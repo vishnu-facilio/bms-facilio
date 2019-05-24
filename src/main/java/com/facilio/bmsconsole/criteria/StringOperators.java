@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.criteria;
 
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
@@ -11,7 +12,7 @@ public enum StringOperators implements Operator<String> {
 		public String getWhereClause(String columnName, String value) {
 			// TODO Auto-generated method stub
 			if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
-				if(value.contains(",")) {
+				if(value.matches(CONTAINS_COMMA_REGEX)) {
 					StringBuilder builder = new StringBuilder();
 					builder.append(columnName)
 							.append(" IN (");
@@ -51,7 +52,7 @@ public enum StringOperators implements Operator<String> {
 						.append(columnName)
 						.append(" IS NULL OR ")
 						.append(columnName);
-				if(value.contains(",")) {
+				if(value.matches(CONTAINS_COMMA_REGEX)) {
 					builder.append(" NOT IN (");
 					splitAndAddQuestionMark(value, builder);
 					builder.append(")");
@@ -152,9 +153,9 @@ public enum StringOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			if(fieldName != null && !fieldName.isEmpty() && value != null && !value.isEmpty()) {
 				Predicate startsWithPredicate = null;
-				if(value.contains(",")) {
+				if(value.matches(CONTAINS_COMMA_REGEX)) {
 					List<Predicate> startsWithPredicates = new ArrayList<>();
-					String[] values = value.trim().split("\\s*,\\s*");
+					String[] values = value.trim().split(SPLIT_COMMA_REGEX);
 					for(String val : values) {
 						startsWithPredicates.add(getStartsWithPredicate(val));
 					}
@@ -198,9 +199,9 @@ public enum StringOperators implements Operator<String> {
 			// TODO Auto-generated method stub
 			if(fieldName != null && !fieldName.isEmpty() && value != null && !value.isEmpty()) {
 				Predicate endsWithPredicate = null;
-				if(value.contains(",")) {
+				if(value.matches(CONTAINS_COMMA_REGEX)) {
 					List<Predicate> endsWithPredicates = new ArrayList<>();
-					String[] values = value.trim().split("\\s*,\\s*");
+					String[] values = value.trim().split(SPLIT_COMMA_REGEX);
 					for(String val : values) {
 						endsWithPredicates.add(getEndsWithPredicate(val));
 					}
@@ -227,6 +228,10 @@ public enum StringOperators implements Operator<String> {
 		}
 	}
 	;
+
+	public static final String DELIMITED_COMMA = "\\,";
+	private static final String CONTAINS_COMMA_REGEX = ".*(?<!\\\\),.*";
+	private static final String SPLIT_COMMA_REGEX = "\\s*(?<!\\\\),\\s*";
 	
 	@Override
 	public abstract String getWhereClause(String columnName, String value);
@@ -281,8 +286,8 @@ public enum StringOperators implements Operator<String> {
 	private static List<Object> commonComputeValue(String value, boolean prefix, boolean suffix) {
 		if(value != null && !value.isEmpty()) {
 			List<Object> valuesList = new ArrayList<>();
-			if(value.contains(",")) {
-				 String[] values = value.trim().split("\\s*,\\s*");
+			if(value.matches(CONTAINS_COMMA_REGEX)) {
+				 String[] values = value.trim().split(SPLIT_COMMA_REGEX);
 				 for(String val : values) {
 					 valuesList.add(appendPercent(val, prefix, suffix));
 				 }
@@ -300,7 +305,7 @@ public enum StringOperators implements Operator<String> {
 		 if(prefix) {
 			 builder.append("%");
 		 }
-		 builder.append(val);
+		 builder.append(val.replace(DELIMITED_COMMA,","));
 		 if(suffix) {
 			 builder.append("%");
 		 }
@@ -308,7 +313,7 @@ public enum StringOperators implements Operator<String> {
 	}
 	
 	private static void splitAndAddQuestionMark(String value, StringBuilder builder) {
-		String[] values = value.trim().split("\\s*,\\s*");
+		String[] values = value.trim().split(SPLIT_COMMA_REGEX);
 		for(int i=0; i<values.length; i++) {
 			if(i != 0) {
 				builder.append(", ");
@@ -320,9 +325,9 @@ public enum StringOperators implements Operator<String> {
 	private static String contains(String columnName, String value, boolean isNot) {
 		if(columnName != null && !columnName.isEmpty() && value != null && !value.isEmpty()) {
 			StringBuilder builder = new StringBuilder();
-			if(value.contains(",")) {
+			if(value.matches(CONTAINS_COMMA_REGEX)) {
 				builder.append("(");
-				String[] values = value.trim().split("\\s*,\\s*");
+				String[] values = value.trim().split(SPLIT_COMMA_REGEX);
 				for(int i=0; i<values.length; i++) {
 					if(i != 0) {
 						builder.append(" OR ");
@@ -349,9 +354,9 @@ public enum StringOperators implements Operator<String> {
 	}
 	
 	private static Predicate computeEqualPredicate(String value) {
-		if(value.contains(",")) {
+		if(value.matches(CONTAINS_COMMA_REGEX)) {
 			List<Predicate> equalPredicates = new ArrayList<>();
-			String[] values = value.trim().split("\\s*,\\s*");
+			String[] values = value.trim().split(SPLIT_COMMA_REGEX);
 			for(String val : values) {
 				equalPredicates.add(getEqualPredicate(val));
 			}
@@ -375,9 +380,9 @@ public enum StringOperators implements Operator<String> {
 	}
 	
 	private static Predicate computeContainsPredicate(String value) {
-		if(value.contains(",")) {
+		if(value.matches(CONTAINS_COMMA_REGEX)) {
 			List<Predicate> containsPredicates = new ArrayList<>();
-			String[] values = value.trim().split("\\s*,\\s*");
+			String[] values = value.trim().split(SPLIT_COMMA_REGEX);
 			for(String val : values) {
 				containsPredicates.add(getContainsPredicate(val));
 			}

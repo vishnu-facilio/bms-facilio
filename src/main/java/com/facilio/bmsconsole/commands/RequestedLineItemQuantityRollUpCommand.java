@@ -23,8 +23,10 @@ public class RequestedLineItemQuantityRollUpCommand implements Command {
         for(Long id : recordIds) {
         	if(costType == 1) {
         		WorkorderItemContext woItem = WorkOrderAPI.getWorkOrderItem(id);
-        		InventoryRequestLineItemContext woLineItem = InventoryRequestAPI.getLineItem(woItem.getRequestedLineItem().getId());
-        		InventoryRequestAPI.updateRequestUsedQuantity(woItem.getRequestedLineItem(), woLineItem.getUsedQuantity() - woItem.getQuantity());
+        		if(woItem.getRequestedLineItem() != null && woItem.getRequestedLineItem().getId() > 0) {
+	        		InventoryRequestLineItemContext woLineItem = InventoryRequestAPI.getLineItem(woItem.getRequestedLineItem().getId());
+	        		InventoryRequestAPI.updateRequestUsedQuantity(woItem.getRequestedLineItem(), woLineItem.getUsedQuantity() - woItem.getQuantity());
+        		}
         	}
 //        	else if(costType == 2) {
 //        		WorkorderToolsContext woTool = WorkOrderAPI.getWorkOrderTool(id);

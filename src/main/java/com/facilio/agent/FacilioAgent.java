@@ -14,7 +14,7 @@ public class FacilioAgent
     private  Boolean agentConnStatus ;
     private  Long agentDataInterval ;
     private  Integer agentNumberOfControllers;
-    private  Integer  agentType;
+    private  String  agentType;
     private  Long lastModifiedTime;
     private Long lastDataRecievedTime;
     private Long deletedTime;
@@ -123,11 +123,11 @@ public class FacilioAgent
         this.agentNumberOfControllers = agentNumberOfControllers;
     }
 
-    public Integer getAgentType() {
+    public String getAgentType() {
         return agentType;
     }
 
-    public void setAgentType(Integer agentType) {
+    public void setAgentType(String agentType) {
         this.agentType = agentType;
     }
 

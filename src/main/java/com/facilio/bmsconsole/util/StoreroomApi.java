@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -49,5 +50,17 @@ public class StoreroomApi {
 			return storerooms.get(0);
 		}
 		return null;
+	}
+	
+	public static void updateStoreRoomLastPurchasedDate(long storeRoomId, long lastPurchasedDate) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.STORE_ROOM);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.STORE_ROOM);
+		StoreRoomContext storeRoom = new StoreRoomContext();
+		storeRoom.setId(storeRoomId);
+		storeRoom.setLastPurchasedDate(lastPurchasedDate);
+		UpdateRecordBuilder<StoreRoomContext> updateBuilder = new UpdateRecordBuilder<StoreRoomContext>().module(module)
+				.fields(fields).andCondition(CriteriaAPI.getIdCondition(storeRoomId, module));
+		updateBuilder.update(storeRoom);
 	}
 }

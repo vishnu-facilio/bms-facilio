@@ -263,7 +263,7 @@ public class FieldFactory {
 		fields.add(getAgentNameField(module));
 		fields.add(getField(AgentKeys.DISPLAY_NAME,"DISPLAY_NAME",module,FieldType.STRING));
 		fields.add(getField(AgentKeys.DATA_INTERVAL,"DATA_INTERVAL",module,FieldType.NUMBER));
-		fields.add(getField(AgentKeys.AGENT_TYPE,"TYPE",module,FieldType.NUMBER));
+		fields.add(getField(AgentKeys.AGENT_TYPE,"TYPE",module,FieldType.STRING));
 		fields.add(getField(AgentKeys.VERSION,"VERSION",module,FieldType.STRING));
 		fields.add(getField(AgentKeys.LAST_MODIFIED_TIME,"LAST_MODIFIED_TIME",module,FieldType.NUMBER));
 		fields.add(getCreatedTime(module));
@@ -2896,6 +2896,7 @@ public class FieldFactory {
 		fields.add(getField("broadcastIp", "BROADCAST_IP", module, FieldType.STRING));
 		fields.add(getField("subnetPrefix", "SUBNET_PREFIX", module, FieldType.NUMBER));
 		fields.add(getField("networkNumber", "NETWORK_NUMBER", module, FieldType.NUMBER));
+		fields.add(getField("availablePoints", "AVAILABLE_POINTS", module, FieldType.NUMBER));
 		fields.add(getField("controllerPropsJsonStr", "CONTROLLER_PROPS", module, FieldType.STRING));
 		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.DATE_TIME));
 		fields.add(getField("lastModifiedTime", "LAST_MODIFIED_TIME", module, FieldType.DATE_TIME));
@@ -5811,6 +5812,7 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(getField("id", "ID", validationModule, FieldType.ID));
 		fields.add(getField("ruleId", "RULE_ID", validationModule, FieldType.NUMBER));
+		fields.add(getField("name", "NAME", validationModule, FieldType.STRING));
 		fields.add(getField("errorMessage", "ERROR_MESSAGE", validationModule, FieldType.STRING));
 		fields.add(getField("criteriaId", "CRITERIA_ID", validationModule, FieldType.NUMBER));
 		return fields;

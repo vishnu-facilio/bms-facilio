@@ -83,12 +83,21 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
     }
     
     @Override 
-    public Value visitListFetch(WorkflowV2Parser.ListFetchContext ctx) 
+    public Value visitListAndMapSymbolOperation(WorkflowV2Parser.ListAndMapSymbolOperationContext ctx)
 	{
-    	Value listValue = this.visit(ctx.atom().get(0));
-    	List list = listValue.asList();
-    	int index = this.visit(ctx.atom().get(1)).asInt();
-		return new Value(list.get(index));
+    	String varName = ctx.VAR().getText();
+    	Value value = this.varMemoryMap.get(varName);
+    	if(value.asObject() instanceof List ) {
+    		Value listValue = this.visit(ctx.atom());
+    		Integer index = listValue.asInt();
+    		return new Value(value.asList().get(index));
+    	}
+    	if(value.asObject() instanceof Map ) {
+    		Value mapValue = this.visit(ctx.atom());
+    		Object key = mapValue.asObject();
+    		return new Value(value.asMap().get(key));
+    	}
+    	return Value.VOID;
 	}
     @Override 
     public Value visitDataTypeSpecificFunction(WorkflowV2Parser.DataTypeSpecificFunctionContext ctx) {
@@ -156,9 +165,31 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
     
     @Override
     public Value visitAssignment(WorkflowV2Parser.AssignmentContext ctx) {
-        String varName = ctx.VAR().getText();
-        Value value = this.visit(ctx.expr());
-        return varMemoryMap.put(varName, value);
+    	
+    	String varName = ctx.VAR().getText();
+    	
+    	if (ctx.atom(0) != null) {
+        	
+        	Value parentValue = varMemoryMap.get(varName);
+        	
+        	if(parentValue.asObject() instanceof List) {
+        		
+        		Value index = this.visit(ctx.atom(0));
+        		
+        		Value value = this.visit(ctx.expr());
+        		parentValue.asList().add(index.asInt(), value.asObject());
+        	}
+        	else if (parentValue.asObject() instanceof Map) {
+        		Value key = this.visit(ctx.atom(0));
+        		Value value = this.visit(ctx.expr());
+        		parentValue.asMap().put(key.asObject(), value.asObject());
+        	}
+        }
+        else {
+        	Value value = this.visit(ctx.expr());
+        	return varMemoryMap.put(varName, value);
+        }
+        return Value.VOID;
     }
     
     @Override 
@@ -361,8 +392,9 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
     }
     
     @Override
-    public Value visitArithmeticExpr(WorkflowV2Parser.ArithmeticExprContext ctx) {
+    public Value visitArithmeticFirstPrecedenceExpr(WorkflowV2Parser.ArithmeticFirstPrecedenceExprContext ctx) {
 
+    	System.out.println("arithmetic1 - - "+ctx.getText());
         Value left = this.visit(ctx.expr(0));
         Value right = this.visit(ctx.expr(1));
 
@@ -373,6 +405,19 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
                 return new Value(left.asDouble() / right.asDouble());
             case WorkflowV2Parser.MOD:
                 return new Value(left.asDouble() % right.asDouble());
+            default:
+                throw new RuntimeException("unknown operator: " + WorkflowV2Parser.tokenNames[ctx.op.getType()]);
+        }
+    }
+    
+    @Override
+    public Value visitArithmeticSecondPrecedenceExpr(WorkflowV2Parser.ArithmeticSecondPrecedenceExprContext ctx) {
+
+    	System.out.println("arithmetic2 - - "+ctx.getText());
+        Value left = this.visit(ctx.expr(0));
+        Value right = this.visit(ctx.expr(1));
+
+        switch (ctx.op.getType()) {
             case WorkflowV2Parser.PLUS:
                 return left.isDouble() && right.isDouble() ?
                         new Value(left.asDouble() + right.asDouble()) :
@@ -452,6 +497,14 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
     		}
     		else {
     			operator = NumberOperators.EQUALS;
+    		}
+    		break;
+    	case "!=" :
+    		if(operatorValue.asObject() instanceof String) {
+    			operator = StringOperators.ISN_T;
+    		}
+    		else {
+    			operator = NumberOperators.NOT_EQUALS;
     		}
     		break;
     	default:
