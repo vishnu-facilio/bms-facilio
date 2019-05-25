@@ -37,7 +37,7 @@ public class FetchShipmentDetailsCommand implements Command{
 					.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(lineItemModuleName))
 					.andCondition(CriteriaAPI.getCondition("SHIPMENT_ID", "shipment", String.valueOf(shipmentContext.getId()), NumberOperators.EQUALS))
 					.fetchLookups(Arrays.asList((LookupField) fieldsAsMap.get("itemType"),
-					(LookupField) fieldsAsMap.get("toolType")));
+					(LookupField) fieldsAsMap.get("toolType"),(LookupField) fieldsAsMap.get("asset")));
 		
 			List<ShipmentLineItemContext> list = builder.get();
 			shipmentContext.setLineItems(list);

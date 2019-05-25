@@ -82,6 +82,8 @@ public class AddOrUpdateShipmentCommand implements Command{
 		                     AssetContext asset = new AssetContext(); 
 		                     asset.setId(lineItemContext.getAssetIds().get(i)); 
 		                     lineItem.setAsset(asset); 
+		                     lineItem.setUnitPrice(lineItemContext.getUnitPrice());
+		                     lineItem.setRate(lineItemContext.getRate());
 		                     lineItem.setInventoryType(lineItemContext.getInventoryType()); 
 		                     if(lineItemContext.getInventoryType() == InventoryType.ITEM.getValue()) { 
 		                         lineItem.setItemType(lineItemContext.getItemType()); 
