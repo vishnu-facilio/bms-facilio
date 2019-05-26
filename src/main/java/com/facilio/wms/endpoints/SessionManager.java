@@ -121,11 +121,11 @@ public class SessionManager {
 	}
 	
 	private long sendUserMessage(Message message) {
-		logger.log(Level.INFO, "Send message called. from: "+message.getFrom()+" to: "+message.getTo());
+		logger.log(Level.FINE, "Send message called. from: "+message.getFrom()+" to: "+message.getTo());
 		long timeTaken = 0L;
 		List<UserSession> sessionList = getUserSessions(message.getTo());
 		if (sessionList != null) {
-			logger.log(Level.INFO, "Going to send message to ("+sessionList.size()+") user sessions. from: "+message.getFrom()+" to: "+message.getTo());
+			logger.log(Level.FINE, "Going to send message to ("+sessionList.size()+") user sessions. from: "+message.getFrom()+" to: "+message.getTo());
 			for (UserSession us : sessionList) {
 				try {
 					timeTaken = timeTaken + us.sendMessage(message);
@@ -136,7 +136,7 @@ public class SessionManager {
 			}
 		}
 		else {
-			logger.log(Level.INFO, "No active sessions exists for the user: "+message.getTo());
+			logger.log(Level.FINE, "No active sessions exists for the user: "+message.getTo());
 		}
 		if(sessionList != null && sessionList.size() > 0) {
 			logger.fine("Session size " + sessionList.size() + " " + timeTaken);

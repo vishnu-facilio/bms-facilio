@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.context;
 import java.text.ParseException;
 import java.util.List;
 
-import com.facilio.modules.FacilioStatus;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -13,6 +12,7 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FacilioStatus;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
 public class TaskContext extends ModuleBaseWithCustomFields {
@@ -387,5 +387,21 @@ public class TaskContext extends ModuleBaseWithCustomFields {
 	}
 	public void setFailureValue(String failureValue) {
 		this.failureValue = failureValue;
+	}
+	
+	private long offlineModifiedTime = -1;
+	public long getOfflineModifiedTime() {
+		return offlineModifiedTime;
+	}
+	public void setOfflineModifiedTime(long offlineModifiedTime) {
+		this.offlineModifiedTime = offlineModifiedTime;
+	}
+	
+	private long syncTime = -1;
+	public long getSyncTime() {
+		return syncTime;
+	}
+	public void setSyncTime(long syncTime) {
+		this.syncTime = syncTime;
 	}
 }

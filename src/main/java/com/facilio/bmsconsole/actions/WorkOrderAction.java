@@ -50,7 +50,6 @@ import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
-import com.facilio.modules.FacilioStatus;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.modules.FacilioField;
@@ -58,14 +57,12 @@ import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
-import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -75,6 +72,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioStatus;
 
 public class WorkOrderAction extends FacilioAction {
 
@@ -83,35 +81,6 @@ public class WorkOrderAction extends FacilioAction {
 	 */
 	private static final long serialVersionUID = 1L;
 	private static Logger log = LogManager.getLogger(WorkOrderAction.class.getName());
-
-    public String newWorkOrder() throws Exception {
-
-		FacilioContext context = new FacilioContext();
-		try {
-			Chain newTicket = FacilioChainFactory.getNewWorkOrderChain();
-			newTicket.execute(context);
-
-			setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
-			setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
-
-			fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-		}
-		catch (Exception e) {
-			JSONObject inComingDetails = new JSONObject();
-			inComingDetails.put("moduleName", getModuleName());
-			inComingDetails.put("ActionForm", getActionForm());
-			inComingDetails.put("fields", fields);
-			sendErrorMail(e, inComingDetails);
-			throw e;
-		}
-		return SUCCESS;
-	}
-
-    public String v2workOrderCount () throws Exception {
-    		workOrderList();	
-    		setResult(FacilioConstants.ContextNames.WORK_ORDER_COUNT, woCount);		
-		return SUCCESS;
-	}
 
     public String getCurrentView() {
         return currentView;
@@ -150,21 +119,12 @@ public class WorkOrderAction extends FacilioAction {
 	}
 
 	public String addWorkOrder() throws Exception {
-		try {
-			if(workOrderString != null) {
-				setWorkordercontex(workOrderString);
-			}
-			if(tasksString != null) {
-				setTaskcontex(tasksString);
-			}
+		if(workOrderString != null) {
+			setWorkordercontex(workOrderString);
 		}
-		catch (Exception e) {
-			JSONObject inComingDetails = new JSONObject();
-			inComingDetails.put("addWorkOrder", "While adding Workorder");
-			sendErrorMail(e, inComingDetails);
-			throw e;
+		if(tasksString != null) {
+			setTaskcontex(tasksString);
 		}
-		
 		return addWorkOrder(workorder);
 	}
 
@@ -203,12 +163,10 @@ public class WorkOrderAction extends FacilioAction {
 		}
 		catch (Exception e) {
 			JSONObject inComingDetails = new JSONObject();
-			inComingDetails.put("workorder", workorder);
-			inComingDetails.put("tasks", tasks);
-			inComingDetails.put("attachedFiles", this.attachedFiles);
-			inComingDetails.put("attachedFilesFileName", this.attachedFilesFileName);
-			inComingDetails.put("attachedFilesContentType", this.attachedFilesContentType);
-			inComingDetails.put("attachmentType", this.attachmentType);
+			inComingDetails.put("workorder", FieldUtil.getAsJSON(workorder));
+			if (tasks != null) {
+				inComingDetails.put("tasks", FieldUtil.getAsJSON(tasks));
+			}
 			sendErrorMail(e, inComingDetails);
 			throw e;
 		}
@@ -225,26 +183,6 @@ public class WorkOrderAction extends FacilioAction {
 		this.templateId = templateId;
 	}
 
-	public String addWorkOrderFromTemplate() throws Exception {
-		try {
-			JSONTemplate template = (JSONTemplate) TemplateAPI.getTemplate(getTemplateId());
-			JSONParser parser = new JSONParser();
-			JSONObject content = (JSONObject) parser
-					.parse((String) template.getTemplate(new HashMap<String, Object>()).get("content"));
-
-			WorkOrderContext workorder = FieldUtil.getAsBeanFromJson(content, WorkOrderContext.class);
-		}
-		catch (Exception e) {
-			JSONObject inComingDetails = new JSONObject();
-			inComingDetails.put("addWorkOrderFromTemplate, WorkorderObject", workorder);
-			sendErrorMail(e, inComingDetails);
-			throw e;
-		}
-		
-
-		return addWorkOrder(workorder);
-	}
-	
 	public String addPreventiveMaintenance() throws Exception {
 		FacilioContext context = new FacilioContext();
 		if(workOrderString != null) {
@@ -1211,21 +1149,12 @@ public class WorkOrderAction extends FacilioAction {
 
 	public String assignWorkOrder() throws Exception {
 		FacilioContext context = new FacilioContext();
-		try {
-		
-			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.ASSIGN_TICKET);
-			if(workorder != null && workorder.getAssignedTo() != null && workorder.getAssignedTo().getId() == -1l) {
-				workorder.getAssignedTo().setId(-99l);
-			}
-			if(workorder != null && workorder.getAssignmentGroup() != null && workorder.getAssignmentGroup().getId() == -1l) {
-				workorder.getAssignmentGroup().setId(-99l);
-			}
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.ASSIGN_TICKET);
+		if(workorder != null && workorder.getAssignedTo() != null && workorder.getAssignedTo().getId() == -1l) {
+			workorder.getAssignedTo().setId(-99l);
 		}
-		catch (Exception e) {
-			JSONObject inComingDetails = new JSONObject();
-			inComingDetails.put("Event Type, assignWorkOrder", EventType.ASSIGN_TICKET);
-			sendErrorMail(e, inComingDetails);
-			throw e;
+		if(workorder != null && workorder.getAssignmentGroup() != null && workorder.getAssignmentGroup().getId() == -1l) {
+			workorder.getAssignmentGroup().setId(-99l);
 		}
 		return updateWorkOrder(context);
 	}
@@ -1233,7 +1162,6 @@ public class WorkOrderAction extends FacilioAction {
 	public String closeWorkOrder() throws Exception {
 		FacilioContext context = new FacilioContext();
 		workorder = new WorkOrderContext();
-		try {
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CLOSE_WORK_ORDER);
 		context.put(FacilioConstants.ContextNames.ACTUAL_TIMINGS, actualTimings);
 
@@ -1246,21 +1174,11 @@ public class WorkOrderAction extends FacilioAction {
 		if (actualWorkDuration != -1) {
 			workorder.setActualWorkDuration(actualWorkDuration);
 		}
-	}
-		catch (Exception e) {
-			JSONObject inComingDetails = new JSONObject();
-			inComingDetails.put("Event Type, closeWorkOrder", EventType.CLOSE_WORK_ORDER);
-			inComingDetails.put("actualTimings", actualTimings);
-			inComingDetails.put("workorder", workorder);
-			sendErrorMail(e, inComingDetails);
-			throw e;
-		}
 		return updateWorkOrder(context);
 	}
 
 	public String resolveWorkOrder() throws Exception {
 		FacilioContext context = new FacilioContext();
-		try {
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.SOLVE_WORK_ORDER);
 		context.put(FacilioConstants.ContextNames.ACTUAL_TIMINGS, actualTimings);
 
@@ -1272,15 +1190,6 @@ public class WorkOrderAction extends FacilioAction {
 			workorder.setActualWorkDuration(actualWorkDuration);
 		}
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
-	}
-		catch (Exception e) {
-			JSONObject inComingDetails = new JSONObject();
-			inComingDetails.put("Event Type, resolveWorkOrder", EventType.SOLVE_WORK_ORDER);
-			inComingDetails.put("actualTimings", actualTimings);
-			inComingDetails.put("workorder", workorder);
-			sendErrorMail(e, inComingDetails);
-			throw e;
-		}
 		return updateWorkOrder(context);
 	}
 
@@ -1306,16 +1215,7 @@ public class WorkOrderAction extends FacilioAction {
 
 	public String updateWorkOrder() throws Exception {
 		FacilioContext context = new FacilioContext();
-		try {
-			setUpdateWorkorderContext(context);
-		}
-		catch (Exception e) {
-			JSONObject inComingDetails = new JSONObject();
-			inComingDetails.put("updateWorkOrder", "updateWorkOrder");
-			sendErrorMail(e, inComingDetails);
-			throw e;
-		}
-		
+		setUpdateWorkorderContext(context);
 		return updateWorkOrder(context);
 	}
 	
@@ -1365,10 +1265,11 @@ public class WorkOrderAction extends FacilioAction {
 		Chain updateWorkOrder = TransactionChainFactory.getUpdateWorkOrderChain();
 		updateWorkOrder.execute(context);
 		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
+		setWorkOrders((List<WorkOrderContext>) context.get(ContextNames.RECORD_LIST));
 	}
 	catch (Exception e) {
 		JSONObject inComingDetails = new JSONObject();
-		inComingDetails.put("workorder", workorder);
+		inComingDetails.put("workorder", FieldUtil.getAsJSON(workorder));
 		inComingDetails.put("RECORD_ID_LIST", id);
 		sendErrorMail(e, inComingDetails);
 		throw e;
@@ -1475,19 +1376,14 @@ public class WorkOrderAction extends FacilioAction {
 		this.recordCount = ""+count;
 	}
 	
-	public String workOrderCount () throws Exception {
-		System.out.println("View Name :  clount " + getViewName());
-		try {
-			workOrderList();
-		}
-		catch (Exception e) {
-			JSONObject inComingDetails = new JSONObject();
-			inComingDetails.put("View name", getViewName());
-			sendErrorMail(e, inComingDetails);
-			throw e;
-		}
-		return SUCCESS;
+	private long modifiedTime = -1;
+	public long getModifiedTime() {
+		return modifiedTime;
 	}
+	public void setModifiedTime(long modifiedTime) {
+		this.modifiedTime = modifiedTime;
+	}
+
 	private void sendErrorMail(Exception e, JSONObject inComingDetails) throws Exception {
 		// TODO Auto-generated method stub
 		String errorTrace = null;
@@ -2254,49 +2150,34 @@ public class WorkOrderAction extends FacilioAction {
 	/******************      V2 Api    ******************/
 	
 	public String v2viewWorkOrder() throws Exception {
-		try {
 		viewWorkOrder();
 		setResult(FacilioConstants.ContextNames.WORK_ORDER, workorder);
-	}
-		catch (Exception e) {
-			JSONObject inComingDetails = new JSONObject();
-			inComingDetails.put("workorder", workorder);
-			sendErrorMail(e, inComingDetails);
-			throw e;
-		}
 		return SUCCESS;
 	}
 	
 	public String v2addWorkOrder() throws Exception {
-		try {
 		addWorkOrder();
 		viewWorkOrder();
 		setResult(FacilioConstants.ContextNames.WORK_ORDER, workorder);
-	}
-		catch (Exception e) {
-			JSONObject inComingDetails = new JSONObject();
-			inComingDetails.put("workorder", workorder);
-			sendErrorMail(e, inComingDetails);
-			throw e;
-		}
 		return SUCCESS;
 	}
 	
 	public String v2updateWorkOrder() throws Exception {
 		updateWorkOrder();
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
+		setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
 		return SUCCESS;
 	}
 	
 	public String v2assignWorkOrder() throws Exception {
 		assignWorkOrder();
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
+		setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
 
 		return SUCCESS;
 	}
 	
 	public String v2workOrderList() throws Exception {
-		try {
 		workOrderList();
 		setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
 		if (getSubView() != null) {
@@ -2307,13 +2188,12 @@ public class WorkOrderAction extends FacilioAction {
 		}
 		setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
 		setResult("stateFlows", stateFlows);
-		}
-		catch (Exception e) {
-			JSONObject inComingDetails = new JSONObject();
-			inComingDetails.put("workOrders", workOrders);
-			sendErrorMail(e, inComingDetails);
-			throw e;
-		}
+		return SUCCESS;
+	}
+	
+	public String v2workOrderCount () throws Exception {
+		workOrderList();	
+		setResult(FacilioConstants.ContextNames.WORK_ORDER_COUNT, woCount);		
 		return SUCCESS;
 	}
 	
@@ -2457,12 +2337,14 @@ public class WorkOrderAction extends FacilioAction {
 	public String v2resolveWorkorder() throws Exception {
 		resolveWorkOrder();
 		setResult(FacilioConstants.ContextNames.RESULT, "success");
+		setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
 		return SUCCESS;
 	}
 	
 	public String v2closeWorkorder() throws Exception {
 		closeWorkOrder();
 		setResult(FacilioConstants.ContextNames.RESULT, "success");
+		setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
 		return SUCCESS;
 	}
 

@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.facilio.modules.FacilioStatus;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
@@ -39,6 +38,7 @@ import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioStatus;
 
 public class UpdateTaskCommand implements Command {
 	
@@ -85,7 +85,11 @@ public class UpdateTaskCommand implements Command {
 				}
 			
 			Long lastSyncTime = (Long) context.get(FacilioConstants.ContextNames.LAST_SYNC_TIME);
-			if (lastSyncTime != null && oldTasks.get(0).getModifiedTime() > lastSyncTime ) {
+			TaskContext oldTaskForSync = oldTasks.get(0);
+			if (lastSyncTime != null && oldTaskForSync.getModifiedTime() > lastSyncTime ) {
+				throw new RuntimeException("The task was modified after the last sync");
+			}
+			if (task.getSyncTime() != -1 && oldTaskForSync.getModifiedTime() > task.getSyncTime() ) {
 				throw new RuntimeException("The task was modified after the last sync");
 			}
 			
@@ -140,7 +144,12 @@ public class UpdateTaskCommand implements Command {
 			idCondition.setOperator(NumberOperators.EQUALS);
 			idCondition.setValue(ids);
 			
-			task.setModifiedTime(System.currentTimeMillis());
+			if (task.getOfflineModifiedTime() != -1) {
+				task.setModifiedTime(task.getOfflineModifiedTime());
+			}
+			else {
+				task.setModifiedTime(System.currentTimeMillis());
+			}
 			
 			UpdateRecordBuilder<TaskContext> updateBuilder = new UpdateRecordBuilder<TaskContext>()
 																		.moduleName(moduleName)

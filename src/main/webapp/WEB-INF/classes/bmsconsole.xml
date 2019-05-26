@@ -1645,26 +1645,9 @@
 	</package>
 
 	<package name="workOrderApi" namespace="/api/workorder" extends="homeApi">
-		<action name="layout" class="com.facilio.bmsconsole.actions.WorkOrderAction"
-			method="newWorkOrder">
-			<param name="moduleName">workorder</param>
-			<param name="permission">CREATE</param>
-			<result name="success" type="json">
-				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
-			</result>
-		</action>
 
 		<action name="add" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="addWorkOrder">
-			<param name="moduleName">workorder</param>
-			<param name="permission">CREATE</param>
-			<result name="success" type="json">
-				<param name="includeProperties">^workorder.*</param>
-			</result>
-		</action>
-
-		<action name="addFromTemplate" class="com.facilio.bmsconsole.actions.WorkOrderAction"
-			method="addWorkOrderFromTemplate">
 			<param name="moduleName">workorder</param>
 			<param name="permission">CREATE</param>
 			<result name="success" type="json">
@@ -1865,7 +1848,7 @@
 		</action>
 		
 		<action name="workOrderCount" class="com.facilio.bmsconsole.actions.WorkOrderAction"
-			method="workOrderCount">
+			method="workOrderList">
 			<param name="moduleName">workorder</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">

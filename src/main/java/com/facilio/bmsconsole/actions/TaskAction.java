@@ -1,11 +1,29 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Command;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.ActionForm;
+import com.facilio.bmsconsole.context.FormLayout;
+import com.facilio.bmsconsole.context.RecordSummaryLayout;
+import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
+import com.facilio.bmsconsole.context.TaskSectionContext;
+import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -16,18 +34,6 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.exception.ReadingValidationException;
 import com.facilio.modules.FacilioStatus;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.struts2.ServletActionContext;
-import org.json.simple.JSONObject;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class TaskAction extends FacilioAction {
 
@@ -282,6 +288,7 @@ public class TaskAction extends FacilioAction {
 			Chain updateTask = TransactionChainFactory.getUpdateTaskChain();
 			updateTask.execute(context);
 			rowsUpdated += (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
+			setModifiedTime(defaultClosedTaskObj.getModifiedTime());
 		}
 		}
 		catch (Exception e) {
@@ -545,18 +552,21 @@ public class TaskAction extends FacilioAction {
 	public String v2updateStatus() throws Exception {
 		updateStatus();
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
+		setResult(FacilioConstants.ContextNames.TASK, task);
 		return SUCCESS;
 	}
 	
 	public String v2closeAllTask() throws Exception {
 		closeAllTask();
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
+		setResult(FacilioConstants.ContextNames.MODIFIED_TIME, modifiedTime);
 		return SUCCESS;
 	}
 	
 	public String v2updateAllTask() throws Exception {
 		updateAllTask();
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
+		setResult(FacilioConstants.ContextNames.TASK_LIST, taskContextList);
 		setResult("error", getError());
 		return SUCCESS;
 	}
@@ -564,6 +574,7 @@ public class TaskAction extends FacilioAction {
 	public String v2updateTask() throws Exception {
 		updateTask();
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
+		setResult(FacilioConstants.ContextNames.TASK, task);
 		setResult("error", getError());
 		return SUCCESS;
 	}
@@ -684,6 +695,14 @@ public class TaskAction extends FacilioAction {
 			mailJson.put("message", body.toString());
 			AwsUtil.sendEmail(mailJson);
 		}
+	}
+	
+	private long modifiedTime = -1;
+	public long getModifiedTime() {
+		return modifiedTime;
+	}
+	public void setModifiedTime(long modifiedTime) {
+		this.modifiedTime = modifiedTime;
 	}
 	
  }
