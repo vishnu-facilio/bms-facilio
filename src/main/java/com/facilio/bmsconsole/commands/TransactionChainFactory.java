@@ -2770,6 +2770,7 @@ public class TransactionChainFactory {
 		public static Chain getTransferShipmentChain() {
 			
 			Chain c = getDefaultChain();
+			c.addCommand(new UpdateShipmentRecordForDirecttransferCommand());
 			c.addCommand(getStageShipmentInventoryChain());
 		    c.addCommand(getReceiveShipmentInventoryChain());
 		    return c;

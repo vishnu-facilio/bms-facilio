@@ -50,6 +50,8 @@ public class ReceiveShipmentCommand implements Command{
 				.get(FacilioConstants.ContextNames.SHIPMENT);
 		List<ItemContext> itemsTobeAdded = new ArrayList<>();
 		List<ToolContext> toolsToBeAdded = new ArrayList<>();
+		List<Long> newItemTypes = new ArrayList<Long>();
+		List<Long> newToolTypes = new ArrayList<Long>();
 		boolean containsIndividualTrackingItem = false;
 		boolean containsIndividualTrackingTool = false;
 		
@@ -69,7 +71,11 @@ public class ReceiveShipmentCommand implements Command{
 									} else {
 										containsIndividualTrackingItem = false;
 									}
-									itemsTobeAdded.add(ShipmentAPI.createItem(shipment, lineItem, containsIndividualTrackingItem, shipmentRotatingAssets));
+									ItemContext newItem = ShipmentAPI.createItem(shipment, lineItem, containsIndividualTrackingItem, shipmentRotatingAssets);
+										if(!newItemTypes.contains(itemtype.getId())) {
+											itemsTobeAdded.add(newItem);
+											newItemTypes.add(newItem.getItemType().getId());
+										}
 								} else if (lineItem.getInventoryTypeEnum() == InventoryType.TOOL) {
 									ToolTypesContext toolType = ToolsApi.getToolTypes(lineItem.getToolType().getId());
 									if (toolType.isRotating()) {
@@ -77,7 +83,11 @@ public class ReceiveShipmentCommand implements Command{
 									} else {
 										containsIndividualTrackingTool = false;
 									}
-									toolsToBeAdded.add(ShipmentAPI.createTool(shipment, lineItem, containsIndividualTrackingTool, shipmentRotatingAssets));
+									ToolContext newTool = ShipmentAPI.createTool(shipment, lineItem, containsIndividualTrackingTool, shipmentRotatingAssets);
+									if(!newToolTypes.contains(toolType.getId())) {
+										toolsToBeAdded.add(newTool);
+										newToolTypes.add(newTool.getToolType().getId());
+									}
 								}
 						}
 					}
