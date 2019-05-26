@@ -6,7 +6,7 @@
              driverClassName="com.mysql.jdbc.Driver"
              factory="com.zaxxer.hikari.HikariJNDIFactory"
              maximumPoolSize="70"
-             connectionTimeout="14400000"
+             connectionTimeout="30000"
              leakDetectionThreshold="55000"
              dataSource.implicitCachingEnabled="true"
              username="faciliouser"
