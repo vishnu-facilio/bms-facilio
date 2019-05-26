@@ -1,5 +1,6 @@
 {
   "dbName": "mysql",
+  "dbPackage": "com.facilio.sql.mysql",
   "dbConfigClass": "com.facilio.bmsconsole.db.BmsDBConf",
   "operators" : [
     {
@@ -17,6 +18,26 @@
     {
       "types": ["BOOLEAN"],
       "enumClassName": "com.facilio.db.criteria.operators.BooleanOperators"
+    },
+    {
+      "types": ["DATE", "DATE_TIME"],
+      "enumClassName": "com.facilio.db.criteria.operators.DateOperators"
+    }
+    {
+      "types": ["LOOKUP"],
+      "enumClassName": "com.facilio.db.criteria.operators.LookupOperator"
+    },
+    {
+      "types": ["LOOKUP"],
+      "enumClassName": "com.facilio.db.criteria.operators.PickListOperators"
+    },
+    {
+      "types": ["ENUM"],
+      "enumClassName": "com.facilio.db.criteria.operators.EnumOperators"
+    },
+    {
+      "types": ["LOOKUP"],
+      "enumClassName": "com.facilio.db.criteria.operators.BuildingOperator"
     }
   ]
 }
