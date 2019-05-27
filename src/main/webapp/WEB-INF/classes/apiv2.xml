@@ -133,6 +133,17 @@
 		<action name="view"
 			class="com.facilio.bmsconsole.actions.StateFlowAction" method="viewStateTransition" />
 	</package>
+	
+	<package name="shift" namespace="/api/v2/shift" extends="v2Api">
+		<action name="add" 
+			class="com.facilio.bmsconsole.actions.ShiftAction" method="add" />
+		<action name="list" 
+			class="com.facilio.bmsconsole.actions.ShiftAction" method="all" />
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.ShiftAction" method="delete" />
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.ShiftAction" method="update" />
+	</package>
 
 	<package name="importTemplate" namespace="/api/v2/importTemplate"
 		extends="v2Api">

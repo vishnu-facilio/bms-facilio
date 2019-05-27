@@ -1,9 +1,10 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.modules.ModuleBaseWithCustomFields;
-
 import java.time.LocalTime;
-import java.util.List;
+
+import org.apache.struts2.json.annotations.JSON;
+
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class ShiftContext extends ModuleBaseWithCustomFields {
 	/**
@@ -26,69 +27,39 @@ public class ShiftContext extends ModuleBaseWithCustomFields {
 		return this.siteId;
 	}
 	
-	private Boolean isSameTime;
-	public void setIsSameTime(Boolean isSameTime) {
-		this.isSameTime = isSameTime;
-	}
-	
-	public Boolean getIsSameTime() {
-		return this.isSameTime;
-	}
-	
-	public Boolean isSameTime() {
-		return this.isSameTime;
-	}
-	
-	private LocalTime startTime;
+	private long startTime = -1;
+	@JSON(serialize = false)
 	public LocalTime getStartTimeAsLocalTime() {
+		if (startTime > 0) {
+			return LocalTime.ofSecondOfDay(startTime);
+		}
+		return null;
+	}
+	public long getStartTime() {
 		return startTime;
 	}
-	public String getStartTime() {
-		if(startTime != null) {
-			return startTime.toString();
+	public void setStartTime(LocalTime startTime) {
+		this.startTime = startTime.getSecond();
+	}
+	public void setStartTime(long secondOfDay) {
+		this.startTime = secondOfDay;
+	}
+	
+	private long endTime = -1;
+	@JSON(serialize = false)
+	public LocalTime getEndTimeAsLocalTime() {
+		if (endTime > 0) {
+			return LocalTime.ofSecondOfDay(endTime);
 		}
 		return null;
 	}
-	public void setStartTime(LocalTime startTime) {
-		this.startTime = startTime;
-	}
-	public void setStartTime(String value) {
-		if (value == null || value.isEmpty()) {return;}
-		this.startTime = LocalTime.parse(value);
-	}
-	
-	private LocalTime endTime;
-	public LocalTime getEndTimeAsLocalTime() {
+	public long getEndTime() {
 		return endTime;
 	}
-	public String getEndTime() {
-		if(endTime != null) {
-			return endTime.toString();
-		}
-		return null;
-	}
 	public void setEndTime(LocalTime endTime) {
-		this.endTime = endTime;
+		this.endTime = endTime.getSecond();
 	}
-	public void setEndTime(String value) {
-		if (value == null || value.isEmpty()) {return;}
-		this.endTime = LocalTime.parse(value);
-	}
-	
-	private List<BusinessHourContext> days;
-	public List<BusinessHourContext> getDays() {
-		return days;
-	}
-	public void setDays(List<BusinessHourContext> days) {
-		this.days = days;
-	}
-	
-	private long businessHoursId;
-	public void setBusinessHoursId(long businessHoursId) {
-		this.businessHoursId = businessHoursId;
-	}
-	
-	public long getBusinessHoursId() {
-		return this.businessHoursId;
+	public void setEndTime(long secondOfDay) {
+		this.endTime = secondOfDay;
 	}
 }

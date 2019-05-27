@@ -1,32 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import com.facilio.accounts.util.AccountConstants;
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.workflow.rule.EventType;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericDeleteRecordBuilder;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.builder.GenericUpdateRecordBuilder;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
-import com.facilio.modules.fields.EnumField;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.tasker.FacilioTimer;
-import com.facilio.tasker.ScheduleInfo;
-import com.facilio.tasker.ScheduleInfo.FrequencyType;
-import com.facilio.tasker.job.JobContext;
-import com.facilio.time.DateTimeUtil;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.ParseException;
-
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -35,61 +8,120 @@ import java.time.DayOfWeek;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAdjusters;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
+
+import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.BusinessHourContext;
+import com.facilio.bmsconsole.context.BusinessHoursList;
+import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.context.ShiftContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.StringOperators;
+import com.facilio.bmsconsole.modules.DeleteRecordBuilder;
+import com.facilio.bmsconsole.modules.EnumField;
+import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.bmsconsole.modules.FieldFactory;
+import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.bmsconsole.modules.InsertRecordBuilder;
+import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioStatus;
+import com.facilio.sql.GenericDeleteRecordBuilder;
+import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.facilio.tasker.FacilioTimer;
+import com.facilio.tasker.ScheduleInfo;
+import com.facilio.tasker.ScheduleInfo.FrequencyType;
+import com.facilio.tasker.job.JobContext;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 public class ShiftAPI {
 	public static List<ShiftContext> getAllShifts() throws Exception {
-		List<ShiftContext> shifts = new ArrayList<>();
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getShiftField())
-				.table(ModuleFactory.getShiftModule().getTableName())
-				.andCustomWhere(ModuleFactory.getShiftModule().getTableName() + ".ORGID=?", AccountUtil.getCurrentOrg().getOrgId())
-				.orderBy("name");
-		List<Map<String, Object>> props = selectBuilder.get();
-		StringJoiner j = new StringJoiner(",");
-		if (props != null && !props.isEmpty()) {
-			for (Map<String, Object> p : props) {
-				ShiftContext s = FieldUtil.getAsBeanFromMap(p, ShiftContext.class);
-				j.add(String.valueOf(s.getBusinessHoursId()));
-				shifts.add(s);
-			}
-		}
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		SelectRecordsBuilder<ShiftContext> builder = new SelectRecordsBuilder<ShiftContext>()
+				.beanClass(ShiftContext.class)
+				.module(modBean.getModule(FacilioConstants.ContextNames.SHIFT))
+				.select(modBean.getAllFields(FacilioConstants.ContextNames.SHIFT));
+		List<ShiftContext> list = builder.get();
+		return list;
 		
-		if (shifts.isEmpty()) {
-			return shifts;
-		}
-		
-		String businessHoursTable = ModuleFactory.getBusinessHoursModule().getTableName();
-		String singleDayTable = ModuleFactory.getSingleDayBusinessHourModule().getTableName();
-		selectBuilder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getSingleDayBusinessHoursFields())
-				.table(businessHoursTable)
-				.innerJoin(singleDayTable)
-				.on(businessHoursTable+".ID = "+singleDayTable+".PARENT_ID")
-				.andCustomWhere(businessHoursTable+".ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
-				.andCondition(CriteriaAPI.getCondition("PARENT_ID","parentId", j.toString(), NumberOperators.EQUALS))
-				.orderBy("dayOfWeek");
-		
-		props = selectBuilder.get();
-		
-		Map<Long, List<BusinessHourContext>> parentIdVsContext = new HashMap<>();
-		if (props != null && !props.isEmpty()) {
-			for (Map<String, Object> prop: props) {
-				BusinessHourContext b = FieldUtil.getAsBeanFromMap(prop, BusinessHourContext.class);
-				long id = b.getParentId();
-				if (!parentIdVsContext.containsKey(id)) {
-					parentIdVsContext.put(id, new ArrayList<>());
-				}
-				parentIdVsContext.get(id).add(b);
-			}
-		}
-		
-		shifts.forEach(s -> {
-			List<BusinessHourContext> b = parentIdVsContext.get(s.getBusinessHoursId());
-			s.setDays(b);
-		});
-		return shifts;
+//		List<ShiftContext> shifts = new ArrayList<>();
+//		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+//				.select(FieldFactory.getShiftField())
+//				.table(ModuleFactory.getShiftModule().getTableName())
+//				.andCustomWhere(ModuleFactory.getShiftModule().getTableName() + ".ORGID=?", AccountUtil.getCurrentOrg().getOrgId())
+//				.orderBy("name");
+//		List<Map<String, Object>> props = selectBuilder.get();
+//		StringJoiner j = new StringJoiner(",");
+////		if (props != null && !props.isEmpty()) {
+////			for (Map<String, Object> p : props) {
+////				ShiftContext s = FieldUtil.getAsBeanFromMap(p, ShiftContext.class);
+////				j.add(String.valueOf(s.getBusinessHoursId()));
+////				shifts.add(s);
+////			}
+////		}
+//		
+//		if (shifts.isEmpty()) {
+//			return shifts;
+//		}
+//		
+//		String businessHoursTable = ModuleFactory.getBusinessHoursModule().getTableName();
+//		String singleDayTable = ModuleFactory.getSingleDayBusinessHourModule().getTableName();
+//		selectBuilder = new GenericSelectRecordBuilder()
+//				.select(FieldFactory.getSingleDayBusinessHoursFields())
+//				.table(businessHoursTable)
+//				.innerJoin(singleDayTable)
+//				.on(businessHoursTable+".ID = "+singleDayTable+".PARENT_ID")
+//				.andCustomWhere(businessHoursTable+".ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
+//				.andCondition(CriteriaAPI.getCondition("PARENT_ID","parentId", j.toString(), NumberOperators.EQUALS))
+//				.orderBy("dayOfWeek");
+//		
+//		props = selectBuilder.get();
+//		
+//		Map<Long, List<BusinessHourContext>> parentIdVsContext = new HashMap<>();
+//		if (props != null && !props.isEmpty()) {
+//			for (Map<String, Object> prop: props) {
+//				BusinessHourContext b = FieldUtil.getAsBeanFromMap(prop, BusinessHourContext.class);
+//				long id = b.getParentId();
+//				if (!parentIdVsContext.containsKey(id)) {
+//					parentIdVsContext.put(id, new ArrayList<>());
+//				}
+//				parentIdVsContext.get(id).add(b);
+//			}
+//		}
+//		
+////		shifts.forEach(s -> {
+////			List<BusinessHourContext> b = parentIdVsContext.get(s.getBusinessHoursId());
+////			s.setDays(b);
+////		});
+//		return shifts;
 	}
 	
 	public static void deleteJobsForshifts(List<Long> ids) throws Exception {
@@ -476,32 +508,40 @@ public class ShiftAPI {
 	}
 
 	public static void deleteShift(long id) throws Exception {
-		ShiftContext shift = null;
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getShiftField())
-				.table(ModuleFactory.getShiftModule().getTableName())
-				.andCustomWhere(ModuleFactory.getShiftModule().getTableName() + ".ORGID=? AND "+ ModuleFactory.getShiftModule().getTableName()+".ID=?", AccountUtil.getCurrentOrg().getOrgId(), id);
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			shift = FieldUtil.getAsBeanFromMap(props.get(0), ShiftContext.class);
-		}
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SHIFT);
+		DeleteRecordBuilder<ShiftContext> builder = new DeleteRecordBuilder<ShiftContext>()
+				.module(module)
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getIdCondition(id, module));
+		builder.delete();
 		
-		if (shift == null) {
-			return;
-		}
+//		ShiftContext shift = null;
+//		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+//				.select(FieldFactory.getShiftField())
+//				.table(ModuleFactory.getShiftModule().getTableName())
+//				.andCustomWhere(ModuleFactory.getShiftModule().getTableName() + ".ORGID=? AND "+ ModuleFactory.getShiftModule().getTableName()+".ID=?", AccountUtil.getCurrentOrg().getOrgId(), id);
+//		List<Map<String, Object>> props = selectBuilder.get();
+//		if (props != null && !props.isEmpty()) {
+//			shift = FieldUtil.getAsBeanFromMap(props.get(0), ShiftContext.class);
+//		}
+//		
+//		if (shift == null) {
+//			return;
+//		}
+//		
+//		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+//				.table(ModuleFactory.getShiftModule().getName())
+//				.andCustomWhere(ModuleFactory.getShiftModule().getTableName() + ".ORGID=? AND "+ ModuleFactory.getShiftModule().getTableName()+".ID=?", AccountUtil.getCurrentOrg().getOrgId(), id);
+//		deleteBuilder.delete();
 		
-		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
-				.table(ModuleFactory.getShiftModule().getName())
-				.andCustomWhere(ModuleFactory.getShiftModule().getTableName() + ".ORGID=? AND "+ ModuleFactory.getShiftModule().getTableName()+".ID=?", AccountUtil.getCurrentOrg().getOrgId(), id);
-		deleteBuilder.delete();
+//		BusinessHoursList businessHoursList = BusinessHoursAPI.getBusinessHours(shift.getBusinessHoursId());
 		
-		BusinessHoursList businessHoursList = BusinessHoursAPI.getBusinessHours(shift.getBusinessHoursId());
+//		scheduleOneTimeJob(shift, businessHoursList);
 		
-		scheduleOneTimeJob(shift, businessHoursList);
+//		deleteJobsForshifts(businessHoursList.stream().map(BusinessHourContext::getId).collect(Collectors.toList()));
 		
-		deleteJobsForshifts(businessHoursList.stream().map(BusinessHourContext::getId).collect(Collectors.toList()));
-		
-		BusinessHoursAPI.deleteBusinessHours(shift.getBusinessHoursId());
+//		BusinessHoursAPI.deleteBusinessHours(shift.getBusinessHoursId());
 	}
 
 	public static void scheduleOneTimeJob(ShiftContext shift, BusinessHoursList businessHoursList)
@@ -672,5 +712,48 @@ public class ShiftAPI {
 			whreadings.addAll(addUserWorkHoursReading(assignedToUserId, workOrderId, activityType, "Close", endTime, true));
 		}
 		return whreadings;
+	}
+
+	public static void addShift(ShiftContext shift) throws Exception {
+		checkValidation(shift);
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		InsertRecordBuilder<ShiftContext> builder = new InsertRecordBuilder<ShiftContext>()
+				.module(modBean.getModule(FacilioConstants.ContextNames.SHIFT))
+				.fields(modBean.getAllFields(FacilioConstants.ContextNames.SHIFT))
+				.addRecord(shift);
+		builder.save();
+	}
+
+	private static void checkValidation(ShiftContext shift) throws Exception {
+		if (StringUtils.isEmpty(shift.getName())) {
+			throw new IllegalArgumentException("Name is mandatory");
+		}
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SHIFT);
+		SelectRecordsBuilder<ShiftContext> builder = new SelectRecordsBuilder<ShiftContext>()
+				.beanClass(ShiftContext.class)
+				.module(module)
+				.select(Collections.singletonList(FieldFactory.getIdField(module)))
+				.andCondition(CriteriaAPI.getCondition("NAME", "name", shift.getName(), StringOperators.IS));
+		if (shift.getId() > 0) {
+			builder.andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(shift.getId()), NumberOperators.NOT_EQUALS));
+		}
+		List<ShiftContext> list = builder.get();
+		if (CollectionUtils.isNotEmpty(list) && list.size() > 0) {
+			throw new IllegalArgumentException("Shift with name already found");
+		}
+	}
+
+	public static void updateShift(ShiftContext shift) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SHIFT);
+		UpdateRecordBuilder<ShiftContext> builder = new UpdateRecordBuilder<ShiftContext>()
+				.module(module)
+				.fields(modBean.getAllFields(module.getName()))
+				.andCondition(CriteriaAPI.getIdCondition(shift.getId(), module))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+		builder.update(shift);
 	}
 }

@@ -1,15 +1,15 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.List;
+
+import org.apache.commons.chain.Chain;
+
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.ShiftContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.opensymphony.xwork2.ActionSupport;
-import org.apache.commons.chain.Chain;
 
-import java.util.List;
-
-public class ShiftAction extends ActionSupport {
+public class ShiftAction extends FacilioAction {
 	
 	/**
 	 * 
@@ -20,6 +20,8 @@ public class ShiftAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.SHIFT, this.shift);
 		Chain c = FacilioChainFactory.getAddShiftCommand();
 		c.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.SHIFT, context.get(FacilioConstants.ContextNames.SHIFT));
 
 		return SUCCESS;
 	}
@@ -30,6 +32,7 @@ public class ShiftAction extends ActionSupport {
 		Chain c = FacilioChainFactory.getUpdateShiftCommand();
 		c.execute(context);
 		
+		setResult(FacilioConstants.ContextNames.SHIFT, context.get(FacilioConstants.ContextNames.SHIFT));
 		return SUCCESS;
 	}
 	
@@ -38,8 +41,7 @@ public class ShiftAction extends ActionSupport {
 		Chain c = FacilioChainFactory.getAllShiftsCommand();
 		c.execute(context);
 		
-		this.shifts = (List<ShiftContext>) context.get(FacilioConstants.ContextNames.SHIFTS);
-		
+		setResult(FacilioConstants.ContextNames.SHIFTS, (List<ShiftContext>) context.get(FacilioConstants.ContextNames.SHIFTS));
 		return SUCCESS;
 	}
 	
@@ -54,17 +56,17 @@ public class ShiftAction extends ActionSupport {
 		this.users = (List<String>) context.get(FacilioConstants.ContextNames.USERS);
 		
 		
-		if (users != null && !users.isEmpty()) {
-			this.result = "failure";
-		} else {
-			this.result = "success";
-		}
+//		if (users != null && !users.isEmpty()) {
+//			this.result = "failure";
+//		} else {
+//			this.result = "success";
+//		}
 		return SUCCESS;
 	}
 	
 	
 	private long id;
-	private String result;
+//	private String result;
 	private List<String> users;
 	
 	private boolean doValidation;
@@ -92,14 +94,6 @@ public class ShiftAction extends ActionSupport {
 	
 	public List<ShiftContext> getShifts() {
 		return this.shifts;
-	}
-
-	public String getResult() {
-		return result;
-	}
-
-	public void setResult(String result) {
-		this.result = result;
 	}
 
 	public List<String> getUsers() {
