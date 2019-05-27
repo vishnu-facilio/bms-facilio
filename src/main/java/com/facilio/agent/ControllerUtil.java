@@ -46,7 +46,7 @@ public class ControllerUtil {
                  LOGGER.info("Exception occured", e);
              }
          }
-        return null;
+        return new ArrayList<>();
     }
 
     /**

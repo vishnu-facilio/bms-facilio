@@ -198,8 +198,9 @@
 		<action name="logCount"  class="com.facilio.bmsconsole.actions.ControllerAction" method="getLogCount">
 		</action>
 
-		<action name="metrics"  class="com.facilio.bmsconsole.actions.ControllerAction" method="getAgentMetrics">
+		<!--<action name="metrics"  class="com.facilio.bmsconsole.actions.ControllerAction" method="getMetrics">
 		</action>
+		-->
 
 	</package>
 

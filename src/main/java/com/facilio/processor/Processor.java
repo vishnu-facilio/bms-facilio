@@ -301,7 +301,10 @@ public class Processor implements IRecordProcessor {
             LOGGER.info("Payload in processor : "+payLoad);
         }
             bean.processTimeSeries(timeStamp, payLoad, record, processRecordsInput.getCheckpointer(), isTimeSeries);
-            LOGGER.info("timetaken : "+(System.currentTimeMillis() - startTime));
+            long timeTaken = (System.currentTimeMillis() - startTime);
+            if(timeTaken >  5000L){
+                LOGGER.info("timetaken : "+timeTaken);
+            }
         }
 
         private void updateDeviceTable(String deviceId) {
