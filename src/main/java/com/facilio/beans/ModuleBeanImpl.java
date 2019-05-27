@@ -30,6 +30,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.transaction.FacilioConnectionPool;
+import com.facilio.db.util.DBConf;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.FacilioModule.ModuleType;
@@ -102,7 +103,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		ResultSet rs = null;
 		try {
 			 conn = getConnection();
-			 String sql = DBUtil.getQuery("module.child.id");
+			 String sql = DBConf.getInstance().getQuery("module.child.id");
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setLong(1, getOrgId());
 			pstmt.setLong(2, moduleId);
@@ -133,7 +134,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		try {
 			 conn = getConnection();
 			 
-			 String sql = DBUtil.getQuery("module.child.name");
+			 String sql = DBConf.getInstance().getQuery("module.child.name");
 			 pstmt = conn.prepareStatement(sql);
 
 			pstmt.setLong(1, getOrgId());
@@ -162,7 +163,7 @@ public class ModuleBeanImpl implements ModuleBean {
 	
 	@Override
 	public List<FacilioModule> getAllSubModules(long moduleId) throws Exception {
-		String sql = DBUtil.getQuery("module.submodule.all.id");
+		String sql = DBConf.getInstance().getQuery("module.submodule.all.id");
 		ResultSet rs = null;
 		try(Connection conn = getConnection();PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setLong(1, getOrgId());
@@ -193,7 +194,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			return LookupSpecialTypeUtil.getAllSubModules(moduleName);
 		}
 		
-		String sql = DBUtil.getQuery("module.submodule.all.name");
+		String sql = DBConf.getInstance().getQuery("module.submodule.all.name");
 		ResultSet rs = null;
 		try(Connection conn = getConnection();PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setLong(1, getOrgId());
@@ -230,7 +231,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		if (types == null || types.length == 0) {
 			return null;
 		}
-		String sql = MessageFormat.format(DBUtil.getQuery("module.submodule.type.id"), getTypes(types));
+		String sql = MessageFormat.format(DBConf.getInstance().getQuery("module.submodule.type.id"), getTypes(types));
 		ResultSet rs = null;
 		try(Connection conn = getConnection();PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setLong(1, getOrgId());
@@ -264,7 +265,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			return LookupSpecialTypeUtil.getSubModules(moduleName, types);
 		}
 		
-		String sql = MessageFormat.format(DBUtil.getQuery("module.submodule.get"), getTypes(types));
+		String sql = MessageFormat.format(DBConf.getInstance().getQuery("module.submodule.get"), getTypes(types));
 		ResultSet rs = null;
 		try(Connection conn = getConnection();PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setLong(1, getOrgId());
@@ -320,7 +321,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		try {
 			 conn = getConnection();
 			 
-			 String sql = DBUtil.getQuery("module.child.modules");
+			 String sql = DBConf.getInstance().getQuery("module.child.modules");
 			 pstmt = conn.prepareStatement(sql);
 
 			pstmt.setLong(1, getOrgId());

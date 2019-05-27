@@ -356,7 +356,7 @@ public interface AggregateOperator {
         DateAggregateOperator(Integer value,String stringValue,String expr, String format,boolean isPublic) {
             this.value = value;
             this.stringValue = stringValue;
-            this.expr = DBUtil.getQuery(expr);
+            this.expr = DBConf.getInstance().getQuery(expr);
             this.format = format;
             this.isPublic = isPublic;
         }
