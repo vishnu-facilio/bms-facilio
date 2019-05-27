@@ -127,6 +127,9 @@ public class ToolTransactionsAction extends FacilioAction{
 		if(getShowToolsForReturn()) {
 			context.put(FacilioConstants.ContextNames.SHOW_TOOLS_FOR_RETURN, showToolsForReturn);
 		}
+		else if(getShowToolsForIssue()) {
+			context.put(FacilioConstants.ContextNames.SHOW_TOOLS_FOR_ISSUE, showToolsForIssue);
+		}
 		Chain itemsListChain = ReadOnlyChainFactory.getToolTransactionsList();
 		itemsListChain.execute(context);
 		if (getCount()) {
@@ -202,4 +205,37 @@ public class ToolTransactionsAction extends FacilioAction{
 	public void setShowToolsForReturn(Boolean showToolsForReturn) {
 		this.showToolsForReturn = showToolsForReturn;
 	}
+	
+
+	private Boolean showItemsForReturn;
+
+	public Boolean getShowItemsForReturn() {
+		if (showItemsForReturn == null) {
+			return false;
+		}
+		return showItemsForReturn;
+	}
+
+	public void setShowItemsForReturn(Boolean showToolsForReturn) {
+		this.showItemsForReturn = showToolsForReturn;
+	}
+	private Boolean showToolsForIssue;
+
+	public Boolean getShowToolsForIssue() {
+		if (showToolsForIssue == null) {
+			return false;
+		}
+		return showToolsForIssue;
+	}
+
+	public void setShowToolsForIssue(Boolean showToolsForIssue) {
+		this.showToolsForIssue = showToolsForIssue;
+	}
+	
+	public String showToolTransactionListForIssue() throws Exception {
+		toolsTransactionsList();
+		return SUCCESS;
+	}
+	
+	
 }

@@ -5,6 +5,10 @@ import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.WorkorderItemContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.PickListOperators;
+import com.facilio.bmsconsole.modules.*;
+import com.facilio.bmsconsole.util.InventoryRequestAPI;
 import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.bmsconsole.util.StoreroomApi;
 import com.facilio.constants.FacilioConstants;
@@ -23,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-;
+
 
 public class GetWorkorderItemsListCommand implements Command {
 
@@ -60,6 +64,9 @@ public class GetWorkorderItemsListCommand implements Command {
 					ItemTypesContext item = ItemsApi.getItemTypes(inventry.getItemType().getId());
 					inventry.setItemType(item);
 					woItems.setItem(inventry);
+					if(woItems.getParentTransactionId() > 0) {
+						woItems.setRemainingQuantity(InventoryRequestAPI.getParentTransactionRecord(woItems.getParentTransactionId()).getRemainingQuantity());
+					}
 				}
 			}
 			context.put(FacilioConstants.ContextNames.WORKORDER_ITEMS, workorderItems);

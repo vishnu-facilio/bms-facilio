@@ -1872,6 +1872,7 @@ public class TransactionChainFactory {
 			c.addCommand(new RequestedLineItemQuantityRollUpCommand());
 			c.addCommand(new GenericDeleteModuleDataCommand());
 			c.addCommand(new DeleteWorkorderItemCommand());
+			c.addCommand(new ItemTransactionRemainingQuantityRollupCommand());
 			c.addCommand(new PurchasedItemsQuantityRollUpCommand());
 			c.addCommand(getUpdateItemQuantityRollupChain());
 			c.addCommand(new AddOrUpdateWorkorderCostCommand());
@@ -1960,6 +1961,7 @@ public class TransactionChainFactory {
 			c.addCommand(new RequestedLineItemQuantityRollUpCommand());
 			c.addCommand(new GenericDeleteModuleDataCommand());
 			c.addCommand(new DeleteWorkorderToolCommand());
+			c.addCommand(new ToolTransactionRemainingQuantityRollupCommand());
 			c.addCommand(getUpdatetoolQuantityRollupChain());
 			c.addCommand(new AddOrUpdateWorkorderCostCommand());
 			c.addCommand(new UpdateWorkorderTotalCostCommand());

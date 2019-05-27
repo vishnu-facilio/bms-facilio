@@ -104,8 +104,11 @@ public class GetItemTransactionsListCommand implements Command {
 
 		builder.fetchLookup((LookupField) itemTransactionsFieldsMap.get("purchasedItem"));
 		builder.fetchLookup((LookupField) itemTransactionsFieldsMap.get("asset"));
+		builder.fetchLookup((LookupField) itemTransactionsFieldsMap.get("itemType"));
 
 		Boolean getShowItemsForReturn = (Boolean) context.get(FacilioConstants.ContextNames.SHOW_ITEMS_FOR_RETURN);
+		Boolean getShowItemsForIssue = (Boolean) context.get(FacilioConstants.ContextNames.SHOW_ITEMS_FOR_ISSUE);
+		
 		if (getShowItemsForReturn != null && getShowItemsForReturn) {
 			// List<LookupField>lookUpfields = new ArrayList<>();
 			// lookUpfields.add((LookupField)
@@ -117,6 +120,15 @@ public class GetItemTransactionsListCommand implements Command {
 			builder.andCondition(CriteriaAPI.getCondition(itemTransactionsFieldsMap.get("transactionState"),
 					String.valueOf(2), NumberOperators.EQUALS));
 			// builder.fetchLookups(lookUpfields);
+		}
+		else if(getShowItemsForIssue != null && getShowItemsForIssue) {
+			builder.andCondition(CriteriaAPI.getCondition(itemTransactionsFieldsMap.get("remainingQuantity"),
+					String.valueOf(0), NumberOperators.GREATER_THAN));
+			builder.andCondition(CriteriaAPI.getCondition(itemTransactionsFieldsMap.get("transactionState"),
+					String.valueOf(2), NumberOperators.EQUALS));
+			builder.andCondition(CriteriaAPI.getCondition(itemTransactionsFieldsMap.get("issuedTo"),
+					String.valueOf(AccountUtil.getCurrentUser().getOuid()), NumberOperators.EQUALS));
+		
 		}
 
 		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);

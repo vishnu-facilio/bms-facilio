@@ -2,10 +2,15 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ItemTransactionsContext;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.TransactionState;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.events.context.EventContext.EventInternalState;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
@@ -23,6 +28,7 @@ public class ItemTransactionRemainingQuantityRollupCommand implements Command {
 		TransactionState transactionState = (TransactionState) context
 				.get(FacilioConstants.ContextNames.TRANSACTION_STATE);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		EventType event = (EventType)context.get(FacilioConstants.ContextNames.EVENT_TYPE);
 		List<ItemTransactionsContext> itemTransactions = (List<ItemTransactionsContext>) context
 				.get(FacilioConstants.ContextNames.RECORD_LIST);
 		FacilioModule itemTransactionsModule = modBean.getModule(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
@@ -49,7 +55,15 @@ public class ItemTransactionRemainingQuantityRollupCommand implements Command {
 				for (ItemTransactionsContext transaction : itemTransactions) {
 					ItemTransactionsContext itemTransaction = getItemTransaction(transaction.getParentTransactionId(),
 							itemTransactionsModule, itemTransactionsFields, itemTransactionsFieldsMap);
-					double totalRemainingQuantity = itemTransaction.getQuantity() - transaction.getQuantity();
+					double totalRemainingQuantity = 0;
+					if(event != null && event.getValue() == EventType.DELETE.getValue()) {
+						double totalReturnQuantity = getTotalReturnQuantity(transaction.getParentTransactionId(),
+								itemTransactionsModule, itemTransactionsFieldsMap, transactionState);
+						totalRemainingQuantity = itemTransaction.getQuantity() - totalReturnQuantity;
+					}
+					else {
+						totalRemainingQuantity = itemTransaction.getQuantity() - transaction.getQuantity();
+					}
 					itemTransaction.setRemainingQuantity(totalRemainingQuantity);
 
 					UpdateRecordBuilder<ItemTransactionsContext> updateBuilder = new UpdateRecordBuilder<ItemTransactionsContext>()

@@ -1702,6 +1702,11 @@
 			<param name="moduleName">inventory</param>
 			<param name="permission">READ,READ_OWN</param>
 			</action>
+			<action name="showItemTransactionListForIssue"
+			class="com.facilio.bmsconsole.actions.ItemTransactionsAction" method="showItemTransactionListForIssue">
+			<param name="moduleName">inventory</param>
+			<param name="permission">READ,READ_OWN</param>
+			</action>
 	</package>
 	<package name="itemTransactionsCountApi" namespace="/api/v2/itemTransactions"
 	extends="v2Api">
@@ -1797,6 +1802,12 @@
 			<param name="moduleName">inventory</param>
 			<param name="permission">READ,READ_OWN</param>
 			</action>
+			<action name="showToolTransactionListForIssue"
+			class="com.facilio.bmsconsole.actions.ToolTransactionsAction" method="showToolTransactionListForIssue">
+			<param name="moduleName">inventory</param>
+			<param name="permission">READ,READ_OWN</param>
+			</action>
+			
 	</package>
 	
 	<package name="purchaseRequestApi" namespace="/api/v2/purchaserequest" extends="v2Api">

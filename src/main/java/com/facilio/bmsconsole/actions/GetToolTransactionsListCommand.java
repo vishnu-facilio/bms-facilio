@@ -5,6 +5,11 @@ import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.ToolTransactionContext;
+import com.facilio.bmsconsole.criteria.CommonOperators;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.StoreroomApi;
 import com.facilio.bmsconsole.util.ToolsApi;
 import com.facilio.bmsconsole.view.FacilioView;
@@ -25,6 +30,7 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -101,8 +107,11 @@ public class GetToolTransactionsListCommand implements Command {
 		
 		builder.fetchLookup((LookupField) toolTransactionsFieldsMap.get("purchasedTool"));
 		builder.fetchLookup((LookupField) toolTransactionsFieldsMap.get("asset"));
-		
+		builder.fetchLookup((LookupField) toolTransactionsFieldsMap.get("toolType"));
+
+
 		Boolean getShowToolsForReturn = (Boolean) context.get(FacilioConstants.ContextNames.SHOW_TOOLS_FOR_RETURN);
+        Boolean getShowToolsForIssue = (Boolean) context.get(FacilioConstants.ContextNames.SHOW_TOOLS_FOR_ISSUE);
 		if (getShowToolsForReturn != null && getShowToolsForReturn) {
 			
 //			builder.andCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("remainingQuantity"),
@@ -123,7 +132,15 @@ public class GetToolTransactionsListCommand implements Command {
 			builder.andCriteria(finalCriteria);
 			
 		}
-		
+		else if(getShowToolsForIssue != null && getShowToolsForIssue) {
+			builder.andCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("transactionState"),
+					String.valueOf(2), NumberOperators.EQUALS));
+			builder.andCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("issuedTo"),
+					String.valueOf(AccountUtil.getCurrentUser().getOuid()), NumberOperators.EQUALS));
+
+		}
+
+		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria("inventory","read");
 		Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria("inventory","read");
 		if(permissionCriteria != null) {
 			builder.andCriteria(permissionCriteria);
