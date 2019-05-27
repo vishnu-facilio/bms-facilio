@@ -6,12 +6,12 @@ import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
-import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.modules.fields.FacilioField;;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.events.context.EventContext.EventInternalState;
@@ -19,8 +19,8 @@ import com.facilio.events.context.EventContext.EventState;
 import com.facilio.events.context.EventToAlarmFieldMapping;
 import com.facilio.events.util.EventRulesAPI;
 import com.facilio.fw.BeanFactory;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.modules.*;
+import com.facilio.modules.fields.FacilioField;
 import com.google.common.base.Strings;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -32,6 +32,8 @@ import org.json.simple.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+;
 
 public class EventsToAlarmsCommand implements Command {
 	private static final Logger LOGGER = LogManager.getLogger(EventsToAlarmsCommand.class.getName());

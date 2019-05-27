@@ -1,11 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.events.constants.EventConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.timeseries.TimeSeriesAPI;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -13,17 +18,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.FieldType;
-import com.facilio.bmsconsole.util.ReadingsAPI;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.events.constants.EventConstants;
-import com.facilio.fw.BeanFactory;
-import com.facilio.timeseries.TimeSeriesAPI;
+import java.util.*;
 
 public class ModeledDataCommand implements Command {
 	private static final Logger LOGGER = LogManager.getLogger(ModeledDataCommand.class.getName());

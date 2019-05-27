@@ -1,20 +1,19 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.bmsconsole.context.MLContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.Operator;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import com.facilio.bmsconsole.context.MLContext;
-import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.Condition;
-import com.facilio.db.criteria.Criteria;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.Operator;
-import com.facilio.constants.FacilioConstants;
 
 public class ApplyCriteriaForMLCommand implements Command {
 

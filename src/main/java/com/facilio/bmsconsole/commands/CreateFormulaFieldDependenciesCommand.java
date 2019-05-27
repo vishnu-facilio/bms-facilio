@@ -4,13 +4,14 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext.TriggerType;
-import com.facilio.modules.fields.FacilioField;;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -18,6 +19,8 @@ import org.apache.commons.chain.Context;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
+;
 
 public class CreateFormulaFieldDependenciesCommand implements Command {
 

@@ -1,10 +1,10 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.modules.AggregateOperator;
+import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.BaseLineContext;
 import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.util.DashboardUtil;
 import org.json.simple.JSONObject;
 
 import java.util.*;

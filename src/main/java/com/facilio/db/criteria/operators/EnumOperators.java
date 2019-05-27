@@ -2,8 +2,8 @@ package com.facilio.db.criteria.operators;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.db.criteria.FacilioModulePredicate;
-import com.facilio.modules.fields.EnumField;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.fields.EnumField;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
 import org.apache.log4j.LogManager;

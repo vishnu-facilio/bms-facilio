@@ -1,10 +1,10 @@
 package com.facilio.bmsconsole.page;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.facilio.modules.FacilioModule;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Page {
 	private static final long serialVersionUID = 1L;

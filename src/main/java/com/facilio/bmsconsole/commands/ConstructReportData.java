@@ -2,19 +2,18 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.modules.FacilioStatus;
-import com.facilio.modules.FacilioStatus.StatusType;
-import com.facilio.modules.*;
-import com.facilio.modules.AggregateOperator.CommonAggregateOperator;
-import com.facilio.modules.AggregateOperator.DateAggregateOperator;
-import com.facilio.modules.AggregateOperator.SpaceAggregateOperator;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
-import com.facilio.modules.fields.FacilioField;;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.*;
+import com.facilio.modules.AggregateOperator.CommonAggregateOperator;
+import com.facilio.modules.AggregateOperator.DateAggregateOperator;
+import com.facilio.modules.AggregateOperator.SpaceAggregateOperator;
+import com.facilio.modules.FacilioStatus.StatusType;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.report.context.*;
 import com.facilio.report.context.ReportContext.ReportType;
@@ -29,6 +28,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+;
 
 public class ConstructReportData implements Command {
 

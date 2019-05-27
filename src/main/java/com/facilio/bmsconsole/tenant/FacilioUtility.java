@@ -1,9 +1,9 @@
 package com.facilio.bmsconsole.tenant;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.modules.fields.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.fields.FacilioField;
 
 public enum FacilioUtility {
 

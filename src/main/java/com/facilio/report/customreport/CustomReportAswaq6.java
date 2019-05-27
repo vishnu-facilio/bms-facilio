@@ -1,15 +1,18 @@
 package com.facilio.report.customreport;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.*;
-import com.facilio.modules.FacilioStatus;
-import com.facilio.modules.FacilioStatus.StatusType;
-import com.facilio.modules.FacilioModule;
-import com.facilio.time.DateTimeUtil;
+import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.ReportContext;
+import com.facilio.bmsconsole.context.TicketCategoryContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioStatus;
+import com.facilio.modules.FacilioStatus.StatusType;
+import com.facilio.time.DateTimeUtil;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 

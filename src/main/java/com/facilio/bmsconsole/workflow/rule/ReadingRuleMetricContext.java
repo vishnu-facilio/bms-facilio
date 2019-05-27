@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.workflow.rule;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.modules.fields.FacilioField;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.fields.FacilioField;
 
 public class ReadingRuleMetricContext {
 	

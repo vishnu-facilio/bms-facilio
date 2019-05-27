@@ -2,9 +2,8 @@ package com.facilio.db.criteria.operators;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.db.criteria.FacilioModulePredicate;
-import com.facilio.db.criteria.operators.Operator;
-import com.facilio.modules.fields.FacilioField;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.fields.FacilioField;
 import com.google.common.base.Objects;
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang3.StringUtils;

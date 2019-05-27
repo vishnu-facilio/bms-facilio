@@ -1,16 +1,16 @@
 package com.facilio.internal;
 
-import java.util.List;
-import java.util.Map;
-
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.modules.fields.FacilioField;
+
+import java.util.List;
+import java.util.Map;
 
 public class InternalApi {
 	

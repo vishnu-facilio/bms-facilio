@@ -1,26 +1,21 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Collections;
-import java.util.List;
-
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ContractsContext.ContractType;
+import com.facilio.bmsconsole.context.PurchaseContractContext;
+import com.facilio.bmsconsole.context.PurchaseContractLineItemContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.*;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.PurchaseContractContext;
-import com.facilio.bmsconsole.context.PurchaseContractLineItemContext;
-import com.facilio.bmsconsole.context.ContractsContext.ContractType;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.modules.DeleteRecordBuilder;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.InsertRecordBuilder;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.UpdateRecordBuilder;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
+import java.util.Collections;
+import java.util.List;
 
 public class AddOrUpdatePurchaseContractCommand implements Command {
 

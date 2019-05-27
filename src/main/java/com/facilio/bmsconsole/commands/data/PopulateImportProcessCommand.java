@@ -7,10 +7,6 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TicketContext;
-import com.facilio.modules.fields.EnumField;
-import com.facilio.modules.fields.FacilioField;;
-import com.facilio.modules.*;
-import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsole.util.ModuleLocalIdUtil;
 import com.facilio.chain.FacilioContext;
@@ -18,6 +14,10 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule.ModuleType;
+import com.facilio.modules.fields.EnumField;
+import com.facilio.modules.fields.FacilioField;
 import com.google.common.collect.ArrayListMultimap;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
@@ -29,6 +29,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
+
+;
 
 public class PopulateImportProcessCommand implements Command {
 	

@@ -1,16 +1,15 @@
 package com.facilio.bmsconsole.page;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.json.simple.JSONObject;
-
 import com.facilio.bmsconsole.page.Page.Column;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.PageWidget.WidgetType;
 import com.facilio.bmsconsole.page.WidgetGroup.WidgetGroupType;
 import com.facilio.constants.FacilioConstants;
+import org.json.simple.JSONObject;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class PageFactory {
 

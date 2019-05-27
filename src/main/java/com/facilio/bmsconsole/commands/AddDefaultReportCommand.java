@@ -1,15 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.db.util.DBConf;
-import com.facilio.modules.BaseLineContext;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.FacilioModule;
 import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.constants.FacilioConstants.ContextNames;
-import com.facilio.fw.BeanFactory;
 import com.facilio.db.builder.DBUtil;
+import com.facilio.db.util.DBConf;
 import com.facilio.db.util.SQLScriptRunner;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.BaseLineContext;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;

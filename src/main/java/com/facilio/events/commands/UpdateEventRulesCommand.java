@@ -1,13 +1,13 @@
 package com.facilio.events.commands;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldUtil;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventRule;
 import com.facilio.events.util.EventRulesAPI;
-import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldUtil;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 

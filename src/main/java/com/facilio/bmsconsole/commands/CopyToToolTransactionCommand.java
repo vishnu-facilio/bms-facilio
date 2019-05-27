@@ -1,9 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
-
-import com.facilio.constants.FacilioConstants;
 
 public class CopyToToolTransactionCommand implements Command{
 

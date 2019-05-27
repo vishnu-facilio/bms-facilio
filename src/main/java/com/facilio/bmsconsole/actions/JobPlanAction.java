@@ -1,13 +1,13 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.Collections;
-import java.util.List;
-
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.JobPlanContext;
 import com.facilio.bmsconsole.util.JobPlanApi;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants.ContextNames;
+
+import java.util.Collections;
+import java.util.List;
 
 public class JobPlanAction extends FacilioAction {
 	private static final long serialVersionUID = 1L;

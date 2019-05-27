@@ -1,9 +1,8 @@
 package com.facilio.workflows.context;
 
 import com.facilio.bmsconsole.commands.CalculateDerivationCommand;
-import com.facilio.workflows.util.WorkflowUtil;
-
 import com.facilio.modules.FieldUtil;
+import com.facilio.workflows.util.WorkflowUtil;
 import org.json.simple.JSONArray;
 
 import java.util.ArrayList;

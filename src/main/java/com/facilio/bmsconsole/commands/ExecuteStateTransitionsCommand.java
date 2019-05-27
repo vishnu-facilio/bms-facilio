@@ -1,9 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Context;
-
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.chain.Context;
 
 public class ExecuteStateTransitionsCommand extends ExecuteAllWorkflowsCommand {
 	private static final long serialVersionUID = 1L;

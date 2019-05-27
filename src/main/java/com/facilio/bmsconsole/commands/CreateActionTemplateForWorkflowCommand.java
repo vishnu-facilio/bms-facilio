@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.modules.FieldUtil;
 import com.facilio.bmsconsole.templates.*;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FieldUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;

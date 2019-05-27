@@ -11,17 +11,17 @@ import java.util.Set;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-
-
-import com.facilio.db.criteria.*;
-import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.fw.BeanFactory;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder.GenericJoinBuilder;
 import com.facilio.db.builder.JoinBuilderIfc;
 import com.facilio.db.builder.UpdateBuilderIfc;
 import com.facilio.db.builder.WhereBuilder;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.google.common.collect.MapDifference;
 import com.google.common.collect.MapDifference.ValueDifference;
