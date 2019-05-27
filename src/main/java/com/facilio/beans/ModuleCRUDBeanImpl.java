@@ -753,9 +753,6 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
             } else {
                 selectRecordBuilder.limit(100);
             }
-            if(context.containsKey(FacilioConstants.ContextNames.SORT_FIELDS)){
-            	selectRecordBuilder.orderBy(context.get(FacilioConstants.ContextNames.SORT_FIELDS).toString());
-			}
             rows.addAll(selectRecordBuilder.get());
         }catch (Exception e){
             LOGGER.info("Exception Occurred ",e);
