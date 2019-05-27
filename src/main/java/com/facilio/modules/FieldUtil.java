@@ -420,6 +420,10 @@ public class FieldUtil {
 	public static boolean isSystemFieldsPresent (FacilioModule module) {
 		return SYSTEM_FIELDS_ALLOWED_MODULES.contains(module.getName());
 	}
+	
+	public static boolean isBaseEntityModule (FacilioModule module) {
+		return module.getTypeEnum() == FacilioModule.ModuleType.BASE_ENTITY;
+	}
 
 	public static FacilioField parseFieldJson(JSONObject fieldJson) throws Exception {
 		JSONArray fieldJsons = FacilioUtil.getSingleTonJsonArray(fieldJson);

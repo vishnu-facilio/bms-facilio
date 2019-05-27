@@ -160,6 +160,10 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 					currentFields.addAll(FieldFactory.getSystemFields(currentModule));
 				}
 				
+				if (FieldUtil.isBaseEntityModule(currentModule)) {
+					currentFields.addAll(FieldFactory.getBaseModuleSystemFields(currentModule));
+				}
+				
 				GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 																.table(currentModule.getTableName())
 																.fields(currentFields);

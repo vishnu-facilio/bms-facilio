@@ -59,8 +59,8 @@ public class Value {
         return String.valueOf(value);
     }
 
-    public boolean isDouble() {
-        return value instanceof Double;
+    public boolean isNumber() {
+        return value instanceof Number;
     }
 
     @Override

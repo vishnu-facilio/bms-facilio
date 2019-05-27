@@ -169,7 +169,7 @@ public class GenerateCriteriaFromFilterCommand implements Command {
 		}
 	}
 	
-	private static final List<String> TEMPLATE_FIELDS = Arrays.asList("priorityId", "statusId", "categoryId", "typeId", "assignmentGroupId", "assignedToId", "resourceId", "tenantId");
+	private static final List<String> TEMPLATE_FIELDS = Arrays.asList("priorityId", "statusId", "categoryId", "typeId", "assignmentGroupId", "assignedToId", "resourceId", "tenantId", "additionInfo");
 	private static final List<String> OLD_FIELDS = Arrays.asList("siteId", "spaceId", "buildingId", "floorId", "spaceId1", "spaceId2", "spaceId3", "spaceId4");
 	private static final List<String> OLD_FIELDS_MODULE = Arrays.asList(FacilioConstants.ContextNames.BASE_SPACE, FacilioConstants.ContextNames.RESOURCE, FacilioConstants.ContextNames.SPACE, FacilioConstants.ContextNames.ASSET, FacilioConstants.ContextNames.BUILDING, FacilioConstants.ContextNames.FLOOR);
 	private String gePreventiveMaintenanceModule(String fieldName) {
