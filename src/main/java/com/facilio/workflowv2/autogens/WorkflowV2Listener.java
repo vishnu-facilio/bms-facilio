@@ -412,17 +412,29 @@ public interface WorkflowV2Listener extends ParseTreeListener {
 	 */
 	void exitVarAtom(WorkflowV2Parser.VarAtomContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code listAndMapSymbolOperation}
+	 * Enter a parse tree produced by the {@code listSymbolOperation}
 	 * labeled alternative in {@link WorkflowV2Parser#atom}.
 	 * @param ctx the parse tree
 	 */
-	void enterListAndMapSymbolOperation(WorkflowV2Parser.ListAndMapSymbolOperationContext ctx);
+	void enterListSymbolOperation(WorkflowV2Parser.ListSymbolOperationContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code listAndMapSymbolOperation}
+	 * Exit a parse tree produced by the {@code listSymbolOperation}
 	 * labeled alternative in {@link WorkflowV2Parser#atom}.
 	 * @param ctx the parse tree
 	 */
-	void exitListAndMapSymbolOperation(WorkflowV2Parser.ListAndMapSymbolOperationContext ctx);
+	void exitListSymbolOperation(WorkflowV2Parser.ListSymbolOperationContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code mapSymbolOperation}
+	 * labeled alternative in {@link WorkflowV2Parser#atom}.
+	 * @param ctx the parse tree
+	 */
+	void enterMapSymbolOperation(WorkflowV2Parser.MapSymbolOperationContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code mapSymbolOperation}
+	 * labeled alternative in {@link WorkflowV2Parser#atom}.
+	 * @param ctx the parse tree
+	 */
+	void exitMapSymbolOperation(WorkflowV2Parser.MapSymbolOperationContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code listInitialisation}
 	 * labeled alternative in {@link WorkflowV2Parser#list_opperations}.

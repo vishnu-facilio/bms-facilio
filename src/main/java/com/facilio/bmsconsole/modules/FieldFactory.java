@@ -4005,13 +4005,9 @@ public class FieldFactory {
 
 		fields.add(getIdField(module));
 
-		FacilioField selectFieldId = new FacilioField();
-		selectFieldId.setName("workflowString");
-		selectFieldId.setDataType(FieldType.STRING);
-		selectFieldId.setColumnName("WORKFLOW_XML_STRING");
-		selectFieldId.setModule(module);
-		fields.add(selectFieldId);
-
+		fields.add(getField("workflowString", "WORKFLOW_XML_STRING", module, FieldType.STRING));
+		fields.add(getField("workflowV2String", "WORKFLOW_STRING", module, FieldType.STRING));
+		
 		fields.add(getField("name", "NAME", module, FieldType.STRING));
 		fields.add(getField("nameSpaceId", "NAMESPACE_ID", module, FieldType.LOOKUP));
 		fields.add(getField("workflowUIMode", "UI_MODE", module, FieldType.NUMBER));

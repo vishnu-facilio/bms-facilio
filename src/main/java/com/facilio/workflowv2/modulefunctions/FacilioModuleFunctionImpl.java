@@ -249,7 +249,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 //								readingDataMeta = workflowContext.getCachedRDM().get(key);
 //							}
 							if(readingDataMeta == null) {
-								readingDataMeta = ReadingsAPI.getReadingDataMeta(Long.parseLong(parentIdString), select);
+								readingDataMeta = ReadingsAPI.getReadingDataMeta(Double.valueOf(parentIdString).longValue(), select);
 							}
 							if(readingDataMeta == null) {
 								throw new Exception("readingDataMeta is null for FieldName - "+dbParamContext.getFieldName() +" moduleName - "+module.getName()+" parentId - "+parentIdString);

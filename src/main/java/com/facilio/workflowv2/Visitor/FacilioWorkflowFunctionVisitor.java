@@ -83,7 +83,7 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
     }
     
     @Override 
-    public Value visitListAndMapSymbolOperation(WorkflowV2Parser.ListAndMapSymbolOperationContext ctx)
+    public Value visitListSymbolOperation(WorkflowV2Parser.ListSymbolOperationContext ctx)
 	{
     	String varName = ctx.VAR().getText();
     	Value value = this.varMemoryMap.get(varName);
@@ -92,10 +92,33 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
     		Integer index = listValue.asInt();
     		return new Value(value.asList().get(index));
     	}
-    	if(value.asObject() instanceof Map ) {
-    		Value mapValue = this.visit(ctx.atom());
-    		Object key = mapValue.asObject();
-    		return new Value(value.asMap().get(key));
+    	else {
+    		throw new RuntimeException("not a list " + varName);
+    	}
+	}
+    
+    @Override 
+    public Value visitMapSymbolOperation(WorkflowV2Parser.MapSymbolOperationContext ctx)
+	{
+    	String mapVar = ctx.VAR(0).getText();
+    	Value mapValue = this.varMemoryMap.get(mapVar);
+    	if(mapValue.asObject() instanceof Map ) {
+    		Map<Object, Object> map = mapValue.asMap();
+    		
+    		int length = ctx.VAR().size();
+    		
+    		for(int i=1;i<length;i++) {
+    			String key = ctx.VAR(i).getText();
+    			Object currentValue = map.get(key);
+    			
+    			if(i == length-1) {
+    				return new Value(currentValue);
+    			}
+    			map = (Map<Object, Object>) currentValue;
+    		}
+    	}
+    	else {
+    		throw new RuntimeException("not a map " + mapVar);
     	}
     	return Value.VOID;
 	}

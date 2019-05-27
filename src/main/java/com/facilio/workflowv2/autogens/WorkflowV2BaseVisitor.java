@@ -269,7 +269,14 @@ public class WorkflowV2BaseVisitor<T> extends AbstractParseTreeVisitor<T> implem
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitListAndMapSymbolOperation(WorkflowV2Parser.ListAndMapSymbolOperationContext ctx) { return visitChildren(ctx); }
+	@Override public T visitListSymbolOperation(WorkflowV2Parser.ListSymbolOperationContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitMapSymbolOperation(WorkflowV2Parser.MapSymbolOperationContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

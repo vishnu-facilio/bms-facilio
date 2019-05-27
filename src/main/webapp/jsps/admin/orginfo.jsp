@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-    <%@page import="com.facilio.accounts.util.AccountUtil, com.facilio.accounts.dto.User,com.facilio.accounts.dto.Role, java.util.*, java.util.Iterator ,org.json.simple.JSONObject,org.json.simple.JSONArray,java.util.List, com.facilio.accounts.dto.Organization ,org.json.simple.JSONObject,com.facilio.accounts.impl.OrgBeanImpl, com.facilio.bmsconsole.commands.util.CommonCommandUtil"%>
+    <%@page import="com.facilio.accounts.util.AccountUtil,java.util.Comparator, com.facilio.accounts.dto.User,com.facilio.accounts.dto.Role, java.util.*, java.util.Iterator ,org.json.simple.JSONObject,org.json.simple.JSONArray,java.util.List, com.facilio.accounts.dto.Organization ,org.json.simple.JSONObject,com.facilio.accounts.impl.OrgBeanImpl, com.facilio.bmsconsole.commands.util.CommonCommandUtil, com.facilio.accounts.util.AccountUtil.FeatureLicense"%>
   <%
   	
   String orgid = request.getParameter("orgid");
@@ -15,7 +15,57 @@
   	  users = AccountUtil.getOrgBean().getAllOrgUsers(Long.parseLong(orgid));
   	  roles =AccountUtil.getRoleBean().getRoles(Long.parseLong(orgid));
   	}
+    
+    Map<Long,FeatureLicense> FEATUREMAPUNORDERED  = AccountUtil.FeatureLicense.getAllFeatureLicense();
+    Map<FeatureLicense,Long> FEATUREMAPreversed = new HashMap<>();
+    Map<String,Long> FEATUREMAPstring = new HashMap<>();
+    long val1;
+    FeatureLicense val2;
+    
+    for(Long key :FEATUREMAPUNORDERED.keySet())
+    {
+    	val1 = key;
+    	val2 = FEATUREMAPUNORDERED.get(key);
+    	FEATUREMAPreversed.put(val2,val1);
+    }
+    
+    
+    for(FeatureLicense key :FEATUREMAPreversed.keySet()) 
+    {
+    	String val3 = (String.valueOf(key));
+    	long val4 = FEATUREMAPreversed.get(key);
+    	FEATUREMAPstring.put(val3,val4);
+    	
+    }
+    TreeMap<String,Long> FEATUREMAP = new TreeMap<String,Long>(FEATUREMAPstring);
+    
+	int module = AccountUtil.getFeatureLicense();
+	int remainder,i=0;
+	List<Long> enabledFeatures = new ArrayList<Long>();
+	while(module!=0)
+	{
+		remainder=module%2;
+		if(remainder==1)
+		{
+			//indicate the corresponding pow(2,i);
+			FeatureLicense licensename = AccountUtil.FeatureLicense.getFeatureLicense(pow(i));
+			enabledFeatures.add(licensename.getLicense());
+		}
+		module/=2;
+		i++;	
+	}
   %>
+ <%! 
+
+public long pow(int num) {
+long res=1;
+for(int i=0;i<num;i++)
+res=res*2;
+return res;
+}
+
+%>
+ 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -38,6 +88,16 @@ function view(userId){
 <script>
 function myFunction() {
   var x = document.getElementById("new");
+  if (x.style.display === "block") {
+    x.style.display = "none";
+  } else {
+    x.style.display = "block";
+  }
+}
+</script>
+<script>
+function myLicenseFunction() {
+  var x = document.getElementById("newlicense");
   if (x.style.display === "block") {
     x.style.display = "none";
   } else {
@@ -175,6 +235,7 @@ function myFunction() {
 
 <% } %>
 <%} %>
+
 <div class=" col-lg-12 col-md-12">
 
 <%if(orgid!=null) {%>
@@ -214,9 +275,67 @@ function myFunction() {
 <%} %>
 </div>
 </div>
-<br>
-<br>
-<br>
+ 
+<div class=" col-lg-12 col-md-12">
+
+<%if(orgid!=null) {%>
+<button onclick="myLicenseFunction()">Add License</button>
+<%} %>
+<br><br><br>
+
+
+<div id="newlicense" style="display:none">
+<%if(orgid!=null ){ %>
+<form method="POST" ACTION="addLicense">
+<br><br>
+
+<h4>License features:</h4>
+
+
+<div >
+<input type = "hidden" name = "orgid" value="<%= orgid %>" />
+<table style=" width: 50%; margin-top:40px;"  class="table table-bordered">
+
+<tr>
+	<td style="text-align:center;"><b>FEATURES</b></td>
+	<td style="text-align:center;"><b>STATUS</b></td>
+</tr>
+
+  <%  
+  
+  	for(String key  :FEATUREMAP.keySet())
+  	 {
+  		long value = FEATUREMAP.get(key);
+  		boolean isEnabled = false;
+  		if(enabledFeatures.contains(value)) {
+  			isEnabled = true;
+  	}
+  %>
+	<tr>
+	<td><label><%=key%></label> </td>
+	<td style="text-align:center;">
+   		
+  		<input type = "checkbox" <% if (isEnabled == true) { %> checked <%  }%> name="selected" value = "<%=value%>"   id="<%=orgid%>" />
+  		
+	</td>
+	</tr>
+
+
+ <%} %>	
+
+</table>
+
+
+</div> 
+
+<input type="submit" name="addLicense" value="Update" />
+</form>
+
+<%} %>
+<br><br><br>
+</div>
+</div>
+
 
 <style>
 .org-th{

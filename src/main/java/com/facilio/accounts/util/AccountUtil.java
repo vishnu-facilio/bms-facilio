@@ -3,10 +3,13 @@ package com.facilio.accounts.util;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 import com.facilio.accounts.bean.GroupBean;
 import com.facilio.accounts.bean.OrgBean;
@@ -136,10 +139,10 @@ public class AccountUtil {
 		// Use 512 for next features
 		
 		private long license;
+
 		FeatureLicense(long license) {
 			this.license = license;
 		}
-		
 		public long getLicense() {
 			return license;
 		}
@@ -147,6 +150,10 @@ public class AccountUtil {
 			return FEATURE_MAP.get(value);
 		}
 		
+		public static Map<Long, FeatureLicense> getAllFeatureLicense() {	
+			return FEATURE_MAP;
+		}
+	
 		private static final Map<Long, FeatureLicense> FEATURE_MAP = Collections.unmodifiableMap(initFeatureMap());
 		private static Map<Long, FeatureLicense> initFeatureMap() {
 			Map<Long, FeatureLicense> typeMap = new HashMap<>();
@@ -188,6 +195,10 @@ public class AccountUtil {
 	public static boolean isFeatureEnabled(FeatureLicense featureLicense) throws Exception {
 		return (getFeatureLicense() & featureLicense.getLicense()) == featureLicense.getLicense();
 	}
+	
+	
+	
+	
 	
 	public static PortalInfoContext getPortalInfo() throws Exception {
 		FacilioModule module = ModuleFactory.getServicePortalModule();
