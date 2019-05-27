@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.context.ItemContext.CostType;
 import com.facilio.bmsconsole.context.ItemTransactionsContext;
 import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.PurchasedItemContext;
+import com.facilio.bmsconsole.context.ShipmentContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -58,6 +59,8 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 		FacilioModule itemTransactionsModule = modBean.getModule(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
 		List<FacilioField> itemTransactionsFields = modBean
 				.getAllFields(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
+		ShipmentContext shipment = (ShipmentContext)context.get(FacilioConstants.ContextNames.SHIPMENT);
+
 
 		FacilioModule purchasedItemModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_ITEM);
 		List<FacilioField> purchasedItemFields = modBean.getAllFields(FacilioConstants.ContextNames.PURCHASED_ITEM);
@@ -112,11 +115,11 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 								if (itemType.isRotating()) {
 									woitemactivity.add(info);
 									wItem = setWorkorderItemObj(purchaseditem, 1, item, parentId, itemTransaction,
-											itemType, approvalState, wItem.getAsset());
+											itemType, approvalState, wItem.getAsset(), shipment);
 								} else {
 									woitemactivity.add(info);
 									wItem = setWorkorderItemObj(purchaseditem, itemTransaction.getQuantity(), item,
-											parentId, itemTransaction, itemType, approvalState, null);
+											parentId, itemTransaction, itemType, approvalState, null, shipment);
 								}
 								//updatePurchasedItem(purchaseditem);
 								wItem.setId(itemTransaction.getId());
@@ -170,7 +173,7 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 										}
 								//	}
 									woItem = setWorkorderItemObj(null, 1, item, parentId, itemTransaction, itemType,
-											approvalState, asset);
+											approvalState, asset, shipment);
 									updatePurchasedItem(asset);
 									itemTransactionsList.add(woItem);
 									itemTransactiosnToBeAdded.add(woItem);
@@ -199,7 +202,7 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 								if (itemTransaction.getQuantity() <= pItem.getCurrentQuantity()) {
 									ItemTransactionsContext woItem = new ItemTransactionsContext();
 									woItem = setWorkorderItemObj(pItem, itemTransaction.getQuantity(), item, parentId,
-											itemTransaction, itemType, approvalState, null);
+											itemTransaction, itemType, approvalState, null, shipment);
 									itemTransactionsList.add(woItem);
 									itemTransactiosnToBeAdded.add(woItem);
 									if (itemTransaction.getTransactionStateEnum() == TransactionState.ISSUE) {
@@ -222,7 +225,7 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 											quantityUsedForTheCost = purchaseitem.getCurrentQuantity();
 										}
 										woItem = setWorkorderItemObj(purchaseitem, quantityUsedForTheCost, item,
-												parentId, itemTransaction, itemType, approvalState, null);
+												parentId, itemTransaction, itemType, approvalState, null, shipment);
 										requiredQuantity -= quantityUsedForTheCost;
 										itemTransactionsList.add(woItem);
 										itemTransactiosnToBeAdded.add(woItem);
@@ -272,12 +275,20 @@ public class AddOrUpdateManualItemTransactionCommand implements Command {
 
 	private ItemTransactionsContext setWorkorderItemObj(PurchasedItemContext purchasedItem, double quantity,
 			ItemContext item, long parentId, ItemTransactionsContext itemTransactions, ItemTypesContext itemTypes,
-			ApprovalState approvalState, AssetContext asset) {
+			ApprovalState approvalState, AssetContext asset, ShipmentContext shipment) {
 		ItemTransactionsContext woItem = new ItemTransactionsContext();
-		woItem.setTransactionType(TransactionType.MANUAL);
 		if(itemTransactions.getRequestedLineItem() != null) {
 			woItem.setRequestedLineItem(itemTransactions.getRequestedLineItem());
 		}
+
+		if(shipment == null) {
+			woItem.setTransactionType(TransactionType.MANUAL.getValue());
+		}
+		else {
+			woItem.setTransactionType(TransactionType.SHIPMENT_STOCK.getValue());
+			woItem.setShipment(shipment.getId());
+		}
+
 		woItem.setTransactionState(itemTransactions.getTransactionStateEnum());
 		woItem.setIsReturnable(true);
 		if (purchasedItem != null) {

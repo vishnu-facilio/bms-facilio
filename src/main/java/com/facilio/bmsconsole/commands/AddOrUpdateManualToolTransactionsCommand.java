@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.TransactionState;
+import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -28,6 +29,7 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 		// TODO Auto-generated method stub
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		ShipmentContext shipment = (ShipmentContext)context.get(FacilioConstants.ContextNames.SHIPMENT);
 		FacilioModule toolTransactionsModule = modBean.getModule(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
 		List<FacilioField> toolTransactionsFields = modBean
 				.getAllFields(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
@@ -65,7 +67,7 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 								approvalState = ApprovalState.APPROVED;
 							}
 							wTool = setWorkorderItemObj(toolTransaction.getQuantity(), tool, toolTransaction,
-									toolTypes, approvalState, null);
+									toolTypes, approvalState, null, shipment);
 							// update
 							wTool.setId(toolTransaction.getId());
 							toolTransactionslist.add(wTool);
@@ -109,7 +111,7 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 									// pTool.setIsUsed(true);
 									// }
 									woTool = setWorkorderItemObj(1, tool, toolTransaction, toolTypes,
-											approvalState, asset);
+											approvalState, asset, shipment);
 									updateAsset(asset);
 									toolTransactionslist.add(woTool);
 									toolTransactionsToBeAdded.add(woTool);
@@ -118,7 +120,7 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 						} else {
 							ToolTransactionContext woTool = new ToolTransactionContext();
 							woTool = setWorkorderItemObj(toolTransaction.getQuantity(), tool, toolTransaction,
-									toolTypes, approvalState, null);
+									toolTypes, approvalState, null, shipment);
 							toolTransactionslist.add(woTool);
 							toolTransactionsToBeAdded.add(woTool);
 						}
@@ -144,10 +146,16 @@ public class AddOrUpdateManualToolTransactionsCommand implements Command {
 
 	private ToolTransactionContext setWorkorderItemObj(double quantity,
 			ToolContext tool, ToolTransactionContext toolTransaction, ToolTypesContext toolTypes,
-			ApprovalState approvalState, AssetContext asset) {
+			ApprovalState approvalState, AssetContext asset, ShipmentContext shipment) {
 		ToolTransactionContext woTool = new ToolTransactionContext();
 
-		woTool.setTransactionType(toolTransaction.getTransactionTypeEnum());
+		if(shipment == null) {
+			woTool.setTransactionType(TransactionType.MANUAL.getValue());
+		}
+		else {
+			woTool.setTransactionType(TransactionType.SHIPMENT_STOCK.getValue());
+			woTool.setShipment(shipment.getId());
+		}
 		woTool.setTransactionState(toolTransaction.getTransactionStateEnum());
 		woTool.setIsReturnable(true);
 		if(asset!=null) {

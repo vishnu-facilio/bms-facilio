@@ -43,7 +43,6 @@ public class AddShipmentRotatingAssetsCommand implements Command{
 				AssetContext asset = AssetsAPI.getAssetInfo(lineItem.getAsset().getId(), true);
 				context.put(FacilioConstants.ContextNames.RECORD, asset);
 				
-				new AddRotatingItemToolCommand().execute(context);
 				
 				 Map<String, Object> props = new HashMap<String, Object>();
 				 FacilioField isDeletedField = FieldFactory.getIsDeletedField(ModuleFactory.getAssetsModule().getParentModule());
@@ -58,18 +57,25 @@ public class AddShipmentRotatingAssetsCommand implements Command{
 					item = ItemsApi.
 							getItem(lineItem.getItemType(),shipment.getToStore());
 					props.put("rotatingItem", item.getId());
+					asset.setRotatingItem(item);
 					
 				}
 				if (lineItem.getInventoryTypeEnum() == InventoryType.TOOL) {
 					tool = ToolsApi.getTool(lineItem.getToolType(),shipment.getToStore());
 					props.put("rotatingTool", tool.getId());
-					
+					asset.setRotatingTool(tool);
 				}
+				
+				
 				StoreRoomContext toStoreRoom = StoreroomApi.getStoreRoom(shipment.getToStore().getId());
 				props.put(siteField.getName(), toStoreRoom.getSite().getId());
 				props.put("currentLocation" , -1);
+				props.put("isUsed", false);
 				
 				AssetsAPI.changeAssetSpace(asset.getId(), props);
+				
+				new AddRotatingItemToolCommand().execute(context);
+				
 			  	context.put(FacilioConstants.ContextNames.MODULE, FacilioConstants.ContextNames.ASSET);
 				context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.ASSET);
 				context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, Long.valueOf(-1));
