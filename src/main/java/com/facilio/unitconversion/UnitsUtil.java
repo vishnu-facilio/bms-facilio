@@ -89,7 +89,7 @@ public class UnitsUtil {
 
 		if(numberField.getMetric() > 0 && value != null) {
 			if(numberField.getMetric() == Metric.CURRENCY.getMetricId()) {
-				return (Number) value;
+				return (Number) FieldUtil.castOrParseValueAsPerType(numberField.getDataTypeEnum(), value);
 			}
 			Double convertedValue = -1d;
 			if(numberField.getUnitId() > 0) {
@@ -102,7 +102,7 @@ public class UnitsUtil {
 			return castConvertedValue(value, convertedValue);
 		}
 		
-		return (Number) value;
+		return (Number) FieldUtil.castOrParseValueAsPerType(numberField.getDataTypeEnum(), value);
 	}
 	
 	public static Double convertToOrgDisplayUnitFromSi(Object value,int metricId) throws Exception {
