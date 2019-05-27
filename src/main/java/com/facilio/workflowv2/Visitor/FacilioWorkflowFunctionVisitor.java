@@ -436,7 +436,7 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
 
         switch (ctx.op.getType()) {
             case WorkflowV2Parser.PLUS:
-                return left.isDouble() && right.isDouble() ?
+                return left.isNumber() && right.isNumber() ?
                         new Value(left.asDouble() + right.asDouble()) :
                         new Value(left.asString() + right.asString());
             case WorkflowV2Parser.MINUS:
