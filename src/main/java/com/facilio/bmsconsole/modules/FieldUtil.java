@@ -31,6 +31,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
@@ -642,6 +643,10 @@ public class FieldUtil {
 
 	public static boolean isSystemFieldsPresent (FacilioModule module) {
 		return SYSTEM_FIELDS_ALLOWED_MODULES.contains(module.getName());
+	}
+	
+	public static boolean isBaseEntityModule (FacilioModule module) {
+		return module.getTypeEnum() == ModuleType.BASE_ENTITY;
 	}
 
 	public static FacilioField parseFieldJson(JSONObject fieldJson) throws Exception {

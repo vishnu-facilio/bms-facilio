@@ -1,8 +1,21 @@
 package com.facilio.bmsconsole.modules;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.criteria.*;
+import com.facilio.bmsconsole.criteria.BooleanOperators;
+import com.facilio.bmsconsole.criteria.Condition;
+import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder.GenericJoinBuilder;
@@ -12,10 +25,6 @@ import com.facilio.sql.WhereBuilder;
 import com.google.common.collect.MapDifference;
 import com.google.common.collect.MapDifference.ValueDifference;
 import com.google.common.collect.Maps;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.*;
 
 public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implements UpdateBuilderIfc<E> {
 	
@@ -186,7 +195,9 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		if (FieldUtil.isSystemFieldsPresent(module)) {
 			moduleProps.keySet().removeAll(FieldFactory.getSystemFieldNames());
 		}
-		
+		if (FieldUtil.isBaseEntityModule(module)) {
+			moduleProps.keySet().removeAll(FieldFactory.getBaseModuleSystemFieldNames());
+		}
 	}
 	
 	public int updateViaMap(Map<String, Object> props) throws Exception {
@@ -311,6 +322,9 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		}
 		if (FieldUtil.isSystemFieldsPresent(module)) {
 			updateFields.addAll(FieldFactory.getSystemFields(module));
+		}
+		if (FieldUtil.isBaseEntityModule(module)) {
+			updateFields.addAll(FieldFactory.getBaseModuleSystemFields(module));
 		}
 		
 		FacilioModule prevModule = module;

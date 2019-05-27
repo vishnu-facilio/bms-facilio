@@ -1,18 +1,18 @@
 package com.facilio.bmsconsole.modules;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.util.ModuleLocalIdUtil;
-import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericInsertRecordBuilder;
-import com.facilio.sql.InsertBuilderIfc;
-
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.ModuleLocalIdUtil;
+import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericInsertRecordBuilder;
+import com.facilio.sql.InsertBuilderIfc;
 
 public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implements InsertBuilderIfc<E> {
 	
@@ -157,6 +157,10 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 				
 				if (FieldUtil.isSystemFieldsPresent(currentModule)) {
 					currentFields.addAll(FieldFactory.getSystemFields(currentModule));
+				}
+				
+				if (FieldUtil.isBaseEntityModule(currentModule)) {
+					currentFields.addAll(FieldFactory.getBaseModuleSystemFields(currentModule));
 				}
 				
 				GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()

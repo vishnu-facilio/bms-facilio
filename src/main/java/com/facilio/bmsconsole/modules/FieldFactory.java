@@ -1,14 +1,22 @@
 package com.facilio.bmsconsole.modules;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentKeys;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.tasker.tasks.EventUtil;
-import org.apache.commons.lang3.tuple.Pair;
-
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class FieldFactory {
 
@@ -771,6 +779,31 @@ public class FieldFactory {
 		}
 		return null;
 	}
+	
+	private static final List<String> baseModuleSystemFields = Collections.unmodifiableList(FieldFactory.getBaseModuleSystemFields(null).stream().map(FacilioField::getName).collect(Collectors.toList()));
+	public static boolean isBaseModuleSystemField (String fieldName) {
+		return baseModuleSystemFields.contains(fieldName);
+	}
+	public static List<String> getBaseModuleSystemFieldNames () {
+		return baseModuleSystemFields;
+	}
+
+	public static FacilioField getBaseModuleSystemField (String fieldName, FacilioModule module) {
+		switch (fieldName) {
+			case "formId":
+				return getField("formId", "FORM_ID", module != null ? module.getParentModule() : null, FieldType.NUMBER);
+		}
+		return null;
+	}
+	
+	public static List<FacilioField> getBaseModuleSystemFields(FacilioModule module) {
+		List<FacilioField> fields = new ArrayList<>();
+		
+//		fields.add(getBaseModuleSystemField("formId", module));
+		
+		return fields;
+	}
+
 
 	public static FacilioField getKinesisField() {
 		return getKinesisField(null);
