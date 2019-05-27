@@ -57,6 +57,7 @@ public class ColumnFactory {
 		columnMap.put("itemTransactions-default", getDefaultItemTransactionsColumns());
 		columnMap.put("purchasedItem-default", getDefaultPurchasedItemColumns());
 		columnMap.put("gatePass-default", getDefaultGatePassColumns());
+		columnMap.put("shipment-default", getDefaultShipmentColumns());
 		
 		// Default report columns 
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
@@ -349,6 +350,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("unitcost", "Unit Cost"));
 		return columns;
 	}
+	
 	private static List<ViewField> getDefaultGatePassColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
@@ -420,6 +422,17 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		columns.add(new ViewField("serialNumber", "Serial Number"));
 	
+		return columns;
+	}
+	
+	private static List<ViewField> getDefaultShipmentColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("fromStore", "From Store"));
+		columns.add(new ViewField("toStore", "To Store"));
+		columns.add(new ViewField("transferredBy", "Transferred By"));
+		columns.add(new ViewField("receivedBy", "Received By"));
+		columns.add(new ViewField("status", "Status"));
 		return columns;
 	}
 }
