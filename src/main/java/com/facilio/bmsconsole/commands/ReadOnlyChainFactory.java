@@ -903,4 +903,10 @@ public class ReadOnlyChainFactory {
 		return chain;
 	}
 
+	
+	public static Chain getPMPlannerSettingschain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new LoadPMPlannerSettingCommand());
+		return c;
+	}
 }

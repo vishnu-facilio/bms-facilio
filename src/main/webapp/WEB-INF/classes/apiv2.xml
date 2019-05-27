@@ -265,6 +265,7 @@
 			<param name="fetchAllType">true</param>
 		</action>
 	</package>
+	
 	<package name="workOrderNewCalendarCountApiV2" namespace="/api/v2/workorders/newcalendar/count"
 		extends="v2Api">
 		<action name="*" class="com.facilio.bmsconsole.actions.WorkOrderAction"
@@ -275,6 +276,19 @@
 			<param name="fetchAllType">true</param>
 		</action>
 	</package>
+	<package name="pmplanner" namespace="/api/v2/pmplanner"
+		extends="v2Api">
+		<action name="settings" class="com.facilio.bmsconsole.actions.PMPlannerAction"
+			method="getPMPlannerSettings">			
+		</action>		
+	</package>
+	<package name="pmplannerupdate" namespace="/api/v2/pmplanner/update"
+		extends="v2Api">
+		<action name="settings" class="com.facilio.bmsconsole.actions.PMPlannerAction"
+			method="updatePMPlannerSettings">			
+		</action>		
+	</package>
+	
 
 	<package name="approvalListApiV2" namespace="/api/v2/approvals/view"
 		extends="v2Api">

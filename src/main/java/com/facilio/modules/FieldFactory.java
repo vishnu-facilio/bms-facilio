@@ -4734,7 +4734,18 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
 
+	public static List<FacilioField> getPMPlannerSettingsFields() {
+		FacilioModule module = ModuleFactory.getPMPlannerSettingsModule();
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getIdField(module));
+		fields.add(getField("settingsJSON", "SETTINGS_JSON", module, FieldType.STRING));
+
+		return fields;
+	}
+	
 	public static List<FacilioField> getInstanceMappingFields() {
 		FacilioModule module = ModuleFactory.getInstanceMappingModule();
 		

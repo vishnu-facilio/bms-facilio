@@ -2686,7 +2686,12 @@ public class TransactionChainFactory {
 			c.addCommand(new ChangeTransitionExecutionOrderCommand());
 			return c;
 		}
-
+		public static Chain getPMPlannerSettingsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdatePMPlannerSettingsCommand());
+			return c;
+		}
+		
 }
 
 
