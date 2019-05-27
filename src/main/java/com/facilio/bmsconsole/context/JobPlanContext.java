@@ -1,11 +1,11 @@
 package com.facilio.bmsconsole.context;
 
-import java.util.List;
-import java.util.Map;
-
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.TaskTemplate;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import java.util.List;
+import java.util.Map;
 
 public class JobPlanContext {
 

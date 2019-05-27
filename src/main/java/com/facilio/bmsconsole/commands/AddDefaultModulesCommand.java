@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.db.builder.DBUtil;
-import com.facilio.db.util.SQLScriptRunner;
 import com.facilio.db.util.DBConf;
+import com.facilio.db.util.SQLScriptRunner;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;

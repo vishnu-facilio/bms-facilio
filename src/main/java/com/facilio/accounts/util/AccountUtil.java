@@ -1,16 +1,5 @@
 package com.facilio.accounts.util;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
-
 import com.facilio.accounts.bean.GroupBean;
 import com.facilio.accounts.bean.OrgBean;
 import com.facilio.accounts.bean.RoleBean;
@@ -19,17 +8,25 @@ import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.PortalInfoContext;
+import com.facilio.db.builder.DBUtil;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.modules.fields.FacilioField;
+import com.facilio.db.transaction.FacilioConnectionPool;
+import com.facilio.fw.BeanFactory;
+import com.facilio.fw.TransactionBeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.fw.BeanFactory;
-import com.facilio.fw.TransactionBeanFactory;
-import com.facilio.db.builder.DBUtil;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.transaction.FacilioConnectionPool;
+import com.facilio.modules.fields.FacilioField;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AccountUtil {
 

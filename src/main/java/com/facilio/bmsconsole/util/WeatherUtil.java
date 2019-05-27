@@ -8,16 +8,16 @@ import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.modules.*;
-import com.facilio.modules.fields.FacilioField;;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.modules.*;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.weather.context.WeatherStationContext;
 import org.apache.commons.chain.Chain;
@@ -39,6 +39,8 @@ import java.util.*;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
+
+;
 
 
 public class WeatherUtil {

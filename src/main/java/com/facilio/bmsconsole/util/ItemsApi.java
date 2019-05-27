@@ -5,25 +5,22 @@ import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTransactionsContext;
 import com.facilio.bmsconsole.context.ItemTypesContext;
-import com.facilio.bmsconsole.context.ToolContext;
-import com.facilio.bmsconsole.context.WorkorderItemContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.modules.UpdateRecordBuilder;
-import com.facilio.modules.fields.FacilioField;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
+import com.facilio.modules.UpdateRecordBuilder;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.collections4.CollectionUtils;
 
 public class ItemsApi {
 	public static Map<Long, ItemTypesContext> getItemTypesMap(long id) throws Exception {

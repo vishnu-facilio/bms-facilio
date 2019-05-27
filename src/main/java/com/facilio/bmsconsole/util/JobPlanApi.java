@@ -1,19 +1,18 @@
 package com.facilio.bmsconsole.util;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.collections4.CollectionUtils;
-
 import com.facilio.bmsconsole.context.JobPlanContext;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
+import org.apache.commons.collections4.CollectionUtils;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class JobPlanApi {
 	

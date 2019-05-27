@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ResourceContext extends ModuleBaseWithCustomFields {

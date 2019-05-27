@@ -1,11 +1,11 @@
 package com.facilio.bmsconsole.templates;
 
+import org.json.simple.JSONObject;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.json.simple.JSONObject;
 
 public class DefaultTemplate extends Template {
 

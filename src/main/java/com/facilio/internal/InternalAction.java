@@ -1,10 +1,9 @@
 package com.facilio.internal;
 
-import javax.servlet.http.HttpServletRequest;
-
+import com.facilio.bmsconsole.actions.FacilioAction;
 import org.apache.struts2.ServletActionContext;
 
-import com.facilio.bmsconsole.actions.FacilioAction;
+import javax.servlet.http.HttpServletRequest;
 
 public class InternalAction extends FacilioAction {
 	

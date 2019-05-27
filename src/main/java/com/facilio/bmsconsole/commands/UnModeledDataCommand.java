@@ -1,27 +1,21 @@
 package com.facilio.bmsconsole.commands;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.timeseries.TimeSeriesAPI;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import java.sql.SQLException;
+import java.util.*;
 
 public class UnModeledDataCommand implements Command {
 

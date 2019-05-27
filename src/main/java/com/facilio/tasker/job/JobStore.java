@@ -1,18 +1,18 @@
 package com.facilio.tasker.job;
 
+import com.facilio.db.builder.DBUtil;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.modules.fields.FacilioField;
+import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.server.ServerInfo;
-import com.facilio.db.builder.DBUtil;
-import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.tasker.FacilioScheduler;
 import com.facilio.tasker.config.SchedulerJobConf;
-import com.facilio.db.transaction.FacilioConnectionPool;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import org.apache.log4j.LogManager;

@@ -1,12 +1,12 @@
 package com.facilio.events.commands;
 
-import com.facilio.modules.FieldUtil;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.events.context.EventContext.EventInternalState;
 import com.facilio.events.context.EventContext.EventState;
 import com.facilio.events.context.EventRule;
+import com.facilio.modules.FieldUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.chain.Command;

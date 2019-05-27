@@ -1,14 +1,13 @@
 package com.facilio.bmsconsole.page;
 
-import java.util.Map;
-
+import com.facilio.bmsconsole.page.Page.Section;
+import com.facilio.modules.FieldUtil;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.facilio.modules.FieldUtil;
-import com.facilio.bmsconsole.page.Page.Section;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.Map;
 
 public class PageWidget {
 	private static final long serialVersionUID = 1L;

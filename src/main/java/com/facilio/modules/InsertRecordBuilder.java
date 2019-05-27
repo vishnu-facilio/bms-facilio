@@ -3,9 +3,9 @@ package com.facilio.modules;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.ModuleLocalIdUtil;
-import com.facilio.fw.BeanFactory;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.InsertBuilderIfc;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
 
 import java.lang.reflect.InvocationTargetException;

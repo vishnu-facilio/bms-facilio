@@ -1,10 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Chain;
-
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.workflow.rule.StateContext;
@@ -13,6 +8,10 @@ import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.chain.Chain;
+
+import java.util.List;
+import java.util.Map;
 
 public class StateFlowAction extends FacilioAction {
 	private static final long serialVersionUID = 1L;

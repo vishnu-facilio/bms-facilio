@@ -1,27 +1,22 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.view.ViewFactory;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.Alarm;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.FieldFactory;
-import com.facilio.bmsconsole.view.ViewFactory;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.constants.FacilioConstants.Alarm;
-import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import java.util.*;
 
 public class ConstructAssetReportCardsCommand implements Command{
 

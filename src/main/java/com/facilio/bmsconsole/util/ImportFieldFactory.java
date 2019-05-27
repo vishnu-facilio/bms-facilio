@@ -1,23 +1,22 @@
 package com.facilio.bmsconsole.util;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.actions.ImportProcessContext;
+import com.facilio.bmsconsole.actions.ImportProcessContext.ImportSetting;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.actions.ImportProcessContext;
-import com.facilio.bmsconsole.actions.ImportProcessContext.ImportSetting;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.fields.LookupField;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
 
 public class ImportFieldFactory {
 

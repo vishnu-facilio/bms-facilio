@@ -16,7 +16,6 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
-import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.contexts.DBParamContext;
 

@@ -1,16 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.bmsconsole.context.InventoryRequestLineItemContext;
 import com.facilio.bmsconsole.context.WorkorderItemContext;
-import com.facilio.bmsconsole.context.WorkorderToolsContext;
 import com.facilio.bmsconsole.util.InventoryRequestAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import java.util.List;
 
 public class RequestedLineItemQuantityRollUpCommand implements Command {
 

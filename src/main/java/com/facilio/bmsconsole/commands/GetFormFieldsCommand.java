@@ -3,11 +3,11 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormField.Required;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.FacilioField.FieldDisplayType;
-import com.facilio.modules.FieldFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 

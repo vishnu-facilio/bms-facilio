@@ -3,10 +3,10 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.InsertRecordBuilder;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 

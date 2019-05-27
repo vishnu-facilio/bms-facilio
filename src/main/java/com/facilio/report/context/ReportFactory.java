@@ -1,15 +1,14 @@
 package com.facilio.report.context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.modules.FacilioStatus;
-import com.facilio.modules.FacilioStatus.StatusType;
+import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.FieldOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
+import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.collections4.CollectionUtils;
 

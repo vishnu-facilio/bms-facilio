@@ -1,13 +1,11 @@
 package com.facilio.db.criteria.operators;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.FacilioModulePredicate;
-import com.facilio.db.criteria.operators.Operator;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.LookupField;
-import com.facilio.fw.BeanFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 

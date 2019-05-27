@@ -3,12 +3,12 @@ package com.facilio.events.commands;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.modules.FieldUtil;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.events.context.EventContext.EventInternalState;
 import com.facilio.events.context.EventContext.EventState;
 import com.facilio.events.context.EventRule;
+import com.facilio.modules.FieldUtil;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 

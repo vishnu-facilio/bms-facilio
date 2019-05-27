@@ -3,8 +3,8 @@ package com.facilio.bmsconsole.context;
 import com.facilio.beans.ModuleBean;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.Operator;
-import com.facilio.modules.fields.FacilioField;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 

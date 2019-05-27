@@ -1,24 +1,22 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.EnumOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.chargebee.internal.StringJoiner;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.InventoryRequestContext;
 import com.facilio.bmsconsole.context.InventoryRequestLineItemContext;
 import com.facilio.bmsconsole.util.InventoryRequestAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.EnumOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import java.util.List;
 
 public class GetInventoryRequestLineItemsForParentIdCommand implements Command{
 

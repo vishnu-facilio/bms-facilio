@@ -1,13 +1,11 @@
 package com.facilio.accounts.dto;
 
-import java.io.Serializable;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.struts2.ServletActionContext;
-
 import com.facilio.screen.context.RemoteScreenContext;
 import com.opensymphony.xwork2.ActionContext;
+import org.apache.struts2.ServletActionContext;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.Serializable;
 
 public class Account implements Serializable {
 	

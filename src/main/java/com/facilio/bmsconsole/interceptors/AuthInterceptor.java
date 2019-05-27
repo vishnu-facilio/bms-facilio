@@ -3,8 +3,6 @@ package com.facilio.bmsconsole.interceptors;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.facilio.accounts.dto.Account;
-import com.facilio.accounts.dto.Role;
-import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.auth.cookie.FacilioCookie;

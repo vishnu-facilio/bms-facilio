@@ -1,38 +1,32 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.CalculateAggregationCommand.EnumVal;
+import com.facilio.bmsconsole.reports.ReportsUtil;
+import com.facilio.bmsconsole.util.ExportUtil;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.AggregateOperator.CommonAggregateOperator;
 import com.facilio.modules.AggregateOperator.DateAggregateOperator;
 import com.facilio.modules.FieldType;
-import com.facilio.bmsconsole.reports.ReportsUtil;
-import com.facilio.time.DateTimeUtil;
-import com.facilio.bmsconsole.util.ExportUtil;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.pdf.PdfUtil;
 import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportDataPointContext.DataPointType;
+import com.facilio.time.DateTimeUtil;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.util.AbstractMap.SimpleEntry;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 public class GetExportReportFileCommand implements Command {
 	

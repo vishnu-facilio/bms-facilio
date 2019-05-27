@@ -1,17 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.facilio.bmsconsole.util.StateFlowRulesAPI;
+import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
-
-import com.facilio.bmsconsole.util.StateFlowRulesAPI;
-import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
-import com.facilio.constants.FacilioConstants;
 
 public class DeleteStateTransitionCommand implements Command {
 

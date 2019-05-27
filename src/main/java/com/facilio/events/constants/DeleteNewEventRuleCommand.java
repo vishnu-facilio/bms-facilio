@@ -1,11 +1,11 @@
 package com.facilio.events.constants;
 
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.modules.FacilioModule;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.util.EventRulesAPI;
-import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.modules.FacilioModule;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 

@@ -1,27 +1,21 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.Logger;
-
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.MLContext;
 import com.facilio.bmsconsole.context.MLVariableContext;
 import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.modules.fields.FacilioField;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
+import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.log4j.Logger;
+
+import java.util.*;
 
 public class GetReadingsForMLCommand implements Command {
 

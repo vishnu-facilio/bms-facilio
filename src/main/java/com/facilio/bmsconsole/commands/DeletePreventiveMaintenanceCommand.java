@@ -1,10 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 

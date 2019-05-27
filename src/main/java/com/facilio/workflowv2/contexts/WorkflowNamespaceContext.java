@@ -1,8 +1,8 @@
 package com.facilio.workflowv2.contexts;
 
-import java.util.Map;
-
 import com.facilio.workflows.context.WorkflowContext;
+
+import java.util.Map;
 
 public class WorkflowNamespaceContext {
 

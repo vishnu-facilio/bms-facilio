@@ -1,10 +1,10 @@
 package com.facilio.bmsconsole.context;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.facilio.accounts.dto.User;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class InventoryRequestContext extends ModuleBaseWithCustomFields {
 

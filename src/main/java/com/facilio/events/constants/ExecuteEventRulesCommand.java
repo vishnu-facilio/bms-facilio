@@ -2,11 +2,11 @@ package com.facilio.events.constants;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.modules.FieldUtil;
 import com.facilio.events.context.EventContext;
 import com.facilio.events.context.EventContext.EventState;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.util.EventAPI;
+import com.facilio.modules.FieldUtil;
 import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;

@@ -1,17 +1,11 @@
 package com.facilio.bmsconsole.stateflow;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.facilio.beans.ModuleBean;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.lang3.StringUtils;
 
-import com.facilio.beans.ModuleBean;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.constants.FacilioConstants;
+import java.util.*;
 
 public class TimerFieldUtil {
 	
