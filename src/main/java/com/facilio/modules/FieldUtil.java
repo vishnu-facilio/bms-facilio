@@ -3,7 +3,6 @@ package com.facilio.modules;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.forms.FacilioForm;
-import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
@@ -423,7 +422,7 @@ public class FieldUtil {
 	}
 	
 	public static boolean isBaseEntityModule (FacilioModule module) {
-		return module.getTypeEnum() == ModuleType.BASE_ENTITY;
+		return module.getTypeEnum() == FacilioModule.ModuleType.BASE_ENTITY;
 	}
 
 	public static FacilioField parseFieldJson(JSONObject fieldJson) throws Exception {
