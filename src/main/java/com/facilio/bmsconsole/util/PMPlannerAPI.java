@@ -3,17 +3,17 @@ package com.facilio.bmsconsole.util;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.PMPlannerSettingsContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.sql.GenericInsertRecordBuilder;
-import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class PMPlannerAPI {
 	
@@ -25,7 +25,7 @@ public class PMPlannerAPI {
 			
 	public static PMPlannerSettingsContext getPMPlannerSettings() throws Exception
 	{
-		FacilioModule plannerModule=ModuleFactory.getPMPlannerSettingsModule();
+		FacilioModule plannerModule= ModuleFactory.getPMPlannerSettingsModule();
 		GenericSelectRecordBuilder builder=new GenericSelectRecordBuilder()
 				.table(plannerModule.getTableName())
 				.select(FieldFactory.getPMPlannerSettingsFields())
