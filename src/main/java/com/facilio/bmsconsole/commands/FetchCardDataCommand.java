@@ -25,6 +25,7 @@ import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.unitconversion.Unit;
 import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.context.WorkflowContext.WorkflowUIMode;
 import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -89,8 +90,17 @@ public class FetchCardDataCommand implements Command {
 				
 				CardType card = CardType.getCardType(widgetStaticContext.getStaticKey());
 				
+				boolean isNewWorkflowCard = false;
+				
 				if(card.isDynamicWfGeneratingCard()) {
 					card.setWorkflow(widgetStaticContext.getWidgetVsWorkflowContexts().get(0).getWorkflowString());
+					if(widgetStaticContext.getWidgetVsWorkflowContexts().get(0).getWorkflowId() != null) {
+						WorkflowContext workflowTemp = WorkflowUtil.getWorkflowContext(widgetStaticContext.getWidgetVsWorkflowContexts().get(0).getWorkflowId());
+						if(workflowTemp.getWorkflowUIMode() == WorkflowUIMode.NEW_WORKFLOW.getValue()) {
+							card.setWorkflow(workflowTemp.getWorkflowV2String());
+							isNewWorkflowCard = true;
+						}
+					}
 				}
 				
 				if(widgetStaticContext.getStaticKey().equals(CardType.FAHU_STATUS_CARD_NEW.getName())) {
@@ -98,7 +108,14 @@ public class FetchCardDataCommand implements Command {
 				}
 				
 				if(card.isSingleResultWorkFlow()) {
-					Object wfResult = WorkflowUtil.getWorkflowExpressionResult(card.getWorkflow(), widgetStaticContext.getParamsJson());
+					
+					Object wfResult = null;
+					if(isNewWorkflowCard) {
+						wfResult = WorkflowUtil.getWorkflowExpressionResult(card.getWorkflow(), widgetStaticContext.getParamsJson(),WorkflowUIMode.NEW_WORKFLOW);
+					}
+					else {
+						wfResult = WorkflowUtil.getWorkflowExpressionResult(card.getWorkflow(), widgetStaticContext.getParamsJson());
+					}
 					
 					wfResult = CardUtil.getWorkflowResultForClient(wfResult, widgetStaticContext); // parsing data suitable for client
 					result.put("result", wfResult);
