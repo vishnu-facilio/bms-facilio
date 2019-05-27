@@ -371,8 +371,6 @@ public static Map<Long,List<Map<String,Object>>> getReadings(String moduleName) 
 				else {
 					reading.setId(-1);
 				}
-				
-				LOGGER.info("The Weather reading which exists in DB for module: "+moduleName+" "+reading);
 			}
 		}
 		return readingsMap;

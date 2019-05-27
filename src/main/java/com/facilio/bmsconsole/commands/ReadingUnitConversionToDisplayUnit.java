@@ -49,7 +49,7 @@ public class ReadingUnitConversionToDisplayUnit implements Command {
 										ReadingDataMeta readingDataMeta = metaMap.get(ReadingsAPI.getRDMKey(reading.getParentId(), field));
 										
 										if(readingDataMeta==null) {
-											LOGGER.info("Reading data meta is null for parent: "+reading.getParentId()+" for field: "+field);
+											//LOGGER.info("Reading data meta is null for parent: "+reading.getParentId()+" for field: "+field);
 										}
 										
 										if(field instanceof NumberField) {
@@ -64,7 +64,7 @@ public class ReadingUnitConversionToDisplayUnit implements Command {
 					}
 				}
 			}
-			LOGGER.info("Time taken for Unit conversion for modules : "+readingMap.keySet()+" is "+(System.currentTimeMillis() - startTime));
+			//LOGGER.info("Time taken for Unit conversion for modules : "+readingMap.keySet()+" is "+(System.currentTimeMillis() - startTime));
 		}
 		return false;
 	}
