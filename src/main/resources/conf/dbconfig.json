@@ -12,7 +12,7 @@
       "enumClassName": "com.facilio.db.criteria.operators.StringOperators"
     },
     {
-      "types": ["NUMBER", "DECIMAL", "ID"],
+      "types": ["NUMBER", "DECIMAL", "ID", "COUNTER"],
       "enumClassName": "com.facilio.db.criteria.operators.NumberOperators"
     },
     {
@@ -38,6 +38,10 @@
     {
       "types": ["LOOKUP"],
       "enumClassName": "com.facilio.db.criteria.operators.BuildingOperator"
+    },
+    {
+      "types": ["STRING", "NUMBER", "DECIMAL", "BOOLEAN", "DATE", "DATE_TIME", "LOOKUP", "ENUM", "FILE", "COUNTER" ,"ID"],
+      "enumClassName": "com.facilio.db.criteria.operators.FieldOperator"
     }
   ]
 }
