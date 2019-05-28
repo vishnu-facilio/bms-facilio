@@ -286,6 +286,21 @@ public class WorkflowContext implements Serializable {
 		this.logString = logString;
 	}
 	
+	
+	public void visitFunctionHeader() throws Exception {
+		
+		InputStream stream = new ByteArrayInputStream(workflowV2String.getBytes(StandardCharsets.UTF_8));
+		
+		WorkflowV2Lexer lexer = new WorkflowV2Lexer(CharStreams.fromStream(stream, StandardCharsets.UTF_8));
+        
+		WorkflowV2Parser parser = new WorkflowV2Parser(new CommonTokenStream(lexer));
+        ParseTree tree = parser.parse();
+        
+        FacilioWorkflowFunctionVisitor visitor = new FacilioWorkflowFunctionVisitor();
+        visitor.setWorkflowContext(this);
+        visitor.visitFunctionHeader(tree);
+	}
+	
 	public Object executeWorkflow() throws Exception {
 		
 		Object result = null;

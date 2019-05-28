@@ -32,6 +32,8 @@ import com.facilio.timeseries.TimeSeriesAPI;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
+import com.facilio.workflowv2.util.WorkflowV2API;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
@@ -927,6 +929,36 @@ public enum ActionType {
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception 
 		{
 			FacilioTimer.scheduleOneTimeJob(FacilioUtil.parseLong(context.get("jobid")), "DefaultMLJob", System.currentTimeMillis(), "ml");
+		}
+				
+		@Override
+		public boolean isTemplateNeeded() 
+		{
+			return false;
+		}
+		
+	},
+	WORKFLOW_ACTION (21) {
+
+		@Override
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception 
+		{
+			
+			
+			WorkflowContext workflowContext = WorkflowUtil.getWorkflowContext((Long)obj.get("resultWorkflowId"));
+			workflowContext.setLogNeeded(true);
+			
+			Map<String, Object> props = FieldUtil.getAsProperties(currentRecord);
+			
+			List<Object> currentRecordList = new ArrayList<>();
+			currentRecordList.add(props);
+			WorkflowV2API.executeWorkflow(workflowContext, currentRecordList, null, false, false, false);
+			
+//			Map<String,Object> currentRecordMap = new HashMap<>();
+//			
+//			currentRecordMap.put("record", currentRecord);
+//			
+//			WorkflowUtil.getWorkflowExpressionResult(workflowContext, currentRecordMap);
 		}
 				
 		@Override

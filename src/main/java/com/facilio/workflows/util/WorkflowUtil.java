@@ -280,16 +280,27 @@ public class WorkflowUtil {
 	}
 	
 	private static Object getWorkflowResult(WorkflowContext workflowContext,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked, boolean isVariableMapNeeded) throws Exception {
+
 		if(workflowContext.getWorkflowUIMode() != WorkflowContext.WorkflowUIMode.NEW_WORKFLOW.getValue()) {
 			workflowContext = getWorkflowContextFromString(workflowContext.getWorkflowString(),workflowContext);
+			List<ParameterContext> parameterContexts = validateAndGetParameters(workflowContext,paramMap);
+			workflowContext.setParameters(parameterContexts);
+			
 		}
+		else {
+			workflowContext.visitFunctionHeader();
+			List<Object> params = new ArrayList<>();
+			for(ParameterContext parameterContext : workflowContext.getParameters()) {
+				params.add(paramMap.get(parameterContext.getName()));
+			}
+			workflowContext.setParams(params);
+		}
+		
 		workflowContext.setCachedRDM(rdmCache);
 		workflowContext.setIgnoreMarkedReadings(ignoreMarked);
-		List<ParameterContext> parameterContexts = validateAndGetParameters(workflowContext,paramMap);
 		
 		paramMap = workflowContext.getVariableResultMap();
 		
-		workflowContext.setParameters(parameterContexts);
 		workflowContext.setIgnoreNullParams(ignoreNullExpressions);
 		
 		Object result = workflowContext.executeWorkflow();
@@ -600,7 +611,9 @@ public class WorkflowUtil {
 	
 	private static WorkflowContext getWorkflowFromProp(Map<String, Object> prop, boolean isWithExpParsed) throws Exception {
 		WorkflowContext workflow = FieldUtil.getAsBeanFromMap(prop, WorkflowContext.class);
-		workflow = getWorkflowContextFromString(workflow.getWorkflowString(),workflow);
+		if(workflow.getWorkflowUIMode() != WorkflowUIMode.NEW_WORKFLOW.getValue()) {
+			workflow = getWorkflowContextFromString(workflow.getWorkflowString(),workflow);
+		}
 		
 		if(isWithExpParsed) {
 			parseExpression(workflow);
