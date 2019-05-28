@@ -53,17 +53,17 @@ public class LoadViewCommand implements Command {
 			}
 			
 			if(view == null) {
-				if (modBean.getField("moduleState", ContextNames.WORK_ORDER) != null && (viewName.equals("approval_requested") || moduleName.equals("approval"))) {
-					view = ViewFactory.getRequestedStateApproval();
-					if (view != null) {
-						List<ViewField> columns = ColumnFactory.getColumns(moduleName, viewName);
-						view.setFields(columns);
-						view.setDefault(true);
-					}
-				}
-				else {
+//				if (modBean.getField("moduleState", ContextNames.WORK_ORDER) != null && (viewName.equals("approval_requested") || moduleName.equals("approval"))) {
+//					view = ViewFactory.getRequestedStateApproval();
+//					if (view != null) {
+//						List<ViewField> columns = ColumnFactory.getColumns(moduleName, viewName);
+//						view.setFields(columns);
+//						view.setDefault(true);
+//					}
+//				}
+//				else {
 					view = ViewFactory.getView(moduleName, viewName);
-				}
+//				}
 				if (view == null && parentViewName != null) {
 					view = ViewFactory.getView(moduleName, parentViewName);
 				}

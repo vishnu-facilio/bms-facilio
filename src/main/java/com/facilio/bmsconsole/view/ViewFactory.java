@@ -89,11 +89,12 @@ public class ViewFactory {
 
 		order = 1;
 		views = new LinkedHashMap<>();
-		views.put("approval_requested", getRequestedApproval().setOrder(order++));
-		views.put("approval_approved", getApprovedApproval().setOrder(order++));
-		views.put("approval_rejected", getRejectedApproval().setOrder(order++));
-		views.put("approval_all", getAllApproval().setOrder(order++));
-		views.put("approval_myrequests", getMyRequestWorkorders().setOrder(order++));
+//		views.put("approval_requested", getRequestedApproval().setOrder(order++));
+//		views.put("approval_approved", getApprovedApproval().setOrder(order++));
+//		views.put("approval_rejected", getRejectedApproval().setOrder(order++));
+//		views.put("approval_all", getAllApproval().setOrder(order++));
+//		views.put("approval_myrequests", getMyRequestWorkorders().setOrder(order++));
+		views.put("approval_requested", getRequestedStateApproval().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.APPROVAL, views);
 
 		order = 1;
