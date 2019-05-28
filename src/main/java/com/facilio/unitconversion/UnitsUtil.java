@@ -7,6 +7,7 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.NumberField;
@@ -106,7 +107,7 @@ public class UnitsUtil {
 	}
 
 	private static Number parseNumber (Object value, NumberField numberField) {
-		return value instanceof Number ? (Number) value : (Number) FieldUtil.castOrParseValueAsPerType(numberField.getDataTypeEnum(), value);
+		return value instanceof Number ? (Number) value : (Number) (numberField.getDataTypeEnum() == null ? FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, value) : FieldUtil.castOrParseValueAsPerType(numberField.getDataTypeEnum(), value));
 	}
 	
 	public static Double convertToOrgDisplayUnitFromSi(Object value,int metricId) throws Exception {
