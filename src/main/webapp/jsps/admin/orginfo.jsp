@@ -17,54 +17,38 @@
   	}
     
     Map<Long,FeatureLicense> FEATUREMAPUNORDERED  = AccountUtil.FeatureLicense.getAllFeatureLicense();
-    Map<FeatureLicense,Long> FEATUREMAPreversed = new HashMap<>();
-    Map<String,Long> FEATUREMAPstring = new HashMap<>();
-    long val1;
+    Map<FeatureLicense, Long> FEATUREMAPreversed = new HashMap<>();
+  	Map<FeatureLicense,Boolean> FEATUREMAPenabled = new HashMap<>();
+  	Map<String,Boolean>FEATUREMAPstring = new HashMap<>();
+  	Map<String,Long> NEWMAP = new HashMap<String,Long>();
+ 	long val1;
     FeatureLicense val2;
-    
     for(Long key :FEATUREMAPUNORDERED.keySet())
     {
     	val1 = key;
     	val2 = FEATUREMAPUNORDERED.get(key);
     	FEATUREMAPreversed.put(val2,val1);
     }
-    
-    
-    for(FeatureLicense key :FEATUREMAPreversed.keySet()) 
+   	boolean isEnabled;
+    for(FeatureLicense key :FEATUREMAPreversed.keySet())
+    {
+    	isEnabled = AccountUtil.isFeatureEnabled(key);
+    	FEATUREMAPenabled.put(key,isEnabled);
+    }
+    for(FeatureLicense key :FEATUREMAPenabled.keySet()) 
     {
     	String val3 = (String.valueOf(key));
-    	long val4 = FEATUREMAPreversed.get(key);
+    	boolean val4 = FEATUREMAPenabled.get(key);
     	FEATUREMAPstring.put(val3,val4);
     	
     }
-    TreeMap<String,Long> FEATUREMAP = new TreeMap<String,Long>(FEATUREMAPstring);
-    
-	int module = AccountUtil.getFeatureLicense();
-	int remainder,i=0;
-	List<Long> enabledFeatures = new ArrayList<Long>();
-	while(module!=0)
-	{
-		remainder=module%2;
-		if(remainder==1)
-		{
-			//indicate the corresponding pow(2,i);
-			FeatureLicense licensename = AccountUtil.FeatureLicense.getFeatureLicense(pow(i));
-			enabledFeatures.add(licensename.getLicense());
-		}
-		module/=2;
-		i++;	
-	}
+    TreeMap<String,Boolean> FEATUREMAP = new TreeMap<String,Boolean>(FEATUREMAPstring);
+    for(Long key :FEATUREMAPUNORDERED.keySet()) {
+    	FeatureLicense value = FEATUREMAPUNORDERED.get(key);
+    	NEWMAP.put(String.valueOf(value), key);
+    }
   %>
- <%! 
 
-public long pow(int num) {
-long res=1;
-for(int i=0;i<num;i++)
-res=res*2;
-return res;
-}
-
-%>
  
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
@@ -300,22 +284,18 @@ function myLicenseFunction() {
 	<td style="text-align:center;"><b>FEATURES</b></td>
 	<td style="text-align:center;"><b>STATUS</b></td>
 </tr>
-
-  <%  
+  
+  <%
   
   	for(String key  :FEATUREMAP.keySet())
-  	 {
-  		long value = FEATUREMAP.get(key);
-  		boolean isEnabled = false;
-  		if(enabledFeatures.contains(value)) {
-  			isEnabled = true;
-  	}
+  	{
+  		boolean isenable = FEATUREMAP.get(key);
   %>
 	<tr>
 	<td><label><%=key%></label> </td>
 	<td style="text-align:center;">
    		
-  		<input type = "checkbox" <% if (isEnabled == true) { %> checked <%  }%> name="selected" value = "<%=value%>"   id="<%=orgid%>" />
+  <input type = "checkbox" <% if (isenable == true) { %> checked <%  }%> name="selected" value = "<%=NEWMAP.get(key)%>"   id="<%=orgid%>" />
   		
 	</td>
 	</tr>
