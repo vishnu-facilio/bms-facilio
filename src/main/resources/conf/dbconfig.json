@@ -22,7 +22,7 @@
     {
       "types": ["DATE", "DATE_TIME"],
       "enumClassName": "com.facilio.db.criteria.operators.DateOperators"
-    }
+    },
     {
       "types": ["LOOKUP"],
       "enumClassName": "com.facilio.db.criteria.operators.LookupOperator"
