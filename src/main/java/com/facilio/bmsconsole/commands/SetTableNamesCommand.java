@@ -310,6 +310,14 @@ public class SetTableNamesCommand implements Command {
 	public static SetTableNamesCommand getForInventoryRequestLineItem() {
 		return new SetTableNamesCommand("inventoryrequestlineitems", "InventoryRequestLineItems");
 	}
+	
+	public static SetTableNamesCommand getForAttendance() {
+		return new SetTableNamesCommand("attendance", "Attendance");
+	}
+	
+	public static SetTableNamesCommand getForAttendanceTransaction() {
+		return new SetTableNamesCommand("attendanceTransaction", "Attendance_Transactions");
+	}
 
 	public static SetTableNamesCommand getForShipment() {
 		return new SetTableNamesCommand("shipment", "Shipment");

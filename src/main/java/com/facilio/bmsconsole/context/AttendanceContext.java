@@ -50,11 +50,16 @@ public class AttendanceContext extends ModuleBaseWithCustomFields{
 	public Status getStatusEnum() {
 		return status;
 	}
-	public Status getStatus() {
-		return status;
-	}
+	
 	public void setStatus(Status status) {
 		this.status = status;
+	}
+	
+	public int getStatus() {
+		if (status != null) {
+			return status.getValue();
+		}
+		return -1;
 	}
 	
 	public void setStatus(int status) {
@@ -77,5 +82,13 @@ public class AttendanceContext extends ModuleBaseWithCustomFields{
 			}
 			return null;
 		}
+	}
+	
+	private long lastCheckInTime = -1;
+	public long getLastCheckInTime() {
+		return lastCheckInTime;
+	}
+	public void setLastCheckInTime(long lastCheckInTime) {
+		this.lastCheckInTime = lastCheckInTime;
 	}
 }

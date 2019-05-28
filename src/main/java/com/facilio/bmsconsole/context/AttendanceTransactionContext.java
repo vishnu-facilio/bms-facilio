@@ -23,18 +23,22 @@ public class AttendanceTransactionContext extends ModuleBaseWithCustomFields {
 		return transactionType;
 	}
 
-	public TransactionType getTransactionType() {
-		return transactionType;
-	}
-
 	public void setTransactionType(TransactionType transactionType) {
 		this.transactionType = transactionType;
+	}
+
+	public int getTransactionType() {
+		if (transactionType != null) {
+			return transactionType.getValue();
+		}
+		return -1;
 	}
 
 	public void setTransactionType(int transactionType) {
 		this.transactionType = TransactionType.valueOf(transactionType);
 	}
-
+	
+	
 	public enum TransactionType {
 		CHECKIN, 
 		CHECKOUT;
@@ -56,12 +60,18 @@ public class AttendanceTransactionContext extends ModuleBaseWithCustomFields {
 	public SourceType getSourceTypeEnum(){
 		return sourceType;
 	}
-	public SourceType getSourceType() {
-		return sourceType;
-	}
+	
 	public void setSourceType(SourceType sourceType) {
 		this.sourceType = sourceType;
 	}
+	
+	public int getSourceType() {
+		if (sourceType != null) {
+			return sourceType.getValue();
+		}
+		return -1;
+	}
+
 	public void setSourceType(int sourceType) {
 		this.sourceType = SourceType.valueOf(sourceType);
 	}

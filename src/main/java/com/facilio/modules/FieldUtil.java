@@ -414,7 +414,7 @@ public class FieldUtil {
 	}
 
 	private static final Set<String> SYSTEM_FIELDS_ALLOWED_MODULES = Collections.unmodifiableSet(
-			new HashSet<>(Arrays.asList(FacilioConstants.ContextNames.ASSET_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY, FacilioConstants.ContextNames.ITEM_ACTIVITY, FacilioConstants.ContextNames.PURCHASE_ORDER, FacilioConstants.ContextNames.PURCHASE_REQUEST, FacilioConstants.ContextNames.RECEIVABLE, FacilioConstants.ContextNames.RECEIPTS, FacilioConstants.ContextNames.CONTRACTS, FacilioConstants.ContextNames.GATE_PASS, FacilioConstants.ContextNames.SHIPMENT, FacilioConstants.ContextNames.INVENTORY_REQUEST))
+			new HashSet<>(Arrays.asList(FacilioConstants.ContextNames.ASSET_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY, FacilioConstants.ContextNames.ITEM_ACTIVITY, FacilioConstants.ContextNames.PURCHASE_ORDER, FacilioConstants.ContextNames.PURCHASE_REQUEST, FacilioConstants.ContextNames.RECEIVABLE, FacilioConstants.ContextNames.RECEIPTS, FacilioConstants.ContextNames.CONTRACTS, FacilioConstants.ContextNames.GATE_PASS, FacilioConstants.ContextNames.SHIPMENT, FacilioConstants.ContextNames.INVENTORY_REQUEST, FacilioConstants.ContextNames.INVENTORY_REQUEST, FacilioConstants.ContextNames.ATTENDANCE, FacilioConstants.ContextNames.ATTENDANCE_TRANSACTIONS))
 			);
 
 	public static boolean isSystemFieldsPresent (FacilioModule module) {

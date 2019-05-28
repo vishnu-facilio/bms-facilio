@@ -2794,6 +2794,13 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+		public static Chain getAddAttendanceTransactionChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForAttendanceTransaction());
+			c.addCommand(new AddAttendanceCommand());
+			c.addCommand(new GenericAddModuleDataCommand());
+			return c;
+		}
 }
 
 
