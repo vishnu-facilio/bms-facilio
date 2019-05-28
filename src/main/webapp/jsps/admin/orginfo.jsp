@@ -9,45 +9,52 @@
     JSONObject result = null;
     List<User> users = null;
     List<Role> roles = null;
-    if (orgid != null) {
-  	  org = AccountUtil.getOrgBean().getOrg(Long.parseLong(orgid));
-  	  result = CommonCommandUtil.getOrgInfo(Long.parseLong(orgid));
-  	  users = AccountUtil.getOrgBean().getAllOrgUsers(Long.parseLong(orgid));
-  	  roles =AccountUtil.getRoleBean().getRoles(Long.parseLong(orgid));
-  	}
-    
+    TreeMap<String,Boolean> FEATUREMAP = null;
     Map<Long,FeatureLicense> FEATUREMAPUNORDERED  = AccountUtil.FeatureLicense.getAllFeatureLicense();
     Map<FeatureLicense, Long> FEATUREMAPreversed = new HashMap<>();
   	Map<FeatureLicense,Boolean> FEATUREMAPenabled = new HashMap<>();
   	Map<String,Boolean>FEATUREMAPstring = new HashMap<>();
   	Map<String,Long> NEWMAP = new HashMap<String,Long>();
- 	long val1;
-    FeatureLicense val2;
-    for(Long key :FEATUREMAPUNORDERED.keySet())
-    {
-    	val1 = key;
-    	val2 = FEATUREMAPUNORDERED.get(key);
-    	FEATUREMAPreversed.put(val2,val1);
-    }
-   	boolean isEnabled;
-    for(FeatureLicense key :FEATUREMAPreversed.keySet())
-    {
-    	isEnabled = AccountUtil.isFeatureEnabled(key);
-    	FEATUREMAPenabled.put(key,isEnabled);
-    }
-    for(FeatureLicense key :FEATUREMAPenabled.keySet()) 
-    {
-    	String val3 = (String.valueOf(key));
-    	boolean val4 = FEATUREMAPenabled.get(key);
-    	FEATUREMAPstring.put(val3,val4);
+    if (orgid != null) {
+  	  org = AccountUtil.getOrgBean().getOrg(Long.parseLong(orgid));
+  	  result = CommonCommandUtil.getOrgInfo(Long.parseLong(orgid));
+  	  users = AccountUtil.getOrgBean().getAllOrgUsers(Long.parseLong(orgid));
+  	  roles =AccountUtil.getRoleBean().getRoles(Long.parseLong(orgid));
+  	  
+  	 for(Long key :FEATUREMAPUNORDERED.keySet())
+     {
+     	long val1 = key;
+     	FeatureLicense val2 = FEATUREMAPUNORDERED.get(key);
+     	FEATUREMAPreversed.put(val2,val1);
+     }
+    	boolean isEnabled;
     	
-    }
-    TreeMap<String,Boolean> FEATUREMAP = new TreeMap<String,Boolean>(FEATUREMAPstring);
-    for(Long key :FEATUREMAPUNORDERED.keySet()) {
-    	FeatureLicense value = FEATUREMAPUNORDERED.get(key);
-    	NEWMAP.put(String.valueOf(value), key);
-    }
+     for(FeatureLicense key :FEATUREMAPreversed.keySet())
+     {
+     	isEnabled = isFeatureEnabled(key,org.getOrgId());
+     	FEATUREMAPenabled.put(key,isEnabled);
+     }
+     for(FeatureLicense key :FEATUREMAPenabled.keySet()) 
+     {
+     	String val3 = (String.valueOf(key));
+     	boolean val4 = FEATUREMAPenabled.get(key);
+     	FEATUREMAPstring.put(val3,val4);
+     	
+     }
+     FEATUREMAP = new TreeMap<String,Boolean>(FEATUREMAPstring);
+     for(Long key :FEATUREMAPUNORDERED.keySet()) {
+     	FeatureLicense value = FEATUREMAPUNORDERED.get(key);
+     	NEWMAP.put(String.valueOf(value), key);
+     }
+  	  
+  	}
+    
+   
   %>
+<%!
+public static boolean isFeatureEnabled(FeatureLicense featureLicense,long orgid) throws Exception {
+		return (AccountUtil.getOrgFeatureLicense(orgid) & featureLicense.getLicense()) == featureLicense.getLicense();
+	}%>
 
  
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
