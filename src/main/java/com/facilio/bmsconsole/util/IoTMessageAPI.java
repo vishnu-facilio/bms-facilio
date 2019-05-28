@@ -231,8 +231,9 @@ public class IoTMessageAPI {
 														;
 		Map<String, Object> prop = builder.fetchFirst();
 		if (prop != null && !prop.isEmpty()) {
+			PublishMessage message = FieldUtil.getAsBeanFromMap(prop, PublishMessage.class);
 			List<FacilioField> selectFields = FieldFactory.getCountField(module);
-			long parentId = (long) prop.get("parentId");
+			long parentId = message.getParentId();
 			builder = new GenericSelectRecordBuilder()
 					.table(module.getTableName())
 					.select(selectFields)
@@ -257,7 +258,7 @@ public class IoTMessageAPI {
 				
 				try {
 					if (data.getCommandEnum() != null && data.getCommandEnum() == IotCommandType.SET) {
-						publishGetData(data);
+						publishGetData(data.getControllerId(), message);
 					}
 				}
 				catch(Exception e) {
@@ -269,15 +270,15 @@ public class IoTMessageAPI {
 		}
 	}
 	
-	private static void publishGetData(PublishData data) throws Exception {
-		JSONObject msg = data.getMessages().get(0).getData();
+	private static void publishGetData(long controllerId, PublishMessage message) throws Exception {
+		JSONObject msg = message.getData();
 		JSONArray points = (JSONArray) msg.get("points");
 		JSONObject pointInstance = (JSONObject) points.get(0);
 		
 		Map<String, Object> instance = new HashMap<>();
 		instance.put("instanceType", pointInstance.get("instanceType"));
 		instance.put("objectInstanceNumber", pointInstance.get("objectInstanceNumber"));
-		instance.put("controllerId",data.getControllerId());
+		instance.put("controllerId", controllerId);
 		
 		IoTMessageAPI.publishIotMessage(Collections.singletonList(instance), IotCommandType.GET);
 	}
