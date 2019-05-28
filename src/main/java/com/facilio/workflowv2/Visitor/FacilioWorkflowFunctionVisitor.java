@@ -87,7 +87,7 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
     		return new Value(value.asList().get(index));
     	}
     	else {
-    		throw new RuntimeException("not a list " + varName);
+    		throw new RuntimeException("var "+varName+" is not of list type");
     	}
 	}
     

@@ -79,12 +79,13 @@ public class Value {
         if(value == o) {
             return true;
         }
-
+        Value that = (Value)o;
+        if(value == null && that != null && that.value == null) {
+        	return true;
+        }
         if(value == null || o == null || o.getClass() != value.getClass()) {
             return false;
         }
-
-        Value that = (Value)o;
 
         return this.value.equals(that.value);
     }
