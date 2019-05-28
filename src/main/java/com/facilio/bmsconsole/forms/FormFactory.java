@@ -1,5 +1,14 @@
 package com.facilio.bmsconsole.forms;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.WorkOrderContext.WOUrgency;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
@@ -16,9 +25,6 @@ import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 public class FormFactory {
 	
@@ -164,7 +170,7 @@ public class FormFactory {
 	
 	public static FacilioForm getServiceWorkOrderForm() {
 		FacilioForm form = new FacilioForm();
-		form.setDisplayName("Default Request");
+		form.setDisplayName("Standard");
 		form.setName("default_workorder_portal");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER));
 		form.setLabelPosition(LabelPosition.TOP);
@@ -276,7 +282,7 @@ public class FormFactory {
 
 	public static FacilioForm getWebWorkOrderForm() {
 		FacilioForm form = new FacilioForm();
-		form.setDisplayName("Workorder");
+		form.setDisplayName("Standard");
 		form.setName("default_workorder_web");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.WORK_ORDER));
 		form.setLabelPosition(LabelPosition.LEFT);

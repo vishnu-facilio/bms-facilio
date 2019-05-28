@@ -3,12 +3,14 @@ package com.facilio.bmsconsole.actions;
 import java.io.File;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
@@ -21,6 +23,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.ActivityContext;
 import com.facilio.aws.util.AwsUtil;
@@ -73,22 +76,6 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.struts2.ServletActionContext;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
-import java.io.File;
-import java.time.Instant;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 public class WorkOrderAction extends FacilioAction {
 
@@ -1281,6 +1268,18 @@ public class WorkOrderAction extends FacilioAction {
 	}
 	catch (Exception e) {
 		JSONObject inComingDetails = new JSONObject();
+		if (workorder.getAssignedTo() != null && workorder.getAssignedTo().getId() > -1) {
+			User user = new User();
+			user.setId(workorder.getAssignedTo().getId());
+			user.setName(workorder.getAssignedTo().getName());
+			workorder.setAssignedTo(user);
+		}
+		if (workorder.getAssignedBy() != null && workorder.getAssignedBy().getId() > -1) {
+			User user = new User();
+			user.setId(workorder.getAssignedBy().getId());
+			user.setName(workorder.getAssignedBy().getName());
+			workorder.setAssignedBy(user);
+		}
 		inComingDetails.put("workorder", FieldUtil.getAsJSON(workorder));
 		inComingDetails.put("RECORD_ID_LIST", id);
 		sendErrorMail(e, inComingDetails);
