@@ -1042,10 +1042,14 @@ public class FacilioConstants {
 		public static final String UNIT_POINTS="unit";
 		public static final String DEMO_ROLLUP_EXECUTION_TIME="nextexecution";
 		public static final String DEMO_ROLLUP_JOB_ORG="rollup_job_org";
-		
+		public static final String DATA_POINTS="data_points";
+		public static final String POINTS_DATA_RECORD="points_data_record";
+
 		public static final String PM_PLANNER_SETTINGS="pm_planner_settings";
 
-		
+		public static final String ATTENDANCE = "attendance";
+		public static final String ATTENDANCE_TRANSACTIONS = "attendanceTransaction";
+
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
@@ -1159,6 +1163,8 @@ public class FacilioConstants {
 			classMap.put(INVENTORY_REQUEST, InventoryRequestContext.class);
 			classMap.put(INVENTORY_REQUEST_LINE_ITEMS, InventoryRequestLineItemContext.class);
 
+			classMap.put(ATTENDANCE, AttendanceContext.class);
+			classMap.put(ATTENDANCE_TRANSACTIONS, AttendanceTransactionContext.class);
 			return classMap;
 		}
 		
