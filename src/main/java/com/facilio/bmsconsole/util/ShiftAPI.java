@@ -35,6 +35,7 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ShiftContext;
 import com.facilio.bmsconsole.context.ShiftUserRelContext;
+import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.StringOperators;
@@ -521,6 +522,8 @@ public class ShiftAPI {
 				.andCondition(CriteriaAPI.getIdCondition(id, module));
 		builder.delete();
 		
+		deleteSchedulers(id);
+		
 //		ShiftContext shift = null;
 //		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 //				.select(FieldFactory.getShiftField())
@@ -732,8 +735,15 @@ public class ShiftAPI {
 		addSchedulers(shift);
 	}
 
-	private static void addSchedulers(ShiftContext shift) {
-//		FacilioTimer.schedulePeriodicJob(shift.getId(), "AttendanceAbsentSchedulerJob", delay, period, "facilio");
+	private static void addSchedulers(ShiftContext shift) throws Exception {
+		ScheduleInfo schedule = new ScheduleInfo();
+		schedule.setFrequencyType(FrequencyType.DAILY);
+		schedule.addTime(shift.getEndTimeAsLocalTime());
+		FacilioTimer.scheduleCalendarJob(shift.getId(), "AttendanceAbsentSchedulerJob", System.currentTimeMillis(), schedule, "facilio");
+	}
+	
+	private static void deleteSchedulers(long id) throws Exception {
+		FacilioTimer.deleteJob(id, "AttendanceAbsentSchedulerJob");
 	}
 
 	private static void checkValidation(ShiftContext shift) throws Exception {
@@ -766,6 +776,9 @@ public class ShiftAPI {
 				.andCondition(CriteriaAPI.getIdCondition(shift.getId(), module))
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
 		builder.update(shift);
+		
+		deleteSchedulers(shift.getId());
+		addSchedulers(shift);
 	}
 
 	public static ShiftContext getShift(long id) throws Exception {
@@ -781,10 +794,14 @@ public class ShiftAPI {
 	}
 
 	public static List<ShiftUserRelContext> getShiftUserMapping(long startTime, long endTime) throws Exception {
-		return getShiftUserMapping(startTime, endTime, -1);
+		return getShiftUserMapping(startTime, endTime, -1, -1);
 	}
-
-	private static List<ShiftUserRelContext> getShiftUserMapping(long startTime, long endTime, long orgUserId) throws Exception {
+	
+	public static List<ShiftUserRelContext> getShiftUserMapping(long startTime, long endTime, long shiftId) throws Exception {
+		return getShiftUserMapping(startTime, endTime, -1, shiftId);
+	}
+	
+	private static List<ShiftUserRelContext> getShiftUserMapping(long startTime, long endTime, long orgUserId, long shiftId) throws Exception {
 		startTime = DateTimeUtil.getDayStartTimeOf(startTime, true);
 		endTime = DateTimeUtil.getDayEndTimeOf(endTime, true);
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
@@ -792,13 +809,21 @@ public class ShiftAPI {
 				.select(FieldFactory.getShiftUserRelModuleFields())
 				.orderBy("START_TIME");
 		
-		builder.andCondition(CriteriaAPI.getCondition("END_TIME", "endTime", String.valueOf(startTime), NumberOperators.GREATER_THAN_EQUAL))
-			.orCondition(CriteriaAPI.getCondition("END_TIME", "endTime", String.valueOf(UNLIMITED_PERIOD), NumberOperators.EQUALS));
-		builder.andCondition(CriteriaAPI.getCondition("START_TIME", "startTime", String.valueOf(endTime), NumberOperators.LESS_THAN_EQUAL))
-			.orCondition(CriteriaAPI.getCondition("START_TIME", "startTime", String.valueOf(UNLIMITED_PERIOD), NumberOperators.EQUALS));
+		Criteria c = new Criteria();
+		c.addAndCondition(CriteriaAPI.getCondition("END_TIME", "endTime", String.valueOf(startTime), NumberOperators.GREATER_THAN_EQUAL));
+		c.addOrCondition(CriteriaAPI.getCondition("END_TIME", "endTime", String.valueOf(UNLIMITED_PERIOD), NumberOperators.EQUALS));
+		builder.andCriteria(c);
+		
+		c = new Criteria();
+		c.addAndCondition(CriteriaAPI.getCondition("START_TIME", "startTime", String.valueOf(endTime), NumberOperators.LESS_THAN_EQUAL));
+		c.addOrCondition(CriteriaAPI.getCondition("START_TIME", "startTime", String.valueOf(UNLIMITED_PERIOD), NumberOperators.EQUALS));
+		builder.andCriteria(c);
 		
 		if (orgUserId > 0) {
 			builder.andCondition(CriteriaAPI.getCondition("ORG_USERID", "orgUserid", String.valueOf(orgUserId), NumberOperators.EQUALS));
+		}
+		if (shiftId > 0) {
+			builder.andCondition(CriteriaAPI.getCondition("SHIFTID", "shiftId", String.valueOf(shiftId), NumberOperators.EQUALS));	
 		}
 		
 		List<Map<String, Object>> list = builder.get();
@@ -819,7 +844,7 @@ public class ShiftAPI {
 		startTime = DateTimeUtil.getDayStartTimeOf(startTime, true);
 		endTime = DateTimeUtil.getDayEndTimeOf(endTime, true);
 
-		List<ShiftUserRelContext> shiftUserMapping = getShiftUserMapping(startTime, endTime, orgUserId);
+		List<ShiftUserRelContext> shiftUserMapping = getShiftUserMapping(startTime, endTime, orgUserId, -1);
 		
 		int count = 0;
 		Map<String, Object> prop = new HashMap<>();

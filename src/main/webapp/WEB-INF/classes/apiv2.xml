@@ -148,6 +148,8 @@
 			class="com.facilio.bmsconsole.actions.ShiftAction" method="getShiftUserMapping" />
 		<action name="addShiftUserMapping"
 			class="com.facilio.bmsconsole.actions.ShiftAction" method="addShiftUserMapping" />
+		<action name="scheduleTesting"
+			class="com.facilio.bmsconsole.actions.ShiftAction" method="scheduleTesting" />
 	</package>
 
 	<package name="importTemplate" namespace="/api/v2/importTemplate"

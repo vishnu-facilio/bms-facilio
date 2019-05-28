@@ -13,12 +13,9 @@ public class AddShiftCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		ShiftContext shift = (ShiftContext) context.get(FacilioConstants.ContextNames.SHIFT);
-//		long id = BusinessHoursAPI.addBusinessHours(shift.getDays());
-//		shift.setBusinessHoursId(id);
+		shift.setDefaultShift(false);
 		ShiftAPI.addShift(shift);
 		
-//		props.get("id");
-//		List<BusinessHourContext> days = shift.getDays();
 		
 //		ShiftAPI.scheduleJobs(days);
 		

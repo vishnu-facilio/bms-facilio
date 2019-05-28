@@ -67,6 +67,16 @@ public class ShiftAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String scheduleTesting() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.SHIFT_ID, id);
+		
+		Chain chain = TransactionChainFactory.markAbsentChain();
+		chain.execute(context);
+		
+		return SUCCESS;
+	}
+	
 	private long startDate = -1;
 	public void setStartDate(long startDate) {
 		this.startDate = startDate;

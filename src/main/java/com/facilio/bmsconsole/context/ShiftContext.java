@@ -30,7 +30,7 @@ public class ShiftContext extends ModuleBaseWithCustomFields {
 	private long startTime = -1;
 	@JSON(serialize = false)
 	public LocalTime getStartTimeAsLocalTime() {
-		if (startTime > 0) {
+		if (startTime >= 0) {
 			return LocalTime.ofSecondOfDay(startTime);
 		}
 		return null;
@@ -48,7 +48,7 @@ public class ShiftContext extends ModuleBaseWithCustomFields {
 	private long endTime = -1;
 	@JSON(serialize = false)
 	public LocalTime getEndTimeAsLocalTime() {
-		if (endTime > 0) {
+		if (endTime >= 0) {
 			return LocalTime.ofSecondOfDay(endTime);
 		}
 		return null;
