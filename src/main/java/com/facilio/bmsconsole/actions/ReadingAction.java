@@ -1,13 +1,30 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Chain;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.FormLayout;
+import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
+import com.facilio.bmsconsole.context.PublishData;
+import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.IoTMessageAPI;
@@ -27,15 +44,6 @@ import com.facilio.time.DateTimeUtil;
 import com.facilio.timeseries.TimeSeriesAPI;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
-import org.apache.commons.chain.Chain;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class ReadingAction extends FacilioAction {
 	
@@ -1046,7 +1054,9 @@ public class ReadingAction extends FacilioAction {
 		if (instance != null && AccountUtil.getCurrentOrg()!= null) {
 			instance.put("value", value);
 			instance.put("fieldId", fieldId);
-			IoTMessageAPI.publishIotMessage(Collections.singletonList(instance), IotCommandType.SET);
+			PublishData data = IoTMessageAPI.publishIotMessage(Collections.singletonList(instance), IotCommandType.SET);
+			setResult("data", data);
+			
 		}
 		return SUCCESS;
 	}
