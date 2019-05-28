@@ -728,6 +728,12 @@ public class ShiftAPI {
 				.fields(modBean.getAllFields(FacilioConstants.ContextNames.SHIFT))
 				.addRecord(shift);
 		builder.save();
+		
+		addSchedulers(shift);
+	}
+
+	private static void addSchedulers(ShiftContext shift) {
+//		FacilioTimer.schedulePeriodicJob(shift.getId(), "AttendanceAbsentSchedulerJob", delay, period, "facilio");
 	}
 
 	private static void checkValidation(ShiftContext shift) throws Exception {

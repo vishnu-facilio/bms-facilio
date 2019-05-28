@@ -2801,6 +2801,13 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericAddModuleDataCommand());
 			return c;
 		}
+		public static Chain markAbsentChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new GetUsersForShiftCommand());
+			c.addCommand(new MarkAsAbsentCommand());
+			return c;
+		}
+
 }
 
 

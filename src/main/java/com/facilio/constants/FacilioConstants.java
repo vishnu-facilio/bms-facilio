@@ -1045,6 +1045,8 @@ public class FacilioConstants {
 		public static final String DATA_POINTS="data_points";
 		public static final String POINTS_DATA_RECORD="points_data_record";
 
+		public static final String DATE = "date";
+		
 		public static final String PM_PLANNER_SETTINGS="pm_planner_settings";
 
 		public static final String ATTENDANCE = "attendance";
