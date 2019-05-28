@@ -20,6 +20,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
@@ -51,7 +52,7 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 
 		long itemTypesId = -1;
 		ApprovalState approvalState = null;
-		if (workorderitems != null) {
+		if (CollectionUtils.isNotEmpty(workorderitems)) {
 			long parentId = workorderitems.get(0).getParentId();
 			for (WorkorderItemContext workorderitem : workorderitems) {
 				long parentTransactionId = workorderitem.getParentTransactionId();
@@ -67,7 +68,7 @@ public class AddOrUpdateWorkorderItemsCommand implements Command {
 					}
 				}
 				else if(workorderitem.getParentTransactionId() > 0) {
-					if(!InventoryRequestAPI.checkQuantityForWoItem(workorderitem.getParentTransactionId(), workorderitem.getQuantity())){
+					if(!InventoryRequestAPI.checkQuantityForWoItem(workorderitem.getParentTransactionId(), workorderitem.getQuantity(), workorderitem.getRemainingQuantity())){
 						throw new IllegalArgumentException("Please check the quantity issued");
 					}
 				}

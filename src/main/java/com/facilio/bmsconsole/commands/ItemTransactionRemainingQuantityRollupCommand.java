@@ -57,14 +57,9 @@ public class ItemTransactionRemainingQuantityRollupCommand implements Command {
 					ItemTransactionsContext itemTransaction = getItemTransaction(transaction.getParentTransactionId(),
 							itemTransactionsModule, itemTransactionsFields, itemTransactionsFieldsMap);
 					double totalRemainingQuantity = 0;
-					if(event != null && event.getValue() == EventType.DELETE.getValue()) {
-						double totalReturnQuantity = getTotalReturnQuantity(transaction.getParentTransactionId(),
-								itemTransactionsModule, itemTransactionsFieldsMap, transactionState);
-						totalRemainingQuantity = itemTransaction.getQuantity() - totalReturnQuantity;
-					}
-					else {
-						totalRemainingQuantity = itemTransaction.getQuantity() - transaction.getQuantity();
-					}
+					totalRemainingQuantity = itemTransaction.getQuantity() - getTotalRemainingQuantityQuantity(transaction.getParentTransactionId(),
+								itemTransactionsModule, itemTransactionsFieldsMap, TransactionState.USE);
+					
 					itemTransaction.setRemainingQuantity(totalRemainingQuantity);
 
 					UpdateRecordBuilder<ItemTransactionsContext> updateBuilder = new UpdateRecordBuilder<ItemTransactionsContext>()
@@ -92,6 +87,34 @@ public class ItemTransactionRemainingQuantityRollupCommand implements Command {
 				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("parentTransactionId"),
 						String.valueOf(parentTransactionId), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("transactionState"), String.valueOf(3),
+						NumberOperators.EQUALS))
+				.setAggregation();
+
+		List<Map<String, Object>> rs = builder.getAsProps();
+		if (rs != null && rs.size() > 0) {
+			if (rs.get(0).get("totalRemainingQuantity") != null) {
+				return (double) rs.get(0).get("totalRemainingQuantity");
+			}
+			return 0d;
+		}
+		return 0d;
+	}
+	
+	private double getTotalRemainingQuantityQuantity(long parentTransactionId, FacilioModule module,
+			Map<String, FacilioField> fieldsMap, TransactionState transactionState) throws Exception {
+
+		if (parentTransactionId <= 0) {
+			return 0d;
+		}
+
+		List<FacilioField> field = new ArrayList<>();
+		field.add(FieldFactory.getField("totalRemainingQuantity", "sum(QUANTITY)", FieldType.DECIMAL));
+
+		SelectRecordsBuilder<ItemTransactionsContext> builder = new SelectRecordsBuilder<ItemTransactionsContext>()
+				.select(field).moduleName(module.getName())
+				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("parentTransactionId"),
+						String.valueOf(parentTransactionId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("transactionState"), String.valueOf(4),
 						NumberOperators.EQUALS))
 				.setAggregation();
 

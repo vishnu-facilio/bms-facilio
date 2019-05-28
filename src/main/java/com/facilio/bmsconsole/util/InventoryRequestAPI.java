@@ -149,8 +149,11 @@ public class InventoryRequestAPI {
 		}
 	}
 	
-	public static boolean checkQuantityForWoItem(long parentTransactionId, double woItemQuantity) throws Exception {
-		if(woItemQuantity <= getParentTransactionRecord(parentTransactionId).getRemainingQuantity()) {
+	public static boolean checkQuantityForWoItem(long parentTransactionId, double woItemQuantity, double childRemaingingQuantity) throws Exception {
+		if(woItemQuantity - childRemaingingQuantity <= 0) {
+			return true;
+		}
+		if(woItemQuantity - childRemaingingQuantity  <= getParentTransactionRecord(parentTransactionId).getRemainingQuantity()) {
 			return true;
 		}
 		return false;
@@ -194,6 +197,7 @@ public static ToolTransactionContext getParentTransactionRecordForTool(long pare
 	
 public static boolean checkQuantityForWoTool(long parentTransactionId, double woToolQuantity) throws Exception {
 		
+	
 	if(woToolQuantity <= getParentTransactionRecordForTool(parentTransactionId).getQuantity()) {
 		return true;
 	}
