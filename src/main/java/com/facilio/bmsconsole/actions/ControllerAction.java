@@ -266,6 +266,7 @@ public class ControllerAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.TABLE_NAME,AgentKeys.AGENT_LOG_TABLE);
 		context.put(FacilioConstants.ContextNames.FIELDS, FieldFactory.getAgentLogFields());
 		context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
+		context.put(FacilioConstants.ContextNames.SORT_FIELDS,FieldFactory.getAgentLogTimeField(agentModule).getColumnName()+" DESC");
 		logDetails.addAll(bean.getRows(context));
 		if(! logDetails.isEmpty()){
 			setResult("logs",logDetails);
