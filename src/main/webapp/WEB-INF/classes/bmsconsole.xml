@@ -293,7 +293,7 @@
 			<param name="moduleName">workorder</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
-				<param name="includeProperties">tasks.*,sections.*,preRequests.*,preRequestSections.*</param>
+				<param name="includeProperties">tasks.*,sections.*</param>
 			</result>
 		</action>
 		<action name="dashboard" class="com.facilio.bmsconsole.actions.DashboardAction"
@@ -589,7 +589,7 @@
 			<param name="moduleName">workorder</param>
 			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
 			<result name="success" type="json">
-				<param name="includeProperties">rowsUpdated,preRequestStatus,^error.*</param>
+				<param name="includeProperties">rowsUpdated,^error.*</param>
 			</result>
 		</action>
 		<action name="addorupdatetaskinput" class="com.facilio.bmsconsole.actions.TaskAction"
@@ -1761,7 +1761,7 @@
 			<param name="moduleName">planned</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
-				<param name="includeProperties">^preventivemaintenance.*,^workorder.*,taskList.*,sections.*,^reminders.*,^listOfTasks.*,^sectionTemplates.*,^preRequestList.*,^listOfPreRequests.*,^preRequestSectionTemplates.*</param>
+				<param name="includeProperties">^preventivemaintenance.*,^workorder.*,taskList.*,sections.*,^reminders.*,^listOfTasks.*,^sectionTemplates.*</param>
 			</result>
 		</action>
 

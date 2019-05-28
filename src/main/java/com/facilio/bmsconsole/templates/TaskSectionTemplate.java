@@ -19,15 +19,7 @@ public class TaskSectionTemplate extends Template {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private boolean isPreRequestSection=false;
 	
-	public boolean isPreRequestSection() {
-		return isPreRequestSection;
-	}
-	public void setPreRequestSection(boolean isPreRequestSection) {
-		this.isPreRequestSection = isPreRequestSection;
-	}
-
 	List<PMIncludeExcludeResourceContext> pmIncludeExcludeResourceContexts;
 	
 	public List<PMIncludeExcludeResourceContext> getPmIncludeExcludeResourceContexts() {

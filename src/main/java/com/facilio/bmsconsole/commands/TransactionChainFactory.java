@@ -791,8 +791,7 @@ public class TransactionChainFactory {
 //			c.setPostTransactionChain(TransactionChainFactory.getUpdateTaskCountChain());
 			return c;
 		}
-		
-		
+
 		public static Chain getAddTasksChain() {
 			FacilioChain c = (FacilioChain) getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForTask());
@@ -1245,19 +1244,7 @@ public class TransactionChainFactory {
 //			c.addCommand(getAddOrUpdateReadingValuesChain());
 			return c;
 		}
-		public static Chain getUpdatePreRequestChain() {
-			Chain c = getDefaultChain();
-//			c.addCommand(new ValidateAndCreateValuesForInputTaskCommand());
-//			c.addCommand(ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain());
-			c.addCommand(SetTableNamesCommand.getForTask());
-			c.addCommand(new LoadAllFieldsCommand());
-			c.addCommand(new UpdateTaskCommand());
-//			c.addCommand(new UpdateClosedTasksCounterCommand());
-//			c.addCommand(new AddTaskTicketActivityCommand());
-//			c.addCommand(new ExecuteAllWorkflowsCommand());
-//			c.addCommand(new AddActivitiesCommand());
-			return c;
-		}
+		
 		public static Chain getProcessDataChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new ProcessDataCommand());

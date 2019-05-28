@@ -83,19 +83,14 @@ public class NewPreventiveMaintenanceSummaryCommand implements Command {
 				pm.setResourcePlanners(new ArrayList<>(resourcePlanners.values()));
 			}
 		}
-
-		WorkorderTemplate template = (WorkorderTemplate) TemplateAPI.getTemplate(pm.getTemplateId());
 		
+		WorkorderTemplate template = (WorkorderTemplate) TemplateAPI.getTemplate(pm.getTemplateId());
 		List<TaskContext> listOfTasks = null;
 		if ( template.getTaskTemplates() != null) {
 			listOfTasks = template.getTaskTemplates().stream().map(taskTemplate -> taskTemplate.getTask()).collect(Collectors.toList());
 			fillReadingFields(listOfTasks);
 		}
-		List<TaskContext> listOfPreRequests = null;
-		if ( template.getPreRequestTemplates() != null) {
-			listOfPreRequests = template.getPreRequestTemplates().stream().map(taskTemplate -> taskTemplate.getTask()).collect(Collectors.toList());
-			fillReadingFields(listOfPreRequests);
-		}
+		
 		WorkOrderContext workorder = template.getWorkorder();
 		if(workorder.getAttachments() != null && !workorder.getAttachments().isEmpty()) {
 			List<Long> fileIds = workorder.getAttachments().stream().map(file -> file.getFileId()).collect(Collectors.toList());
@@ -147,11 +142,8 @@ public class NewPreventiveMaintenanceSummaryCommand implements Command {
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.TASK_MAP, taskMap);
-		context.put(FacilioConstants.ContextNames.PRE_REQUEST_MAP, template.getPreRequests());
 		context.put(FacilioConstants.ContextNames.TASK_LIST, listOfTasks);
-		context.put(FacilioConstants.ContextNames.PRE_REQUEST_LIST, listOfPreRequests);
 		List<TaskSectionTemplate> sectionTemplate = template.getSectionTemplates();
-		
 		sectionTemplate = fillSectionTemplate(template,sectionTemplate);
 		Map<Long, List<ReadingRuleContext>> fieldVsRules = new HashMap<>();
 		if (listOfTasks != null) {
@@ -175,9 +167,7 @@ public class NewPreventiveMaintenanceSummaryCommand implements Command {
 				}
 			}
 		}
-		
 		context.put(FacilioConstants.ContextNames.TASK_SECTIONS, sectionTemplate);
-		context.put(FacilioConstants.ContextNames.PRE_REQUEST_SECTIONS, template.getPreRequestSectionTemplates());
 		context.put(FacilioConstants.ContextNames.PM_TASK_SECTIONS, sectionTemplate);
 		PreventiveMaintenanceAPI.updateResourceDetails(workorder, taskMap);
 		if (listOfTasks != null) {

@@ -55,12 +55,12 @@ public class GetBuildingCommand implements Command {
 					location=SpaceAPI.getLocationSpace(building.getLocation().getId());
 					building.setLocation(location);
 				}
-				if(building.getOperatingHour()!=-1){
-				List<Long> businessHourIds=Collections.singletonList(building.getOperatingHour());
-				List<BusinessHoursContext> businessHour = BusinessHoursAPI.getBusinessHours(businessHourIds);
-				if(!businessHour.isEmpty()){
-				building.setBusinessHour(businessHour.get(0));}
-				}
+				if(building.getData()!=null && building.getData().get("operatingHour") != null) {
+					List<Long> businessHourIds=Collections.singletonList(Long.parseLong(building.getData().get("operatingHour").toString()));
+					List<BusinessHoursContext> businessHour = BusinessHoursAPI.getBusinessHours(businessHourIds);
+					if(!businessHour.isEmpty()){
+						building.setBusinessHour(businessHour.get(0));}
+					}
 				context.put(FacilioConstants.ContextNames.BUILDING, building);
 			}
 		}

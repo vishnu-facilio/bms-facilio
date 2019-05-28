@@ -387,7 +387,6 @@ public class TemplateAPI {
 				if(templates != null && !templates.isEmpty()) {
 					templateMap.putAll(templates.get(0));
 					template = getWOTemplateFromMap(templateMap);
-
 				}
 			}break;
 			case PM_TASK_SECTION:
@@ -399,13 +398,6 @@ public class TemplateAPI {
 					template = getTaskGroupTemplateFromMap(templateMap);
 				}
 			}break;
-			case PM_PRE_REQUEST_SECTION:{
-				List<Map<String, Object>> templates = getExtendedProps(ModuleFactory.getTaskSectionTemplateModule(), FieldFactory.getTaskSectionTemplateFields(), id);
-				if(templates != null && !templates.isEmpty()) {
-					templateMap.putAll(templates.get(0));
-					template = getTaskGroupTemplateFromMap(templateMap);
-				}
-			}
 			case JSON:
 			case ALARM: {
 				List<Map<String, Object>> templates = getExtendedProps(ModuleFactory.getJSONTemplateModule(), FieldFactory.getJSONTemplateFields(), id);
@@ -434,6 +426,7 @@ public class TemplateAPI {
 		if (template != null && template.getWorkflowId() != -1) {
 			template.setWorkflow(WorkflowUtil.getWorkflowContext(template.getWorkflowId(), true));
 		}
+		
 		return template;
 	}
 
@@ -748,10 +741,8 @@ public class TemplateAPI {
 	
 	private static WorkorderTemplate getWOTemplateFromMap(Map<String, Object> templateProps) throws Exception {
 		WorkorderTemplate woTemplate = FieldUtil.getAsBeanFromMap(templateProps, WorkorderTemplate.class);
-
-		Map<Long, TaskSectionTemplate> sectionMap = getTaskSectionTemplatesFromWOTemplate(woTemplate,null);
-		woTemplate.setTasks(getTasksFromWOTemplate(woTemplate, sectionMap,null));
-        woTemplate.setPreRequests(getPreRequestsFromWOTemplate(woTemplate, sectionMap));
+		Map<Long, TaskSectionTemplate> sectionMap = getTaskSectionTemplatesFromWOTemplate(woTemplate, null);
+		woTemplate.setTasks(getTasksFromWOTemplate(woTemplate, sectionMap, null));
 		List<TaskSectionTemplate> templates = woTemplate.getSectionTemplates();
 		//FIXME this is temporary need to fix this by adding sequence number for task sections
 		if (templates != null) {
@@ -796,20 +787,15 @@ public class TemplateAPI {
 		if (sectionProps != null && !sectionProps.isEmpty()) {
 			Map<Long, TaskSectionTemplate> sections = new HashMap<>();
 			List<TaskSectionTemplate> sectionTemplates = new ArrayList<>();
-			List<TaskSectionTemplate> preRequestSectionTemplates = new ArrayList<>();
 			List<Long> sectionIDs = new ArrayList<>();
 			for (Map<String, Object> prop : sectionProps) {
 				TaskSectionTemplate sectionTemplate = FieldUtil.getAsBeanFromMap(prop, TaskSectionTemplate.class);
 				sectionTemplate.setPmIncludeExcludeResourceContexts(TemplateAPI.getPMIncludeExcludeList(null, sectionTemplate.getId(), null));
-                sections.put(sectionTemplate.getId(), sectionTemplate);
+				sections.put(sectionTemplate.getId(), sectionTemplate);
 				sectionIDs.add(sectionTemplate.getId());
-				if(sectionTemplate.getType()==Type.PM_PRE_REQUEST_SECTION.getIntVal()){
-				sectionTemplate.setPreRequestSection(true);
-				preRequestSectionTemplates.add(sectionTemplate);
-				}else{
 				sectionTemplates.add(sectionTemplate);
-				}
 			}
+			
 			if (!sectionIDs.isEmpty()) {
 				FacilioModule sectionTriggerModule = ModuleFactory.getTaskSectionTemplateTriggersModule();
 				FacilioModule trigModule = ModuleFactory.getPMTriggersModule();
@@ -842,10 +828,10 @@ public class TemplateAPI {
 						}
 					}
 				}
-			}	
+			}
+						
 			if (woTemplate != null) {
 				woTemplate.setSectionTemplates(sectionTemplates);
-				woTemplate.setPreRequestSectionTemplates(preRequestSectionTemplates);
 			}
 			else {
 				jobPlan.setSectionTemplates(sectionTemplates);
@@ -855,45 +841,7 @@ public class TemplateAPI {
 		return null;
 	}
 	
-	private static Map<String, List<TaskContext>> getPreRequestsFromWOTemplate(WorkorderTemplate woTemplate, Map<Long, TaskSectionTemplate> sectionMap) throws Exception {
-		FacilioModule module = ModuleFactory.getTaskTemplateModule();
-		List<FacilioField> fields = FieldFactory.getTaskTemplateFields();
-		FacilioField parentIdField;
-			parentIdField = FieldFactory.getAsMap(fields).get("parentTemplateId");
-		
-		List<Map<String, Object>> taskProps = getTemplateJoinedProps(module, fields, CriteriaAPI.getCondition(parentIdField, String.valueOf(woTemplate.getId()), PickListOperators.IS));
-		
-		if (taskProps != null && !taskProps.isEmpty()) {
-			Map<String, List<TaskContext>> taskMap = new HashMap<>();
-			for (Map<String, Object> prop : taskProps) {
-				TaskTemplate template = FieldUtil.getAsBeanFromMap(prop, TaskTemplate.class);
-				if(template.getType()==Type.PM_PRE_REQUEST.getIntVal()){
-					TaskContext task = template.getTask();
-				String sectionName = null;
-				if (template.getSectionId() == -1) {
-					sectionName = FacilioConstants.ContextNames.DEFAULT_TASK_SECTION;
-				}
-				else {
-					TaskSectionTemplate sectionTemplate = sectionMap.get(template.getSectionId());
-					sectionName = sectionTemplate.getName();
-					sectionTemplate.getId();
-					sectionTemplate.addTaskTemplates(template);
-				}
-				
-				List<TaskContext> tasks = taskMap.get(sectionName);
-				if (tasks == null) {
-					tasks = new ArrayList<>();
-					taskMap.put(sectionName, tasks);
-				}
-				tasks.add(task);
-			}
-			}
-			return taskMap;
-		}
-		return null;
-	}
-	
-private static Map<String, List<TaskContext>> getTasksFromWOTemplate(WorkorderTemplate woTemplate, Map<Long, TaskSectionTemplate> sectionMap,  JobPlanContext jobPlan) throws Exception {
+	private static Map<String, List<TaskContext>> getTasksFromWOTemplate(WorkorderTemplate woTemplate, Map<Long, TaskSectionTemplate> sectionMap,  JobPlanContext jobPlan) throws Exception {
 		FacilioModule module = ModuleFactory.getTaskTemplateModule();
 		List<FacilioField> fields = FieldFactory.getTaskTemplateFields();
 		long parentId;
@@ -912,15 +860,13 @@ private static Map<String, List<TaskContext>> getTasksFromWOTemplate(WorkorderTe
 			Map<String, List<TaskContext>> taskMap = new HashMap<>();
 			List<TaskContext> allTasks = new ArrayList<>();
 			List<TaskTemplate> taskTemplates = new ArrayList<>();
-			List<TaskTemplate> preRequestTemplates = new ArrayList<>();
 			for (Map<String, Object> prop : taskProps) {
 				TaskTemplate template = FieldUtil.getAsBeanFromMap(prop, TaskTemplate.class);
-				if(template.getType()!=Type.PM_PRE_REQUEST.getIntVal()){
 				taskTemplates.add(template);
 				template.setPmIncludeExcludeResourceContexts(getPMIncludeExcludeList(null, null, template.getId()));
 				TaskContext task = template.getTask();
-				String sectionName = null;
 				
+				String sectionName = null;
 				if (template.getSectionId() == -1) {
 					sectionName = FacilioConstants.ContextNames.DEFAULT_TASK_SECTION;
 				}
@@ -937,19 +883,11 @@ private static Map<String, List<TaskContext>> getTasksFromWOTemplate(WorkorderTe
 				}
 				allTasks.add(task);
 				tasks.add(task);
-			}else{
-				template.setPreRequest(true);
-				preRequestTemplates.add(template);
-			}
-				
 			}
 			if (woTemplate != null) {
-				woTemplate.setPreRequestTemplates(preRequestTemplates);
 				woTemplate.setTaskTemplates(taskTemplates);
 				if(sectionMap != null) {
-					List<TaskSectionTemplate> taskSectionlist= sectionMap.entrySet().stream().map(Entry::getValue).filter(sec->!sec.isPreRequestSection()).collect(Collectors.toList());
-//					woTemplate.setSectionTemplates(new ArrayList<>(sectionMap.values()));
-					woTemplate.setSectionTemplates(taskSectionlist);
+					woTemplate.setSectionTemplates(new ArrayList<>(sectionMap.values()));
 				}
 			}
 			else {
@@ -1191,57 +1129,42 @@ private static Map<String, List<TaskContext>> getTasksFromWOTemplate(WorkorderTe
 		}
 	}
 	
-private static Map<String, Long> addSectionTemplatesForWO(List<TaskSectionTemplate> sectionTemplates,long woTemplateId, Type taskType,Type sectiontype,Type preRequestType,Type preRequestSectionType) throws Exception {
-
+	private static Map<String, Long> addSectionTemplatesForWO(List<TaskSectionTemplate> sectionTemplates,long woTemplateId, Type taskType,Type sectiontype) throws Exception {
 		List<Map<String, Object>> templatePropList = new ArrayList<>();
 		
 		for (TaskSectionTemplate sectionTemplate : sectionTemplates) {
 			//sectionTemplate.setType(sectiontype);
 			sectionTemplate.setOrgId(AccountUtil.getCurrentOrg().getId());
 			sectionTemplate.setParentWOTemplateId(woTemplateId);
-			if(sectionTemplate.isPreRequestSection())
-			{
-				sectionTemplate.setType(preRequestSectionType);
-			}else{
-				sectionTemplate.setType(Type.WO_TASK_SECTION);
-			}
+			sectionTemplate.setType(Type.WO_TASK_SECTION);
 			templatePropList.add(FieldUtil.getAsProperties(sectionTemplate));
 		}
 		insertTemplatesWithExtendedProps(ModuleFactory.getTaskSectionTemplateModule(), FieldFactory.getTaskSectionTemplateFields(), templatePropList);
+		
 		Map<String, Long> sectionMap = new HashMap<>();
-		Map<String, Long> preRequestSectionMap = new HashMap<>();
 		for (Map<String, Object> prop : templatePropList) {
-			if(prop.get("typeEnum").toString().equals(Type.PM_PRE_REQUEST_SECTION.toString()))
-			{
-				preRequestSectionMap.put((String)prop.get("name"), (Long)prop.get("id"));
-			}else{
-				sectionMap.put((String)prop.get("name"), (Long)prop.get("id"));
-			}
+			sectionMap.put((String)prop.get("name"), (Long)prop.get("id"));
 		}
+		
+		
 		for (TaskSectionTemplate sectionTemplate : sectionTemplates) {
-			if(sectionTemplate.isPreRequestSection()){
-				if(preRequestSectionMap.get(sectionTemplate.getName()) != null) {
-					Long id = preRequestSectionMap.get(sectionTemplate.getName());
-					sectionTemplate.setId(id);
-					addIncludeExcludePropsForSection(sectionTemplate);
-				}
-			}else{
-				if(sectionMap.get(sectionTemplate.getName()) != null) {
-					Long id = sectionMap.get(sectionTemplate.getName());
-					sectionTemplate.setId(id);
-					addIncludeExcludePropsForSection(sectionTemplate);
-				}
+			if(sectionMap.get(sectionTemplate.getName()) != null) {
+				
+				Long id = sectionMap.get(sectionTemplate.getName());
+				sectionTemplate.setId(id);
+				
+				addIncludeExcludePropsForSection(sectionTemplate);
 			}
-			
 			
 			for(TaskTemplate taskTeplate : sectionTemplate.getTaskTemplates()) {
-				Type type=sectionTemplate.isPreRequestSection()?preRequestType:taskType;
-				fillDefaultPropsTaskTemplate(taskTeplate, sectionTemplate.getId(), woTemplateId, type);
+				fillDefaultPropsTaskTemplate(taskTeplate, sectionTemplate.getId(), woTemplateId, taskType);
 				Map<String, Object> props = FieldUtil.getAsProperties(taskTeplate);
 				props.remove("id");
 				insertTemplateWithExtendedProps(ModuleFactory.getTaskTemplateModule(), FieldFactory.getTaskTemplateFields(),props); //add tasks
+				
 				taskTeplate.setId((Long)props.get("id"));
-                addIncludeExcludePropsForTask(taskTeplate);
+				
+				addIncludeExcludePropsForTask(taskTeplate);
 			}
 		}
 		return sectionMap;
@@ -1302,13 +1225,13 @@ private static Map<String, Long> addSectionTemplatesForWO(List<TaskSectionTempla
 		insertBuilder.save();
 	}
 
-	public static long addNewWorkOrderTemplate(WorkorderTemplate template, Type woType, Type taskType, Type sectionType,Type preRequestType,Type preRequestSectionType) throws Exception {
+	public static long addNewWorkOrderTemplate(WorkorderTemplate template, Type woType, Type taskType, Type sectionType) throws Exception {
 		addDefaultProps(template);
 		template.setType(woType);
 		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
 		long templateId = insertTemplateWithExtendedProps(ModuleFactory.getWorkOrderTemplateModule(), FieldFactory.getWorkOrderTemplateFields(), templateProps); //inserting WO template
 		
-		addSectionTemplatesForWO(template.getSectionTemplates(), templateId,taskType, sectionType,preRequestType,preRequestSectionType);
+		addSectionTemplatesForWO(template.getSectionTemplates(), templateId,taskType, sectionType);
 		return templateId;
 	}
 	

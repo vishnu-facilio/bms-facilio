@@ -111,6 +111,7 @@ public class PreventiveMaintenanceAPI {
 			}
 			Template sectionTemplate = TemplateAPI.getTemplate(sectiontemplate.getId());
 			sectiontemplate = (TaskSectionTemplate)sectionTemplate;
+			
 			 List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(sectiontemplate.getAssignmentType()), woResourceId, sectiontemplate.getSpaceCategoryId(), sectiontemplate.getAssetCategoryId(),sectiontemplate.getResourceId(),sectiontemplate.getPmIncludeExcludeResourceContexts());
 			 Map<String, Integer> dupSectionNameCount = new HashMap<>();
 			 for(Long resourceId :resourceIds) {
@@ -156,71 +157,7 @@ public class PreventiveMaintenanceAPI {
 		}
 		return taskMap;
 	}
-	public static Map<String, List<TaskContext>> getPreRequestMapForNewPMExecution(List<TaskSectionTemplate> sectiontemplates,Long woResourceId, Long triggerId) throws Exception {
-		Map<String, List<TaskContext>> taskMap = new LinkedHashMap<>();
-		for(TaskSectionTemplate sectiontemplate :sectiontemplates) {
-			if (triggerId != null && triggerId > -1) {
-				List<PMTriggerContext> triggerContexts = sectiontemplate.getPmTriggerContexts();
-				if (triggerContexts != null && !triggerContexts.isEmpty()) {
-					boolean found = false;
-					for (int i = 0; i < triggerContexts.size(); i++) {
-						if (triggerContexts.get(i).getId() == triggerId) {
-							found = true;
-							break;
-						}
-					}
-					if (!found) {
-						continue;
-					}
-				}
-			}
-			Template sectionTemplate = TemplateAPI.getTemplate(sectiontemplate.getId());
-			sectiontemplate = (TaskSectionTemplate)sectionTemplate;
-			 List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(sectiontemplate.getAssignmentType()), woResourceId, sectiontemplate.getSpaceCategoryId(), sectiontemplate.getAssetCategoryId(),sectiontemplate.getResourceId(),sectiontemplate.getPmIncludeExcludeResourceContexts());
-			 Map<String, Integer> dupSectionNameCount = new HashMap<>();
-			 for(Long resourceId :resourceIds) {
-				 if(resourceId == null || resourceId < 0) {
-					 continue;
-				 }
-				 ResourceContext sectionResource = ResourceAPI.getResource(resourceId);
-				 String sectionName = sectiontemplate.getName();
-
-				 if (taskMap.containsKey(sectionName)) {
-					 Integer count = dupSectionNameCount.get(sectionName);
-					 if (count == null) {
-					 	count = 0;
-					 }
-					 count = count + 1;
-					 dupSectionNameCount.put(sectionName, count);
-					 sectionName += sectionName + " - " + count;
-				 }
-
-				 int sectionAssignmentType = sectiontemplate.getAssignmentType();
-				 List<TaskTemplate> taskTemplates = sectiontemplate.getTaskTemplates();
-				 
-				 List<TaskContext> tasks = new ArrayList<TaskContext>();
-				 for(TaskTemplate taskTemplate :taskTemplates) {
-					 
-					 List<Long> taskResourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(PMAssignmentType.valueOf(taskTemplate.getAssignmentType()), sectionResource.getId(), taskTemplate.getSpaceCategoryId(), taskTemplate.getAssetCategoryId(),taskTemplate.getResourceId(),taskTemplate.getPmIncludeExcludeResourceContexts());
-
-					 applySectionSettingsIfApplicable(sectiontemplate,taskTemplate);
-					 for(Long taskResourceId :taskResourceIds) {
-					 	if (sectionAssignmentType == PMAssignmentType.ASSET_CATEGORY.getVal() || sectionAssignmentType == PMAssignmentType.SPACE_CATEGORY.getVal()) {
-							if (ObjectUtils.compare(taskResourceId, resourceId) != 0) {
-								continue;
-							}
-						}
-					 	ResourceContext taskResource = ResourceAPI.getResource(taskResourceId);
-					 	TaskContext task = taskTemplate.getTask();
-					 	task.setResource(taskResource);
-					 	tasks.add(task);
-					 }
-				 }
-				 taskMap.put(sectionName, tasks);
-			 }
-		}
-		return taskMap;
-	}
+	
 	public static long getStartTimeInSecond(long startTime) {
 		
 		long startTimeInSecond = startTime / 1000;
@@ -371,6 +308,7 @@ public class PreventiveMaintenanceAPI {
 				}
 			}
 		}
+
 		if(isNewPmType) {
 			Long woTemplateResourceId = wo.getResource() != null ? wo.getResource().getId() : -1;
 			if(woTemplateResourceId > 0) {
@@ -389,47 +327,11 @@ public class PreventiveMaintenanceAPI {
 			taskMap = taskMapForNewPmExecution;
 		}
 
-		
-		Map<String, List<TaskContext>> preRequestMap = null;
-		Map<String, List<TaskContext>> preRequestMapForNewPmExecution = null;	// should be handled in above if too
-
-		 isNewPmType = false;
-
-		if(woTemplate.getPreRequestSectionTemplates() != null) {
-			for(TaskSectionTemplate sectiontemplate : woTemplate.getPreRequestSectionTemplates()) {// for new pm_Type section should be present and every section should have a AssignmentType
-				if(sectiontemplate.getAssignmentType() < 0) {
-					isNewPmType =  false;
-					break;
-				}
-				else {
-					isNewPmType = true;
-				}
-			}
-		}
-		if(isNewPmType) {
-			Long woTemplateResourceId = wo.getResource() != null ? wo.getResource().getId() : -1;
-			if(woTemplateResourceId > 0) {
-				Long currentTriggerId = pmTrigger.getId();
-				preRequestMapForNewPmExecution = PreventiveMaintenanceAPI.getTaskMapForNewPMExecution(woTemplate.getPreRequestSectionTemplates(), woTemplateResourceId, currentTriggerId);
-			}
-		} else {
-			preRequestMapForNewPmExecution = woTemplate.getPreRequests();
-		}
-
-		if (AccountUtil.getCurrentOrg().getOrgId() == 92 && (pm.getId() == 15831 || pm.getId() == 16191)) {
-			LOGGER.log(Level.SEVERE, "isNewPmType: "+ isNewPmType + "has pre request sections: " + (woTemplate.getPreRequestSectionTemplates() != null && !woTemplate.getPreRequestSectionTemplates().isEmpty()) + "has pre requests: "+ (woTemplate.getPreRequests() != null && !woTemplate.getPreRequests().isEmpty()));
-		}
-
-		if(preRequestMapForNewPmExecution != null) {
-			preRequestMap = preRequestMapForNewPmExecution;
-		}
-		
 		wo.setSourceType(TicketContext.SourceType.PREVENTIVE_MAINTENANCE);
 		wo.setPm(pm);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 		context.put(FacilioConstants.ContextNames.REQUESTER, wo.getRequester());
 		context.put(FacilioConstants.ContextNames.TASK_MAP, taskMap);
-		context.put(FacilioConstants.ContextNames.PRE_REQUEST_MAP, preRequestMap);
 		context.put(FacilioConstants.ContextNames.IS_PM_EXECUTION, true);
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTEXT_LIST, wo.getAttachments());

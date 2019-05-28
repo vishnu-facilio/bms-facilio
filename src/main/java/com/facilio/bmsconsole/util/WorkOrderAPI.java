@@ -13,8 +13,6 @@ import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.builder.GenericUpdateRecordBuilder;
-import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.*;
@@ -23,14 +21,12 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import org.apache.commons.chain.Command;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.*;
 import java.util.logging.Logger;
@@ -1276,101 +1272,6 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 		return wo.getSiteId();
 	}
 	
-	public static Map<Long,MutablePair<Long, Long>> getTotalAndCompletedPreRequestCountMap(Collection ids) throws Exception {
-		if (CollectionUtils.isNotEmpty(ids)) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			String moduleName = "task";
-
-			FacilioField parentIdField = modBean.getField("parentTicketId", moduleName);
-			FacilioModule module = modBean.getModule(moduleName);
-			
-			List<FacilioField> fields = new ArrayList<>();
-			fields.add(parentIdField);
-			
-			FacilioField countField = new FacilioField();
-			countField.setName("count");
-			countField.setColumnName("COUNT(*)");
-			countField.setDataType(FieldType.NUMBER);
-			fields.add(countField);
-			FacilioField preRequestField = new FacilioField();
-			preRequestField.setName("isPreRequest");
-			preRequestField.setColumnName("IS_PRE_REQUEST");
-			preRequestField.setDataType(FieldType.BOOLEAN);
-			
-			FacilioField inputValueField = new FacilioField();
-			inputValueField.setName("inputValue");
-			inputValueField.setColumnName("INPUT_VALUE");
-			inputValueField.setDataType(FieldType.STRING);
-			
-			Condition condition = CriteriaAPI.getCondition(parentIdField, ids, NumberOperators.EQUALS);
-			Condition preRequestCondition = CriteriaAPI.getCondition(preRequestField, "1" , NumberOperators.EQUALS);
-			
-			
-			GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
-					.table(module.getTableName())
-					.select(fields)
-					.groupBy(parentIdField.getCompleteColumnName())
-					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-					.andCondition(condition).andCondition(preRequestCondition);
-			
-			Map<Long,MutablePair<Long, Long>> totCompletedPreRequestCountMap = new HashMap<>();
-			List<Map<String, Object>> totalCountList = select.get();
-//			if(totalCountList.isEmpty()){
-//				
-//				ids.stream().forEach(id->totCompletedPreRequestCountMap.put((Long)id, 0));
-//			}else{
-				
-//			for (Map<String, Object> map : totalCountList) {
-//				long id = ((Number) map.get("parentTicketId")).longValue();
-//				totPreRequestCountMap.put(id, ((Number) map.get("count")).intValue());
-//			}
-			
-//			}
-			Condition inputValueCondition = CriteriaAPI.getCondition(inputValueField, "1" , StringOperators.IS);
-			select = new GenericSelectRecordBuilder()
-					.table(module.getTableName())
-					.select(fields)
-					.groupBy(parentIdField.getCompleteColumnName())
-					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-					.andCondition(condition).andCondition(preRequestCondition)
-					.andCondition(inputValueCondition);
-			List<Map<String, Object>> completedCountList = select.get();
-			
-			ids.stream().forEach(id->{
-				Map<String,Object> totalCountMap= totalCountList.stream()
-						.filter(map ->id.equals(((Number)map.get("parentTicketId")).longValue()))
-						.findFirst().orElse(new HashMap<String,Object>(){{put("count", 0);}});
-				Map<String,Object> completedCountMap= completedCountList.stream()
-						.filter(map ->id.equals(((Number)map.get("parentTicketId")).longValue()))
-						.findFirst().orElse(new HashMap<String,Object>(){{put("count", 0);}});
-				
-				MutablePair<Long, Long> pair = new MutablePair<>();
-				pair.setLeft(((Number) totalCountMap.get("count")).longValue());
-				pair.setRight(((Number) completedCountMap.get("count")).longValue());
-				totCompletedPreRequestCountMap.put((Long)id, pair);
-				
-			});
-			
-			
-			
-//			Map<Long,Integer> CompletedPreReqCountMap = new HashMap<>();
-//			
-//			if(completedCountList.isEmpty()){
-//				ids.stream().forEach(id->CompletedPreReqCountMap.put((Long)id, 0));
-//			}else{
-//			for (Map<String, Object> map : completedCountList) {
-//				long id = ((Number) map.get("parentTicketId")).longValue();
-//				CompletedPreReqCountMap.put(id, ((Number) map.get("count")).intValue());
-//			}
-//			}
-			
-			
-//			updatePreRequestStatus(totCompletedPreRequestCountMap);
-			return totCompletedPreRequestCountMap;
-		}else{
-			return null;
-		}
-	}
 	
     public static WorkorderItemContext getWorkOrderItem(long woItemId) throws Exception {
     	
@@ -1413,34 +1314,6 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
   	 return null;
 
   }
-	public static void updatePreRequestStatus(Map<Long,MutablePair<Long, Long>> totCompletedPreRequestCountMap) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		String workorderModuleName = "workorder";
-		FacilioModule workorderModule = modBean.getModule(workorderModuleName);
-		
-		FacilioField preRequestStatusField = new FacilioField();
-		preRequestStatusField.setName("preRequestStatus");
-		preRequestStatusField.setColumnName("PRE_REQUEST_STATUS");
-		preRequestStatusField.setDataType(FieldType.BOOLEAN);
-		
-		for (Long id: totCompletedPreRequestCountMap.keySet()) {
-			Map<String, Object> updateMap = new HashMap<>();
-			Long totPreRequestCount = totCompletedPreRequestCountMap.get(id).getLeft();
-			Long compPreRequestCount = totCompletedPreRequestCountMap.get(id).getRight();
-			updateMap.put("preRequestStatus", totPreRequestCount == compPreRequestCount );
-			
-			FacilioField idField = FieldFactory.getIdField(workorderModule);
-			Condition idFieldCondition = CriteriaAPI.getCondition(idField, NumberOperators.EQUALS);
-			idFieldCondition.setValue(String.valueOf(id));
-			
-			GenericUpdateRecordBuilder recordBuilder = new GenericUpdateRecordBuilder()
-					.table(workorderModule.getTableName())
-					.fields(Arrays.asList(preRequestStatusField))
-					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(workorderModule))
-					.andCondition(idFieldCondition);
-			recordBuilder.update(updateMap);
-		}
-	}
 	
 	
 	

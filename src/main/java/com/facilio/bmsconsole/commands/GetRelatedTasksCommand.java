@@ -10,7 +10,6 @@ import org.apache.commons.chain.Context;
 
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class GetRelatedTasksCommand implements Command {
 
@@ -26,20 +25,11 @@ public class GetRelatedTasksCommand implements Command {
 		//Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();
 		
 		Map<Long, TaskSectionContext> sections = TicketAPI.getRelatedTaskSections(recordId);
-		Map<Long, TaskSectionContext> taskSections =sections.entrySet().stream().filter(en->!en.getValue().isPreRequest()).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
-		
-		context.put(FacilioConstants.ContextNames.TASK_SECTIONS, taskSections);
-		Map<Long, TaskSectionContext> preRequestSections =sections.entrySet().stream().filter(en->en.getValue().isPreRequest()).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue));
-		context.put(FacilioConstants.ContextNames.PRE_REQUEST_SECTIONS, preRequestSections);
-		
-		
-		List<TaskContext> alltasks = TicketAPI.getRelatedTasks(recordId);
-		List<TaskContext> tasks=alltasks.stream().filter(t-> !t.isPreRequest()).collect(Collectors.toList());
+		context.put(FacilioConstants.ContextNames.TASK_SECTIONS, sections);
+		List<TaskContext> tasks = TicketAPI.getRelatedTasks(recordId);
 		context.put(FacilioConstants.ContextNames.TASK_LIST, tasks);
-		List<TaskContext> preRequests=alltasks.stream().filter(t-> t.isPreRequest()).collect(Collectors.toList());
-		context.put(FacilioConstants.ContextNames.PRE_REQUEST_LIST, preRequests);
 		context.put(FacilioConstants.ContextNames.TASK_MAP, TicketAPI.groupTaskBySection(tasks));
-		context.put(FacilioConstants.ContextNames.PRE_REQUEST_MAP, TicketAPI.groupPreRequestBySection(preRequests));
+		
 		CommonCommandUtil.loadTaskLookups(tasks);
 		
 		return false;

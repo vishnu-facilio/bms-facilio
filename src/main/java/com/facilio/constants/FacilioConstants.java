@@ -213,10 +213,6 @@ public class FacilioConstants {
 		public static final String TASK_SECTION = "taskSection";
 		public static final String DEFAULT_TASK_SECTION = "default";
 		
-		public static final String PRE_REQUEST_MAP="preRequestMap";
-		public static final String PRE_REQUEST_LIST = "preRequests";
-		public static final String PRE_REQUEST_SECTIONS = "preRequestSections";
-		
 		public static final String ATTACHMENT = "attachment";
 		public static final String ATTACHMENT_LIST = "attachments";
 		public static final String EXISTING_ATTACHMENT_LIST = "existingAttachments";
@@ -538,7 +534,6 @@ public class FacilioConstants {
 		public static final String SCHEDULED_PM_JOBS = "schdeduledPMJobs";
 		public static final String SCHEDULED_PM_JOBS_MAP = "schdeduledPMJobsMap";
 		public static final String PM_TASK_SECTIONS = "pmTaskSections";
-		public static final String PM_PRE_REQUEST_SECTIONS = "pmPreRequestSections";
 		
 		public static final String PREVENTIVE_MAINTENANCE_STARTTIME = "preventivemaintenanceStarttime";
 		public static final String PREVENTIVE_MAINTENANCE_ENDTIME = "preventivemaintenanceEndtime";

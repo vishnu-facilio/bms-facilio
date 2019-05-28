@@ -4374,7 +4374,7 @@ public class FieldFactory {
 		fields.add(getField("parentTicketId", "PARENT_TICKET_ID", module, FieldType.NUMBER));
 		fields.add(getField("isEditable", "IS_EDITABLE", module, FieldType.NUMBER));
 		fields.add(getField("sequenceNumber", "SEQUENCE_NUMBER", module, FieldType.NUMBER));
-		fields.add(getField("preRequest", "IS_PRE_REQUEST", module, FieldType.BOOLEAN));
+
 		return fields;
 	}
 

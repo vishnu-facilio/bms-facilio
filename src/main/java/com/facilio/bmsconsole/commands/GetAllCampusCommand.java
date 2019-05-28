@@ -40,17 +40,19 @@ public class GetAllCampusCommand implements Command {
 		List<Long> spaceId = new ArrayList<Long>();
 		List<Long> businessHourIds = new ArrayList<Long>();
 		Map<Long, Long> spaceBhIdsMap = new HashMap<Long, Long>();
-if (campuses != null) {
-		campuses.forEach((e) -> {
-			long spaceid = e.getId();
-			spaceId.add(spaceid);
-			if (e.getOperatingHour() != -1) {
-				long bhid =e.getOperatingHour();
-				businessHourIds.add(bhid);
-				spaceBhIdsMap.put(spaceid, bhid);
-			}
-		});
-}
+		if (campuses != null) {
+			campuses.forEach((e) -> {
+				long spaceid = e.getId();
+				spaceId.add(spaceid);
+				if (e.getData() != null) {
+					if (e.getData().get("operatingHour") != null) {
+						long bhid = Long.parseLong(e.getData().get("operatingHour").toString());
+						businessHourIds.add(bhid);
+						spaceBhIdsMap.put(spaceid, bhid);
+					}
+				}
+			});
+		}
 		List<BusinessHoursContext> businessHourList = BusinessHoursAPI.getBusinessHours(businessHourIds);
 		if (campuses != null) {
 			campuses.forEach((e) -> {
