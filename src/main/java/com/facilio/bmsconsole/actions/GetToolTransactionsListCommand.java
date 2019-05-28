@@ -1,15 +1,18 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.ToolTransactionContext;
-import com.facilio.bmsconsole.criteria.CommonOperators;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.StoreroomApi;
 import com.facilio.bmsconsole.util.ToolsApi;
 import com.facilio.bmsconsole.view.FacilioView;
@@ -25,14 +28,6 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 public class GetToolTransactionsListCommand implements Command {
 	@Override
@@ -140,7 +135,6 @@ public class GetToolTransactionsListCommand implements Command {
 
 		}
 
-		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria("inventory","read");
 		Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria("inventory","read");
 		if(permissionCriteria != null) {
 			builder.andCriteria(permissionCriteria);
