@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
@@ -12,12 +13,15 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +32,10 @@ public class GetWorkOrderListCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		
+		List<Long> woIds = new ArrayList<>();
+		woIds = (List<Long>) context.get(FacilioConstants.ContextNames.WO_IDS);
+		System.out.println();
 		String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		String count = (String) context.get(FacilioConstants.ContextNames.WO_LIST_COUNT);
@@ -35,7 +43,6 @@ public class GetWorkOrderListCommand implements Command {
 		List<FacilioField> fields = null;
 		
 		 List<Map<String, Object>> subViewsCount = null;
-		
 		if (count != null) {
 			FacilioField countFld = new FacilioField();
 			countFld.setName("count");
@@ -51,8 +58,25 @@ public class GetWorkOrderListCommand implements Command {
 			}
 			fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		}
-
-
+		
+		
+		
+		
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule("workorder");
+		List<WorkOrderContext> workOrders = new ArrayList<WorkOrderContext>();
+		if (woIds != null && !woIds.isEmpty()) {
+			SelectRecordsBuilder<WorkOrderContext> selectBuilder = new SelectRecordsBuilder<WorkOrderContext>()
+					.table(dataTableName)
+					.moduleName(moduleName)
+					.beanClass(WorkOrderContext.class)
+					.select(fields)
+					.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(module),StringUtils.join(woIds, ","),NumberOperators.EQUALS));
+			
+			workOrders = selectBuilder.get();
+		}
+		else {
 		SelectRecordsBuilder<WorkOrderContext> selectBuilder = new SelectRecordsBuilder<WorkOrderContext>()
 				.table(dataTableName)
 				.moduleName(moduleName)
@@ -149,7 +173,8 @@ public class GetWorkOrderListCommand implements Command {
 				}
 			}
 		}
-		List<WorkOrderContext> workOrders = selectBuilder.get();
+		 workOrders = selectBuilder.get();
+	}
 
 		if (count != null) {
 			if (workOrders != null && !workOrders.isEmpty()) {

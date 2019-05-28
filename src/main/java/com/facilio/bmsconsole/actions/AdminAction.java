@@ -95,33 +95,28 @@ public class AdminAction extends ActionSupport
 		return SUCCESS;
 	}
 	
-	public String addLicense() throws SQLException
-	{
+	public String addLicense() throws SQLException {
 		HttpServletRequest request = ServletActionContext.getRequest();
 		String[] selectedfeatures = request.getParameterValues("selected");
-		long flicensevalue = 0,summodule=0;
-		 String orgidstring = request.getParameter("orgid");
-    	 long orgid = Long.parseLong(orgidstring);
-		 if (selectedfeatures != null) 
-		   {
-		      for (int i = 0; i < selectedfeatures.length; i++) 
-		      {
-		    	  flicensevalue =  Long.parseLong(selectedfeatures[i]);
-		    	 FeatureLicense flicensename = AccountUtil.FeatureLicense.getFeatureLicense(flicensevalue);
-		    	 summodule+=flicensevalue;
-		      }
-		      
-		      GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-		    			 .table(AccountConstants.getFeatureLicenseModule().getTableName())
-		    			 .fields(AccountConstants.getFeatureLicenseFields())
-		    			 .andCustomWhere("ORGID = ?", orgid);
+		long flicensevalue = 0, summodule = 0;
+		String orgidstring = request.getParameter("orgid");
+		long orgid = Long.parseLong(orgidstring);
+		if (selectedfeatures != null) {
+			for (int i = 0; i < selectedfeatures.length; i++) {
+				flicensevalue = Long.parseLong(selectedfeatures[i]);
+				summodule += flicensevalue;
+			}
+		}
 
-		    			 Map<String, Object> props = new HashMap<>();
-		    			 props.put("module", summodule);
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(AccountConstants.getFeatureLicenseModule().getTableName())
+				.fields(AccountConstants.getFeatureLicenseFields()).andCustomWhere("ORGID = ?", orgid);
 
-		    			 updateBuilder.update(props);
-		    			 System.out.println ("updateBuilder -- "+updateBuilder);
-		   }
+		Map<String, Object> props = new HashMap<>();
+		props.put("module", summodule);
+
+		updateBuilder.update(props);
+		System.out.println("updateBuilder -- " + updateBuilder);
 		return SUCCESS;
 	}
 	

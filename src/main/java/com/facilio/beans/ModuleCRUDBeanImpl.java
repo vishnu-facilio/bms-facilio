@@ -747,7 +747,9 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
                     .select((Collection<FacilioField>) context.get(FacilioConstants.ContextNames.FIELDS))
                     .andCondition(CriteriaAPI.getCurrentOrgIdCondition(messageModule))
                     .andCriteria((Criteria) context.get(FacilioConstants.ContextNames.CRITERIA));
-
+            if( context.containsKey(FacilioConstants.ContextNames.SORT_FIELDS)){
+                selectRecordBuilder.orderBy(context.get(FacilioConstants.ContextNames.SORT_FIELDS).toString());
+            }
             if (context.containsKey(FacilioConstants.ContextNames.OFFSET)) {
                 selectRecordBuilder.offset(Integer.parseInt(context.get(FacilioConstants.ContextNames.OFFSET).toString()));
             }

@@ -182,7 +182,7 @@
 			<param name="moduleName">workorder</param>
 			<param name="permission">READ</param>
 		</action>
-		
+
 		<action name="update" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="v2updateWorkOrder">
 			<param name="moduleName">workorder</param>
@@ -547,7 +547,7 @@
 			<param name="permission">GENERAL</param>
 			<param name="id">{1}</param>
 		</action>
-	</package>
+	</package> 
 
 	<package name="taskApiv2" namespace="/api/v2/tasks" extends="v2Api">
 
@@ -622,6 +622,10 @@
 			method="v2noteList">
 			<param name="parentId">{1}</param>
 		</action>
+		<action name="noteList" class="com.facilio.bmsconsole.actions.NoteAction"
+			method="v2noteList">
+			<param name="module">ticketnotes</param>
+ </action>
 	</package>
 
 	<package name="attachmentApiv2" namespace="/api/v2/attachments"

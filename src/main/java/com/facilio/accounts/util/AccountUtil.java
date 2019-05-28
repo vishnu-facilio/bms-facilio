@@ -161,6 +161,23 @@ public class AccountUtil {
 		}
 	}
 
+    
+    public static int getOrgFeatureLicense(long orgid) throws Exception {
+    	
+    	Object module;
+    	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(AccountConstants.getFeatureLicenseFields())
+				.table(AccountConstants.getFeatureLicenseModule().getTableName())
+				.andCustomWhere("ORGID = ?", orgid);
+				
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		Map<String, Object> modulemap=props.get(0);
+		module = modulemap.get("module");
+		int moduleint = (int)module;
+		return moduleint;
+
+    }
 
 	public static int getFeatureLicense() throws Exception {
 		long orgId = getCurrentOrg().getOrgId();
