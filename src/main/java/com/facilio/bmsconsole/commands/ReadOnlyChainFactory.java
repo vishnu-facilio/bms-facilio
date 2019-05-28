@@ -925,6 +925,11 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetAssetForTypeAndStoreCommand());
 		return chain;
 	}
+	public static Chain getShiftUserMappingChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetShiftUserMappingCommand());
+		return c;
+	}
 
 
 	public static Chain getPMPlannerSettingschain() {

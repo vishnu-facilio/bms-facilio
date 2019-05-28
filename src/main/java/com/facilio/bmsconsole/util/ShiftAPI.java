@@ -34,6 +34,7 @@ import com.facilio.bmsconsole.context.BusinessHoursList;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ShiftContext;
+import com.facilio.bmsconsole.context.ShiftUserRelContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.criteria.StringOperators;
@@ -53,6 +54,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.sql.GenericDeleteRecordBuilder;
+import com.facilio.sql.GenericInsertRecordBuilder;
 import com.facilio.sql.GenericSelectRecordBuilder;
 import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
@@ -63,6 +65,9 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 
 public class ShiftAPI {
+	
+	public static final long UNLIMITED_PERIOD = -2;
+	
 	public static List<ShiftContext> getAllShifts() throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		SelectRecordsBuilder<ShiftContext> builder = new SelectRecordsBuilder<ShiftContext>()
@@ -755,5 +760,162 @@ public class ShiftAPI {
 				.andCondition(CriteriaAPI.getIdCondition(shift.getId(), module))
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
 		builder.update(shift);
+	}
+
+	public static ShiftContext getShift(long id) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SHIFT);
+		SelectRecordsBuilder<ShiftContext> builder = new SelectRecordsBuilder<ShiftContext>()
+				.beanClass(ShiftContext.class)
+				.module(module)
+				.select(modBean.getAllFields(module.getName()))
+				.andCondition(CriteriaAPI.getIdCondition(id, module))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+		return builder.fetchFirst();
+	}
+
+	public static List<ShiftUserRelContext> getShiftUserMapping(long startTime, long endTime) throws Exception {
+		return getShiftUserMapping(startTime, endTime, -1);
+	}
+
+	private static List<ShiftUserRelContext> getShiftUserMapping(long startTime, long endTime, long orgUserId) throws Exception {
+		startTime = DateTimeUtil.getDayStartTimeOf(startTime, true);
+		endTime = DateTimeUtil.getDayEndTimeOf(endTime, true);
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getShiftUserRelModule().getTableName())
+				.select(FieldFactory.getShiftUserRelModuleFields())
+				.orderBy("START_TIME");
+		
+		builder.andCondition(CriteriaAPI.getCondition("END_TIME", "endTime", String.valueOf(startTime), NumberOperators.GREATER_THAN_EQUAL))
+			.orCondition(CriteriaAPI.getCondition("END_TIME", "endTime", String.valueOf(UNLIMITED_PERIOD), NumberOperators.EQUALS));
+		builder.andCondition(CriteriaAPI.getCondition("START_TIME", "startTime", String.valueOf(endTime), NumberOperators.LESS_THAN_EQUAL))
+			.orCondition(CriteriaAPI.getCondition("START_TIME", "startTime", String.valueOf(UNLIMITED_PERIOD), NumberOperators.EQUALS));
+		
+		if (orgUserId > 0) {
+			builder.andCondition(CriteriaAPI.getCondition("ORG_USERID", "orgUserid", String.valueOf(orgUserId), NumberOperators.EQUALS));
+		}
+		
+		List<Map<String, Object>> list = builder.get();
+		List<ShiftUserRelContext> shiftUserMapping = FieldUtil.getAsBeanListFromMapList(list, ShiftUserRelContext.class);
+		System.out.println(list);
+		return shiftUserMapping;		
+	}
+	
+	private static void insertShiftUserMapping(ShiftUserRelContext shift) throws Exception {
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getShiftUserRelModule().getTableName())
+				.fields(FieldFactory.getShiftUserRelModuleFields());
+		insertBuilder.addRecord(FieldUtil.getAsProperties(shift));
+		insertBuilder.save();
+	}
+
+	public static void addShiftUserMapping(ShiftContext shift, long orgUserId, long startTime, long endTime) throws Exception {
+		startTime = DateTimeUtil.getDayStartTimeOf(startTime, true);
+		endTime = DateTimeUtil.getDayEndTimeOf(endTime, true);
+
+		List<ShiftUserRelContext> shiftUserMapping = getShiftUserMapping(startTime, endTime, orgUserId);
+		
+		int count = 0;
+		Map<String, Object> prop = new HashMap<>();
+		while (count < shiftUserMapping.size()) {
+			ShiftUserRelContext shiftUserRel = shiftUserMapping.get(count);
+			
+//			if (count == 0 && shiftUserRel.getStartTime() > startTime) {
+//				if (shiftUserRel.getStartTime() < endTime) {
+//					endTime = shiftUserRel.getStartTime() - 1;
+//				}
+//				
+//				ShiftUserRelContext add = new ShiftUserRelContext();
+//				add.setStartTime(startTime);
+//				add.setEndTime(endTime);
+//				add.setShiftId(shift.getId());
+//				add.setOuid(orgUserId);
+//				insertShiftUserMapping(add);
+//				break;
+//			}
+			
+			count++;
+			boolean containsTime = shiftUserRel.containsTime(startTime);
+			if (containsTime) {
+				List<FacilioField> fields = new ArrayList<>();
+				fields.add(FieldFactory.getField("endTime", "END_TIME", FieldType.NUMBER));
+				fields.add(FieldFactory.getField("shiftId", "SHIFTID", FieldType.NUMBER));
+				
+				GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+						.table(ModuleFactory.getShiftUserRelModule().getTableName())
+						.fields(fields)
+						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getShiftUserRelModule()))
+						.andCondition(CriteriaAPI.getIdCondition(shiftUserRel.getId(), ModuleFactory.getShiftUserRelModule()));
+				
+				boolean shouldRearrangeShifts = endTime != shiftUserRel.getEndTime();
+				if (shouldRearrangeShifts) {
+					prop.put("endTime", startTime - 1);
+				} else {
+					prop.put("shiftId", shift.getId());
+				}
+				builder.update(prop);
+				prop.clear();
+				
+				if (shouldRearrangeShifts) {
+					ShiftUserRelContext add = new ShiftUserRelContext();
+					add.setStartTime(startTime);
+					add.setEndTime(endTime);
+					add.setShiftId(shift.getId());
+					add.setOuid(orgUserId);
+					insertShiftUserMapping(add);
+				}
+				
+				if (shouldRearrangeShifts && shiftUserRel.containsTime(endTime)) {
+					// When changing last row, need to handle special case
+					ShiftUserRelContext add = new ShiftUserRelContext();
+					add.setStartTime(endTime + 1);
+					add.setEndTime(shiftUserRel.getEndTime());
+					add.setShiftId(shiftUserRel.getShiftId());
+					add.setOuid(orgUserId);
+					insertShiftUserMapping(add);
+				}
+//				else if (shouldRearrangeShifts && (count - 1) == 0) {
+//					// When changing first row, need to handle special case
+//					ShiftUserRelContext add = new ShiftUserRelContext();
+//					add.setStartTime(shiftUserRel.getStartTime());
+//					add.setEndTime(startTime - 1);
+//					add.setShiftId(shiftUserRel.getShiftId());
+//					add.setOuid(orgUserId);
+//					insertShiftUserMapping(add);
+//				}
+				break;
+			}
+		}
+		
+		List<Long> deleteIds = new ArrayList<>();
+		while (count < shiftUserMapping.size()) {
+			ShiftUserRelContext shiftUserRel = shiftUserMapping.get(count);
+			count++;
+			if (endTime == UNLIMITED_PERIOD || !shiftUserRel.containsTime(endTime + 1)) {
+				deleteIds.add(shiftUserRel.getId());
+			}
+			else {
+				if ((endTime + 1) != shiftUserRel.getStartTime()) {
+					GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+							.table(ModuleFactory.getShiftUserRelModule().getTableName())
+							.fields(Collections.singletonList(FieldFactory.getField("startTime", "START_TIME", FieldType.NUMBER)))
+							.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getShiftUserRelModule()))
+							.andCondition(CriteriaAPI.getIdCondition(shiftUserRel.getId(), ModuleFactory.getShiftUserRelModule()));
+					prop.put("startTime", endTime + 1);
+					builder.update(prop);
+					prop.clear();
+				}
+				
+				break;
+			}
+		}
+		
+		if (CollectionUtils.isNotEmpty(deleteIds)) {
+			GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+					.table(ModuleFactory.getShiftUserRelModule().getTableName())
+					.andCondition(CriteriaAPI.getIdCondition(deleteIds, ModuleFactory.getShiftUserRelModule()))
+					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getShiftUserRelModule()));
+			builder.delete();
+		}
 	}
 }

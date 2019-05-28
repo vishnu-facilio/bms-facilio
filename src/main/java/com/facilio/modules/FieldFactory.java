@@ -5217,8 +5217,11 @@ public class FieldFactory {
 		FacilioModule module = ModuleFactory.getShiftUserRelModule();
 		List<FacilioField> fields = new ArrayList<>();
 		
+		fields.add(getField("id", "ID", module, FieldType.ID));
 		fields.add(getField("ouid", "ORG_USERID", module, FieldType.NUMBER));
 		fields.add(getField("shiftId", "SHIFTID", module, FieldType.NUMBER));
+		fields.add(getField("startTime", "START_TIME", module, FieldType.NUMBER));
+		fields.add(getField("endTime", "END_TIME", module, FieldType.NUMBER));
 		return fields;
 	}
 	

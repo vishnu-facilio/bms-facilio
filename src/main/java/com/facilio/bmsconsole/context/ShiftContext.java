@@ -62,4 +62,12 @@ public class ShiftContext extends ModuleBaseWithCustomFields {
 	public void setEndTime(long secondOfDay) {
 		this.endTime = secondOfDay;
 	}
+	
+	private Boolean defaultShift;
+	public Boolean getDefaultShift() {
+		return defaultShift;
+	}
+	public void setDefaultShift(Boolean defaultShift) {
+		this.defaultShift = defaultShift;
+	}
 }

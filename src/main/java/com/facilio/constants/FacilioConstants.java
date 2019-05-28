@@ -566,6 +566,7 @@ public class FacilioConstants {
 		
 		public static final String USERS = "users";
 		public static final String ORGUSERS = "orgusers";
+		public static final String ORG_USER_ID = "orgUserId";
 		
 		public static final String GROUPS = "groups";
 		
@@ -815,7 +816,9 @@ public class FacilioConstants {
 		public static final String BENCHMARK_DATE_VAL = "benchmarkDateVal";
 		public static final String SHIFT = "shift";
 		public static final String SHIFTS = "shifts";
+		public static final String SHIFT_USER_MAPPING = "shiftUserMapping";
 		public static final String ACTUAL_TIMINGS = "actualTimings";
+		public static final String SHIFT_ID = "shiftId";
 		
 		public static final String LAST_SYNC_TIME = "lastSyncTime";
 		public static final String CUSTOM_OBJECT = "customObject";

@@ -2786,6 +2786,14 @@ public class TransactionChainFactory {
 		    c.addCommand(getReceiveShipmentInventoryChain());
 		    return c;
 		}
+
+
+		public static Chain addShiftUserMappingChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddShiftUserMappingCommand());
+			return c;
+		}
+
 }
 
 

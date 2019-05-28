@@ -3,8 +3,11 @@ package com.facilio.bmsconsole.actions;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ShiftContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -64,9 +67,56 @@ public class ShiftAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	private long startDate = -1;
+	public void setStartDate(long startDate) {
+		this.startDate = startDate;
+	}
+	public long getStartDate() {
+		return startDate;
+	}
+	
+	private long endDate = -1;
+	public void setEndDate(long endDate) {
+		this.endDate = endDate;
+	}
+	public long getEndDate() {
+		return endDate;
+	}
+	
+	public String getShiftUserMapping() throws Exception {
+		Context context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.START_TIME, startDate);
+		context.put(FacilioConstants.ContextNames.END_TIME, endDate);
+		
+		Chain c = ReadOnlyChainFactory.getShiftUserMappingChain();
+		c.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.SHIFT_USER_MAPPING, context.get(FacilioConstants.ContextNames.SHIFT_USER_MAPPING));
+		return SUCCESS;
+	}
+	
+	public String addShiftUserMapping() throws Exception {
+		Context context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ORG_USER_ID, orgUserId);
+		context.put(FacilioConstants.ContextNames.START_TIME, startDate);
+		context.put(FacilioConstants.ContextNames.END_TIME, endDate);
+		context.put(FacilioConstants.ContextNames.SHIFT_ID, id);
+		
+		Chain c = TransactionChainFactory.addShiftUserMappingChain();
+		c.execute(context);
+		
+		return SUCCESS;
+	}
+	
+	private long orgUserId = -1;
+	public long getOrgUserId() {
+		return orgUserId;
+	}
+	public void setOrgUserId(long orgUserId) {
+		this.orgUserId = orgUserId;
+	}
 	
 	private long id;
-//	private String result;
 	private List<String> users;
 	
 	private boolean doValidation;
