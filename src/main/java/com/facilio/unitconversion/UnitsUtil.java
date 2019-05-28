@@ -7,6 +7,7 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.NumberField;
@@ -89,7 +90,7 @@ public class UnitsUtil {
 
 		if(numberField.getMetric() > 0 && value != null) {
 			if(numberField.getMetric() == Metric.CURRENCY.getMetricId()) {
-				return (Number) value;
+				return parseNumber(value, numberField);
 			}
 			Double convertedValue = -1d;
 			if(numberField.getUnitId() > 0) {
@@ -102,7 +103,11 @@ public class UnitsUtil {
 			return castConvertedValue(value, convertedValue);
 		}
 		
-		return (Number) value;
+		return parseNumber(value, numberField);
+	}
+
+	private static Number parseNumber (Object value, NumberField numberField) {
+		return value instanceof Number ? (Number) value : (Number) (numberField.getDataTypeEnum() == null ? FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, value) : FieldUtil.castOrParseValueAsPerType(numberField.getDataTypeEnum(), value));
 	}
 	
 	public static Double convertToOrgDisplayUnitFromSi(Object value,int metricId) throws Exception {
