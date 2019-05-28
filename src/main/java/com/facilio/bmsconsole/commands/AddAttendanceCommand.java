@@ -48,7 +48,7 @@ public class AddAttendanceCommand implements Command{
 		AttendanceContext att = null;
 		User user = AccountUtil.getCurrentUser();
 		SelectRecordsBuilder<AttendanceContext> builder = new SelectRecordsBuilder<AttendanceContext>()
-				.module(module).andCondition(CriteriaAPI.getCondition(fieldMap.get("user"), String.valueOf(user.getId()), PickListOperators.IS))
+				.module(module).andCondition(CriteriaAPI.getCondition(fieldMap.get("user"), String.valueOf(user.getOuid()), PickListOperators.IS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("day"), DateOperators.TODAY))
 				.beanClass(AttendanceContext.class)
 				.select(fields);
