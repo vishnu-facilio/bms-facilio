@@ -13,6 +13,9 @@ public class Value {
     final Object value;
 
     public Value(Object value) {
+    	if(!(value instanceof Double) && value instanceof Number) {
+    		value = new Double(((Number)value).doubleValue());
+    	}
         this.value = value;
     }
     
@@ -76,17 +79,14 @@ public class Value {
     @Override
     public boolean equals(Object o) {
 
-        if(value == o) {
-            return true;
-        }
-        Value that = (Value)o;
-        if(value == null && that != null && that.value == null) {
+    	Value that = (Value)o;
+    	
+        if(this.value == null && that.value == null) {
         	return true;
         }
-        if(value == null || o == null || o.getClass() != value.getClass()) {
+        if((this.value == null && that.value != null) || (this.value != null && that.value == null)) {
             return false;
         }
-
         return this.value.equals(that.value);
     }
 
