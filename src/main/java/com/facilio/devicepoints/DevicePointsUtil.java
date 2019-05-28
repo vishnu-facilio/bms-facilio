@@ -22,7 +22,7 @@ import java.util.Map;
 public  class DevicePointsUtil {
     private static final Logger LOGGER = LogManager.getLogger(DevicePointsUtil.class.getName());
 
-    public  void processDevicePoints(JSONObject payLoad, long orgId, HashMap deviceMap, Long agentId) throws Exception {
+    public  void processDevicePoints(JSONObject payLoad, long orgId, Long agentId) throws Exception {
         LOGGER.info("in DevicePointsUtil.ProcessDevicePoints");
         long instanceNumber = (Long)payLoad.get(DevicePointsKeys.INSTANCE_NUMBER);
         String destinationAddress = "";

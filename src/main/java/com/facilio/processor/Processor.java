@@ -11,20 +11,15 @@ import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
-import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.devicepoints.DevicePointsUtil;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.kinesis.ErrorDataProducer;
-import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.AckUtil;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.LogManager;
@@ -40,7 +35,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-;
 
 public class Processor implements IRecordProcessor {
 
@@ -51,11 +45,6 @@ public class Processor implements IRecordProcessor {
         private String shardId;
         private String errorStream;
         private final CharsetDecoder decoder = Charset.forName("UTF-8").newDecoder();
-        private final List<FacilioField> fields = new ArrayList<>();
-        private final Condition orgIdCondition = new Condition();
-        private final FacilioField deviceIdField = new FacilioField();
-        private final HashMap<String, Long> deviceMap = new HashMap<>();
-        private FacilioModule deviceDetailsModule;
         private HashMap<String, HashMap<String, Long>> deviceMessageTime = new HashMap<>();
         private AgentUtil agentUtil;
         private DevicePointsUtil devicePointsUtil;
@@ -68,7 +57,7 @@ public class Processor implements IRecordProcessor {
         private List<EventRuleContext> eventRules = new ArrayList<>();
         private JSONParser parser = new JSONParser();
 
-    Processor(long orgId, String orgDomainName){
+        Processor(long orgId, String orgDomainName){
             this.orgId = orgId;
             this.orgDomainName = orgDomainName;
             this.errorStream = orgDomainName + "-error";
@@ -99,22 +88,6 @@ public class Processor implements IRecordProcessor {
             String threadName = orgDomainName +"-processor";
             thread.setName(threadName);
             this.shardId = initializationInput.getShardId();
-
-            deviceDetailsModule = ModuleFactory.getDeviceDetailsModule();
-            //orgIdField.setModule(deviceDetailsModule);
-
-            orgIdCondition.setField(FieldFactory.getOrgIdField(deviceDetailsModule));
-            orgIdCondition.setOperator(NumberOperators.EQUALS);
-            orgIdCondition.setValue(String.valueOf(orgId));
-
-            deviceIdField.setName(AgentKeys.DEVICE_ID);
-            deviceIdField.setDataType(FieldType.STRING);
-            deviceIdField.setColumnName("DEVICE_ID");
-            deviceIdField.setModule(deviceDetailsModule);
-
-            fields.addAll(FieldFactory.getDeviceDetailsFields());
-
-            deviceMap.putAll(getDeviceMap());
         }
 
         @Override
@@ -202,18 +175,18 @@ public class Processor implements IRecordProcessor {
                         switch (publishType) {
                             case timeseries:
                                 processTimeSeries(record, payLoad, processRecordsInput, true);
-                                updateDeviceTable(record.getPartitionKey());
+                                // updateDeviceTable(record.getPartitionKey());
                                 break;
                             case cov:
                                 processTimeSeries(record, payLoad, processRecordsInput, false);
-                                updateDeviceTable(record.getPartitionKey());
+                                // updateDeviceTable(record.getPartitionKey());
                                 break;
                             case agent:
                                 i =  agentUtil.processAgent( payLoad,agentName);
                                 processLog(payLoad,agent.getId());
                                 break;
                             case devicepoints:
-                                devicePointsUtil.processDevicePoints(payLoad, orgId, deviceMap, agent.getId());
+                                devicePointsUtil.processDevicePoints(payLoad, orgId, agent.getId());
                                 break;
                             case ack:
                                 ackUtil.processAck(payLoad, orgId);
@@ -313,7 +286,7 @@ public class Processor implements IRecordProcessor {
             }
         }
 
-        private void updateDeviceTable(String deviceId) {
+        /*private void updateDeviceTable(String deviceId) {
             try {
                 // LOGGER.info("Device ID : "+deviceId);
                 if (deviceId == null || deviceId.isEmpty()) {
@@ -351,7 +324,7 @@ public class Processor implements IRecordProcessor {
         private void addDeviceId(String deviceId) throws Exception {
             ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
             deviceMap.put(deviceId, bean.addDeviceId(deviceId));
-        }
+        }*/
 
         @Override
         public void shutdown(ShutdownInput shutdownInput) {

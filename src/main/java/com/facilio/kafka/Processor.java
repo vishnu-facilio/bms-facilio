@@ -4,21 +4,15 @@ import com.facilio.agent.*;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.db.builder.GenericInsertRecordBuilder;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
-import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.devicepoints.DevicePointsUtil;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.fields.FacilioField;
 import com.facilio.procon.message.FacilioRecord;
 import com.facilio.procon.processor.FacilioProcessor;
 import com.facilio.server.ServerInfo;
@@ -35,13 +29,8 @@ import java.util.Map;
 
 import static com.facilio.agent.PublishType.event;
 
-;
 
 public class Processor extends FacilioProcessor {
-    private final List<FacilioField> fields = new ArrayList<>();
-    private final FacilioField deviceIdField = new FacilioField();
-    private final HashMap<String, Long> deviceMap = new HashMap<>();
-    private FacilioModule deviceDetailsModule;
     private AgentUtil agentUtil;
     private DevicePointsUtil devicePointsUtil;
     private AckUtil ackUtil;
@@ -74,23 +63,10 @@ public class Processor extends FacilioProcessor {
         devicePointsUtil = new DevicePointsUtil();
         ackUtil = new AckUtil();
         eventUtil = new EventUtil();
-        initializeModules();
         setEventType("processor");
         LOGGER.info("Initializing processor " + orgDomainName);
     }
 
-    private void initializeModules() {
-
-        deviceDetailsModule = ModuleFactory.getDeviceDetailsModule();
-        deviceIdField.setName("deviceId");
-        deviceIdField.setDataType(FieldType.STRING);
-        deviceIdField.setColumnName("DEVICE_ID");
-        deviceIdField.setModule(deviceDetailsModule);
-
-        fields.addAll(FieldFactory.getDeviceDetailsFields());
-
-        deviceMap.putAll(getDeviceMap());
-    }
 
 
     @Override
@@ -180,7 +156,7 @@ public class Processor extends FacilioProcessor {
                                     processTimeSeries(record);
                                     break;
                                 case devicepoints:
-                                    devicePointsUtil.processDevicePoints(payLoad, orgId, deviceMap, agent.getId());
+                                    devicePointsUtil.processDevicePoints(payLoad, orgId, agent.getId());
                                     break;
                                 case ack:
                                     ackUtil.processAck(payLoad, orgId);
@@ -218,7 +194,6 @@ public class Processor extends FacilioProcessor {
                         CommonCommandUtil.emailException("Processor", "Error in processing records ", e, payLoad.toJSONString());
                         LOGGER.info("Exception occurred ", e);
                     } finally {
-                        updateDeviceTable(partitionKey);
                         if (alarmCreated) {
                             getConsumer().commit(record);
                         }
@@ -276,57 +251,4 @@ public class Processor extends FacilioProcessor {
         agent.setWritable(false);
         return agent;
     }
-
-    private void updateDeviceTable(String deviceId) {
-        try {
-            if( ! deviceMap.containsKey(deviceId)) {
-                addDeviceId(deviceId);
-            }
-            if(deviceMap.containsKey(deviceId)) {
-                HashMap<String, Object> map = new HashMap<>();
-                map.put("lastUpdatedTime", System.currentTimeMillis());
-                GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder().table(deviceDetailsModule.getTableName())
-                        .fields(fields).andCondition(getDeviceIdCondition(deviceId));
-                builder.update(map);
-            }
-        } catch (Exception e) {
-            LOGGER.info("Exception while updating time for device id " + deviceId, e);
-        }
-    }
-
-    private Condition getDeviceIdCondition(String deviceId) {
-        return  CriteriaAPI.getCondition("DEVICE_ID", "DEVICE_ID", deviceId, StringOperators.IS);
-    }
-
-    private HashMap<String, Long> getDeviceMap() {
-        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().table(deviceDetailsModule.getTableName()).select(fields);
-        HashMap<String, Long> deviceData = new HashMap<>();
-        try {
-            List<Map<String, Object>> data = builder.get();
-            for(Map<String, Object> obj : data) {
-                String deviceId = (String)obj.get("deviceId");
-                Long id = (Long)obj.get("id");
-                deviceData.put(deviceId, id);
-            }
-        } catch (Exception e) {
-            LOGGER.info("Exception while getting device data", e);
-        }
-
-        return deviceData;
-    }
-
-    private void addDeviceId(String deviceId) throws Exception {
-        GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder().table(deviceDetailsModule.getTableName()).fields(fields);
-        HashMap<String, Object> device = new HashMap<>();
-        device.put("orgId", orgId);
-        device.put("deviceId", deviceId);
-        device.put("inUse", true);
-        device.put("lastUpdatedTime", System.currentTimeMillis());
-        device.put("lastAlertedTime", 0L);
-        device.put("alertFrequency", 2400000L);
-        long id = builder.insert(device);
-        deviceMap.put(deviceId, id);
-    }
-
-
 }
