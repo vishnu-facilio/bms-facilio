@@ -138,7 +138,6 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		 		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, attachedFilesContentType);
 		 		context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
 			}
-			
 			Command addWorkOrder = TransactionChainFactory.getAddWorkOrderChain();
 			addWorkOrder.execute(context);
 			
@@ -240,12 +239,46 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				if(taskMapForNewPmExecution != null) {
 					taskMap = taskMapForNewPmExecution;
 				}
+                
+				Map<String, List<TaskContext>> preRequestMap = workorderTemplate.getPreRequests();
 
+				Map<String, List<TaskContext>> preRequestMapForNewPmExecution = null;	// should be handled in above if too
+				
+				 isNewPmType = false;
+				
+				if(workorderTemplate.getPreRequestSectionTemplates() != null) {
+					for(TaskSectionTemplate sectiontemplate : workorderTemplate.getPreRequestSectionTemplates()) {// for new pm_Type section should be present and every section should have a AssignmentType
+						if(sectiontemplate.getAssignmentType() < 0) {
+							isNewPmType =  false;
+							break;
+						} else {
+							isNewPmType = true; 
+						}
+					}
+				}
+
+				if(isNewPmType) {
+					Long woTemplateResourceId = wo.getResource() != null ? wo.getResource().getId() : -1;
+					if(woTemplateResourceId > 0) {
+						Long currentTriggerId = null;
+						if (pmTrigger != null) {
+							currentTriggerId = pmTrigger.getId();
+						}
+						preRequestMapForNewPmExecution = PreventiveMaintenanceAPI.getPreRequestMapForNewPMExecution(workorderTemplate.getPreRequestSectionTemplates(), woTemplateResourceId, currentTriggerId);
+					}
+				} else {
+					preRequestMapForNewPmExecution = workorderTemplate.getPreRequests();
+				}
+				if(preRequestMapForNewPmExecution != null) {
+					preRequestMap = preRequestMapForNewPmExecution;
+				}
+				
 				wo.setSourceType(TicketContext.SourceType.PREVENTIVE_MAINTENANCE);
 				wo.setPm(pm);
 				context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 				context.put(FacilioConstants.ContextNames.REQUESTER, wo.getRequester());
 				context.put(FacilioConstants.ContextNames.TASK_MAP, taskMap);
+				context.put(FacilioConstants.ContextNames.PRE_REQUEST_MAP, preRequestMap);
 				context.put(FacilioConstants.ContextNames.IS_PM_EXECUTION, true);
 				context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
 				context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTEXT_LIST, wo.getAttachments());

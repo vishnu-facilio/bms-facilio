@@ -481,6 +481,26 @@ public class TicketAPI {
 		}
 		return null;
 	}
+	public static Map<Long, List<TaskContext>> groupPreRequestBySection(List<TaskContext> tasks) throws Exception {
+		if(tasks != null && !tasks.isEmpty()) {
+			Map<Long, List<TaskContext>> taskMap = new HashMap<>();
+			for(TaskContext task : tasks) {
+				List<TaskContext> taskList = taskMap.get(task.getSectionId());
+				if (taskList == null) {
+					taskList = new ArrayList<>();
+					taskMap.put(task.getSectionId(), taskList);
+				}
+//				if(task.getOptions()==null){
+//					List options=new ArrayList<String>(Arrays.asList("Yes","No"));
+//					task.setOptions(options);
+//				}
+				taskList.add(task);
+			}
+			return taskMap;
+		}
+		return null;
+	}
+	
 	
 	public static List<NoteContext> getRelatedNotes(long ticketId) throws Exception 
 	{
@@ -1016,6 +1036,8 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 			case BOOLEAN:
 				BooleanField field = (BooleanField) modBean.getField(task.getReadingFieldId());
 				task.setReadingField(field);
+				task.setTruevalue(field.getTrueVal());
+				task.setFalsevalue(field.getFalseVal());
 				List<String> options = new ArrayList<>();
 				options.add(field.getTrueVal());
 				options.add(field.getFalseVal());
@@ -1273,17 +1295,22 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 			countField.setColumnName("COUNT(*)");
 			countField.setDataType(FieldType.NUMBER);
 			fields.add(countField);
+			FacilioField preRequestField = new FacilioField();
+			preRequestField.setName("IS_PRE_REQUEST");
+			preRequestField.setColumnName("IS_PRE_REQUEST");
+			preRequestField.setDataType(FieldType.BOOLEAN);
 			
 			Condition condition = CriteriaAPI.getCondition(parentIdField, parentIds, NumberOperators.EQUALS);
+			Condition notPreRequestCondition = CriteriaAPI.getCondition(preRequestField, "1" , NumberOperators.NOT_EQUALS);
 			GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
 					.table(module.getTableName())
 					.select(fields)
 					.groupBy(parentIdField.getCompleteColumnName())
 					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-					.andCondition(condition);
+					.andCondition(condition).andCondition(notPreRequestCondition);
 			
 			List<Map<String, Object>> totalCountList = select.get();
-			
+			 
 			Map<Long, MutablePair<Integer, Integer>> updatedValues = new HashMap<>();
 			for (Map<String, Object> map : totalCountList) {
 				long id = ((Number) map.get("parentTicketId")).longValue();
@@ -1301,7 +1328,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 					.groupBy(parentIdField.getCompleteColumnName())
 					.andCondition(condition)
 					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-					.andCondition(completedStatusCondition);
+					.andCondition(completedStatusCondition).andCondition(notPreRequestCondition);
 			
 			List<Map<String, Object>> completedCountList = select.get();
 			
