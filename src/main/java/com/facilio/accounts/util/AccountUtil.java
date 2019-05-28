@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.TransactionBeanFactory;
@@ -162,21 +163,23 @@ public class AccountUtil {
 	}
 
     
-    public static int getOrgFeatureLicense(long orgid) throws Exception {
+    public static int getOrgFeatureLicense(long orgid) throws Exception
+    {
     	
     	Object module;
+    	String orgidString = String.valueOf(orgid);
     	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(AccountConstants.getFeatureLicenseFields())
 				.table(AccountConstants.getFeatureLicenseModule().getTableName())
-				.andCustomWhere("ORGID = ?", orgid);
-				
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getOrgIdField(AccountConstants.getFeatureLicenseModule()), orgidString, StringOperators.IS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		Map<String, Object> modulemap=props.get(0);
 		module = modulemap.get("module");
 		int moduleint = (int)module;
 		return moduleint;
-
+    	
+    	
     }
 
 	public static int getFeatureLicense() throws Exception {

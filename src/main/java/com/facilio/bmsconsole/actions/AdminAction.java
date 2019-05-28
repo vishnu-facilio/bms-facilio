@@ -10,8 +10,13 @@ import com.facilio.bmsconsole.util.AdminAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.LRUCache;
 import com.facilio.license.FreshsalesUtil;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.wms.message.Message;
 import com.facilio.wms.message.MessageType;
@@ -28,6 +33,7 @@ import javax.websocket.EncodeException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -95,28 +101,32 @@ public class AdminAction extends ActionSupport
 		return SUCCESS;
 	}
 	
-	public String addLicense() throws SQLException {
+	public String addLicense() throws SQLException 
+	{
 		HttpServletRequest request = ServletActionContext.getRequest();
 		String[] selectedfeatures = request.getParameterValues("selected");
-		long flicensevalue = 0, summodule = 0;
-		String orgidstring = request.getParameter("orgid");
-		long orgid = Long.parseLong(orgidstring);
-		if (selectedfeatures != null) {
-			for (int i = 0; i < selectedfeatures.length; i++) {
-				flicensevalue = Long.parseLong(selectedfeatures[i]);
-				summodule += flicensevalue;
+		if(selectedfeatures!=null)
+		{
+			long flicensevalue = 0, summodule = 0;
+			String orgidstring = request.getParameter("orgid");
+			if (selectedfeatures != null) 
+			{
+				for (int i = 0; i < selectedfeatures.length; i++)
+				{
+					flicensevalue = Long.parseLong(selectedfeatures[i]);
+					summodule += flicensevalue;
+				}
 			}
+					GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+					.table(AccountConstants.getFeatureLicenseModule().getTableName())
+					.fields(AccountConstants.getFeatureLicenseFields())
+					.andCondition(CriteriaAPI.getCondition(FieldFactory.getOrgIdField(AccountConstants.getFeatureLicenseModule()), orgidstring, StringOperators.IS));
+
+			Map<String, Object> props = new HashMap<>();
+			props.put("module", summodule);
+			updateBuilder.update(props);
+			System.out.println("updateBuilder -- " + updateBuilder);
 		}
-
-		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(AccountConstants.getFeatureLicenseModule().getTableName())
-				.fields(AccountConstants.getFeatureLicenseFields()).andCustomWhere("ORGID = ?", orgid);
-
-		Map<String, Object> props = new HashMap<>();
-		props.put("module", summodule);
-
-		updateBuilder.update(props);
-		System.out.println("updateBuilder -- " + updateBuilder);
 		return SUCCESS;
 	}
 	
