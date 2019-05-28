@@ -1,6 +1,6 @@
 {
   "dbName": "mysql",
-  "dbPackage": "com.facilio.sql.mysql",
+  "dbPackage": "com.facilio.db.builder.mysql",
   "dbConfigClass": "com.facilio.bmsconsole.db.BmsDBConf",
   "operators" : [
     {
@@ -22,7 +22,7 @@
     {
       "types": ["DATE", "DATE_TIME"],
       "enumClassName": "com.facilio.db.criteria.operators.DateOperators"
-    }
+    },
     {
       "types": ["LOOKUP"],
       "enumClassName": "com.facilio.db.criteria.operators.LookupOperator"

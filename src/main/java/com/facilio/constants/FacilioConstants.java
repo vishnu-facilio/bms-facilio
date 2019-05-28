@@ -929,6 +929,7 @@ public class FacilioConstants {
 		public static final String DEMO_ROLLUP_EXECUTION_TIME="nextexecution";
 		public static final String DEMO_ROLLUP_JOB_ORG="rollup_job_org";
 		
+		public static final String PM_PLANNER_SETTINGS="pm_planner_settings";
 		
 		
 		

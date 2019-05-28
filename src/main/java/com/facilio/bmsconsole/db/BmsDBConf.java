@@ -71,10 +71,11 @@ public class BmsDBConf extends DBConf {
         StringBuilder transactionId = new StringBuilder();
         if (account != null) {
             transactionId.append(account.getOrg().getDomain())
-                            .append("-")
-                            .append(account.getUser().getId())
-                            .append("-")
-                            ;
+                            .append("-");
+            if (account.getUser() != null) {
+                transactionId.append(account.getUser().getId())
+                                .append("-");
+            }
         }
         transactionId.append(Thread.currentThread().getName());
         return transactionId.toString();

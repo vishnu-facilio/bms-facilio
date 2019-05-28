@@ -113,7 +113,7 @@ public enum LookupOperator implements Operator<Criteria> {
 
 	@Override
 	public boolean useCriteriaVal() {
-		return false;
+		return true;
 	}
 
 	private static final Map<String, Operator> operatorMap = Collections.unmodifiableMap(initOperatorMap());

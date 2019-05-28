@@ -1,5 +1,27 @@
 package com.facilio.beans;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
@@ -710,6 +732,10 @@ public class ModuleBeanImpl implements ModuleBean {
 
 		if (FieldUtil.isSystemFieldsPresent(module) && FieldFactory.isSystemField(fieldName)) {
 			return FieldFactory.getSystemField(fieldName, module);
+		}
+		
+		if (FieldUtil.isBaseEntityModule(module) && FieldFactory.isBaseModuleSystemField(fieldName)) {
+			return FieldFactory.getBaseModuleSystemField(fieldName, module);
 		}
 		
 		if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {

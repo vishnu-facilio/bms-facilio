@@ -1183,6 +1183,14 @@ public class ModuleFactory {
 		return calendarColor;
 	}
 
+	public static FacilioModule getPMPlannerSettingsModule() {
+		FacilioModule pmPLannerSettingsModule = new FacilioModule();
+		pmPLannerSettingsModule.setName("pmPlannerSettings");
+		pmPLannerSettingsModule.setDisplayName("PM Planner settings");
+		pmPLannerSettingsModule.setTableName("PM_Planner_Settings");
+		return pmPLannerSettingsModule;
+	}
+	
 	public static FacilioModule getBaseLineModule() {
 		FacilioModule blModule = new FacilioModule();
 		blModule.setName("baseline");

@@ -20,6 +20,7 @@ import com.facilio.workflows.conditions.context.ElseContext;
 import com.facilio.workflows.conditions.context.ElseIfContext;
 import com.facilio.workflows.conditions.context.IfContext;
 import com.facilio.workflows.context.*;
+import com.facilio.workflows.context.WorkflowContext.WorkflowUIMode;
 import com.facilio.workflows.functions.*;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -239,7 +240,15 @@ public class WorkflowUtil {
 		return getExpressionResultMap(workflowContext,paramMap);
 	}
 	
-	
+	public static Object getWorkflowExpressionResult(String workflowString,Map<String,Object> paramMap,WorkflowContext.WorkflowUIMode uiMode) throws Exception {
+		if(uiMode == WorkflowUIMode.NEW_WORKFLOW) {
+			WorkflowContext workflow = new WorkflowContext();
+			workflow.setWorkflowUIMode(uiMode);
+			workflow.setWorkflowV2String(workflowString);
+			return getWorkflowResult(workflow,paramMap, null, false, false,false);
+		}
+		return getWorkflowResult(new WorkflowContext(workflowString),paramMap, null, false, false,false);
+	}
 	public static Object getWorkflowExpressionResult(String workflowString,Map<String,Object> paramMap) throws Exception {
 		return getWorkflowResult(new WorkflowContext(workflowString),paramMap, null, false, false,false);
 	}
