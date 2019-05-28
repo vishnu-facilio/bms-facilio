@@ -9,7 +9,10 @@ import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class NoteAction extends FacilioAction {
 
@@ -24,10 +27,11 @@ public class NoteAction extends FacilioAction {
 	public long getNoteId() {
 		return noteId;
 	}
+
 	public void setNoteId(long noteId) {
 		this.noteId = noteId;
 	}
-	
+
 	public String addTicketNote() throws Exception {
 		return addNote(FacilioConstants.ContextNames.TICKET_NOTES);
 	}
@@ -111,6 +115,18 @@ public class NoteAction extends FacilioAction {
 		this.note = note;
 	}
 	
+	private Map<Long, List<NoteContext>> notesLists ;
+	
+
+
+	public Map<Long, List<NoteContext>> getNotesLists() {
+		return notesLists;
+	}
+
+	public void setNotesLists(Map<Long, List<NoteContext>> notesLists) {
+		this.notesLists = notesLists;
+	}
+
 	private List<NoteContext> notes;
 	public List<NoteContext> getNotes() {
 		return notes;
@@ -157,7 +173,17 @@ public class NoteAction extends FacilioAction {
 	public String getStoreRoomNotes() throws Exception {
 		return getNotesList(FacilioConstants.ContextNames.STORE_ROOM_NOTES);
 	}
-	
+
+	private List<Long> notesIds;
+
+	public List<Long> getNotesIds() {
+		return notesIds;
+	}
+
+	public void setNotesIds(List<Long> notesIds) {
+		this.notesIds = notesIds;
+	}
+
 	public String getNotesList() throws Exception {
 		return getNotesList(module);
 	}
@@ -165,19 +191,29 @@ public class NoteAction extends FacilioAction {
 	public String v2getNotesList() throws Exception {
 		getNotesList();
 		setResult("notes", notes);
+		
 		return SUCCESS;
 	}
 	
 	private String getNotesList(String moduleName) throws Exception {
 		
 		FacilioContext context = new FacilioContext();
+		if (notesIds != null && !notesIds.isEmpty()) {			
+			context.put(FacilioConstants.ContextNames.NOTE_IDS, notesIds);
+			}
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.PARENT_ID, this.parentId);
 
 		Chain getRelatedNoteChain = FacilioChainFactory.getNotesChain();
 		getRelatedNoteChain.execute(context);
-
-		setNotes((List<NoteContext>) context.get(FacilioConstants.ContextNames.NOTE_LIST));
+		if (notesIds != null && !notesIds.isEmpty()) {
+			setNotesLists((Map<Long, List<NoteContext>>) context.get(FacilioConstants.ContextNames.NOTE_LIST));
+			
+		}
+		else {
+			setNotes((List<NoteContext>) context.get(FacilioConstants.ContextNames.NOTE_LIST));
+		}
+		
 		return SUCCESS;
 	}
 	
@@ -185,7 +221,9 @@ public class NoteAction extends FacilioAction {
 
 	public String v2noteList() throws Exception {
 		getNotesList();
+		setResult("notesList", notesLists);
 		setResult(FacilioConstants.ContextNames.NOTE_LIST, notes);
+		
 		return SUCCESS;
 	}
 	

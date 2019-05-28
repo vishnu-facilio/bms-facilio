@@ -351,6 +351,7 @@ public class FacilioConstants {
 		
 		public static final String NOTE = "note";
 		public static final String NOTE_LIST = "notes";
+		public static final String NOTES_LIST = "notesList";
 		public static final String COMMENT = "comment";
 		
 		public static final String MODULE_FIELD = "moduleField";
@@ -543,6 +544,8 @@ public class FacilioConstants {
 		public static final String WO_DUE_STARTTIME = "woDueStarttime";
 		public static final String WO_DUE_ENDTIME = "woDueEndtime";
 		public static final String WO_LIST_COUNT = "woListCount";
+		public static final String WO_IDS = "woIds";
+		public static final String NOTE_IDS = "noteIds";
 		public static final String WO_VIEW_COUNT = "woListAndCount";
 		public static final String IS_APPROVAL = "isApproval";
 		public static final String WO_FETCH_ALL = "woFetchAll";

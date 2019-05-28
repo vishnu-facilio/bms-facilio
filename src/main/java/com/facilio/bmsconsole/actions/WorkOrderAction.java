@@ -45,6 +45,7 @@ import java.io.File;
 import java.time.Instant;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 public class WorkOrderAction extends FacilioAction {
 
@@ -1269,8 +1270,9 @@ public class WorkOrderAction extends FacilioAction {
 	}
 		return SUCCESS;
 	}
-
 	
+
+
 	
 	private WorkorderTemplate workorderTemplate;
 
@@ -1589,7 +1591,15 @@ public class WorkOrderAction extends FacilioAction {
 			log.info("Exception occurred ", e);
 		}
 	}
-	
+	private String woIds;
+	public String getWoIds() {
+		return woIds;
+	}
+
+	public void setWoIds(String woIds) {
+		this.woIds = woIds;
+	}
+
 	private String workOrderString;
 	public String getWorkOrdertString() {
 		return workOrderString;
@@ -1609,6 +1619,11 @@ public class WorkOrderAction extends FacilioAction {
 	public String workOrderList() throws Exception {
 		// TODO Auto-generated method stub
 		FacilioContext context = new FacilioContext();
+		if (woIds != null) {
+		String strNew = woIds.substring(1, woIds.length() - 1);
+		List<Long> ids = Arrays.asList(strNew.split(",")).stream().map(Long::parseLong).collect(Collectors.toList());		
+		context.put(FacilioConstants.ContextNames.WO_IDS, ids);
+		}
 		try {
 		if (isApproval()) {
 			setViewName("approval_" + getViewName());
