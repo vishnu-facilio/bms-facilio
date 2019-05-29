@@ -514,6 +514,16 @@ public class ShiftAPI {
 	}
 
 	public static void deleteShift(long id) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getShiftUserRelModule().getTableName())
+				.select(FieldFactory.getShiftUserRelModuleFields())
+				.andCondition(CriteriaAPI.getCondition("SHIFTID", "shiftId", String.valueOf(id), NumberOperators.EQUALS))	
+				.orderBy("START_TIME");
+		List<Map<String, Object>> list = selectBuilder.get();
+		if (CollectionUtils.isNotEmpty(list)) {
+			throw new IllegalArgumentException("Shift is associated with employees. Remove before delete");
+		}
+		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SHIFT);
 		DeleteRecordBuilder<ShiftContext> builder = new DeleteRecordBuilder<ShiftContext>()
