@@ -405,24 +405,26 @@ public class WorkflowUtil {
 
 		
 		WorkflowContext workflow = new WorkflowContext();
-		if(workflowContext.getWorkflowString() == null) {
-			workflow.setWorkflowString(getXmlStringFromWorkflow(workflowContext));
+		
+		if(workflowContext.getWorkflowUIMode() == WorkflowContext.WorkflowUIMode.NEW_WORKFLOW.getValue()) {
+			workflow.setWorkflowV2String(workflowContext.getWorkflowV2String());
 		}
 		else {
-			workflow.setWorkflowString(workflowContext.getWorkflowString());
+			if(workflowContext.getWorkflowString() == null) {
+				workflow.setWorkflowString(getXmlStringFromWorkflow(workflowContext));
+			}
+			else {
+				workflow.setWorkflowString(workflowContext.getWorkflowString());
+			}
+			
+			getWorkflowContextFromString(workflow.getWorkflowString(),workflow);
+			
+			validateWorkflow(workflow);
 		}
-		
-		getWorkflowContextFromString(workflow.getWorkflowString(),workflow);
-		
-		validateWorkflow(workflow);
-		
-		BeanFactory.lookup("ModuleBean");
 		
 		workflow.setWorkflowUIMode(workflowContext.getWorkflowUIMode());
 		
 		workflow.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-		
-		LOGGER.fine("ADDING WORKFLOW STRING--- "+workflowContext.getWorkflowString());
 		
 		workflowContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		
@@ -433,24 +435,29 @@ public class WorkflowUtil {
 		Map<String, Object> props = FieldUtil.getAsProperties(workflow);
 		insertBuilder.addRecord(props);
 		insertBuilder.save();
-
+		
 		workflowContext.setId((Long) props.get("id"));
-		insertBuilder = new GenericInsertRecordBuilder()
-				.table(ModuleFactory.getWorkflowFieldModule().getTableName())
-				.fields(FieldFactory.getWorkflowFieldsFields());
 		
-		workflowContext = WorkflowUtil.getWorkflowContext(workflowContext.getId(), true);
-		
-		List<WorkflowFieldContext> workflowFields = getWorkflowField(workflowContext);
-		
-		if (workflowFields != null && !workflowFields.isEmpty()) {
-			for(WorkflowFieldContext workflowField :workflowFields) {
-				props = FieldUtil.getAsProperties(workflowField);
-				insertBuilder.addRecord(props);
+		if(workflowContext.getWorkflowUIMode() != WorkflowContext.WorkflowUIMode.NEW_WORKFLOW.getValue()) {
+			
+			insertBuilder = new GenericInsertRecordBuilder()
+					.table(ModuleFactory.getWorkflowFieldModule().getTableName())
+					.fields(FieldFactory.getWorkflowFieldsFields());
+			
+			workflowContext = WorkflowUtil.getWorkflowContext(workflowContext.getId(), true);
+			
+			List<WorkflowFieldContext> workflowFields = getWorkflowField(workflowContext);
+			
+			if (workflowFields != null && !workflowFields.isEmpty()) {
+				for(WorkflowFieldContext workflowField :workflowFields) {
+					props = FieldUtil.getAsProperties(workflowField);
+					insertBuilder.addRecord(props);
+				}
 			}
+
+			insertBuilder.save();
 		}
 
-		insertBuilder.save();
 		return workflowContext.getId();
 	}
 	
