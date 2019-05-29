@@ -352,9 +352,13 @@ public class ColumnFactory {
 	private static List<ViewField> getDefaultGatePassColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
+		columns.add(new ViewField("issuedTo", "Issued To"));
+		columns.add(new ViewField("issuedToPhoneNumber", "Phone Number"));
+		columns.add(new ViewField("fromStoreRoom", "From Storeroom"));
+		columns.add(new ViewField("toStoreRoom", "To Storeroom"));
 		columns.add(new ViewField("issuedTime", "Issued Time"));
 		columns.add(new ViewField("returnTime", "Return Time"));
-		columns.add(new ViewField("issuedTo", "Issued To"));
+		columns.add(new ViewField("status", "Status"));
 		columns.add(new ViewField("issuedBy", "Issued By"));
 		columns.add(new ViewField("isReturnable", "Is Returnable"));
 		columns.add(new ViewField("gatePassType", "Gate Pass Type"));
