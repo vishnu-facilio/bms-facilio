@@ -155,7 +155,9 @@ public class FacilioContextListener implements ServletContextListener {
 		}
 
 
-		getPassword("test-buvi");
+		if( ! AwsUtil.isDevelopment()) {
+            getPassword("test-buvi");
+        }
 		initDBConnectionPool();
 		Operator.getOperator(1);
 		TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACTION,1);

@@ -425,25 +425,29 @@ public class AwsUtil
 	private static void sendEmailViaAws(JSONObject mailJson) throws Exception  {
 		String toAddress = (String)mailJson.get("to");
 		boolean sendEmail = true;
+		HashSet<String> to = new HashSet<>();
 		if( ! AwsUtil.isProduction() ) {
 			if(toAddress != null) {
-				String to = "";
 				for(String address : toAddress.split(",")) {
-					if(address.contains("facilio.com")) {
-						to = address + ",";
+					if(address.contains("@facilio.com")) {
+						to.add(address);
 					}
 				}
-				if(to.length() == 0 ) {
+				if(to.size() == 0 ) {
 					sendEmail = false;
-				} else {
-					toAddress = to;
 				}
 			} else {
 				sendEmail = false;
 			}
+		} else {
+			for(String address : toAddress.split(",")) {
+				if(address.contains("@")) {
+					to.add(address);
+				}
+			}
 		}
 		if(sendEmail) {
-			Destination destination = new Destination().withToAddresses(toAddress.split("\\s*,\\s*"));
+			Destination destination = new Destination().withToAddresses(to);
 			Content subjectContent = new Content().withData((String) mailJson.get("subject"));
 			Content bodyContent = new Content().withData((String) mailJson.get("message"));
 
