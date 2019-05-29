@@ -504,42 +504,28 @@ public class AwsUtil
 
         try {
             getSecretValueResult = client.getSecretValue(getSecretValueRequest);
-        } catch (DecryptionFailureException e) {
+        } catch (Exception e) {
             // Secrets Manager can't decrypt the protected secret text using the provided KMS key.
             // Deal with the exception here, and/or rethrow at your discretion.
-            throw e;
-        } catch (InternalServiceErrorException e) {
-            // An error occurred on the server side.
-            // Deal with the exception here, and/or rethrow at your discretion.
-            throw e;
-        } catch (InvalidParameterException e) {
-            // You provided an invalid value for a parameter.
-            // Deal with the exception here, and/or rethrow at your discretion.
-            throw e;
-        } catch (InvalidRequestException e) {
-            // You provided a parameter value that is not valid for the current state of the resource.
-            // Deal with the exception here, and/or rethrow at your discretion.
-            throw e;
-        } catch (ResourceNotFoundException e) {
-            // We can't find the resource that you asked for.
-            // Deal with the exception here, and/or rethrow at your discretion.
-            throw e;
+            LOGGER.info("Exception while getting secret ", e);
         }
-        final String secretBinaryString = getSecretValueResult.getSecretString();
-        final ObjectMapper objectMapper = new ObjectMapper();
-        final HashMap<String, String> secretMap;
-        try {
-            secretMap = objectMapper.readValue(secretBinaryString, HashMap.class);
+        if(getSecretValueResult != null) {
+			final String secretBinaryString = getSecretValueResult.getSecretString();
+			final ObjectMapper objectMapper = new ObjectMapper();
+			final HashMap<String, String> secretMap;
+			try {
+				secretMap = objectMapper.readValue(secretBinaryString, HashMap.class);
 
-            String url = String.format("jdbc:mysql://%s:%s/dbName", secretMap.get("host"), secretMap.get("port"));
-            LOGGER.info("Secret url = "+url);
-            LOGGER.info("Secret username = "+secretMap.get("username"));
-            LOGGER.info("Secret password = "+secretMap.get("password"));
-            // Decrypts secret using the associated KMS CMK.
-            // Depending on whether the secret is a string or binary, one of these fields will be populated.
-        } catch (IOException e) {
-            LOGGER.info("exception while reading value from secret manager ", e);
-        }
+				String url = String.format("jdbc:mysql://%s:%s/dbName", secretMap.get("host"), secretMap.get("port"));
+				LOGGER.info("Secret url = " + url);
+				LOGGER.info("Secret username = " + secretMap.get("username"));
+				LOGGER.info("Secret password = " + secretMap.get("password"));
+				// Decrypts secret using the associated KMS CMK.
+				// Depending on whether the secret is a string or binary, one of these fields will be populated.
+			} catch (IOException e) {
+				LOGGER.info("exception while reading value from secret manager ", e);
+			}
+		}
 
         // Your code goes here.
     }
