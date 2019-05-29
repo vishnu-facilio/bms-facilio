@@ -11,7 +11,9 @@ public enum CommandStatus
     PROCESSING("Processing",1),
     IGNORED("Ignored",2),
     EXECUTED("Executed",3),
-    SENT("Sent",4);
+    SENT("Sent",4),
+    CONNECTED("Connected",5),
+    DISCONNECTED("Disconnected",6);
 
     private String status;
     private int key;

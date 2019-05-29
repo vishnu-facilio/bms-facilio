@@ -213,25 +213,40 @@ public class Processor extends FacilioProcessor {
     private void processLog(JSONObject payLoad,Long agentId){
         if(isStage && (payLoad.containsKey(AgentKeys.COMMAND_STATUS) || payLoad.containsKey(AgentKeys.CONTENT))){
             int connectionCount = -1;
-            if( payLoad.containsKey(AgentKeys.COMMAND_STATUS)){
-                if(("1".equals(payLoad.get(AgentKeys.COMMAND_STATUS).toString()))){
+            //checks for key status in payload and if it 'agent'-publishype
+            if( payLoad.containsKey(AgentKeys.COMMAND_STATUS) && ! payLoad.containsKey(AgentKeys.COMMAND)){
 
+                Long status = (Long)payLoad.remove(AgentKeys.COMMAND_STATUS);
+                if((1 == status)){ // Connected block -- getting Connection count
+                    payLoad.put(AgentKeys.COMMAND_STATUS,CommandStatus.CONNECTED.getKey());
+                    payLoad.put(AgentKeys.COMMAND,ControllerCommand.connect.getCommand());
                     if(payLoad.containsKey(AgentKeys.CONNECTION_COUNT)) {
                         connectionCount = Integer.parseInt(payLoad.get(AgentKeys.CONNECTION_COUNT).toString());
                     }
 
                     if (connectionCount == -1) {
-                        payLoad.put(AgentKeys.CONTENT, AgentContent.CONNECTED.getKey());
+                        payLoad.put(AgentKeys.CONTENT, AgentContent.Connected.getKey());
                     } else {
                         if (connectionCount == 1) {
-                            payLoad.put(AgentKeys.CONTENT, AgentContent.RESTARTED.getKey());
-                            agentUtil.putLog(payLoad,orgId, agentId,false);
+                            payLoad.put(AgentKeys.CONTENT, AgentContent.Restarted.getKey());
+                            AgentUtil.putLog(payLoad,orgId, agentId,false);
                         }
-                        payLoad.put(AgentKeys.CONTENT, AgentContent.CONNECTED.getKey()+connectionCount);
+                        payLoad.put(AgentKeys.CONTENT, AgentContent.Connected.getKey()+connectionCount);
                     }
-                } else {
-                    payLoad.put(AgentKeys.CONTENT, AgentContent.DISCONNECTED.getKey());
+
+                } else if(0 == status) { // disconnected block -
+                    payLoad.put(AgentKeys.COMMAND_STATUS,CommandStatus.DISCONNECTED.getKey());
+                    payLoad.put(AgentKeys.CONTENT, AgentContent.Disconnected.getKey());
+                    payLoad.put(AgentKeys.COMMAND,ControllerCommand.connect.getCommand());
                 }
+                else{ // avoids any status pther than 0 and 1
+                     LOGGER.info("Exception Occured, wrong status in payload.--"+payLoad);
+                    return;
+                }
+            }
+            // ack type - so content is always msgid.
+            else {
+                payLoad.put(AgentKeys.CONTENT, payLoad.get(AgentKeys.MESSAGE_ID));
             }
             AgentUtil.putLog(payLoad,orgId,agentId,false);
         }

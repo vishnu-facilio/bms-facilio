@@ -377,38 +377,39 @@ public  class AgentUtil
      * @param sent
      */
     public static void putLog(JSONObject payLoad, Long orgId,Long agentId,boolean sent) {
-        Map<String,Object> toUpdate = new HashMap<>();
-        if(sent){
-            payLoad.put(AgentKeys.COMMAND_STATUS,CommandStatus.SENT.getKey());
-            toUpdate.put(AgentKeys.COMMAND_STATUS,CommandStatus.SENT.getKey());
-        }else{
-            if(payLoad.containsKey(AgentKeys.COMMAND_STATUS)){
-                toUpdate.put(AgentKeys.COMMAND_STATUS,Integer.parseInt(payLoad.get(AgentKeys.COMMAND_STATUS).toString()));
+            Map<String, Object> toUpdate = new HashMap<>();
+            if (sent) {
+                payLoad.put(AgentKeys.COMMAND_STATUS, CommandStatus.SENT.getKey());
+                toUpdate.put(AgentKeys.COMMAND_STATUS, CommandStatus.SENT.getKey());
+            } else {
+                if (payLoad.containsKey(AgentKeys.COMMAND_STATUS)) {
+                    toUpdate.put(AgentKeys.COMMAND_STATUS, Integer.parseInt(payLoad.get(AgentKeys.COMMAND_STATUS).toString()));
+                }
+            }
+            if (payLoad.containsKey(AgentKeys.COMMAND)) {
+                toUpdate.put(AgentKeys.COMMAND, ControllerCommand.valueOf(payLoad.get(AgentKeys.COMMAND).toString()).getValue());
+            }
+            toUpdate.put(AgentKeys.AGENT_ID, agentId);
+            toUpdate.put(AgentKeys.TIMESTAMP, System.currentTimeMillis());
+            if (payLoad.containsKey(AgentKeys.DEVICE_ID)) {
+                toUpdate.put(AgentKeys.DEVICE_ID, payLoad.get(AgentKeys.DEVICE_ID).toString());
+            }
+            if (payLoad.containsKey(AgentKeys.MESSAGE_ID)) {
+                toUpdate.put(AgentKeys.MESSAGE_ID, payLoad.get(AgentKeys.MESSAGE_ID).toString());
+            }
+            if (payLoad.containsKey(AgentKeys.CONTENT)) {
+                toUpdate.put(AgentKeys.CONTENT, payLoad.get(AgentKeys.CONTENT));
+            }
+            try {
+                ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+                bean.addLog(toUpdate);
+            } catch (Exception e)
+            {
+                LOGGER.info("Exception occured ", e);
             }
         }
-        if(payLoad.containsKey(AgentKeys.COMMAND)){
-            toUpdate.put(AgentKeys.COMMAND, ControllerCommand.valueOf(payLoad.get(AgentKeys.COMMAND).toString()).getValue());
-        }
-        toUpdate.put(AgentKeys.AGENT_ID,agentId);
-        toUpdate.put(AgentKeys.TIMESTAMP,System.currentTimeMillis());
-        if(payLoad.containsKey(AgentKeys.DEVICE_ID)){
-            toUpdate.put(AgentKeys.DEVICE_ID,payLoad.get(AgentKeys.DEVICE_ID).toString());
-        }
-        if(payLoad.containsKey(AgentKeys.MESSAGE_ID)){
-            toUpdate.put(AgentKeys.MESSAGE_ID,payLoad.get(AgentKeys.MESSAGE_ID).toString());
-        }
-        if (payLoad.containsKey(AgentKeys.CONTENT)){
-            toUpdate.put(AgentKeys.CONTENT,payLoad.get(AgentKeys.CONTENT));
-        }
-        try {
-            ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD",orgId);
-            bean.addLog(toUpdate);
-        } catch (Exception e)
-        {
-            LOGGER.info("Exception occured",e);
-        }
 
-    }
+
 
     /**
      * This method fetches agent-log data of the entire organization or a particular agent.
@@ -554,6 +555,8 @@ public  class AgentUtil
         }
         return status;
     }
+
+
 
 }
 
