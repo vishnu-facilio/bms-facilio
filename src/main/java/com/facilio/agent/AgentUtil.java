@@ -20,6 +20,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
+import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -443,10 +444,15 @@ public  class AgentUtil
             map.put(AgentKeys.START_TIME,System.currentTimeMillis());
 
             if(messageStatus == MessageStatus.RECIEVED ){
-                if(bean.addAgentMessage(map) > 0 ){
-                    status = true;
+                try {
+                    if (bean.addAgentMessage(map) > 0) {
+                        status = true;
+                    }
+                }catch (MySQLIntegrityConstraintViolationException e){
+                    LOGGER.info("Duplicate Message "+e.getMessage());
                 }
             }
+
             else if(messageStatus == MessageStatus.DATA_EMPTY){
                 map.put(AgentKeys.FINISH_TIME, System.currentTimeMillis());
                 if(bean.updateAgentMessage(map)>0){

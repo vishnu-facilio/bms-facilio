@@ -5,7 +5,6 @@ import com.amazonaws.services.kinesis.clientlibrary.types.InitializationInput;
 import com.amazonaws.services.kinesis.clientlibrary.types.ProcessRecordsInput;
 import com.amazonaws.services.kinesis.clientlibrary.types.ShutdownInput;
 import com.amazonaws.services.kinesis.model.Record;
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.*;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
@@ -292,9 +291,9 @@ public class Processor implements IRecordProcessor {
             long startTime = System.currentTimeMillis();
             // LOGGER.info("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + " TIME::::" +timeStamp);
             ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-        if (AccountUtil.getCurrentOrg().getId() == 146 ) {
+        /*if (AccountUtil.getCurrentOrg().getId() == 146 ) {
             LOGGER.info("Payload in processor : "+payLoad);
-        }
+        }*/
             bean.processTimeSeries(timeStamp, payLoad, record, processRecordsInput.getCheckpointer(), isTimeSeries);
             long timeTaken = (System.currentTimeMillis() - startTime);
             if(timeTaken >  5000L){
