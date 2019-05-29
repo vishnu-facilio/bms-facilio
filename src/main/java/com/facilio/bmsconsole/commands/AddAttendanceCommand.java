@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
@@ -12,7 +13,9 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AttendanceContext;
 import com.facilio.bmsconsole.context.AttendanceContext.Status;
 import com.facilio.bmsconsole.context.AttendanceTransactionContext;
+import com.facilio.bmsconsole.context.ShiftUserRelContext;
 import com.facilio.bmsconsole.context.AttendanceTransactionContext.TransactionType;
+import com.facilio.bmsconsole.context.ShiftContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.DateOperators;
 import com.facilio.bmsconsole.criteria.PickListOperators;
@@ -22,6 +25,8 @@ import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.util.DateTimeUtil;
+import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -70,6 +75,15 @@ public class AddAttendanceCommand implements Command{
 			AttendanceContext attendanceContext = new AttendanceContext();
 			if(attendanceTransaction.getTransactionTypeEnum() == TransactionType.CHECKIN) {
 				attendanceContext.setStatus(Status.PRESENT);
+				List<ShiftUserRelContext> shiftusers = ShiftAPI.getShiftUserMapping(attendanceTransaction.getTransactionTime(), attendanceTransaction.getTransactionTime(), user.getOuid(), -1);
+				ShiftUserRelContext shiftuser;
+				if(CollectionUtils.isNotEmpty(shiftusers)) {
+					shiftuser = shiftusers.get(0);
+					ShiftContext shift = ShiftAPI.getShift(shiftuser.getShiftId());
+					if(shift.isWeekend(attendanceTransaction.getTransactionTime())) {
+						attendanceContext.setStatus(Status.HOLIDAY);
+					}
+				}
 				attendanceContext.setCheckInTime(attendanceTransaction.getTransactionTime());
 				attendanceContext.setLastCheckInTime(attendanceTransaction.getTransactionTime());
 			}
