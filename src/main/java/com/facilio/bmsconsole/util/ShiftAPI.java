@@ -801,7 +801,7 @@ public class ShiftAPI {
 		return getShiftUserMapping(startTime, endTime, -1, shiftId);
 	}
 	
-	private static List<ShiftUserRelContext> getShiftUserMapping(long startTime, long endTime, long orgUserId, long shiftId) throws Exception {
+	public static List<ShiftUserRelContext> getShiftUserMapping(long startTime, long endTime, long orgUserId, long shiftId) throws Exception {
 		startTime = DateTimeUtil.getDayStartTimeOf(startTime, true);
 		endTime = DateTimeUtil.getDayEndTimeOf(endTime, true);
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
