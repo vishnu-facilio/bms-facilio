@@ -273,6 +273,7 @@ public interface AggregateOperator {
             selectField.setDisplayName(field.getDisplayName());
             selectField.setColumnName(selectFieldString);
             selectField.setFieldId(field.getFieldId());
+            selectField.setDataType(FieldType.DECIMAL);
             return selectField;
         }
 		@Override
@@ -308,6 +309,7 @@ public interface AggregateOperator {
             selectField.setDisplayName(field.getDisplayName());
             selectField.setColumnName(selectFieldString);
             selectField.setFieldId(field.getFieldId());
+            selectField.setDataType(FieldType.STRING);
             return selectField;
         }
 		@Override
@@ -370,6 +372,7 @@ public interface AggregateOperator {
             selectField.setDisplayName(field.getDisplayName());
             selectField.setColumnName(selectFieldString);
             selectField.setFieldId(field.getFieldId());
+            selectField.setDataType(FieldType.STRING);
             return selectField;
         }
 
@@ -379,6 +382,7 @@ public interface AggregateOperator {
             selectField.setDisplayName(field.getDisplayName());
             selectField.setColumnName("MIN("+field.getCompleteColumnName()+")");
             selectField.setFieldId(field.getFieldId());
+            selectField.setDataType(FieldType.DATE_TIME);
             return selectField;
         }
 
@@ -562,6 +566,7 @@ public interface AggregateOperator {
             selectField.setDisplayName(field.getDisplayName());
             selectField.setColumnName(selectFieldString);
             selectField.setFieldId(field.getFieldId());
+            selectField.setDataType(FieldType.DECIMAL);
             return selectField;
         }
 		@Override
