@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BuildingContext;
@@ -9,7 +10,14 @@ import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.commons.lang3.StringUtils;
@@ -90,6 +98,42 @@ public class PortfolioAction extends ActionSupport {
 				}
 			}
 		}
+		
+		return SUCCESS;
+	}
+	
+	public String getAllBuildingsWithRootMeter() throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		FacilioModule energyMeterModule = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER);
+		FacilioModule energyMeterPurposeModule = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER_PURPOSE);
+		FacilioModule baseSpaceModule = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
+		FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
+		
+		builder.table(energyMeterModule.getTableName())
+		.innerJoin(energyMeterPurposeModule.getTableName()).on("Energy_Meter.PURPOSE_ID = Energy_Meter_Purpose.ID")
+		.innerJoin(baseSpaceModule.getTableName()).on("Energy_Meter.PURPOSE_SPACE_ID = BaseSpace.ID")
+		.innerJoin(resourceModule.getTableName()).on("BaseSpace.id = Resources.id")
+		.innerJoin(resourceModule.getTableName() + " b").on("Energy_Meter.id = b.id");
+		
+		builder.andCustomWhere("Energy_Meter_Purpose.NAME = \"Main\"");
+		builder.andCustomWhere("IS_ROOT = true");
+		builder.andCustomWhere("BaseSpace.SPACE_TYPE = 2");
+		builder.andCustomWhere("Resources.SYS_DELETED is null or Resources.SYS_DELETED = false");
+		builder.andCustomWhere("b.SYS_DELETED is null or b.SYS_DELETED = false");
+		
+		builder.select(modBean.getAllFields(baseSpaceModule.getName()));
+		
+		
+		List<Map<String, Object>> props = builder.get();
+		
+		JSONObject result = new JSONObject();
+		result.put("buildingsWithRootMeter", props);
+		
+		setReportData(result);
 		
 		return SUCCESS;
 	}

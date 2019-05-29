@@ -2189,6 +2189,12 @@
 				<param name="includeProperties">^reportData.*</param>
 			</result>
 		</action>
+		<action name="getAllBuildingsWithRootMeter" class="com.facilio.bmsconsole.actions.PortfolioAction"
+			method="getAllBuildingsWithRootMeter">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportData.*</param>
+			</result>
+		</action>
 		<action name="getAllChiller" class="com.facilio.bmsconsole.actions.PortfolioAction"
 			method="getAllChiller">
 			<result name="success" type="json">
