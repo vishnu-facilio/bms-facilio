@@ -80,6 +80,11 @@ public class FetchScheduledRuleMatchingRecordsCommand implements Command {
 																				.andCondition(CriteriaAPI.getCondition(dateField, range.toString(), DateOperators.BETWEEN))
 																				.beanClass(beanClassName)
 																				;
+
+		if (rule.getCriteria() != null) {
+			selectBuilder.andCriteria(rule.getCriteria());
+		}
+
 		List<ModuleBaseWithCustomFields> records = selectBuilder.get();
 		// LOGGER.info(selectBuilder.toString());
 		return records;
