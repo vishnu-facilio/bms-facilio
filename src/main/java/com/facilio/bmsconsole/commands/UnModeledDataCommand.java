@@ -1,5 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -10,12 +21,6 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.timeseries.TimeSeriesAPI;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import java.sql.SQLException;
-import java.util.*;
 
 public class UnModeledDataCommand implements Command {
 
@@ -38,9 +43,9 @@ public class UnModeledDataCommand implements Command {
 					continue;
 				}
 				Long pointsInstanceId=null;
-				if(TimeSeriesAPI.isStage()) {
+//				if(TimeSeriesAPI.isStage()) {
 					pointsInstanceId = getPointsUnmodledInstance(deviceName , instanceName ,controllerId, pointsRecords);
-				}
+//				}
 				Long instanceId= getUnmodledInstance(deviceName,instanceName,controllerId);
 
 				if(instanceId==null && controllerId!=null) {
@@ -57,9 +62,9 @@ public class UnModeledDataCommand implements Command {
 					instanceId=getUnmodeledInstanceAfterInsert(deviceName,instanceName,controllerId);
 				}
 				Map<String, Object> record=new HashMap<String,Object>();			
-				if(TimeSeriesAPI.isStage()) {
+//				if(TimeSeriesAPI.isStage()) {
 					record.put("newInstanceId", pointsInstanceId);
-				}
+//				}
 				record.put("instanceId", instanceId);
 				record.put("ttime",timeStamp);
 				record.put("value", instanceVal);

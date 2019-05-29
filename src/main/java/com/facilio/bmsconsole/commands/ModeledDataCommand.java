@@ -1,5 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -11,14 +24,6 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.timeseries.TimeSeriesAPI;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
-import java.util.*;
 
 public class ModeledDataCommand implements Command {
 	private static final Logger LOGGER = LogManager.getLogger(ModeledDataCommand.class.getName());
@@ -41,7 +46,7 @@ public class ModeledDataCommand implements Command {
 		Map<String,Object>  dataPoints= null;
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 	
-	if(TimeSeriesAPI.isStage()) {
+//	if(TimeSeriesAPI.isStage()) {
 			LOGGER.debug("Inside ModeledDataCommand####### deviceData: "+deviceData);
 
 			for(Map.Entry<String, Map<String,String>> data:deviceData.entrySet()) {
@@ -108,7 +113,7 @@ public class ModeledDataCommand implements Command {
 				
 				dataPointsValue.addAll(insertNewPointsData);
 			}
-	}
+//	}
 
 		//oldPublish data
 		if(!TimeSeriesAPI.isStage()) {
