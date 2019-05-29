@@ -1,5 +1,8 @@
 package com.facilio.fw.listener;
 
+import com.amazonaws.services.secretsmanager.AWSSecretsManager;
+import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
+import com.amazonaws.services.secretsmanager.model.*;
 import com.facilio.activity.ActivityType;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
@@ -22,6 +25,7 @@ import com.facilio.server.ServerInfo;
 import com.facilio.serviceportal.actions.PortalAuthInterceptor;
 import com.facilio.tasker.FacilioScheduler;
 import com.facilio.tasker.executor.InstantJobExecutor;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.flywaydb.core.Flyway;
@@ -49,6 +53,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Properties;
 import java.util.Timer;
@@ -66,6 +71,67 @@ public class FacilioContextListener implements ServletContextListener {
 		FacilioScheduler.stopSchedulers();
 		InstantJobExecutor.INSTANCE.stopExecutor();
 		timer.cancel();
+	}
+
+	private static void getPassword(String secretKey) {
+
+			String secretName = secretKey;
+			String region = "us-west-2";
+
+			// Create a Secrets Manager client
+			AWSSecretsManager client  = AWSSecretsManagerClientBuilder.standard()
+					.withRegion(region)
+					.build();
+
+			// In this sample we only handle the specific exceptions for the 'GetSecretValue' API.
+			// See https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
+			// We rethrow the exception by default.
+
+			String secret ="", decodedBinarySecret = "";
+			GetSecretValueRequest getSecretValueRequest = new GetSecretValueRequest()
+					.withSecretId(secretName);
+			GetSecretValueResult getSecretValueResult = null;
+
+			try {
+				getSecretValueResult = client.getSecretValue(getSecretValueRequest);
+			} catch (DecryptionFailureException e) {
+				// Secrets Manager can't decrypt the protected secret text using the provided KMS key.
+				// Deal with the exception here, and/or rethrow at your discretion.
+				throw e;
+			} catch (InternalServiceErrorException e) {
+				// An error occurred on the server side.
+				// Deal with the exception here, and/or rethrow at your discretion.
+				throw e;
+			} catch (InvalidParameterException e) {
+				// You provided an invalid value for a parameter.
+				// Deal with the exception here, and/or rethrow at your discretion.
+				throw e;
+			} catch (InvalidRequestException e) {
+				// You provided a parameter value that is not valid for the current state of the resource.
+				// Deal with the exception here, and/or rethrow at your discretion.
+				throw e;
+			} catch (ResourceNotFoundException e) {
+				// We can't find the resource that you asked for.
+				// Deal with the exception here, and/or rethrow at your discretion.
+				throw e;
+			}
+			final String secretBinaryString = getSecretValueResult.getSecretString();
+			final ObjectMapper objectMapper = new ObjectMapper();
+			final HashMap<String, String> secretMap;
+			try {
+				secretMap = objectMapper.readValue(secretBinaryString, HashMap.class);
+
+				String url = String.format("jdbc:mysql://%s:%s/dbName", secretMap.get("host"), secretMap.get("port"));
+				log.info("Secret url = "+url);
+				log.info("Secret username = "+secretMap.get("username"));
+				log.info("Secret password = "+secretMap.get("password"));
+				// Decrypts secret using the associated KMS CMK.
+				// Depending on whether the secret is a string or binary, one of these fields will be populated.
+			} catch (IOException e) {
+				log.info("exception while reading value from secret manager ", e);
+			}
+
+			// Your code goes here.
 	}
 
 	public void contextInitialized(ServletContextEvent event) {
@@ -89,6 +155,7 @@ public class FacilioContextListener implements ServletContextListener {
 		}
 
 
+		getPassword("test-buvi");
 		initDBConnectionPool();
 		Operator.getOperator(1);
 		TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACTION,1);
