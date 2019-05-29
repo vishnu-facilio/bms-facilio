@@ -401,6 +401,10 @@ public  class AgentUtil
             if (payLoad.containsKey(AgentKeys.CONTENT)) {
                 toUpdate.put(AgentKeys.CONTENT, payLoad.get(AgentKeys.CONTENT));
             }
+            long checkOrgId = 152;
+            if(orgId == checkOrgId){
+                LOGGER.info("debugging log -toUpdate--"+toUpdate);
+            }
             try {
                 ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
                 bean.addLog(toUpdate);

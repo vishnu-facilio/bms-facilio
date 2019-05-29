@@ -211,6 +211,10 @@ public class Processor extends FacilioProcessor {
     }
 
     private void processLog(JSONObject payLoad,Long agentId){
+        long checkOrgId = 152;
+        if(orgId == checkOrgId){
+            LOGGER.info("debugging payload---"+payLoad);
+        }
         if(isStage && (payLoad.containsKey(AgentKeys.COMMAND_STATUS) || payLoad.containsKey(AgentKeys.CONTENT))){
             int connectionCount = -1;
             //checks for key status in payload and if it 'agent'-publishype
