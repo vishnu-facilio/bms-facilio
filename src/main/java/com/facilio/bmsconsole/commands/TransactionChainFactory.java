@@ -2804,7 +2804,7 @@ public class TransactionChainFactory {
 		public static Chain markAbsentChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new GetUsersForShiftCommand());
-			c.addCommand(new MarkAsAbsentCommand());
+			c.addCommand(new MarkAsAbsentOrLeaveCommand());
 			return c;
 		}
 
