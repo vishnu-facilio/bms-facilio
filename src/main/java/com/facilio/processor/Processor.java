@@ -98,7 +98,7 @@ public class Processor implements IRecordProcessor {
                 String recordId = record.getSequenceNumber();
                 try {
                     try {
-                        boolean  isDuplicateMessage = AgentUtil.isDuplicate(recordId);
+                        boolean  isDuplicateMessage = agentUtil.isDuplicate(recordId);
                         if ( isDuplicateMessage ) {
                             if(isRestarted){
                                 LOGGER.info(" Duplicate message received but can be processed due to server-restart "+recordId);
@@ -110,7 +110,7 @@ public class Processor implements IRecordProcessor {
                             }
                         }
                         else {
-                            AgentUtil.addAgentMessage(recordId);
+                            agentUtil.addAgentMessage(recordId);
                         }
                     }catch (Exception e1){
                         LOGGER.info("Exception Occured ",e1);
@@ -119,7 +119,7 @@ public class Processor implements IRecordProcessor {
                     data = decoder.decode(record.getData()).toString();
                     if (data.isEmpty()) {
                         LOGGER.info(" Empty message received "+recordId);
-                        AgentUtil.updateAgentMessage(recordId, MessageStatus.DATA_EMPTY);
+                        agentUtil.updateAgentMessage(recordId, MessageStatus.DATA_EMPTY);
                         continue;
                     }
 
@@ -163,7 +163,7 @@ public class Processor implements IRecordProcessor {
                         agentUtil.addAgent(agent);
                     }
                     if(isStage && agent != null) {
-                        AgentUtil.addAgentMetrics(data.length(), agent.getId(), publishType.getKey());
+                        agentUtil.addAgentMetrics(data.length(), agent.getId(), publishType.getKey());
                     }
 
                     long i = 0;
@@ -217,7 +217,7 @@ public class Processor implements IRecordProcessor {
                         genericUpdateRecordBuilder.update(toUpdate);
 
                     }
-                    AgentUtil.updateAgentMessage(recordId,MessageStatus.PROCESSED);
+                    agentUtil.updateAgentMessage(recordId,MessageStatus.PROCESSED);
                 } catch (Exception e) {
                     try {
                         if(AwsUtil.isProduction()) {

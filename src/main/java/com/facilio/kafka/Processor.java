@@ -78,7 +78,7 @@ public class Processor extends FacilioProcessor {
             try {
 
                 try {
-                    boolean  isDuplicateMessage = AgentUtil.isDuplicate(recordId);
+                    boolean  isDuplicateMessage = agentUtil.isDuplicate(recordId);
                     if ( isDuplicateMessage ) {
                         if(isRestarted){
                             LOGGER.info(" Duplicate message received but can be processed due to server-restart "+recordId);
@@ -90,7 +90,7 @@ public class Processor extends FacilioProcessor {
                         }
                     }
                     else {
-                        AgentUtil.addAgentMessage(recordId);
+                        agentUtil.addAgentMessage(recordId);
                     }
                 }catch (Exception e1){
                     LOGGER.info("Exception Occured ",e1);
@@ -99,7 +99,7 @@ public class Processor extends FacilioProcessor {
                 data = record.getData().toString();
                 if (data.isEmpty()) {
                     LOGGER.info(" Empty message received "+recordId);
-                    AgentUtil.updateAgentMessage(recordId, MessageStatus.DATA_EMPTY);
+                    agentUtil.updateAgentMessage(recordId, MessageStatus.DATA_EMPTY);
                     continue;
                 }
                 ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
@@ -184,10 +184,10 @@ public class Processor extends FacilioProcessor {
 
                         }
                         if(isStage && agent != null) {
-                            AgentUtil.addAgentMetrics(dataLength, agent.getId(), publishType.getKey());
+                            agentUtil.addAgentMetrics(dataLength, agent.getId(), publishType.getKey());
                         }
 
-                        AgentUtil.updateAgentMessage(recordId,MessageStatus.PROCESSED);
+                        agentUtil.updateAgentMessage(recordId,MessageStatus.PROCESSED);
                     }
 
                     catch (Exception e) {

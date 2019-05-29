@@ -426,17 +426,17 @@ public  class AgentUtil
         return genericSelectRecordBuilder.get();
     }
 
-    public static boolean addAgentMessage(String recordId) throws Exception{
+    public boolean addAgentMessage(String recordId) throws Exception{
         return addOrUpdateAgentMessage(recordId,MessageStatus.RECIEVED);
     }
-    public static boolean updateAgentMessage(String recordId,MessageStatus messageStatus) throws Exception{
+    public boolean updateAgentMessage(String recordId,MessageStatus messageStatus) throws Exception{
         return addOrUpdateAgentMessage(recordId,messageStatus);
     }
 
-    public static boolean addOrUpdateAgentMessage(String recordId, MessageStatus messageStatus)throws Exception{
+    private   boolean addOrUpdateAgentMessage(String recordId, MessageStatus messageStatus)throws Exception{
         boolean status = false;
             ModuleCRUDBean bean;
-            bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", AccountUtil.getCurrentOrg().getId());
+            bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
             Map<String,Object> map = new HashMap<>();
             map.put(AgentKeys.RECORD_ID,recordId);
             map.put(AgentKeys.MSG_STATUS,messageStatus.getStatusKey());
@@ -492,14 +492,14 @@ public  class AgentUtil
      * @param agentId If of the agent that sent this message.
      * @param publishType Publish-Type of the message.
      */
-    public static void addAgentMetrics(Integer messageSize, Long agentId, int publishType){
+    public void addAgentMetrics(Integer messageSize, Long agentId, int publishType){
         Long createdTime = DateTimeUtil.getDayStartTimeOf(System.currentTimeMillis());
         Long lastUpdatedTime = System.currentTimeMillis();
         ModuleCRUDBean bean;
         Map<String, Object> metrics = new HashMap<>();
         Map<String, Object> record;
         try {
-            bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", AccountUtil.getCurrentOrg().getId());
+            bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
             List<Map<String,Object>> records = bean.getMetrics(agentId,publishType,createdTime);
             if(!records.isEmpty()) {
                 record = records.get(0);
@@ -530,29 +530,29 @@ public  class AgentUtil
         }
     }
 
-    public static boolean isDuplicate(String partitionKey) throws Exception{
+    public boolean isDuplicate(String recordId) throws Exception{
         boolean status = true;
-        FacilioModule messageModule = ModuleFactory.getAgentMessageModule();
-        FacilioContext context = new FacilioContext();
+            FacilioModule messageModule = ModuleFactory.getAgentMessageModule();
+            FacilioContext context = new FacilioContext();
 
-        Criteria criteria = new Criteria();
-        criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getAgentMessagePartitionKeyField(messageModule),partitionKey,StringOperators.IS));
+            Criteria criteria = new Criteria();
+            criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getAgentMessagePartitionKeyField(messageModule), recordId, StringOperators.IS));
 
-        context.put(FacilioConstants.ContextNames.TABLE_NAME,AgentKeys.AGENT_MESSAGE_TABLE);
-        context.put(FacilioConstants.ContextNames.FIELDS,FieldFactory.getAgentMessageFields());
-        context.put(FacilioConstants.ContextNames.MODULE,messageModule);
-        context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
-        try {
-            ModuleCRUDBean bean;
-            bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", AccountUtil.getCurrentOrg().getId());
-            List<Map<String, Object>> rows = bean.getRows(context);
-            if (((rows == null) || (rows.isEmpty()))) {
-                status = false;
+            context.put(FacilioConstants.ContextNames.TABLE_NAME, AgentKeys.AGENT_MESSAGE_TABLE);
+            context.put(FacilioConstants.ContextNames.FIELDS, FieldFactory.getAgentMessageFields());
+            context.put(FacilioConstants.ContextNames.MODULE, messageModule);
+            context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
+            try {
+                ModuleCRUDBean bean;
+                bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+                List<Map<String, Object>> rows = bean.getRows(context);
+                if (((rows == null) || (rows.isEmpty()))) {
+                    status = false;
+                }
+            } catch (Exception e) {
+                LOGGER.info("Exception Occurred ", e);
+                throw e;
             }
-        }catch (Exception e){
-            LOGGER.info("Exception Occurred ",e);
-            throw e;
-        }
         return status;
     }
 
