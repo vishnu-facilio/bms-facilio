@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.InventoryRequestContext;
 import com.facilio.bmsconsole.context.InventoryRequestLineItemContext;
 import com.facilio.bmsconsole.context.InventoryType;
+import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Chain;
@@ -313,6 +314,12 @@ public class InventoryRequestAction extends FacilioAction {
 		issueRequestListChain.execute(context);
 		setResult(FacilioConstants.ContextNames.INVENTORY_REQUEST, inventoryRequest);
 		
+		return SUCCESS;
+	}
+	
+	public String test() throws Exception {
+		
+		setResult(FacilioConstants.ContextNames.WORK_ORDER_STATUS_PERCENTAGE_RESPONSE, WorkOrderAPI.getAvgCompletionTimeByTechnician("3", 1558818822000L, 1559250822000L, 2L));
 		return SUCCESS;
 	}
 	

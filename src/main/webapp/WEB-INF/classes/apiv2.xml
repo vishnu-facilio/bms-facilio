@@ -2286,6 +2286,16 @@
 		</action>
 	</package>
 	
+	<package name="testapi" namespace="/api/v2/testapi"
+		extends="v2Api">
+		<action name="test" class="com.facilio.bmsconsole.actions.InventoryRequestAction"
+			method="test">
+			<param name="moduleName">inventory</param>
+			<param name="permission">READ,READ_OWN</param>
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
+	
 	
 
 	
