@@ -123,16 +123,11 @@ public class PageWidget {
 	public void addToLayoutParams(Section section, int width, int height) {
 		int x = section.getLatestX();
 		int y = section.getLatestY();
-		if (x != 0) {
-			x += width;
-		}
 		addToLayoutParams(x, y, width, height);
+		x += width;
 		if (x >= 24 || width >= 24) {
 			y += height;	// Assuming the height will be same for everywidget
 			x = 0;
-		}
-		else if (x == 0) {
-			x += width;
 		}
 		section.setLatestXY(x, y);
 	}
