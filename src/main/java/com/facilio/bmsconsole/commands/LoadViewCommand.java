@@ -1,5 +1,20 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.StringJoiner;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ViewField;
@@ -21,13 +36,6 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.google.common.base.Functions;
 import com.google.common.collect.Lists;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.util.*;
 
 public class LoadViewCommand implements Command {
 
@@ -83,7 +91,15 @@ public class LoadViewCommand implements Command {
 			
 			if(view != null) {
 				view.setDefaultModuleFields(moduleName, parentViewName);
-				if (view.getSortFields() != null && !view.getSortFields().isEmpty()) {
+				Boolean overrideSorting = (Boolean) context.get(ContextNames.OVERRIDE_SORTING);
+				if (overrideSorting != null && overrideSorting) {
+					JSONObject sortObj = (JSONObject) context.get(FacilioConstants.ContextNames.SORTING);
+					SortField sortField = getQuerySortField(modBean, moduleName, sortObj);
+					String sortQuery = getOrderClauseForLookupTable(sortField, moduleName);
+					context.put(FacilioConstants.ContextNames.SORTING_QUERY, sortQuery);
+					view.setSortFields(Collections.singletonList(sortField));
+				}
+				else if (view.getSortFields() != null && !view.getSortFields().isEmpty()) {
 					StringBuilder orderBy = new StringBuilder();
 					String prefix = "";
 					for (SortField sortField : view.getSortFields()) {
@@ -212,6 +228,20 @@ public class LoadViewCommand implements Command {
 			}
 		} 
 		return field.getSortField().getCompleteColumnName() + " " + (field.getIsAscending()? "asc" : "desc");
+	}
+	
+	private SortField getQuerySortField(ModuleBean modBean, String moduleName, JSONObject sortObj) throws Exception {
+		String orderByColName = (String) sortObj.get("orderBy");
+		String orderType = (String) sortObj.get("orderType");
+		FacilioField field = modBean.getField(orderByColName, moduleName);
+		if (field != null) {
+			SortField newSortField = new SortField();
+			newSortField.setFieldId(field.getFieldId());
+			newSortField.setSortField(field);
+			newSortField.setIsAscending("asc".equalsIgnoreCase(orderType));
+			return newSortField;
+		}
+		return null;
 	}
 	
 

@@ -1728,15 +1728,13 @@ public class WorkOrderAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
 		}
 
-		JSONObject sorting = new JSONObject();
-		if (getOrderBy() != null) {
+		if (getOverrideViewOrderBy() && getOrderBy() != null) {
+			JSONObject sorting = new JSONObject();
 			sorting.put("orderBy", getOrderBy());
 			sorting.put("orderType", getOrderType());
-		} else {
-			sorting.put("orderBy", "createdTime");
-			sorting.put("orderType", "desc");
+			context.put(FacilioConstants.ContextNames.SORTING, sorting);
+			context.put(FacilioConstants.ContextNames.OVERRIDE_SORTING, true);
 		}
-		context.put(FacilioConstants.ContextNames.SORTING, sorting);
 
 		JSONObject pagination = new JSONObject();
 		pagination.put("page", getPage());
@@ -1982,6 +1980,17 @@ public class WorkOrderAction extends FacilioAction {
 
 	public String getOrderType() {
 		return this.orderType;
+	}
+	
+	private Boolean overrideViewOrderBy;
+	public boolean getOverrideViewOrderBy() {
+		if (overrideViewOrderBy == null) {
+			return false;
+		}
+		return overrideViewOrderBy;
+	}
+	public void setOverrideViewOrderBy(boolean overrideViewOrderBy) {
+		this.overrideViewOrderBy = overrideViewOrderBy;
 	}
 
 	String search;
