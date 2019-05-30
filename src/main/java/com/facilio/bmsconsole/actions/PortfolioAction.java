@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
@@ -123,6 +124,7 @@ public class PortfolioAction extends ActionSupport {
 		builder.andCustomWhere("IS_ROOT = true");
 		builder.andCustomWhere("BaseSpace.SPACE_TYPE = 2");
 		builder.andCustomWhere("Resources.SYS_DELETED is null or Resources.SYS_DELETED = false");
+		builder.andCustomWhere("Energy_Meter.ORGID = ?", AccountUtil.getCurrentOrg().getId());
 		builder.andCustomWhere("b.SYS_DELETED is null or b.SYS_DELETED = false");
 		
 		builder.select(modBean.getAllFields(baseSpaceModule.getName()));
