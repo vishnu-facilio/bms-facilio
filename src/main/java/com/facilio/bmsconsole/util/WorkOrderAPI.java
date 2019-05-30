@@ -1979,7 +1979,6 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			String moduleName=FacilioConstants.ContextNames.PREREQUISITE_PHOTOS;
 			FacilioModule module = modBean.getModule(moduleName);
-			List<FacilioField> fields = modBean.getAllFields(moduleName);
 			Condition idCondition = CriteriaAPI.getCondition(modBean.getField("parentId", moduleName), String.valueOf(id),NumberOperators.EQUALS);
 			SelectRecordsBuilder<PhotosContext> selectBuilder = new SelectRecordsBuilder<PhotosContext>()
 																		.moduleName(moduleName)
@@ -1991,50 +1990,6 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 		}
 	}
     public static WorkorderItemContext getWorkOrderItem(long woItemId) throws Exception {
-
-    	  ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-    	  FacilioModule woItemModule = modBean.getModule(FacilioConstants.ContextNames.WORKORDER_ITEMS);
-
-
-    	 SelectRecordsBuilder<WorkorderItemContext> selectRecordsBuilder = new SelectRecordsBuilder<WorkorderItemContext>()
-				  .module(woItemModule)
-				  .beanClass(WorkorderItemContext.class)
-                 .select(modBean.getAllFields(woItemModule.getName()))
-                 .andCondition(CriteriaAPI.getIdCondition(woItemId, woItemModule))
-                ;
-
-    	 List<WorkorderItemContext> list = selectRecordsBuilder.get();
-    	 if(CollectionUtils.isNotEmpty(list)) {
-    		 return list.get(0);
-    	 }
-    	 return null;
-
-    }
-
-    public static WorkorderToolsContext getWorkOrderTool(long woToolId) throws Exception {
-
-  	  ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-  	  FacilioModule woToolModule = modBean.getModule(FacilioConstants.ContextNames.WORKORDER_TOOLS);
-
-
-  	 SelectRecordsBuilder<WorkorderToolsContext> selectRecordsBuilder = new SelectRecordsBuilder<WorkorderToolsContext>()
-				  .module(woToolModule)
-				  .beanClass(WorkorderToolsContext.class)
-               .select(modBean.getAllFields(woToolModule.getName()))
-               .andCondition(CriteriaAPI.getIdCondition(woToolId, woToolModule))
-              ;
-
-  	 List<WorkorderToolsContext> list = selectRecordsBuilder.get();
-  	 if(CollectionUtils.isNotEmpty(list)) {
-  		 return list.get(0);
-  	 }
-  	 return null;
-
-  }
-
-    public static String getSiteName(long siteId) throws Exception {
-    	
-    	return SpaceAPI.getSiteSpace(siteId).getName();
     }
 
     public static List<Map<String, Object>> getTopNTechniciansWithOpenCloseCount(String count,long startTime, long endTime, long siteId) throws Exception {
