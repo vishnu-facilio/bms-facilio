@@ -37,20 +37,20 @@ public class PageFactory {
 		tab1.addSection(tab1Sec1);
 		
 		PageWidget pageWidget = new PageWidget(WidgetType.PRIMARY_DETAILS_WIDGET);
-		pageWidget.addToLayoutParams(tab1Sec1, 24, 10);
+		pageWidget.addToLayoutParams(tab1Sec1, 24, 9);
 		pageWidget.addToWidgetParams("showOperatingHours", true);
 		tab1Sec1.addWidget(pageWidget);
 		
 		PageWidget workorderWidget = getCountModuleWidget(FacilioConstants.ContextNames.WORK_ORDER);
-		workorderWidget.addToLayoutParams(tab1Sec1, 6, 5);
+		workorderWidget.addToLayoutParams(tab1Sec1, 8, 11);
 		tab1Sec1.addWidget(workorderWidget);
 		
 		PageWidget alarmWidget = getCountModuleWidget(FacilioConstants.ContextNames.ALARM);
-		alarmWidget.addToLayoutParams(tab1Sec1, 6, 5);
+		alarmWidget.addToLayoutParams(tab1Sec1, 8, 11);
 		tab1Sec1.addWidget(alarmWidget);
 		
 		PageWidget fddWidget = new PageWidget(WidgetType.CARD);
-		fddWidget.addToLayoutParams(tab1Sec1, 6, 5);
+		fddWidget.addToLayoutParams(tab1Sec1, 8, 11);
 		fddWidget.addToWidgetParams("type", "failureMetrics");
 		tab1Sec1.addWidget(fddWidget);
 		
@@ -74,17 +74,17 @@ public class PageFactory {
 		tab2.addSection(tab2Sec1);
 		
 		PageWidget nextPmWidget = new PageWidget(WidgetType.CARD);
-		nextPmWidget.addToLayoutParams(tab2Sec1, 6, 5);
+		nextPmWidget.addToLayoutParams(tab2Sec1, 8, 9);
 		nextPmWidget.addToWidgetParams("type", "nextPm");
 		tab2Sec1.addWidget(nextPmWidget);
 		
 		PageWidget woDetailsWidget = new PageWidget(WidgetType.CARD);
-		woDetailsWidget.addToLayoutParams(tab2Sec1, 6, 5);
+		woDetailsWidget.addToLayoutParams(tab2Sec1, 8, 9);
 		woDetailsWidget.addToWidgetParams("type", "woDetails");
 		tab2Sec1.addWidget(woDetailsWidget);
 		
 		PageWidget recentlyClosedWidget = new PageWidget(WidgetType.CARD);
-		recentlyClosedWidget.addToLayoutParams(tab2Sec1, 6, 5);
+		recentlyClosedWidget.addToLayoutParams(tab2Sec1, 8, 9);
 		recentlyClosedWidget.addToWidgetParams("type", "recentlyClosedPm");
 		tab2Sec1.addWidget(recentlyClosedWidget);
 		
