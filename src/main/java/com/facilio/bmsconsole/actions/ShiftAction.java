@@ -111,6 +111,16 @@ public class ShiftAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String deleteBreak() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ID, id);
+		
+		Chain c = TransactionChainFactory.deleteBreakChain();
+		c.execute(context);
+		
+		return SUCCESS;
+	}
+	
 	private long startDate = -1;
 	public void setStartDate(long startDate) {
 		this.startDate = startDate;

@@ -159,6 +159,8 @@
 			class="com.facilio.bmsconsole.actions.ShiftAction" method="getAllBreak" />
 		<action name="get"
 			class="com.facilio.bmsconsole.actions.ShiftAction" method="getBreak" />
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.ShiftAction" method="deleteBreak" />
 	</package>
 
 	<package name="importTemplate" namespace="/api/v2/importTemplate"

@@ -1062,4 +1062,16 @@ public class ShiftAPI {
 		breakContext.setShifts(getShiftsAttachedToBreak(breakId));
 		return breakContext;
 	}
+
+	public static void deleteBreak(Long breakId) throws Exception {
+		deleteBreakShiftRel(breakId);
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BREAK);
+		DeleteRecordBuilder<BreakContext> builder = new DeleteRecordBuilder<BreakContext>()
+				.module(module)
+				.andCondition(CriteriaAPI.getIdCondition(breakId, module))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+		builder.delete();
+	}
 }
