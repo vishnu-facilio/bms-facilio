@@ -2182,4 +2182,41 @@ public class PreventiveMaintenanceAPI {
 		
 		return builder.get();
 	}
+
+    public static void addTaskSectionTrigger(PreventiveMaintenance pm, List<TaskSectionTemplate> sectionTemplates) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
+        FacilioModule module = ModuleFactory.getTaskSectionTemplateTriggersModule();
+
+        GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
+                .table(module.getTableName())
+                .fields(FieldFactory.getTaskSectionTemplateTriggersFields());
+
+
+        List<Map<String, Object>> props = new ArrayList<>();
+
+        boolean isNewFlow = true;
+        if(isNewFlow) {
+            for (int i = 0; i < sectionTemplates.size(); i++) {
+                List<PMTaskSectionTemplateTriggers> pmTaskSectionTemplateTriggers = sectionTemplates.get(i).getPmTaskSectionTemplateTriggers();
+                if (pmTaskSectionTemplateTriggers == null) {
+                    continue;
+                }
+                for (int k = 0; k < pmTaskSectionTemplateTriggers.size(); k++) {
+                    PMTaskSectionTemplateTriggers pmTaskSectionTemplateTrigger = pmTaskSectionTemplateTriggers.get(k);
+                    PMTriggerContext trig = pm.getTriggerMap().get(pmTaskSectionTemplateTriggers.get(k).getTriggerName());
+                    if (trig == null) {
+                    	throw new IllegalArgumentException("Trigger associated with section does not exist.");
+                    }
+                    pmTaskSectionTemplateTrigger.setTriggerId(trig.getId());
+                    pmTaskSectionTemplateTrigger.setSectionId(sectionTemplates.get(i).getId());
+                    props.add(FieldUtil.getAsProperties(pmTaskSectionTemplateTrigger));
+                }
+            }
+        }
+
+
+        if (!props.isEmpty()) {
+            builder.addRecords(props);
+            builder.save();
+        }
+    }
 }

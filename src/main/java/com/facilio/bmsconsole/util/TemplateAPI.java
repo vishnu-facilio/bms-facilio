@@ -838,6 +838,7 @@ public class TemplateAPI {
 							section.getPmTriggerContexts().add(trigContext);
 							
 							PMTaskSectionTemplateTriggers pmTaskSectionTemplateTrigger =  FieldUtil.getAsBeanFromMap(prop, PMTaskSectionTemplateTriggers.class);
+							pmTaskSectionTemplateTrigger.setTriggerName(trigName);
 							section.addPmTaskSectionTemplateTriggers(pmTaskSectionTemplateTrigger);
 						}
 					}

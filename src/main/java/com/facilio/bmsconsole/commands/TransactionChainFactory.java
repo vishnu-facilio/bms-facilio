@@ -1314,6 +1314,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddPMTriggerCommand(true));
 			c.addCommand(new AddPMReminderCommand(true));
 			c.addCommand(new SetMissingRelInResourcePlannersCommand());
+			c.addCommand(new CreateTaskSectionTriggerRelCommand());
 			c.addCommand(new AddPMRelFieldsCommand(true));
 			c.addCommand(new BlockPMEditOnWOGeneration(true, true));
 			c.addCommand(new ScheduleCreateWOJob(true, true));
