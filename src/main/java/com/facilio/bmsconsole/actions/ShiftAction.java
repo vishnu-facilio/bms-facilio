@@ -8,6 +8,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.BreakContext;
 import com.facilio.bmsconsole.context.ShiftContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -58,12 +59,6 @@ public class ShiftAction extends FacilioAction {
 		
 		this.users = (List<String>) context.get(FacilioConstants.ContextNames.USERS);
 		
-		
-//		if (users != null && !users.isEmpty()) {
-//			this.result = "failure";
-//		} else {
-//			this.result = "success";
-//		}
 		return SUCCESS;
 	}
 	
@@ -73,6 +68,45 @@ public class ShiftAction extends FacilioAction {
 		
 		Chain chain = TransactionChainFactory.markAbsentChain();
 		chain.execute(context);
+		
+		return SUCCESS;
+	}
+	
+	private BreakContext breakContext;
+	public BreakContext getBreakContext() {
+		return breakContext;
+	}
+	public void setBreakContext(BreakContext breakContext) {
+		this.breakContext = breakContext;
+	}
+	
+	public String addOrUpdateBreak() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.BREAK, breakContext);
+		
+		Chain chain = TransactionChainFactory.addOrUpdateBreakChain();
+		chain.execute(context);
+		return SUCCESS;
+	}
+	
+	public String getAllBreak() throws Exception {
+		FacilioContext context = new FacilioContext();
+		
+		Chain c = ReadOnlyChainFactory.getAllBreakChain();
+		c.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.BREAK_LIST, context.get(FacilioConstants.ContextNames.BREAK_LIST));
+		return SUCCESS;
+	}
+	
+	public String getBreak() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ID, id);
+		
+		Chain c = ReadOnlyChainFactory.getBreakChain();
+		c.execute(context);
+		
+		setResult("breakContext", context.get(FacilioConstants.ContextNames.BREAK));
 		
 		return SUCCESS;
 	}

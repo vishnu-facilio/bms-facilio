@@ -5225,6 +5225,16 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static List<FacilioField> getShiftBreakRelModuleFields() {
+		FacilioModule module = ModuleFactory.getShiftBreakRelModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getField("id", "ID", module, FieldType.ID));
+		fields.add(getField("shiftId", "SHIFTID", module, FieldType.NUMBER));
+		fields.add(getField("breakId", "BREAK_ID", module, FieldType.NUMBER));
+		return fields;
+	}
+	
 	public static List<FacilioField> getCostFields() {
 		FacilioModule module = ModuleFactory.getCostsModule();
 		List<FacilioField> fields = new ArrayList<>();

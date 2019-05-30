@@ -29,12 +29,14 @@ import org.json.simple.parser.ParseException;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.BreakContext;
 import com.facilio.bmsconsole.context.BusinessHourContext;
 import com.facilio.bmsconsole.context.BusinessHoursList;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ShiftContext;
 import com.facilio.bmsconsole.context.ShiftUserRelContext;
+import com.facilio.bmsconsole.criteria.Condition;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -958,5 +960,106 @@ public class ShiftAPI {
 					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getShiftUserRelModule()));
 			builder.delete();
 		}
+	}
+
+	public static void addOrUpdateBreak(BreakContext breakContext) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BREAK);
+		
+		if (breakContext.getId() > 0) {
+			UpdateRecordBuilder<BreakContext> builder = new UpdateRecordBuilder<BreakContext>()
+					.module(module)
+					.fields(modBean.getAllFields(module.getName()))
+					.andCondition(CriteriaAPI.getIdCondition(breakContext.getId(), module));
+			builder.update(breakContext);
+			
+			deleteBreakShiftRel(breakContext.getId());
+		}
+		else {
+			InsertRecordBuilder<BreakContext> builder = new InsertRecordBuilder<BreakContext>()
+					.module(module)
+					.fields(modBean.getAllFields(module.getName()));
+			builder.addRecord(breakContext);
+			builder.save();
+		}
+		
+		addBreakShiftRel(breakContext);
+	}
+	
+	public static List<BreakContext> getBreakList() throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BREAK);
+		SelectRecordsBuilder<BreakContext> builder = new SelectRecordsBuilder<BreakContext>()
+				.module(module)
+				.select(modBean.getAllFields(module.getName()))
+				.beanClass(BreakContext.class)
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+		List<BreakContext> list = builder.get();
+		return list;
+	}
+	
+	private static void deleteBreakShiftRel(long id) throws Exception {
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(ModuleFactory.getShiftBreakRelModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("BREAK_ID", "breakId", String.valueOf(id), NumberOperators.EQUALS));
+		builder.delete();
+	}
+
+	private static void addBreakShiftRel(BreakContext breakContext) throws Exception {
+		if (CollectionUtils.isNotEmpty(breakContext.getShifts())) {
+			List<Map<String, Object>> props = new ArrayList<>();
+			List<ShiftContext> shiftFromDB = new ArrayList<>();
+			for (ShiftContext shiftContext : breakContext.getShifts()) {
+				ShiftContext shift = getShift(shiftContext.getId());
+				if (shift == null) {
+					throw new IllegalArgumentException("Invalid shift");
+				}
+				shiftFromDB.add(shift);
+				
+				Map<String, Object> prop = new HashMap<>();
+				props.add(prop);
+				
+				prop.put("shiftId", shift.getId());
+				prop.put("breakId", breakContext.getId());
+			}
+			breakContext.setShifts(shiftFromDB);
+			
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+					.table(ModuleFactory.getShiftBreakRelModule().getTableName())
+					.fields(FieldFactory.getShiftBreakRelModuleFields());
+			
+			insertBuilder.addRecords(props);
+			insertBuilder.save();
+		}		
+	}
+	
+	public static List<ShiftContext> getShiftsAttachedToBreak(long breakId) throws Exception {
+		List<ShiftContext> list = new ArrayList<>();
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getShiftBreakRelModule().getTableName())
+				.select(FieldFactory.getShiftBreakRelModuleFields())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getShiftBreakRelModule()))
+				.andCondition(CriteriaAPI.getCondition("BREAK_ID", "breakId", String.valueOf(breakId), NumberOperators.EQUALS));
+		List<Map<String, Object>> shiftBreakList = builder.get();
+		if (CollectionUtils.isNotEmpty(shiftBreakList)) {
+			for (Map<String, Object> map : shiftBreakList) {
+				list.add(getShift((long) map.get("shiftId")));
+			}
+		}
+		return list;
+	}
+
+	public static BreakContext getBreak(long breakId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BREAK);
+		SelectRecordsBuilder<BreakContext> builder = new SelectRecordsBuilder<BreakContext>()
+				.module(module)
+				.select(modBean.getAllFields(module.getName()))
+				.beanClass(BreakContext.class)
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getIdCondition(breakId, module));
+		BreakContext breakContext = builder.fetchFirst();
+		breakContext.setShifts(getShiftsAttachedToBreak(breakId));
+		return breakContext;
 	}
 }

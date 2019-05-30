@@ -151,6 +151,15 @@
 		<action name="scheduleTesting"
 			class="com.facilio.bmsconsole.actions.ShiftAction" method="scheduleTesting" />
 	</package>
+	
+	<package name="break" namespace="/api/v2/break" extends="v2Api">
+		<action name="addOrUpdate"
+			class="com.facilio.bmsconsole.actions.ShiftAction" method="addOrUpdateBreak" />
+		<action name="list"
+			class="com.facilio.bmsconsole.actions.ShiftAction" method="getAllBreak" />
+		<action name="get"
+			class="com.facilio.bmsconsole.actions.ShiftAction" method="getBreak" />
+	</package>
 
 	<package name="importTemplate" namespace="/api/v2/importTemplate"
 		extends="v2Api">

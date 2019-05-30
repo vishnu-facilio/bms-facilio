@@ -952,6 +952,16 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GenericGetModuleDataListCommand());
 		return c;
 	}
+	public static Chain getAllBreakChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetAllBreaksCommand());
+		return c;
+	}
+	public static Chain getBreakChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetBreakCommand());
+		return c;
+	}
 
 
 	public static Chain getPMPlannerSettingschain() {

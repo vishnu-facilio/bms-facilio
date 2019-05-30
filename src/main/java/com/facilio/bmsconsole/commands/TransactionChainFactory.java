@@ -2808,6 +2808,12 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+		public static Chain addOrUpdateBreakChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddOrUpdateBreakCommand());
+			return c;
+		}
+
 }
 
 

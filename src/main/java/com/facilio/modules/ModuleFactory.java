@@ -1543,6 +1543,14 @@ public class ModuleFactory {
 		return shiftUserRel;
 	}
 	
+	public static FacilioModule getShiftBreakRelModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("ShiftBreakRel");
+		module.setDisplayName("Shift Break Rel");
+		module.setTableName("Shift_Break_Rel");
+		return module;
+	}
+	
 	public static FacilioModule getCostsModule() {
 		FacilioModule costs = new FacilioModule();
 		costs.setName("cost");
