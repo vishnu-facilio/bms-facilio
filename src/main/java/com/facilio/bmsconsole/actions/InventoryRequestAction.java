@@ -317,11 +317,4 @@ public class InventoryRequestAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	public String test() throws Exception {
-		
-		setResult(FacilioConstants.ContextNames.WORK_ORDER_STATUS_PERCENTAGE_RESPONSE, WorkOrderAPI.getAvgCompletionTimeByTechnician("3", 1558818822000L, 1559250822000L, 2L));
-		return SUCCESS;
-	}
-	
-
 }
