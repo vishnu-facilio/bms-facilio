@@ -39,7 +39,7 @@ public class GetFormMetaCommand extends FacilioCommand {
 			if (formModuleName != null) {
 				formModule = modBean.getModule(formModuleName);
 			}
-			
+
 			form = FormsAPI.getFormFromDB(formName, formModule);
 			if (form == null) {
 				FacilioModule childModule = null;
