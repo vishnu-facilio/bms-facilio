@@ -1,13 +1,16 @@
 package com.facilio.bmsconsole.page;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.modules.FieldUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
-import java.util.Map;
 
 public class PageWidget {
 	private static final long serialVersionUID = 1L;
@@ -146,6 +149,20 @@ public class PageWidget {
 		}
 		layoutParams.put(key, value);
 	}
+	
+	private List<PageWidget> widgets;
+	public List<PageWidget> getWidgets() {
+		return widgets;
+	}
+	public void setWidgets(List<PageWidget> widgets) {
+		this.widgets = widgets;
+	}
+	public void addToWidget (PageWidget widget) {
+		if (widgets == null) {
+			widgets = new ArrayList<PageWidget>();
+		}
+		widgets.add(widget);
+	}
 
 	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 	public enum WidgetType {
@@ -157,7 +174,8 @@ public class PageWidget {
  		COUNT("count"),
  		COMMENT("comment"),
  		ATTACHMENT("attachment"),
- 		ACTIVITY("activity")
+ 		ACTIVITY("activity"),
+ 		GROUP("group")
  		;
 		
 		private String name;

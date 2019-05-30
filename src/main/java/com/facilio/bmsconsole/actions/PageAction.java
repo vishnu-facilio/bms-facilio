@@ -7,6 +7,8 @@ import org.apache.commons.chain.Chain;
 
 public class PageAction extends FacilioAction {
 	
+	private static final long serialVersionUID = 1L;
+	
 	public String fetchPage() throws Exception {
 		
 		FacilioContext context = new FacilioContext();

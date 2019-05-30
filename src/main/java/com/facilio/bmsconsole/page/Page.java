@@ -1,10 +1,10 @@
 package com.facilio.bmsconsole.page;
 
-import com.facilio.modules.FacilioModule;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import com.facilio.modules.FacilioModule;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class Page {
 	private static final long serialVersionUID = 1L;
@@ -41,30 +41,24 @@ public class Page {
 		this.module = module;
 	}
 
-	private List<Column> columns;
-	public List<Column> getColumns() {
-		return columns;
+	private List<Tab> tabs;
+	public List<Tab> getTabs() {
+		return tabs;
 	}
-	public void setColumns(List<Column> columns) {
-		this.columns = columns;
+	public void setTabs(List<Tab> tabs) {
+		this.tabs = tabs;
 	}
-	public void addColumns(Column column) {
-		if (columns == null) {
-			columns = new ArrayList<>();
+	public void addTab(Tab tab) {
+		if (tabs == null) {
+			tabs = new ArrayList<>();
 		}
-		columns.add(column);
+		tabs.add(tab);
 	}
 	
-	public class Column {
+	public class Tab {
 		
-		Column () {}
-		
-		Column (int width) {
-			this(width, false);
-		}
-		Column (int width, boolean isFixed) {
-			this.width = width;
-			this.fixed = isFixed;
+		Tab(String name) {
+			this.name = name;
 		}
 		
 		private long orgId = -1;
@@ -91,28 +85,14 @@ public class Page {
 			this.pageId = pageId;
 		}
 		
-		private Boolean fixed;
-		public Boolean getFixed() {
-			return fixed;
+		private String name;
+		public String getName() {
+			return name;
 		}
-		public void setFixed(Boolean fixed) {
-			this.fixed = fixed;
+		public void setName(String name) {
+			this.name = name;
 		}
-		public boolean isFixed() {
-			if (fixed == null) {
-				return false;
-			}
-			return fixed;
-		}
-		
-		private int width = -1;	// in percent
-		public int getWidth() {
-			return width;
-		}
-		public void setWidth(int width) {
-			this.width = width;
-		}
-		
+
 		private List<Section> sections;
 		public List<Section> getSections() {
 			return sections;
@@ -172,20 +152,20 @@ public class Page {
 			this.pageId = pageId;
 		}
 		
-		private long columnId = -1;
-		public long getColumnId() {
-			return columnId;
+		private long tabId = -1;
+		public long getTabId() {
+			return tabId;
 		}
-		public void setColumnId(long columnId) {
-			this.columnId = columnId;
+		public void setTabId(long tabId) {
+			this.tabId = tabId;
 		}
 		
-		private Column column;
-		public Column getColumn() {
-			return column;
+		private Tab tab;
+		public Tab getTab() {
+			return tab;
 		}
-		public void setColumn(Column column) {
-			this.column = column;
+		public void setTab(Tab tab) {
+			this.tab = tab;
 		}
 		
 		private List<PageWidget> widgets;

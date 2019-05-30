@@ -1,15 +1,16 @@
 package com.facilio.bmsconsole.page;
 
-import com.facilio.bmsconsole.page.Page.Column;
-import com.facilio.bmsconsole.page.Page.Section;
-import com.facilio.bmsconsole.page.PageWidget.WidgetType;
-import com.facilio.bmsconsole.page.WidgetGroup.WidgetGroupType;
-import com.facilio.constants.FacilioConstants;
-import org.json.simple.JSONObject;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.json.simple.JSONObject;
+
+import com.facilio.bmsconsole.page.Page.Section;
+import com.facilio.bmsconsole.page.Page.Tab;
+import com.facilio.bmsconsole.page.PageWidget.WidgetType;
+import com.facilio.bmsconsole.page.WidgetGroup.WidgetGroupType;
+import com.facilio.constants.FacilioConstants;
 
 public class PageFactory {
 
@@ -29,66 +30,87 @@ public class PageFactory {
 	private static Page getAssetPage() {
 		Page page = new Page();
 
-		Column column1 = page.new Column();
+		Tab tab1 = page.new Tab("summary");
+		page.addTab(tab1);
 
-		Section col1Sec1 = page.new Section();
+		Section tab1Sec1 = page.new Section();
+		tab1.addSection(tab1Sec1);
+		
 		PageWidget pageWidget = new PageWidget(WidgetType.PRIMARY_DETAILS_WIDGET);
-		pageWidget.addToLayoutParams(col1Sec1, 24, 10);
-		col1Sec1.addWidget(pageWidget);
-		column1.addSection(col1Sec1);
+		pageWidget.addToLayoutParams(tab1Sec1, 24, 10);
+		pageWidget.addToWidgetParams("showOperatingHours", true);
+		tab1Sec1.addWidget(pageWidget);
+		
+		PageWidget workorderWidget = getCountModuleWidget(FacilioConstants.ContextNames.WORK_ORDER);
+		workorderWidget.addToLayoutParams(tab1Sec1, 6, 5);
+		tab1Sec1.addWidget(workorderWidget);
+		
+		PageWidget alarmWidget = getCountModuleWidget(FacilioConstants.ContextNames.ALARM);
+		alarmWidget.addToLayoutParams(tab1Sec1, 6, 5);
+		tab1Sec1.addWidget(alarmWidget);
+		
+		PageWidget fddWidget = new PageWidget(WidgetType.CARD);
+		fddWidget.addToLayoutParams(tab1Sec1, 6, 5);
+		fddWidget.addToWidgetParams("type", "failureMetrics");
+		tab1Sec1.addWidget(fddWidget);
+		
 
-		Section col1Sec2 = page.new Section();
 		// col1Sec2.setName("overview");
 		// col1Sec2.setDisplayName("common.page.overview");
 		PageWidget detailsWidget = new PageWidget(WidgetType.SECONDARY_DETAILS_WIDGET);
-		detailsWidget.addToLayoutParams(col1Sec2, 24, 5);
-		col1Sec2.addWidget(detailsWidget);
-		column1.addSection(col1Sec2);
-
-		Section col1Sec3 = page.new Section();
-		column1.addSection(col1Sec3);
+		detailsWidget.addToLayoutParams(tab1Sec1, 24, 5);
+		tab1Sec1.addWidget(detailsWidget);
 		
-		PageWidget readingWidget = getListModuleWidget(FacilioConstants.ContextNames.READING);
-		readingWidget.addToLayoutParams(col1Sec3, 24, 10);
-		col1Sec3.addWidget(readingWidget);
+		addCommonSubModuleGroup(tab1Sec1);
+
+//		PageWidget readingWidget = getListModuleWidget(FacilioConstants.ContextNames.READING);
+//		readingWidget.addToLayoutParams(col1Sec3, 24, 10);
+//		col1Sec3.addWidget(readingWidget);
 		
-		Section col1Sec4 = page.new Section();
-		column1.addSection(col1Sec4);
-
-		WidgetGroup moduleGroup = new WidgetGroup(WidgetGroupType.TAB);
-		moduleGroup.addToLayoutParams(col1Sec4, 24, 10);
-		col1Sec4.addWidgetGroup(moduleGroup);
-
-		PageWidget workorderWidget = getCountModuleWidget(FacilioConstants.ContextNames.WORK_ORDER);
-		moduleGroup.addWidget(workorderWidget);
-		PageWidget pmWidget = getListModuleWidget(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
-		moduleGroup.addWidget(pmWidget);
-		PageWidget alarmWidget = getCountModuleWidget(FacilioConstants.ContextNames.ALARM);
-		moduleGroup.addWidget(alarmWidget);
+		Tab tab2 = page.new Tab("maintenance");
+		page.addTab(tab2);
 		
-		WidgetGroup subModuleGroup = getCommonSubModuleGroup(col1Sec4);
-		col1Sec4.addWidgetGroup(subModuleGroup);
-
-		page.addColumns(column1);
+		Section tab2Sec1 = page.new Section();
+		tab2.addSection(tab2Sec1);
+		
+		PageWidget nextPmWidget = new PageWidget(WidgetType.CARD);
+		nextPmWidget.addToLayoutParams(tab2Sec1, 6, 5);
+		nextPmWidget.addToWidgetParams("type", "nextPm");
+		tab2Sec1.addWidget(nextPmWidget);
+		
+		PageWidget woDetailsWidget = new PageWidget(WidgetType.CARD);
+		woDetailsWidget.addToLayoutParams(tab2Sec1, 6, 5);
+		woDetailsWidget.addToWidgetParams("type", "woDetails");
+		tab2Sec1.addWidget(woDetailsWidget);
+		
+		PageWidget recentlyClosedWidget = new PageWidget(WidgetType.CARD);
+		recentlyClosedWidget.addToLayoutParams(tab2Sec1, 6, 5);
+		recentlyClosedWidget.addToWidgetParams("type", "recentlyClosedPm");
+		tab2Sec1.addWidget(recentlyClosedWidget);
+		
+//		PageWidget pmWidget = getListModuleWidget(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
+//		pmWidget.addToLayoutParams(tab2Sec1, 24, 10);
+//		col1Sec3.addWidget(readingWidget);
 
 		return page;
 	}
 
-	private static WidgetGroup getCommonSubModuleGroup(Section section) {
-		WidgetGroup group = new WidgetGroup(WidgetGroupType.TAB);
-		group.addToLayoutParams(section, 24, 10);
+	private static PageWidget addCommonSubModuleGroup(Section section) {
 
+		PageWidget subModuleGroup = new PageWidget(WidgetType.GROUP);
+		subModuleGroup.addToLayoutParams(section, 24, 10);
+		subModuleGroup.addToWidgetParams("type", WidgetGroupType.TAB);
+		section.addWidget(subModuleGroup);
+		
 		PageWidget notesWidget = new PageWidget();
 		notesWidget.setWidgetType(WidgetType.COMMENT);
-		// group.addToLayoutParams(24, 5);
-		group.addWidget(notesWidget);
-
+		subModuleGroup.addToWidget(notesWidget);
+		
 		PageWidget attachmentWidget = new PageWidget();
 		attachmentWidget.setWidgetType(WidgetType.ATTACHMENT);
-		// group.addToLayoutParams(24, 5);
-		group.addWidget(attachmentWidget);
+		subModuleGroup.addToWidget(attachmentWidget);
 
-		return group;
+		return subModuleGroup;
 	}
 
 	private static PageWidget getCountModuleWidget(String module) {
@@ -112,8 +134,8 @@ public class PageFactory {
 		col2Sec2.setDisplayName("Asset Performance");
 		addAssetPerformanceWidgets(col2Sec2);
 
-		Column column2 = page.getColumns().get(1);
-		column2.addSection(col2Sec2, 1);
+//		Column column2 = page.getColumns().get(1);
+//		column2.addSection(col2Sec2, 1);
 
 		return page;
 	}
