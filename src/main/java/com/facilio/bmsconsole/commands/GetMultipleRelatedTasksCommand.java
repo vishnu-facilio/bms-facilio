@@ -6,10 +6,12 @@ import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
@@ -20,6 +22,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 ;
 
@@ -39,7 +42,8 @@ public class GetMultipleRelatedTasksCommand implements Command {
 		
 		setRelatedTaskSections(recordIds, taskMap);
 		
-		List<TaskContext> tasks = TicketAPI.getRelatedTasks(recordIds);
+		List<TaskContext> alltasks = TicketAPI.getRelatedTasks(recordIds);
+		List<TaskContext> tasks = alltasks.stream().filter(t -> !t.isPreRequest()).collect(Collectors.toList());
 		context.put(FacilioConstants.ContextNames.TASK_LIST, tasks);
 		groupTaskBySection(tasks, taskMap);
 		
@@ -71,7 +75,9 @@ public class GetMultipleRelatedTasksCommand implements Command {
 						Map<String, Object> sectionMap = new HashMap<>();
 						sections = new HashMap<Long, TaskSectionContext>();
 						sectionMap.put("sections", sections);
-						taskMap.put(section.getParentTicketId(), sectionMap);
+						if (!section.isPreRequest()) {
+							taskMap.put(section.getParentTicketId(), sectionMap);
+						}
 					}
 					else {
 						sections = (Map<Long, TaskSectionContext>) taskMap.get(section.getParentTicketId()).get("sections");

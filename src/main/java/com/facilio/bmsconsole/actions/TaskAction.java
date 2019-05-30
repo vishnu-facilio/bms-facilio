@@ -19,6 +19,7 @@ import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
@@ -163,7 +164,16 @@ public class TaskAction extends FacilioAction {
 	public void setId(List<Long> id) {
 		this.id = id;
 	}
-	
+
+	private boolean preRequestStatus;
+
+	public boolean isPreRequestStatus() {
+		return preRequestStatus;
+	}
+
+	public void setPreRequestStatus(boolean preRequestStatus) {
+		this.preRequestStatus = preRequestStatus;
+	}
 	private int rowsUpdated;
 	public int getRowsUpdated() {
 		return rowsUpdated;
@@ -309,8 +319,13 @@ public class TaskAction extends FacilioAction {
 				context.put(FacilioConstants.ContextNames.DO_VALIDTION, getDoValidation());
 			}
 			context.put(FacilioConstants.ContextNames.SKIP_LAST_READING_CHECK, true);
-			Chain updateTask = TransactionChainFactory.getUpdateTaskChain();
+			Chain updateTask;
 			try {
+					if (singleTask.isPreRequest()) {
+						updateTask = TransactionChainFactory.getUpdatePreRequestChain();
+					} else {
+						updateTask = TransactionChainFactory.getUpdateTaskChain();
+					}
 				updateTask.execute(context);
 			} catch (ReadingValidationException ex) {
 				Map<String, String> msgMap = new HashMap<>();
@@ -324,6 +339,11 @@ public class TaskAction extends FacilioAction {
 				rowsUpdated += (int) count;
 			}
 		}
+			List<TaskContext> oldTasks = (List<TaskContext>) context.get(FacilioConstants.TicketActivity.OLD_TICKETS);
+			if (!oldTasks.isEmpty()) {
+				Long workOrderId = oldTasks.get(0).getParentTicketId();
+				preRequestStatus =WorkOrderAPI.getPreRequestStatus(workOrderId);
+			}
 	}
 		catch (Exception e) {
 			JSONObject inComingDetails = new JSONObject();
@@ -425,7 +445,9 @@ public class TaskAction extends FacilioAction {
 				getRelatedTasksChain.execute(context);
 
 				setTasks((Map<Long, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP));
+				setPreRequests((Map<Long, List<TaskContext>>) context.get(FacilioConstants.ContextNames.PRE_REQUEST_MAP));
 				setSections((Map<Long, TaskSectionContext>) context.get(FacilioConstants.ContextNames.TASK_SECTIONS));
+				setPreRequestSections((Map<Long, TaskSectionContext>) context.get(FacilioConstants.ContextNames.PRE_REQUEST_SECTIONS));	
 			} catch (Exception e) {
 				log.info("Exception occurred ", e);
 			}
@@ -466,7 +488,16 @@ public class TaskAction extends FacilioAction {
 
 		return SUCCESS;
 	}
-	
+
+	private Map<Long, List<TaskContext>> preRequests;
+
+	public Map<Long, List<TaskContext>> getPreRequests() {
+		return preRequests;
+	}
+
+	public void setPreRequests(Map<Long, List<TaskContext>> preRequests) {
+		this.preRequests = preRequests;
+	}
 	private Map<Long, List<TaskContext>> tasks;
 	public Map<Long, List<TaskContext>> getTasks() {
 		return tasks;
@@ -482,7 +513,16 @@ public class TaskAction extends FacilioAction {
 	public void setSections(Map<Long, TaskSectionContext> sections) {
 		this.sections = sections;
 	}
-	
+
+	private Map<Long, TaskSectionContext> preRequestSections;
+
+	public Map<Long, TaskSectionContext> getPreRequestSections() {
+		return preRequestSections;
+	}
+
+	public void setPreRequestSections(Map<Long, TaskSectionContext> preRequestSections) {
+		this.preRequestSections = preRequestSections;
+	}
 	private Map<Long, Map<String, Object>> taskMap;
 	public Map<Long, Map<String, Object>> getTaskMap() {
 		return taskMap;

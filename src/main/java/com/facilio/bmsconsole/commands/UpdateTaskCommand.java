@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.chain.FacilioContext;
@@ -25,10 +26,12 @@ import com.facilio.modules.fields.LookupField;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.MutablePair;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -153,6 +156,9 @@ public class UpdateTaskCommand implements Command {
 																		.andCondition(idCondition);
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, updateBuilder.update(task));
 			context.put(FacilioConstants.TicketActivity.OLD_TICKETS, oldTasks);
+			if (task.isPreRequest()) {
+				WorkOrderAPI.updatePreRequestStatus(oldTasks.get(0).getParentTicketId());
+			}
 		}
 		return false;
 	}

@@ -285,7 +285,16 @@ public class WorkorderTemplate extends Template {
 			additionInfo.putAll(prop);
 		}
 	}
-	
+
+	private Map<String, List<TaskContext>> preRequests;
+
+	public Map<String, List<TaskContext>> getPreRequests() {
+		return preRequests;
+	}
+
+	public void setPreRequests(Map<String, List<TaskContext>> preRequests) {
+		this.preRequests = preRequests;
+	}	
 	private Map<String, List<TaskContext>> tasks;
 	public Map<String, List<TaskContext>> getTasks() {
 		return tasks;
@@ -293,7 +302,17 @@ public class WorkorderTemplate extends Template {
 	public void setTasks(Map<String, List<TaskContext>> tasks) {
 		this.tasks = tasks;
 	}
-	
+
+	@JsonIgnore
+	private List<TaskTemplate> preRequestTemplates;
+
+	public List<TaskTemplate> getPreRequestTemplates() {
+		return preRequestTemplates;
+	}
+
+	public void setPreRequestTemplates(List<TaskTemplate> preRequestTemplates) {
+		this.preRequestTemplates = preRequestTemplates;
+	}
 	@JsonIgnore
 	private List<TaskTemplate> taskTemplates;
 	public List<TaskTemplate> getTaskTemplates() {
@@ -302,7 +321,17 @@ public class WorkorderTemplate extends Template {
 	public void setTaskTemplates(List<TaskTemplate> taskTemplates) {
 		this.taskTemplates = taskTemplates;
 	}
-	
+
+	@JsonIgnore
+	private List<TaskSectionTemplate> preRequestSectionTemplates;
+
+	public List<TaskSectionTemplate> getPreRequestSectionTemplates() {
+		return preRequestSectionTemplates;
+	}
+
+	public void setPreRequestSectionTemplates(List<TaskSectionTemplate> preRequestSectionTemplates) {
+		this.preRequestSectionTemplates = preRequestSectionTemplates;
+	}
 	@JsonIgnore
 	private List<TaskSectionTemplate> sectionTemplates;
 	public List<TaskSectionTemplate> getSectionTemplates() {

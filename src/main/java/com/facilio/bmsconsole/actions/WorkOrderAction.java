@@ -215,6 +215,9 @@ public class WorkOrderAction extends FacilioAction {
 		if(tasksString != null) {
 			setTaskSectioncontext(tasksString);
 		}
+		if(preRequestsString != null) {
+			setPreRequestSectioncontext(preRequestsString);
+		}
 		if(reminderString != null) {
 			setRemindercontex(reminderString);
 		}
@@ -466,6 +469,9 @@ public class WorkOrderAction extends FacilioAction {
 		}
 		if(tasksString != null) {
 			setTaskSectioncontext(tasksString);
+		}
+		if (preRequestsString != null) {
+			setPreRequestSectioncontext(preRequestsString);
 		}
 		if(reminderString != null) {
 			setRemindercontex(reminderString);
@@ -806,8 +812,11 @@ public class WorkOrderAction extends FacilioAction {
 		setPreventivemaintenance((PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE));
 		setWorkorder((WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER));
 		setTaskList((Map<Long, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP));
+		setPreRequestList((Map<Long, List<TaskContext>>) context.get(FacilioConstants.ContextNames.PRE_REQUEST_MAP));
 		setListOfTasks((List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST));
+		setListOfPreRequests((List<TaskContext>) context.get(FacilioConstants.ContextNames.PRE_REQUEST_LIST));
 		setSectionTemplates((List<TaskSectionTemplate>) context.get(FacilioConstants.ContextNames.TASK_SECTIONS));
+		setPreRequestSectionTemplates((List<TaskSectionTemplate>) context.get(FacilioConstants.ContextNames.PRE_REQUEST_SECTIONS));
 		setReminders((List<PMReminder>) context.get(FacilioConstants.ContextNames.PM_REMINDERS));
 		return SUCCESS;
 	}
@@ -1492,6 +1501,15 @@ public class WorkOrderAction extends FacilioAction {
 		this.taskSectionString = taskSectionString;
 	}
 
+	private String preRequestsString;
+
+	public String getPreRequestsString() {
+		return preRequestsString;
+	}
+
+	public void setPreRequestsString(String preRequestsString) {
+		this.preRequestsString = preRequestsString;
+	}
 	private String tasksString;
 	public String getTasksString() {
 		return tasksString;
@@ -1510,7 +1528,18 @@ public class WorkOrderAction extends FacilioAction {
 			}
 		}
 	}
-	
+
+	public List<TaskSectionTemplate> setPreRequestSectioncontext(String preRequestSectionstring) throws Exception {
+
+		JSONParser parser = new JSONParser();
+		JSONArray obj = (JSONArray) parser.parse(preRequestSectionstring);
+
+		List<TaskSectionTemplate> taskSectionContextList = FieldUtil.getAsBeanListFromJsonArray(obj,
+				TaskSectionTemplate.class);
+		taskSectionContextList.stream().forEach(pr -> pr.setPreRequestSection(true));
+		getSectionTemplates().addAll(taskSectionContextList);
+		return taskSectionContextList;
+	}
 	public List<TaskSectionTemplate> setTaskSectioncontext(String taskSectionstring) throws Exception {
 		
 		JSONParser parser = new JSONParser();
@@ -1749,6 +1778,15 @@ public class WorkOrderAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+	private Map<Long, List<TaskContext>> preRequestList;
+
+	public Map<Long, List<TaskContext>> getPreRequestList() {
+		return preRequestList;
+	}
+
+	public void setPreRequestList(Map<Long, List<TaskContext>> preRequestList) {
+		this.preRequestList = preRequestList;
+	}
 	private Map<Long, List<TaskContext>> taskList;
 
 	public Map<Long, List<TaskContext>> getTaskList() {
@@ -1758,7 +1796,16 @@ public class WorkOrderAction extends FacilioAction {
 	public void setTaskList(Map<Long, List<TaskContext>> taskList) {
 		this.taskList = taskList;
 	}
-	
+
+	private List<TaskContext> listOfPreRequests;
+
+	public List<TaskContext> getListOfPreRequests() {
+		return listOfPreRequests;
+	}
+
+	public void setListOfPreRequests(List<TaskContext> listOfPreRequests) {
+		this.listOfPreRequests = listOfPreRequests;
+	}
 	private List<TaskContext> listOfTasks;
 	public List<TaskContext> getListOfTasks() {
 		return listOfTasks;
@@ -1767,6 +1814,15 @@ public class WorkOrderAction extends FacilioAction {
 		this.listOfTasks = taskTemplates;
 	}
 
+	private List<TaskSectionTemplate> preRequestSectionTemplates;
+
+	public List<TaskSectionTemplate> getPreRequestSectionTemplates() {
+		return preRequestSectionTemplates;
+	}
+
+	public void setPreRequestSectionTemplates(List<TaskSectionTemplate> preRequestSectionTemplates) {
+		this.preRequestSectionTemplates = preRequestSectionTemplates;
+	}
 	private List<TaskSectionTemplate> sectionTemplates;
 
 	public List<TaskSectionTemplate> getSectionTemplates() {

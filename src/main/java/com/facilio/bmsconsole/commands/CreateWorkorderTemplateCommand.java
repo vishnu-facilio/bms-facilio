@@ -75,7 +75,7 @@ public class CreateWorkorderTemplateCommand implements Command {
 		long templateId = -1; 
 		if (type == Template.Type.PM_WORKORDER) {
 			
-			templateId = TemplateAPI.addNewWorkOrderTemplate(workorderTemplate, Type.PM_WORKORDER, Type.PM_TASK, Type.PM_TASK_SECTION);	 // all addition done here..
+			templateId = TemplateAPI.addNewWorkOrderTemplate(workorderTemplate, Type.PM_WORKORDER, Type.PM_TASK, Type.PM_TASK_SECTION, Type.PM_PRE_REQUEST, Type.PM_PRE_REQUEST_SECTION);// all addition done here..
 		}
 		else {
 			templateId = TemplateAPI.addWorkOrderTemplate(workorderTemplate);

@@ -20,6 +20,15 @@ public class WorkOrderContext extends TicketContext {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private boolean preRequestStatus;
+
+	public boolean isPreRequestStatus() {
+		return preRequestStatus;
+	}
+
+	public void setPreRequestStatus(boolean preRequestStatus) {
+		this.preRequestStatus = preRequestStatus;
+	}
 	private static Logger log = LogManager.getLogger(WorkOrderContext.class.getName());
 	private User requester;
 	public User getRequester() {
