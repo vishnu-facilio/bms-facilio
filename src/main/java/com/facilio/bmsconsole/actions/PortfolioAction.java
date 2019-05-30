@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.AssetsAPI;
@@ -243,6 +244,16 @@ public class PortfolioAction extends ActionSupport {
 			
 			prop.put("thisMonthKwh", thisMonthKwh);
 			prop.put("lastMonthKwh", lastMonthKwh);
+			
+			if(resourceContext.getPhotoId() <= 0) {
+				
+				List<PhotosContext> photos = SpaceAPI.getBaseSpacePhotos(resourceContext.getId());
+				
+				if(photos != null && !photos.isEmpty()) {
+					resourceContext.setPhotoId(photos.get(0).getPhotoId());
+				}
+			}
+			
 			prop.put("avatar", resourceContext.getAvatarUrl());
 			
 			if(thisMonthKwh != null && thisMonthKwh > 0 && lastMonthKwh != null && lastMonthKwh > 0) {
