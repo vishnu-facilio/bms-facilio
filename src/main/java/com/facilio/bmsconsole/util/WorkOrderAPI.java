@@ -1857,15 +1857,20 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 					.andCondition(condition)
 					.andCondition(preRequestCondition).andCondition(inputValueCondition);
 			List<Map<String, Object>> countList = select.get();
-              
+            Boolean allPreRequisitesCompleted;
+            Boolean photosAddedIfMandatory;
 			Boolean preRequestStatus = countList.isEmpty();
 			if(!preRequestStatus){
-				preRequestStatus=countList.stream().allMatch(map->(0==((Number) map.get("count")).longValue()));
+				allPreRequisitesCompleted=countList.stream().allMatch(map->(0==((Number) map.get("count")).longValue()));
+				photosAddedIfMandatory=isPhotosAddedIfMandatory(id);//start from here
+				preRequestStatus=allPreRequisitesCompleted&&photosAddedIfMandatory;
 			}
 
 			return preRequestStatus;
 	}
-	
+	public static Boolean isPhotosAddedIfMandatory(Long id){
+		return true;
+	}
     public static WorkorderItemContext getWorkOrderItem(long woItemId) throws Exception {
 
     	  ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

@@ -218,7 +218,16 @@ public class WorkOrderContext extends TicketContext {
 	public void setAlarm(AlarmContext alarm) {
 		this.alarm = alarm;
 	}
-	
+
+	private Boolean photoMandatory;
+
+	public Boolean getPhotoMandatory() {
+		return photoMandatory;
+	}
+
+	public void setPhotoMandatory(Boolean photoMandatory) {
+		this.photoMandatory = photoMandatory;
+	}
 	private Boolean isSignatureRequired;
 	public Boolean getIsSignatureRequired() {
 		return isSignatureRequired;
