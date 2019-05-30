@@ -18,10 +18,12 @@ import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -231,12 +233,17 @@ public class PortfolioAction extends ActionSupport {
 		Map<Long,Double> prevMeterVsConsumption=ReportsUtil.getMapping(propsLastMonth,"parentId","totalEnergyConsumptionDelta");
 		
 		for(Map<String, Object> prop : props) {
+			
+			Long buildingId = (Long)prop.get("building");
+			
+			ResourceContext resourceContext = ResourceAPI.getResource(buildingId);
 			Long meterId = (Long) prop.get("meterId");
 			Double thisMonthKwh = (Double) thisMeterVsConsumption.get(meterId);
 			Double lastMonthKwh = (Double) prevMeterVsConsumption.get(meterId);
 			
 			prop.put("thisMonthKwh", thisMonthKwh);
 			prop.put("lastMonthKwh", lastMonthKwh);
+			prop.put("avatar", resourceContext.getAvatarUrl());
 			
 			if(thisMonthKwh != null && thisMonthKwh > 0 && lastMonthKwh != null && lastMonthKwh > 0) {
 				double variance= ReportsUtil.getVariance(thisMonthKwh, lastMonthKwh);
