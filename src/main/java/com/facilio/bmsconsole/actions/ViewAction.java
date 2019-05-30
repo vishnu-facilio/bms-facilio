@@ -99,6 +99,7 @@ public class ViewAction extends FacilioAction {
 
 		context.put(FacilioConstants.ContextNames.FILE_FORMAT, type);
 		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.START_TIME, startTime);
 		context.put(FacilioConstants.ContextNames.END_TIME, endTime);
 		context.put(FacilioConstants.ContextNames.MAX_COUNT, maxCount);
@@ -112,7 +113,7 @@ public class ViewAction extends FacilioAction {
 	public String woScheduledList() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, "workorder");
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		Chain mailReportChain = ReportsChainFactory.getWoScheduledViewListChain();
 		mailReportChain.execute(context);
 		setScheduledReports((List<ReportInfo>) context.get(FacilioConstants.ContextNames.REPORT_LIST));
@@ -127,6 +128,7 @@ public class ViewAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.FILE_FORMAT, type);
 		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.CV_NAME, viewName);
 		context.put(FacilioConstants.ContextNames.START_TIME, startTime);
 		context.put(FacilioConstants.ContextNames.END_TIME, endTime);
