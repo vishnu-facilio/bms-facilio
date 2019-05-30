@@ -930,6 +930,17 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetShiftUserMappingCommand());
 		return c;
 	}
+	
+	public static Chain getAttendanceList() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForAttendance());
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GenericGetModuleDataListCommand());
+		return c;
+	}
 
 
 	public static Chain getPMPlannerSettingschain() {

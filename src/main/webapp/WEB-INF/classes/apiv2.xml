@@ -2377,6 +2377,12 @@
 		</action>
 	</package>
 	
-
+	<package name="attendanceListApiv2" namespace="/api/v2/attendance/view"
+		extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.AttendanceAction"
+			method="attendanceList">
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
 	
 </struts>

@@ -1,10 +1,17 @@
 package com.facilio.bmsconsole.actions;
 
-import org.apache.commons.chain.Chain;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.apache.commons.chain.Chain;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AttendanceContext;
 import com.facilio.bmsconsole.context.AttendanceTransactionContext;
+import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -44,6 +51,14 @@ public class AttendanceAction extends ModuleAction{
 		this.attendanceTransactionId = attendanceTransactionId;
 	}
 	
+	private List<AttendanceContext> attendanceList;
+	public List<AttendanceContext> getAttendanceList() {
+		return attendanceList;
+	}
+	public void setAttendanceList(List<AttendanceContext> attendanceList) {
+		this.attendanceList = attendanceList;
+	}
+	
 	public String addAttendanceTransaction() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, attendanceTransaction);
@@ -53,5 +68,77 @@ public class AttendanceAction extends ModuleAction{
 		return SUCCESS;
 	}
 
+	public String attendanceList() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Item.DAY asc");
+		if (getFilters() != null) {
+			JSONParser parser = new JSONParser();
+			JSONObject json = (JSONObject) parser.parse(getFilters());
+			context.put(FacilioConstants.ContextNames.FILTERS, json);
+			context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
+		}
+		if (getSearch() != null) {
+			JSONObject searchObj = new JSONObject();
+			searchObj.put("fields", "attendance.user");
+			searchObj.put("query", getSearch());
+			context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
+		}
+		if (getCount()) { // only count
+			context.put(FacilioConstants.ContextNames.FETCH_COUNT, true);
+		} else {
+			JSONObject pagination = new JSONObject();
+			pagination.put("page", getPage());
+			pagination.put("perPage", getPerPage());
+			if (getPerPage() < 0) {
+				pagination.put("perPage", 5000);
+			}
+			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+		}
 
+		Chain itemsListChain = ReadOnlyChainFactory.getAttendanceList();
+		itemsListChain.execute(context);
+		if (getCount()) {
+			setAttendanceCount((Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
+			setResult("count", attendanceCount);
+		} else {
+			attendanceList = (List<AttendanceContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+			if (attendanceList == null) {
+				attendanceList = new ArrayList<>();
+			}
+			setResult(FacilioConstants.ContextNames.ATTENDANCE, attendanceList);
+		}
+		return SUCCESS;
+	}
+	
+	private boolean includeParentFilter;
+
+	public boolean getIncludeParentFilter() {
+		return includeParentFilter;
+	}
+
+	public void setIncludeParentFilter(boolean includeParentFilter) {
+		this.includeParentFilter = includeParentFilter;
+	}
+	private Boolean count;
+
+	public Boolean getCount() {
+		if (count == null) {
+			return false;
+		}
+		return count;
+	}
+
+	public void setCount(Boolean count) {
+		this.count = count;
+	}
+	
+	private Long attendanceCount;
+	public Long getAttendanceCount() {
+		return attendanceCount;
+	}
+	public void setAttendanceCount(Long attendanceCount) {
+		this.attendanceCount = attendanceCount;
+	}
+	
 }

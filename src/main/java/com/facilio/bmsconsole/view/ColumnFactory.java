@@ -58,6 +58,8 @@ public class ColumnFactory {
 		columnMap.put("purchasedItem-default", getDefaultPurchasedItemColumns());
 		columnMap.put("gatePass-default", getDefaultGatePassColumns());
 		columnMap.put("shipment-default", getDefaultShipmentColumns());
+		columnMap.put("attendance-default", getDefaultAttendanceColumns());
+		columnMap.put("attendanceTransaction-default", getDefaultAttendanceTransactionColumns());
 		
 		// Default report columns 
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
@@ -433,6 +435,30 @@ public class ColumnFactory {
 		columns.add(new ViewField("transferredBy", "Transferred By"));
 		columns.add(new ViewField("receivedBy", "Received By"));
 		columns.add(new ViewField("status", "Status"));
+		return columns;
+	}
+	private static List<ViewField> getDefaultAttendanceColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("user", "User"));
+		columns.add(new ViewField("checkInTime", "Check-in Time"));
+		columns.add(new ViewField("checkOutTime", "Check-out Time"));
+		columns.add(new ViewField("workingHours", "Working Hours"));
+		columns.add(new ViewField("day", "Day"));
+		columns.add(new ViewField("status", "Status"));
+		return columns;
+	}
+	
+	private static List<ViewField> getDefaultAttendanceTransactionColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("attendance", "Attendance"));
+		columns.add(new ViewField("transactionType", "Transaction Type"));
+		columns.add(new ViewField("sourceType", "Source Type"));
+		columns.add(new ViewField("location", "Location"));
+		columns.add(new ViewField("ipAddress", "IP Address"));
+		columns.add(new ViewField("terminal", "Terminal"));
+		columns.add(new ViewField("transactionTime", "Transaction Time"));
 		return columns;
 	}
 }

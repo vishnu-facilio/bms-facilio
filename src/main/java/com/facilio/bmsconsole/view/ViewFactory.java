@@ -336,6 +336,15 @@ public class ViewFactory {
 		views.put("issued", getInventoryRequestForStatus("issued", "Issued", 6).setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.INVENTORY_REQUEST, views);
 
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllAttendanceView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.ATTENDANCE, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllAttendanceTransactionView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.ATTENDANCE_TRANSACTIONS, views);
 		
 		return viewsMap;
 	}
@@ -3558,4 +3567,32 @@ public class ViewFactory {
 		return gatePassStatusCriteria;
 	}
 
+	private static FacilioView getAllAttendanceView() {
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("SYS_CREATED_TIME");
+		createdTime.setModule(ModuleFactory.getAttendanceModule());
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Attendance");
+		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		return allView;
+	}
+	
+	private static FacilioView getAllAttendanceTransactionView() {
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("SYS_CREATED_TIME");
+		createdTime.setModule(ModuleFactory.getAttendanceTransactionModule());
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Attendance Transactions");
+		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		return allView;
+	}
+	
 }
