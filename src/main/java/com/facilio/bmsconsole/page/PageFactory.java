@@ -42,15 +42,15 @@ public class PageFactory {
 		tab1Sec1.addWidget(pageWidget);
 		
 		PageWidget workorderWidget = getCountModuleWidget(FacilioConstants.ContextNames.WORK_ORDER);
-		workorderWidget.addToLayoutParams(tab1Sec1, 8, 11);
+		workorderWidget.addToLayoutParams(tab1Sec1, 7, 11);
 		tab1Sec1.addWidget(workorderWidget);
 		
 		PageWidget alarmWidget = getCountModuleWidget(FacilioConstants.ContextNames.ALARM);
-		alarmWidget.addToLayoutParams(tab1Sec1, 8, 11);
+		alarmWidget.addToLayoutParams(tab1Sec1, 7, 11);
 		tab1Sec1.addWidget(alarmWidget);
 		
 		PageWidget fddWidget = new PageWidget(WidgetType.CARD);
-		fddWidget.addToLayoutParams(tab1Sec1, 8, 11);
+		fddWidget.addToLayoutParams(tab1Sec1, 10, 11);
 		fddWidget.addToWidgetParams("type", "failureMetrics");
 		tab1Sec1.addWidget(fddWidget);
 		
