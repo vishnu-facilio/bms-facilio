@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.AttendanceContext.Status;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
@@ -123,6 +124,14 @@ public class AttendanceTransactionContext extends ModuleBaseWithCustomFields {
 	}
 	public void setTransactionTime(long transactionTime) {
 		this.transactionTime = transactionTime;
+	}
+	
+	private User user;
+	public User getUser() {
+		return user;
+	}
+	public void setUser(User user) {
+		this.user = user;
 	}
 
 }
