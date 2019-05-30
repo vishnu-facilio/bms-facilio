@@ -831,8 +831,14 @@ public class ModuleBeanImpl implements ModuleBean {
 				case LOOKUP:
 					if (field instanceof LookupField) {
 						LookupField lookupField = (LookupField) field;
-						if (lookupField.getLookupModuleId() > 0) {
-							FacilioModule module = getMod(lookupField.getLookupModuleId());
+						if (lookupField.getLookupModuleId() > 0 || lookupField.getLookupModule() != null) {
+							FacilioModule module;
+							if (lookupField.getLookupModuleId() > 0) {
+								module = getMod(lookupField.getLookupModuleId());
+							}
+							else {
+								module = getMod(lookupField.getLookupModule().getModuleId());
+							}
 							if (module == null) {
 								throw new IllegalArgumentException("Invalid lookup Module");
 							}
