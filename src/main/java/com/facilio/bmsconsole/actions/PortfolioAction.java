@@ -1,9 +1,21 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.reports.ReportsUtil;
@@ -13,20 +25,19 @@ import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import com.opensymphony.xwork2.ActionSupport;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import java.util.*;
-import java.util.logging.Logger;
 
 public class PortfolioAction extends ActionSupport {
 	
@@ -122,7 +133,7 @@ public class PortfolioAction extends ActionSupport {
 		
 		builder.andCustomWhere("Energy_Meter_Purpose.NAME = \"Main\"");
 		builder.andCustomWhere("IS_ROOT = true");
-		builder.andCustomWhere("BaseSpace.SPACE_TYPE = 2");
+		builder.andCustomWhere("BaseSpace.SPACE_TYPE = ?",BaseSpaceContext.SpaceType.BUILDING.getIntVal());
 		builder.andCustomWhere("Resources.SYS_DELETED is null or Resources.SYS_DELETED = false");
 		builder.andCustomWhere("Energy_Meter.ORGID = ?", AccountUtil.getCurrentOrg().getId());
 		builder.andCustomWhere("b.SYS_DELETED is null or b.SYS_DELETED = false");
@@ -137,6 +148,106 @@ public class PortfolioAction extends ActionSupport {
 		
 		setReportData(result);
 		
+		return SUCCESS;
+	}
+	
+	public String getAllBuildingsWithRootMeterMeta() throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		FacilioModule energyMeterModule = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER);
+		FacilioModule energyMeterPurposeModule = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER_PURPOSE);
+		FacilioModule baseSpaceModule = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
+		FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder();
+		
+		builder.table(energyMeterModule.getTableName())
+		.innerJoin(energyMeterPurposeModule.getTableName()).on("Energy_Meter.PURPOSE_ID = Energy_Meter_Purpose.ID")
+		.innerJoin(baseSpaceModule.getTableName()).on("Energy_Meter.PURPOSE_SPACE_ID = BaseSpace.ID")
+		.innerJoin(resourceModule.getTableName()).on("BaseSpace.id = Resources.id")
+		.innerJoin(resourceModule.getTableName() + " b").on("Energy_Meter.id = b.id");
+		
+		builder.andCustomWhere("Energy_Meter_Purpose.NAME = \"Main\"");
+		builder.andCustomWhere("IS_ROOT = true");
+		builder.andCustomWhere("BaseSpace.SPACE_TYPE = ?",BaseSpaceContext.SpaceType.BUILDING.getIntVal());
+		builder.andCustomWhere("Resources.SYS_DELETED is null or Resources.SYS_DELETED = false");
+		builder.andCustomWhere("Energy_Meter.ORGID = ?", AccountUtil.getCurrentOrg().getId());
+		builder.andCustomWhere("b.SYS_DELETED is null or b.SYS_DELETED = false");
+		
+		List<FacilioField> selectfields = new ArrayList<>();
+		
+		selectfields.addAll(modBean.getAllFields(baseSpaceModule.getName()));
+		
+		FacilioField meterIdField = FieldFactory.getIdField(energyMeterModule).clone();
+		meterIdField.setName("meterId");
+		
+		selectfields.add(meterIdField);
+		
+		builder.select(selectfields);
+		
+		List<Map<String, Object>> props = builder.get();
+		
+		List<Long> mainMeterList = new ArrayList<Long>();
+		for(Map<String, Object> prop :props) {
+			mainMeterList.add((Long)prop.get("meterId"));
+		}
+		
+		FacilioModule energyDataModule = modBean.getModule(FacilioConstants.ContextNames.ENERGY_DATA_READING);
+		Map<String, FacilioField> energyDataFieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.ContextNames.ENERGY_DATA_READING));
+		
+		FacilioField energyField = energyDataFieldMap.get("totalEnergyConsumptionDelta").clone();
+		
+		selectfields = new ArrayList<>();
+		selectfields.add(energyDataFieldMap.get("parentId"));
+		
+		SelectRecordsBuilder<ModuleBaseWithCustomFields> select1 = new SelectRecordsBuilder<>();
+		select1.select(selectfields);
+		select1.aggregate(AggregateOperator.NumberAggregateOperator.SUM, energyField);
+		select1.module(energyDataModule)
+		.andCondition(CriteriaAPI.getCondition(energyDataFieldMap.get("parentId"), mainMeterList, NumberOperators.EQUALS))
+		.andCondition(CriteriaAPI.getCondition(energyDataFieldMap.get("ttime"), DateOperators.CURRENT_MONTH_UPTO_NOW))
+		.groupBy("PARENT_METER_ID");
+		
+		List<Map<String, Object>> propsThisMonth = select1.getAsProps();
+		
+		Map<Long,Double> thisMeterVsConsumption=ReportsUtil.getMapping(propsThisMonth,"parentId","totalEnergyConsumptionDelta");
+		
+		long prevMonthStartTime= DateTimeUtil.getMonthStartTime(-1);
+		long currentMonthStartTime=DateTimeUtil.getMonthStartTime();
+		long currentEndTime=DateTimeUtil.getCurrenTime();
+		long previousEndTime=prevMonthStartTime+(currentEndTime-currentMonthStartTime);
+		
+		select1 = new SelectRecordsBuilder<>();
+		select1.select(selectfields);
+		select1.aggregate(AggregateOperator.NumberAggregateOperator.SUM, energyField);
+		select1.module(energyDataModule)
+		.andCondition(CriteriaAPI.getCondition(energyDataFieldMap.get("parentId"), mainMeterList, NumberOperators.EQUALS))
+		.andCondition(CriteriaAPI.getCondition(energyDataFieldMap.get("ttime"),prevMonthStartTime+","+previousEndTime ,DateOperators.BETWEEN))
+		.groupBy("PARENT_METER_ID");
+		
+		List<Map<String, Object>> propsLastMonth = select1.getAsProps();
+		
+		Map<Long,Double> prevMeterVsConsumption=ReportsUtil.getMapping(propsLastMonth,"parentId","totalEnergyConsumptionDelta");
+		
+		for(Map<String, Object> prop : props) {
+			Long meterId = (Long) prop.get("meterId");
+			Double thisMonthKwh = (Double) thisMeterVsConsumption.get(meterId);
+			Double lastMonthKwh = (Double) prevMeterVsConsumption.get(meterId);
+			
+			prop.put("thisMonthKwh", thisMonthKwh);
+			prop.put("lastMonthKwh", lastMonthKwh);
+			
+			if(thisMonthKwh != null && thisMonthKwh > 0 && lastMonthKwh != null && lastMonthKwh > 0) {
+				double variance= ReportsUtil.getVariance(thisMonthKwh, lastMonthKwh);
+				prop.put("variance", variance);
+			}
+		}
+		JSONObject result = new JSONObject();
+		result.put("buildingsWithRootMeterMeta", props);
+		
+		setReportData(result);
+			
 		return SUCCESS;
 	}
 	
