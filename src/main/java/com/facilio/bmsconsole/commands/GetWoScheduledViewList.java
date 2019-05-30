@@ -49,7 +49,6 @@ public class GetWoScheduledViewList implements Command {
 
 		
 		List<Map<String, Object>> props = selectBuilder.get();
-		System.out.println("props"+props);
 		Map<Long, ReportInfo> woReportsMap = new HashMap<>();
 
 		List<Long> reportIds = new ArrayList<>();
@@ -62,8 +61,6 @@ public class GetWoScheduledViewList implements Command {
 				woReportsMap.put(report.getId(), report);
 			}
 		}
-		System.out.println("reportIds"+reportIds);
-		System.out.println("woReportsMap"+woReportsMap);
 		if (!reportIds.isEmpty()) {
 			FacilioModule jobsModule = ModuleFactory.getJobsModule();
 			List<FacilioField> jobsField = FieldFactory.getJobFields();
@@ -78,7 +75,6 @@ public class GetWoScheduledViewList implements Command {
 			
 			List<Map<String, Object>> jobProps = selectBuilder.get();
 			if(jobProps != null && !jobProps.isEmpty()) {
-				System.out.println("jobProps"+jobProps);
 				for(Map<String, Object> prop : jobProps) {
 					JobContext job = FieldUtil.getAsBeanFromMap(prop, JobContext.class);
 					if (job.isActive()) {
