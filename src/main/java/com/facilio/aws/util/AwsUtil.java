@@ -28,6 +28,7 @@ import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
 import com.amazonaws.services.simpleemail.model.*;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentKeys;
 import com.facilio.bmsconsole.util.CommonAPI;
@@ -35,6 +36,7 @@ import com.facilio.bmsconsole.util.CommonAPI.NotificationType;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.email.EmailUtil;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
@@ -371,23 +373,21 @@ public class AwsUtil
 		    }
 			
 		    CloseableHttpResponse response = client.execute(post);
-			LOGGER.info("\nSending 'POST' request to URL : " + url);
-			LOGGER.info("Post parameters : " + post.getEntity());
-			LOGGER.info("Response Code : " +  response.getStatusLine().getStatusCode());
+		    int status = response.getStatusLine().getStatusCode();
+		    if(status != 200) {
+				LOGGER.info("\nSending 'POST' request to URL : " + url);
+				LOGGER.info("Post parameters : " + post.getEntity());
+				LOGGER.info("Response Code : " + status);
+			}
 	 
 			BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 			String line = "";
-			while ((line = rd.readLine()) != null) 
-			{
+			while ((line = rd.readLine()) != null) {
 				result.append(line);
 			}
-    	}
-		catch (Exception e) 
-    	{
+    	} catch (Exception e) {
 			LOGGER.info("Executing doHttpPost ::::url:::" + url, e);
-		} 
-    	finally 
-    	{
+		} finally {
 			client.close();
 		}
     	return result.toString();
@@ -447,12 +447,12 @@ public class AwsUtil
 			}
 		} else {
 			for(String address : toAddress.split(",")) {
-				if(address.contains("@")) {
+				if(address!= null && address.contains("@")) {
 					to.add(address);
 				}
 			}
 		}
-		if(sendEmail) {
+		if(sendEmail && to.size() > 0) {
 			Destination destination = new Destination().withToAddresses(to);
 			Content subjectContent = new Content().withData((String) mailJson.get("subject"));
 			Content bodyContent = new Content().withData((String) mailJson.get("message"));
@@ -486,50 +486,35 @@ public class AwsUtil
 		}
 	}
 
-    public static void getPassword(String secretKey) {
+    public static HashMap<String, String> getPassword(String secretKey) {
 
-        String secretName = secretKey;
+		HashMap<String, String> secretMap = new HashMap<>();
 
-        // Create a Secrets Manager client
         AWSSecretsManager client  = AWSSecretsManagerClientBuilder.standard().withCredentials(getAWSCredentialsProvider()).withRegion(Regions.US_WEST_2).build();
 
-        // In this sample we only handle the specific exceptions for the 'GetSecretValue' API.
-        // See https://docs.aws.amazon.com/secretsmanager/latest/apireference/API_GetSecretValue.html
-        // We rethrow the exception by default.
+        GetSecretValueRequest getSecretValueRequest = new GetSecretValueRequest().withSecretId(secretKey);
 
-        String secret ="", decodedBinarySecret = "";
-        GetSecretValueRequest getSecretValueRequest = new GetSecretValueRequest()
-                .withSecretId(secretName);
         GetSecretValueResult getSecretValueResult = null;
 
         try {
             getSecretValueResult = client.getSecretValue(getSecretValueRequest);
         } catch (Exception e) {
-            // Secrets Manager can't decrypt the protected secret text using the provided KMS key.
-            // Deal with the exception here, and/or rethrow at your discretion.
             LOGGER.info("Exception while getting secret ", e);
         }
         if(getSecretValueResult != null) {
-			final String secretBinaryString = getSecretValueResult.getSecretString();
-			final ObjectMapper objectMapper = new ObjectMapper();
-			final HashMap<String, String> secretMap;
+			String secretBinaryString = getSecretValueResult.getSecretString();
+			ObjectMapper objectMapper = new ObjectMapper();
 			try {
-				secretMap = objectMapper.readValue(secretBinaryString, HashMap.class);
+				secretMap.putAll(objectMapper.readValue(secretBinaryString, HashMap.class));
 
-				String url = String.format("jdbc:mysql://%s:%s/dbName", secretMap.get("host"), secretMap.get("port"));
-				LOGGER.info("Secret url = " + url);
-				LOGGER.info("Secret username = " + secretMap.get("username"));
-				LOGGER.info("Secret password = " + secretMap.get("password"));
-				// Decrypts secret using the associated KMS CMK.
-				// Depending on whether the secret is a string or binary, one of these fields will be populated.
+				String url = String.format("jdbc:mysql://%s:%s/bms", secretMap.get("host"), secretMap.get("port"));
+				secretMap.put("url", url);
 			} catch (IOException e) {
 				LOGGER.info("exception while reading value from secret manager ", e);
 			}
 		}
-
-        // Your code goes here.
+        return secretMap;
     }
-
 
     private static void logEmail (JSONObject mailJson) throws Exception {
 		if (AccountUtil.getCurrentOrg() != null) {
@@ -562,25 +547,26 @@ public class AwsUtil
 			return;
 		}
 		String toAddress = (String)mailJson.get("to");
+		HashSet<String> to = new HashSet<>();
 		boolean sendEmail = true;
-		if( ! isProduction()) {
+		if( ! AwsUtil.isProduction() ) {
 			if(toAddress != null) {
-				String to = "";
 				for(String address : toAddress.split(",")) {
-					if(address.contains("facilio.com")) {
-						to = address + ",";
+					if(address.contains("@facilio.com")) {
+						to.add(address);
 					}
-				}
-				if(to.length() == 0 ) {
-					sendEmail = false;
-				} else {
-					mailJson.put("to", to);
 				}
 			} else {
 				sendEmail = false;
 			}
+		} else {
+			for(String address : toAddress.split(",")) {
+				if(address != null && address.contains("@")) {
+					to.add(address);
+				}
+			}
 		}
-		if(sendEmail) {
+		if(sendEmail && to.size() > 0) {
 			try {
 				if (AwsUtil.isDevelopment()) {
 //					mailJson.put("subject", "Local - " + mailJson.get("subject"));
@@ -596,7 +582,7 @@ public class AwsUtil
 				AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
 						.withRegion(Regions.US_WEST_2).withCredentials(getAWSCredentialsProvider()).build();
 				client.sendRawEmail(request);
-				LOGGER.info("Email sent!");
+				// LOGGER.info("Email sent!");
 				
 				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 151) {
 					LOGGER.info("Email sent to "+toAddress+"\n"+mailJson);

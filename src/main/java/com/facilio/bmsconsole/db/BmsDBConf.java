@@ -110,6 +110,10 @@ public class BmsDBConf extends DBConf {
         return -1;
     }
 
+    public HashMap<String, String> getSecret(String secretKey) {
+        return AwsUtil.getPassword(secretKey);
+    }
+
     @Override
     public ZoneId getCurrentZoneId() {
         //TODO TimeZone related changes to be done.

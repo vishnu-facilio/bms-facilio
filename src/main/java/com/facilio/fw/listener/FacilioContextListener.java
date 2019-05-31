@@ -243,10 +243,9 @@ public class FacilioContextListener implements ServletContextListener {
 			rs = stmt.executeQuery("select 1"); //Test Connection
 			
 			while(rs.next()) {
-				System.out.println(rs.getInt(1));
+				log.info("testing connection : " + rs.getInt(1));
 			}
-		}
-		catch(SQLException e) {
+		} catch(SQLException e) {
 			log.info("Exception occurred ", e);
 		}
 		finally {

@@ -1,9 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.InventoryCategoryContext;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.PurchasedItemContext;
+import com.facilio.bmsconsole.util.InventoryCategoryApi;
 import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.bmsconsole.util.StoreroomApi;
 import com.facilio.constants.FacilioConstants;
@@ -29,6 +31,7 @@ public class ImportItemCommand implements Command {
 		if (purchasedItemList != null && !purchasedItemList.isEmpty() && storeRoomId > 0) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			Map<String, Long> itemNameVsIdMap = ItemsApi.getAllItemTypes();
+			Map<String, Long> categoryNameVsIdMap = InventoryCategoryApi.getAllInventoryCategories();
 			List<ItemContext> itemsList = new ArrayList<>();
 			for (PurchasedItemContext purchasedItem : purchasedItemList) {
 				ItemTypesContext itemType = new ItemTypesContext();
@@ -43,6 +46,16 @@ public class ImportItemCommand implements Command {
 					else if(purchasedItem.getSerialNumber() != null && !purchasedItem.getSerialNumber().equalsIgnoreCase("null")) {
 						itemType.setIsRotating(true);
 					}
+					InventoryCategoryContext category = new InventoryCategoryContext();;
+					if(categoryNameVsIdMap.containsKey(itemType.getCategory().getName())) {
+						category.setId(categoryNameVsIdMap.get(itemType.getCategory().getName()));
+						itemType.setCategory(category);
+					} else {
+						category.setName(itemType.getCategory().getName());
+						category.setDisplayName(itemType.getCategory().getName());
+						category.setId(InventoryCategoryApi.insertInventoryCategory(category));
+					}
+					itemType.setCategory(category);
 					itemType.setId(insertItemType(modBean, itemType));
 				}
 				item.setItemType(itemType);
