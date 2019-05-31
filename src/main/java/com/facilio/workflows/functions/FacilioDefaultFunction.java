@@ -6,8 +6,10 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.cards.util.CardUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -391,10 +393,9 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			dateJson.put("endTime", Long.valueOf(objects[3].toString()));
 			dateJson.put("operatorId", Long.valueOf(objects[4].toString()));
 			
-			String siteName = WorkOrderAPI.getSiteName(Long.valueOf(objects[7].toString()));
-			
-			
-			String permalLinkURL = objects[0].toString()+"/app/maintenanceReport?token="+token+"&id="+dashboard.getId()+"&linkName="+dashboard.getLinkName()+"&siteName="+siteName+"&siteId="+objects[7].toString()+"&moduleName=workorder"+"&name="+dashboard.getDashboardName()+"&daterange="+URLEncoder.encode(dateJson.toString());
+			SiteContext site = SpaceAPI.getSiteSpace(Long.valueOf(objects[7].toString()));
+					
+			String permalLinkURL = objects[0].toString()+"/app/maintenanceReport?token="+token+"&id="+dashboard.getId()+"&linkName="+dashboard.getLinkName()+"&siteName="+site.getName()+"&siteId="+site.getId()+"&moduleName=workorder"+"&name="+dashboard.getDashboardName()+"&daterange="+URLEncoder.encode(dateJson.toString());
 			return permalLinkURL;
 		}
 		

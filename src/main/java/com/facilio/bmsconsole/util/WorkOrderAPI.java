@@ -1250,7 +1250,9 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 	  }
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule workOrderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
-		
+		FacilioModule baseSpaceModule = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
+		FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+	
 				List<FacilioField> workorderFields = modBean.getAllFields(workOrderModule.getName());
 
 		Map<String, FacilioField> workorderFieldMap = FieldFactory.getAsMap(workorderFields);
@@ -1274,8 +1276,14 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 		resourceIdFld.setDataType(FieldType.NUMBER);
 
 		
-		fields.add(resourceIdFld);
-		
+		FacilioField buildingId = new FacilioField();
+		resourceIdFld.setName("buildingId");
+		resourceIdFld.setColumnName("BUILDING_ID");
+		resourceIdFld.setModule(baseSpaceModule);
+		resourceIdFld.setDataType(FieldType.NUMBER);
+
+		fields.add(buildingId);
+
 		Condition spaceCond = new Condition();
 		spaceCond.setField(resourceIdFld);
 		spaceCond.setOperator(BuildingOperator.BUILDING_IS);
@@ -1285,10 +1293,14 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 				.module(workOrderModule)
 				.beanClass(WorkOrderContext.class)
 				.select(fields)
+				.innerJoin(resourceModule.getTableName())
+				.on(resourceModule.getTableName()+".ID = "+ resourceIdFld.getCompleteColumnName())
+				.innerJoin(baseSpaceModule.getTableName())
+				.on(baseSpaceModule.getTableName()+".ID = "+ resourceModule.getTableName()+".SPACE_ID")
 				.andCondition(CriteriaAPI.getCondition(plannedType, idString.toString() , NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
 				.andCondition(spaceCond)
-				.groupBy(resourceIdFld.getCompleteColumnName())
+				.groupBy(buildingId.getCompleteColumnName())
 				.orderBy(idCountField.getColumnName()+" DESC")
                 .limit(Integer.parseInt(count))
 				;
@@ -1313,9 +1325,13 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 											.module(workOrderModule)
 											.beanClass(WorkOrderContext.class)
 											.select(fields)
+											.innerJoin(resourceModule.getTableName())
+											.on(resourceModule.getTableName()+".ID = "+ resourceIdFld.getCompleteColumnName())
+											.innerJoin(baseSpaceModule.getTableName())
+											.on(baseSpaceModule.getTableName()+".ID = "+ resourceModule.getTableName()+".SPACE_ID")
 											.andCondition(CriteriaAPI.getCondition(plannedType, idString.toString() , NumberOperators.EQUALS))
 											.andCondition(spaceCond2)
-											.groupBy(resourceIdFld.getCompleteColumnName())
+											.groupBy(buildingId.getCompleteColumnName())
 											.orderBy(idCountField.getColumnName()+" DESC")
 											;
 
@@ -1371,7 +1387,9 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule workOrderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
 				List<FacilioField> workorderFields = modBean.getAllFields(workOrderModule.getName());
-
+		FacilioModule baseSpaceModule = modBean.getModule(FacilioConstants.ContextNames.BASE_SPACE);
+		FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+				
 		Map<String, FacilioField> workorderFieldMap = FieldFactory.getAsMap(workorderFields);
 
 		List<FacilioField> fields = new ArrayList<FacilioField>();
@@ -1392,7 +1410,13 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 		resourceIdFld.setModule(ModuleFactory.getTicketsModule());
 		resourceIdFld.setDataType(FieldType.NUMBER);
 
-		fields.add(resourceIdFld);
+		FacilioField buildingId = new FacilioField();
+		resourceIdFld.setName("buildingId");
+		resourceIdFld.setColumnName("BUILDING_ID");
+		resourceIdFld.setModule(baseSpaceModule);
+		resourceIdFld.setDataType(FieldType.NUMBER);
+
+		fields.add(buildingId);
 	
 		Condition spaceCond = new Condition();
 		spaceCond.setField(resourceIdFld);
@@ -1403,10 +1427,14 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 				.module(workOrderModule)
 				.beanClass(WorkOrderContext.class)
 				.select(fields)
+				.innerJoin(resourceModule.getTableName())
+				.on(resourceModule.getTableName()+".ID = "+ resourceIdFld.getCompleteColumnName())
+				.innerJoin(baseSpaceModule.getTableName())
+				.on(baseSpaceModule.getTableName()+".ID = "+ resourceModule.getTableName()+".SPACE_ID")
 				.andCondition(CriteriaAPI.getCondition(plannedType, idString.toString() , NumberOperators.NOT_EQUALS))
 				.andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
 				.andCondition(spaceCond)
-				.groupBy(resourceIdFld.getCompleteColumnName())
+				.groupBy(buildingId.getCompleteColumnName())
 				.orderBy(idCountField.getColumnName()+" DESC")
                 .limit(Integer.parseInt(count))
 				;
@@ -1430,9 +1458,13 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 											.module(workOrderModule)
 											.beanClass(WorkOrderContext.class)
 											.select(fields)
+											.innerJoin(resourceModule.getTableName())
+											.on(resourceModule.getTableName()+".ID = "+ resourceIdFld.getCompleteColumnName())
+											.innerJoin(baseSpaceModule.getTableName())
+											.on(baseSpaceModule.getTableName()+".ID = "+ resourceModule.getTableName()+".SPACE_ID")
 											.andCondition(CriteriaAPI.getCondition(plannedType, idString.toString() , NumberOperators.EQUALS))
 											.andCondition(spaceCond2)
-											.groupBy(resourceIdFld.getCompleteColumnName())
+											.groupBy(buildingId.getCompleteColumnName())
 											.orderBy(idCountField.getColumnName()+" DESC")
 											;
 
