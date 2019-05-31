@@ -21,7 +21,15 @@ public class TaskContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
 
 	private static Logger log = LogManager.getLogger(TaskContext.class.getName());
-	
+	private boolean preRequest;
+
+	public boolean isPreRequest() {
+		return preRequest;
+	}
+
+	public void setPreRequest(boolean preRequest) {
+		this.preRequest = preRequest;
+	}
 	private String subject;
 	public String getSubject() {
 		return subject;
@@ -379,7 +387,26 @@ public class TaskContext extends ModuleBaseWithCustomFields {
 		}
 		return false;
 	}
-	
+
+	private String truevalue;
+
+	public String getTruevalue() {
+		return truevalue;
+	}
+
+	public void setTruevalue(String truevalue) {
+		this.truevalue = truevalue;
+	}
+
+	private String falsevalue;
+
+	public String getFalsevalue() {
+		return falsevalue;
+	}
+
+	public void setFalsevalue(String falsevalue) {
+		this.falsevalue = falsevalue;
+	}
 	private String failureValue;
 	public String getFailureValue() {
 		return failureValue;

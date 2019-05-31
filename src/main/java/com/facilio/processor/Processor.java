@@ -296,7 +296,7 @@ public class Processor implements IRecordProcessor {
         }*/
             bean.processTimeSeries(timeStamp, payLoad, record, processRecordsInput.getCheckpointer(), isTimeSeries);
             long timeTaken = (System.currentTimeMillis() - startTime);
-            if(timeTaken >  5000L){
+            if(timeTaken >  100000L){
                 LOGGER.info("timetaken : "+timeTaken);
             }
         }

@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.ReportInfo;
@@ -8,6 +9,7 @@ import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -33,7 +35,7 @@ public class GetWoScheduledViewList implements Command {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule moduleToFetch = modBean.getModule(moduleName);
-		
+		long moduleId = modBean.getModule(moduleName).getModuleId();
 		FacilioModule module = ModuleFactory.getViewScheduleInfoModule();
 		ModuleFactory.getEMailTemplatesModule();
 		
@@ -42,7 +44,8 @@ public class GetWoScheduledViewList implements Command {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+				.andCustomWhere("ORGID = ? AND MODULEID = ?", AccountUtil.getCurrentOrg().getOrgId(), moduleId);
 
 		
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -58,16 +61,16 @@ public class GetWoScheduledViewList implements Command {
 				woReportsMap.put(report.getId(), report);
 			}
 		}
-		
 		if (!reportIds.isEmpty()) {
 			FacilioModule jobsModule = ModuleFactory.getJobsModule();
 			List<FacilioField> jobsField = FieldFactory.getJobFields();
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(jobsField);
-			
+			 
 			selectBuilder = new GenericSelectRecordBuilder()
 					.select(jobsField)
 					.table(jobsModule.getTableName())
 					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(jobsModule))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("jobId"), reportIds, NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("jobName"), "ViewEmailScheduler", StringOperators.IS));
 			
 			List<Map<String, Object>> jobProps = selectBuilder.get();

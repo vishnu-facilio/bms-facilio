@@ -31,7 +31,16 @@ public class TaskSectionContext implements Serializable {
 	public void setParentTicketId(long parentTicketId) {
 		this.parentTicketId = parentTicketId;
 	}
-	
+
+	private boolean preRequest;
+
+	public boolean isPreRequest() {
+		return preRequest;
+	}
+
+	public void setPreRequest(boolean preRequest) {
+		this.preRequest = preRequest;
+	}
 	private Boolean isEditable;
 	public Boolean getIsEditable() {
 		return isEditable;

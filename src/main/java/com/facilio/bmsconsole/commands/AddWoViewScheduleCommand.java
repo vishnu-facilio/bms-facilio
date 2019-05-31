@@ -33,14 +33,15 @@ public class AddWoViewScheduleCommand implements Command {
 		// TODO Auto-generated method stub
 		long viewId;
 		String viewName = (String) context.get(FacilioConstants.ContextNames.CV_NAME);
+		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		long moduleId = modBean.getModule("workorder").getModuleId();
+		long moduleId = modBean.getModule(moduleName).getModuleId();
 		FacilioView view = ViewAPI.getView(viewName, moduleId, AccountUtil.getCurrentOrg().getOrgId());
 		if (view == null) {
-			view = ViewFactory.getView("workorder", viewName);
+			view = ViewFactory.getView(moduleName, viewName);
 		}
 		if ((view != null) && (view.getId() == -1)) {
-			viewId = ViewAPI.checkAndAddView(view.getName(), "workorder", null);
+			viewId = ViewAPI.checkAndAddView(view.getName(), moduleName, null);
 			view.setId(viewId);
 		}
 		else {
@@ -65,6 +66,7 @@ public class AddWoViewScheduleCommand implements Command {
 			props.put("viewId", viewId);
 			props.put("fileFormat", fileFormat);
 			props.put("templateId", emailTemplate.getId());
+			props.put("moduleID", moduleId);
 			
 			FacilioModule module = ModuleFactory.getViewScheduleInfoModule();
 			List<FacilioField> fields = FieldFactory.getViewScheduleInfoFields();

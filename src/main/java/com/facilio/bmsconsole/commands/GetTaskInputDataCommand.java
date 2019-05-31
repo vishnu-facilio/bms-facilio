@@ -25,11 +25,13 @@ public class GetTaskInputDataCommand implements Command {
 			tasks = new ArrayList<>();
 			taskvsTemplateMap = new HashMap<>();
 			for(TaskSectionTemplate sectionTemplate :sectionTemplates) {
+				if (sectionTemplate.getTaskTemplates() != null) {
 				for(TaskTemplate taskTemplate:sectionTemplate.getTaskTemplates()) {
 					TaskContext task = taskTemplate.getTask();
 					tasks.add(task);
 					taskvsTemplateMap.put(task, taskTemplate);
 				}
+			  }
 			}
 		} else {
 			tasks = (List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST);
@@ -46,6 +48,34 @@ public class GetTaskInputDataCommand implements Command {
 		}
 		
 		PreventiveMaintenanceAPI.updateTaskTemplateFromTaskContext(taskvsTemplateMap);
+		List<TaskContext> preRequests = null;
+		Map<TaskContext, TaskTemplate> preRequestvsTemplateMap = null;
+		if (context.get(FacilioConstants.ContextNames.PM_PRE_REQUEST_SECTIONS) != null) {
+			List<TaskSectionTemplate> sectionTemplates = (List<TaskSectionTemplate>) context
+					.get(FacilioConstants.ContextNames.PRE_REQUEST_SECTIONS);
+			preRequests = new ArrayList<>();
+			preRequestvsTemplateMap = new HashMap<>();
+			for (TaskSectionTemplate sectionTemplate : sectionTemplates) {
+				for (TaskTemplate taskTemplate : sectionTemplate.getTaskTemplates()) {
+					TaskContext task = taskTemplate.getTask();
+					preRequests.add(task);
+					preRequestvsTemplateMap.put(task, taskTemplate);
+				}
+			}
+
+		} else {
+			preRequests = (List<TaskContext>) context.get(FacilioConstants.ContextNames.PRE_REQUEST_LIST);
+			if (preRequests == null) {
+				TaskContext task = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
+				if (task != null) {
+					preRequests = Collections.singletonList(task);
+				}
+			}
+		}
+		if (preRequests != null && !preRequests.isEmpty()) {
+			TicketAPI.setTasksInputData(preRequests);
+		}
+		PreventiveMaintenanceAPI.updateTaskTemplateFromTaskContext(preRequestvsTemplateMap);
 		return false;
 	}
 }

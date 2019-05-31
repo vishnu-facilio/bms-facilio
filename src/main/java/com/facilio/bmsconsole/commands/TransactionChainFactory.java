@@ -1244,7 +1244,14 @@ public class TransactionChainFactory {
 //			c.addCommand(getAddOrUpdateReadingValuesChain());
 			return c;
 		}
-		
+
+	public static Chain getUpdatePreRequestChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForTask());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new UpdateTaskCommand());
+		return c;
+	}		
 		public static Chain getProcessDataChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new ProcessDataCommand());
@@ -1307,6 +1314,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddPMTriggerCommand(true));
 			c.addCommand(new AddPMReminderCommand(true));
 			c.addCommand(new SetMissingRelInResourcePlannersCommand());
+			c.addCommand(new CreateTaskSectionTriggerRelCommand());
 			c.addCommand(new AddPMRelFieldsCommand(true));
 			c.addCommand(new BlockPMEditOnWOGeneration(true, true));
 			c.addCommand(new ScheduleCreateWOJob(true, true));

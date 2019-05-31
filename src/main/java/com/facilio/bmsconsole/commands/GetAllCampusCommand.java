@@ -44,12 +44,10 @@ public class GetAllCampusCommand implements Command {
 			campuses.forEach((e) -> {
 				long spaceid = e.getId();
 				spaceId.add(spaceid);
-				if (e.getData() != null) {
-					if (e.getData().get("operatingHour") != null) {
-						long bhid = Long.parseLong(e.getData().get("operatingHour").toString());
+				if (e.getOperatingHour() != -1) {
+					long bhid =e.getOperatingHour();
 						businessHourIds.add(bhid);
 						spaceBhIdsMap.put(spaceid, bhid);
-					}
 				}
 			});
 		}

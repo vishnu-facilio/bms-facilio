@@ -4374,7 +4374,7 @@ public class FieldFactory {
 		fields.add(getField("parentTicketId", "PARENT_TICKET_ID", module, FieldType.NUMBER));
 		fields.add(getField("isEditable", "IS_EDITABLE", module, FieldType.NUMBER));
 		fields.add(getField("sequenceNumber", "SEQUENCE_NUMBER", module, FieldType.NUMBER));
-
+		fields.add(getField("preRequest", "IS_PRE_REQUEST", module, FieldType.BOOLEAN));
 		return fields;
 	}
 
@@ -4420,9 +4420,10 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 
 		fields.add(getIdField(module));
-		fields.add(getField("viewId", "VIEWID", module, FieldType.NUMBER));
+		fields.add(getField("viewId", "VIEWID", module, FieldType.NUMBER)); 
 		fields.add(getField("fileFormat", "FILE_FORMAT", module, FieldType.NUMBER));
 		fields.add(getField("templateId", "TEMPLATEID", module, FieldType.NUMBER));
+		fields.add(getField("moduleID","MODULEID",module,FieldType.NUMBER));
 
 		return fields;
 	}

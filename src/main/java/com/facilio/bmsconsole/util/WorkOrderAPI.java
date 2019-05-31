@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections4.CollectionUtils;
+import com.amazonaws.services.dynamodbv2.xspec.NULL;
 
 import com.chargebee.internal.StringJoiner;
 import com.facilio.accounts.dto.Group;
@@ -27,6 +28,7 @@ import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -48,6 +50,12 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import com.mysql.fabric.xmlrpc.base.Array;
+import org.apache.commons.chain.Command;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.tuple.MutablePair;
+
+import java.util.*;
+import java.util.logging.Logger;
 
 public class WorkOrderAPI {
 	
@@ -1059,6 +1067,29 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 
 }
 
+	public static void updatePreRequestStatus(Long id)
+			throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		String workorderModuleName = "workorder";
+		FacilioModule workorderModule = modBean.getModule(workorderModuleName);
+
+		FacilioField preRequestStatusField = new FacilioField();
+		preRequestStatusField.setName("preRequestStatus");
+		preRequestStatusField.setColumnName("PRE_REQUEST_STATUS");
+		preRequestStatusField.setDataType(FieldType.BOOLEAN);
+
+		Map<String, Object> updateMap = new HashMap<>();
+		updateMap.put("preRequestStatus", getPreRequestStatus(id));
+
+		FacilioField idField = FieldFactory.getIdField(workorderModule);
+		Condition idFieldCondition = CriteriaAPI.getCondition(idField, NumberOperators.EQUALS);
+		idFieldCondition.setValue(String.valueOf(id));
+
+		GenericUpdateRecordBuilder recordBuilder = new GenericUpdateRecordBuilder()
+				.table(workorderModule.getTableName()).fields(Arrays.asList(preRequestStatusField))
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(workorderModule)).andCondition(idFieldCondition);
+		recordBuilder.update(updateMap);
+	}
   public static Map<Long, Object> getTeamsCountBySite() throws Exception {
 
   
@@ -1743,8 +1774,48 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 		return wo.getSiteId();
 	}
 
-	
+	public static Boolean getPreRequestStatus(Long id)
+			throws Exception {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			String moduleName = "task";
+			FacilioField parentIdField = modBean.getField("parentTicketId", moduleName);
+			FacilioModule module = modBean.getModule(moduleName);
 
+			List<FacilioField> fields = new ArrayList<>();
+			fields.add(parentIdField);
+
+			FacilioField countField = new FacilioField();
+			countField.setName("count");
+			countField.setColumnName("COUNT(*)");
+			countField.setDataType(FieldType.NUMBER);
+			fields.add(countField);
+			FacilioField preRequestField = new FacilioField();
+			preRequestField.setName("isPreRequest");
+			preRequestField.setColumnName("IS_PRE_REQUEST");
+			preRequestField.setDataType(FieldType.BOOLEAN);
+
+			FacilioField inputValueField = new FacilioField();
+			inputValueField.setName("inputValue");
+			inputValueField.setColumnName("INPUT_VALUE");
+			inputValueField.setDataType(FieldType.STRING);
+
+			Condition condition = CriteriaAPI.getCondition(parentIdField, Collections.singletonList(id), NumberOperators.EQUALS);
+			Condition preRequestCondition = CriteriaAPI.getCondition(preRequestField, "1", NumberOperators.EQUALS);
+			Condition inputValueCondition = CriteriaAPI.getCondition(inputValueField, "1", StringOperators.ISN_T);
+			GenericSelectRecordBuilder select = new GenericSelectRecordBuilder().table(module.getTableName()).select(fields)
+					.groupBy(parentIdField.getCompleteColumnName())
+					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module)).andCondition(condition)
+					.andCondition(preRequestCondition).andCondition(inputValueCondition);
+			List<Map<String, Object>> countList = select.get();
+              
+			Boolean preRequestStatus = countList.isEmpty();
+			if(!preRequestStatus){
+				preRequestStatus=countList.stream().allMatch(map->(0==((Number) map.get("count")).longValue()));
+			}
+
+			return preRequestStatus;
+	}
+	
     public static WorkorderItemContext getWorkOrderItem(long woItemId) throws Exception {
 
     	  ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
