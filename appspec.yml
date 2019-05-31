@@ -35,6 +35,9 @@ files:
     destination: /home/ubuntu/deployment-files/
   - source: /context-production.xml
     destination: /home/ubuntu/deployment-files/
+  - source: /web-stage.xml
+    destination: /home/ubuntu/deployment-files/
+
 
 permissions:
   - object: /home/ubuntu

@@ -297,7 +297,7 @@ public class ScheduleInfo implements Serializable {
 			}
 		}
 		if(incrementMonth) {
-			zdt = zdt.with(LocalTime.of(0, 0)).plusMonths(frequency);
+			zdt = zdt.with(LocalTime.of(0, 0)).plusMonths(frequency).with(ChronoField.DAY_OF_WEEK, 1);
 			newZdt = getMinWeek(zdt);
 		}
 		return newZdt;

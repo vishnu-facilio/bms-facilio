@@ -110,6 +110,10 @@ public class BmsDBConf extends DBConf {
         return -1;
     }
 
+    public HashSet<String> getDBIdentifiers() {
+        return AwsUtil.getDBIdentifiers();
+    }
+
     public HashMap<String, String> getSecret(String secretKey) {
         return AwsUtil.getPassword(secretKey);
     }
