@@ -1277,15 +1277,15 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 
 		
 		FacilioField buildingId = new FacilioField();
-		resourceIdFld.setName("buildingId");
-		resourceIdFld.setColumnName("BUILDING_ID");
-		resourceIdFld.setModule(baseSpaceModule);
-		resourceIdFld.setDataType(FieldType.NUMBER);
+		buildingId.setName("buildingId");
+		buildingId.setColumnName("BUILDING_ID");
+		buildingId.setModule(baseSpaceModule);
+		buildingId.setDataType(FieldType.NUMBER);
 
 		fields.add(buildingId);
 
 		Condition spaceCond = new Condition();
-		spaceCond.setField(resourceIdFld);
+		spaceCond.setField(buildingId);
 		spaceCond.setOperator(BuildingOperator.BUILDING_IS);
 		spaceCond.setValue(buildingIdString.toString());
 
@@ -1311,12 +1311,12 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 	 StringJoiner resourceidString = new StringJoiner(",");
 	 for(int i =0;i<plannedWorkOrders.size();i++) {
 		 Map<String, Object> map = plannedWorkOrders.get(i);
-		 resourceidString.add(String.valueOf(map.get("resourceId")));
-		 plannedMap.put((Long)map.get("resourceId"),map);
+		 resourceidString.add(String.valueOf(map.get("buildingId")));
+		 plannedMap.put((Long)map.get("buildingId"),map);
 	 }
 			
 	 Condition spaceCond2 = new Condition();
-		spaceCond2.setField(resourceIdFld);
+		spaceCond2.setField(buildingId);
 		spaceCond2.setOperator(BuildingOperator.BUILDING_IS);
 		spaceCond2.setValue(resourceidString.toString());
 		
@@ -1345,7 +1345,7 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 	 Map<Long,Map<String, Object>> plannedLastMonthMap = new HashMap<Long, Map<String,Object>>();
 	 for(int i =0;i<lastMonthList.size();i++) {
 		 Map<String, Object> map = lastMonthList.get(i);
-		 plannedLastMonthMap.put((Long)map.get("resourceId"),map);
+		 plannedLastMonthMap.put((Long)map.get("buildingId"),map);
 	 }
 		
 	List<Map<String, Object>> finalResult = new ArrayList<Map<String,Object>>();
@@ -1353,8 +1353,8 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 
 	 for(int i =0;i<plannedWorkOrders.size();i++) {
 		 Map<String,Object> map = plannedWorkOrders.get(i);
-		 Map<String,Object> planned = plannedMap.get(map.get("resourceId"));
-		 Map<String,Object> plannedLastMonth = plannedLastMonthMap.get(map.get("resourceId"));
+		 Map<String,Object> planned = plannedMap.get(map.get("buildingId"));
+		 Map<String,Object> plannedLastMonth = plannedLastMonthMap.get(map.get("buildingId"));
 		 long diff = 0;
 		 Map<String, Object> resMap = new HashMap<String, Object>();
 			
@@ -1369,8 +1369,8 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 		
 		 resMap.put("plannedCount",planned.get("count"));
 		 resMap.put("percentage",Math.abs(diff));
-		 resMap.put("resourceId",map.get("resourceId"));
-		 resMap.put("resourceName",resourceArray.get((Long)map.get("resourceId")));
+		 resMap.put("resourceId",map.get("buildingId"));
+		 resMap.put("resourceName",resourceArray.get((Long)map.get("buildingId")));
 		 finalResult.add(resMap);
 	 }
 	
@@ -1411,15 +1411,15 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 		resourceIdFld.setDataType(FieldType.NUMBER);
 
 		FacilioField buildingId = new FacilioField();
-		resourceIdFld.setName("buildingId");
-		resourceIdFld.setColumnName("BUILDING_ID");
-		resourceIdFld.setModule(baseSpaceModule);
-		resourceIdFld.setDataType(FieldType.NUMBER);
+		buildingId.setName("buildingId");
+		buildingId.setColumnName("BUILDING_ID");
+		buildingId.setModule(baseSpaceModule);
+		buildingId.setDataType(FieldType.NUMBER);
 
 		fields.add(buildingId);
 	
 		Condition spaceCond = new Condition();
-		spaceCond.setField(resourceIdFld);
+		spaceCond.setField(buildingId);
 		spaceCond.setOperator(BuildingOperator.BUILDING_IS);
 		spaceCond.setValue(buildingIdString.toString());
 
@@ -1446,11 +1446,11 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 	 StringJoiner resourceidString = new StringJoiner(",");
 	 for(int i =0;i<unPlannedWorkOrders.size();i++) {
 		 Map<String, Object> map = unPlannedWorkOrders.get(i);
-		 resourceidString.add(String.valueOf(map.get("resourceId")));
-		 unplannedMap.put((Long)map.get("resourceId"),map);
+		 resourceidString.add(String.valueOf(map.get("buildingId")));
+		 unplannedMap.put((Long)map.get("buildingId"),map);
 	 }
 	 Condition spaceCond2 = new Condition();
-		spaceCond2.setField(resourceIdFld);
+		spaceCond2.setField(buildingId);
 		spaceCond2.setOperator(BuildingOperator.BUILDING_IS);
 		spaceCond2.setValue(resourceidString.toString());
 	 
@@ -1462,7 +1462,7 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 											.on(resourceModule.getTableName()+".ID = "+ resourceIdFld.getCompleteColumnName())
 											.innerJoin(baseSpaceModule.getTableName())
 											.on(baseSpaceModule.getTableName()+".ID = "+ resourceModule.getTableName()+".SPACE_ID")
-											.andCondition(CriteriaAPI.getCondition(plannedType, idString.toString() , NumberOperators.EQUALS))
+											.andCondition(CriteriaAPI.getCondition(plannedType, idString.toString() , NumberOperators.NOT_EQUALS))
 											.andCondition(spaceCond2)
 											.groupBy(buildingId.getCompleteColumnName())
 											.orderBy(idCountField.getColumnName()+" DESC")
@@ -1478,7 +1478,7 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 	 Map<Long,Map<String, Object>> unplannedLastMonthMap = new HashMap<Long, Map<String,Object>>();
 	 for(int i =0;i<lastMonthList.size();i++) {
 		 Map<String, Object> map = lastMonthList.get(i);
-		 unplannedLastMonthMap.put((Long)map.get("resourceId"),map);
+		 unplannedLastMonthMap.put((Long)map.get("buildingId"),map);
 	 }
 	
 	List<Map<String, Object>> finalResult = new ArrayList<Map<String,Object>>();
@@ -1486,8 +1486,8 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 
 	 for(int i =0;i<unPlannedWorkOrders.size();i++) {
 		 Map<String,Object> map = unPlannedWorkOrders.get(i);
-		 Map<String,Object> unplanned = unplannedMap.get(map.get("resourceId"));
-		 Map<String,Object> unplannedLastMonth = unplannedLastMonthMap.get(map.get("resourceId"));
+		 Map<String,Object> unplanned = unplannedMap.get(map.get("buildingId"));
+		 Map<String,Object> unplannedLastMonth = unplannedLastMonthMap.get(map.get("buildingId"));
 			
 		 long diff = 0;
 		 Map<String, Object> resMap = new HashMap<String, Object>();
@@ -1501,8 +1501,8 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 			 resMap.put("difference",4);//1-increase,2-same,3-decrease,4-no data
 		 }
 		 resMap.put("percentage",Math.abs(diff));
-		 resMap.put("resourceId",map.get("resourceId"));
-		 resMap.put("resourceName",resourceArray.get((Long)map.get("resourceId")));
+		 resMap.put("resourceId",map.get("buildingId"));
+		 resMap.put("resourceName",resourceArray.get((Long)map.get("buildingId")));
 		 finalResult.add(resMap);
 	 }
 	
