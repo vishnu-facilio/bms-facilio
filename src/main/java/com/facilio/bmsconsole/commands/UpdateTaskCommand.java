@@ -218,6 +218,12 @@ public class UpdateTaskCommand implements Command {
 						FacilioStatus workInProgressStatus = TicketAPI.getStatus("Work in Progress");
 						if (ticket.getAssignedTo() == null) {
 							ticket.setAssignedTo(AccountUtil.getCurrentUser());
+							UpdateRecordBuilder<TicketContext> updateBuilder = new UpdateRecordBuilder<TicketContext>()
+									.module(woModule)
+									.fields(woFields)
+									.andCondition(CriteriaAPI.getIdCondition(task.getParentTicketId(), woModule));
+
+							updateBuilder.update(ticket);
 						}
 						StateFlowRulesAPI.updateState(ticket, woModule, workInProgressStatus, false, context);
 					}
