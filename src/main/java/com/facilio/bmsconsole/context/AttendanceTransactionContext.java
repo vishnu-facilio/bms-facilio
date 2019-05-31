@@ -41,7 +41,9 @@ public class AttendanceTransactionContext extends ModuleBaseWithCustomFields {
 	
 	public enum TransactionType {
 		CHECKIN, 
-		CHECKOUT;
+		CHECKOUT,
+		BREAKSTART,
+		BREAKSTOP;
 
 		public int getValue() {
 			return ordinal() + 1;

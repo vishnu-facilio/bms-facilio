@@ -1053,6 +1053,7 @@ public class FacilioConstants {
 		public static final String ATTENDANCE_TRANSACTIONS = "attendanceTransaction";
 		public static final String BREAK = "break";
 		public static final String BREAK_LIST = "break_list";
+		public static final String BREAK_TRANSACTION = "breakTransaction";
 
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());

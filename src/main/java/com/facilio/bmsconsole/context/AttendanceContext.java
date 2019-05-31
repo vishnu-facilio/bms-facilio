@@ -99,4 +99,12 @@ public class AttendanceContext extends ModuleBaseWithCustomFields{
 	public void setTotalPaidBreakHrs(long totalPaidBreakHrs) {
 		this.totalPaidBreakHrs = totalPaidBreakHrs;
 	}
+	
+	private long lastBreakStartTime = -1;
+	public long getLastBreakStartTime() {
+		return lastBreakStartTime;
+	}
+	public void setLastBreakStartTime(long lastBreakStartTime) {
+		this.lastBreakStartTime = lastBreakStartTime;
+	}
 }

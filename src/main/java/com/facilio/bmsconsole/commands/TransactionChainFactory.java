@@ -2819,6 +2819,14 @@ public class TransactionChainFactory {
 			c.addCommand(new DeleteBreakCommand());
 			return c;
 		}
+		
+		public static Chain getAddBreakTransactionChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForBreakTransaction());
+			c.addCommand(new AddBreakTransactionCommand());
+			c.addCommand(new GenericAddModuleDataCommand());
+			return c;
+		}
 
 }
 

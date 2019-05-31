@@ -318,6 +318,10 @@ public class SetTableNamesCommand implements Command {
 	public static SetTableNamesCommand getForAttendanceTransaction() {
 		return new SetTableNamesCommand("attendanceTransaction", "Attendance_Transactions");
 	}
+	
+	public static SetTableNamesCommand getForBreakTransaction() {
+		return new SetTableNamesCommand("breakTransaction", "BREAK_TRANSACTION");
+	}
 
 	public static SetTableNamesCommand getForShipment() {
 		return new SetTableNamesCommand("shipment", "Shipment");
