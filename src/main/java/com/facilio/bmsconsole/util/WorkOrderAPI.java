@@ -1339,11 +1339,11 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 		 Map<String,Object> map = plannedWorkOrders.get(i);
 		 Map<String,Object> planned = plannedMap.get(map.get("resourceId"));
 		 Map<String,Object> plannedLastMonth = plannedLastMonthMap.get(map.get("resourceId"));
-		 double diff = 0;
+		 long diff = 0;
 		 Map<String, Object> resMap = new HashMap<String, Object>();
 			
 		 if(plannedLastMonth != null) {
-			 diff = (((double)plannedLastMonth.get("count") - (double)planned.get("count")) / (double)plannedLastMonth.get("count") ) * 100 ;
+			 diff = (((long)plannedLastMonth.get("count") - (long)planned.get("count")) / (long)plannedLastMonth.get("count") ) * 100 ;
 			 resMap.put("difference",diff > 0 ? 1 : diff == 0 ? 2 : 3 );//1-increase,2-same,3-decrease,4-no data
 				
 		 }
@@ -1457,11 +1457,11 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 		 Map<String,Object> unplanned = unplannedMap.get(map.get("resourceId"));
 		 Map<String,Object> unplannedLastMonth = unplannedLastMonthMap.get(map.get("resourceId"));
 			
-		 double diff = 0;
+		 long diff = 0;
 		 Map<String, Object> resMap = new HashMap<String, Object>();
 		 resMap.put("unplannedCount",unplanned.get("count"));
 		 if(unplannedLastMonth != null) {
-			 diff = (((double)unplannedLastMonth.get("count") - (double)unplanned.get("count")) / (double)unplannedLastMonth.get("count") ) * 100 ;
+			 diff = (((long)unplannedLastMonth.get("count") - (long)unplanned.get("count")) / (long)unplannedLastMonth.get("count") ) * 100 ;
 			 resMap.put("difference",diff > 0 ? 1 : diff == 0 ? 2 : 3 );//1-increase,2-same,3-decrease,4-no data
 				
 		 }
