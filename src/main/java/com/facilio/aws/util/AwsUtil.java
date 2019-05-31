@@ -135,7 +135,7 @@ public class AwsUtil
 	private static String anomalyPredictAPIURL;
 
 	private static boolean sysLogEnabled;
-    private static HashSet<String> dbIdentifiers;
+    private static HashSet<String> dbIdentifiers = new HashSet<>();
 
     public static Long getMessageReprocessInterval() {
 			return messageReprocessInterval;
