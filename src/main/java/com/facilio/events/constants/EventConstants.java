@@ -333,7 +333,7 @@ public class EventConstants {
 			fields.add(additionalInfo);
 			
 			fields.add(FieldFactory.getField("subRuleId", "Sub Rule Id", "SUB_RULE_ID", module, FieldType.LOOKUP));
-			
+			fields.add(FieldFactory.getField("alarmRuleEntityId", "Entity Id", "ALARM_RULE_ENTITY_ID", module, FieldType.LOOKUP));
 			return fields;
 		}
 		

@@ -252,7 +252,14 @@ public class EventContext {
 	}
 	
 	private long subRuleId;
+	private long alarmRuleEntityId;
 
+	public long getAlarmRuleEntityId() {
+		return alarmRuleEntityId;
+	}
+	public void setAlarmRuleEntityId(long alarmRuleEntityId) {
+		this.alarmRuleEntityId = alarmRuleEntityId;
+	}
 	public long getSubRuleId() {
 		return subRuleId;
 	}
