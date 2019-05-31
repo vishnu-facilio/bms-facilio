@@ -395,7 +395,7 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			
 			SiteContext site = SpaceAPI.getSiteSpace(Long.valueOf(objects[7].toString()));
 					
-			String permalLinkURL = objects[0].toString()+"/app/maintenanceReport?token="+token+"&id="+dashboard.getId()+"&linkName="+dashboard.getLinkName()+"&siteName="+site.getName()+"&siteId="+site.getId()+"&moduleName=workorder"+"&name="+dashboard.getDashboardName()+"&daterange="+URLEncoder.encode(dateJson.toString());
+			String permalLinkURL = objects[0].toString()+"/app/maintenanceReport?token="+token+"&id="+dashboard.getId()+"&linkName="+dashboard.getLinkName()+"&siteName="+URLEncoder.encode(site.getName())+"&siteId="+site.getId()+"&moduleName=workorder"+"&name="+URLEncoder.encode(dashboard.getDashboardName())+"&daterange="+URLEncoder.encode(dateJson.toString());
 			return permalLinkURL;
 		}
 		
