@@ -9,9 +9,9 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.bmsconsole.context.ShiftContext;
 import com.facilio.bmsconsole.context.ShiftUserRelContext;
-import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.time.DateTimeUtil;
 
 public class GetUsersForShiftCommand implements Command {
 
