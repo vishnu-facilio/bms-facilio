@@ -135,7 +135,9 @@ public class AwsUtil
 	private static String anomalyPredictAPIURL;
 
 	private static boolean sysLogEnabled;
-	public static Long getMessageReprocessInterval() {
+    private static HashSet<String> dbIdentifiers;
+
+    public static Long getMessageReprocessInterval() {
 			return messageReprocessInterval;
 	}
 	private static Long messageReprocessInterval;
@@ -184,6 +186,15 @@ public class AwsUtil
 						pdfjs = file.getParentFile().getParentFile().getAbsolutePath() + "/js";
 					}
 				}
+
+				String db = PROPERTIES.getProperty("db.identifiers");
+				if(db != null) {
+				    String[] dbNames = db.split(",");
+				    for(String dbName : dbNames) {
+				        String identifier = dbName.trim();
+				        dbIdentifiers.add(identifier);
+                    }
+                }
 			} catch (IOException e) {
 				LOGGER.info("Exception while trying to load property file " + AWS_PROPERTY_FILE);
 			}
@@ -978,5 +989,9 @@ public class AwsUtil
 
     public static boolean isSysLogEnabled() {
 		return sysLogEnabled;
+    }
+
+    public static HashSet<String> getDBIdentifiers() {
+	    return dbIdentifiers;
     }
 }
