@@ -1745,14 +1745,20 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 				 Map<String,Object> lastMonth = lastMonthMap.get(technicianMap.get("id"));
 				
 				 if(lastMonth != null ) {
-				   resMap.put("avg_resolution_time_last_month",lastMonth.get("avg_resolution_time") );
+					 Double avgTime = ((Number)lastMonth.get("avg_resolution_time")).doubleValue();
+					 avgTime = Math.round(avgTime*100.0)/100.0;
+					 
+					 resMap.put("avg_resolution_time_last_month",avgTime );
 					
 				 }
 				 else {
 					 resMap.put("avg_resolution_time_last_month",0);
 						
 				 }
-				 resMap.put("avgResolutionTime",thsMonth.get("avg_resolution_time"));
+				 Double avgTime = ((Number)thsMonth.get("avg_resolution_time")).doubleValue();
+				 avgTime = Math.round(avgTime*100.0)/100.0;
+				   
+				 resMap.put("avgResolutionTime",avgTime);
 				 User user = AccountUtil.getUserBean().getUser((Long)technicianMap.get("id"));
 				 resMap.put("technicianName",user.getName());
 				 finalResult.add(resMap);
