@@ -37,13 +37,13 @@ public class ItemTypesContext extends ModuleBaseWithCustomFields {
 		this.serialNumber = serialNumber;
 	}
 
-	private ItemTypesCategoryContext category;
+	private InventoryCategoryContext category;
 
-	public ItemTypesCategoryContext getCategory() {
+	public InventoryCategoryContext getCategory() {
 		return category;
 	}
 
-	public void setCategory(ItemTypesCategoryContext category) {
+	public void setCategory(InventoryCategoryContext category) {
 		this.category = category;
 	}
 

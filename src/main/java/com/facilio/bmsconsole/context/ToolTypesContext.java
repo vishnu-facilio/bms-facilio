@@ -37,13 +37,13 @@ public class ToolTypesContext extends ModuleBaseWithCustomFields {
 		this.serialNumber = serialNumber;
 	}
 
-	private ToolTypesCategoryContext category;
+	private InventoryCategoryContext category;
 
-	public ToolTypesCategoryContext getCategory() {
+	public InventoryCategoryContext getCategory() {
 		return category;
 	}
 
-	public void setCategory(ToolTypesCategoryContext category) {
+	public void setCategory(InventoryCategoryContext category) {
 		this.category = category;
 	}
 
