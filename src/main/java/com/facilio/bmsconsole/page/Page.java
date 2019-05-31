@@ -112,6 +112,13 @@ public class Page {
 	}
 	
 	public class Section {
+		
+		Section(){}
+		
+		Section(String name) {
+			this.name = name;
+		}
+		
 		private long orgId = -1;
 		public long getOrgId() {
 			return orgId;

@@ -2274,6 +2274,9 @@ public class WorkOrderAction extends FacilioAction {
 	public String v2workOrderList() throws Exception {
 		workOrderList();
 		setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
+		if (getCount() != null) {
+			setResult(FacilioConstants.ContextNames.WORK_ORDER_COUNT, woCount);	
+		}
 		if (getSubView() != null) {
 			setResult(FacilioConstants.ContextNames.SUB_VIEW, subView);
 		}

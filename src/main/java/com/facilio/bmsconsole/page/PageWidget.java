@@ -18,7 +18,12 @@ public class PageWidget {
 	public PageWidget () {}
 	
 	public PageWidget(WidgetType type) {
+		this(type, null);
+	}
+	
+	public PageWidget(WidgetType type, String name) {
 		this.widgetType = type;
+		this.name = name;
 	}
 
 	private long orgId = -1;
@@ -37,6 +42,14 @@ public class PageWidget {
 		this.id = id;
 	}
 	
+	private String name;
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	private WidgetType widgetType;
 	public WidgetType getWidgetTypeEnum() {
 		return widgetType;
@@ -170,7 +183,8 @@ public class PageWidget {
  		COMMENT("comment"),
  		ATTACHMENT("attachment"),
  		ACTIVITY("activity"),
- 		GROUP("group")
+ 		GROUP("group"),
+ 		HISTORY("history")
  		;
 		
 		private String name;
@@ -188,6 +202,41 @@ public class PageWidget {
 		}
 		
 		public static WidgetType valueOf (int value) {
+			if (value > 0 && value <= values().length) {
+				return values() [value - 1];
+			}
+			return null;
+		}
+ 	}
+	
+	public enum CardType {
+		NEXT_PM("nextPm"),
+		FAILURE_METRICS("failureMetrics"),
+		WO_DETAILS("woDetails"),
+		RECENTLY_CLOSED_PM("recentlyClosedPm"),
+		ASSET_LIFE("assetLife"),
+		ALARM_INSIGHTS("alarmInsights"),
+		LAST_DOWNTIME("lastDownTime"),
+		OVERALL_DOWNTIME("overallDownTime"),
+		FAILURE_RATE("failureRate"),
+		AVG_TTR("AvgTtr")
+ 		;
+		
+		private String name;
+		
+		CardType(String name) {
+			this.name = name;
+		}
+		
+		public String getName() {
+			return name;
+		}
+		
+ 		public int getValue() {
+			return ordinal() + 1;
+		}
+		
+		public static CardType valueOf (int value) {
 			if (value > 0 && value <= values().length) {
 				return values() [value - 1];
 			}

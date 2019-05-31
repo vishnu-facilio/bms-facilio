@@ -650,6 +650,7 @@ public class FacilioConstants {
 		public static final String FILTER_CONDITIONS = "filterConditions";
 		public static final String CRITERIA_IDS = "criteria";
 		public static final String COUNT = "count";
+		public static final String FILTER = "filter";
 		public static final String FILTER_CRITERIA = "filterCriteria";
 		public static final String INCLUDE_PARENT_CRITERIA = "includeParentCriteria";
 		public static final String SEARCH = "search";

@@ -1,32 +1,35 @@
 package com.facilio.bmsconsole.page;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.Page.Tab;
+import com.facilio.bmsconsole.page.PageWidget.CardType;
 import com.facilio.bmsconsole.page.PageWidget.WidgetType;
 import com.facilio.bmsconsole.page.WidgetGroup.WidgetGroupType;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 
 public class PageFactory {
 
-	private static final Map<String, Page> PAGE_MAP = Collections.unmodifiableMap(initPages());
+//	private static final Map<String, Page> PAGE_MAP = Collections.unmodifiableMap(initPages());
 
 	public static Page getPage(String moduleName) {
-		return PAGE_MAP.get(moduleName);
+//		return PAGE_MAP.get(moduleName);
+		switch(moduleName) {
+			case ContextNames.ASSET:
+				return getAssetPage();
+		}
+		return null;
 	}
 
-	private static Map<String, Page> initPages() {
+	/*private static Map<String, Page> initPages() {
 		Map<String, Page> allPages = new HashMap<>();
 		allPages.put(FacilioConstants.ContextNames.ASSET, getAssetPage());
 		// allPages.put(FacilioConstants.ContextNames.CHILLER, getChillerPage());
 		return allPages;
 	}
-
+*/
 	private static Page getAssetPage() {
 		Page page = new Page();
 
@@ -51,7 +54,7 @@ public class PageFactory {
 		
 		PageWidget fddWidget = new PageWidget(WidgetType.CARD);
 		fddWidget.addToLayoutParams(tab1Sec1, 10, 11);
-		fddWidget.addToWidgetParams("type", "failureMetrics");
+		fddWidget.addToWidgetParams("type", CardType.FAILURE_METRICS.getName());
 		tab1Sec1.addWidget(fddWidget);
 		
 
@@ -75,22 +78,93 @@ public class PageFactory {
 		
 		PageWidget nextPmWidget = new PageWidget(WidgetType.CARD);
 		nextPmWidget.addToLayoutParams(tab2Sec1, 8, 9);
-		nextPmWidget.addToWidgetParams("type", "nextPm");
+		nextPmWidget.addToWidgetParams("type", CardType.NEXT_PM.getName());
 		tab2Sec1.addWidget(nextPmWidget);
 		
 		PageWidget woDetailsWidget = new PageWidget(WidgetType.CARD);
 		woDetailsWidget.addToLayoutParams(tab2Sec1, 8, 9);
-		woDetailsWidget.addToWidgetParams("type", "woDetails");
+		woDetailsWidget.addToWidgetParams("type", CardType.WO_DETAILS.getName());
 		tab2Sec1.addWidget(woDetailsWidget);
 		
 		PageWidget recentlyClosedWidget = new PageWidget(WidgetType.CARD);
 		recentlyClosedWidget.addToLayoutParams(tab2Sec1, 8, 9);
-		recentlyClosedWidget.addToWidgetParams("type", "recentlyClosedPm");
+		recentlyClosedWidget.addToWidgetParams("type", CardType.RECENTLY_CLOSED_PM.getName());
 		tab2Sec1.addWidget(recentlyClosedWidget);
 		
-//		PageWidget pmWidget = getListModuleWidget(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
-//		pmWidget.addToLayoutParams(tab2Sec1, 24, 10);
-//		col1Sec3.addWidget(readingWidget);
+		Section tab2Sec2 = page.new Section();
+		tab2.addSection(tab2Sec2);
+		
+		PageWidget plannedWidget = new PageWidget(WidgetType.LIST, "plannedWorkorder");
+		plannedWidget.addToLayoutParams(tab2Sec2, 24, 10);
+		tab2Sec2.addWidget(plannedWidget);
+		
+		PageWidget unPlannedWidget = new PageWidget(WidgetType.LIST, "unPlannedWorkorder");
+		unPlannedWidget.addToLayoutParams(tab2Sec2, 24, 10);
+		tab2Sec2.addWidget(unPlannedWidget);
+		
+		Tab tab3 = page.new Tab("readings");
+		page.addTab(tab3);
+		
+		Section tab3Sec1 = page.new Section();
+		tab3.addSection(tab3Sec1);
+		
+		PageWidget readingsWidget = new PageWidget(WidgetType.LIST, "readings");
+		readingsWidget.addToLayoutParams(tab3Sec1, 24, 10);
+		tab3Sec1.addWidget(readingsWidget);
+		
+		Section tab3Sec2 = page.new Section("commands");
+		tab3.addSection(tab3Sec2);
+		
+		
+		
+		Tab tab4 = page.new Tab("performace");
+		page.addTab(tab4);
+		
+		Section tab4Sec1 = page.new Section();
+		tab4.addSection(tab4Sec1);
+		
+		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
+		cardWidget.addToLayoutParams(tab4Sec1, 24, 3);
+		cardWidget.addToWidgetParams("type", CardType.WO_DETAILS.getName());
+		tab4Sec1.addWidget(cardWidget);
+		
+		cardWidget = new PageWidget(WidgetType.CARD);
+		cardWidget.addToLayoutParams(tab4Sec1, 24, 8);
+		cardWidget.addToWidgetParams("type", CardType.ASSET_LIFE.getName());
+		tab4Sec1.addWidget(cardWidget);
+		
+		cardWidget = new PageWidget(WidgetType.CARD, "lastReportedDownTime");
+		cardWidget.addToLayoutParams(tab4Sec1, 12, 3);
+		cardWidget.addToWidgetParams("type", CardType.LAST_DOWNTIME.getName());
+		tab4Sec1.addWidget(cardWidget);
+		
+		cardWidget = new PageWidget(WidgetType.CARD, "overallDownTime");
+		cardWidget.addToLayoutParams(tab4Sec1, 12, 3);
+		cardWidget.addToWidgetParams("type", CardType.OVERALL_DOWNTIME.getName());
+		tab4Sec1.addWidget(cardWidget);
+		
+		cardWidget = new PageWidget(WidgetType.CHART);
+		cardWidget.addToLayoutParams(tab4Sec1, 12, 6);
+		cardWidget.addToWidgetParams("type", CardType.FAILURE_RATE.getName());
+		tab4Sec1.addWidget(cardWidget);
+		
+		cardWidget = new PageWidget(WidgetType.CHART);
+		cardWidget.addToLayoutParams(tab4Sec1, 12, 6);
+		cardWidget.addToWidgetParams("type", CardType.AVG_TTR.getName());
+		tab4Sec1.addWidget(cardWidget);
+		
+
+		
+		
+		Tab tab5 = page.new Tab("history");
+		page.addTab(tab5);
+		
+		Section tab5Sec1 = page.new Section();
+		tab5.addSection(tab5Sec1);
+		
+		PageWidget historyWidget = new PageWidget(WidgetType.HISTORY);
+		historyWidget.addToLayoutParams(tab5Sec1, 24, 24);
+		tab5Sec1.addWidget(historyWidget);
 
 		return page;
 	}

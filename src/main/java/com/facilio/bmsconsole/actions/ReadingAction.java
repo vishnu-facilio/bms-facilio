@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -34,6 +35,7 @@ import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
@@ -1018,10 +1020,34 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.FETCH_READING_INPUT_VALUES, fetchInputValues);
 		context.put(FacilioConstants.ContextNames.IS_FETCH_RDM_FROM_UI, true);
 		
+		if (isFetchCount()) {
+			context.put(FacilioConstants.ContextNames.FETCH_COUNT, isFetchCount());
+		}
+		if (getSearch() != null) {
+			context.put(FacilioConstants.ContextNames.SEARCH, getSearch());
+		}
+		if (getPerPage() != -1) {
+			JSONObject pagination = new JSONObject();
+			pagination.put("page", getPage());
+			pagination.put("perPage", getPerPage());
+			
+			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+		}
+		if (StringUtils.isNotEmpty(getReadingType())) {
+			context.put(FacilioConstants.ContextNames.FILTER, getReadingType());
+		}
+
+		
 		Chain latestAssetData = ReadOnlyChainFactory.fetchLatestReadingDataChain();
 		latestAssetData.execute(context);
 		
-		setResult("readingValues", context.get(FacilioConstants.ContextNames.READING_DATA_META_LIST));
+		if (isFetchCount()) {
+			setResult(ContextNames.COUNT, context.get(ContextNames.COUNT));
+		}
+		else {
+			setResult("readingValues", context.get(FacilioConstants.ContextNames.READING_DATA_META_LIST));
+		}
+		
 		
 		return SUCCESS;
 	}
@@ -1109,6 +1135,50 @@ public class ReadingAction extends FacilioAction {
 	}
 	public void setValue(String value) {
 		this.value = value;
+	}
+	
+	private String search;
+	public void setSearch(String search) {
+		this.search = search;
+	}
+	public String getSearch() {
+		return this.search;
+	}
+
+	private int page;
+	public void setPage(int page) {
+		this.page = page;
+	}
+	public int getPage() {
+		return this.page;
+	}
+
+	public int perPage = -1;
+	public void setPerPage(int perPage) {
+		this.perPage = perPage;
+	}
+	public int getPerPage() {
+		return this.perPage;
+	}
+	
+	// connected, formula or others
+	private String readingType;
+	public String getReadingType() {
+		return readingType;
+	}
+	public void setReadingType(String readingType) {
+		this.readingType = readingType;
+	} 
+	
+	private Boolean fetchCount;
+	public boolean isFetchCount() {
+		if (fetchCount == null) {
+			return false;
+		}
+		return fetchCount;
+	}
+	public void setFetchCount(boolean fetchCount) {
+		this.fetchCount = fetchCount;
 	}
 
 }
