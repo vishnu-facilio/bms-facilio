@@ -1,11 +1,14 @@
 package com.facilio.workflows.functions;
 
+import com.chargebee.org.json.JSONObject;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.cards.util.CardUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
@@ -28,6 +31,7 @@ import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.exceptions.FunctionParamException;
 import com.facilio.workflows.util.WorkflowUtil;
 
+import java.net.URLEncoder;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -366,6 +370,31 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			String token = AccountUtil.getUserBean().generatePermalinkForURL(objects[1].toString(), user);
 			String permalLinkURL = objects[0].toString()+objects[1].toString()+"?token="+token+"&startDate="+Long.valueOf(objects[2].toString())+"&endDate="+Long.valueOf(objects[3].toString());
 			
+			return permalLinkURL;
+		}
+		
+	},
+	GET_MAINTENANCE_PERMALINK_URL(10, "getMaintenancePermaLinkUrl") {
+
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			if (objects == null || objects.length < 1) {
+				return null;
+			}
+			
+			User user = AccountUtil.getUserBean().getUser(AccountUtil.getCurrentOrg().getId(), (String) objects[5]);
+			String token = AccountUtil.getUserBean().generatePermalinkForURL(objects[1].toString(), user);
+			DashboardContext dashboard = DashboardUtil.getDashboard(Long.valueOf(objects[6].toString()));
+			org.json.simple.JSONObject dateJson = new org.json.simple.JSONObject();
+			dateJson.put("startTime", Long.valueOf(objects[2].toString()));
+			dateJson.put("endTime", Long.valueOf(objects[3].toString()));
+			dateJson.put("operatorId", Long.valueOf(objects[4].toString()));
+			
+			String siteName = WorkOrderAPI.getSiteName(Long.valueOf(objects[7].toString()));
+			
+			
+			String permalLinkURL = objects[0].toString()+"/app/maintenanceReport?token="+token+"&id="+dashboard.getId()+"&linkName="+dashboard.getLinkName()+"&siteName="+siteName+"&siteId="+objects[7].toString()+"&moduleName=workorder"+"&name="+dashboard.getDashboardName()+"&daterange="+URLEncoder.encode(dateJson.toString());
 			return permalLinkURL;
 		}
 		

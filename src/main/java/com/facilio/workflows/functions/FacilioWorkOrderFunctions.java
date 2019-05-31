@@ -114,6 +114,21 @@ public enum FacilioWorkOrderFunctions implements FacilioWorkflowFunctionInterfac
 			}
 		}
 	},
+	GET_SITE_NAME(8,"getSiteName") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			String siteName = WorkOrderAPI.getSiteName(Long.valueOf(objects[0].toString()));
+			
+            return siteName;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	}
 	;
 	;
 	

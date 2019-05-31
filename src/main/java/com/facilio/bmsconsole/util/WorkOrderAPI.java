@@ -1713,18 +1713,15 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 				 Map<String,Object> thsMonth = techMap.get(technicianMap.get("id"));
 				 Map<String,Object> lastMonth = lastMonthMap.get(technicianMap.get("id"));
 				
-				 double diff = 0;
 				 if(lastMonth != null ) {
-				   diff = (((double)lastMonth.get("avg_resolution_time") - (double)thsMonth.get("avg_resolution_time")) / (double)lastMonth.get("avg_resolution_time") ) * 100 ;
-				   resMap.put("difference",diff > 0 ? 1 : diff == 0 ? 2 : 3 );//1-increase,2-same,3-decrease
+				   resMap.put("avg_resolution_time_last_month",lastMonth.get("avg_resolution_time") );
 					
 				 }
 				 else {
-					 resMap.put("difference",4);//1-increase,2-same,3-decrease,4-no data
+					 resMap.put("avg_resolution_time_last_month",0);
 						
 				 }
 				 resMap.put("avgResolutionTime",thsMonth.get("avg_resolution_time"));
-				 resMap.put("percentage",Math.abs(diff));
 				 User user = AccountUtil.getUserBean().getUser((Long)technicianMap.get("id"));
 				 resMap.put("technicianName",user.getName());
 				 finalResult.add(resMap);
@@ -1790,6 +1787,10 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 
   }
 
+    public static String getSiteName(long siteId) throws Exception {
+    	
+    	return SpaceAPI.getSiteSpace(siteId).getName();
+    }
 
 	
  }
