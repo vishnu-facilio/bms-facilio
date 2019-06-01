@@ -134,5 +134,13 @@ public class AttendanceTransactionContext extends ModuleBaseWithCustomFields {
 	public void setUser(User user) {
 		this.user = user;
 	}
+	
+	private String remarks;
+	public String getRemarks() {
+		return remarks;
+	}
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
 
 }
