@@ -4,6 +4,8 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 
 import java.util.*;
 
+import org.apache.struts2.json.annotations.JSON;
+
 public class MLContext extends ModuleBaseWithCustomFields
 {
 	private static final long serialVersionUID = 1L;
@@ -36,19 +38,23 @@ public class MLContext extends ModuleBaseWithCustomFields
 		return sequence;
 	}
 	
+	@JSON(serialize=false)
 	public void setPredictionTime(long predictionTime)
 	{
 		this.predictionTime = predictionTime;
 	}
+	@JSON(serialize=false)
 	public long getPredictionTime()
 	{
 		return predictionTime;
 	}
 	
+	@JSON(serialize=false)
 	public void setResult(String result)
 	{
 		this.result = result;
 	}
+	@JSON(serialize=false)
 	public String getResult()
 	{
 		return result;
@@ -73,16 +79,22 @@ public class MLContext extends ModuleBaseWithCustomFields
 		return predictionModuleID;
 	}
 	
+	public void setModelPath(String modelPath)
+	{
+		this.modelPath = modelPath;
+	}
 	public String getModelPath()
 	{
 		return modelPath;
 	}
 	
+	@JSON(serialize=false)
 	public void setAssetDetails(long assetID,Map<String,Object> data)
 	{
 		assetDetails.put(assetID, data);
 	}
 	
+	@JSON(serialize=false)
 	public void setAssetVariables(long assetID,MLAssetVariableContext assetVariableContext)
 	{
 		if(assetVariables==null)
@@ -100,16 +112,20 @@ public class MLContext extends ModuleBaseWithCustomFields
 			assetVariables.put(assetID, variableValues);
 		}
 	}
+	
+	@JSON(serialize=false)
 	public Map<Long,HashMap<String,String>> getAssetVariables()
 	{
 		return assetVariables;
 	}
+	
+	@JSON(serialize=false)
 	public Hashtable<Long,Map<String,Object>> getAssetDetails()
 	{
 		return assetDetails;
 	}
 	
-	
+	@JSON(serialize=false)
 	public void addMLVariable(MLVariableContext context)
 	{
 		if(mlVariables==null)
@@ -119,11 +135,13 @@ public class MLContext extends ModuleBaseWithCustomFields
 		mlVariables.add(context);
 	}
 	
+	@JSON(serialize=false)
 	public List<MLVariableContext> getMLVariable()
 	{
 		return mlVariables;
 	}
 	
+	@JSON(serialize=false)
 	public void addMLModelVariable(MLModelVariableContext context)
 	{
 		if(mlModelVariables==null)
@@ -133,11 +151,13 @@ public class MLContext extends ModuleBaseWithCustomFields
 		mlModelVariables.add(context);
 	}
 	
+	@JSON(serialize=false)
 	public List<MLModelVariableContext> getMLModelVariable()
 	{
 		return mlModelVariables;
 	}
 	
+	@JSON(serialize=false)
 	public String getMLModelVariable(String key)
 	{
 		if(mlModelVariables.size()>0)
@@ -153,6 +173,7 @@ public class MLContext extends ModuleBaseWithCustomFields
 		return null;
 	}
 	
+	@JSON(serialize=false)
 	public void addMLCriteriaVariable(MLVariableContext context)
 	{
 		if(criteriaVariables==null)
@@ -162,6 +183,7 @@ public class MLContext extends ModuleBaseWithCustomFields
 		criteriaVariables.add(context);
 	}
 	
+	@JSON(serialize=false)
 	public void setMlVariablesDataMap(long assetID,String attributeName ,SortedMap<Long,Object> data)
 	{
 		if(mlVariablesDataMap==null)
@@ -179,30 +201,35 @@ public class MLContext extends ModuleBaseWithCustomFields
 			mlVariablesDataMap.put(assetID, assetData);
 		}
 	}
+	
+	@JSON(serialize=false)
 	public Hashtable<Long,Hashtable<String,SortedMap<Long,Object>>> getMlVariablesDataMap()
 	{
 		return mlVariablesDataMap;
 	}
 	
+	@JSON(serialize=false)
 	public void setMlCriteriaVariablesDataMap(SortedMap<Long,Hashtable<String,Object>> dataMap)
 	{
 		this.mlCriteriaVariablesDataMap = dataMap;
 	}
+	@JSON(serialize=false)
 	public SortedMap<Long,Hashtable<String,Object>> getMlCriteriaVariablesDataMap()
 	{
 		return mlCriteriaVariablesDataMap;
 	}
 	
+	@JSON(serialize=false)
 	public List<MLVariableContext> getMLCriteriaVariables()
 	{
 		return criteriaVariables;
 	}
 	
-	public long getCriteriaId() {
+	public long getCriteriaID() {
 		return criteriaId;
 	}
 
-	public void setCriteriaId(long criteriaId) {
+	public void setCriteriaID(long criteriaId) {
 		this.criteriaId = criteriaId;
 	}
 	public long getRuleID() {
@@ -211,22 +238,39 @@ public class MLContext extends ModuleBaseWithCustomFields
 	public void setRuleID(long ruleID) {
 		this.ruleID = ruleID;
 	}
+	
+	@JSON(serialize=false)
 	public void setMlVariablesDataMap(Hashtable<Long, Hashtable<String, SortedMap<Long, Object>>> criteriaSatisfiedDataMap) 
 	{
 		this.mlVariablesDataMap = criteriaSatisfiedDataMap;
 	}
 	
+	@JSON(serialize=false)
 	public long getSourceID()
 	{
-		for(MLVariableContext context: mlVariables)
+		if(mlVariables!=null)
 		{
-			if(context.getIsSource())
+			for(MLVariableContext context: mlVariables)
 			{
-				return context.getParentID();
+				if(context.getIsSource())
+				{
+					return context.getParentID();
+				}
 			}
 		}
 		return -1;
 	}
 	
-	
+	@JSON(serialize=false)
+    public MLVariableContext getMLVariableContext(long assetID)
+    {
+		for(MLVariableContext context: mlVariables)
+		{
+			if(context.getParentID()== assetID)
+			{
+				return context;
+			}
+        }
+		return null;
+    }
 }

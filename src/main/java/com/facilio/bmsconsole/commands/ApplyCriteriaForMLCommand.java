@@ -29,7 +29,7 @@ public class ApplyCriteriaForMLCommand implements Command {
 			Hashtable<Long, Hashtable<String, SortedMap<Long, Object>>> criteriaSatisfiedDataMap = new Hashtable<Long, Hashtable<String, SortedMap<Long, Object>>>();
 			
 			Set<Long> keySet = criteriaVariableDataMap.keySet();
-			Criteria criteria = CriteriaAPI.getCriteria(mlContext.getOrgId(), mlContext.getCriteriaId());
+			Criteria criteria = CriteriaAPI.getCriteria(mlContext.getOrgId(), mlContext.getCriteriaID());
 			
 			long previousTime = -1;
 			for(long ttime:keySet)

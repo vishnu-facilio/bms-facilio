@@ -21,6 +21,10 @@ public class CreateReadingModulesCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		String readingName = (String) context.get(FacilioConstants.ContextNames.READING_NAME);
+		Boolean overRideSplit = (Boolean) context.get(FacilioConstants.ContextNames.OVER_RIDE_READING_SPLIT);
+        if (overRideSplit == null) {
+        	overRideSplit = false;
+        }
 		
 		if(readingName != null && !readingName.isEmpty()) {
 			List<FacilioField> fields = (List<FacilioField>) context.remove(FacilioConstants.ContextNames.MODULE_FIELD_LIST);
@@ -35,15 +39,15 @@ public class CreateReadingModulesCommand implements Command {
 			
 			if (fields != null && !fields.isEmpty()) {
 				FacilioModule module = createModule(readingName, context);
-				List<FacilioModule> modules = splitFields(module, fields);
+				List<FacilioModule> modules = splitFields(module, fields,overRideSplit);
 				context.put(FacilioConstants.ContextNames.MODULE_LIST, modules);
 			}
 		}
 		return false;
 	}
 	
-	private List<FacilioModule> splitFields(FacilioModule module, List<FacilioField> allFields) {
-		if (allFields.size() <= MAX_FIELDS_PER_TYPE_PER_MODULE) {
+	private List<FacilioModule> splitFields(FacilioModule module, List<FacilioField> allFields,boolean overRideSplit) {
+		if (allFields.size() <= MAX_FIELDS_PER_TYPE_PER_MODULE || overRideSplit) {
 			allFields.addAll(FieldFactory.getDefaultReadingFields(module));
 			module.setFields(allFields);
 			return Collections.singletonList(module);

@@ -5655,6 +5655,83 @@ public class FieldFactory {
 		fields.add(getField("fieldID","FIELDID",module,FieldType.NUMBER));
 		return fields;
 	}
+	
+	public static List<FacilioField> getMLLogCheckGamFields()
+	{
+ 		List<FacilioField> fields = new ArrayList<>();
+ 		FacilioModule module = ModuleFactory.getMLLogReadingModule();
+ 		fields.add(getField("actualValue","DECIMAL_CF1",module,FieldType.NUMBER));
+ 		fields.add(getField("adjustedLowerBound","DECIMAL_CF2",module,FieldType.NUMBER));
+ 		fields.add(getField("adjustedUpperBound","DECIMAL_CF3",module,FieldType.NUMBER));
+ 		fields.add(getField("gamAnomaly","DECIMAL_CF4",module,FieldType.NUMBER));
+ 		fields.add(getField("lowerARMA","DECIMAL_CF5",module,FieldType.NUMBER));
+ 		fields.add(getField("lowerAnomaly","DECIMAL_CF6",module,FieldType.NUMBER));
+ 		fields.add(getField("lowerBound","DECIMAL_CF7",module,FieldType.NUMBER));
+ 		fields.add(getField("lowerGAM","DECIMAL_CF8",module,FieldType.NUMBER));
+ 		fields.add(getField("predicted","DECIMAL_CF9",module,FieldType.NUMBER));
+ 		fields.add(getField("predictedResidual","DECIMAL_CF10",module,FieldType.NUMBER));
+ 		fields.add(getField("residual","DECIMAL_CF11",module,FieldType.NUMBER));
+ 		fields.add(getField("temperature","DECIMAL_CF12",module,FieldType.NUMBER));
+ 		fields.add(getField("upperARMA","DECIMAL_CF13",module,FieldType.NUMBER));
+ 		fields.add(getField("upperAnomaly","DECIMAL_CF14",module,FieldType.NUMBER));
+ 		fields.add(getField("upperBound","DECIMAL_CF15",module,FieldType.NUMBER));
+ 		fields.add(getField("upperGAM","DECIMAL_CF16",module,FieldType.NUMBER));
+ 		fields.add(getField("predictedTime","PREDICTED_TIME",module,FieldType.NUMBER));
+ 
+ 		return fields;
+	}
+	
+	public static List<FacilioField> getMLCheckGamFields()
+	{
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getMLReadingModule();
+		fields.add(getField("actualValue","DECIMAL_CF1",module,FieldType.NUMBER));
+		fields.add(getField("adjustedLowerBound","DECIMAL_CF2",module,FieldType.NUMBER));
+		fields.add(getField("adjustedUpperBound","DECIMAL_CF3",module,FieldType.NUMBER));
+		fields.add(getField("gamAnomaly","DECIMAL_CF4",module,FieldType.NUMBER));
+		fields.add(getField("lowerARMA","DECIMAL_CF5",module,FieldType.NUMBER));
+		fields.add(getField("lowerAnomaly","DECIMAL_CF6",module,FieldType.NUMBER));
+		fields.add(getField("lowerBound","DECIMAL_CF7",module,FieldType.NUMBER));
+		fields.add(getField("lowerGAM","DECIMAL_CF8",module,FieldType.NUMBER));
+		fields.add(getField("predicted","DECIMAL_CF9",module,FieldType.NUMBER));
+		fields.add(getField("predictedResidual","DECIMAL_CF10",module,FieldType.NUMBER));
+		fields.add(getField("residual","DECIMAL_CF11",module,FieldType.NUMBER));
+		fields.add(getField("temperature","DECIMAL_CF12",module,FieldType.NUMBER));
+		fields.add(getField("upperARMA","DECIMAL_CF13",module,FieldType.NUMBER));
+		fields.add(getField("upperAnomaly","DECIMAL_CF14",module,FieldType.NUMBER));
+		fields.add(getField("upperBound","DECIMAL_CF15",module,FieldType.NUMBER));
+		fields.add(getField("upperGAM","DECIMAL_CF16",module,FieldType.NUMBER));
+		
+		return fields;
+	}
+	 	
+	public static List<FacilioField> getMLLogCheckRatioFields()
+	{
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getMLLogReadingModule();
+		fields.add(getField("meterID","DECIMAL_CF1",module,FieldType.NUMBER));
+		fields.add(getField("childMeter","DECIMAL_CF2",module,FieldType.NUMBER));
+		fields.add(getField("ratio","DECIMAL_CF3",module,FieldType.NUMBER));
+		fields.add(getField("upperAnomaly","DECIMAL_CF4",module,FieldType.NUMBER));
+		fields.add(getField("lowerAnomaly","DECIMAL_CF5",module,FieldType.NUMBER));
+		fields.add(getField("predictedTime","PREDICTED_TIME",module,FieldType.NUMBER));
+		
+		return fields; 		
+	}
+	 	
+	public static List<FacilioField> getMLCheckRatioFields()
+ 	{
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getMLReadingModule();
+		fields.add(getField("meterID","DECIMAL_CF1",module,FieldType.NUMBER));
+		fields.add(getField("childMeter","DECIMAL_CF2",module,FieldType.NUMBER));
+		fields.add(getField("ratio","DECIMAL_CF3",module,FieldType.NUMBER));
+		fields.add(getField("upperAnomaly","DECIMAL_CF4",module,FieldType.NUMBER));
+		fields.add(getField("lowerAnomaly","DECIMAL_CF5",module,FieldType.NUMBER));
+		fields.add(getField("predictedTime","PREDICTED_TIME",module,FieldType.NUMBER));
+		
+		return fields;	
+ 	}
 
 	public static List<FacilioField> getNotificationLoggerFields() {
 		FacilioModule module = ModuleFactory.getNotificationLoggerModule();

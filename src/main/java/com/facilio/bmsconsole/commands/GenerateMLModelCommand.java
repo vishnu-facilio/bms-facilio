@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.MLContext;
@@ -16,6 +17,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.time.LocalDate;
 import java.util.*;
 
 public class GenerateMLModelCommand implements Command {
@@ -28,6 +30,7 @@ public class GenerateMLModelCommand implements Command {
 		JSONObject postObj = new JSONObject();
 		postObj.put("ml_id",mlContext.getId());
 		postObj.put("orgid", mlContext.getOrgId());
+		postObj.put("date", LocalDate.now(TimeZone.getTimeZone(AccountUtil.getCurrentOrg().getTimezone()).toZoneId()));
 		
 		JSONObject modelVariables = new JSONObject();
 		if(mlContext.getMLModelVariable()!=null)

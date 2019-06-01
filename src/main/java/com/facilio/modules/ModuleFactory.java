@@ -2019,6 +2019,22 @@ public class ModuleFactory {
 		return mlCriteriaVariableModule;
 	}
 	
+	public static FacilioModule getMLLogReadingModule(){
+		FacilioModule module = new FacilioModule();
+		module.setName("mlLogReadings");
+		module.setDisplayName("ML Log Readings");
+		module.setTableName("ML_Log_Readings");
+		return module;
+	}
+
+	public static FacilioModule getMLReadingModule(){
+		FacilioModule module = new FacilioModule();
+		module.setName("mlReadings");
+		module.setDisplayName("ML Readings");
+		module.setTableName("ML_Readings");
+		return module;	
+	}
+	
 
 	public static FacilioModule getSitesForStoreRoomModule() {
 		FacilioModule accessbileSpaceModule = new FacilioModule();

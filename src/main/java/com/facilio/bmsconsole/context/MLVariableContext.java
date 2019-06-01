@@ -6,6 +6,7 @@ public class MLVariableContext extends ModuleBaseWithCustomFields
 {
 	private static final long serialVersionUID = 1L;
 
+	private long mlID;
 	private long moduleID;
 	private long fieldID;
 	private boolean isSource;
@@ -14,7 +15,16 @@ public class MLVariableContext extends ModuleBaseWithCustomFields
 	private long maxSamplingPeriod;
 	private int sequence;
 	
-	public long getModuleid() 
+	public long getMlID()
+	{
+		return mlID;
+	}
+	public void setMlID(long mlID)
+	{
+		this.mlID = mlID;
+	}
+	
+	public long getModuleID() 
 	{
 		return moduleID;
 	}
