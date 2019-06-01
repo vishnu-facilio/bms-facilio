@@ -67,6 +67,7 @@ public class AddAttendanceCommand implements Command {
 			att = attendance.get(0);
 			if (attendanceTransaction.getTransactionTypeEnum() == TransactionType.CHECKIN) {
 				att.setLastCheckInTime(attendanceTransaction.getTransactionTime());
+				att.setCheckOutTime(-1);
 			} else if (attendanceTransaction.getTransactionTypeEnum() == TransactionType.CHECKOUT) {
 				att.setCheckOutTime(attendanceTransaction.getTransactionTime());
 				long workhrs = att.getCheckOutTime() - att.getLastCheckInTime();
@@ -80,6 +81,7 @@ public class AddAttendanceCommand implements Command {
 			AttendanceContext attendanceContext = new AttendanceContext();
 			if (attendanceTransaction.getTransactionTypeEnum() == TransactionType.CHECKIN) {
 				attendanceContext.setStatus(Status.PRESENT);
+				attendanceContext.setCheckOutTime(-1);
 				List<ShiftUserRelContext> shiftusers = ShiftAPI.getShiftUserMapping(
 						attendanceTransaction.getTransactionTime(), attendanceTransaction.getTransactionTime(),
 						user.getOuid(), -1);
