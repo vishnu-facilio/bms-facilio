@@ -1,12 +1,12 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.aws.util.AwsUtil;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.facilio.aws.util.AwsUtil;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 public class AssetContext extends ResourceContext {
 	/**
@@ -350,6 +350,20 @@ public class AssetContext extends ResourceContext {
 	public boolean isUsed() {
 		if(isUsed != null) {
 			return isUsed.booleanValue();
+		}
+		return false;
+	}
+	
+	public Boolean connected;
+	public Boolean getConnected() {
+		return connected;
+	}
+	public void setConnected(Boolean connected) {
+		this.connected = connected;
+	}
+	public boolean isConnected() {
+		if(connected != null) {
+			return connected.booleanValue();
 		}
 		return false;
 	}

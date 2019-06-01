@@ -1,27 +1,57 @@
 package com.facilio.bmsconsole.util;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.AssetDepartmentContext;
+import com.facilio.bmsconsole.context.AssetTypeContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.ItemContext;
+import com.facilio.bmsconsole.context.PhotosContext;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.*;
+import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.BuildingOperator;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONObject;
-
-import java.sql.*;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 public class AssetsAPI {
 	
@@ -794,6 +824,24 @@ public class AssetsAPI {
 			}
 		
 		}
+	}
+	
+	public static int updateAssetConnectionStatus(long assetId, boolean isConnected) throws Exception {
+		
+		AssetContext asset = new AssetContext();
+		asset.setConnected(isConnected);
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
+		
+		UpdateRecordBuilder<AssetContext> updateBuilder = new UpdateRecordBuilder<AssetContext>()
+				.module(module)
+				.fields(fields)
+				.andCondition(CriteriaAPI.getIdCondition(assetId, module));
+		
+		return updateBuilder.update(asset);
+		
 	}
 
 }
