@@ -219,7 +219,8 @@ public class PageWidget {
 		LAST_DOWNTIME("lastDownTime"),
 		OVERALL_DOWNTIME("overallDownTime"),
 		FAILURE_RATE("failureRate"),
-		AVG_TTR("AvgTtr")
+		AVG_TTR("avgTtr"),
+		SET_COMMAND("setCommand")
  		;
 		
 		private String name;

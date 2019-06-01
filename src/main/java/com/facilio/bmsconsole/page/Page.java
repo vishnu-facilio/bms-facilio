@@ -57,7 +57,7 @@ public class Page {
 	
 	public class Tab {
 		
-		Tab(String name) {
+		public Tab(String name) {
 			this.name = name;
 		}
 		
@@ -113,9 +113,9 @@ public class Page {
 	
 	public class Section {
 		
-		Section(){}
+		public Section(){}
 		
-		Section(String name) {
+		public Section(String name) {
 			this.name = name;
 		}
 		

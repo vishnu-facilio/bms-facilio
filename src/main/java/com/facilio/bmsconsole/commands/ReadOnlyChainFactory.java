@@ -1,11 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.actions.GetToolTransactionsListCommand;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
-import com.facilio.chain.FacilioChain;
 import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+
+import com.facilio.bmsconsole.actions.GetToolTransactionsListCommand;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+import com.facilio.chain.FacilioChain;
 
 public class ReadOnlyChainFactory {
 	private static Logger LOGGER = LogManager.getLogger(ReadOnlyChainFactory.class.getName());
@@ -365,6 +366,7 @@ public class ReadOnlyChainFactory {
 
 	public static Chain getPageChain() {
 		Chain c = getDefaultChain();
+		c.addCommand(new GenericGetModuleDataDetailCommand());
 		c.addCommand(new GetPageCommand());
 		return c;
 	}
