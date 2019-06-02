@@ -2219,4 +2219,158 @@ public class PreventiveMaintenanceAPI {
             builder.save();
         }
     }
+
+
+	private static List<Long> fetchAffectedTaskSections(long triggerId, List<String> allowedSectionTemplates) throws Exception {
+		if (allowedSectionTemplates == null || allowedSectionTemplates.isEmpty()) {
+			return null;
+		}
+		List<FacilioField> taskSectionFields = FieldFactory.getTaskSectionFields();
+		FacilioModule taskSectionMod = ModuleFactory.getTaskSectionModule();
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		Map<String, FacilioField> workOrderMap = FieldFactory.getAsMap(modBean.getAllFields("workorder"));
+		Map<String, FacilioField> ticketsMap = FieldFactory.getAsMap(modBean.getAllFields("ticket"));
+
+		FacilioStatus assignedStatus = TicketAPI.getStatus("Assigned");
+		FacilioStatus status = TicketAPI.getStatus("Submitted");
+
+		Map<String, FacilioField> taskSectionMap = FieldFactory.getAsMap(taskSectionFields);
+
+		List<FacilioField> selectFields = Arrays.asList(taskSectionMap.get("id"));
+
+		Criteria statusCriteria = new Criteria();
+		statusCriteria.addAndCondition(CriteriaAPI.getCondition(ticketsMap.get("status"), String.valueOf(status.getId()), NumberOperators.EQUALS));
+		statusCriteria.addOrCondition(CriteriaAPI.getCondition(ticketsMap.get("status"), String.valueOf(assignedStatus.getId()), NumberOperators.EQUALS));
+
+		String customWhere = "NOT (";
+		int size = allowedSectionTemplates.size();
+		for (String allowed : allowedSectionTemplates) {
+			size = size - 1;
+			customWhere += "Task_Section.NAME LIKE '%"+allowed+"%'";
+			if (size != 0) {
+				customWhere += " OR ";
+			}
+		}
+		customWhere = customWhere + ")";
+
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder();
+		selectRecordBuilder.select(selectFields)
+				.table(taskSectionMod.getTableName())
+				.innerJoin("WorkOrders")
+				.on("WorkOrders.ID = Task_Section.PARENT_TICKET_ID")
+				.innerJoin("Tickets")
+				.on("WorkOrders.ID = Tickets.ID")
+				.innerJoin("TicketStatus")
+				.on("TicketStatus.ID = Tickets.STATUS_ID")
+				.andCondition(CriteriaAPI.getCondition(workOrderMap.get("trigger"), Collections.singletonList(triggerId), NumberOperators.EQUALS))
+				.andCustomWhere(customWhere)
+				.andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getOrgId(), taskSectionMod))
+				.andCriteria(statusCriteria);
+
+		List<Map<String, Object>> props = selectRecordBuilder.get();
+		
+		List<Long> ids = new ArrayList<>();
+
+		for (Map<String, Object> prop: props) {
+			ids.add((long) prop.get("id"));
+		}
+
+		return ids;
+	}
+
+	private static Map<Long, List<String>> getTriggerSectionMap() throws Exception {
+		List<FacilioField> taskSectionTemplateTriggerFields = FieldFactory.getTaskSectionTemplateTriggersFields();
+		FacilioModule taskSectionMod = ModuleFactory.getTaskSectionTemplateTriggersModule();
+
+		List<FacilioField> templateFields = FieldFactory.getTemplateFields();
+
+
+		Map<String, FacilioField> taskSectionTemplateTriggersMap = FieldFactory.getAsMap(taskSectionTemplateTriggerFields);
+		Map<String, FacilioField> templateMap = FieldFactory.getAsMap(templateFields);
+
+		List<FacilioField> selectFields = Arrays.asList(taskSectionTemplateTriggersMap.get("triggerId"), templateMap.get("name"));
+
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder();
+		selectRecordBuilder.select(selectFields)
+				.table(taskSectionMod.getTableName())
+				.innerJoin("Task_Section_Template")
+				.on("Task_Section_Template.ID = Task_Section_Template_Triggers.SECTION_ID")
+				.innerJoin("Templates")
+				.on("Templates.ID = Task_Section_Template.ID")
+				.andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getOrgId(), taskSectionMod));
+
+		List<Map<String, Object>> props = selectRecordBuilder.get();
+
+		Map<Long, List<String>> triggerSectionMap = new HashMap<>();
+
+		for (Map<String, Object> prop: props) {
+			if (triggerSectionMap.get(prop.get("triggerId")) == null) {
+				triggerSectionMap.put((long) prop.get("triggerId"), new ArrayList<>());
+			}
+			triggerSectionMap.get(prop.get("triggerId")).add((String) prop.get("name"));
+		}
+
+		if (triggerSectionMap.isEmpty()) {
+			return triggerSectionMap;
+		}
+
+		Map<String, FacilioField>  trigMap = FieldFactory.getAsMap(FieldFactory.getPMTriggerFields());
+		FacilioField triggerId = trigMap.get("id");
+		triggerId.setName("triggerId");
+
+		List<FacilioField> allSelect = Arrays.asList(triggerId, templateMap.get("name"));
+
+		GenericSelectRecordBuilder allSelectRecordBuilder = new GenericSelectRecordBuilder();
+		allSelectRecordBuilder.select(allSelect)
+				.table("Task_Section_Template")
+				.innerJoin("Templates")
+				.on("Templates.ID = Task_Section_Template.ID")
+				.innerJoin("Preventive_Maintenance")
+				.on("Preventive_Maintenance.TEMPLATE_ID = Task_Section_Template.PARENT_WO_TEMPLATE_ID")
+				.innerJoin("PM_Triggers")
+				.on("PM_Triggers.PM_ID = Preventive_Maintenance.ID")
+				.leftJoin(taskSectionMod.getTableName())
+				.on("Task_Section_Template.ID = Task_Section_Template_Triggers.SECTION_ID")
+				.andCustomWhere("Preventive_Maintenance.ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
+				.andCustomWhere("Task_Section_Template_Triggers.SECTION_ID IS NULL")
+				.andCondition(CriteriaAPI.getCondition(triggerId, triggerSectionMap.keySet(), NumberOperators.EQUALS));
+
+		List<Map<String, Object>> allProp = allSelectRecordBuilder.get();
+
+		for (Map<String, Object> prop: allProp) {
+			if (triggerSectionMap.get(prop.get("triggerId")) == null) {
+				triggerSectionMap.put((long) prop.get("triggerId"), new ArrayList<>());
+			}
+			triggerSectionMap.get(prop.get("triggerId")).add((String) prop.get("name"));
+		}
+
+
+		return triggerSectionMap;
+	}
+
+    public static void fetchAffectedTaskSection (List<Long> orgs) throws Exception {
+		for (long i : orgs) {
+			try {
+				AccountUtil.setCurrentAccount(i);
+				if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
+					LOGGER.log(Level.SEVERE, "Org is missing");
+					continue;
+				}
+
+				Map<Long, List<String>> triggerSectionMap = getTriggerSectionMap();
+
+				Set<Map.Entry<Long, List<String>>> entries = triggerSectionMap.entrySet();
+				for (Map.Entry<Long, List<String>> entry: entries) {
+					long triggerId = entry.getKey();
+					List<String> sectionNames = entry.getValue();
+					List<Long> affectedTaskSections = fetchAffectedTaskSections(triggerId, sectionNames);
+					if (affectedTaskSections != null && !affectedTaskSections.isEmpty()) {
+						LOGGER.log(Level.SEVERE, "Affected task sections for triggerId " + triggerId + " affectedTaskSections: " + StringUtils.join(affectedTaskSections, ","));
+					}
+				}
+			} finally {
+				AccountUtil.cleanCurrentAccount();
+			}
+		}
+	}
 }
