@@ -43,11 +43,13 @@ public class AssetPageFactory extends PageFactory {
 		addWoDetailsWidget(tab2Sec1);
 		addRecentlyClosedWidget(tab2Sec1);
 		
-		Section tab2Sec2 = page.new Section();
+		Section tab2Sec2 = page.new Section("plannedWorkorder");
 		tab2.addSection(tab2Sec2);
-		
 		addPlannedWoWidget(tab2Sec2);
-		addUnPlannedWoWidget(tab2Sec2);
+		
+		Section tab2Sec3 = page.new Section("unplannedWorkorder");
+		tab2.addSection(tab2Sec3);
+		addUnPlannedWoWidget(tab2Sec3);
 
 
 		Tab tab3 = page.new Tab("readings");
