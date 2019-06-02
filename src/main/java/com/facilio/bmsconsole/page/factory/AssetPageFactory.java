@@ -90,26 +90,26 @@ public class AssetPageFactory extends PageFactory {
 	
 	private static void addPrimaryDetailsWidget(Section section) {
 		PageWidget pageWidget = new PageWidget(WidgetType.PRIMARY_DETAILS_WIDGET);
-		pageWidget.addToLayoutParams(section, 24, 9);
+		pageWidget.addToLayoutParams(section, 24, 7);
 		pageWidget.addToWidgetParams("showOperatingHours", true);
 		section.addWidget(pageWidget);
 	}
 	
 	private static void addWoCountWidget(Section section) {
 		PageWidget workorderWidget = getCountModuleWidget(FacilioConstants.ContextNames.WORK_ORDER);
-		workorderWidget.addToLayoutParams(section, 7, 11);
+		workorderWidget.addToLayoutParams(section, 7, 8);
 		section.addWidget(workorderWidget);
 	}
 	
 	private static void addAlarmCountWidget(Section section) {
 		PageWidget alarmWidget = getCountModuleWidget(FacilioConstants.ContextNames.ALARM);
-		alarmWidget.addToLayoutParams(section, 7, 11);
+		alarmWidget.addToLayoutParams(section, 7, 8);
 		section.addWidget(alarmWidget);
 	}
 	
 	private static void addFailureMetricWidget(Section section) {
 		PageWidget fddWidget = new PageWidget(WidgetType.CARD);
-		fddWidget.addToLayoutParams(section, 10, 11);
+		fddWidget.addToLayoutParams(section, 10, 8);
 		fddWidget.addToWidgetParams("type", CardType.FAILURE_METRICS.getName());
 		section.addWidget(fddWidget);
 	}

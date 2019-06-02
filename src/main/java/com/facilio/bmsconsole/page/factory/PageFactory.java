@@ -36,7 +36,7 @@ public class PageFactory {
 	protected static PageWidget addCommonSubModuleGroup(Section section) {
 
 		PageWidget subModuleGroup = new PageWidget(WidgetType.GROUP);
-		subModuleGroup.addToLayoutParams(section, 24, 10);
+		subModuleGroup.addToLayoutParams(section, 24, 8);
 		subModuleGroup.addToWidgetParams("type", WidgetGroupType.TAB);
 		section.addWidget(subModuleGroup);
 		
