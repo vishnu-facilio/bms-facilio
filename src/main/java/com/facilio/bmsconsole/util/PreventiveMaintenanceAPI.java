@@ -2351,6 +2351,7 @@ public class PreventiveMaintenanceAPI {
     public static void fetchAffectedTaskSection (List<Long> orgs) throws Exception {
 		for (long i : orgs) {
 			try {
+				LOGGER.log(Level.SEVERE, "Setting account id " + i);
 				AccountUtil.setCurrentAccount(i);
 				if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
 					LOGGER.log(Level.SEVERE, "Org is missing");
