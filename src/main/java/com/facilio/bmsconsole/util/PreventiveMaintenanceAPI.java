@@ -2360,6 +2360,8 @@ public class PreventiveMaintenanceAPI {
 
 				Map<Long, List<String>> triggerSectionMap = getTriggerSectionMap();
 
+				LOGGER.log(Level.SEVERE, "Trigger size " + triggerSectionMap.size());
+
 				Set<Map.Entry<Long, List<String>>> entries = triggerSectionMap.entrySet();
 				for (Map.Entry<Long, List<String>> entry: entries) {
 					long triggerId = entry.getKey();
