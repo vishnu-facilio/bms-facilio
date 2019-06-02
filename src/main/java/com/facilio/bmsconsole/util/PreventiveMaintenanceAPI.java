@@ -2369,6 +2369,9 @@ public class PreventiveMaintenanceAPI {
 						LOGGER.log(Level.SEVERE, "Affected task sections for triggerId " + triggerId + " affectedTaskSections: " + StringUtils.join(affectedTaskSections, ","));
 					}
 				}
+			} catch (Exception e) {
+				LOGGER.log(Level.SEVERE, "Exception migrating org " + i, e);
+				throw e;
 			} finally {
 				AccountUtil.cleanCurrentAccount();
 			}
