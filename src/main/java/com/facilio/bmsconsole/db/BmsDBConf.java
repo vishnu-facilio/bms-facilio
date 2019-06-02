@@ -110,7 +110,8 @@ public class BmsDBConf extends DBConf {
         return -1;
     }
 
-    public HashSet<String> getDBIdentifiers() {
+    @Override
+    public Set<String> getDBIdentifiers() {
         return AwsUtil.getDBIdentifiers();
     }
 
