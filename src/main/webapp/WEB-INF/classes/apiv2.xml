@@ -514,7 +514,19 @@
 			<param name="alarmId">{1}</param>
 		</action>
 	</package>
-
+ <package name="assetBreakdownApiv2" namespace="/api/v2/assetbreakdown"
+	extends="v2Api">
+	<action name="add"
+		class="com.facilio.bmsconsole.actions.AssetBreakdownAction" method="addAssetBreakDown">
+		<param name="moduleName">setup</param>
+		<param name="permission">GENERAL</param>
+	</action>
+	<action name="getlastbreakdown"
+		class="com.facilio.bmsconsole.actions.AssetBreakdownAction" method="getLastBreakdown">
+		<param name="moduleName">setup</param>
+		<param name="permission">GENERAL</param>
+	</action>
+</package>
 <package name="businessHoursApiv2" namespace="/api/v2/businesshours" extends="v2Api">
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.BusinessHoursAction" method="addBussinessHours">

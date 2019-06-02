@@ -13,6 +13,25 @@ public class AssetContext extends ResourceContext {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private Boolean downtimeStatus;
+
+	public Boolean getDowntimeStatus() {
+		return downtimeStatus;
+	}
+
+	public void setDowntimeStatus(Boolean downtimeStatus) {
+		this.downtimeStatus = downtimeStatus;
+	}
+
+	private long lastDowntimeId = -1;
+
+	public long getLastDowntimeId() {
+		return lastDowntimeId;
+	}
+
+	public void setLastDowntimeId(long lastDowntimeId) {
+		this.lastDowntimeId = lastDowntimeId;
+	}
 	private AssetState state;
 	public int getState() {
 		if(state != null) {

@@ -1833,7 +1833,15 @@ public class FacilioChainFactory {
 		c.addCommand(new GenericDeleteModuleDataCommand());
 		return c;
 	}
-	
+
+	public static Chain getAddAssetBreakdownChain() {
+		Chain c = FacilioChain.getTransactionChain();
+		c.addCommand(new getAssetDownTimeDetailsCommand());
+		c.addCommand(new AddAssetBreakDownCommand());
+		c.addCommand(new updateAssetDownTimeDetailsCommand());
+		return c;
+	}
+
 	public static Chain getAddAssetCategoryChain() {
 		Chain c = FacilioChain.getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForAssetCategory());

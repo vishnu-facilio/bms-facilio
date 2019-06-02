@@ -21,6 +21,14 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new FetchReportExtraMeta());
 		return c;
 	}
+
+	public static Chain getLastAssetBreakDownChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new getAssetDownTimeDetailsCommand());
+		c.addCommand(new getAssetBreakdownCommand());
+		return c;
+	}
+
 	public static Chain getBusinessHoursChain () {
 		Chain c = getDefaultChain();
 		c.addCommand(new GetBusinessHourCommand());

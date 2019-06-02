@@ -520,6 +520,9 @@ public class FacilioConstants {
 		public static final String ENERGY_METER_PURPOSE = "energymeterpurpose";
 		public static final String RO_MODULE_SPI_CINEMAS = "rowaterenpinew";
 		
+		public static final String ASSET_BREAKDOWN = "assetBreakdown";          
+		public static final String ASSET_DOWNTIME_STATUS = "assetDowntimeStatus";       
+		public static final String ASSET_DOWNTIME_ID = "assetDowntimeId";     
 		
 		public static final String CURRENT_OCCUPANCY_READING = "currentoccupancyreading";
 		public static final String ASSIGNED_OCCUPANCY_READING = "assignedoccupancyreading";
