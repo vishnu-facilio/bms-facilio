@@ -818,6 +818,12 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain getAlarmInsightChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new FetchAlarmInsightCommand());
+		return c;
+	}
+	
 	public static Chain fetchGatePassDetails() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForGatePass());

@@ -431,8 +431,11 @@
 			<param name="moduleName">alarm</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 		</action>
-
-
+		<action name="insights" class="com.facilio.bmsconsole.actions.AlarmAction"
+			method="fetchAlarmInsightsForResource">
+			<param name="moduleName">alarm</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+		</action>
 
 	</package>
 

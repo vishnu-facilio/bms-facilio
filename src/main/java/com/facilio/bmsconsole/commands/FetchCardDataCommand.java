@@ -1,12 +1,39 @@
 package com.facilio.bmsconsole.commands;
 
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.DashboardAction;
 import com.facilio.bmsconsole.actions.V2ReportAction;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.DashboardWidgetContext;
+import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.PhotosContext;
+import com.facilio.bmsconsole.context.ReadingAlarmContext;
+import com.facilio.bmsconsole.context.ReportSpaceFilterContext;
+import com.facilio.bmsconsole.context.WidgetStaticContext;
+import com.facilio.bmsconsole.context.WidgetVsWorkflowContext;
 import com.facilio.bmsconsole.reports.ReportsUtil;
-import com.facilio.bmsconsole.util.*;
+import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.bmsconsole.util.BaseLineAPI;
+import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.bmsconsole.util.DeviceAPI;
+import com.facilio.bmsconsole.util.ReadingRuleAPI;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
 import com.facilio.cards.util.CardType;
 import com.facilio.cards.util.CardUtil;
@@ -27,14 +54,6 @@ import com.facilio.unitconversion.Unit;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowContext.WorkflowUIMode;
 import com.facilio.workflows.util.WorkflowUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import java.text.DecimalFormat;
-import java.util.*;
-import java.util.logging.Logger;
 
 public class FetchCardDataCommand implements Command {
 
@@ -191,9 +210,10 @@ public class FetchCardDataCommand implements Command {
 					long parentId = (long) paramsJson.get("parentId");
 					int dateOperator = Integer.parseInt(paramsJson.get("dateOperator").toString());
 					String dateValue = (String) paramsJson.get("dateValue");
+					Long entityId = (Long) paramsJson.get("entityId");
 					
 					DateOperators operator = (DateOperators)Operator.getOperator(dateOperator);
-					result = getResourceAlarmBar(parentId,operator.getRange(dateValue));
+					result = getResourceAlarmBar(parentId, entityId, operator.getRange(dateValue));
 					context.put(FacilioConstants.ContextNames.RESULT, result);
 					return false;
 				}
@@ -353,10 +373,10 @@ public class FetchCardDataCommand implements Command {
 		}
 		return false;
 	}
-	private Map<String,Object> getResourceAlarmBar(Long resourceId,DateRange dateRange) throws Exception {
+	private Map<String,Object> getResourceAlarmBar(Long resourceId,Long entityId, DateRange dateRange) throws Exception {
 		
 		Map<String,Object> result = new HashMap<>();
-		List<ReadingAlarmContext> allAlarms = AlarmAPI.getReadingAlarms(Collections.singletonList(resourceId), -1, dateRange.getStartTime(), dateRange.getEndTime(), false);
+		List<ReadingAlarmContext> allAlarms = AlarmAPI.getReadingAlarms(Collections.singletonList(resourceId), entityId, -1, dateRange.getStartTime(), dateRange.getEndTime(), false);
 		
 		Map<Long, ReadingAlarmContext> alarmMap = new HashMap<>();
 		
