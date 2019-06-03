@@ -8,6 +8,8 @@ import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.fw.auth.CognitoUtil.CognitoUser;
 import com.facilio.fw.auth.LoginUtil;
@@ -23,6 +25,8 @@ import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import java.net.URL;
 import java.util.*;
 import java.util.logging.Level;
@@ -148,7 +152,23 @@ public class AuthInterceptor extends AbstractInterceptor {
 					}
 					request.setAttribute("ORGID", currentAccount.getOrg().getOrgId());
 					request.setAttribute("USERID", currentAccount.getUser().getOuid());
-
+					
+					if(!AwsUtil.isProduction()) {
+						String currentSite = request.getHeader("X-current-site");
+						long currentSiteId = -1l;
+						if (currentSite != null && !currentSite.isEmpty())
+							currentSiteId = Long.valueOf(currentSite);
+						
+						if (currentSiteId == -1l || (FacilioCookie.getUserCookie(request, "fc.timeZone")) == null)
+						{
+							setTimeZoneCookie(AccountUtil.getCurrentOrg().getTimezone());		
+						}
+						else 
+						{
+							setTimeZoneCookie(SpaceAPI.getSiteSpace(currentSiteId).getTimeZone());
+						}
+					}
+					
 					Parameter permission = ActionContext.getContext().getParameters().get("permission");
 					Parameter moduleName = ActionContext.getContext().getParameters().get("moduleName");
 					if (permission != null && permission.getValue() != null && moduleName != null && moduleName.getValue() != null && !isAuthorizedAccess(moduleName.getValue(), permission.getValue())) {
@@ -210,6 +230,23 @@ public class AuthInterceptor extends AbstractInterceptor {
 			LOGGER.log(Level.SEVERE, "error thrown from action class", e);
 			throw e;
 		}
+	}
+
+	private void setTimeZoneCookie(String timeZone) {
+
+		HttpServletRequest request = ServletActionContext.getRequest();
+		HttpServletResponse response = ServletActionContext.getResponse();
+        Cookie timezonecookie = new Cookie("fc.timeZone",timeZone);
+        timezonecookie.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
+        timezonecookie.setPath("/");
+        timezonecookie.setHttpOnly(false);
+        if( ! (AwsUtil.isDevelopment() || AwsUtil.disableCSP())) {
+        timezonecookie.setSecure(true);
+        }
+        String parentdomain = request.getServerName().replaceAll("app.", "");
+        timezonecookie.setDomain(parentdomain);
+        response.addCookie(timezonecookie);
+		
 	}
 
 	private boolean isAuthorizedAccess(String moduleName, String permissions) throws Exception {
