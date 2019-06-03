@@ -5,9 +5,9 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.AttendanceContext;
 import com.facilio.bmsconsole.context.AttendanceTransactionContext;
-import com.facilio.bmsconsole.context.AttendanceTransactionContext.TransactionType;
 import com.facilio.bmsconsole.context.BreakContext.BreakType;
 import com.facilio.bmsconsole.context.BreakTransactionContext;
+import com.facilio.bmsconsole.context.BreakTransactionContext.TransactionType;
 import com.facilio.bmsconsole.util.AttendanceApi;
 import com.facilio.constants.FacilioConstants;
 
@@ -23,19 +23,18 @@ public class AddBreakTransactionCommand implements Command {
 			lastBreakStartTime = attendance.getLastBreakStartTime();
 			AttendanceTransactionContext attendanceTransaction = new AttendanceTransactionContext();
 			attendanceTransaction.setAttendance(breakTransaction.getAttendance());
-			if (breakTransaction.getBreakStartTime() > 0) {
-				attendance.setLastBreakStartTime(breakTransaction.getBreakStartTime());
-				attendanceTransaction.setTransactionTime(breakTransaction.getBreakStartTime());
-				attendanceTransaction.setTransactionType(TransactionType.BREAKSTART);
-			} else if(breakTransaction.getBreakStopTime() > 0) {
-				long totalBreakDur = breakTransaction.getBreakStopTime() - lastBreakStartTime;
+			attendanceTransaction.setTransactionTime(breakTransaction.getTransactionTime());
+			if (breakTransaction.getTransactionTypeEnum() == TransactionType.BREAKSTART) {
+				attendance.setLastBreakStartTime(breakTransaction.getTransactionTime());
+				attendanceTransaction.setTransactionType(com.facilio.bmsconsole.context.AttendanceTransactionContext.TransactionType.BREAKSTART);
+			} else if(breakTransaction.getTransactionTypeEnum() == TransactionType.BREAKSTOP) {
+				long totalBreakDur = breakTransaction.getTransactionTime() - lastBreakStartTime;
 				if(attendance.getTotalPaidBreakHrs() > 0) {
 					totalBreakDur += attendance.getTotalPaidBreakHrs();
 				}
 				attendance.setTotalPaidBreakHrs(totalBreakDur);
 				attendance.setLastBreakStartTime(-1);
-				attendanceTransaction.setTransactionTime(breakTransaction.getBreakStopTime());
-				attendanceTransaction.setTransactionType(TransactionType.BREAKSTOP);
+				attendanceTransaction.setTransactionType(com.facilio.bmsconsole.context.AttendanceTransactionContext.TransactionType.BREAKSTOP);
 			}
 			breakTransaction.setAttendanceTransaction(attendanceTransaction);
 //			if(breakTransaction.getBreakId().getBreakTypeEnum() == BreakType.PAID) {

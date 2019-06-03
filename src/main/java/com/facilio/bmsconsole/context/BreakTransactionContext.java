@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.bmsconsole.context.AttendanceTransactionContext.TransactionType;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class BreakTransactionContext extends ModuleBaseWithCustomFields{
@@ -30,20 +31,12 @@ public class BreakTransactionContext extends ModuleBaseWithCustomFields{
 		this.attendanceTransaction = attendanceTransaction;
 	}
 	
-	private long breakStartTime = -1;
-	public long getBreakStartTime() {
-		return breakStartTime;
+	private long transactionTime = -1;
+	public long getTransactionTime() {
+		return transactionTime;
 	}
-	public void setBreakStartTime(long breakStartTime) {
-		this.breakStartTime = breakStartTime;
-	}
-	
-	private long breakStopTime = -1;
-	public long getBreakStopTime() {
-		return breakStopTime;
-	}
-	public void setBreakStopTime(long breakStopTime) {
-		this.breakStopTime = breakStopTime;
+	public void setTransactionTime(long breakStartTime) {
+		this.transactionTime = breakStartTime;
 	}
 	
 	private long timeTaken = -1;
@@ -54,5 +47,42 @@ public class BreakTransactionContext extends ModuleBaseWithCustomFields{
 		this.timeTaken = timeTaken;
 	}
 	
+	private TransactionType transactionType;
+
+	public TransactionType getTransactionTypeEnum() {
+		return transactionType;
+	}
+
+	public void setTransactionType(TransactionType transactionType) {
+		this.transactionType = transactionType;
+	}
+
+	public int getTransactionType() {
+		if (transactionType != null) {
+			return transactionType.getValue();
+		}
+		return -1;
+	}
+
+	public void setTransactionType(int transactionType) {
+		this.transactionType = TransactionType.valueOf(transactionType);
+	}
+	
+	
+	public enum TransactionType {
+		BREAKSTART,
+		BREAKSTOP;
+
+		public int getValue() {
+			return ordinal() + 1;
+		}
+
+		public static TransactionType valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+	}
 
 }
