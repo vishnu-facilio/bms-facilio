@@ -14,12 +14,12 @@ import com.facilio.bmsconsole.context.ShipmentContext;
 import com.facilio.bmsconsole.context.ShipmentLineItemContext;
 import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.ToolTypesContext;
-import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.bmsconsole.util.ShipmentAPI;
 import com.facilio.bmsconsole.util.ToolsApi;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 
 public class StageShipmentCommand implements Command{
 

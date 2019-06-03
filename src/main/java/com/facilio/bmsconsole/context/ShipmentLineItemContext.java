@@ -3,12 +3,10 @@ package com.facilio.bmsconsole.context;
 import java.util.Collections;
 import java.util.List;
 
-import com.facilio.accounts.dto.User;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.util.ItemsApi;
-import com.facilio.bmsconsole.util.ShipmentAPI;
 import com.facilio.bmsconsole.util.ToolsApi;
 import com.facilio.bmsconsole.util.TransactionType;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class ShipmentLineItemContext extends ModuleBaseWithCustomFields{
 	

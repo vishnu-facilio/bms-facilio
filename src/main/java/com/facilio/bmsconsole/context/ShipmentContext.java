@@ -3,7 +3,7 @@ package com.facilio.bmsconsole.context;
 import java.util.List;
 
 import com.facilio.accounts.dto.User;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class ShipmentContext extends ModuleBaseWithCustomFields{
 	private User transferredBy;
