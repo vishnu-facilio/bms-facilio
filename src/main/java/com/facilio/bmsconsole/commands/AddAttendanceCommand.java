@@ -96,7 +96,7 @@ public class AddAttendanceCommand implements Command {
 				attendanceContext.setCheckInTime(attendanceTransaction.getTransactionTime());
 				attendanceContext.setLastCheckInTime(attendanceTransaction.getTransactionTime());
 			}
-			attendanceContext.setUser(AccountUtil.getCurrentUser());
+			attendanceContext.setUser(user);
 			attendanceContext.setDay(attendanceTransaction.getTransactionTime());
 			InsertRecordBuilder<AttendanceContext> insertBuilder = new InsertRecordBuilder<AttendanceContext>()
 					.module(module).fields(fields);
