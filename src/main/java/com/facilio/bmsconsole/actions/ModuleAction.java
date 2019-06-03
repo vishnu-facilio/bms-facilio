@@ -48,10 +48,20 @@ public class ModuleAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	private boolean stateFlow = false;
+	public boolean isStateFlow() {
+		return stateFlow;
+	}
+	public void setStateFlow(boolean stateFlow) {
+		this.stateFlow = stateFlow;
+	}
+	
 	public String v2AddModule() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
 		context.put(FacilioConstants.ContextNames.MODULE_TYPE, moduleType);
+		context.put(FacilioConstants.ContextNames.SUPPORT_STATEFLOW, stateFlow);
+		
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
 		
 		Chain addModulesChain = TransactionChainFactory.getAddModuleChain();
@@ -59,6 +69,7 @@ public class ModuleAction extends FacilioAction {
 		
 		FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
 		setResult("module", module);
+		setResult(FacilioConstants.ContextNames.FORM, context.get(FacilioConstants.ContextNames.FORM));
 		return SUCCESS;
 	}
 	

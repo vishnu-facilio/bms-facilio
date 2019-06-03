@@ -1050,7 +1050,7 @@ public class FacilioConstants {
 
 
 		public static final String PM_PLANNER_SETTINGS="pm_planner_settings";
-
+		
 		public static final String ATTENDANCE = "attendance";
 		public static final String ATTENDANCE_TRANSACTIONS = "attendanceTransaction";
 		public static final String BREAK = "break";
@@ -1097,6 +1097,9 @@ public class FacilioConstants {
 				public static final String JOB = "jobContext";
 		public static final String JOB_NAME = "jobName";
 
+		public static final String SUPPORT_STATEFLOW = "supportStateFlow";
+		
+		
 		
 		public static final String RECORD_RULE = "recordRule";
 		public static final String RECORD_RULE_LIST = "recordRuleList";

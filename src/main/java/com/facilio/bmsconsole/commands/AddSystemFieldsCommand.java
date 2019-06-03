@@ -7,14 +7,14 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioModule.ModuleType;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 
 public class AddSystemFieldsCommand implements Command {
 
@@ -35,11 +35,14 @@ public class AddSystemFieldsCommand implements Command {
 			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			
-			LookupField moduleStateField = (LookupField) FieldFactory.getField("moduleState", "Status", "MODULE_STATE", module, FieldType.LOOKUP);
-			moduleStateField.setLookupModule(modBean.getModule("ticketstatus"));
-			fields.add(moduleStateField);
-			
-			fields.add(FieldFactory.getField("stateFlowId", "State Flow Id", "STATE_FLOW_ID", module, FieldType.NUMBER));
+			Boolean supportStateFlow = (Boolean) context.get(FacilioConstants.ContextNames.SUPPORT_STATEFLOW);
+			if (supportStateFlow != null && supportStateFlow) {
+				LookupField moduleStateField = (LookupField) FieldFactory.getField("moduleState", "Status", "MODULE_STATE", module, FieldType.LOOKUP);
+				moduleStateField.setLookupModule(modBean.getModule("ticketstatus"));
+				fields.add(moduleStateField);
+				
+				fields.add(FieldFactory.getField("stateFlowId", "State Flow Id", "STATE_FLOW_ID", module, FieldType.NUMBER));
+			}
 		}
 		return false;
 	}

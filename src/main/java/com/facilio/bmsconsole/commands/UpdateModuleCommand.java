@@ -5,9 +5,9 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 
 public class UpdateModuleCommand implements Command {
 
