@@ -438,18 +438,13 @@ public class ReadingsAPI {
 	
 	public static Map<String, Object> getInstanceMapping(String deviceName, String instanceName,Long controllerId) throws Exception {
 
-		FacilioModule module = ModuleFactory.getPointsModule();
-		List<FacilioField> fields = FieldFactory.getPointsFields();
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-
+		
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getPointsFields())
-				.table(module.getTableName())
+				.select(FieldFactory.getInstanceMappingFields())
+				.table("Instance_To_Asset_Mapping")
 				.andCustomWhere("ORGID=?",orgId)
 				.andCustomWhere("DEVICE_NAME= ?",deviceName)
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), CommonOperators.IS_NOT_EMPTY))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("fieldId"), CommonOperators.IS_NOT_EMPTY))
 				.andCustomWhere("INSTANCE_NAME=?",instanceName);
 		if(controllerId!=null) {
 			builder=builder.andCustomWhere("CONTROLLER_ID=?", controllerId);
@@ -465,16 +460,10 @@ public class ReadingsAPI {
 	
 	private static List<Map<String, Object>> getDeviceVsInstances() throws Exception {
 
-		FacilioModule module = ModuleFactory.getPointsModule();
-		List<FacilioField> fields = FieldFactory.getPointsFields();
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getPointsFields())
-				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), CommonOperators.IS_NOT_EMPTY))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("fieldId"), CommonOperators.IS_NOT_EMPTY))
+				.select(FieldFactory.getInstanceMappingFields())
+				.table("Instance_To_Asset_Mapping")
 				.andCustomWhere("ORGID=?",orgId);
 
 		List<Map<String, Object>> stats = builder.get();	
@@ -516,9 +505,9 @@ public class ReadingsAPI {
 		
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
-				.table(ModuleFactory.getPointsModule().getTableName())
-				.innerJoin(ModuleFactory.getUnmodeledDataModule().getTableName())
-				.on("Unmodeled_Data.INSTANCE_ID=Points.ID")
+				.table("Unmodeled_Instance")
+				.innerJoin("Unmodeled_Data")
+				.on("Unmodeled_Data.INSTANCE_ID=Unmodeled_Instance.ID")
 				.andCustomWhere("ORGID=?",orgId)
 				.andCondition(CriteriaAPI.getCondition("DEVICE_NAME", "device", StringUtils.join(deviceList,","), StringOperators.IS))
 				.orderBy("TTIME");

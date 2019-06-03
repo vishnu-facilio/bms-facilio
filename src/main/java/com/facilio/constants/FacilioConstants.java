@@ -1031,9 +1031,7 @@ public class FacilioConstants {
 		public static final String UNIT_POINTS="unit";
 		public static final String DEMO_ROLLUP_EXECUTION_TIME="nextexecution";
 		public static final String DEMO_ROLLUP_JOB_ORG="rollup_job_org";
-		public static final String DATA_POINTS="data_points";
-		public static final String POINTS_DATA_RECORD="points_data_record";
-
+		
 		public static final String PM_PLANNER_SETTINGS="pm_planner_settings";
 		
 		

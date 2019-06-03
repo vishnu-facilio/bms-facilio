@@ -38,7 +38,7 @@ public class ModeledDataCommand implements Command {
 		Map<String,List<ReadingContext>> moduleVsReading = new HashMap<String,List<ReadingContext>> ();
 		Map<String,ReadingContext> iModuleVsReading = new HashMap<String,ReadingContext> ();
 		Long controllerId= (Long) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
-		List<Map<String,Object>> dataPointsValue=(List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.DATA_POINTS);
+		List<Map<String,Object>> dataPointsValue=(List<Map<String, Object>>) context.get("DATA_POINTS");
 		if(TimeSeriesAPI.isStage()) {
 			LOGGER.debug(dataPointsValue+"Points data incomming");
 		}
@@ -182,7 +182,7 @@ public class ModeledDataCommand implements Command {
 		context.put(FacilioConstants.ContextNames.READINGS_MAP,moduleVsReading);
 		context.put(FacilioConstants.ContextNames.HISTORY_READINGS, false);
 //		if(TimeSeriesAPI.isStage()) {
-			context.put(FacilioConstants.ContextNames.POINTS_DATA_RECORD, dataPointsValue);
+			context.put("POINTS_DATA_RECORD", dataPointsValue);
 //		}
 		return false;
 	}
