@@ -73,6 +73,7 @@ public class AssetPageFactory extends PageFactory {
 		tab4.addSection(tab4Sec1);
 		
 		addAssetLifeWidget(tab4Sec1);
+		addAlarmInsightsWidget(tab4Sec1);
 		addLastDownTimeWidget(tab4Sec1);
 		addOverallDowntimeWidget(tab4Sec1);
 		addFailureRateWidget(tab4Sec1);
@@ -172,8 +173,15 @@ public class AssetPageFactory extends PageFactory {
 	
 	private static void addAssetLifeWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
-		cardWidget.addToLayoutParams(section, 24, 8);
+		cardWidget.addToLayoutParams(section, 24, 3);
 		cardWidget.addToWidgetParams("type", CardType.ASSET_LIFE.getName());
+		section.addWidget(cardWidget);
+	}
+	
+	private static void addAlarmInsightsWidget(Section section) {
+		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
+		cardWidget.addToLayoutParams(section, 24, 8);
+		cardWidget.addToWidgetParams("type", CardType.ALARM_INSIGHTS.getName());
 		section.addWidget(cardWidget);
 	}
 	
