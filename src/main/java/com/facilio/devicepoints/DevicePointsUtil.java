@@ -72,8 +72,8 @@ public  class DevicePointsUtil {
                 LOGGER.info("Device Points : "+points);
                 
                 int count;
-                 TimeSeriesAPI.addPointsInstances(points, controllerSettingsId);
-                count = TimeSeriesAPI.addUnmodeledInstances(points, controllerSettingsId);
+                TimeSeriesAPI.addUnmodeledInstances(points, controllerSettingsId);
+                count = TimeSeriesAPI.addPointsInstances(points, controllerSettingsId);
                 
                 JSONObject info = new JSONObject();
                 info.put("controllerId", controllerSettingsId);

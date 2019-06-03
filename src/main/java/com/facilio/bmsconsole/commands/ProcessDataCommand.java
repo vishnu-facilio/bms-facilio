@@ -75,7 +75,6 @@ public class ProcessDataCommand implements Command {
 					instanceList.add(instanceName.replace(",", StringOperators.DELIMITED_COMMA));
 				}
 			}	
-//		if(TimeSeriesAPI.isStage()) {
 				
 				if(instanceList.length()>0) { //if innerKeyList isEmpty,.. so the length will be 0
 					FacilioModule module=ModuleFactory.getPointsModule();
@@ -86,14 +85,11 @@ public class ProcessDataCommand implements Command {
 					deviceAndInstanceCriteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getInstanceField(module), instanceList.toString(), StringOperators.IS));
 					criteriaList.orCriteria(deviceAndInstanceCriteria);
 				}	
-//		}
 		}
-//	if(TimeSeriesAPI.isStage()) {
 			
-			pointsStat= getDataPoints(criteriaList);
-			LOGGER.debug("########### Insert Points Data: "+pointsStat);
-			context.put("DATA_POINTS",pointsStat );
-//	}
+		pointsStat= getDataPoints(criteriaList);
+		LOGGER.debug("########### Insert Points Data: "+pointsStat);
+		context.put(FacilioConstants.ContextNames.DATA_POINTS,pointsStat );
 		LOGGER.debug("Finished ProcessDataCommand####### : ");
 		context.put(FacilioConstants.ContextNames.DEVICE_DATA, deviceData);
 		if (AccountUtil.getCurrentOrg().getId() == 146 ) {

@@ -26,15 +26,15 @@ public class GetUnmodelledInstancesForControllerCommand implements Command {
 		}
 		String searchText = (String) context.get(FacilioConstants.ContextNames.SEARCH);
 		List<Map<String, Object>> instances=null;
-		if(!TimeSeriesAPI.isStage()) {
-			 instances = TimeSeriesAPI.getUnmodeledInstancesForController(controllerId, configured, fetchMapped, pagination, isSubscribed, isCount, searchText, false);
-			setResources(context,fetchMapped, isCount, instances, "assetId");
-		}
-		else {
-			
+//		if(!TimeSeriesAPI.isStage()) {
+//			 instances = TimeSeriesAPI.getUnmodeledInstancesForController(controllerId, configured, fetchMapped, pagination, isSubscribed, isCount, searchText, false);
+//			setResources(context,fetchMapped, isCount, instances, "assetId");
+//		}
+//		else {
+//			
 			instances = TimeSeriesAPI.getPointsInstancesForController(controllerId, configured, fetchMapped, pagination, isSubscribed, isCount, searchText, false);
 			setResources(context,fetchMapped, isCount, instances,"resourceId");
-		}
+//		}
 		context.put(FacilioConstants.ContextNames.INSTANCE_INFO, instances);
 		return false;
 	}
