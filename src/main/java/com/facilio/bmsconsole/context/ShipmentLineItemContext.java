@@ -101,7 +101,7 @@ public class ShipmentLineItemContext extends ModuleBaseWithCustomFields{
 	        ItemContext item = ItemsApi.getItemsForTypeAndStore(shipment.getFromStore().getId(), this.getItemType().getId()); 
 	        transaction.setItem(item); 
 	        transaction.setIssuedTo(shipment.getReceivedBy()); 
-	        transaction.setParentId(shipment.getReceivedBy().getId()); 
+		    transaction.setParentId(shipment.getReceivedBy().getId()); 
 	        transaction.setShipment(shipment.getId());
 	        transaction.setTransactionType(TransactionType.SHIPMENT_STOCK); 
 	        transaction.setTransactionState(2); 
@@ -118,9 +118,9 @@ public class ShipmentLineItemContext extends ModuleBaseWithCustomFields{
 	            throw new IllegalArgumentException("No appropriate Tool found"); 
 	        } 
 	        ToolContext tool = ToolsApi.getToolsForTypeAndStore(shipment.getFromStore().getId(), this.getToolType().getId()); 
-	        transaction.setTool(tool); 
+	        transaction.setTool(tool);
 	        transaction.setIssuedTo(shipment.getReceivedBy()); 
-	        transaction.setParentId(shipment.getReceivedBy().getId()); 
+		    transaction.setParentId(shipment.getReceivedBy().getId()); 
 	        transaction.setShipment(shipment.getId());
 	        transaction.setTransactionType(TransactionType.SHIPMENT_STOCK); 
 	        transaction.setTransactionState(2); 

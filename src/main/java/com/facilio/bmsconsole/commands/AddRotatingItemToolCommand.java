@@ -1,7 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ItemContext;
+import com.facilio.bmsconsole.context.PurchasedToolContext;
 import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Chain;
@@ -13,6 +22,8 @@ public class AddRotatingItemToolCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		AssetContext asset = (AssetContext) context.get(FacilioConstants.ContextNames.RECORD);
+		context.put(FacilioConstants.ContextNames.PURCHASED_TOOL, null);
+
 		if (asset != null) {
 			context.put(FacilioConstants.ContextNames.ROTATING_ASSET, asset);
 			context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, false);
