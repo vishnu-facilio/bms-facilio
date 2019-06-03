@@ -66,7 +66,7 @@ public class AssetPageFactory extends PageFactory {
 		addCommandWidget(tab3Sec2);
 		
 		
-		Tab tab4 = page.new Tab("performace");
+		Tab tab4 = page.new Tab("performance");
 		page.addTab(tab4);
 		
 		Section tab4Sec1 = page.new Section();
@@ -173,7 +173,7 @@ public class AssetPageFactory extends PageFactory {
 	
 	private static void addAssetLifeWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
-		cardWidget.addToLayoutParams(section, 24, 3);
+		cardWidget.addToLayoutParams(section, 24, 2);
 		cardWidget.addToWidgetParams("type", CardType.ASSET_LIFE.getName());
 		section.addWidget(cardWidget);
 	}
@@ -187,14 +187,14 @@ public class AssetPageFactory extends PageFactory {
 	
 	private static void addLastDownTimeWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD, "lastReportedDownTime");
-		cardWidget.addToLayoutParams(section, 12, 3);
+		cardWidget.addToLayoutParams(section, 12, 4);
 		cardWidget.addToWidgetParams("type", CardType.LAST_DOWNTIME.getName());
 		section.addWidget(cardWidget);
 	}
 	
 	private static void addOverallDowntimeWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD, "overallDownTime");
-		cardWidget.addToLayoutParams(section, 12, 3);
+		cardWidget.addToLayoutParams(section, 12, 4);
 		cardWidget.addToWidgetParams("type", CardType.OVERALL_DOWNTIME.getName());
 		section.addWidget(cardWidget);
 	}
