@@ -713,7 +713,17 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		GenericInsertRecordBuilder genericInsertRecordBuilder = new GenericInsertRecordBuilder()
 				.table(AgentKeys.METRICS_TABLE)
 				.fields(FieldFactory.getAgentMetricsFields());
-		genericInsertRecordBuilder.insert( metrics);
+        try {
+            genericInsertRecordBuilder.insert( metrics);
+        }catch (Exception e){
+            if(e instanceof com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException){
+                LOGGER.info("Duplicate Metrics, insertion failed "+e.getMessage());
+            }
+            else {
+                LOGGER.info("Exception occurred ",e);
+            }
+        }
+
 	}
 
     @Override
