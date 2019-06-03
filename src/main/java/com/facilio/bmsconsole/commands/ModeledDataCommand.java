@@ -132,7 +132,7 @@ public class ModeledDataCommand implements Command {
 					continue;
 				}
 				
-				Long assetId= (Long) stat.get("assetId");
+				Long assetId= (Long) stat.get("resourceId");
 				Long fieldId= (Long) stat.get("fieldId");
 				
 				if(fieldId!=null && assetId!=null) {
