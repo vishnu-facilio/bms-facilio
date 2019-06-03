@@ -2420,7 +2420,7 @@
 		</action>
 	</package>
 	
-	<package name="attendanceTrasaction" namespace="/api/v2/breakTransaction"
+	<package name="breakTrasaction" namespace="/api/v2/breakTransaction"
 		extends="v2Api">
 		<action name="add" class="com.facilio.bmsconsole.actions.BreakTransactionAction"
 			method="addBreakTransaction">
