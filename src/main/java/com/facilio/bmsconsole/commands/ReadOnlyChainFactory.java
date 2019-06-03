@@ -957,6 +957,29 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetAllBreaksCommand());
 		return c;
 	}
+	
+	public static Chain getBreakList() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForBreak());
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GenericGetModuleDataListCommand());
+		return c;
+	}
+	
+	public static Chain getShiftList() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForShift());
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GenericGetModuleDataListCommand());
+		return c;
+	}
+	
 	public static Chain getBreakChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new GetBreakCommand());

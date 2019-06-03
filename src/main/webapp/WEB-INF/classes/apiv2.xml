@@ -152,6 +152,14 @@
 			class="com.facilio.bmsconsole.actions.ShiftAction" method="scheduleTesting" />
 	</package>
 	
+	<package name="shiftList" namespace="/api/v2/shift/view"
+		extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.ShiftAction"
+			method="shiftList">
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
+	
 	<package name="break" namespace="/api/v2/break" extends="v2Api">
 		<action name="addOrUpdate"
 			class="com.facilio.bmsconsole.actions.ShiftAction" method="addOrUpdateBreak" />
@@ -161,6 +169,14 @@
 			class="com.facilio.bmsconsole.actions.ShiftAction" method="getBreak" />
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.ShiftAction" method="deleteBreak" />
+	</package>
+	
+	<package name="breakList" namespace="/api/v2/break/view"
+		extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.ShiftAction"
+			method="breakList">
+			<param name="viewName">{1}</param>
+		</action>
 	</package>
 
 	<package name="importTemplate" namespace="/api/v2/importTemplate"

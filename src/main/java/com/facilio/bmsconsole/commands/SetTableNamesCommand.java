@@ -319,6 +319,15 @@ public class SetTableNamesCommand implements Command {
 		return new SetTableNamesCommand("attendanceTransaction", "Attendance_Transactions");
 	}
 	
+	public static SetTableNamesCommand getForBreak() {
+		return new SetTableNamesCommand("break", "Break");
+	}
+	
+	public static SetTableNamesCommand getForShift() {
+		return new SetTableNamesCommand("shift", "Shift");
+	}
+	
+	
 	public static SetTableNamesCommand getForBreakTransaction() {
 		return new SetTableNamesCommand("breakTransaction", "BREAK_TRANSACTION");
 	}

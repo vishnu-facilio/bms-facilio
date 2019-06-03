@@ -777,6 +777,14 @@ public class ModuleFactory {
 		module.setTableName("Shift");
 		return module;
 	}
+	
+	public static FacilioModule getBreakModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("break");
+		module.setDisplayName("Break");
+		module.setTableName("Break");
+		return module;
+	}
 
 	public static FacilioModule getFilesModule() {
 		FacilioModule filesModule = new FacilioModule();
@@ -2184,4 +2192,5 @@ public class ModuleFactory {
 		module.setTableName("Attendance_Transactions");
 		return module;
 	}
+	
 }

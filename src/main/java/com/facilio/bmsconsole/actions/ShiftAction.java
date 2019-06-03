@@ -1,9 +1,12 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
@@ -40,12 +43,62 @@ public class ShiftAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	public String all() throws Exception {
+	public String all() throws Exception {		
 		FacilioContext context = new FacilioContext();
 		Chain c = FacilioChainFactory.getAllShiftsCommand();
 		c.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.SHIFTS, (List<ShiftContext>) context.get(FacilioConstants.ContextNames.SHIFTS));
+
+			
+		return SUCCESS;
+		
+	}
+	
+	public String shiftList() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Shift.NAME asc");
+		if (getFilters() != null) {
+			JSONParser parser = new JSONParser();
+			JSONObject json = (JSONObject) parser.parse(getFilters());
+			context.put(FacilioConstants.ContextNames.FILTERS, json);
+			context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
+		}
+		if (getSearch() != null) {
+			JSONObject searchObj = new JSONObject();
+			searchObj.put("fields", "shift.name");
+			searchObj.put("query", getSearch());
+			context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
+		}
+		if (getCount()) { // only count
+			context.put(FacilioConstants.ContextNames.FETCH_COUNT, true);
+		} else {
+			JSONObject pagination = new JSONObject();
+			pagination.put("page", getPage());
+			pagination.put("perPage", getPerPage());
+			if (getPerPage() < 0) {
+				pagination.put("perPage", 5000);
+			}
+			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+		}
+		
+		
+		Chain c = ReadOnlyChainFactory.getShiftList();
+		c.execute(context);
+		
+		if (getCount()) {
+			setShiftCount((Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
+			setResult("count", shiftCount);
+		} else {
+			shiftList = (List<ShiftContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+			if (shiftList == null) {
+				shiftList = new ArrayList<>();
+			}
+			setResult(FacilioConstants.ContextNames.SHIFTS, shiftList);
+		}
+		
 		return SUCCESS;
 	}
 	
@@ -96,6 +149,52 @@ public class ShiftAction extends FacilioAction {
 		c.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.BREAK_LIST, context.get(FacilioConstants.ContextNames.BREAK_LIST));
+		return SUCCESS;
+	}
+	
+	public String breakList() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Break.NAME asc");
+		if (getFilters() != null) {
+			JSONParser parser = new JSONParser();
+			JSONObject json = (JSONObject) parser.parse(getFilters());
+			context.put(FacilioConstants.ContextNames.FILTERS, json);
+			context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
+		}
+		if (getSearch() != null) {
+			JSONObject searchObj = new JSONObject();
+			searchObj.put("fields", "break.name");
+			searchObj.put("query", getSearch());
+			context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
+		}
+		if (getCount()) { // only count
+			context.put(FacilioConstants.ContextNames.FETCH_COUNT, true);
+		} else {
+			JSONObject pagination = new JSONObject();
+			pagination.put("page", getPage());
+			pagination.put("perPage", getPerPage());
+			if (getPerPage() < 0) {
+				pagination.put("perPage", 5000);
+			}
+			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+		}
+		
+		
+		Chain c = ReadOnlyChainFactory.getBreakList();
+		c.execute(context);
+		
+		if (getCount()) {
+			setShiftCount((Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
+			setResult("count", breakCount);
+		} else {
+			breakList = (List<BreakContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+			if (breakList == null) {
+				breakList = new ArrayList<>();
+			}
+			setResult(FacilioConstants.ContextNames.BREAK_LIST, breakList);
+		}
+		
 		return SUCCESS;
 	}
 	
@@ -215,5 +314,69 @@ public class ShiftAction extends FacilioAction {
 	public void setId(long id) {
 		this.id = id;
 	}
+	
+	private boolean includeParentFilter;
+
+	public boolean getIncludeParentFilter() {
+		return includeParentFilter;
+	}
+
+	public void setIncludeParentFilter(boolean includeParentFilter) {
+		this.includeParentFilter = includeParentFilter;
+	}
+	
+	private Boolean count;
+	
+	public Boolean getCount() {
+		if (count == null) {
+			return false;
+		}
+		return count;
+	}
+
+	public void setCount(Boolean count) {
+		this.count = count;
+	}
+	
+	private Long shiftCount;
+	
+	public Long getShiftCount() {
+		return shiftCount;
+	}
+
+	public void setShiftCount(Long shiftCount) {
+		this.shiftCount = shiftCount;
+	}
+	
+	private List<ShiftContext> shiftList;
+	
+	public List<ShiftContext> getShiftList() {
+		return shiftList;
+	}
+
+	public void setShiftList(List<ShiftContext> shiftList) {
+		this.shiftList = shiftList;
+	}
+	
+	private List<BreakContext> breakList;
+	
+	public List<BreakContext> getBreakList() {
+		return breakList;
+	}
+
+	public void setBreakList(List<BreakContext> breakList) {
+		this.breakList = breakList;
+	}
+	
+	private Long breakCount;
+	
+	public Long getBreakCount() {
+		return breakCount;
+	}
+
+	public void setBreakCount(Long breakCount) {
+		this.breakCount = breakCount;
+	}
+
 	
 }
