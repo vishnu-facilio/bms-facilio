@@ -128,6 +128,20 @@ public enum FacilioWorkOrderFunctions implements FacilioWorkflowFunctionInterfac
 				throw new FunctionParamException("Required Object is null");
 			}
 		}
+	},
+	GET_TECHNICIAN_CLOSED_OPEN_COUNT(9,"getTopNTechWithOpenCloseCount") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			List<Map<String,Object>> techOpenCloseCountList = WorkOrderAPI.getTopNTechniciansWithOpenCloseCount(objects[0].toString(), Long.valueOf(objects[1].toString()), Long.valueOf(objects[2].toString()), Long.valueOf(objects[3].toString()));
+		    return techOpenCloseCountList;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
 	}
 	;
 	;

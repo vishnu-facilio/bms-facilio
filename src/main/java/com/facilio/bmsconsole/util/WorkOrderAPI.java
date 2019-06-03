@@ -1901,5 +1901,91 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
     	return SpaceAPI.getSiteSpace(siteId).getName();
     }
 
+    public static List<Map<String, Object>> getTopNTechniciansWithOpenCloseCount(String count,long startTime, long endTime, long siteId) throws Exception {
+
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule workOrderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+		List<FacilioField> workorderFields = modBean.getAllFields(workOrderModule.getName());
+		Map<String, FacilioField> workorderFieldMap = FieldFactory.getAsMap(workorderFields);
+
+
+
+
+		List<FacilioField> fields = new ArrayList<FacilioField>();
+
+		FacilioField assignedToTechField = workorderFieldMap.get("assignedTo");
+		FacilioField techField = assignedToTechField.clone();
+		techField.setName("tech_id");
+		fields.add(techField);
+
+		FacilioField idCountField = new FacilioField();
+		idCountField.setColumnName("count(*)");
+		idCountField.setName("count");
+		fields.add(idCountField);
+
+
+		Criteria closedCriteria = ViewFactory.getClosedTicketsCriteria();
+        Condition openCondition = ViewFactory.getOpenStatusCondition();
+		SelectRecordsBuilder<WorkOrderContext> selectRecordsBuilder = new SelectRecordsBuilder<WorkOrderContext>()
+																	  .module(workOrderModule)
+																	  .beanClass(WorkOrderContext.class)
+																	  .select(fields)
+																	  .andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
+																	  .andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".SITE_ID", "siteId", String.valueOf(siteId), NumberOperators.EQUALS))
+																	  .andCriteria(closedCriteria)
+																	  .andCondition(CriteriaAPI.getCondition(techField,"",CommonOperators.IS_NOT_EMPTY))
+																	  .groupBy(techField.getCompleteColumnName())
+																	  .orderBy(idCountField.getColumnName()+" DESC")
+																	  .limit(Integer.parseInt(count))
+
+			                                                          ;
+	   List<Map<String, Object>> totalClosedWoCountByTech = selectRecordsBuilder.getAsProps();
+	   Map<Long,Map<String, Object>> result = new HashMap<Long, Map<String,Object>>();
+	   StringJoiner techIdString = new StringJoiner(",");
+		for(int i=0;i<totalClosedWoCountByTech.size();i++)
+		{
+		  Map<String, Object> map = new HashMap<String, Object>();
+		  Map<String, Object> techMap = (Map<String, Object>) totalClosedWoCountByTech.get(i).get("tech_id");
+		  User user = AccountUtil.getUserBean().getUser((Long)techMap.get("id"));
+		  map.put("technicianName", user.getName());
+		  map.put("closed", totalClosedWoCountByTech.get(i).get("count"));
+		  result.put((Long)techMap.get("id"), map);
+		  techIdString.add(String.valueOf(techMap.get("id")));
+		}
+
+		SelectRecordsBuilder<WorkOrderContext> openBuilder = new SelectRecordsBuilder<WorkOrderContext>()
+				  .module(workOrderModule)
+				  .beanClass(WorkOrderContext.class)
+				  .select(fields)
+				  .andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
+				  .andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".SITE_ID", "siteId", String.valueOf(siteId), NumberOperators.EQUALS))
+				  .andCondition(CriteriaAPI.getCondition(techField, String.valueOf(techIdString), NumberOperators.EQUALS))
+				  .andCondition(openCondition)
+				  .groupBy(techField.getCompleteColumnName())
+				  .orderBy(idCountField.getColumnName()+" DESC")
+				
+                ;
+		List<Map<String, Object>> openCountByTech = openBuilder.getAsProps();
+		List<Map<String,Object>> finalResult = new ArrayList<Map<String,Object>>();
+		Map<Long, Map<String, Object>> openMap = new HashMap<Long, Map<String,Object>>();
+		for(int i=0;i<openCountByTech.size();i++)
+		{
+		  Map<String,Object> map = openCountByTech.get(i);
+		  Map techMap = (Map) map.get("tech_id");
+		  openMap.put((Long)techMap.get("id"), map);
+		}
+		for(int i=0;i<totalClosedWoCountByTech.size();i++)
+		{
+			Map<String, Object> map = new HashMap<String, Object>();
+			Map<String, Object> teamMap = (Map<String, Object>) totalClosedWoCountByTech.get(i).get("tech_id");
+			long open = openMap.get(teamMap.get("id")) != null ? (long) openMap.get(teamMap.get("id")).get("count") : 0;
+			result.get(teamMap.get("id")).put("open", open);
+			finalResult.add(result.get(teamMap.get("id")));
+		}
+		return finalResult;
+
+	}
+
 	
  }
