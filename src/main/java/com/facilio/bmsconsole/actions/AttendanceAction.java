@@ -187,7 +187,7 @@ public class AttendanceAction extends ModuleAction{
 			if (attendanceTranactionList == null) {
 				attendanceTranactionList = new ArrayList<>();
 			}
-			setResult(FacilioConstants.ContextNames.ATTENDANCE, attendanceList);
+			setResult(FacilioConstants.ContextNames.ATTENDANCE_TRANSACTIONS, attendanceTranactionList);
 		}
 		return SUCCESS;
 	}
