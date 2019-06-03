@@ -53,7 +53,7 @@ public class PageFactory {
 	
 	protected static void addHistoryWidget(Section section) {
 		PageWidget historyWidget = new PageWidget(WidgetType.HISTORY);
-		historyWidget.addToLayoutParams(section, 24, 24);
+		historyWidget.addToLayoutParams(section, 24, 3);
 		section.addWidget(historyWidget);
 	}
 
