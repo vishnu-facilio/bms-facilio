@@ -278,6 +278,17 @@ public class Processor implements IRecordProcessor {
                     return;
                 }
             }
+            else if(payLoad.containsKey(AgentKeys.CONTENT)){
+                long checkOrgId = 152;
+                if(orgId == checkOrgId){
+                    LOGGER.info("debugging payload--With content alone-1-"+payLoad);
+                }
+                payLoad.put(AgentKeys.CONTENT,AgentContent.Subscribed.getKey());
+                payLoad.put(AgentKeys.COMMAND,ControllerCommand.subscribe.getCommand());
+                if(orgId == checkOrgId){
+                    LOGGER.info("debugging payload--With content alone-2-"+payLoad);
+                }
+            }
             // ack type - so content is always msgid.
             else {
                 payLoad.put(AgentKeys.CONTENT, payLoad.get(AgentKeys.MESSAGE_ID));
@@ -285,6 +296,7 @@ public class Processor implements IRecordProcessor {
             AgentUtil.putLog(payLoad,orgId,agentId,false);
         }
     }
+
 
     private void processTimeSeries(Record record, JSONObject payLoad, ProcessRecordsInput processRecordsInput, boolean isTimeSeries) throws Exception {
             long timeStamp=	record.getApproximateArrivalTimestamp().getTime();
