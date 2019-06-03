@@ -1053,6 +1053,10 @@
 		<action name="update" class="com.facilio.bmsconsole.actions.AssetAction"
 			method="v2updateAsset">
 		</action>
+		
+		<action name="downtimemetrics" class="com.facilio.bmsconsole.actions.AssetAction"
+			method="fetchAssetDowntimeMetrics">
+		</action>
 
 		<action name="*" class="com.facilio.bmsconsole.actions.AssetAction"
 			method="assetDetails">

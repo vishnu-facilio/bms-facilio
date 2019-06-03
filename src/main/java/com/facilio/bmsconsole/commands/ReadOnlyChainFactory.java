@@ -818,6 +818,12 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain getAssetDowntimeMetricsChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new FetchAssetDowntimeMetricsCommand());
+		return c;
+	}
+	
 	public static Chain getAlarmInsightChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new FetchAlarmInsightCommand());
