@@ -180,7 +180,7 @@ public class AssetPageFactory extends PageFactory {
 	
 	private static void addAlarmInsightsWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
-		cardWidget.addToLayoutParams(section, 24, 8);
+		cardWidget.addToLayoutParams(section, 24, 10);
 		cardWidget.addToWidgetParams("type", CardType.ALARM_INSIGHTS.getName());
 		section.addWidget(cardWidget);
 	}
@@ -201,14 +201,14 @@ public class AssetPageFactory extends PageFactory {
 	
 	private static void addFailureRateWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART);
-		cardWidget.addToLayoutParams(section, 12, 6);
+		cardWidget.addToLayoutParams(section, 12, 8);
 		cardWidget.addToWidgetParams("type", CardType.FAILURE_RATE.getName());
 		section.addWidget(cardWidget);
 	}
 	
 	private static void addAvgTtrWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART);
-		cardWidget.addToLayoutParams(section, 12, 6);
+		cardWidget.addToLayoutParams(section, 12, 8);
 		cardWidget.addToWidgetParams("type", CardType.AVG_TTR.getName());
 		section.addWidget(cardWidget);
 	}
