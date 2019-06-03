@@ -760,10 +760,17 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
                     .fields(FieldFactory.getAgentMessageFields());
             return insertRecordBuilder.insert(map);
     }catch (Exception e){
-        LOGGER.info("Exception Occurred ",e);
-        throw e;
+            if(e instanceof MySQLIntegrityConstraintViolationException){
+                LOGGER.info("Duplicate Message,insertion failed "+e.getMessage());
+            }
+            else {
+                LOGGER.info("Exception Occurred "+e.getMessage());
+                throw e;
+            }
     }
+       return 0L;
 	}
+
 	public Long updateAgentMessage(Map<String,Object> map) throws Exception{
 		FacilioModule messageModule = ModuleFactory.getAgentMessageModule();
 		try{
