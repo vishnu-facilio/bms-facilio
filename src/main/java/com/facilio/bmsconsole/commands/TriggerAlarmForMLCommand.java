@@ -1,6 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
 
+import java.util.Hashtable;
+import java.util.Set;
+import java.util.SortedMap;
+
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -11,7 +15,6 @@ import org.json.JSONObject;
 
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.MLContext;
-import com.facilio.bmsconsole.context.MLVariableContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.chain.FacilioContext;
@@ -26,42 +29,83 @@ public class TriggerAlarmForMLCommand implements Command {
 	public boolean execute(Context context) throws Exception 
 	{
 		MLContext mlContext = (MLContext) context.get(FacilioConstants.ContextNames.ML);
-		if(mlContext.getModelPath().equals("checkGam1"))
+		if(mlContext.getModelPath().equals("ratioCheck"))
 		{
-			JSONObject response = new JSONObject(mlContext.getResult());
-			long meterID = response.getLong("assetid");
-			AssetContext asset = AssetsAPI.getAssetInfo(meterID);
-			String assetName = asset.getName();
 			
-			MLVariableContext mlVariableContext = mlContext.getMLVariableContext(meterID);
-			
-			JSONArray responseData = (JSONArray)response.get("data");
-			for(int i=0;i<responseData.length();i++)
-			{
-				JSONObject data = (JSONObject)responseData.get(i);
+            Set<Long> assetIDList = mlContext.getMlVariablesDataMap().keySet();
+            
+            for(long assetID : assetIDList)
+            {
+            	Hashtable<String,SortedMap<Long,Object>> variablesData = mlContext.getMlVariablesDataMap().get(assetID);
 
-				String message = "Anomaly Detected. Actual Consumption :"+data.getLong("actualValue")+", Expected Max Consumption :"+data.getLong("AdjustedUpperBound");
-				JSONObject obj = new JSONObject();
-				obj.put("message", message);
-				obj.put("source", assetName);
-				obj.put("condition", "Anomaly Detected in Energy Consumption");
-				obj.put("resourceId", meterID);
-				obj.put("severity", "Minor");
-				obj.put("timestamp", data.get("ttime"));
-				obj.put("consumption", data.get("actualValue"));
+            	SortedMap<Long,Object> actualValueMap = variablesData.get("actualValue");
+            	double actualValue = (double) actualValueMap.get(actualValueMap.firstKey());
 
-				obj.put("sourceType", SourceType.ANOMALY_ALARM.getIntVal());
-				obj.put("readingFieldId", mlVariableContext.getFieldID());
-				obj.put("startTime", data.get("ttime"));
-				obj.put("readingMessage", message);
-				FacilioContext addEventContext = new FacilioContext();
-				addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, obj);
-				Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
-				getAddEventChain.execute(addEventContext);
-			}
-			
-		}
+            	SortedMap<Long,Object> adjustedUpperBoundMap = variablesData.get("adjustedUpperBound");
+            	double adjustedUpperBound = (double) adjustedUpperBoundMap.get(adjustedUpperBoundMap.firstKey());
+
+            	LOGGER.info("actual Value is =>"+actualValue +":::"+adjustedUpperBound);
+            	if(actualValue > adjustedUpperBound)
+            	{
+            		generateAnomalyEvent(actualValue,adjustedUpperBound,assetID,mlContext.getPredictionTime());
+            	}
+            	else
+            	{
+            		generateClearEvent(assetID,mlContext.getPredictionTime());
+            	}
+            }
+         }
+         
 		return false;
+	}
+	
+	private void generateClearEvent(long assetID,long ttime) throws Exception
+	{
+		AssetContext asset = AssetsAPI.getAssetInfo(assetID);
+        String assetName = asset.getName();
+        
+		String message = "Anomaly Cleared";
+        org.json.simple.JSONObject obj = new org.json.simple.JSONObject();
+        obj.put("message", message);
+        obj.put("source", assetName);
+        obj.put("condition", "Anomaly Detected in Energy Consumption");
+        obj.put("resourceId", assetID);
+        obj.put("severity", FacilioConstants.Alarm.CLEAR_SEVERITY);
+        obj.put("timestamp", ttime);
+
+        obj.put("sourceType", SourceType.ANOMALY_ALARM.getIntVal());
+        //obj.put("readingFieldId", mlVariableContext.getFieldID());
+        obj.put("startTime", ttime);
+        obj.put("readingMessage", message);
+        FacilioContext addEventContext = new FacilioContext();
+        addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, obj);
+        Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
+        getAddEventChain.execute(addEventContext);
+	}
+	
+	private void generateAnomalyEvent(double actualValue,double adjustedUpperBound,long assetID,long ttime) throws Exception
+	{
+		AssetContext asset = AssetsAPI.getAssetInfo(assetID);
+        String assetName = asset.getName();
+        
+		String message = "Anomaly Detected. Actual Consumption :"+actualValue+", Expected Max Consumption :"+adjustedUpperBound;
+        org.json.simple.JSONObject obj = new org.json.simple.JSONObject();
+        obj.put("message", message);
+        obj.put("source", assetName);
+        obj.put("condition", "Anomaly Detected in Energy Consumption");
+        obj.put("resourceId", assetID);
+        obj.put("severity", "Minor");
+        obj.put("timestamp", ttime);
+        obj.put("consumption", actualValue);
+
+        obj.put("sourceType", SourceType.ANOMALY_ALARM.getIntVal());
+        //obj.put("readingFieldId", mlVariableContext.getFieldID());
+        obj.put("startTime", ttime);
+        obj.put("readingMessage", message);
+        FacilioContext addEventContext = new FacilioContext();
+        addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, obj);
+        Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
+        getAddEventChain.execute(addEventContext);
 	}
 	
 	public static void main(String arg[])
