@@ -2349,9 +2349,10 @@ public class PreventiveMaintenanceAPI {
 	}
 
     public static void fetchAffectedTaskSection (List<Long> orgs) throws Exception {
+		LOGGER.log(Level.SEVERE, "Migration started");
 		for (long i : orgs) {
 			try {
-				// LOGGER.log(Level.SEVERE, "Setting account id " + i);
+				LOGGER.log(Level.SEVERE, "Setting account id " + i);
 				AccountUtil.setCurrentAccount(i);
 				if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
 					LOGGER.log(Level.SEVERE, "Org is missing");
@@ -2360,7 +2361,7 @@ public class PreventiveMaintenanceAPI {
 
 				Map<Long, List<String>> triggerSectionMap = getTriggerSectionMap();
 
-				// LOGGER.log(Level.SEVERE, "Trigger size " + triggerSectionMap.size());
+				LOGGER.log(Level.SEVERE, "Trigger size " + triggerSectionMap.size());
 
 				Set<Map.Entry<Long, List<String>>> entries = triggerSectionMap.entrySet();
 				for (Map.Entry<Long, List<String>> entry: entries) {
@@ -2368,7 +2369,7 @@ public class PreventiveMaintenanceAPI {
 					List<String> sectionNames = entry.getValue();
 					List<Long> affectedTaskSections = fetchAffectedTaskSections(triggerId, sectionNames);
 					if (affectedTaskSections != null && !affectedTaskSections.isEmpty()) {
-						// LOGGER.log(Level.SEVERE, "Affected task sections for triggerId " + triggerId + " affectedTaskSections: " + StringUtils.join(affectedTaskSections, ","));
+						LOGGER.log(Level.SEVERE, "Affected task sections for triggerId " + triggerId + " affectedTaskSections: " + StringUtils.join(affectedTaskSections, ","));
 					}
 				}
 			} catch (Exception e) {
@@ -2378,5 +2379,6 @@ public class PreventiveMaintenanceAPI {
 				AccountUtil.cleanCurrentAccount();
 			}
 		}
+		LOGGER.log(Level.SEVERE, "Completing migration");
 	}
 }
