@@ -41,6 +41,10 @@ public class GetReadingsForMLCommand implements Command {
 		for(MLVariableContext variables:mlVariable)
 		{
 			long startTime = currentTime-variables.getMaxSamplingPeriod();
+			if(variables.getFutureSamplingPeriod()!=0L)
+			{
+				currentTime = currentTime + variables.getFutureSamplingPeriod();
+			}
 			SortedMap<Long,Object> data = new TreeMap<Long,Object>();
             FacilioField variableField = modBean.getField(variables.getFieldID());
             FacilioField parentField = modBean.getField(variables.getParentFieldID());

@@ -13,6 +13,7 @@ public class MLVariableContext extends ModuleBaseWithCustomFields
 	private long parentFieldID;
 	private long parentID;
 	private long maxSamplingPeriod;
+	private long futureSamplingPeriod;
 	private int sequence;
 	
 	public long getMlID()
@@ -71,6 +72,16 @@ public class MLVariableContext extends ModuleBaseWithCustomFields
 	public void setMaxSamplingPeriod(long maxSamplingPeriod) 
 	{
 		this.maxSamplingPeriod = maxSamplingPeriod;
+	}
+	
+	public long getFutureSamplingPeriod()
+	{
+		return futureSamplingPeriod;
+	}
+	
+	public void setFutureSamplingPeriod(long futureSamplingPeriod)
+	{
+		this.futureSamplingPeriod = futureSamplingPeriod;
 	}
 	
 	public void setSequence(int sequence)

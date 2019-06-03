@@ -5643,6 +5643,7 @@ public class FieldFactory {
 		fields.add(getField("parentFieldID","PARENT_FIELDID",module,FieldType.NUMBER));
 		fields.add(getField("parentID","PARENT_ID",module,FieldType.NUMBER));
 		fields.add(getField("maxSamplingPeriod","MAX_SAMPLING_PERIOD",module,FieldType.NUMBER));
+		fields.add(getField("futureSamplingPeriod","FUTURE_SAMPLING_PERIOD",module,FieldType.NUMBER));
 
 		return fields;
 	}
