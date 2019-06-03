@@ -66,9 +66,15 @@ public class AddAttendanceCommand implements Command {
 		if (attendance != null && !attendance.isEmpty()) {
 			att = attendance.get(0);
 			if (attendanceTransaction.getTransactionTypeEnum() == TransactionType.CHECKIN) {
+				if(att.getCheckOutTime() == -99) {
+					throw new IllegalArgumentException("The User has already checked in");
+				}
 				att.setLastCheckInTime(attendanceTransaction.getTransactionTime());
 				att.setCheckOutTime(-99);
 			} else if (attendanceTransaction.getTransactionTypeEnum() == TransactionType.CHECKOUT) {
+				if (att.getCheckOutTime() > 0) {
+					throw new IllegalArgumentException("The User has already checked out");
+				}
 				att.setCheckOutTime(attendanceTransaction.getTransactionTime());
 				long workhrs = att.getCheckOutTime() - att.getLastCheckInTime();
 				if (att.getWorkingHours() > 0) {

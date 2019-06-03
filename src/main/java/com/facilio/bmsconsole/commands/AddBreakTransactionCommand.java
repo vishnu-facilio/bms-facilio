@@ -20,14 +20,23 @@ public class AddBreakTransactionCommand implements Command {
 			long lastBreakStartTime = -1;
 			AttendanceContext attendance = new AttendanceContext();
 			attendance = AttendanceApi.getAttendanceForId(breakTransaction.getAttendance().getId());
+			if(attendance == null) {
+				throw new IllegalArgumentException("Kindly first check in");
+			}
 			lastBreakStartTime = attendance.getLastBreakStartTime();
 			AttendanceTransactionContext attendanceTransaction = new AttendanceTransactionContext();
 			attendanceTransaction.setAttendance(breakTransaction.getAttendance());
 			attendanceTransaction.setTransactionTime(breakTransaction.getTransactionTime());
 			if (breakTransaction.getTransactionTypeEnum() == TransactionType.BREAKSTART) {
+				if (attendance.getLastBreakStartTime() > 0) {
+					throw new IllegalArgumentException("The User has already checked in break");
+				}
 				attendance.setLastBreakStartTime(breakTransaction.getTransactionTime());
 				attendanceTransaction.setTransactionType(com.facilio.bmsconsole.context.AttendanceTransactionContext.TransactionType.BREAKSTART);
 			} else if(breakTransaction.getTransactionTypeEnum() == TransactionType.BREAKSTOP) {
+				if (attendance.getLastBreakStartTime() < 0) {
+					throw new IllegalArgumentException("The User has already checked out break");
+				}
 				long totalBreakDur = breakTransaction.getTransactionTime() - lastBreakStartTime;
 				if(attendance.getTotalPaidBreakHrs() > 0) {
 					totalBreakDur += attendance.getTotalPaidBreakHrs();
