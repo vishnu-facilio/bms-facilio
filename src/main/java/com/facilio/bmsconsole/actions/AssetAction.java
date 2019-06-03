@@ -1,5 +1,16 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Chain;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -15,12 +26,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Chain;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
-import java.util.*;
 
 public class AssetAction extends FacilioAction {
 	
@@ -96,6 +101,7 @@ public class AssetAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, categoryId);
 		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
+		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ASSET_ACTIVITY);
 		Chain addAssetChain = TransactionChainFactory.getAddAssetChain();
 		addAssetChain.execute(context);
 		setAssetId(asset.getId());
@@ -511,6 +517,14 @@ public class AssetAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		ReadOnlyChainFactory.getAssetModuleReportCardChain().execute(context);
 		setResult("cards", context.get(FacilioConstants.ContextNames.REPORT_CARDS));
+		return SUCCESS;
+	}
+	
+	public String fetchAssetDowntimeMetrics() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ASSET_ID, assetId);
+		ReadOnlyChainFactory.getAssetDowntimeMetricsChain().execute(context);
+		setResult("metrics", context.get(FacilioConstants.ContextNames.RESULT));
 		return SUCCESS;
 	}
 	

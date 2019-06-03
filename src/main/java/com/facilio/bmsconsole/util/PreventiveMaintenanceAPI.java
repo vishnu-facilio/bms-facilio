@@ -321,7 +321,7 @@ public class PreventiveMaintenanceAPI {
 		boolean isScheduled = false;
 		while (nextExecutionTime <= endTime && (pm.getMaxCount() == -1 || currentCount < pm.getMaxCount()) && (pm.getEndTime() == -1 || nextExecutionTime <= pm.getEndTime())) {
 			if ((nextExecutionTime * 1000) < currentTime) {
-				LOGGER.log(Level.SEVERE, "Skipping : next: "+ nextExecutionTime * 1000 + " current: "+ currentTime);
+				// LOGGER.log(Level.SEVERE, "Skipping : next: "+ nextExecutionTime * 1000 + " current: "+ currentTime);
 				nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(nextExecutionTime);
 				if (pmTrigger.getSchedule().getFrequencyTypeEnum() == FrequencyType.DO_NOT_REPEAT) {
 					break;
@@ -819,11 +819,11 @@ public class PreventiveMaintenanceAPI {
 					continue;
 				}
 
-				LOGGER.log(Level.SEVERE, "Number of PMS to be deactivated: " + pms.size());
+				// LOGGER.log(Level.SEVERE, "Number of PMS to be deactivated: " + pms.size());
 
 				List<Long> skipped = deactivateActivateAllPms(pms);
 
-				LOGGER.log(Level.SEVERE, "skipped pms: " + StringUtils.join(skipped.toArray(), ", "));
+				// LOGGER.log(Level.SEVERE, "skipped pms: " + StringUtils.join(skipped.toArray(), ", "));
 			} finally {
 				AccountUtil.cleanCurrentAccount();
 			}
@@ -844,9 +844,9 @@ public class PreventiveMaintenanceAPI {
 				Chain migrationChain = TransactionChainFactory.getPMMigration(activePm.getId());
 				migrationChain.execute(context);
 
-				LOGGER.log(Level.SEVERE, "Migrated " + activePm.getId());
+				// LOGGER.log(Level.SEVERE, "Migrated " + activePm.getId());
 			} catch (Exception e) {
-				LOGGER.log(Level.SEVERE, "Failed to migrate PM: " + activePm.getId(), e);
+				// LOGGER.log(Level.SEVERE, "Failed to migrate PM: " + activePm.getId(), e);
 				skippedPms.add(activePm.getId());
 			}
 		}
@@ -871,7 +871,7 @@ public class PreventiveMaintenanceAPI {
 				Chain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChainForMig();
 				addTemplate.execute(context);
 
-				LOGGER.log(Level.SEVERE, "Activated: " + activePm.getId());
+				// LOGGER.log(Level.SEVERE, "Activated: " + activePm.getId());
 			} catch (Exception e) {
 				LOGGER.log(Level.SEVERE, "Failed to activate PM: " + activePm.getId(), e);
 				activateSkipList.add(activePm.getId());
@@ -893,7 +893,7 @@ public class PreventiveMaintenanceAPI {
 				Chain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChainForMig();
 				addTemplate.execute(context);
 
-				LOGGER.log(Level.SEVERE, "Deactivated: " + activePm.getId());
+				// LOGGER.log(Level.SEVERE, "Deactivated: " + activePm.getId());
 			} catch (Exception e) {
 				LOGGER.log(Level.SEVERE, "Failed to deactivate PM: " + activePm.getId(), e);
 				skipList.add(activePm.getId());
@@ -2351,7 +2351,7 @@ public class PreventiveMaintenanceAPI {
     public static void fetchAffectedTaskSection (List<Long> orgs) throws Exception {
 		for (long i : orgs) {
 			try {
-				LOGGER.log(Level.SEVERE, "Setting account id " + i);
+				// LOGGER.log(Level.SEVERE, "Setting account id " + i);
 				AccountUtil.setCurrentAccount(i);
 				if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
 					LOGGER.log(Level.SEVERE, "Org is missing");
@@ -2360,7 +2360,7 @@ public class PreventiveMaintenanceAPI {
 
 				Map<Long, List<String>> triggerSectionMap = getTriggerSectionMap();
 
-				LOGGER.log(Level.SEVERE, "Trigger size " + triggerSectionMap.size());
+				// LOGGER.log(Level.SEVERE, "Trigger size " + triggerSectionMap.size());
 
 				Set<Map.Entry<Long, List<String>>> entries = triggerSectionMap.entrySet();
 				for (Map.Entry<Long, List<String>> entry: entries) {
@@ -2368,7 +2368,7 @@ public class PreventiveMaintenanceAPI {
 					List<String> sectionNames = entry.getValue();
 					List<Long> affectedTaskSections = fetchAffectedTaskSections(triggerId, sectionNames);
 					if (affectedTaskSections != null && !affectedTaskSections.isEmpty()) {
-						LOGGER.log(Level.SEVERE, "Affected task sections for triggerId " + triggerId + " affectedTaskSections: " + StringUtils.join(affectedTaskSections, ","));
+						// LOGGER.log(Level.SEVERE, "Affected task sections for triggerId " + triggerId + " affectedTaskSections: " + StringUtils.join(affectedTaskSections, ","));
 					}
 				}
 			} catch (Exception e) {

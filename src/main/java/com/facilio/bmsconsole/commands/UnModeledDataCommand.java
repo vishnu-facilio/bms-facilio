@@ -32,7 +32,7 @@ public class UnModeledDataCommand implements Command {
 		long timeStamp=(long)context.get(FacilioConstants.ContextNames.TIMESTAMP);
 		Long controllerId=(Long) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
 		List<Map<String, Object>> records=new ArrayList<Map<String,Object>>();
-		List<Map<String, Object>> pointsRecords=(List<Map<String, Object>>) context.get("POINTS_DATA_RECORD");
+		List<Map<String, Object>> pointsRecords=(List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.POINTS_DATA_RECORD);
 		for(Map.Entry<String, Map<String,String>> data:deviceData.entrySet()) {
 			String deviceName=data.getKey();
 			Map<String,String> instanceMap= data.getValue();
