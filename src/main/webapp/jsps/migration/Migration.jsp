@@ -4,5 +4,5 @@
 <%
 List<Long> orgs = new ArrayList<Long>();
                 orgs.add(154L);
-PreventiveMaintenanceAPI.fetchAffectedTaskSection(orgs);
+PreventiveMaintenanceAPI.verifyMigration(orgs);
 %>

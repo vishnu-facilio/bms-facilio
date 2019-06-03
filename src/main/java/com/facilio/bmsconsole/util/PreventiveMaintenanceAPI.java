@@ -2221,6 +2221,116 @@ public class PreventiveMaintenanceAPI {
     }
 
 
+    private static Map<Long, Map<Long, List<String>>> workOrderTriggerSectionMap() throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		Map<String, FacilioField> ticketsMap = FieldFactory.getAsMap(modBean.getAllFields("ticket"));
+
+		FacilioModule workOrderMod = modBean.getModule("workorder");
+
+		FacilioModule taskSectionMod = ModuleFactory.getTaskSectionModule();
+		Map<String, FacilioField> workOrderMap = FieldFactory.getAsMap(modBean.getAllFields("workorder"));
+
+		FacilioStatus assignedStatus = TicketAPI.getStatus("Assigned");
+		FacilioStatus status = TicketAPI.getStatus("Submitted");
+
+		Criteria statusCriteria = new Criteria();
+		statusCriteria.addAndCondition(CriteriaAPI.getCondition(ticketsMap.get("status"), String.valueOf(status.getId()), NumberOperators.EQUALS));
+		statusCriteria.addOrCondition(CriteriaAPI.getCondition(ticketsMap.get("status"), String.valueOf(assignedStatus.getId()), NumberOperators.EQUALS));
+
+		List<FacilioField> taskSectionFields = FieldFactory.getTaskSectionFields();
+		Map<String, FacilioField> taskSectionMap = FieldFactory.getAsMap(taskSectionFields);
+
+		List<FacilioField> selectFields = Arrays.asList(FieldFactory.getIdField(workOrderMod), workOrderMap.get("trigger"),taskSectionMap.get("name"));
+
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder();
+		selectRecordBuilder.select(selectFields)
+				.table(taskSectionMod.getTableName())
+				.innerJoin("WorkOrders")
+				.on("WorkOrders.ID = Task_Section.PARENT_TICKET_ID")
+				.innerJoin("Tickets")
+				.on("WorkOrders.ID = Tickets.ID")
+				.innerJoin("TicketStatus")
+				.on("TicketStatus.ID = Tickets.STATUS_ID")
+				.andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getOrgId(), taskSectionMod))
+				.andCriteria(statusCriteria)
+				.andCondition(CriteriaAPI.getCondition(workOrderMap.get("createdTime"), String.valueOf(1555459200000L), NumberOperators.GREATER_THAN_EQUAL))
+				.andCondition(CriteriaAPI.getCondition(workOrderMap.get("trigger"), CommonOperators.IS_NOT_EMPTY))
+				.andCondition(CriteriaAPI.getCondition(workOrderMap.get("jobStatus"), String.valueOf(3), NumberOperators.EQUALS));
+
+		List<Map<String, Object>> props;
+		try {
+			props = selectRecordBuilder.get();
+		} catch (Exception e) {
+			LOGGER.log(Level.SEVERE, "Failed sql: " + selectRecordBuilder.toString());
+			throw e;
+		}
+
+
+
+		Map<Long, Map<Long, List<String>>> triggerSectionMap = new HashMap<>();
+
+		for (Map<String, Object> prop: props) {
+			if (triggerSectionMap.get(prop.get("trigger")) == null) {
+				triggerSectionMap.put((long) prop.get("trigger"), new HashMap<>());
+			}
+
+			Map<Long, List<String>> woMap = triggerSectionMap.get(prop.get("trigger"));
+			if (woMap.get(prop.get("id")) == null) {
+				woMap.put((long) prop.get("id"), new ArrayList<>());
+			}
+
+			woMap.get(prop.get("id")).add((String) prop.get("name"));
+		}
+		return triggerSectionMap;
+	}
+
+    public static void verifyMigration(List<Long> orgs) throws Exception {
+		for (long i : orgs) {
+			try {
+				AccountUtil.setCurrentAccount(i);
+				if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
+					LOGGER.log(Level.SEVERE, "Org is missing");
+					continue;
+				}
+
+				Map<Long, List<String>> triggerSectionMap = getTriggerSectionMap();
+				Map<Long, Map<Long, List<String>>> woMap = workOrderTriggerSectionMap();
+
+				Set<Long> trigs = triggerSectionMap.keySet();
+				for (long trig: trigs) {
+					Map<Long, List<String>> woUnit = woMap.get(trig);
+					if (woUnit == null) {
+						LOGGER.log(Level.SEVERE, "==>No wos for trigger " + trig);
+						continue;
+					}
+					List<String> configSections = triggerSectionMap.get(trig);
+					Set<Long> woIds = woUnit.keySet();
+
+					for (long woId: woIds) {
+						List<String> actualSections = woUnit.get(woId);
+						for (String config: configSections) {
+							boolean found = false;
+							for (String actual: actualSections) {
+								if (actual.contains(config)) {
+									found = true;
+									break;
+								}
+							}
+							if (!found) {
+								LOGGER.log(Level.SEVERE, "===> Mismatch TriggerID: " + trig + " WOID: " + woId);
+							} else {
+								LOGGER.log(Level.SEVERE, "Matched TriggerID: " + trig + " WOID: " + woId);
+							}
+						}
+					}
+				}
+			} finally {
+				AccountUtil.cleanCurrentAccount();
+			}
+		}
+	}
+
+
 	private static List<Long> fetchAffectedTaskSections(long triggerId, List<String> allowedSectionTemplates) throws Exception {
 		if (allowedSectionTemplates == null || allowedSectionTemplates.isEmpty()) {
 			return null;
