@@ -278,7 +278,7 @@ public class Processor implements IRecordProcessor {
                     return;
                 }
             }
-            else if(payLoad.containsKey(AgentKeys.CONTENT)){
+            else if(  (!payLoad.containsKey(AgentKeys.COMMAND)) && payLoad.containsKey(AgentKeys.CONTENT)){
                 long checkOrgId = 152;
                 if(orgId == checkOrgId){
                     LOGGER.info("debugging payload--With content alone-1-"+payLoad);
