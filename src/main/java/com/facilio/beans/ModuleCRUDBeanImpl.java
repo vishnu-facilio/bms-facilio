@@ -35,6 +35,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.procon.consumer.FacilioConsumer;
 import com.facilio.procon.message.FacilioRecord;
 import com.facilio.timeseries.TimeSeriesAPI;
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -766,9 +767,15 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			Integer rowsAffected= updateRecordBuilder.update(map);
 			return Long.valueOf(rowsAffected);
         }catch (Exception e){
-            LOGGER.info("Exception Occurred ",e);
-            throw e;
+			if(e instanceof MySQLIntegrityConstraintViolationException){
+				LOGGER.info("Duplicate Message,updation failed "+e.getMessage());
+			}
+			else {
+				LOGGER.info("Exception Occurred "+e.getMessage());
+				throw e;
+			}
         }
+		return 0L;
 	}
 	public List<Map<String,Object>> getRows(FacilioContext context) throws Exception{
 	    // always create an Empty List<Map<String,Object>> and return it instead of null;
