@@ -5,11 +5,13 @@ import java.util.Map;
 
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.context.WorkflowContext.WorkflowUIMode;
 
 public class WorkflowV2API {
 	
 	public static Object executeWorkflow(WorkflowContext workflowContext,List<Object> params, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked, boolean isVariableMapNeeded) throws Exception {
 		workflowContext.setCachedRDM(rdmCache);
+		workflowContext.setWorkflowUIMode(WorkflowUIMode.NEW_WORKFLOW);
 		workflowContext.setIgnoreMarkedReadings(ignoreMarked);
 		
 		workflowContext.setParams(params);
