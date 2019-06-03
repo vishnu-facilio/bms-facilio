@@ -79,7 +79,7 @@ public enum ActionType {
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
 				Object currentRecord) {
 			// TODO Auto-generated method stub
-			if (obj != null) {
+			if (obj != null && AwsUtil.isProduction()) {
 				try {
 					String to = (String) obj.get("to");
 					if (to != null && !to.isEmpty() && checkIfActiveUserFromPhone(to)) {
@@ -145,7 +145,7 @@ public enum ActionType {
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
 				Object currentRecord) {
 			// TODO Auto-generated method stub
-			if (obj != null) {
+			if (obj != null && AwsUtil.isProduction()) {
 				try {
 					JSONArray tos = null;
 					Object toNums = obj.remove("to");
@@ -305,7 +305,7 @@ public enum ActionType {
 				Object currentRecord) {
 			// TODO Auto-generated method stub
 			try {
-				if (obj != null) {
+				if (obj != null && AwsUtil.isProduction()) {
 					String ids = (String) obj.get("id");
 
 					if (!StringUtils.isEmpty(ids)) {
