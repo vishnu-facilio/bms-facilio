@@ -1745,7 +1745,6 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 					  .beanClass(WorkOrderContext.class)
 					  .select(fields)
 					  .andCriteria(closedCriteria)
-					  .andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
 					  .andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".SITE_ID", "siteId", String.valueOf(siteId), NumberOperators.EQUALS))
 					  .andCondition(CriteriaAPI.getCondition(technicianField.getCompleteColumnName(), "assignedTo", techIdString.toString(),NumberOperators.EQUALS ))
 					  .groupBy(technicianField.getCompleteColumnName())
