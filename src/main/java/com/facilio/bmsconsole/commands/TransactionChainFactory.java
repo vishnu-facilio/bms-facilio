@@ -2741,7 +2741,7 @@ public class TransactionChainFactory {
 		public static Chain getReceiveShipmentInventoryChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new ReceiveShipmentCommand());
-			c.addCommand(getBulkAddToolChain());
+			c.addCommand(getBulkAddShipmentToolChain());
 			c.addCommand(getAddBulkItemChain());
 			c.addCommand(new AddShipmentRotatingAssetsCommand());
 			return c;
@@ -2754,6 +2754,17 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain getBulkAddShipmentToolChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForTool());
+			c.addCommand(new BulkToolAdditionCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
+			c.addCommand(new AddBulkToolStockTransactionsCommand());
+			c.addCommand(new AddBulkRotatingToolShipmentTransactionCommand());
+			c.addCommand(getUpdatetoolQuantityRollupChain());
+			c.addCommand(getSetItemAndToolTypeForStoreRoomChain());
+			return c;
+		}
 		public static Chain getStageShipmentInventoryChain () {
 			Chain c = getDefaultChain();
 			c.addCommand(new StageShipmentCommand());

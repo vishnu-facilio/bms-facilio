@@ -69,9 +69,9 @@ public class AddShipmentRotatingAssetsCommand implements Command{
 				props.put("currentLocation" , -1);
 				props.put("isUsed", false);
 				
+				//new AddRotatingItemToolCommand().execute(context);
 				AssetsAPI.changeAssetSpace(asset.getId(), props);
 				
-				new AddRotatingItemToolCommand().execute(context);
 				
 			  	context.put(FacilioConstants.ContextNames.MODULE, FacilioConstants.ContextNames.ASSET);
 				context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.ASSET);
