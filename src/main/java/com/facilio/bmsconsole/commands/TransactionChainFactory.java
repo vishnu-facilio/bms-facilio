@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Chain;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.agent.ConfigureAgentCommand;
@@ -10,7 +12,6 @@ import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
-import org.apache.commons.chain.Chain;
 
 public class TransactionChainFactory {
 
@@ -2884,6 +2885,15 @@ public class TransactionChainFactory {
 			c.addCommand(SetTableNamesCommand.getForBreakTransaction());
 			c.addCommand(new AddBreakTransactionCommand());
 			c.addCommand(new GenericAddModuleDataCommand());
+			return c;
+		}
+		
+		public static Chain getAddAssetBreakdownChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ValidateAssetBreakdownCommand());
+			c.addCommand(new getAssetDownTimeDetailsCommand());
+			c.addCommand(new AddAssetBreakDownCommand());
+			c.addCommand(new updateAssetDownTimeDetailsCommand());
 			return c;
 		}
 

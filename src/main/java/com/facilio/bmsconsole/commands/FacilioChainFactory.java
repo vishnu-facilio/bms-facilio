@@ -1,5 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Map;
+
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.exception.AccountException;
 import com.facilio.accounts.util.AccountConstants;
@@ -13,13 +21,6 @@ import com.facilio.leed.commands.AddEnergyMeterCommand;
 import com.facilio.leed.commands.FetchArcAssetsCommand;
 import com.facilio.leed.commands.LeedBuildingDetailsCommand;
 import com.facilio.modules.FieldUtil;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.util.Map;
 
 public class FacilioChainFactory {
     private static Logger LOGGER = LogManager.getLogger(FacilioChainFactory.class.getName());
@@ -1832,14 +1833,6 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadModuleNameCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenericDeleteModuleDataCommand());
-		return c;
-	}
-
-	public static Chain getAddAssetBreakdownChain() {
-		Chain c = FacilioChain.getTransactionChain();
-		c.addCommand(new getAssetDownTimeDetailsCommand());
-		c.addCommand(new AddAssetBreakDownCommand());
-		c.addCommand(new updateAssetDownTimeDetailsCommand());
 		return c;
 	}
 
