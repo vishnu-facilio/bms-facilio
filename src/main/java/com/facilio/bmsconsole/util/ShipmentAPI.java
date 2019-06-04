@@ -73,7 +73,7 @@ public class ShipmentAPI {
 
 	public static ToolContext createTool(ShipmentContext shipment, ShipmentLineItemContext lineItem,
 			boolean isRotating, List<ShipmentLineItemContext> shipmentRotatingAssets) throws Exception {
-		ToolContext tool = getTool(lineItem.getToolType(), shipment.getToStore(), lineItem.getQuantity(), lineItem.getUnitPrice());
+		ToolContext tool = getTool(lineItem.getToolType(), shipment.getToStore(), lineItem.getQuantity(), lineItem.getUnitPrice(), 1);
 		
 		if (isRotating) {
 			shipmentRotatingAssets.add(lineItem);		
@@ -136,7 +136,7 @@ public class ShipmentAPI {
 		return item;
 	}
 	
-	private static ToolContext getTool(ToolTypesContext toolType, StoreRoomContext storeroom, double quantity, double rate) throws Exception {
+	private static ToolContext getTool(ToolTypesContext toolType, StoreRoomContext storeroom, double quantity,double unitPrice, double rate) throws Exception {
 		ToolContext toolc = null;
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule toolModule = modBean.getModule(FacilioConstants.ContextNames.TOOL);
@@ -151,16 +151,17 @@ public class ShipmentAPI {
 		if (tools != null && !tools.isEmpty()) {
 			for (ToolContext tool : tools) {
 				if (tool.getToolType().getId() == toolType.getId()) {
+					tool.setQuantity(quantity);
 					return tool;
 				}
 			}
-			return addTool(toolModule, toolFields,  storeroom, toolType, quantity, rate);
+			return addTool(toolModule, toolFields,  storeroom, toolType, quantity,unitPrice, rate);
 		} else {
-			return addTool(toolModule, toolFields, storeroom, toolType, quantity, rate);
+			return addTool(toolModule, toolFields, storeroom, toolType, quantity,unitPrice, rate);
 		}
 	}
 
-	private static ToolContext addTool(FacilioModule module, List<FacilioField> fields, StoreRoomContext store, ToolTypesContext toolType, double quantity, double rate) throws Exception {
+	private static ToolContext addTool(FacilioModule module, List<FacilioField> fields, StoreRoomContext store, ToolTypesContext toolType, double quantity, double unitPrice, double rate) throws Exception {
 		ToolContext tool = new ToolContext();
 		tool.setStoreRoom(store);
 		tool.setQuantity(quantity);
