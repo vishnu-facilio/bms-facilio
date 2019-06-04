@@ -1776,7 +1776,10 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 				 Map<String,Object> lastMonth = lastMonthMap.get(technicianMap.get("id"));
 				
 				 if(lastMonth != null ) {
-					 Double avgTime = ((Number)lastMonth.get("avg_resolution_time")).doubleValue();
+					 Double avgTime = 0.0;
+					 if(lastMonth.get("avg_resolution_time") != null) {
+					   avgTime = ((Number)lastMonth.get("avg_resolution_time")).doubleValue();
+					 }
 					 avgTime = Math.round(avgTime*100.0)/100.0;
 					 
 					 resMap.put("avg_resolution_time_last_month",avgTime );
