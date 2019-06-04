@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.WordUtils;
 import org.apache.log4j.LogManager;
@@ -452,18 +453,27 @@ public class AlarmAPI {
 		return selectBuilder;
 	}
 	
-	public static List<ReadingAlarmContext> getReadingAlarms(List<Long> resourceId, Long entityId, long fieldId, long startTime, long endTime, boolean isWithAnomaly) throws Exception {
+	public static List<ReadingAlarmContext> getReadingAlarms(List<Long> resourceId, Long ruleId, long fieldId, long startTime, long endTime, boolean isWithAnomaly) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.READING_ALARM);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		SelectRecordsBuilder<ReadingAlarmContext> selectBuilder = getReadingAlarmsSelectBuilder(startTime, endTime, isWithAnomaly, fields, fieldMap)
 																	.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), resourceId, PickListOperators.IS))
 																	;
+		boolean ruleAvailable = false;
+		if (ruleId != null && ruleId != -1) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("ruleId"), String.valueOf(ruleId), NumberOperators.EQUALS));
+			ruleAvailable = true;
+		}
+		if (CollectionUtils.isNotEmpty(resourceId)) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), resourceId, PickListOperators.IS));
+		}
+		else if (!ruleAvailable) {
+			throw new IllegalArgumentException("Resource Id or Rule Id should be available");
+		}
+		
 		if(fieldId > 0) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("readingFieldId"), String.valueOf(fieldId), NumberOperators.EQUALS));
-		}
-		if (entityId != null && entityId > 0) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("entityId"), String.valueOf(entityId), NumberOperators.EQUALS));
 		}
 		List<ReadingAlarmContext> alarms = selectBuilder.get();
 		/*if (AccountUtil.getCurrentOrg().getId() == 75) {

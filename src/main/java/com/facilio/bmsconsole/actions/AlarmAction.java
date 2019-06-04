@@ -611,6 +611,7 @@ public class AlarmAction extends FacilioAction {
 	public String fetchAlarmInsightsForResource() throws Exception{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ASSET_ID, assetId);
+		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
 		ReadOnlyChainFactory.getAlarmInsightChain().execute(context);
 		setResult(ContextNames.ALARM_LIST, context.get(ContextNames.ALARM_LIST));
 		return SUCCESS;
@@ -622,5 +623,13 @@ public class AlarmAction extends FacilioAction {
 	}
 	public void setAssetId(long assetId) {
 		this.assetId = assetId;
+	}
+	
+	private int dateOperator = -1;
+	public int getDateOperator() {
+		return dateOperator;
+	}
+	public void setDateOperator(int dateOperator) {
+		this.dateOperator = dateOperator;
 	}
 }
