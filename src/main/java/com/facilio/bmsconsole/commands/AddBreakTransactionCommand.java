@@ -15,7 +15,7 @@ public class AddBreakTransactionCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		BreakTransactionContext breakTransaction = (BreakTransactionContext) context.get(FacilioConstants.ContextNames.BREAK_TRANSACTION);
+		BreakTransactionContext breakTransaction = (BreakTransactionContext) context.get(FacilioConstants.ContextNames.RECORD);
 		if (breakTransaction != null) {
 			long lastBreakStartTime = -1;
 			AttendanceContext attendance = new AttendanceContext();
