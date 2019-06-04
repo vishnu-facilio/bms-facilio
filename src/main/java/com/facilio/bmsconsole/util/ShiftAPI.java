@@ -73,6 +73,10 @@ public class ShiftAPI {
 	
 	public static List<ShiftContext> getAllShifts() throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SHIFT);
+		if (module == null) {
+			return new ArrayList<>();
+		}
 		SelectRecordsBuilder<ShiftContext> builder = new SelectRecordsBuilder<ShiftContext>()
 				.beanClass(ShiftContext.class)
 				.module(modBean.getModule(FacilioConstants.ContextNames.SHIFT))
