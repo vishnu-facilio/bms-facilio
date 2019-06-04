@@ -117,8 +117,8 @@ if (userList != null) { %>
 
 
 <td><%=user.getId() %></td>
-<td><%=user.getOrgId() %></td>
 <td><%=user.getUid() %></td>
+<td><%=user.getOrgId() %></td>
 <td><%=user.getName() %></td>
 <td><%=user.getEmail() %></td>
 <td><%=user.getRole().getName()%></td>
