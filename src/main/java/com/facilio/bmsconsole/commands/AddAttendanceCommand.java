@@ -28,6 +28,7 @@ import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.time.DateTimeUtil;
 
 public class AddAttendanceCommand implements Command {
 
@@ -107,9 +108,12 @@ public class AddAttendanceCommand implements Command {
 				}
 				attendanceContext.setCheckInTime(attendanceTransaction.getTransactionTime());
 				attendanceContext.setLastCheckInTime(attendanceTransaction.getTransactionTime());
+			} else if(attendanceTransaction.getTransactionTypeEnum() == TransactionType.CHECKOUT) {
+				throw new IllegalArgumentException("Kindly first check in.");
 			}
 			attendanceContext.setUser(user);
-			attendanceContext.setDay(attendanceTransaction.getTransactionTime());
+			long day = DateTimeUtil.getDayStartTimeOf(attendanceTransaction.getTransactionTime());
+			attendanceContext.setDay(day);
 			InsertRecordBuilder<AttendanceContext> insertBuilder = new InsertRecordBuilder<AttendanceContext>()
 					.module(module).fields(fields);
 			long id = insertBuilder.insert(attendanceContext);
