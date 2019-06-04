@@ -29,37 +29,45 @@ public class TriggerAlarmForMLCommand implements Command {
 	public boolean execute(Context context) throws Exception 
 	{
 		MLContext mlContext = (MLContext) context.get(FacilioConstants.ContextNames.ML);
-		if(mlContext.getModelPath().equals("ratioCheck"))
+		try
 		{
 			
-            Set<Long> assetIDList = mlContext.getMlVariablesDataMap().keySet();
-            
-            for(long assetID : assetIDList)
-            {
-            	Hashtable<String,SortedMap<Long,Object>> variablesData = mlContext.getMlVariablesDataMap().get(assetID);
-
-            	SortedMap<Long,Object> actualValueMap = variablesData.get("actualValue");
-            	double actualValue = (double) actualValueMap.get(actualValueMap.firstKey());
-
-            	SortedMap<Long,Object> adjustedUpperBoundMap = variablesData.get("adjustedUpperBound");
-            	double adjustedUpperBound = (double) adjustedUpperBoundMap.get(adjustedUpperBoundMap.firstKey());
-
-            	LOGGER.info("actual Value is =>"+actualValue +":::"+adjustedUpperBound);
-            	if(actualValue > adjustedUpperBound)
-            	{
-            		generateAnomalyEvent(actualValue,adjustedUpperBound,assetID,mlContext.getPredictionTime());
-            	}
-            	else
-            	{
-            		generateClearEvent(assetID,mlContext.getPredictionTime());
-            	}
-            }
-         }
+			if(mlContext.getModelPath().equals("ratioCheck"))
+			{
+				
+	            Set<Long> assetIDList = mlContext.getMlVariablesDataMap().keySet();
+	            
+	            for(long assetID : assetIDList)
+	            {
+	            	Hashtable<String,SortedMap<Long,Object>> variablesData = mlContext.getMlVariablesDataMap().get(assetID);
+	
+	            	SortedMap<Long,Object> actualValueMap = variablesData.get("actualValue");
+	            	double actualValue = (double) actualValueMap.get(actualValueMap.firstKey());
+	
+	            	SortedMap<Long,Object> adjustedUpperBoundMap = variablesData.get("adjustedUpperBound");
+	            	double adjustedUpperBound = (double) adjustedUpperBoundMap.get(adjustedUpperBoundMap.firstKey());
+	
+	            	LOGGER.info("actual Value is =>"+actualValue +":::"+adjustedUpperBound);
+	            	if(actualValue > adjustedUpperBound)
+	            	{
+	            		generateAnomalyEvent(actualValue,adjustedUpperBound,assetID,mlContext.getMLVariable().get(0).getFieldID(),mlContext.getPredictionTime());
+	            	}
+	            	else
+	            	{
+	            		generateClearEvent(assetID,mlContext.getMLVariable().get(0).getFieldID(),mlContext.getPredictionTime());
+	            	}
+	            }
+	         }
+		}
+		catch(Exception e)
+		{
+			LOGGER.fatal("Error while triggering alarm for ML_ID"+mlContext.getId());
+		}
          
 		return false;
 	}
 	
-	private void generateClearEvent(long assetID,long ttime) throws Exception
+	private void generateClearEvent(long assetID,long fieldID,long ttime) throws Exception
 	{
 		AssetContext asset = AssetsAPI.getAssetInfo(assetID);
         String assetName = asset.getName();
@@ -74,7 +82,7 @@ public class TriggerAlarmForMLCommand implements Command {
         obj.put("timestamp", ttime);
 
         obj.put("sourceType", SourceType.ANOMALY_ALARM.getIntVal());
-        //obj.put("readingFieldId", mlVariableContext.getFieldID());
+        obj.put("readingFieldId", fieldID);
         obj.put("startTime", ttime);
         obj.put("readingMessage", message);
         FacilioContext addEventContext = new FacilioContext();
@@ -83,7 +91,7 @@ public class TriggerAlarmForMLCommand implements Command {
         getAddEventChain.execute(addEventContext);
 	}
 	
-	private void generateAnomalyEvent(double actualValue,double adjustedUpperBound,long assetID,long ttime) throws Exception
+	private void generateAnomalyEvent(double actualValue,double adjustedUpperBound,long assetID,long fieldID,long ttime) throws Exception
 	{
 		AssetContext asset = AssetsAPI.getAssetInfo(assetID);
         String assetName = asset.getName();
@@ -99,7 +107,7 @@ public class TriggerAlarmForMLCommand implements Command {
         obj.put("consumption", actualValue);
 
         obj.put("sourceType", SourceType.ANOMALY_ALARM.getIntVal());
-        //obj.put("readingFieldId", mlVariableContext.getFieldID());
+        obj.put("readingFieldId", fieldID);
         obj.put("startTime", ttime);
         obj.put("readingMessage", message);
         FacilioContext addEventContext = new FacilioContext();
