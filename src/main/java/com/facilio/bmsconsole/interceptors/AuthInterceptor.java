@@ -156,7 +156,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 					if(!AwsUtil.isProduction()) {
 						String currentSite = request.getHeader("X-current-site");
 						long currentSiteId = -1l;
-						if (currentSite != null && !currentSite.isEmpty())
+						if (currentSite != null && !currentSite.isEmpty() && !currentSite.equals("null"))
 							currentSiteId = Long.valueOf(currentSite);
 						
 						if (currentSiteId == -1l || (FacilioCookie.getUserCookie(request, "fc.timeZone")) == null)
