@@ -1,24 +1,20 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.context.ShiftContext;
+import com.facilio.bmsconsole.context.BreakContext;
 import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.constants.FacilioConstants;
 
-
-public class AddShiftCommand implements Command {
+public class GetAllBreaksCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		ShiftContext shift = (ShiftContext) context.get(FacilioConstants.ContextNames.SHIFT);
-		shift.setDefaultShift(false);
-		ShiftAPI.addShift(shift);
-		
-		
-//		ShiftAPI.scheduleJobs(days);
-		
+		List<BreakContext> breakList = ShiftAPI.getBreakList();
+		context.put(FacilioConstants.ContextNames.BREAK_LIST, breakList);
 		return false;
 	}
 

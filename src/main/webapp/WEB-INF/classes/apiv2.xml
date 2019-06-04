@@ -133,6 +133,51 @@
 		<action name="view"
 			class="com.facilio.bmsconsole.actions.StateFlowAction" method="viewStateTransition" />
 	</package>
+	
+	<package name="shift" namespace="/api/v2/shift" extends="v2Api">
+		<action name="add" 
+			class="com.facilio.bmsconsole.actions.ShiftAction" method="add" />
+		<action name="list" 
+			class="com.facilio.bmsconsole.actions.ShiftAction" method="all" />
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.ShiftAction" method="delete" />
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.ShiftAction" method="update" />
+			
+		<action name="shiftUserMapping"
+			class="com.facilio.bmsconsole.actions.ShiftAction" method="getShiftUserMapping" />
+		<action name="addShiftUserMapping"
+			class="com.facilio.bmsconsole.actions.ShiftAction" method="addShiftUserMapping" />
+		<action name="scheduleTesting"
+			class="com.facilio.bmsconsole.actions.ShiftAction" method="scheduleTesting" />
+	</package>
+	
+	<package name="shiftList" namespace="/api/v2/shift/view"
+		extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.ShiftAction"
+			method="shiftList">
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
+	
+	<package name="break" namespace="/api/v2/break" extends="v2Api">
+		<action name="addOrUpdate"
+			class="com.facilio.bmsconsole.actions.ShiftAction" method="addOrUpdateBreak" />
+		<action name="list"
+			class="com.facilio.bmsconsole.actions.ShiftAction" method="getAllBreak" />
+		<action name="get"
+			class="com.facilio.bmsconsole.actions.ShiftAction" method="getBreak" />
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.ShiftAction" method="deleteBreak" />
+	</package>
+	
+	<package name="breakList" namespace="/api/v2/break/view"
+		extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.ShiftAction"
+			method="breakList">
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
 
 	<package name="importTemplate" namespace="/api/v2/importTemplate"
 		extends="v2Api">
@@ -2352,7 +2397,34 @@
 		</action>
 	</package>
 	
+	<package name="attendanceTrasaction" namespace="/api/v2/attendance"
+		extends="v2Api">
+		<action name="add" class="com.facilio.bmsconsole.actions.AttendanceAction"
+			method="addAttendanceTransaction">
+		</action>
+	</package>
 	
-
+	<package name="attendanceListApiv2" namespace="/api/v2/attendance/view"
+		extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.AttendanceAction"
+			method="attendanceList">
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
+	
+	<package name="attendanceTransactionListApiv2" namespace="/api/v2/attendanceTransaction/view"
+		extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.AttendanceAction"
+			method="attendanceTransactionList">
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
+	
+	<package name="breakTrasaction" namespace="/api/v2/breakTransaction"
+		extends="v2Api">
+		<action name="add" class="com.facilio.bmsconsole.actions.BreakTransactionAction"
+			method="addBreakTransaction">
+		</action>
+	</package>
 	
 </struts>

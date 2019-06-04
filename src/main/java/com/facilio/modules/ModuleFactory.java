@@ -81,6 +81,8 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.LABOUR_CONTRACTS, getLabourContractModule());
 		moduleMap.put(FacilioConstants.ContextNames.INVENTORY_REQUEST, getInventoryRequestModule());
 		moduleMap.put(FacilioConstants.ContextNames.SHIPMENT, getShipmentModule());
+		moduleMap.put(FacilioConstants.ContextNames.ATTENDANCE, getAttendanceModule());
+		moduleMap.put(FacilioConstants.ContextNames.ATTENDANCE_TRANSACTIONS, getAttendanceTransactionModule());
 
 		return moduleMap;
 	}
@@ -773,6 +775,14 @@ public class ModuleFactory {
 		module.setName("shift");
 		module.setDisplayName("Shift");
 		module.setTableName("Shift");
+		return module;
+	}
+	
+	public static FacilioModule getBreakModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("break");
+		module.setDisplayName("Break");
+		module.setTableName("Break");
 		return module;
 	}
 
@@ -1541,6 +1551,14 @@ public class ModuleFactory {
 		return shiftUserRel;
 	}
 	
+	public static FacilioModule getShiftBreakRelModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("ShiftBreakRel");
+		module.setDisplayName("Shift Break Rel");
+		module.setTableName("Shift_Break_Rel");
+		return module;
+	}
+	
 	public static FacilioModule getCostsModule() {
 		FacilioModule costs = new FacilioModule();
 		costs.setName("cost");
@@ -2158,4 +2176,21 @@ public class ModuleFactory {
 		labourcontract.setTableName("Shipment");
 		return labourcontract;
 	}
+	
+	public static FacilioModule getAttendanceModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("attendance");
+		module.setDisplayName("Attendance");
+		module.setTableName("Attendance");
+		return module;
+	}
+	
+	public static FacilioModule getAttendanceTransactionModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("attendanceTransaction");
+		module.setDisplayName("Attendance Transaction");
+		module.setTableName("Attendance_Transactions");
+		return module;
+	}
+	
 }

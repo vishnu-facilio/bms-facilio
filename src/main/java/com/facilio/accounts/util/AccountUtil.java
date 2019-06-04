@@ -121,6 +121,7 @@ public class AccountUtil {
 		SPACE_ASSET (8),
 		WEATHER_INTEGRATION (16),
 		ANOMALY_DETECTOR (32),
+		PEOPLE (64),
 		SHIFT_HOURS (128),
 		SITE_SWITCH (256),
 		APPROVAL (1024),
@@ -134,7 +135,7 @@ public class AccountUtil {
 		NEW_LAYOUT (262144)
 		;
 		
-		// Use 64, 512 for next features
+		// Use 512 for next features
 		
 		private long license;
 

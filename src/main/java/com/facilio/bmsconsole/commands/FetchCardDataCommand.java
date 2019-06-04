@@ -210,10 +210,10 @@ public class FetchCardDataCommand implements Command {
 					long parentId = (long) paramsJson.get("parentId");
 					int dateOperator = Integer.parseInt(paramsJson.get("dateOperator").toString());
 					String dateValue = (String) paramsJson.get("dateValue");
-					Long entityId = (Long) paramsJson.get("entityId");
+					Long ruleId = (Long) paramsJson.get("ruleId");
 					
 					DateOperators operator = (DateOperators)Operator.getOperator(dateOperator);
-					result = getResourceAlarmBar(parentId, entityId, operator.getRange(dateValue));
+					result = getResourceAlarmBar(parentId, ruleId, operator.getRange(dateValue));
 					context.put(FacilioConstants.ContextNames.RESULT, result);
 					return false;
 				}
@@ -373,10 +373,11 @@ public class FetchCardDataCommand implements Command {
 		}
 		return false;
 	}
-	private Map<String,Object> getResourceAlarmBar(Long resourceId,Long entityId, DateRange dateRange) throws Exception {
+	private Map<String,Object> getResourceAlarmBar(Long resourceId,Long ruleId, DateRange dateRange) throws Exception {
 		
 		Map<String,Object> result = new HashMap<>();
-		List<ReadingAlarmContext> allAlarms = AlarmAPI.getReadingAlarms(Collections.singletonList(resourceId), entityId, -1, dateRange.getStartTime(), dateRange.getEndTime(), false);
+		List<Long> resourceIds = resourceId != null && resourceId != -1 ? Collections.singletonList(resourceId) : null;
+		List<ReadingAlarmContext> allAlarms = AlarmAPI.getReadingAlarms(resourceIds, ruleId, -1, dateRange.getStartTime(), dateRange.getEndTime(), false);
 		
 		Map<Long, ReadingAlarmContext> alarmMap = new HashMap<>();
 		

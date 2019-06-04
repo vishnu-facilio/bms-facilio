@@ -16,6 +16,8 @@ import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.AssetDepartmentContext;
 import com.facilio.bmsconsole.context.AssetTypeContext;
+import com.facilio.bmsconsole.context.AttendanceContext;
+import com.facilio.bmsconsole.context.AttendanceTransactionContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.ChillerCondenserPumpContext;
@@ -566,6 +568,7 @@ public class FacilioConstants {
 		
 		public static final String USERS = "users";
 		public static final String ORGUSERS = "orgusers";
+		public static final String ORG_USER_ID = "orgUserId";
 		
 		public static final String GROUPS = "groups";
 		
@@ -815,7 +818,9 @@ public class FacilioConstants {
 		public static final String BENCHMARK_DATE_VAL = "benchmarkDateVal";
 		public static final String SHIFT = "shift";
 		public static final String SHIFTS = "shifts";
+		public static final String SHIFT_USER_MAPPING = "shiftUserMapping";
 		public static final String ACTUAL_TIMINGS = "actualTimings";
+		public static final String SHIFT_ID = "shiftId";
 		
 		public static final String LAST_SYNC_TIME = "lastSyncTime";
 		public static final String CUSTOM_OBJECT = "customObject";
@@ -1039,10 +1044,19 @@ public class FacilioConstants {
 		public static final String UNIT_POINTS="unit";
 		public static final String DEMO_ROLLUP_EXECUTION_TIME="nextexecution";
 		public static final String DEMO_ROLLUP_JOB_ORG="rollup_job_org";
+		public static final String DATA_POINTS="data_points";
+		public static final String POINTS_DATA_RECORD="points_data_record";
+
+		public static final String DATE = "date";
 		
 		public static final String PM_PLANNER_SETTINGS="pm_planner_settings";
 
-		
+		public static final String ATTENDANCE = "attendance";
+		public static final String ATTENDANCE_TRANSACTIONS = "attendanceTransaction";
+		public static final String BREAK = "break";
+		public static final String BREAK_LIST = "break_list";
+		public static final String BREAK_TRANSACTION = "breakTransaction";
+
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
@@ -1156,6 +1170,8 @@ public class FacilioConstants {
 			classMap.put(INVENTORY_REQUEST, InventoryRequestContext.class);
 			classMap.put(INVENTORY_REQUEST_LINE_ITEMS, InventoryRequestLineItemContext.class);
 
+			classMap.put(ATTENDANCE, AttendanceContext.class);
+			classMap.put(ATTENDANCE_TRANSACTIONS, AttendanceTransactionContext.class);
 			return classMap;
 		}
 		

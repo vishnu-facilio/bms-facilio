@@ -2786,6 +2786,48 @@ public class TransactionChainFactory {
 		    c.addCommand(getReceiveShipmentInventoryChain());
 		    return c;
 		}
+
+
+		public static Chain addShiftUserMappingChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddShiftUserMappingCommand());
+			return c;
+		}
+
+		public static Chain getAddAttendanceTransactionChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForAttendanceTransaction());
+			c.addCommand(new AddAttendanceCommand());
+			c.addCommand(new GenericAddModuleDataCommand());
+			return c;
+		}
+		public static Chain markAbsentChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new GetUsersForShiftCommand());
+			c.addCommand(new MarkAsAbsentOrLeaveCommand());
+			return c;
+		}
+
+		public static Chain addOrUpdateBreakChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddOrUpdateBreakCommand());
+			return c;
+		}
+
+		public static Chain deleteBreakChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new DeleteBreakCommand());
+			return c;
+		}
+		
+		public static Chain getAddBreakTransactionChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForBreakTransaction());
+			c.addCommand(new AddBreakTransactionCommand());
+			c.addCommand(new GenericAddModuleDataCommand());
+			return c;
+		}
+
 }
 
 

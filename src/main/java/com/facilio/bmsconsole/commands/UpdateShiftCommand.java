@@ -24,29 +24,23 @@ public class UpdateShiftCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		ShiftContext shift = (ShiftContext) context.get(FacilioConstants.ContextNames.SHIFT);
-		long oldId = shift.getBusinessHoursId();
+//		long oldId = shift.getBusinessHoursId();
 		
-		BusinessHoursList businessHoursList = BusinessHoursAPI.getBusinessHours(oldId);
+//		BusinessHoursList businessHoursList = BusinessHoursAPI.getBusinessHours(oldId);
 		
-		ShiftAPI.scheduleOneTimeJob(shift, businessHoursList);
+//		ShiftAPI.scheduleOneTimeJob(shift, businessHoursList);
 		
-		ShiftAPI.deleteJobsForshifts(businessHoursList.stream().map(BusinessHourContext::getId).collect(Collectors.toList()));
+//		ShiftAPI.deleteJobsForshifts(businessHoursList.stream().map(BusinessHourContext::getId).collect(Collectors.toList()));
 		
-		long id = BusinessHoursAPI.addBusinessHours(shift.getDays());
-		shift.setBusinessHoursId(id);
+//		long id = BusinessHoursAPI.addBusinessHours(shift.getDays());
+//		shift.setBusinessHoursId(id);
 		
-		FacilioModule module = ModuleFactory.getShiftModule();
-		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
-				.fields(FieldFactory.getShiftField())
-				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getIdCondition(shift.getId(), module))
-				.andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getOrgId(), module));
+		ShiftAPI.updateShift(shift);
 		
-		Map<String, Object> prop = FieldUtil.getAsProperties(shift);
-		builder.update(prop);
+		
 
-		BusinessHoursAPI.deleteBusinessHours(oldId);
-		ShiftAPI.scheduleJobs(shift.getDays());
+//		BusinessHoursAPI.deleteBusinessHours(oldId);
+//		ShiftAPI.scheduleJobs(shift.getDays());
 		return false;
 	}
 
