@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.context.AssetTypeContext;
 import com.facilio.bmsconsole.context.AttendanceContext;
 import com.facilio.bmsconsole.context.AttendanceTransactionContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.BreakContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.ChillerCondenserPumpContext;
 import com.facilio.bmsconsole.context.ChillerContext;
@@ -69,6 +70,7 @@ import com.facilio.bmsconsole.context.ReceiptContext;
 import com.facilio.bmsconsole.context.ReceiptLineItemContext;
 import com.facilio.bmsconsole.context.ReceivableContext;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.ShiftContext;
 import com.facilio.bmsconsole.context.ShipmentContext;
 import com.facilio.bmsconsole.context.ShipmentLineItemContext;
 import com.facilio.bmsconsole.context.SiteContext;
@@ -1174,6 +1176,8 @@ public class FacilioConstants {
 
 			classMap.put(ATTENDANCE, AttendanceContext.class);
 			classMap.put(ATTENDANCE_TRANSACTIONS, AttendanceTransactionContext.class);
+			classMap.put(SHIFT, ShiftContext.class);
+			classMap.put(BREAK, BreakContext.class);
 			return classMap;
 		}
 		
