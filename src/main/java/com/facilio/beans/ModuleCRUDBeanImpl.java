@@ -1,5 +1,4 @@
 package com.facilio.beans;
-
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
 import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.accounts.util.AccountUtil;
@@ -687,7 +686,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	}
 
 	@Override
-	public Long addLog(Map<String, Object> logData) throws Exception{
+	public Long addLog(Map<String, Object> logData) throws Exception{ // done transaction
 		FacilioModule logModule = ModuleFactory.getAgentLogModule();
 		GenericInsertRecordBuilder genericInsertRecordBuilder = new GenericInsertRecordBuilder()
 															.table(AgentKeys.AGENT_LOG_TABLE)
@@ -696,7 +695,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	}
 
     @Override
-    public void updateAgentMetrics(Map<String,Object> metrics, Map<String, Object> criteria) throws Exception {
+    public int updateAgentMetrics(Map<String,Object> metrics, Map<String, Object> criteria) throws Exception { // done transaction
 		FacilioModule metricsmodule = ModuleFactory.getAgentMetricsModule();
 		GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder()
 																.table(AgentKeys.METRICS_TABLE)
@@ -705,16 +704,16 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 																.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(metricsmodule), criteria.get(AgentKeys.AGENT_ID).toString(),NumberOperators.EQUALS))
 																.andCondition(CriteriaAPI.getCondition(FieldFactory.getPublishTypeField(metricsmodule), criteria.get(EventUtil.DATA_TYPE).toString(),NumberOperators.EQUALS));
 
-                genericUpdateRecordBuilder.update(metrics);
+                return genericUpdateRecordBuilder.update(metrics);
 
 
     }
-    public void insertAgentMetrics(Map<String,Object> metrics)throws Exception{
+    public long insertAgentMetrics(Map<String,Object> metrics)throws Exception{ // done transaction
 		GenericInsertRecordBuilder genericInsertRecordBuilder = new GenericInsertRecordBuilder()
 				.table(AgentKeys.METRICS_TABLE)
 				.fields(FieldFactory.getAgentMetricsFields());
         try {
-            genericInsertRecordBuilder.insert( metrics);
+            return genericInsertRecordBuilder.insert( metrics);
         }catch (Exception e){
             if(e instanceof com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException){
                 LOGGER.info("Duplicate Metrics, insertion failed "+e.getMessage());
@@ -723,6 +722,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
                 LOGGER.info("Exception occurred ",e);
             }
         }
+        return -1L;
 
 	}
 
@@ -752,7 +752,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		return genericSelectRecordBuilder.get();
 	}*/
 
-	public Long addAgentMessage(Map<String,Object> map)throws Exception{
+	public Long addAgentMessage(Map<String,Object> map)throws Exception{ // transaction done
 		FacilioModule messageModule = ModuleFactory.getAgentMessageModule();
         try {
             GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
@@ -771,7 +771,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
        return 0L;
 	}
 
-	public Long updateAgentMessage(Map<String,Object> map) throws Exception{
+	public Long updateAgentMessage(Map<String,Object> map) throws Exception{ // transaction done
 		FacilioModule messageModule = ModuleFactory.getAgentMessageModule();
 		try{
 			GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
@@ -794,6 +794,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
         }
 		return 0L;
 	}
+
 	public List<Map<String,Object>> getRows(FacilioContext context) throws Exception{
 	    // always create an Empty List<Map<String,Object>> and return it instead of null;
         List<Map<String,Object>> rows = new ArrayList<>();

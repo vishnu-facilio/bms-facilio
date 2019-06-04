@@ -64,6 +64,7 @@ public class FacilioConstants {
         public static final String CRITERIA = "criteria";
         public static final String FIELDS = "fields";
         public static final String TO_UPDATE_MAP = "toUpdateMap";
+        public static final String TO_INSERT_MAP = "toInsertMap";
 
 		public static final String FACILIO_RECORD = "facilioRecord";
 		public static final String FACILIO_CONSUMER = "facilioConsumer";
