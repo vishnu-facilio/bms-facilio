@@ -2253,6 +2253,7 @@ public class WorkOrderAction extends FacilioAction {
 		addWorkOrder();
 		viewWorkOrder();
 		setResult(FacilioConstants.ContextNames.WORK_ORDER, workorder);
+		setResult(FacilioConstants.ContextNames.MODIFIED_TIME, workOrders.get(0).getModifiedTime());
 		return SUCCESS;
 	}
 	
@@ -2260,6 +2261,9 @@ public class WorkOrderAction extends FacilioAction {
 		updateWorkOrder();
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
 		setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
+		if (workOrders.size() == 1) {
+			setResult(FacilioConstants.ContextNames.MODIFIED_TIME, workOrders.get(0).getModifiedTime());
+		}
 		return SUCCESS;
 	}
 	
@@ -2267,6 +2271,9 @@ public class WorkOrderAction extends FacilioAction {
 		assignWorkOrder();
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
 		setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
+		if (workOrders.size() == 1) {
+			setResult(FacilioConstants.ContextNames.MODIFIED_TIME, workOrders.get(0).getModifiedTime());
+		}
 
 		return SUCCESS;
 	}
@@ -2435,6 +2442,9 @@ public class WorkOrderAction extends FacilioAction {
 		resolveWorkOrder();
 		setResult(FacilioConstants.ContextNames.RESULT, "success");
 		setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
+		if (workOrders.size() == 1) {
+			setResult(FacilioConstants.ContextNames.MODIFIED_TIME, workOrders.get(0).getModifiedTime());
+		}
 		return SUCCESS;
 	}
 	
@@ -2442,6 +2452,9 @@ public class WorkOrderAction extends FacilioAction {
 		closeWorkOrder();
 		setResult(FacilioConstants.ContextNames.RESULT, "success");
 		setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
+		if (workOrders.size() == 1) {
+			setResult(FacilioConstants.ContextNames.MODIFIED_TIME, workOrders.get(0).getModifiedTime());
+		}
 		return SUCCESS;
 	}
 
