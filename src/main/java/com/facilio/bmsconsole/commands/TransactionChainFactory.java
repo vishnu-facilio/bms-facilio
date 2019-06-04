@@ -5,9 +5,9 @@ import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.agent.ConfigureAgentCommand;
 import com.facilio.agent.ConfigureControllerCommand;
 import com.facilio.agent.DeleteAgentCommand;
+import com.facilio.agent.commands.UpdateAgentTableCommand;
 import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
-import com.facilio.bmsconsole.context.ShipmentLineItemContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 import org.apache.commons.chain.Chain;
@@ -891,6 +891,18 @@ public class TransactionChainFactory {
 			c.addCommand(new ConfigureAgentCommand());
 			return c;
 		}
+
+		public static Chain updateAgentTable(){
+		Chain c = getDefaultChain();
+		c.addCommand(new UpdateAgentTableCommand());
+		return c;
+		}
+
+		/*public static Chain updateAgent(){
+		Chain c = getDefaultChain();
+		c.addCommand(new UpdateAgentDetailsCommand());
+		return c;
+		}*/
 
 		public static Chain deleteAgent(){
 			Chain c = getDefaultChain();

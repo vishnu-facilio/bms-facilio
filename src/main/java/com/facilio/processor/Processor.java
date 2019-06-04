@@ -8,18 +8,16 @@ import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.agent.*;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.db.builder.GenericUpdateRecordBuilder;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.chain.FacilioContext;
 import com.facilio.devicepoints.DevicePointsUtil;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.kinesis.ErrorDataProducer;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.util.AckUtil;
+import org.apache.commons.chain.Chain;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -32,7 +30,6 @@ import java.nio.charset.CharsetDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 public class Processor implements IRecordProcessor {
@@ -206,14 +203,22 @@ public class Processor implements IRecordProcessor {
                         LOGGER.info("Duplicate message for device " + deviceId + " and type " + dataType);
                     }
                     if ( i == 0 ) {
-                        GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder().table(AgentKeys.AGENT_TABLE).fields(FieldFactory.getAgentDataFields())
+
+                        FacilioContext context = new FacilioContext();
+                        context.put(AgentKeys.NAME, agentName);
+                        Chain updateAgentTable = TransactionChainFactory.updateAgentTable();
+                        updateAgentTable.execute(context);
+
+
+
+                        /*GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder().table(AgentKeys.AGENT_TABLE).fields(FieldFactory.getAgentDataFields())
                                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentNameField(ModuleFactory.getAgentDataModule()),agentName,StringOperators.IS))
                                 .andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getAgentDataModule()));
                         Map<String,Object> toUpdate = new HashMap<>();
                         toUpdate.put(AgentKeys.CONNECTION_STATUS, Boolean.TRUE);
                         toUpdate.put(AgentKeys.STATE, 1);
                         toUpdate.put(AgentKeys.LAST_DATA_RECEIVED_TIME, lastMessageReceivedTime);
-                        genericUpdateRecordBuilder.update(toUpdate);
+                        genericUpdateRecordBuilder.update(toUpdate);*/
 
                     }
                     agentUtil.updateAgentMessage(recordId,MessageStatus.PROCESSED);
