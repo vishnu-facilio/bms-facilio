@@ -54,7 +54,7 @@ public class AddOrUpdateToolStockTransactionsCommand implements Command {
 					.beanClass(ToolContext.class).andCondition(CriteriaAPI.getIdCondition(toolIds, Toolmodule));
 
 			List<ToolContext> tools = toolselectBuilder.get();
-			ToolContext tool = (ToolContext) context.get(FacilioConstants.ContextNames.TOOL);
+			ToolContext tool = (ToolContext) context.get(FacilioConstants.ContextNames.RECORD);
 			// if (tools != null && !tools.isEmpty()) {
 			// tool = tools.get(0);
 			// }

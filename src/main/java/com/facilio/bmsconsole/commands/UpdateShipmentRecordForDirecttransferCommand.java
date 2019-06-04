@@ -11,6 +11,8 @@ import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.InventoryType;
 import com.facilio.bmsconsole.context.ShipmentContext;
 import com.facilio.bmsconsole.context.ShipmentLineItemContext;
+import com.facilio.bmsconsole.context.StoreRoomContext;
+import com.facilio.bmsconsole.util.StoreroomApi;
 import com.facilio.constants.FacilioConstants;
 
 public class UpdateShipmentRecordForDirecttransferCommand  implements Command{
@@ -30,6 +32,14 @@ public class UpdateShipmentRecordForDirecttransferCommand  implements Command{
 			if(shipment.getTransferredBy() == null) {
 				shipment.setTransferredBy(AccountUtil.getCurrentUser());
 			}
+			if(shipment.getTransferredBy() == null) {
+				StoreRoomContext fromStore = StoreroomApi.getStoreRoom(shipment.getFromStore().getId());
+				shipment.setTransferredBy(fromStore.getOwner() != null ? fromStore.getOwner() : AccountUtil.getCurrentUser());
+			}
+			if(shipment.getReceivedBy() == null) {
+				StoreRoomContext toStore = StoreroomApi.getStoreRoom(shipment.getToStore().getId());
+				shipment.setReceivedBy(toStore.getOwner() != null ? toStore.getOwner() : AccountUtil.getCurrentUser());
+		    }
 			updateLineItems(shipment);
 			
 			context.put(FacilioConstants.ContextNames.RECORD, shipment);
