@@ -2896,6 +2896,12 @@ public class TransactionChainFactory {
 			c.addCommand(new updateAssetDownTimeDetailsCommand());
 			return c;
 		}
+		
+		public static Chain getAttendanceTransitionState() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ShowStateForAttendanceCommand());
+			return c;
+		}
 
 }
 

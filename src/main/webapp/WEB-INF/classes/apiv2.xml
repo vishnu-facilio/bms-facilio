@@ -2414,6 +2414,9 @@
 		<action name="add" class="com.facilio.bmsconsole.actions.AttendanceAction"
 			method="addAttendanceTransaction">
 		</action>
+		<action name="getState" class="com.facilio.bmsconsole.actions.AttendanceAction"
+			method="showStateForAttendance">
+		</action>
 	</package>
 	
 	<package name="attendanceListApiv2" namespace="/api/v2/attendance/view"

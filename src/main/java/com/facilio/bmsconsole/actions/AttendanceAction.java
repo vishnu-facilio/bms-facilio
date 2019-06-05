@@ -11,6 +11,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AttendanceContext;
 import com.facilio.bmsconsole.context.AttendanceTransactionContext;
+import com.facilio.bmsconsole.context.AttendanceStateContext;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -189,6 +190,40 @@ public class AttendanceAction extends ModuleAction{
 			}
 			setResult(FacilioConstants.ContextNames.ATTENDANCE_TRANSACTIONS, attendanceTranactionList);
 		}
+		return SUCCESS;
+	}
+	
+	private long userId;
+	public long getUserId() {
+		return userId;
+	}
+	public void setUserId(long userId) {
+		this.userId = userId;
+	}
+	
+	private long time;
+	public long getTime() {
+		return time;
+	}
+	public void setTime(long time) {
+		this.time = time;
+	}
+	
+	private List<AttendanceStateContext> attendanceTransitions;
+	public List<AttendanceStateContext> getAttendanceTransitions() {
+		return attendanceTransitions;
+	}
+	public void setAttendanceTransitions(List<AttendanceStateContext> attendanceTransitions) {
+		this.attendanceTransitions = attendanceTransitions;
+	}
+	public String showStateForAttendance() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.USER_ID, getUserId());
+		context.put(FacilioConstants.ContextNames.TIMESTAMP, getTime());
+		Chain chain = TransactionChainFactory.getAttendanceTransitionState();
+		chain.execute(context);
+		attendanceTransitions = (List<AttendanceStateContext>) context.get(FacilioConstants.ContextNames.RECORD);
+		setResult(FacilioConstants.ContextNames.RECORD, attendanceTransitions);
 		return SUCCESS;
 	}
 	
