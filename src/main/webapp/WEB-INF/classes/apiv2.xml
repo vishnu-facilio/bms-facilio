@@ -2417,6 +2417,10 @@
 		<action name="getState" class="com.facilio.bmsconsole.actions.AttendanceAction"
 			method="showStateForAttendance">
 		</action>
+		<action name="*" class="com.facilio.bmsconsole.actions.AttendanceAction" 
+		method="getAttendanceDetails">
+			<param name="attendanceId">{1}</param>
+		</action>
 	</package>
 	
 	<package name="attendanceListApiv2" namespace="/api/v2/attendance/view"

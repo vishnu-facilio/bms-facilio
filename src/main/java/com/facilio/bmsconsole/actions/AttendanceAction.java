@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.context.AttendanceContext;
 import com.facilio.bmsconsole.context.AttendanceTransactionContext;
 import com.facilio.bmsconsole.context.AttendanceStateContext;
 import com.facilio.bmsconsole.context.ItemContext;
+import com.facilio.bmsconsole.context.ShipmentContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -227,4 +228,16 @@ public class AttendanceAction extends ModuleAction{
 		return SUCCESS;
 	}
 	
+	public String getAttendanceDetails() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ID, attendanceId);
+		
+		Chain chain = ReadOnlyChainFactory.getAttendanceDetailsChain();
+		chain.execute(context);
+		
+		AttendanceContext attendance = (AttendanceContext) context.get(FacilioConstants.ContextNames.RECORD);
+		setResult(FacilioConstants.ContextNames.ATTENDANCE, attendance);
+		
+		return SUCCESS;
+	}
 }

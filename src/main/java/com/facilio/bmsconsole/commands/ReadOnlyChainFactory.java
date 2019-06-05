@@ -1012,4 +1012,11 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new FetchShipmentDetailsCommand());
 		return c;
 	}
+	
+	public static Chain getAttendanceDetailsChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForAttendance());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		return c;
+	}
 }
