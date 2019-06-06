@@ -1,9 +1,9 @@
 package com.facilio.workflows.functions;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.modules.EnumField;
-import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.fields.EnumField;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.exceptions.FunctionParamException;
 import com.facilio.workflows.util.WorkflowUtil;

@@ -18,18 +18,26 @@ import com.amazonaws.services.rekognition.AmazonRekognition;
 import com.amazonaws.services.rekognition.AmazonRekognitionClientBuilder;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import com.amazonaws.services.secretsmanager.AWSSecretsManager;
+import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
+import com.amazonaws.services.secretsmanager.model.*;
+import com.amazonaws.services.secretsmanager.model.InvalidRequestException;
+import com.amazonaws.services.secretsmanager.model.ResourceNotFoundException;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
 import com.amazonaws.services.simpleemail.model.*;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentKeys;
+import com.facilio.bmsconsole.util.CommonAPI;
+import com.facilio.bmsconsole.util.CommonAPI.NotificationType;
+import com.facilio.db.builder.DBUtil;
+import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.email.EmailUtil;
-import com.facilio.sql.DBUtil;
-import com.facilio.transaction.FacilioConnectionPool;
-import com.facilio.util.FacilioUtil;
-import com.facilio.util.FacilioUtil.NotificationType;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -127,7 +135,9 @@ public class AwsUtil
 	private static String anomalyPredictAPIURL;
 
 	private static boolean sysLogEnabled;
-	public static Long getMessageReprocessInterval() {
+    private static HashSet<String> dbIdentifiers = new HashSet<>();
+
+    public static Long getMessageReprocessInterval() {
 			return messageReprocessInterval;
 	}
 	private static Long messageReprocessInterval;
@@ -176,6 +186,15 @@ public class AwsUtil
 						pdfjs = file.getParentFile().getParentFile().getAbsolutePath() + "/js";
 					}
 				}
+
+				String db = PROPERTIES.getProperty("db.identifiers");
+				if(db != null) {
+				    String[] dbNames = db.split(",");
+				    for(String dbName : dbNames) {
+				        String identifier = dbName.trim();
+				        dbIdentifiers.add(identifier);
+                    }
+                }
 			} catch (IOException e) {
 				LOGGER.info("Exception while trying to load property file " + AWS_PROPERTY_FILE);
 			}
@@ -365,23 +384,21 @@ public class AwsUtil
 		    }
 			
 		    CloseableHttpResponse response = client.execute(post);
-			LOGGER.info("\nSending 'POST' request to URL : " + url);
-			LOGGER.info("Post parameters : " + post.getEntity());
-			LOGGER.info("Response Code : " +  response.getStatusLine().getStatusCode());
+		    int status = response.getStatusLine().getStatusCode();
+		    if(status != 200) {
+				LOGGER.info("\nSending 'POST' request to URL : " + url);
+				LOGGER.info("Post parameters : " + post.getEntity());
+				LOGGER.info("Response Code : " + status);
+			}
 	 
 			BufferedReader rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 			String line = "";
-			while ((line = rd.readLine()) != null) 
-			{
+			while ((line = rd.readLine()) != null) {
 				result.append(line);
 			}
-    	}
-		catch (Exception e) 
-    	{
+    	} catch (Exception e) {
 			LOGGER.info("Executing doHttpPost ::::url:::" + url, e);
-		} 
-    	finally 
-    	{
+		} finally {
 			client.close();
 		}
     	return result.toString();
@@ -425,25 +442,29 @@ public class AwsUtil
 	private static void sendEmailViaAws(JSONObject mailJson) throws Exception  {
 		String toAddress = (String)mailJson.get("to");
 		boolean sendEmail = true;
+		HashSet<String> to = new HashSet<>();
 		if( ! AwsUtil.isProduction() ) {
 			if(toAddress != null) {
-				String to = "";
 				for(String address : toAddress.split(",")) {
-					if(address.contains("facilio.com")) {
-						to = address + ",";
+					if(address.contains("@facilio.com")) {
+						to.add(address);
 					}
 				}
-				if(to.length() == 0 ) {
+				if(to.size() == 0 ) {
 					sendEmail = false;
-				} else {
-					toAddress = to;
 				}
 			} else {
 				sendEmail = false;
 			}
+		} else {
+			for(String address : toAddress.split(",")) {
+				if(address!= null && address.contains("@")) {
+					to.add(address);
+				}
+			}
 		}
-		if(sendEmail) {
-			Destination destination = new Destination().withToAddresses(toAddress.split("\\s*,\\s*"));
+		if(sendEmail && to.size() > 0) {
+			Destination destination = new Destination().withToAddresses(to);
 			Content subjectContent = new Content().withData((String) mailJson.get("subject"));
 			Content bodyContent = new Content().withData((String) mailJson.get("message"));
 
@@ -475,15 +496,45 @@ public class AwsUtil
 			}
 		}
 	}
-	
-	private static void logEmail (JSONObject mailJson) throws Exception {
+
+    public static HashMap<String, String> getPassword(String secretKey) {
+
+		HashMap<String, String> secretMap = new HashMap<>();
+
+        AWSSecretsManager client  = AWSSecretsManagerClientBuilder.standard().withCredentials(getAWSCredentialsProvider()).withRegion(Regions.US_WEST_2).build();
+
+        GetSecretValueRequest getSecretValueRequest = new GetSecretValueRequest().withSecretId(secretKey);
+
+        GetSecretValueResult getSecretValueResult = null;
+
+        try {
+            getSecretValueResult = client.getSecretValue(getSecretValueRequest);
+        } catch (Exception e) {
+            LOGGER.info("Exception while getting secret ", e);
+        }
+        if(getSecretValueResult != null) {
+			String secretBinaryString = getSecretValueResult.getSecretString();
+			ObjectMapper objectMapper = new ObjectMapper();
+			try {
+				secretMap.putAll(objectMapper.readValue(secretBinaryString, HashMap.class));
+
+				String url = String.format("jdbc:mysql://%s:%s/bms", secretMap.get("host"), secretMap.get("port"));
+				secretMap.put("url", url);
+			} catch (IOException e) {
+				LOGGER.info("exception while reading value from secret manager ", e);
+			}
+		}
+        return secretMap;
+    }
+
+    private static void logEmail (JSONObject mailJson) throws Exception {
 		if (AccountUtil.getCurrentOrg() != null) {
 			String toAddress = (String)mailJson.get("to");
 			if (!"error+alert@facilio.com".equals(toAddress) && !"error@facilio.com".equals(toAddress)) {
 				toAddress = toAddress == null ? "" : toAddress;
 				JSONObject info = new JSONObject();
 				info.put("subject", mailJson.get("subject"));
-				FacilioUtil.addNotificationLogger(NotificationType.EMAIL, toAddress, info);
+				CommonAPI.addNotificationLogger(NotificationType.EMAIL, toAddress, info);
 			}
 		}
 	}
@@ -507,25 +558,26 @@ public class AwsUtil
 			return;
 		}
 		String toAddress = (String)mailJson.get("to");
+		HashSet<String> to = new HashSet<>();
 		boolean sendEmail = true;
-		if( ! isProduction()) {
+		if( ! AwsUtil.isProduction() ) {
 			if(toAddress != null) {
-				String to = "";
 				for(String address : toAddress.split(",")) {
-					if(address.contains("facilio.com")) {
-						to = address + ",";
+					if(address.contains("@facilio.com")) {
+						to.add(address);
 					}
-				}
-				if(to.length() == 0 ) {
-					sendEmail = false;
-				} else {
-					mailJson.put("to", to);
 				}
 			} else {
 				sendEmail = false;
 			}
+		} else {
+			for(String address : toAddress.split(",")) {
+				if(address != null && address.contains("@")) {
+					to.add(address);
+				}
+			}
 		}
-		if(sendEmail) {
+		if(sendEmail && to.size() > 0) {
 			try {
 				if (AwsUtil.isDevelopment()) {
 //					mailJson.put("subject", "Local - " + mailJson.get("subject"));
@@ -541,7 +593,7 @@ public class AwsUtil
 				AmazonSimpleEmailService client = AmazonSimpleEmailServiceClientBuilder.standard()
 						.withRegion(Regions.US_WEST_2).withCredentials(getAWSCredentialsProvider()).build();
 				client.sendRawEmail(request);
-				LOGGER.info("Email sent!");
+				// LOGGER.info("Email sent!");
 				
 				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 151) {
 					LOGGER.info("Email sent to "+toAddress+"\n"+mailJson);
@@ -853,11 +905,7 @@ public class AwsUtil
 	public static String getServerName() {
 		return getAppDomain();
 	}
-	
-	public static String getDB() {
-		return db;
-	}
-	
+
 	public static String getDBClass() {
 		return dbClass;
 	}
@@ -941,5 +989,9 @@ public class AwsUtil
 
     public static boolean isSysLogEnabled() {
 		return sysLogEnabled;
+    }
+
+    public static HashSet<String> getDBIdentifiers() {
+	    return dbIdentifiers;
     }
 }

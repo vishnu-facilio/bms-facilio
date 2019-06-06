@@ -14,7 +14,8 @@ unzip $APP_HOME/webapps/ROOT.war -d $APP_HOME/webapps/ROOT
 
 if [ "$DEPLOYMENT_GROUP_NAME" = "pre_production" ]; then
     echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/ubuntu/deployment.log
-    cp $UBUNTU_HOME/deployment-files/context-stage.xml $META_INF_DIR/context.xml
+    rm $META_INF_DIR/context.xml
+    cp $UBUNTU_HOME/deployment-files/web-stage.xml $BMS_DIR/WEB-INF/web.xml
     cp $UBUNTU_HOME/setenv.sh $APP_HOME/bin/setenv.sh
     cp $UBUNTU_HOME/deployment-files/awsprops-stage.properties $CONF_DIR/awsprops.properties
     cp $UBUNTU_HOME/deployment-files/log4j-stage.properties $CLASSES_DIR/log4j.properties

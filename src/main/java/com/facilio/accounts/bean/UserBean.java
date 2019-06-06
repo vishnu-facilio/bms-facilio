@@ -3,7 +3,7 @@ package com.facilio.accounts.bean;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
-import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.db.criteria.Criteria;
 
 import java.util.Collection;
 import java.util.List;

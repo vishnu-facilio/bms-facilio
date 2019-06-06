@@ -1,10 +1,10 @@
 package com.facilio.bmsconsole.view;
 
 import com.facilio.bmsconsole.context.ViewField;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 
 import java.util.*;
 
@@ -57,6 +57,11 @@ public class ColumnFactory {
 		columnMap.put("itemTransactions-default", getDefaultItemTransactionsColumns());
 		columnMap.put("purchasedItem-default", getDefaultPurchasedItemColumns());
 		columnMap.put("gatePass-default", getDefaultGatePassColumns());
+		columnMap.put("shipment-default", getDefaultShipmentColumns());
+		columnMap.put("attendance-default", getDefaultAttendanceColumns());
+		columnMap.put("attendanceTransaction-default", getDefaultAttendanceTransactionColumns());
+		columnMap.put("shift-default", getDefaultShiftColumns());
+		columnMap.put("break-default", getDefaultBreakColumns());
 		
 		// Default report columns 
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
@@ -349,12 +354,17 @@ public class ColumnFactory {
 		columns.add(new ViewField("unitcost", "Unit Cost"));
 		return columns;
 	}
+	
 	private static List<ViewField> getDefaultGatePassColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
+		columns.add(new ViewField("issuedTo", "Issued To"));
+		columns.add(new ViewField("issuedToPhoneNumber", "Phone Number"));
+		columns.add(new ViewField("fromStoreRoom", "From Storeroom"));
+		columns.add(new ViewField("toStoreRoom", "To Storeroom"));
 		columns.add(new ViewField("issuedTime", "Issued Time"));
 		columns.add(new ViewField("returnTime", "Return Time"));
-		columns.add(new ViewField("issuedTo", "Issued To"));
+		columns.add(new ViewField("status", "Status"));
 		columns.add(new ViewField("issuedBy", "Issued By"));
 		columns.add(new ViewField("isReturnable", "Is Returnable"));
 		columns.add(new ViewField("gatePassType", "Gate Pass Type"));
@@ -416,6 +426,58 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		columns.add(new ViewField("serialNumber", "Serial Number"));
 	
+		return columns;
+	}
+	
+	private static List<ViewField> getDefaultShipmentColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("fromStore", "From Store"));
+		columns.add(new ViewField("toStore", "To Store"));
+		columns.add(new ViewField("transferredBy", "Transferred By"));
+		columns.add(new ViewField("receivedBy", "Received By"));
+		columns.add(new ViewField("status", "Status"));
+		return columns;
+	}
+	private static List<ViewField> getDefaultAttendanceColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("user", "User"));
+		columns.add(new ViewField("checkInTime", "Check-in Time"));
+		columns.add(new ViewField("checkOutTime", "Check-out Time"));
+		columns.add(new ViewField("workingHours", "Working Hours"));
+		columns.add(new ViewField("day", "Day"));
+		columns.add(new ViewField("status", "Status"));
+		return columns;
+	}
+	
+	private static List<ViewField> getDefaultAttendanceTransactionColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("attendance", "Attendance"));
+		columns.add(new ViewField("transactionType", "Transaction Type"));
+		columns.add(new ViewField("sourceType", "Source Type"));
+		columns.add(new ViewField("location", "Location"));
+		columns.add(new ViewField("ipAddress", "IP Address"));
+		columns.add(new ViewField("terminal", "Terminal"));
+		columns.add(new ViewField("transactionTime", "Transaction Time"));
+		return columns;
+	}
+	
+	private static List<ViewField> getDefaultShiftColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("startTime", "Start Time"));
+		columns.add(new ViewField("endTime", "End Time"));
+		columns.add(new ViewField("defaultShift", "Is Default"));
+		return columns;
+	}
+	
+	private static List<ViewField> getDefaultBreakColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("breakTime", "Break Time"));
+		columns.add(new ViewField("breakType", "Break Type"));
 		return columns;
 	}
 }

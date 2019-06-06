@@ -1,21 +1,20 @@
 package com.facilio.bmsconsole.templates;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 import com.facilio.bmsconsole.context.PMIncludeExcludeResourceContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
-import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.modules.FieldUtil;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class TaskTemplate extends Template {
 	
@@ -39,7 +38,16 @@ public class TaskTemplate extends Template {
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
+
+	private boolean isPreRequest = false;
+
+	public boolean isPreRequest() {
+		return isPreRequest;
+	}
+
+	public void setPreRequest(boolean isPreRequest) {
+		this.isPreRequest = isPreRequest;
+	}
 	private TaskStatus status;
 	public TaskStatus getStatusEnum() {
 		return status;

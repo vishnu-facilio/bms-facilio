@@ -7,8 +7,23 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>bms Maven Webapp</name>
 	<url>http://maven.apache.org</url>
+	<repositories>
+		<repository>
+			<id>facilio-framework-s3-release-repo</id>
+			<url>s3://repo.facilio/facilio-framework/release</url>
+		</repository>
+		<repository>
+			<id>facilio-framework-s3-snapshot-repo</id>
+			<url>s3://repo.facilio/facilio-framework/snapshot</url>
+		</repository>
+	</repositories>
 	
 	<dependencies>
+		<dependency>
+			<groupId>com.facilio.framework</groupId>
+			<artifactId>facilio-framework</artifactId>
+			<version>1.0.12</version>
+		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
@@ -65,16 +80,10 @@
 		<dependency>
 			<groupId>com.zaxxer</groupId>
 			<artifactId>HikariCP</artifactId>
-			<version>2.7.8</version>
+			<version>3.3.1</version>
 			<scope>compile</scope>
 		</dependency>
 
-
-		<dependency>
-			<groupId>com.amazonaws</groupId>
-			<artifactId>aws-java-sdk-rds</artifactId>
-			<version>1.11.123</version>
-		</dependency>
 		<dependency>
 			<groupId>com.amazonaws</groupId>
 			<artifactId>aws-iot-device-sdk-java</artifactId>
@@ -90,11 +99,6 @@
 			<artifactId>aws-java-sdk-dynamodb</artifactId>
 			<version>1.11.136</version>
 		</dependency>
-		<dependency>
-			<groupId>com.amazonaws</groupId>
-			<artifactId>aws-java-sdk-cognitoidp</artifactId>
-			<version>1.11.136</version>
-		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-rekognition -->
 		<dependency>
 			<groupId>com.amazonaws</groupId>
@@ -106,12 +110,6 @@
 			<groupId>com.amazonaws</groupId>
 			<artifactId>aws-java-sdk-core</artifactId>
 			<version>1.11.303</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.amazonaws</groupId>
-			<artifactId>aws-java-sdk-cognitoidentity</artifactId>
-			<version>1.11.136</version>
 		</dependency>
 
 		<!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-ses -->
@@ -146,7 +144,14 @@
 			<version>1.11.400</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-sqs -->
+        <!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-secretsmanager -->
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>aws-java-sdk-secretsmanager</artifactId>
+            <version>1.11.316</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-sqs -->
 		<dependency>
 			<groupId>com.amazonaws</groupId>
 			<artifactId>aws-java-sdk-sqs</artifactId>
@@ -320,13 +325,6 @@
 			<version>2.9.3</version>
 		</dependency>
 
-		<!-- https://mvnrepository.com/artifact/javax.transaction/jta -->
-		<dependency>
-			<groupId>javax.transaction</groupId>
-			<artifactId>jta</artifactId>
-			<version>1.1</version>
-		</dependency>
-
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
@@ -406,17 +404,23 @@
             <version>1.54</version>
         </dependency>
        <!-- https://mvnrepository.com/artifact/com.googlecode.libphonenumber/libphonenumber -->
-<dependency>
-    <groupId>com.googlecode.libphonenumber</groupId>
-    <artifactId>libphonenumber</artifactId>
-    <version>3.5</version>
-</dependency>
-<!-- https://mvnrepository.com/artifact/org.antlr/antlr4-runtime -->
-<dependency>
-    <groupId>org.antlr</groupId>
-    <artifactId>antlr4-runtime</artifactId>
-    <version>4.7.2</version>
-</dependency>
+		<dependency>
+			<groupId>com.googlecode.libphonenumber</groupId>
+			<artifactId>libphonenumber</artifactId>
+			<version>3.5</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.antlr/antlr4-runtime -->
+		<dependency>
+			<groupId>org.antlr</groupId>
+			<artifactId>antlr4-runtime</artifactId>
+			<version>4.7.2</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/javax.transaction/jta -->
+		<dependency>
+			<groupId>javax.transaction</groupId>
+			<artifactId>jta</artifactId>
+			<version>1.1</version>
+		</dependency>
     
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-text -->
 		<dependency>
@@ -428,9 +432,9 @@
 	<build>
 		<extensions>
 			<extension>
-				<groupId>org.springframework.build</groupId>
-				<artifactId>aws-maven</artifactId>
-				<version>5.0.0.RELEASE</version>
+				<groupId>com.gkatzioura.maven.cloud</groupId>
+				<artifactId>s3-storage-wagon</artifactId>
+				<version>1.8</version>
 			</extension>
 		</extensions>
 		<finalName>ROOT</finalName>

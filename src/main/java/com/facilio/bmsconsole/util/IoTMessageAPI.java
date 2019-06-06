@@ -1,24 +1,6 @@
 package com.facilio.bmsconsole.util;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
-import com.amazonaws.services.iot.client.AWSIotConnectionStatus;
-import com.amazonaws.services.iot.client.AWSIotException;
-import com.amazonaws.services.iot.client.AWSIotMessage;
-import com.amazonaws.services.iot.client.AWSIotMqttClient;
-import com.amazonaws.services.iot.client.AWSIotQos;
+import com.amazonaws.services.iot.client.*;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentKeys;
 import com.facilio.agent.AgentKeys.AckMessageType;
@@ -28,24 +10,29 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.PublishData;
 import com.facilio.bmsconsole.context.PublishMessage;
-import com.facilio.bmsconsole.criteria.CommonOperators;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.*;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.serializable.SerializableConsumer;
-import com.facilio.sql.GenericInsertRecordBuilder;
-import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.wms.message.WmsPublishResponse;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.sql.SQLException;
+import java.util.*;
 
 public class IoTMessageAPI {
 	private static final Logger LOGGER = LogManager.getLogger(IoTMessageAPI.class.getName());
@@ -230,8 +217,9 @@ public class IoTMessageAPI {
 														;
 		Map<String, Object> prop = builder.fetchFirst();
 		if (prop != null && !prop.isEmpty()) {
+			PublishMessage message = FieldUtil.getAsBeanFromMap(prop, PublishMessage.class);
 			List<FacilioField> selectFields = FieldFactory.getCountField(module);
-			long parentId = (long) prop.get("parentId");
+			long parentId = message.getParentId();
 			builder = new GenericSelectRecordBuilder()
 					.table(module.getTableName())
 					.select(selectFields)
@@ -253,9 +241,32 @@ public class IoTMessageAPI {
 						;
 				prop =  builder.fetchFirst();
 				PublishData data = FieldUtil.getAsBeanFromMap(prop, PublishData.class);
+				
+				try {
+					if (data.getCommandEnum() != null && data.getCommandEnum() == IotCommandType.SET) {
+						publishGetData(data.getControllerId(), message);
+					}
+				}
+				catch(Exception e) {
+					LOGGER.error("Exception while publishing get ", e);
+				}
+				
 				sendPublishNotification(data, null);
 			}
 		}
+	}
+	
+	private static void publishGetData(long controllerId, PublishMessage message) throws Exception {
+		JSONObject msg = message.getData();
+		JSONArray points = (JSONArray) msg.get("points");
+		JSONObject pointInstance = (JSONObject) points.get(0);
+		
+		Map<String, Object> instance = new HashMap<>();
+		instance.put("instanceType", pointInstance.get("instanceType"));
+		instance.put("objectInstanceNumber", pointInstance.get("objectInstanceNumber"));
+		instance.put("controllerId", controllerId);
+		
+		IoTMessageAPI.publishIotMessage(Collections.singletonList(instance), IotCommandType.GET);
 	}
 	
 	private static void addPublishData (PublishData data) throws Exception {
@@ -351,6 +362,7 @@ public class IoTMessageAPI {
 			if(mqttClient.getConnectionStatus() == AWSIotConnectionStatus.CONNECTED) {
 				mqttClient.publish(new AWSIotMessage(topic, AWSIotQos.QOS0, object.toJSONString()));
 				if(isStage) {
+					LOGGER.info("debugging log -object from publishIotMessage--"+object.toJSONString());
 					AgentUtil.putLog(object, AccountUtil.getCurrentOrg().getOrgId(), Long.parseLong(object.get(AgentKeys.AGENT_ID).toString()), true);
 				}
 			}

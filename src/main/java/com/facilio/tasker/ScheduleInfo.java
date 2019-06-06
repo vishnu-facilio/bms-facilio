@@ -1,7 +1,8 @@
 package com.facilio.tasker;
 
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.util.DateTimeUtil;
+import com.facilio.time.DateRange;
+import com.facilio.time.DateTimeUtil;
+import com.facilio.util.FacilioUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
@@ -296,7 +297,7 @@ public class ScheduleInfo implements Serializable {
 			}
 		}
 		if(incrementMonth) {
-			zdt = zdt.with(LocalTime.of(0, 0)).plusMonths(frequency);
+			zdt = zdt.with(LocalTime.of(0, 0)).plusMonths(frequency).with(ChronoField.DAY_OF_WEEK, 1);
 			newZdt = getMinWeek(zdt);
 		}
 		return newZdt;
@@ -468,11 +469,11 @@ public class ScheduleInfo implements Serializable {
 								builder.append(", ");
 							}
 						}
-						builder.append(CommonCommandUtil.getNumberWithSuffix(values.get(itr)));
+						builder.append(FacilioUtil.getNumberWithSuffix(values.get(itr)));
 					}
 				}
 				else {
-					builder.append(CommonCommandUtil.getNumberWithSuffix(zdt.getDayOfMonth()));
+					builder.append(FacilioUtil.getNumberWithSuffix(zdt.getDayOfMonth()));
 				}
 				return builder.toString();
 			case MONTHLY_WEEK:
@@ -501,7 +502,7 @@ public class ScheduleInfo implements Serializable {
 							.append(" years");
 				}
 				builder.append(" on ")
-						.append(CommonCommandUtil.getNumberWithSuffix(zdt.getDayOfMonth()))
+						.append(FacilioUtil.getNumberWithSuffix(zdt.getDayOfMonth()))
 						.append(" of ");
 				if(values != null && !values.isEmpty()) {
 					for(int itr = 0; itr<values.size(); itr++) {
@@ -530,7 +531,7 @@ public class ScheduleInfo implements Serializable {
 			case 2:
 			case 3:
 			case 4:
-				return CommonCommandUtil.getNumberWithSuffix(weekFrequency);
+				return FacilioUtil.getNumberWithSuffix(weekFrequency);
 			case 5:
 				return "Last";
 		}
@@ -552,5 +553,19 @@ public class ScheduleInfo implements Serializable {
 				builder.append(DayOfWeek.of(values.get(itr)).name());
 			}
 		}
+	}
+
+	public List<DateRange> getTimeIntervals(long startTime, long endTime) {
+		List<DateRange> intervals = new ArrayList<>();
+		startTime = startTime/1000;
+		endTime = endTime/1000;
+
+		long currentEndTime = nextExecutionTime(startTime);
+		while (currentEndTime <= endTime) {
+			intervals.add(new DateRange(startTime*1000, (currentEndTime*1000)-1));
+			startTime = currentEndTime;
+			currentEndTime = nextExecutionTime(startTime);
+		}
+		return intervals;
 	}
 }

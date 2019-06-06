@@ -208,6 +208,18 @@ public class WorkflowV2BaseListener implements WorkflowV2Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterArithmeticFirstPrecedenceExpr(WorkflowV2Parser.ArithmeticFirstPrecedenceExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitArithmeticFirstPrecedenceExpr(WorkflowV2Parser.ArithmeticFirstPrecedenceExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterUnaryMinusExpr(WorkflowV2Parser.UnaryMinusExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -227,6 +239,18 @@ public class WorkflowV2BaseListener implements WorkflowV2Listener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitStandAloneStatements(WorkflowV2Parser.StandAloneStatementsContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterArithmeticSecondPrecedenceExpr(WorkflowV2Parser.ArithmeticSecondPrecedenceExprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitArithmeticSecondPrecedenceExpr(WorkflowV2Parser.ArithmeticSecondPrecedenceExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -263,18 +287,6 @@ public class WorkflowV2BaseListener implements WorkflowV2Listener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitCriteriaInitialization(WorkflowV2Parser.CriteriaInitializationContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterArithmeticExpr(WorkflowV2Parser.ArithmeticExprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitArithmeticExpr(WorkflowV2Parser.ArithmeticExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -436,6 +448,30 @@ public class WorkflowV2BaseListener implements WorkflowV2Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterListSymbolOperation(WorkflowV2Parser.ListSymbolOperationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitListSymbolOperation(WorkflowV2Parser.ListSymbolOperationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterMapSymbolOperation(WorkflowV2Parser.MapSymbolOperationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitMapSymbolOperation(WorkflowV2Parser.MapSymbolOperationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterListInitialisation(WorkflowV2Parser.ListInitialisationContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -443,18 +479,6 @@ public class WorkflowV2BaseListener implements WorkflowV2Listener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitListInitialisation(WorkflowV2Parser.ListInitialisationContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterListFetch(WorkflowV2Parser.ListFetchContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitListFetch(WorkflowV2Parser.ListFetchContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

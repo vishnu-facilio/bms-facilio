@@ -4,14 +4,14 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.ReportFieldContext;
-import com.facilio.modules.FacilioStatus;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Condition;
 import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.modules.*;
+import com.facilio.modules.fields.FacilioField;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -19,11 +19,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+;
+
 public class CustomReportCultfit1 implements CustomReport {
 
 	@Override
 	public JSONArray getData(ReportContext report, FacilioModule module, JSONArray dateFilter,
-			JSONObject userFilterValues, long baseLineId, long criteriaId) throws Exception {
+                             JSONObject userFilterValues, long baseLineId, long criteriaId) throws Exception {
 		
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

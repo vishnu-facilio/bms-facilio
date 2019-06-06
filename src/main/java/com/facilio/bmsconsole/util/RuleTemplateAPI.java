@@ -1,29 +1,28 @@
 package com.facilio.bmsconsole.util;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AlarmSeverityContext;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.workflow.rule.*;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ThresholdType;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.FacilioUtil;
+import com.facilio.workflows.context.WorkflowContext;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.AlarmSeverityContext;
-import com.facilio.bmsconsole.context.AssetCategoryContext;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.workflow.rule.*;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.*;
-import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericInsertRecordBuilder;
-import com.facilio.util.FacilioUtil;
-import com.facilio.workflows.context.WorkflowContext;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class RuleTemplateAPI {
 	

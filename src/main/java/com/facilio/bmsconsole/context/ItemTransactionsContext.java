@@ -1,10 +1,10 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.accounts.dto.User;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 
 import java.util.List;
 
@@ -210,7 +210,18 @@ public class ItemTransactionsContext extends ModuleBaseWithCustomFields {
 	public void setAssetIds(List<Long> assetIds) {
 		this.assetIds = assetIds;
 	}
-	
+
+	private long shipment;
+
+	public long getShipment() {
+		return shipment;
+	}
+
+	public void setShipment(long shipment) {
+		this.shipment = shipment;
+	}
+
+
 	private InventoryRequestLineItemContext requestedLineItem;
 	public InventoryRequestLineItemContext getRequestedLineItem() {
 		return requestedLineItem;
@@ -218,5 +229,5 @@ public class ItemTransactionsContext extends ModuleBaseWithCustomFields {
 	public void setRequestedLineItem(InventoryRequestLineItemContext requestedLineItem) {
 		this.requestedLineItem = requestedLineItem;
 	}
-	
+
 }

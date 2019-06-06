@@ -6,16 +6,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.modules.FacilioStatus;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.tenant.TenantContext;
-import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FacilioStatus;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.time.DateTimeUtil;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
 public class TicketContext extends ModuleBaseWithCustomFields {
@@ -165,7 +165,7 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 	}
 	public String getDueDateString() {
 		if(dueDate != -1) {
-			return DateTimeUtil.getZonedDateTime(dueDate).format(FacilioConstants.READABLE_DATE_FORMAT);
+			return DateTimeUtil.getZonedDateTime(dueDate).format(DateTimeUtil.READABLE_DATE_FORMAT);
 		}
 		return null;
 	}
@@ -359,6 +359,14 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 	}
 	public void setOfflineWorkEnd(long offlineWorkEnd) {
 		this.offlineWorkEnd = offlineWorkEnd;
+	}
+	
+	private long offlineModifiedTime = -1;
+	public long getOfflineModifiedTime() {
+		return offlineModifiedTime;
+	}
+	public void setOfflineModifiedTime(long offlineModifiedTime) {
+		this.offlineModifiedTime = offlineModifiedTime;
 	}
 
 	private ResourceContext resource;

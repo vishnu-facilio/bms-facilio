@@ -1,11 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.bmsconsole.context.SpaceContext;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
@@ -52,7 +52,7 @@ public class GetAllSpaceCommand implements Command{
 		if (categoryId != null && categoryId > 0) {
 			builder.andCustomWhere("Space.SPACE_CATEGORY_ID = ?", categoryId);
 		}
-		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(moduleName);
+		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(moduleName);
 		if(scopeCriteria != null)
 		{
 			builder.andCriteria(scopeCriteria);

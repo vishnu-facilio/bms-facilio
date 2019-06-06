@@ -1,19 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import com.facilio.modules.FacilioStatus;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
@@ -22,23 +8,35 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
 import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.*;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.apache.log4j.LogManager;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class UpdateTaskCommand implements Command {
 	
@@ -85,7 +83,11 @@ public class UpdateTaskCommand implements Command {
 				}
 			
 			Long lastSyncTime = (Long) context.get(FacilioConstants.ContextNames.LAST_SYNC_TIME);
-			if (lastSyncTime != null && oldTasks.get(0).getModifiedTime() > lastSyncTime ) {
+			TaskContext oldTaskForSync = oldTasks.get(0);
+			if (lastSyncTime != null && oldTaskForSync.getModifiedTime() > lastSyncTime ) {
+				throw new RuntimeException("The task was modified after the last sync");
+			}
+			if (task.getSyncTime() != -1 && oldTaskForSync.getModifiedTime() > task.getSyncTime() ) {
 				throw new RuntimeException("The task was modified after the last sync");
 			}
 			
@@ -140,7 +142,12 @@ public class UpdateTaskCommand implements Command {
 			idCondition.setOperator(NumberOperators.EQUALS);
 			idCondition.setValue(ids);
 			
-			task.setModifiedTime(System.currentTimeMillis());
+			if (task.getOfflineModifiedTime() != -1) {
+				task.setModifiedTime(task.getOfflineModifiedTime());
+			}
+			else {
+				task.setModifiedTime(System.currentTimeMillis());
+			}
 			
 			UpdateRecordBuilder<TaskContext> updateBuilder = new UpdateRecordBuilder<TaskContext>()
 																		.moduleName(moduleName)
@@ -149,6 +156,9 @@ public class UpdateTaskCommand implements Command {
 																		.andCondition(idCondition);
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, updateBuilder.update(task));
 			context.put(FacilioConstants.TicketActivity.OLD_TICKETS, oldTasks);
+			if (task.isPreRequest()) {
+				WorkOrderAPI.updatePreRequestStatus(oldTasks.get(0).getParentTicketId());
+			}
 		}
 		return false;
 	}
@@ -208,6 +218,12 @@ public class UpdateTaskCommand implements Command {
 						FacilioStatus workInProgressStatus = TicketAPI.getStatus("Work in Progress");
 						if (ticket.getAssignedTo() == null) {
 							ticket.setAssignedTo(AccountUtil.getCurrentUser());
+							UpdateRecordBuilder<TicketContext> updateBuilder = new UpdateRecordBuilder<TicketContext>()
+									.module(woModule)
+									.fields(woFields)
+									.andCondition(CriteriaAPI.getIdCondition(task.getParentTicketId(), woModule));
+
+							updateBuilder.update(ticket);
 						}
 						StateFlowRulesAPI.updateState(ticket, woModule, workInProgressStatus, false, context);
 					}

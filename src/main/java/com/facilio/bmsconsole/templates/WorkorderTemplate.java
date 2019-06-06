@@ -1,20 +1,19 @@
 package com.facilio.bmsconsole.templates;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.modules.FieldUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.TaskContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.lang.reflect.InvocationTargetException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class WorkorderTemplate extends Template {
 	
@@ -286,7 +285,16 @@ public class WorkorderTemplate extends Template {
 			additionInfo.putAll(prop);
 		}
 	}
-	
+
+	private Map<String, List<TaskContext>> preRequests;
+
+	public Map<String, List<TaskContext>> getPreRequests() {
+		return preRequests;
+	}
+
+	public void setPreRequests(Map<String, List<TaskContext>> preRequests) {
+		this.preRequests = preRequests;
+	}	
 	private Map<String, List<TaskContext>> tasks;
 	public Map<String, List<TaskContext>> getTasks() {
 		return tasks;
@@ -294,7 +302,17 @@ public class WorkorderTemplate extends Template {
 	public void setTasks(Map<String, List<TaskContext>> tasks) {
 		this.tasks = tasks;
 	}
-	
+
+	@JsonIgnore
+	private List<TaskTemplate> preRequestTemplates;
+
+	public List<TaskTemplate> getPreRequestTemplates() {
+		return preRequestTemplates;
+	}
+
+	public void setPreRequestTemplates(List<TaskTemplate> preRequestTemplates) {
+		this.preRequestTemplates = preRequestTemplates;
+	}
 	@JsonIgnore
 	private List<TaskTemplate> taskTemplates;
 	public List<TaskTemplate> getTaskTemplates() {
@@ -303,7 +321,17 @@ public class WorkorderTemplate extends Template {
 	public void setTaskTemplates(List<TaskTemplate> taskTemplates) {
 		this.taskTemplates = taskTemplates;
 	}
-	
+
+	@JsonIgnore
+	private List<TaskSectionTemplate> preRequestSectionTemplates;
+
+	public List<TaskSectionTemplate> getPreRequestSectionTemplates() {
+		return preRequestSectionTemplates;
+	}
+
+	public void setPreRequestSectionTemplates(List<TaskSectionTemplate> preRequestSectionTemplates) {
+		this.preRequestSectionTemplates = preRequestSectionTemplates;
+	}
 	@JsonIgnore
 	private List<TaskSectionTemplate> sectionTemplates;
 	public List<TaskSectionTemplate> getSectionTemplates() {

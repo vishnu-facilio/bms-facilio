@@ -14,6 +14,8 @@ public class AddRotatingItemToolCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		AssetContext asset = (AssetContext) context.get(FacilioConstants.ContextNames.RECORD);
+		context.put(FacilioConstants.ContextNames.PURCHASED_TOOL, null);
+
 		if (asset != null) {
 			context.put(FacilioConstants.ContextNames.ROTATING_ASSET, asset);
 			context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, false);

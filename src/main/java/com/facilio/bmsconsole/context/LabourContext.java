@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.accounts.dto.User;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 
 import java.util.Collections;
 import java.util.HashMap;

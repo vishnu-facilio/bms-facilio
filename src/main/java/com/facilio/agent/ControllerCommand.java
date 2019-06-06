@@ -17,7 +17,8 @@ public enum ControllerCommand
     reconfigure("reconfigure",7),
     discoverPoints("discoverPoints",8),
     ping("ping",9),
-    pong("pong",10);
+    pong("pong",10),
+    connect("connect",11);
 
     private String command;
     private int value;

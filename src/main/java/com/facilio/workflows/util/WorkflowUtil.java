@@ -1,23 +1,26 @@
 package com.facilio.workflows.util;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.BaseLineContext;
-import com.facilio.bmsconsole.context.BaseLineContext.AdjustType;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
-import com.facilio.bmsconsole.criteria.*;
-import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.BaseLineAPI;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericDeleteRecordBuilder;
-import com.facilio.sql.GenericInsertRecordBuilder;
-import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.modules.*;
+import com.facilio.modules.BaseLineContext.AdjustType;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.conditions.context.ElseContext;
 import com.facilio.workflows.conditions.context.ElseIfContext;
 import com.facilio.workflows.conditions.context.IfContext;
 import com.facilio.workflows.context.*;
+import com.facilio.workflows.context.WorkflowContext.WorkflowUIMode;
 import com.facilio.workflows.functions.*;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -26,7 +29,6 @@ import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.LogManager;
-import org.json.simple.JSONObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -43,6 +45,8 @@ import java.util.*;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+;
 
 public class WorkflowUtil {
 	
@@ -236,7 +240,15 @@ public class WorkflowUtil {
 		return getExpressionResultMap(workflowContext,paramMap);
 	}
 	
-	
+	public static Object getWorkflowExpressionResult(String workflowString,Map<String,Object> paramMap,WorkflowContext.WorkflowUIMode uiMode) throws Exception {
+		if(uiMode == WorkflowUIMode.NEW_WORKFLOW) {
+			WorkflowContext workflow = new WorkflowContext();
+			workflow.setWorkflowUIMode(uiMode);
+			workflow.setWorkflowV2String(workflowString);
+			return getWorkflowResult(workflow,paramMap, null, false, false,false);
+		}
+		return getWorkflowResult(new WorkflowContext(workflowString),paramMap, null, false, false,false);
+	}
 	public static Object getWorkflowExpressionResult(String workflowString,Map<String,Object> paramMap) throws Exception {
 		return getWorkflowResult(new WorkflowContext(workflowString),paramMap, null, false, false,false);
 	}
@@ -268,16 +280,27 @@ public class WorkflowUtil {
 	}
 	
 	private static Object getWorkflowResult(WorkflowContext workflowContext,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked, boolean isVariableMapNeeded) throws Exception {
+
 		if(workflowContext.getWorkflowUIMode() != WorkflowContext.WorkflowUIMode.NEW_WORKFLOW.getValue()) {
 			workflowContext = getWorkflowContextFromString(workflowContext.getWorkflowString(),workflowContext);
+			List<ParameterContext> parameterContexts = validateAndGetParameters(workflowContext,paramMap);
+			workflowContext.setParameters(parameterContexts);
+			
 		}
+		else {
+			workflowContext.visitFunctionHeader();
+			List<Object> params = new ArrayList<>();
+			for(ParameterContext parameterContext : workflowContext.getParameters()) {
+				params.add(paramMap.get(parameterContext.getName()));
+			}
+			workflowContext.setParams(params);
+		}
+		
 		workflowContext.setCachedRDM(rdmCache);
 		workflowContext.setIgnoreMarkedReadings(ignoreMarked);
-		List<ParameterContext> parameterContexts = validateAndGetParameters(workflowContext,paramMap);
 		
 		paramMap = workflowContext.getVariableResultMap();
 		
-		workflowContext.setParameters(parameterContexts);
 		workflowContext.setIgnoreNullParams(ignoreNullExpressions);
 		
 		Object result = workflowContext.executeWorkflow();
@@ -382,24 +405,26 @@ public class WorkflowUtil {
 
 		
 		WorkflowContext workflow = new WorkflowContext();
-		if(workflowContext.getWorkflowString() == null) {
-			workflow.setWorkflowString(getXmlStringFromWorkflow(workflowContext));
+		
+		if(workflowContext.getWorkflowUIMode() == WorkflowContext.WorkflowUIMode.NEW_WORKFLOW.getValue()) {
+			workflow.setWorkflowV2String(workflowContext.getWorkflowV2String());
 		}
 		else {
-			workflow.setWorkflowString(workflowContext.getWorkflowString());
+			if(workflowContext.getWorkflowString() == null) {
+				workflow.setWorkflowString(getXmlStringFromWorkflow(workflowContext));
+			}
+			else {
+				workflow.setWorkflowString(workflowContext.getWorkflowString());
+			}
+			
+			getWorkflowContextFromString(workflow.getWorkflowString(),workflow);
+			
+			validateWorkflow(workflow);
 		}
-		
-		getWorkflowContextFromString(workflow.getWorkflowString(),workflow);
-		
-		validateWorkflow(workflow);
-		
-		BeanFactory.lookup("ModuleBean");
 		
 		workflow.setWorkflowUIMode(workflowContext.getWorkflowUIMode());
 		
 		workflow.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-		
-		LOGGER.fine("ADDING WORKFLOW STRING--- "+workflowContext.getWorkflowString());
 		
 		workflowContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		
@@ -410,24 +435,29 @@ public class WorkflowUtil {
 		Map<String, Object> props = FieldUtil.getAsProperties(workflow);
 		insertBuilder.addRecord(props);
 		insertBuilder.save();
-
+		
 		workflowContext.setId((Long) props.get("id"));
-		insertBuilder = new GenericInsertRecordBuilder()
-				.table(ModuleFactory.getWorkflowFieldModule().getTableName())
-				.fields(FieldFactory.getWorkflowFieldsFields());
 		
-		workflowContext = WorkflowUtil.getWorkflowContext(workflowContext.getId(), true);
-		
-		List<WorkflowFieldContext> workflowFields = getWorkflowField(workflowContext);
-		
-		if (workflowFields != null && !workflowFields.isEmpty()) {
-			for(WorkflowFieldContext workflowField :workflowFields) {
-				props = FieldUtil.getAsProperties(workflowField);
-				insertBuilder.addRecord(props);
+		if(workflowContext.getWorkflowUIMode() != WorkflowContext.WorkflowUIMode.NEW_WORKFLOW.getValue()) {
+			
+			insertBuilder = new GenericInsertRecordBuilder()
+					.table(ModuleFactory.getWorkflowFieldModule().getTableName())
+					.fields(FieldFactory.getWorkflowFieldsFields());
+			
+			workflowContext = WorkflowUtil.getWorkflowContext(workflowContext.getId(), true);
+			
+			List<WorkflowFieldContext> workflowFields = getWorkflowField(workflowContext);
+			
+			if (workflowFields != null && !workflowFields.isEmpty()) {
+				for(WorkflowFieldContext workflowField :workflowFields) {
+					props = FieldUtil.getAsProperties(workflowField);
+					insertBuilder.addRecord(props);
+				}
 			}
+
+			insertBuilder.save();
 		}
 
-		insertBuilder.save();
 		return workflowContext.getId();
 	}
 	
@@ -588,7 +618,9 @@ public class WorkflowUtil {
 	
 	private static WorkflowContext getWorkflowFromProp(Map<String, Object> prop, boolean isWithExpParsed) throws Exception {
 		WorkflowContext workflow = FieldUtil.getAsBeanFromMap(prop, WorkflowContext.class);
-		workflow = getWorkflowContextFromString(workflow.getWorkflowString(),workflow);
+		if(workflow.getWorkflowUIMode() != WorkflowUIMode.NEW_WORKFLOW.getValue()) {
+			workflow = getWorkflowContextFromString(workflow.getWorkflowString(),workflow);
+		}
 		
 		if(isWithExpParsed) {
 			parseExpression(workflow);
@@ -1129,7 +1161,7 @@ public class WorkflowUtil {
 			else {
 				field = modBean.getField(fieldName, moduleName);
 				if(FacilioUtil.isNumeric(operatorString)) {
-					operator = Operator.OPERATOR_MAP.get(Integer.parseInt(operatorString));
+					operator = Operator.getOperator(Integer.parseInt(operatorString));
 				}
 				else {
 					operator = field.getDataTypeEnum().getOperator(operatorString);

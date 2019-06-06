@@ -1,17 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.sql.GenericInsertRecordBuilder;
 
 public class AddSitesForStoreRoomCommand implements Command {
 

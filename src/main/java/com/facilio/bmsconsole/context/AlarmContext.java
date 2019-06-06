@@ -2,9 +2,9 @@ package com.facilio.bmsconsole.context;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.aws.util.AwsUtil;
-import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.context.EventContext;
+import com.facilio.time.DateTimeUtil;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;

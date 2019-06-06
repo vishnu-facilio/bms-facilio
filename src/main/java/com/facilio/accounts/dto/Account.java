@@ -1,13 +1,11 @@
 package com.facilio.accounts.dto;
 
-import java.io.Serializable;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.struts2.ServletActionContext;
-
 import com.facilio.screen.context.RemoteScreenContext;
 import com.opensymphony.xwork2.ActionContext;
+import org.apache.struts2.ServletActionContext;
+
+import javax.servlet.http.HttpServletRequest;
+import java.io.Serializable;
 
 public class Account implements Serializable {
 	
@@ -39,7 +37,7 @@ public class Account implements Serializable {
 	private long redisDeleteTime = 0L;
 
 	private RemoteScreenContext remoteScreen;
-	
+
 	public Account(Organization org, User user) {
 		this.org = org;
 		this.user = user;
@@ -105,7 +103,7 @@ public class Account implements Serializable {
 	public RemoteScreenContext getRemoteScreen() {
 		return this.remoteScreen;
 	}
-	
+
 	public void setRemoteScreen(RemoteScreenContext remoteScreen) {
 		this.remoteScreen = remoteScreen;
 	}

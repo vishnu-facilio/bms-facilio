@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +24,7 @@ public class FormLayout {
 		requesterEmail.setName("email");
 		requesterEmail.setDisplayName("Requester Email");
 		requesterEmail.setDisplayType(FacilioField.FieldDisplayType.EMAIL);
-		requesterEmail.setDataType(com.facilio.bmsconsole.modules.FieldType.STRING);
+		requesterEmail.setDataType(FieldType.STRING);
 		requesterEmail.setModule(ModuleFactory.getRequesterModule());
 		requesterEmail.setDefault(true);
 		second.addField(requesterEmail);

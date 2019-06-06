@@ -1,36 +1,31 @@
 package com.facilio.workflows.context;
 
-import java.time.ZonedDateTime;
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.PermissionUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.util.CommonAPI;
+import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.FacilioModulePredicate;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.*;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.time.DateTimeUtil;
+import com.facilio.workflows.util.WorkflowUtil;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import com.facilio.accounts.dto.User;
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ReadingDataMeta;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.FacilioModulePredicate;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.AggregateOperator;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.util.DateTimeUtil;
-import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
-import com.facilio.bmsconsole.util.ReadingsAPI;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
-import com.facilio.util.FacilioUtil;
-import com.facilio.workflows.util.WorkflowUtil;
 
 public class ExpressionContext implements WorkflowExpression {
 	
@@ -302,7 +297,7 @@ public class ExpressionContext implements WorkflowExpression {
 				User user = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
 				AccountUtil.getCurrentAccount().setUser(user);
 			}
-			Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(module.getName());
+			Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(module.getName());
 			if (scopeCriteria != null) {
 				selectBuilder.andCriteria(scopeCriteria);
 			}
@@ -373,7 +368,7 @@ public class ExpressionContext implements WorkflowExpression {
 							if(readingDataMeta == null) {
 								throw new Exception("readingDataMeta is null for FieldName - "+fieldName +" moduleName - "+moduleName+" parentId - "+parentIdString);
 							}
-							long actualLastRecordedTime = FacilioUtil.getActualLastRecordedTime(module);
+							long actualLastRecordedTime = CommonAPI.getActualLastRecordedTime(module);
 							if(actualLastRecordedTime > 0) {
 								if(readingDataMeta.getTtime() >= actualLastRecordedTime) {
 									exprResult = readingDataMeta.getValue();

@@ -1,24 +1,38 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.modules.*;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.InventoryRequestLineItemContext;
+import com.facilio.bmsconsole.context.PurchasedToolContext;
+import com.facilio.bmsconsole.context.StoreRoomContext;
+import com.facilio.bmsconsole.context.ToolContext;
+import com.facilio.bmsconsole.context.ToolTypesContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.context.WorkorderToolsContext;
 import com.facilio.bmsconsole.util.InventoryRequestAPI;
-import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.bmsconsole.util.ToolsApi;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.InsertRecordBuilder;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.UpdateRecordBuilder;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 
 public class AddOrUpdateWorkorderToolsCommand implements Command {
 
@@ -39,9 +53,11 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 		List<WorkorderToolsContext> workorderToolslist = new ArrayList<>();
 		List<WorkorderToolsContext> toolsToBeAdded = new ArrayList<>();
 		long toolTypesId = -1;
-		if (workorderTools != null) {
+		if (CollectionUtils.isNotEmpty(workorderTools)) {
 			long parentId = workorderTools.get(0).getParentId();
+			
 			for (WorkorderToolsContext workorderTool : workorderTools) {
+				long parentTransactionId = workorderTool.getParentTransactionId();
 				WorkOrderContext workorder = getWorkorder(parentId);
 				ToolContext tool = getStockedTools(workorderTool.getTool().getId());
 				toolTypesId = tool.getToolType().getId();
@@ -52,6 +68,12 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 						throw new IllegalArgumentException("Please check the quantity approved/issued in the request");
 					}
 				}
+				else if(workorderTool.getParentTransactionId() > 0) {
+					if(!InventoryRequestAPI.checkQuantityForWoTool(workorderTool.getParentTransactionId(), workorderTool.getQuantity())){
+						throw new IllegalArgumentException("Please check the quantity issued");
+					}
+				}
+				
 				if (workorderTool.getId() > 0) {
 					SelectRecordsBuilder<WorkorderToolsContext> selectBuilder = new SelectRecordsBuilder<WorkorderToolsContext>()
 							.select(workorderToolsFields).table(workorderToolsModule.getTableName())
@@ -71,7 +93,7 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 									approvalState = ApprovalState.APPROVED;
 							}
 							wTool = setWorkorderItemObj(null, workorderTool.getQuantity(), tool, parentId,
-									workorder, workorderTool, approvalState, null, workorderTool.getRequestedLineItem());
+									workorder, workorderTool, approvalState, null, workorderTool.getRequestedLineItem(), parentTransactionId);
 							// update
 							wTool.setId(workorderTool.getId());
 							workorderToolslist.add(wTool);
@@ -79,7 +101,7 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 						}
 					}
 				} else {
-					if (workorderTool.getRequestedLineItem() == null && tool.getCurrentQuantity() < workorderTool.getQuantity()) {
+                    if (workorderTool.getRequestedLineItem() == null && workorderTool.getParentTransactionId() <= 0 && tool.getQuantity() < workorderTool.getQuantity()) {
 						throw new IllegalArgumentException("Insufficient quantity in inventory!");
 					} else {
 						ApprovalState approvalState = ApprovalState.YET_TO_BE_REQUESTED;
@@ -91,13 +113,14 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 							List<AssetContext> assets = getAssetsFromId(assetIds);
 							if (assets != null) {
 								for (AssetContext asset : assets) {
-									if(workorderTool.getRequestedLineItem() == null && asset.isUsed()) {
+									if (workorderTool.getRequestedLineItem() == null && workorderTool.getParentTransactionId() <= 0 && asset.isUsed()) {
 										throw new IllegalArgumentException("Insufficient quantity in inventory!");
 									}
 									WorkorderToolsContext woTool = new WorkorderToolsContext();
 									woTool = setWorkorderItemObj(null, 1, tool, parentId, workorder,
-											workorderTool, approvalState, asset, workorderTool.getRequestedLineItem());
+											workorderTool, approvalState, asset, workorderTool.getRequestedLineItem(), parentTransactionId);
 									updatePurchasedTool(asset);
+									asset.setIsUsed(true);
 									workorderToolslist.add(woTool);
 									toolsToBeAdded.add(woTool);
 								}
@@ -105,7 +128,7 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 						} else {
 							WorkorderToolsContext woTool = new WorkorderToolsContext();
 							woTool = setWorkorderItemObj(null, workorderTool.getQuantity(), tool, parentId,
-									workorder, workorderTool, approvalState, null, workorderTool.getRequestedLineItem());
+									workorder, workorderTool, approvalState, null, workorderTool.getRequestedLineItem(), parentTransactionId);
 							workorderToolslist.add(woTool);
 							toolsToBeAdded.add(woTool);
 						}
@@ -133,7 +156,7 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 
 	private WorkorderToolsContext setWorkorderItemObj(PurchasedToolContext purchasedtool, double quantity,
 			ToolContext tool, long parentId, WorkOrderContext workorder, WorkorderToolsContext workorderTools,
-			ApprovalState approvalState, AssetContext asset, InventoryRequestLineItemContext lineItem) throws Exception{
+			ApprovalState approvalState, AssetContext asset, InventoryRequestLineItemContext lineItem, long parentTransactionId) throws Exception{
 		WorkorderToolsContext woTool = new WorkorderToolsContext();
 		woTool.setIssueTime(workorderTools.getIssueTime());
 		woTool.setReturnTime(workorderTools.getReturnTime());
@@ -190,6 +213,11 @@ public class AddOrUpdateWorkorderToolsCommand implements Command {
 				woTool.setIssuedTo(workorder.getAssignedTo());
 			}
 		}
+		
+		if(parentTransactionId != -1) {
+			woTool.setParentTransactionId(parentTransactionId);
+		}
+
 		return woTool;
 	}
 

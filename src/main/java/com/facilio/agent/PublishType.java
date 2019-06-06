@@ -1,5 +1,8 @@
 package com.facilio.agent;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * This enum is to map PublishType with its integer number.
  * Use this enum to handle publish-types in database.
@@ -27,6 +30,14 @@ public enum PublishType {
 
     public int getKey() {
         return key;
+    }
+
+    public static Map<Integer, PublishType> initTypeMap() {
+        Map<Integer, PublishType> typeMap = new HashMap<>();
+        for(PublishType type : values()) {
+            typeMap.put(type.getKey(), type);
+        }
+        return typeMap;
     }
 
 }

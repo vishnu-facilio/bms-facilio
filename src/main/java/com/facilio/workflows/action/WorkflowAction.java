@@ -5,7 +5,10 @@ import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.functions.FacilioSystemFunctionNameSpace;
 import com.facilio.workflows.functions.FacilioWorkflowFunctionInterface;
 import com.facilio.workflows.util.WorkflowUtil;
+import com.facilio.workflowv2.util.WorkflowV2Util;
+
 import org.apache.log4j.LogManager;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -24,6 +27,25 @@ public class WorkflowAction extends FacilioAction {
 	
 	List<FacilioSystemFunctionNameSpace> namespaces;
 	
+	int defaultWorkflowId = -1;
+	List<Object> paramList;
+	
+	public List<Object> getParamList() {
+		return paramList;
+	}
+
+	public void setParamList(List<Object> paramList) {
+		this.paramList = paramList;
+	}
+
+	public int getDefaultWorkflowId() {
+		return defaultWorkflowId;
+	}
+
+	public void setDefaultWorkflowId(int defaultWorkflowId) {
+		this.defaultWorkflowId = defaultWorkflowId;
+	}
+
 	public List<FacilioSystemFunctionNameSpace> getNamespaces() {
 		return namespaces;
 	}
@@ -105,7 +127,16 @@ public class WorkflowAction extends FacilioAction {
 	}
 
 	String workflowString;
+	String workflowV2String;
 	
+	public String getWorkflowV2String() {
+		return workflowV2String;
+	}
+
+	public void setWorkflowV2String(String workflowV2String) {
+		this.workflowV2String = workflowV2String;
+	}
+
 	int workflowUIMode;
 	
 	public int getWorkflowUIMode() {
@@ -139,6 +170,18 @@ public class WorkflowAction extends FacilioAction {
 	public void setWorkflowString(String workflowString) {
 		this.workflowString = workflowString;
 	}
+	
+	Object workflowResult;
+	
+
+	public Object getWorkflowResult() {
+		return workflowResult;
+	}
+
+	public void setWorkflowResult(Object workflowResult) {
+		this.workflowResult = workflowResult;
+	}
+
 	Map<String, Object> resultMap;
 
 	public Map<String, Object> getResultMap() {
@@ -167,9 +210,10 @@ public class WorkflowAction extends FacilioAction {
 	    if(workflowId != null) {
 	    	resultMap = WorkflowUtil.getExpressionResultMap(workflowId, params);
 	    }
-	    else if(workflowString != null) {
+	    else if(workflowString != null || workflowV2String != null) {
 	    	WorkflowContext wfContext = new WorkflowContext();
 	    	wfContext.setWorkflowString(workflowString);
+	    	wfContext.setWorkflowV2String(workflowV2String);
 	    	wfContext.setWorkflowUIMode(workflowUIMode);
 	    	wfContext.setDebugMode(true);
 	    	logResult = WorkflowUtil.getWorkflowExpressionResult(wfContext, params).toString();
@@ -178,4 +222,10 @@ public class WorkflowAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String getDefaultWorkflowResult() throws Exception {
+		if(defaultWorkflowId > -1) {
+			workflowResult = WorkflowV2Util.getDefaultWorkflowResult(defaultWorkflowId, paramList);
+		}
+		return SUCCESS;
+	}
 }

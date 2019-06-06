@@ -186,9 +186,9 @@
 		<action name="list"  class="com.facilio.bmsconsole.actions.ControllerAction" method="getAgentDetails">
 		</action>
 
-		<action name="delete"  class="com.facilio.bmsconsole.actions.ControllerAction" method="deleteAgent">
+		<!--<action name="delete"  class="com.facilio.bmsconsole.actions.ControllerAction" method="deleteAgent">
 		</action>
-
+			-->
 		<action name="edit"  class="com.facilio.bmsconsole.actions.ControllerAction" method="editAgent">
 		</action>
 
@@ -198,8 +198,9 @@
 		<action name="logCount"  class="com.facilio.bmsconsole.actions.ControllerAction" method="getLogCount">
 		</action>
 
-		<action name="metrics"  class="com.facilio.bmsconsole.actions.ControllerAction" method="getAgentMetrics">
+		<!--<action name="metrics"  class="com.facilio.bmsconsole.actions.ControllerAction" method="getMetrics">
 		</action>
+		-->
 
 	</package>
 

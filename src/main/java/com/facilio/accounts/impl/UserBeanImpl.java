@@ -19,22 +19,30 @@ import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.context.ShiftUserRelContext;
-import com.facilio.bmsconsole.criteria.*;
-import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.EncryptionUtil;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.db.transaction.FacilioConnectionPool;
+import com.facilio.db.transaction.FacilioTransaction;
+import com.facilio.db.transaction.FacilioTransactionManager;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.LRUCache;
 import com.facilio.fw.auth.CognitoUtil;
-import com.facilio.sql.GenericDeleteRecordBuilder;
-import com.facilio.sql.GenericInsertRecordBuilder;
-import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.sql.GenericUpdateRecordBuilder;
-import com.facilio.transaction.FacilioConnectionPool;
+import com.facilio.modules.*;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -43,11 +51,15 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import javax.transaction.Transaction;
+import javax.transaction.TransactionManager;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.*;
+
+;
 
 public class UserBeanImpl implements UserBean {
 
@@ -1750,46 +1762,76 @@ public class UserBeanImpl implements UserBean {
 	@Override
 	public long startUserSession(long uid, String email, String token, String ipAddress, String userAgent, String userType) throws Exception {
 
-		List<FacilioField> fields = AccountConstants.getUserSessionFields();
+		TransactionManager transactionManager = null;
+		try {
+			transactionManager = FacilioTransactionManager.INSTANCE.getTransactionManager();
 
-		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-				.table(AccountConstants.getUserSessionModule().getTableName())
-				.fields(fields);
+			Transaction transaction = transactionManager.getTransaction();
+			if(transaction == null) {
+				transactionManager.begin();
+			}
+			List<FacilioField> fields = AccountConstants.getUserSessionFields();
 
-		Map<String, Object> props = new HashMap<>();
-		props.put("uid", uid);
-		props.put("sessionType", AccountConstants.SessionType.USER_LOGIN_SESSION.getValue());
-		props.put("token", token);
-		props.put("startTime", System.currentTimeMillis());
-		props.put("isActive", true);
-		props.put("ipAddress", ipAddress);
-		props.put("userAgent", userAgent);
-		props.put("userType", userType);
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+					.table(AccountConstants.getUserSessionModule().getTableName())
+					.fields(fields);
 
-		insertBuilder.addRecord(props);
-		insertBuilder.save();
-		long sessionId = (Long) props.get("id");
-		return sessionId;
+			Map<String, Object> props = new HashMap<>();
+			props.put("uid", uid);
+			props.put("sessionType", AccountConstants.SessionType.USER_LOGIN_SESSION.getValue());
+			props.put("token", token);
+			props.put("startTime", System.currentTimeMillis());
+			props.put("isActive", true);
+			props.put("ipAddress", ipAddress);
+			props.put("userAgent", userAgent);
+			props.put("userType", userType);
+
+			insertBuilder.addRecord(props);
+			insertBuilder.save();
+			transactionManager.commit();
+			long sessionId = (Long) props.get("id");
+			return sessionId;
+		} catch (Exception e) {
+			if(transactionManager != null) {
+				transactionManager.rollback();
+			}
+			log.info("exception while adding user session transaction ", e);
+		}
+		return -1L;
 	}
 
 	@Override
 	public boolean endUserSession(long uid, String email, String token) throws Exception {
 
-		List<FacilioField> fields = AccountConstants.getUserSessionFields();
+		TransactionManager transactionManager = null;
+		try {
+			transactionManager = FacilioTransactionManager.INSTANCE.getTransactionManager();
+			Transaction transaction = transactionManager.getTransaction();
+			if(transaction == null) {
+				transactionManager.begin();
+			}
+			List<FacilioField> fields = AccountConstants.getUserSessionFields();
 
-		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(AccountConstants.getUserSessionModule().getTableName())
-				.fields(fields)
-				.andCustomWhere("USERID = ? AND TOKEN = ?", uid, token);
+			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+					.table(AccountConstants.getUserSessionModule().getTableName())
+					.fields(fields)
+					.andCustomWhere("USERID = ? AND TOKEN = ?", uid, token);
 
-		Map<String, Object> props = new HashMap<>();
-		props.put("endTime", System.currentTimeMillis());
-		props.put("isActive", false);
+			Map<String, Object> props = new HashMap<>();
+			props.put("endTime", System.currentTimeMillis());
+			props.put("isActive", false);
 
-		int updatedRows = updateBuilder.update(props);
-		if (updatedRows > 0) {
-			LRUCache.getUserSessionCache().remove(email);
-			return true;
+			int updatedRows = updateBuilder.update(props);
+			if (updatedRows > 0) {
+				LRUCache.getUserSessionCache().remove(email);
+				return true;
+			}
+			transactionManager.commit();
+		} catch (Exception e) {
+			if(transactionManager != null) {
+				transactionManager.rollback();
+			}
+			log.info("exception while adding ending user session ", e);
 		}
 		return false;
 	}

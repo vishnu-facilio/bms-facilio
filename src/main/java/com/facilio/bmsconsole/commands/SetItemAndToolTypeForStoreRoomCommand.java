@@ -4,11 +4,12 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.ToolContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.*;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.*;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -16,13 +17,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+;
+
 public class SetItemAndToolTypeForStoreRoomCommand implements Command{
 
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		long storeRoomId = (long) context.get(FacilioConstants.ContextNames.STORE_ROOM);
+		Long storeRoomId = (Long) context.get(FacilioConstants.ContextNames.STORE_ROOM);
 		
 		FacilioModule itemModule = modBean.getModule(FacilioConstants.ContextNames.ITEM);
 		List<FacilioField> itemFields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);

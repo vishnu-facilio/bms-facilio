@@ -1,14 +1,5 @@
 package com.facilio.devicepoints;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.util.ControllerAPI;
@@ -16,6 +7,14 @@ import com.facilio.bmsconsole.util.IoTMessageAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.timeseries.TimeSeriesAPI;
 import com.facilio.util.FacilioUtil;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * AgentProcessor is a dedicated Processor for processing payloads with PUBLISH_TYPE set to 'DevicePoints'.
@@ -23,7 +22,7 @@ import com.facilio.util.FacilioUtil;
 public  class DevicePointsUtil {
     private static final Logger LOGGER = LogManager.getLogger(DevicePointsUtil.class.getName());
 
-    public  void processDevicePoints(JSONObject payLoad, long orgId, HashMap deviceMap, Long agentId) throws Exception {
+    public  void processDevicePoints(JSONObject payLoad, long orgId, Long agentId) throws Exception {
         LOGGER.info("in DevicePointsUtil.ProcessDevicePoints");
         long instanceNumber = (Long)payLoad.get(DevicePointsKeys.INSTANCE_NUMBER);
         String destinationAddress = "";
@@ -71,13 +70,11 @@ public  class DevicePointsUtil {
             if(controllerSettingsId > -1) {
                 JSONArray points = (JSONArray)payLoad.get(DevicePointsKeys.POINTS);
                 LOGGER.info("Device Points : "+points);
-
-			int count;
-
-			TimeSeriesAPI.addPointsInstances(points, controllerSettingsId);
-
-			count = TimeSeriesAPI.addUnmodeledInstances(points, controllerSettingsId);
-
+                
+                int count;
+                 TimeSeriesAPI.addPointsInstances(points, controllerSettingsId);
+                count = TimeSeriesAPI.addUnmodeledInstances(points, controllerSettingsId);
+                
                 JSONObject info = new JSONObject();
                 info.put("controllerId", controllerSettingsId);
                 info.put("publishType", "devicePoints");

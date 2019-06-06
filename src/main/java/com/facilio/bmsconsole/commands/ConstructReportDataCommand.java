@@ -1,13 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.modules.AggregateOperator.DateAggregateOperator;
-import com.facilio.bmsconsole.modules.AggregateOperator.NumberAggregateOperator;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.*;
+import com.facilio.modules.AggregateOperator.DateAggregateOperator;
+import com.facilio.modules.AggregateOperator.NumberAggregateOperator;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.report.context.*;
 import com.facilio.report.util.ReportUtil;
 import org.apache.commons.chain.Command;

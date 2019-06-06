@@ -1,21 +1,37 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ToolContext;
-import com.facilio.bmsconsole.context.ToolTransactionContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.criteria.PickListOperators;
-import com.facilio.bmsconsole.modules.*;
-import com.facilio.bmsconsole.util.TransactionState;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericSelectRecordBuilder;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.*;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.ToolContext;
+import com.facilio.bmsconsole.context.ToolTransactionContext;
+import com.facilio.bmsconsole.util.TransactionState;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.UpdateRecordBuilder;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
+
+;
 
 public class ToolQuantityRollUpCommand implements Command {
 
@@ -23,15 +39,16 @@ public class ToolQuantityRollUpCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<? extends ToolTransactionContext> toolTransactions = (List<ToolTransactionContext>) context
 				.get(FacilioConstants.ContextNames.RECORD_LIST);
+		
+		List<Long> toolIds = (List<Long>) context
+				.get(FacilioConstants.ContextNames.TOOL_IDS);
+		
 		if (toolTransactions != null && !toolTransactions.isEmpty()) {
 			// temp check, to be changed
 			if (toolTransactions.get(0) instanceof ToolTransactionContext) {
-				FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TOOL);
-				List<FacilioField> toolFields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
-
+				
 				Set<Long> uniqueToolIds = new HashSet<Long>();
 				int totalQuantityConsumed = 0;
 
@@ -43,37 +60,65 @@ public class ToolQuantityRollUpCommand implements Command {
 
 				// List<Long> toolIds = (List<Long>)
 				// context.get(FacilioConstants.ContextNames.TOOL_IDS);
-				long toolTypeId = -1;
-				List<Long> toolTypesIds = new ArrayList<>();
-				if (uniqueToolIds != null && !uniqueToolIds.isEmpty()) {
-					for (long stId : uniqueToolIds) {
-						SelectRecordsBuilder<ToolContext> selectBuilder = new SelectRecordsBuilder<ToolContext>()
-								.select(toolFields).table(module.getTableName()).moduleName(module.getName())
-								.beanClass(ToolContext.class).andCondition(CriteriaAPI.getIdCondition(stId, module));
-
-						List<ToolContext> tools = selectBuilder.get();
-						ToolContext tool = new ToolContext();
-						if (tools != null && !tools.isEmpty()) {
-							tool = tools.get(0);
-							toolTypeId = tool.getToolType().getId();
-							tool.setQuantity(getTotalQuantity(stId));
-							double availableQty = getTotalQuantityConsumed(stId);
-							tool.setCurrentQuantity(availableQty);
-							toolTypesIds.add(tool.getToolType().getId());
-						}
-
-						UpdateRecordBuilder<ToolContext> updateBuilder = new UpdateRecordBuilder<ToolContext>()
-								.module(module).fields(modBean.getAllFields(module.getName()))
-								.andCondition(CriteriaAPI.getIdCondition(tool.getId(), module));
-
-						updateBuilder.update(tool);
-						context.put(FacilioConstants.ContextNames.TOOL_TYPES_ID, toolTypeId);
-					}
-				}
-				context.put(FacilioConstants.ContextNames.TOOL_TYPES_IDS, toolTypesIds);
+				constructToolAndTypeIds(uniqueToolIds,context);
 			}
 		}
+		else if(CollectionUtils.isNotEmpty(toolIds)) {
+			Set<Long> uniqueToolIds = new HashSet<Long>();
+			for (Long id : toolIds) {
+				uniqueToolIds.add(id);
+			}
+			constructToolAndTypeIds(uniqueToolIds,context);
+		}
 		return false;
+	}
+	
+	public static void constructToolAndTypeIds(Set<Long> uniqueToolIds, Context context) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TOOL);
+		List<FacilioField> toolFields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
+
+		
+		long toolTypeId = -1;
+		List<Long> toolTypesIds = new ArrayList<>();
+		if (uniqueToolIds != null && !uniqueToolIds.isEmpty()) {
+			for (long stId : uniqueToolIds) {
+				Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(toolFields);
+				List<LookupField>lookUpfields = new ArrayList<>();
+				lookUpfields.add((LookupField) fieldsAsMap.get("toolType"));
+
+				SelectRecordsBuilder<ToolContext> selectBuilder = new SelectRecordsBuilder<ToolContext>()
+						.select(toolFields).table(module.getTableName()).moduleName(module.getName())
+						.beanClass(ToolContext.class).andCondition(CriteriaAPI.getIdCondition(stId, module))
+						.fetchLookups(lookUpfields)
+						;
+
+				List<ToolContext> tools = selectBuilder.get();
+				ToolContext tool = new ToolContext();
+				if (tools != null && !tools.isEmpty()) {
+					tool = tools.get(0);
+					toolTypeId = tool.getToolType().getId();
+					tool.setQuantity(getTotalQuantity(stId));
+					double availableQty = 0;
+					//if(!tool.getToolType().isRotating()) {
+						availableQty = getTotalQuantityConsumed(stId);
+					//}
+					//else {
+					//	availableQty = getRotatingAssetCount(stId);
+					//}
+					tool.setCurrentQuantity(availableQty);
+					toolTypesIds.add(tool.getToolType().getId());
+				}
+
+				UpdateRecordBuilder<ToolContext> updateBuilder = new UpdateRecordBuilder<ToolContext>()
+						.module(module).fields(modBean.getAllFields(module.getName()))
+						.andCondition(CriteriaAPI.getIdCondition(tool.getId(), module));
+
+				updateBuilder.update(tool);
+				context.put(FacilioConstants.ContextNames.TOOL_TYPES_ID, toolTypeId);
+			}
+		}
+		context.put(FacilioConstants.ContextNames.TOOL_TYPES_IDS, toolTypesIds);
 	}
 
 	public static double getTotalQuantityConsumed(long toolId) throws Exception {
@@ -101,7 +146,7 @@ public class ToolQuantityRollUpCommand implements Command {
 				FieldType.DECIMAL));
 		fields.add(FieldFactory.getField("used", "sum(case WHEN TRANSACTION_STATE = 4 AND ( PARENT_TRANSACTION_ID <= 0 OR PARENT_TRANSACTION_ID IS NULL ) THEN QUANTITY ELSE 0 END)",
 				FieldType.DECIMAL));
-		
+
 		builder.select(fields);
 
 		builder.andCondition(CriteriaAPI.getCondition(toolTransactionFieldMap.get("tool"), String.valueOf(toolId),
@@ -150,5 +195,19 @@ public class ToolQuantityRollUpCommand implements Command {
 			return (addition);
 		}
 		return 0d;
+	}
+
+	private static double getRotatingAssetCount(long toolId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+		List<FacilioField> assetFields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
+
+		SelectRecordsBuilder<AssetContext> assetBuilder = new SelectRecordsBuilder<AssetContext>()
+				.select(assetFields).table(assetModule.getTableName()).moduleName(assetModule.getName())
+				.beanClass(AssetContext.class).
+				andCondition(CriteriaAPI.getCondition("ROTATING_TOOL", "rotatingTool", String.valueOf(toolId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("IS_USED", "isUsed", String.valueOf("false"), BooleanOperators.IS))
+				;
+		return assetBuilder.get().size();
 	}
 }

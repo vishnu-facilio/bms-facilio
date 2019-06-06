@@ -1,11 +1,11 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.Map;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
+
+import java.util.Map;
 
 public class ClientErrorAction extends FacilioAction {
     private static final long serialVersionUID = 1L;

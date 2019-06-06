@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.templates;
 
-import com.facilio.bmsconsole.modules.FieldUtil;
+import com.facilio.modules.FieldUtil;
 import org.w3c.dom.Element;
 
 import javax.xml.bind.annotation.XmlAnyElement;

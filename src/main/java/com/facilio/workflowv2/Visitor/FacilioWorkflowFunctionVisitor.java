@@ -1,26 +1,14 @@
 package com.facilio.workflowv2.Visitor;
 
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.antlr.v4.runtime.misc.ParseCancellationException;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.RuleNode;
-import org.apache.commons.lang3.tuple.Pair;
-
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.criteria.BooleanOperators;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.criteria.Operator;
-import com.facilio.bmsconsole.criteria.StringOperators;
-import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.Operator;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowFunctionContext;
@@ -28,12 +16,18 @@ import com.facilio.workflows.functions.FacilioSystemFunctionNameSpace;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.autogens.WorkflowV2BaseVisitor;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser;
-import com.facilio.workflowv2.autogens.WorkflowV2Parser.ExprContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Function_paramContext;
 import com.facilio.workflowv2.contexts.DBParamContext;
 import com.facilio.workflowv2.contexts.Value;
 import com.facilio.workflowv2.contexts.WorkflowNamespaceContext;
 import com.facilio.workflowv2.util.WorkflowV2Util;
+import org.antlr.v4.runtime.misc.ParseCancellationException;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.RuleNode;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.lang.reflect.Method;
+import java.util.*;
 
 public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
 
@@ -83,12 +77,44 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
     }
     
     @Override 
-    public Value visitListFetch(WorkflowV2Parser.ListFetchContext ctx) 
+    public Value visitListSymbolOperation(WorkflowV2Parser.ListSymbolOperationContext ctx)
 	{
-    	Value listValue = this.visit(ctx.atom().get(0));
-    	List list = listValue.asList();
-    	int index = this.visit(ctx.atom().get(1)).asInt();
-		return new Value(list.get(index));
+    	String varName = ctx.VAR().getText();
+    	Value value = this.varMemoryMap.get(varName);
+    	if(value.asObject() instanceof List ) {
+    		Value listValue = this.visit(ctx.atom());
+    		Integer index = listValue.asInt();
+    		return new Value(value.asList().get(index));
+    	}
+    	else {
+    		throw new RuntimeException("var "+varName+" is not of list type");
+    	}
+	}
+    
+    @Override 
+    public Value visitMapSymbolOperation(WorkflowV2Parser.MapSymbolOperationContext ctx)
+	{
+    	String mapVar = ctx.VAR(0).getText();
+    	Value mapValue = this.varMemoryMap.get(mapVar);
+    	if(mapValue.asObject() instanceof Map ) {
+    		Map<Object, Object> map = mapValue.asMap();
+    		
+    		int length = ctx.VAR().size();
+    		
+    		for(int i=1;i<length;i++) {
+    			String key = ctx.VAR(i).getText();
+    			Object currentValue = map.get(key);
+    			
+    			if(i == length-1) {
+    				return new Value(currentValue);
+    			}
+    			map = (Map<Object, Object>) currentValue;
+    		}
+    	}
+    	else {
+    		throw new RuntimeException("not a map " + mapVar);
+    	}
+    	return Value.VOID;
 	}
     @Override 
     public Value visitDataTypeSpecificFunction(WorkflowV2Parser.DataTypeSpecificFunctionContext ctx) {
@@ -156,9 +182,31 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
     
     @Override
     public Value visitAssignment(WorkflowV2Parser.AssignmentContext ctx) {
-        String varName = ctx.VAR().getText();
-        Value value = this.visit(ctx.expr());
-        return varMemoryMap.put(varName, value);
+    	
+    	String varName = ctx.VAR().getText();
+    	
+    	if (ctx.atom(0) != null) {
+        	
+        	Value parentValue = varMemoryMap.get(varName);
+        	
+        	if(parentValue.asObject() instanceof List) {
+        		
+        		Value index = this.visit(ctx.atom(0));
+        		
+        		Value value = this.visit(ctx.expr());
+        		parentValue.asList().add(index.asInt(), value.asObject());
+        	}
+        	else if (parentValue.asObject() instanceof Map) {
+        		Value key = this.visit(ctx.atom(0));
+        		Value value = this.visit(ctx.expr());
+        		parentValue.asMap().put(key.asObject(), value.asObject());
+        	}
+        }
+        else {
+        	Value value = this.visit(ctx.expr());
+        	return varMemoryMap.put(varName, value);
+        }
+        return Value.VOID;
     }
     
     @Override 
@@ -268,73 +316,6 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
     	
     }
     
-//    @Override
-//    public Value visitFunctionCall(WorkflowV2Parser.FunctionCallContext ctx) {
-//    	try {
-//    		String functionNameText = ctx.FUNCTION_NAME().getText();
-//        	String[] splits = functionNameText.split(".");
-//        	if(splits[0].equals("app")) {
-//        		WorkflowFunctionContext wfFunctionContext = new WorkflowFunctionContext(); 
-//        		String nameSpace = splits[1];
-//        		String functionName = splits[2];
-//        		
-//        		wfFunctionContext.setNameSpace(nameSpace);
-//        		wfFunctionContext.setFunctionName(functionName);
-//        		
-//        		Object[] paramValues = new Object[ctx.expr().size()];
-//        		int i = 0;
-//    			for(ExprContext expr :ctx.expr()) {
-//            		Value paramValue = this.visit(expr);
-//            		paramValues [i++] = paramValue.asObject();
-//            	}
-//            	Object result = WorkflowUtil.evalSystemFunctions(wfFunctionContext, paramValues);
-//            	return new Value(result);
-//        	}
-//    	}
-//    	catch(Exception e) {
-//    	}
-//    	return Value.VOID;
-//    }
-    
-    
-    
-//   @Override 
-//   public Value visitFetchRecord(WorkflowV2Parser.FetchRecordContext ctx) {
-//	   
-//	   String moduleName = ctx.MODULE_NAME().getText();
-//	   System.out.println("moduleName -- "+moduleName);
-//	   System.out.println("conditions -- "+ctx.criteria().condition().getText());
-//	   this.visit(ctx.criteria());
-//	   System.out.println("conditionMap -- "+conditionMap);
-//	   
-//	   String criteria = ctx.criteria().condition().getText();
-//	   
-//	   String s = criteria;
-//	   for(int key:conditionMap.keySet()) {
-//		   String sk = conditionMap.get(key);
-//		   s = s.replaceFirst(sk, key+"");
-//	   }
-//	   
-//	   System.out.println("final  criteria -- "+s);
-//	   
-////	   for(ConditionContext condition :ctx.condition().condition()) {
-////		   System.out.println("condition -- "+condition.getText());
-////		   System.out.println("fieldName -- "+condition.VAR().getText());
-////		   System.out.println("opp -- "+condition.op.getText());
-////		   System.out.println("value -- "+this.visit(condition.atom()));
-////	   }
-//	   if(ctx.VAR(0) != null) {
-//		   if(ctx.VAR(1) != null) {
-//			   System.out.println("aggregation -- "+ctx.VAR(0));
-//			   System.out.println("fieldName --   "+ctx.VAR(1));
-//		   }
-//		   else {
-//			   System.out.println("fieldName -- "+ctx.VAR(0));
-//		   }
-//	   }
-//	   
-//	   return new Value(10);
-//   }
 
     @Override
     public Value visitUnaryMinusExpr(WorkflowV2Parser.UnaryMinusExprContext ctx) {
@@ -342,18 +323,6 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
         return new Value(-value.asDouble());
     }
     
-//    @Override 
-//    public Value visitApiCall(WorkflowV2Parser.ApiCallContext ctx) {
-//    	
-//    	System.out.println("moduleName -- "+ctx.API().getText());
-//    	
-//    	for(ExprContext expr :ctx.expr()) {
-//    		Value value = this.visit(expr);
-//    		System.out.println("val -- "+value);
-//    	}
-//    	return visitChildren(ctx); 
-//    }
-
     @Override
     public Value visitNotExpr(WorkflowV2Parser.NotExprContext ctx) {
         Value value = this.visit(ctx.expr());
@@ -361,7 +330,7 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
     }
     
     @Override
-    public Value visitArithmeticExpr(WorkflowV2Parser.ArithmeticExprContext ctx) {
+    public Value visitArithmeticFirstPrecedenceExpr(WorkflowV2Parser.ArithmeticFirstPrecedenceExprContext ctx) {
 
         Value left = this.visit(ctx.expr(0));
         Value right = this.visit(ctx.expr(1));
@@ -373,8 +342,20 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
                 return new Value(left.asDouble() / right.asDouble());
             case WorkflowV2Parser.MOD:
                 return new Value(left.asDouble() % right.asDouble());
+            default:
+                throw new RuntimeException("unknown operator: " + WorkflowV2Parser.tokenNames[ctx.op.getType()]);
+        }
+    }
+    
+    @Override
+    public Value visitArithmeticSecondPrecedenceExpr(WorkflowV2Parser.ArithmeticSecondPrecedenceExprContext ctx) {
+
+        Value left = this.visit(ctx.expr(0));
+        Value right = this.visit(ctx.expr(1));
+
+        switch (ctx.op.getType()) {
             case WorkflowV2Parser.PLUS:
-                return left.isDouble() && right.isDouble() ?
+                return left.isNumber() && right.isNumber() ?
                         new Value(left.asDouble() + right.asDouble()) :
                         new Value(left.asString() + right.asString());
             case WorkflowV2Parser.MINUS:
@@ -435,7 +416,6 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
     @Override 
     public Value visitCondition_atom(WorkflowV2Parser.Condition_atomContext ctx) {
     	
-    	System.out.println("condition subs --- "+ctx.getText());
     	Condition condition = new Condition();
     	condition.setFieldName(ctx.VAR().getText());
     	
@@ -452,6 +432,14 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
     		}
     		else {
     			operator = NumberOperators.EQUALS;
+    		}
+    		break;
+    	case "!=" :
+    		if(operatorValue.asObject() instanceof String) {
+    			operator = StringOperators.ISN_T;
+    		}
+    		else {
+    			operator = NumberOperators.NOT_EQUALS;
     		}
     		break;
     	default:
@@ -556,7 +544,6 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
     public Value visitFor_each_statement(WorkflowV2Parser.For_each_statementContext ctx) {
     	
     	Value exprValue = this.visit(ctx.expr());
-    	System.out.println("iterateVae - "+exprValue);
     	String loopVariableIndexName = ctx.VAR(0).getText();
     	String loopVariableValueName = ctx.VAR(1).getText();
     	

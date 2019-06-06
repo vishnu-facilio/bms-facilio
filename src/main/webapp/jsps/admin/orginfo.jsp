@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-    <%@page import="com.facilio.accounts.util.AccountUtil, com.facilio.accounts.dto.User,com.facilio.accounts.dto.Role, java.util.*, java.util.Iterator ,org.json.simple.JSONObject,org.json.simple.JSONArray,java.util.List, com.facilio.accounts.dto.Organization ,org.json.simple.JSONObject,com.facilio.accounts.impl.OrgBeanImpl, com.facilio.bmsconsole.commands.util.CommonCommandUtil"%>
+    <%@page import="com.facilio.accounts.util.AccountUtil,java.util.Comparator, com.facilio.accounts.dto.User,com.facilio.accounts.dto.Role, java.util.*, java.util.Iterator ,org.json.simple.JSONObject,org.json.simple.JSONArray,java.util.List, com.facilio.accounts.dto.Organization ,org.json.simple.JSONObject,com.facilio.accounts.impl.OrgBeanImpl, com.facilio.bmsconsole.commands.util.CommonCommandUtil, com.facilio.accounts.util.AccountUtil.FeatureLicense"%>
   <%
   	
   String orgid = request.getParameter("orgid");
@@ -9,13 +9,54 @@
     JSONObject result = null;
     List<User> users = null;
     List<Role> roles = null;
+    TreeMap<String,Boolean> FEATUREMAP = null;
+    Map<Long,FeatureLicense> FEATUREMAPUNORDERED  = AccountUtil.FeatureLicense.getAllFeatureLicense();
+    Map<FeatureLicense, Long> FEATUREMAPreversed = new HashMap<>();
+  	Map<FeatureLicense,Boolean> FEATUREMAPenabled = new HashMap<>();
+  	Map<String,Boolean>FEATUREMAPstring = new HashMap<>();
+  	Map<String,Long> NEWMAP = new HashMap<String,Long>();
     if (orgid != null) {
   	  org = AccountUtil.getOrgBean().getOrg(Long.parseLong(orgid));
   	  result = CommonCommandUtil.getOrgInfo(Long.parseLong(orgid));
   	  users = AccountUtil.getOrgBean().getAllOrgUsers(Long.parseLong(orgid));
   	  roles =AccountUtil.getRoleBean().getRoles(Long.parseLong(orgid));
+  	  
+  	 for(Long key :FEATUREMAPUNORDERED.keySet())
+     {
+     	long val1 = key;
+     	FeatureLicense val2 = FEATUREMAPUNORDERED.get(key);
+     	FEATUREMAPreversed.put(val2,val1);
+     }
+    	boolean isEnabled;
+    	
+     for(FeatureLicense key :FEATUREMAPreversed.keySet())
+     {
+     	isEnabled = isFeatureEnabled(key,org.getOrgId());
+     	FEATUREMAPenabled.put(key,isEnabled);
+     }
+     for(FeatureLicense key :FEATUREMAPenabled.keySet()) 
+     {
+     	String val3 = (String.valueOf(key));
+     	boolean val4 = FEATUREMAPenabled.get(key);
+     	FEATUREMAPstring.put(val3,val4);
+     	
+     }
+     FEATUREMAP = new TreeMap<String,Boolean>(FEATUREMAPstring);
+     for(Long key :FEATUREMAPUNORDERED.keySet()) {
+     	FeatureLicense value = FEATUREMAPUNORDERED.get(key);
+     	NEWMAP.put(String.valueOf(value), key);
+     }
+  	  
   	}
+    
+   
   %>
+<%!
+public static boolean isFeatureEnabled(FeatureLicense featureLicense,long orgid) throws Exception {
+		return (AccountUtil.getOrgFeatureLicense(orgid) & featureLicense.getLicense()) == featureLicense.getLicense();
+	}%>
+
+ 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -38,6 +79,16 @@ function view(userId){
 <script>
 function myFunction() {
   var x = document.getElementById("new");
+  if (x.style.display === "block") {
+    x.style.display = "none";
+  } else {
+    x.style.display = "block";
+  }
+}
+</script>
+<script>
+function myLicenseFunction() {
+  var x = document.getElementById("newlicense");
   if (x.style.display === "block") {
     x.style.display = "none";
   } else {
@@ -175,6 +226,7 @@ function myFunction() {
 
 <% } %>
 <%} %>
+
 <div class=" col-lg-12 col-md-12">
 
 <%if(orgid!=null) {%>
@@ -214,9 +266,63 @@ function myFunction() {
 <%} %>
 </div>
 </div>
-<br>
-<br>
-<br>
+ 
+<div class=" col-lg-12 col-md-12">
+
+<%if(orgid!=null) {%>
+<button onclick="myLicenseFunction()">Add License</button>
+<%} %>
+<br><br><br>
+
+
+<div id="newlicense" style="display:none">
+<%if(orgid!=null ){ %>
+<form method="POST" ACTION="addLicense">
+<br><br>
+
+<h4>License features:</h4>
+
+
+<div >
+<input type = "hidden" name = "orgid" value="<%= orgid %>" />
+<table style=" width: 50%; margin-top:40px;"  class="table table-bordered">
+
+<tr>
+	<td style="text-align:center;"><b>FEATURES</b></td>
+	<td style="text-align:center;"><b>STATUS</b></td>
+</tr>
+  
+  <%
+  
+  	for(String key  :FEATUREMAP.keySet())
+  	{
+  		boolean isenable = FEATUREMAP.get(key);
+  %>
+	<tr>
+	<td><label><%=key%></label> </td>
+	<td style="text-align:center;">
+   		
+  <input type = "checkbox" <% if (isenable == true) { %> checked <%  }%> name="selected" value = "<%=NEWMAP.get(key)%>"   id="<%=orgid%>" />
+  		
+	</td>
+	</tr>
+
+
+ <%} %>	
+
+</table>
+
+
+</div> 
+
+<input type="submit" name="addLicense" value="Update" />
+</form>
+
+<%} %>
+<br><br><br>
+</div>
+</div>
+
 
 <style>
 .org-th{

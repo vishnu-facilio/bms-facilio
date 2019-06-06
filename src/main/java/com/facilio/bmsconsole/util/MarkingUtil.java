@@ -5,13 +5,17 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.MarkedReadingContext;
 import com.facilio.bmsconsole.context.MarkedReadingContext.MarkType;
 import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.criteria.PickListOperators;
-import com.facilio.bmsconsole.modules.*;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericInsertRecordBuilder;
-import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -67,7 +71,7 @@ public static void addMarkedreadings(List<MarkedReadingContext> markedList) thro
 public static List<Double> getActualValues(long resourceId, long fieldId, long ttime, MarkType type)  {
 	
 	List<Double> actualValList = new ArrayList<>();
-	FacilioModule module=ModuleFactory.getMarkedReadingModule();
+	FacilioModule module= ModuleFactory.getMarkedReadingModule();
 	List<FacilioField> fields = FieldFactory.getMarkedReadingFields();
 	Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 	FacilioField actualValFld = fieldMap.get("actualValue");

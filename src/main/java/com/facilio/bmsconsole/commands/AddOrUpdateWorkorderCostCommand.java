@@ -6,13 +6,14 @@ import com.facilio.bmsconsole.context.WorkorderCostContext;
 import com.facilio.bmsconsole.context.WorkorderCostContext.CostType;
 import com.facilio.bmsconsole.context.WorkorderItemContext;
 import com.facilio.bmsconsole.context.WorkorderToolsContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.EnumOperators;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.criteria.PickListOperators;
-import com.facilio.bmsconsole.modules.*;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.EnumOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.*;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -66,7 +67,7 @@ public class AddOrUpdateWorkorderCostCommand implements Command {
 						.andCondition(CriteriaAPI.getCondition(workorderCostsFieldMap.get("parentId"),
 								String.valueOf(parentId), PickListOperators.IS))
 						.andCondition(CriteriaAPI.getCondition(workorderCostsFieldMap.get("costType"),
-								String.valueOf(cos), EnumOperators.VALUE_IS));
+								String.valueOf(cos.getValue()), EnumOperators.IS));
 
 				List<WorkorderCostContext> workorderCosts = workorderCostSetlectBuilder.get();
 				WorkorderCostContext workorderCost = new WorkorderCostContext();

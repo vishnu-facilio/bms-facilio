@@ -1,18 +1,37 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.aws.util.AwsUtil;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.facilio.aws.util.AwsUtil;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
 public class AssetContext extends ResourceContext {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private Boolean downtimeStatus;
+
+	public Boolean getDowntimeStatus() {
+		return downtimeStatus;
+	}
+
+	public void setDowntimeStatus(Boolean downtimeStatus) {
+		this.downtimeStatus = downtimeStatus;
+	}
+
+	private long lastDowntimeId = -1;
+
+	public long getLastDowntimeId() {
+		return lastDowntimeId;
+	}
+
+	public void setLastDowntimeId(long lastDowntimeId) {
+		this.lastDowntimeId = lastDowntimeId;
+	}
 	private AssetState state;
 	public int getState() {
 		if(state != null) {
@@ -350,6 +369,20 @@ public class AssetContext extends ResourceContext {
 	public boolean isUsed() {
 		if(isUsed != null) {
 			return isUsed.booleanValue();
+		}
+		return false;
+	}
+	
+	public Boolean connected;
+	public Boolean getConnected() {
+		return connected;
+	}
+	public void setConnected(Boolean connected) {
+		this.connected = connected;
+	}
+	public boolean isConnected() {
+		if(connected != null) {
+			return connected.booleanValue();
 		}
 		return false;
 	}

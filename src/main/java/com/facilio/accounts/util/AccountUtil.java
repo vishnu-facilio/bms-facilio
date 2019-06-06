@@ -1,13 +1,5 @@
 package com.facilio.accounts.util;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.facilio.accounts.bean.GroupBean;
 import com.facilio.accounts.bean.OrgBean;
 import com.facilio.accounts.bean.RoleBean;
@@ -16,17 +8,26 @@ import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.PortalInfoContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleFactory;
+import com.facilio.db.builder.DBUtil;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.TransactionBeanFactory;
-import com.facilio.sql.DBUtil;
-import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.transaction.FacilioConnectionPool;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AccountUtil {
 
@@ -120,6 +121,7 @@ public class AccountUtil {
 		SPACE_ASSET (8),
 		WEATHER_INTEGRATION (16),
 		ANOMALY_DETECTOR (32),
+		PEOPLE (64),
 		SHIFT_HOURS (128),
 		SITE_SWITCH (256),
 		APPROVAL (1024),
@@ -136,10 +138,10 @@ public class AccountUtil {
 		// Use 512 for next features
 		
 		private long license;
+
 		FeatureLicense(long license) {
 			this.license = license;
 		}
-		
 		public long getLicense() {
 			return license;
 		}
@@ -147,6 +149,10 @@ public class AccountUtil {
 			return FEATURE_MAP.get(value);
 		}
 		
+		public static Map<Long, FeatureLicense> getAllFeatureLicense() {	
+			return FEATURE_MAP;
+		}
+	
 		private static final Map<Long, FeatureLicense> FEATURE_MAP = Collections.unmodifiableMap(initFeatureMap());
 		private static Map<Long, FeatureLicense> initFeatureMap() {
 			Map<Long, FeatureLicense> typeMap = new HashMap<>();
@@ -157,6 +163,25 @@ public class AccountUtil {
 		}
 	}
 
+    
+    public static int getOrgFeatureLicense(long orgid) throws Exception
+    {
+    	
+    	Object module;
+    	String orgidString = String.valueOf(orgid);
+    	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(AccountConstants.getFeatureLicenseFields())
+				.table(AccountConstants.getFeatureLicenseModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getOrgIdField(AccountConstants.getFeatureLicenseModule()), orgidString, StringOperators.IS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		Map<String, Object> modulemap=props.get(0);
+		module = modulemap.get("module");
+		int moduleint = (int)module;
+		return moduleint;
+    	
+    	
+    }
 
 	public static int getFeatureLicense() throws Exception {
 		long orgId = getCurrentOrg().getOrgId();
@@ -188,6 +213,10 @@ public class AccountUtil {
 	public static boolean isFeatureEnabled(FeatureLicense featureLicense) throws Exception {
 		return (getFeatureLicense() & featureLicense.getLicense()) == featureLicense.getLicense();
 	}
+	
+	
+	
+	
 	
 	public static PortalInfoContext getPortalInfo() throws Exception {
 		FacilioModule module = ModuleFactory.getServicePortalModule();

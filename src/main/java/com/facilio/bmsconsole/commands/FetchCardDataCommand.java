@@ -18,9 +18,6 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.DashboardAction;
 import com.facilio.bmsconsole.actions.V2ReportAction;
 import com.facilio.bmsconsole.context.AlarmContext;
-import com.facilio.bmsconsole.context.BaseLineContext;
-import com.facilio.bmsconsole.context.BaseLineContext.AdjustType;
-import com.facilio.bmsconsole.context.BaseLineContext.RangeType;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
@@ -30,16 +27,10 @@ import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ReportSpaceFilterContext;
 import com.facilio.bmsconsole.context.WidgetStaticContext;
 import com.facilio.bmsconsole.context.WidgetVsWorkflowContext;
-import com.facilio.bmsconsole.criteria.DateOperators;
-import com.facilio.bmsconsole.criteria.DateRange;
-import com.facilio.bmsconsole.criteria.Operator;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.bmsconsole.util.DashboardUtil;
-import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
@@ -48,10 +39,20 @@ import com.facilio.cards.util.CardType;
 import com.facilio.cards.util.CardUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.criteria.operators.Operator;
 import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.modules.BaseLineContext;
+import com.facilio.modules.BaseLineContext.AdjustType;
+import com.facilio.modules.BaseLineContext.RangeType;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.time.DateRange;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.unitconversion.Unit;
 import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.context.WorkflowContext.WorkflowUIMode;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class FetchCardDataCommand implements Command {
@@ -108,8 +109,17 @@ public class FetchCardDataCommand implements Command {
 				
 				CardType card = CardType.getCardType(widgetStaticContext.getStaticKey());
 				
+				boolean isNewWorkflowCard = false;
+				
 				if(card.isDynamicWfGeneratingCard()) {
 					card.setWorkflow(widgetStaticContext.getWidgetVsWorkflowContexts().get(0).getWorkflowString());
+					if(widgetStaticContext.getWidgetVsWorkflowContexts().get(0).getWorkflowId() != null) {
+						WorkflowContext workflowTemp = WorkflowUtil.getWorkflowContext(widgetStaticContext.getWidgetVsWorkflowContexts().get(0).getWorkflowId());
+						if(workflowTemp.getWorkflowUIMode() == WorkflowUIMode.NEW_WORKFLOW.getValue()) {
+							card.setWorkflow(workflowTemp.getWorkflowV2String());
+							isNewWorkflowCard = true;
+						}
+					}
 				}
 				
 				if(widgetStaticContext.getStaticKey().equals(CardType.FAHU_STATUS_CARD_NEW.getName())) {
@@ -117,7 +127,14 @@ public class FetchCardDataCommand implements Command {
 				}
 				
 				if(card.isSingleResultWorkFlow()) {
-					Object wfResult = WorkflowUtil.getWorkflowExpressionResult(card.getWorkflow(), widgetStaticContext.getParamsJson());
+					
+					Object wfResult = null;
+					if(isNewWorkflowCard) {
+						wfResult = WorkflowUtil.getWorkflowExpressionResult(card.getWorkflow(), widgetStaticContext.getParamsJson(),WorkflowUIMode.NEW_WORKFLOW);
+					}
+					else {
+						wfResult = WorkflowUtil.getWorkflowExpressionResult(card.getWorkflow(), widgetStaticContext.getParamsJson());
+					}
 					
 					wfResult = CardUtil.getWorkflowResultForClient(wfResult, widgetStaticContext); // parsing data suitable for client
 					result.put("result", wfResult);
@@ -193,9 +210,10 @@ public class FetchCardDataCommand implements Command {
 					long parentId = (long) paramsJson.get("parentId");
 					int dateOperator = Integer.parseInt(paramsJson.get("dateOperator").toString());
 					String dateValue = (String) paramsJson.get("dateValue");
+					Long ruleId = (Long) paramsJson.get("ruleId");
 					
-					DateOperators operator = (DateOperators)Operator.OPERATOR_MAP.get(dateOperator);
-					result = getResourceAlarmBar(parentId,operator.getRange(dateValue));
+					DateOperators operator = (DateOperators)Operator.getOperator(dateOperator);
+					result = getResourceAlarmBar(parentId, ruleId, operator.getRange(dateValue));
 					context.put(FacilioConstants.ContextNames.RESULT, result);
 					return false;
 				}
@@ -355,10 +373,11 @@ public class FetchCardDataCommand implements Command {
 		}
 		return false;
 	}
-	private Map<String,Object> getResourceAlarmBar(Long resourceId,DateRange dateRange) throws Exception {
+	private Map<String,Object> getResourceAlarmBar(Long resourceId,Long ruleId, DateRange dateRange) throws Exception {
 		
 		Map<String,Object> result = new HashMap<>();
-		List<ReadingAlarmContext> allAlarms = AlarmAPI.getReadingAlarms(Collections.singletonList(resourceId), -1, dateRange.getStartTime(), dateRange.getEndTime(), false);
+		List<Long> resourceIds = resourceId != null && resourceId != -1 ? Collections.singletonList(resourceId) : null;
+		List<ReadingAlarmContext> allAlarms = AlarmAPI.getReadingAlarms(resourceIds, ruleId, -1, dateRange.getStartTime(), dateRange.getEndTime(), false);
 		
 		Map<Long, ReadingAlarmContext> alarmMap = new HashMap<>();
 		

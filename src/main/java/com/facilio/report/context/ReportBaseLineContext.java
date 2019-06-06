@@ -1,8 +1,8 @@
 package com.facilio.report.context;
 
-import com.facilio.bmsconsole.context.BaseLineContext;
-import com.facilio.bmsconsole.context.BaseLineContext.AdjustType;
-import com.facilio.bmsconsole.criteria.DateRange;
+import com.facilio.modules.BaseLineContext;
+import com.facilio.modules.BaseLineContext.AdjustType;
+import com.facilio.time.DateRange;
 
 public class ReportBaseLineContext {
 

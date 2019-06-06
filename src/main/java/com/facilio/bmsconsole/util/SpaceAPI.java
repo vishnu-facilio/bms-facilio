@@ -1,55 +1,31 @@
 package com.facilio.bmsconsole.util;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
-import com.facilio.modules.FacilioStatus;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.PermissionUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
+import com.facilio.bmsconsole.view.ViewFactory;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.*;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule.ModuleType;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
-import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.FloorContext;
-import com.facilio.bmsconsole.context.LocationContext;
-import com.facilio.bmsconsole.context.PhotosContext;
-import com.facilio.bmsconsole.context.SiteContext;
-import com.facilio.bmsconsole.context.SpaceContext;
-import com.facilio.bmsconsole.context.ZoneContext;
-import com.facilio.bmsconsole.criteria.BooleanOperators;
-import com.facilio.bmsconsole.criteria.BuildingOperator;
-import com.facilio.bmsconsole.criteria.CommonOperators;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.criteria.PickListOperators;
-import com.facilio.bmsconsole.criteria.StringOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.InsertRecordBuilder;
-import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
-import com.facilio.bmsconsole.view.ViewFactory;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericDeleteRecordBuilder;
-import com.facilio.sql.GenericInsertRecordBuilder;
-import com.facilio.sql.GenericSelectRecordBuilder;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.logging.Logger;
 
 public class SpaceAPI {
 	
@@ -753,12 +729,12 @@ public class SpaceAPI {
 																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																	.andCustomWhere("BaseSpace.SITE_ID =? AND SPACE_TYPE=?",siteId,BaseSpaceContext.SpaceType.BUILDING.getIntVal());
 		
-		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(module.getName());
+		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(module.getName());
 		if (scopeCriteria != null) {
 			selectBuilder.andCriteria(scopeCriteria);
 		}
 		
-		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(module.getName(),"read");
+		Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria(module.getName(),"read");
 		if (permissionCriteria != null) {
 			selectBuilder.andCriteria(permissionCriteria);
 		}
@@ -782,13 +758,13 @@ public class SpaceAPI {
 																	.andCustomWhere("SPACE_TYPE=?",BaseSpaceContext.SpaceType.BUILDING.getIntVal());
 		
 		
-		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(module.getName());
+		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(module.getName());
 		if (scopeCriteria != null) {
 			selectBuilder.andCriteria(scopeCriteria);
 		}
 		
 		 if (AccountUtil.getCurrentUser().getRole() != null) {
-		 	Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(module.getName(),"read");
+		 	Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria(module.getName(),"read");
 		 	if (permissionCriteria != null) {
 		 		selectBuilder.andCriteria(permissionCriteria);
 		 	}
@@ -1123,7 +1099,7 @@ public static long getSitesCount() throws Exception {
 		}
 		// temp handling for service portal without Login
 		if (AccountUtil.getCurrentUser() != null) {
-			Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria("basespace");
+			Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria("basespace");
 			if(scopeCriteria != null) {
 				selectBuilder.andCriteria(scopeCriteria);
 			}

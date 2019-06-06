@@ -1,13 +1,38 @@
 package com.facilio.bmsconsole.workflow.rule;
 
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import com.facilio.accounts.bean.UserBean;
+import com.facilio.accounts.dto.Group;
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.commands.UpdateStateCommand;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.TicketContext.SourceType;
+import com.facilio.bmsconsole.util.*;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ReadingRuleType;
+import com.facilio.chain.FacilioChain;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.events.constants.EventConstants;
+import com.facilio.events.context.EventContext;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.*;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
+import com.facilio.tasker.FacilioTimer;
+import com.facilio.timeseries.TimeSeriesAPI;
+import com.facilio.util.FacilioUtil;
+import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.util.WorkflowUtil;
+import com.facilio.workflowv2.util.WorkflowV2API;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.chain.Chain;
@@ -20,62 +45,9 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.bean.UserBean;
-import com.facilio.accounts.dto.Group;
-import com.facilio.accounts.dto.User;
-import com.facilio.accounts.util.AccountConstants;
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.commands.UpdateStateCommand;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.AlarmContext;
-import com.facilio.bmsconsole.context.AlarmSeverityContext;
-import com.facilio.bmsconsole.context.NoteContext;
-import com.facilio.bmsconsole.context.NotificationContext;
-import com.facilio.bmsconsole.context.PMTriggerContext;
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
-import com.facilio.bmsconsole.context.ReadingAlarmContext;
-import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.context.TicketContext.SourceType;
-import com.facilio.modules.FacilioStatus;
-import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.criteria.PickListOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
-import com.facilio.bmsconsole.util.AlarmAPI;
-import com.facilio.bmsconsole.util.NotificationAPI;
-import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
-import com.facilio.bmsconsole.util.ReadingRuleAPI;
-import com.facilio.bmsconsole.util.SMSUtil;
-import com.facilio.bmsconsole.util.StateFlowRulesAPI;
-import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.util.WorkOrderAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ReadingRuleType;
-import com.facilio.chain.FacilioChain;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.events.constants.EventConstants;
-import com.facilio.events.context.EventContext;
-import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.tasker.FacilioTimer;
-import com.facilio.timeseries.TimeSeriesAPI;
-import com.facilio.util.FacilioUtil;
-import com.facilio.workflows.context.WorkflowContext;
-import com.facilio.workflows.util.WorkflowUtil;
+import java.time.Instant;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public enum ActionType {
 
@@ -107,7 +79,7 @@ public enum ActionType {
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
 				Object currentRecord) {
 			// TODO Auto-generated method stub
-			if (obj != null) {
+			if (obj != null && AwsUtil.isProduction()) {
 				try {
 					String to = (String) obj.get("to");
 					if (to != null && !to.isEmpty() && checkIfActiveUserFromPhone(to)) {
@@ -173,7 +145,7 @@ public enum ActionType {
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
 				Object currentRecord) {
 			// TODO Auto-generated method stub
-			if (obj != null) {
+			if (obj != null && AwsUtil.isProduction()) {
 				try {
 					JSONArray tos = null;
 					Object toNums = obj.remove("to");
@@ -333,7 +305,7 @@ public enum ActionType {
 				Object currentRecord) {
 			// TODO Auto-generated method stub
 			try {
-				if (obj != null) {
+				if (obj != null && AwsUtil.isProduction()) {
 					String ids = (String) obj.get("id");
 
 					if (!StringUtils.isEmpty(ids)) {
@@ -680,11 +652,11 @@ public enum ActionType {
 								Object id = ((Map<String, Object>)val).get("id");
 								if ( FacilioConstants.ContextNames.USERS.equals(((LookupField) field).getSpecialType()) && FacilioConstants.Criteria.LOGGED_IN_USER.equals(id)) {
 									val = AccountUtil.getCurrentUser();
-									((Map<String, Object>)val).put("id", AccountUtil.getCurrentUser().getId());// setting newly updated value if any
 								}
 								else {
 									val = FieldUtil.getEmptyLookupVal((LookupField) field, FacilioUtil.parseLong(id));
 								}
+								obj.put(key, FieldUtil.getAsProperties(val));
 								break;
 							case DATE:
 							case DATE_TIME:
@@ -957,6 +929,36 @@ public enum ActionType {
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception 
 		{
 			FacilioTimer.scheduleOneTimeJob(FacilioUtil.parseLong(context.get("jobid")), "DefaultMLJob", System.currentTimeMillis(), "ml");
+		}
+				
+		@Override
+		public boolean isTemplateNeeded() 
+		{
+			return false;
+		}
+		
+	},
+	WORKFLOW_ACTION (21) {
+
+		@Override
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception 
+		{
+			
+			
+			WorkflowContext workflowContext = WorkflowUtil.getWorkflowContext((Long)obj.get("resultWorkflowId"));
+			workflowContext.setLogNeeded(true);
+			
+			Map<String, Object> props = FieldUtil.getAsProperties(currentRecord);
+			
+			List<Object> currentRecordList = new ArrayList<>();
+			currentRecordList.add(props);
+			WorkflowV2API.executeWorkflow(workflowContext, currentRecordList, null, false, false, false);
+			
+//			Map<String,Object> currentRecordMap = new HashMap<>();
+//			
+//			currentRecordMap.put("record", currentRecord);
+//			
+//			WorkflowUtil.getWorkflowExpressionResult(workflowContext, currentRecordMap);
 		}
 				
 		@Override

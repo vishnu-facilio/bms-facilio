@@ -1,9 +1,7 @@
 package com.facilio.bmsconsole.context;
 
-import java.util.List;
-
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.fs.FileStoreFactory;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class ConnectedAppContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;

@@ -1,27 +1,36 @@
 package com.facilio.fw.listener;
 
+import com.amazonaws.ClientConfiguration;
+import com.amazonaws.auth.AWSCredentialsProvider;
+import com.amazonaws.client.AwsAsyncClientParams;
+import com.amazonaws.handlers.RequestHandler2;
+import com.amazonaws.metrics.RequestMetricCollector;
+import com.amazonaws.services.secretsmanager.AWSSecretsManager;
+import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
+import com.amazonaws.services.secretsmanager.model.*;
 import com.facilio.activity.ActivityType;
 import com.facilio.aws.util.AwsUtil;
-import com.facilio.bmsconsole.criteria.Operator;
-import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
-import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.cache.RedisManager;
+import com.facilio.db.builder.DBUtil;
+import com.facilio.db.criteria.operators.Operator;
+import com.facilio.db.transaction.FacilioConnectionPool;
+import com.facilio.db.transaction.TransactionMonitor;
+import com.facilio.db.util.DBConf;
+import com.facilio.db.util.SQLScriptRunner;
 import com.facilio.filters.HealthCheckFilter;
 import com.facilio.fw.BeanFactory;
 import com.facilio.kafka.KafkaProcessor;
 import com.facilio.kinesis.KinesisProcessor;
 import com.facilio.logging.SysOutLogger;
+import com.facilio.modules.FieldUtil;
 import com.facilio.queue.FacilioExceptionProcessor;
 import com.facilio.server.ServerInfo;
 import com.facilio.serviceportal.actions.PortalAuthInterceptor;
-import com.facilio.sql.DBUtil;
-import com.facilio.sql.SQLScriptRunner;
 import com.facilio.tasker.FacilioScheduler;
 import com.facilio.tasker.executor.InstantJobExecutor;
-import com.facilio.transaction.FacilioConnectionPool;
-import com.facilio.transaction.TransactionMonitor;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.flywaydb.core.Flyway;
@@ -49,9 +58,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Properties;
-import java.util.Timer;
+import java.util.*;
+import java.util.concurrent.ExecutorService;
 
 public class FacilioContextListener implements ServletContextListener {
 
@@ -89,8 +97,15 @@ public class FacilioContextListener implements ServletContextListener {
 		}
 
 
+		if( ! AwsUtil.isDevelopment()) {
+		    try {
+                AwsUtil.getPassword("test-buvi");
+            } catch (Exception e) {
+		        log.info("Exception while accessing secret manager ", e);
+            }
+        }
 		initDBConnectionPool();
-		Operator.OPERATOR_MAP.get(1);
+		Operator.getOperator(1);
 		TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACTION,1);
 		ActivityType.getActivityType(1);
 		FieldUtil.inti();
@@ -165,7 +180,7 @@ public class FacilioContextListener implements ServletContextListener {
 
 	/*private void initializeDB() {
 //		createTables("conf/leedconsole.sql");
-		//createTables("conf/db/" + AwsUtil.getDB() + "/eventconsole.sql");
+		//createTables("conf/db/" + DBConf.getInstance().getDBName() + "/eventconsole.sql");
 	}*/
 
 	private void createTables(String fileName) {
@@ -206,7 +221,7 @@ public class FacilioContextListener implements ServletContextListener {
 			DataSource ds = FacilioConnectionPool.getInstance().getDataSource();
 			long startTime = System.currentTimeMillis();
 			Flyway flyway = new Flyway();
-			flyway.setLocations("db/migration/" + AwsUtil.getDB());
+			flyway.setLocations("db/migration/" + DBConf.getInstance().getDBName());
 			flyway.setDataSource(ds);
 			flyway.setBaselineOnMigrate(true);
 			int mig_status = flyway.migrate();
@@ -228,10 +243,9 @@ public class FacilioContextListener implements ServletContextListener {
 			rs = stmt.executeQuery("select 1"); //Test Connection
 			
 			while(rs.next()) {
-				System.out.println(rs.getInt(1));
+				log.info("testing connection : " + rs.getInt(1));
 			}
-		}
-		catch(SQLException e) {
+		} catch(SQLException e) {
 			log.info("Exception occurred ", e);
 		}
 		finally {

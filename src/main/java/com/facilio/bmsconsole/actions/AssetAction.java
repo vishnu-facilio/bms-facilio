@@ -19,13 +19,13 @@ import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.InventoryType;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 
 public class AssetAction extends FacilioAction {
 	
@@ -101,6 +101,7 @@ public class AssetAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, categoryId);
 		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
+		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ASSET_ACTIVITY);
 		Chain addAssetChain = TransactionChainFactory.getAddAssetChain();
 		addAssetChain.execute(context);
 		setAssetId(asset.getId());
@@ -516,6 +517,14 @@ public class AssetAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		ReadOnlyChainFactory.getAssetModuleReportCardChain().execute(context);
 		setResult("cards", context.get(FacilioConstants.ContextNames.REPORT_CARDS));
+		return SUCCESS;
+	}
+	
+	public String fetchAssetDowntimeMetrics() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ASSET_ID, assetId);
+		ReadOnlyChainFactory.getAssetDowntimeMetricsChain().execute(context);
+		setResult("metrics", context.get(FacilioConstants.ContextNames.RESULT));
 		return SUCCESS;
 	}
 	

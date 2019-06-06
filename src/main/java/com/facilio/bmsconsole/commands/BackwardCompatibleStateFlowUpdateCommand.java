@@ -1,18 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.util.StateFlowRulesAPI;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioStatus;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
-import com.facilio.beans.ModuleBean;
-import com.facilio.modules.FacilioStatus;
-import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.util.StateFlowRulesAPI;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
+import java.util.List;
 
 // TODO to be removed once supported by every client
 public class BackwardCompatibleStateFlowUpdateCommand implements Command {

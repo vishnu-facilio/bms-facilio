@@ -4,9 +4,11 @@ public enum TransactionState {
 	ADDITION,
 	ISSUE,
 	RETURN,
-	USE
-	;
-	
+	USE,
+	IN,
+	OUT;
+
+
 	public int getValue() {
 		return ordinal() + 1;
 	}

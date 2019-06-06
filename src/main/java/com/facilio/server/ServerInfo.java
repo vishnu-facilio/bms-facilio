@@ -1,9 +1,9 @@
 package com.facilio.server;
 
 import com.facilio.aws.util.AwsUtil;
-import com.facilio.sql.DBUtil;
-import com.facilio.transaction.FTransactionManager;
-import com.facilio.transaction.FacilioConnectionPool;
+import com.facilio.db.builder.DBUtil;
+import com.facilio.db.transaction.FTransactionManager;
+import com.facilio.db.transaction.FacilioConnectionPool;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 

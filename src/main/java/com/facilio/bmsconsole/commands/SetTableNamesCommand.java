@@ -310,6 +310,35 @@ public class SetTableNamesCommand implements Command {
 	public static SetTableNamesCommand getForInventoryRequestLineItem() {
 		return new SetTableNamesCommand("inventoryrequestlineitems", "InventoryRequestLineItems");
 	}
+	
+	public static SetTableNamesCommand getForAttendance() {
+		return new SetTableNamesCommand("attendance", "Attendance");
+	}
+	
+	public static SetTableNamesCommand getForAttendanceTransaction() {
+		return new SetTableNamesCommand("attendanceTransaction", "Attendance_Transactions");
+	}
+	
+	public static SetTableNamesCommand getForBreak() {
+		return new SetTableNamesCommand("break", "Break");
+	}
+	
+	public static SetTableNamesCommand getForShift() {
+		return new SetTableNamesCommand("shift", "Shift");
+	}
+	
+	
+	public static SetTableNamesCommand getForBreakTransaction() {
+		return new SetTableNamesCommand("breakTransaction", "BREAK_TRANSACTION");
+	}
+
+	public static SetTableNamesCommand getForShipment() {
+		return new SetTableNamesCommand("shipment", "Shipment");
+	}
+
+	public static SetTableNamesCommand getForShipmentLineItems() {
+		return new SetTableNamesCommand("shipmentLineItem", "Shipment_line_item");
+	}
 
 	public static void setForModule (Context context, String moduleName) {
 		//TODO handle all module and get from map

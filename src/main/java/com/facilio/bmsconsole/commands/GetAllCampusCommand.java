@@ -1,18 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.actions.BusinessHoursAction;
+import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.bmsconsole.context.BusinessHoursContext;
 import com.facilio.bmsconsole.context.SiteContext;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.BusinessHoursAPI;
-import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-
-import org.apache.commons.chain.Chain;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -20,7 +16,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class GetAllCampusCommand implements Command {
 
@@ -36,7 +31,7 @@ public class GetAllCampusCommand implements Command {
 		SelectRecordsBuilder<SiteContext> builder = new SelectRecordsBuilder<SiteContext>().table(dataTableName)
 				.moduleName(moduleName).beanClass(SiteContext.class).select(fields).maxLevel(2)
 				.orderBy(fieldMap.get("name").getColumnName() + " ASC");
-		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(moduleName);
+		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(moduleName);
 		if (scopeCriteria != null) {
 			builder.andCriteria(scopeCriteria);
 		}
@@ -49,12 +44,10 @@ public class GetAllCampusCommand implements Command {
 			campuses.forEach((e) -> {
 				long spaceid = e.getId();
 				spaceId.add(spaceid);
-				if (e.getData() != null) {
-					if (e.getData().get("operatingHour") != null) {
-						long bhid = Long.parseLong(e.getData().get("operatingHour").toString());
+				if (e.getOperatingHour() != -1) {
+					long bhid =e.getOperatingHour();
 						businessHourIds.add(bhid);
 						spaceBhIdsMap.put(spaceid, bhid);
-					}
 				}
 			});
 		}

@@ -2,12 +2,12 @@ package com.facilio.events.constants;
 
 import com.facilio.bmsconsole.commands.GetExportValueField;
 import com.facilio.bmsconsole.commands.UpdateEventCountCommand;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.events.commands.*;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Chain;
 
 import java.util.ArrayList;
@@ -333,7 +333,7 @@ public class EventConstants {
 			fields.add(additionalInfo);
 			
 			fields.add(FieldFactory.getField("subRuleId", "Sub Rule Id", "SUB_RULE_ID", module, FieldType.LOOKUP));
-			
+			fields.add(FieldFactory.getField("alarmRuleEntityId", "Entity Id", "ALARM_RULE_ENTITY_ID", module, FieldType.LOOKUP));
 			return fields;
 		}
 		

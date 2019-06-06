@@ -1,9 +1,9 @@
 package com.facilio.bmsconsole.actions;
 
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.fields.FacilioField;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.commons.chain.Command;
 import org.apache.struts2.ServletActionContext;

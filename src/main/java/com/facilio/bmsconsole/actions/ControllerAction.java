@@ -7,21 +7,22 @@ import com.facilio.agent.ControllerUtil;
 import com.facilio.agent.PublishType;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
 import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -112,19 +113,20 @@ public class ControllerAction extends FacilioAction {
 			List<Map<String, Object>> agentDetailsList;
 			agentDetailsList = new AgentUtil(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentOrg().getDomain()).agentDetails();
 
-			if (agentDetailsList != null) {
-				JSONArray agentDetails = new JSONArray();
+            JSONArray agentDetails = new JSONArray();
+            setAgentDetail(agentDetails);
+            if ( agentDetailsList != null || !agentDetailsList.isEmpty()) {
 				agentDetails.addAll(agentDetailsList);
 				setAgentDetail(agentDetails);
 				setResult("agentDetails", getAgentDetail());
 				return SUCCESS;
 			}else {
 				setResult("agentDetails", getAgentDetail());
-				return NONE;
+				return SUCCESS;
 			}
 		} else {
 			setResult("agentDetails",getAgentDetail());
-			return ERROR;
+			return SUCCESS;
 		}
 	}
 
@@ -146,15 +148,15 @@ public class ControllerAction extends FacilioAction {
 
 		List<Map<String, Object>> agentControllerList;
 		agentControllerList =    ControllerUtil.controllerDetailsAPI(getAgentId());
-
+		this.controllerDetails = new JSONArray();
 		if (!agentControllerList.isEmpty()) {
-			this.controllerDetails = new JSONArray();
 			this.controllerDetails.addAll(agentControllerList);
 			setResult("controllerDetails", getControllerDetails());
 			return SUCCESS;
 		}
+		setControllerDetails(new JSONArray());
 		setResult("controllerDetails", getControllerDetails());
-		return ERROR;
+		return SUCCESS;
 	}
 
 	public JSONArray getJsonArray() {
@@ -176,7 +178,7 @@ public class ControllerAction extends FacilioAction {
 			return SUCCESS;
 		}
 		setResult("agentLog", getJsonArray());
-		return ERROR;
+		return SUCCESS;
 	}
 	private Integer publishType;
 
@@ -191,14 +193,14 @@ public class ControllerAction extends FacilioAction {
 	public String getAgentMetrics() throws Exception{
 		List<Map<String, Object>> agentMetrics;
 		agentMetrics = AgentUtil.getAgentMetrics(getAgentId(),getPublishType());
+		this.jsonArray = new JSONArray();
 		if(!agentMetrics.isEmpty()){
-			this.jsonArray = new JSONArray();
 			this.jsonArray.addAll(agentMetrics);
 			setResult("agentMetrics", getJsonArray());
 			return SUCCESS;
 		}
 		setResult("agentMetrics", getJsonArray());
-		return ERROR;
+		return SUCCESS;
 	}
 
 	/**
@@ -215,7 +217,7 @@ public class ControllerAction extends FacilioAction {
 			return SUCCESS;
 		} else {
 			setResult("msg", ERROR);
-			return ERROR;
+			return SUCCESS;
 		}
 
 	}
@@ -242,7 +244,7 @@ public class ControllerAction extends FacilioAction {
 			return SUCCESS;
 		} else {
 			setResult("msg", ERROR);
-			return ERROR;
+			return SUCCESS;
 		}
 	}
 	private static final Logger LOGGER = LogManager.getLogger(ControllerAction.class.getName());
@@ -264,14 +266,15 @@ public class ControllerAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.TABLE_NAME,AgentKeys.AGENT_LOG_TABLE);
 		context.put(FacilioConstants.ContextNames.FIELDS, FieldFactory.getAgentLogFields());
 		context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
+		context.put(FacilioConstants.ContextNames.SORT_FIELDS,FieldFactory.getAgentLogTimeField(agentModule).getColumnName()+" DESC");
 		logDetails.addAll(bean.getRows(context));
 		if(! logDetails.isEmpty()){
 			setResult("logs",logDetails);
 			return SUCCESS;
 		}
 		else {
-			setResult("logs",logDetails);
-			return ERROR;
+			setResult("logs",new ArrayList<>());
+			return SUCCESS;
 		}
 	}
 
@@ -298,6 +301,38 @@ public class ControllerAction extends FacilioAction {
 		}
 		return ERROR;
 	}
+
+	/*public String getMetrics() throws Exception{
+		ModuleCRUDBean bean;
+		bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", Objects.requireNonNull(AccountUtil.getCurrentOrg()).getId());
+		FacilioModule metricsModule = ModuleFactory.getAgentMetricsModule();
+		FacilioContext context = new FacilioContext();
+		Criteria criteria = new Criteria();
+		JSONArray metricsDetails = new JSONArray();
+		if(getAgentId() != null) {
+			criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(metricsModule), getAgentId().toString(), NumberOperators.EQUALS));
+		}
+		context.put(FacilioConstants.ContextNames.TABLE_NAME,AgentKeys.METRICS_TABLE);
+		context.put(FacilioConstants.ContextNames.FIELDS, FieldFactory.getAgentMetricsFields());
+		context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
+        Long day30Back = DateTimeUtil.getDayStartTimeOf(System.currentTimeMillis())-(2592000000L);
+        criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getCreatedTime(metricsModule),day30Back.toString(),NumberOperators.GREATER_THAN_EQUAL));
+		context.put(FacilioConstants.ContextNames.LIMIT_VALUE,(30*6));
+		HashMap[] maps = new HashMap[PublishType.initTypeMap().size()];
+		List<Map<String,Object>> records = bean.getRows(context);
+		for(Map<String,Object> record : records){
+			maps[PublishType.valueOf(record.get(EventUtil.DATA_TYPE).toString()).getKey()].put(AgentKeys.SIZE,record.get(AgentKeys.SIZE).toString());
+		}
+
+		if(! metricsDetails.isEmpty()){
+			setResult("metrics",metricsDetails);
+			return SUCCESS;
+		}
+		else {
+			setResult("metrics",metricsDetails);
+			return SUCCESS;
+		}
+	}*/
 }
 
 

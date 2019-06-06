@@ -1,25 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.ReadingAlarmContext;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.DateOperators;
-import com.facilio.bmsconsole.criteria.DateRange;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.util.AlarmAPI;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.events.constants.EventConstants.EventFieldFactory;
-import com.facilio.events.context.EventContext;
-import com.facilio.events.util.EventAPI;
-import com.facilio.report.context.ReportContext;
-import com.facilio.report.context.ReportContext.ReportType;
-import com.facilio.report.context.ReportDataPointContext;
-import com.facilio.util.FacilioUtil;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -30,8 +20,26 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.ReadingAlarmContext;
+import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.events.constants.EventConstants.EventFieldFactory;
+import com.facilio.events.context.EventContext;
+import com.facilio.events.util.EventAPI;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.report.context.ReportContext;
+import com.facilio.report.context.ReportContext.ReportType;
+import com.facilio.report.context.ReportDataPointContext;
+import com.facilio.time.DateRange;
+import com.facilio.util.FacilioUtil;
 
 public class FetchReportAdditionalInfoCommand implements Command {
 	
@@ -92,7 +100,7 @@ public class FetchReportAdditionalInfoCommand implements Command {
 							if (parentIds != null) {
 								List<ReadingAlarmContext> alarms = null;
 								if (alarmId == null || alarmId == -1) {
-									alarms = AlarmAPI.getReadingAlarms(parentIds, dp.getyAxis().getFieldId(), report.getDateRange().getStartTime(), report.getDateRange().getEndTime(), false);
+									alarms = AlarmAPI.getReadingAlarms(parentIds, -1l, dp.getyAxis().getFieldId(), report.getDateRange().getStartTime(), report.getDateRange().getEndTime(), false);
 								}
 								else if (currentAlarm != null && currentAlarm.getReadingFieldId() == dp.getyAxis().getFieldId() && parentIds.contains(currentAlarm.getResource().getId())) {
 									alarms = AlarmAPI.getReadingAlarms(currentAlarm.getEntityId(), report.getDateRange().getStartTime(), report.getDateRange().getEndTime(), false);

@@ -1,34 +1,51 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Chain;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.FormLayout;
+import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
+import com.facilio.bmsconsole.context.PublishData;
+import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
-import com.facilio.bmsconsole.criteria.DateRange;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.util.*;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.context.SpaceCategoryContext;
+import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.FormulaFieldAPI;
+import com.facilio.bmsconsole.util.IoTMessageAPI;
 import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.time.DateRange;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.timeseries.TimeSeriesAPI;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
-import org.apache.commons.chain.Chain;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 public class ReadingAction extends FacilioAction {
 	
@@ -1003,10 +1020,34 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.FETCH_READING_INPUT_VALUES, fetchInputValues);
 		context.put(FacilioConstants.ContextNames.IS_FETCH_RDM_FROM_UI, true);
 		
+		if (isFetchCount()) {
+			context.put(FacilioConstants.ContextNames.FETCH_COUNT, isFetchCount());
+		}
+		if (getSearch() != null) {
+			context.put(FacilioConstants.ContextNames.SEARCH, getSearch());
+		}
+		if (getPerPage() != -1) {
+			JSONObject pagination = new JSONObject();
+			pagination.put("page", getPage());
+			pagination.put("perPage", getPerPage());
+			
+			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+		}
+		if (StringUtils.isNotEmpty(getReadingType())) {
+			context.put(FacilioConstants.ContextNames.FILTER, getReadingType());
+		}
+
+		
 		Chain latestAssetData = ReadOnlyChainFactory.fetchLatestReadingDataChain();
 		latestAssetData.execute(context);
 		
-		setResult("readingValues", context.get(FacilioConstants.ContextNames.READING_DATA_META_LIST));
+		if (isFetchCount()) {
+			setResult(ContextNames.COUNT, context.get(ContextNames.COUNT));
+		}
+		else {
+			setResult("readingValues", context.get(FacilioConstants.ContextNames.READING_DATA_META_LIST));
+		}
+		
 		
 		return SUCCESS;
 	}
@@ -1039,7 +1080,9 @@ public class ReadingAction extends FacilioAction {
 		if (instance != null && AccountUtil.getCurrentOrg()!= null) {
 			instance.put("value", value);
 			instance.put("fieldId", fieldId);
-			IoTMessageAPI.publishIotMessage(Collections.singletonList(instance), IotCommandType.SET);
+			PublishData data = IoTMessageAPI.publishIotMessage(Collections.singletonList(instance), IotCommandType.SET);
+			setResult("data", data);
+			
 		}
 		return SUCCESS;
 	}
@@ -1092,6 +1135,50 @@ public class ReadingAction extends FacilioAction {
 	}
 	public void setValue(String value) {
 		this.value = value;
+	}
+	
+	private String search;
+	public void setSearch(String search) {
+		this.search = search;
+	}
+	public String getSearch() {
+		return this.search;
+	}
+
+	private int page;
+	public void setPage(int page) {
+		this.page = page;
+	}
+	public int getPage() {
+		return this.page;
+	}
+
+	public int perPage = -1;
+	public void setPerPage(int perPage) {
+		this.perPage = perPage;
+	}
+	public int getPerPage() {
+		return this.perPage;
+	}
+	
+	// connected, formula or others
+	private String readingType;
+	public String getReadingType() {
+		return readingType;
+	}
+	public void setReadingType(String readingType) {
+		this.readingType = readingType;
+	} 
+	
+	private Boolean fetchCount;
+	public boolean isFetchCount() {
+		if (fetchCount == null) {
+			return false;
+		}
+		return fetchCount;
+	}
+	public void setFetchCount(boolean fetchCount) {
+		this.fetchCount = fetchCount;
 	}
 
 }

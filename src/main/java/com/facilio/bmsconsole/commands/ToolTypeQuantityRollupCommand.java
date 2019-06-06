@@ -1,12 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.*;
+import com.facilio.bmsconsole.context.ItemContext;
+import com.facilio.bmsconsole.context.ToolContext;
+import com.facilio.bmsconsole.context.ToolTransactionContext;
+import com.facilio.bmsconsole.context.ToolTypesContext;
+import com.facilio.bmsconsole.util.StoreroomApi;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.*;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -79,7 +84,7 @@ public class ToolTypeQuantityRollupCommand implements Command {
 							.andCondition(CriteriaAPI.getIdCondition(id, toolTypesModule));
 
 					updateBuilder.update(toolType);
-					updateStoreRoomLastPurchasedDate(storeRoomId, lastPurchasedDate);
+					StoreroomApi.updateStoreRoomLastPurchasedDate(storeRoomId, lastPurchasedDate);
 				}
 			}
 			context.put(FacilioConstants.ContextNames.TOOL_TYPES_IDS, toolTypesIds);
@@ -112,16 +117,16 @@ public class ToolTypeQuantityRollupCommand implements Command {
 		return 0d;
 	}
 
-	private void updateStoreRoomLastPurchasedDate(long storeRoomId, long lastPurchasedDate) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.STORE_ROOM);
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.STORE_ROOM);
-		StoreRoomContext storeRoom = new StoreRoomContext();
-		storeRoom.setId(storeRoomId);
-		storeRoom.setLastPurchasedDate(lastPurchasedDate);
-		UpdateRecordBuilder<StoreRoomContext> updateBuilder = new UpdateRecordBuilder<StoreRoomContext>().module(module)
-				.fields(fields).andCondition(CriteriaAPI.getIdCondition(storeRoomId, module));
-		updateBuilder.update(storeRoom);
-	}
+//	private void updateStoreRoomLastPurchasedDate(long storeRoomId, long lastPurchasedDate) throws Exception {
+//		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+//		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.STORE_ROOM);
+//		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.STORE_ROOM);
+//		StoreRoomContext storeRoom = new StoreRoomContext();
+//		storeRoom.setId(storeRoomId);
+//		storeRoom.setLastPurchasedDate(lastPurchasedDate);
+//		UpdateRecordBuilder<StoreRoomContext> updateBuilder = new UpdateRecordBuilder<StoreRoomContext>().module(module)
+//				.fields(fields).andCondition(CriteriaAPI.getIdCondition(storeRoomId, module));
+//		updateBuilder.update(storeRoom);
+//	}
 
 }

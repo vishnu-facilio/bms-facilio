@@ -293,7 +293,7 @@
 			<param name="moduleName">workorder</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
-				<param name="includeProperties">tasks.*,sections.*</param>
+				<param name="includeProperties">tasks.*,sections.*,preRequests.*,preRequestSections.*</param>
 			</result>
 		</action>
 		<action name="dashboard" class="com.facilio.bmsconsole.actions.DashboardAction"
@@ -589,7 +589,7 @@
 			<param name="moduleName">workorder</param>
 			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
 			<result name="success" type="json">
-				<param name="includeProperties">rowsUpdated,^error.*</param>
+				<param name="includeProperties">rowsUpdated,preRequestStatus,^error.*</param>
 			</result>
 		</action>
 		<action name="addorupdatetaskinput" class="com.facilio.bmsconsole.actions.TaskAction"
@@ -1068,6 +1068,10 @@
 			<result type="tiles">adminpage/orginfo.jsp</result>
 			</action>
 			<action name="updateUser" class="com.facilio.bmsconsole.actions.AdminAction" method = "updateUser">
+		<result name="success" type="tiles">adminpage/orginfo.jsp</result>
+		 </action>
+		 
+		 	<action name="addLicense" class="com.facilio.bmsconsole.actions.AdminAction" method = "addLicense">
 		<result name="success" type="tiles">adminpage/orginfo.jsp</result>
 		 </action>
 		 
@@ -1641,26 +1645,9 @@
 	</package>
 
 	<package name="workOrderApi" namespace="/api/workorder" extends="homeApi">
-		<action name="layout" class="com.facilio.bmsconsole.actions.WorkOrderAction"
-			method="newWorkOrder">
-			<param name="moduleName">workorder</param>
-			<param name="permission">CREATE</param>
-			<result name="success" type="json">
-				<param name="includeProperties">formlayout,formlayout\[\d+\],formlayout\[\d+\].*</param>
-			</result>
-		</action>
 
 		<action name="add" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="addWorkOrder">
-			<param name="moduleName">workorder</param>
-			<param name="permission">CREATE</param>
-			<result name="success" type="json">
-				<param name="includeProperties">^workorder.*</param>
-			</result>
-		</action>
-
-		<action name="addFromTemplate" class="com.facilio.bmsconsole.actions.WorkOrderAction"
-			method="addWorkOrderFromTemplate">
 			<param name="moduleName">workorder</param>
 			<param name="permission">CREATE</param>
 			<result name="success" type="json">
@@ -1774,7 +1761,7 @@
 			<param name="moduleName">planned</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
-				<param name="includeProperties">^preventivemaintenance.*,^workorder.*,taskList.*,sections.*,^reminders.*,^listOfTasks.*,^sectionTemplates.*</param>
+				<param name="includeProperties">^preventivemaintenance.*,^workorder.*,taskList.*,sections.*,^reminders.*,^listOfTasks.*,^sectionTemplates.*,^preRequestList.*,^listOfPreRequests.*,^preRequestSectionTemplates.*</param>
 			</result>
 		</action>
 
@@ -1861,7 +1848,7 @@
 		</action>
 		
 		<action name="workOrderCount" class="com.facilio.bmsconsole.actions.WorkOrderAction"
-			method="workOrderCount">
+			method="workOrderList">
 			<param name="moduleName">workorder</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
@@ -2198,6 +2185,18 @@
 	
 		<action name="getAllBuildings" class="com.facilio.bmsconsole.actions.PortfolioAction"
 			method="getAllBuildings">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportData.*</param>
+			</result>
+		</action>
+		<action name="getAllBuildingsWithRootMeter" class="com.facilio.bmsconsole.actions.PortfolioAction"
+			method="getAllBuildingsWithRootMeter">
+			<result name="success" type="json">
+				<param name="includeProperties">^reportData.*</param>
+			</result>
+		</action>
+		<action name="getAllBuildingsWithRootMeterMeta" class="com.facilio.bmsconsole.actions.PortfolioAction"
+			method="getAllBuildingsWithRootMeterMeta">
 			<result name="success" type="json">
 				<param name="includeProperties">^reportData.*</param>
 			</result>
@@ -3359,6 +3358,16 @@
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
 				<param name="includeProperties">^resultMap.*,^logResult.*</param>
+			</result>
+			<result name="error" type="json">
+				<param name="statusCode">400</param>
+			</result>
+		</action>
+		
+		<action name="getDefaultWorkflowResult" class="com.facilio.workflows.action.WorkflowAction" method="getDefaultWorkflowResult">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">^workflowResult.*</param>
 			</result>
 			<result name="error" type="json">
 				<param name="statusCode">400</param>

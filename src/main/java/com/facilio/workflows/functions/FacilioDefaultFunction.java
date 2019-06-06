@@ -1,26 +1,43 @@
 package com.facilio.workflows.functions;
 
+import com.chargebee.org.json.JSONObject;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
-import com.facilio.bmsconsole.criteria.*;
-import com.facilio.bmsconsole.modules.*;
+import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.cards.util.CardUtil;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.NumberField;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.exceptions.FunctionParamException;
 import com.facilio.workflows.util.WorkflowUtil;
 
+import java.net.URLEncoder;
 import java.util.*;
 import java.util.logging.Level;
+
+;
 
 public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 
@@ -355,6 +372,30 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			String token = AccountUtil.getUserBean().generatePermalinkForURL(objects[1].toString(), user);
 			String permalLinkURL = objects[0].toString()+objects[1].toString()+"?token="+token+"&startDate="+Long.valueOf(objects[2].toString())+"&endDate="+Long.valueOf(objects[3].toString());
 			
+			return permalLinkURL;
+		}
+		
+	},
+	GET_MAINTENANCE_PERMALINK_URL(10, "getMaintenancePermaLinkUrl") {
+
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			if (objects == null || objects.length < 1) {
+				return null;
+			}
+			
+			User user = AccountUtil.getUserBean().getUser(AccountUtil.getCurrentOrg().getId(), (String) objects[5]);
+			String token = AccountUtil.getUserBean().generatePermalinkForURL(objects[1].toString(), user);
+			DashboardContext dashboard = DashboardUtil.getDashboard(Long.valueOf(objects[6].toString()));
+			org.json.simple.JSONObject dateJson = new org.json.simple.JSONObject();
+			dateJson.put("startTime", Long.valueOf(objects[2].toString()));
+			dateJson.put("endTime", Long.valueOf(objects[3].toString()));
+			dateJson.put("operatorId", Long.valueOf(objects[4].toString()));
+			
+			SiteContext site = SpaceAPI.getSiteSpace(Long.valueOf(objects[7].toString()));
+					
+			String permalLinkURL = objects[0].toString()+"/app/maintenanceReport?token="+token+"&id="+dashboard.getId()+"&linkName="+dashboard.getLinkName()+"&siteName="+URLEncoder.encode(site.getName())+"&siteId="+site.getId()+"&moduleName=workorder"+"&name="+URLEncoder.encode(dashboard.getDashboardName())+"&daterange="+URLEncoder.encode(dateJson.toString());
 			return permalLinkURL;
 		}
 		

@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.fs.FileStoreFactory;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.unitconversion.Unit;
 
 public class ItemTypesContext extends ModuleBaseWithCustomFields {
@@ -37,13 +37,13 @@ public class ItemTypesContext extends ModuleBaseWithCustomFields {
 		this.serialNumber = serialNumber;
 	}
 
-	private ItemTypesCategoryContext category;
+	private InventoryCategoryContext category;
 
-	public ItemTypesCategoryContext getCategory() {
+	public InventoryCategoryContext getCategory() {
 		return category;
 	}
 
-	public void setCategory(ItemTypesCategoryContext category) {
+	public void setCategory(InventoryCategoryContext category) {
 		this.category = category;
 	}
 

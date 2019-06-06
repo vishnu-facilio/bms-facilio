@@ -1,53 +1,40 @@
 package com.facilio.bmsconsole.util;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import com.facilio.modules.FacilioStatus;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.activity.WorkOrderActivityType;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.stateflow.TimerFieldUtil;
+import com.facilio.bmsconsole.stateflow.TimerFieldUtil.TimerField;
+import com.facilio.bmsconsole.workflow.rule.*;
+import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext.TransitionType;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.EnumOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule.ModuleType;
+import com.facilio.modules.FacilioStatus.StatusType;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.tasker.FacilioTimer;
+import com.facilio.time.DateTimeUtil;
+import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.activity.WorkOrderActivityType;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.modules.FacilioStatus.StatusType;
-import com.facilio.bmsconsole.criteria.BooleanOperators;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.EnumOperators;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.modules.UpdateChangeSet;
-import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
-import com.facilio.bmsconsole.stateflow.TimerFieldUtil;
-import com.facilio.bmsconsole.stateflow.TimerFieldUtil.TimerField;
-import com.facilio.bmsconsole.workflow.rule.ApproverContext;
-import com.facilio.bmsconsole.workflow.rule.StateContext;
-import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
-import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
-import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext.TransitionType;
-import com.facilio.bmsconsole.workflow.rule.ValidationContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
-import com.facilio.chain.FacilioContext;
-import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericDeleteRecordBuilder;
-import com.facilio.sql.GenericInsertRecordBuilder;
-import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.sql.GenericUpdateRecordBuilder;
-import com.facilio.tasker.FacilioTimer;
+import java.util.*;
 
 public class StateFlowRulesAPI extends WorkflowRuleAPI {
 
@@ -583,10 +570,23 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 	}
 
 	public static void addStateFlowTransitionChildren(StateflowTransitionContext rule) throws Exception {
-		if (rule.getForm() != null) {
+		FacilioForm form = rule.getForm();
+		if (form != null) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			long formId = FormsAPI.createForm(rule.getForm(), modBean.getModule(rule.getModuleId()));
-			rule.setFormId(formId);
+			Context context = new FacilioContext();
+			if (StringUtils.isEmpty(form.getName())) {
+				form.setName("Enter Details");
+			}
+			form.setName(form.getName() + "_" + rule.getId());
+			context.put(FacilioConstants.ContextNames.FORM, form);
+
+			FacilioModule module = modBean.getModule(rule.getModuleId());
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
+
+			Chain chain = TransactionChainFactory.getAddFormCommand();
+			chain.execute(context);
+
+			rule.setFormId(form.getId());
 		}
 	}
 	

@@ -1,5 +1,4 @@
 package com.facilio.beans;
-
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
 import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.accounts.util.AccountUtil;
@@ -9,8 +8,6 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
-import com.facilio.bmsconsole.criteria.*;
-import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.*;
@@ -18,19 +15,26 @@ import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.events.util.EventAPI;
 import com.facilio.events.util.EventRulesAPI;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioStatus;
+import com.facilio.modules.*;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.procon.consumer.FacilioConsumer;
 import com.facilio.procon.message.FacilioRecord;
-import com.facilio.sql.GenericDeleteRecordBuilder;
-import com.facilio.sql.GenericInsertRecordBuilder;
-import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.timeseries.TimeSeriesAPI;
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -236,12 +240,45 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				if(taskMapForNewPmExecution != null) {
 					taskMap = taskMapForNewPmExecution;
 				}
+				Map<String, List<TaskContext>> preRequestMap = workorderTemplate.getPreRequests();
 
+				Map<String, List<TaskContext>> preRequestMapForNewPmExecution = null; 
+				isNewPmType = false;
+
+				if (workorderTemplate.getPreRequestSectionTemplates() != null) {
+					for (TaskSectionTemplate sectiontemplate : workorderTemplate.getPreRequestSectionTemplates()) {
+						if (sectiontemplate.getAssignmentType() < 0) {
+							isNewPmType = false;
+							break;
+						} else {
+							isNewPmType = true;
+						}
+					}
+				}
+
+				if (isNewPmType) {
+					Long woTemplateResourceId = wo.getResource() != null ? wo.getResource().getId() : -1;
+					if (woTemplateResourceId > 0) {
+						Long currentTriggerId = null;
+						if (pmTrigger != null) {
+							currentTriggerId = pmTrigger.getId();
+						}
+						preRequestMapForNewPmExecution = PreventiveMaintenanceAPI.getPreRequestMapForNewPMExecution(
+								workorderTemplate.getPreRequestSectionTemplates(), woTemplateResourceId,
+								currentTriggerId);
+					}
+				} else {
+					preRequestMapForNewPmExecution = workorderTemplate.getPreRequests();
+				}
+				if (preRequestMapForNewPmExecution != null) {
+					preRequestMap = preRequestMapForNewPmExecution;
+				}
 				wo.setSourceType(TicketContext.SourceType.PREVENTIVE_MAINTENANCE);
 				wo.setPm(pm);
 				context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 				context.put(FacilioConstants.ContextNames.REQUESTER, wo.getRequester());
 				context.put(FacilioConstants.ContextNames.TASK_MAP, taskMap);
+				context.put(FacilioConstants.ContextNames.PRE_REQUEST_MAP, preRequestMap);
 				context.put(FacilioConstants.ContextNames.IS_PM_EXECUTION, true);
 				context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
 				context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTEXT_LIST, wo.getAttachments());
@@ -649,7 +686,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	}
 
 	@Override
-	public Long addLog(Map<String, Object> logData) throws Exception{
+	public Long addLog(Map<String, Object> logData) throws Exception{ // done transaction
 		FacilioModule logModule = ModuleFactory.getAgentLogModule();
 		GenericInsertRecordBuilder genericInsertRecordBuilder = new GenericInsertRecordBuilder()
 															.table(AgentKeys.AGENT_LOG_TABLE)
@@ -658,7 +695,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	}
 
     @Override
-    public void updateAgentMetrics(Map<String,Object> metrics, Map<String, Object> criteria) throws Exception {
+    public int updateAgentMetrics(Map<String,Object> metrics, Map<String, Object> criteria) throws Exception { // done transaction
 		FacilioModule metricsmodule = ModuleFactory.getAgentMetricsModule();
 		GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder()
 																.table(AgentKeys.METRICS_TABLE)
@@ -667,15 +704,26 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 																.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(metricsmodule), criteria.get(AgentKeys.AGENT_ID).toString(),NumberOperators.EQUALS))
 																.andCondition(CriteriaAPI.getCondition(FieldFactory.getPublishTypeField(metricsmodule), criteria.get(EventUtil.DATA_TYPE).toString(),NumberOperators.EQUALS));
 
-                genericUpdateRecordBuilder.update(metrics);
+                return genericUpdateRecordBuilder.update(metrics);
 
 
     }
-    public void insertAgentMetrics(Map<String,Object> metrics)throws Exception{
+    public long insertAgentMetrics(Map<String,Object> metrics)throws Exception{ // done transaction
 		GenericInsertRecordBuilder genericInsertRecordBuilder = new GenericInsertRecordBuilder()
 				.table(AgentKeys.METRICS_TABLE)
 				.fields(FieldFactory.getAgentMetricsFields());
-		genericInsertRecordBuilder.insert( metrics);
+        try {
+            return genericInsertRecordBuilder.insert( metrics);
+        }catch (Exception e){
+            if(e instanceof com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException){
+                LOGGER.info("Duplicate Metrics, insertion failed "+e.getMessage());
+            }
+            else {
+                LOGGER.info("Exception occurred ",e);
+            }
+        }
+        return -1L;
+
 	}
 
     @Override
@@ -704,7 +752,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		return genericSelectRecordBuilder.get();
 	}*/
 
-	public Long addAgentMessage(Map<String,Object> map)throws Exception{
+	public Long addAgentMessage(Map<String,Object> map)throws Exception{ // transaction done
 		FacilioModule messageModule = ModuleFactory.getAgentMessageModule();
         try {
             GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
@@ -712,11 +760,18 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
                     .fields(FieldFactory.getAgentMessageFields());
             return insertRecordBuilder.insert(map);
     }catch (Exception e){
-        LOGGER.info("Exception Occurred ",e);
-        throw e;
+            if(e instanceof MySQLIntegrityConstraintViolationException){
+                LOGGER.info("Duplicate Message,insertion failed "+e.getMessage());
+            }
+            else {
+                LOGGER.info("Exception Occurred "+e.getMessage());
+                throw e;
+            }
     }
+       return 0L;
 	}
-	public Long updateAgentMessage(Map<String,Object> map) throws Exception{
+
+	public Long updateAgentMessage(Map<String,Object> map) throws Exception{ // transaction done
 		FacilioModule messageModule = ModuleFactory.getAgentMessageModule();
 		try{
 			GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
@@ -729,10 +784,17 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			Integer rowsAffected= updateRecordBuilder.update(map);
 			return Long.valueOf(rowsAffected);
         }catch (Exception e){
-            LOGGER.info("Exception Occurred ",e);
-            throw e;
+			if(e instanceof MySQLIntegrityConstraintViolationException){
+				LOGGER.info("Duplicate Message,updation failed "+e.getMessage());
+			}
+			else {
+				LOGGER.info("Exception Occurred "+e.getMessage());
+				throw e;
+			}
         }
+		return 0L;
 	}
+
 	public List<Map<String,Object>> getRows(FacilioContext context) throws Exception{
 	    // always create an Empty List<Map<String,Object>> and return it instead of null;
         List<Map<String,Object>> rows = new ArrayList<>();
@@ -743,7 +805,9 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
                     .select((Collection<FacilioField>) context.get(FacilioConstants.ContextNames.FIELDS))
                     .andCondition(CriteriaAPI.getCurrentOrgIdCondition(messageModule))
                     .andCriteria((Criteria) context.get(FacilioConstants.ContextNames.CRITERIA));
-
+            if( context.containsKey(FacilioConstants.ContextNames.SORT_FIELDS)){
+                selectRecordBuilder.orderBy(context.get(FacilioConstants.ContextNames.SORT_FIELDS).toString());
+            }
             if (context.containsKey(FacilioConstants.ContextNames.OFFSET)) {
                 selectRecordBuilder.offset(Integer.parseInt(context.get(FacilioConstants.ContextNames.OFFSET).toString()));
             }

@@ -4,11 +4,17 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.ItemContext.CostType;
 import com.facilio.bmsconsole.context.PurchaseOrderContext.Status;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.*;
+import com.facilio.bmsconsole.util.ItemsApi;
+import com.facilio.bmsconsole.util.ToolsApi;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.UpdateRecordBuilder;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -52,18 +58,33 @@ public class PurchaseOrderCompleteCommand implements Command {
 									ItemTypesContext itemtype = getItemType(lineItem.getItemType().getId());
 									if (itemtype.isRotating()) {
 										containsIndividualTrackingItem = true;
+										ItemContext item = ItemsApi.getItemsForTypeAndStore(po.getStoreRoom().getId(), lineItem.getItemType().getId());
+										long lastPurchasedDate = ItemsApi.getLastPurchasedItemDateForItemId(item.getId());
+										ItemContext update_item = new ItemContext();
+										update_item.setId(item.getId());
+										update_item.setLastPurchasedDate(lastPurchasedDate);
+										update_item.setLastPurchasedPrice(ItemsApi.getLastPurchasedItemPriceForItemId(item.getId()));
+										ItemsApi.updateLastPurchasedDateForItem(update_item);
+										ItemsApi.updateLastPurchasedDetailsForItemType(itemtype.getId());
 									} else {
 										containsIndividualTrackingItem = false;
-									}
-									itemsTobeAdded.add(createItem(po, lineItem, containsIndividualTrackingItem));
+										itemsTobeAdded.add(createItem(po, lineItem, containsIndividualTrackingItem));
+									}									
 								} else if (lineItem.getInventoryTypeEnum() == InventoryType.TOOL) {
 									ToolTypesContext toolType = getToolType(lineItem.getToolType().getId());
 									if (toolType.isRotating()) {
 										containsIndividualTrackingTool = true;
+										ToolContext tool = ToolsApi.getToolsForTypeAndStore(po.getStoreRoom().getId(), toolType.getId());
+										long lastPurchasedDate= ToolsApi.getLastPurchasedToolDateForToolId(tool.getId());	
+										ToolContext update_tool = new ToolContext();
+										update_tool.setId(tool.getId());
+										update_tool.setLastPurchasedDate(lastPurchasedDate);
+										ToolsApi.updateLastPurchasedDateForTool(update_tool);
+										ToolsApi.updatelastPurchaseddetailsInToolType(toolType.getId());
 									} else {
 										containsIndividualTrackingTool = false;
-									}
-									toolsToBeAdded.add(createTool(po, lineItem, containsIndividualTrackingTool));
+										toolsToBeAdded.add(createTool(po, lineItem, containsIndividualTrackingTool));
+									}								
 								}
 							}
 						}
@@ -236,4 +257,5 @@ public class PurchaseOrderCompleteCommand implements Command {
 		}
 		return purchasedTools;
 	}
+
 }

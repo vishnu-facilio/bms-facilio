@@ -1,8 +1,7 @@
 package com.facilio.chain;
 
 import com.facilio.bmsconsole.commands.PostTransactionCommand;
-import com.facilio.transaction.FacilioTransactionManager;
-import org.apache.commons.chain.Chain;
+import com.facilio.db.transaction.FacilioTransactionManager;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.chain.impl.ChainBase;
@@ -13,7 +12,6 @@ import org.apache.log4j.Logger;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class FacilioChain extends ChainBase {

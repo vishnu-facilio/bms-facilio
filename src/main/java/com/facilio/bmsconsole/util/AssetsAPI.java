@@ -31,26 +31,28 @@ import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ToolContext;
-import com.facilio.bmsconsole.criteria.BooleanOperators;
-import com.facilio.bmsconsole.criteria.BuildingOperator;
-import com.facilio.bmsconsole.criteria.CommonOperators;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.criteria.PickListOperators;
-import com.facilio.bmsconsole.criteria.StringOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.DBUtil;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.BuildingOperator;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.fw.BeanFactory;
-import com.facilio.sql.DBUtil;
-import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.transaction.FacilioConnectionPool;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.UpdateRecordBuilder;
+import com.facilio.modules.fields.FacilioField;
 
 public class AssetsAPI {
 	
@@ -502,8 +504,6 @@ public class AssetsAPI {
 	}
 	
 	public static JSONObject getAssetsWithReadings (List<Long> buildingIds) throws Exception {
-		Map<Long, FacilioField> fieldMap = null;
-		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
 		List<FacilioField> fields = new ArrayList(modBean.getAllFields(FacilioConstants.ContextNames.ASSET));
@@ -528,16 +528,30 @@ public class AssetsAPI {
 		
 		List<AssetContext> assets = selectBuilder.get();
 		
+		JSONObject data = new JSONObject();
+
+		JSONObject categoryVsFields = new JSONObject();
+		data.put("categoryWithFields", categoryVsFields);
+
+		JSONObject categoryVsAssets = new JSONObject();
+		data.put("categoryWithAssets", categoryVsAssets);
+
+		Map<Long, Object> assetMap = new JSONObject();
+		data.put("assets", assetMap);
+
+		Map<Long, FacilioField> fieldMap = null;
+		data.put("fields", fieldMap);
+
 		if (assets == null || assets.isEmpty()) {
-			return null;
+			return data;
 		}
 		Set<Long> fieldIds = assets.stream().map(asset -> (Long) asset.getData().get("fieldId")).collect(Collectors.toSet());
 		fieldMap = modBean.getFields(fieldIds);
 		
-		Map<Long, Object> assetMap = new JSONObject();
+
 		
-		JSONObject categoryVsFields = new JSONObject();
-		JSONObject categoryVsAssets = new JSONObject();
+
+
 		for(AssetContext asset: assets) {
 			if (asset.getCategory() == null) {
 				continue;
@@ -586,8 +600,7 @@ public class AssetsAPI {
 			categoryVsFields.put(asset.getCategory().getId(), readings);
 			
 		}
-		
-		JSONObject data = new JSONObject();
+
 		data.put("categoryWithFields", categoryVsFields);
 		data.put("categoryWithAssets", categoryVsAssets);
 		data.put("assets", assetMap);
@@ -737,7 +750,7 @@ public class AssetsAPI {
 	}
 	
 	public static List<AssetContext> getAssetForItemTypeAndStore(long itemTypeId, long storeroomId) throws Exception {
-		
+
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		ItemContext rotatingItem = ItemsApi.getItemsForTypeAndStore(storeroomId, itemTypeId);
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
@@ -752,12 +765,12 @@ public class AssetsAPI {
 			return assets;
 		}
 	   throw new IllegalArgumentException("No appropriate asset found");
-		
-		
+
+
 	}
-	
+
 	public static List<AssetContext> getAssetForToolTypeAndStore(long toolTypeId, long storeroomId) throws Exception {
-		
+
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		ToolContext rotatingTool = ToolsApi.getToolsForTypeAndStore(storeroomId, toolTypeId);
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
@@ -766,17 +779,17 @@ public class AssetsAPI {
 				.table(module.getTableName()).moduleName(module.getName()).beanClass(AssetContext.class)
 				.andCondition(CriteriaAPI.getCondition("ROTATING_TOOL", "rotatingTool", String.valueOf(rotatingTool.getId()), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition("IS_USED", "isUsed", String.valueOf("false"), BooleanOperators.IS))
-						
+
 				;
 		List<AssetContext> assets = selectBuilder.get();
 		if(!CollectionUtils.isEmpty(assets)) {
 			return assets;
 		}
 	   throw new IllegalArgumentException("No appropriate asset found");
-		
-		
+
+
 	}
-	
+
 	public static void loadAssetsLookups(List<AssetContext> assets) throws Exception {
 		Set<Long> spaceIds = new HashSet<Long>();
 		Set<Long> typeIds = new HashSet<Long>();
@@ -812,6 +825,49 @@ public class AssetsAPI {
 			}
 		
 		}
+	}
+
+	public static void changeAssetSpace(long id, Map<String, Object> prop) throws Exception {
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+		FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
+		FacilioField isDeletedField = FieldFactory.getIsDeletedField(module.getParentModule());
+		FacilioField siteField = FieldFactory.getSiteIdField(module.getParentModule());
+		List<FacilioField> modFields = new ArrayList<FacilioField>();
+		modFields.addAll(fields);
+		modFields.add(isDeletedField);
+		modFields.add(siteField);
+		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+			.table(module.getTableName())
+			.fields(modFields)
+			.innerJoin(resourceModule.getTableName())
+			.on(module.getTableName()+".ID = "+resourceModule.getTableName()+".ID")
+			.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+			.andCondition(CriteriaAPI.getIdCondition(id, module))
+		;
+		builder.update(prop);
+
+	}
+
+	public static int updateAssetConnectionStatus(long assetId, boolean isConnected) throws Exception {
+
+		AssetContext asset = new AssetContext();
+		asset.setConnected(isConnected);
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
+
+		UpdateRecordBuilder<AssetContext> updateBuilder = new UpdateRecordBuilder<AssetContext>()
+				.module(module)
+				.fields(fields)
+				.andCondition(CriteriaAPI.getIdCondition(assetId, module));
+
+		return updateBuilder.update(asset);
+
 	}
 
 }

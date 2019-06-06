@@ -13,15 +13,14 @@ import com.facilio.accounts.exception.AccountException;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.AddActivitiesCommand;
-import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
-import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.leed.commands.AddConsumptionForLeed;
 import com.facilio.leed.commands.AddEnergyMeterCommand;
 import com.facilio.leed.commands.FetchArcAssetsCommand;
 import com.facilio.leed.commands.LeedBuildingDetailsCommand;
-import com.facilio.sql.GenericInsertRecordBuilder;
+import com.facilio.modules.FieldUtil;
 
 public class FacilioChainFactory {
     private static Logger LOGGER = LogManager.getLogger(FacilioChainFactory.class.getName());
@@ -891,6 +890,7 @@ public class FacilioChainFactory {
 		Chain c = FacilioChain.getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForAsset());
 		c.addCommand(new DeleteResourceCommand());
+		c.addCommand(new RotatingItemQuantityRollUpCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
 		return c;
 	}
@@ -1835,7 +1835,7 @@ public class FacilioChainFactory {
 		c.addCommand(new GenericDeleteModuleDataCommand());
 		return c;
 	}
-	
+
 	public static Chain getAddAssetCategoryChain() {
 		Chain c = FacilioChain.getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForAssetCategory());
@@ -2060,7 +2060,14 @@ public class FacilioChainFactory {
 		c.addCommand(new ApplyCriteriaForMLCommand());
 		c.addCommand(new GenerateMLModelCommand());
 		c.addCommand(new AddReadingsForMLCommand());
+		c.addCommand(new TriggerAlarmForMLCommand());
 		c.addCommand(new ApplyRuleForMLCommand());
+		return c;
+	}
+	
+	public static Chain enableAnomalyDetectionChain() {
+		Chain c = FacilioChain.getTransactionChain();
+		c.addCommand(new EnableAnomalyDetectionCommand());
 		return c;
 	}
 	

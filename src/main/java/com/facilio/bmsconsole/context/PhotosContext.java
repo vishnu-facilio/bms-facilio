@@ -1,7 +1,7 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.fs.FileStoreFactory;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class PhotosContext extends ModuleBaseWithCustomFields {
 	/**

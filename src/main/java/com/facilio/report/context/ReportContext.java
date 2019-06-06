@@ -1,26 +1,25 @@
 package com.facilio.report.context;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.facilio.beans.ModuleBean;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.criteria.operators.Operator;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.AggregateOperator;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldUtil;
+import com.facilio.report.context.ReadingAnalysisContext.AnalyticsType;
+import com.facilio.time.DateRange;
+import com.facilio.util.FacilioUtil;
+import com.facilio.workflows.context.WorkflowContext;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.DateOperators;
-import com.facilio.bmsconsole.criteria.DateRange;
-import com.facilio.bmsconsole.criteria.Operator;
-import com.facilio.bmsconsole.modules.AggregateOperator;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.fw.BeanFactory;
-import com.facilio.report.context.ReadingAnalysisContext.AnalyticsType;
-import com.facilio.util.FacilioUtil;
-import com.facilio.workflows.context.WorkflowContext;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ReportContext {
 
@@ -203,7 +202,7 @@ public class ReportContext {
 	}
 	public void setDateOperator(int dateOperator) {
 		if(dateOperator > 0) {
-			Operator operator = Operator.OPERATOR_MAP.get(dateOperator);
+			Operator operator = Operator.getOperator(dateOperator);
 			if (operator instanceof DateOperators) {
 				this.dateOperator = (DateOperators) operator;
 			}

@@ -37,7 +37,7 @@ public class CalculateAggregationCommand implements Command {
 			Map<String, Object> aggrData = new HashMap<>();
 
 			for (ReportDataPointContext dp : report.getDataPoints()) {
-				if (!dp.isAggrCalculated()) {
+				if (!dp.isAggrCalculated()) {//Whenever new aggregation is handled for another field type, dp.setAggregation should be updated there
 					switch (dp.getyAxis().getDataTypeEnum()) {
 						case NUMBER:
 						case DECIMAL:
@@ -52,7 +52,6 @@ public class CalculateAggregationCommand implements Command {
 						default:
 							break;
 					}
-					dp.setAggrCalculated(true);
 				}
 			}
 
@@ -86,6 +85,7 @@ public class CalculateAggregationCommand implements Command {
 			currentData = nextData;
 		}
 		aggregateEnum(report, dp, aggrData, timeAlias, currentData, null, isFirst, previousRecords); //for the last record
+		dp.setAggrCalculated(aggrData.containsKey(dp.getAliases().get(FacilioConstants.Reports.ACTUAL_DATA) + ".timeline"));
 	}
 
 	private void aggregateEnum (ReportContext report, ReportDataPointContext dp, Map<String, Object> aggrData, String timeAlias, Map<String, Object> currentData, Map<String, Object> nextData, boolean isFirst, Map<String, SimpleEntry<Long, Integer>> previousRecords) {
@@ -139,13 +139,13 @@ public class CalculateAggregationCommand implements Command {
 	private EnumVal combineEnumVal (ReportContext report, Set<Integer> enumValues, List<SimpleEntry<Long, Integer>> highResVal, long startTime, long endTime, SimpleEntry<Long, Integer> previousRecord) {
 		long currentTime = System.currentTimeMillis();
 
-		if (AccountUtil.getCurrentOrg().getId() == 134) {
+		/*if (AccountUtil.getCurrentOrg().getId() == 134) {
 			LOGGER.info(new StringBuilder()
 							.append("High Res : ").append(highResVal).append("\n")
 							.append("Start Time : ").append(startTime).append("\n")
 							.append("Current Time : ").append(currentTime).append("\n")
 							.append("Previous Record : ").append(previousRecord));
-		}
+		}*/
 
 		if (CollectionUtils.isEmpty(highResVal) && (previousRecord == null || startTime > currentTime)) {
 			return null;
@@ -154,12 +154,12 @@ public class CalculateAggregationCommand implements Command {
 		List<SimpleEntry<Long, Integer>> timeline = new ArrayList<>();
 		Map<Integer, Long> durations = initDuration(enumValues);
 		
-		LOGGER.info(new StringBuilder()
+		/*LOGGER.info(new StringBuilder()
 						.append("High Res Val : ").append(highResVal).append("\n")
 						.append("Enum : ").append(enumValues).append("\n")
 						.append("StartTime : ").append(startTime).append("\n")
 						.append("endTime : ").append(endTime).append("\n")
-						.append("Prev record : ").append(previousRecord).append("\n"));
+						.append("Prev record : ").append(previousRecord).append("\n"));*/
 		
 		if (previousRecord != null) {
 			SimpleEntry<Long, Integer> val = new SimpleEntry<Long, Integer>(startTime, previousRecord.getValue());
@@ -196,7 +196,7 @@ public class CalculateAggregationCommand implements Command {
 		durations.put(previousRecord.getValue(), duration + (endTime - previousRecord.getKey())); //End time is start time of next cycle. It's excluded
 		
 		EnumVal val = new EnumVal(highResVal, timeline, durations);
-		LOGGER.info(val);
+		// LOGGER.info(val);
 		return val;
 	}
 	
@@ -223,6 +223,7 @@ public class CalculateAggregationCommand implements Command {
 				calculateNumericAggr(data.get(alias), alias, aggrData, isLatest);
 			}
 		}
+		dp.setAggrCalculated(aggrData.containsKey(dp.getAliases().get(FacilioConstants.Reports.ACTUAL_DATA) + ".sum"));
 	}
 	
 	private void calculateNumericAggr (Object value, String alias, Map<String, Object> aggrData, boolean isLatest) {

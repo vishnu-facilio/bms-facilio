@@ -1,19 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.GatePassContext;
 import com.facilio.bmsconsole.context.GatePassLineItemsContext;
-import com.facilio.bmsconsole.context.ItemContext;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.InsertRecordBuilder;
+import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import java.util.List;
 
 public class AddGatePassLineItemsCommand implements Command{
 
@@ -27,7 +25,7 @@ public class AddGatePassLineItemsCommand implements Command{
 			List<FacilioField> fields = modBean
 					.getAllFields(FacilioConstants.ContextNames.GATE_PASS_LINE_ITEMS);
 			for(GatePassLineItemsContext item : lineItems) {
-				item.setGatePass(gatePass);
+				item.setGatePass(gatePass.getId());
 			}
 			addItem(module, fields, lineItems);
 		}

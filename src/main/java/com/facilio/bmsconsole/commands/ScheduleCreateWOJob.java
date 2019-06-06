@@ -49,7 +49,7 @@ public class ScheduleCreateWOJob implements Command {
         }
         for (Long id: pmIds) {
             FacilioTimer.deleteJob(id, "ScheduleNewPM");
-            FacilioTimer.scheduleOneTimeJob(id, "ScheduleNewPM", 5, "facilio");
+            FacilioTimer.scheduleOneTimeJob(id, "ScheduleNewPM", 5, "priority");
         }
         PreventiveMaintenanceAPI.updateWorkOrderCreationStatus(pmIds, true);
         return false;

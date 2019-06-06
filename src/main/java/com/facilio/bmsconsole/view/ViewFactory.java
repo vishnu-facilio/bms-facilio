@@ -1,44 +1,28 @@
 package com.facilio.bmsconsole.view;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext.AssetState;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
-import com.facilio.modules.FacilioStatus;
-import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
-import com.facilio.bmsconsole.criteria.BooleanOperators;
-import com.facilio.bmsconsole.criteria.CommonOperators;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.DateOperators;
-import com.facilio.bmsconsole.criteria.LookupOperator;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.criteria.PickListOperators;
-import com.facilio.bmsconsole.criteria.StringOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.tenant.TenantContext;
-import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.events.constants.EventConstants;
+import com.facilio.modules.*;
+import com.facilio.modules.FacilioStatus.StatusType;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.NumberField;
+import com.facilio.time.DateTimeUtil;
+
+import java.util.*;
 
 public class ViewFactory {
 
@@ -105,11 +89,12 @@ public class ViewFactory {
 
 		order = 1;
 		views = new LinkedHashMap<>();
-		views.put("approval_requested", getRequestedApproval().setOrder(order++));
-		views.put("approval_approved", getApprovedApproval().setOrder(order++));
-		views.put("approval_rejected", getRejectedApproval().setOrder(order++));
-		views.put("approval_all", getAllApproval().setOrder(order++));
-		views.put("approval_myrequests", getMyRequestWorkorders().setOrder(order++));
+//		views.put("approval_requested", getRequestedApproval().setOrder(order++));
+//		views.put("approval_approved", getApprovedApproval().setOrder(order++));
+//		views.put("approval_rejected", getRejectedApproval().setOrder(order++));
+//		views.put("approval_all", getAllApproval().setOrder(order++));
+//		views.put("approval_myrequests", getMyRequestWorkorders().setOrder(order++));
+		views.put("approval_requested", getRequestedStateApproval().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.APPROVAL, views);
 
 		order = 1;
@@ -279,6 +264,12 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllGatePass().setOrder(order++));
+		views.put("pending", getGatePassForStatus("pending", "Pending", 1).setOrder(order++));
+		views.put("approved", getGatePassForStatus("approved", "Approved", 2).setOrder(order++));
+		views.put("rejected", getGatePassForStatus("rejected", "Rejected", 4).setOrder(order++));
+		views.put("pendingreturn", getPendingReturnGatePass("pendingreturn", "Pending Return", 2).setOrder(order++));
+		views.put("overduereturn", getOverDueReturnGatePass("overduereturn", "Overdue Return", 2).setOrder(order++));
+		
 		viewsMap.put(FacilioConstants.ContextNames.GATE_PASS, views);
 		
 		order = 1;
@@ -327,6 +318,15 @@ public class ViewFactory {
 		views.put("all", getAllPoLineItemsSerialNumeberView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.PO_LINE_ITEMS_SERIAL_NUMBERS, views);
 		
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllShipmentView().setOrder(order++));
+		views.put("staged", getShipmentForStatus("staged", "Staged", 2).setOrder(order++));
+//		views.put("shipped", getShipmentForStatus("shipped", "Shipped", 3).setOrder(order++));
+		views.put("received", getShipmentForStatus("received", "Received", 4).setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.SHIPMENT, views);
+
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllInventoryRequestView().setOrder(order++));
@@ -336,6 +336,26 @@ public class ViewFactory {
 		views.put("issued", getInventoryRequestForStatus("issued", "Issued", 6).setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.INVENTORY_REQUEST, views);
 
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllAttendanceView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.ATTENDANCE, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllAttendanceTransactionView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.ATTENDANCE_TRANSACTIONS, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllShiftView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.SHIFT, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllBreakView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.BREAK, views);
+		
 		
 		return viewsMap;
 	}
@@ -3292,6 +3312,62 @@ public class ViewFactory {
 		return allView;
 	}
 	
+	private static FacilioView getAllShipmentView() {
+		FacilioField localId = new FacilioField();
+		localId.setName("localId");
+		localId.setColumnName("LOCAL_ID");
+		localId.setDataType(FieldType.NUMBER);
+		localId.setModule(ModuleFactory.getShipmentModule());
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All");
+		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
+		return allView;
+	}
+	
+	
+	private static FacilioView getShipmentForStatus(String viewName, String viewDisplayName, int status) {
+		FacilioModule shipmentModule = ModuleFactory.getShipmentModule();
+
+		FacilioField localId = new FacilioField();
+		localId.setName("localId");
+		localId.setColumnName("LOCAL_ID");
+		localId.setDataType(FieldType.NUMBER);
+		localId.setModule(ModuleFactory.getShipmentModule());
+
+		List<SortField> sortFields = Arrays.asList(new SortField(localId, false));
+
+		Criteria criteria = getShipmentStatusCriteria(shipmentModule, status);
+		
+		FacilioView statusView = new FacilioView();
+		statusView.setName(viewName);
+		statusView.setDisplayName(viewDisplayName);
+		statusView.setSortFields(sortFields);
+		statusView.setCriteria(criteria);
+
+		return statusView;
+	}
+	
+	private static Criteria getShipmentStatusCriteria(FacilioModule module, int status) {
+		
+		FacilioField shipmentStatusField = new FacilioField();
+		shipmentStatusField.setName("status");
+		shipmentStatusField.setColumnName("STATUS");
+		shipmentStatusField.setDataType(FieldType.NUMBER);
+		shipmentStatusField.setModule(ModuleFactory.getShipmentModule());
+		
+		Condition statusCond = new Condition();
+		statusCond.setField(shipmentStatusField);
+		statusCond.setOperator(NumberOperators.EQUALS);
+		statusCond.setValue(String.valueOf(status));
+
+		Criteria shipmentStatusCriteria = new Criteria();
+		shipmentStatusCriteria.addAndCondition(statusCond);
+		return shipmentStatusCriteria;
+	}
+	
+
 	private static FacilioView getAllInventoryRequestView() {
 		FacilioField localId = new FacilioField();
 		localId.setName("localId");
@@ -3317,7 +3393,7 @@ public class ViewFactory {
 		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
 
 		Criteria criteria = getInventoryRequestStatusCriteria(irModule, status);
-		
+
 		FacilioView statusView = new FacilioView();
 		statusView.setName(viewName);
 		statusView.setDisplayName(viewDisplayName);
@@ -3326,15 +3402,15 @@ public class ViewFactory {
 
 		return statusView;
 	}
-	
+
 	private static Criteria getInventoryRequestStatusCriteria(FacilioModule module, int status) {
-		
+
 		FacilioField irStatusField = new FacilioField();
 		irStatusField.setName("status");
 		irStatusField.setColumnName("STATUS");
 		irStatusField.setDataType(FieldType.NUMBER);
 		irStatusField.setModule(ModuleFactory.getInventoryRequestModule());
-		
+
 		Condition statusCond = new Condition();
 		statusCond.setField(irStatusField);
 		statusCond.setOperator(NumberOperators.EQUALS);
@@ -3346,4 +3422,216 @@ public class ViewFactory {
 	}
 
 
+	private static FacilioView getGatePassForStatus(String viewName, String viewDisplayName, int status) {
+		FacilioModule gatePassModule = ModuleFactory.getGatePassModule();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("SYS_CREATED_TIME");
+		createdTime.setModule(gatePassModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+		Criteria criteria = getGatePassCriteria(gatePassModule, status);
+
+		FacilioView statusView = new FacilioView();
+		statusView.setName(viewName);
+		statusView.setDisplayName(viewDisplayName);
+		statusView.setSortFields(sortFields);
+		statusView.setCriteria(criteria);
+
+		return statusView;
+	}
+
+	private static Criteria getGatePassCriteria(FacilioModule module, int status) {
+
+		FacilioField gpStatusField = new FacilioField();
+		gpStatusField.setName("status");
+		gpStatusField.setColumnName("STATUS");
+		gpStatusField.setDataType(FieldType.NUMBER);
+		gpStatusField.setModule(ModuleFactory.getGatePassModule());
+
+		Condition statusCond = new Condition();
+		statusCond.setField(gpStatusField);
+		statusCond.setOperator(NumberOperators.EQUALS);
+		statusCond.setValue(String.valueOf(status));
+
+		Criteria gatePassStatusCriteria = new Criteria();
+		gatePassStatusCriteria.addAndCondition(statusCond);
+		return gatePassStatusCriteria;
+	}
+	
+	private static FacilioView getPendingReturnGatePass(String viewName, String viewDisplayName, int status) {
+		FacilioModule gatePassModule = ModuleFactory.getGatePassModule();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("SYS_CREATED_TIME");
+		createdTime.setModule(gatePassModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+		Criteria criteria = getPendingReturnGatePassCriteria(gatePassModule, status);
+
+		FacilioView statusView = new FacilioView();
+		statusView.setName(viewName);
+		statusView.setDisplayName(viewDisplayName);
+		statusView.setSortFields(sortFields);
+		statusView.setCriteria(criteria);
+
+		return statusView;
+	}
+
+	private static Criteria getPendingReturnGatePassCriteria(FacilioModule module, int status) {
+
+		FacilioField gpStatusField = new FacilioField();
+		gpStatusField.setName("status");
+		gpStatusField.setColumnName("STATUS");
+		gpStatusField.setModule(ModuleFactory.getGatePassModule());
+
+		Condition statusCond = new Condition();
+		statusCond.setField(gpStatusField);
+		statusCond.setOperator(NumberOperators.EQUALS);
+		statusCond.setValue(String.valueOf(status));
+		
+		FacilioField gpReturnableField = new FacilioField();
+		gpReturnableField.setName("isReturnable");
+		gpReturnableField.setColumnName("IS_RETURNABLE");
+		gpReturnableField.setDataType(FieldType.BOOLEAN);
+		gpReturnableField.setModule(ModuleFactory.getGatePassModule());
+
+		Condition returnCond = new Condition();
+		returnCond.setField(gpReturnableField);
+		returnCond.setOperator(BooleanOperators.IS);
+		returnCond.setValue(String.valueOf(true));
+
+		Criteria gatePassStatusCriteria = new Criteria();
+		gatePassStatusCriteria.addAndCondition(statusCond);
+		gatePassStatusCriteria.addAndCondition(returnCond);
+		return gatePassStatusCriteria;
+	}
+	
+	private static FacilioView getOverDueReturnGatePass(String viewName, String viewDisplayName, int status) {
+		FacilioModule gatePassModule = ModuleFactory.getGatePassModule();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("SYS_CREATED_TIME");
+		createdTime.setModule(gatePassModule);
+
+		List<SortField> sortFields = Arrays.asList(new SortField(createdTime, false));
+
+		Criteria criteria = getOverdueReturnGatePassCriteria(gatePassModule, status);
+
+		FacilioView statusView = new FacilioView();
+		statusView.setName(viewName);
+		statusView.setDisplayName(viewDisplayName);
+		statusView.setSortFields(sortFields);
+		statusView.setCriteria(criteria);
+
+		return statusView;
+	}
+
+	private static Criteria getOverdueReturnGatePassCriteria(FacilioModule module, int status) {
+
+		FacilioField gpStatusField = new FacilioField();
+		gpStatusField.setName("status");
+		gpStatusField.setColumnName("STATUS");
+		gpStatusField.setModule(ModuleFactory.getGatePassModule());
+
+		Condition statusCond = new Condition();
+		statusCond.setField(gpStatusField);
+		statusCond.setOperator(NumberOperators.EQUALS);
+		statusCond.setValue(String.valueOf(status));
+		
+		FacilioField gpReturnableField = new FacilioField();
+		gpReturnableField.setName("isReturnable");
+		gpReturnableField.setColumnName("IS_RETURNABLE");
+		gpReturnableField.setDataType(FieldType.BOOLEAN);
+		gpReturnableField.setModule(ModuleFactory.getGatePassModule());
+
+		Condition returnCond = new Condition();
+		returnCond.setField(gpReturnableField);
+		returnCond.setOperator(BooleanOperators.IS);
+		returnCond.setValue(String.valueOf(true));
+		
+		FacilioField gpReturnTimeField = new FacilioField();
+		gpReturnTimeField.setName("returnTime");
+		gpReturnTimeField.setColumnName("RETURN_TIME");
+		gpReturnTimeField.setDataType(FieldType.NUMBER);
+		gpReturnTimeField.setModule(ModuleFactory.getGatePassModule());
+
+		Long currTime = DateTimeUtil.getCurrenTime();
+		
+		Condition overDue = new Condition();
+		overDue.setField(gpReturnTimeField);
+		overDue.setOperator(NumberOperators.LESS_THAN);
+		overDue.setValue(currTime + "");
+
+		Criteria gatePassStatusCriteria = new Criteria();
+		gatePassStatusCriteria.addAndCondition(statusCond);
+		gatePassStatusCriteria.addAndCondition(returnCond);
+		gatePassStatusCriteria.addAndCondition(overDue);
+		return gatePassStatusCriteria;
+	}
+
+	private static FacilioView getAllAttendanceView() {
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("SYS_CREATED_TIME");
+		createdTime.setModule(ModuleFactory.getAttendanceModule());
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Attendance");
+		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		return allView;
+	}
+	
+	private static FacilioView getAllAttendanceTransactionView() {
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("sysCreatedTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("SYS_CREATED_TIME");
+		createdTime.setModule(ModuleFactory.getAttendanceTransactionModule());
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Attendance Transactions");
+		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		return allView;
+	}
+	
+	private static FacilioView getAllShiftView() {
+		FacilioField name = new FacilioField();
+		name.setName("name");
+		name.setDataType(FieldType.STRING);
+		name.setColumnName("NAME");
+		name.setModule(ModuleFactory.getShiftModule());
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Shift(s)");
+		allView.setSortFields(Arrays.asList(new SortField(name, false)));
+		return allView;
+	}
+	
+	private static FacilioView getAllBreakView() {
+		FacilioField name = new FacilioField();
+		name.setName("name");
+		name.setDataType(FieldType.STRING);
+		name.setColumnName("name");
+		name.setModule(ModuleFactory.getBreakModule());
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Break");
+		allView.setSortFields(Arrays.asList(new SortField(name, false)));
+		return allView;
+	}
+	
 }

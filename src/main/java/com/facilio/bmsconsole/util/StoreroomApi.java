@@ -2,12 +2,13 @@ package com.facilio.bmsconsole.util;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.StoreRoomContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.UpdateRecordBuilder;
+import com.facilio.modules.fields.FacilioField;
 
 import java.util.List;
 import java.util.Map;
@@ -49,5 +50,17 @@ public class StoreroomApi {
 			return storerooms.get(0);
 		}
 		return null;
+	}
+	
+	public static void updateStoreRoomLastPurchasedDate(long storeRoomId, long lastPurchasedDate) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.STORE_ROOM);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.STORE_ROOM);
+		StoreRoomContext storeRoom = new StoreRoomContext();
+		storeRoom.setId(storeRoomId);
+		storeRoom.setLastPurchasedDate(lastPurchasedDate);
+		UpdateRecordBuilder<StoreRoomContext> updateBuilder = new UpdateRecordBuilder<StoreRoomContext>().module(module)
+				.fields(fields).andCondition(CriteriaAPI.getIdCondition(storeRoomId, module));
+		updateBuilder.update(storeRoom);
 	}
 }
