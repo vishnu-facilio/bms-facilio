@@ -227,6 +227,7 @@ public class TaskAction extends FacilioAction {
 		}
 		context.put(FacilioConstants.ContextNames.TASK, task);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
+		context.put(FacilioConstants.ContextNames.SKIP_LAST_READING_CHECK, true);
 		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
 		Map<Long, Map<String, String>> errorMap = new HashMap<>();
 		Chain updateTask = TransactionChainFactory.getUpdateTaskChain();
@@ -322,6 +323,7 @@ public class TaskAction extends FacilioAction {
 			if (AccountUtil.getCurrentAccount().getDeviceType() != null) {
 				context.put(FacilioConstants.ContextNames.DO_VALIDTION, getDoValidation());
 			}
+			context.put(FacilioConstants.ContextNames.SKIP_LAST_READING_CHECK, true);
 			Chain updateTask;
 			try {
 					if (singleTask.isPreRequest()) {
