@@ -2253,7 +2253,7 @@ public class WorkOrderAction extends FacilioAction {
 		addWorkOrder();
 		viewWorkOrder();
 		setResult(FacilioConstants.ContextNames.WORK_ORDER, workorder);
-		setResult(FacilioConstants.ContextNames.MODIFIED_TIME, workOrders.get(0).getModifiedTime());
+		setResult(FacilioConstants.ContextNames.MODIFIED_TIME, workorder.getModifiedTime());
 		return SUCCESS;
 	}
 	
