@@ -661,6 +661,13 @@ public class FieldFactory {
 		required.setColumnName("REQUIRED");
 		required.setModule(module);
 		fields.add(required);
+		
+		FacilioField mainField = new FacilioField();
+		mainField.setName("isMainField");
+		mainField.setDataType(FieldType.BOOLEAN);
+		mainField.setColumnName("IS_MAIN_FIELD");
+		mainField.setModule(module);
+		fields.add(mainField);
 
 		return fields;
 	}

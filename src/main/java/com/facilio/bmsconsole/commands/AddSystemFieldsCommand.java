@@ -35,6 +35,11 @@ public class AddSystemFieldsCommand implements Command {
 			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			
+			FacilioField mainField = FieldFactory.getField("name", "Name", "NAME", module, FieldType.STRING);
+			mainField.setMainField(true);
+			mainField.setRequired(true);
+			fields.add(mainField);
+			
 			Boolean supportStateFlow = (Boolean) context.get(FacilioConstants.ContextNames.SUPPORT_STATEFLOW);
 			if (supportStateFlow != null && supportStateFlow) {
 				LookupField moduleStateField = (LookupField) FieldFactory.getField("moduleState", "Status", "MODULE_STATE", module, FieldType.LOOKUP);

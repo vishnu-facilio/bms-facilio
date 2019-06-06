@@ -3155,11 +3155,9 @@
 			<param name="linkName">{1}</param>
 		</action>
 	</package>
-
-	<package name="moduleApiV2" namespace="/api/v2/modules/fields"
-		extends="v2Api">
-		<action name="add"
-			class="com.facilio.bmsconsole.actions.ModuleAction"
+	
+	<package name="moduleFieldApiV2" namespace="/api/v2/modules/fields" extends="v2Api">
+		<action name="add" class="com.facilio.bmsconsole.actions.ModuleAction" 
 			method="v2addCustomFields">
 		</action>
 		<action name="update"
