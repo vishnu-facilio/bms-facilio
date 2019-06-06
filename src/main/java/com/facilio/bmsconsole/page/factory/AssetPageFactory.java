@@ -187,28 +187,28 @@ public class AssetPageFactory extends PageFactory {
 	
 	private static void addLastDownTimeWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD, "lastReportedDownTime");
-		cardWidget.addToLayoutParams(section, 12, 4);
+		cardWidget.addToLayoutParams(section, 12, 5);
 		cardWidget.addToWidgetParams("type", CardType.LAST_DOWNTIME.getName());
 		section.addWidget(cardWidget);
 	}
 	
 	private static void addOverallDowntimeWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD, "overallDownTime");
-		cardWidget.addToLayoutParams(section, 12, 4);
+		cardWidget.addToLayoutParams(section, 12, 5);
 		cardWidget.addToWidgetParams("type", CardType.OVERALL_DOWNTIME.getName());
 		section.addWidget(cardWidget);
 	}
 	
 	private static void addFailureRateWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART);
-		cardWidget.addToLayoutParams(section, 12, 8);
+		cardWidget.addToLayoutParams(section, 12, 11);
 		cardWidget.addToWidgetParams("type", CardType.FAILURE_RATE.getName());
 		section.addWidget(cardWidget);
 	}
 	
 	private static void addAvgTtrWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART);
-		cardWidget.addToLayoutParams(section, 12, 8);
+		cardWidget.addToLayoutParams(section, 12, 11);
 		cardWidget.addToWidgetParams("type", CardType.AVG_TTR.getName());
 		section.addWidget(cardWidget);
 	}
