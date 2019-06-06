@@ -5,11 +5,14 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BreakContext;
+import com.facilio.bmsconsole.context.ShiftContext;
+import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
@@ -99,6 +102,13 @@ public class GetBreakListCommand implements Command{
 		}
 
 		List<BreakContext> records = builder.get();
+		
+		if(CollectionUtils.isNotEmpty(records)) {
+			for(BreakContext br : records) {
+				List<ShiftContext> shifts = ShiftAPI.getShiftsAttachedToBreak(br.getId());
+				br.setShifts(shifts);
+			}
+		}
 	
 		if (records != null && !records.isEmpty()) {
 			if (getCount != null && getCount) {
