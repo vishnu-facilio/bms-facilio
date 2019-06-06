@@ -308,6 +308,10 @@
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<param name="viewName">{1}</param>
 			<param name="fetchAllType">true</param>
+			<result name="success" type="json">			
+				<param name="ignoreHierarchy">false</param>	
+				<param name="includeProperties">^result\.workorders\[\d+\]\.(id|createdTime|subject|assignedTo|trigger|resource)\..*</param>				
+			</result>			
 		</action>
 	</package>
 	
@@ -324,7 +328,8 @@
 	<package name="pmplanner" namespace="/api/v2/pmplanner"
 		extends="v2Api">
 		<action name="settings" class="com.facilio.bmsconsole.actions.PMPlannerAction"
-			method="getPMPlannerSettings">			
+			method="getPMPlannerSettings">
+			
 		</action>		
 	</package>
 	<package name="pmplannerupdate" namespace="/api/v2/pmplanner/update"
