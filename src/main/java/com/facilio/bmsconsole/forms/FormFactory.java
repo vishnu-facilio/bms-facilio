@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.MapUtils;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.WorkOrderContext.WOUrgency;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
@@ -93,8 +95,8 @@ public class FormFactory {
 	
 	public static Map<String, FacilioForm> getForms(String moduleName, FormType formtype) {
 		Map<String, FacilioForm> forms = getForms(moduleName);
-		if (formtype == null) {
-			return forms;
+		if (MapUtils.isEmpty(forms) || formtype == null) {
+			return new HashMap<>();
 		}
 		return forms.entrySet().stream().filter(f -> f.getValue().getFormTypeEnum() == formtype)
 	            .collect(Collectors.toMap(f -> f.getKey(), f -> f.getValue()));
@@ -109,7 +111,11 @@ public class FormFactory {
 	}
 	
 	public static FacilioForm getForm(String moduleName, String formName, Boolean...onlyFields) {
-		FacilioForm form = getForms(moduleName).get(formName);
+		Map<String, FacilioForm> forms = getForms(moduleName);
+		if (MapUtils.isEmpty(forms)) {
+			return null;
+		}
+		FacilioForm form = forms.get(formName);
 		if (onlyFields == null || onlyFields.length == 0 || !onlyFields[0]) {
 			form = new FacilioForm(form);
 			// TODO add sections in formfactory initialization itself once all client supports

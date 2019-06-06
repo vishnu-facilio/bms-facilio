@@ -1,5 +1,23 @@
 package com.facilio.bmsconsole.util;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.forms.FacilioForm;
@@ -7,6 +25,7 @@ import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.forms.FormFactory;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.constants.FacilioConstants.Builder;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -14,6 +33,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -22,11 +42,6 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import com.facilio.modules.fields.LookupField;
-
-import java.sql.SQLException;
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class FormsAPI {
 	
@@ -96,9 +111,26 @@ public class FormsAPI {
 		formTypeCriteria.addAndCondition(formTypeCondition);
 		return formTypeCriteria;
 	}
+	
+	public static FacilioForm getFormFromDB(String formName, FacilioModule module) throws Exception {
+
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormFields());
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("name"), formName, StringOperators.IS));
+		if (module != null) {
+			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), String.valueOf(module.getModuleId()), StringOperators.IS));
+		}
+		
+		List<FacilioForm> forms = getFormFromDB(criteria);
+		if (forms == null || forms.isEmpty()) {
+			return null;
+		}
+		return forms.get(0);
+	}
 
 	public static List<FacilioForm> getFormFromDB(Criteria criteria) throws Exception {
-		List<FacilioForm> forms = getDBFormList(null, null, criteria);
+		List<FacilioForm> forms = getDBFormList(null, null, criteria, null);
 		if (forms == null || forms.isEmpty()) {
 			return null;
 		}
@@ -232,12 +264,13 @@ public class FormsAPI {
 	
 	public static void addFormFields (long formId, FacilioForm form) throws Exception {
 		List<FormField> fields = null;
-		if (form.getSections() != null) {
+		if (form.getSections() == null && form.getFields() != null) {
+			FormSection section = new FormSection("Default", 1, form.getFields(), false);
+			form.setSections(Collections.singletonList(section));
+		}
+		if (CollectionUtils.isNotEmpty(form.getSections())) {
 			addFormSections(formId, form.getSections());
 			fields = getFormFieldsFromSections(form.getSections());
-		}
-		else {
-			fields = form.getFields();
 		}
 		
 		if (fields != null) {
@@ -394,7 +427,7 @@ public class FormsAPI {
 	}
 	
 	public static Map<String, FacilioForm> getFormsAsMap (String moduleName,FormType formType) throws Exception {
-		List<FacilioForm> forms = getDBFormList(moduleName, formType, null);
+		List<FacilioForm> forms = getDBFormList(moduleName, formType);
 		Map<String, FacilioForm> formMap = new LinkedHashMap<>();
 		if (forms != null && !forms.isEmpty()) {
 			for(FacilioForm form: forms) {
@@ -405,7 +438,11 @@ public class FormsAPI {
 		return null;
 	}
 	
-	public static List<FacilioForm> getDBFormList(String moduleName,FormType formType, Criteria criteria) throws Exception{
+	public static List<FacilioForm> getDBFormList(String moduleName,FormType formType) throws Exception{
+		return getDBFormList(moduleName, formType, null, null);
+	}
+	
+	public static List<FacilioForm> getDBFormList(String moduleName,FormType formType, Criteria criteria, Map<String, Object> selectParams) throws Exception{
 		
 		FacilioModule formModule = ModuleFactory.getFormModule();
 		
@@ -427,6 +464,19 @@ public class FormsAPI {
 		if (criteria != null) {
 			formListBuilder.andCriteria(criteria);
 		}
+		if (MapUtils.isNotEmpty(selectParams)) {
+			if (selectParams.containsKey(Builder.ORDER_BY)) {
+				String orderBy = (String) selectParams.get(Builder.ORDER_BY);
+				String orderByType = (String) selectParams.get(Builder.ORDER_BY_TYPE);
+				formListBuilder.orderBy(fieldMap.get(orderBy).getCompleteColumnName() + (orderByType != null ? " " + orderByType : " asc"));
+			}
+			if (selectParams.containsKey(Builder.LIMIT)) {
+				formListBuilder.limit((int) selectParams.get(Builder.LIMIT));
+			}
+		}
+		else {
+			formListBuilder.orderBy("ID asc");
+		}
 		
 		return FieldUtil.getAsBeanListFromMapList(formListBuilder.get(), FacilioForm.class);
 			
@@ -440,17 +490,21 @@ public class FormsAPI {
 		}
 		Map<String, FormField> formFieldMap = fields.stream().collect(Collectors.toMap(FormField::getName, Function.identity()));
 		
+		
+		List<FormField> defaultFields = new ArrayList<>();
+		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioForm defaultForm = FormFactory.getDefaultForm(moduleName, form, true);
-		List<FormField> defaultFields = new ArrayList<>();
-		for (FormField f: defaultForm.getFields()) {	// TODO get fields from all sections
-			if (!formFieldMap.containsKey(f.getName())) {
-				FormField formField = FieldUtil.cloneBean(f, FormField.class);
-				FacilioField field = modBean.getField(formField.getName(), moduleName);
-				if (field != null) {
-					formField.setFieldId(field.getFieldId());
+		if (defaultForm != null && CollectionUtils.isNotEmpty(defaultForm.getFields())) {
+			for (FormField f: defaultForm.getFields()) {	// TODO get fields from all sections
+				if (!formFieldMap.containsKey(f.getName()) && (f.getField() == null || f.getField().isDefault())) {
+					FormField formField = FieldUtil.cloneBean(f, FormField.class);
+					FacilioField field = modBean.getField(formField.getName(), moduleName);
+					if (field != null) {
+						formField.setFieldId(field.getFieldId());
+					}
+					defaultFields.add(formField);
 				}
-				defaultFields.add(formField);
 			}
 		}
 		
@@ -479,5 +533,20 @@ public class FormsAPI {
 			}
 			fields.set(i, mutatedField);
 		}
+	}
+	
+	public static FacilioForm getDefaultForm(String moduleName, FacilioForm form, Boolean...onlyFields) throws Exception {
+		FacilioForm defaultForm = FormFactory.getDefaultForm(moduleName, form, onlyFields);
+		if (defaultForm == null) {
+			Map<String, Object> params = new HashMap<>();
+			params.put(Builder.ORDER_BY, "id");
+			params.put(Builder.LIMIT, 1);
+			List<FacilioForm> forms = getDBFormList(moduleName, form.getFormTypeEnum(), null, params);
+			if (CollectionUtils.isNotEmpty(forms)) {
+				return forms.get(0);
+			}
+		}
+		return defaultForm;
+		
 	}
 }
