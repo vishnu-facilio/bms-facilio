@@ -1735,6 +1735,13 @@ public class WorkOrderAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.SORTING, sorting);
 			context.put(FacilioConstants.ContextNames.OVERRIDE_SORTING, true);
 		}
+		
+		if (isCalendarApi()) {
+			context.put(FacilioConstants.ContextNames.FETCH_SELECTED_FIELDS, getCalendarSelectFields());
+		}
+		else if (getSelectFields() != null) {
+ 			context.put(FacilioConstants.ContextNames.FETCH_SELECTED_FIELDS, getSelectFields());			
+ 		}
 
 		JSONObject pagination = new JSONObject();
 		pagination.put("page", getPage());
@@ -1774,6 +1781,18 @@ public class WorkOrderAction extends FacilioAction {
 			throw e;
 		}
 		return SUCCESS;
+	}
+	
+	private Boolean calendarApi;
+	public boolean isCalendarApi() {
+		if (calendarApi == null) {
+			return false;
+		}
+		return calendarApi;
+	}
+
+	public void setCalendarApi(Boolean calendarApi) {
+		this.calendarApi = calendarApi;
 	}
 
 	private Map<Long, List<TaskContext>> preRequestList;
@@ -2456,6 +2475,10 @@ public class WorkOrderAction extends FacilioAction {
 			setResult(FacilioConstants.ContextNames.MODIFIED_TIME, workOrders.get(0).getModifiedTime());
 		}
 		return SUCCESS;
+	}
+	
+	private List<String> getCalendarSelectFields() {
+		return Arrays.asList("createdTime", "subject", "assignedTo", "trigger", "resource");
 	}
 
 }

@@ -44,7 +44,6 @@ public class AddFormCommand implements Command {
 		if (form.getSections() == null) {
 			FacilioForm defaultForm = FormsAPI.getDefaultForm(moduleName, form);
 			if (defaultForm != null && CollectionUtils.isNotEmpty(defaultForm.getSections())) {
-				// Default forms should have section
 				form.setSections(new ArrayList<>(defaultForm.getSections()));
 				for(FormSection section: form.getSections()) {
 					FormsAPI.setFieldDetails(modBean, section.getFields(), moduleName);
