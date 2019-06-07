@@ -2,13 +2,13 @@ package com.facilio.agent;
 
 public enum AgentContent
 {
-    IGNORED("Ignored",0),
-    PROCESSING("Processing",1),
-    EXECUTED("Executed",2),
-    DISCONNECTED("Agent disconnected to Facilio",3),
-    CONNECTED("Agent connected to Facilio",1000),
-    RESTARTED("Restarted",5),
-    SUBSCRIBED("Subscribed",6);
+    Ignored("Ignored",0),
+    Processing("Processing",1),
+    Executed("Executed",2),
+    Disconnected("Agent disconnected to Facilio",3),
+    Connected("Agent connected to Facilio",1000),
+    Restarted("Restarted",5),
+    Subscribed("Subscribed",6);
     private int key;
     private String content;
 

@@ -1,5 +1,18 @@
 package com.facilio.workflows.context;
 
+import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.workflows.context.WorkflowExpression.WorkflowExpressionType;
+import com.facilio.workflows.util.WorkflowUtil;
+import com.facilio.workflowv2.Visitor.FacilioWorkflowFunctionVisitor;
+import com.facilio.workflowv2.autogens.WorkflowV2Lexer;
+import com.facilio.workflowv2.autogens.WorkflowV2Parser;
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.json.simple.JSONArray;
+
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -10,21 +23,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.json.simple.JSONArray;
-
-import com.facilio.bmsconsole.context.ReadingDataMeta;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.workflows.context.WorkflowExpression.WorkflowExpressionType;
-import com.facilio.workflows.util.WorkflowUtil;
-import com.facilio.workflowv2.Visitor.FacilioWorkflowFunctionVisitor;
-import com.facilio.workflowv2.autogens.WorkflowV2Lexer;
-import com.facilio.workflowv2.autogens.WorkflowV2Parser;
-import com.facilio.workflowv2.contexts.Value;
 
 public class WorkflowContext implements Serializable {
 	
@@ -286,6 +284,21 @@ public class WorkflowContext implements Serializable {
 	}
 	public void setLogString(StringBuilder logString) {
 		this.logString = logString;
+	}
+	
+	
+	public void visitFunctionHeader() throws Exception {
+		
+		InputStream stream = new ByteArrayInputStream(workflowV2String.getBytes(StandardCharsets.UTF_8));
+		
+		WorkflowV2Lexer lexer = new WorkflowV2Lexer(CharStreams.fromStream(stream, StandardCharsets.UTF_8));
+        
+		WorkflowV2Parser parser = new WorkflowV2Parser(new CommonTokenStream(lexer));
+        ParseTree tree = parser.parse();
+        
+        FacilioWorkflowFunctionVisitor visitor = new FacilioWorkflowFunctionVisitor();
+        visitor.setWorkflowContext(this);
+        visitor.visitFunctionHeader(tree);
 	}
 	
 	public Object executeWorkflow() throws Exception {

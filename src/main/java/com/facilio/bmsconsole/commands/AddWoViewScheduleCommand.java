@@ -1,19 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.ViewAPI;
@@ -21,11 +9,22 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericInsertRecordBuilder;
-import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.ScheduleInfo;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class AddWoViewScheduleCommand implements Command {
 
@@ -34,14 +33,15 @@ public class AddWoViewScheduleCommand implements Command {
 		// TODO Auto-generated method stub
 		long viewId;
 		String viewName = (String) context.get(FacilioConstants.ContextNames.CV_NAME);
+		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		long moduleId = modBean.getModule("workorder").getModuleId();
+		long moduleId = modBean.getModule(moduleName).getModuleId();
 		FacilioView view = ViewAPI.getView(viewName, moduleId, AccountUtil.getCurrentOrg().getOrgId());
 		if (view == null) {
-			view = ViewFactory.getView("workorder", viewName);
+			view = ViewFactory.getView(moduleName, viewName);
 		}
 		if ((view != null) && (view.getId() == -1)) {
-			viewId = ViewAPI.checkAndAddView(view.getName(), "workorder", null);
+			viewId = ViewAPI.checkAndAddView(view.getName(), moduleName, null);
 			view.setId(viewId);
 		}
 		else {
@@ -66,6 +66,7 @@ public class AddWoViewScheduleCommand implements Command {
 			props.put("viewId", viewId);
 			props.put("fileFormat", fileFormat);
 			props.put("templateId", emailTemplate.getId());
+			props.put("moduleID", moduleId);
 			
 			FacilioModule module = ModuleFactory.getViewScheduleInfoModule();
 			List<FacilioField> fields = FieldFactory.getViewScheduleInfoFields();

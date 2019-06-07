@@ -11,15 +11,15 @@ import org.apache.log4j.spi.Filter;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.spi.ThrowableInformation;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
+import java.io.*;
 
 public class FacilioLogAppender extends DailyRollingFileAppender {
 
     private static final String DEFAULT_ORG_USER_ID = "-1";
-
+    private static final File ROOT_FILE = new File("/");
+    private static long lastFreeSpaceCheckedTime = System.currentTimeMillis();
+    private static final long FREE_SPACE_THRESHOLD = 10000000000L;
+    private static long freeSpace = ROOT_FILE.getFreeSpace();
     public FacilioLogAppender() {
         super();
     }
@@ -129,7 +129,14 @@ public class FacilioLogAppender extends DailyRollingFileAppender {
         } catch (Exception e) {
             event.setProperty("exception", "LogAppenderException");
         }
-        super.append(event);
+        if((lastFreeSpaceCheckedTime + 300_000L) < System.currentTimeMillis()) {
+            lastFreeSpaceCheckedTime = System.currentTimeMillis();
+            freeSpace = ROOT_FILE.getFreeSpace();
+        }
+
+        if(freeSpace > FREE_SPACE_THRESHOLD) {
+            super.append(event);
+        }
     }
 
     protected boolean checkEntryConditions() {

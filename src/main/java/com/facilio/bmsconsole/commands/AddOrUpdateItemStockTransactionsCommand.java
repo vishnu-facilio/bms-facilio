@@ -1,27 +1,35 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTransactionsContext;
 import com.facilio.bmsconsole.context.PurchasedItemContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.EnumOperators;
-import com.facilio.bmsconsole.modules.*;
+import com.facilio.bmsconsole.context.ShipmentContext;
 import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.fw.BeanFactory;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.InsertRecordBuilder;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.UpdateRecordBuilder;
+import com.facilio.modules.fields.FacilioField;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+;
 
 public class AddOrUpdateItemStockTransactionsCommand implements Command {
 
@@ -30,6 +38,7 @@ public class AddOrUpdateItemStockTransactionsCommand implements Command {
 		// TODO Auto-generated method stub
 		List<PurchasedItemContext> purchasedItems = (List<PurchasedItemContext>) context
 				.get(FacilioConstants.ContextNames.PURCHASED_ITEM);
+		ShipmentContext shipment = (ShipmentContext)context.get(FacilioConstants.ContextNames.SHIPMENT);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
@@ -41,14 +50,21 @@ public class AddOrUpdateItemStockTransactionsCommand implements Command {
 			for (PurchasedItemContext ic : purchasedItems) {
 				ItemContext item = ItemsApi.getItems(ic.getItem().getId());
 				ItemTransactionsContext transaction = new ItemTransactionsContext();
-				transaction.setTransactionState(TransactionState.ADDITION.getValue());
+				if(shipment == null) {
+					transaction.setTransactionType(TransactionType.STOCK.getValue());
+					transaction.setTransactionState(TransactionState.ADDITION.getValue());
+				}
+				else {
+					transaction.setTransactionType(TransactionType.SHIPMENT_STOCK.getValue());
+					transaction.setTransactionState(TransactionState.ADDITION.getValue());
+					transaction.setShipment(shipment.getId());
+				}
 				transaction.setPurchasedItem(ic);
 				transaction.setItem(ic.getItem());
 				transaction.setItemType(item.getItemType());
 				transaction.setQuantity(ic.getQuantity());
 				transaction.setParentId(ic.getId());
 				transaction.setIsReturnable(false);
-				transaction.setTransactionType(TransactionType.STOCK.getValue());
 				transaction.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
 
 				// if bulk insertion add stock transaction entry
@@ -87,9 +103,17 @@ public class AddOrUpdateItemStockTransactionsCommand implements Command {
 			q+=1;
 			items.setQuantity(q);
 			ItemTransactionsContext transaction = new ItemTransactionsContext();
-			transaction.setTransactionState(TransactionState.ADDITION.getValue());
 			transaction.setIsReturnable(false);
-			transaction.setTransactionType(TransactionType.STOCK.getValue());
+
+			if(shipment == null) {
+				transaction.setTransactionType(TransactionType.STOCK.getValue());
+				transaction.setTransactionState(TransactionState.ADDITION.getValue());
+			}
+			else {
+				transaction.setTransactionType(TransactionType.SHIPMENT_STOCK.getValue());
+				transaction.setTransactionState(TransactionState.ADDITION.getValue());
+				transaction.setShipment(shipment.getId());
+			}
 			transaction.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
 			transaction.setItem(items);
 			transaction.setItemType(items.getItemType());

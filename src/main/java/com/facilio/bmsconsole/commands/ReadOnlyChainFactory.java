@@ -21,6 +21,14 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new FetchReportExtraMeta());
 		return c;
 	}
+
+	public static Chain getLastAssetBreakDownChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new getAssetDownTimeDetailsCommand());
+		c.addCommand(new getAssetBreakdownCommand());
+		return c;
+	}
+
 	public static Chain getBusinessHoursChain () {
 		Chain c = getDefaultChain();
 		c.addCommand(new GetBusinessHourCommand());
@@ -366,6 +374,7 @@ public class ReadOnlyChainFactory {
 
 	public static Chain getPageChain() {
 		Chain c = getDefaultChain();
+		c.addCommand(new GenericGetModuleDataDetailCommand());
 		c.addCommand(new GetPageCommand());
 		return c;
 	}
@@ -808,7 +817,20 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetModuleReportCardsCommand());
 		return c;
 	}
-	
+
+	public static Chain getAssetDowntimeMetricsChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new FetchAssetDowntimeMetricsCommand());
+		return c;
+	}
+
+
+	public static Chain getAlarmInsightChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new FetchAlarmInsightCommand());
+		return c;
+	}
+
 	public static Chain fetchGatePassDetails() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForGatePass());
@@ -889,19 +911,112 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetInventoryRequestLineItemsForParentIdCommand());
 		return chain;
 	}
-	
+
 	public static Chain getInventoryRequestLineItemListByStoreRoomIdChain() {
 		Chain chain = getDefaultChain();
 		chain.addCommand(SetTableNamesCommand.getForInventoryRequest());
 		chain.addCommand(new GetInventoryRequestLineItemsForStoreRoomIdCommand());
 		return chain;
 	}
-	
+
 	public static Chain getAssetForTypeAndStoreChain() {
 		Chain chain = getDefaultChain();
 		chain.addCommand(SetTableNamesCommand.getForAsset());
 		chain.addCommand(new GetAssetForTypeAndStoreCommand());
 		return chain;
 	}
+	public static Chain getShiftUserMappingChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetShiftUserMappingCommand());
+		return c;
+	}
+	
+	public static Chain getAttendanceList() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForAttendance());
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GenericGetModuleDataListCommand());
+		return c;
+	}
+	
+	public static Chain getAttendanceTransactionsList() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForAttendanceTransaction());
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GenericGetModuleDataListCommand());
+		return c;
+	}
+	public static Chain getAllBreakChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetAllBreaksCommand());
+		return c;
+	}
+	
+	public static Chain getBreakList() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForBreak());
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GetBreakListCommand());
+		return c;
+	}
+	
+	public static Chain getShiftList() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForShift());
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GetShiftListCommand());
+		return c;
+	}
+	
+	public static Chain getBreakChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetBreakCommand());
+		return c;
+	}
 
+
+	public static Chain getPMPlannerSettingschain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new LoadPMPlannerSettingCommand());
+		return c;
+	}
+
+	public static Chain getShipmentListChain() {
+		Chain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForShipment());
+		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new GetShipmentListCommand());
+		return chain;
+	}
+
+	public static Chain getShipmentDetailsChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForShipment());
+		c.addCommand(new LoadShipmentLookUpCommand());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		c.addCommand(new FetchShipmentDetailsCommand());
+		return c;
+	}
+	
+	public static Chain getAttendanceDetailsChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForAttendance());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		return c;
+	}
 }

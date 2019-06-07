@@ -1,14 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.bmsconsole.context.ConnectionContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
-
-import com.facilio.bmsconsole.context.ConnectionContext;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.sql.GenericUpdateRecordBuilder;
 
 public class UpdateConnectionCommand implements Command  {
 

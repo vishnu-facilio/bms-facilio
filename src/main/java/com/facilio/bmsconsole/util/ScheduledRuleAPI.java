@@ -1,9 +1,9 @@
 package com.facilio.bmsconsole.util;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.tasker.ScheduleInfo.FrequencyType;

@@ -1,0 +1,35 @@
+{
+   "0": {
+        "description" : "sample",
+        "usage" : "test",
+        "workflow" : "Number getSquareOf(Number i) 
+                      {
+                      		return i * i;
+                      }"
+        },
+    "1": {
+    	"description" : "woAverageResponseTime",
+        "usage" : "pmSummary",
+        "workflow" : "Number test(Number pmId) 
+        			  	{ 
+        			  		woModule = Module(\"workorder\"); 
+        			  		ticketModule = Module(\"ticketstatus\"); 
+        			  		re = ticketModule.fetch([status == \"Closed\"]); 
+        			  		b = re[0]; 
+        			  		res = woModule.fetch([pm == pmId && status ==  b.id]); 
+        			  		if (res == null) 
+        			  		{ 
+        			  			return 0; 
+        			  		} 
+        			  		responseTime = 0; 
+        			  		a = res.size(); 
+        			  		for each index,value in res { 
+        			  			wd =  (value.actualWorkStart - value.createdTime); 
+        			  			responseTime = (responseTime + wd);
+        			  		} 
+        			  		responseTime = responseTime/a; 
+        			  		return responseTime; 
+        			  	}"
+        } 
+        
+}

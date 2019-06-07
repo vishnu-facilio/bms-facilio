@@ -4,13 +4,13 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.NumberField;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.NumberField;
 import com.facilio.unitconversion.UnitsUtil;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -49,7 +49,7 @@ public class ReadingUnitConversionToDisplayUnit implements Command {
 										ReadingDataMeta readingDataMeta = metaMap.get(ReadingsAPI.getRDMKey(reading.getParentId(), field));
 										
 										if(readingDataMeta==null) {
-											LOGGER.info("Reading data meta is null for parent: "+reading.getParentId()+" for field: "+field);
+											//LOGGER.info("Reading data meta is null for parent: "+reading.getParentId()+" for field: "+field);
 										}
 										
 										if(field instanceof NumberField) {
@@ -64,7 +64,7 @@ public class ReadingUnitConversionToDisplayUnit implements Command {
 					}
 				}
 			}
-			LOGGER.info("Time taken for Unit conversion for modules : "+readingMap.keySet()+" is "+(System.currentTimeMillis() - startTime));
+			//LOGGER.info("Time taken for Unit conversion for modules : "+readingMap.keySet()+" is "+(System.currentTimeMillis() - startTime));
 		}
 		return false;
 	}

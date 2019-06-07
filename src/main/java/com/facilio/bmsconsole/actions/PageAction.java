@@ -8,11 +8,13 @@ import com.facilio.constants.FacilioConstants;
 
 public class PageAction extends FacilioAction {
 	
+	private static final long serialVersionUID = 1L;
+	
 	public String fetchPage() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-		context.put(FacilioConstants.ContextNames.RECORD_ID, id);
+		context.put(FacilioConstants.ContextNames.ID, id);
 		Chain chain = ReadOnlyChainFactory.getPageChain();
 		chain.execute(context);
 		

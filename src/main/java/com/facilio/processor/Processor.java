@@ -5,23 +5,19 @@ import com.amazonaws.services.kinesis.clientlibrary.types.InitializationInput;
 import com.amazonaws.services.kinesis.clientlibrary.types.ProcessRecordsInput;
 import com.amazonaws.services.kinesis.clientlibrary.types.ShutdownInput;
 import com.amazonaws.services.kinesis.model.Record;
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.*;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.criteria.StringOperators;
-import com.facilio.bmsconsole.modules.*;
+import com.facilio.chain.FacilioContext;
 import com.facilio.devicepoints.DevicePointsUtil;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.kinesis.ErrorDataProducer;
-import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.util.AckUtil;
+import org.apache.commons.chain.Chain;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -34,7 +30,7 @@ import java.nio.charset.CharsetDecoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+
 
 public class Processor implements IRecordProcessor {
 
@@ -45,11 +41,6 @@ public class Processor implements IRecordProcessor {
         private String shardId;
         private String errorStream;
         private final CharsetDecoder decoder = Charset.forName("UTF-8").newDecoder();
-        private final List<FacilioField> fields = new ArrayList<>();
-        private final Condition orgIdCondition = new Condition();
-        private final FacilioField deviceIdField = new FacilioField();
-        private final HashMap<String, Long> deviceMap = new HashMap<>();
-        private FacilioModule deviceDetailsModule;
         private HashMap<String, HashMap<String, Long>> deviceMessageTime = new HashMap<>();
         private AgentUtil agentUtil;
         private DevicePointsUtil devicePointsUtil;
@@ -62,7 +53,7 @@ public class Processor implements IRecordProcessor {
         private List<EventRuleContext> eventRules = new ArrayList<>();
         private JSONParser parser = new JSONParser();
 
-    Processor(long orgId, String orgDomainName){
+        Processor(long orgId, String orgDomainName){
             this.orgId = orgId;
             this.orgDomainName = orgDomainName;
             this.errorStream = orgDomainName + "-error";
@@ -93,22 +84,6 @@ public class Processor implements IRecordProcessor {
             String threadName = orgDomainName +"-processor";
             thread.setName(threadName);
             this.shardId = initializationInput.getShardId();
-
-            deviceDetailsModule = ModuleFactory.getDeviceDetailsModule();
-            //orgIdField.setModule(deviceDetailsModule);
-
-            orgIdCondition.setField(FieldFactory.getOrgIdField(deviceDetailsModule));
-            orgIdCondition.setOperator(NumberOperators.EQUALS);
-            orgIdCondition.setValue(String.valueOf(orgId));
-
-            deviceIdField.setName(AgentKeys.DEVICE_ID);
-            deviceIdField.setDataType(FieldType.STRING);
-            deviceIdField.setColumnName("DEVICE_ID");
-            deviceIdField.setModule(deviceDetailsModule);
-
-            fields.addAll(FieldFactory.getDeviceDetailsFields());
-
-            deviceMap.putAll(getDeviceMap());
         }
 
         @Override
@@ -119,7 +94,7 @@ public class Processor implements IRecordProcessor {
                 String recordId = record.getSequenceNumber();
                 try {
                     try {
-                        boolean  isDuplicateMessage = AgentUtil.isDuplicate(recordId);
+                        boolean  isDuplicateMessage = agentUtil.isDuplicate(recordId);
                         if ( isDuplicateMessage ) {
                             if(isRestarted){
                                 LOGGER.info(" Duplicate message received but can be processed due to server-restart "+recordId);
@@ -131,7 +106,7 @@ public class Processor implements IRecordProcessor {
                             }
                         }
                         else {
-                            AgentUtil.addAgentMessage(recordId);
+                            agentUtil.addAgentMessage(recordId);
                         }
                     }catch (Exception e1){
                         LOGGER.info("Exception Occured ",e1);
@@ -140,7 +115,7 @@ public class Processor implements IRecordProcessor {
                     data = decoder.decode(record.getData()).toString();
                     if (data.isEmpty()) {
                         LOGGER.info(" Empty message received "+recordId);
-                        AgentUtil.updateAgentMessage(recordId, MessageStatus.DATA_EMPTY);
+                        agentUtil.updateAgentMessage(recordId, MessageStatus.DATA_EMPTY);
                         continue;
                     }
 
@@ -184,7 +159,7 @@ public class Processor implements IRecordProcessor {
                         agentUtil.addAgent(agent);
                     }
                     if(isStage && agent != null) {
-                        AgentUtil.addAgentMetrics(data.length(), agent.getId(), publishType.getKey());
+                        agentUtil.addAgentMetrics(data.length(), agent.getId(), publishType.getKey());
                     }
 
                     long i = 0;
@@ -196,18 +171,18 @@ public class Processor implements IRecordProcessor {
                         switch (publishType) {
                             case timeseries:
                                 processTimeSeries(record, payLoad, processRecordsInput, true);
-                                updateDeviceTable(record.getPartitionKey());
+                                // updateDeviceTable(record.getPartitionKey());
                                 break;
                             case cov:
                                 processTimeSeries(record, payLoad, processRecordsInput, false);
-                                updateDeviceTable(record.getPartitionKey());
+                                // updateDeviceTable(record.getPartitionKey());
                                 break;
                             case agent:
                                 i =  agentUtil.processAgent( payLoad,agentName);
                                 processLog(payLoad,agent.getId());
                                 break;
                             case devicepoints:
-                                devicePointsUtil.processDevicePoints(payLoad, orgId, deviceMap, agent.getId());
+                                devicePointsUtil.processDevicePoints(payLoad, orgId, agent.getId());
                                 break;
                             case ack:
                                 ackUtil.processAck(payLoad, orgId);
@@ -228,17 +203,25 @@ public class Processor implements IRecordProcessor {
                         LOGGER.info("Duplicate message for device " + deviceId + " and type " + dataType);
                     }
                     if ( i == 0 ) {
-                        GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder().table(AgentKeys.AGENT_TABLE).fields(FieldFactory.getAgentDataFields())
+
+                        FacilioContext context = new FacilioContext();
+                        context.put(AgentKeys.NAME, agentName);
+                        Chain updateAgentTable = TransactionChainFactory.updateAgentTable();
+                        updateAgentTable.execute(context);
+
+
+
+                        /*GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder().table(AgentKeys.AGENT_TABLE).fields(FieldFactory.getAgentDataFields())
                                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentNameField(ModuleFactory.getAgentDataModule()),agentName,StringOperators.IS))
                                 .andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getAgentDataModule()));
                         Map<String,Object> toUpdate = new HashMap<>();
                         toUpdate.put(AgentKeys.CONNECTION_STATUS, Boolean.TRUE);
                         toUpdate.put(AgentKeys.STATE, 1);
                         toUpdate.put(AgentKeys.LAST_DATA_RECEIVED_TIME, lastMessageReceivedTime);
-                        genericUpdateRecordBuilder.update(toUpdate);
+                        genericUpdateRecordBuilder.update(toUpdate);*/
 
                     }
-                    AgentUtil.updateAgentMessage(recordId,MessageStatus.PROCESSED);
+                    agentUtil.updateAgentMessage(recordId,MessageStatus.PROCESSED);
                 } catch (Exception e) {
                     try {
                         if(AwsUtil.isProduction()) {
@@ -269,42 +252,73 @@ public class Processor implements IRecordProcessor {
     private void processLog(JSONObject payLoad,Long agentId){
         if(isStage && (payLoad.containsKey(AgentKeys.COMMAND_STATUS) || payLoad.containsKey(AgentKeys.CONTENT))){
             int connectionCount = -1;
-            if( payLoad.containsKey(AgentKeys.COMMAND_STATUS)){
-                if(( "1".equals( payLoad.get( AgentKeys.COMMAND_STATUS ).toString() ) )){
+            //checks for key status in payload and if it 'agent'-publishype
+            if( payLoad.containsKey(AgentKeys.COMMAND_STATUS) && ! payLoad.containsKey(AgentKeys.COMMAND)){
+
+                Long status = (Long)payLoad.remove(AgentKeys.COMMAND_STATUS);
+                if((1 == status)){ // Connected block -- getting Connection count
+                    payLoad.put(AgentKeys.COMMAND_STATUS,CommandStatus.CONNECTED.getKey());
+                    payLoad.put(AgentKeys.COMMAND,ControllerCommand.connect.getCommand());
                     if(payLoad.containsKey(AgentKeys.CONNECTION_COUNT)) {
                         connectionCount = Integer.parseInt(payLoad.get(AgentKeys.CONNECTION_COUNT).toString());
                     }
 
                     if (connectionCount == -1) {
-                        payLoad.put(AgentKeys.CONTENT, AgentContent.CONNECTED.getKey());
+                        payLoad.put(AgentKeys.CONTENT, AgentContent.Connected.getKey());
                     } else {
                         if (connectionCount == 1) {
-                            payLoad.put(AgentKeys.CONTENT, AgentContent.RESTARTED.getKey());
-                            agentUtil.putLog(payLoad,orgId, agentId,false);
+                            payLoad.put(AgentKeys.CONTENT, AgentContent.Restarted.getKey());
+                            AgentUtil.putLog(payLoad,orgId, agentId,false);
                         }
-                        payLoad.put(AgentKeys.CONTENT, AgentContent.CONNECTED.getKey()+connectionCount);
+                        payLoad.put(AgentKeys.CONTENT, AgentContent.Connected.getKey()+connectionCount);
                     }
-                } else {
-                    payLoad.put(AgentKeys.CONTENT, AgentContent.DISCONNECTED.getKey());
+
+                } else if(0 == status) { // disconnected block -
+                    payLoad.put(AgentKeys.COMMAND_STATUS,CommandStatus.DISCONNECTED.getKey());
+                    payLoad.put(AgentKeys.CONTENT, AgentContent.Disconnected.getKey());
+                    payLoad.put(AgentKeys.COMMAND,ControllerCommand.connect.getCommand());
                 }
+                else{ // avoids any status pther than 0 and 1
+                    LOGGER.info("Exception Occured, wrong status in payload.--"+payLoad);
+                    return;
+                }
+            }
+            else if(  (!payLoad.containsKey(AgentKeys.COMMAND)) && payLoad.containsKey(AgentKeys.CONTENT)){
+                long checkOrgId = 152;
+                if(orgId == checkOrgId){
+                    LOGGER.info("debugging payload--With content alone-1-"+payLoad);
+                }
+                payLoad.put(AgentKeys.CONTENT,AgentContent.Subscribed.getKey());
+                payLoad.put(AgentKeys.COMMAND,ControllerCommand.subscribe.getCommand());
+                if(orgId == checkOrgId){
+                    LOGGER.info("debugging payload--With content alone-2-"+payLoad);
+                }
+            }
+            // ack type - so content is always msgid.
+            else {
+                payLoad.put(AgentKeys.CONTENT, payLoad.get(AgentKeys.MESSAGE_ID));
             }
             AgentUtil.putLog(payLoad,orgId,agentId,false);
         }
     }
+
 
     private void processTimeSeries(Record record, JSONObject payLoad, ProcessRecordsInput processRecordsInput, boolean isTimeSeries) throws Exception {
             long timeStamp=	record.getApproximateArrivalTimestamp().getTime();
             long startTime = System.currentTimeMillis();
             // LOGGER.info("TIMESERIES DATA PROCESSED TIME::: ORGID::::::: "+orgId + " TIME::::" +timeStamp);
             ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-        if (AccountUtil.getCurrentOrg().getId() == 146 ) {
+        /*if (AccountUtil.getCurrentOrg().getId() == 146 ) {
             LOGGER.info("Payload in processor : "+payLoad);
-        }
+        }*/
             bean.processTimeSeries(timeStamp, payLoad, record, processRecordsInput.getCheckpointer(), isTimeSeries);
-            LOGGER.info("timetaken : "+(System.currentTimeMillis() - startTime));
+            long timeTaken = (System.currentTimeMillis() - startTime);
+            if(timeTaken >  100000L){
+                LOGGER.info("timetaken : "+timeTaken);
+            }
         }
 
-        private void updateDeviceTable(String deviceId) {
+        /*private void updateDeviceTable(String deviceId) {
             try {
                 // LOGGER.info("Device ID : "+deviceId);
                 if (deviceId == null || deviceId.isEmpty()) {
@@ -342,7 +356,7 @@ public class Processor implements IRecordProcessor {
         private void addDeviceId(String deviceId) throws Exception {
             ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
             deviceMap.put(deviceId, bean.addDeviceId(deviceId));
-        }
+        }*/
 
         @Override
         public void shutdown(ShutdownInput shutdownInput) {

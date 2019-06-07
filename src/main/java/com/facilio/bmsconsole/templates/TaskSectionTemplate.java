@@ -1,18 +1,17 @@
 package com.facilio.bmsconsole.templates;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-
 import com.facilio.bmsconsole.context.PMIncludeExcludeResourceContext;
 import com.facilio.bmsconsole.context.PMTaskSectionTemplateTriggers;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class TaskSectionTemplate extends Template {
 	
@@ -20,7 +19,15 @@ public class TaskSectionTemplate extends Template {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+	private boolean isPreRequestSection = false;
+
+	public boolean isPreRequestSection() {
+		return isPreRequestSection;
+	}
+
+	public void setPreRequestSection(boolean isPreRequestSection) {
+		this.isPreRequestSection = isPreRequestSection;
+	}
 	List<PMIncludeExcludeResourceContext> pmIncludeExcludeResourceContexts;
 	
 	public List<PMIncludeExcludeResourceContext> getPmIncludeExcludeResourceContexts() {

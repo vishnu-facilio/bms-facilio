@@ -1,9 +1,9 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
+
 import java.io.Serializable;
 import java.util.List;
-
-import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
 
 public class PublishData implements Serializable {
 	/**

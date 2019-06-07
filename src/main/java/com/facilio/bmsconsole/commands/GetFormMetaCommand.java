@@ -11,23 +11,20 @@ import org.apache.commons.lang3.StringUtils;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.StringOperators;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.forms.FormFactory;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 
 public class GetFormMetaCommand implements Command {
 
@@ -37,16 +34,20 @@ public class GetFormMetaCommand implements Command {
 		Long formId = (Long) context.get(FacilioConstants.ContextNames.FORM_ID);
 		FacilioForm form = null;
 		if (formName != null) {
-			String formModuleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);	// TODO...needs to be mandatory
-			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			form = getFormFromDB(formName);
+			String formModuleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);	// TODO...needs to be mandatory
+			FacilioModule formModule = null;
+			if (formModuleName != null) {
+				formModule = modBean.getModule(formModuleName);
+			}
+			
+			form = FormsAPI.getFormFromDB(formName, formModule);
 			if (form == null) {
 				FacilioModule childModule = null;
 				if (formModuleName != null) {
 					form = FormFactory.getForm(formModuleName, formName);
 					if (form == null) {
-						childModule = modBean.getModule(formModuleName);
+						childModule = formModule;
 						form = getChildForm(childModule);
 					}
 				}
@@ -126,6 +127,7 @@ public class GetFormMetaCommand implements Command {
 		FacilioForm form = null;
 		if (childModule != null && childModule.getExtendModule() != null) {
 			String extendedModName = childModule.getExtendModule().getName();
+			// TODO get with type
 			form = new FacilioForm(FormFactory.getForm("default_" +extendedModName));
 			form.setDisplayName(childModule.getDisplayName());
 		}
@@ -162,22 +164,6 @@ public class GetFormMetaCommand implements Command {
 				}
 			}
 		}
-	}
-	
-	private FacilioForm getFormFromDB(String formName) throws Exception {
-		Criteria formNameCriteria = new Criteria();
-		Condition condition = new Condition();
-		condition.setColumnName("NAME");
-		condition.setFieldName("name");
-		condition.setOperator(StringOperators.IS);
-		condition.setValue(formName);
-		formNameCriteria.addAndCondition(condition);
-		
-		List<FacilioForm> forms = FormsAPI.getFormFromDB(formNameCriteria);
-		if (forms == null || forms.isEmpty()) {
-			return null;
-		}
-		return forms.get(0);
 	}
 
 }

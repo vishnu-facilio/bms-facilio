@@ -1,9 +1,9 @@
 package com.facilio.filters;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.events.constants.EventConstants;
+import com.facilio.time.DateTimeUtil;
 import org.apache.commons.chain.Chain;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;

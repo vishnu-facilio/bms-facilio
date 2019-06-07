@@ -10,3 +10,5 @@ target/
 bmsconsole.iml
 deploy.sh
 src/main/java/test/
+
+src/main/webapp/META-INF/context\.xml

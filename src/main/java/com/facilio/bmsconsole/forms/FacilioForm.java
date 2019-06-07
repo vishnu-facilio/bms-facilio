@@ -1,13 +1,9 @@
 package com.facilio.bmsconsole.forms;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.facilio.modules.FacilioModule;
 
-import com.facilio.bmsconsole.modules.FacilioModule;
+import java.io.Serializable;
+import java.util.*;
 
 public class FacilioForm implements Serializable {
 	public FacilioForm () {}

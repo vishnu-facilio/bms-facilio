@@ -55,6 +55,93 @@ public enum FacilioWorkOrderFunctions implements FacilioWorkflowFunctionInterfac
 				throw new FunctionParamException("Required Object is null");
 			}
 		}
+	},
+	GET_TOP_N_BUILDING_PLANNED_TYPE_COUNT(4,"getTopNBuildingsWithPlannedTypeCount") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			List<Map<String,Object>> plannedMapList = WorkOrderAPI.getTopNBuildingsWithPlannedTypeCount(objects[0].toString(), Long.valueOf(objects[1].toString()), Long.valueOf(objects[2].toString()), Long.valueOf(objects[3].toString()));
+			
+            return plannedMapList;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	GET_TEAM_CLOSED_OPEN_COUNT(5,"getTopNTeamsWithOpenCloseCount") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			List<Map<String,Object>> teamOpenCloseCountList = WorkOrderAPI.getTopNTeamWithOpenCloseCount(objects[0].toString(), Long.valueOf(objects[1].toString()), Long.valueOf(objects[2].toString()), Long.valueOf(objects[3].toString()));
+		    return teamOpenCloseCountList;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	GET_TOP_N_TECH_AVG_RESOLUTION_TIME(6,"getTopNTechWithAvgResolutionTime") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			List<Map<String,Object>> techResolutionTimeList = WorkOrderAPI.getAvgCompletionTimeByTechnician(objects[0].toString(), Long.valueOf(objects[1].toString()), Long.valueOf(objects[2].toString()), Long.valueOf(objects[3].toString()));
+		    return techResolutionTimeList;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	GET_TOP_N_BUILDING_UNPLANNED_TYPE_COUNT(7,"getTopNBuildingsWithUnPlannedTypeCount") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			List<Map<String,Object>> unPlannedMapList = WorkOrderAPI.getTopNBuildingsWithUnPlannedTypeCount(objects[0].toString(), Long.valueOf(objects[1].toString()), Long.valueOf(objects[2].toString()), Long.valueOf(objects[3].toString()));
+			
+            return unPlannedMapList;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	GET_SITE_NAME(8,"getSiteName") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			String siteName = WorkOrderAPI.getSiteName(Long.valueOf(objects[0].toString()));
+			
+            return siteName;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	GET_TECHNICIAN_CLOSED_OPEN_COUNT(9,"getTopNTechWithOpenCloseCount") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			List<Map<String,Object>> techOpenCloseCountList = WorkOrderAPI.getTopNTechniciansWithOpenCloseCount(objects[0].toString(), Long.valueOf(objects[1].toString()), Long.valueOf(objects[2].toString()), Long.valueOf(objects[3].toString()));
+		    return techOpenCloseCountList;
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
 	}
 	;
 	;

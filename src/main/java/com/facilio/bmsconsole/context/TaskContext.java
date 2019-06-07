@@ -1,19 +1,18 @@
 package com.facilio.bmsconsole.context;
 
-import java.text.ParseException;
-import java.util.List;
-
-import com.facilio.modules.FacilioStatus;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.facilio.accounts.dto.User;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FacilioStatus;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.fields.FacilioField;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import java.text.ParseException;
+import java.util.List;
 
 public class TaskContext extends ModuleBaseWithCustomFields {
 	/**
@@ -22,7 +21,15 @@ public class TaskContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
 
 	private static Logger log = LogManager.getLogger(TaskContext.class.getName());
-	
+	private boolean preRequest;
+
+	public boolean isPreRequest() {
+		return preRequest;
+	}
+
+	public void setPreRequest(boolean preRequest) {
+		this.preRequest = preRequest;
+	}
 	private String subject;
 	public String getSubject() {
 		return subject;
@@ -380,12 +387,47 @@ public class TaskContext extends ModuleBaseWithCustomFields {
 		}
 		return false;
 	}
-	
+
+	private String truevalue;
+
+	public String getTruevalue() {
+		return truevalue;
+	}
+
+	public void setTruevalue(String truevalue) {
+		this.truevalue = truevalue;
+	}
+
+	private String falsevalue;
+
+	public String getFalsevalue() {
+		return falsevalue;
+	}
+
+	public void setFalsevalue(String falsevalue) {
+		this.falsevalue = falsevalue;
+	}
 	private String failureValue;
 	public String getFailureValue() {
 		return failureValue;
 	}
 	public void setFailureValue(String failureValue) {
 		this.failureValue = failureValue;
+	}
+	
+	private long offlineModifiedTime = -1;
+	public long getOfflineModifiedTime() {
+		return offlineModifiedTime;
+	}
+	public void setOfflineModifiedTime(long offlineModifiedTime) {
+		this.offlineModifiedTime = offlineModifiedTime;
+	}
+	
+	private long syncTime = -1;
+	public long getSyncTime() {
+		return syncTime;
+	}
+	public void setSyncTime(long syncTime) {
+		this.syncTime = syncTime;
 	}
 }

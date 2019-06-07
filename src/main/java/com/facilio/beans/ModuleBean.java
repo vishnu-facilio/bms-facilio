@@ -1,8 +1,8 @@
 package com.facilio.beans;
 
 import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.FacilioField;
 import org.json.simple.JSONObject;
 
 import java.util.Collection;

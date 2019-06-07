@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.fields.FacilioField;
 
 public class ReportFieldContext {
 

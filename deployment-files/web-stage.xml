@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="WebApp_9" version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+    <display-name>BMS Console</display-name>
+    <context-param>
+        <param-name>
+            org.apache.tiles.impl.BasicTilesContainer.DEFINITIONS_CONFIG
+        </param-name>
+        <param-value>
+            /WEB-INF/tiles.xml
+        </param-value>
+    </context-param>
+
+    <session-config>
+        <cookie-config><secure>true</secure></cookie-config>
+    </session-config>
+
+    <listener>
+        <listener-class>org.apache.tiles.web.startup.simple.SimpleTilesListener</listener-class>
+    </listener>
+
+    <filter>
+        <filter-name>HealthFilter</filter-name>
+        <filter-class>com.facilio.filters.HealthCheckFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>HealthFilter</filter-name>
+        <url-pattern>/api/health</url-pattern>
+    </filter-mapping>
+    <filter>
+        <filter-name>AccessLogFilter</filter-name>
+        <filter-class>com.facilio.filters.AccessLogFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>AccessLogFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+
+    <filter>
+        <filter-name>IotFilter</filter-name>
+        <filter-class>com.facilio.filters.IotFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>IotFilter</filter-name>
+        <url-pattern>/iot/api/timeseries/publish</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>CorsFilter</filter-name>
+        <filter-class>com.facilio.filters.FacilioCorsFilter</filter-class>
+        <init-param>
+            <param-name>cors.allowed.methods</param-name>
+            <param-value>GET,POST,HEAD,OPTIONS,PUT</param-value>
+        </init-param>
+        <init-param>
+            <param-name>cors.allowed.headers</param-name>
+            <param-value>Content-Type,X-Requested-With,accept,Accept-Encoding,Accept-Language,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,Referer,User-Agent,Authorization,X-Device-Type,X-App-Version,X-Remote-Screen,X-current-site,X-Permalink-Token</param-value>
+        </init-param>
+        <init-param>
+            <param-name>cors.exposed.headers</param-name>
+            <param-value>Access-Control-Allow-Origin</param-value>
+        </init-param>
+    </filter>
+
+    <filter>
+        <filter-name>struts2</filter-name>
+        <filter-class>org.apache.struts2.dispatcher.filter.StrutsPrepareAndExecuteFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>CorsFilter</filter-name>
+        <url-pattern>/api/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>CorsFilter</filter-name>
+        <url-pattern>/app/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>CorsFilter</filter-name>
+        <url-pattern>/internal/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>CorsFilter</filter-name>
+        <url-pattern>/service/*</url-pattern>
+    </filter-mapping>
+
+
+    <filter-mapping>
+        <filter-name>struts2</filter-name>
+        <url-pattern>/api/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>struts2</filter-name>
+        <url-pattern>/internal/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>struts2</filter-name>
+        <url-pattern>/iot/api/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>struts2</filter-name>
+        <url-pattern>/auth/api/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>struts2</filter-name>
+        <url-pattern>/admin/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>struts2</filter-name>
+        <url-pattern>/internalmig/*</url-pattern>
+    </filter-mapping>
+
+    <servlet>
+        <servlet-name>clientapp</servlet-name>
+        <jsp-file>/jsps/index.jsp</jsp-file>
+    </servlet>
+    <servlet>
+        <servlet-name>sandbox</servlet-name>
+        <jsp-file>/jsps/dummyindex.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>clientapp</servlet-name>
+        <url-pattern>/app/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>clientapp</servlet-name>
+        <url-pattern>/tv/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>clientapp</servlet-name>
+        <url-pattern>/service/*</url-pattern>
+    </servlet-mapping>
+    <servlet-mapping>
+        <servlet-name>sandbox</servlet-name>
+        <url-pattern>/sandbox/*</url-pattern>
+    </servlet-mapping>
+    <welcome-file-list>
+        <welcome-file>/jsps/index.jsp</welcome-file>
+    </welcome-file-list>
+
+    <!--  JDBC >
+    <resource-ref>
+        <description>DB Connection</description>
+        <res-ref-name>jdbc/BmsDB</res-ref-name>
+        <res-type>javax.sql.DataSource</res-type>
+        <res-auth>Container</res-auth>
+    </resource-ref>
+
+    < Context Listener -->
+
+    <listener>
+        <listener-class>com.facilio.fw.listener.FacilioContextListener</listener-class>
+    </listener>
+
+    <jsp-config>
+        <taglib>
+            <taglib-uri>facilio-tags</taglib-uri>
+            <taglib-location>/WEB-INF/tags/facilio-tags.tld</taglib-location>
+        </taglib>
+    </jsp-config>
+</web-app>

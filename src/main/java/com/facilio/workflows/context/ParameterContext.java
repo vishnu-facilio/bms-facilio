@@ -1,6 +1,6 @@
 package com.facilio.workflows.context;
 
-import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.modules.FieldType;
 
 import java.io.Serializable;
 

@@ -39,35 +39,36 @@ import com.facilio.bmsconsole.context.TicketCategoryContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.TicketPriorityContext;
-import com.facilio.modules.FacilioStatus;
-import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.bmsconsole.context.TicketTypeContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.BooleanField;
-import com.facilio.bmsconsole.modules.DeleteRecordBuilder;
-import com.facilio.bmsconsole.modules.EnumField;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericDeleteRecordBuilder;
-import com.facilio.sql.GenericInsertRecordBuilder;
-import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.facilio.modules.DeleteRecordBuilder;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioStatus;
+import com.facilio.modules.FacilioStatus.StatusType;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.BooleanField;
+import com.facilio.modules.fields.EnumField;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class TicketAPI {
@@ -288,7 +289,21 @@ public class TicketAPI {
 															.orderBy("ID");
 		return builder.get();
 	}
-	
+
+	public static List<TicketTypeContext> getPlannedTypes(long orgId) throws Exception
+	{
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		SelectRecordsBuilder<TicketTypeContext> builder = new SelectRecordsBuilder<TicketTypeContext>()
+															.table("TicketType")
+															.moduleName(FacilioConstants.ContextNames.TICKET_TYPE)
+															.beanClass(TicketTypeContext.class)
+															.select(modBean.getAllFields(FacilioConstants.ContextNames.TICKET_TYPE))
+															.andCondition(CriteriaAPI.getCondition("NAME","name", "Preventive, Rounds, Compliance", StringOperators.IS))
+															.andCustomWhere("ORGID = ?", orgId)
+															.orderBy("ID");
+		return builder.get();
+	}
+
 	public static List<TicketCategoryContext> getCategories(long orgId) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -510,7 +525,21 @@ public class TicketAPI {
 		}
 		return null;
 	}
-	
+	public static Map<Long, List<TaskContext>> groupPreRequestBySection(List<TaskContext> tasks) throws Exception {
+		if(tasks != null && !tasks.isEmpty()) {
+			Map<Long, List<TaskContext>> taskMap = new HashMap<>();
+			for(TaskContext task : tasks) {
+				List<TaskContext> taskList = taskMap.get(task.getSectionId());
+				if (taskList == null) {
+					taskList = new ArrayList<>();
+					taskMap.put(task.getSectionId(), taskList);
+				}
+				taskList.add(task);
+			}
+			return taskMap;
+		}
+		return null;
+	}	
 	public static List<NoteContext> getRelatedNotes(long ticketId) throws Exception 
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -616,7 +645,12 @@ public class TicketAPI {
 				}
 				else {
 					assignTicketToCurrentUser(ticket, oldTicket);
-					ticket.setActualWorkStart(ticket.getOfflineWorkStart() != -1 ? ticket.getOfflineWorkStart() : System.currentTimeMillis());
+					if (ticket.getOfflineModifiedTime() != -1) {
+						ticket.setActualWorkStart(ticket.getOfflineModifiedTime());
+					}
+					else {
+						ticket.setActualWorkStart(ticket.getOfflineWorkStart() != -1 ? ticket.getOfflineWorkStart() : System.currentTimeMillis());
+					}
 				}
 			}
 			else if ("On Hold".equalsIgnoreCase(statusObj.getStatus()) || "Resolved".equalsIgnoreCase(statusObj.getStatus()) 
@@ -624,7 +658,12 @@ public class TicketAPI {
 
 				long estimatedDuration;
 				if ("Resolved".equalsIgnoreCase(statusObj.getStatus()) || "Closed".equalsIgnoreCase(statusObj.getStatus())) {
-					ticket.setActualWorkEnd(ticket.getOfflineWorkEnd() != -1 ? ticket.getOfflineWorkEnd() : System.currentTimeMillis());
+					if (ticket.getOfflineModifiedTime() != -1) {
+						ticket.setActualWorkEnd(ticket.getOfflineModifiedTime());
+					}
+					else {
+						ticket.setActualWorkEnd(ticket.getOfflineWorkEnd() != -1 ? ticket.getOfflineWorkEnd() : System.currentTimeMillis());
+					}
 					estimatedDuration = TicketAPI.getEstimatedWorkDuration(oldTicket, ticket.getActualWorkEnd());
 					if(isWorkDurationChangeAllowed) {
 						long actualDuration = ticket.getActualWorkDuration() != -1 ? ticket.getActualWorkDuration() : ticket.getEstimatedWorkDuration();
@@ -1045,6 +1084,8 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 			case BOOLEAN:
 				BooleanField field = (BooleanField) modBean.getField(task.getReadingFieldId());
 				task.setReadingField(field);
+				task.setTruevalue(field.getTrueVal());
+				task.setFalsevalue(field.getFalseVal());
 				List<String> options = new ArrayList<>();
 				options.add(field.getTrueVal());
 				options.add(field.getFalseVal());
@@ -1302,14 +1343,19 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 			countField.setColumnName("COUNT(*)");
 			countField.setDataType(FieldType.NUMBER);
 			fields.add(countField);
+			FacilioField preRequestField = new FacilioField();
+			preRequestField.setName("IS_PRE_REQUEST");
+			preRequestField.setColumnName("IS_PRE_REQUEST");
+			preRequestField.setDataType(FieldType.BOOLEAN);
 			
 			Condition condition = CriteriaAPI.getCondition(parentIdField, parentIds, NumberOperators.EQUALS);
+			Condition notPreRequestCondition = CriteriaAPI.getCondition(preRequestField, "1" , NumberOperators.NOT_EQUALS);
 			GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
 					.table(module.getTableName())
 					.select(fields)
 					.groupBy(parentIdField.getCompleteColumnName())
 					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-					.andCondition(condition);
+					.andCondition(condition).andCondition(notPreRequestCondition);
 			
 			List<Map<String, Object>> totalCountList = select.get();
 			
@@ -1330,7 +1376,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 					.groupBy(parentIdField.getCompleteColumnName())
 					.andCondition(condition)
 					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-					.andCondition(completedStatusCondition);
+					.andCondition(completedStatusCondition).andCondition(notPreRequestCondition);
 			
 			List<Map<String, Object>> completedCountList = select.get();
 			

@@ -16,13 +16,13 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldType;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.timeseries.TimeSeriesAPI;
 
 public class ModeledDataCommand implements Command {
@@ -46,7 +46,7 @@ public class ModeledDataCommand implements Command {
 		Map<String,Object>  dataPoints= null;
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 	
-	if(TimeSeriesAPI.isStage()) {
+//	if(TimeSeriesAPI.isStage()) {
 			LOGGER.debug("Inside ModeledDataCommand####### deviceData: "+deviceData);
 
 			for(Map.Entry<String, Map<String,String>> data:deviceData.entrySet()) {
@@ -113,7 +113,7 @@ public class ModeledDataCommand implements Command {
 				
 				dataPointsValue.addAll(insertNewPointsData);
 			}
-	}
+//	}
 
 		//oldPublish data
 		if(!TimeSeriesAPI.isStage()) {

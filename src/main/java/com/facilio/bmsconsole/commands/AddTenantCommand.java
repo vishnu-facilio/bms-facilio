@@ -1,15 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.chain.Context;
-
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.chain.Context;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class AddTenantCommand extends GenericAddModuleDataCommand {
 

@@ -1,26 +1,25 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.bmsconsole.context.ReportInfo;
+import com.facilio.bmsconsole.util.TemplateAPI;
+import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.tasker.FacilioTimer;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import com.facilio.bmsconsole.context.ReportInfo;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.util.TemplateAPI;
-import com.facilio.bmsconsole.workflow.rule.EventType;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.sql.GenericDeleteRecordBuilder;
-import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.tasker.FacilioTimer;
 
 public class DeleteWoScheduledViewCommand implements Command {
 

@@ -1,25 +1,35 @@
 package com.facilio.bmsconsole.context;
 
+import java.io.File;
+import java.text.ParseException;
+import java.util.List;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.accounts.dto.User;
 import com.facilio.aws.util.AwsUtil;
-import com.facilio.bmsconsole.util.DateTimeUtil;
 import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.bmsconsole.workflow.rule.ApproverContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.time.DateTimeUtil;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.io.File;
-import java.text.ParseException;
-import java.util.List;
 
 public class WorkOrderContext extends TicketContext {
     /**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private boolean preRequestStatus;
+
+	public boolean isPreRequestStatus() {
+		return preRequestStatus;
+	}
+
+	public void setPreRequestStatus(boolean preRequestStatus) {
+		this.preRequestStatus = preRequestStatus;
+	}
 	private static Logger log = LogManager.getLogger(WorkOrderContext.class.getName());
 	private User requester;
 	public User getRequester() {
@@ -58,7 +68,7 @@ public class WorkOrderContext extends TicketContext {
 	}
 	public String getCreatedTimeString() {
 		if(createdTime != -1) {
-			return DateTimeUtil.getZonedDateTime(createdTime).format(FacilioConstants.READABLE_DATE_FORMAT);
+			return DateTimeUtil.getZonedDateTime(createdTime).format(DateTimeUtil.READABLE_DATE_FORMAT);
 		}
 		return null;
 	}
@@ -351,4 +361,13 @@ public class WorkOrderContext extends TicketContext {
 			return null;
 		}
 	}
+	
+	private long syncTime = -1;
+	public long getSyncTime() {
+		return syncTime;
+	}
+	public void setSyncTime(long syncTime) {
+		this.syncTime = syncTime;
+	}
+	
 }

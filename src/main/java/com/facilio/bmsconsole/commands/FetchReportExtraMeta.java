@@ -1,18 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.AlarmContext;
-import com.facilio.bmsconsole.context.ReadingAlarmContext;
-import com.facilio.bmsconsole.context.ReportAlarmContext;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.DateRange;
-import com.facilio.bmsconsole.util.AlarmAPI;
-import com.facilio.bmsconsole.util.DateTimeUtil;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.report.context.ReportContext;
-import com.facilio.report.context.ReportContext.ReportType;
-import com.facilio.report.context.ReportDataPointContext;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.tuple.Pair;
@@ -24,8 +18,19 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.ReadingAlarmContext;
+import com.facilio.bmsconsole.context.ReportAlarmContext;
+import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
+import com.facilio.report.context.ReportContext;
+import com.facilio.report.context.ReportContext.ReportType;
+import com.facilio.report.context.ReportDataPointContext;
+import com.facilio.time.DateRange;
+import com.facilio.time.DateTimeUtil;
 
 public class FetchReportExtraMeta implements Command {
 	private static final Logger LOGGER = LogManager.getLogger(FetchReportExtraMeta.class.getName());
@@ -106,7 +111,7 @@ public class FetchReportExtraMeta implements Command {
 							long fieldId = dataPoint.getyAxis().getFieldId();
 							
 							for (Long parentId : parentIds) {
-								List<ReadingAlarmContext> alarms = AlarmAPI.getReadingAlarms(Collections.singletonList(parentId),fieldId,report.getDateRange().getStartTime(),report.getDateRange().getEndTime(),false);
+								List<ReadingAlarmContext> alarms = AlarmAPI.getReadingAlarms(Collections.singletonList(parentId), -1l, fieldId,report.getDateRange().getStartTime(),report.getDateRange().getEndTime(),false);
 								alarms = filterAlarmAndGetList(alarms,alarmId);
 								for(ReadingAlarmContext alarm :alarms) {
 									alarm.setReportMeta(dataPoint.getName()+"_"+FacilioConstants.Reports.ACTUAL_DATA);

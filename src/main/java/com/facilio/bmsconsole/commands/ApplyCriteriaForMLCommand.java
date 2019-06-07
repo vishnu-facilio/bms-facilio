@@ -1,21 +1,19 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.bmsconsole.context.MLContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.Operator;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
-import java.util.TreeMap;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import com.facilio.bmsconsole.context.MLContext;
-import com.facilio.bmsconsole.criteria.BooleanOperators;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.Operator;
-import com.facilio.constants.FacilioConstants;
 
 public class ApplyCriteriaForMLCommand implements Command {
 
@@ -31,7 +29,7 @@ public class ApplyCriteriaForMLCommand implements Command {
 			Hashtable<Long, Hashtable<String, SortedMap<Long, Object>>> criteriaSatisfiedDataMap = new Hashtable<Long, Hashtable<String, SortedMap<Long, Object>>>();
 			
 			Set<Long> keySet = criteriaVariableDataMap.keySet();
-			Criteria criteria = CriteriaAPI.getCriteria(mlContext.getOrgId(), mlContext.getCriteriaId());
+			Criteria criteria = CriteriaAPI.getCriteria(mlContext.getOrgId(), mlContext.getCriteriaID());
 			
 			long previousTime = -1;
 			for(long ttime:keySet)

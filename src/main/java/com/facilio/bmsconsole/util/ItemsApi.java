@@ -1,29 +1,30 @@
 package com.facilio.bmsconsole.util;
 
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.ItemContext;
-import com.facilio.bmsconsole.context.ItemTransactionsContext;
-import com.facilio.bmsconsole.context.ItemTypesContext;
-import com.facilio.bmsconsole.context.ToolContext;
-import com.facilio.bmsconsole.context.WorkorderItemContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
+
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.ItemContext;
+import com.facilio.bmsconsole.context.ItemContext.CostType;
+import com.facilio.bmsconsole.context.ItemTransactionsContext;
+import com.facilio.bmsconsole.context.ItemTypesContext;
+import com.facilio.bmsconsole.context.StoreRoomContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.InsertRecordBuilder;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.UpdateRecordBuilder;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 
 public class ItemsApi {
 	public static Map<Long, ItemTypesContext> getItemTypesMap(long id) throws Exception {
@@ -77,7 +78,7 @@ public class ItemsApi {
 		}
 		return null;
 	}
-	
+
 	public static List<ItemContext> getItemsForStore(long storeId) throws Exception {
 		if (storeId <= 0) {
 			return null;
@@ -94,28 +95,9 @@ public class ItemsApi {
 
 	}
 
+
+
 	
-
-	public static ItemContext getItemsForTypeAndStore(long storeId, long itemTypeId) throws Exception {
-		if (storeId <= 0) {
-			return null;
-		}
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM);
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
-		SelectRecordsBuilder<ItemContext> selectBuilder = new SelectRecordsBuilder<ItemContext>().select(fields)
-				.table(module.getTableName()).moduleName(module.getName()).beanClass(ItemContext.class)
-				.andCondition(CriteriaAPI.getCondition("STORE_ROOM_ID", "storeRoom", String.valueOf(storeId), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("ITEM_TYPES_ID", "itemType", String.valueOf(itemTypeId), NumberOperators.EQUALS))
-				
-				;
-		List<ItemContext> items = selectBuilder.get();
-		if(!CollectionUtils.isEmpty(items)) {
-			return items.get(0);
-		}
-	 throw new IllegalArgumentException("No appropriate item found");
-	}
-
 	public static Map<String, Long> getAllItemTypes() throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM_TYPES);
@@ -134,7 +116,7 @@ public class ItemsApi {
 		return null;
 	}
 	public static ItemTransactionsContext getItemTransactionsForRequestedLineItem(long requestedLineItem) throws Exception {
-		
+
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule itemTransactionModule = modBean.getModule(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
 		List<FacilioField> itemTransactionFields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
@@ -143,25 +125,25 @@ public class ItemsApi {
 				.select(itemTransactionFields).table(itemTransactionModule.getTableName())
 				.moduleName(itemTransactionModule.getName()).beanClass(ItemTransactionsContext.class)
 				.andCondition(CriteriaAPI.getCondition("REQUESTED_LINEITEM", "requestedLineItem", String.valueOf(requestedLineItem), NumberOperators.EQUALS));
-		
+
 		List<ItemTransactionsContext> itemTransactions = selectBuilder.get();
 		if(!CollectionUtils.isEmpty(itemTransactions)) {
 			return itemTransactions.get(0);
 		}
 		throw new IllegalArgumentException("Item shoud be issued before being used");
 	}
-	
+
 	public static void updateLastPurchasedDetailsForItemType(long id) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule itemTypesModule = modBean.getModule(FacilioConstants.ContextNames.ITEM_TYPES);
-		
+
 		FacilioModule itemModule = modBean.getModule(FacilioConstants.ContextNames.ITEM);
 		List<FacilioField> itemFields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
 		Map<String, FacilioField> itemFieldMap = FieldFactory.getAsMap(itemFields);
-		
+
 		long lastPurchasedDate = -1;
 		double lastPurchasedPrice = -1;
-		
+
 		SelectRecordsBuilder<ItemContext> builder = new SelectRecordsBuilder<ItemContext>()
 				.select(itemFields).moduleName(itemModule.getName())
 				.andCondition(CriteriaAPI.getCondition(itemFieldMap.get("itemType"), String.valueOf(id),
@@ -191,7 +173,7 @@ public class ItemsApi {
 
 		StoreroomApi.updateStoreRoomLastPurchasedDate(storeRoomId, lastPurchasedDate);
 	}
-	
+
 	public static long getLastPurchasedItemDateForItemId(long id) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
@@ -206,10 +188,10 @@ public class ItemsApi {
 		if(assetscontext!=null && !assetscontext.isEmpty()) {
 			lastPurchasedDate = assetscontext.get(0).getPurchasedDate();
 		}
-		
+
 		return lastPurchasedDate;
 	}
-	
+
 	public static double getLastPurchasedItemPriceForItemId(long id) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
@@ -224,10 +206,10 @@ public class ItemsApi {
 		if(assetscontext!=null && !assetscontext.isEmpty()) {
 			lastPurchasedDate = assetscontext.get(0).getUnitPrice();
 		}
-		
+
 		return lastPurchasedDate;
 	}
-	
+
 	public static void updateLastPurchasedDateForItem(ItemContext item)
 			throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -237,4 +219,63 @@ public class ItemsApi {
 				.module(module).fields(fields).andCondition(CriteriaAPI.getIdCondition(item.getId(), module));
 		updateBuilder.update(item);
 	}
+
+	public static ItemContext getItem(ItemTypesContext itemType, StoreRoomContext storeroom) throws Exception {
+		ItemContext itemc = null;
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule itemModule = modBean.getModule(FacilioConstants.ContextNames.ITEM);
+		List<FacilioField> itemFields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
+		Map<String, FacilioField> itemFieldMap = FieldFactory.getAsMap(itemFields);
+		SelectRecordsBuilder<ItemContext> itemselectBuilder = new SelectRecordsBuilder<ItemContext>().select(itemFields)
+				.table(itemModule.getTableName()).moduleName(itemModule.getName()).beanClass(ItemContext.class)
+				.andCondition(CriteriaAPI.getCondition(itemFieldMap.get("storeRoom"), String.valueOf(storeroom.getId()),
+						NumberOperators.EQUALS));
+
+		List<ItemContext> items = itemselectBuilder.get();
+		if (items != null && !items.isEmpty()) {
+			for (ItemContext item : items) {
+				if (item.getItemType().getId() == itemType.getId()) {
+					return item;
+				}
+			}
+			return addItem(itemModule, itemFields, storeroom, itemType);
+		} else {
+			return addItem(itemModule, itemFields, storeroom, itemType);
+		}
+	}
+
+	public static ItemContext addItem(FacilioModule module, List<FacilioField> fields, StoreRoomContext store, ItemTypesContext itemType) throws Exception {
+		ItemContext item = new ItemContext();
+		item.setStoreRoom(store);
+		item.setItemType(itemType);
+		item.setCostType(CostType.FIFO);
+		InsertRecordBuilder<ItemContext> readingBuilder = new InsertRecordBuilder<ItemContext>().module(module)
+				.fields(fields);
+		readingBuilder.withLocalId();
+		readingBuilder.insert(item);
+		return item;
+	}
+
+
+	public static ItemContext getItemsForTypeAndStore(long storeId, long itemTypeId) throws Exception {
+        if (storeId <= 0) {
+            return null;
+        }
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM);
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
+        SelectRecordsBuilder<ItemContext> selectBuilder = new SelectRecordsBuilder<ItemContext>().select(fields)
+                .table(module.getTableName()).moduleName(module.getName()).beanClass(ItemContext.class)
+                .andCondition(CriteriaAPI.getCondition("STORE_ROOM_ID", "storeRoom", String.valueOf(storeId), NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition("ITEM_TYPES_ID", "itemType", String.valueOf(itemTypeId), NumberOperators.EQUALS))
+
+                ;
+        List<ItemContext> items = selectBuilder.get();
+        if(!CollectionUtils.isEmpty(items)) {
+            return items.get(0);
+        }
+     throw new IllegalArgumentException("No appropriate item found");
+    }
+
+
 }

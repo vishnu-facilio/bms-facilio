@@ -298,7 +298,7 @@
 			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 		</action>
 		<action name="workOrderCount" class="com.facilio.bmsconsole.actions.WorkOrderAction"
-			method="workOrderCount">
+			method="workOrderList">
 			<param name="moduleName">workorder</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<param name="approval">true</param>

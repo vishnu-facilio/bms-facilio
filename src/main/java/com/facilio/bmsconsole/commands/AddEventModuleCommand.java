@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.sql.DBUtil;
-import com.facilio.sql.SQLScriptRunner;
+import com.facilio.db.builder.DBUtil;
+import com.facilio.db.util.DBConf;
+import com.facilio.db.util.SQLScriptRunner;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class AddEventModuleCommand implements Command {
 	
-	private static final File EVENT_MODULE_SQL = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/db/" + AwsUtil.getDB() + "/eventModule.sql").getFile());
+	private static final File EVENT_MODULE_SQL = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/db/" + DBConf.getInstance().getDBName() + "/eventModule.sql").getFile());
 	
 	@Override
 	public boolean execute(Context context) throws Exception {

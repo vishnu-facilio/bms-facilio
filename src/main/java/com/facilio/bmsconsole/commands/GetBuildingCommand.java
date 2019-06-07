@@ -4,16 +4,13 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.BusinessHoursContext;
 import com.facilio.bmsconsole.context.LocationContext;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.BusinessHoursAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
-import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-
-import org.apache.commons.chain.Chain;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -58,8 +55,8 @@ public class GetBuildingCommand implements Command {
 					location=SpaceAPI.getLocationSpace(building.getLocation().getId());
 					building.setLocation(location);
 				}
-				if(building.getData()!=null && building.getData().get("operatingHour") != null) {
-					List<Long> businessHourIds=Collections.singletonList(Long.parseLong(building.getData().get("operatingHour").toString()));
+				if(building.getOperatingHour()!=-1){
+					List<Long> businessHourIds=Collections.singletonList(building.getOperatingHour());
 					List<BusinessHoursContext> businessHour = BusinessHoursAPI.getBusinessHours(businessHourIds);
 					if(!businessHour.isEmpty()){
 						building.setBusinessHour(businessHour.get(0));}

@@ -2,16 +2,22 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PurchasedToolContext;
+import com.facilio.bmsconsole.context.ShipmentContext;
 import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.ToolTransactionContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.TransactionState;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.InsertRecordBuilder;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -19,12 +25,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+;
+
 public class AddBulkToolStockTransactionsCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<Long> toolIds = (List<Long>) context.get(FacilioConstants.ContextNames.TOOL_IDS);
+		ShipmentContext shipment = (ShipmentContext)context.get(FacilioConstants.ContextNames.SHIPMENT);
 		if (toolIds != null && !toolIds.isEmpty()) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
@@ -64,7 +73,13 @@ public class AddBulkToolStockTransactionsCommand implements Command {
 								transaction.setTool(tool);
 								transaction.setParentId(tool.getId());
 								transaction.setIsReturnable(false);
-								transaction.setTransactionType(TransactionType.STOCK.getValue());
+								if(shipment != null) {
+									transaction.setTransactionType(TransactionType.SHIPMENT_STOCK.getValue());
+									transaction.setShipment(shipment.getId());
+								}
+								else {
+									transaction.setTransactionType(TransactionType.STOCK.getValue());
+								}
 								transaction.setToolType(tool.getToolType());
 								transaction.setPurchasedTool(purchaseTool);
 								transaction.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
@@ -77,7 +92,13 @@ public class AddBulkToolStockTransactionsCommand implements Command {
 						transaction.setTool(tool);
 						transaction.setParentId(tool.getId());
 						transaction.setIsReturnable(false);
-						transaction.setTransactionType(TransactionType.STOCK.getValue());
+						if(shipment != null) {
+							transaction.setTransactionType(TransactionType.SHIPMENT_STOCK.getValue());
+							transaction.setShipment(shipment.getId());
+						}
+						else {
+							transaction.setTransactionType(TransactionType.STOCK.getValue());
+						}
 						transaction.setToolType(tool.getToolType());
 						transaction.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
 						toolTransaction.add(transaction);

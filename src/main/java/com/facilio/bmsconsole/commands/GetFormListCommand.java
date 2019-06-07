@@ -22,18 +22,18 @@ public class GetFormListCommand implements Command {
 		// TODO Auto-generated method stub
 		Map<String, FacilioForm> forms = new LinkedHashMap<>(FormFactory.getForms((String)context.get(FacilioConstants.ContextNames.MODULE_NAME), (FormType) (context.get(FacilioConstants.ContextNames.FORM_TYPE))));
 		Map<String, FacilioForm> dbForms=FormsAPI.getFormsAsMap((String)context.get(FacilioConstants.ContextNames.MODULE_NAME),(FormType) (context.get(FacilioConstants.ContextNames.FORM_TYPE)));
-		Map<String, FacilioForm> newForms = new LinkedHashMap<>();	// Temp
-		if (forms != null) {
+		/*Map<String, FacilioForm> newForms = new LinkedHashMap<>();	// Temp
+		if (MapUtils.isNotEmpty(forms)) {
 			for(Map.Entry<String, FacilioForm> entry :forms.entrySet()) {
 				newForms.put(entry.getKey(), entry.getValue());
 			}
-		}
+		}*/
 		if (dbForms != null) {
 			for(Map.Entry<String, FacilioForm> entry :dbForms.entrySet()) {
-				newForms.put(entry.getKey(), entry.getValue());
+				forms.put(entry.getKey(), entry.getValue());
 			}
 		}
-		List<FacilioForm> formsList = new ArrayList<>(newForms.values());
+		List<FacilioForm> formsList = new ArrayList<>(forms.values());
 		formsList.removeIf(form -> form.isHideInList() || (AccountUtil.getCurrentAccount().isFromMobile() && !form.getShowInMobile()));
 
 		context.put(FacilioConstants.ContextNames.FORMS, formsList);

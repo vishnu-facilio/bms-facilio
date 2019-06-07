@@ -49,6 +49,7 @@
 	 <job name='EndShiftOTJ' classname= 'com.facilio.bmsconsole.jobs.ShiftEndOneTimeJob' transactionTimeout='300000'/>
 	 <job name='DeviceMonitor' classname= 'com.facilio.bmsconsole.jobs.DeviceMonitorJob' transactionTimeout='300000'/>
 	 <job name='ScheduleNewPM' classname= 'com.facilio.bmsconsole.commands.ScheduleNewPMCommand' transactionTimeout='14400000'/>
+	 <job name='AttendanceAbsentSchedulerJob' classname='com.facilio.bmsconsole.commands.AttendanceAbsentSchedulerJob' transactionTimeout='14400000'/>
 
 	 <!-- Shift jobs -->
 	 <job name='scheduledReadingRule' classname= 'com.facilio.bmsconsole.jobs.ScheduledReadingRuleJob' transactionTimeout='300000'/>
@@ -56,7 +57,8 @@
 	 
 	 <job name='HistoricalScheduledRule' classname='com.facilio.bmsconsole.jobs.HistoricalScheduledRuleJob' transactionTimeout='7200000' />
 	 <!--  ML jobs -->
-	 <job name='DefaultMLJob' classname='com.facilio.bmsconsole.jobs.DefaultMLJob' transactionTimeout='7200000'/> 
+	 <job name='DefaultMLJob' classname='com.facilio.bmsconsole.jobs.DefaultMLJob' transactionTimeout='7200000'/>
+	 <job name='HistoricalAnomalyDetectionJob' classname='com.facilio.bmsconsole.jobs.HistoricalAnomalyDetectionJob' transactionTimeout='7200000'/> 
 	 
 	 <job name='StateFlowScheduledRule' classname='com.facilio.bmsconsole.jobs.StateFlowScheduledRuleJob' transactionTimeout='900000' />
 

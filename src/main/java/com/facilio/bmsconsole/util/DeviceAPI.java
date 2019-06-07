@@ -6,14 +6,22 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.MarkedReadingContext.MarkType;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
-import com.facilio.bmsconsole.criteria.*;
-import com.facilio.bmsconsole.modules.*;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.BuildingOperator;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericInsertRecordBuilder;
-import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.modules.*;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
+import com.facilio.time.DateRange;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.time.SecondsChronoUnit;
 import com.facilio.util.ExpressionEvaluator;
 import org.apache.commons.chain.Chain;
@@ -25,6 +33,8 @@ import org.apache.log4j.Logger;
 
 import java.time.ZonedDateTime;
 import java.util.*;
+
+;
 
 public class DeviceAPI 
 {
@@ -78,7 +88,7 @@ public class DeviceAPI
 		if(purposeId != null) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(modBean.getField("purpose", module.getName()), ""+purposeId, NumberOperators.EQUALS));
 		}
-		selectBuilder.andCondition(CriteriaAPI.getCondition("IS_VIRTUAL","isVirtual","false",BooleanOperators.IS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("IS_VIRTUAL","isVirtual","false", BooleanOperators.IS));
 		return selectBuilder.get();
 		
 	}
@@ -312,7 +322,7 @@ public class DeviceAPI
 				.select(modBean.getAllFields(module.getName()))
 				.module(module)
 				.beanClass(EnergyMeterPurposeContext.class)
-				.andCondition(CriteriaAPI.getCondition("NAME","NAME",purposeName,StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition("NAME","NAME",purposeName, StringOperators.IS))
 				.maxLevel(0);
 		 List<EnergyMeterPurposeContext> props = selectBuilder.get();
 		 if(props != null && !props.isEmpty()) {
@@ -692,7 +702,7 @@ public class DeviceAPI
 	}
 	
 	
-	private static ReadingContext calculateVMReading(EnergyMeterContext meter,List<ReadingContext> readings, List<Long> childIds, DateRange interval, boolean ignoreNullValues) throws Exception {
+	private static ReadingContext calculateVMReading(EnergyMeterContext meter, List<ReadingContext> readings, List<Long> childIds, DateRange interval, boolean ignoreNullValues) throws Exception {
 		ReadingContext virtualMeterReading = null;
 		if (!readings.isEmpty()) {
 			Map<Long, List<ReadingContext>> readingMap = new HashMap<>();

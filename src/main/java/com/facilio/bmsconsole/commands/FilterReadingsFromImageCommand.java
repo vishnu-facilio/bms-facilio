@@ -2,10 +2,10 @@ package com.facilio.bmsconsole.commands;
 
 import com.amazonaws.services.rekognition.model.TextDetection;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.image.ImageRecognitionUtil;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 

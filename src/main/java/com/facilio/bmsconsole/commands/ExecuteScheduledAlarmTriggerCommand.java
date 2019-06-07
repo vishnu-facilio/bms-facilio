@@ -1,12 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FacilioModule;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 

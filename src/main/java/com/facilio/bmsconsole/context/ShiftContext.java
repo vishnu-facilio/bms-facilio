@@ -1,9 +1,17 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-
 import java.time.LocalTime;
+import java.util.Calendar;
 import java.util.List;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.json.annotations.JSON;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class ShiftContext extends ModuleBaseWithCustomFields {
 	/**
@@ -26,69 +34,80 @@ public class ShiftContext extends ModuleBaseWithCustomFields {
 		return this.siteId;
 	}
 	
-	private Boolean isSameTime;
-	public void setIsSameTime(Boolean isSameTime) {
-		this.isSameTime = isSameTime;
-	}
-	
-	public Boolean getIsSameTime() {
-		return this.isSameTime;
-	}
-	
-	public Boolean isSameTime() {
-		return this.isSameTime;
-	}
-	
-	private LocalTime startTime;
+	private long startTime = -1;
+	@JSON(serialize = false)
 	public LocalTime getStartTimeAsLocalTime() {
+		if (startTime >= 0) {
+			return LocalTime.ofSecondOfDay(startTime);
+		}
+		return null;
+	}
+	public long getStartTime() {
 		return startTime;
 	}
-	public String getStartTime() {
-		if(startTime != null) {
-			return startTime.toString();
+	public void setStartTime(LocalTime startTime) {
+		this.startTime = startTime.getSecond();
+	}
+	public void setStartTime(long secondOfDay) {
+		this.startTime = secondOfDay;
+	}
+	
+	private long endTime = -1;
+	@JSON(serialize = false)
+	public LocalTime getEndTimeAsLocalTime() {
+		if (endTime >= 0) {
+			return LocalTime.ofSecondOfDay(endTime);
 		}
 		return null;
 	}
-	public void setStartTime(LocalTime startTime) {
-		this.startTime = startTime;
-	}
-	public void setStartTime(String value) {
-		if (value == null || value.isEmpty()) {return;}
-		this.startTime = LocalTime.parse(value);
-	}
-	
-	private LocalTime endTime;
-	public LocalTime getEndTimeAsLocalTime() {
+	public long getEndTime() {
 		return endTime;
 	}
-	public String getEndTime() {
-		if(endTime != null) {
-			return endTime.toString();
+	public void setEndTime(LocalTime endTime) {
+		this.endTime = endTime.getSecond();
+	}
+	public void setEndTime(long secondOfDay) {
+		this.endTime = secondOfDay;
+	}
+	
+	private Boolean defaultShift;
+	public Boolean getDefaultShift() {
+		return defaultShift;
+	}
+	public void setDefaultShift(Boolean defaultShift) {
+		this.defaultShift = defaultShift;
+	}
+	
+	private JSONObject weekend;
+	public JSONObject getWeekendJSON() {
+		return weekend;
+	}
+	public String getWeekend() {
+		if (weekend != null) {
+			return weekend.toJSONString();
 		}
 		return null;
 	}
-	public void setEndTime(LocalTime endTime) {
-		this.endTime = endTime;
+	public void setWeekend(String s) throws ParseException {
+		if (StringUtils.isNotEmpty(s)) {
+			this.weekend = (JSONObject) new JSONParser().parse(s);
+		}
 	}
-	public void setEndTime(String value) {
-		if (value == null || value.isEmpty()) {return;}
-		this.endTime = LocalTime.parse(value);
-	}
-	
-	private List<BusinessHourContext> days;
-	public List<BusinessHourContext> getDays() {
-		return days;
-	}
-	public void setDays(List<BusinessHourContext> days) {
-		this.days = days;
+	public void setWeekend(JSONObject weekend) {
+		this.weekend = weekend;
 	}
 	
-	private long businessHoursId;
-	public void setBusinessHoursId(long businessHoursId) {
-		this.businessHoursId = businessHoursId;
-	}
-	
-	public long getBusinessHoursId() {
-		return this.businessHoursId;
+	public boolean isWeekend(long timestamp) {
+		Calendar c = Calendar.getInstance();
+		c.setTimeInMillis(timestamp);
+		int weekOfMonth = c.get(Calendar.WEEK_OF_MONTH);
+		if (weekend != null) {
+			List<Long> dayList = (List<Long>) weekend.get(String.valueOf(weekOfMonth));
+			if (CollectionUtils.isNotEmpty(dayList)) {
+				int i = c.get(Calendar.DAY_OF_WEEK);
+				return dayList.contains((long) i);
+			}
+		}
+		return false;
 	}
 }

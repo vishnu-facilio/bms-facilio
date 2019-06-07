@@ -1,31 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
-import java.text.DecimalFormat;
-import java.time.ZonedDateTime;
-import java.time.temporal.ChronoField;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import com.facilio.modules.FacilioStatus;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -33,108 +9,37 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.ReportsChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.AlarmContext;
-import com.facilio.bmsconsole.context.AssetCategoryContext;
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.BaseLineContext;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
-import com.facilio.bmsconsole.context.BenchmarkContext;
-import com.facilio.bmsconsole.context.BenchmarkUnit;
-import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.DashboardContext;
-import com.facilio.bmsconsole.context.DashboardFolderContext;
-import com.facilio.bmsconsole.context.DashboardSharingContext;
-import com.facilio.bmsconsole.context.DashboardWidgetContext;
-import com.facilio.bmsconsole.context.DerivationContext;
-import com.facilio.bmsconsole.context.EnergyMeterContext;
-import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
-import com.facilio.bmsconsole.context.MarkedReadingContext;
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
-import com.facilio.bmsconsole.context.ReadingAlarmContext;
-import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.context.ReportBenchmarkRelContext;
-import com.facilio.bmsconsole.context.ReportColumnContext;
-import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.ReportContext.LegendMode;
 import com.facilio.bmsconsole.context.ReportContext.ReportChartType;
-import com.facilio.bmsconsole.context.ReportDateFilterContext;
-import com.facilio.bmsconsole.context.ReportFieldContext;
-import com.facilio.bmsconsole.context.ReportFolderContext;
-import com.facilio.bmsconsole.context.ReportInfo;
-import com.facilio.bmsconsole.context.ReportSpaceFilterContext;
-import com.facilio.bmsconsole.context.ReportThreshold;
-import com.facilio.bmsconsole.context.ReportUserFilterContext;
-import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.SiteContext;
-import com.facilio.bmsconsole.context.SpaceFilteredDashboardSettings;
-import com.facilio.bmsconsole.context.TaskContext;
-import com.facilio.bmsconsole.context.TaskSectionContext;
-import com.facilio.bmsconsole.context.TicketCategoryContext;
-import com.facilio.modules.FacilioStatus.StatusType;
-import com.facilio.bmsconsole.context.WidgetChartContext;
-import com.facilio.bmsconsole.context.WidgetListViewContext;
-import com.facilio.bmsconsole.context.WidgetStaticContext;
-import com.facilio.bmsconsole.context.WidgetWebContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext.WORUrgency;
-import com.facilio.bmsconsole.criteria.BooleanOperators;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.DateOperators;
-import com.facilio.bmsconsole.criteria.DateRange;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.criteria.Operator;
-import com.facilio.bmsconsole.criteria.PickListOperators;
-import com.facilio.bmsconsole.modules.AggregateOperator;
-import com.facilio.bmsconsole.modules.AggregateOperator.CommonAggregateOperator;
-import com.facilio.bmsconsole.modules.AggregateOperator.DateAggregateOperator;
-import com.facilio.bmsconsole.modules.AggregateOperator.EnergyPurposeAggregateOperator;
-import com.facilio.bmsconsole.modules.AggregateOperator.NumberAggregateOperator;
-import com.facilio.bmsconsole.modules.AggregateOperator.SpaceAggregateOperator;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.modules.NumberField;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.reports.ReportExportUtil;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.templates.EMailTemplate;
-import com.facilio.bmsconsole.util.AlarmAPI;
-import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.bmsconsole.util.BaseLineAPI;
-import com.facilio.bmsconsole.util.BenchmarkAPI;
-import com.facilio.bmsconsole.util.DashboardUtil;
-import com.facilio.bmsconsole.util.DateTimeUtil;
-import com.facilio.bmsconsole.util.DerivationAPI;
-import com.facilio.bmsconsole.util.DeviceAPI;
-import com.facilio.bmsconsole.util.ExportUtil;
-import com.facilio.bmsconsole.util.FacilioFrequency;
-import com.facilio.bmsconsole.util.FormulaFieldAPI;
-import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
-import com.facilio.bmsconsole.util.ReadingsAPI;
-import com.facilio.bmsconsole.util.ResourceAPI;
-import com.facilio.bmsconsole.util.SpaceAPI;
-import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.util.WorkOrderAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.*;
+import com.facilio.modules.AggregateOperator.*;
+import com.facilio.modules.FacilioStatus.StatusType;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.NumberField;
 import com.facilio.pdf.PdfUtil;
 import com.facilio.report.customreport.CustomReport;
-import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.sql.GenericUpdateRecordBuilder;
 import com.facilio.tasker.ScheduleInfo;
+import com.facilio.time.DateRange;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.timeseries.TimeSeriesAPI;
 import com.facilio.unitconversion.Metric;
 import com.facilio.unitconversion.Unit;
@@ -144,6 +49,20 @@ import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Command;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.text.DecimalFormat;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoField;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 //import com.facilio.workflows.context.WorkflowExpression;
 
@@ -636,7 +555,7 @@ public class DashboardAction extends FacilioAction {
 		if (xAggr != 0) {
 			FacilioFrequency frequency = DashboardUtil.getAggrFrequency(xAggr);
 			ScheduleInfo schedule = FormulaFieldAPI.getSchedule(frequency);
-			intervals= DateTimeUtil.getTimeIntervals((Long)dateFilter.get(0),(Long) dateFilter.get(1), schedule);
+			intervals= schedule.getTimeIntervals((Long)dateFilter.get(0),(Long) dateFilter.get(1));
 		}
 		else {
 			int minuteInterval = ReadingsAPI.getDataInterval(workflow);
@@ -1180,7 +1099,7 @@ public class DashboardAction extends FacilioAction {
 		String operatorName;
 		if (fieldJson.containsKey("operatorId")) {
 			operatorId = (int) (long) fieldJson.get("operatorId");
-			operatorName = Operator.OPERATOR_MAP.get(operatorId).getOperator();
+			operatorName = Operator.getOperator(operatorId).getOperator();
 		} else {
 			operatorName = (String) fieldJson.get("operator");
 			operatorId = field.getDataTypeEnum().getOperator(operatorName).getOperatorId();
@@ -3610,13 +3529,13 @@ public class DashboardAction extends FacilioAction {
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
 				;
 		
-		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(module.getName());
+		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(module.getName());
 		if (scopeCriteria != null) {
 			builder.andCriteria(scopeCriteria);
 		}
 		
 		try {
-			Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(module.getName(),"read");
+			Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria(module.getName(),"read");
 			if (permissionCriteria != null) {
 				builder.andCriteria(permissionCriteria);
 			}
@@ -4314,7 +4233,7 @@ public class DashboardAction extends FacilioAction {
 			.on(energyMeterModule.getTableName()+".ID="+resourceModule.getTableName()+".ID")
 			.andCondition(CriteriaAPI.getCondition("SYS_DELETED", "deleted", String.valueOf(false), BooleanOperators.IS));
 			
-			Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria("asset");
+			Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria("asset");
 			
 			if(scopeCriteria != null) {
 				subBuilder.andCriteria(scopeCriteria);
@@ -5540,7 +5459,7 @@ public class DashboardAction extends FacilioAction {
 				timeRange.add((Long) dateFilter.get(1));
 			}
 			else if (reportContext.getDateFilter() != null) {
-				DateOperators operator = (DateOperators) Operator.OPERATOR_MAP.get(reportContext.getDateFilter().getOperatorId());
+				DateOperators operator = (DateOperators) Operator.getOperator(reportContext.getDateFilter().getOperatorId());
 				
 				DateRange range = operator.getRange(reportContext.getDateFilter().getValue());
 				timeRange.add(range.getStartTime());

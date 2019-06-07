@@ -1,14 +1,13 @@
 package com.facilio.bmsconsole.util;
 
+import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.ZoneContext;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-
-import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.ZoneContext;
-import com.facilio.bmsconsole.criteria.BuildingOperator;
 
 public class ZoneAPI {
 	private static final Logger LOGGER = Logger.getLogger(ZoneAPI.class.getName());

@@ -3,12 +3,12 @@ package com.facilio.workflows.functions;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
-import com.facilio.bmsconsole.criteria.DateOperators;
-import com.facilio.bmsconsole.criteria.DateRange;
-import com.facilio.bmsconsole.criteria.Operator;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.criteria.operators.Operator;
+import com.facilio.time.DateRange;
 import com.facilio.workflows.exceptions.FunctionParamException;
 import org.apache.commons.lang3.StringUtils;
 
@@ -29,7 +29,7 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 			}
 			
 			
-			DateOperators oper = (DateOperators) Operator.OPERATOR_MAP.get(dateOperator);
+			DateOperators oper = (DateOperators) Operator.getOperator(dateOperator);
 			BaseSpaceContext baseSpace = SpaceAPI.getBaseSpace(baseSpaceId);
 			
 			if(baseSpace != null && oper != null) {

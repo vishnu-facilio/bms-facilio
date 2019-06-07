@@ -1,14 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.report.context.ReportContext;
+import com.facilio.report.context.ReportDataPointContext;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -16,10 +11,8 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.report.context.ReportContext;
-import com.facilio.report.context.ReportDataPointContext;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.*;
 
 public class CalculateAggregationCommand implements Command {
 
@@ -146,13 +139,13 @@ public class CalculateAggregationCommand implements Command {
 	private EnumVal combineEnumVal (ReportContext report, Set<Integer> enumValues, List<SimpleEntry<Long, Integer>> highResVal, long startTime, long endTime, SimpleEntry<Long, Integer> previousRecord) {
 		long currentTime = System.currentTimeMillis();
 
-		if (AccountUtil.getCurrentOrg().getId() == 134) {
+		/*if (AccountUtil.getCurrentOrg().getId() == 134) {
 			LOGGER.info(new StringBuilder()
 							.append("High Res : ").append(highResVal).append("\n")
 							.append("Start Time : ").append(startTime).append("\n")
 							.append("Current Time : ").append(currentTime).append("\n")
 							.append("Previous Record : ").append(previousRecord));
-		}
+		}*/
 
 		if (CollectionUtils.isEmpty(highResVal) && (previousRecord == null || startTime > currentTime)) {
 			return null;
@@ -161,12 +154,12 @@ public class CalculateAggregationCommand implements Command {
 		List<SimpleEntry<Long, Integer>> timeline = new ArrayList<>();
 		Map<Integer, Long> durations = initDuration(enumValues);
 		
-		LOGGER.info(new StringBuilder()
+		/*LOGGER.info(new StringBuilder()
 						.append("High Res Val : ").append(highResVal).append("\n")
 						.append("Enum : ").append(enumValues).append("\n")
 						.append("StartTime : ").append(startTime).append("\n")
 						.append("endTime : ").append(endTime).append("\n")
-						.append("Prev record : ").append(previousRecord).append("\n"));
+						.append("Prev record : ").append(previousRecord).append("\n"));*/
 		
 		if (previousRecord != null) {
 			SimpleEntry<Long, Integer> val = new SimpleEntry<Long, Integer>(startTime, previousRecord.getValue());
@@ -203,7 +196,7 @@ public class CalculateAggregationCommand implements Command {
 		durations.put(previousRecord.getValue(), duration + (endTime - previousRecord.getKey())); //End time is start time of next cycle. It's excluded
 		
 		EnumVal val = new EnumVal(highResVal, timeline, durations);
-		LOGGER.info(val);
+		// LOGGER.info(val);
 		return val;
 	}
 	

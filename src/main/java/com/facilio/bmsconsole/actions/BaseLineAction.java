@@ -1,9 +1,9 @@
 package com.facilio.bmsconsole.actions;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.context.BaseLineContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.BaseLineContext;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.commons.chain.Chain;
 

@@ -3,12 +3,11 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.constants.FacilioConstants;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
 public class UpdateTenantCommand implements Command {
 

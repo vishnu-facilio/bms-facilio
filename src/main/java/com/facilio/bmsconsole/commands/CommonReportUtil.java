@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.context.BaseLineContext;
-import com.facilio.bmsconsole.context.BaseLineContext.AdjustType;
 import com.facilio.bmsconsole.util.BaseLineAPI;
+import com.facilio.modules.BaseLineContext;
+import com.facilio.modules.BaseLineContext.AdjustType;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
 

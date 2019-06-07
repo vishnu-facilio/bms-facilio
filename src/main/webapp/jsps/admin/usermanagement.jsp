@@ -99,7 +99,9 @@ if (userList != null) { %>
 
 
 <table style=" margin-top:40px;" class="table table-bordered" >
-<tr> <th>Id</th>
+<tr> <th>ORG_USERID</th>
+<th>USERID</th>
+<th>ORGID</th>
 <th>Name</th>	
 <th> Email</th>
 <th> Role </th>
@@ -115,6 +117,8 @@ if (userList != null) { %>
 
 
 <td><%=user.getId() %></td>
+<td><%=user.getUid() %></td>
+<td><%=user.getOrgId() %></td>
 <td><%=user.getName() %></td>
 <td><%=user.getEmail() %></td>
 <td><%=user.getRole().getName()%></td>

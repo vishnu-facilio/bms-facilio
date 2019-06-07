@@ -8,9 +8,9 @@ import com.amazonaws.services.kinesis.model.ResourceNotFoundException;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.modules.FacilioField;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.processor.ProcessorFactory;
-import com.facilio.sql.GenericSelectRecordBuilder;
 import org.apache.log4j.LogManager;
 
 import java.util.HashSet;

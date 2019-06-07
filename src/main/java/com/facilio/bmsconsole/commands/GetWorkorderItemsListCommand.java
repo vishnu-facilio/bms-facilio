@@ -1,23 +1,31 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.WorkorderItemContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.PickListOperators;
-import com.facilio.bmsconsole.modules.*;
+import com.facilio.bmsconsole.util.InventoryRequestAPI;
 import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.bmsconsole.util.StoreroomApi;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+
 
 public class GetWorkorderItemsListCommand implements Command {
 
@@ -54,6 +62,9 @@ public class GetWorkorderItemsListCommand implements Command {
 					ItemTypesContext item = ItemsApi.getItemTypes(inventry.getItemType().getId());
 					inventry.setItemType(item);
 					woItems.setItem(inventry);
+					if(woItems.getParentTransactionId() > 0) {
+						woItems.setRemainingQuantity(InventoryRequestAPI.getParentTransactionRecord(woItems.getParentTransactionId()).getRemainingQuantity());
+					}
 				}
 			}
 			context.put(FacilioConstants.ContextNames.WORKORDER_ITEMS, workorderItems);

@@ -1,12 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.HashMap;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
-
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.MLContext;
+import com.facilio.bmsconsole.context.MLModelVariableContext;
+import com.facilio.bmsconsole.context.MLVariableContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
@@ -14,16 +17,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.MLContext;
-import com.facilio.bmsconsole.context.MLModelVariableContext;
-import com.facilio.bmsconsole.context.MLVariableContext;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.util.MLUtil;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
+import java.time.LocalDate;
+import java.util.*;
 
 public class GenerateMLModelCommand implements Command {
 
@@ -35,6 +30,7 @@ public class GenerateMLModelCommand implements Command {
 		JSONObject postObj = new JSONObject();
 		postObj.put("ml_id",mlContext.getId());
 		postObj.put("orgid", mlContext.getOrgId());
+		postObj.put("date", LocalDate.now(TimeZone.getTimeZone(AccountUtil.getCurrentOrg().getTimezone()).toZoneId()));
 		
 		JSONObject modelVariables = new JSONObject();
 		if(mlContext.getMLModelVariable()!=null)
@@ -116,7 +112,14 @@ public class GenerateMLModelCommand implements Command {
 				{
 					JSONObject object = new JSONObject();
 					object.put("ttime", time);
-					object.put(attributeName, attributeDataMap.get(time));
+					if(attributeDataMap.get(time)==null)
+					{
+						object.put(attributeName, JSONObject.NULL);
+					}
+					else
+					{
+						object.put(attributeName, attributeDataMap.get(time));
+					}
 					object.put("assetID", assetID);
 					
 					attributeArray.put(object);

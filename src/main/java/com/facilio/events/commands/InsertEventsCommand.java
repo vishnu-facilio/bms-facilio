@@ -1,21 +1,15 @@
 package com.facilio.events.commands;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
-import com.facilio.events.context.EventContext.EventInternalState;
 import com.facilio.events.util.EventAPI;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 public class InsertEventsCommand implements Command {
 

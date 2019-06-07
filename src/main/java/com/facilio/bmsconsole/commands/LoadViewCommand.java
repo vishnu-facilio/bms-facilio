@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,16 +13,11 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ViewField;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.ColumnFactory;
@@ -30,8 +26,14 @@ import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import com.google.common.base.Functions;
 import com.google.common.collect.Lists;
 
@@ -59,17 +61,17 @@ public class LoadViewCommand implements Command {
 			}
 			
 			if(view == null) {
-				if (modBean.getField("moduleState", ContextNames.WORK_ORDER) != null && (viewName.equals("approval_requested") || moduleName.equals("approval"))) {
-					view = ViewFactory.getRequestedStateApproval();
-					if (view != null) {
-						List<ViewField> columns = ColumnFactory.getColumns(moduleName, viewName);
-						view.setFields(columns);
-						view.setDefault(true);
-					}
-				}
-				else {
+//				if (modBean.getField("moduleState", ContextNames.WORK_ORDER) != null && (viewName.equals("approval_requested") || moduleName.equals("approval"))) {
+//					view = ViewFactory.getRequestedStateApproval();
+//					if (view != null) {
+//						List<ViewField> columns = ColumnFactory.getColumns(moduleName, viewName);
+//						view.setFields(columns);
+//						view.setDefault(true);
+//					}
+//				}
+//				else {
 					view = ViewFactory.getView(moduleName, viewName);
-				}
+//				}
 				if (view == null && parentViewName != null) {
 					view = ViewFactory.getView(moduleName, parentViewName);
 				}
@@ -89,7 +91,15 @@ public class LoadViewCommand implements Command {
 			
 			if(view != null) {
 				view.setDefaultModuleFields(moduleName, parentViewName);
-				if (view.getSortFields() != null && !view.getSortFields().isEmpty()) {
+				Boolean overrideSorting = (Boolean) context.get(ContextNames.OVERRIDE_SORTING);
+				if (overrideSorting != null && overrideSorting) {
+					JSONObject sortObj = (JSONObject) context.get(FacilioConstants.ContextNames.SORTING);
+					SortField sortField = getQuerySortField(modBean, moduleName, sortObj);
+					String sortQuery = getOrderClauseForLookupTable(sortField, moduleName);
+					context.put(FacilioConstants.ContextNames.SORTING_QUERY, sortQuery);
+					view.setSortFields(Collections.singletonList(sortField));
+				}
+				else if (view.getSortFields() != null && !view.getSortFields().isEmpty()) {
 					StringBuilder orderBy = new StringBuilder();
 					String prefix = "";
 					for (SortField sortField : view.getSortFields()) {
@@ -218,6 +228,20 @@ public class LoadViewCommand implements Command {
 			}
 		} 
 		return field.getSortField().getCompleteColumnName() + " " + (field.getIsAscending()? "asc" : "desc");
+	}
+	
+	private SortField getQuerySortField(ModuleBean modBean, String moduleName, JSONObject sortObj) throws Exception {
+		String orderByColName = (String) sortObj.get("orderBy");
+		String orderType = (String) sortObj.get("orderType");
+		FacilioField field = modBean.getField(orderByColName, moduleName);
+		if (field != null) {
+			SortField newSortField = new SortField();
+			newSortField.setFieldId(field.getFieldId());
+			newSortField.setSortField(field);
+			newSortField.setIsAscending("asc".equalsIgnoreCase(orderType));
+			return newSortField;
+		}
+		return null;
 	}
 	
 

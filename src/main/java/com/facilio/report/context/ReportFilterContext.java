@@ -1,7 +1,7 @@
 package com.facilio.report.context;
 
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.Operator;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.operators.Operator;
 
 public class ReportFilterContext extends ReportFieldContext {
 
@@ -28,7 +28,7 @@ public class ReportFilterContext extends ReportFieldContext {
 	}
 	public void setFilterOperator(int filterOperator) {
 		if (filterOperator > 0) {
-			this.filterOperator = Operator.OPERATOR_MAP.get(filterOperator);
+			this.filterOperator = Operator.getOperator(filterOperator);
 		}
 	}
 	

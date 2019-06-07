@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
-import com.facilio.bmsconsole.modules.FieldType;
+import com.facilio.modules.FieldType;
 import com.opensymphony.xwork2.ActionSupport;
 
 import java.util.HashMap;

@@ -1,19 +1,26 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ItemTransactionsContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.*;
-import com.facilio.bmsconsole.util.TransactionState;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ItemTransactionsContext;
+import com.facilio.bmsconsole.util.TransactionState;
+import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.UpdateRecordBuilder;
+import com.facilio.modules.fields.FacilioField;
 
 public class ItemTransactionRemainingQuantityRollupCommand implements Command {
 
@@ -22,6 +29,7 @@ public class ItemTransactionRemainingQuantityRollupCommand implements Command {
 		TransactionState transactionState = (TransactionState) context
 				.get(FacilioConstants.ContextNames.TRANSACTION_STATE);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		EventType event = (EventType)context.get(FacilioConstants.ContextNames.EVENT_TYPE);
 		List<ItemTransactionsContext> itemTransactions = (List<ItemTransactionsContext>) context
 				.get(FacilioConstants.ContextNames.RECORD_LIST);
 		FacilioModule itemTransactionsModule = modBean.getModule(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
@@ -48,7 +56,10 @@ public class ItemTransactionRemainingQuantityRollupCommand implements Command {
 				for (ItemTransactionsContext transaction : itemTransactions) {
 					ItemTransactionsContext itemTransaction = getItemTransaction(transaction.getParentTransactionId(),
 							itemTransactionsModule, itemTransactionsFields, itemTransactionsFieldsMap);
-					double totalRemainingQuantity = itemTransaction.getQuantity() - transaction.getQuantity();
+					double totalRemainingQuantity = 0;
+					totalRemainingQuantity = itemTransaction.getQuantity() - getTotalRemainingQuantityQuantity(transaction.getParentTransactionId(),
+								itemTransactionsModule, itemTransactionsFieldsMap, TransactionState.USE);
+					
 					itemTransaction.setRemainingQuantity(totalRemainingQuantity);
 
 					UpdateRecordBuilder<ItemTransactionsContext> updateBuilder = new UpdateRecordBuilder<ItemTransactionsContext>()
@@ -76,6 +87,34 @@ public class ItemTransactionRemainingQuantityRollupCommand implements Command {
 				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("parentTransactionId"),
 						String.valueOf(parentTransactionId), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("transactionState"), String.valueOf(3),
+						NumberOperators.EQUALS))
+				.setAggregation();
+
+		List<Map<String, Object>> rs = builder.getAsProps();
+		if (rs != null && rs.size() > 0) {
+			if (rs.get(0).get("totalRemainingQuantity") != null) {
+				return (double) rs.get(0).get("totalRemainingQuantity");
+			}
+			return 0d;
+		}
+		return 0d;
+	}
+	
+	private double getTotalRemainingQuantityQuantity(long parentTransactionId, FacilioModule module,
+			Map<String, FacilioField> fieldsMap, TransactionState transactionState) throws Exception {
+
+		if (parentTransactionId <= 0) {
+			return 0d;
+		}
+
+		List<FacilioField> field = new ArrayList<>();
+		field.add(FieldFactory.getField("totalRemainingQuantity", "sum(QUANTITY)", FieldType.DECIMAL));
+
+		SelectRecordsBuilder<ItemTransactionsContext> builder = new SelectRecordsBuilder<ItemTransactionsContext>()
+				.select(field).moduleName(module.getName())
+				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("parentTransactionId"),
+						String.valueOf(parentTransactionId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldsMap.get("transactionState"), String.valueOf(4),
 						NumberOperators.EQUALS))
 				.setAggregation();
 

@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ResourceContext extends ModuleBaseWithCustomFields {
@@ -40,6 +40,15 @@ public class ResourceContext extends ModuleBaseWithCustomFields {
 		this.photoId = photoId;
 	}
 
+	private long operatingHour = -1;
+
+	public long getOperatingHour() {
+		return operatingHour;
+	}
+
+	public void setOperatingHour(long operatingHour) {
+		this.operatingHour = operatingHour;
+	}
 	BusinessHoursContext businessHour;
 	public BusinessHoursContext getBusinessHour() {
 		return businessHour;

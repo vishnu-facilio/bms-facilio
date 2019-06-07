@@ -2,9 +2,9 @@ package com.facilio.wms.endpoints;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.cache.RedisManager;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.wms.message.Message;
 import com.facilio.wms.message.MessageType;
 import com.facilio.wms.util.WmsApi;

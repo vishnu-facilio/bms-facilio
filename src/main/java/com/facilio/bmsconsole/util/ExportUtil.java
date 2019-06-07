@@ -7,7 +7,6 @@ import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.ViewField;
-import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -15,6 +14,13 @@ import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
+import com.facilio.time.DateTimeUtil;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -34,7 +40,7 @@ import java.util.stream.Collectors;
 
 public class ExportUtil {
 	
-	public static String exportData(FileFormat fileFormat,FacilioModule facilioModule, List<ViewField> fields, List<? extends ModuleBaseWithCustomFields> records, boolean isS3Url) throws Exception {
+	public static String exportData(FileFormat fileFormat, FacilioModule facilioModule, List<ViewField> fields, List<? extends ModuleBaseWithCustomFields> records, boolean isS3Url) throws Exception {
 		String fileUrl = null;
 		if(fileFormat == FileFormat.XLS){
 			fileUrl=ExportUtil.exportDataAsXLS(facilioModule, fields, records, isS3Url);
@@ -413,6 +419,14 @@ public class ExportUtil {
 		}
 		case BOOLEAN:case DECIMAL:case MISC:case STRING:
 			break;
+			case ENUM:
+				break;
+			case FILE:
+				break;
+			case COUNTER:
+				break;
+			case ID:
+				break;
 		}
 		return null;
 	}

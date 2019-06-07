@@ -2,14 +2,16 @@ package com.facilio.unitconversion;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.OrgUnitsContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.modules.NumberField;
-import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.NumberField;
+import com.facilio.util.FacilioUtil;
 import com.udojava.evalex.Expression;
 import org.json.simple.JSONObject;
 
@@ -73,23 +75,39 @@ public class UnitsUtil {
 		Unit orgDisplayUnit = getOrgDisplayUnit(AccountUtil.getCurrentOrg().getOrgId(),from.getMetric().getMetricId());
 		return convert(value, from, orgDisplayUnit);
 	}
-	public static Object convertToDisplayUnit(Object value,NumberField numberField) throws Exception {
+
+	private static Number castConvertedValue (Object oldVal, Double convertedValue) {
+		if (oldVal instanceof Integer) {
+			return FacilioUtil.parseInt(convertedValue);
+		}
+		else if (oldVal instanceof  Long) {
+			return FacilioUtil.parseLong(convertedValue);
+		}
+		return convertedValue;
+	}
+
+	public static Number convertToDisplayUnit(Object value,NumberField numberField) throws Exception {
 
 		if(numberField.getMetric() > 0 && value != null) {
 			if(numberField.getMetric() == Metric.CURRENCY.getMetricId()) {
-				return Double.parseDouble(value.toString());
+				return parseNumber(value, numberField);
 			}
+			Double convertedValue = -1d;
 			if(numberField.getUnitId() > 0) {
 				Unit siUnit = Unit.valueOf(Metric.valueOf(numberField.getMetric()).getSiUnitId());
-				value = convert(value, siUnit.getUnitId(), numberField.getUnitId());
+				convertedValue = convert(value, siUnit.getUnitId(), numberField.getUnitId());
 			}
 			else {
-				value = convertToOrgDisplayUnitFromSi(value, numberField.getMetric());
+				convertedValue = convertToOrgDisplayUnitFromSi(value, numberField.getMetric());
 			}
-			return Double.parseDouble(value.toString());
+			return castConvertedValue(value, convertedValue);
 		}
 		
-		return value;
+		return parseNumber(value, numberField);
+	}
+
+	private static Number parseNumber (Object value, NumberField numberField) {
+		return value instanceof Number ? (Number) value : (Number) (numberField.getDataTypeEnum() == null ? FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, value) : FieldUtil.castOrParseValueAsPerType(numberField.getDataTypeEnum(), value));
 	}
 	
 	public static Double convertToOrgDisplayUnitFromSi(Object value,int metricId) throws Exception {

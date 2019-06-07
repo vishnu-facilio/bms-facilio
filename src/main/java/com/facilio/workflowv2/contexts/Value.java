@@ -1,10 +1,10 @@
 package com.facilio.workflowv2.contexts;
 
+import com.facilio.db.criteria.Criteria;
+import com.facilio.modules.FacilioModule;
+
 import java.util.List;
 import java.util.Map;
-
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.modules.FacilioModule;
 
 public class Value {
 
@@ -13,6 +13,9 @@ public class Value {
     final Object value;
 
     public Value(Object value) {
+    	if(!(value instanceof Double) && value instanceof Number) {
+    		value = new Double(((Number)value).doubleValue());
+    	}
         this.value = value;
     }
     
@@ -59,8 +62,8 @@ public class Value {
         return String.valueOf(value);
     }
 
-    public boolean isDouble() {
-        return value instanceof Double;
+    public boolean isNumber() {
+        return value instanceof Number;
     }
 
     @Override
@@ -76,16 +79,14 @@ public class Value {
     @Override
     public boolean equals(Object o) {
 
-        if(value == o) {
-            return true;
+    	Value that = (Value)o;
+    	
+        if(this.value == null && that.value == null) {
+        	return true;
         }
-
-        if(value == null || o == null || o.getClass() != value.getClass()) {
+        if((this.value == null && that.value != null) || (this.value != null && that.value == null)) {
             return false;
         }
-
-        Value that = (Value)o;
-
         return this.value.equals(that.value);
     }
 

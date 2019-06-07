@@ -1,30 +1,37 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.PermissionUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldType;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
-import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.FacilioField;
 
 public class GetWorkOrderListCommand implements Command {
 
@@ -32,14 +39,17 @@ public class GetWorkOrderListCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		
+		List<Long> woIds = new ArrayList<>();
+		woIds = (List<Long>) context.get(FacilioConstants.ContextNames.WO_IDS);
 		String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		String count = (String) context.get(FacilioConstants.ContextNames.WO_LIST_COUNT);
 		boolean isApproval = (Boolean) context.get(FacilioConstants.ContextNames.IS_APPROVAL);
+		
 		List<FacilioField> fields = null;
 		
 		 List<Map<String, Object>> subViewsCount = null;
-		
 		if (count != null) {
 			FacilioField countFld = new FacilioField();
 			countFld.setName("count");
@@ -54,9 +64,27 @@ public class GetWorkOrderListCommand implements Command {
 				context.put(FacilioConstants.ContextNames.SUB_VIEW_COUNT, subViewsCount);
 			}
 			fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+			List<String> selectFields = (List<String>) context.get(FacilioConstants.ContextNames.FETCH_SELECTED_FIELDS);
+			if (CollectionUtils.isNotEmpty(selectFields)) {
+				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+				fields = selectFields.stream().map(fieldName -> fieldMap.get(fieldName)).collect(Collectors.toList());
+			}
 		}
-
-
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule("workorder");
+		List<WorkOrderContext> workOrders = new ArrayList<WorkOrderContext>();
+		if (woIds != null && !woIds.isEmpty()) {
+			SelectRecordsBuilder<WorkOrderContext> selectBuilder = new SelectRecordsBuilder<WorkOrderContext>()
+					.table(dataTableName)
+					.moduleName(moduleName)
+					.beanClass(WorkOrderContext.class)
+					.select(fields)
+					.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(module),StringUtils.join(woIds, ","),NumberOperators.EQUALS));
+			
+			workOrders = selectBuilder.get();
+		}
+		else {
 		SelectRecordsBuilder<WorkOrderContext> selectBuilder = new SelectRecordsBuilder<WorkOrderContext>()
 				.table(dataTableName)
 				.moduleName(moduleName)
@@ -103,14 +131,14 @@ public class GetWorkOrderListCommand implements Command {
 			}
 		}
 
-//		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(moduleName);
+//		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(moduleName);
 //		if(scopeCriteria != null)
 //		{
 //			selectBuilder.andCriteria(scopeCriteria);
 //		}
 //
 //		if (AccountUtil.getCurrentAccount().getUser().getUserType() != 2) {
-//			Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(moduleName,"read");
+//			Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria(moduleName,"read");
 //			if(permissionCriteria != null) {
 //				selectBuilder.andCriteria(permissionCriteria);
 //			}
@@ -153,7 +181,8 @@ public class GetWorkOrderListCommand implements Command {
 				}
 			}
 		}
-		List<WorkOrderContext> workOrders = selectBuilder.get();
+		 workOrders = selectBuilder.get();
+	}
 
 		if (count != null) {
 			if (workOrders != null && !workOrders.isEmpty()) {
@@ -205,13 +234,13 @@ public class GetWorkOrderListCommand implements Command {
 			selectBuilder.andCriteria(subViewcriteria);
 		}
 		
-		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(workorderModule.getName());
+		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(workorderModule.getName());
 		if(scopeCriteria != null)
 		{
 			selectBuilder.andCriteria(scopeCriteria);
 		}
 
-		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria(workorderModule.getName(),"read");
+		Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria(workorderModule.getName(),"read");
 		if(permissionCriteria != null) {
 			selectBuilder.andCriteria(permissionCriteria);
 		}

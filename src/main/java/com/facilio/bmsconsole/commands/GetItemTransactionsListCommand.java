@@ -1,25 +1,30 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemTransactionsContext;
-import com.facilio.bmsconsole.criteria.BooleanOperators;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.bmsconsole.util.StoreroomApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -62,7 +67,7 @@ public class GetItemTransactionsListCommand implements Command {
 			// }
 			builder.orderBy(orderBy);
 		}
-		Criteria permissionCriteria = AccountUtil.getCurrentUser().getRole().permissionCriteria("inventory", "read");
+		Criteria permissionCriteria = PermissionUtil.getCurrentUserPermissionCriteria("inventory", "read");
 		if (permissionCriteria != null) {
 			builder.andCriteria(permissionCriteria);
 		}
@@ -92,15 +97,18 @@ public class GetItemTransactionsListCommand implements Command {
 			builder.andCriteria(searchCriteria);
 		}
 
-		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(moduleName);
+		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(moduleName);
 		if (scopeCriteria != null) {
 			builder.andCriteria(scopeCriteria);
 		}
 
 		builder.fetchLookup((LookupField) itemTransactionsFieldsMap.get("purchasedItem"));
 		builder.fetchLookup((LookupField) itemTransactionsFieldsMap.get("asset"));
+		builder.fetchLookup((LookupField) itemTransactionsFieldsMap.get("itemType"));
 
 		Boolean getShowItemsForReturn = (Boolean) context.get(FacilioConstants.ContextNames.SHOW_ITEMS_FOR_RETURN);
+		Boolean getShowItemsForIssue = (Boolean) context.get(FacilioConstants.ContextNames.SHOW_ITEMS_FOR_ISSUE);
+		
 		if (getShowItemsForReturn != null && getShowItemsForReturn) {
 			// List<LookupField>lookUpfields = new ArrayList<>();
 			// lookUpfields.add((LookupField)
@@ -111,7 +119,18 @@ public class GetItemTransactionsListCommand implements Command {
 					String.valueOf(true), BooleanOperators.IS));
 			builder.andCondition(CriteriaAPI.getCondition(itemTransactionsFieldsMap.get("transactionState"),
 					String.valueOf(2), NumberOperators.EQUALS));
+			builder.andCondition(CriteriaAPI.getCondition(itemTransactionsFieldsMap.get("transactionType"),
+					String.valueOf(4), NumberOperators.NOT_EQUALS));
 			// builder.fetchLookups(lookUpfields);
+		}
+		else if(getShowItemsForIssue != null && getShowItemsForIssue) {
+			builder.andCondition(CriteriaAPI.getCondition(itemTransactionsFieldsMap.get("remainingQuantity"),
+					String.valueOf(0), NumberOperators.GREATER_THAN));
+			builder.andCondition(CriteriaAPI.getCondition(itemTransactionsFieldsMap.get("transactionState"),
+					String.valueOf(2), NumberOperators.EQUALS));
+			builder.andCondition(CriteriaAPI.getCondition(itemTransactionsFieldsMap.get("issuedTo"),
+					String.valueOf(AccountUtil.getCurrentUser().getOuid()), NumberOperators.EQUALS));
+		
 		}
 
 		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);

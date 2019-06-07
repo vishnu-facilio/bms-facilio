@@ -1,31 +1,65 @@
 package com.facilio.bmsconsole.util;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
-import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
-import com.facilio.bmsconsole.context.TicketContext.SourceType;
-import com.facilio.bmsconsole.criteria.*;
-import com.facilio.bmsconsole.modules.*;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleMetricContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericInsertRecordBuilder;
-import com.facilio.util.FacilioUtil;
-import com.facilio.workflows.context.ExpressionContext;
-import com.facilio.workflows.context.WorkflowContext;
+import java.text.DecimalFormat;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.text.WordUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import java.text.DecimalFormat;
-import java.text.MessageFormat;
-import java.util.*;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
+import com.facilio.bmsconsole.context.AlarmSeverityContext;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.MLAlarmContext;
+import com.facilio.bmsconsole.context.ReadingAlarmContext;
+import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
+import com.facilio.bmsconsole.context.TicketCategoryContext;
+import com.facilio.bmsconsole.context.TicketContext.SourceType;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleMetricContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.Operator;
+import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.BaseLineContext;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.UpdateRecordBuilder;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.NumberField;
+import com.facilio.time.DateRange;
+import com.facilio.time.DateTimeUtil;
+import com.facilio.workflows.context.ExpressionContext;
+import com.facilio.workflows.context.WorkflowContext;
 
 public class AlarmAPI {
 	private static final Logger LOGGER = LogManager.getLogger(AlarmAPI.class.getName());
@@ -419,13 +453,25 @@ public class AlarmAPI {
 		return selectBuilder;
 	}
 	
-	public static List<ReadingAlarmContext> getReadingAlarms(List<Long> resourceId, long fieldId, long startTime, long endTime, boolean isWithAnomaly) throws Exception {
+	public static List<ReadingAlarmContext> getReadingAlarms(List<Long> resourceId, Long ruleId, long fieldId, long startTime, long endTime, boolean isWithAnomaly) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.READING_ALARM);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		SelectRecordsBuilder<ReadingAlarmContext> selectBuilder = getReadingAlarmsSelectBuilder(startTime, endTime, isWithAnomaly, fields, fieldMap)
 																	.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), resourceId, PickListOperators.IS))
 																	;
+		boolean ruleAvailable = false;
+		if (ruleId != null && ruleId != -1) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("ruleId"), String.valueOf(ruleId), NumberOperators.EQUALS));
+			ruleAvailable = true;
+		}
+		if (CollectionUtils.isNotEmpty(resourceId)) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), resourceId, PickListOperators.IS));
+		}
+		else if (!ruleAvailable) {
+			throw new IllegalArgumentException("Resource Id or Rule Id should be available");
+		}
+		
 		if(fieldId > 0) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("readingFieldId"), String.valueOf(fieldId), NumberOperators.EQUALS));
 		}
@@ -516,7 +562,7 @@ public class AlarmAPI {
 					for(String rdmKey : rdms.keySet()) {
 						ReadingDataMeta rdm = rdms.get(rdmKey);
 						
-						long actualLastRecordedTime = FacilioUtil.getActualLastRecordedTime(rdm.getField().getModule());
+						long actualLastRecordedTime = CommonAPI.getActualLastRecordedTime(rdm.getField().getModule());
 						if(actualLastRecordedTime > 0) {
 							if(rdm.getTtime() >= actualLastRecordedTime) {
 								metricValues.put(rdmKey, rdm.getValue());
@@ -613,7 +659,7 @@ public class AlarmAPI {
 					.append(rule.getReadingField().getDisplayName())
 					.append("' ");
 		
-		NumberOperators operator = (NumberOperators) Operator.OPERATOR_MAP.get(rule.getOperatorId());
+		NumberOperators operator = (NumberOperators) Operator.getOperator(rule.getOperatorId());
 		switch (rule.getThresholdTypeEnum()) {
 			case SIMPLE:
 				appendSimpleMsg(msgBuilder, operator, rule, reading);
@@ -638,13 +684,13 @@ public class AlarmAPI {
 		
 		if (range.getEndTime() != -1) {
 			msgBuilder.append(" between ")
-					.append(DateTimeUtil.getZonedDateTime(range.getStartTime()).format(FacilioConstants.READABLE_DATE_FORMAT))
+					.append(DateTimeUtil.getZonedDateTime(range.getStartTime()).format(DateTimeUtil.READABLE_DATE_FORMAT))
 					.append(" and ")
-					.append(DateTimeUtil.getZonedDateTime(range.getEndTime()).format(FacilioConstants.READABLE_DATE_FORMAT));
+					.append(DateTimeUtil.getZonedDateTime(range.getEndTime()).format(DateTimeUtil.READABLE_DATE_FORMAT));
 		}
 		else {
 			msgBuilder.append(" at ")
-						.append(DateTimeUtil.getZonedDateTime(range.getStartTime()).format(FacilioConstants.READABLE_DATE_FORMAT));
+						.append(DateTimeUtil.getZonedDateTime(range.getStartTime()).format(DateTimeUtil.READABLE_DATE_FORMAT));
 		}
 		
 		return msgBuilder.toString();

@@ -1,7 +1,7 @@
 package com.facilio.report.customreport;
 
 import com.facilio.bmsconsole.context.ReportContext;
-import com.facilio.bmsconsole.modules.FacilioModule;
+import com.facilio.modules.FacilioModule;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 

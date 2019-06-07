@@ -2,11 +2,11 @@
 
  import com.facilio.accounts.util.AccountUtil;
  import com.facilio.bmsconsole.context.EmailSettingContext;
- import com.facilio.bmsconsole.modules.FacilioField;
- import com.facilio.bmsconsole.modules.FieldFactory;
- import com.facilio.bmsconsole.modules.FieldUtil;
  import com.facilio.constants.FacilioConstants;
- import com.facilio.sql.GenericSelectRecordBuilder;
+ import com.facilio.db.builder.GenericSelectRecordBuilder;
+ import com.facilio.modules.FieldFactory;
+ import com.facilio.modules.FieldUtil;
+ import com.facilio.modules.fields.FacilioField;
  import org.apache.commons.chain.Command;
  import org.apache.commons.chain.Context;
 

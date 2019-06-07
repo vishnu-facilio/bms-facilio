@@ -3,12 +3,16 @@ package com.facilio.bmsconsole.commands.data;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.*;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.modules.*;
 import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.InsertRecordBuilder;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
@@ -324,7 +328,7 @@ public class ProcessSpaceXLS implements Command {
 		workbook.close();
 	}
 
-	public static List<Map<String, Object>> getLookupProps(LookupField lookupField,Object value) {
+	public static List<Map<String, Object>> getLookupProps(LookupField lookupField, Object value) {
 		
 		try {
 			System.out.println("getLookupProps -- "+lookupField.getColumnName() +" facilioField.getModule() - "+lookupField.getLookupModule().getTableName() +" with value -- "+value);

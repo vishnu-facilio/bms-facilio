@@ -1,12 +1,14 @@
 package com.facilio.bmsconsole.page;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.page.Page.Section;
+import com.facilio.modules.FieldUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -16,7 +18,12 @@ public class PageWidget {
 	public PageWidget () {}
 	
 	public PageWidget(WidgetType type) {
+		this(type, null);
+	}
+	
+	public PageWidget(WidgetType type, String name) {
 		this.widgetType = type;
+		this.name = name;
 	}
 
 	private long orgId = -1;
@@ -35,6 +42,14 @@ public class PageWidget {
 		this.id = id;
 	}
 	
+	private String name;
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+
 	private WidgetType widgetType;
 	public WidgetType getWidgetTypeEnum() {
 		return widgetType;
@@ -121,16 +136,11 @@ public class PageWidget {
 	public void addToLayoutParams(Section section, int width, int height) {
 		int x = section.getLatestX();
 		int y = section.getLatestY();
-		if (x != 0) {
-			x += width;
-		}
 		addToLayoutParams(x, y, width, height);
+		x += width;
 		if (x >= 24 || width >= 24) {
 			y += height;	// Assuming the height will be same for everywidget
 			x = 0;
-		}
-		else if (x == 0) {
-			x += width;
 		}
 		section.setLatestXY(x, y);
 	}
@@ -147,6 +157,20 @@ public class PageWidget {
 		}
 		layoutParams.put(key, value);
 	}
+	
+	private List<PageWidget> widgets;
+	public List<PageWidget> getWidgets() {
+		return widgets;
+	}
+	public void setWidgets(List<PageWidget> widgets) {
+		this.widgets = widgets;
+	}
+	public void addToWidget (PageWidget widget) {
+		if (widgets == null) {
+			widgets = new ArrayList<PageWidget>();
+		}
+		widgets.add(widget);
+	}
 
 	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 	public enum WidgetType {
@@ -158,7 +182,9 @@ public class PageWidget {
  		COUNT("count"),
  		COMMENT("comment"),
  		ATTACHMENT("attachment"),
- 		ACTIVITY("activity")
+ 		ACTIVITY("activity"),
+ 		GROUP("group"),
+ 		HISTORY("history")
  		;
 		
 		private String name;
@@ -176,6 +202,42 @@ public class PageWidget {
 		}
 		
 		public static WidgetType valueOf (int value) {
+			if (value > 0 && value <= values().length) {
+				return values() [value - 1];
+			}
+			return null;
+		}
+ 	}
+	
+	public enum CardType {
+		NEXT_PM("nextPm"),
+		FAILURE_METRICS("failureMetrics"),
+		WO_DETAILS("woDetails"),
+		RECENTLY_CLOSED_PM("recentlyClosedPm"),
+		ASSET_LIFE("assetLife"),
+		ALARM_INSIGHTS("alarmInsights"),
+		LAST_DOWNTIME("lastDownTime"),
+		OVERALL_DOWNTIME("overallDownTime"),
+		FAILURE_RATE("failureRate"),
+		AVG_TTR("avgTtr"),
+		SET_COMMAND("setCommand")
+ 		;
+		
+		private String name;
+		
+		CardType(String name) {
+			this.name = name;
+		}
+		
+		public String getName() {
+			return name;
+		}
+		
+ 		public int getValue() {
+			return ordinal() + 1;
+		}
+		
+		public static CardType valueOf (int value) {
 			if (value > 0 && value <= values().length) {
 				return values() [value - 1];
 			}

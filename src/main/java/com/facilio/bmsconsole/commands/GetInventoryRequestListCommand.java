@@ -1,29 +1,28 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-import java.util.Map;
-
+import com.facilio.accounts.util.PermissionUtil;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.InventoryRequestContext;
+import com.facilio.bmsconsole.context.InventoryRequestLineItemContext;
+import com.facilio.bmsconsole.util.InventoryRequestAPI;
+import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.InventoryRequestContext;
-import com.facilio.bmsconsole.context.InventoryRequestLineItemContext;
-import com.facilio.bmsconsole.criteria.CommonOperators;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.util.InventoryRequestAPI;
-import com.facilio.bmsconsole.view.FacilioView;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
+import java.util.List;
+import java.util.Map;
 
 public class GetInventoryRequestListCommand implements Command {
 
@@ -84,7 +83,7 @@ public class GetInventoryRequestListCommand implements Command {
 			builder.andCriteria(searchCriteria);
 		}
 
-		Criteria scopeCriteria = AccountUtil.getCurrentUser().scopeCriteria(moduleName);
+		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(moduleName);
 		if (scopeCriteria != null) {
 			builder.andCriteria(scopeCriteria);
 		}
@@ -97,7 +96,7 @@ public class GetInventoryRequestListCommand implements Command {
 		if(storeRoomId != null && status != null && storeRoomId > 0 && status >0) {
 			Criteria criteria = new Criteria();
 			criteria.addAndCondition(CriteriaAPI.getCondition("STOREROOM", "storeRoom", String.valueOf(storeRoomId), NumberOperators.EQUALS));
-			criteria.addOrCondition(CriteriaAPI.getCondition("STOREROOM", "storeRoom", "",CommonOperators.IS_EMPTY));
+			criteria.addOrCondition(CriteriaAPI.getCondition("STOREROOM", "storeRoom", "", CommonOperators.IS_EMPTY));
 			
 			builder.andCondition(CriteriaAPI.getCondition("STATUS", "status", String.valueOf(status), NumberOperators.EQUALS));
 			builder.andCriteria(criteria);

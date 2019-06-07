@@ -2,26 +2,30 @@ package com.facilio.bmsconsole.util;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
-import com.facilio.bmsconsole.criteria.*;
-import com.facilio.bmsconsole.modules.*;
-import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ThresholdType;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleMetricContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.Operator;
+import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.events.constants.EventConstants;
-import com.facilio.sql.GenericDeleteRecordBuilder;
-import com.facilio.sql.GenericInsertRecordBuilder;
-import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.workflows.context.ExpressionContext;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
@@ -33,6 +37,8 @@ import org.json.simple.JSONObject;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.*;
+
+;
 
 public class ReadingRuleAPI extends WorkflowRuleAPI {
 	
@@ -479,7 +485,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 			appendSimpleMsg(msgBuilder, rule);
 			break;
 		case BASE_LINE:
-			NumberOperators operator = (NumberOperators) Operator.OPERATOR_MAP.get(rule.getOperatorId());
+			NumberOperators operator = (NumberOperators) Operator.getOperator(rule.getOperatorId());
 			AlarmAPI.appendBaseLineMsg(msgBuilder, operator, rule);
 			break;
 		case FLAPPING:
@@ -512,7 +518,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 			msgBuilder.append(" for "+rule.getDateRange()+ " hour(s)");
 		}
 		
-		NumberOperators operator = (NumberOperators) Operator.OPERATOR_MAP.get(rule.getOperatorId());
+		NumberOperators operator = (NumberOperators) Operator.getOperator(rule.getOperatorId());
 		msgBuilder.append(" "+operator.getOperator());
 		
 		String value = null;

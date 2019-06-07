@@ -1,28 +1,27 @@
 package com.facilio.bmsconsole.util;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.InventoryRequestLineItemContext;
+import com.facilio.bmsconsole.context.ItemTransactionsContext;
+import com.facilio.bmsconsole.context.ItemTypesContext;
+import com.facilio.bmsconsole.context.ToolTransactionContext;
+import com.facilio.bmsconsole.context.ToolTypesContext;
+import com.facilio.bmsconsole.context.WorkorderToolsContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.UpdateRecordBuilder;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
+import org.apache.commons.collections4.CollectionUtils;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.collections4.CollectionUtils;
-
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.InventoryRequestLineItemContext;
-import com.facilio.bmsconsole.context.ItemTypesContext;
-import com.facilio.bmsconsole.context.ToolTypesContext;
-import com.facilio.bmsconsole.context.WorkorderToolsContext;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.LookupField;
-import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
-import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
 
 public class InventoryRequestAPI {
 
@@ -148,6 +147,61 @@ public class InventoryRequestAPI {
 							;
 		   updateBuilder.updateViaMap(updateMap);
 		}
+	}
+	
+	public static boolean checkQuantityForWoItem(long parentTransactionId, double woItemQuantity, double childRemaingingQuantity) throws Exception {
+		if(woItemQuantity - childRemaingingQuantity <= 0) {
+			return true;
+		}
+		if(woItemQuantity - childRemaingingQuantity  <= getParentTransactionRecord(parentTransactionId).getRemainingQuantity()) {
+			return true;
+		}
+		return false;
+	}
+	
+	public static ItemTransactionsContext getParentTransactionRecord(long parentTransactionId) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule itemTransactionsModule = modBean.getModule(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
+		List<FacilioField> itemTransactionsFields = modBean
+				.getAllFields(FacilioConstants.ContextNames.ITEM_TRANSACTIONS);
+
+		SelectRecordsBuilder<ItemTransactionsContext> selectBuilder = new SelectRecordsBuilder<ItemTransactionsContext>()
+				.select(itemTransactionsFields).table(itemTransactionsModule.getTableName())
+				.moduleName(itemTransactionsModule.getName()).beanClass(ItemTransactionsContext.class)
+				.andCondition(CriteriaAPI.getIdCondition(parentTransactionId, itemTransactionsModule));
+		List<ItemTransactionsContext> woIt = selectBuilder.get();
+		if(CollectionUtils.isNotEmpty(woIt)) {
+			return woIt.get(0);
+		}
+		throw new IllegalArgumentException("No appropriate transaction found");
+		}
+	
+public static ToolTransactionContext getParentTransactionRecordForTool(long parentTransactionId) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule toolTransactionsModule = modBean.getModule(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
+		List<FacilioField> toolTransactionsFields = modBean
+				.getAllFields(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
+
+		SelectRecordsBuilder<ToolTransactionContext> selectBuilder = new SelectRecordsBuilder<ToolTransactionContext>()
+				.select(toolTransactionsFields).table(toolTransactionsModule.getTableName())
+				.moduleName(toolTransactionsModule.getName()).beanClass(ToolTransactionContext.class)
+				.andCondition(CriteriaAPI.getIdCondition(parentTransactionId, toolTransactionsModule));
+		List<ToolTransactionContext> woIt = selectBuilder.get();
+		if(CollectionUtils.isNotEmpty(woIt)) {
+			return woIt.get(0);
+		}
+		throw new IllegalArgumentException("No appropriate transaction found");
+		}
+	
+public static boolean checkQuantityForWoTool(long parentTransactionId, double woToolQuantity) throws Exception {
+		
+	
+	if(woToolQuantity <= getParentTransactionRecordForTool(parentTransactionId).getQuantity()) {
+		return true;
+	}
+	return false;
 	}
 	
 }

@@ -6,43 +6,41 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.context.BaseLineContext.RangeType;
 import com.facilio.bmsconsole.context.DashboardSharingContext.SharingType;
 import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
-import com.facilio.bmsconsole.context.FormulaFieldContext.ResourceType;
-import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.context.ReportContext.LegendMode;
 import com.facilio.bmsconsole.context.ReportContext.ReportChartType;
 import com.facilio.bmsconsole.context.SiteContext.SiteType;
-import com.facilio.bmsconsole.criteria.*;
-import com.facilio.bmsconsole.modules.*;
-import com.facilio.cards.util.CardType;
-import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericDeleteRecordBuilder;
-import com.facilio.sql.GenericInsertRecordBuilder;
-import com.facilio.sql.GenericSelectRecordBuilder;
-import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.facilio.modules.*;
+import com.facilio.modules.AggregateOperator.CommonAggregateOperator;
+import com.facilio.modules.AggregateOperator.DateAggregateOperator;
+import com.facilio.modules.AggregateOperator.NumberAggregateOperator;
+import com.facilio.modules.BaseLineContext.RangeType;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.time.DateRange;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
-import com.facilio.workflows.context.WorkflowContext;
-import com.facilio.workflows.context.WorkflowFieldContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.fasterxml.jackson.annotation.JsonFormat.Feature;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
-import org.apache.commons.chain.Chain;
 import org.apache.commons.collections.list.SetUniqueList;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
-import org.apache.tiles.request.collection.CollectionUtil;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -51,9 +49,6 @@ import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
-
-import com.facilio.bmsconsole.modules.AggregateOperator.*;
 
 public class DashboardUtil {
 	
@@ -159,7 +154,7 @@ public class DashboardUtil {
 		}
 		return false;
 	}
-	
+
 	public static List<EnergyMeterContext> getMainEnergyMeter(String spaceList) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ENERGY_METER);
@@ -167,14 +162,14 @@ public class DashboardUtil {
 		EnergyMeterPurposeContext energyMeterPurpose = DeviceAPI.getEnergyMetersPurposeByName(ENERGY_METER_PURPOSE_MAIN);
 		
 		if(energyMeterPurpose != null && spaceList != null && !spaceList.isEmpty()) {
-			SelectRecordsBuilder<EnergyMeterContext> selectBuilder = 
+			SelectRecordsBuilder<EnergyMeterContext> selectBuilder =
 					new SelectRecordsBuilder<EnergyMeterContext>()
 					.select(modBean.getAllFields(module.getName()))
 					.module(module)
 					.beanClass(EnergyMeterContext.class)
 					.andCustomWhere("IS_ROOT= ?", true)
 					.andCustomWhere("PARENT_ASSET_ID IS NULL")
-					.andCondition(CriteriaAPI.getCondition("PURPOSE_SPACE_ID","PURPOSE_SPACE_ID",spaceList,NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition("PURPOSE_SPACE_ID","PURPOSE_SPACE_ID",spaceList, NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition("PURPOSE_ID","PURPOSE_ID",energyMeterPurpose.getId()+"",NumberOperators.EQUALS))
 					.maxLevel(0);
 			return selectBuilder.get();
@@ -227,7 +222,7 @@ public class DashboardUtil {
 		}
 		return false;
 	}
-	public static String getDataFromValue(Long timeValue,AggregateOperator aggregateOperator) {
+	public static String getDataFromValue(Long timeValue, AggregateOperator aggregateOperator) {
 		
 		String timeKey = null;
 		
@@ -2008,7 +2003,7 @@ public class DashboardUtil {
 		
 		deleteRecordBuilder = new GenericDeleteRecordBuilder();
 		deleteRecordBuilder.table(ModuleFactory.getWidgetModule().getTableName())
-		.andCondition(CriteriaAPI.getCondition(ModuleFactory.getWidgetModule().getTableName()+".ID", "id", StringUtils.join(removedWidgets, ","),StringOperators.IS));
+		.andCondition(CriteriaAPI.getCondition(ModuleFactory.getWidgetModule().getTableName()+".ID", "id", StringUtils.join(removedWidgets, ","), StringOperators.IS));
 		
 		deleteRecordBuilder.delete();
 		
@@ -2609,7 +2604,7 @@ public class DashboardUtil {
 		
 		DashboardContext dashboard = DashboardUtil.getDashboardWithWidgets(dashboardId);
 		if(dashboard != null && dashboard.getDateOperator() >0) {
-			DateOperators dateOperators = (DateOperators) Operator.OPERATOR_MAP.get(dashboard.getDateOperator());
+			DateOperators dateOperators = (DateOperators) Operator.getOperator(dashboard.getDateOperator());
 			if(dateOperators != null) {
 				DateRange range = dateOperators.getRange(dashboard.getDateValue());
 				return range;

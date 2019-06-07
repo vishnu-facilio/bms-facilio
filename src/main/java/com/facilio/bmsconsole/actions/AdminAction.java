@@ -1,19 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.websocket.EncodeException;
-
-import org.apache.commons.chain.Chain;
-import org.apache.struts2.ServletActionContext;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
@@ -23,9 +9,14 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.util.AdminAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.LRUCache;
 import com.facilio.license.FreshsalesUtil;
-import com.facilio.sql.GenericUpdateRecordBuilder;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.wms.message.Message;
 import com.facilio.wms.message.MessageType;
@@ -33,6 +24,19 @@ import com.facilio.wms.util.WmsApi;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.util.ValueStack;
+import org.apache.commons.chain.Chain;
+import org.apache.struts2.ServletActionContext;
+import org.json.simple.JSONObject;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.websocket.EncodeException;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class AdminAction extends ActionSupport
 {
@@ -97,33 +101,32 @@ public class AdminAction extends ActionSupport
 		return SUCCESS;
 	}
 	
-	public String addLicense() throws SQLException
+	public String addLicense() throws SQLException 
 	{
 		HttpServletRequest request = ServletActionContext.getRequest();
 		String[] selectedfeatures = request.getParameterValues("selected");
-		long flicensevalue = 0,summodule=0;
-		 String orgidstring = request.getParameter("orgid");
-    	 long orgid = Long.parseLong(orgidstring);
-		 if (selectedfeatures != null) 
-		   {
-		      for (int i = 0; i < selectedfeatures.length; i++) 
-		      {
-		    	  flicensevalue =  Long.parseLong(selectedfeatures[i]);
-		    	 FeatureLicense flicensename = AccountUtil.FeatureLicense.getFeatureLicense(flicensevalue);
-		    	 summodule+=flicensevalue;
-		      }
-		      
-		      GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-		    			 .table(AccountConstants.getFeatureLicenseModule().getTableName())
-		    			 .fields(AccountConstants.getFeatureLicenseFields())
-		    			 .andCustomWhere("ORGID = ?", orgid);
+		if(selectedfeatures!=null)
+		{
+			long flicensevalue = 0, summodule = 0;
+			String orgidstring = request.getParameter("orgid");
+			if (selectedfeatures != null) 
+			{
+				for (int i = 0; i < selectedfeatures.length; i++)
+				{
+					flicensevalue = Long.parseLong(selectedfeatures[i]);
+					summodule += flicensevalue;
+				}
+			}
+					GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+					.table(AccountConstants.getFeatureLicenseModule().getTableName())
+					.fields(AccountConstants.getFeatureLicenseFields())
+					.andCondition(CriteriaAPI.getCondition(FieldFactory.getOrgIdField(AccountConstants.getFeatureLicenseModule()), orgidstring, StringOperators.IS));
 
-		    			 Map<String, Object> props = new HashMap<>();
-		    			 props.put("module", summodule);
-
-		    			 updateBuilder.update(props);
-		    			 System.out.println ("updateBuilder -- "+updateBuilder);
-		   }
+			Map<String, Object> props = new HashMap<>();
+			props.put("module", summodule);
+			updateBuilder.update(props);
+			System.out.println("updateBuilder -- " + updateBuilder);
+		}
 		return SUCCESS;
 	}
 	

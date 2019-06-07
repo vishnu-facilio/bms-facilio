@@ -1,20 +1,31 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class MLVariableContext extends ModuleBaseWithCustomFields
 {
 	private static final long serialVersionUID = 1L;
 
+	private long mlID;
 	private long moduleID;
 	private long fieldID;
 	private boolean isSource;
 	private long parentFieldID;
 	private long parentID;
 	private long maxSamplingPeriod;
+	private long futureSamplingPeriod;
 	private int sequence;
 	
-	public long getModuleid() 
+	public long getMlID()
+	{
+		return mlID;
+	}
+	public void setMlID(long mlID)
+	{
+		this.mlID = mlID;
+	}
+	
+	public long getModuleID() 
 	{
 		return moduleID;
 	}
@@ -61,6 +72,16 @@ public class MLVariableContext extends ModuleBaseWithCustomFields
 	public void setMaxSamplingPeriod(long maxSamplingPeriod) 
 	{
 		this.maxSamplingPeriod = maxSamplingPeriod;
+	}
+	
+	public long getFutureSamplingPeriod()
+	{
+		return futureSamplingPeriod;
+	}
+	
+	public void setFutureSamplingPeriod(long futureSamplingPeriod)
+	{
+		this.futureSamplingPeriod = futureSamplingPeriod;
 	}
 	
 	public void setSequence(int sequence)

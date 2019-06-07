@@ -1,16 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-
-import com.facilio.modules.FacilioStatus;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FacilioStatus;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import java.util.List;
 
 public class GetAvailableStateCommand implements Command {
 
@@ -20,7 +19,7 @@ public class GetAvailableStateCommand implements Command {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		if (moduleData != null) {
 			FacilioStatus currentState = moduleData.getModuleState();
-			context.put("currentState", moduleData.getModuleState());
+			context.put("currentState", currentState);
 			if (currentState != null) {
 				List<WorkflowRuleContext> availableState = StateFlowRulesAPI.getAvailableState(moduleData.getStateFlowId(), currentState.getId(), moduleName, moduleData, (FacilioContext) context);
 				

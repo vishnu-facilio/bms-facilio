@@ -1,10 +1,10 @@
 package com.facilio.bmsconsole.context;
 
-import java.util.List;
-
 import com.facilio.accounts.dto.User;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.util.GatePassType;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+
+import java.util.List;
 
 public class GatePassContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;

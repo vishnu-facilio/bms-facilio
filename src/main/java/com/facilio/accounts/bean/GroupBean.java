@@ -3,7 +3,7 @@ package com.facilio.accounts.bean;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.GroupMember;
 import com.facilio.accounts.util.AccountConstants.GroupMemberRole;
-import com.facilio.bmsconsole.criteria.Criteria;
+import com.facilio.db.criteria.Criteria;
 
 import java.util.Collection;
 import java.util.List;

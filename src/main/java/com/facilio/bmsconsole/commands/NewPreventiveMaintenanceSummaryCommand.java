@@ -3,12 +3,6 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.TaskTemplate;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
@@ -16,10 +10,16 @@ import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
-import com.facilio.sql.GenericSelectRecordBuilder;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.chain.Command;
@@ -90,7 +90,11 @@ public class NewPreventiveMaintenanceSummaryCommand implements Command {
 			listOfTasks = template.getTaskTemplates().stream().map(taskTemplate -> taskTemplate.getTask()).collect(Collectors.toList());
 			fillReadingFields(listOfTasks);
 		}
-		
+		List<TaskContext> listOfPreRequests = null;
+		if ( template.getPreRequestTemplates() != null) {
+			listOfPreRequests = template.getPreRequestTemplates().stream().map(taskTemplate -> taskTemplate.getTask()).collect(Collectors.toList());
+			fillReadingFields(listOfPreRequests);
+		}
 		WorkOrderContext workorder = template.getWorkorder();
 		if(workorder.getAttachments() != null && !workorder.getAttachments().isEmpty()) {
 			List<Long> fileIds = workorder.getAttachments().stream().map(file -> file.getFileId()).collect(Collectors.toList());
@@ -142,7 +146,9 @@ public class NewPreventiveMaintenanceSummaryCommand implements Command {
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 		context.put(FacilioConstants.ContextNames.TASK_MAP, taskMap);
+		context.put(FacilioConstants.ContextNames.PRE_REQUEST_MAP, template.getPreRequests());
 		context.put(FacilioConstants.ContextNames.TASK_LIST, listOfTasks);
+		context.put(FacilioConstants.ContextNames.PRE_REQUEST_LIST, listOfPreRequests);
 		List<TaskSectionTemplate> sectionTemplate = template.getSectionTemplates();
 		sectionTemplate = fillSectionTemplate(template,sectionTemplate);
 		Map<Long, List<ReadingRuleContext>> fieldVsRules = new HashMap<>();
@@ -168,6 +174,7 @@ public class NewPreventiveMaintenanceSummaryCommand implements Command {
 			}
 		}
 		context.put(FacilioConstants.ContextNames.TASK_SECTIONS, sectionTemplate);
+		context.put(FacilioConstants.ContextNames.PRE_REQUEST_SECTIONS, template.getPreRequestSectionTemplates());
 		context.put(FacilioConstants.ContextNames.PM_TASK_SECTIONS, sectionTemplate);
 		PreventiveMaintenanceAPI.updateResourceDetails(workorder, taskMap);
 		if (listOfTasks != null) {

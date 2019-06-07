@@ -1,31 +1,30 @@
 package com.facilio.bmsconsole.workflow.rule;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.SharingContext;
+import com.facilio.bmsconsole.context.SingleSharingContext;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.util.StateFlowRulesAPI;
+import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext.ApprovalOrder;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.SharingContext;
-import com.facilio.bmsconsole.context.SingleSharingContext;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.PickListOperators;
-import com.facilio.bmsconsole.forms.FacilioForm;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.FieldFactory;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.modules.ModuleFactory;
-import com.facilio.bmsconsole.util.StateFlowRulesAPI;
-import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext.ApprovalOrder;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
-import com.facilio.sql.GenericSelectRecordBuilder;
 
 public class StateflowTransitionContext extends WorkflowRuleContext {
 	private static final long serialVersionUID = 1L;
@@ -198,7 +197,7 @@ public class StateflowTransitionContext extends WorkflowRuleContext {
 			return false;
 		}
 
-		if (moduleRecord.getModuleState() != null && moduleRecord.getStateFlowId() > 0 && moduleRecord.getStateFlowId() == getStateFlowId() && 
+		if (moduleRecord.getModuleState() != null && moduleRecord.getStateFlowId() > 0 && moduleRecord.getStateFlowId() == getStateFlowId() &&
 				getFromStateId() != moduleRecord.getModuleState().getId()) {
 			return false;
 		}

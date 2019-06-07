@@ -1,15 +1,14 @@
 package com.facilio.bmsconsole.workflow.rule;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.json.annotations.JSON;
 
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.criteria.Criteria;
-import com.facilio.bmsconsole.modules.FieldUtil;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
+import java.util.HashMap;
+import java.util.Map;
 
 public class ValidationContext {
 	private long id = -1;

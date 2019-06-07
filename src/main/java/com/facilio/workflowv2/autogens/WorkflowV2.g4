@@ -13,7 +13,7 @@ function_name_declare: VAR ;
 function_param: data_type VAR ;
 
 data_type
- : op=(VOID | DATA_TYPE_STRING | DATA_TYPE_NUMBER | DATA_TYPE_DECIMAL | DATA_TYPE_BOOLEAN)
+ : op=(VOID | DATA_TYPE_STRING | DATA_TYPE_NUMBER | DATA_TYPE_DECIMAL | DATA_TYPE_BOOLEAN | DATA_TYPE_MAP | DATA_TYPE_LIST)
  ;
  
  block
@@ -148,6 +148,8 @@ DATA_TYPE_STRING : 'String';
 DATA_TYPE_NUMBER : 'Number';
 DATA_TYPE_DECIMAL : 'Decimal';
 DATA_TYPE_BOOLEAN : 'Boolean';
+DATA_TYPE_MAP : 'Map';
+DATA_TYPE_LIST : 'List';
 RETURN : 'return';
   
 OR : '||';

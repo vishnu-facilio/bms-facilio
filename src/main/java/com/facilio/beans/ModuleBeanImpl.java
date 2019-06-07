@@ -1,17 +1,40 @@
 package com.facilio.beans;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.StringJoiner;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
-import com.facilio.bmsconsole.criteria.Condition;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.*;
-import com.facilio.bmsconsole.modules.FacilioModule.ModuleType;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.db.builder.*;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.transaction.FacilioConnectionPool;
+import com.facilio.db.util.DBConf;
 import com.facilio.fw.BeanFactory;
-import com.facilio.sql.*;
-import com.facilio.transaction.FacilioConnectionPool;
-
+import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule.ModuleType;
+import com.facilio.modules.fields.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -23,6 +46,8 @@ import java.sql.*;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.stream.Collectors;
+
+;
 
 public class ModuleBeanImpl implements ModuleBean {
 
@@ -78,7 +103,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		ResultSet rs = null;
 		try {
 			 conn = getConnection();
-			 String sql = DBUtil.getQuery("module.child.id");
+			 String sql = DBConf.getInstance().getQuery("module.child.id");
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setLong(1, getOrgId());
 			pstmt.setLong(2, moduleId);
@@ -109,7 +134,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		try {
 			 conn = getConnection();
 			 
-			 String sql = DBUtil.getQuery("module.child.name");
+			 String sql = DBConf.getInstance().getQuery("module.child.name");
 			 pstmt = conn.prepareStatement(sql);
 
 			pstmt.setLong(1, getOrgId());
@@ -138,7 +163,7 @@ public class ModuleBeanImpl implements ModuleBean {
 	
 	@Override
 	public List<FacilioModule> getAllSubModules(long moduleId) throws Exception {
-		String sql = DBUtil.getQuery("module.submodule.all.id");
+		String sql = DBConf.getInstance().getQuery("module.submodule.all.id");
 		ResultSet rs = null;
 		try(Connection conn = getConnection();PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setLong(1, getOrgId());
@@ -169,7 +194,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			return LookupSpecialTypeUtil.getAllSubModules(moduleName);
 		}
 		
-		String sql = DBUtil.getQuery("module.submodule.all.name");
+		String sql = DBConf.getInstance().getQuery("module.submodule.all.name");
 		ResultSet rs = null;
 		try(Connection conn = getConnection();PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setLong(1, getOrgId());
@@ -206,7 +231,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		if (types == null || types.length == 0) {
 			return null;
 		}
-		String sql = MessageFormat.format(DBUtil.getQuery("module.submodule.type.id"), getTypes(types));
+		String sql = MessageFormat.format(DBConf.getInstance().getQuery("module.submodule.type.id"), getTypes(types));
 		ResultSet rs = null;
 		try(Connection conn = getConnection();PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setLong(1, getOrgId());
@@ -240,7 +265,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			return LookupSpecialTypeUtil.getSubModules(moduleName, types);
 		}
 		
-		String sql = MessageFormat.format(DBUtil.getQuery("module.submodule.get"), getTypes(types));
+		String sql = MessageFormat.format(DBConf.getInstance().getQuery("module.submodule.get"), getTypes(types));
 		ResultSet rs = null;
 		try(Connection conn = getConnection();PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setLong(1, getOrgId());
@@ -296,7 +321,7 @@ public class ModuleBeanImpl implements ModuleBean {
 		try {
 			 conn = getConnection();
 			 
-			 String sql = DBUtil.getQuery("module.child.modules");
+			 String sql = DBConf.getInstance().getQuery("module.child.modules");
 			 pstmt = conn.prepareStatement(sql);
 
 			pstmt.setLong(1, getOrgId());
@@ -707,6 +732,10 @@ public class ModuleBeanImpl implements ModuleBean {
 
 		if (FieldUtil.isSystemFieldsPresent(module) && FieldFactory.isSystemField(fieldName)) {
 			return FieldFactory.getSystemField(fieldName, module);
+		}
+		
+		if (FieldUtil.isBaseEntityModule(module) && FieldFactory.isBaseModuleSystemField(fieldName)) {
+			return FieldFactory.getBaseModuleSystemField(fieldName, module);
 		}
 		
 		if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {

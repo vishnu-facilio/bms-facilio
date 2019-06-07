@@ -2,8 +2,8 @@ package com.facilio.urjanet.util;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.sql.DBUtil;
-import com.facilio.transaction.FacilioConnectionPool;
+import com.facilio.db.builder.DBUtil;
+import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.urjanet.context.UtilityProviderCredentials;
 
 import java.sql.Connection;

@@ -5,9 +5,9 @@ import com.facilio.accounts.dto.GroupMember;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FieldUtil;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.fields.FacilioField;
 
 import java.util.ArrayList;
 import java.util.Collection;
