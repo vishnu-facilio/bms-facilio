@@ -1,22 +1,39 @@
 package com.facilio.bmsconsole.page.factory;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingType;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.Page.Tab;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.PageWidget.CardType;
 import com.facilio.bmsconsole.page.PageWidget.WidgetType;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FieldUtil;
 
 public class AssetPageFactory extends PageFactory {
 	
+	private static final Logger LOGGER = LogManager.getLogger(AssetPageFactory.class.getName());
+	
 	public static Page getAssetPage(AssetContext asset) {
 		// TODO do the check based on status or category
-		return getConnectedAssetPage();
+		return getConnectedAssetPage(asset.getId());
 	}
 
-	private static Page getConnectedAssetPage() {
+	private static Page getConnectedAssetPage(long assetId) {
 		Page page = new Page();
 
 		Tab tab1 = page.new Tab("summary");
@@ -60,10 +77,16 @@ public class AssetPageFactory extends PageFactory {
 		
 		addReadingWidget(tab3Sec1);
 		
-		Section tab3Sec2 = page.new Section("commands");
-		tab3.addSection(tab3Sec2);
-		
-		addCommandWidget(tab3Sec2);
+		try {
+			if (AccountUtil.isFeatureEnabled(FeatureLicense.CONTROL_ACTIONS)) {
+				Section tab3Sec2 = page.new Section("commands");
+				tab3.addSection(tab3Sec2);
+				
+				addCommandWidget(tab3Sec2, assetId);
+			}
+		} catch (Exception e) {
+			LOGGER.error("Error in checking control action license or adding command widget", e);
+		}
 		
 		
 		Tab tab4 = page.new Tab("performance");
@@ -80,7 +103,7 @@ public class AssetPageFactory extends PageFactory {
 		addAvgTtrWidget(tab4Sec1);
 		
 		
-		Tab tab5 = page.new Tab("history");
+		Tab tab5 = page.new Tab("history", "history");
 		page.addTab(tab5);
 		
 		Section tab5Sec1 = page.new Section();
@@ -164,11 +187,34 @@ public class AssetPageFactory extends PageFactory {
 		section.addWidget(readingsWidget);
 	}
 	
-	private static void addCommandWidget(Section section) {
-		PageWidget commandWidget = new PageWidget(WidgetType.CARD);
-		commandWidget.addToLayoutParams(section, 24, 24);
-		commandWidget.addToWidgetParams("type", CardType.SET_COMMAND.getName());
-		section.addWidget(commandWidget);
+	private static void addCommandWidget(Section section, long assetId) {
+		
+		List<ReadingDataMeta> writableReadings = null;
+		try {
+			writableReadings = ReadingsAPI.getReadingDataMetaList(Collections.singletonList(assetId), null, true, ReadingType.WRITE);
+		} catch (Exception e) {
+			LOGGER.error("Error in fetching writable readings", e);
+		}
+		if (CollectionUtils.isNotEmpty(writableReadings)) {
+			for(ReadingDataMeta rdm : writableReadings) {
+				PageWidget commandWidget = new PageWidget(WidgetType.CARD);
+				commandWidget.addToLayoutParams(section, 24, 24);
+				commandWidget.addToWidgetParams("type", CardType.SET_COMMAND.getName());
+				
+				JSONObject obj = new JSONObject();
+				obj.put("field", rdm.getField());
+				obj.put("value", rdm.getValue());
+				try {
+					obj.put("inputUnit", FieldUtil.getAsProperties(rdm.getUnitEnum()));
+				} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+					LOGGER.error("Error in converting unit", e);
+				}
+
+				commandWidget.addToWidgetParams("data", obj);
+				section.addWidget(commandWidget);
+			}
+		}
+		
 	}
 	
 	private static void addAssetLifeWidget(Section section) {
@@ -212,6 +258,7 @@ public class AssetPageFactory extends PageFactory {
 		cardWidget.addToWidgetParams("type", CardType.AVG_TTR.getName());
 		section.addWidget(cardWidget);
 	}
+	
 	
 	
 }
