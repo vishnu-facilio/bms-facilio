@@ -116,7 +116,7 @@ public class AssetPageFactory extends PageFactory {
 	
 	private static void addPrimaryDetailsWidget(Section section) {
 		PageWidget pageWidget = new PageWidget(WidgetType.PRIMARY_DETAILS_WIDGET);
-		pageWidget.addToLayoutParams(section, 24, 7);
+		pageWidget.addToLayoutParams(section, 24, 6);
 		pageWidget.addToWidgetParams("showOperatingHours", true);
 		section.addWidget(pageWidget);
 	}
@@ -150,21 +150,21 @@ public class AssetPageFactory extends PageFactory {
 	
 	private static void addNextPmWidget(Section section) {
 		PageWidget nextPmWidget = new PageWidget(WidgetType.CARD);
-		nextPmWidget.addToLayoutParams(section, 8, 9);
+		nextPmWidget.addToLayoutParams(section, 8, 7);
 		nextPmWidget.addToWidgetParams("type", CardType.NEXT_PM.getName());
 		section.addWidget(nextPmWidget);
 	}
 	
 	private static void addWoDetailsWidget(Section section) {
 		PageWidget woDetailsWidget = new PageWidget(WidgetType.CARD);
-		woDetailsWidget.addToLayoutParams(section, 8, 9);
+		woDetailsWidget.addToLayoutParams(section, 8, 7);
 		woDetailsWidget.addToWidgetParams("type", CardType.WO_DETAILS.getName());
 		section.addWidget(woDetailsWidget);
 	}
 	
 	private static void addRecentlyClosedWidget(Section section) {
 		PageWidget recentlyClosedWidget = new PageWidget(WidgetType.CARD);
-		recentlyClosedWidget.addToLayoutParams(section, 8, 9);
+		recentlyClosedWidget.addToLayoutParams(section, 8, 7);
 		recentlyClosedWidget.addToWidgetParams("type", CardType.RECENTLY_CLOSED_PM.getName());
 		section.addWidget(recentlyClosedWidget);
 	}
