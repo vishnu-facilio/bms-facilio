@@ -257,7 +257,7 @@ public class ReadingsAPI {
 	}
 	
 	public static long getReadingDataMetaCount(Collection<Long> resourceIds, boolean excludeEmptyFields, String search, ReadingInputType...readingTypes) throws Exception {
-		List<Map<String, Object>> props = getRDMProps(resourceIds, null, excludeEmptyFields, true, null, search, readingTypes);
+		List<Map<String, Object>> props = getRDMProps(resourceIds, null, excludeEmptyFields, true, null, search, null, readingTypes);
 		if (props != null && !props.isEmpty()) {
 			return (long) props.get(0).get("count");
 		}
@@ -269,27 +269,27 @@ public class ReadingsAPI {
 	}
 	
 	public static List<ReadingDataMeta> getReadingDataMetaList(Long resourceId, Collection<FacilioField> fieldList, boolean excludeEmptyFields, ReadingInputType...readingTypes) throws Exception {
-		return getReadingDataMetaList(Collections.singletonList(resourceId), fieldList, excludeEmptyFields, readingTypes);
-	}
-	
-	public static List<ReadingDataMeta> getReadingDataMetaList(Collection<Long> resourceIds, Collection<FacilioField> fieldList, boolean excludeEmptyFields, ReadingInputType...readingTypes) throws Exception {
-		return getReadingDataMetaList(resourceIds, fieldList, excludeEmptyFields, null, null, readingTypes);
+		return getReadingDataMetaList(Collections.singletonList(resourceId), fieldList, excludeEmptyFields, null, null, readingTypes);
 	}
 	
 	public static List<ReadingDataMeta> getReadingDataMetaList(Collection<Long> resourceIds, Collection<FacilioField> fieldList, boolean excludeEmptyFields, JSONObject pagination, String search, ReadingInputType...readingTypes) throws Exception {
+		return getReadingDataMetaList(resourceIds, fieldList, excludeEmptyFields, pagination, search, null, readingTypes);
+	}
+	
+	public static List<ReadingDataMeta> getReadingDataMetaList(Collection<Long> resourceIds, Collection<FacilioField> fieldList, boolean excludeEmptyFields, ReadingType readingType) throws Exception {
+		return getReadingDataMetaList(resourceIds, fieldList, excludeEmptyFields, null, null, readingType);
+	}
+	
+	public static List<ReadingDataMeta> getReadingDataMetaList(Collection<Long> resourceIds, Collection<FacilioField> fieldList, boolean excludeEmptyFields, JSONObject pagination, String search, ReadingType readingType, ReadingInputType...inputTypes) throws Exception {
 		Map<Long, FacilioField> fieldMap = null;
 		if (fieldList != null) {
 			fieldMap = FieldFactory.getAsIdMap(fieldList);
 		}
-		List<Map<String, Object>> stats = getRDMProps(resourceIds, fieldMap, excludeEmptyFields, false, pagination, search, readingTypes);
+		List<Map<String, Object>> stats = getRDMProps(resourceIds, fieldMap, excludeEmptyFields, false, pagination, search, readingType, inputTypes);
 		return getReadingDataFromProps(stats, fieldMap);
 	}
 	
-	private static List<Map<String, Object>> getRDMProps (Long resourceId, Map<Long, FacilioField> fieldMap, boolean excludeEmptyFields, boolean fetchCount, String search, ReadingInputType...readingTypes) throws Exception {
-		return getRDMProps(Collections.singletonList(resourceId), fieldMap, excludeEmptyFields, fetchCount, null, search, readingTypes);
-	}
-	
-	private static List<Map<String, Object>> getRDMProps (Collection<Long> resourceIds, Map<Long, FacilioField> fieldMap, boolean excludeEmptyFields, boolean fetchCount, JSONObject pagination, String search, ReadingInputType...readingTypes) throws Exception {
+	private static List<Map<String, Object>> getRDMProps (Collection<Long> resourceIds, Map<Long, FacilioField> fieldMap, boolean excludeEmptyFields, boolean fetchCount, JSONObject pagination, String search, ReadingType readingType, ReadingInputType...inputTypes) throws Exception {
 		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
 		List<FacilioField> redingFields = FieldFactory.getReadingDataMetaFields();
 		Map<String, FacilioField> readingFieldsMap = FieldFactory.getAsMap(redingFields);
@@ -320,8 +320,12 @@ public class ReadingsAPI {
 			.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), CommonOperators.IS_NOT_EMPTY));
 		}
 		
-		if (readingTypes != null && readingTypes.length > 0) {
-			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"), getReadingTypes(readingTypes), PickListOperators.IS));
+		if(readingType != null) {
+			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("readingType"), String.valueOf(readingType.getValue()), PickListOperators.IS));
+		}
+		
+		if (inputTypes != null && inputTypes.length > 0) {
+			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"), getReadingTypes(inputTypes), PickListOperators.IS));
 		}
 		else {
 			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"),String.valueOf(ReadingInputType.HIDDEN_FORMULA_FIELD.getValue()), PickListOperators.ISN_T));
