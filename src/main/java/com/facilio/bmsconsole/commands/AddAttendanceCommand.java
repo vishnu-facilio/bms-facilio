@@ -70,7 +70,7 @@ public class AddAttendanceCommand implements Command {
 				if (att.getLastBreakStartTime() > 0) {
 					throw new IllegalArgumentException("Kindly check out break before checking in");
 				}
-				if (att.getCheckOutTime() == -99) {
+				if (att.getCheckOutTime() < 0) {
 					throw new IllegalArgumentException("The User has already checked in");
 				}
 				att.setLastCheckInTime(attendanceTransaction.getTransactionTime());
