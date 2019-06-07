@@ -96,14 +96,6 @@ public class FacilioContextListener implements ServletContextListener {
 			timer.schedule(new FacilioExceptionProcessor(), 0L, 900000L); // 30 minutes
 		}
 
-
-		if( ! AwsUtil.isDevelopment()) {
-		    try {
-                AwsUtil.getPassword("test-buvi");
-            } catch (Exception e) {
-		        log.info("Exception while accessing secret manager ", e);
-            }
-        }
 		initDBConnectionPool();
 		Operator.getOperator(1);
 		TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACTION,1);
