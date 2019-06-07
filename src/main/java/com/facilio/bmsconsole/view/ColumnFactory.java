@@ -442,12 +442,15 @@ public class ColumnFactory {
 	private static List<ViewField> getDefaultAttendanceColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
-		columns.add(new ViewField("user", "User"));
+//		columns.add(new ViewField("user", "User"));
 		columns.add(new ViewField("checkInTime", "Check-in Time"));
 		columns.add(new ViewField("checkOutTime", "Check-out Time"));
 		columns.add(new ViewField("workingHours", "Working Hours"));
 		columns.add(new ViewField("day", "Day"));
 		columns.add(new ViewField("status", "Status"));
+		columns.add(new ViewField("lastCheckInTime", "Last Check-in Time"));
+		columns.add(new ViewField("totalPaidBreakHrs", "Total Paid Break Hours"));
+		columns.add(new ViewField("lastBreakStartTime", "Last Break Start Time"));
 		return columns;
 	}
 	
