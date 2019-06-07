@@ -166,7 +166,16 @@ public class AuthInterceptor extends AbstractInterceptor {
 						}
 						else 
 						{
-							setTimeZoneCookie(SpaceAPI.getSiteSpace(currentSiteId).getTimeZone());
+							String timezonevar = SpaceAPI.getSiteSpace(currentSiteId).getTimeZone();
+							if (timezonevar != null && !timezonevar.isEmpty())
+							{
+							setTimeZoneCookie(timezonevar);
+							}
+							else
+							{
+							setTimeZoneCookie(AccountUtil.getCurrentOrg().getTimezone());	
+							}
+								
 						}
 					}
 					
@@ -234,7 +243,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 	}
 
 	private void setTimeZoneCookie(String timeZone) {
-
+		
 		HttpServletRequest request = ServletActionContext.getRequest();
 		HttpServletResponse response = ServletActionContext.getResponse();
         Cookie timezonecookie = new Cookie("fc.timeZone",timeZone);
@@ -245,9 +254,8 @@ public class AuthInterceptor extends AbstractInterceptor {
         	timezonecookie.setSecure(true);
         }
         String parentdomain = request.getServerName().replaceAll("app.", "");
-//        timezonecookie.setDomain(parentdomain);
-        response.addCookie(timezonecookie);
-		
+        timezonecookie.setDomain(parentdomain);
+        response.addCookie(timezonecookie);	
 	}
 
 	private boolean isAuthorizedAccess(String moduleName, String permissions) throws Exception {

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.lang3.StringUtils;
@@ -215,6 +216,10 @@ public class PortfolioAction extends ActionSupport {
 		List<Map<String, Object>> propsThisMonth = select1.getAsProps();
 		
 		Map<Long,Double> thisMeterVsConsumption=ReportsUtil.getMapping(propsThisMonth,"parentId","totalEnergyConsumptionDelta");
+		if(AccountUtil.getCurrentOrg().getId() == 75l) {
+			LOGGER.log(Level.SEVERE, "this month select query --"+select1);
+			LOGGER.log(Level.SEVERE, "thisMeterVsConsumption --"+thisMeterVsConsumption);
+		}
 		
 		long prevMonthStartTime= DateTimeUtil.getMonthStartTime(-1);
 		long currentMonthStartTime=DateTimeUtil.getMonthStartTime();
@@ -232,6 +237,11 @@ public class PortfolioAction extends ActionSupport {
 		List<Map<String, Object>> propsLastMonth = select1.getAsProps();
 		
 		Map<Long,Double> prevMeterVsConsumption=ReportsUtil.getMapping(propsLastMonth,"parentId","totalEnergyConsumptionDelta");
+		
+		if(AccountUtil.getCurrentOrg().getId() == 75l) {
+			LOGGER.log(Level.SEVERE, "last month select query --"+select1);
+			LOGGER.log(Level.SEVERE, "prevMeterVsConsumption --"+prevMeterVsConsumption);
+		}
 		
 		for(Map<String, Object> prop : props) {
 			
