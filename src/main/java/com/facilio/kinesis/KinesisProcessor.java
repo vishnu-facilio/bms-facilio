@@ -33,9 +33,6 @@ public class KinesisProcessor {
         return properties;
     }
     
-    static {
-    	EXISTING_ORGS.add("rmzbangalore");
-    }
 
     private static void updateStream() {
         try {
