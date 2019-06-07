@@ -33,9 +33,6 @@ public class OpenScheduledWO extends FacilioJob {
     @Override
     public void execute(JobContext jc) throws Exception {
         try {
-            if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
-                return;
-            }
             long woId = jc.getJobId();
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);

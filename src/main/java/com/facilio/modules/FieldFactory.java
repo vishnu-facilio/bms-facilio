@@ -4328,21 +4328,6 @@ public class FieldFactory {
 		return fields;
 	}
 
-	public static List<FacilioField> getPMJobFields() {
-		FacilioModule module = ModuleFactory.getPMJobsModule();
-		List<FacilioField> fields = new ArrayList<>();
-
-		fields.add(getIdField(module));
-		fields.add(getField("pmId", "PM_ID", module, FieldType.NUMBER));
-		fields.add(getField("pmTriggerId", "PM_TRIGGER_ID", module, FieldType.NUMBER));
-		fields.add(getField("nextExecutionTime", "NEXT_EXECUTION_TIME", module, FieldType.NUMBER));
-		fields.add(getField("templateId", "TEMPLATE_ID", module, FieldType.NUMBER));
-		fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
-		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.NUMBER));
-
-		return fields;
-	}
-
 	public static List<FacilioField> getBeforePMRemindersTriggerRelFields() {
 		FacilioModule module = ModuleFactory.getBeforePMRemindersTriggerRelModule();
 		List<FacilioField> fields = new ArrayList<>();
