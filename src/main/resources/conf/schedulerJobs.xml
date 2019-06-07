@@ -6,8 +6,6 @@
 	 <job name='DeviceDataExtractor' classname='com.facilio.tasker.tasks.DeviceDataExtractorJob' />
 	 <job name='IotConnector' classname='com.facilio.tasker.tasks.IotConnectorJob' /> -->
 	 <job name='WorkOrderRequestEmailParser' classname='com.facilio.bmsconsole.jobs.WorkOrderRequestEmailParser' transactionTimeout='300000'/>
-	 <job name='PreventiveMaintenance' classname='com.facilio.bmsconsole.jobs.PMToWorkOrder' transactionTimeout='300000'/>
-	 <job name='PMScheduler' classname='com.facilio.bmsconsole.jobs.PMScheduler' transactionTimeout='300000'/>
 	 <job name='PMNewScheduler' classname='com.facilio.bmsconsole.jobs.PMNewScheduler' transactionTimeout='300000'/>
 	 <job name='ScheduleWOStatusChange' classname='com.facilio.bmsconsole.jobs.ScheduleWOStatusChange' transactionTimeout='900000'/>
 	 <job name='OpenScheduledWO' classname='com.facilio.bmsconsole.jobs.OpenScheduledWO' transactionTimeout='300000'/>

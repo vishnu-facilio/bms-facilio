@@ -66,11 +66,6 @@ public class ExecutePMCommand implements Command {
 				if(wo != null) {
 					context.put(FacilioConstants.ContextNames.PM_TO_WO, Collections.singletonMap(pm.getId(), wo));
 				}
-				
-				PMJobsContext currentJob = (PMJobsContext) context.get(FacilioConstants.ContextNames.PM_CURRENT_JOB);
-				if (currentJob != null) {
-					PreventiveMaintenanceAPI.updatePMJobStatus(currentJob.getId(), PMJobsStatus.COMPLETED);
-				}
 			}
 		}
 		return false;
