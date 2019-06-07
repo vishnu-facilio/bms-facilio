@@ -112,7 +112,12 @@ public class AccountUtil {
 			currentAccount.get().setRequestUri(requestURI);
 		}
     }
-
+    
+    public static void setTimeZone(String timeZone) {
+		if (currentAccount.get() != null) {
+			currentAccount.get().setTimeZone(timeZone);
+		}
+    }
 
     public enum FeatureLicense {
 		MAINTENANCE (1),

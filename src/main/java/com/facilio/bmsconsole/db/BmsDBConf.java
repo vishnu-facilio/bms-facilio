@@ -122,14 +122,32 @@ public class BmsDBConf extends DBConf {
     @Override
     public ZoneId getCurrentZoneId() {
         //TODO TimeZone related changes to be done.
+    	if(!AwsUtil.isProduction())
+    	{
+    		Account currentAccount = AccountUtil.getCurrentAccount();
+    		if(currentAccount != null)
+    		{
+    			String zone = currentAccount.getTimeZone();
+    		 	if(zone != null && !zone.isEmpty()) 
+    		 	{
+                 return ZoneId.of(zone.trim());
+    		 	}
+    		}
+    	}
+    	else
+    	{
         Organization org = AccountUtil.getCurrentOrg();
-        if(org != null) {
-            String zone = org.getTimezone();
-            if(zone != null && !zone.isEmpty()) {
-                return ZoneId.of(zone.trim());
-            }
-        }
-        return DBConf.getInstance().isDevelopment() ? ZoneId.systemDefault() : ZoneId.of("Z");
+	        if(org != null) {
+	            String zone = org.getTimezone();
+	            if(zone != null && !zone.isEmpty())
+	            {
+	                return ZoneId.of(zone.trim());
+	            }
+	        }
+        
+    	}
+    	
+    	return DBConf.getInstance().isDevelopment() ? ZoneId.systemDefault() : ZoneId.of("Z");
     }
 
     @Override

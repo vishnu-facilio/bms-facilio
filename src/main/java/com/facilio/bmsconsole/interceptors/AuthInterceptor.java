@@ -162,18 +162,21 @@ public class AuthInterceptor extends AbstractInterceptor {
 						
 						if (currentSiteId == -1l || (FacilioCookie.getUserCookie(request, "fc.timeZone")) == null)
 						{
-							setTimeZoneCookie(AccountUtil.getCurrentOrg().getTimezone());		
+							setTimeZoneCookie(AccountUtil.getCurrentOrg().getTimezone());
+							AccountUtil.setTimeZone(AccountUtil.getCurrentOrg().getTimezone());
 						}
 						else 
 						{
 							String timezonevar = SpaceAPI.getSiteSpace(currentSiteId).getTimeZone();
 							if (timezonevar != null && !timezonevar.isEmpty())
 							{
-							setTimeZoneCookie(timezonevar);
+								setTimeZoneCookie(timezonevar);
+								AccountUtil.setTimeZone(timezonevar);
 							}
 							else
 							{
-							setTimeZoneCookie(AccountUtil.getCurrentOrg().getTimezone());	
+								setTimeZoneCookie(AccountUtil.getCurrentOrg().getTimezone());
+								AccountUtil.setTimeZone(AccountUtil.getCurrentOrg().getTimezone());
 							}
 								
 						}
