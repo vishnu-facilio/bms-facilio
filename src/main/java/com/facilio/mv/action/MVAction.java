@@ -28,4 +28,17 @@ public class MVAction extends FacilioAction {
 		setResult("mvProject", mvProject);
 		return SUCCESS;
 	}
+	
+	public String deleteMVProject() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		
+		context.put(MVUtil.MV_PROJECT, mvProject);
+		
+		Chain deleteMVProjectChain =  TransactionChainFactory.getDeleteMVProjectChain(); 
+		deleteMVProjectChain.execute(context);
+		
+		setResult("mvProject", mvProject);
+		return SUCCESS;
+	}
 }
