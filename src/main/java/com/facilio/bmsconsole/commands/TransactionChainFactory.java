@@ -12,6 +12,10 @@ import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
+import com.facilio.mv.command.AddMVAjustmentCommand;
+import com.facilio.mv.command.AddMVAjustmentVsBaselineCommand;
+import com.facilio.mv.command.AddMVBaselineCommand;
+import com.facilio.mv.command.AddMVProjectCommand;
 
 public class TransactionChainFactory {
 
@@ -2900,6 +2904,15 @@ public class TransactionChainFactory {
 		public static Chain getAttendanceTransitionState() {
 			Chain c = getDefaultChain();
 			c.addCommand(new ShowStateForAttendanceCommand());
+			return c;
+		}
+		
+		public static Chain getAddMVProjectChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddMVProjectCommand());
+			c.addCommand(new AddMVBaselineCommand());
+			c.addCommand(new AddMVAjustmentCommand());
+			c.addCommand(new AddMVAjustmentVsBaselineCommand());
 			return c;
 		}
 

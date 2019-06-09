@@ -5958,4 +5958,17 @@ public class FieldFactory {
 		fields.add(getField("criteriaId", "CRITERIA_ID", validationModule, FieldType.NUMBER));
 		return fields;
 	}
+	
+	public static List<FacilioField> getMVAjuststmentVsBaselineFields() {
+		FacilioModule module = ModuleFactory.getMVAjuststmentVsBaselineModule();
+		List<FacilioField> fields = new ArrayList<>();
+
+		//fields.add(getOrgIdField(module));
+		fields.add(getField("id", "ID", module, FieldType.ID));
+		fields.add(getField("adjustmentId", "ADJUSTMENT_ID", module, FieldType.LOOKUP));
+		fields.add(getField("baselineId", "BASELINE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("formulaField", "FORMULA_FIELD_ID", module, FieldType.LOOKUP));
+		
+		return fields;
+	}
 }
