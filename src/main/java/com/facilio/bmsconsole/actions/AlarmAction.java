@@ -41,6 +41,7 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.time.DateRange;
 
 public class AlarmAction extends FacilioAction {
 	/**
@@ -611,7 +612,9 @@ public class AlarmAction extends FacilioAction {
 	public String fetchAlarmInsightsForResource() throws Exception{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ASSET_ID, assetId);
+		context.put(FacilioConstants.ContextNames.DATE_RANGE, dateRange);
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
+		context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateOperatorValue);
 		ReadOnlyChainFactory.getAlarmInsightChain().execute(context);
 		setResult(ContextNames.ALARM_LIST, context.get(ContextNames.ALARM_LIST));
 		return SUCCESS;
@@ -631,5 +634,21 @@ public class AlarmAction extends FacilioAction {
 	}
 	public void setDateOperator(int dateOperator) {
 		this.dateOperator = dateOperator;
+	}
+	
+	private String dateOperatorValue;
+	public String getDateOperatorValue() {
+		return dateOperatorValue;
+	}
+	public void setDateOperatorValue(String dateOperatorValue) {
+		this.dateOperatorValue = dateOperatorValue;
+	}
+	
+	private DateRange dateRange;
+	public DateRange getDateRange() {
+		return dateRange;
+	}
+	public void setDateRange(DateRange dateRange) {
+		this.dateRange = dateRange;
 	}
 }

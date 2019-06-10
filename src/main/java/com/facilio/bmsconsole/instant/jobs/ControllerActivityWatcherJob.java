@@ -25,6 +25,7 @@ public class ControllerActivityWatcherJob extends InstantJob {
 	private static final Logger LOGGER = LogManager.getLogger(ControllerActivityWatcherJob.class.getName());
 	private static final long THREAD_SLEEP_BUFFER = 5000;
 	private static final long TIME_OUT = 15 * 60 * 1000;
+	private boolean timedOut = false;
 	
 	@Override
 	public void execute(FacilioContext context) throws Exception {
@@ -98,7 +99,7 @@ public class ControllerActivityWatcherJob extends InstantJob {
 		Map<String, Set<Long>> activityMap = new HashMap<>();
 		Set<Long> activityIds = new HashSet<>();
 		
-		while (!inCompleteControllers.isEmpty()) {
+		while (!inCompleteControllers.isEmpty() && !timedOut) {
 			List<Map<String, Object>> activities = ControllerAPI.getControllerActivities(inCompleteControllers.values(), watcher.getRecordTime());
 			if (activities != null && !activities.isEmpty()) {
 				LOGGER.debug("Activities for time : "+watcher.getRecordTime()+" and interval : "+watcher.getDataInterval()+" : "+activities);
@@ -166,5 +167,9 @@ public class ControllerActivityWatcherJob extends InstantJob {
 		return activities;
 	}
 	
-	
+	@Override
+	public void handleTimeOut() {
+		LOGGER.info("Controller Acitivty timed out!!");
+		timedOut = true;
+	}
 }

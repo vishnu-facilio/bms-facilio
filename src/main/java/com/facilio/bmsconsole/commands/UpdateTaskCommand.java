@@ -1,5 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
@@ -20,23 +33,13 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioStatus;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.MutablePair;
-import org.apache.log4j.LogManager;
-import org.json.simple.JSONObject;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class UpdateTaskCommand implements Command {
 	
@@ -85,10 +88,10 @@ public class UpdateTaskCommand implements Command {
 			Long lastSyncTime = (Long) context.get(FacilioConstants.ContextNames.LAST_SYNC_TIME);
 			TaskContext oldTaskForSync = oldTasks.get(0);
 			if (lastSyncTime != null && oldTaskForSync.getModifiedTime() > lastSyncTime ) {
-				throw new RuntimeException("The task was modified after the last sync");
+				throw new IllegalArgumentException("The task was modified after the last sync");
 			}
 			if (task.getSyncTime() != -1 && oldTaskForSync.getModifiedTime() > task.getSyncTime() ) {
-				throw new RuntimeException("The task was modified after the last sync");
+				throw new IllegalArgumentException("The task was modified after the last sync");
 			}
 			
 			List<Object> closedtask = new ArrayList<>();

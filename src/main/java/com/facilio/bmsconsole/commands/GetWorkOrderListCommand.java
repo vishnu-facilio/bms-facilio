@@ -1,5 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
@@ -14,17 +26,12 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONObject;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 public class GetWorkOrderListCommand implements Command {
 
@@ -35,11 +42,11 @@ public class GetWorkOrderListCommand implements Command {
 		
 		List<Long> woIds = new ArrayList<>();
 		woIds = (List<Long>) context.get(FacilioConstants.ContextNames.WO_IDS);
-		System.out.println();
 		String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		String count = (String) context.get(FacilioConstants.ContextNames.WO_LIST_COUNT);
 		boolean isApproval = (Boolean) context.get(FacilioConstants.ContextNames.IS_APPROVAL);
+		
 		List<FacilioField> fields = null;
 		
 		 List<Map<String, Object>> subViewsCount = null;
@@ -57,11 +64,12 @@ public class GetWorkOrderListCommand implements Command {
 				context.put(FacilioConstants.ContextNames.SUB_VIEW_COUNT, subViewsCount);
 			}
 			fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+			List<String> selectFields = (List<String>) context.get(FacilioConstants.ContextNames.FETCH_SELECTED_FIELDS);
+			if (CollectionUtils.isNotEmpty(selectFields)) {
+				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+				fields = selectFields.stream().map(fieldName -> fieldMap.get(fieldName)).collect(Collectors.toList());
+			}
 		}
-		
-		
-		
-		
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule("workorder");

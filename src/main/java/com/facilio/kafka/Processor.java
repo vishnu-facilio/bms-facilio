@@ -87,7 +87,13 @@ public class Processor extends FacilioProcessor {
                         }
                     }
                     else {
-                        agentUtil.addAgentMessage(recordId);
+                        boolean originalFlag =false;
+                                originalFlag = agentUtil.addAgentMessage(recordId);
+                        if(!originalFlag){
+                            LOGGER.info("tried adding duplicate message "+ recordId);
+                            continue;
+                        }
+                        LOGGER.info("debugging log - processing-"+recordId);
                     }
                 }catch (Exception e1){
                     LOGGER.info("Exception Occured ",e1);

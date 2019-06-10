@@ -17,6 +17,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
@@ -714,8 +715,9 @@ public class TaskAction extends FacilioAction {
 		String errorTrace = null;
 		StringBuilder body = new StringBuilder("\n\nDetails: \n");
 		if (e != null) {
-			errorTrace = ExceptionUtils.getStackTrace(e);
-			body.append(inComingDetails.toString())
+			if (e instanceof IllegalArgumentException) {
+				errorTrace = ExceptionUtils.getStackTrace(e);
+				body.append(inComingDetails.toString())
 				.append("\nOrgId: ")
 				.append(AccountUtil.getCurrentOrg().getOrgId())
 				.append("\nUser: ")
@@ -727,14 +729,18 @@ public class TaskAction extends FacilioAction {
 				.append("\n\n-----------------\n\n")
 				.append("------------------\n\nStackTrace : \n--------\n")
 				.append(errorTrace);
-			String message = e.getMessage();
-			System.out.println("88888888" + body);
-			JSONObject mailJson = new JSONObject();
-			mailJson.put("sender", "noreply@facilio.com");
-			mailJson.put("to", "shaan@facilio.com, tharani@facilio.com, aravind@facilio.com");
-			mailJson.put("subject", "Task Exception");
-			mailJson.put("message", body.toString());
-			AwsUtil.sendEmail(mailJson);
+				String message = e.getMessage();
+				System.out.println("88888888" + body);
+				JSONObject mailJson = new JSONObject();
+				mailJson.put("sender", "noreply@facilio.com");
+				mailJson.put("to", "shaan@facilio.com, tharani@facilio.com, aravind@facilio.com");
+				mailJson.put("subject", "Task Exception");
+				mailJson.put("message", body.toString());
+				AwsUtil.sendEmail(mailJson);
+			}
+			else {
+				CommonCommandUtil.emailException(WorkOrderAction.class.getName(), "Error in Task api", e, inComingDetails.toString());
+			}
 		}
 	}
 	

@@ -965,7 +965,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
-		c.addCommand(new GenericGetModuleDataListCommand());
+		c.addCommand(new GetBreakListCommand());
 		return c;
 	}
 	
@@ -976,7 +976,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
-		c.addCommand(new GenericGetModuleDataListCommand());
+		c.addCommand(new GetShiftListCommand());
 		return c;
 	}
 	

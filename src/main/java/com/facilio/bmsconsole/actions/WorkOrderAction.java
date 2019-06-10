@@ -32,6 +32,7 @@ import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.AttachmentContext;
@@ -1414,8 +1415,9 @@ public class WorkOrderAction extends FacilioAction {
 		String errorTrace = null;
 		StringBuilder body = new StringBuilder("\n\nDetails: \n");
 		if (e != null) {
-			errorTrace = ExceptionUtils.getStackTrace(e);
-			body.append(inComingDetails.toString())
+			if (e instanceof IllegalArgumentException) {
+				errorTrace = ExceptionUtils.getStackTrace(e);
+				body.append(inComingDetails.toString())
 				.append("\nOrgId: ")
 				.append(AccountUtil.getCurrentOrg().getOrgId())
 				.append("\nUser: ")
@@ -1427,13 +1429,17 @@ public class WorkOrderAction extends FacilioAction {
 				.append("\n\n-----------------\n\n")
 				.append("------------------\n\nStackTrace : \n--------\n")
 				.append(errorTrace);
-			String message = e.getMessage();
-			JSONObject mailJson = new JSONObject();
-			mailJson.put("sender", "noreply@facilio.com");
-			mailJson.put("to", "shaan@facilio.com, tharani@facilio.com, aravind@facilio.com");
-			mailJson.put("subject", "Workorder Exception");
-			mailJson.put("message", body.toString());
-			AwsUtil.sendEmail(mailJson);
+				String message = e.getMessage();
+				JSONObject mailJson = new JSONObject();
+				mailJson.put("sender", "noreply@facilio.com");
+				mailJson.put("to", "shaan@facilio.com, tharani@facilio.com");
+				mailJson.put("subject", "Workorder Exception");
+				mailJson.put("message", body.toString());
+				AwsUtil.sendEmail(mailJson);
+			}
+			else {
+				CommonCommandUtil.emailException(WorkOrderAction.class.getName(), "Error in Workorder api", e, inComingDetails.toString());
+			}
 		}
 	}
 
@@ -1735,6 +1741,13 @@ public class WorkOrderAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.SORTING, sorting);
 			context.put(FacilioConstants.ContextNames.OVERRIDE_SORTING, true);
 		}
+		
+		if (isCalendarApi()) {
+			context.put(FacilioConstants.ContextNames.FETCH_SELECTED_FIELDS, getCalendarSelectFields());
+		}
+		else if (getSelectFields() != null) {
+ 			context.put(FacilioConstants.ContextNames.FETCH_SELECTED_FIELDS, getSelectFields());			
+ 		}
 
 		JSONObject pagination = new JSONObject();
 		pagination.put("page", getPage());
@@ -1774,6 +1787,18 @@ public class WorkOrderAction extends FacilioAction {
 			throw e;
 		}
 		return SUCCESS;
+	}
+	
+	private Boolean calendarApi;
+	public boolean isCalendarApi() {
+		if (calendarApi == null) {
+			return false;
+		}
+		return calendarApi;
+	}
+
+	public void setCalendarApi(Boolean calendarApi) {
+		this.calendarApi = calendarApi;
 	}
 
 	private Map<Long, List<TaskContext>> preRequestList;
@@ -2456,6 +2481,10 @@ public class WorkOrderAction extends FacilioAction {
 			setResult(FacilioConstants.ContextNames.MODIFIED_TIME, workOrders.get(0).getModifiedTime());
 		}
 		return SUCCESS;
+	}
+	
+	private List<String> getCalendarSelectFields() {
+		return Arrays.asList("createdTime", "subject", "assignedTo", "trigger", "resource");
 	}
 
 }

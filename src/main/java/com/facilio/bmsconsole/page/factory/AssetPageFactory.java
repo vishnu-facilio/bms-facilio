@@ -1,22 +1,39 @@
 package com.facilio.bmsconsole.page.factory;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingType;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.Page.Tab;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.PageWidget.CardType;
 import com.facilio.bmsconsole.page.PageWidget.WidgetType;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FieldUtil;
 
 public class AssetPageFactory extends PageFactory {
 	
+	private static final Logger LOGGER = LogManager.getLogger(AssetPageFactory.class.getName());
+	
 	public static Page getAssetPage(AssetContext asset) {
 		// TODO do the check based on status or category
-		return getConnectedAssetPage();
+		return getConnectedAssetPage(asset.getId());
 	}
 
-	private static Page getConnectedAssetPage() {
+	private static Page getConnectedAssetPage(long assetId) {
 		Page page = new Page();
 
 		Tab tab1 = page.new Tab("summary");
@@ -60,10 +77,16 @@ public class AssetPageFactory extends PageFactory {
 		
 		addReadingWidget(tab3Sec1);
 		
-		Section tab3Sec2 = page.new Section("commands");
-		tab3.addSection(tab3Sec2);
-		
-		addCommandWidget(tab3Sec2);
+		try {
+			if (AccountUtil.isFeatureEnabled(FeatureLicense.CONTROL_ACTIONS)) {
+				Section tab3Sec2 = page.new Section("commands");
+				tab3.addSection(tab3Sec2);
+				
+				addCommandWidget(tab3Sec2, assetId);
+			}
+		} catch (Exception e) {
+			LOGGER.error("Error in checking control action license or adding command widget", e);
+		}
 		
 		
 		Tab tab4 = page.new Tab("performance");
@@ -80,7 +103,7 @@ public class AssetPageFactory extends PageFactory {
 		addAvgTtrWidget(tab4Sec1);
 		
 		
-		Tab tab5 = page.new Tab("history");
+		Tab tab5 = page.new Tab("history", "history");
 		page.addTab(tab5);
 		
 		Section tab5Sec1 = page.new Section();
@@ -93,7 +116,7 @@ public class AssetPageFactory extends PageFactory {
 	
 	private static void addPrimaryDetailsWidget(Section section) {
 		PageWidget pageWidget = new PageWidget(WidgetType.PRIMARY_DETAILS_WIDGET);
-		pageWidget.addToLayoutParams(section, 24, 7);
+		pageWidget.addToLayoutParams(section, 24, 6);
 		pageWidget.addToWidgetParams("showOperatingHours", true);
 		section.addWidget(pageWidget);
 	}
@@ -127,21 +150,21 @@ public class AssetPageFactory extends PageFactory {
 	
 	private static void addNextPmWidget(Section section) {
 		PageWidget nextPmWidget = new PageWidget(WidgetType.CARD);
-		nextPmWidget.addToLayoutParams(section, 8, 9);
+		nextPmWidget.addToLayoutParams(section, 8, 7);
 		nextPmWidget.addToWidgetParams("type", CardType.NEXT_PM.getName());
 		section.addWidget(nextPmWidget);
 	}
 	
 	private static void addWoDetailsWidget(Section section) {
 		PageWidget woDetailsWidget = new PageWidget(WidgetType.CARD);
-		woDetailsWidget.addToLayoutParams(section, 8, 9);
+		woDetailsWidget.addToLayoutParams(section, 8, 7);
 		woDetailsWidget.addToWidgetParams("type", CardType.WO_DETAILS.getName());
 		section.addWidget(woDetailsWidget);
 	}
 	
 	private static void addRecentlyClosedWidget(Section section) {
 		PageWidget recentlyClosedWidget = new PageWidget(WidgetType.CARD);
-		recentlyClosedWidget.addToLayoutParams(section, 8, 9);
+		recentlyClosedWidget.addToLayoutParams(section, 8, 7);
 		recentlyClosedWidget.addToWidgetParams("type", CardType.RECENTLY_CLOSED_PM.getName());
 		section.addWidget(recentlyClosedWidget);
 	}
@@ -164,11 +187,34 @@ public class AssetPageFactory extends PageFactory {
 		section.addWidget(readingsWidget);
 	}
 	
-	private static void addCommandWidget(Section section) {
-		PageWidget commandWidget = new PageWidget(WidgetType.CARD);
-		commandWidget.addToLayoutParams(section, 24, 24);
-		commandWidget.addToWidgetParams("type", CardType.SET_COMMAND.getName());
-		section.addWidget(commandWidget);
+	private static void addCommandWidget(Section section, long assetId) {
+		
+		List<ReadingDataMeta> writableReadings = null;
+		try {
+			writableReadings = ReadingsAPI.getReadingDataMetaList(Collections.singletonList(assetId), null, true, ReadingType.WRITE);
+		} catch (Exception e) {
+			LOGGER.error("Error in fetching writable readings", e);
+		}
+		if (CollectionUtils.isNotEmpty(writableReadings)) {
+			for(ReadingDataMeta rdm : writableReadings) {
+				PageWidget commandWidget = new PageWidget(WidgetType.CARD);
+				commandWidget.addToLayoutParams(section, 6, 6);
+				commandWidget.addToWidgetParams("type", CardType.SET_COMMAND.getName());
+				
+				JSONObject obj = new JSONObject();
+				obj.put("field", rdm.getField());
+				obj.put("value", rdm.getValue());
+				try {
+					obj.put("inputUnit", FieldUtil.getAsProperties(rdm.getUnitEnum()));
+				} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+					LOGGER.error("Error in converting unit", e);
+				}
+
+				commandWidget.addToWidgetParams("data", obj);
+				section.addWidget(commandWidget);
+			}
+		}
+		
 	}
 	
 	private static void addAssetLifeWidget(Section section) {
@@ -187,31 +233,32 @@ public class AssetPageFactory extends PageFactory {
 	
 	private static void addLastDownTimeWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD, "lastReportedDownTime");
-		cardWidget.addToLayoutParams(section, 12, 4);
+		cardWidget.addToLayoutParams(section, 12, 5);
 		cardWidget.addToWidgetParams("type", CardType.LAST_DOWNTIME.getName());
 		section.addWidget(cardWidget);
 	}
 	
 	private static void addOverallDowntimeWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD, "overallDownTime");
-		cardWidget.addToLayoutParams(section, 12, 4);
+		cardWidget.addToLayoutParams(section, 12, 5);
 		cardWidget.addToWidgetParams("type", CardType.OVERALL_DOWNTIME.getName());
 		section.addWidget(cardWidget);
 	}
 	
 	private static void addFailureRateWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART);
-		cardWidget.addToLayoutParams(section, 12, 8);
+		cardWidget.addToLayoutParams(section, 12, 11);
 		cardWidget.addToWidgetParams("type", CardType.FAILURE_RATE.getName());
 		section.addWidget(cardWidget);
 	}
 	
 	private static void addAvgTtrWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART);
-		cardWidget.addToLayoutParams(section, 12, 8);
+		cardWidget.addToLayoutParams(section, 12, 11);
 		cardWidget.addToWidgetParams("type", CardType.AVG_TTR.getName());
 		section.addWidget(cardWidget);
 	}
+	
 	
 	
 }
