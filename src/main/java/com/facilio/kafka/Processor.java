@@ -93,6 +93,7 @@ public class Processor extends FacilioProcessor {
                             LOGGER.info("tried adding duplicate message "+ recordId);
                             continue;
                         }
+                        LOGGER.info("debugging log - processing-"+recordId);
                     }
                 }catch (Exception e1){
                     LOGGER.info("Exception Occured ",e1);
