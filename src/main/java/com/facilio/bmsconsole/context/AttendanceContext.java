@@ -107,4 +107,13 @@ public class AttendanceContext extends ModuleBaseWithCustomFields{
 	public void setLastBreakStartTime(long lastBreakStartTime) {
 		this.lastBreakStartTime = lastBreakStartTime;
 	}
+	
+	private BreakContext lastBreakId;
+	public BreakContext getLastBreakId() {
+		return lastBreakId;
+	}
+	public void setLastBreakId(BreakContext lastBreakId) {
+		this.lastBreakId = lastBreakId;
+	}
+	
 }
