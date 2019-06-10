@@ -32,6 +32,7 @@ import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.AttachmentContext;
@@ -1414,8 +1415,9 @@ public class WorkOrderAction extends FacilioAction {
 		String errorTrace = null;
 		StringBuilder body = new StringBuilder("\n\nDetails: \n");
 		if (e != null) {
-			errorTrace = ExceptionUtils.getStackTrace(e);
-			body.append(inComingDetails.toString())
+			if (e instanceof IllegalArgumentException) {
+				errorTrace = ExceptionUtils.getStackTrace(e);
+				body.append(inComingDetails.toString())
 				.append("\nOrgId: ")
 				.append(AccountUtil.getCurrentOrg().getOrgId())
 				.append("\nUser: ")
@@ -1427,13 +1429,17 @@ public class WorkOrderAction extends FacilioAction {
 				.append("\n\n-----------------\n\n")
 				.append("------------------\n\nStackTrace : \n--------\n")
 				.append(errorTrace);
-			String message = e.getMessage();
-			JSONObject mailJson = new JSONObject();
-			mailJson.put("sender", "noreply@facilio.com");
-			mailJson.put("to", "shaan@facilio.com, tharani@facilio.com, aravind@facilio.com");
-			mailJson.put("subject", "Workorder Exception");
-			mailJson.put("message", body.toString());
-			AwsUtil.sendEmail(mailJson);
+				String message = e.getMessage();
+				JSONObject mailJson = new JSONObject();
+				mailJson.put("sender", "noreply@facilio.com");
+				mailJson.put("to", "shaan@facilio.com, tharani@facilio.com");
+				mailJson.put("subject", "Workorder Exception");
+				mailJson.put("message", body.toString());
+				AwsUtil.sendEmail(mailJson);
+			}
+			else {
+				CommonCommandUtil.emailException(WorkOrderAction.class.getName(), "Error in Workorder api", e, inComingDetails.toString());
+			}
 		}
 	}
 
