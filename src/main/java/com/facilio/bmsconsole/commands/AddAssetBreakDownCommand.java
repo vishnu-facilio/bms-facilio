@@ -8,6 +8,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetBDSourceDetailsContext;
 import com.facilio.bmsconsole.context.AssetBreakdownContext;
 import com.facilio.bmsconsole.util.AssetBreakdownAPI;
 import com.facilio.constants.FacilioConstants;
@@ -30,37 +31,80 @@ public class AddAssetBreakDownCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		AssetBreakdownContext assetBreakdown = (AssetBreakdownContext) context.get(FacilioConstants.ContextNames.ASSET_BREAKDOWN);
+		AssetBreakdownContext assetBreakdown;
 		Boolean assetBreakdownStatus = (Boolean) context.get(FacilioConstants.ContextNames.ASSET_DOWNTIME_STATUS);
-		Long assetBreakdownId = (Long) context.get(FacilioConstants.ContextNames.ASSET_DOWNTIME_ID);
+		AssetBDSourceDetailsContext assetBDSourceDetails = (AssetBDSourceDetailsContext) context.get(FacilioConstants.ContextNames.ASSET_BD_SOURCE_DETAILS);
+		Long lastAssetBdSourceId = (Long) context.get(FacilioConstants.ContextNames.LAST_ASSET_BD_SOURCE_DETAILS_ID);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(ContextNames.ASSET_BREAKDOWN);
+		FacilioModule module = modBean.getModule(ContextNames.ASSET_BD_SOURCE_DETAILS);
+		List<FacilioField> fields = modBean.getAllFields(ContextNames.ASSET_BD_SOURCE_DETAILS);
+		fields.add(FieldFactory.getModuleIdField(module));
+		FacilioModule assetBreakdownModule = modBean.getModule(ContextNames.ASSET_BREAKDOWN);
+		List<FacilioField> assetBreakdownFields = modBean.getAllFields(ContextNames.ASSET_BREAKDOWN);
+		assetBreakdownFields.add(FieldFactory.getModuleIdField(assetBreakdownModule));
 		if (assetBreakdownStatus) {
-			if (assetBreakdown.getTotime() != -1) {
-				assetBreakdown.setDuration(AssetBreakdownAPI.calculateDurationInSeconds(assetBreakdown.getFromtime(),
-						assetBreakdown.getTotime()));
+			if (lastAssetBdSourceId != null && lastAssetBdSourceId != -1) {
+				if (assetBDSourceDetails.getTotime() > 0) {
+					Map<String, Object> props = FieldUtil.getAsProperties(assetBDSourceDetails);
+					List<FacilioField> fieldsToUpdate = new ArrayList<>();
+					fieldsToUpdate.add(modBean.getField("totime", ContextNames.ASSET_BD_SOURCE_DETAILS));
+
+					GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+							.table(module.getTableName()).fields(fieldsToUpdate)
+							.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+							.andCondition(CriteriaAPI.getIdCondition(lastAssetBdSourceId, module));
+					updateBuilder.update(props);
+				}
+			} else {
+					Map<String, Object> props = FieldUtil.getAsProperties(assetBDSourceDetails);
+					props.put("moduleId", module.getModuleId());
+					GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+							.table(module.getTableName())
+							.fields(fields)
+							.addRecord(props);
+					insertBuilder.save();
+			}
+			List<AssetBDSourceDetailsContext> AssetBDdetailsList = AssetBreakdownAPI.getAssetBDdetails(module,fields, assetBDSourceDetails.getParentId());
+			boolean allBreakDownCompleted = AssetBDdetailsList.stream().allMatch(ast -> ast.getTotime() != -1);
+			if (allBreakDownCompleted) {
+				assetBreakdown = AssetBreakdownAPI.getAssetBreakdown(assetBreakdownModule, assetBreakdownFields,assetBDSourceDetails.getParentId());
+				assetBreakdown.setTotime(AssetBDdetailsList.get(0).getTotime());
+				assetBreakdown.setDuration(AssetBreakdownAPI.calculateDurationInSeconds(assetBreakdown.getFromtime(), assetBreakdown.getTotime()));
+
 				Map<String, Object> props = FieldUtil.getAsProperties(assetBreakdown);
-				List<FacilioField> fields = new ArrayList<>();
-				fields.add(modBean.getField("totime", ContextNames.ASSET_BREAKDOWN));
-				fields.add(modBean.getField("duration", ContextNames.ASSET_BREAKDOWN));
-				GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder().table(module.getTableName())
-						.fields(fields).andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-						.andCondition(CriteriaAPI.getIdCondition(assetBreakdownId, module));
+				List<FacilioField> fieldsToUpdate = new ArrayList<>();
+				fieldsToUpdate.add(modBean.getField("totime", ContextNames.ASSET_BREAKDOWN));
+				fieldsToUpdate.add(modBean.getField("duration", ContextNames.ASSET_BREAKDOWN));
+
+				GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder().table(assetBreakdownModule.getTableName())
+						.fields(fieldsToUpdate)
+						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(assetBreakdownModule))
+						.andCondition(CriteriaAPI.getIdCondition(assetBDSourceDetails.getParentId(),
+								assetBreakdownModule));
 				updateBuilder.update(props);
 				context.put(FacilioConstants.ContextNames.ASSET_DOWNTIME_STATUS, false);
 			}
 		} else {
-			List<FacilioField> fields = modBean.getAllFields(ContextNames.ASSET_BREAKDOWN);
-			fields.add(FieldFactory.getModuleIdField(module));
-			
-			updateAssetBetweenFailureTime(module, fields, assetBreakdown);
-			
+			assetBreakdown=new AssetBreakdownContext();
+			assetBreakdown.setParentId(assetBDSourceDetails.getAssetid());
+            assetBreakdown.setFromtime(assetBDSourceDetails.getFromtime());
+			if (assetBDSourceDetails.getTotime() > 0) {
+				assetBreakdown.setTotime(assetBDSourceDetails.getTotime());
+				assetBreakdown.setDuration(AssetBreakdownAPI.calculateDurationInSeconds(assetBDSourceDetails.getFromtime(), assetBDSourceDetails.getTotime()));
+			}
+			updateAssetBetweenFailureTime(assetBreakdownModule, assetBreakdownFields, assetBreakdown);
 			Map<String, Object> props = FieldUtil.getAsProperties(assetBreakdown);
-			props.put("moduleId", module.getModuleId());
-			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder().table(module.getTableName())
-					.fields(fields).addRecord(props);
+			props.put("moduleId", assetBreakdownModule.getModuleId());
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder().table(assetBreakdownModule.getTableName())
+					.fields(assetBreakdownFields).addRecord(props);
 			insertBuilder.save();
 			long assetBreakdownid = (long) props.get("id");
+			assetBDSourceDetails.setParentId(assetBreakdownid);
+			props = FieldUtil.getAsProperties(assetBDSourceDetails);
+			props.put("moduleId", module.getModuleId());
+			insertBuilder = new GenericInsertRecordBuilder().table(module.getTableName())
+					.fields(fields).addRecord(props);
+			insertBuilder.save();
 			context.put(FacilioConstants.ContextNames.ASSET_DOWNTIME_ID, assetBreakdownid);
 			context.put(FacilioConstants.ContextNames.ASSET_DOWNTIME_STATUS, assetBreakdown.getTotime() == -1);
 		}

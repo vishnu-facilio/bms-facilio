@@ -537,6 +537,9 @@ public class FacilioConstants {
 		public static final String ASSET_BREAKDOWN = "assetBreakdown";
 		public static final String ASSET_DOWNTIME_STATUS = "assetDowntimeStatus";
 		public static final String ASSET_DOWNTIME_ID = "assetDowntimeId";
+		
+		public static final String ASSET_BD_SOURCE_DETAILS = "assetbreakdownSourceDetails";
+		public static final String LAST_ASSET_BD_SOURCE_DETAILS_ID = "lastAssetBDSourceDetailId";
 
 		public static final String CURRENT_OCCUPANCY_READING = "currentoccupancyreading";
 		public static final String ASSIGNED_OCCUPANCY_READING = "assignedoccupancyreading";

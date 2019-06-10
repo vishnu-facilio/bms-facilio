@@ -576,8 +576,8 @@
 		<param name="moduleName">setup</param>
 		<param name="permission">GENERAL</param>
 	</action>
-	<action name="getlastbreakdown"
-		class="com.facilio.bmsconsole.actions.AssetBreakdownAction" method="getLastBreakdown">
+	<action name="addNew"
+		class="com.facilio.bmsconsole.actions.AssetBreakdownAction" method="addNewAssetBreakDown">
 		<param name="moduleName">setup</param>
 		<param name="permission">GENERAL</param>
 	</action>
