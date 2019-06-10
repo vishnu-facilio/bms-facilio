@@ -198,7 +198,7 @@ public class AssetPageFactory extends PageFactory {
 		if (CollectionUtils.isNotEmpty(writableReadings)) {
 			for(ReadingDataMeta rdm : writableReadings) {
 				PageWidget commandWidget = new PageWidget(WidgetType.CARD);
-				commandWidget.addToLayoutParams(section, 24, 24);
+				commandWidget.addToLayoutParams(section, 6, 6);
 				commandWidget.addToWidgetParams("type", CardType.SET_COMMAND.getName());
 				
 				JSONObject obj = new JSONObject();
