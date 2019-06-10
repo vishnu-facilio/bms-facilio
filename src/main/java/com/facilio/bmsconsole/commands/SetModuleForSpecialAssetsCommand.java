@@ -38,7 +38,8 @@ public class SetModuleForSpecialAssetsCommand implements Command{
 			
 		}
 		else {
-			ArrayListMultimap<String, ReadingContext> categoryBasedAsset = (ArrayListMultimap<String,ReadingContext>)context.get("categoryBasedAsset");
+			// ArrayListMultimap<String, ReadingContext> categoryBasedAsset = (ArrayListMultimap<String,ReadingContext>)context.get("categoryBasedAsset");
+			HashMap<String, List<ReadingContext>> categoryBasedAsset = (HashMap<String, List<ReadingContext>>) context.get("categoryBasedAsset");
 			List<String> assetCategoryNames = new ArrayList(categoryBasedAsset.keySet());
 			Map<String, Map<String,String>> modulesInfo = new HashMap<>();
 			

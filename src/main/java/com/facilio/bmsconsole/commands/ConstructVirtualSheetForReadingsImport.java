@@ -42,7 +42,6 @@ public class ConstructVirtualSheetForReadingsImport implements Command{
 	HashMap<String, String> fieldMapping = importTemplateContext.getFieldMapping();
 	HashMap<String, String> uniqueMapping = importTemplateContext.getUniqueMapping();
 	HashMap<String, HashMap<String, ReadingContext>> groupedContext = new HashMap<String, HashMap<String,ReadingContext>>();
-	LOGGER.severe("importTemplateContext getFieldMappingString-- "+importTemplateContext.getFieldMappingString());
 
 	List<Map<String,Object>> allRows = ImportAPI.getValidatedRows(importProcessContext.getId());
 	fieldMapParsing(fieldMapping);
@@ -146,15 +145,15 @@ public class ConstructVirtualSheetForReadingsImport implements Command{
 			else {
 				groupedContext.get(module).put(uniqueId.toString(), readingContext);
 				}
-			LOGGER.severe("Virtual sheet construction complete");
+			
 			}
 	}
-	
 	context.put(ImportAPI.ImportProcessConstants.GROUPED_ROW_CONTEXT, groupedContext);
 	context.put(ImportAPI.ImportProcessConstants.GROUPED_FIELDS, groupedFields);
 	context.put(ImportAPI.ImportProcessConstants.IMPORT_TEMPLATE_CONTEXT, importTemplateContext);
 	context.put(ImportAPI.ImportProcessConstants.NULL_COUNT, nullFields);
-
+	
+	LOGGER.severe("Virtual sheet construction complete");
 	return false;
 	
 	}

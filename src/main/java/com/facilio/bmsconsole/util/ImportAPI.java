@@ -575,7 +575,8 @@ public class ImportAPI {
 		try {
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule facilioModule =  bean.getModule(module);
-
+			List<FacilioField> fieldsList= bean.getAllFields(module);
+			List<FacilioField> customFields = bean.getAllCustomFields(module);
 			
 			if(facilioModule.getName().equals(FacilioConstants.ContextNames.TOOL)
 					|| facilioModule.getName().equals(FacilioConstants.ContextNames.PURCHASED_TOOL)
@@ -584,32 +585,23 @@ public class ImportAPI {
 					|| facilioModule.getName().equals(FacilioConstants.ContextNames.ITEM)
 					|| facilioModule.getName().equals(FacilioConstants.ContextNames.ITEM_TYPES)		
 					) {
-//				for(FacilioField field : fieldsList) {
-//					if(field.getDataType() == FieldType.LOOKUP.getTypeAsInt() && !ImportAPI.isRemovableFieldOnImport(field.getName())) {
-//						LookupField lookupField = (LookupField) field;
-//						fields.remove(field.getName());
-//						List<FacilioField> lookupModuleFields = bean.getAllFields(lookupField.getLookupModule().getName());
-//						for(FacilioField lkField : lookupModuleFields) {
-//							fields.add(lkField.getName());
-//						}
-//					}
-//				}
-				
 				fields.addAll(ImportFieldFactory.getImportFieldNames(facilioModule.getName()));
 			}
 			else {
-				List<FacilioField> fieldsList= bean.getAllFields(module);
-				LOGGER.severe(fieldsList.toString());
-				for(FacilioField field : fieldsList)
-				{
-					if(!ImportAPI.isRemovableFieldOnImport(field.getName()))
-					{
-						LOGGER.severe(field.getName());
-						fields.add(field.getName());
-					}
+				if(customFields != null && !customFields.isEmpty()) {
+					fieldsList.addAll(customFields);
 				}
+
 				if(facilioModule.getName().equals(FacilioConstants.ContextNames.ASSET) ||
 						(facilioModule.getExtendModule() != null && facilioModule.getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
+					for(FacilioField field : fieldsList)
+					{
+						if(!ImportAPI.isRemovableFieldOnImport(field.getName()))
+						{
+							fields.add(field.getName());
+						}
+					}
+					
 					fields.remove("space");
 					fields.remove("localId");
 					fields.remove("resourceType");
@@ -627,9 +619,46 @@ public class ImportAPI {
 					fields.add("subspace3");
 				}
 				}
-			
+				else if(facilioModule.getName().equals(FacilioConstants.ContextNames.SITE)
+						|| facilioModule.getName().equals(FacilioConstants.ContextNames.BUILDING) ||
+						facilioModule.getName().equals(FacilioConstants.ContextNames.FLOOR)
+						|| facilioModule.getName().equals(FacilioConstants.ContextNames.SPACE)
+						) {
+					Long moduleId = facilioModule.getModuleId();
+					List<String> includeFields = ImportFieldFactory.includeFields(facilioModule.getName());
+					
+					Map<String, FacilioField> resourceFields = FieldFactory.getAsMap(bean.getAllFields(FacilioConstants.ContextNames.RESOURCE));
+					fields.add(resourceFields.get("name").getName());
+					fields.add(resourceFields.get("description").getName());
+					
+					if(customFields != null && !customFields.isEmpty()) {
+						fieldsList.addAll(customFields);
+					}
+					
+					for(FacilioField field : fieldsList) {
+						if(field.getModuleId() == facilioModule.getModuleId() || (!includeFields.isEmpty() && includeFields.contains(field.getName()))) {
+							fields.add(field.getName());
+						}
+					}					
+				}
+				else {
+					
+					if(customFields != null && !customFields.isEmpty()) {
+						fieldsList.addAll(customFields);
+					}
+					
+					for(FacilioField field : fieldsList)
+					{
+						if(!ImportAPI.isRemovableFieldOnImport(field.getName()))
+						{
+							LOGGER.severe(field.getName());
+							fields.add(field.getName());
+						}
+					}
+				}
 		}
 		}
+		
 		catch(Exception e) {
 			log.info("Exception occurred ", e);
 		}

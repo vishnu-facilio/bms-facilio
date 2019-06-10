@@ -292,10 +292,11 @@ public class ImportProcessContext implements Serializable
 				facilioFieldMapping = new HashMap<String, FacilioField>();
 				ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				List<FacilioField> fieldsList= bean.getAllFields(getModule().getName());
-
+				List<String> removeFields = ImportFieldFactory.getFieldsTobeRemoved(getModule().getName());
+				
 				for(FacilioField field : fieldsList)
 				{
-					if(!ImportAPI.isRemovableFieldOnImport(field.getName()))
+					if(!ImportAPI.isRemovableFieldOnImport(field.getName()) && !removeFields.contains(field.getName()))
 					{
 						if(field.getDataType() == FieldType.LOOKUP.getTypeAsInt() && getModule().getName().equals(FacilioConstants.ContextNames.ASSET) == false && 
 								

@@ -1,5 +1,17 @@
 package com.facilio.bmsconsole.commands.data;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
@@ -14,21 +26,15 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.InsertRecordBuilder;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
 import com.google.common.collect.ArrayListMultimap;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
 
 ;
 
@@ -43,18 +49,25 @@ public class PopulateImportProcessCommand implements Command {
 		c.get(ImportAPI.ImportProcessConstants.FIELDS_MAPPING);
 		StringBuilder emailMessage = new StringBuilder();
 		ArrayListMultimap<String,String> groupedFields = (ArrayListMultimap<String,String>) c.get(ImportAPI.ImportProcessConstants.GROUPED_FIELDS);
-		ArrayListMultimap<String, ReadingContext> groupedReadingContext = (ArrayListMultimap<String, ReadingContext>) c.get(ImportAPI.ImportProcessConstants.GROUPED_READING_CONTEXT);
+		// ArrayListMultimap<String, ReadingContext> groupedReadingContext = (ArrayListMultimap<String, ReadingContext>) c.get(ImportAPI.ImportProcessConstants.GROUPED_READING_CONTEXT);
+		HashMap<String, List<ReadingContext>> groupedReadingContext = (HashMap<String, List<ReadingContext>>) c.get(ImportAPI.ImportProcessConstants.GROUPED_READING_CONTEXT);
+		
 		ArrayListMultimap<String, Long> recordsList = (ArrayListMultimap<String, Long>) c.get(FacilioConstants.ContextNames.RECORD_LIST);
+		
+		
+		
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
 		JSONObject meta = new JSONObject();	
 		Integer Setting = importProcessContext.getImportSetting();
 		List<Long> listOfIds = new ArrayList<>();
 		
 		if(Setting == ImportProcessContext.ImportSetting.INSERT.getValue()) {
-				List<String> keys = new ArrayList(groupedFields.keySet());
+				Integer totalSize = 0;
+				List<String> keys = new ArrayList(groupedReadingContext.keySet());
 				
 				for(int i=0; i<keys.size(); i++) {
 					listOfIds = populateData(groupedReadingContext.get(keys.get(i)),keys.get(i));
+					totalSize =  totalSize + groupedReadingContext.get(keys.get(i)).size();
 				}
 				if(!listOfIds.isEmpty()) {
 					for(Long id: listOfIds) {
@@ -63,10 +76,10 @@ public class PopulateImportProcessCommand implements Command {
 				}
 				if(!importProcessContext.getImportJobMetaJson().isEmpty()) {
 					meta = importProcessContext.getFieldMappingJSON();
-					meta.put("Inserted", groupedReadingContext.size()+"");
+					meta.put("Inserted", totalSize);
 				}
 				else {
-					meta.put("Inserted", groupedReadingContext.size()+"");
+					meta.put("Inserted", totalSize);
 				}
 				importProcessContext.setImportJobMeta(meta.toJSONString());
 				emailMessage.append(",Inserted:" + groupedReadingContext.size() +"Updated:"+ 0 +",Skipped:" +0);

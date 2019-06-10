@@ -1030,28 +1030,6 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getImportReadingChain() {
-		Chain c = FacilioChain.getTransactionChain();
-		c.addCommand(new ConstructVirtualSheetForReadingsImport());
-		c.addCommand(new InsertReadingCommand());
-		c.addCommand(new WriteSkippedToFileCommand());
-		c.addCommand(new SendEmailCommand());
-		return c;
-	}
-	
-	public static Chain parseReadingDataForImport() {
-		Chain c = FacilioChain.getTransactionChain();
-		c.addCommand(new DataParseForLogsCommand());
-		c.addCommand(new InsertImportDataIntoLogCommand());
-		return c;
-	}
-	
-	public static Chain parseImportData() {
-		Chain c = FacilioChain.getTransactionChain();
-		c.addCommand(new DataParseForImportCommand());
-		c.addCommand(new InsertImportDataIntoLogCommand());
-		return c;
-	}
 	
 	public static Chain processImportData() {
 		Chain c = FacilioChain.getNonTransactionChain();
@@ -1061,8 +1039,6 @@ public class FacilioChainFactory {
 		c.addCommand(new GetZoneCommand());
 		return c;
 	}
-	
-	
 	
 	public static Chain getEmailSettingChain() {
 		Chain c = FacilioChain.getNonTransactionChain();

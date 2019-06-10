@@ -28,9 +28,9 @@ import java.time.Instant;
 import java.util.*;
 import java.util.logging.Logger;
 
-public class DataParseForLogsCommand implements Command {
+public class ParseDataForReadingLogsCommand implements Command {
 
-	private static final Logger LOGGER = Logger.getLogger(DataParseForLogsCommand.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(ParseDataForReadingLogsCommand.class.getName());
 	
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -41,7 +41,7 @@ public class DataParseForLogsCommand implements Command {
 		LOGGER.severe("templateID -- "+templateID);
 		ImportTemplateAction importTemplateAction = new ImportTemplateAction();
 		ImportTemplateContext importTemplateContext = importTemplateAction.fetchTemplate(templateID);
-		LOGGER.severe("importTemplateContext getFieldMappingString-- "+importTemplateContext.getFieldMappingString());
+		
 		
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
 		InputStream is = fs.readFile(importProcessContext.getFileId());
@@ -244,7 +244,7 @@ public class DataParseForLogsCommand implements Command {
 		LOGGER.severe(groupedContext.toString());
 		context.put(ImportAPI.ImportProcessConstants.GROUPED_ROW_CONTEXT, groupedContext);
 		context.put(ImportAPI.ImportProcessConstants.ROW_COUNT, row_no);
-//		context.put(ImportAPI.ImportProcessConstants.HAS_DUPLICATE_ENTRIES, hasDuplicates(groupedContext));
+
 		LOGGER.severe("---DataParseForLogCommand End-----");
 		return false;
 	}
@@ -261,8 +261,8 @@ public class DataParseForLogsCommand implements Command {
 //	}
 	public static Long getAssetByUniqueness(HashMap<String,Object> colVal, String module, HashMap<String,String> uniqueMapping) throws Exception {
 		LOGGER.severe("getAssetByUniqueness");
-		LOGGER.severe("colVal" + colVal.toString());
-		LOGGER.severe("module" + module);
+//		LOGGER.severe("colVal" + colVal.toString());
+//		LOGGER.severe("module" + module);
 		LOGGER.severe("uniqueMapping" + uniqueMapping.toString());
 		
 		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");

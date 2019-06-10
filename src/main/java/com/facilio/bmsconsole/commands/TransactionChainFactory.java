@@ -1094,8 +1094,32 @@ public class TransactionChainFactory {
 			c.addCommand(new SwitchToAddResourceChain());
 			return c;
 		}
-
-		public static Chain getAssetImportChain() {
+		
+		public static Chain parseReadingDataForImport() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ParseDataForReadingLogsCommand());
+			c.addCommand(new InsertImportDataIntoLogCommand());
+			return c;
+		}
+		
+		public static Chain parseImportData() {
+			Chain c = getDefaultChain();
+			c.addCommand(new GenericParseDataForImportCommand());
+			c.addCommand(new InsertImportDataIntoLogCommand());
+			return c;
+		}
+		
+		public static Chain getImportReadingChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ConstructVirtualSheetForReadingsImport());
+			c.addCommand(new InsertReadingCommand());
+			c.addCommand(new WriteSkippedToFileCommand());
+			c.addCommand(new SendEmailCommand());
+			return c;
+		}
+		
+		
+		public static Chain getGenericImportChain() {
 			Chain c= getDefaultChain();
 			c.addCommand(new PopulateImportProcessCommand());
 			c.addCommand(new UpdateBaseAndResourceCommand());

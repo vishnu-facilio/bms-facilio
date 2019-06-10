@@ -28,12 +28,24 @@ public class SwitchToAddResourceChain implements Command {
 		List<ReadingContext> readingsContext = (List<ReadingContext>) context.get(ImportAPI.ImportProcessConstants.READINGS_LIST); 
 		String moduleName = importProcessContext.getModule().getName();
 		FacilioModule facilioModule = bean.getModule(moduleName);
+		
 		if(facilioModule.getName().equals(FacilioConstants.ContextNames.ASSET) ||
 				(facilioModule.getExtendModule() != null &&  facilioModule.getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))
 				) {
-			Chain c = TransactionChainFactory.getAssetImportChain();
+			Chain c = TransactionChainFactory.getGenericImportChain();
 			c.execute(context);	
 		}
+		
+		else if(facilioModule.getName().equals(FacilioConstants.ContextNames.SITE) 
+				|| facilioModule.getName().equals(FacilioConstants.ContextNames.BUILDING) 
+				|| facilioModule.getName().equals(FacilioConstants.ContextNames.FLOOR) 
+				|| facilioModule.getName().equals(FacilioConstants.ContextNames.SPACE) 
+				|| facilioModule.getExtendModule() != null && facilioModule.getExtendModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE)) {
+			
+				Chain c = TransactionChainFactory.getGenericImportChain();
+				c.execute(context);
+		}
+		
 		else if(facilioModule.getName().equals(FacilioConstants.ContextNames.PURCHASED_ITEM)) {
 			JSONObject importMeta = importProcessContext.getImportJobMetaJson();
 			Long StoreRoom;
@@ -55,6 +67,7 @@ public class SwitchToAddResourceChain implements Command {
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, items);
 			c.execute(context);
 		}
+		
 		else if(facilioModule.getName().equals(FacilioConstants.ContextNames.PURCHASED_TOOL)) {
 			JSONObject importMeta = importProcessContext.getImportJobMetaJson();
 			Long StoreRoom;
