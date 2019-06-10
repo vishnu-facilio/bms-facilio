@@ -116,4 +116,11 @@ public class AttendanceContext extends ModuleBaseWithCustomFields{
 		this.lastBreakId = lastBreakId;
 	}
 	
+	private long totalUnpaidBreakHrs = -1;
+	public long getTotalUnpaidBreakHrs() {
+		return totalUnpaidBreakHrs;
+	}
+	public void setTotalUnpaidBreakHrs(long totalUnpaidBreakHrs) {
+		this.totalUnpaidBreakHrs = totalUnpaidBreakHrs;
+	}
 }

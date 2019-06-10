@@ -23,14 +23,6 @@ public class BreakTransactionContext extends ModuleBaseWithCustomFields{
 		this.breakId = breakId;
 	}
 	
-	private AttendanceTransactionContext attendanceTransaction;
-	public AttendanceTransactionContext getAttendanceTransaction() {
-		return attendanceTransaction;
-	}
-	public void setAttendanceTransaction(AttendanceTransactionContext attendanceTransaction) {
-		this.attendanceTransaction = attendanceTransaction;
-	}
-	
 	private long startTime = -1;
 	public long getStartTime() {
 		return startTime;
