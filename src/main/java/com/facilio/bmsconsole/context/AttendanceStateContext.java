@@ -5,9 +5,13 @@ public class AttendanceStateContext {
 	private long breakId;
 	public AttendanceStateContext() {
 	}
-	public AttendanceStateContext(String type) {
-		setType(type);
+	
+	public AttendanceStateContext(String type, long breakId) {
+		super();
+		this.type = type;
+		this.breakId = breakId;
 	}
+
 	public long getBreakId() {
 		return breakId;
 	}
