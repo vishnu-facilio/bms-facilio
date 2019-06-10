@@ -94,6 +94,10 @@ public class Processor extends FacilioProcessor {
                 }
                 String data = "";
                 data = record.getData().toString();
+                long orgCheckID = 191;
+                if(orgId == orgCheckID){
+                    LOGGER.info(recordId+" --Duplicate check log-- "+data);
+                }
                 if (data.isEmpty()) {
                     LOGGER.info(" Empty message received "+recordId);
                     agentUtil.updateAgentMessage(recordId, MessageStatus.DATA_EMPTY);
