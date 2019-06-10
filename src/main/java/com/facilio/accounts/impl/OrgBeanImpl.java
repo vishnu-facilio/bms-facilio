@@ -245,15 +245,15 @@ public class OrgBeanImpl implements OrgBean {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getUserFields());
 		fields.addAll(AccountConstants.getOrgUserFields());
-		fields.addAll(FieldFactory.getShiftUserRelModuleFields());
+//		fields.addAll(FieldFactory.getShiftUserRelModuleFields());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Users")
 				.innerJoin("ORG_Users")
 				.on("Users.USERID = ORG_Users.USERID")
-				.leftJoin("Shift_User_Rel")
-				.on("ORG_Users.ORG_USERID = Shift_User_Rel.ORG_USERID")
+//				.leftJoin("Shift_User_Rel")
+//				.on("ORG_Users.ORG_USERID = Shift_User_Rel.ORG_USERID")
 				.andCustomWhere("ORG_Users.ORGID = ? AND USER_TYPE = ? AND DELETED_TIME = -1", orgId, AccountConstants.UserType.USER.getValue());
 		
 		User currentUser = AccountUtil.getCurrentAccount().getUser();
