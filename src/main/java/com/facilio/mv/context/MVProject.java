@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
@@ -21,12 +22,20 @@ public class MVProject extends ModuleBaseWithCustomFields {
 	long startTime;
 	long endTime;
 	FacilioFrequency frequency;
-	long recordingMeter;
 	boolean isAutoGenVmMeter;
+	EnergyMeterContext energyMeter;
 
 	List<MVBaseline> baselines;
 	List<MVAdjustment> ajustments;
 	List<MVAdjustmentVsBaseline> ajustmentVsBaseline;
+	
+	public EnergyMeterContext getEnergyMeter() {
+		return energyMeter;
+	}
+
+	public void setEnergyMeter(EnergyMeterContext energyMeter) {
+		this.energyMeter = energyMeter;
+	}
 
 	public List<MVBaseline> getBaselines() {
 		return baselines;
@@ -104,14 +113,6 @@ public class MVProject extends ModuleBaseWithCustomFields {
 
 	public void setFrequency(int frequency) {
 		this.frequency = FacilioFrequency.valueOf(frequency);
-	}
-
-	public long getRecordingMeter() {
-		return recordingMeter;
-	}
-
-	public void setRecordingMeter(long recordingMeter) {
-		this.recordingMeter = recordingMeter;
 	}
 
 	public boolean isAutoGenVmMeter() {
