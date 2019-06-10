@@ -282,6 +282,20 @@ public class LoginAction extends FacilioAction {
 		account = new HashMap<>();
 		account.put("org", AccountUtil.getCurrentOrg());
 		account.put("user", AccountUtil.getCurrentUser());
+		
+		if(!AwsUtil.isProduction()) {
+		String timezonevar = null;
+		if (AccountUtil.getCurrentAccount().getCurrentSiteId() > 0) {
+			timezonevar = SpaceAPI.getSiteSpace(AccountUtil.getCurrentAccount().getCurrentSiteId()).getTimeZone();	
+		}
+		if (timezonevar == null || "".equals(timezonevar.trim())) {
+			timezonevar = AccountUtil.getCurrentOrg().getTimezone();
+		}
+		AccountUtil.setTimeZone(timezonevar);
+		account.put("timezone", timezonevar);
+		}
+		
+		
 		//log.info(AccountUtil.getCurrentUser().getEmail()+"))(()()()(((((())))))");
 		//log.info(AccountUtil.getCurrentAccount().getOrg().getDomain()+"$$$$$$$$$$$$$$$$$$$$$");
 		List<User> users = AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId());
