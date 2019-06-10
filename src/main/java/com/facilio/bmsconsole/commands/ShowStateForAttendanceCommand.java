@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.context.AttendanceContext;
 import com.facilio.bmsconsole.context.AttendanceTransactionContext.TransactionType;
 import com.facilio.bmsconsole.context.BreakContext;
 import com.facilio.bmsconsole.context.ShiftContext;
+import com.facilio.bmsconsole.context.ShiftUserRelContext;
 import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.bmsconsole.context.AttendanceStateContext;
 import com.facilio.constants.FacilioConstants;
@@ -38,40 +39,48 @@ public class ShowStateForAttendanceCommand implements Command {
 			List<AttendanceStateContext> attendancestateList = new ArrayList<>();
 			AttendanceContext attendance = getAttendance(userId, day);
 			if (attendance == null) {
-				attendancestateList.add(new AttendanceStateContext(TransactionType.CHECKIN.name(), -1));
+				attendancestateList.add(new AttendanceStateContext(TransactionType.CHECKIN.name(), null));
 			} else if (attendance != null) {
 				if (attendance.getCheckOutTime() > 0 && attendance.getLastBreakStartTime() < 0) {
-					attendancestateList.add(new AttendanceStateContext(TransactionType.CHECKIN.name(), -1));
+					attendancestateList.add(new AttendanceStateContext(TransactionType.CHECKIN.name(), null));
 				} else if (attendance.getCheckOutTime() < 0 && attendance.getLastBreakStartTime() > 0) {
-					attendancestateList.add(new AttendanceStateContext(TransactionType.BREAKSTOP.name(), -1));
+					attendancestateList.add(new AttendanceStateContext(TransactionType.BREAKSTOP.name(), 
+							ShiftAPI.getBreak(attendance.getLastBreakId().getId())));
 				} else if (attendance.getLastCheckInTime() > 0 && attendance.getLastBreakStartTime() < 0) {
-					attendancestateList.add(new AttendanceStateContext(TransactionType.CHECKOUT.name(), -1));
-				} else if (attendance.getLastBreakStartTime() < 0 && attendance.getCheckOutTime() < 0) {
+					attendancestateList.add(new AttendanceStateContext(TransactionType.CHECKOUT.name(), null));
+//				} else if (attendance.getLastBreakStartTime() < 0 && attendance.getCheckOutTime() < 0) {
 					// checked in
-					attendancestateList.add(new AttendanceStateContext(TransactionType.CHECKOUT.name(), -1));
+//					attendancestateList.add(new AttendanceStateContext(TransactionType.CHECKOUT.name(), -1));
 					User user = attendance.getUser();
-					ShiftContext shift = ShiftAPI.getShift(user.getShiftId());
-					List<BreakContext> breaks = ShiftAPI.getBreakssAttachedToShift(shift.getId());
-					if (!CollectionUtils.isEmpty(breaks)) {
-						for (BreakContext breakContext : breaks) {
-							attendancestateList.add(new AttendanceStateContext(TransactionType.BREAKSTART.name(), breakContext.getId()));
+					List<ShiftUserRelContext> shiftUserMapping = ShiftAPI.getShiftUserMapping(time, time, user.getId(), -1);
+					if (CollectionUtils.isNotEmpty(shiftUserMapping)) {
+						long shiftId = shiftUserMapping.get(0).getShiftId();
+						ShiftContext shift = ShiftAPI.getShift(shiftId);
+						List<BreakContext> breaks = ShiftAPI.getBreakssAttachedToShift(shift.getId());
+						if (!CollectionUtils.isEmpty(breaks)) {
+							for (BreakContext breakContext : breaks) {
+								attendancestateList.add(new AttendanceStateContext(TransactionType.BREAKSTART.name(), breakContext));
+							}
 						}
 					}
-				} else if (attendance.getLastBreakStartTime() > 0) {
-					attendancestateList.add(new AttendanceStateContext(TransactionType.BREAKSTOP.name(),
-							attendance.getLastBreakId().getId()));
-				} else if (attendance.getLastBreakStartTime() < 0) {
-					attendancestateList.add(new AttendanceStateContext(TransactionType.CHECKIN.name(), -1));
-					User user = attendance.getUser();
-					ShiftContext shift = ShiftAPI.getShift(user.getShiftId());
-					List<BreakContext> breaks = ShiftAPI.getBreakssAttachedToShift(shift.getId());
-					if (!CollectionUtils.isEmpty(breaks)) {
-						for (BreakContext breakContext : breaks) {
-							attendancestateList.add(new AttendanceStateContext(TransactionType.BREAKSTART.name(), breakContext.getId()));
-						}
-					}
-				} else if (attendance.getCheckOutTime() > 0) {
-					attendancestateList.add(new AttendanceStateContext(TransactionType.CHECKIN.name(), -1));
+				} 
+//				else if (attendance.getLastBreakStartTime() > 0) {
+//					attendancestateList.add(new AttendanceStateContext(TransactionType.BREAKSTOP.name(),
+//							attendance.getLastBreakId().getId()));
+//				} 
+//				else if (attendance.getLastBreakStartTime() < 0) {
+//					attendancestateList.add(new AttendanceStateContext(TransactionType.CHECKIN.name(), -1));
+//					User user = attendance.getUser();
+//					ShiftContext shift = ShiftAPI.getShift(user.getShiftId());
+//					List<BreakContext> breaks = ShiftAPI.getBreakssAttachedToShift(shift.getId());
+//					if (!CollectionUtils.isEmpty(breaks)) {
+//						for (BreakContext breakContext : breaks) {
+//							attendancestateList.add(new AttendanceStateContext(TransactionType.BREAKSTART.name(), breakContext.getId()));
+//						}
+//					}
+//				} 
+				else if (attendance.getCheckOutTime() > 0) {
+					attendancestateList.add(new AttendanceStateContext(TransactionType.CHECKIN.name(), null));
 				}
 			}
 			context.put(FacilioConstants.ContextNames.RECORD, attendancestateList);

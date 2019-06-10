@@ -2,21 +2,21 @@ package com.facilio.bmsconsole.context;
 
 public class AttendanceStateContext {
 	private String type;
-	private long breakId;
+	private BreakContext breakContext;
 	public AttendanceStateContext() {
 	}
 	
-	public AttendanceStateContext(String type, long breakId) {
+	public AttendanceStateContext(String type, BreakContext breakContext) {
 		super();
 		this.type = type;
-		this.breakId = breakId;
+		this.breakContext = breakContext;
 	}
 
-	public long getBreakId() {
-		return breakId;
+	public BreakContext getBreakContext() {
+		return breakContext;
 	}
-	public void setBreakId(long breakId) {
-		this.breakId = breakId;
+	public void setBreakContext(BreakContext breakContext) {
+		this.breakContext = breakContext;
 	}
 	public String getType() {
 		return type;
