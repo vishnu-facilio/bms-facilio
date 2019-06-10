@@ -1,5 +1,6 @@
 package com.facilio.mv.context;
 
+import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class MVBaseline extends ModuleBaseWithCustomFields {
@@ -11,11 +12,17 @@ public class MVBaseline extends ModuleBaseWithCustomFields {
 	
 	long projectId;
 	String name;
+	FormulaFieldContext formulaField;
 	long formulaFieldId;
 	long startTime;
 	long endTime;
 	
-	
+	public FormulaFieldContext getFormulaField() {
+		return formulaField;
+	}
+	public void setFormulaField(FormulaFieldContext formulaField) {
+		this.formulaField = formulaField;
+	}
 	public long getProjectId() {
 		return projectId;
 	}

@@ -2,10 +2,14 @@ package com.facilio.mv.command;
 
 import java.util.List;
 
+import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -23,6 +27,19 @@ public class AddMVBaselineCommand implements Command {
 		MVProject mvProject = (MVProject) context.get(MVUtil.MV_PROJECT);
 		
 		List<MVBaseline> baseLines = mvProject.getBaselines();
+		
+		for(MVBaseline baseLine :baseLines) {
+			context.put(FacilioConstants.ContextNames.FORMULA_FIELD, baseLine.getFormulaField());
+
+			if (baseLine.getFormulaField().getInterval() == -1) {
+				int interval = mvProject.getFrequency();
+				baseLine.getFormulaField().setInterval(interval);
+			}
+
+			Chain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
+			addEnpiChain.execute(context);
+		}
+		
 		
 		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		

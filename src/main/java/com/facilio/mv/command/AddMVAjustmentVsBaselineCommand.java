@@ -4,9 +4,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -34,6 +37,18 @@ public class AddMVAjustmentVsBaselineCommand implements Command {
 		
 		fillMVAjustmentContext(ajustmentsVsBaselineContexts, baselineNameMap, adjustmentNameMap);
 		
+		for(MVAdjustmentVsBaseline ajustmentsVsBaselineContext :ajustmentsVsBaselineContexts) {
+			context.put(FacilioConstants.ContextNames.FORMULA_FIELD, ajustmentsVsBaselineContext.getFormulaField());
+
+			if (ajustmentsVsBaselineContext.getFormulaField().getInterval() == -1) {
+				int interval = mvProject.getFrequency();
+				ajustmentsVsBaselineContext.getFormulaField().setInterval(interval);
+			}
+
+			Chain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
+			addEnpiChain.execute(context);
+		}
+		
 		FacilioModule module = ModuleFactory.getMVAjuststmentVsBaselineModule();
 		List<FacilioField> fields = FieldFactory.getMVAjuststmentVsBaselineFields();
 		
@@ -55,6 +70,8 @@ public class AddMVAjustmentVsBaselineCommand implements Command {
 		for(MVAdjustmentVsBaseline ajustmentsVsBaselineContext :ajustmentsVsBaselineContexts) {
 			ajustmentsVsBaselineContext.setAdjustmentId(adjustmentNameMap.get(ajustmentsVsBaselineContext.getAdjustmentName()).getId());
 			ajustmentsVsBaselineContext.setBaselineId(baselineNameMap.get(ajustmentsVsBaselineContext.getBaselineName()).getId());
+			
+			// construct formula field here
 		}
 	}
 
