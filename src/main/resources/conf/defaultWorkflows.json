@@ -7,20 +7,29 @@
                       		return i * i;
                       }"
         },
-    "1": {
+   "1": {
     	"description" : "woAverageResponseTime",
         "usage" : "pmSummary",
         "workflow" : "Number test(Number pmId) 
         			  	{ 
         			  		woModule = Module(\"workorder\"); 
-        			  		ticketModule = Module(\"ticketstatus\"); 
-        			  		re = ticketModule.fetch([status == \"Closed\"]); 
-        			  		b = re[0]; 
-        			  		res = woModule.fetch([pm == pmId && status ==  b.id]); 
+        			  		res = woModule.fetch([pm == pmId && actualWorkStart > 0]); 
         			  		if (res == null) 
         			  		{ 
         			  			return 0; 
         			  		} 
+  							date = NameSpace("date");
+    						temp = date.getPreviousMonthEndDate();
+  							previousMonthRes = woModule.fetch([pm == pmId && actualWorkStart > 0 && createdTime <= temp]);
+  							previousMonthresponseTime = 0; 
+  							if (previousMonthRes != null) {	
+        			  		b = previousMonthRes.size(); 
+                              for each index,value in previousMonthRes { 
+        			  			wd =  (value.actualWorkStart - value.createdTime); 
+        			  			previousMonthresponseTime = (previousMonthresponseTime + wd);
+        			  		}
+                              previousMonthresponseTime = previousMonthresponseTime/b; 
+                                }
         			  		responseTime = 0; 
         			  		a = res.size(); 
         			  		for each index,value in res { 
@@ -28,8 +37,11 @@
         			  			responseTime = (responseTime + wd);
         			  		} 
         			  		responseTime = responseTime/a; 
-        			  		return responseTime; 
+                            resMap = {};
+                            resMap["responseTime"] = responseTime;
+                            resMap["previousMonthresponseTime"] = previousMonthresponseTime;
+         					return resMap; 
         			  	}"
-        } 
+        }
         
 }
