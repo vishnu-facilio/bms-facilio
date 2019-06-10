@@ -15,6 +15,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 
 public class AddSystemFieldsCommand implements Command {
 
@@ -36,6 +37,7 @@ public class AddSystemFieldsCommand implements Command {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			
 			FacilioField mainField = FieldFactory.getField("name", "Name", "NAME", module, FieldType.STRING);
+			mainField.setDisplayType(FieldDisplayType.TEXTBOX);
 			mainField.setMainField(true);
 			mainField.setRequired(true);
 			fields.add(mainField);
