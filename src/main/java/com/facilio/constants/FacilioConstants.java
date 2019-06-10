@@ -148,6 +148,12 @@ public class FacilioConstants {
 		public static final String MODIFIED_USER = "modifiedUser";
 	}
 	
+	public static class ModuleNames {
+		public static final String TOOL_TYPES="tooltypes";
+		public static final String ITEM_TYPES="itemtypes";
+		public static final String STORE_ROOM="storeroom";
+	}
+	
 	public static class ContextNames {
 
 		public static final String CONNECTION = "connectionContext";
