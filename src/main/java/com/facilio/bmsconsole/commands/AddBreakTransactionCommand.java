@@ -35,6 +35,7 @@ public class AddBreakTransactionCommand implements Command {
 					throw new IllegalArgumentException("The User has already checked in break");
 				}
 				attendance.setLastBreakStartTime(breakTransaction.getStartTime());
+				attendance.setLastBreakId(breakTransaction.getBreakId());
 				attendanceTransaction.setTransactionType(com.facilio.bmsconsole.context.AttendanceTransactionContext.TransactionType.BREAKSTART);
 			} else if(breakTransaction.getTransactionTypeEnum() == TransactionType.BREAKSTOP) {
 				if (attendance.getLastBreakStartTime() < 0) {
@@ -46,6 +47,7 @@ public class AddBreakTransactionCommand implements Command {
 				}
 				attendance.setTotalPaidBreakHrs(totalBreakDur);
 				attendance.setLastBreakStartTime(-99);
+				attendance.setLastBreakId(null);
 				attendanceTransaction.setTransactionType(com.facilio.bmsconsole.context.AttendanceTransactionContext.TransactionType.BREAKSTOP);
 			}
 			breakTransaction.setAttendanceTransaction(attendanceTransaction);
