@@ -288,6 +288,10 @@ public class LoginAction extends FacilioAction {
 		if (AccountUtil.getCurrentAccount().getCurrentSiteId() > 0) {
 			timezonevar = SpaceAPI.getSiteSpace(AccountUtil.getCurrentAccount().getCurrentSiteId()).getTimeZone();	
 		}
+		else if (AccountUtil.getCurrentAccount().getCurrentSiteId() == -1 && CommonCommandUtil.getMySites().size()==1 ) {
+			timezonevar = SpaceAPI.getSiteSpace(CommonCommandUtil.getMySites().get(0).getId()).getTimeZone();	
+		}
+		
 		if (timezonevar == null || "".equals(timezonevar.trim())) {
 			timezonevar = AccountUtil.getCurrentOrg().getTimezone();
 		}
