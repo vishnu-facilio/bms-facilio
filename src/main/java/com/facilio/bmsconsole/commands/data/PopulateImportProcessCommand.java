@@ -76,10 +76,10 @@ public class PopulateImportProcessCommand implements Command {
 				}
 				if(!importProcessContext.getImportJobMetaJson().isEmpty()) {
 					meta = importProcessContext.getFieldMappingJSON();
-					meta.put("Inserted", totalSize);
+					meta.put("Inserted", totalSize + "");
 				}
 				else {
-					meta.put("Inserted", totalSize);
+					meta.put("Inserted", totalSize + "");
 				}
 				importProcessContext.setImportJobMeta(meta.toJSONString());
 				emailMessage.append(",Inserted:" + groupedReadingContext.size() +"Updated:"+ 0 +",Skipped:" +0);

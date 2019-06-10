@@ -107,6 +107,22 @@ public class ImportDataAction extends ActionSupport {
 		return SUCCESS;
 	}
 	
+	public String checkModule() throws Exception{
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		JSONObject moduleInfo = new JSONObject();
+		if(module != null) {
+			moduleInfo.put("moduleExists", true);
+		}
+		else {
+			moduleInfo.put("moduleExists", false);
+		}
+		
+		setModuleExists(moduleInfo);
+		
+		return SUCCESS;
+	}
+	
 	public String deleteFile() throws Exception{
 		FileStore fs  = FileStoreFactory.getInstance().getFileStore();
 		if(fs.deleteFile(fileId)) {
@@ -491,7 +507,14 @@ public class ImportDataAction extends ActionSupport {
 	private String moduleName;
 	private Long fileId;
 	private long orgId;
+	private JSONObject moduleExists;
 	
+	public JSONObject getModuleExists() {
+		return moduleExists;
+	}
+	public void setModuleExists(JSONObject moduleExisting) {
+		this.moduleExists = moduleExisting;
+	}
 	
 	public long getOrgId() {
 		return orgId;
