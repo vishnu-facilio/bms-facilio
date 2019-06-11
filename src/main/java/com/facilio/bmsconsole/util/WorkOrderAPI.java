@@ -18,6 +18,7 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.TicketTypeContext;
@@ -1857,19 +1858,24 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 					.andCondition(condition)
 					.andCondition(preRequestCondition).andCondition(inputValueCondition);
 			List<Map<String, Object>> countList = select.get();
-            Boolean allPreRequisitesCompleted;
-            Boolean photosAddedIfMandatory;
-			Boolean preRequestStatus = countList.isEmpty();
-			if(!preRequestStatus){
+            Boolean preRequestStatus=false;
+			Boolean allPreRequisitesCompleted = countList.isEmpty();
+			if(!allPreRequisitesCompleted){
 				allPreRequisitesCompleted=countList.stream().allMatch(map->(0==((Number) map.get("count")).longValue()));
-				photosAddedIfMandatory=isPhotosAddedIfMandatory(id);//start from here
-				preRequestStatus=allPreRequisitesCompleted&&photosAddedIfMandatory;
 			}
-
+			Boolean photosAddedIfMandatory=isPhotosAddedIfMandatory(id);
+			preRequestStatus=allPreRequisitesCompleted&&photosAddedIfMandatory;
 			return preRequestStatus;
 	}
-	public static Boolean isPhotosAddedIfMandatory(Long id){
-		return true;
+	public static Boolean isPhotosAddedIfMandatory(Long id)throws Exception{
+		WorkOrderContext workorder=WorkOrderAPI.getWorkOrder(id);
+		boolean isPhtMandatory=workorder.getPhotoMandatory()==null?Boolean.FALSE:workorder.getPhotoMandatory();
+		if(!isPhtMandatory){
+			return true;
+		}else{
+			List<AttachmentContext> attachments=AttachmentsAPI.getAttachments(FacilioConstants.ContextNames.PREREQUISITE_ATTACHMENTS, id);
+            return !attachments.isEmpty();
+		}
 	}
     public static WorkorderItemContext getWorkOrderItem(long woItemId) throws Exception {
 

@@ -94,6 +94,11 @@ public class AttachmentsAPI {
 	}
 	
 	private static SelectRecordsBuilder<AttachmentContext> getListBuilder(String moduleName, Long parentId, boolean fetchDeleted, List<Long>... attachmentIds) throws Exception {
+		boolean isPrerequisite=false;
+		if(moduleName.equals(FacilioConstants.ContextNames.PREREQUISITE_ATTACHMENTS)){
+			isPrerequisite=true;
+			moduleName=FacilioConstants.ContextNames.TICKET_ATTACHMENTS;
+		}
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
 		List<FacilioField> fields = FieldFactory.getFileFields();
@@ -119,6 +124,13 @@ public class AttachmentsAPI {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("fileId"), attachmentIds[0], NumberOperators.EQUALS));
 		}
 		
+		if (moduleName.equals(FacilioConstants.ContextNames.TICKET_ATTACHMENTS)) {
+			if (isPrerequisite) {
+				selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("preRequisite"), "1", NumberOperators.EQUALS));
+			} else {
+				selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("preRequisite"), "1", NumberOperators.NOT_EQUALS));
+			}
+		}
 		// TODO handle other attachments
 		if (moduleName.equals(FacilioConstants.ContextNames.ASSET_ATTACHMENTS) || moduleName.equals(FacilioConstants.ContextNames.BASE_SPACE_ATTACHMENTS) || moduleName.equals(FacilioConstants.ContextNames.INVENTORY_ATTACHMENTS)) {
 			Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(moduleName, fieldMap.get("parentId"));

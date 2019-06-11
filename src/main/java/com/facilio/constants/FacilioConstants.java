@@ -502,6 +502,7 @@ public class FacilioConstants {
 		public static final String BASE_SPACE_ATTACHMENTS = "basespaceattachments";
 		public static final String ASSET_ATTACHMENTS = "assetattachments";
 		public static final String TASK_ATTACHMENTS = "taskattachments";
+		public static final String PREREQUISITE_ATTACHMENTS = "prerequisiteattachments";
 		public static final String INVENTORY_ATTACHMENTS = "inventoryattachments";
 		public static final String ITEM_TYPES_ATTACHMENTS = "itemTypesAttachments";
 		public static final String TOOL_TYPES_ATTACHMENTS = "toolTypesattachments";
@@ -511,6 +512,8 @@ public class FacilioConstants {
 		public static final String MV_BASELINE_MODULE = "mvbaseline";
 		public static final String MV_ADJUSTMENT_MODULE = "mvadjustment";
 		
+
+        public static final String IS_PREREQUISITE="isPrerequisite";
 		public static final String PICKLIST = "pickList";
 		
 		public static final String USERS = "users";
