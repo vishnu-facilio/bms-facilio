@@ -1,11 +1,30 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Command;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.ActionForm;
+import com.facilio.bmsconsole.context.FormLayout;
+import com.facilio.bmsconsole.context.RecordSummaryLayout;
+import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
+import com.facilio.bmsconsole.context.TaskSectionContext;
+import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.view.FacilioView;
@@ -16,19 +35,6 @@ import com.facilio.exception.ReadingValidationException;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
-import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.apache.commons.lang3.tuple.MutablePair;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.struts2.ServletActionContext;
-import org.json.simple.JSONObject;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class TaskAction extends FacilioAction {
 
@@ -587,6 +593,7 @@ public class TaskAction extends FacilioAction {
 		updateStatus();
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
 		setResult(FacilioConstants.ContextNames.TASK, task);
+		setResult(FacilioConstants.ContextNames.MODIFIED_TIME, task.getModifiedTime());
 		return SUCCESS;
 	}
 	
@@ -609,6 +616,7 @@ public class TaskAction extends FacilioAction {
 		updateTask();
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
 		setResult(FacilioConstants.ContextNames.TASK, task);
+		setResult(FacilioConstants.ContextNames.MODIFIED_TIME, task.getModifiedTime());
 		setResult("error", getError());
 		return SUCCESS;
 	}
@@ -707,8 +715,9 @@ public class TaskAction extends FacilioAction {
 		String errorTrace = null;
 		StringBuilder body = new StringBuilder("\n\nDetails: \n");
 		if (e != null) {
-			errorTrace = ExceptionUtils.getStackTrace(e);
-			body.append(inComingDetails.toString())
+			if (e instanceof IllegalArgumentException) {
+				errorTrace = ExceptionUtils.getStackTrace(e);
+				body.append(inComingDetails.toString())
 				.append("\nOrgId: ")
 				.append(AccountUtil.getCurrentOrg().getOrgId())
 				.append("\nUser: ")
@@ -720,14 +729,18 @@ public class TaskAction extends FacilioAction {
 				.append("\n\n-----------------\n\n")
 				.append("------------------\n\nStackTrace : \n--------\n")
 				.append(errorTrace);
-			String message = e.getMessage();
-			System.out.println("88888888" + body);
-			JSONObject mailJson = new JSONObject();
-			mailJson.put("sender", "noreply@facilio.com");
-			mailJson.put("to", "shaan@facilio.com, tharani@facilio.com, aravind@facilio.com");
-			mailJson.put("subject", "Task Exception");
-			mailJson.put("message", body.toString());
-			AwsUtil.sendEmail(mailJson);
+				String message = e.getMessage();
+				System.out.println("88888888" + body);
+				JSONObject mailJson = new JSONObject();
+				mailJson.put("sender", "noreply@facilio.com");
+				mailJson.put("to", "shaan@facilio.com, tharani@facilio.com, aravind@facilio.com");
+				mailJson.put("subject", "Task Exception");
+				mailJson.put("message", body.toString());
+				AwsUtil.sendEmail(mailJson);
+			}
+			else {
+				CommonCommandUtil.emailException(WorkOrderAction.class.getName(), "Error in Task api", e, inComingDetails.toString());
+			}
 		}
 	}
 	

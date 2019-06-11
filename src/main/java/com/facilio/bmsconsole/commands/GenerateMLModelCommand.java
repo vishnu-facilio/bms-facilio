@@ -112,7 +112,14 @@ public class GenerateMLModelCommand implements Command {
 				{
 					JSONObject object = new JSONObject();
 					object.put("ttime", time);
-					object.put(attributeName, attributeDataMap.get(time));
+					if(attributeDataMap.get(time)==null)
+					{
+						object.put(attributeName, JSONObject.NULL);
+					}
+					else
+					{
+						object.put(attributeName, attributeDataMap.get(time));
+					}
 					object.put("assetID", assetID);
 					
 					attributeArray.put(object);

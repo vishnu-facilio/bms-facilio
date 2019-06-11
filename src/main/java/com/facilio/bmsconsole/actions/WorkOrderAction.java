@@ -32,6 +32,7 @@ import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.AttachmentContext;
@@ -242,13 +243,8 @@ public class WorkOrderAction extends FacilioAction {
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.attachedFilesContentType);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, this.attachmentType);
 
- 		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
-			Chain addTemplate = FacilioChainFactory.getAddNewPreventiveMaintenanceChain();
-			addTemplate.execute(context);
-		} else {
-			Chain addTemplate = FacilioChainFactory.getAddPreventiveMaintenanceChain();
-			addTemplate.execute(context);
-		}
+ 		Chain addTemplate = FacilioChainFactory.getAddNewPreventiveMaintenanceChain();
+ 		addTemplate.execute(context);
 
 		return SUCCESS;
 	}
@@ -283,9 +279,7 @@ public class WorkOrderAction extends FacilioAction {
 		} else {
 			assetLists = assetids;	
 		}
-		System.out.printf("addBulkPreventiveMaintenance" + assetLists.size());
-		
-		
+
 		Map<String, List<TaskContext>> taskPm1 = pm.getWoTemplate().getTasks();
 		List<PMTriggerContext> pmTriggers = pm.getTriggers();
 		
@@ -364,7 +358,7 @@ public class WorkOrderAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 			context.put(FacilioConstants.ContextNames.TASK_MAP, taskPm1);
 			context.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
-			Chain addTemplate = FacilioChainFactory.getAddPreventiveMaintenanceChain();
+			Chain addTemplate = FacilioChainFactory.getAddNewPreventiveMaintenanceChain();
 			addTemplate.execute(context);
 		}
 		return SUCCESS;
@@ -743,14 +737,8 @@ public class WorkOrderAction extends FacilioAction {
  			context.put(FacilioConstants.ContextNames.EXISTING_ATTACHMENT_LIST, oldAttachments); 			
  		}
 
- 		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
-			Chain updatePM = FacilioChainFactory.getUpdateNewPreventiveMaintenanceChain();
-			updatePM.execute(context);
-		} else {
-			Chain updatePM = FacilioChainFactory.getUpdatePreventiveMaintenanceChain();
-			updatePM.execute(context);
-		}
-
+ 		Chain updatePM = FacilioChainFactory.getUpdateNewPreventiveMaintenanceChain();
+ 		updatePM.execute(context);
 
 		return SUCCESS;
 	}
@@ -783,15 +771,8 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.PM_RESOURCE_ID, resourceId);
 		context.put(FacilioConstants.ContextNames.PM_ID, pmId);
 
-		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
-			Chain updatePM = FacilioChainFactory.getUpdateNewPreventiveMaintenanceJobChain();
-			updatePM.execute(context);
-		} else {
-			Chain updatePM = FacilioChainFactory.getUpdatePreventiveMaintenanceJobChain();
-			updatePM.execute(context);
-		}
-
-
+		Chain updatePM = FacilioChainFactory.getUpdateNewPreventiveMaintenanceJobChain();
+		updatePM.execute(context);
 
 		return SUCCESS;
 	}
@@ -801,13 +782,8 @@ public class WorkOrderAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, id.get(0));
 
-		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
-			Chain pmSummary = FacilioChainFactory.getNewPreventiveMaintenanceSummaryChain();
-			pmSummary.execute(context);
-		} else {
-			Chain pmSummary = FacilioChainFactory.getPreventiveMaintenanceSummaryChain();
-			pmSummary.execute(context);
-		}
+		Chain pmSummary = FacilioChainFactory.getNewPreventiveMaintenanceSummaryChain();
+		pmSummary.execute(context);
 
 		setPreventivemaintenance((PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE));
 		setWorkorder((WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER));
@@ -873,19 +849,11 @@ public class WorkOrderAction extends FacilioAction {
 	}
 
 	public String changePreventiveMaintenanceStatus() throws Exception {
-
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, preventivemaintenance);
-
-		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
-			Chain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChain();
-			addTemplate.execute(context);
-		} else {
-			Chain addTemplate = TransactionChainFactory.getChangePreventiveMaintenanceStatusChain();
-			addTemplate.execute(context);
-		}
-
+		Chain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChain();
+		addTemplate.execute(context);
 
 		return SUCCESS;
 	}
@@ -930,35 +898,6 @@ public class WorkOrderAction extends FacilioAction {
 		this.endTime = endTime;
 	}
 
-	public String getUpcomingPreventiveMaintenance() throws Exception {
-
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_STARTTIME, getStartTime());
-		// context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_ENDTIME,
-		// startTime + (7*24*60*60));
-		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_ENDTIME, getEndTime());
-
-		if (getFilters() != null) {
-			JSONParser parser = new JSONParser();
-			JSONObject json = (JSONObject) parser.parse(getFilters());
-			context.put(FacilioConstants.ContextNames.FILTERS, json);
-		}
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
-
-		Chain getPmchain = FacilioChainFactory.getGetUpcomingPreventiveMaintenanceListChain();
-		getPmchain.execute(context);
-
-		setPmMap((Map<Long, PreventiveMaintenance>) context
-				.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST));
-		setPmJobs((List<PMJobsContext>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_JOBS_LIST));
-		setPmTriggerMap((Map<Long, PMTriggerContext>) context
-				.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_TRIGGERS_LIST));
-		setPmResourcesMap((Map<Long, ResourceContext>) context
-				.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_RESOURCES));
-
-		return SUCCESS;
-	}
-
 	private List<Map<String, Object>> pmJobList;
 
 	public List<Map<String, Object>> getPmJobList() {
@@ -982,17 +921,10 @@ public class WorkOrderAction extends FacilioAction {
 		}
 
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
-		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
-			context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WORK_ORDER);
-		}
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WORK_ORDER);
 
-		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
-			Chain getPmchain = FacilioChainFactory.getGetNewPMJobListChain();
-			getPmchain.execute(context);
-		} else {
-			Chain getPmchain = FacilioChainFactory.getGetPMJobListChain();
-			getPmchain.execute(context);
-		}
+		Chain getPmchain = FacilioChainFactory.getGetNewPMJobListChain();
+		getPmchain.execute(context);
 
 		setPmMap((Map<Long, PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST));
 		setPmJobList((List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_JOBS_LIST));
@@ -1414,8 +1346,9 @@ public class WorkOrderAction extends FacilioAction {
 		String errorTrace = null;
 		StringBuilder body = new StringBuilder("\n\nDetails: \n");
 		if (e != null) {
-			errorTrace = ExceptionUtils.getStackTrace(e);
-			body.append(inComingDetails.toString())
+			if (e instanceof IllegalArgumentException) {
+				errorTrace = ExceptionUtils.getStackTrace(e);
+				body.append(inComingDetails.toString())
 				.append("\nOrgId: ")
 				.append(AccountUtil.getCurrentOrg().getOrgId())
 				.append("\nUser: ")
@@ -1427,13 +1360,17 @@ public class WorkOrderAction extends FacilioAction {
 				.append("\n\n-----------------\n\n")
 				.append("------------------\n\nStackTrace : \n--------\n")
 				.append(errorTrace);
-			String message = e.getMessage();
-			JSONObject mailJson = new JSONObject();
-			mailJson.put("sender", "noreply@facilio.com");
-			mailJson.put("to", "shaan@facilio.com, tharani@facilio.com, aravind@facilio.com");
-			mailJson.put("subject", "Workorder Exception");
-			mailJson.put("message", body.toString());
-			AwsUtil.sendEmail(mailJson);
+				String message = e.getMessage();
+				JSONObject mailJson = new JSONObject();
+				mailJson.put("sender", "noreply@facilio.com");
+				mailJson.put("to", "shaan@facilio.com, tharani@facilio.com");
+				mailJson.put("subject", "Workorder Exception");
+				mailJson.put("message", body.toString());
+				AwsUtil.sendEmail(mailJson);
+			}
+			else {
+				CommonCommandUtil.emailException(WorkOrderAction.class.getName(), "Error in Workorder api", e, inComingDetails.toString());
+			}
 		}
 	}
 
@@ -1735,6 +1672,13 @@ public class WorkOrderAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.SORTING, sorting);
 			context.put(FacilioConstants.ContextNames.OVERRIDE_SORTING, true);
 		}
+		
+		if (isCalendarApi()) {
+			context.put(FacilioConstants.ContextNames.FETCH_SELECTED_FIELDS, getCalendarSelectFields());
+		}
+		else if (getSelectFields() != null) {
+ 			context.put(FacilioConstants.ContextNames.FETCH_SELECTED_FIELDS, getSelectFields());			
+ 		}
 
 		JSONObject pagination = new JSONObject();
 		pagination.put("page", getPage());
@@ -1774,6 +1718,18 @@ public class WorkOrderAction extends FacilioAction {
 			throw e;
 		}
 		return SUCCESS;
+	}
+	
+	private Boolean calendarApi;
+	public boolean isCalendarApi() {
+		if (calendarApi == null) {
+			return false;
+		}
+		return calendarApi;
+	}
+
+	public void setCalendarApi(Boolean calendarApi) {
+		this.calendarApi = calendarApi;
 	}
 
 	private Map<Long, List<TaskContext>> preRequestList;
@@ -2253,6 +2209,7 @@ public class WorkOrderAction extends FacilioAction {
 		addWorkOrder();
 		viewWorkOrder();
 		setResult(FacilioConstants.ContextNames.WORK_ORDER, workorder);
+		setResult(FacilioConstants.ContextNames.MODIFIED_TIME, workorder.getModifiedTime());
 		return SUCCESS;
 	}
 	
@@ -2260,6 +2217,9 @@ public class WorkOrderAction extends FacilioAction {
 		updateWorkOrder();
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
 		setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
+		if (workOrders.size() == 1) {
+			setResult(FacilioConstants.ContextNames.MODIFIED_TIME, workOrders.get(0).getModifiedTime());
+		}
 		return SUCCESS;
 	}
 	
@@ -2267,6 +2227,9 @@ public class WorkOrderAction extends FacilioAction {
 		assignWorkOrder();
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
 		setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
+		if (workOrders.size() == 1) {
+			setResult(FacilioConstants.ContextNames.MODIFIED_TIME, workOrders.get(0).getModifiedTime());
+		}
 
 		return SUCCESS;
 	}
@@ -2435,6 +2398,9 @@ public class WorkOrderAction extends FacilioAction {
 		resolveWorkOrder();
 		setResult(FacilioConstants.ContextNames.RESULT, "success");
 		setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
+		if (workOrders.size() == 1) {
+			setResult(FacilioConstants.ContextNames.MODIFIED_TIME, workOrders.get(0).getModifiedTime());
+		}
 		return SUCCESS;
 	}
 	
@@ -2442,7 +2408,14 @@ public class WorkOrderAction extends FacilioAction {
 		closeWorkOrder();
 		setResult(FacilioConstants.ContextNames.RESULT, "success");
 		setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
+		if (workOrders.size() == 1) {
+			setResult(FacilioConstants.ContextNames.MODIFIED_TIME, workOrders.get(0).getModifiedTime());
+		}
 		return SUCCESS;
+	}
+	
+	private List<String> getCalendarSelectFields() {
+		return Arrays.asList("createdTime", "subject", "assignedTo", "trigger", "resource");
 	}
 
 }

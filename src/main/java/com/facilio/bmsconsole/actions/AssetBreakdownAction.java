@@ -1,28 +1,12 @@
 package com.facilio.bmsconsole.actions;
 
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import org.apache.commons.chain.Chain;
+
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetBreakdownContext;
-import com.facilio.bmsconsole.context.AssetCategoryContext;
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.BusinessHoursContext;
-import com.facilio.bmsconsole.context.FormLayout;
-import com.facilio.bmsconsole.context.InventoryType;
-import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
-import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.constants.FacilioConstants.ContextNames;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Chain;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
-import java.util.*;
 
 public class AssetBreakdownAction extends FacilioAction {
        private static final long serialVersionUID = 1L;
@@ -30,7 +14,7 @@ public class AssetBreakdownAction extends FacilioAction {
        public String addAssetBreakDown() throws Exception {
                FacilioContext context = new FacilioContext();
                context.put(FacilioConstants.ContextNames.ASSET_BREAKDOWN, assetBreakdown);
-               Chain newAssetBreakdown = FacilioChainFactory.getAddAssetBreakdownChain();
+               Chain newAssetBreakdown = TransactionChainFactory.getAddAssetBreakdownChain();
                newAssetBreakdown.execute(context);
                return SUCCESS;
        }

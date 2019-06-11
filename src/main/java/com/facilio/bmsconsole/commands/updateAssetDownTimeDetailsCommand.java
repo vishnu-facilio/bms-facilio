@@ -11,13 +11,11 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetBreakdownContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 
@@ -34,12 +32,10 @@ public class updateAssetDownTimeDetailsCommand implements Command {
                        asset.setLastDowntimeId(assetDowntimeId);
                        Map<String, Object> props = FieldUtil.getAsProperties(asset);
                        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-                       FacilioModule module = modBean.getModule("asset");
+                       FacilioModule module = modBean.getModule(ContextNames.ASSET);
                        List<FacilioField> fields = new ArrayList<>();
-                       FacilioField field = FieldFactory.getField("downtimeStatus", "DOWNTIME_STATUS", FieldType.BOOLEAN);
-                       fields.add(field);
-                       field = FieldFactory.getField("lastDowntimeId", "LAST_DOWNTIME_ID", FieldType.NUMBER);
-                       fields.add(field);
+                       fields.add(modBean.getField("downtimeStatus", ContextNames.ASSET));
+                       fields.add(modBean.getField("lastDowntimeId", ContextNames.ASSET));
                        GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder().table(module.getTableName())
                                        .fields(fields).andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
                                        .andCondition(CriteriaAPI.getIdCondition(assetBreakdown.getParentId(), module));

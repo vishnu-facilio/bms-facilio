@@ -308,6 +308,11 @@
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<param name="viewName">{1}</param>
 			<param name="fetchAllType">true</param>
+			<param name="calendarApi">true</param>
+			<result name="success" type="json">			
+				<param name="ignoreHierarchy">false</param>	
+				<param name="includeProperties">^result\.workorders\[\d+\]\.(id|createdTime|subject|assignedTo|trigger|resource)\..*</param>				
+			</result>			
 		</action>
 	</package>
 	
@@ -319,12 +324,14 @@
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<param name="viewName">{1}</param>
 			<param name="fetchAllType">true</param>
+			<param name="calendarApi">true</param>
 		</action>
 	</package>
 	<package name="pmplanner" namespace="/api/v2/pmplanner"
 		extends="v2Api">
 		<action name="settings" class="com.facilio.bmsconsole.actions.PMPlannerAction"
-			method="getPMPlannerSettings">			
+			method="getPMPlannerSettings">
+			
 		</action>		
 	</package>
 	<package name="pmplannerupdate" namespace="/api/v2/pmplanner/update"
@@ -618,6 +625,18 @@
 		</action>
 
 		<action name="closeAllTask" class="com.facilio.bmsconsole.actions.TaskAction"
+			method="v2closeAllTask">
+			<param name="moduleName">workorder</param>
+			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
+		</action>
+		
+		<action name="closeResourceTasks" class="com.facilio.bmsconsole.actions.TaskAction"
+			method="v2closeAllTask">
+			<param name="moduleName">workorder</param>
+			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
+		</action>
+		
+		<action name="closeSectionsTasks" class="com.facilio.bmsconsole.actions.TaskAction"
 			method="v2closeAllTask">
 			<param name="moduleName">workorder</param>
 			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
@@ -2401,6 +2420,13 @@
 		extends="v2Api">
 		<action name="add" class="com.facilio.bmsconsole.actions.AttendanceAction"
 			method="addAttendanceTransaction">
+		</action>
+		<action name="getState" class="com.facilio.bmsconsole.actions.AttendanceAction"
+			method="showStateForAttendance">
+		</action>
+		<action name="*" class="com.facilio.bmsconsole.actions.AttendanceAction" 
+		method="getAttendanceDetails">
+			<param name="attendanceId">{1}</param>
 		</action>
 	</package>
 	

@@ -34,6 +34,8 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.db.transaction.FacilioConnectionPool;
+import com.facilio.db.transaction.FacilioTransaction;
+import com.facilio.db.transaction.FacilioTransactionManager;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
@@ -49,6 +51,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import javax.transaction.Transaction;
+import javax.transaction.TransactionManager;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -1758,49 +1762,81 @@ public class UserBeanImpl implements UserBean {
 	@Override
 	public long startUserSession(long uid, String email, String token, String ipAddress, String userAgent, String userType) throws Exception {
 
-		List<FacilioField> fields = AccountConstants.getUserSessionFields();
+		TransactionManager transactionManager = null;
+		try {
+			transactionManager = FacilioTransactionManager.INSTANCE.getTransactionManager();
 
-		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-				.table(AccountConstants.getUserSessionModule().getTableName())
-				.fields(fields);
+			Transaction transaction = transactionManager.getTransaction();
+			if(transaction == null) {
+				transactionManager.begin();
+			}
+			List<FacilioField> fields = AccountConstants.getUserSessionFields();
 
-		Map<String, Object> props = new HashMap<>();
-		props.put("uid", uid);
-		props.put("sessionType", AccountConstants.SessionType.USER_LOGIN_SESSION.getValue());
-		props.put("token", token);
-		props.put("startTime", System.currentTimeMillis());
-		props.put("isActive", true);
-		props.put("ipAddress", ipAddress);
-		props.put("userAgent", userAgent);
-		props.put("userType", userType);
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+					.table(AccountConstants.getUserSessionModule().getTableName())
+					.fields(fields);
 
-		insertBuilder.addRecord(props);
-		insertBuilder.save();
-		long sessionId = (Long) props.get("id");
-		return sessionId;
+			Map<String, Object> props = new HashMap<>();
+			props.put("uid", uid);
+			props.put("sessionType", AccountConstants.SessionType.USER_LOGIN_SESSION.getValue());
+			props.put("token", token);
+			props.put("startTime", System.currentTimeMillis());
+			props.put("isActive", true);
+			props.put("ipAddress", ipAddress);
+			props.put("userAgent", userAgent);
+			props.put("userType", userType);
+
+			insertBuilder.addRecord(props);
+			insertBuilder.save();
+			transactionManager.commit();
+			long sessionId = (Long) props.get("id");
+			return sessionId;
+		} catch (Exception e) {
+			if(transactionManager != null) {
+				transactionManager.rollback();
+			}
+			log.info("exception while adding user session transaction ", e);
+		}
+		return -1L;
 	}
 
 	@Override
 	public boolean endUserSession(long uid, String email, String token) throws Exception {
 
-		List<FacilioField> fields = AccountConstants.getUserSessionFields();
+		boolean status = false;
+		TransactionManager transactionManager = null;
+		try {
+			transactionManager = FacilioTransactionManager.INSTANCE.getTransactionManager();
+			Transaction transaction = transactionManager.getTransaction();
+			if(transaction == null) {
+				transactionManager.begin();
+			}
+			List<FacilioField> fields = AccountConstants.getUserSessionFields();
 
-		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(AccountConstants.getUserSessionModule().getTableName())
-				.fields(fields)
-				.andCustomWhere("USERID = ? AND TOKEN = ?", uid, token);
+			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+					.table(AccountConstants.getUserSessionModule().getTableName())
+					.fields(fields)
+					.andCustomWhere("USERID = ? AND TOKEN = ?", uid, token);
 
-		Map<String, Object> props = new HashMap<>();
-		props.put("endTime", System.currentTimeMillis());
-		props.put("isActive", false);
+			Map<String, Object> props = new HashMap<>();
+			props.put("endTime", System.currentTimeMillis());
+			props.put("isActive", false);
 
-		int updatedRows = updateBuilder.update(props);
-		if (updatedRows > 0) {
-			LRUCache.getUserSessionCache().remove(email);
-			return true;
+			int updatedRows = updateBuilder.update(props);
+			if (updatedRows > 0) {
+				LRUCache.getUserSessionCache().remove(email);
+				status = true;
+			}
+			transactionManager.commit();
+		} catch (Exception e) {
+			if(transactionManager != null) {
+				transactionManager.rollback();
+			}
+			log.info("exception while adding ending user session ", e);
 		}
-		return false;
+		return status;
 	}
+
 	@Override
 	public List<Map<String, Object>> getUserSessions(long uid, Boolean isActive) throws Exception
 	{

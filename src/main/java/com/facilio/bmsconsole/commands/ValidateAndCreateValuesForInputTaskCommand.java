@@ -1,9 +1,20 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.AttachmentContext;
+import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.AttachmentsAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -16,12 +27,6 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 
 
@@ -43,13 +48,13 @@ public class ValidateAndCreateValuesForInputTaskCommand implements Command {
 						if(task.getStatusNew() != -1) {
 							if(task.getStatusNewEnum() == TaskStatus.CLOSED) {
 								if (completeRecord.getInputTypeEnum() != InputType.NONE && ((completeRecord.getInputValue() == null || completeRecord.getInputValue().isEmpty())) && (task.getInputValue() == null || task.getInputValue().isEmpty())) {
-									throw new UnsupportedOperationException("Input task cannot be closed without entering input value");
+									throw new IllegalArgumentException("Input task cannot be closed without entering input value");
 								}
 								
 								if(completeRecord.isAttachmentRequired()) {
 									List<AttachmentContext> attachments = AttachmentsAPI.getAttachments(FacilioConstants.ContextNames.TASK_ATTACHMENTS, recordIds.get(i));
 									if (attachments == null || attachments.isEmpty() ) {
-										throw new UnsupportedOperationException("Atleast one file has to be attached since attachment is required to close the task");
+										throw new IllegalArgumentException("Atleast one file has to be attached since attachment is required to close the task");
 									}
 								}
 							}

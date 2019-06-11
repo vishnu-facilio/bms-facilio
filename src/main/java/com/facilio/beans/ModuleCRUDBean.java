@@ -66,9 +66,9 @@ public interface ModuleCRUDBean {
 
 	public Long addLog(Map<String,Object> logData) throws Exception;
 
-	public void updateAgentMetrics(Map<String,Object> metrics, Map<String,Object> criteria) throws Exception;
+	public int updateAgentMetrics(Map<String,Object> metrics, Map<String,Object> criteria) throws Exception;
 
-	public void insertAgentMetrics(Map<String,Object> metrics) throws Exception;
+	public long insertAgentMetrics(Map<String,Object> metrics) throws Exception;
 
 	public List<Map<String, Object>> getMetrics(Long agentId, Integer publishType, Long createdTime) throws Exception;
 

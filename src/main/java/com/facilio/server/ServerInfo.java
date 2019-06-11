@@ -37,9 +37,9 @@ public class ServerInfo extends TimerTask {
     private static final String PING_TIME = "pingtime";
     private static final String ID = "id";
 
-    static {
+    /*static {
         assignConnection();
-    }
+    }*/
 
     private static void assignConnection() {
         try {
@@ -69,7 +69,11 @@ public class ServerInfo extends TimerTask {
 
     private static long getServerId(String ip) {
         ResultSet resultSet = null;
-        try (PreparedStatement statement = connection.prepareStatement(SELECT_ID)){
+        PreparedStatement statement = null;
+
+        try {
+            connection = FacilioConnectionPool.getInstance().getConnection();
+            statement = connection.prepareStatement(SELECT_ID);
             statement.setString(1, ip);
             resultSet = statement.executeQuery();
             if(resultSet.next()) {
@@ -78,7 +82,7 @@ public class ServerInfo extends TimerTask {
         } catch (SQLException e) {
             LOGGER.info("Exception while getting server id ", e);
         } finally {
-            DBUtil.closeAll(null, resultSet);
+            DBUtil.closeAll(connection, statement);
         }
         return -1L;
     }

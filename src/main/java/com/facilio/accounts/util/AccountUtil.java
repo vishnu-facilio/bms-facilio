@@ -112,7 +112,12 @@ public class AccountUtil {
 			currentAccount.get().setRequestUri(requestURI);
 		}
     }
-
+    
+    public static void setTimeZone(String timeZone) {
+		if (currentAccount.get() != null) {
+			currentAccount.get().setTimeZone(timeZone);
+		}
+    }
 
     public enum FeatureLicense {
 		MAINTENANCE (1),
@@ -121,9 +126,10 @@ public class AccountUtil {
 		SPACE_ASSET (8),
 		WEATHER_INTEGRATION (16),
 		ANOMALY_DETECTOR (32),
-		PEOPLE (64),
+		NEW_LAYOUT (64),
 		SHIFT_HOURS (128),
 		SITE_SWITCH (256),
+		PEOPLE (512),
 		APPROVAL (1024),
 		MOBILE_DASHBOARD (2048),
 		CONTROL_ACTIONS (4096),
@@ -132,10 +138,8 @@ public class AccountUtil {
 		TENANTS (32768),
 		NEW_FORM (65536),
 		CONNECTEDAPPS (131072),
-		NEW_LAYOUT (262144)
 		;
 		
-		// Use 512 for next features
 		
 		private long license;
 

@@ -152,23 +152,19 @@ public class AuthInterceptor extends AbstractInterceptor {
 					}
 					request.setAttribute("ORGID", currentAccount.getOrg().getOrgId());
 					request.setAttribute("USERID", currentAccount.getUser().getOuid());
-					
-					if(!AwsUtil.isProduction()) {
-						String currentSite = request.getHeader("X-current-site");
-						long currentSiteId = -1l;
-						if (currentSite != null && !currentSite.isEmpty() && !currentSite.equals("null")) {
-							currentSiteId = Long.valueOf(currentSite);
-						}
-						
-						if (currentSiteId == -1l || (FacilioCookie.getUserCookie(request, "fc.timeZone")) == null)
-						{
-							setTimeZoneCookie(AccountUtil.getCurrentOrg().getTimezone());		
-						}
-						else 
-						{
-							setTimeZoneCookie(SpaceAPI.getSiteSpace(currentSiteId).getTimeZone());
-						}
+										
+
+					String timezonevar = null;
+					if (AccountUtil.getCurrentAccount().getCurrentSiteId() > 0)
+					{
+						timezonevar = SpaceAPI.getSiteSpace(AccountUtil.getCurrentAccount().getCurrentSiteId()).getTimeZone();	
 					}
+					if (timezonevar == null || "".equals(timezonevar.trim())) 
+					{
+						timezonevar = AccountUtil.getCurrentOrg().getTimezone();
+					}
+					AccountUtil.setTimeZone(timezonevar);
+					
 					
 					Parameter permission = ActionContext.getContext().getParameters().get("permission");
 					Parameter moduleName = ActionContext.getContext().getParameters().get("moduleName");
@@ -231,23 +227,6 @@ public class AuthInterceptor extends AbstractInterceptor {
 			LOGGER.log(Level.SEVERE, "error thrown from action class", e);
 			throw e;
 		}
-	}
-
-	private void setTimeZoneCookie(String timeZone) {
-
-		HttpServletRequest request = ServletActionContext.getRequest();
-		HttpServletResponse response = ServletActionContext.getResponse();
-        Cookie timezonecookie = new Cookie("fc.timeZone",timeZone);
-        timezonecookie.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
-        timezonecookie.setPath("/");
-        timezonecookie.setHttpOnly(false);
-        if( ! (AwsUtil.isDevelopment() || AwsUtil.disableCSP())) {
-        	timezonecookie.setSecure(true);
-        }
-        String parentdomain = request.getServerName().replaceAll("app.", "");
-//        timezonecookie.setDomain(parentdomain);
-        response.addCookie(timezonecookie);
-		
 	}
 
 	private boolean isAuthorizedAccess(String moduleName, String permissions) throws Exception {

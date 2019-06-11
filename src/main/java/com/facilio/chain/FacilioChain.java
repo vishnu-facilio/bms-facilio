@@ -145,15 +145,23 @@ public class FacilioChain extends ChainBase {
 			if (CollectionUtils.isNotEmpty(postTransactionChains)) {
 				FacilioChain root = rootChain.get();
 				if (this.equals(root)) {
-//					if (postTransactionContext.get() != null) {
-//						postTransactionChain.execute(postTransactionContext.get());
-//					}
-					for (PostTransactionCommand postTransactionCommand : postTransactionChains) {
-						postTransactionCommand.postExecute();
+					try {
+						TransactionManager tm = FacilioTransactionManager.INSTANCE.getTransactionManager();
+						Transaction currenttrans = tm.getTransaction();
+						if (currenttrans == null) {
+							tm.begin();
+						} 
+						for (PostTransactionCommand postTransactionCommand: postTransactionChains) {
+							postTransactionCommand.postExecute();
+						}
+	
+						FacilioTransactionManager.INSTANCE.getTransactionManager().commit();
+					} catch (Throwable e) {
+						LOGGER.error("Exception occurred ", e);
+						FacilioTransactionManager.INSTANCE.getTransactionManager().rollback();
 					}
 					// clear rootChain to set transaction chain as root
 					rootChain.remove();
-//					postTransactionContext.remove();
 				}
 				else {
 					root.addPostTransaction(this.postTransactionChains);
@@ -162,7 +170,6 @@ public class FacilioChain extends ChainBase {
 
 			return status;
 		} catch (Throwable e) {
-			// TODO Auto-generated catch block
 			LOGGER.error("Exception occurred ", e);
 			if (enableTransaction) {
 				if (istransaction) {
@@ -175,7 +182,6 @@ public class FacilioChain extends ChainBase {
 			FacilioChain root = rootChain.get();
 			if (this.equals(root)) {
 				rootChain.remove();
-//				postTransactionContext.remove();
 			}
 		}
 	}

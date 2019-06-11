@@ -63,7 +63,13 @@ public class ScheduledRuleAPI extends WorkflowRuleAPI {
 	
 	protected static void addScheduledRuleJob(WorkflowRuleContext rule) throws Exception {
 		long startTime = ZonedDateTime.now().truncatedTo(new SecondsChronoUnit(ScheduledRuleAPI.DATE_TIME_RULE_INTERVAL * 60)).toInstant().toEpochMilli() - 1;
-		FacilioTimer.scheduleCalendarJob(rule.getId(), "ScheduledRuleExecution", startTime, getDateTimeSchedule(rule), "facilio");
+
+		if (rule.getTimeObj() != null) {
+			FacilioTimer.scheduleCalendarJob(rule.getId(), "ScheduledRuleExecution", startTime, getDateSchedule(rule), "facilio");
+		}
+		else {
+			FacilioTimer.schedulePeriodicJob(rule.getId(), "ScheduledRuleExecution", 300, DATE_TIME_RULE_INTERVAL * 60, "facilio");
+		}
 	}
 	
 	protected static void updateScheduledRuleJob(WorkflowRuleContext rule) throws Exception {
@@ -76,22 +82,10 @@ public class ScheduledRuleAPI extends WorkflowRuleAPI {
 	}
 	
 	private static final int DATE_TIME_RULE_INTERVAL = 30; //In Minutes //Only 5, 10, 15, 20, 30
-	private static ScheduleInfo getDateTimeSchedule(WorkflowRuleContext rule) {
+	private static ScheduleInfo getDateSchedule(WorkflowRuleContext rule) {
 		ScheduleInfo info = new ScheduleInfo();
 		info.setFrequencyType(FrequencyType.DAILY);
-		
-		if (rule.getTimeObj() != null) {
-			info.addTime(rule.getTimeObj());
-		}
-		else {
-			LocalTime time = LocalTime.MIDNIGHT;
-			info.addTime(time);
-			time = time.plusMinutes(DATE_TIME_RULE_INTERVAL);
-			while (time.isAfter(LocalTime.MIDNIGHT)) {
-				info.addTime(time);
-				time = time.plusMinutes(DATE_TIME_RULE_INTERVAL);
-			}
-		}
+		info.addTime(rule.getTimeObj());
 		return info;
 	}
 }

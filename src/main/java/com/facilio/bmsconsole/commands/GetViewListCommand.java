@@ -125,22 +125,20 @@ public class GetViewListCommand implements Command {
 						groupViews.set(groupSize - 1, mutatedDetail);
 					}
 
-					if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
-						if (upcomingView.isPresent()) {
-							Map<String, Object> groupDetails1 = new HashMap<>();
-							groupDetails1.put("name", "upcoming");
-							groupDetails1.put("displayName", "Upcoming Work Orders");
-							groupDetails1.put("views", Arrays.asList(upcomingView.get()));
-							groupViews.add(groupDetails1);
-						}
+					if (upcomingView.isPresent()) {
+						Map<String, Object> groupDetails1 = new HashMap<>();
+						groupDetails1.put("name", "upcoming");
+						groupDetails1.put("displayName", "Upcoming Work Orders");
+						groupDetails1.put("views", Arrays.asList(upcomingView.get()));
+						groupViews.add(groupDetails1);
+					}
 
-						if (myupcomingView.isPresent()) {
-							Map<String, Object> groupDetails1 = new HashMap<>();
-							groupDetails1.put("name", "myupcoming");
-							groupDetails1.put("displayName", "My Upcoming Work Orders");
-							groupDetails1.put("views", Arrays.asList(myupcomingView.get()));
-							groupViews.add(groupDetails1);
-						}
+					if (myupcomingView.isPresent()) {
+						Map<String, Object> groupDetails1 = new HashMap<>();
+						groupDetails1.put("name", "myupcoming");
+						groupDetails1.put("displayName", "My Upcoming Work Orders");
+						groupDetails1.put("views", Arrays.asList(myupcomingView.get()));
+						groupViews.add(groupDetails1);
 					}
 				}
 				else {

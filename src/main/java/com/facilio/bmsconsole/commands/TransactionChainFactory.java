@@ -5,11 +5,12 @@ import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.agent.ConfigureAgentCommand;
 import com.facilio.agent.ConfigureControllerCommand;
 import com.facilio.agent.DeleteAgentCommand;
+import com.facilio.agent.commands.*;
 import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
-import com.facilio.bmsconsole.context.ShipmentLineItemContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
+import com.facilio.mv.command.*;
 import org.apache.commons.chain.Chain;
 
 public class TransactionChainFactory {
@@ -892,10 +893,75 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+		public static Chain updateAgentTable(){
+		Chain c = getDefaultChain();
+		c.addCommand(new UpdateAgentTableCommand());
+		return c;
+		}
+
+		public static Chain updateAgent(){
+		Chain c = getDefaultChain();
+		c.addCommand(new UpdateAgentDetailsCommand());
+		return c;
+		}
+
+        public static Chain getUpdateQueryChain(){
+	    Chain c = getDefaultChain();
+
+	    return c;
+        }
+
+        public static Chain getUpdateAgentMessageChain(){
+	    Chain c = getDefaultChain();
+	    c.addCommand(new UpdateAgentMessageCommand());
+	    return c;
+        }
+
+        public static Chain getAddAgentMessageChain(){
+	    Chain c = getDefaultChain();
+	    c.addCommand(new AddAgentMessageCommand());
+        return c;
+        }
+
+        public static Chain getAddAgentMetricsChain(){
+	    Chain c = getDefaultChain();
+	    c.addCommand(new AddAgentMetricsCommand());
+	    return c;
+        }
+
+        public static Chain getUpdateAgentMetricsChain(){
+	    Chain c = getDefaultChain();
+	    c.addCommand(new UpdateAgentMetricsCommand());
+	    return c;
+        }
+
+        public static Chain addLogChain(){
+	    Chain c = getDefaultChain();
+	    c.addCommand(new AddLogChainCommand() );
+	    return c;
+        }
+
+        public static Chain getAgentEditChain(){
+		Chain c = getDefaultChain();
+		c.addCommand(new AgentEditCommand());
+		return c;
+		}
+		public static Chain getAddAgentChain(){
+		Chain c = getDefaultChain();
+		c.addCommand(new AgentCreate());
+		return c;
+		}
+
 		public static Chain deleteAgent(){
 			Chain c = getDefaultChain();
 			c.addCommand(new DeleteAgentCommand());
 			return c;
+		}
+
+		public static Chain updateAckChain(){
+		Chain c = getDefaultChain();
+		c.addCommand(new AckUpdateCommand());
+		return c;
 		}
 
 		public static Chain controllerEdit(){
@@ -1295,19 +1361,6 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
-		public static Chain getChangePreventiveMaintenanceStatusChain() {
-			Chain c = getDefaultChain();
-			c.addCommand(new ChangePreventiveMaintenanceStatusCommand());
-			c.addCommand(new DeletePMAndDependenciesCommand(false, true));
-			c.addCommand(new AddPMTriggerCommand(true));
-			c.addCommand(new AddPMReminderCommand(true));
-			c.addCommand(new SetMissingRelInResourcePlannersCommand());
-			c.addCommand(new AddPMRelFieldsCommand(true));
-			c.addCommand(new SchedulePMCommand(true));
-			c.addCommand(new scheduleBeforePMRemindersCommand(true));
-			return c;
-		}
-
 		public static Chain getChangeNewPreventiveMaintenanceStatusChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new ChangePreventiveMaintenanceStatusCommand());
@@ -1339,23 +1392,6 @@ public class TransactionChainFactory {
 			c.addCommand(getChangeNewPreventiveMaintenanceStatusChainForMig());
 			c.addCommand(new ResetContext(pmId));
 			c.addCommand(getChangeNewPreventiveMaintenanceStatusChainForMig());
-			return c;
-		}
-
-
-
-	public static Chain getExecutePreventiveMaintenanceChain() {
-			Chain c = getDefaultChain();
-			
-			c.addCommand(new ForkChainToInstantJobCommand()
-				.addCommand(new ResetTriggersCommand())
-				.addCommand(new SchedulePrePMRemindersCommand())
-			);
-			
-			c.addCommand(new PreparePMForMultipleAsset());
-			c.addCommand(new ExecutePMCommand());
-			c.addCommand(new SchedulePostPMRemindersCommand());
-			
 			return c;
 		}
 
@@ -2823,8 +2859,64 @@ public class TransactionChainFactory {
 		public static Chain getAddBreakTransactionChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForBreakTransaction());
-			c.addCommand(new AddBreakTransactionCommand());
-			c.addCommand(new GenericAddModuleDataCommand());
+			c.addCommand(new AddOrUpdateBreakTransactionCommand());
+			return c;
+		}
+		
+		public static Chain getAddAssetBreakdownChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ValidateAssetBreakdownCommand());
+			c.addCommand(new getAssetDownTimeDetailsCommand());
+			c.addCommand(new AddAssetBreakDownCommand());
+			c.addCommand(new updateAssetDownTimeDetailsCommand());
+			return c;
+		}
+		
+		public static Chain getAttendanceTransitionState() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ShowStateForAttendanceCommand());
+			return c;
+		}
+		
+		public static Chain getAddMVProjectChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddMVProjectCommand());
+			c.addCommand(new AddMVBaselineCommand());
+			c.addCommand(new AddMVAjustmentCommand());
+			c.addCommand(new AddMVAjustmentVsBaselineCommand());
+			return c;
+		}
+		
+		public static Chain getUpdateMVProjectChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateMVPojectCommand());
+			c.addCommand(new UpdateMVBaselineCommand());
+			c.addCommand(new UpdateMVAdjustmentCommand());
+			c.addCommand(new UpdateMVAjustmentVsBaselineCommand());
+			return c;
+		}
+		
+		public static Chain getAddMVBaselineChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddMVBaselineCommand());
+			return c;
+		}
+		
+		public static Chain getAddMVAdjustmentChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddMVAjustmentCommand());
+			return c;
+		}
+		
+		public static Chain getAddMVAjustmentVsBaselineChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddMVAjustmentVsBaselineCommand());
+			return c;
+		}
+		
+		public static Chain getDeleteMVProjectChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new DeleteMVProjectCommand());
 			return c;
 		}
 

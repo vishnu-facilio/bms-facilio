@@ -32,7 +32,7 @@ public class KinesisProcessor {
         properties.put("log4j.appender.stdout.layout", "org.apache.log4j.PatternLayout");
         return properties;
     }
-
+ 
     private static void updateStream() {
         try {
             AmazonKinesis kinesis = AwsUtil.getKinesisClient();

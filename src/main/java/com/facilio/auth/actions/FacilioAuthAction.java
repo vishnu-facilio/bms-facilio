@@ -590,7 +590,7 @@ public class FacilioAuthAction extends FacilioAction {
 				newjget.put("issue", jget);
 				String body = newjget.toJSONString();
 				Map<String, String> headers = new HashMap<>();
-				headers.put("Authorization", "Token token=92On0bqAP-gQKOCBm8MgyA");
+				headers.put("Authorization", "Token token=93LalYD_wbiIA1qD0sXiOQ"); 
 				headers.put("Content-Type", "application/json");
 				http("POST", url, headers, body);
 				LOGGER.info("postIssueResponse" + jb.toString());

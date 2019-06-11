@@ -1,19 +1,20 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.ControllerAPI;
 import com.facilio.bmsconsole.util.IoTMessageAPI;
 import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.timeseries.TimeSeriesAPI;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 public class UnsubscribeInstanceIoTCommand implements Command {
 	
@@ -26,13 +27,10 @@ public class UnsubscribeInstanceIoTCommand implements Command {
 		if (ids != null) {
 			long controllerId = (long) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
 			TimeSeriesAPI.updateUnmodeledInstances(ids, Collections.singletonMap("subscribed", false));
-			List<Map<String, Object>> instanceList =  TimeSeriesAPI.getSubscribedInstances(controllerId);
-			if (instanceList != null && !instanceList.isEmpty()) {
-				IoTMessageAPI.publishIotMessage(instanceList, IotCommandType.SUBSCRIBE, null, data -> rollbackUnSubscribe(ids));
-			}
-			else {
-				IoTMessageAPI.publishIotMessage(controllerId, IotCommandType.UNSUBSCRIBE, null, data -> rollbackUnSubscribe(ids));
-			}
+			
+			List<Map<String, Object>> instanceList =  TimeSeriesAPI.getUnmodeledInstances(ids);
+			IoTMessageAPI.publishIotMessage(instanceList, IotCommandType.UNSUBSCRIBE, null, data -> rollbackUnSubscribe(ids));
+			
 			ControllerAPI.updateControllerModifiedTime(controllerId);
 		}
 		return false;

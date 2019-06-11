@@ -2,6 +2,7 @@ package com.facilio.agent;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleCRUDBean;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -21,6 +22,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
+import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -165,11 +167,12 @@ public  class AgentUtil
                agentNameCondition.setField(FieldFactory.getAgentNameField(ModuleFactory.getAgentDataModule()));
                agentNameCondition.setOperator(StringOperators.IS);
                agentNameCondition.setValue(agentName);
+               FacilioContext context = new FacilioContext();
+               context.put(FacilioConstants.ContextNames.CRITERIA,agentNameCondition);
 
-               GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder()
-                       .table(AgentKeys.AGENT_TABLE)
-                       .fields(FieldFactory.getAgentDataFields()).andCondition(agentNameCondition);
-               try {
+           Chain updateAgentChain = TransactionChainFactory.updateAgent();
+
+           try {
 
                    Map<String, Object> toUpdate = new HashMap<>();
                    if (jsonObject.containsKey(AgentKeys.CONNECTION_STATUS)) {
@@ -257,7 +260,10 @@ public  class AgentUtil
                    }
                    if (!toUpdate.isEmpty()) {
                        toUpdate.put(AgentKeys.LAST_DATA_RECEIVED_TIME, System.currentTimeMillis());
-                       return genericUpdateRecordBuilder.update(toUpdate);
+                       context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP,toUpdate);
+                       if(updateAgentChain.execute(context)){
+                           return 1;
+                       }
                    }
                    return 0;
                } catch (Exception e) {
@@ -285,11 +291,31 @@ public  class AgentUtil
         payload.put(AgentKeys.CREATED_TIME, currTime);
         payload.put(AgentKeys.LAST_MODIFIED_TIME, currTime);
         payload.put(AgentKeys.LAST_DATA_RECEIVED_TIME, currTime);
-        GenericInsertRecordBuilder genericInsertRecordBuilder = new GenericInsertRecordBuilder()
-                .table(AgentKeys.AGENT_TABLE)
-                .fields(FieldFactory.getAgentDataFields());
+        Chain chain = TransactionChainFactory.getAddAgentChain();
+        FacilioContext context = new FacilioContext();
+        context.put(FacilioConstants.ContextNames.PAY_LOAD,payload);
         try {
-            long id = (int)genericInsertRecordBuilder.insert(payload);
+            chain.execute(context);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        FacilioModule agentDataModule = ModuleFactory.getAgentDataModule();
+        GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder().table(AgentKeys.AGENT_TABLE).select(FieldFactory.getAgentDataFields())
+                .andCondition(CriteriaAPI.getCurrentOrgIdCondition(agentDataModule))
+                .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentNameField(agentDataModule),agent.getAgentName(),StringOperators.IS));
+        long id = 0L;
+        try {
+            List<Map<String,Object>> row = selectRecordBuilder.get();
+            if(row.size() == 1 && row.get(0).containsKey(AgentKeys.ID)){
+               id = Long.parseLong(row.get(0).get(AgentKeys.ID).toString());
+            }else {
+                LOGGER.info("Exception multiple entries with same AgentId ");
+            }
+        } catch (Exception e) {
+            LOGGER.info("Exception while fetching agent detail for agentId ",e);
+        }
+
+        try {
             agent.setId(id);
             if(id > 0)  {
                 agentMap.put(agent.getAgentName(), agent);
@@ -358,16 +384,18 @@ public  class AgentUtil
     }
 
     static boolean agentEdit(JSONObject payload) throws SQLException {
+        boolean status = false;
         if(AccountUtil.getCurrentOrg() != null && payload.containsKey(AgentKeys.ID)) {
-            GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder()
-                    .table(AgentKeys.AGENT_TABLE)
-                    .fields(FieldFactory.getAgentDataFields())
-                    .andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getAgentDataModule()))
-                    .andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(ModuleFactory.getAgentDataModule()),payload.get(AgentKeys.ID).toString(),NumberOperators.EQUALS));
-            int updatedRows= genericUpdateRecordBuilder.update(payload);
-            return (updatedRows > 0);
+            Chain agentEditChain = TransactionChainFactory.getAgentEditChain();
+            FacilioContext context = new FacilioContext();
+            context.put(FacilioConstants.ContextNames.PAY_LOAD,payload);
+            try {
+                status = agentEditChain.execute(context);
+            } catch (Exception e) {
+                LOGGER.info("Exception occurred ",e);
+            }
         }
-        return false;
+        return status;
     }
 
     /**
@@ -378,6 +406,9 @@ public  class AgentUtil
      * @param sent
      */
     public static void putLog(JSONObject payLoad, Long orgId,Long agentId,boolean sent) {
+        Chain addLogChain = TransactionChainFactory.addLogChain();
+        FacilioContext context = new FacilioContext();
+        context.put(AgentKeys.ORG_ID,orgId);
             Map<String, Object> toUpdate = new HashMap<>();
             if (sent) {
                 payLoad.put(AgentKeys.COMMAND_STATUS, CommandStatus.SENT.getKey());
@@ -406,8 +437,10 @@ public  class AgentUtil
                 LOGGER.info("debugging log -toUpdate--"+toUpdate);
             }
             try {
-                ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-                bean.addLog(toUpdate);
+                context.put(FacilioConstants.ContextNames.TO_INSERT_MAP,toUpdate);
+                addLogChain.execute(context);
+               /* ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+                bean.addLog(toUpdate);*/
             } catch (Exception e)
             {
                 LOGGER.info("Exception occured ", e);
@@ -440,16 +473,23 @@ public  class AgentUtil
 
     private   boolean addOrUpdateAgentMessage(String recordId, MessageStatus messageStatus)throws Exception{
         boolean status = false;
-            ModuleCRUDBean bean;
-            bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+
             Map<String,Object> map = new HashMap<>();
             map.put(AgentKeys.RECORD_ID,recordId);
             map.put(AgentKeys.MSG_STATUS,messageStatus.getStatusKey());
             map.put(AgentKeys.START_TIME,System.currentTimeMillis());
 
+            Chain updateAgentMessageChain = TransactionChainFactory.getUpdateAgentMessageChain();
+            Chain addAgentMessageChain = TransactionChainFactory.getAddAgentMessageChain();
+
+            FacilioContext context = new FacilioContext();
+            context.put(AgentKeys.ORG_ID,orgId);
+
+
             if(messageStatus == MessageStatus.RECIEVED ){
                 try {
-                    if (bean.addAgentMessage(map) > 0) {
+                    context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP,map);
+                    if (addAgentMessageChain.execute(context)) {
                         status = true;
                     }
                 }catch (MySQLIntegrityConstraintViolationException e){
@@ -459,14 +499,16 @@ public  class AgentUtil
 
             else if(messageStatus == MessageStatus.DATA_EMPTY){
                 map.put(AgentKeys.FINISH_TIME, System.currentTimeMillis());
-                if(bean.updateAgentMessage(map)>0){
+                context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP,map);
+                if(updateAgentMessageChain.execute(context)){
                     status = true;
                 }
             }
             else {
                 map.put(AgentKeys.FINISH_TIME, System.currentTimeMillis());
                 map.remove(AgentKeys.START_TIME);
-                if(bean.updateAgentMessage(map) > 0 ){
+                context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP,map);
+                if(updateAgentMessageChain.execute(context)){
                     status = true;
                 }
             }
@@ -508,6 +550,10 @@ public  class AgentUtil
         ModuleCRUDBean bean;
         Map<String, Object> metrics = new HashMap<>();
         Map<String, Object> record;
+        Chain addAgentMetricsChain = TransactionChainFactory.getAddAgentMetricsChain();
+        Chain updateAgentMetricsChain = TransactionChainFactory.getUpdateAgentMetricsChain();
+        FacilioContext context = new FacilioContext();
+        context.put(AgentKeys.ORG_ID,orgId);
         try {
             bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
             List<Map<String,Object>> records = bean.getMetrics(agentId,publishType,createdTime);
@@ -521,7 +567,11 @@ public  class AgentUtil
                         metrics.put(AgentKeys.SIZE, Integer.parseInt(record.get(AgentKeys.SIZE).toString()) + messageSize);
                         metrics.put(AgentKeys.NO_OF_MESSAGES, Integer.parseInt(record.get(AgentKeys.NO_OF_MESSAGES).toString()) + 1);
                         metrics.put(AgentKeys.LAST_UPDATED_TIME, lastUpdatedTime);
-                        bean.updateAgentMetrics(metrics, criteria);
+                        context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP,metrics);
+                        context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
+
+                        updateAgentMetricsChain.execute(context);
+                        //bean.updateAgentMetrics(metrics, criteria);
                     }
             }
             else {
@@ -531,7 +581,9 @@ public  class AgentUtil
                 metrics.put(AgentKeys.SIZE, messageSize);
                 metrics.put(AgentKeys.CREATED_TIME, createdTime);
                 metrics.put(AgentKeys.LAST_UPDATED_TIME, lastUpdatedTime);
-                bean.insertAgentMetrics(metrics);
+                context.put(FacilioConstants.ContextNames.TO_INSERT_MAP,metrics);
+                addAgentMetricsChain.execute(context);
+                //bean.insertAgentMetrics(metrics);
             }
 
 

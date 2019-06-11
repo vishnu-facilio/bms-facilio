@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -135,6 +136,11 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 																	.fields(fields)
 																	.addRecords(readings);
 		readingBuilder.save();
+		long orgCheck = 78;
+		Boolean isStage = !AwsUtil.isProduction();
+		if(isStage && (orgCheck == Objects.requireNonNull(AccountUtil.getCurrentOrg()).getOrgId()) ){
+			LOGGER.info("   Debugging log in AddOrUpdateReadingValueCommand--"+readings);
+		}
 		if (isUpdateLastReading) {
 			Map<String, ReadingDataMeta> currentRDMs = ReadingsAPI.updateReadingDataMeta(fields,readings,metaMap);
 			if (currentRDMs != null) {

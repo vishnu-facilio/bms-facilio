@@ -46,9 +46,9 @@ public class ModeledDataCommand implements Command {
 		Map<String,Object>  dataPoints= null;
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 	
-//	if(TimeSeriesAPI.isStage()) {
-			LOGGER.debug("Inside ModeledDataCommand####### deviceData: "+deviceData);
-
+	if(TimeSeriesAPI.isStage()) {
+			LOGGER.info("Inside ModeledDataCommand####### deviceData: "+deviceData);
+	}
 			for(Map.Entry<String, Map<String,String>> data:deviceData.entrySet()) {
 
 				String deviceName=data.getKey();
@@ -176,8 +176,9 @@ public class ModeledDataCommand implements Command {
 			}
 			readings.add(reading);
 		}
-		LOGGER.debug("Inside ModeledDataCommand####### moduleVsReading: "+moduleVsReading);
-
+		if(TimeSeriesAPI.isStage()) {
+		LOGGER.info("Inside ModeledDataCommand####### moduleVsReading: "+moduleVsReading);
+		}
 
 		context.put(FacilioConstants.ContextNames.READINGS_MAP,moduleVsReading);
 		context.put(FacilioConstants.ContextNames.HISTORY_READINGS, false);

@@ -52,7 +52,7 @@ public class AssetBreakdownContext extends ResourceContext {
                this.totime = totime;
        }
 
-       private long duration;
+       private long duration = -1; // In seconds
 
        public long getDuration() {
                return duration;
@@ -61,5 +61,13 @@ public class AssetBreakdownContext extends ResourceContext {
        public void setDuration(long duration) {
                this.duration = duration;
        }
+       
+    private long timeBetweenFailure = -1; // In seconds
+	public long getTimeBetweenFailure() {
+		return timeBetweenFailure;
+	}
+	public void setTimeBetweenFailure(long timeBetweenFailure) {
+		this.timeBetweenFailure = timeBetweenFailure;
+	}
 
 }

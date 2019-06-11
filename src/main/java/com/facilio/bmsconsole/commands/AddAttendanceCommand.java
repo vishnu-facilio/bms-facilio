@@ -70,7 +70,7 @@ public class AddAttendanceCommand implements Command {
 				if (att.getLastBreakStartTime() > 0) {
 					throw new IllegalArgumentException("Kindly check out break before checking in");
 				}
-				if (att.getCheckOutTime() == -99) {
+				if (att.getCheckOutTime() < 0) {
 					throw new IllegalArgumentException("The User has already checked in");
 				}
 				att.setLastCheckInTime(attendanceTransaction.getTransactionTime());
@@ -88,6 +88,7 @@ public class AddAttendanceCommand implements Command {
 					workhrs += att.getWorkingHours();
 				}
 				att.setWorkingHours(workhrs);
+				att.setLastCheckInTime(-99);
 			}
 
 		} else {
@@ -122,6 +123,7 @@ public class AddAttendanceCommand implements Command {
 		}
 		if (attendanceTransaction.getTransactionTypeEnum() == TransactionType.CHECKOUT) {
 			att.setCheckOutTime(attendanceTransaction.getTransactionTime());
+			att.setLastCheckInTime(-99);
 		}
 		UpdateRecordBuilder<AttendanceContext> updateBuilder = new UpdateRecordBuilder<AttendanceContext>()
 				.module(module).fields(fields).andCondition(CriteriaAPI.getIdCondition(att.getId(), module));

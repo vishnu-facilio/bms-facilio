@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.context.AssetTypeContext;
 import com.facilio.bmsconsole.context.AttendanceContext;
 import com.facilio.bmsconsole.context.AttendanceTransactionContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.BreakContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.ChillerCondenserPumpContext;
 import com.facilio.bmsconsole.context.ChillerContext;
@@ -69,6 +70,7 @@ import com.facilio.bmsconsole.context.ReceiptContext;
 import com.facilio.bmsconsole.context.ReceiptLineItemContext;
 import com.facilio.bmsconsole.context.ReceivableContext;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.ShiftContext;
 import com.facilio.bmsconsole.context.ShipmentContext;
 import com.facilio.bmsconsole.context.ShipmentLineItemContext;
 import com.facilio.bmsconsole.context.SiteContext;
@@ -146,6 +148,12 @@ public class FacilioConstants {
 		public static final String MODIFIED_USER = "modifiedUser";
 	}
 	
+	public static class ModuleNames {
+		public static final String TOOL_TYPES="tooltypes";
+		public static final String ITEM_TYPES="itemtypes";
+		public static final String STORE_ROOM="storeroom";
+	}
+	
 	public static class ContextNames {
 
 		public static final String CONNECTION = "connectionContext";
@@ -153,6 +161,8 @@ public class FacilioConstants {
         public static final String TABLE_NAME = "tableName";
         public static final String CRITERIA = "criteria";
         public static final String FIELDS = "fields";
+        public static final String TO_UPDATE_MAP = "toUpdateMap";
+        public static final String TO_INSERT_MAP = "toInsertMap";
 
 		public static final String FACILIO_RECORD = "facilioRecord";
 		public static final String FACILIO_CONSUMER = "facilioConsumer";
@@ -563,7 +573,10 @@ public class FacilioConstants {
 		public static final String TOOL_TYPES_ATTACHMENTS = "toolTypesattachments";
 		public static final String STORE_ROOM_ATTACHMENTS = "storeRoomAttachments";
 
-
+		public static final String MV_PROJECT_MODULE = "mvproject";
+		public static final String MV_BASELINE_MODULE = "mvbaseline";
+		public static final String MV_ADJUSTMENT_MODULE = "mvajustment";
+		
 		public static final String PICKLIST = "pickList";
 		
 		public static final String USERS = "users";
@@ -1172,6 +1185,8 @@ public class FacilioConstants {
 
 			classMap.put(ATTENDANCE, AttendanceContext.class);
 			classMap.put(ATTENDANCE_TRANSACTIONS, AttendanceTransactionContext.class);
+			classMap.put(SHIFT, ShiftContext.class);
+			classMap.put(BREAK, BreakContext.class);
 			return classMap;
 		}
 		
@@ -1199,6 +1214,15 @@ public class FacilioConstants {
 	public static class Criteria {
 		public static final String LOGGED_IN_USER = "${LOGGED_USER}";
 		public static final String LOGGED_IN_USER_GROUP = "${LOGGED_USER_GROUP}";
+	}
+	
+	public static class Builder {
+		public static final String GROUP_BY = "groupBy";
+		public static final String LIMIT = "limit";
+		public static final String ORDER_BY = "orderBy";
+		public static final String ORDER_BY_TYPE = "orderByType";
+		public static final String PAGE = "page";
+		public static final String PER_PAGE = "perPage";
 	}
 	
 	public static class ApprovalRule {

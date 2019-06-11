@@ -83,36 +83,4 @@ public class UpdateNewPreventiveMaintenanceJobCommand implements Command {
 		}
 		return false;
 	}
-	
-	private long updateWO(long templateId, long resourceId) throws Exception {
-		Template template = TemplateAPI.getTemplate(templateId);
-		long newTemplateId = -1;
-		WorkOrderContext wo = ((WorkorderTemplate)template).getWorkorder();
-		Map<String, List<TaskContext>> taskMap = ((WorkorderTemplate)template).getTasks();
-		
-
-		
-		WorkorderTemplate woTemplate = new WorkorderTemplate();
-		woTemplate.setWorkorder(wo);
-		woTemplate.setTasks(taskMap);
-		newTemplateId = TemplateAPI.addPMWorkOrderTemplate(woTemplate);
-		return newTemplateId;
-	}
-	
-	private void reScheduleIfRequired(List<Long> ids) throws Exception {
-		List<PMJobsContext> pmJobs = PreventiveMaintenanceAPI.getPMJobs(ids);
-		if (pmJobs != null && !pmJobs.isEmpty()) {
-			long currentTime = DateTimeUtil.getCurrenTime(true);
-			for (PMJobsContext pmJob : pmJobs) {
-				if (pmJob.getNextExecutionTime() > currentTime) {
-					PMJobsContext nextJob = PreventiveMaintenanceAPI.getNextPMJob(pmJob.getPmTriggerId(), pmJob.getNextExecutionTime(), true);
-					if (nextJob.getStatusEnum() == PMJobsStatus.SCHEDULED) {
-						FacilioTimer.deleteJob(nextJob.getId(), "PreventiveMaintenance");
-						PreventiveMaintenanceAPI.updatePMJobStatus(nextJob.getId(), PMJobsStatus.ACTIVE);
-						PreventiveMaintenanceAPI.schedulePMJob(pmJob);
-					}
-				}
-			}
-		}
-	}
 }

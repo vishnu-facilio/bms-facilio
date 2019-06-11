@@ -965,7 +965,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
-		c.addCommand(new GenericGetModuleDataListCommand());
+		c.addCommand(new GetBreakListCommand());
 		return c;
 	}
 	
@@ -976,7 +976,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
-		c.addCommand(new GenericGetModuleDataListCommand());
+		c.addCommand(new GetShiftListCommand());
 		return c;
 	}
 	
@@ -1010,6 +1010,13 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new LoadShipmentLookUpCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		c.addCommand(new FetchShipmentDetailsCommand());
+		return c;
+	}
+	
+	public static Chain getAttendanceDetailsChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForAttendance());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
 		return c;
 	}
 }

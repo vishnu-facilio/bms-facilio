@@ -3,20 +3,18 @@ package com.facilio.kafka;
 import com.facilio.agent.*;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.db.builder.GenericUpdateRecordBuilder;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.chain.FacilioContext;
 import com.facilio.devicepoints.DevicePointsUtil;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.procon.message.FacilioRecord;
 import com.facilio.procon.processor.FacilioProcessor;
 import com.facilio.server.ServerInfo;
 import com.facilio.util.AckUtil;
+import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -25,7 +23,6 @@ import org.json.simple.parser.JSONParser;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.facilio.agent.PublishType.event;
 
@@ -90,7 +87,12 @@ public class Processor extends FacilioProcessor {
                         }
                     }
                     else {
-                        agentUtil.addAgentMessage(recordId);
+                        boolean originalFlag =false;
+                                originalFlag = agentUtil.addAgentMessage(recordId);
+                        if(!originalFlag){
+                            LOGGER.info("tried adding duplicate message "+ recordId);
+                            continue;
+                        }
                     }
                 }catch (Exception e1){
                     LOGGER.info("Exception Occured ",e1);
@@ -173,14 +175,23 @@ public class Processor extends FacilioProcessor {
                             dataTypeLastMessageTime.put(dataType, lastMessageReceivedTime);
                             deviceMessageTime.put(deviceId, dataTypeLastMessageTime);
                         }if (numberOfRows == 0) {
-                            GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder().table(AgentKeys.AGENT_TABLE).fields(FieldFactory.getAgentDataFields())
-                                  .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentNameField(ModuleFactory.getAgentDataModule()),agentName,StringOperators.IS))
-                                    .andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getAgentDataModule()));
-                            Map<String, Object> toUpdate = new HashMap<>();
+                            FacilioContext context = new FacilioContext();
+                            context.put(AgentKeys.NAME, agentName);
+                            Chain updateAgentTable = TransactionChainFactory.updateAgentTable();
+                            updateAgentTable.execute(context);
+
+                            /*GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder().table(AgentKeys.AGENT_TABLE).fields(FieldFactory.getAgentDataFields())
+                                  .andCondition()
+                                    .andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getAgentDataModule()));*/
+
+                            /*Map<String, Object> toUpdate = new HashMap<>();
                             toUpdate.put(AgentKeys.LAST_DATA_RECEIVED_TIME, System.currentTimeMillis());
                             toUpdate.put(AgentKeys.CONNECTION_STATUS, Boolean.TRUE);
-                            toUpdate.put(AgentKeys.STATE, 1);
-                            genericUpdateRecordBuilder.update(toUpdate);
+                            toUpdate.put(AgentKeys.STATE, 1);*/
+
+                            //genericUpdateRecordBuilder.update(toUpdate);
+
+
 
                         }
                         if(isStage && agent != null) {
@@ -270,6 +281,10 @@ public class Processor extends FacilioProcessor {
     }
 
     private void processTimeSeries(FacilioRecord record) throws Exception {
+        long orgCheck = 78;
+        if(isStage && orgCheck == orgId){
+            LOGGER.info("   Debugging log -data in ProcessTimeSeries--"+record.getData());
+        }
         ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD",orgId);
         bean.processTimeSeries(getConsumer(), record);
     }
