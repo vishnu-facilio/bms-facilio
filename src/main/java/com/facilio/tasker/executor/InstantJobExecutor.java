@@ -112,7 +112,7 @@ public enum InstantJobExecutor implements Runnable {
 		while (itr.hasNext()) {
 			JobTimeOutInfo info = itr.next().getValue();
 			if (currentTime >= (info.getExecutionTime()+info.getTimeOut())) {
-				if (info.getFuture().cancel(false)) {
+				if (info.getFuture().cancel(true)) {
 					info.getInstantJob().handleTimeOut();
 					itr.remove();
 				}
