@@ -1361,6 +1361,19 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain getChangePreventiveMaintenanceStatusChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ChangePreventiveMaintenanceStatusCommand());
+			c.addCommand(new DeletePMAndDependenciesCommand(false, true));
+			c.addCommand(new AddPMTriggerCommand(true));
+			c.addCommand(new AddPMReminderCommand(true));
+			c.addCommand(new SetMissingRelInResourcePlannersCommand());
+			c.addCommand(new AddPMRelFieldsCommand(true));
+			c.addCommand(new SchedulePMCommand(true));
+			c.addCommand(new scheduleBeforePMRemindersCommand(true));
+			return c;
+		}
+
 		public static Chain getChangeNewPreventiveMaintenanceStatusChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new ChangePreventiveMaintenanceStatusCommand());
@@ -1392,6 +1405,23 @@ public class TransactionChainFactory {
 			c.addCommand(getChangeNewPreventiveMaintenanceStatusChainForMig());
 			c.addCommand(new ResetContext(pmId));
 			c.addCommand(getChangeNewPreventiveMaintenanceStatusChainForMig());
+			return c;
+		}
+
+
+
+	public static Chain getExecutePreventiveMaintenanceChain() {
+			Chain c = getDefaultChain();
+			
+			c.addCommand(new ForkChainToInstantJobCommand()
+				.addCommand(new ResetTriggersCommand())
+				.addCommand(new SchedulePrePMRemindersCommand())
+			);
+			
+			c.addCommand(new PreparePMForMultipleAsset());
+			c.addCommand(new ExecutePMCommand());
+			c.addCommand(new SchedulePostPMRemindersCommand());
+			
 			return c;
 		}
 

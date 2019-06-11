@@ -33,6 +33,9 @@ public class BlockPMEditOnWOGeneration implements Command {
 
     @Override
     public boolean execute(Context context) throws Exception {
+        if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
+            return false;
+        }
         List<PreventiveMaintenance> pms =  (List<PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST);
         PreventiveMaintenance pm = (PreventiveMaintenance)  context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
         List<Long> pmIds = new ArrayList<>();

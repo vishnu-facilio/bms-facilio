@@ -2,12 +2,13 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMJobsContext.PMJobsStatus;
-import com.facilio.bmsconsole.templates.WorkorderTemplate;
+import com.facilio.bmsconsole.context.PMTriggerContext;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
-import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
@@ -19,10 +20,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.UpdateRecordBuilder;
-import com.facilio.modules.fields.FacilioField;
 import com.facilio.serializable.SerializableCommand;
 import com.facilio.tasker.ScheduleInfo.FrequencyType;
 import com.facilio.time.DateTimeUtil;
@@ -30,14 +28,11 @@ import org.apache.commons.chain.Context;
 
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-;
-
-public class ResetNewTriggersCommand implements SerializableCommand {
+public class ResetTriggersCommand implements SerializableCommand {
 
 	/**
 	 * 
@@ -54,13 +49,14 @@ public class ResetNewTriggersCommand implements SerializableCommand {
 			long currentExecutionTime = (Long) context.get(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME);
 			PMTriggerContext currentTrigger = (PMTriggerContext) context.get(FacilioConstants.ContextNames.PM_CURRENT_TRIGGER); 
 			Boolean reset = (Boolean) context.get(FacilioConstants.ContextNames.PM_RESET_TRIGGERS);
+			PMJobsContext currentJob = (PMJobsContext) context.get(FacilioConstants.ContextNames.PM_CURRENT_JOB);
 			if (reset == null) {
 				reset = false;
 			}
 			if(reset) {
 				Map<Long, Long> nextExecutionTimes = new HashMap<>();
 				for(PreventiveMaintenance pm : pms) {
-					newresetPMTriggers(context, pm, currentTrigger, pmTriggersMap.get(pm.getId()), currentExecutionTime);
+					resetPMTriggers(pm, currentTrigger, pmTriggersMap.get(pm.getId()),currentJob, currentExecutionTime, nextExecutionTimes);
 				}
 				context.put(FacilioConstants.ContextNames.NEXT_EXECUTION_TIMES, nextExecutionTimes);
 				context.put(FacilioConstants.ContextNames.PM_TRIGGERS, pmTriggersMap);
@@ -68,75 +64,7 @@ public class ResetNewTriggersCommand implements SerializableCommand {
 		}
 		return false;
 	}
-
-	private void newresetPMTriggers(Context context, PreventiveMaintenance pm, PMTriggerContext currentTrigger, List<PMTriggerContext> triggers, long currentExecutionTime) throws Exception {
-		long templateId = pm.getTemplateId();
-		if (templateId > 0) {
-			WorkorderTemplate template = (WorkorderTemplate) TemplateAPI.getTemplate(templateId);
-			for(PMTriggerContext trigger : triggers) {
-				if(trigger.getSchedule() != null && trigger.getSchedule().getFrequencyTypeEnum() != FrequencyType.DO_NOT_REPEAT) {
-					switch(pm.getTriggerTypeEnum()) {
-						case FIXED:
-						case FLOATING:
-							if (trigger.getId() == currentTrigger.getId()) {
-								PreventiveMaintenanceAPI.createWOContextsFromPMOnce(context, pm, trigger, template, currentExecutionTime);
-							}
-							else {//Deleting oldJobs of other schedule triggers
-								WorkOrderContext nextWo = PreventiveMaintenanceAPI.getNextPMWorkOrderContext(trigger.getId(), currentExecutionTime, false);
-								ZonedDateTime zdt = DateTimeUtil.getDateTime(nextWo.getCreatedTime());
-								if(trigger.getSchedule().getTimeObjects() != null && !trigger.getSchedule().getTimeObjects().isEmpty()) {
-									List<LocalTime> times = trigger.getSchedule().getTimeObjects();
-									zdt = zdt.with(times.get(times.size() - 1));
-								}
-								long nextExecutionTime = trigger.getSchedule().nextExecutionTime(zdt.toEpochSecond());
-								ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-								FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
-								List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
-								Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-								FacilioField nextExecutionField = fieldMap.get("createdTime");
-								FacilioField isActive = fieldMap.get("jobStatus");
-								if (pm.getEndTime() == -1 || nextExecutionTime < pm.getEndTime()) {
-									Map<String, Object> props = new HashMap<>();
-									props.put("jobStatus", WorkOrderContext.JobsStatus.ACTIVE.getValue());
-									props.put("createdTime", nextExecutionTime * 1000);
-									UpdateRecordBuilder<WorkOrderContext> updateRecordBuilder = new UpdateRecordBuilder<WorkOrderContext>()
-											.fields(Arrays.asList(nextExecutionField, isActive))
-											.module(module)
-											.andCondition(CriteriaAPI.getIdCondition(nextWo.getId(), module));
-									updateRecordBuilder.updateViaMap(props);
-								}
-								else {
-									Map<String, Object> props = new HashMap<>();
-									props.put("jobStatus", WorkOrderContext.JobsStatus.IN_ACTIVE.getValue());
-									UpdateRecordBuilder<WorkOrderContext> updateRecordBuilder = new UpdateRecordBuilder<WorkOrderContext>()
-											.fields(Arrays.asList(nextExecutionField, isActive))
-											.module(module)
-											.andCondition(CriteriaAPI.getIdCondition(nextWo.getId(), module));
-									updateRecordBuilder.updateViaMap(props);
-								}
-							}
-							break;
-					}
-				}
-				else if(trigger.getRuleId() != -1) {
-					switch(pm.getTriggerTypeEnum()) {
-						case FIXED:
-						case FLOATING:
-							if(trigger.getId() != currentTrigger.getId()) { //Resetting latest value of other metered triggers
-								long latestValue = getLatestReading(trigger.getRuleId());
-								if(latestValue != -1) {
-									ReadingRuleAPI.updateLastValueInReadingRule(trigger.getRuleId(), latestValue);
-								}
-							}
-							break;
-						default:
-							break;
-					}
-				}
-			}
-		}
-	}
-
+	
 	private void resetPMTriggers(PreventiveMaintenance pm, PMTriggerContext currentTrigger, List<PMTriggerContext> triggers,PMJobsContext pmJobsContext, long currentExecutionTime, Map<Long, Long> nextExecutionTimes) throws Exception {
 		for(PMTriggerContext trigger : triggers) {
 			if(trigger.getSchedule() != null && trigger.getSchedule().getFrequencyTypeEnum() != FrequencyType.DO_NOT_REPEAT) {
@@ -153,7 +81,7 @@ public class ResetNewTriggersCommand implements SerializableCommand {
 						else {//Deleting oldJobs of other schedule triggers
 							pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger.getId(), currentExecutionTime, false);
 							PMJobsContext updatedPM = new PMJobsContext();
-							ZonedDateTime zdt = DateTimeUtil.getDateTime(pmJob.getNextExecutionTime());
+							ZonedDateTime zdt = DateTimeUtil.getDateTime();
 							if(trigger.getSchedule().getTimeObjects() != null && !trigger.getSchedule().getTimeObjects().isEmpty()) {
 								List<LocalTime> times = trigger.getSchedule().getTimeObjects();
 								zdt = zdt.with(times.get(times.size() - 1));
