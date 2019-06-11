@@ -36,7 +36,6 @@ public class DeletePMAndDependenciesCommand implements Command{
 	@Override
 	public boolean execute(Context context) throws Exception {
 		
-		List<Long> templateIds = new ArrayList<>();
 		List<Long> ruleIds = new ArrayList<>();
 		List<Long> pmIds = new ArrayList<>();
 		List<Long> triggerPMIds = new ArrayList<>();
@@ -50,10 +49,7 @@ public class DeletePMAndDependenciesCommand implements Command{
 		if (oldPms != null) {
 			for(PreventiveMaintenance oldPm: oldPms) {
 				pmIds.add(oldPm.getId());
-				if (!isStatusUpdate) {
-					templateIds.add(oldPm.getTemplateId());
-				}
-				
+
 				if(oldPm.hasTriggers() && oldPm.getTriggers() != null && (isPMDelete || newPm.getTriggers() != null || deleteOnStatusUpdate)) {
 					List<Long> triggerIds = new ArrayList<>();
 					oldPm.getTriggers().forEach(trigger -> {
@@ -63,8 +59,6 @@ public class DeletePMAndDependenciesCommand implements Command{
 						triggerIds.add(trigger.getId());
 					});
 
-					List<PMJobsContext> pmJobs = PreventiveMaintenanceAPI.getPMJobs(triggerIds,true);
-					templateIds.addAll(pmJobs.stream().map(PMJobsContext::getTemplateId).collect(Collectors.toList()));
 
 					triggerPMIds.add(oldPm.getId());
 					
@@ -92,18 +86,16 @@ public class DeletePMAndDependenciesCommand implements Command{
 		ActionAPI.deleteActions(actionIds);
 		deletePMReminders(pmIds);
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
-		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
-			if (isPMDelete) {
-				deleteScheduledWorkorders(context, recordIds);
-			} else if (isStatusUpdate) {
-				if (newPm != null && !newPm.isActive()) {
-					deleteScheduledWorkorders(context, recordIds);
-				}
-			} else {
+		if (isPMDelete) {
+			deleteScheduledWorkorders(context, recordIds);
+		} else if (isStatusUpdate) {
+			if (newPm != null && !newPm.isActive()) {
 				deleteScheduledWorkorders(context, recordIds);
 			}
-			deleteMultiWoPMReminders(pmIds);
+		} else {
+			deleteScheduledWorkorders(context, recordIds);
 		}
+		deleteMultiWoPMReminders(pmIds);
 
 //		if(isPMDelete || deleteOnStatusUpdate || (newPm != null && newPm.getId() != -1 && newPm.getReminders() != null)) {
 //			
@@ -125,8 +117,6 @@ public class DeletePMAndDependenciesCommand implements Command{
 			int count = deletePMs(recordIds);
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, count);
 		}
-		
-		TemplateAPI.deleteTemplates(templateIds);
 		
 		return false;
 	}
@@ -210,23 +200,7 @@ public class DeletePMAndDependenciesCommand implements Command{
 		if (pmIds.isEmpty()) {
 			return;
 		}
-
-		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
-			deleteNewPMReminders(pmIds);
-			return;
-		}
-		FacilioModule reminderModule = ModuleFactory.getPMReminderModule();
-	   FacilioField pmIdField = new FacilioField();
-	   pmIdField.setName("pmId");
-	   pmIdField.setDataType(FieldType.NUMBER);
-	   pmIdField.setColumnName("PM_ID");
-	   pmIdField.setModule(reminderModule);
-
-		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
-				.table(reminderModule.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(reminderModule))
-				.andCondition(CriteriaAPI.getCondition(pmIdField, pmIds, NumberOperators.EQUALS));
-		deleteBuilder.delete();
+		deleteNewPMReminders(pmIds);
 	}
 
 	private void deleteNewPMReminders(List<Long> pmIds) throws Exception {
