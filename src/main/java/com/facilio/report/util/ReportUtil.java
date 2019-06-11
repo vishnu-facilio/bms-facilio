@@ -114,7 +114,7 @@ public class ReportUtil {
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
 													.select(fields)
 													.table(reportFoldermodule.getTableName())
-													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(reportFoldermodule))
+//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(reportFoldermodule))
 													.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
 													;
 		
@@ -192,7 +192,7 @@ public class ReportUtil {
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
 													.select(FieldFactory.getReport1Fields())
 													.table(module.getTableName())
-													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCustomWhere(module.getTableName()+".REPORT_FOLDER_ID = ?",folderId)
 													;
 		
@@ -220,7 +220,7 @@ public class ReportUtil {
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
 													.select(fields)
 													.table(reportModule.getTableName())
-													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(reportModule))
+//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(reportModule))
 													.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
 		
 		if (searchText != null) {
@@ -255,7 +255,7 @@ public class ReportUtil {
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
 													.select(FieldFactory.getReport1Fields())
 													.table(module.getTableName())
-													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCondition(CriteriaAPI.getIdCondition(reportId, module))
 													;
 		
@@ -354,7 +354,7 @@ public class ReportUtil {
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
 													.select(FieldFactory.getReport1Fields())
 													.table(module.getTableName())
-													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCustomWhere("REPORT_FOLDER_ID = ?", reportFolderId);
 													;
 		
@@ -440,7 +440,7 @@ public class ReportUtil {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 													.table(module.getTableName())
 													.fields(FieldFactory.getReport1Fields())
-													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCondition(CriteriaAPI.getIdCondition(reportContext.getId(), module))
 													;
 		

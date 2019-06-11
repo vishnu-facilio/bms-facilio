@@ -82,7 +82,8 @@ public class AddOrUpdateStateFlowCommand implements Command {
 				.select(Arrays.asList(FieldFactory.getIdField(ModuleFactory.getWorkflowRuleModule()), executionOrderField))
 				.andCondition(CriteriaAPI.getCondition("RULE_TYPE", "ruleType", String.valueOf(RuleType.STATE_FLOW.getIntVal()), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getWorkflowRuleModule()));
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getWorkflowRuleModule()));
+				;
 		List<Map<String, Object>> list = selectBuilder.get();
 		
 		if (CollectionUtils.isNotEmpty(list)) {
@@ -90,8 +91,8 @@ public class AddOrUpdateStateFlowCommand implements Command {
 				GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
 						.table(ModuleFactory.getWorkflowRuleModule().getTableName())
 						.fields(Collections.singletonList(executionOrderField))
-						.andCondition(CriteriaAPI.getIdCondition((long) map.get("id"), ModuleFactory.getWorkflowRuleModule()))
-						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getWorkflowRuleModule()));
+						.andCondition(CriteriaAPI.getIdCondition((long) map.get("id"), ModuleFactory.getWorkflowRuleModule()));
+//						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getWorkflowRuleModule()));
 				Integer executionOrder = ((Integer) map.get("executionOrder"));
 				if (executionOrder == null) {
 					executionOrder = 0;

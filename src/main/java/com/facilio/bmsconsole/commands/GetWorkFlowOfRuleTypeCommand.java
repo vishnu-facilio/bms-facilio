@@ -96,7 +96,8 @@ public class GetWorkFlowOfRuleTypeCommand implements Command {
 			.on(module.getTableName()+ ".ID =" + readingRuleModule.getTableName() + ".ID");
 		}
 		
-		builder.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+		builder
+//		.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 		.andCondition(CriteriaAPI.getCondition(ruleTypeField, String.valueOf(ruleType.getIntVal()), NumberOperators.EQUALS))
 		.andCondition(CriteriaAPI.getCondition(latestVersionField, String.valueOf(true), BooleanOperators.IS))
 		;

@@ -23,7 +23,7 @@ public class DeleteNewEventRuleCommand implements Command {
 				FacilioModule module = EventConstants.EventModuleFactory.getEventRulesModule();
 				GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 																.table(module.getTableName())
-																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																.andCondition(CriteriaAPI.getIdCondition(id, module))
 																;
 				deleteBuilder.delete();

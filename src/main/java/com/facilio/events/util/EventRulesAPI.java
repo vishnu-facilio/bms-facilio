@@ -37,7 +37,7 @@ public class EventRulesAPI {
 													.select(fields)
 													.table(module.getTableName())
 													.orderBy("EXECUTION_ORDER")
-													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCondition(CriteriaAPI.getIdCondition(id, module))
 													;
 
@@ -59,7 +59,7 @@ public class EventRulesAPI {
 													.select(fields)
 													.table(module.getTableName())
 													.orderBy("EXECUTION_ORDER")
-													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCondition(CriteriaAPI.getCondition(active, String.valueOf(true), BooleanOperators.IS))
 													;
 
@@ -76,7 +76,7 @@ public class EventRulesAPI {
 													.select(fields)
 													.table(module.getTableName())
 													.orderBy("EXECUTION_ORDER")
-													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													;
 
 		List<Map<String, Object>> eventRulesProps = rulebuilder.get();

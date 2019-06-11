@@ -577,7 +577,8 @@ public class PreventiveMaintenanceAPI {
 				.on("Tickets.ID=WorkOrders.ID")
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), String.valueOf(preopen.getId()), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("pm"), String.valueOf(pmId), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+				;
 		List<Map<String, Object>> props = selectRecordsBuilder.get();
 		if (props == null || props.isEmpty()) {
 			return null;
@@ -662,6 +663,7 @@ public class PreventiveMaintenanceAPI {
 		return skipList;
 	}
 
+
 	public static PreventiveMaintenance getActivePM(long id, boolean fetchChildren) throws Exception {
 		return getPM(id, true, fetchChildren);
 	}
@@ -677,7 +679,7 @@ public class PreventiveMaintenanceAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getIdCondition(id, module))
 														;
 		
@@ -732,7 +734,7 @@ public class PreventiveMaintenanceAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														;
 		if (onlyActive) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(pmFieldsMap.get("status"), String.valueOf(true), BooleanOperators.IS));
@@ -770,7 +772,7 @@ public class PreventiveMaintenanceAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.orderBy("Preventive_Maintenance.CREATION_TIME DESC")
 														;
 		
@@ -938,7 +940,7 @@ public class PreventiveMaintenanceAPI {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 														.fields(FieldFactory.getPreventiveMaintenanceFields())
 														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getIdCondition(pmId, module))
 														;
 		
@@ -958,7 +960,7 @@ public class PreventiveMaintenanceAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCriteria(filterCriteria);
 		return selectBuilder.get();
 	}
@@ -1233,7 +1235,7 @@ public class PreventiveMaintenanceAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(reminderIdField, reminderIds, NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -1285,7 +1287,7 @@ public class PreventiveMaintenanceAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(pmIdField, pmIds, NumberOperators.EQUALS));
 		
 		return selectBuilder.get();
@@ -1496,7 +1498,7 @@ public class PreventiveMaintenanceAPI {
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 															.table(module.getTableName())
 															.select(FieldFactory.getPMReminderFields())
-															.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//															.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 															.andCustomWhere("PM_ID = ?", pm.getId())
 															.andCustomWhere("REMINDER_TYPE != ?", ReminderType.BEFORE_EXECUTION.getValue())
 															;
@@ -1596,7 +1598,7 @@ public class PreventiveMaintenanceAPI {
 					GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder();
 					updateRecordBuilder.table(reminderModule.getTableName())
 							.fields(Arrays.asList(reminderFieldsMap.get("scheduleRuleId")))
-							.andCondition(CriteriaAPI.getCurrentOrgIdCondition(reminderModule))
+//							.andCondition(CriteriaAPI.getCurrentOrgIdCondition(reminderModule))
 							.andCondition(CriteriaAPI.getIdCondition(reminder.getId(), reminderModule))
 							.andCondition(CriteriaAPI.getCondition(reminderFieldsMap.get("pmId"), String.valueOf(pm.getId()), NumberOperators.EQUALS));
 					updateRecordBuilder.update(props);
@@ -1752,7 +1754,7 @@ public class PreventiveMaintenanceAPI {
         GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder();
         updateRecordBuilder.fields(Arrays.asList(fieldMap.get("woGenerationStatus")))
                 .table(module.getTableName())
-                .andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//                .andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
                 .andCondition(CriteriaAPI.getCondition(fieldMap.get("id"), ids, NumberOperators.EQUALS));
         updateRecordBuilder.update(props);
     }

@@ -182,7 +182,8 @@ public class WorkflowV2Util {
 
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields)
-				.table(module.getTableName()).andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.table(module.getTableName())
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("name"), name, StringOperators.IS));
 
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -215,7 +216,8 @@ public class WorkflowV2Util {
 
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields)
-				.table(module.getTableName()).andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.table(module.getTableName())
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("name"), functionName, StringOperators.IS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("nameSpaceId"), nameSpaceId + "",
 						NumberOperators.EQUALS));

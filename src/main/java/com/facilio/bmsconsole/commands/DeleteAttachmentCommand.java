@@ -55,7 +55,7 @@ public class DeleteAttachmentCommand implements Command, PostTransactionCommand 
 			
 			GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 					.table(module.getTableName())
-					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 					.andCondition(CriteriaAPI.getIdCondition(attachmentIdList, module));
 
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, builder.delete());

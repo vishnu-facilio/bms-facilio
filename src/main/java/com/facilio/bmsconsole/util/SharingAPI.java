@@ -46,7 +46,7 @@ public class SharingAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.table(module.getTableName())
 														.select(fields)
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(parentIdField, String.valueOf(parentId), PickListOperators.IS))
 														.orderBy("ID")
 														;
@@ -64,7 +64,7 @@ public class SharingAPI {
 	public static int deleteSharing (Collection<Long> ids, FacilioModule module) throws SQLException {
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getIdCondition(ids, module))
 														;
 		
@@ -75,7 +75,7 @@ public class SharingAPI {
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				;
 		List<Map<String, Object>> props = select.get();
 		SharingContext<E> sharingList = new SharingContext<E>();

@@ -47,7 +47,7 @@ public class UpdateTaskCountCommand implements Command {
 					.table(module.getTableName())
 					.select(fields)
 					.groupBy(parentIdField.getCompleteColumnName())
-					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 					.andCondition(condition);
 			
 			List<Map<String, Object>> totalCountList = select.get();
@@ -68,7 +68,7 @@ public class UpdateTaskCountCommand implements Command {
 					.select(fields)
 					.groupBy(parentIdField.getCompleteColumnName())
 					.andCondition(condition)
-					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 					.andCondition(completedStatusCondition);
 			
 			List<Map<String, Object>> completedCountList = select.get();
@@ -109,7 +109,7 @@ public class UpdateTaskCountCommand implements Command {
 				GenericUpdateRecordBuilder recordBuilder = new GenericUpdateRecordBuilder()
 						.table(ticketModule.getTableName())
 						.fields(Arrays.asList(noOfTasksField, noOfClosedTasksField))
-						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ticketModule))
+//						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ticketModule))
 						.andCondition(idFieldCondition);
 				recordBuilder.update(updateMap);
 			}

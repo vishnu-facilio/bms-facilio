@@ -24,7 +24,7 @@ public class ValidateAssetDepartmentDeletion implements Command {
 		GenericSelectRecordBuilder assetSelectBuilder = new GenericSelectRecordBuilder()
 				.select(Arrays.asList(FieldFactory.getIdField(assetModule))).table(assetModule.getTableName())
 				.innerJoin("Resources").on("Assets.ID=Resources.ID")
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(assetModule))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(assetModule))
 				.andCustomWhere("DEPARTMENT_ID = ? AND (Resources.SYS_DELETED IS NULL OR Resources.SYS_DELETED = ?)", recordID, false ).limit(1);
 
 		List<Map<String, Object>> result = assetSelectBuilder.get();

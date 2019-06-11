@@ -26,8 +26,8 @@ public class GetConnectedAppsListCommand implements Command{
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getConnectedAppFields())
 				.table(ModuleFactory.getConnectedAppsModule().getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getConnectedAppsModule()));
-		
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getConnectedAppsModule()));
+				;
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			List<ConnectedAppContext> connectedApps = new ArrayList<>();

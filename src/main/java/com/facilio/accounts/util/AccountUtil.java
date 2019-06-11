@@ -177,7 +177,7 @@ public class AccountUtil {
     	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(AccountConstants.getFeatureLicenseFields())
 				.table(AccountConstants.getFeatureLicenseModule().getTableName())
-				.andCondition(CriteriaAPI.getCondition(FieldFactory.getOrgIdField(AccountConstants.getFeatureLicenseModule()), orgidString, StringOperators.IS));
+				.andCondition(CriteriaAPI.getCondition(AccountConstants.getOrgIdField(AccountConstants.getFeatureLicenseModule()), orgidString, StringOperators.IS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		Map<String, Object> modulemap=props.get(0);
@@ -229,8 +229,8 @@ public class AccountUtil {
 		
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 												.table(module.getTableName())
-												.select(fields)
-												.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+												.select(fields);
+//												.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
 		
 		List<Map<String, Object>> portalInfoList = builder.get();
 		

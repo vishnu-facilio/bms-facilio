@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.jobs;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.chain.FacilioContext;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -40,7 +41,7 @@ public class DeviceMonitorJob extends FacilioJob {
 
         if(jc.getOrgId() != -1) {
             Condition orgIdCondition = new Condition();
-            orgIdCondition.setField(FieldFactory.getOrgIdField(DEVICE_DETAILS_MODULE));
+            orgIdCondition.setField(AccountConstants.getOrgIdField(DEVICE_DETAILS_MODULE));
             orgIdCondition.setOperator(NumberOperators.EQUALS);
             orgIdCondition.setValue(String.valueOf(jc.getOrgId()));
 

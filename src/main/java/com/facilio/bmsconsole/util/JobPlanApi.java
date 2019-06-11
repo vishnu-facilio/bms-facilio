@@ -31,7 +31,7 @@ public class JobPlanApi {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getJobPlanFields())
 				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				;
 		
 		if (CollectionUtils.isNotEmpty(ids)) {

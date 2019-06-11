@@ -96,7 +96,7 @@ public class GetReadingRuleDetailsCommand implements Command {
 							GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder()
 																							.table(module.getTableName())
 																							.select(fields)
-																							.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//																							.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																							.andCondition(CriteriaAPI.getConditionFromList("SUB_RULE_ID", "subRuleId", rcaIds, NumberOperators.EQUALS))
 																							.andCondition(CriteriaAPI.getCondition(eventFieldsMap.get("resourceId"), alarm.getResource().getId()+"", NumberOperators.EQUALS))
 																							.andCondition(CriteriaAPI.getCondition(eventFieldsMap.get("createdTime"), alarm.getCreatedTime()+"", DateOperators.IS_AFTER))

@@ -29,7 +29,7 @@ public class RemoveAlarmFromEventCommand implements Command {
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 															.fields(fields)
 															.table(module.getTableName())
-															.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//															.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 															.andCondition(CriteriaAPI.getCondition(alarmId, recordIds, PickListOperators.IS))
 															;
 			Map<String, Object> prop = new HashMap<>();

@@ -36,6 +36,7 @@ public class AddAssetBreakDownCommand implements Command {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(ContextNames.ASSET_BREAKDOWN);
 		if (assetBreakdownStatus) {
+
 			if (assetBreakdown.getTotime() != -1) {
 				assetBreakdown.setDuration(AssetBreakdownAPI.calculateDurationInSeconds(assetBreakdown.getFromtime(),
 						assetBreakdown.getTotime()));
@@ -44,8 +45,10 @@ public class AddAssetBreakDownCommand implements Command {
 				fields.add(modBean.getField("totime", ContextNames.ASSET_BREAKDOWN));
 				fields.add(modBean.getField("duration", ContextNames.ASSET_BREAKDOWN));
 				GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder().table(module.getTableName())
-						.fields(fields).andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+						.fields(fields)
+//						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 						.andCondition(CriteriaAPI.getIdCondition(assetBreakdownId, module));
+
 				updateBuilder.update(props);
 				context.put(FacilioConstants.ContextNames.ASSET_DOWNTIME_STATUS, false);
 			}

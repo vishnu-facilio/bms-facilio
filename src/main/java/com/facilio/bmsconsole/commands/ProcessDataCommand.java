@@ -109,7 +109,7 @@ public class ProcessDataCommand implements Command {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getPointsModule()))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getPointsModule()))
 				.andCriteria(criteriaList);
 
 		List<Map<String, Object>> props = builder.get();

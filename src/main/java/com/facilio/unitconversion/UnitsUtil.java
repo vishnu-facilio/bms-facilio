@@ -165,7 +165,7 @@ public class UnitsUtil {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getOrgUnitsModule().getTableName())
 				.select(FieldFactory.getOrgUnitsFields())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getOrgUnitsModule()))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getOrgUnitsModule()))
 				.andCondition(CriteriaAPI.getCondition("METRIC", "metric", metricId+"", NumberOperators.EQUALS));
 
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -187,8 +187,8 @@ public class UnitsUtil {
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getOrgUnitsModule().getTableName())
-				.select(FieldFactory.getOrgUnitsFields())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getOrgUnitsModule()));
+				.select(FieldFactory.getOrgUnitsFields());
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getOrgUnitsModule()));
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		

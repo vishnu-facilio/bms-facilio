@@ -150,8 +150,8 @@ public class MLForecastingJob extends FacilioJob
 			FacilioModule module = ModuleFactory.getMlForecastingModule();
 			GenericSelectRecordBuilder recordBuilder = new GenericSelectRecordBuilder()
 														.table(module.getTableName())
-														.select(FieldFactory.getMlForecastingFields())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+														.select(FieldFactory.getMlForecastingFields());
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
 			
 			List<Map<String, Object>> predictionListMap = recordBuilder.get();
 			List<MlForecastingContext> mlForecastList = getMlForecastFromFromMapList(predictionListMap);

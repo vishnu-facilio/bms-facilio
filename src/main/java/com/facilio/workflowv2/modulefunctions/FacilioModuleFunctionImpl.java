@@ -167,7 +167,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			selectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 					.table(module.getTableName())
 					.module(module)
-					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 					.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
 					.andCriteria(dbParamContext.getCriteria())
 					;

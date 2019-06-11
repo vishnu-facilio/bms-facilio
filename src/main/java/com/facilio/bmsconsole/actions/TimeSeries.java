@@ -75,7 +75,7 @@ public class TimeSeries extends FacilioAction {
 		JSONParser parser = new JSONParser();
 		try {
 			JSONObject payLoad = (JSONObject) parser.parse(getDeviceData());
-			TimeSeriesAPI.processPayLoad(getTimestamp(), payLoad, getMacAddr());
+			TimeSeriesAPI.processPayLoad(getTimestamp(), payLoad, getMacAddr(),true);
 			return SUCCESS;
 		}
 		catch(Exception e) {

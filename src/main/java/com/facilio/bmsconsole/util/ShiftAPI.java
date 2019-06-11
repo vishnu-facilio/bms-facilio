@@ -534,7 +534,7 @@ public class ShiftAPI {
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SHIFT);
 		DeleteRecordBuilder<ShiftContext> builder = new DeleteRecordBuilder<ShiftContext>()
 				.module(module)
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getIdCondition(id, module));
 		builder.delete();
 		
@@ -789,8 +789,8 @@ public class ShiftAPI {
 		UpdateRecordBuilder<ShiftContext> builder = new UpdateRecordBuilder<ShiftContext>()
 				.module(module)
 				.fields(modBean.getAllFields(module.getName()))
-				.andCondition(CriteriaAPI.getIdCondition(shift.getId(), module))
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+				.andCondition(CriteriaAPI.getIdCondition(shift.getId(), module));
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
 		builder.update(shift);
 		
 		deleteSchedulers(shift.getId());
@@ -804,8 +804,8 @@ public class ShiftAPI {
 				.beanClass(ShiftContext.class)
 				.module(module)
 				.select(modBean.getAllFields(module.getName()))
-				.andCondition(CriteriaAPI.getIdCondition(id, module))
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+				.andCondition(CriteriaAPI.getIdCondition(id, module));
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
 		return builder.fetchFirst();
 	}
 
@@ -891,7 +891,7 @@ public class ShiftAPI {
 				GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
 						.table(ModuleFactory.getShiftUserRelModule().getTableName())
 						.fields(fields)
-						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getShiftUserRelModule()))
+//						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getShiftUserRelModule()))
 						.andCondition(CriteriaAPI.getIdCondition(shiftUserRel.getId(), ModuleFactory.getShiftUserRelModule()));
 				
 				boolean shouldRearrangeShifts = endTime != shiftUserRel.getEndTime();
@@ -946,7 +946,7 @@ public class ShiftAPI {
 					GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
 							.table(ModuleFactory.getShiftUserRelModule().getTableName())
 							.fields(Collections.singletonList(FieldFactory.getField("startTime", "START_TIME", FieldType.NUMBER)))
-							.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getShiftUserRelModule()))
+//							.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getShiftUserRelModule()))
 							.andCondition(CriteriaAPI.getIdCondition(shiftUserRel.getId(), ModuleFactory.getShiftUserRelModule()));
 					prop.put("startTime", endTime + 1);
 					builder.update(prop);
@@ -960,8 +960,8 @@ public class ShiftAPI {
 		if (CollectionUtils.isNotEmpty(deleteIds)) {
 			GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 					.table(ModuleFactory.getShiftUserRelModule().getTableName())
-					.andCondition(CriteriaAPI.getIdCondition(deleteIds, ModuleFactory.getShiftUserRelModule()))
-					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getShiftUserRelModule()));
+					.andCondition(CriteriaAPI.getIdCondition(deleteIds, ModuleFactory.getShiftUserRelModule()));
+//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getShiftUserRelModule()));
 			builder.delete();
 		}
 	}
@@ -996,8 +996,8 @@ public class ShiftAPI {
 		SelectRecordsBuilder<BreakContext> builder = new SelectRecordsBuilder<BreakContext>()
 				.module(module)
 				.select(modBean.getAllFields(module.getName()))
-				.beanClass(BreakContext.class)
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+				.beanClass(BreakContext.class);
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
 		List<BreakContext> list = builder.get();
 		return list;
 	}
@@ -1042,7 +1042,7 @@ public class ShiftAPI {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getShiftBreakRelModule().getTableName())
 				.select(FieldFactory.getShiftBreakRelModuleFields())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getShiftBreakRelModule()))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getShiftBreakRelModule()))
 				.andCondition(CriteriaAPI.getCondition("BREAK_ID", "breakId", String.valueOf(breakId), NumberOperators.EQUALS));
 		List<Map<String, Object>> shiftBreakList = builder.get();
 		if (CollectionUtils.isNotEmpty(shiftBreakList)) {
@@ -1060,7 +1060,7 @@ public class ShiftAPI {
 				.module(module)
 				.select(modBean.getAllFields(module.getName()))
 				.beanClass(BreakContext.class)
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getIdCondition(breakId, module));
 		BreakContext breakContext = builder.fetchFirst();
 		breakContext.setShifts(getShiftsAttachedToBreak(breakId));
@@ -1075,7 +1075,8 @@ public class ShiftAPI {
 		DeleteRecordBuilder<BreakContext> builder = new DeleteRecordBuilder<BreakContext>()
 				.module(module)
 				.andCondition(CriteriaAPI.getIdCondition(breakId, module))
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+		;
 		builder.delete();
 	}
 	

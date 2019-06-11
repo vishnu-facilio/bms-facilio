@@ -1,5 +1,16 @@
 package com.facilio.db.criteria;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -15,11 +26,6 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.lang3.StringUtils;
-
-import java.sql.SQLException;
-import java.util.*;
-import java.util.Map.Entry;
 
 public class CriteriaAPI {
 	
@@ -120,7 +126,7 @@ public class CriteriaAPI {
 		
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition("CRITERIAID", "criteriaId", String.valueOf(id), NumberOperators.EQUALS))
 														;
 		deleteBuilder.delete();
@@ -140,7 +146,7 @@ public class CriteriaAPI {
 															.table(conditionModule.getTableName())
 															.innerJoin(criteriaModule.getTableName())
 															.on(conditionModule.getTableName()+".PARENT_CRITERIA_ID = "+criteriaModule.getTableName()+".CRITERIAID")
-															.andCondition(getCurrentOrgIdCondition(criteriaModule))
+//															.andCondition(getCurrentOrgIdCondition(criteriaModule))
 															.andCondition(getCondition(criteriaId, String.valueOf(id), PickListOperators.IS))
 															;
 		
@@ -178,7 +184,7 @@ public class CriteriaAPI {
 															.table(conditionModule.getTableName())
 															.innerJoin(criteriaModule.getTableName())
 															.on(conditionModule.getTableName()+".PARENT_CRITERIA_ID = "+criteriaModule.getTableName()+".CRITERIAID")
-															.andCondition(getCurrentOrgIdCondition(criteriaModule))
+//															.andCondition(getCurrentOrgIdCondition(criteriaModule))
 															.andCondition(getCondition(criteriaId, ids, PickListOperators.IS))
 															;
 		
@@ -224,21 +230,21 @@ public class CriteriaAPI {
 	
 	public static Condition getOrgIdCondition(long orgId, FacilioModule module) {
 		Condition idCondition = new Condition();
-		idCondition.setField(FieldFactory.getOrgIdField(module));
+		idCondition.setField(AccountConstants.getOrgIdField(module));
 		idCondition.setOperator(NumberOperators.EQUALS);
 		idCondition.setValue(String.valueOf(orgId));
 		
 		return idCondition;
 	}
 	
-	public static Condition getCurrentOrgIdCondition(FacilioModule module) {
-		Condition idCondition = new Condition();
-		idCondition.setField(FieldFactory.getOrgIdField(module));
-		idCondition.setOperator(NumberOperators.EQUALS);
-		idCondition.setValue(String.valueOf(AccountUtil.getCurrentOrg().getOrgId()));
-		
-		return idCondition;
-	}
+//	public static Condition getCurrentOrgIdCondition(FacilioModule module) {
+//		Condition idCondition = new Condition();
+//		idCondition.setField(FieldFactory.getOrgIdField(module));
+//		idCondition.setOperator(NumberOperators.EQUALS);
+//		idCondition.setValue(String.valueOf(AccountUtil.getCurrentOrg().getOrgId()));
+//		
+//		return idCondition;
+//	}
 	
 	public static Condition getCurrentSiteIdCondition(FacilioModule module) {
 		Condition idCondition = new Condition();

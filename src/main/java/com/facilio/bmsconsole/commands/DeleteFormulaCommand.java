@@ -29,7 +29,7 @@ public class DeleteFormulaCommand implements Command {
 			FacilioModule module = ModuleFactory.getFormulaFieldModule();
 			GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 															.table(module.getTableName())
-															.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//															.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 															.andCondition(CriteriaAPI.getIdCondition(id, module));
 			
 			deleteBuilder.delete();

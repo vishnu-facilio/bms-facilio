@@ -92,7 +92,7 @@ public class UpdateEventsCommand implements Command, PostTransactionCommand {
 					UpdateRecordBuilder<WorkOrderContext> updateRecordBuilder = new UpdateRecordBuilder<WorkOrderContext>()
 							.module(module)
 							.fields(Collections.singletonList(noOfEventsField))
-							.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//							.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 							.andCondition(CriteriaAPI.getIdCondition(id, module));
 
 					updateRecordBuilder.updateViaMap(updateMap);

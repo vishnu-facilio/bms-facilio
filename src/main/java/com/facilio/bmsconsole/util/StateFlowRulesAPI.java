@@ -144,7 +144,8 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 				.table(stateFlowScheduleModule.getTableName())
 				.select(FieldFactory.getStateFlowScheduleFields())
 				.andCondition(CriteriaAPI.getCondition("RECORD_ID", "recordId", String.valueOf(record.getId()), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(stateFlowScheduleModule));
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(stateFlowScheduleModule));
+		;
 		List<Map<String, Object>> list = selectBuilder.get();
 		if (CollectionUtils.isNotEmpty(list)) {
 			List<Long> jobIds = new ArrayList<>();
@@ -516,7 +517,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 				.select(fields)
 				.innerJoin(ModuleFactory.getStateFlowModule().getTableName())
 					.on(ModuleFactory.getWorkflowRuleModule().getTableName() + ".ID = " + ModuleFactory.getStateFlowModule().getTableName() + ".ID")
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getStateFlowModule()))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getStateFlowModule()))
 				.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
 				.orderBy("EXECUTION_ORDER");
 		List<Map<String, Object>> list = builder.get();
@@ -556,7 +557,8 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 	public static StateFlowRuleContext getDefaultStateFlow(FacilioModule module) throws Exception {
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getCondition("DEFAULT_STATE_FLOW", "defaltStateFlow", String.valueOf("true"), BooleanOperators.IS));
-		criteria.addAndCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getStateFlowModule()));
+//		criteria.addAndCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getStateFlowModule()));
+		;
 
 		FacilioField moduleIdField = new FacilioField();
 		moduleIdField.setName("moduleId");

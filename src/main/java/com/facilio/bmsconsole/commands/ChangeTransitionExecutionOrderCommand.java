@@ -58,7 +58,8 @@ public class ChangeTransitionExecutionOrderCommand implements Command {
 						.table(ModuleFactory.getWorkflowRuleModule().getTableName())
 						.fields(Collections.singletonList(executionOrderField))
 						.andCondition(CriteriaAPI.getIdCondition(stateFlowRuleContext.getId(), ModuleFactory.getWorkflowRuleModule()))
-						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getWorkflowRuleModule()));
+//						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getWorkflowRuleModule()));
+						;
 				
 				Map map = new HashMap<>();
 				map.put("executionOrder", i + 1);

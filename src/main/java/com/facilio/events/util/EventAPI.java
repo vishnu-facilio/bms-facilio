@@ -196,7 +196,7 @@ public class EventAPI {
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 																.table(module.getTableName())
 																.select(EventConstants.EventFieldFactory.getSourceToResourceMappingFields())
-																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																.andCondition(CriteriaAPI.getCondition("SOURCE",EventConstants.EventContextNames.SOURCE, source, StringOperators.IS));
 																//.andCustomWhere("ORGID = ? AND SOURCE = ? AND CONTROLLER_ID = ?", orgId, source,controllerId);
 		
@@ -239,7 +239,7 @@ public class EventAPI {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 														.table(module.getTableName())
 														.fields(EventConstants.EventFieldFactory.getSourceToResourceMappingFields())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition("SOURCE",EventConstants.EventContextNames.SOURCE, source, StringOperators.IS))
 														.andCondition(getControllerIdCondition(controllerId, module));		
 		updateBuilder.update(prop);
@@ -253,7 +253,7 @@ public class EventAPI {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 														.table(module.getTableName())
 														.fields(EventConstants.EventFieldFactory.getSourceToResourceMappingFields())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getIdCondition(id, module));		
 		updateBuilder.update(prop);
 	}
@@ -279,7 +279,7 @@ public class EventAPI {
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 																.table(module.getTableName())
 																.select(EventConstants.EventFieldFactory.getEventFields())
-																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																.andCondition(CriteriaAPI.getIdCondition(ids, module));
 		
 		List<Map<String, Object>> props = selectRecordBuilder.get();
@@ -294,7 +294,7 @@ public class EventAPI {
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 																.table(module.getTableName())
 																.select(EventConstants.EventFieldFactory.getEventFields())
-																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																.andCriteria(criteria);
 		
 		List<Map<String, Object>> props = selectRecordBuilder.get();

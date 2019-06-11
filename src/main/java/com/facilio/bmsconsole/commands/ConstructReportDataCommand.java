@@ -241,7 +241,8 @@ public class ConstructReportDataCommand implements Command {
 						.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(lookupModule.getName()))
 						.select(selectFields)
 						.module(lookupModule)
-						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(lookupModule));
+//						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(lookupModule))
+						;
 
 				List<Map<String,Object>> asProps = builder.getAsProps();
 				lookupMap = new HashMap<>();

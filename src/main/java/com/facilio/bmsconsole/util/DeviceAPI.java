@@ -49,7 +49,7 @@ public class DeviceAPI
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.table(module.getTableName())
 				.select(FieldFactory.getControllerFields())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				;
 
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -126,7 +126,7 @@ public class DeviceAPI
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.table(module.getTableName())
 				.select(FieldFactory.getControllerFields())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				;
 
 		List<Map<String, Object>> props = selectBuilder.get();

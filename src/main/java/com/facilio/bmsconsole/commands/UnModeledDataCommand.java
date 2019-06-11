@@ -126,7 +126,7 @@ public class UnModeledDataCommand implements Command {
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 					.table(module.getTableName())
 					.fields(fields)
-					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 					.andCustomWhere("ID=?", instanceId);
 			;
 			updateBuilder.update(prop);
