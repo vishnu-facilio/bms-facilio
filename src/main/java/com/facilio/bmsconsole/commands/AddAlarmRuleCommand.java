@@ -21,7 +21,6 @@ public class AddAlarmRuleCommand implements Command {
 		
 		fillDefaultPropsForPreRequsite(preRequsiteRule);
 		preRequsiteRule.setClearAlarm(alarmRule.isAutoClear());
-		preRequsiteRule.setReportBreakdown(alarmRule.isReportBreakdown());
 		long ruleId = WorkflowRuleAPI.addWorkflowRule(preRequsiteRule);
 		
 		preRequsiteRule.setRuleGroupId(ruleId);

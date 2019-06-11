@@ -8,7 +8,6 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.AssetBDSourceDetailsContext;
 import com.facilio.bmsconsole.context.AssetBreakdownContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.constants.FacilioConstants;
@@ -24,9 +23,9 @@ import com.facilio.modules.fields.FacilioField;
 public class getAssetDownTimeDetailsCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
-		AssetBDSourceDetailsContext assetBDSourceDetails = (AssetBDSourceDetailsContext) context
-				.get(FacilioConstants.ContextNames.ASSET_BD_SOURCE_DETAILS);
-		if (assetBDSourceDetails.getAssetid() != -1) {
+		AssetBreakdownContext assetBreakdown = (AssetBreakdownContext) context
+				.get(FacilioConstants.ContextNames.ASSET_BREAKDOWN);
+		if (assetBreakdown.getParentId() != -1) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule("asset");
 			
@@ -37,7 +36,7 @@ public class getAssetDownTimeDetailsCommand implements Command {
 			
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields)
 					.table(module.getTableName()).andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-					.andCondition(CriteriaAPI.getIdCondition(assetBDSourceDetails.getAssetid(), module));
+					.andCondition(CriteriaAPI.getIdCondition(assetBreakdown.getParentId(), module));
 			
 			Map<String, Object> prop = selectBuilder.fetchFirst();
 			if (prop != null && !prop.isEmpty()) {
@@ -45,11 +44,7 @@ public class getAssetDownTimeDetailsCommand implements Command {
 				context.put(FacilioConstants.ContextNames.ASSET_DOWNTIME_STATUS,
 						asset.getDowntimeStatus() == null ? Boolean.FALSE : asset.getDowntimeStatus());
 				context.put(FacilioConstants.ContextNames.ASSET_DOWNTIME_ID, asset.getLastDowntimeId());
-				assetBDSourceDetails.setParentId(asset.getLastDowntimeId());
-				context.put(FacilioConstants.ContextNames.ASSET_BD_SOURCE_DETAILS, assetBDSourceDetails);
-			}else{
-				context.put(FacilioConstants.ContextNames.ASSET_DOWNTIME_STATUS, Boolean.FALSE);
-				context.put(FacilioConstants.ContextNames.ASSET_DOWNTIME_ID, null);
+				assetBreakdown.setId(asset.getLastDowntimeId());
 			}
 
 		}

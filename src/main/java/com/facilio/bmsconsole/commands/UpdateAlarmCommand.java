@@ -6,9 +6,6 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AlarmSeverityContext;
-import com.facilio.bmsconsole.context.AssetBDSourceDetailsContext;
-import com.facilio.bmsconsole.context.AssetBDSourceDetailsContext.SourceType;
-import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -25,7 +22,6 @@ import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.wms.message.WmsEvent;
 import com.facilio.wms.util.WmsApi;
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
@@ -130,28 +126,6 @@ public class UpdateAlarmCommand implements Command {
 			JSONObject record = new JSONObject();
 			record.put("id", recordIds.get(0));
 			
-			ReadingAlarmContext alarmContext = AlarmAPI.getReadingAlarmContext(recordIds.get(0));
-			Long assetId = Long.parseLong((String) alarmContext.getAdditionInfo().get("resourceid"));
-			Boolean reportBreakDown = false;
-			if (alarmContext.getAdditionInfo() != null&&alarmContext.getAdditionInfo().get("reportBreakdown")!=null) {
-				if (alarmContext.getAdditionInfo().get("reportBreakdown") instanceof String) {
-					reportBreakDown = Boolean.valueOf((String) alarmContext.getAdditionInfo().get("reportBreakdown"));
-				} else {
-					reportBreakDown = (Boolean) alarmContext.getAdditionInfo().get("reportBreakdown");
-				}
-			}
-			for(Long id:recordIds){
-				if (isCleared && reportBreakDown) {
-					AssetBDSourceDetailsContext assetBreakdown = new AssetBDSourceDetailsContext();
-					assetBreakdown.setTotime(alarm.getClearedTime());
-					assetBreakdown.setAssetid(assetId);
-					assetBreakdown.setSourceId(id);
-					assetBreakdown.setSourceTypeEnum(SourceType.ALARM);
-					context.put(FacilioConstants.ContextNames.ASSET_BD_SOURCE_DETAILS, assetBreakdown);
-					Chain newAssetBreakdown = TransactionChainFactory.getAddNewAssetBreakdownChain();
-					newAssetBreakdown.execute(context);
-				}
-			}
 			try {
 				if(EventType.UPDATED_ALARM_SEVERITY.equals(context.get(FacilioConstants.ContextNames.EVENT_TYPE)) && 
 						(AccountUtil.getCurrentOrg().getOrgId() != 88 || alarm.getSeverity().getId() == AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.CRITICAL_SEVERITY).getId())) {

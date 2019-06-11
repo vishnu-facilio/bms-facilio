@@ -218,15 +218,6 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		this.thresholdType = thresholdType;
 	}
 	
-	private Boolean reportBreakdown;
-
-	public Boolean getReportBreakdown() {
-		return reportBreakdown;
-	}
-
-	public void setReportBreakdown(Boolean reportBreakdown) {
-		this.reportBreakdown = reportBreakdown;
-	}
 	private Boolean clearAlarm;
 	public Boolean getClearAlarm() {
 		return clearAlarm;

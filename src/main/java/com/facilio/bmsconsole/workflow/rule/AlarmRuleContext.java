@@ -142,16 +142,6 @@ public class AlarmRuleContext {
 		this.readingAlarmRuleContexts = readingAlarmRuleContexts;
 	}
 	
-	private boolean reportBreakdown;
-
-	public boolean isReportBreakdown() {
-		return reportBreakdown;
-	}
-
-	public void setReportBreakdown(boolean reportBreakdown) {
-		this.reportBreakdown = reportBreakdown;
-	}
-
 	boolean isAutoClear;
 
 	public boolean isAutoClear() {

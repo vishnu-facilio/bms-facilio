@@ -2,12 +2,8 @@ package com.facilio.bmsconsole.workflow.rule;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
-import com.facilio.bmsconsole.actions.AlarmAction;
-import com.facilio.bmsconsole.actions.WorkflowRuleAction;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.util.TemplateAPI;
-import com.facilio.bmsconsole.util.WorkOrderAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.modules.FieldUtil;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
@@ -113,16 +109,6 @@ public class ActionContext implements Serializable {
 			String type = placeHolders.get("mailType") != null ? placeHolders.get("mailType").toString() : null;
 			actionObj.put("mailType", type);
 			
-            if(currentRule.getParentRuleId()!=-1){
-            WorkflowRuleContext rule= WorkflowRuleAPI.getWorkflowRule(currentRule.getParentRuleId());
-             if(rule!=null){
-            	 actionObj.put("alarmRuleName", rule.getName());
-             }
-            }
-            actionObj.put("resourceid",(Long)placeHolders.get("resourceId"));
-            if(currentRule instanceof ReadingRuleContext){
-            	actionObj.put("reportBreakdown", ((ReadingRuleContext) currentRule).getReportBreakdown());
-            }
 			if (AccountUtil.getCurrentOrg().getId() == 151 && actionType == ActionType.BULK_EMAIL_NOTIFICATION) {
 				LOGGER.info("Email json : "+actionObj.toJSONString());
 			}

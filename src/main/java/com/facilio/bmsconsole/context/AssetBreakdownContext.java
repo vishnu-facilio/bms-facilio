@@ -1,8 +1,6 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.modules.ModuleBaseWithCustomFields;
-
-public class AssetBreakdownContext extends ModuleBaseWithCustomFields{
+public class AssetBreakdownContext extends ResourceContext {
        private static final long serialVersionUID = 1L;
        private long id = -1;
 
@@ -22,6 +20,16 @@ public class AssetBreakdownContext extends ModuleBaseWithCustomFields{
 
        public void setParentId(long parentId) {
                this.parentId = parentId;
+       }
+
+       private String condition;
+
+       public String getCondition() {
+               return condition;
+       }
+
+       public void setCondition(String condition) {
+               this.condition = condition;
        }
 
        private long fromtime = -1;
