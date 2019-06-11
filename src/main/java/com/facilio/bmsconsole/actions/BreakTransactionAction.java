@@ -18,9 +18,18 @@ public class BreakTransactionAction extends ModuleAction{
 		this.breakTransaction = breakTransaction;
 	}
 	
+	private long userId = -1;
+	public long getUserId() {
+		return userId;
+	}
+	public void setUserId(long userId) {
+		this.userId = userId;
+	}
+	
 	public String addBreakTransaction() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, breakTransaction);
+		context.put(FacilioConstants.ContextNames.USER_ID, userId);
 		Chain addItem = TransactionChainFactory.getAddBreakTransactionChain();
 		addItem.execute(context);
 		setResult(FacilioConstants.ContextNames.BREAK_TRANSACTION, breakTransaction);

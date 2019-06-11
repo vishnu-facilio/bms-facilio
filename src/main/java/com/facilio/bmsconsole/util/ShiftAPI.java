@@ -1078,4 +1078,20 @@ public class ShiftAPI {
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
 		builder.delete();
 	}
+	
+	public static List<BreakContext> getBreakssAttachedToShift(long breakId) throws Exception {
+		List<BreakContext> list = new ArrayList<>();
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getShiftBreakRelModule().getTableName())
+				.select(FieldFactory.getShiftBreakRelModuleFields())
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getShiftBreakRelModule()))
+				.andCondition(CriteriaAPI.getCondition("SHIFTID", "shiftId", String.valueOf(breakId), NumberOperators.EQUALS));
+		List<Map<String, Object>> shiftBreakList = builder.get();
+		if (CollectionUtils.isNotEmpty(shiftBreakList)) {
+			for (Map<String, Object> map : shiftBreakList) {
+				list.add(getBreak((long) map.get("breakId")));
+			}
+		}
+		return list;
+	}
 }

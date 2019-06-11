@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.bmsconsole.context.ShiftContext;
 import com.facilio.bmsconsole.context.ShiftUserRelContext;
@@ -21,6 +22,17 @@ public class GetShiftUserMappingCommand implements Command {
 		}
 		
 		List<ShiftUserRelContext> shiftUserMapping = ShiftAPI.getShiftUserMapping(startTime, endTime);
+		if (CollectionUtils.isNotEmpty(shiftUserMapping)) {
+			for (ShiftUserRelContext rel : shiftUserMapping) {
+				if (rel.getStartTime() == ShiftAPI.UNLIMITED_PERIOD || rel.getStartTime() < startTime) {
+					rel.setStartTime(startTime);
+				}
+				
+				if (rel.getEndTime() == ShiftAPI.UNLIMITED_PERIOD || rel.getEndTime() > endTime) {
+					rel.setEndTime(endTime);
+				}
+			}
+		}
 		context.put(FacilioConstants.ContextNames.SHIFT_USER_MAPPING, shiftUserMapping);
 		return false;
 	}
