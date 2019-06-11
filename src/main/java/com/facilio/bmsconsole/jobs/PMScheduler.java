@@ -1,22 +1,17 @@
 package com.facilio.bmsconsole.jobs;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.PMResourcePlannerContext;
+import com.facilio.bmsconsole.context.PMTriggerContext;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.TriggerType;
-import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
-import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
-import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.ScheduleInfo.FrequencyType;
@@ -33,15 +28,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-public class PMNewScheduler extends FacilioJob {
+public class PMScheduler extends FacilioJob {
 
-	private static final Logger LOGGER = LogManager.getLogger(PMNewScheduler.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(PMScheduler.class.getName());
 
 	@Override
 	public void execute(JobContext jc) {
 		// TODO Auto-generated method stub
 		try {
-			if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
+			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
 				return;
 			}
 			FacilioModule pmTriggerModule = ModuleFactory.getPMTriggersModule();
@@ -96,26 +91,15 @@ public class PMNewScheduler extends FacilioJob {
 		}
 	}
 		
-	private void createPMJobs(PreventiveMaintenance pm, Map<Long,PMTriggerContext> triggerMap, Map<Long, Long> maxNextExecutionTimesMap, long endTime) throws Exception {
-		if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE) {
-			long templateId = pm.getTemplateId();
-			WorkorderTemplate workorderTemplate = (WorkorderTemplate) TemplateAPI.getTemplate(templateId);
-			if (workorderTemplate != null) {
+	private void createPMJobs(PreventiveMaintenance pm, Map<Long,PMTriggerContext> triggerMap, Map<Long, Long> maxNextExecutionTimesMap, long endTime) {
+		try {
+			if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE) {
 				Long baseSpaceId = pm.getBaseSpaceId();
 				if (baseSpaceId == null || baseSpaceId < 0) {
 					baseSpaceId = pm.getSiteId();
 				}
 				List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),baseSpaceId,pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
 				Map<Long, PMResourcePlannerContext> pmResourcePlanner = PreventiveMaintenanceAPI.getPMResourcesPlanner(pm.getId());
-				List<ResourceContext> resourceObjs = ResourceAPI.getResources(resourceIds, false); // ?
-
-				Map<Long, ResourceContext> resourceMap = new HashMap<>();
-				if(resourceObjs != null && !resourceObjs.isEmpty()) {
-					for (ResourceContext resource : resourceObjs) {
-						resourceMap.put(resource.getId(), resource);
-					}
-				}
-
 				for(Long resourceId :resourceIds) {
 					List<PMTriggerContext> triggers = null;
 					if(pmResourcePlanner.get(resourceId) != null) {
@@ -128,54 +112,37 @@ public class PMNewScheduler extends FacilioJob {
 								}
 							}
 						}
-						if (currentResourcePlanner.getAssignedToId() != null && currentResourcePlanner.getAssignedToId() > 0 ) {
-							workorderTemplate.setAssignedToId(currentResourcePlanner.getAssignedToId());
-						}
 						currentResourcePlanner.setTriggerContexts(trigs);
 						triggers = trigs;
 					}
-
+					
 					if(triggers == null) {
 						triggers = new ArrayList<>();
 						triggers.add(PreventiveMaintenanceAPI.getDefaultTrigger(pm.getTriggers()));
 					}
 
-					if (resourceMap.get(resourceId) != null) {
-						workorderTemplate.setResourceId(resourceId);
-						workorderTemplate.setResource(resourceMap.get(resourceId));
-					} else {
-						LOGGER.error("work order not generated PMID: " + pm.getId() + "ResourceId: " + resourceId);
-						CommonCommandUtil.emailAlert("work order not generated", "PMID: " + pm.getId() + "ResourceId: " + resourceId);
-					}
-
 					for (PMTriggerContext trigger: triggers) {
-						if (trigger.getSchedule() != null) {
-							FacilioContext context = new FacilioContext();
-							Long maxTime = maxNextExecutionTimesMap.get(trigger.getId());
-							if (maxTime != null) {
-								if ((maxTime/1000)  < endTime) {
-									PreventiveMaintenanceAPI.createWOContextsFromPM(context, pm, trigger, maxTime/1000, workorderTemplate);
-								}
-							}
+						Long maxTime = maxNextExecutionTimesMap.get(trigger.getId());
+						if (maxTime != null && maxTime < endTime) {
+							PreventiveMaintenanceAPI.createPMJobs(pm, trigger, resourceId, maxTime, endTime, true);
+						}
+					}
+				}
+			}
+			else {
+				for(PMTriggerContext trigger : pm.getTriggers()) {
+					if(trigger.getSchedule().getFrequencyTypeEnum() != FrequencyType.DO_NOT_REPEAT) {
+						Long maxTime = maxNextExecutionTimesMap.get(trigger.getId());
+						if(maxTime < endTime) {
+							PreventiveMaintenanceAPI.createPMJobs(pm, trigger, maxTime, endTime);
 						}
 					}
 				}
 			}
 		}
-		else {
-			for(PMTriggerContext trigger : pm.getTriggers()) {
-				long templateId = pm.getTemplateId();
-				WorkorderTemplate workorderTemplate = (WorkorderTemplate) TemplateAPI.getTemplate(templateId);
-				if(trigger.getSchedule().getFrequencyTypeEnum() != FrequencyType.DO_NOT_REPEAT) {
-					Long maxTime = maxNextExecutionTimesMap.get(trigger.getId());
-					if (maxTime != null) {
-						if((maxTime/1000) < endTime) {
-							FacilioContext context = new FacilioContext();
-							PreventiveMaintenanceAPI.createWOContextsFromPM(context, pm, trigger, maxTime/1000, workorderTemplate);
-						}
-					}
-				}
-			}
+		catch (Exception e) {
+			LOGGER.error("Error occurred during PM Job creation of PM : "+pm.getId());
+			CommonCommandUtil.emailException("PMScheduler", "Error occurred during PM Job creation of PM : "+pm.getId(), e);
 		}
 	}
 	
@@ -200,29 +167,19 @@ public class PMNewScheduler extends FacilioJob {
 	}
 
 	private Map<Long, Long> getMaxExecutionTimes(String triggerIds) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
-		List<FacilioField> woFields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
-		Map<String, FacilioField> woFieldMap = FieldFactory.getAsMap(woFields);
-		FacilioField maxField = FieldFactory.getField("maxScheduledStart", "MAX(SCHEDULED_START)", FieldType.NUMBER);
-		FacilioField triggerIdField = woFieldMap.get("trigger");
+		FacilioModule module = ModuleFactory.getPMJobsModule();
+		Map<String, FacilioField> pmFields = FieldFactory.getAsMap(FieldFactory.getPMJobFields());
+		FacilioField maxField = FieldFactory.getField("maxExecutionTime", "MAX(NEXT_EXECUTION_TIME)", FieldType.NUMBER);
+		FacilioField triggerIdField = pmFields.get("pmTriggerId");
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(maxField);
 		fields.add(triggerIdField);
-		FacilioField statusField = woFieldMap.get("status");
-		FacilioField jobStatusField = woFieldMap.get("jobStatus");
-		FacilioStatus status = TicketAPI.getStatus("preopen");
-		FacilioModule ticketModule = ModuleFactory.getTicketsModule();
-
+		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(module.getTableName())
-														.innerJoin(ticketModule.getTableName())
-														.on(ticketModule.getTableName()+ ".ID=" + module.getTableName() + ".ID")
 														.andCondition(CriteriaAPI.getCondition(triggerIdField, triggerIds, NumberOperators.EQUALS))
-														.andCondition(CriteriaAPI.getCondition(statusField, String.valueOf(status.getId()), NumberOperators.EQUALS))
-														.andCondition(CriteriaAPI.getCondition(jobStatusField, String.valueOf(PMJobsContext.PMJobsStatus.ACTIVE.getValue()), NumberOperators.EQUALS))
-														.groupBy(triggerIdField.getCompleteColumnName())
+														.groupBy(triggerIdField.getName())
 														;
 		
 		List<Map<String, Object>> props = selectBuilder.get();

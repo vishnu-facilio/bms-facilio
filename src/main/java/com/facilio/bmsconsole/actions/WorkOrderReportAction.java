@@ -247,6 +247,9 @@ public class WorkOrderReportAction extends ActionSupport {
 		else if ("assets".equalsIgnoreCase(getType())) {
 			setReportData(getWorkOrderAssetSummary());
 		}
+		else if ("tasks".equalsIgnoreCase(getType())) {
+			setPms(getWorkOrderPreventiveSummary());
+		}
 		else if("assetEfficiency".equalsIgnoreCase(getType())) {
 			setReportData(getAvgResolutionTime(assetNotNullFilter,assetGroupBy));
 		}
@@ -906,6 +909,27 @@ public class WorkOrderReportAction extends ActionSupport {
  		List<Map<String, Object>> rs = (List<Map<String, Object>>) repContext.get(FacilioConstants.Reports.RESULT_SET);
 		
 		return rs;
+	}
+	
+	private List<PreventiveMaintenance> getWorkOrderPreventiveSummary() throws Exception {
+		
+		long startTime = System.currentTimeMillis() / 1000;
+		int topN = 5;
+		String topNData = FacilioConstants.Reports.BOTTOM_N+":"+topN+":"+FacilioConstants.Job.TABLE_NAME+"."+FacilioConstants.Job.NEXT_EXECUTION_TIME;
+		FacilioReportContext context = new FacilioReportContext();
+		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_STARTTIME, startTime);
+		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_ENDTIME, startTime + (7*24*60*60));
+		context.put(FacilioConstants.Reports.TOP_N_DATA, topNData);
+		
+
+		Chain getPmchain = new ChainBase();
+		getPmchain.addCommand(new SetTopNReportCommand());
+		getPmchain.addCommand(new SetOrderByCommand());
+		getPmchain.addCommand(new GetUpcomingPreventiveMaintenanceCommand());
+		getPmchain.execute(context);
+		
+		List<PreventiveMaintenance> pms = (List<PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST);
+		return pms;
 	}
 	
 	private List<Map<String, Object>> getWorkOrderSpaceSummary() throws Exception {
