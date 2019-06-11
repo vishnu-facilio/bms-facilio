@@ -614,9 +614,9 @@ public class ImportAPI {
 					fields.add("building");
 					fields.add("floor");
 					fields.add("spaceName");
-					fields.add("subspace1");
-					fields.add("subspace2");
-					fields.add("subspace3");
+					fields.add("space1");
+					fields.add("space2");
+					fields.add("space3");
 				}
 				}
 				else if(facilioModule.getName().equals(FacilioConstants.ContextNames.SITE)

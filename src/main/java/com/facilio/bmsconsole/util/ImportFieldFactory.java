@@ -170,9 +170,14 @@ public class ImportFieldFactory {
 	
 	public static JSONObject getImportOptions(FacilioModule module){
 		JSONObject options = new JSONObject();
-		if(module.getName().equals(FacilioConstants.ContextNames.ASSET)
+
+		if(module.getName().equals(FacilioConstants.ContextNames.ASSET)) {
+			options.put(ImportProcessContext.ImportSetting.INSERT.toString(), ImportProcessContext.ImportSetting.INSERT.getValue());
+		}
+		else if(
 				// || module.getName().equals(FacilioConstants.ContextNames.BASE_SPACE) 
-				|| 
+				
+
 				module.getExtendModule() != null && 
 				(module.getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET)
 						// ||
@@ -273,6 +278,10 @@ public class ImportFieldFactory {
 			removedFields.add("space2");
 			removedFields.add("space3");
 			removedFields.add("space4");
+			removedFields.add("cdd");
+			removedFields.add("hdd");
+			removedFields.add("wdd");
+
 		}
 		}
 		return removedFields;

@@ -118,6 +118,7 @@ public class ProcessImportCommand implements Command {
 							
 							lookupHolder = new HashMap<>();
 							lookupHolder.put("id", spaceId);
+							props.put("purposeSpace", lookupHolder);
 							props.put(ImportAPI.ImportProcessConstants.SPACE_FIELD, lookupHolder);
 						}
 						
@@ -633,7 +634,7 @@ public class ProcessImportCommand implements Command {
 				spaceName = (String) colVal.get(fieldMapping.get(moduleName + "__space1"));
 			}
 			
-			for(int i =1; i < 3; i++)
+			for(int i =0; i <= 3; i++)
 			{
 				String temp = (String) colVal.get(fieldMapping.get(moduleName + "__space" + (i+1)));
 				if(temp != null && temp != "") {

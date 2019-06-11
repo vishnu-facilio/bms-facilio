@@ -1,5 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.context.ImportRowContext;
 import com.facilio.bmsconsole.util.ImportAPI;
@@ -7,13 +17,6 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.logging.Logger;
 
 public class InsertImportDataIntoLogCommand implements Command {
 
@@ -27,15 +30,14 @@ public class InsertImportDataIntoLogCommand implements Command {
 				(HashMap<String, List<ImportRowContext>>) context.get(ImportAPI.ImportProcessConstants.GROUPED_ROW_CONTEXT);
 		ImportProcessContext importProcessContext = (ImportProcessContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
 		Integer row_count = (Integer) context.get(ImportAPI.ImportProcessConstants.ROW_COUNT);
+		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getImportProcessLogModule().getTableName())
 				.fields(FieldFactory.getImportProcessLogFields());
 		
-		LOGGER.severe("Grouped Context");
-		LOGGER.severe(groupedContext.toString());
-		
 		
 		for(String uniqueString : groupedContext.keySet()) {
+			
 			ImportProcessLogContext logContext= new ImportProcessLogContext();
 			logContext.setImportMode(importProcessContext.getImportMode());
 			
@@ -74,11 +76,12 @@ public class InsertImportDataIntoLogCommand implements Command {
 			if(hasDuplicates == false) {
 				hasDuplicates = hasDuplicate(logContext, importProcessContext);
 			}
-			JSONObject props = FieldUtil.getAsJSON(logContext);
-			LOGGER.severe("props" + props.toString());
+			JSONObject props = new JSONObject();
+			props = FieldUtil.getAsJSON(logContext);
 			insertBuilder.addRecord(props);
 		}
 		insertBuilder.save();
+
 		context.put(ImportAPI.ImportProcessConstants.HAS_DUPLICATE_ENTRIES, hasDuplicates);
 		LOGGER.severe("HAS DUPLICATES" + hasDuplicates);
 		importProcessContext.setStatus(ImportProcessContext.ImportStatus.RESOLVE_VALIDATION.getValue());
