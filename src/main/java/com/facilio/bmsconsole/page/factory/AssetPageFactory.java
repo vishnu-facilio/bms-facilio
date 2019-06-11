@@ -226,7 +226,7 @@ public class AssetPageFactory extends PageFactory {
 	
 	private static void addAlarmInsightsWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
-		cardWidget.addToLayoutParams(section, 24, 10);
+		cardWidget.addToLayoutParams(section, 24, 11);
 		cardWidget.addToWidgetParams("type", CardType.ALARM_INSIGHTS.getName());
 		section.addWidget(cardWidget);
 	}
