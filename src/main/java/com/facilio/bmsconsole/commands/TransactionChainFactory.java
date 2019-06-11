@@ -2927,6 +2927,33 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain getUpdateMVProjectChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateMVPojectCommand());
+			c.addCommand(new UpdateMVBaselineCommand());
+			c.addCommand(new UpdateMVAdjustmentCommand());
+			c.addCommand(new UpdateMVAjustmentVsBaselineCommand());
+			return c;
+		}
+		
+		public static Chain getAddMVBaselineChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddMVBaselineCommand());
+			return c;
+		}
+		
+		public static Chain getAddMVAdjustmentChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddMVAjustmentCommand());
+			return c;
+		}
+		
+		public static Chain getAddMVAjustmentVsBaselineChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddMVAjustmentVsBaselineCommand());
+			return c;
+		}
+		
 		public static Chain getDeleteMVProjectChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new DeleteMVProjectCommand());
