@@ -31,6 +31,9 @@ public class GenericGetModuleDataListCommand implements Command {
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
+		if (CollectionUtils.isEmpty(fields)) {
+			fields = modBean.getAllFields(moduleName);
+		}
 		Class beanClassName = FacilioConstants.ContextNames.getClassFromModuleName(moduleName);
 		if (beanClassName == null) {
 			beanClassName = ModuleBaseWithCustomFields.class;

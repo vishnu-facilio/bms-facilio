@@ -821,7 +821,7 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateEventListForStateFlowCommand());
 			c.addCommand(new UpdateWorkOrderCommand());
 			c.addCommand(new BackwardCompatibleStateFlowUpdateCommand());
-			c.addCommand(new UpdateStateForWorkorderCommand());
+			c.addCommand(new UpdateStateForModuleDataCommand());
 			c.addCommand(new SendNotificationCommand());
 			c.addCommand(new AddTicketActivityCommand());
 //			c.addCommand(getAddOrUpdateReadingValuesChain());
@@ -1076,6 +1076,8 @@ public class TransactionChainFactory {
 			c.addCommand(new AddCategoryOnAssetUpdateCommand());
 			c.addCommand(new SetModuleForSpecialAssetsCommand());
 			c.addCommand(new GenericUpdateModuleDataCommand());
+			c.addCommand(new GenericGetModuleDataListCommand());
+			c.addCommand(new UpdateStateForModuleDataCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(FacilioChainFactory.getCategoryReadingsChain());
 			c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
