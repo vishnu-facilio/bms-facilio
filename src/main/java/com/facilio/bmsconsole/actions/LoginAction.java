@@ -282,22 +282,11 @@ public class LoginAction extends FacilioAction {
 		account = new HashMap<>();
 		account.put("org", AccountUtil.getCurrentOrg());
 		account.put("user", AccountUtil.getCurrentUser());
+		if(!AwsUtil.isProduction())
+		{
+		account.put("timezone",AccountUtil.getCurrentAccount().getTimeZone()); }
 		
-		if(!AwsUtil.isProduction()) {
-		String timezonevar = null;
-		if (AccountUtil.getCurrentAccount().getCurrentSiteId() > 0) {
-			timezonevar = SpaceAPI.getSiteSpace(AccountUtil.getCurrentAccount().getCurrentSiteId()).getTimeZone();	
-		}
-		else if (AccountUtil.getCurrentAccount().getCurrentSiteId() == -1 && CommonCommandUtil.getMySites().size()==1 ) {
-			timezonevar = SpaceAPI.getSiteSpace(CommonCommandUtil.getMySites().get(0).getId()).getTimeZone();	
-		}
 		
-		if (timezonevar == null || "".equals(timezonevar.trim())) {
-			timezonevar = AccountUtil.getCurrentOrg().getTimezone();
-		}
-		AccountUtil.setTimeZone(timezonevar);
-		account.put("timezone", timezonevar);
-		}
 		
 		
 		//log.info(AccountUtil.getCurrentUser().getEmail()+"))(()()()(((((())))))");
