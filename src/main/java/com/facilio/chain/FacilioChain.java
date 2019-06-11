@@ -148,9 +148,18 @@ public class FacilioChain extends ChainBase {
 //					if (postTransactionContext.get() != null) {
 //						postTransactionChain.execute(postTransactionContext.get());
 //					}
-					for (PostTransactionCommand postTransactionCommand : postTransactionChains) {
+					TransactionManager tm = FacilioTransactionManager.INSTANCE.getTransactionManager();
+					Transaction currenttrans = tm.getTransaction();
+					if (currenttrans == null) {
+						tm.begin();
+					} else {
+						//LOGGER.info("joining parent transaction for " + method.getName());
+					}
+					for (PostTransactionCommand postTransactionCommand: postTransactionChains) {
 						postTransactionCommand.postExecute();
 					}
+
+					FacilioTransactionManager.INSTANCE.getTransactionManager().commit();
 					// clear rootChain to set transaction chain as root
 					rootChain.remove();
 //					postTransactionContext.remove();
