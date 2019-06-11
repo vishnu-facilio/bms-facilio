@@ -54,7 +54,7 @@ public class ControllerActivityWatcherJob extends InstantJob {
 		catch (Exception e) {
 			LOGGER.error("Error occurred in Controller Watcher Job", e);
 			
-			if ( !(e instanceof NullPointerException && ExceptionUtils.getStackTrace(e).contains("com.mysql.jdbc")) && !(e instanceof SQLException && (e.getMessage().contains("No operations allowed after statement closed") || e.getMessage().contains("Operation not allowed after ResultSet closed"))) ) { //Not sending email for transaction timeout
+			if ( !(e instanceof InterruptedException) && !(e instanceof NullPointerException && ExceptionUtils.getStackTrace(e).contains("com.mysql.jdbc")) && !(e instanceof SQLException && (e.getMessage().contains("No operations allowed after statement closed") || e.getMessage().contains("Operation not allowed after ResultSet closed") || e.getMessage().contains("No operations allowed after connection closed."))) ) { //Not sending email for transaction timeout
 				CommonCommandUtil.emailException("ControllerActivityWatcherJob", "Error occurred in Controller Watcher Job", e);
 			}
 		}
