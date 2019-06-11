@@ -37,7 +37,6 @@ public class AddReadingsForMLCommand implements Command {
 			FacilioModule predictModule = modBean.getModule(mlContext.getPredictionModuleID());
 			
 			JSONArray mlArray = (JSONArray) new JSONObject(mlContext.getResult()).get("data");
-			LOGGER.info("[JAVEED] mlArray is "+mlArray);
 			if(mlArray.length()>0)
 			{
 				List<FacilioField> fields = modBean.getAllFields(logModule.getName());
@@ -46,7 +45,6 @@ public class AddReadingsForMLCommand implements Command {
 				List<ReadingContext> predictReadingList = new ArrayList<>(); 
 				
 				long parentID=mlContext.getSourceID();
-				LOGGER.info("[JAVEED] parentID is"+parentID);
 			 
 				 for(int i=0; i<mlArray.length(); i++)
 				 {
@@ -83,9 +81,7 @@ public class AddReadingsForMLCommand implements Command {
 					 
 					 try
 					 {
-						 LOGGER.info("[JAVEED] After updating existing Reading"+predictReadingList.size());
 						 updateExistingPredictReading(parentID,predictModule,predictReadingList);
-						 LOGGER.info("[JAVEED] After1 updating existing Reading");
 	
 					 }
 					 catch(Exception e)
@@ -93,9 +89,7 @@ public class AddReadingsForMLCommand implements Command {
 						 LOGGER.error("Error while updating Predicted Reading", e);
 					 }
 				 }
-				 LOGGER.info("[JAVEED] Before updating log Reading"+logReadingList.size());
 				 updateReading(logModule,logReadingList);
-				 LOGGER.info("[JAVEED] After updating log Reading");
 			}
 		}
 		catch(Exception e)
