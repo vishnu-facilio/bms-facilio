@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.util;
 
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
@@ -944,12 +945,14 @@ public class DashboardUtil {
 	
 	public static List<DashboardFolderContext> getDashboardListWithFolder(String moduleName,boolean getOnlyMobileDashboard) throws Exception {
 		
+//		Criteria criteria = PermissionUtil.getCurrentUserPermissionCriteria("dashboard", "read");
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<Long> baseSpaceIds = new ArrayList<>();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getDashboardFields())
 				.table(ModuleFactory.getDashboardModule().getTableName())
 				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
+//				.andCriteria(criteria)
 				.andCustomWhere("BASE_SPACE_ID IS NULL");
 		
 		if(moduleName != null) {
