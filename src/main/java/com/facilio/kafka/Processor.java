@@ -281,6 +281,10 @@ public class Processor extends FacilioProcessor {
     }
 
     private void processTimeSeries(FacilioRecord record) throws Exception {
+        long orgCheck = 78;
+        if(isStage && orgCheck == orgId){
+            LOGGER.info("   Debugging log -data in ProcessTimeSeries--"+record.getData());
+        }
         ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD",orgId);
         bean.processTimeSeries(getConsumer(), record);
     }
