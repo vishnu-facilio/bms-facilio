@@ -95,11 +95,6 @@ public class TimeSeriesAPI {
 	}
 	
 	public static void processFacilioRecord(FacilioConsumer consumer, FacilioRecord record) throws Exception {
-		long orgCheck = 78;
-		Boolean isStage = !AwsUtil.isProduction();
-		if(isStage && (orgCheck == Objects.requireNonNull(AccountUtil.getCurrentOrg()).getOrgId()) ){
-			LOGGER.info("   Debugging log in processFacilioRecord--"+record.getData());
-		}
 		if (record == null) {
 			return;
 		}
