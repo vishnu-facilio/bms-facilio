@@ -35,6 +35,8 @@ public class MVAction extends FacilioAction {
 		
 		context.put(MVUtil.MV_PROJECT, mvProject);
 		
+		context.put(MVUtil.MV_PROJECT_OLD, MVUtil.getMVProject(mvProject.getId()));
+		
 		Chain addMVProjectChain =  TransactionChainFactory.getUpdateMVProjectChain(); 
 		addMVProjectChain.execute(context);
 		
