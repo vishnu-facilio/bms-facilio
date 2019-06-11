@@ -153,6 +153,19 @@ public class AuthInterceptor extends AbstractInterceptor {
 					request.setAttribute("ORGID", currentAccount.getOrg().getOrgId());
 					request.setAttribute("USERID", currentAccount.getUser().getOuid());
 										
+
+					if(!AwsUtil.isProduction()) {
+						String timezonevar = null;
+						if (AccountUtil.getCurrentAccount().getCurrentSiteId() > 0) {
+							timezonevar = SpaceAPI.getSiteSpace(AccountUtil.getCurrentAccount().getCurrentSiteId()).getTimeZone();	
+							
+						}
+						if (timezonevar == null || "".equals(timezonevar.trim())) {
+							timezonevar = AccountUtil.getCurrentOrg().getTimezone();
+						}
+						AccountUtil.setTimeZone(timezonevar);
+					}
+					
 					Parameter permission = ActionContext.getContext().getParameters().get("permission");
 					Parameter moduleName = ActionContext.getContext().getParameters().get("moduleName");
 					if (permission != null && permission.getValue() != null && moduleName != null && moduleName.getValue() != null && !isAuthorizedAccess(moduleName.getValue(), permission.getValue())) {

@@ -128,9 +128,14 @@ public class BmsDBConf extends DBConf {
     		if(currentAccount != null)
     		{
     			String zone = currentAccount.getTimeZone();
+    			
+    			if(zone == null && AccountUtil.getCurrentOrg() != null) {
+    				zone = AccountUtil.getCurrentOrg().getTimezone();
+    			}
+    			
     		 	if(zone != null && !zone.isEmpty()) 
     		 	{
-                 return ZoneId.of(zone.trim());
+    		 		return ZoneId.of(zone.trim());
     		 	}
     		}
     	}
