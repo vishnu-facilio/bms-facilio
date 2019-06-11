@@ -1,5 +1,6 @@
 package com.facilio.mv.command;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
@@ -23,16 +24,24 @@ public class AddMVAjustmentCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		
+		List<MVAdjustment> adjustments = null;
+		
+		MVAdjustment adjustment = (MVAdjustment) context.get(MVUtil.MV_ADJUSTMENT);
 		MVProject mvProject = (MVProject) context.get(MVUtil.MV_PROJECT);
 		
-		List<MVAdjustment> adjustments = mvProject.getAjustments();
+		if(adjustment == null) {
+			adjustments = mvProject.getAjustments();
+		}
+		else {
+			adjustments = Collections.singletonList(adjustment);
+		}
 		
-		for(MVAdjustment adjustment :adjustments) {
-			context.put(FacilioConstants.ContextNames.FORMULA_FIELD, adjustment.getFormulaField());
+		for(MVAdjustment adjustment1 :adjustments) {
+			context.put(FacilioConstants.ContextNames.FORMULA_FIELD, adjustment1.getFormulaField());
 
-			if (adjustment.getFormulaField().getInterval() == -1) {
+			if (adjustment1.getFormulaField().getInterval() == -1) {
 				int interval = mvProject.getFrequency();
-				adjustment.getFormulaField().setInterval(interval);
+				adjustment1.getFormulaField().setInterval(interval);
 			}
 
 			Chain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();

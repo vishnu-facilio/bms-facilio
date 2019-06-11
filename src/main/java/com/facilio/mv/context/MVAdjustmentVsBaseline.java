@@ -3,7 +3,8 @@ package com.facilio.mv.context;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 
 public class MVAdjustmentVsBaseline {
-
+	
+	long id;
 	long adjustmentId;
 	long baselineId;
 	long formulaFieldId;
@@ -11,6 +12,13 @@ public class MVAdjustmentVsBaseline {
 	
 	String adjustmentName;
 	String baselineName;
+	
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
 	public long getAdjustmentId() {
 		return adjustmentId;
 	}

@@ -426,13 +426,8 @@ public enum ActionType {
 					}
 					
 					pmContext.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
-					if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
-						Chain executePm = TransactionChainFactory.getNewExecutePreventiveMaintenanceChain();
-						executePm.execute(pmContext);
-					} else {
-						Chain executePm = TransactionChainFactory.getExecutePreventiveMaintenanceChain();
-						executePm.execute(pmContext);
-					}
+					Chain executePm = TransactionChainFactory.getNewExecutePreventiveMaintenanceChain();
+					executePm.execute(pmContext);
 
 					
 					WorkOrderContext wo = (WorkOrderContext) pmContext.get(FacilioConstants.ContextNames.WORK_ORDER);

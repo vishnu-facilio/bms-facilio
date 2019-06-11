@@ -1,4 +1,4 @@
-package com.facilio.mv.action;
+	package com.facilio.mv.action;
 
 import org.apache.commons.chain.Chain;
 
@@ -25,7 +25,20 @@ public class MVAction extends FacilioAction {
 		Chain addMVProjectChain =  TransactionChainFactory.getAddMVProjectChain(); 
 		addMVProjectChain.execute(context);
 		
-		setResult("mvProject", mvProject);
+		setResult(MVUtil.MV_PROJECT, mvProject);
+		return SUCCESS;
+	}
+	
+	public String updateMVProject() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		
+		context.put(MVUtil.MV_PROJECT, mvProject);
+		
+		Chain addMVProjectChain =  TransactionChainFactory.getUpdateMVProjectChain(); 
+		addMVProjectChain.execute(context);
+		
+		setResult(MVUtil.MV_PROJECT, mvProject);
 		return SUCCESS;
 	}
 	
@@ -38,7 +51,7 @@ public class MVAction extends FacilioAction {
 		Chain deleteMVProjectChain =  TransactionChainFactory.getDeleteMVProjectChain(); 
 		deleteMVProjectChain.execute(context);
 		
-		setResult("mvProject", mvProject);
+		setResult(MVUtil.MV_PROJECT, mvProject);
 		return SUCCESS;
 	}
 }

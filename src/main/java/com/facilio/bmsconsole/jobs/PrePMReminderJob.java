@@ -18,9 +18,6 @@ public class PrePMReminderJob extends FacilioJob {
 	public void execute(JobContext jc) {
 		// TODO Auto-generated method stub
 		try {
-			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
-				return;
-			}
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.ONLY_POST_REMINDER_TYPE, false);
 			context.put(FacilioConstants.ContextNames.ID, jc.getJobId());

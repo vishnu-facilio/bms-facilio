@@ -243,13 +243,8 @@ public class WorkOrderAction extends FacilioAction {
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.attachedFilesContentType);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, this.attachmentType);
 
- 		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
-			Chain addTemplate = FacilioChainFactory.getAddNewPreventiveMaintenanceChain();
-			addTemplate.execute(context);
-		} else {
-			Chain addTemplate = FacilioChainFactory.getAddPreventiveMaintenanceChain();
-			addTemplate.execute(context);
-		}
+ 		Chain addTemplate = FacilioChainFactory.getAddNewPreventiveMaintenanceChain();
+ 		addTemplate.execute(context);
 
 		return SUCCESS;
 	}
@@ -284,9 +279,7 @@ public class WorkOrderAction extends FacilioAction {
 		} else {
 			assetLists = assetids;	
 		}
-		System.out.printf("addBulkPreventiveMaintenance" + assetLists.size());
-		
-		
+
 		Map<String, List<TaskContext>> taskPm1 = pm.getWoTemplate().getTasks();
 		List<PMTriggerContext> pmTriggers = pm.getTriggers();
 		
@@ -365,7 +358,7 @@ public class WorkOrderAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 			context.put(FacilioConstants.ContextNames.TASK_MAP, taskPm1);
 			context.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
-			Chain addTemplate = FacilioChainFactory.getAddPreventiveMaintenanceChain();
+			Chain addTemplate = FacilioChainFactory.getAddNewPreventiveMaintenanceChain();
 			addTemplate.execute(context);
 		}
 		return SUCCESS;
@@ -744,14 +737,8 @@ public class WorkOrderAction extends FacilioAction {
  			context.put(FacilioConstants.ContextNames.EXISTING_ATTACHMENT_LIST, oldAttachments); 			
  		}
 
- 		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
-			Chain updatePM = FacilioChainFactory.getUpdateNewPreventiveMaintenanceChain();
-			updatePM.execute(context);
-		} else {
-			Chain updatePM = FacilioChainFactory.getUpdatePreventiveMaintenanceChain();
-			updatePM.execute(context);
-		}
-
+ 		Chain updatePM = FacilioChainFactory.getUpdateNewPreventiveMaintenanceChain();
+ 		updatePM.execute(context);
 
 		return SUCCESS;
 	}
@@ -784,15 +771,8 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.PM_RESOURCE_ID, resourceId);
 		context.put(FacilioConstants.ContextNames.PM_ID, pmId);
 
-		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
-			Chain updatePM = FacilioChainFactory.getUpdateNewPreventiveMaintenanceJobChain();
-			updatePM.execute(context);
-		} else {
-			Chain updatePM = FacilioChainFactory.getUpdatePreventiveMaintenanceJobChain();
-			updatePM.execute(context);
-		}
-
-
+		Chain updatePM = FacilioChainFactory.getUpdateNewPreventiveMaintenanceJobChain();
+		updatePM.execute(context);
 
 		return SUCCESS;
 	}
@@ -802,13 +782,8 @@ public class WorkOrderAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, id.get(0));
 
-		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
-			Chain pmSummary = FacilioChainFactory.getNewPreventiveMaintenanceSummaryChain();
-			pmSummary.execute(context);
-		} else {
-			Chain pmSummary = FacilioChainFactory.getPreventiveMaintenanceSummaryChain();
-			pmSummary.execute(context);
-		}
+		Chain pmSummary = FacilioChainFactory.getNewPreventiveMaintenanceSummaryChain();
+		pmSummary.execute(context);
 
 		setPreventivemaintenance((PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE));
 		setWorkorder((WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER));
@@ -874,19 +849,11 @@ public class WorkOrderAction extends FacilioAction {
 	}
 
 	public String changePreventiveMaintenanceStatus() throws Exception {
-
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, preventivemaintenance);
-
-		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
-			Chain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChain();
-			addTemplate.execute(context);
-		} else {
-			Chain addTemplate = TransactionChainFactory.getChangePreventiveMaintenanceStatusChain();
-			addTemplate.execute(context);
-		}
-
+		Chain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChain();
+		addTemplate.execute(context);
 
 		return SUCCESS;
 	}
@@ -931,35 +898,6 @@ public class WorkOrderAction extends FacilioAction {
 		this.endTime = endTime;
 	}
 
-	public String getUpcomingPreventiveMaintenance() throws Exception {
-
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_STARTTIME, getStartTime());
-		// context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_ENDTIME,
-		// startTime + (7*24*60*60));
-		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_ENDTIME, getEndTime());
-
-		if (getFilters() != null) {
-			JSONParser parser = new JSONParser();
-			JSONObject json = (JSONObject) parser.parse(getFilters());
-			context.put(FacilioConstants.ContextNames.FILTERS, json);
-		}
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
-
-		Chain getPmchain = FacilioChainFactory.getGetUpcomingPreventiveMaintenanceListChain();
-		getPmchain.execute(context);
-
-		setPmMap((Map<Long, PreventiveMaintenance>) context
-				.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST));
-		setPmJobs((List<PMJobsContext>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_JOBS_LIST));
-		setPmTriggerMap((Map<Long, PMTriggerContext>) context
-				.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_TRIGGERS_LIST));
-		setPmResourcesMap((Map<Long, ResourceContext>) context
-				.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_RESOURCES));
-
-		return SUCCESS;
-	}
-
 	private List<Map<String, Object>> pmJobList;
 
 	public List<Map<String, Object>> getPmJobList() {
@@ -983,17 +921,10 @@ public class WorkOrderAction extends FacilioAction {
 		}
 
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
-		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
-			context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WORK_ORDER);
-		}
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.WORK_ORDER);
 
-		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
-			Chain getPmchain = FacilioChainFactory.getGetNewPMJobListChain();
-			getPmchain.execute(context);
-		} else {
-			Chain getPmchain = FacilioChainFactory.getGetPMJobListChain();
-			getPmchain.execute(context);
-		}
+		Chain getPmchain = FacilioChainFactory.getGetNewPMJobListChain();
+		getPmchain.execute(context);
 
 		setPmMap((Map<Long, PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST));
 		setPmJobList((List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_JOBS_LIST));

@@ -93,7 +93,6 @@ public class Processor extends FacilioProcessor {
                             LOGGER.info("tried adding duplicate message "+ recordId);
                             continue;
                         }
-                        LOGGER.info("debugging log - processing-"+recordId);
                     }
                 }catch (Exception e1){
                     LOGGER.info("Exception Occured ",e1);
@@ -282,6 +281,10 @@ public class Processor extends FacilioProcessor {
     }
 
     private void processTimeSeries(FacilioRecord record) throws Exception {
+        long orgCheck = 78;
+        if(isStage && orgCheck == orgId){
+            LOGGER.info("   Debugging log -data in ProcessTimeSeries--"+record.getData());
+        }
         ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD",orgId);
         bean.processTimeSeries(getConsumer(), record);
     }

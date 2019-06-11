@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.context.PMJobsContext.PMJobsStatus;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
@@ -137,81 +136,7 @@ public class ResetNewTriggersCommand implements SerializableCommand {
 		}
 	}
 
-	private void resetPMTriggers(PreventiveMaintenance pm, PMTriggerContext currentTrigger, List<PMTriggerContext> triggers,PMJobsContext pmJobsContext, long currentExecutionTime, Map<Long, Long> nextExecutionTimes) throws Exception {
-		for(PMTriggerContext trigger : triggers) {
-			if(trigger.getSchedule() != null && trigger.getSchedule().getFrequencyTypeEnum() != FrequencyType.DO_NOT_REPEAT) {
-				PMJobsContext pmJob = null;
-				switch(pm.getTriggerTypeEnum()) {
-					case FIXED:
-					case FLOATING:
-						if (trigger.getId() == currentTrigger.getId()) {
-							pmJob = PreventiveMaintenanceAPI.createPMJobOnce(pm, trigger, currentExecutionTime);
-							if (pmJob != null) {
-								PreventiveMaintenanceAPI.schedulePMJob(pmJob);
-							}
-						}
-						else {//Deleting oldJobs of other schedule triggers
-							pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger.getId(), currentExecutionTime, false);
-							PMJobsContext updatedPM = new PMJobsContext();
-							ZonedDateTime zdt = DateTimeUtil.getDateTime(pmJob.getNextExecutionTime());
-							if(trigger.getSchedule().getTimeObjects() != null && !trigger.getSchedule().getTimeObjects().isEmpty()) {
-								List<LocalTime> times = trigger.getSchedule().getTimeObjects();
-								zdt = zdt.with(times.get(times.size() - 1));
-							}
-							long nextExecutionTime = trigger.getSchedule().nextExecutionTime(zdt.toEpochSecond());
-							if (pm.getEndTime() == -1 || updatedPM.getNextExecutionTime() < pm.getEndTime()) {
-								updatedPM.setNextExecutionTime(nextExecutionTime);
-								updatedPM.setId(pmJob.getId());
-								updatedPM.setStatus(PMJobsStatus.ACTIVE);
-								pmJob = PreventiveMaintenanceAPI.updateAndGetPMJob(updatedPM);
-								PreventiveMaintenanceAPI.reSchedulePMJob(pmJob);
-							}
-							else {
-								updatedPM.setStatus(PMJobsStatus.IN_ACTIVE);
-								pmJob = PreventiveMaintenanceAPI.updateAndGetPMJob(updatedPM);
-							}
-						}
-						break;
-					case ONLY_SCHEDULE_TRIGGER:
-						if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE) {
-							if(pmJobsContext.getPmTriggerId() == trigger.getId()) {
-								pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger.getId(), currentExecutionTime,pmJobsContext.getResourceId(), true);
-							}
-						}
-						else {
-							pmJob = PreventiveMaintenanceAPI.getNextPMJob(trigger.getId(), currentExecutionTime, true);
-							if (pmJob == null) {
-								pmJob = PreventiveMaintenanceAPI.createPMJobOnce(pm, trigger, currentExecutionTime);
-							}
-						}
-						if (pmJob != null) {
-							PreventiveMaintenanceAPI.schedulePMJob(pmJob);
-						}
-					default:
-						break;
-				}
-				if(pmJob != null) {
-					nextExecutionTimes.put(trigger.getId(), pmJob.getNextExecutionTime());
-				}
-			}
-			else if(trigger.getRuleId() != -1) {
-				switch(pm.getTriggerTypeEnum()) {
-					case FIXED:
-					case FLOATING:
-						if(trigger.getId() != currentTrigger.getId()) { //Resetting latest value of other metered triggers
-							long latestValue = getLatestReading(trigger.getRuleId());
-							if(latestValue != -1) {
-								ReadingRuleAPI.updateLastValueInReadingRule(trigger.getRuleId(), latestValue);
-							}
-						}
-						break;
-					default:
-						break;
-				}
-			}
-		}
-	}
-	
+
 	private long getLatestReading(long readingRuleId) throws Exception {
 		ReadingRuleContext rule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(readingRuleId, true);
 		WorkflowEventContext event = rule.getEvent();

@@ -1,10 +1,12 @@
 package com.facilio.mv.command;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.tiles.request.collection.CollectionUtil;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -24,9 +26,17 @@ public class AddMVBaselineCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		
+		List<MVBaseline> baseLines = null;
+		
+		MVBaseline baseline = (MVBaseline) context.get(MVUtil.MV_BASELINE);
 		MVProject mvProject = (MVProject) context.get(MVUtil.MV_PROJECT);
 		
-		List<MVBaseline> baseLines = mvProject.getBaselines();
+		if(baseline == null) {
+			baseLines = mvProject.getBaselines();
+		}
+		else {
+			baseLines = Collections.singletonList(baseline);
+		}
 		
 		for(MVBaseline baseLine :baseLines) {
 			context.put(FacilioConstants.ContextNames.FORMULA_FIELD, baseLine.getFormulaField());

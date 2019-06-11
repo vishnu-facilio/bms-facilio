@@ -1,5 +1,6 @@
 package com.facilio.mv.command;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,9 +28,19 @@ public class AddMVAjustmentVsBaselineCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		
+		List<MVAdjustmentVsBaseline> ajustmentsVsBaselineContexts = null;
+		
+		MVAdjustmentVsBaseline ajustmentVsBaselineContext = (MVAdjustmentVsBaseline) context.get(MVUtil.MV_ADJUSTMENT_VS_BASELINE);
+		
 		MVProject mvProject = (MVProject) context.get(MVUtil.MV_PROJECT);
 		
-		List<MVAdjustmentVsBaseline> ajustmentsVsBaselineContexts = mvProject.getAjustmentVsBaseline();
+		if(ajustmentVsBaselineContext ==  null) {
+			ajustmentsVsBaselineContexts = mvProject.getAjustmentVsBaseline();
+		}
+		else {
+			ajustmentsVsBaselineContexts = Collections.singletonList(ajustmentVsBaselineContext);
+		}
+		
 		
 		Map<String,MVBaseline> baselineNameMap = getBaseLineNameMap(mvProject);
 		

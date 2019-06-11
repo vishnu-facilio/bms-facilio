@@ -1205,6 +1205,7 @@ public class FieldFactory {
 		fields.add(getField("readingRuleType", "READING_RULE_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("upperBound", "UPPER_BOUND", module, FieldType.DECIMAL));
 		fields.add(getField("lowerBound", "LOWER_BOUND", module, FieldType.DECIMAL));
+		fields.add(getField("reportBreakdown", "REPORT_BREAKDOWN", module, FieldType.BOOLEAN));
 
 		return fields;
 	}
@@ -4324,21 +4325,6 @@ public class FieldFactory {
 		fields.add(getField("resourcePlannerId", "PM_RESOURCE_PLANNER_ID", module, FieldType.LOOKUP));
 		fields.add(getField("reminderId", "PM_REMAINDER_ID", module, FieldType.LOOKUP));
 		
-		return fields;
-	}
-
-	public static List<FacilioField> getPMJobFields() {
-		FacilioModule module = ModuleFactory.getPMJobsModule();
-		List<FacilioField> fields = new ArrayList<>();
-
-		fields.add(getIdField(module));
-		fields.add(getField("pmId", "PM_ID", module, FieldType.NUMBER));
-		fields.add(getField("pmTriggerId", "PM_TRIGGER_ID", module, FieldType.NUMBER));
-		fields.add(getField("nextExecutionTime", "NEXT_EXECUTION_TIME", module, FieldType.NUMBER));
-		fields.add(getField("templateId", "TEMPLATE_ID", module, FieldType.NUMBER));
-		fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
-		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.NUMBER));
-
 		return fields;
 	}
 
