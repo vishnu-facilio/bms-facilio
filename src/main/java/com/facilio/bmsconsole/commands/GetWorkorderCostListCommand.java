@@ -37,12 +37,15 @@ public class GetWorkorderCostListCommand implements Command{
 							String.valueOf(parentId), PickListOperators.IS));
 			
 			List<WorkorderCostContext> workorderCosts = selectBuilder.get();
+			double totalCost = 0;
 			if(workorderCosts!=null && !workorderCosts.isEmpty()) {
 				for(WorkorderCostContext woCosts : workorderCosts) {
 					woCosts.setCostType(CostType.valueOf(woCosts.getCostType()));
+					totalCost += woCosts.getCost();
 				}
 			}
 			context.put(FacilioConstants.ContextNames.WORKORDER_COST, workorderCosts);
+			context.put(FacilioConstants.ContextNames.WO_TOTAL_COST, totalCost);
 		}
 		return false;
 	}
