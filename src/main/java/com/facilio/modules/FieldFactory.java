@@ -5631,6 +5631,7 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getMLAssetVariablesModule();
 		 fields.add(getField("mlId","ML_ID",module,FieldType.NUMBER));
+		 fields.add(getField("assetID","ASSETID",module,FieldType.NUMBER));
 		fields.add(getField("variableKey","VARIABLE_KEY",module,FieldType.STRING));
 		fields.add(getField("variableValue","VARIABLE_VALUE",module,FieldType.STRING));
 		
