@@ -72,6 +72,7 @@ import com.facilio.bmsconsole.context.ReceiptLineItemContext;
 import com.facilio.bmsconsole.context.ReceivableContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ShiftContext;
+import com.facilio.bmsconsole.context.ShiftRotationContext;
 import com.facilio.bmsconsole.context.ShipmentContext;
 import com.facilio.bmsconsole.context.ShipmentLineItemContext;
 import com.facilio.bmsconsole.context.SiteContext;
@@ -1082,6 +1083,8 @@ public class FacilioConstants {
 		public static final String BREAK_TRANSACTION = "breakTransaction";
 		public static final String GRAPHICS = "graphics";
 		public static final String GRAPHICS_LIST = "graphics_list";
+		public static final String SHIFT_ROTATION = "shiftRotation";
+		public static final String SHIFT_ROTATION_DETAILS = "shiftRotationDetails";
 
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
@@ -1201,6 +1204,7 @@ public class FacilioConstants {
 			classMap.put(SHIFT, ShiftContext.class);
 			classMap.put(BREAK, BreakContext.class);
 			classMap.put(GRAPHICS, GraphicsContext.class);
+			classMap.put(SHIFT_ROTATION, ShiftRotationContext.class);
 			return classMap;
 		}
 		

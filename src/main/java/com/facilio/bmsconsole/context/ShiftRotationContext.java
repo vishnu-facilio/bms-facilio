@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.List;
+
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class ShiftRotationContext extends ModuleBaseWithCustomFields{
@@ -130,5 +132,14 @@ public class ShiftRotationContext extends ModuleBaseWithCustomFields{
 			return null;
 		}
 	}
+	
+	private List<ShiftRotationDetailsContext> shiftRotations;
+	public List<ShiftRotationDetailsContext> getShiftRotations() {
+		return shiftRotations;
+	}
+	public void setShiftRotations(List<ShiftRotationDetailsContext> shiftRotationDetails) {
+		this.shiftRotations = shiftRotationDetails;
+	}
+	
 
 }

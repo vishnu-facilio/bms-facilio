@@ -2555,7 +2555,13 @@
 			<param name="moduleName">graphics</param>
 			<param name="permission">DELETE</param>
 		</action>
+		</package>
 
+	<package name="shiftRotation" namespace="/api/v2/shiftRotation"
+		extends="v2Api">
+		<action name="add" class="com.facilio.bmsconsole.actions.BreakTransactionAction"
+			method="addBreakTransaction">
+		</action>
 	</package>
 	
 </struts>

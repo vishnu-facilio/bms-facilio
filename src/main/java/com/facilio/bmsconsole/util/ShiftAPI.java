@@ -35,6 +35,7 @@ import com.facilio.bmsconsole.context.BusinessHoursList;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ShiftContext;
+import com.facilio.bmsconsole.context.ShiftRotationContext;
 import com.facilio.bmsconsole.context.ShiftUserRelContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
@@ -1076,5 +1077,16 @@ public class ShiftAPI {
 			}
 		}
 		return list;
+	}
+	
+	public static void addShiftRotation(ShiftRotationContext shiftRotation) throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		InsertRecordBuilder<ShiftRotationContext> builder = new InsertRecordBuilder<ShiftRotationContext>()
+				.module(modBean.getModule(FacilioConstants.ContextNames.SHIFT_ROTATION))
+				.fields(modBean.getAllFields(FacilioConstants.ContextNames.SHIFT_ROTATION))
+				.addRecord(shiftRotation);
+		builder.save();
+		
 	}
 }

@@ -3155,6 +3155,12 @@ public class TransactionChainFactory {
 			c.addCommand(new DeleteScheduledWorkflowCommand());
 			return c;
 		}
+		public static Chain getAddShiftRotationChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForShiftRotation());
+			c.addCommand(new GenericAddModuleDataCommand());
+			return c;
+		}
 }
 
 
