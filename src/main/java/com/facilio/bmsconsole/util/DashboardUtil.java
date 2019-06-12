@@ -761,6 +761,7 @@ public class DashboardUtil {
 			dashboardJson.put("linkName", dashboard.getLinkName());
 			dashboardJson.put("children", childrenArray);
 			dashboardJson.put("mobileEnabled", dashboard.isMobileEnabled());
+			dashboardJson.put("dashboardSharingContext", dashboard.getDashboardSharingContext());
 			result.add(dashboardJson);
 		 }
 		return result;
@@ -894,6 +895,7 @@ public class DashboardUtil {
 			List<DashboardWidgetContext> dashbaordWidgets = DashboardUtil.getDashboardWidgetsFormDashboardId(dashboard.getId());
 			dashboard.setDashboardWidgets(dashbaordWidgets);
 			dashboard.setReportSpaceFilterContext(getDashboardSpaceFilter(dashboard.getId()));
+			dashboard.setDashboardSharingContext(getDashboardSharing(dashboard.getId()));
 			return dashboard;
 		}
 		return null;
