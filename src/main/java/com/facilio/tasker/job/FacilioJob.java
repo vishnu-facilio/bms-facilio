@@ -2,6 +2,7 @@ package com.facilio.tasker.job;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.jobs.JobLogger;
 import com.facilio.chain.FacilioContext;
 import com.facilio.tasker.executor.Executor;
 import org.apache.log4j.LogManager;
@@ -30,6 +31,7 @@ public abstract class FacilioJob implements Runnable {
 		Thread currentThread = Thread.currentThread();
 		String threadName = currentThread.getName();
 		currentThread.setName(threadName + "-" + jc.getJobId()+"-"+ jc.getJobName());
+		int status = 0;
 		try {
 			if ( JobStore.updateStartExecution(jc.getJobId(), jc.getJobName(), jc.getJobStartTime(), jc.getJobExecutionCount()) < 1 ) {
 				return;
@@ -49,13 +51,17 @@ public abstract class FacilioJob implements Runnable {
 			context.put(JobConstants.JOB_CONTEXT, jc);
 			context.put(JobConstants.FACILIO_JOB, this);
 			JobConstants.ChainFactory.jobExecutionChain(jc.getTransactionTimeout()).execute(context);
+			status = 1;
 		}
 		catch(Exception e) {
+			status = 2;
 			LOGGER.error("Job execution failed for Job :"+jc.getJobId()+" : "+ jc.getJobName(),e);
 			CommonCommandUtil.emailException("FacilioJob", "Job execution failed for Job : "+jc.getJobId()+" : "+ jc.getJobName(), e);
 			reschedule();
 		} finally {
-			LOGGER.debug("Job completed " +jc.getJobId()+"-"+ jc.getJobName() + " time taken : " + (System.currentTimeMillis()-startTime));
+			long timeTaken = (System.currentTimeMillis()-startTime);
+			JobLogger.log(jc, timeTaken, status);
+			LOGGER.debug("Job completed " +jc.getJobId()+"-"+ jc.getJobName() + " time taken : " + timeTaken);
 			currentThread.setName(threadName);
 		}
 	}
