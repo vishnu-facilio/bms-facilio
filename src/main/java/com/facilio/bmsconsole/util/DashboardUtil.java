@@ -1026,7 +1026,7 @@ public class DashboardUtil {
 					buildDashboardtoBeRemoved.add(dashboard);
 					
 					FacilioModule module = modBean.getModule(dashboard.getModuleId());
-					if(module.getName().equals("energydata")) {
+					if(module.getName().equals(FacilioConstants.ContextNames.ENERGY_DATA_READING)) {
 						spaceIdsString = StringUtils.join(spaceIds, ',');
 						
 						List<EnergyMeterContext> energyMeters = getMainEnergyMeter(spaceIdsString);

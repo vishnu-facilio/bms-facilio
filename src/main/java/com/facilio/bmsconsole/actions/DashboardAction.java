@@ -6772,9 +6772,9 @@ public class DashboardAction extends FacilioAction {
 			dashboard = DashboardUtil.getDashboardForBaseSpace(buildingId, module.getModuleId());
 			linkName = (dashboard != null) ? dashboard.getLinkName() : linkName;
 			if(dashboard != null) {
-			dashboard = DashboardUtil.getDashboardWithWidgets(dashboard.getId());
-			setDashboardJson(DashboardUtil.getDashboardResponseJson(dashboard));
-			return SUCCESS;
+				dashboard = DashboardUtil.getDashboardWithWidgets(dashboard.getId());
+				setDashboardJson(DashboardUtil.getDashboardResponseJson(dashboard));
+				return SUCCESS;
 			}
 		}
 		dashboard = DashboardUtil.getDashboardWithWidgets(linkName, moduleName);
