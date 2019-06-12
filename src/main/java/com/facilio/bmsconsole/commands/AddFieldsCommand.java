@@ -95,7 +95,7 @@ public class AddFieldsCommand implements Command {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 					.table(module.getTableName())
 					.select(fields)
-					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 					.orderBy(fieldMap.get("fieldId").getColumnName() + " desc")
 					.limit(1);
 		

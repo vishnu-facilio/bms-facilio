@@ -61,8 +61,8 @@ public class TenantsAPI {
 		FacilioModule module = ModuleFactory.getTenantsModule();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getTenantsFields())
-														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+														.table(module.getTableName());
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		List<FacilioField> tenantFields = new ArrayList(modBean.getAllFields(FacilioConstants.ContextNames.TENANT));
@@ -97,7 +97,7 @@ public class TenantsAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getTenantsUserFields())
 														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCustomWhere("Tenant_Users.TENANTID = ? ", id);
 		List<Map<String, Object>> props = selectBuilder.get();
 		List<TenantUserContext> tenantUsers = new ArrayList<>();
@@ -131,7 +131,7 @@ public class TenantsAPI {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(module.getTableName())
 				.fields(FieldFactory.getTenantsUtilityMappingFields())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCustomWhere("Tenants_Utility_Mapping.ASSET_ID = ?", tenantMeterId)
 				.andCustomWhere("Tenants_Utility_Mapping.TENANT_ID = ? ", tenantId);
 		
@@ -164,7 +164,7 @@ public class TenantsAPI {
 		GenericSelectRecordBuilder selectBuilde = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getTenantsUtilityMappingFields())
 														.table(modulo.getTableName())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(modulo))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(modulo))
 														.andCustomWhere("Tenants_Utility_Mapping.TENANT_ID = ?", value)
 														.andCustomWhere("Tenants_Utility_Mapping.SHOW_IN_PORTAL = ?", true);
 		List<Map<String, Object>> prop = selectBuilde.get();
@@ -195,7 +195,7 @@ public class TenantsAPI {
 		GenericSelectRecordBuilder selectBuilde = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getOrgUserFields())
 														.table(modulo.getTableName())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(modulo))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(modulo))
 														.andCustomWhere("ORG_Users.ORG_USERID = ?", ouiId);
 		List<Map<String, Object>> prop = selectBuilde.get();
 		
@@ -214,7 +214,7 @@ public class TenantsAPI {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(module.getTableName())
 				.fields(FieldFactory.getOrgUserFields())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCustomWhere("ORG_Users.USERID = ?", userId);
 		
 		Map<String, Object> value = new HashMap<>();
@@ -236,7 +236,7 @@ public class TenantsAPI {
 														.module(module)
 														.beanClass(TenantContext.class)
 														.select(modBean.getAllFields(FacilioConstants.ContextNames.TENANT))
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getIdCondition(id, module));
 
 		List<TenantContext> tenants = builder.get();
@@ -258,7 +258,7 @@ public class TenantsAPI {
 														.module(module)
 														.beanClass(TenantContext.class)
 														.select(modBean.getAllFields(FacilioConstants.ContextNames.TENANT))
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getIdCondition(id, module));
 		
 		
@@ -281,7 +281,7 @@ public class TenantsAPI {
 														.module(module)
 														.beanClass(TenantContext.class)
 														.select(modBean.getAllFields(FacilioConstants.ContextNames.TENANT))
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition("ZONE_ID", "zoneId", zoneId+"", NumberOperators.EQUALS))
 														.andCustomWhere(module.getTableName()+".STATUS = ?", 1)
 														
@@ -319,7 +319,7 @@ public class TenantsAPI {
 														.innerJoin(resourceModule.getTableName())
 														.on(module.getTableName()+".ZONE_ID = "+resourceModule.getTableName()+".ID")
 														.andCondition(CriteriaAPI.getCondition(module.getTableName()+".BASE_SPACE_ID", "base_space_id" ,spaceId+"", StringOperators.STARTS_WITH))
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(isDeletedCond)
 														;
 												
@@ -388,7 +388,7 @@ public class TenantsAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 												.table(module.getTableName())
 												.select(fields)
-												.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//												.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 												.andCondition(tenantCond)
 												;
 		List<Map<String,Object>> assets = selectBuilder.get();
@@ -416,7 +416,7 @@ public class TenantsAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 													.table(module.getTableName())
 													.select(fields)
-													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCondition(CriteriaAPI.getCondition(tenantId, ids, PickListOperators.IS))
 													;
 		List<Map<String,Object>> props = selectBuilder.get();
@@ -457,7 +457,7 @@ public class TenantsAPI {
 														.table(tenantModule.getTableName())
 														.moduleName(tenantModule.getName())
 														.beanClass(TenantContext.class)
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(tenantModule))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(tenantModule))
 														.andCondition(zoneIdCond)
 														
 														;
@@ -504,7 +504,7 @@ public class TenantsAPI {
 															.beanClass(TenantContext.class)
 															.innerJoin(zoneRelModule.getTableName())
 															.on(zoneRelModule.getTableName()+".ZONE_ID = "+tenantModule.getTableName()+".ZONE_ID")
-															.andCondition(CriteriaAPI.getCurrentOrgIdCondition(tenantModule))
+//															.andCondition(CriteriaAPI.getCurrentOrgIdCondition(tenantModule))
 															.andCondition(spaceIdCond)
 															;
 		
@@ -536,7 +536,7 @@ public class TenantsAPI {
 													.on(orgUserModule.getTableName()+".ORG_USERID = "+module.getTableName()+".ORG_USERID")
 													.innerJoin(portalUsersModule.getTableName())
 													.on(portalUsersModule.getTableName()+".USERID = "+orgUserModule.getTableName()+".USERID")
-													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCondition(CriteriaAPI.getCondition(tenantId, ids, PickListOperators.IS))
 																					;
 		List<Map<String,Object>> props = selectBuilder.get();
@@ -604,7 +604,7 @@ public class TenantsAPI {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 											.table(module.getTableName())
 											.fields(fields)
-											.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//											.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 											.andCondition(CriteriaAPI.getIdCondition(tenantId, module));
 									
 		Map<String, Object> value = new HashMap<>();
@@ -626,7 +626,7 @@ public class TenantsAPI {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 											.table(module.getTableName())
 											.fields(updatedfields)
-											.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//											.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 											.andCondition(CriteriaAPI.getIdCondition(tenantId, module));
 									
 		Map<String, Object> value = new HashMap<>();
@@ -697,7 +697,7 @@ public class TenantsAPI {
 											.innerJoin(tenantModule.getTableName())
 											.on(utilityModule.getTableName()+".TENANT_ID = "+tenantModule.getTableName()+".ID")
 											.andCondition(assetIdCond)
-											.andCondition(CriteriaAPI.getCurrentOrgIdCondition(utilityModule))
+//											.andCondition(CriteriaAPI.getCurrentOrgIdCondition(utilityModule))
 											.andCondition(sysDeletedCond)
 											.andCustomWhere(tenantModule.getTableName()+".STATUS = ?", 1);
 												 
@@ -780,7 +780,7 @@ public class TenantsAPI {
 		UpdateRecordBuilder<TenantContext> updateBuilder = new UpdateRecordBuilder<TenantContext>()
 														   .module(module)
 														   .fields(modBean.getAllFields(FacilioConstants.ContextNames.TENANT))
-														   .andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														   .andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														   .andCondition(CriteriaAPI.getIdCondition(tenant.getId(), module));
 		int count = updateBuilder.update(tenant);
 		
@@ -817,7 +817,7 @@ public class TenantsAPI {
 		FacilioField tenantId = fieldMap.get("tenantId");
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(tenantId, String.valueOf(tenant.getId()), PickListOperators.IS))
 														;
 		return deleteBuilder.delete();
@@ -827,8 +827,8 @@ public class TenantsAPI {
 		FacilioModule module = ModuleFactory.getRateCardModule();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getRateCardFields())
-														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+														.table(module.getTableName());
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
 		return getRateCardsFromProps(selectBuilder.get());
 	}
 	
@@ -842,7 +842,7 @@ public class TenantsAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getRateCardFields())
 														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getIdCondition(id, module))
 														;
 		List<RateCardContext> rateCards = getRateCardsFromProps(selectBuilder.get());
@@ -937,7 +937,7 @@ public class TenantsAPI {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 														.table(module.getTableName())
 														.fields(FieldFactory.getRateCardFields())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getIdCondition(rateCard.getId(), module))
 														;
 		return updateBuilder.update(FieldUtil.getAsProperties(rateCard));
@@ -951,7 +951,7 @@ public class TenantsAPI {
 		FacilioModule module = ModuleFactory.getRateCardModule();
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getIdCondition(id, module));
 		return deleteBuilder.delete();
 	}
@@ -963,7 +963,7 @@ public class TenantsAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.table(module.getTableName())
 														.select(fields)
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(rateCardIdFIeld, StringUtils.join(ids, ","), PickListOperators.IS));
 		
 		return selectBuilder.get();
@@ -985,7 +985,7 @@ public class TenantsAPI {
 			FacilioModule module = ModuleFactory.getRateCardServiceModule();
 			GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 															.table(module.getTableName())
-															.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//															.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 															.andCondition(CriteriaAPI.getIdCondition(ids, module))
 															;
 			int rowsUpdated =  deleteBuilder.delete();
@@ -1040,7 +1040,7 @@ public class TenantsAPI {
 																				.table(zoneModule.getTableName())
 																				.moduleName(zoneModule.getName())
 																				.beanClass(ZoneContext.class)
-																				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(zoneModule))
+//																				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(zoneModule))
 																				;
 				Map<Long, ZoneContext> zones = selectBuilder.getAsMap();
 				
@@ -1123,7 +1123,7 @@ public class TenantsAPI {
 											.on("Alarms.ID = Tickets.ID")
 											.andCondition(ViewFactory.getAlarmSeverityCondition(FacilioConstants.Alarm.CLEAR_SEVERITY, false))
 											.andCondition(resourceIdCond)
-											.andCondition(CriteriaAPI.getCurrentOrgIdCondition(alarmModule))
+//											.andCondition(CriteriaAPI.getCurrentOrgIdCondition(alarmModule))
 											;
 		
 		List<Map<String, Object>> rs = builder.get();
@@ -1159,7 +1159,7 @@ public class TenantsAPI {
 														  .innerJoin("TicketStatus")
 														  .on("Tickets.STATUS_ID = TicketStatus.ID")
 														  .andCustomWhere("TicketStatus.STATUS_TYPE = ?", FacilioStatus.StatusType.OPEN.getIntVal())
-														  .andCondition(CriteriaAPI.getCurrentOrgIdCondition(workOrderModule))
+//														  .andCondition(CriteriaAPI.getCurrentOrgIdCondition(workOrderModule))
 														  .andCondition(tenantCond);
 									
 		List<WorkOrderContext> rs = builder.get();
@@ -1258,7 +1258,7 @@ public class TenantsAPI {
 													.innerJoin("TicketStatus")
 													.on("Tickets.STATUS_ID = TicketStatus.ID")
 													.andCustomWhere("TicketStatus.STATUS_TYPE = "+ FacilioStatus.StatusType.PRE_OPEN.getIntVal())
-													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(workOrderModule))
+//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(workOrderModule))
 													.andCondition(tenantCond);
 							            		
 		

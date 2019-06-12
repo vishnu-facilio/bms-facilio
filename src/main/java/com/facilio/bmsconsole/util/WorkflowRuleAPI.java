@@ -192,7 +192,7 @@ public class WorkflowRuleAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getWorkflowEventFields())
 														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCustomWhere("MODULEID = ? AND ACTIVITY_TYPE = ?", moduleId, type.getValue());
 		
 		List<Map<String, Object>> eventProps = selectBuilder.get();
@@ -272,7 +272,7 @@ public class WorkflowRuleAPI {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 													.table(module.getTableName())
 													.fields(FieldFactory.getWorkflowRuleFields())
-													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCondition(CriteriaAPI.getIdCondition(rule.getId(), module));
 		return updateBuilder.update(ruleProps);
 	}
@@ -288,7 +288,7 @@ public class WorkflowRuleAPI {
 														.table(extendedModule.getTableName())
 														.innerJoin(workflowModule.getTableName())
 														.on(extendedModule.getTableName()+".ID = "+workflowModule.getTableName()+".ID")
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(workflowModule))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(workflowModule))
 														.andCondition(CriteriaAPI.getIdCondition(extendedRule.getId(), extendedModule));
 		
 		return updateBuilder.update(FieldUtil.getAsProperties(extendedRule));
@@ -311,7 +311,7 @@ public class WorkflowRuleAPI {
 		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 													.table(module.getTableName())
-													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCondition(CriteriaAPI.getIdCondition(ruleId, module));
 		
 		if (fetchEvent) {
@@ -334,7 +334,7 @@ public class WorkflowRuleAPI {
 		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 													.table(module.getTableName())
-													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCondition(CriteriaAPI.getCondition("RULE_TYPE", "ruleType", ruleType.getIntVal()+"", StringOperators.IS))
 													.andCondition(CriteriaAPI.getCondition("STATUS", "status", 1+"", StringOperators.IS));
 		
@@ -365,8 +365,8 @@ public class WorkflowRuleAPI {
 		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 				.table("Workflow_Rule")
-				.select(FieldFactory.getWorkflowRuleFields())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+				.select(FieldFactory.getWorkflowRuleFields());
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
 		return getWorkFlowsFromMapList(ruleBuilder.get(), false, true, true);
 	}
 	
@@ -376,7 +376,7 @@ public class WorkflowRuleAPI {
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 				.table("Workflow_Rule")
 				.select(fields)
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getIdCondition(ids, module))
 				;
 		if (fetchEvent) {
@@ -398,7 +398,7 @@ public class WorkflowRuleAPI {
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 				.table("Workflow_Rule")
 				.select(FieldFactory.getWorkflowRuleFields())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getIdCondition(ids, module))
 				;
 		List<WorkflowRuleContext> rules = getWorkFlowsFromMapList(ruleBuilder.get(), fetchEvent, fetchChildren, fetchExtended);
@@ -423,7 +423,7 @@ public class WorkflowRuleAPI {
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getWorkflowEventFields())
 				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getIdCondition(id, module))
 				;
 		
@@ -441,7 +441,7 @@ public class WorkflowRuleAPI {
 				.table("Workflow_Rule")
 				.innerJoin("Workflow_Event")
 				.on("Workflow_Rule.EVENT_ID = Workflow_Event.ID")
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCustomWhere("Workflow_Event.MODULEID = ?", moduleId);
 		return getWorkFlowsFromMapList(ruleBuilder.get(), false, true, true);
 	}
@@ -460,7 +460,7 @@ public class WorkflowRuleAPI {
 				.select(fields)
 				.innerJoin(eventModule.getTableName())
 				.on(module.getTableName()+".EVENT_ID = "+ eventModule.getTableName() +".ID")
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(ruleTypeField, String.valueOf(type.getIntVal()), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(latestVersionField, String.valueOf(true), BooleanOperators.IS))
 				;
@@ -484,7 +484,7 @@ public class WorkflowRuleAPI {
 				.select(fields)
 				.innerJoin(eventModule.getTableName())
 				.on(module.getTableName()+".EVENT_ID = "+ eventModule.getTableName() +".ID")
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(ruleTypeField, String.valueOf(type.getIntVal()), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(latestVersionField, String.valueOf(true), BooleanOperators.IS))
 				;
@@ -522,7 +522,7 @@ public class WorkflowRuleAPI {
 				.select(fields)
 				.innerJoin("Workflow_Event")
 				.on("Workflow_Rule.EVENT_ID = Workflow_Event.ID")
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ruleModule))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ruleModule))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), module.getExtendedModuleIds(), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), Boolean.TRUE.toString(), BooleanOperators.IS))
 				.orderBy("EXECUTION_ORDER");
@@ -638,7 +638,7 @@ public class WorkflowRuleAPI {
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 															.table(module.getTableName())
 															.select(fields)
-															.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//															.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 															.andCondition(CriteriaAPI.getCondition(ruleField, ruleIds, PickListOperators.IS))
 															;
 			

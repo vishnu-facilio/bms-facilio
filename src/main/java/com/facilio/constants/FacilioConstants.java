@@ -348,6 +348,7 @@ public class FacilioConstants {
 		public static final String MODULE_DATA_INTERVAL = "moduleDataInterval";
 		public static final String PARENT_MODULE = "parentModule";
 		public static final String READING_NAME = "readingName";
+		public static final String IS_SPECIAL_MODULE = "isSpecialModule";
 		public static final String TOTAL_CURRENT_OCCUPANCY = "currentOccupancy";
 		
 		public static final String OVER_RIDE_READING_SPLIT = "overRideReadingSplit";

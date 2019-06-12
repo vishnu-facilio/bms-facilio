@@ -21,6 +21,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
@@ -145,7 +146,7 @@ public class AssetsAPI {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
-		FacilioField orgField = FieldFactory.getOrgIdField(module);
+		FacilioField orgField = AccountConstants.getOrgIdField(module);
 		fields.add(orgField);
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -640,7 +641,7 @@ public class AssetsAPI {
 				.on(readingsMetaModule.getTableName()+"."+readingMetaFieldsMap.get("resourceId").getColumnName()+"="+module.getTableName()+".ID")
 				.innerJoin(readingFieldsModule.getTableName())
 				.on(readingFieldsModule.getTableName()+"." + readingFieldsMap.get("fieldId").getColumnName()+"="+ readingsMetaModule.getTableName()+"."+readingMetaFieldsMap.get("fieldId").getColumnName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(readingMetaFieldsMap.get("value"), "-1", StringOperators.ISN_T))
 				.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), CommonOperators.IS_NOT_EMPTY));
 				
@@ -845,7 +846,7 @@ public class AssetsAPI {
 			.fields(modFields)
 			.innerJoin(resourceModule.getTableName())
 			.on(module.getTableName()+".ID = "+resourceModule.getTableName()+".ID")
-			.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//			.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 			.andCondition(CriteriaAPI.getIdCondition(id, module))
 		;
 		builder.update(prop);

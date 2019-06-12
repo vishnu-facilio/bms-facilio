@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -149,7 +150,7 @@ public class LocationAPI {
 		
 		Condition latCondition = CriteriaAPI.getCondition(latField, Collections.singletonList(lat),NumberOperators.EQUALS);
 		Condition lonCondition = CriteriaAPI.getCondition(lonField, Collections.singletonList(lon),NumberOperators.EQUALS);
-		Condition org = CriteriaAPI.getCondition(FieldFactory.getOrgIdField(), Collections.singleton(orgId),NumberOperators.EQUALS);
+		Condition org = CriteriaAPI.getCondition(AccountConstants.getOrgIdField(), Collections.singleton(orgId),NumberOperators.EQUALS);
 		
 		
 		SelectRecordsBuilder<LocationContext> newBuilder = new SelectRecordsBuilder<LocationContext>().table("Locations")

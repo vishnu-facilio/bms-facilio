@@ -55,6 +55,11 @@ public class CalculateDeltaCommand implements Command {
 									}
 									if (val != null) {
 										ReadingDataMeta rdm = rdmMap.get(ReadingsAPI.getRDMKey(reading.getParentId(), field));
+
+										if (reading.getTtime() != -1 && reading.getTtime() < rdm.getTtime()) {
+											continue; //Not calculating delta for older values
+										}
+
 										Object deltaVal = null;
 										if (field.getDataTypeEnum() == FieldType.DECIMAL) {
 											Double prevVal = (Double) FieldUtil.castOrParseValueAsPerType(field, rdm.getValue());

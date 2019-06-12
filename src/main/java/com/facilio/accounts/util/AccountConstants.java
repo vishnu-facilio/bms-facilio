@@ -1587,6 +1587,22 @@ public class AccountConstants {
 		
 		return fields;
 	}
+
+	public static FacilioField getOrgIdField() {
+		return getOrgIdField(null);
+	}
+
+	public static FacilioField getOrgIdField(FacilioModule module) {
+		FacilioField field = new FacilioField();
+		field.setName("orgId");
+		field.setDisplayName("Org Id");
+		field.setDataType(FieldType.NUMBER);
+		field.setColumnName("ORGID");
+		if (module != null) {
+			field.setModule(module);
+		}
+		return field;
+	}
 	
 	public static List<FacilioField> getRoleFields() {
 		FacilioModule module = getRoleModule();

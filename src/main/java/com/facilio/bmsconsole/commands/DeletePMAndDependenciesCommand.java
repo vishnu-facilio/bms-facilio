@@ -174,7 +174,8 @@ public class DeletePMAndDependenciesCommand implements Command{
 		selectRecordBuilder.select(Arrays.asList(fieldMap.get("scheduleRuleId")))
 				.table(module.getTableName())
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("pmId"), pmIds, NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+				;
 		List<Map<String, Object>> props = selectRecordBuilder.get();
 		List<Long> workFlowIds = new ArrayList<>();
 		if (props != null && !props.isEmpty()) {
@@ -191,7 +192,7 @@ public class DeletePMAndDependenciesCommand implements Command{
 
 		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder()
 				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("pmId"), pmIds, NumberOperators.EQUALS));
 		deleteRecordBuilder.delete();
 	}
@@ -200,7 +201,9 @@ public class DeletePMAndDependenciesCommand implements Command{
 		if (pmIds.isEmpty()) {
 			return;
 		}
+
 		deleteNewPMReminders(pmIds);
+
 	}
 
 	private void deleteNewPMReminders(List<Long> pmIds) throws Exception {
@@ -210,7 +213,7 @@ public class DeletePMAndDependenciesCommand implements Command{
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 				.select(Arrays.asList(fieldMap.get("scheduleRuleId")))
 				.table(reminderModule.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(reminderModule))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(reminderModule))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("pmId"), pmIds, NumberOperators.EQUALS));
 
 		List<Map<String, Object>> props = selectRecordBuilder.get();
@@ -229,7 +232,7 @@ public class DeletePMAndDependenciesCommand implements Command{
 
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 				.table(reminderModule.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(reminderModule))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(reminderModule))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("pmId"), pmIds, NumberOperators.EQUALS));
 		deleteBuilder.delete();
 	}

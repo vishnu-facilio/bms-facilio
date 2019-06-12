@@ -16,6 +16,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
@@ -418,7 +419,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	}
 	
 	private List<Map<String, Object>> getAsJustProps(boolean isMap) throws Exception {
-		FacilioField orgIdField = FieldFactory.getOrgIdField(module);
+		FacilioField orgIdField = AccountConstants.getOrgIdField(module);
 		FacilioField moduleIdField = FieldFactory.getModuleIdField(module);
 		FacilioField siteIdField = null;
 		if (FieldUtil.isSiteIdFieldPresent(module)) {

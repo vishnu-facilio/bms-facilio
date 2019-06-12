@@ -120,7 +120,7 @@ public class AdminAction extends ActionSupport
 					GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 					.table(AccountConstants.getFeatureLicenseModule().getTableName())
 					.fields(AccountConstants.getFeatureLicenseFields())
-					.andCondition(CriteriaAPI.getCondition(FieldFactory.getOrgIdField(AccountConstants.getFeatureLicenseModule()), orgidstring, StringOperators.IS));
+					.andCondition(CriteriaAPI.getCondition(AccountConstants.getOrgIdField(AccountConstants.getFeatureLicenseModule()), orgidstring, StringOperators.IS));
 
 			Map<String, Object> props = new HashMap<>();
 			props.put("module", summodule);

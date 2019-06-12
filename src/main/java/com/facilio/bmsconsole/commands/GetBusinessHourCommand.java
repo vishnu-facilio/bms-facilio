@@ -34,7 +34,9 @@ public class GetBusinessHourCommand implements Command {
 		FacilioModule module = ModuleFactory.getBusinessHoursModule();
 		String businessHoursTable = ModuleFactory.getBusinessHoursModule().getTableName();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(FieldFactory.getBusinessHoursFields())
-				.table(businessHoursTable).andCondition(CriteriaAPI.getCurrentOrgIdCondition(module)).orderBy("Id");
+				.table(businessHoursTable)
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.orderBy("Id");
 		if (!ids.isEmpty()) {
 			selectBuilder.andCondition(CriteriaAPI.getIdCondition(ids, module));
 		} 
@@ -62,7 +64,8 @@ public class GetBusinessHourCommand implements Command {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 					.select(FieldFactory.getSingleDayBusinessHoursFields()).table(businessHoursTable)
 					.innerJoin(singleDayTable).on(businessHoursTable + ".ID = " + singleDayTable + ".PARENT_ID")
-					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module)).orderBy("dayOfWeek");
+//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+					.orderBy("dayOfWeek");
 		if (!ids.isEmpty()) {
 			selectBuilder.andCondition(CriteriaAPI.getIdCondition(ids, module));
 		} 

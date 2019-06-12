@@ -16,7 +16,7 @@ public class GetPageCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-		ModuleBaseWithCustomFields record = (ModuleBaseWithCustomFields) context.get(FacilioConstants.ContextNames.RECORD);
+		Object record = (Object) context.get(FacilioConstants.ContextNames.RECORD);
 		Page page = PageFactory.getPage(moduleName, record);
 		if (page == null) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -26,7 +26,6 @@ public class GetPageCommand implements Command {
 			}
 		}
 		context.put(FacilioConstants.ContextNames.PAGE, page);
-		
 		return false;
 	}
 	

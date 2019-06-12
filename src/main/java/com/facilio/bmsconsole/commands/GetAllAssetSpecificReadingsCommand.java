@@ -52,7 +52,7 @@ public class GetAllAssetSpecificReadingsCommand implements Command {
 														.table(module.getTableName())
 														.innerJoin(assetTable)
 														.on(module.getTableName()+"."+resourceField.getColumnName()+"="+assetTable+".ID")
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(assetModule))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(assetModule))
 														.groupBy(groupBy.toString());
 
 		List<Map<String, Object>> props = selectBuilder.get();

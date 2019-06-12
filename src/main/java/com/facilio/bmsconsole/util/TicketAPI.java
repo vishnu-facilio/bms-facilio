@@ -159,7 +159,7 @@ public class TicketAPI {
 				FacilioModule rdmModule = ModuleFactory.getReadingDataMetaModule();
 				GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 						.table(rdmModule.getTableName())
-						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(rdmModule))
+//						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(rdmModule))
 						.andCondition(CriteriaAPI.getCondition(rdmresourceId, userIds, NumberOperators.EQUALS))
 						.andCondition(CriteriaAPI.getCondition(rdmfieldId, readingFields, NumberOperators.EQUALS));
 				deleteBuilder.delete();
@@ -977,8 +977,8 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 		FacilioModule module = ModuleFactory.getCalendarColorModule();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(FieldFactory.getCalendarColorFields())
-														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+														.table(module.getTableName());
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
 		List<Map<String, Object>> results = selectBuilder.get();
 		if(results != null && !results.isEmpty())
 		{
@@ -997,8 +997,8 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 		if (currentColor != null && currentColor.getId() != -1) {
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 					.table(module.getTableName())
-					.fields(FieldFactory.getCalendarColorFields())
-					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+					.fields(FieldFactory.getCalendarColorFields());
+//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
 
 			updateBuilder.update(colorProp);
 		}
@@ -1354,7 +1354,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 					.table(module.getTableName())
 					.select(fields)
 					.groupBy(parentIdField.getCompleteColumnName())
-					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 					.andCondition(condition).andCondition(notPreRequestCondition);
 			
 			List<Map<String, Object>> totalCountList = select.get();
@@ -1375,7 +1375,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 					.select(fields)
 					.groupBy(parentIdField.getCompleteColumnName())
 					.andCondition(condition)
-					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 					.andCondition(completedStatusCondition).andCondition(notPreRequestCondition);
 			
 			List<Map<String, Object>> completedCountList = select.get();
@@ -1416,7 +1416,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 				GenericUpdateRecordBuilder recordBuilder = new GenericUpdateRecordBuilder()
 						.table(ticketModule.getTableName())
 						.fields(Arrays.asList(noOfTasksField, noOfClosedTasksField))
-						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ticketModule))
+//						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ticketModule))
 						.andCondition(idFieldCondition);
 				recordBuilder.update(updateMap);
 			}

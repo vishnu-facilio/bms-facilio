@@ -28,7 +28,8 @@ public class getAssetBreakdownCommand implements Command {
                        List<FacilioField> fields = modBean.getAllFields("assetbreakdown");
                        fields.add(FieldFactory.getIdField(module));
                        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields)
-                                       .table(module.getTableName()).andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+                                       .table(module.getTableName())
+//                                       .andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
                                        .andCondition(CriteriaAPI.getIdCondition(assetBreakdown.getId(), module));
                        List<Map<String, Object>> props = selectBuilder.get();
                        if (props != null && !props.isEmpty()) {

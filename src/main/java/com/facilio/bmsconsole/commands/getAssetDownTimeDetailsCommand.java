@@ -35,8 +35,11 @@ public class getAssetDownTimeDetailsCommand implements Command {
 			fields.add(modBean.getField("lastDowntimeId", ContextNames.ASSET));
 			
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields)
-					.table(module.getTableName()).andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+
+					.table(module.getTableName())
+//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 					.andCondition(CriteriaAPI.getIdCondition(assetBreakdown.getParentId(), module));
+
 			
 			Map<String, Object> prop = selectBuilder.fetchFirst();
 			if (prop != null && !prop.isEmpty()) {

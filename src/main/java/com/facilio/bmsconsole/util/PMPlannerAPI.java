@@ -28,8 +28,8 @@ public class PMPlannerAPI {
 		FacilioModule plannerModule= ModuleFactory.getPMPlannerSettingsModule();
 		GenericSelectRecordBuilder builder=new GenericSelectRecordBuilder()
 				.table(plannerModule.getTableName())
-				.select(FieldFactory.getPMPlannerSettingsFields())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(plannerModule));
+				.select(FieldFactory.getPMPlannerSettingsFields());
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(plannerModule));
 		List<Map<String, Object>> settingRows=builder.get();
 		if(settingRows.isEmpty())
 		{
@@ -45,8 +45,8 @@ public class PMPlannerAPI {
 		FacilioModule plannerModule=ModuleFactory.getPMPlannerSettingsModule();
 		GenericSelectRecordBuilder builder=new GenericSelectRecordBuilder()
 				.table(plannerModule.getTableName())
-				.select(FieldFactory.getPMPlannerSettingsFields())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(plannerModule));
+				.select(FieldFactory.getPMPlannerSettingsFields());
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(plannerModule));
 		List<Map<String, Object>> settingRows=builder.get();
 		
 		PMPlannerSettingsContext settingsContext=new PMPlannerSettingsContext();

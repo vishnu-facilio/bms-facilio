@@ -46,7 +46,7 @@ public class ScheduledV2ReportListCommand implements Command {
 				.table(module.getTableName())
 				.innerJoin(reportModule.getTableName())
 				.on(module.getTableName()+".REPORTID = "+reportModule.getTableName()+".ID")
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module),String.valueOf(moduleToFetch.getModuleId()), NumberOperators.EQUALS));
 		
 		List<Long> ids = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
@@ -77,7 +77,7 @@ public class ScheduledV2ReportListCommand implements Command {
 		selectBuilder = new GenericSelectRecordBuilder()
 				.select(jobsField)
 				.table(jobsModule.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(jobsModule))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(jobsModule))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("jobId"), reportInfoIds, NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("jobName"), "ReportEmailScheduler", StringOperators.IS));
 		

@@ -413,7 +413,7 @@ public class OrgBeanImpl implements OrgBean {
 	@Override
 	public User getSuperAdmin(long orgId) throws Exception {
 		
-		Role superAdminRole = AccountUtil.getRoleBean(orgId).getRole(orgId, AccountConstants.DefaultRole.SUPER_ADMIN, false);
+		Role superAdminRole = AccountUtil.getRoleBean().getRole(orgId, AccountConstants.DefaultRole.SUPER_ADMIN, false);
 		
 		if(superAdminRole == null) {
 			return null;
@@ -422,7 +422,7 @@ public class OrgBeanImpl implements OrgBean {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getUserFields());
 		fields.addAll(AccountConstants.getOrgUserFields());
-		fields.add(FieldFactory.getOrgIdField(AccountConstants.getOrgUserModule()));
+		fields.add(AccountConstants.getOrgIdField(AccountConstants.getOrgUserModule()));
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)

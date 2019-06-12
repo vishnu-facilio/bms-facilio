@@ -32,7 +32,7 @@ public class GetConnectedAppDetailsCommand implements Command{
 				selectBuilder.andCondition(CriteriaAPI.getIdCondition(connectedAppId, ModuleFactory.getConnectedAppsModule()));
 			}
 			else {
-				selectBuilder.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getConnectedAppsModule()));
+//				selectBuilder.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getConnectedAppsModule()));
 				selectBuilder.andCondition(CriteriaAPI.getCondition("LINK_NAME", "linkName", connectedAppLinkName, StringOperators.IS));
 			}
 			

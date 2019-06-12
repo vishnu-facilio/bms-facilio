@@ -47,7 +47,7 @@ public class ModeledDataCommand implements Command {
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 	
 	if(TimeSeriesAPI.isStage()) {
-			LOGGER.info("Inside ModeledDataCommand####### deviceData: "+deviceData);
+			LOGGER.debug("Inside ModeledDataCommand####### deviceData: "+deviceData);
 	}
 			for(Map.Entry<String, Map<String,String>> data:deviceData.entrySet()) {
 
@@ -116,7 +116,6 @@ public class ModeledDataCommand implements Command {
 //	}
 
 		//oldPublish data
-		if(!TimeSeriesAPI.isStage()) {
 		for(Map.Entry<String, Map<String,String>> data:deviceData.entrySet()) {
 			
 			
@@ -164,7 +163,7 @@ public class ModeledDataCommand implements Command {
 			
 			
 		}
-		}
+		
 		for(Map.Entry<String, ReadingContext> iMap:iModuleVsReading.entrySet()) { //send the data to their's module eg.Energy_Meter...
 			String key=iMap.getKey();
 			String moduleName=key.substring(0, key.indexOf("|"));
@@ -177,7 +176,7 @@ public class ModeledDataCommand implements Command {
 			readings.add(reading);
 		}
 		if(TimeSeriesAPI.isStage()) {
-		LOGGER.info("Inside ModeledDataCommand####### moduleVsReading: "+moduleVsReading);
+		LOGGER.debug("Inside ModeledDataCommand####### moduleVsReading: "+moduleVsReading);
 		}
 
 		context.put(FacilioConstants.ContextNames.READINGS_MAP,moduleVsReading);

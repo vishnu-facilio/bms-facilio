@@ -173,7 +173,7 @@ public class GetWorkOrderRequestListCommand implements Command {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.table(wrTable)
 				.select(Collections.singletonList( FieldFactory.getField("count", "COUNT(" + wrTable + ".ID)", FieldType.NUMBER)))
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(workorderRequestModule))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(workorderRequestModule))
 				.andCriteria(viewCriteria);
 		
 		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(workorderRequestModule.getName());
