@@ -401,4 +401,12 @@ public class BmsDBConf extends DBConf {
     public void emailException(String fromClass, String msg, Throwable e, String info) {
         CommonCommandUtil.emailException(fromClass, msg, e, info);
     }
+
+    @Override
+    public boolean logQueries() {
+        if (AccountUtil.getCurrentOrg() != null && (AccountUtil.getCurrentOrg().getId() == 78 || AccountUtil.getCurrentOrg().getId() == 155)) {
+            return true;
+        }
+        return super.logQueries();
+    }
 }
