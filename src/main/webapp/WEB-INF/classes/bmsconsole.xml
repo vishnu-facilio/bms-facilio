@@ -296,12 +296,12 @@
 				<param name="includeProperties">tasks.*,sections.*,preRequests.*,preRequestSections.*</param>
 			</result>
 		</action>
-		<action name="dashboard" class="com.facilio.bmsconsole.actions.DashboardAction"
+		<!-- <action name="dashboard" class="com.facilio.bmsconsole.actions.DashboardAction"
 			method="getDashboardList">
 			<result name="success" type="json">
 				<param name="includeProperties">dashboards,dashboards\[\d+\],dashboards\[\d+\].*</param>
 			</result>
-		</action>
+		</action> -->
 		
 		<action name="dashboardWithFolder" class="com.facilio.bmsconsole.actions.DashboardAction"
 			method="getDashboardListWithFolder">

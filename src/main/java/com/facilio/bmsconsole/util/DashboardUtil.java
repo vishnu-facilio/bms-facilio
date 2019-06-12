@@ -972,7 +972,7 @@ public class DashboardUtil {
 			Map<Long, DashboardContext> dashboardMap = new HashMap<Long, DashboardContext>();
 			for (Map<String, Object> prop : props) {
 				DashboardContext dashboard = FieldUtil.getAsBeanFromMap(prop, DashboardContext.class);
-//				dashboard.setDashboardSharingContext(getDashboardSharing(dashboard.getId()));
+				dashboard.setDashboardSharingContext(getDashboardSharing(dashboard.getId()));
 //				dashboard.setSpaceFilteredDashboardSettings(getSpaceFilteredDashboardSettings(dashboard.getId()));	// check
 //				dashboard.setReportSpaceFilterContext(getDashboardSpaceFilter(dashboard.getId()));					// check
 				dashboard.setModuleName(modBean.getModule(dashboard.getModuleId()).getName());
@@ -1423,8 +1423,6 @@ public class DashboardUtil {
 					if (dashboardIds.contains(dashboardSharing.getDashboardId())) {
 						dashboardIds.remove(dashboardSharing.getDashboardId());
 					}
-					
-					dashboardMap.get(dashboardSharing.getDashboardId()).addDashboardSharingContext(dashboardSharing);
 					
 					if(!dashboardList.contains(dashboardMap.get(dashboardSharing.getDashboardId()))) {
 						if (dashboardSharing.getSharingTypeEnum().equals(SharingType.USER) && dashboardSharing.getOrgUserId() == AccountUtil.getCurrentAccount().getUser().getOuid()) {
