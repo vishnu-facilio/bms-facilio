@@ -4,6 +4,7 @@ import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -45,6 +46,10 @@ public class CreateSuperAdminCommand implements Command {
 		user.setInvitedTime(System.currentTimeMillis());
 		user.setPassword(password);
 		user.setServerName(serverName);
+		if(AwsUtil.isDevelopment()) {
+			user.setUserVerified(true);
+			user.setInviteAcceptStatus(true);
+		}
 		long ouid = AccountUtil.getUserBean().createUser(orgId, user);
 		context.put("ouid", ouid);
 		
