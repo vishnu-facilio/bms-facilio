@@ -95,7 +95,8 @@ public class Processor extends FacilioProcessor {
                         }
                     }
                 }catch (Exception e1){
-                    LOGGER.info("Exception Occured ",e1);
+                    LOGGER.info("Exception Occured while adding agentMessage so, skipping record ",e1);
+                    continue;
                 }
                 String data = "";
                 data = record.getData().toString();

@@ -44,6 +44,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import java.io.File;
+import java.sql.BatchUpdateException;
 import java.util.*;
 
 public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
@@ -761,7 +762,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
                     .fields(FieldFactory.getAgentMessageFields());
             return insertRecordBuilder.insert(map);
     }catch (Exception e){
-            if(e instanceof MySQLIntegrityConstraintViolationException){
+            if(e instanceof MySQLIntegrityConstraintViolationException || e instanceof BatchUpdateException){
                 LOGGER.info("Duplicate Message,insertion failed "+e.getMessage());
             }
             else {
