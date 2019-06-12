@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class ControllerActivityWatcherJob extends InstantJob {
 
 	private static final Logger LOGGER = LogManager.getLogger(ControllerActivityWatcherJob.class.getName());
-	private static final long THREAD_SLEEP_BUFFER = 5000;
+	private static final long THREAD_SLEEP_BUFFER = 60000;
 	private static final long TIME_OUT = 15 * 60 * 1000;
 	private boolean timedOut = false;
 	

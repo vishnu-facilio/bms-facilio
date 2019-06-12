@@ -1068,12 +1068,17 @@ public class TemplateAPI {
 		}
 		return pmIncludeExcludeResourceContexts;
 	}
-	
+	private static final Logger LOGGER = LogManager.getLogger(TemplateAPI.class.getName());
+
 	private static JSONTemplate getJSONTemplateFromMap(Map<String, Object> templateMap) throws Exception {
 		JSONTemplate template = FieldUtil.getAsBeanFromMap(templateMap, JSONTemplate.class);
 		User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
 		try(InputStream body = FileStoreFactory.getInstance().getFileStore(superAdmin.getId()).readFile(template.getContentId())) {
-			template.setContent(IOUtils.toString(body));
+			if(body != null) {
+				template.setContent(IOUtils.toString(body));
+			}else {
+				LOGGER.info("Exception Occurred - Nullpointer ");
+			}
 		}
 		catch(Exception e) {
 			log.info("Exception occurred ", e);

@@ -45,7 +45,6 @@ public class Processor extends FacilioProcessor {
     private boolean isRestarted = true;
 
 
-
     public Processor(long orgId, String orgDomainName) {
         super(orgId, orgDomainName);
         this.orgId = orgId;
@@ -143,7 +142,12 @@ public class Processor extends FacilioProcessor {
                 FacilioAgent agent = agentUtil.getFacilioAgent(agentName);
                 if (agent == null ) {
                     agent = getFacilioAgent(agentName);
-                    agent.setId(agentUtil.addAgent(agent));
+                    long agentId = agentUtil.addAgent(agent);
+                    if(agentId < 1L) {
+                        LOGGER.info(" Error in AgentId generation ");
+                        continue;
+                    }
+                    agent.setId(agentId);
                 }
                 int dataLength = data.length();
                 HashMap<String, Long> dataTypeLastMessageTime = deviceMessageTime.getOrDefault(deviceId, new HashMap<>());

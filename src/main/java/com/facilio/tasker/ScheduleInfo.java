@@ -5,6 +5,7 @@ import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.io.Serializable;
 import java.time.*;
@@ -153,7 +154,16 @@ public class ScheduleInfo implements Serializable {
 	public void setYearlyDayValue(int yearlyDayValue) {
 		this.yearlyDayValue = yearlyDayValue;
 	}
-	
+
+	private int skipEvery = -1;
+	public int getSkipEvery () {
+		return this.skipEvery;
+	}
+
+	public void setSkipEvery(int skipEvery) {
+		this.skipEvery = skipEvery;
+	}
+
 	public List<Long> nextExecutionTimes(long startTime, long endTime) {
 		List<Long> nextExecutionTimes = new ArrayList<>();
 		long flag = nextExecutionTime(startTime);
@@ -163,6 +173,14 @@ public class ScheduleInfo implements Serializable {
 			flag = nextExecutionTime(flag);
 		}
 		return nextExecutionTimes;
+	}
+
+	public Pair<Long, Integer> nextExecutionTime(Pair<Long, Integer> startTimeCyclesExecuted) {
+		int cycleCount = startTimeCyclesExecuted.getRight() + 1;
+		if(cycleCount % this.skipEvery == 0) {
+			return nextExecutionTime(Pair.of(nextExecutionTime(startTimeCyclesExecuted.getLeft()), cycleCount));
+		}
+		return Pair.of(nextExecutionTime(startTimeCyclesExecuted.getLeft()), cycleCount);
 	}
 	
 	public long nextExecutionTime(long startTime) {

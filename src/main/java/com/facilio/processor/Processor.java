@@ -161,7 +161,12 @@ public class Processor implements IRecordProcessor {
                     FacilioAgent agent = agentUtil.getFacilioAgent(agentName);
                     if (agent == null) {
                         agent = getFacilioAgent(agentName);
-                        agentUtil.addAgent(agent);
+                        long agentId = agentUtil.addAgent(agent);
+                        if(agentId < 1L) {
+                            LOGGER.info(" Error in AgentId generation ");
+                            continue;
+                        }
+                        agent.setId(agentId);
                     }
                     if(isStage && agent != null) {
                         agentUtil.addAgentMetrics(data.length(), agent.getId(), publishType.getKey());
