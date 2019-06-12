@@ -575,6 +575,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		fillDefaultPropsForAlarmRule(alarmTriggerRule,preRequsiteRule,WorkflowRuleContext.RuleType.ALARM_TRIGGER_RULE,preRequsiteRule.getId());
 		alarmTriggerRule.setOnSuccess(true);
 		alarmTriggerRule.setClearAlarm(alarmRule.isAutoClear());
+		alarmTriggerRule.setReportBreakdown(alarmRule.isReportBreakdown());
 		WorkflowRuleAPI.addWorkflowRule(alarmTriggerRule);
 		ruleNameVsIdMap.put(alarmTriggerRule.getName(), alarmTriggerRule.getId());
 		
@@ -593,6 +594,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 					alarmRCARule.setOnSuccess(true);
 				}
 				alarmRCARule.setClearAlarm(false);
+				alarmRCARule.setReportBreakdown(alarmRule.isReportBreakdown());
 				fillDefaultPropsForAlarmRule(alarmRCARule,preRequsiteRule,WorkflowRuleContext.RuleType.ALARM_RCA_RULES,parentId);
 				
 				WorkflowRuleAPI.addWorkflowRule(alarmRCARule);
@@ -606,6 +608,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 			fillDefaultPropsForAlarmRule(alarmClearRule,preRequsiteRule,WorkflowRuleContext.RuleType.ALARM_CLEAR_RULE,alarmTriggerRule.getId());
 			alarmClearRule.setOnSuccess(false);
 			alarmClearRule.setClearAlarm(false);
+			alarmClearRule.setReportBreakdown(alarmRule.isReportBreakdown());
 			WorkflowRuleAPI.addWorkflowRule(alarmClearRule);
 			ruleNameVsIdMap.put(alarmClearRule.getName(), alarmClearRule.getId());
 			
@@ -615,6 +618,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 			fillDefaultPropsForAlarmRule(alarmClearRuleDuplicate,preRequsiteRule,WorkflowRuleContext.RuleType.ALARM_CLEAR_RULE,preRequsiteRule.getId());
 			alarmClearRuleDuplicate.setOnSuccess(false);
 			alarmClearRuleDuplicate.setClearAlarm(false);
+			alarmClearRuleDuplicate.setReportBreakdown(alarmRule.isReportBreakdown());
 			WorkflowRuleAPI.addWorkflowRule(alarmClearRuleDuplicate);
 			ruleNameVsIdMap.put(alarmClearRuleDuplicate.getName(), alarmClearRuleDuplicate.getId());
 		}

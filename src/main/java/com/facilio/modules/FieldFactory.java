@@ -1237,6 +1237,7 @@ public class FieldFactory {
 		fields.add(getField("readingRuleType", "READING_RULE_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("upperBound", "UPPER_BOUND", module, FieldType.DECIMAL));
 		fields.add(getField("lowerBound", "LOWER_BOUND", module, FieldType.DECIMAL));
+		fields.add(getField("reportBreakdown", "REPORT_BREAKDOWN", module, FieldType.BOOLEAN));
 
 		return fields;
 	}
