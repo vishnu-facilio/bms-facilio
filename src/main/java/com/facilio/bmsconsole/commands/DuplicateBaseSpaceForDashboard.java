@@ -30,7 +30,7 @@ public class DuplicateBaseSpaceForDashboard implements Command {
 //		DashboardContext siteDashboard = DashboardUtil.getDashboardWithWidgets(siteId);
 		
 		for(DashboardContext dashboard :dashboards) {
-			if(dashboard.getId() == -1 && dashboard.getBaseSpaceId() != -1) {
+			if(dashboard.getId() == -1 && dashboard.getBaseSpaceId() != null &&dashboard.getBaseSpaceId() != -1) {
 				
 				FacilioModule module = modBean.getModule(dashboard.getModuleId());
 				
