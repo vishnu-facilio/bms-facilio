@@ -112,12 +112,18 @@ public class DashboardContext extends ModuleBaseWithCustomFields implements Clon
 	
 	private Integer displayOrder;
 	
-	public boolean mobileEnabled;
+	public Boolean mobileEnabled;
 	
-	public boolean getMobileEnabled() {
+	public Boolean isMobileEnabled() {
+		if(mobileEnabled != null) {
+			return mobileEnabled;
+		}
+		return Boolean.FALSE;
+	}
+	public Boolean getMobileEnabled() {
 		return mobileEnabled;
 	}
-	public void setMobileEnabled(boolean mobileEnabled) {
+	public void setMobileEnabled(Boolean mobileEnabled) {
 		this.mobileEnabled = mobileEnabled;
 	}
 	public Integer getDisplayOrder() {

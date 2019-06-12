@@ -6690,17 +6690,11 @@ public class DashboardAction extends FacilioAction {
 	public String updateDashboards() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
-		if(dashboards != null) {
-			context.put(FacilioConstants.ContextNames.DASHBOARDS, dashboards);
+		
+		if(dashboards == null && dashboard != null) {
+			dashboards = Collections.singletonList(dashboard);
 		}
-		else if(dashboardId != null && dashboardSharing != null) {
-			dashboard = new DashboardContext();
-			dashboard.setId(dashboardId);
-			dashboard.setDashboardSharingContext(dashboardSharing);
-		}
-		if(dashboard != null) {
-			context.put(FacilioConstants.ContextNames.DASHBOARDS, Collections.singletonList(dashboard));
-		}
+		context.put(FacilioConstants.ContextNames.DASHBOARDS, dashboards);
 		
 		Chain updateDashboardChain = TransactionChainFactory.getUpdateDashboardsChain();
 		updateDashboardChain.execute(context);
@@ -6814,14 +6808,14 @@ public class DashboardAction extends FacilioAction {
 				
 				DashboardUtil.addSpaceFilteredDashboardSettings(spaceFilteredDashboardSettings);
 			}
-			if(!dashboard.getMobileEnabled()) {
+			if(!dashboard.isMobileEnabled()) {
 				dashboard.setMobileEnabled(true);
 				DashboardUtil.updateDashboardPublishStatus(dashboard);
 			}
 		}
 		else {
 			
-			mobileEnabled = !dashboard.getMobileEnabled();
+			mobileEnabled = !dashboard.isMobileEnabled();
 			
 			dashboard.setMobileEnabled(mobileEnabled);
 			dashboard.setId(dashboard.getId());

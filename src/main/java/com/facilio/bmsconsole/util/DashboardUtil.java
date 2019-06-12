@@ -710,7 +710,7 @@ public class DashboardUtil {
 				.andCustomWhere("ID = ?", dashboard.getId());
 
 		Map<String, Object> props = FieldUtil.getAsProperties(dashboard);
-		props.put("mobileEnabled", dashboard.getMobileEnabled());
+		props.put("mobileEnabled", dashboard.isMobileEnabled());
 		int updatedRows = updateBuilder.update(props);
 		if (updatedRows > 0) {
 			return true;
@@ -760,7 +760,7 @@ public class DashboardUtil {
 			dashboardJson.put("dashboardFolderId", dashboard.getDashboardFolderId());
 			dashboardJson.put("linkName", dashboard.getLinkName());
 			dashboardJson.put("children", childrenArray);
-			dashboardJson.put("mobileEnabled", dashboard.getMobileEnabled());
+			dashboardJson.put("mobileEnabled", dashboard.isMobileEnabled());
 			result.add(dashboardJson);
 		 }
 		return result;
