@@ -48,7 +48,6 @@ public class CreateSuperAdminCommand implements Command {
 		user.setServerName(serverName);
 		if(AwsUtil.isDevelopment()) {
 			user.setUserVerified(true);
-			user.setInviteAcceptStatus(true);
 		}
 		long ouid = AccountUtil.getUserBean().createUser(orgId, user);
 		context.put("ouid", ouid);
