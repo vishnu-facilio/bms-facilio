@@ -124,9 +124,8 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 	
 	private void addReadings(FacilioModule module, List<FacilioField> fields, List<ReadingContext> readings,
 			Map<String, ReadingDataMeta> metaMap, Map<String, ReadingDataMeta> currentReadingMap, boolean isUpdateLastReading) throws Exception {
-		
-//		System.err.println( Thread.currentThread().getName()+"Inside addReadings in  AddorUpdateCommand#######  "+readings);
 
+//		System.err.println( Thread.currentThread().getName()+"Inside addReadings in  AddorUpdateCommand#######  "+readings);
 		if (AccountUtil.getCurrentOrg().getId() == 78 && module.getName().equals(FacilioConstants.ContextNames.WATER_READING)) {
 			LOGGER.info("Adding readings : "+readings);
 		}

@@ -43,6 +43,7 @@ public class EnableAnomalyDetectionCommand implements Command
 		
 		//Get All Energy Meters
 		List<EnergyMeterContext>  emContextList = DeviceAPI.getAllEnergyMeters();
+		
 		buildGamModel(emContextList);
 		
 		System.out.println("testing "+emContextList.get(0).getCategory().getId());
@@ -65,6 +66,7 @@ public class EnableAnomalyDetectionCommand implements Command
 		
 		
 		FacilioField energyField = modBean.getField("totalEnergyConsumptionDelta", FacilioConstants.ContextNames.ENERGY_DATA_READING);
+		FacilioField markedField = modBean.getField("marked", FacilioConstants.ContextNames.ENERGY_DATA_READING);
 		FacilioField energyParentField = modBean.getField("parentId", FacilioConstants.ContextNames.ENERGY_DATA_READING);
 		
 		
@@ -74,6 +76,7 @@ public class EnableAnomalyDetectionCommand implements Command
 		{
 			long mlID = addMLModel("checkGam1",logReadingModule.getModuleId(),readingModule.getModuleId());
 			addMLVariables(mlID,energyField.getModuleId(),energyField.getFieldId(),energyParentField.getFieldId(),context.getId(),3600000);
+			addMLVariables(mlID,markedField.getModuleId(),markedField.getFieldId(),energyParentField.getFieldId(),context.getId(),3600000);
 			addMLVariables(mlID,temperatureField.getModuleId(),temperatureField.getFieldId(),temperatureParentField.getFieldId(),context.getSiteId(),3600000);
 			
 			addMLAssetVariables(mlID,context.getId(),"TYPE","Energy Meter");
@@ -242,7 +245,9 @@ public class EnableAnomalyDetectionCommand implements Command
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		FacilioField energyField = modBean.getField("totalEnergyConsumptionDelta", FacilioConstants.ContextNames.ENERGY_DATA_READING);
+		FacilioField markedField = modBean.getField("marked", FacilioConstants.ContextNames.ENERGY_DATA_READING);
 		FacilioField energyParentField = modBean.getField("parentId", FacilioConstants.ContextNames.ENERGY_DATA_READING);
+		
 		
 		
 		FacilioField temperatureField = modBean.getField("temperature", FacilioConstants.ContextNames.WEATHER_READING);
@@ -253,6 +258,7 @@ public class EnableAnomalyDetectionCommand implements Command
 			long mlID = addMLModel("buildGamModel",-1,-1);
 			System.out.println("Module id are "+energyField.getModuleId());
 			addMLVariables(mlID,energyField.getModuleId(),energyField.getFieldId(),energyParentField.getFieldId(),emContext.getId(),777600000);
+			addMLVariables(mlID,markedField.getModuleId(),markedField.getFieldId(),energyParentField.getFieldId(),emContext.getId(),777600000);
 			addMLVariables(mlID,temperatureField.getModuleId(),temperatureField.getFieldId(),temperatureParentField.getFieldId(),emContext.getSiteId(),777600000);
 			
 			addMLAssetVariables(mlID,emContext.getId(),"TYPE","Energy Meter");
@@ -262,6 +268,7 @@ public class EnableAnomalyDetectionCommand implements Command
 			addMLModelVariables(mlID,"dimension1","WEEKDAY");
 			addMLModelVariables(mlID,"dimension1Value","[1,2,3,4,5],[6,7]");
 			addMLModelVariables(mlID,"tableValue","1.96");
+			addMLModelVariables(mlID,"percentile","5");
 			addMLModelVariables(mlID,"adjustmentPercentage","10");
 			addMLModelVariables(mlID,"orderRange","2");
 			addMLModelVariables(mlID,"meterInterval","10");
@@ -315,7 +322,7 @@ public class EnableAnomalyDetectionCommand implements Command
 	{
 		MLAssetVariableContext context = new MLAssetVariableContext();
 		context.setMlId(mlId);
-		context.setAssetId(parentid);
+		context.setAssetID(parentid);
 		context.setVariableKey(key);
 		context.setVariableValue(value);
 		

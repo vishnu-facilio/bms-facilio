@@ -46,7 +46,6 @@ public class ImportDataAction extends ActionSupport {
 	
 	private static org.apache.log4j.Logger log = LogManager.getLogger(ImportDataAction.class.getName());
 	public String upload() throws Exception {
-		LOGGER.severe("UPLOAD_STARTED");
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
 		
 		long fileId = fs.addFile(fileUploadFileName, fileUpload, fileUploadContentType);
@@ -54,14 +53,12 @@ public class ImportDataAction extends ActionSupport {
 		importProcessContext = ImportAPI.getColumnHeadings(fileUpload, importProcessContext);
 		
 		JSONObject firstRow = ImportAPI.getFirstRow(fileUpload);	
-		LOGGER.severe("SECOND POINT-- ");
 		importProcessContext.setfirstRow(firstRow);
 		
 		importProcessContext.setImportMode(getImportMode());
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioModule facilioModule = modBean.getModule(getModuleName());
         
-        LOGGER.severe("THIRD POINT-- ");
 		if(facilioModule ==  null) {
 			return ERROR;
 		}
@@ -103,12 +100,26 @@ public class ImportDataAction extends ActionSupport {
         	ImportAPI.getFieldMapping(importProcessContext);
         }
         
-        
-        LOGGER.severe("LAST POINT-- ");
 		return SUCCESS;
 	}
 	public String displayColumnFieldMapping()
 	{
+		return SUCCESS;
+	}
+	
+	public String checkModule() throws Exception{
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		JSONObject moduleInfo = new JSONObject();
+		if(module != null) {
+			moduleInfo.put("moduleExists", true);
+		}
+		else {
+			moduleInfo.put("moduleExists", false);
+		}
+		
+		setModuleExists(moduleInfo);
+		
 		return SUCCESS;
 	}
 	
@@ -201,7 +212,18 @@ public class ImportDataAction extends ActionSupport {
 		ImportAPI.updateImportProcess(importProcessContext);
 		FacilioContext context = new FacilioContext();
 		context.put(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT, this.importProcessContext);
-		FacilioTimer.scheduleInstantJob("ImportLogJob", context);
+		FacilioTimer.scheduleInstantJob("ImportReadingLogJob", context);
+		return SUCCESS;
+	}
+	
+	public String processImport() throws Exception
+	{	
+		importProcessContext.setStatus(ImportProcessContext.ImportStatus.PARSING_IN_PROGRESS.getValue());
+		ImportAPI.updateImportProcess(importProcessContext);
+		FacilioContext context = new FacilioContext();
+		context.put(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT, importProcessContext);
+		FacilioTimer.scheduleInstantJob("GenericImportDataLogJob", context);
+		
 		return SUCCESS;
 	}
 	
@@ -279,16 +301,7 @@ public class ImportDataAction extends ActionSupport {
 		FacilioTimer.scheduleOneTimeJob(importProcessContext.getId(), "importReading", 5, "priority");
 		return SUCCESS;
 	}
-	public String processImport() throws Exception
-	{	
-		importProcessContext.setStatus(ImportProcessContext.ImportStatus.PARSING_IN_PROGRESS.getValue());
-		ImportAPI.updateImportProcess(importProcessContext);
-		FacilioContext context = new FacilioContext();
-		context.put(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT, importProcessContext);
-		FacilioTimer.scheduleInstantJob("ImportDataLogJob", context);
-		
-		return SUCCESS;
-	}
+	
 	
 	public String importData() throws Exception{
 		if(assetId > 0) {
@@ -299,14 +312,7 @@ public class ImportDataAction extends ActionSupport {
 			
 			importProcessContext.setImportJobMeta(scheduleInfo.toJSONString());
 		}
-		
-//		if (importProcessContext.getModule().getName().equals("space") || importProcessContext.getModule().getName().equals("Space"))
-//		{
-//			ProcessSpaceXLS.processImport(importProcessContext);
-//			ImportAPI.updateImportProcess(getImportProcessContext());
-//		} 
-		
-		
+				
 		importProcessContext.setStatus(ImportProcessContext.ImportStatus.IN_PROGRESS.getValue());
 		ImportAPI.updateImportProcess(importProcessContext);
 		FacilioTimer.scheduleOneTimeJob(importProcessContext.getId(), "importData" , 5, "priority", 1);
@@ -501,7 +507,14 @@ public class ImportDataAction extends ActionSupport {
 	private String moduleName;
 	private Long fileId;
 	private long orgId;
+	private JSONObject moduleExists;
 	
+	public JSONObject getModuleExists() {
+		return moduleExists;
+	}
+	public void setModuleExists(JSONObject moduleExisting) {
+		this.moduleExists = moduleExisting;
+	}
 	
 	public long getOrgId() {
 		return orgId;

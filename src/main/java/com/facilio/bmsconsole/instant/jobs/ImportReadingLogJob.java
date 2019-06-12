@@ -1,8 +1,15 @@
 package com.facilio.bmsconsole.instant.jobs;
 
+import java.util.logging.Logger;
+
+import org.apache.commons.chain.Chain;
+import org.apache.log4j.LogManager;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportTimeColumnParseException;
@@ -11,15 +18,10 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.job.InstantJob;
 import com.facilio.wms.endpoints.PubSubManager;
-import org.apache.commons.chain.Chain;
-import org.apache.log4j.LogManager;
-import org.json.simple.JSONObject;
 
-import java.util.logging.Logger;
-
-public class ImportLogJob extends InstantJob{
-	private static Logger LOGGER = Logger.getLogger(ImportLogJob.class.getName());
-	private org.apache.log4j.Logger log = LogManager.getLogger(ImportLogJob.class.getName());
+public class ImportReadingLogJob extends InstantJob{
+	private static Logger LOGGER = Logger.getLogger(ImportReadingLogJob.class.getName());
+	private org.apache.log4j.Logger log = LogManager.getLogger(ImportReadingLogJob.class.getName());
 	@Override
 	public void execute(FacilioContext context) throws Exception{
 		PubSubManager pubsub = PubSubManager.getInstance();
@@ -29,7 +31,7 @@ public class ImportLogJob extends InstantJob{
 		System.out.print(context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT));
 		
 		try {
-			Chain dataParseChain = FacilioChainFactory.parseReadingDataForImport();
+			Chain dataParseChain = TransactionChainFactory.parseReadingDataForImport();
 			dataParseChain.execute(context);
 			
 			importProcessContext.setStatus(ImportProcessContext.ImportStatus.BEGIN_VALIDATION.getValue());
@@ -47,10 +49,7 @@ public class ImportLogJob extends InstantJob{
 				FacilioTimer.scheduleOneTimeJob(importProcessContext.getId(), "importReading", 5, "priority");
 
 			}
-			
-			
 			pubsub.publishImportStatusChange(importProcessContext.getOrgId(), importProcessContext.getId(), hasDuplicates);
-			
 			
 			LOGGER.severe("------Import Log Job Finished------");
 			

@@ -148,6 +148,12 @@ public class FacilioConstants {
 		public static final String MODIFIED_USER = "modifiedUser";
 	}
 	
+	public static class ModuleNames {
+		public static final String TOOL_TYPES="tooltypes";
+		public static final String ITEM_TYPES="itemtypes";
+		public static final String STORE_ROOM="storeroom";
+	}
+	
 	public static class ContextNames {
 
 		public static final String CONNECTION = "connectionContext";
@@ -568,7 +574,10 @@ public class FacilioConstants {
 		public static final String TOOL_TYPES_ATTACHMENTS = "toolTypesattachments";
 		public static final String STORE_ROOM_ATTACHMENTS = "storeRoomAttachments";
 
-
+		public static final String MV_PROJECT_MODULE = "mvproject";
+		public static final String MV_BASELINE_MODULE = "mvbaseline";
+		public static final String MV_ADJUSTMENT_MODULE = "mvajustment";
+		
 		public static final String PICKLIST = "pickList";
 		
 		public static final String USERS = "users";

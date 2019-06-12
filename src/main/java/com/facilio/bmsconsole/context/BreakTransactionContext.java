@@ -23,20 +23,20 @@ public class BreakTransactionContext extends ModuleBaseWithCustomFields{
 		this.breakId = breakId;
 	}
 	
-	private AttendanceTransactionContext attendanceTransaction;
-	public AttendanceTransactionContext getAttendanceTransaction() {
-		return attendanceTransaction;
+	private long startTime = -1;
+	public long getStartTime() {
+		return startTime;
 	}
-	public void setAttendanceTransaction(AttendanceTransactionContext attendanceTransaction) {
-		this.attendanceTransaction = attendanceTransaction;
+	public void setStartTime(long startTime) {
+		this.startTime = startTime;
 	}
 	
-	private long transactionTime = -1;
-	public long getTransactionTime() {
-		return transactionTime;
+	private long stopTime = -1;
+	public long getStopTime() {
+		return stopTime;
 	}
-	public void setTransactionTime(long breakStartTime) {
-		this.transactionTime = breakStartTime;
+	public void setStopTime(long stopTime) {
+		this.stopTime = stopTime;
 	}
 	
 	private long timeTaken = -1;

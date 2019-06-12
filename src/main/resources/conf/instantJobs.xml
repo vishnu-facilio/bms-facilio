@@ -8,6 +8,6 @@
     <job name='MigrateReadingData' classname= 'com.facilio.bmsconsole.instant.jobs.MigrateReadingDataJob' transactionTimeout='300'/>
     <job name='ProcessUnmodelledHistoricalData' classname= 'com.facilio.bmsconsole.instant.jobs.ProcessUnmodelledHistoricalDataJob' transactionTimeout='300'/>
     <job name='PubSubInstantJob' classname= 'com.facilio.bmsconsole.instant.jobs.PubSubInstantJob' transactionTimeout='300'/>
-	<job name="ImportLogJob" classname='com.facilio.bmsconsole.instant.jobs.ImportLogJob' transactionTimeout= '3600' />
-	<job name="ImportDataLogJob" classname='com.facilio.bmsconsole.jobs.ImportDataLogJob' transactionTimeout= '3600' />
+	<job name="ImportReadingLogJob" classname='com.facilio.bmsconsole.instant.jobs.ImportReadingLogJob' transactionTimeout= '3600' />
+	<job name="GenericImportDataLogJob" classname='com.facilio.bmsconsole.jobs.GenericImportDataLogJob' transactionTimeout= '3600' />
 </instantjob>

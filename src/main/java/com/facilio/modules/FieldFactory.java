@@ -4327,21 +4327,6 @@ public class FieldFactory {
 		return fields;
 	}
 
-	public static List<FacilioField> getPMJobFields() {
-		FacilioModule module = ModuleFactory.getPMJobsModule();
-		List<FacilioField> fields = new ArrayList<>();
-
-		fields.add(getIdField(module));
-		fields.add(getField("pmId", "PM_ID", module, FieldType.NUMBER));
-		fields.add(getField("pmTriggerId", "PM_TRIGGER_ID", module, FieldType.NUMBER));
-		fields.add(getField("nextExecutionTime", "NEXT_EXECUTION_TIME", module, FieldType.NUMBER));
-		fields.add(getField("templateId", "TEMPLATE_ID", module, FieldType.NUMBER));
-		fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
-		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.NUMBER));
-
-		return fields;
-	}
-
 	public static List<FacilioField> getBeforePMRemindersTriggerRelFields() {
 		FacilioModule module = ModuleFactory.getBeforePMRemindersTriggerRelModule();
 		List<FacilioField> fields = new ArrayList<>();
@@ -5630,6 +5615,8 @@ public class FieldFactory {
 	{
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getMLAssetVariablesModule();
+		 fields.add(getField("mlId","ML_ID",module,FieldType.NUMBER));
+		 fields.add(getField("assetID","ASSETID",module,FieldType.NUMBER));
 		fields.add(getField("variableKey","VARIABLE_KEY",module,FieldType.STRING));
 		fields.add(getField("variableValue","VARIABLE_VALUE",module,FieldType.STRING));
 		
@@ -5640,6 +5627,7 @@ public class FieldFactory {
 	{
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getMLModelVariablesModule();
+		fields.add(getField("mlID","ML_ID",module,FieldType.NUMBER));
 		fields.add(getField("variableKey","VARIABLE_KEY",module,FieldType.STRING));
 		fields.add(getField("variableValue","VARIABLE_VALUE",module,FieldType.STRING));
 		
@@ -5650,6 +5638,7 @@ public class FieldFactory {
 	{
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getMLVariablesModule();
+		fields.add(getField("mlID","ML_ID",module,FieldType.NUMBER));
 		fields.add(getField("moduleID","MODULEID",module,FieldType.NUMBER));
 		fields.add(getField("fieldID","FIELDID",module,FieldType.NUMBER));
 		fields.add(getField("isSource","IS_SOURCE",module,FieldType.BOOLEAN));
@@ -5956,6 +5945,19 @@ public class FieldFactory {
 		fields.add(getField("name", "NAME", validationModule, FieldType.STRING));
 		fields.add(getField("errorMessage", "ERROR_MESSAGE", validationModule, FieldType.STRING));
 		fields.add(getField("criteriaId", "CRITERIA_ID", validationModule, FieldType.NUMBER));
+		return fields;
+	}
+	
+	public static List<FacilioField> getMVAjuststmentVsBaselineFields() {
+		FacilioModule module = ModuleFactory.getMVAjuststmentVsBaselineModule();
+		List<FacilioField> fields = new ArrayList<>();
+
+		//fields.add(getOrgIdField(module));
+		fields.add(getField("id", "ID", module, FieldType.ID));
+		fields.add(getField("adjustmentId", "ADJUSTMENT_ID", module, FieldType.LOOKUP));
+		fields.add(getField("baselineId", "BASELINE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("formulaField", "FORMULA_FIELD_ID", module, FieldType.LOOKUP));
+		
 		return fields;
 	}
 }

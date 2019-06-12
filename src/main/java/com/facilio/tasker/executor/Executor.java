@@ -91,7 +91,7 @@ public class Executor implements Runnable {
 	}
 	
 	public void schedule(FacilioJob job, long delay) {
-		executor.schedule(job, delay, TimeUnit.SECONDS);
+		executor.schedule (job, delay, TimeUnit.SECONDS);
 	}
 	
 	public void shutdown() {

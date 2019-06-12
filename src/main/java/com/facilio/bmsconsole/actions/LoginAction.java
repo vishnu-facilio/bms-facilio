@@ -282,6 +282,8 @@ public class LoginAction extends FacilioAction {
 		account = new HashMap<>();
 		account.put("org", AccountUtil.getCurrentOrg());
 		account.put("user", AccountUtil.getCurrentUser());
+		account.put("timezone",AccountUtil.getCurrentAccount().getTimeZone()); 
+		
 		//log.info(AccountUtil.getCurrentUser().getEmail()+"))(()()()(((((())))))");
 		//log.info(AccountUtil.getCurrentAccount().getOrg().getDomain()+"$$$$$$$$$$$$$$$$$$$$$");
 		List<User> users = AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId());

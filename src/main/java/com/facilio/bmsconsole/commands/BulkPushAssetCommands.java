@@ -29,18 +29,21 @@ public class BulkPushAssetCommands implements Command {
 
 	@Override
 	public boolean execute(Context context)throws Exception {
-		LOGGER.severe("BulkPush Asset");
 		List<FacilioModule> moduleList = new ArrayList<>();
-		BeanFactory.lookup("ModuleBean");
-		ArrayListMultimap<String, Long> recordsList = (ArrayListMultimap<String, Long>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		List<Long> assetCategoryIds = new ArrayList<>();
+		Integer totalSize = 0;
+		
+		ArrayListMultimap<String, Long> recordsList = (ArrayListMultimap<String, Long>) context.get(FacilioConstants.ContextNames.RECORD_LIST);	
+		HashMap<String, List<ReadingContext>> categoryBasedAsset = (HashMap<String, List<ReadingContext>>) context.get("categoryBasedAsset"); 
 		ImportProcessContext importProcessContext = (ImportProcessContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
-		ArrayListMultimap<String,ReadingContext> categoryBasedAsset = (ArrayListMultimap<String, ReadingContext>) context.get("categoryBasedAsset");
 		List<String> assetCategoryNames = new ArrayList(categoryBasedAsset.keySet());
 		HashMap<String,Map<String,String>> modulesInfo = (HashMap<String,Map<String,String>>) context.get(ImportAPI.ImportProcessConstants.MODULES_INFO);
+		
 		for(int i=0;i<assetCategoryNames.size();i++) {
 			String assetCategoryName = assetCategoryNames.get(i);
 			List<ReadingContext> readingsList= categoryBasedAsset.get(assetCategoryName);
+			totalSize = totalSize + readingsList.size();
+			
 			String moduleTableName = modulesInfo.get(assetCategoryName).get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 			String moduleName = modulesInfo.get(assetCategoryName).get(FacilioConstants.ContextNames.MODULE_NAME);
 			
@@ -65,23 +68,17 @@ public class BulkPushAssetCommands implements Command {
 		StringBuilder emailMessage = new StringBuilder();
 		if(meta == null) {
 			JSONObject newMeta = new JSONObject();
-			newMeta.put("Inserted", categoryBasedAsset.size());
+			newMeta.put("Inserted", totalSize);
 			importProcessContext.setImportJobMeta(newMeta.toJSONString());
 		}
 		else {
-			meta.put("Inserted", categoryBasedAsset.size());
+			meta.put("Inserted", totalSize);
 			importProcessContext.setImportJobMeta(meta.toJSONString());
 		}
 		
-		emailMessage.append("Added assets: " + categoryBasedAsset.size());
-		context.put(ImportAPI.ImportProcessConstants.EMAIL_MESSAGE, emailMessage);
-//		FacilioModule module = ModuleFactory.getAssetCategoryReadingRelModule();
-//		context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, module);
-//		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_IDS, assetCategoryIds);
+		emailMessage.append("Added assets: " + totalSize);
 		
-		
-		// context.put(FacilioConstants.ContextNames.MODULE_LIST, subModules);
-		
+		context.put(ImportAPI.ImportProcessConstants.EMAIL_MESSAGE, emailMessage);		
 		context.put(FacilioConstants.ContextNames.MODULE_LIST, moduleList);
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, recordsList);
 		

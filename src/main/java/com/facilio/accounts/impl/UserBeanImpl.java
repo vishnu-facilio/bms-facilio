@@ -1803,6 +1803,7 @@ public class UserBeanImpl implements UserBean {
 	@Override
 	public boolean endUserSession(long uid, String email, String token) throws Exception {
 
+		boolean status = false;
 		TransactionManager transactionManager = null;
 		try {
 			transactionManager = FacilioTransactionManager.INSTANCE.getTransactionManager();
@@ -1824,7 +1825,7 @@ public class UserBeanImpl implements UserBean {
 			int updatedRows = updateBuilder.update(props);
 			if (updatedRows > 0) {
 				LRUCache.getUserSessionCache().remove(email);
-				return true;
+				status = true;
 			}
 			transactionManager.commit();
 		} catch (Exception e) {
@@ -1833,8 +1834,9 @@ public class UserBeanImpl implements UserBean {
 			}
 			log.info("exception while adding ending user session ", e);
 		}
-		return false;
+		return status;
 	}
+
 	@Override
 	public List<Map<String, Object>> getUserSessions(long uid, Boolean isActive) throws Exception
 	{

@@ -300,17 +300,14 @@ public  class AgentUtil
             e.printStackTrace();
         }
         FacilioModule agentDataModule = ModuleFactory.getAgentDataModule();
-        LOGGER.info("iamcvijay logs--fetching agentId");
         GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder().table(AgentKeys.AGENT_TABLE).select(FieldFactory.getAgentDataFields())
                 .andCondition(CriteriaAPI.getCurrentOrgIdCondition(agentDataModule))
                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentNameField(agentDataModule),agent.getAgentName(),StringOperators.IS));
         long id = 0L;
         try {
             List<Map<String,Object>> row = selectRecordBuilder.get();
-            LOGGER.info("iamcvijay agent slelct query -"+row);
             if(row.size() == 1 && row.get(0).containsKey(AgentKeys.ID)){
                id = Long.parseLong(row.get(0).get(AgentKeys.ID).toString());
-                LOGGER.info("iamcvijay agentId is "+id);
             }else {
                 LOGGER.info("Exception multiple entries with same AgentId ");
             }
@@ -555,7 +552,6 @@ public  class AgentUtil
         Map<String, Object> record;
         Chain addAgentMetricsChain = TransactionChainFactory.getAddAgentMetricsChain();
         Chain updateAgentMetricsChain = TransactionChainFactory.getUpdateAgentMetricsChain();
-
         FacilioContext context = new FacilioContext();
         context.put(AgentKeys.ORG_ID,orgId);
         try {

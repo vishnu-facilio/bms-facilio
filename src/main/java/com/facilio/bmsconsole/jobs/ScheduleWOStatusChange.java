@@ -29,15 +29,12 @@ public class ScheduleWOStatusChange extends FacilioJob {
     @Override
     public void execute(JobContext jc) throws Exception {
         try {
-            if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
-                return;
-            }
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
             List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
             Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
             FacilioStatus status = TicketAPI.getStatus("preopen");
-            long maxTime = System.currentTimeMillis()+(30*60*1000);
+            long maxTime = jc.getNextExecutionTime()*1000; //Using next execution time because this can be independent of the period of the job
 
             SelectRecordsBuilder<WorkOrderContext> selectRecordsBuilder = new SelectRecordsBuilder<>();
             selectRecordsBuilder.select(fields)
@@ -45,7 +42,7 @@ public class ScheduleWOStatusChange extends FacilioJob {
                     .beanClass(WorkOrderContext.class)
                     .andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), String.valueOf(status.getId()), NumberOperators.EQUALS))
                     .andCondition(CriteriaAPI.getCondition(fieldMap.get("jobStatus"), String.valueOf(PMJobsContext.PMJobsStatus.ACTIVE.getValue()), NumberOperators.EQUALS))
-                    .andCondition(CriteriaAPI.getCondition(fieldMap.get("scheduledStart"), String.valueOf(maxTime), NumberOperators.LESS_THAN_EQUAL))
+                    .andCondition(CriteriaAPI.getCondition(fieldMap.get("scheduledStart"), String.valueOf(maxTime), NumberOperators.LESS_THAN))
                     .andCustomWhere("WorkOrders.PM_ID IS NOT NULL");
             List<WorkOrderContext> wos = selectRecordsBuilder.get();
 

@@ -3,6 +3,7 @@ version: 1.0
 dbName: mysql #db Name is used to handle db wise changes
 dbPackage: com.facilio.db.builder.mysql #The package under which db specific insert, select, update & delete builders are present
 dbConfigClass: com.facilio.bmsconsole.db.BmsDBConf #Default config class that implements DBConf Interface
+logQueries: true #Log all insert/select/update/delete queries
 operators: #Names of enum class that implements Operator Ifc with field types
   - types: [STRING, NUMBER, DECIMAL, BOOLEAN, DATE, DATE_TIME, LOOKUP, ENUM, FILE, COUNTER ,ID] #In list can also specified in yaml
     enumClassName: com.facilio.db.criteria.operators.CommonOperators

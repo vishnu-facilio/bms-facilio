@@ -24,7 +24,6 @@ public class AddAgentMessageCommand implements Command {
                 return true;
             }
         }
-        LOGGER.info("Agent Message addition failed");
         return false;
     }
 }

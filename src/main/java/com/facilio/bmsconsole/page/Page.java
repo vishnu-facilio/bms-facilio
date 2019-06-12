@@ -58,7 +58,12 @@ public class Page {
 	public class Tab {
 		
 		public Tab(String name) {
+			this(name, null);
+		}
+		
+		public Tab(String name, String component) {
 			this.name = name;
+			this.component = component;
 		}
 		
 		private long orgId = -1;
@@ -91,6 +96,14 @@ public class Page {
 		}
 		public void setName(String name) {
 			this.name = name;
+		}
+		
+		private String component;
+		public String getComponent() {
+			return component;
+		}
+		public void setComponent(String component) {
+			this.component = component;
 		}
 
 		private List<Section> sections;

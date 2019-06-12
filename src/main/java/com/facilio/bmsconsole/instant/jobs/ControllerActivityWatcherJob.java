@@ -25,6 +25,7 @@ public class ControllerActivityWatcherJob extends InstantJob {
 	private static final Logger LOGGER = LogManager.getLogger(ControllerActivityWatcherJob.class.getName());
 	private static final long THREAD_SLEEP_BUFFER = 5000;
 	private static final long TIME_OUT = 15 * 60 * 1000;
+	private boolean timedOut = false;
 	
 	@Override
 	public void execute(FacilioContext context) throws Exception {
@@ -53,7 +54,7 @@ public class ControllerActivityWatcherJob extends InstantJob {
 		catch (Exception e) {
 			LOGGER.error("Error occurred in Controller Watcher Job", e);
 			
-			if ( !(e instanceof NullPointerException && ExceptionUtils.getStackTrace(e).contains("com.mysql.jdbc")) && !(e instanceof SQLException && (e.getMessage().contains("No operations allowed after statement closed") || e.getMessage().contains("Operation not allowed after ResultSet closed"))) ) { //Not sending email for transaction timeout
+			if ( !(e instanceof InterruptedException) && !(e instanceof NullPointerException && ExceptionUtils.getStackTrace(e).contains("com.mysql.jdbc")) && !(e instanceof SQLException && (e.getMessage().contains("No operations allowed after statement closed") || e.getMessage().contains("Operation not allowed after ResultSet closed") || e.getMessage().contains("No operations allowed after connection closed"))) ) { //Not sending email for transaction timeout
 				CommonCommandUtil.emailException("ControllerActivityWatcherJob", "Error occurred in Controller Watcher Job", e);
 			}
 		}
@@ -98,7 +99,7 @@ public class ControllerActivityWatcherJob extends InstantJob {
 		Map<String, Set<Long>> activityMap = new HashMap<>();
 		Set<Long> activityIds = new HashSet<>();
 		
-		while (!inCompleteControllers.isEmpty()) {
+		while (!inCompleteControllers.isEmpty() && !timedOut) {
 			List<Map<String, Object>> activities = ControllerAPI.getControllerActivities(inCompleteControllers.values(), watcher.getRecordTime());
 			if (activities != null && !activities.isEmpty()) {
 				LOGGER.debug("Activities for time : "+watcher.getRecordTime()+" and interval : "+watcher.getDataInterval()+" : "+activities);
@@ -166,5 +167,9 @@ public class ControllerActivityWatcherJob extends InstantJob {
 		return activities;
 	}
 	
-	
+	@Override
+	public void handleTimeOut() {
+		LOGGER.info("Controller Acitivty timed out!!");
+		timedOut = true;
+	}
 }

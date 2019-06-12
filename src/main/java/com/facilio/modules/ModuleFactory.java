@@ -1053,15 +1053,6 @@ public class ModuleFactory {
 		return pmTriggers;
 	}
 
-	public static FacilioModule getPMJobsModule() {
-		FacilioModule pmJobs = new FacilioModule();
-		pmJobs.setName("pmJobs");
-		pmJobs.setDisplayName("Preventive Maintenance Jobs");
-		pmJobs.setTableName("PM_Jobs");
-
-		return pmJobs;
-	}
-
 	public static FacilioModule getPMResourceScheduleRuleRelModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("pmResourceScheduleRuleRel");
@@ -2190,6 +2181,14 @@ public class ModuleFactory {
 		module.setName("attendanceTransaction");
 		module.setDisplayName("Attendance Transaction");
 		module.setTableName("Attendance_Transactions");
+		return module;
+	}
+	
+	public static FacilioModule getMVAjuststmentVsBaselineModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("ajustmentVsBaseline");
+		module.setDisplayName("Ajustment Vs Baseline");
+		module.setTableName("MV_Adjustment_vs_Baseline");
 		return module;
 	}
 	

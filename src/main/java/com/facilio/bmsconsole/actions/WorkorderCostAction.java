@@ -115,7 +115,9 @@ public class WorkorderCostAction extends FacilioAction {
 		Command getWorkorderPartsList = ReadOnlyChainFactory.getWorkorderCostList();
 		getWorkorderPartsList.execute(context);
 		workorderCosts = ((List<WorkorderCostContext>) context.get(FacilioConstants.ContextNames.WORKORDER_COST));
+		double totalCost = (double) context.get(FacilioConstants.ContextNames.WO_TOTAL_COST);
 		setResult(FacilioConstants.ContextNames.WORKORDER_COST, workorderCosts);
+		setResult(FacilioConstants.ContextNames.WO_TOTAL_COST, totalCost);
 		return SUCCESS;
 	}
 }

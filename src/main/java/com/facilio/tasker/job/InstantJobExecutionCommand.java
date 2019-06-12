@@ -13,7 +13,6 @@ public class InstantJobExecutionCommand implements Command {
 		// TODO Auto-generated method stub
 		InstantJob job = (InstantJob) context.remove(JobConstants.INSTANT_JOB);
 		job.execute((FacilioContext) context);
-        ObjectQueue.deleteObject(InstantJobConf.getInstantJobQueue(), job.getReceiptHandle());
 		return false;
 	}
 

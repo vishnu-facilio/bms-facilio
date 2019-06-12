@@ -809,14 +809,7 @@
 			</result>
 		</action>
 		
-		<action name="getUpcomingPreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
-			method="getUpcomingPreventiveMaintenance">
-			<param name="moduleName">planned</param>
-			<param name="permission">READ,READ_TEAM,READ_OWN</param>
-			<result name="success" type="json">
-				<param name="includeProperties">pmJobs,pmJobs\[\d+\],pmJobs\[\d+\].*,^pmTriggerMap.*,^pmResourcesMap.*, ^pmMap.*</param>
-			</result>
-		</action>
+
 		
 		<action name="getPMJobs" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="getPMJobs">

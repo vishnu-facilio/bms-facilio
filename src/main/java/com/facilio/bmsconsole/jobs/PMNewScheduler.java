@@ -41,9 +41,6 @@ public class PMNewScheduler extends FacilioJob {
 	public void execute(JobContext jc) {
 		// TODO Auto-generated method stub
 		try {
-			if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO)) {
-				return;
-			}
 			FacilioModule pmTriggerModule = ModuleFactory.getPMTriggersModule();
 			FacilioModule pmModule = ModuleFactory.getPreventiveMaintenanceModule();
 			List<FacilioField> fields = FieldFactory.getPMTriggerFields();

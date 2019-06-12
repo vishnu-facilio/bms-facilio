@@ -737,7 +737,8 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 					.andCondition(CriteriaAPI.getCondition(FieldFactory.getPublishTypeField(metricsModule), publishType.toString(), NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(metricsModule))
 					.andCondition(CriteriaAPI.getCondition(FieldFactory.getCreatedTime(metricsModule),createdTime.toString(),NumberOperators.EQUALS));
-			return genericSelectRecordBuilder.get();
+			List<Map<String, Object>> rows = genericSelectRecordBuilder.get();
+			return rows	;
 		}
 		return new ArrayList<>();
     }
@@ -768,7 +769,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
                 throw e;
             }
     }
-       return 0L;
+       return -1L;
 	}
 
 	public Long updateAgentMessage(Map<String,Object> map) throws Exception{ // transaction done
@@ -799,11 +800,11 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	    // always create an Empty List<Map<String,Object>> and return it instead of null;
         List<Map<String,Object>> rows = new ArrayList<>();
         try {
-            FacilioModule messageModule = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
+            FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
             GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                     .table(context.get(FacilioConstants.ContextNames.TABLE_NAME).toString())
                     .select((Collection<FacilioField>) context.get(FacilioConstants.ContextNames.FIELDS))
-                    .andCondition(CriteriaAPI.getCurrentOrgIdCondition(messageModule))
+                    .andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
                     .andCriteria((Criteria) context.get(FacilioConstants.ContextNames.CRITERIA));
             if( context.containsKey(FacilioConstants.ContextNames.SORT_FIELDS)){
                 selectRecordBuilder.orderBy(context.get(FacilioConstants.ContextNames.SORT_FIELDS).toString());

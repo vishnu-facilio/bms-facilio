@@ -7,6 +7,7 @@ import com.facilio.agent.AgentKeys.AckMessageType;
 import com.facilio.agent.AgentUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.PublishData;
 import com.facilio.bmsconsole.context.PublishMessage;
@@ -24,6 +25,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.serializable.SerializableConsumer;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.wms.message.WmsPublishResponse;
+import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -188,20 +190,17 @@ public class IoTMessageAPI {
 		else {
 			prop = Collections.singletonMap("acknowledgeTime", System.currentTimeMillis());
 		}
-		FacilioModule module = ModuleFactory.getPublishMessageModule();
-		int count = new GenericUpdateRecordBuilder()
-				.table(module.getTableName())
-				.fields(FieldFactory.getPublishMessageFields())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCondition(CriteriaAPI.getIdCondition(id, module))
-				.update(prop)
-				;
-		
+		Chain updateChain = TransactionChainFactory.updateAckChain();
+		FacilioContext context = new FacilioContext();
+		context.put(AgentKeys.ID,id);
+		context.put(FacilioConstants.ContextNames.ID,id);
+		context.put(FacilioConstants.ContextNames.TO_UPDATE_MAP,prop);
+		updateChain.execute(context);
 		if (isExecuted) {
 			handlePublishDataOnMessageAck(id);
 		}
 		
-		return count;
+		return 1;
 	}
 	
 	private static void handlePublishDataOnMessageAck(long messageId) throws Exception {
