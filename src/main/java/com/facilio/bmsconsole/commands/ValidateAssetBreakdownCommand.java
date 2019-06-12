@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -32,7 +33,7 @@ public class ValidateAssetBreakdownCommand implements Command {
 		}
 		
 		if(assetBreakdown.getTotime()>0&&assetBreakdown.getFromtime()>assetBreakdown.getTotime()){
-          throw new IllegalArgumentException("To time is Greater than from time - " + assetBreakdown.getCondition());
+          throw new IllegalArgumentException("To time is Greater than from time - " + new Date(assetBreakdown.getFromtime())+" - "+ new Date(assetBreakdown.getTotime()));
 		}
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(ContextNames.ASSET_BREAKDOWN);
@@ -51,8 +52,8 @@ public class ValidateAssetBreakdownCommand implements Command {
 				;
 		
 		List<AssetBreakdownContext> breakdowns = selectBuilder.get();
-		if (CollectionUtils.isNotEmpty(breakdowns)&&assetBreakdown.getSourceTypeEnum()!=SourceType.ALARM) { // TODO Dont throw if added from alarm..handle once sourcetype is added 
-			throw new IllegalArgumentException("Breakdown already noted for the time period - " + breakdowns.get(0).getId());
+		if (CollectionUtils.isNotEmpty(breakdowns)&&assetBreakdown.getSourceTypeEnum()!=SourceType.ALARM) { 
+			throw new IllegalArgumentException("Breakdown already noted for the time period - " + new Date(breakdowns.get(0).getFromtime())+" - "+ new Date(breakdowns.get(0).getTotime()));
 		}
 		
 		return false;

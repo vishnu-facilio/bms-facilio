@@ -79,7 +79,7 @@ public class AddAlarmCommand implements Command {
 				AssetBDSourceDetailsContext assetBreakdown = new AssetBDSourceDetailsContext();
 				assetBreakdown.setCondition((String) alarm.getAdditionInfo().get("alarmRuleName"));
 				assetBreakdown.setFromtime(alarm.getCreatedTime());
-				assetBreakdown.setAssetid(Long.parseLong((String) alarm.getAdditionInfo().get("resourceid")));
+				assetBreakdown.setAssetid(alarm.getResource().getId());
 				assetBreakdown.setSourceId(alarmId);
 				assetBreakdown.setSourceTypeEnum(SourceType.ALARM);
 				context.put(FacilioConstants.ContextNames.ASSET_BD_SOURCE_DETAILS, assetBreakdown);

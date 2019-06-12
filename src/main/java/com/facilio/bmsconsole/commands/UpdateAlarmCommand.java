@@ -131,7 +131,7 @@ public class UpdateAlarmCommand implements Command {
 			record.put("id", recordIds.get(0));
 			
 			ReadingAlarmContext alarmContext = AlarmAPI.getReadingAlarmContext(recordIds.get(0));
-			Long assetId = Long.parseLong((String) alarmContext.getAdditionInfo().get("resourceid"));
+			Long assetId = alarmContext.getResource().getId();
 			Boolean reportBreakDown = false;
 			if (alarmContext.getAdditionInfo() != null&&alarmContext.getAdditionInfo().get("reportBreakdown")!=null) {
 				if (alarmContext.getAdditionInfo().get("reportBreakdown") instanceof String) {

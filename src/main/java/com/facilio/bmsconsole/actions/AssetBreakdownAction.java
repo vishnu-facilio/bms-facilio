@@ -11,14 +11,6 @@ import com.facilio.constants.FacilioConstants;
 public class AssetBreakdownAction extends FacilioAction {
        private static final long serialVersionUID = 1L;
 
-       public String addAssetBreakDown() throws Exception {
-               FacilioContext context = new FacilioContext();
-               context.put(FacilioConstants.ContextNames.ASSET_BREAKDOWN, assetBreakdown);
-               Chain newAssetBreakdown = TransactionChainFactory.getAddAssetBreakdownChain();
-               newAssetBreakdown.execute(context);
-               return SUCCESS;
-       }
-
 	public String addNewAssetBreakDown() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ASSET_BD_SOURCE_DETAILS, assetBDSourceDetails);

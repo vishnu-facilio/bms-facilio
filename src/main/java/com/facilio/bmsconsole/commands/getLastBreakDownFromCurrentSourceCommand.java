@@ -38,11 +38,15 @@ public class getLastBreakDownFromCurrentSourceCommand implements Command {
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("sourceId"), String.valueOf(sourceId), NumberOperators.EQUALS))
 				.limit(1)
 				;
-    	AssetBDSourceDetailsContext lastAssetBDSourceDetail= selectBuilder.fetchFirst();
-		if(lastAssetBDSourceDetail!=null){
-			assetBDSourceDetails.setFromtime(lastAssetBDSourceDetail.getFromtime());
-			context.put(FacilioConstants.ContextNames.ASSET_BD_SOURCE_DETAILS, assetBDSourceDetails);
-			context.put(FacilioConstants.ContextNames.LAST_ASSET_BD_SOURCE_DETAILS_ID,lastAssetBDSourceDetail.getId());
+    	List<AssetBDSourceDetailsContext> assetBDSourceDetailFromThisSource= selectBuilder.get();
+		if(!assetBDSourceDetailFromThisSource.isEmpty()){
+			boolean allCompleted=assetBDSourceDetailFromThisSource.stream().allMatch(bd->bd.getTotime()>0);
+			if(!allCompleted){
+				AssetBDSourceDetailsContext lastRecord=assetBDSourceDetailFromThisSource.stream().filter(bd->bd.getTotime()<0).findFirst().get();
+				assetBDSourceDetails.setFromtime(lastRecord.getFromtime());
+				context.put(FacilioConstants.ContextNames.ASSET_BD_SOURCE_DETAILS, assetBDSourceDetails);
+				context.put(FacilioConstants.ContextNames.LAST_ASSET_BD_SOURCE_DETAILS_ID,lastRecord.getId());
+			}
 		}
        }
 		return false;

@@ -598,11 +598,6 @@
 	</package>
  <package name="assetBreakdownApiv2" namespace="/api/v2/assetbreakdown"
 	extends="v2Api">
-	<action name="add"
-		class="com.facilio.bmsconsole.actions.AssetBreakdownAction" method="addAssetBreakDown">
-		<param name="moduleName">setup</param>
-		<param name="permission">GENERAL</param>
-	</action>
 	<action name="addNew"
 		class="com.facilio.bmsconsole.actions.AssetBreakdownAction" method="addNewAssetBreakDown">
 		<param name="moduleName">setup</param>

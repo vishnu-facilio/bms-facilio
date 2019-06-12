@@ -62,4 +62,14 @@ public class AssetBreakdownContext extends ModuleBaseWithCustomFields{
 		this.timeBetweenFailure = timeBetweenFailure;
 	}
 
+	private String condition;
+
+	public String getCondition() {
+		return condition;
+	}
+
+	public void setCondition(String condition) {
+		this.condition = condition;
+	}
+
 }
