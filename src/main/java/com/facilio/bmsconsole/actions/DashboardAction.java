@@ -6705,7 +6705,6 @@ public class DashboardAction extends FacilioAction {
 		if(dashboard != null) {
 			context.put(FacilioConstants.ContextNames.DASHBOARDS, Collections.singletonList(dashboard));
 		}
-		context.put(FacilioConstants.ContextNames.MODULE,moduleName);
 		
 		Chain updateDashboardChain = TransactionChainFactory.getUpdateDashboardsChain();
 		updateDashboardChain.execute(context);
