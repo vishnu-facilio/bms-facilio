@@ -339,12 +339,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 			throw new IllegalArgumentException("Field cannot be changed. Please contact the support");
 		}
 		Map<String, Object> prop=(Map<String, Object>) getNewPointsData(assetId,categoryId,fieldId);
-		
-//		if(TimeSeriesAPI.isStage()) {
-//			if(unit!=null) {
-//				prop.put("unit", unit);	
-//			}
-//		}
+		Map<String, Object> props=(Map<String, Object>) getUpdateMappedData(assetId,categoryId,fieldId);
 		
 		FacilioModule module = ModuleFactory.getInstanceMappingModule();
 		List<FacilioField> fields = FieldFactory.getInstanceMappingFields();
@@ -359,10 +354,9 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("device"), deviceName, StringOperators.IS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("instance"), instanceName, StringOperators.IS))
 				;
-//		if(isStage()) {
 			updatePointsData(deviceName, instanceName,prop );
-//		}
-		int count = builder.update(prop);
+
+			int count = builder.update(props);
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, oldData);
@@ -973,7 +967,15 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		pointsRecord.put("mappedTime", System.currentTimeMillis());
 		return pointsRecord;
 	}
-	
+
+	public static Map<String, Object> getUpdateMappedData(long assetId,long categoryId,long fieldId) throws Exception {
+		Map<String, Object> pointsRecord = new HashMap<String,Object>();
+		pointsRecord.put("assetId", assetId);
+		pointsRecord.put("categoryId", categoryId);
+		pointsRecord.put("fieldId", fieldId);
+		pointsRecord.put("mappedTime", System.currentTimeMillis());
+		return pointsRecord;
+	}
 	
 
 	public static boolean isStage() {	
