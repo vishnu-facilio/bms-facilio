@@ -1469,7 +1469,7 @@ public class TransactionChainFactory {
 		}
 	    public static Chain getUpdateDashboardChain() {
 			Chain c = getDefaultChain();
-			c.addCommand(new getUpdateWithBuildingsCommand());
+			c.addCommand(new DuplicateDashboardForBuildingCommand());
 			c.addCommand(new UpdateDashboardWithWidgetCommand());
 			c.addCommand(new EnableMobileDashboardCommand());
 			return c;

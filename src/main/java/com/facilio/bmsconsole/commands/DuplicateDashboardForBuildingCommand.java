@@ -9,7 +9,7 @@ import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-public class getUpdateWithBuildingsCommand implements Command {
+public class DuplicateDashboardForBuildingCommand implements Command {
 	
 	public boolean execute(Context context) throws Exception {
 		Long buildingId= (Long) context.get(FacilioConstants.ContextNames.BUILDING_ID);
