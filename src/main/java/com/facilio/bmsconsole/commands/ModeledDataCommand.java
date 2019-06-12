@@ -116,7 +116,6 @@ public class ModeledDataCommand implements Command {
 //	}
 
 		//oldPublish data
-		if(!TimeSeriesAPI.isStage()) {
 		for(Map.Entry<String, Map<String,String>> data:deviceData.entrySet()) {
 			
 			
@@ -164,7 +163,7 @@ public class ModeledDataCommand implements Command {
 			
 			
 		}
-		}
+		
 		for(Map.Entry<String, ReadingContext> iMap:iModuleVsReading.entrySet()) { //send the data to their's module eg.Energy_Meter...
 			String key=iMap.getKey();
 			String moduleName=key.substring(0, key.indexOf("|"));
