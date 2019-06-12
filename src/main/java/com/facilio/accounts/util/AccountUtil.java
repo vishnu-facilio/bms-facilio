@@ -138,6 +138,7 @@ public class AccountUtil {
 		TENANTS (32768),
 		NEW_FORM (65536),
 		CONNECTEDAPPS (131072),
+		M_AND_V (262144),
 		;
 		
 		
