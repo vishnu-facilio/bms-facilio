@@ -6047,4 +6047,25 @@ public class FieldFactory {
 		
 		return fields;
 	}
+	
+	public static List<FacilioField> getShiftRotationUserRelModuleFields() {
+		FacilioModule module = ModuleFactory.getShiftRotationUserRelModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getField("id", "ID", module, FieldType.ID));
+		fields.add(getField("ouid", "ORG_USERID", module, FieldType.NUMBER));
+		fields.add(getField("shiftRotationId", "SHIFT_ROTATION_ID", module, FieldType.NUMBER));
+		return fields;
+	}
+	
+	public static List<FacilioField> getShiftRotationDetailsModuleFields() {
+		FacilioModule module = ModuleFactory.getShiftRotationDetailsModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getField("id", "ID", module, FieldType.ID));
+		fields.add(getField("shiftRotationId", "SHIFT_ROTATION_ID", module, FieldType.NUMBER));
+		fields.add(getField("fromShiftId", "FROM_SHIFT", module, FieldType.NUMBER));
+		fields.add(getField("toShiftId", "TO_SHIFT", module, FieldType.NUMBER));
+		return fields;
+	}
 }
