@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Chain;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.agent.ConfigureAgentCommand;
@@ -1453,6 +1455,62 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddTemplateCommand());
 			c.addCommand(new ScheduleV2ReportCommand());
+			return c;
+		}
+		
+		public static Chain getExportReportFileChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(ReadOnlyChainFactory.newFetchReportDataChain());
+			c.addCommand(new GetExportReportFileCommand());
+			return c;
+		}
+		
+		public static Chain sendReportMailChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(getExportReportFileChain());
+			c.addCommand(new SendReadingReportMailCommand());
+			return c;
+		}
+		
+		public static Chain getExportAnalyticsFileChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(ReadOnlyChainFactory.newFetchReadingReportChain());
+			c.addCommand(new GetExportReportFileCommand());
+			return c;
+		}
+		
+		public static Chain sendAnalyticsMailChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(getExportAnalyticsFileChain());
+			c.addCommand(new SendReadingReportMailCommand());
+			return c;
+		}
+		
+		public static Chain getExportModuleReportFileChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(ReadOnlyChainFactory.newFetchReportDataChain());
+			c.addCommand(new GetExportModuleReportFileCommand());
+			return c;
+		}
+		
+		public static Chain sendModuleReportMailChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(getExportModuleReportFileChain());
+			c.addCommand(new SendReadingReportMailCommand());
+			return c;
+		}
+		
+		public static Chain getExportModuleAnalyticsFileChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ConstructReportData());
+			c.addCommand(getExportModuleReportFileChain());
+			return c;
+		}
+		
+		public static Chain sendModuleAnalyticsMailChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(getExportModuleAnalyticsFileChain());
+			c.addCommand(new SendReadingReportMailCommand());
 			return c;
 		}
 		

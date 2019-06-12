@@ -1,6 +1,6 @@
 package com.facilio.bmsconsole.jobs;
 
-import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.util.TemplateAPI;
@@ -52,7 +52,7 @@ public class ReportEmailScheduler extends FacilioJob {
 				context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 				context.put("isS3Url", true);
 				
-				Chain mailReportChain = ReadOnlyChainFactory.sendNewReportMailChain();
+				Chain mailReportChain = TransactionChainFactory.sendReportMailChain();
 				mailReportChain.execute(context);				
 				
 			}
