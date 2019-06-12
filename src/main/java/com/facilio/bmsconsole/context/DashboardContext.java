@@ -101,6 +101,12 @@ public class DashboardContext extends ModuleBaseWithCustomFields implements Clon
 	public void setDashboardSharingContext(List<DashboardSharingContext> dashboardSharingContext) {
 		this.dashboardSharingContext = dashboardSharingContext;
 	}
+	
+	public void addDashboardSharingContext(DashboardSharingContext dashboardSharingContext) {
+		
+		this.dashboardSharingContext = this.dashboardSharingContext == null ? new ArrayList<>() : this.dashboardSharingContext; 
+		this.dashboardSharingContext.add(dashboardSharingContext);
+	}
 
 	private String linkName;
 	
