@@ -2,6 +2,7 @@ package com.facilio.tasker.job;
 
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.jobs.JobLogger;
 import com.facilio.chain.FacilioContext;
 import com.facilio.queue.ObjectQueue;
 import com.facilio.tasker.config.InstantJobConf;
@@ -27,6 +28,8 @@ public abstract class InstantJob {
 
     public final void _execute(FacilioContext context, int transactionTimeout) {
     	String jobName = (String) context.remove(InstantJobConf.getJobNameKey());
+    	int status = 0;
+    	long startTime = System.currentTimeMillis();
         try {
             Account account = (Account) context.remove(InstantJobConf.getAccountKey());
 
@@ -45,8 +48,16 @@ public abstract class InstantJob {
 //            	LOGGER.info("Executing Job "+jobName+" with props : "+context);
 //            }
             InstantJobExecutor.INSTANCE.jobEnd(getReceiptHandle());
+            status = 1;
         } catch (Exception e) {
+            status = 2;
            LOGGER.severe("Exception occurred during execution of instant job "+jobName);
+        } finally {
+            JobContext job = new JobContext();
+            job.setJobName(jobName);
+            job.setExecutorName("instant");
+            job.setIsPeriodic(false);
+            JobLogger.log(job, (System.currentTimeMillis() - startTime), status);
         }
     }
 
