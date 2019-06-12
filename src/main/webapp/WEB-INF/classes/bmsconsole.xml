@@ -3722,12 +3722,12 @@
 				<param name="includeProperties">^dashboardSharing.*</param>
 			</result>
 		</action> -->
-		<!-- <action name="*" class="com.facilio.bmsconsole.actions.DashboardAction" method="viewDashboardSharing">
+		<action name="*" class="com.facilio.bmsconsole.actions.DashboardAction" method="viewDashboardSharing">
 			<param name="dashboardId">{1}</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboardSharing.*</param>
 			</result>
-		</action> -->
+		</action>
 	</package>
 	
 	<package name="units" namespace="/api/units" extends="homeApi">
