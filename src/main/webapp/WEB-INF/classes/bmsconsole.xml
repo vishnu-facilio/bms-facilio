@@ -3717,17 +3717,17 @@
 		</action>
 	</package>
 	<package name="dashboardsharing" namespace="/api/dashboardsharing" extends="homeApi">
-		<action name="apply" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboards">
+		<!-- <action name="apply" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboards">
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboardSharing.*</param>
 			</result>
-		</action>
-		<action name="*" class="com.facilio.bmsconsole.actions.DashboardAction" method="viewDashboardSharing">
+		</action> -->
+		<!-- <action name="*" class="com.facilio.bmsconsole.actions.DashboardAction" method="viewDashboardSharing">
 			<param name="dashboardId">{1}</param>
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboardSharing.*</param>
 			</result>
-		</action>
+		</action> -->
 	</package>
 	
 	<package name="units" namespace="/api/units" extends="homeApi">
