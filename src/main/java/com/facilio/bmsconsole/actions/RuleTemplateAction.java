@@ -1,11 +1,13 @@
 package com.facilio.bmsconsole.actions;
 
+import org.apache.commons.chain.Chain;
+import org.json.simple.JSONObject;
+
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.util.RuleTemplateAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Chain;
-import org.json.simple.JSONObject;
 
 public class RuleTemplateAction extends FacilioAction {
 	
@@ -39,6 +41,7 @@ public class RuleTemplateAction extends FacilioAction {
 	public void setPlaceHolder(JSONObject placeHolder) {
 		this.placeHolder = placeHolder;
 	}
+	
 	@SuppressWarnings("unchecked")
 	public String createRulefromTemplates () throws Exception {
 		FacilioContext context = new FacilioContext();
@@ -49,8 +52,15 @@ public class RuleTemplateAction extends FacilioAction {
 		setResult("rule", id);
 		return SUCCESS;
 	}
+	
 	public String getDefaultRuleTemplates() throws Exception {
 		setResult("templates", TemplateAPI.getAllRuleLibraryTemplate());
+		return SUCCESS;
+	}
+	
+	
+	public String getActiveRuleTemplates() throws Exception {
+		setResult("ruleTemplateRel", RuleTemplateAPI.getAppliedTemplates());
 		return SUCCESS;
 	}
 }

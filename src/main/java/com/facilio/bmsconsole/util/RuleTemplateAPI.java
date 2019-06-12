@@ -1,11 +1,27 @@
 package com.facilio.bmsconsole.util;
 
+import java.sql.SQLException;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmSeverityContext;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
-import com.facilio.bmsconsole.workflow.rule.*;
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
+import com.facilio.bmsconsole.workflow.rule.ActionType;
+import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
+import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ThresholdType;
+import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -14,15 +30,6 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
-import java.sql.SQLException;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class RuleTemplateAPI {
 	
@@ -36,6 +43,25 @@ public class RuleTemplateAPI {
 														.addRecord(ruleTemplateProps);
 			insertBuilder.save();
 			return ruleTemplateProps;
+	}
+	
+	public static List<Map<String, Object>> getAppliedTemplates () throws Exception {
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.table("Rule_Templates_Rel")
+														.select(FieldFactory.getRuleTemplateRelFields());
+		
+			
+			List<Map<String, Object>> props = selectBuilder.get();
+			HashMap<Long, Long> rels = new HashMap<Long, Long>();
+			if (props != null && !props.isEmpty()) {
+				for (Map<String, Object> prop: props) {
+					Long defaultTemplateId = (Long) prop.get("defaultTemplateId");
+					Long ruleId = (Long) prop.get("ruleId");
+					rels.put(defaultTemplateId, ruleId);
+
+				}
+			}
+		 return selectBuilder.get();
 	}
 	
 	public static ReadingRuleContext convertByRuleType (JSONObject rulesObject) throws Exception {

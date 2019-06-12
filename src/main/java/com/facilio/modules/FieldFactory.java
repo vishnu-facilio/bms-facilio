@@ -5891,7 +5891,7 @@ public class FieldFactory {
 	
 	public static List<FacilioField> getRuleTemplateRelFields() {
 		List<FacilioField> fields = new ArrayList<>();
-		FacilioModule module = ModuleFactory.getReadingRuleModule();
+		FacilioModule module = ModuleFactory.getRuleTemplatesRelModule();
 
 		FacilioField id = new FacilioField();
 		id.setName("id");

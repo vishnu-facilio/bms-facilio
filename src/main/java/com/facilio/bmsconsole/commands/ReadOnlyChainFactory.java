@@ -379,6 +379,13 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain getSpecialModulePageChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetSpecialModuleDataDetailCommand());
+		c.addCommand(new GetPageCommand());
+		return c;
+	}
+	
 	private static Chain getDefaultChain() {
 		return FacilioChain.getNonTransactionChain();
     }
