@@ -293,61 +293,6 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
-	public static Chain getExportAnalyticsFileChain() {
-		Chain c = getDefaultChain();
-		c.addCommand(ReadOnlyChainFactory.fetchReadingReportChain());
-		c.addCommand(new GetExportReportDataCommand());
-		return c;
-	}
-	
-	public static Chain getExportReportFileChain() {
-		Chain c = getDefaultChain();
-		c.addCommand(fetchReportDataChain());
-		c.addCommand(new GetExportReportDataCommand());
-		return c;
-	}
-	
-	public static Chain sendAnalyticsMailChain() {
-		Chain c = getDefaultChain();
-		c.addCommand(getExportAnalyticsFileChain());
-		c.addCommand(new SendReadingReportMailCommand());
-		return c;
-	}
-	
-	public static Chain sendReportMailChain() {
-		Chain c = getDefaultChain();
-		c.addCommand(getExportReportFileChain());
-		c.addCommand(new SendReadingReportMailCommand());
-		return c;
-	}
-	
-	public static Chain getExportNewAnalyticsFileChain() {
-		Chain c = getDefaultChain();
-		c.addCommand(ReadOnlyChainFactory.newFetchReadingReportChain());
-		c.addCommand(new GetExportReportFileCommand());
-		return c;
-	}
-	
-	public static Chain getExportNewReportFileChain() {
-		Chain c = getDefaultChain();
-		c.addCommand(newFetchReportDataChain());
-		c.addCommand(new GetExportReportFileCommand());
-		return c;
-	}
-	
-	public static Chain getExportNewModuleReportFileChain() {
-		Chain c = getDefaultChain();
-		c.addCommand(newFetchReportDataChain());
-		c.addCommand(new GetExportModuleReportFileCommand());
-		return c;
-	}
-	
-	public static Chain sendNewAnalyticsMailChain() {
-		Chain c = getDefaultChain();
-		c.addCommand(getExportNewAnalyticsFileChain());
-		c.addCommand(new SendReadingReportMailCommand());
-		return c;
-	}
 	
 	public static Chain fetchTenantDetails() {
 		Chain c = getDefaultChain();
@@ -357,12 +302,7 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
-	public static Chain sendNewReportMailChain() {
-		Chain c = getDefaultChain();
-		c.addCommand(getExportNewReportFileChain());
-		c.addCommand(new SendReadingReportMailCommand());
-		return c;
-	}
+	
 	
 	public static Chain constructAndFetchReportDataChain() {
 		Chain c = getDefaultChain();
