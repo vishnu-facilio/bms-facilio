@@ -72,7 +72,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		
 		// Update start and end time of the record
 		if (facilioStatus.getType() == StatusType.CLOSED) {
-			if (prop.get(timerField.getEndTimeFieldName()) == null) {
+			if (timerField != null && prop.get(timerField.getEndTimeFieldName()) == null) {
 				FacilioModule timeLogModule = getTimeLogModule(module);
 				if (timeLogModule != null) {
 					Map<String, Object> lastTimerLog = TimerLogUtil.getLastTimerLog(timeLogModule, record.getId());
@@ -84,11 +84,13 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		}
 		else if (facilioStatus.getTimerEnabled() && facilioStatus.getType() == StatusType.OPEN) {
 			long currentTime = DateTimeUtil.getCurrenTime();
-			if (prop.get(timerField.getEndTimeFieldName()) != null) {
-				prop.put(timerField.getEndTimeFieldName(), -99);
-			}
-			if (prop.get(timerField.getStartTimeFieldName()) == null) {
-				prop.put(timerField.getStartTimeFieldName(), currentTime);
+			if (timerField != null) {
+				if (prop.get(timerField.getEndTimeFieldName()) != null) {
+					prop.put(timerField.getEndTimeFieldName(), -99);
+				}
+				if (prop.get(timerField.getStartTimeFieldName()) == null) {
+					prop.put(timerField.getStartTimeFieldName(), currentTime);
+				}
 			}
 		}
 		

@@ -15,7 +15,7 @@ import org.json.simple.JSONObject;
 
 import java.util.List;
 
-public class TicketStatusAction extends ActionSupport {
+public class TicketStatusAction extends FacilioAction {
 	/**
 	 * 
 	 */
@@ -28,6 +28,27 @@ public class TicketStatusAction extends ActionSupport {
 		statusListChain.execute(context);
 		
 		setStatuses((List<FacilioStatus>) context.get(FacilioConstants.ContextNames.TICKET_STATUS_LIST));
+		
+		return SUCCESS;
+	}
+	
+	private String parentModuleName;
+	public String getParentModuleName() {
+		return parentModuleName;
+	}
+	public void setParentModuleName(String parentModuleName) {
+		this.parentModuleName = parentModuleName;
+	}
+	
+	public String v2StatusList() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.PARENT_MODULE, parentModuleName);
+		
+		Chain statusListChain = FacilioChainFactory.getTicketStatusListChain();
+		statusListChain.execute(context);
+		
+//		setStatuses((List<FacilioStatus>) context.get(FacilioConstants.ContextNames.TICKET_STATUS_LIST));
+		setResult("status", context.get(FacilioConstants.ContextNames.TICKET_STATUS_LIST));
 		
 		return SUCCESS;
 	}
