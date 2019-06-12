@@ -25,7 +25,7 @@ public class getUpdateWithBuildingsCommand implements Command {
 			
 			if(dashboard == null) { 
 				
-				context.put(FacilioConstants.ContextNames.IS_SKIP,true);
+				context.put(FacilioConstants.ContextNames.IS_SKIP_LINKNAME_CHECK,true);
 				db.setBaseSpaceId(buildingId);
 				
 				db.setId(-1l);

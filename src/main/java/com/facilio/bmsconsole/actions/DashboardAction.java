@@ -6746,7 +6746,7 @@ public class DashboardAction extends FacilioAction {
 		dashboardFolders = DashboardUtil.getDashboardListWithFolder(getOnlyMobileDashboard,true);
 		return SUCCESS;
 	}
-	public String getDashboardList() throws Exception {
+	public String getDashboardList() throws Exception {		// depricated
 		if (moduleName != null) {
 			dashboards = DashboardUtil.getDashboardList(moduleName);
 		}
@@ -6758,7 +6758,7 @@ public class DashboardAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	public String getDashboardTree() throws Exception {
+	public String getDashboardTree() throws Exception {		// depricated
 		if (moduleName != null) {
 			dashboardFolders = DashboardUtil.getDashboardTree(moduleName);
 		}

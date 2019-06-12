@@ -970,29 +970,26 @@ public class DashboardUtil {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		
-		List<Long> dashboardIds = new ArrayList<>();
 		if (props != null && !props.isEmpty()) {
 			Map<Long, DashboardContext> dashboardMap = new HashMap<Long, DashboardContext>();
 			for (Map<String, Object> prop : props) {
 				DashboardContext dashboard = FieldUtil.getAsBeanFromMap(prop, DashboardContext.class);
 				dashboard.setDashboardSharingContext(getDashboardSharing(dashboard.getId()));
-				dashboard.setSpaceFilteredDashboardSettings(getSpaceFilteredDashboardSettings(dashboard.getId()));
-				dashboard.setReportSpaceFilterContext(getDashboardSpaceFilter(dashboard.getId()));
+//				dashboard.setSpaceFilteredDashboardSettings(getSpaceFilteredDashboardSettings(dashboard.getId()));	// check
+//				dashboard.setReportSpaceFilterContext(getDashboardSpaceFilter(dashboard.getId()));					// check
 				dashboard.setModuleName(modBean.getModule(dashboard.getModuleId()).getName());
 				dashboardMap.put(dashboard.getId(), dashboard);
-				dashboardIds.add(dashboard.getId());
 				if (dashboard.getBaseSpaceId() != null) {
 					baseSpaceIds.add(dashboard.getBaseSpaceId());
 				}
 			}
-			List<DashboardContext> dashboards = getFilteredDashboards(dashboardMap, dashboardIds);
+			List<DashboardContext> dashboards = getFilteredDashboards(dashboardMap, new ArrayList<>(dashboardMap.keySet()));
 			
 			if(AccountUtil.isFeatureEnabled(FeatureLicense.NEW_LAYOUT))  {
 				getAllBuildingsForDashboard(dashboards,baseSpaceIds,moduleName);
 				
-				getAllSitesForDashboard(dashboards,baseSpaceIds);
+//				getAllSitesForDashboard(dashboards,baseSpaceIds); site Dashboard not supported for new flow
 			}
-			
 			if(getOnlyMobileDashboard) {
 				splitBuildingDashboardForMobile(dashboards);
 			}
@@ -1205,7 +1202,7 @@ public class DashboardUtil {
 				dashboardMap.put(dashboard.getId(), dashboard);
 				dashboardIds.add(dashboard.getId());
 			}
-			List<DashboardContext> dashboards = getFilteredDashboards(dashboardMap, dashboardIds);
+			List<DashboardContext> dashboards = getFilteredDashboards(dashboardMap, new ArrayList<>(dashboardMap.keySet()));
 			
 			DashboardContext portfolioDashboard = null;
 			DashboardContext commercialPortfolioDashboard = null;
