@@ -173,7 +173,7 @@ public class IoTMessageAPI {
 		return new GenericUpdateRecordBuilder()
 				.table(module.getTableName())
 				.fields(FieldFactory.getPublishDataFields())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getIdCondition(id, module))
 				.update(prop)
 				;
@@ -211,7 +211,7 @@ public class IoTMessageAPI {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 														.table(module.getTableName())
 														.select(fields)
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getIdCondition(messageId, module))
 														;
 		Map<String, Object> prop = builder.fetchFirst();
@@ -222,7 +222,7 @@ public class IoTMessageAPI {
 			builder = new GenericSelectRecordBuilder()
 					.table(module.getTableName())
 					.select(selectFields)
-					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(parentId), NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("responseAckTime"), CommonOperators.IS_EMPTY))
 					;
@@ -235,7 +235,7 @@ public class IoTMessageAPI {
 				builder = new GenericSelectRecordBuilder()
 						.table(module.getTableName())
 						.select(FieldFactory.getPublishDataFields())
-						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 						.andCondition(CriteriaAPI.getIdCondition(parentId, module));
 						;
 				prop =  builder.fetchFirst();

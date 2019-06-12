@@ -1085,7 +1085,7 @@ public class ShiftAPI {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getShiftBreakRelModule().getTableName())
 				.select(FieldFactory.getShiftBreakRelModuleFields())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getShiftBreakRelModule()))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getShiftBreakRelModule()))
 				.andCondition(CriteriaAPI.getCondition("SHIFTID", "shiftId", String.valueOf(breakId), NumberOperators.EQUALS));
 		List<Map<String, Object>> shiftBreakList = builder.get();
 		if (CollectionUtils.isNotEmpty(shiftBreakList)) {
