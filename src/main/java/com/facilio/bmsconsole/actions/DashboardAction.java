@@ -6239,7 +6239,7 @@ public class DashboardAction extends FacilioAction {
 		this.getOnlyMobileDashboard = getOnlyMobileDashboard;
 	}
 	
-	private List<DashboardSharingContext> dashboardSharing;
+	private List<DashboardSharingContext> dashboardSharing;					// remove this
 	public List<DashboardSharingContext> getDashboardSharing() {
 		return dashboardSharing;
 	}
@@ -6254,11 +6254,7 @@ public class DashboardAction extends FacilioAction {
 	public JSONArray getDashboardJson() {
 		return dashboardJson;
 	}
-	public String getWidget() {
-		
-		return SUCCESS;
-	}
-	
+
 	private String linkName;
 
 	public String getLinkName() {
