@@ -420,15 +420,6 @@ public class PreventiveMaintenanceAPI {
 			preRequestMapForNewPmExecution = woTemplate.getPreRequests();
 		}
 
-		if (AccountUtil.getCurrentOrg().getOrgId() == 92 && (pm.getId() == 15831 || pm.getId() == 16191)) {
-			LOGGER.log(Level.SEVERE,
-					"isNewPmType: " + isNewPmType + "has pre request sections: "
-							+ (woTemplate.getPreRequestSectionTemplates() != null
-									&& !woTemplate.getPreRequestSectionTemplates().isEmpty())
-							+ "has pre requests: "
-							+ (woTemplate.getPreRequests() != null && !woTemplate.getPreRequests().isEmpty()));
-		}
-
 		if (preRequestMapForNewPmExecution != null) {
 			preRequestMap = preRequestMapForNewPmExecution;
 		}
