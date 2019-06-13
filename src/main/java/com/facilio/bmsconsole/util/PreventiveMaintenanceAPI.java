@@ -313,14 +313,18 @@ public class PreventiveMaintenanceAPI {
 		boolean isScheduled = false;
 		while (nextExecutionTime <= endTime && (pm.getMaxCount() == -1 || currentCount < pm.getMaxCount()) && (pm.getEndTime() == -1 || nextExecutionTime <= pm.getEndTime())) {
 			if ((nextExecutionTime * 1000) < currentTime) {
-				// LOGGER.log(Level.SEVERE, "Skipping : next: "+ nextExecutionTime * 1000 + " current: "+ currentTime);
+				if (pm.getId() == 1132719L) {
+					LOGGER.log(Level.SEVERE, "Skipping : next: "+ nextExecutionTime * 1000 + " current: "+ currentTime);
+				}
 				nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(nextExecutionTime);
 				if (pmTrigger.getSchedule().getFrequencyTypeEnum() == FrequencyType.DO_NOT_REPEAT) {
 					break;
 				}
 				continue;
 			}
-
+			if (pm.getId() == 1132719L) {
+				LOGGER.log(Level.SEVERE, "Generating : next: "+ nextExecutionTime * 1000 + " current: "+ currentTime);
+			}
 			WorkOrderContext wo = createWoContextFromPM(context, pm, pmTrigger, woTemplate, nextExecutionTime);
 
 			wos.add(wo);
