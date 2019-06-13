@@ -83,6 +83,7 @@ public class AddOrUpdateBreakTransactionCommand implements Command {
 			// BreakType.PAID) {
 			//
 			// }
+			attendanceTransaction.setSourceType(breakTransactionRecord.getSourceType());
 			attendanceTransaction.setAttendance(attendance);
 			long attendanceTransactionId = AttendanceApi.addAttendanceTransaction(attendanceTransaction);
 			attendanceTransaction.setId(attendanceTransactionId);

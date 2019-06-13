@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.bmsconsole.context.AttendanceTransactionContext.TransactionType;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class BreakTransactionContext extends ModuleBaseWithCustomFields{
@@ -85,4 +84,11 @@ public class BreakTransactionContext extends ModuleBaseWithCustomFields{
 		}
 	}
 
+	private int sourceType;
+	public int getSourceType() {
+		return sourceType;
+	}
+	public void setSourceType(int sourceType) {
+		this.sourceType = sourceType;
+	}
 }
