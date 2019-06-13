@@ -3594,10 +3594,6 @@ public class DashboardAction extends FacilioAction {
 		}
 		ReportFieldContext reportXAxisField = DashboardUtil.getReportField(report.getxAxisField());
 		report.setxAxisField(reportXAxisField);
-		if(AccountUtil.getCurrentOrg().getId() == 78l) {
-			LOGGER.severe("report.getxAxisField() ---- "+report.getxAxisField());
-			LOGGER.severe("reportXAxisField ---- "+reportXAxisField);
-		}
 		FacilioField xAxisField = reportXAxisField.getField();
 		
 		if(!module.getName().equals(xAxisField.getModule().getName()) && !module.getName().equals(FacilioConstants.ContextNames.TICKET)) {
@@ -3894,12 +3890,6 @@ public class DashboardAction extends FacilioAction {
 		builder.select(fields);
 		if(!isWorkHourReport) {
 			rs = builder.get();
-		}
-		if(AccountUtil.getCurrentOrg().getId() == 154l) {
-			LOGGER.severe("builder --- "+reportContext.getId() +"   "+baseLineId);
-			LOGGER.severe("builder --- "+builder);
-			
-			LOGGER.severe("res 1-- "+rs);
 		}
 		
 		if(report.getGroupBy() != null) {
