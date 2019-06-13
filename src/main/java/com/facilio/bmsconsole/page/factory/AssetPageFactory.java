@@ -192,27 +192,32 @@ public class AssetPageFactory extends PageFactory {
 		List<ReadingDataMeta> writableReadings = null;
 		try {
 			writableReadings = ReadingsAPI.getReadingDataMetaList(Collections.singletonList(assetId), null, true, ReadingType.WRITE);
+		
+			if (CollectionUtils.isNotEmpty(writableReadings)) {
+				for(ReadingDataMeta rdm : writableReadings) {
+					
+					ReadingsAPI.convertUnitForRdmData(rdm);
+					
+					PageWidget commandWidget = new PageWidget(WidgetType.CARD);
+					commandWidget.addToLayoutParams(section, 6, 6);
+					commandWidget.addToWidgetParams("type", CardType.SET_COMMAND.getName());
+					
+					JSONObject obj = new JSONObject();
+					obj.put("field", rdm.getField());
+					obj.put("value", rdm.getValue());
+					try {
+						obj.put("inputUnit", FieldUtil.getAsProperties(rdm.getUnitEnum()));
+					} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+						LOGGER.error("Error in converting unit", e);
+					}
+	
+					commandWidget.addToWidgetParams("data", obj);
+					section.addWidget(commandWidget);
+				}
+			}
+			
 		} catch (Exception e) {
 			LOGGER.error("Error in fetching writable readings", e);
-		}
-		if (CollectionUtils.isNotEmpty(writableReadings)) {
-			for(ReadingDataMeta rdm : writableReadings) {
-				PageWidget commandWidget = new PageWidget(WidgetType.CARD);
-				commandWidget.addToLayoutParams(section, 6, 6);
-				commandWidget.addToWidgetParams("type", CardType.SET_COMMAND.getName());
-				
-				JSONObject obj = new JSONObject();
-				obj.put("field", rdm.getField());
-				obj.put("value", rdm.getValue());
-				try {
-					obj.put("inputUnit", FieldUtil.getAsProperties(rdm.getUnitEnum()));
-				} catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-					LOGGER.error("Error in converting unit", e);
-				}
-
-				commandWidget.addToWidgetParams("data", obj);
-				section.addWidget(commandWidget);
-			}
 		}
 		
 	}

@@ -56,8 +56,12 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.NumberField;
 import com.facilio.time.SecondsChronoUnit;
 import com.facilio.timeseries.TimeSeriesAPI;
+import com.facilio.unitconversion.Metric;
+import com.facilio.unitconversion.Unit;
+import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowFieldContext;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -1002,6 +1006,27 @@ public class ReadingsAPI {
 		
 		if (task.getResource() != null && task.getResource().getId() > 0) {
 			reading.addReading("resourceId", task.getResource().getId());
+		}
+	}
+	
+	public static void convertUnitForRdmData (ReadingDataMeta meta) throws Exception {
+		if (meta.getField() instanceof NumberField) {
+			Object value = meta.getValue();
+			
+			NumberField numberField =  (NumberField)meta.getField();
+			if(numberField.getMetric() > 0) {
+				
+				if(numberField.getUnitId() > 0) {
+					Unit siUnit = Unit.valueOf(Metric.valueOf(numberField.getMetric()).getSiUnitId());
+					value = UnitsUtil.convert(meta.getValue(), siUnit.getUnitId(), numberField.getUnitId());
+				}
+				else {
+					value = UnitsUtil.convertToOrgDisplayUnitFromSi(meta.getValue(), numberField.getMetric());
+				}
+			}
+			if(value != null) {
+				meta.setValue(value);
+			}
 		}
 	}
 }

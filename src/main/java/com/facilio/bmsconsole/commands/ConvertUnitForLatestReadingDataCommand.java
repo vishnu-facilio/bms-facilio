@@ -1,15 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.context.ReadingDataMeta;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.fields.NumberField;
-import com.facilio.unitconversion.Metric;
-import com.facilio.unitconversion.Unit;
-import com.facilio.unitconversion.UnitsUtil;
+import java.util.List;
+
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import java.util.List;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.constants.FacilioConstants;
 
 public class ConvertUnitForLatestReadingDataCommand implements Command {
 
@@ -20,24 +18,7 @@ public class ConvertUnitForLatestReadingDataCommand implements Command {
 			List<ReadingDataMeta> rdmList = (List<ReadingDataMeta>) context.get(FacilioConstants.ContextNames.READING_DATA_META_LIST);
 			if (rdmList != null) {
 				for(ReadingDataMeta meta : rdmList) {
-					if (meta.getField() instanceof NumberField) {
-						Object value = meta.getValue();
-						
-						NumberField numberField =  (NumberField)meta.getField();
-						if(numberField.getMetric() > 0) {
-							
-							if(numberField.getUnitId() > 0) {
-								Unit siUnit = Unit.valueOf(Metric.valueOf(numberField.getMetric()).getSiUnitId());
-								value = UnitsUtil.convert(meta.getValue(), siUnit.getUnitId(), numberField.getUnitId());
-							}
-							else {
-								value = UnitsUtil.convertToOrgDisplayUnitFromSi(meta.getValue(), numberField.getMetric());
-							}
-						}
-						if(value != null) {
-							meta.setValue(value);
-						}
-					}
+					ReadingsAPI.convertUnitForRdmData(meta);
 				}
 			}
 		}
