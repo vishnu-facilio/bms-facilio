@@ -140,14 +140,9 @@ public class TimeSeriesAPI {
 	
 	public static Map<String, List<String>> getAllDevices() throws Exception {
 		
-		FacilioModule module = ModuleFactory.getPointsModule();
-		List<FacilioField> fields = FieldFactory.getPointsFields();
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.select(fields)
-				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), CommonOperators.IS_EMPTY))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("fieldId"), CommonOperators.IS_EMPTY))
+				.select(FieldFactory.getUnmodeledInstanceFields())
+				.table("Unmodeled_Instance")
 				.andCustomWhere("ORGID=?",AccountUtil.getCurrentOrg().getOrgId());
 
 		List<Map<String, Object>> props = builder.get();
@@ -242,7 +237,9 @@ public class TimeSeriesAPI {
 public static void insertInstanceAssetMapping(String deviceName, long assetId, long categoryId, Long controllerId, Map<String,Long> instanceFieldMap, Integer unit) throws Exception {
 		
 		List<Map<String, Object>> instanceDetails = getUnmodeledInstances(deviceName, instanceFieldMap.keySet(), controllerId, null);
+		//List<Map<String, Object>> instancePointsDetails = getPoinstUnmodeledInstances(deviceName, instanceFieldMap.keySet(), controllerId, null);
 		Map<String,Map<String, Object>> instanceMap = instanceDetails.stream().collect(Collectors.toMap(instance -> (String) instance.get("instance"), Function.identity()));
+		//Map<String,Map<String, Object>> instancepointsMap = instancePointsDetails.stream().collect(Collectors.toMap(instance -> (String) instance.get("instance"), Function.identity()));
 		
 		List<ReadingDataMeta> writableReadingList = new ArrayList<>();
 		List<ReadingDataMeta> remainingReadingList = new ArrayList<>();
@@ -260,10 +257,12 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 			
 			checkForInputType(assetId, fieldId, instanceName, metaMap);
 
+//			if(isStage()) {
 				Map<String, Object> pointsRecord = (Map<String, Object>) getNewPointsData(assetId,categoryId,fieldId);
 //				pointsRecord.put("unit", unit);
 				updatePointsData(deviceName, instanceName, pointsRecord);
 
+//			}
 
 			Map<String, Object> record = new HashMap<String,Object>();
 			record.put("orgId", orgId);
@@ -324,7 +323,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 	
 	public static int updateInstanceAssetMapping(String deviceName, long assetId, long categoryId, String instanceName, long fieldId, Map<String, Object> oldData,Integer unit) throws Exception {
 		long oldFieldId = (long) oldData.get("fieldId");
-		long oldAssetId = (long) oldData.get("resourceId");
+		long oldAssetId = (long) oldData.get("assetId");
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<Pair<Long, FacilioField>> pairs = new ArrayList<>();
@@ -376,15 +375,9 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 	
 	public static Map<String, Long> getDefaultInstanceFieldMap() throws Exception {
 		Map<String, Long> fieldMap = new HashMap<>();
-
-		FacilioModule module = ModuleFactory.getPointsModule();
-		List<FacilioField> fields = FieldFactory.getPointsFields();
-		Map<String, FacilioField> fieldMaps = FieldFactory.getAsMap(fields);
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.select(fields)
-				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCondition(fieldMaps.get("resourceId"), CommonOperators.IS_NOT_EMPTY))
-				.andCondition(CriteriaAPI.getCondition(fieldMaps.get("fieldId"), CommonOperators.IS_NOT_EMPTY))
+				.select(FieldFactory.getInstanceMappingFields())
+				.table("Instance_To_Asset_Mapping")
 				.andCustomWhere("ORGID=?", AccountUtil.getCurrentOrg().getOrgId());
 		List<Map<String, Object>> props = builder.get();	
 		if(props!=null && !props.isEmpty()) {
@@ -397,14 +390,14 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 	}
 	
 	public static Map<String, Object> getMappedInstance(Long assetId, long fieldId) throws Exception {
-		FacilioModule module = ModuleFactory.getPointsModule();
-		List<FacilioField> fields = FieldFactory.getPointsFields();
+		FacilioModule module = ModuleFactory.getInstanceMappingModule();
+		List<FacilioField> fields = FieldFactory.getInstanceMappingFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(module.getTableName())
 //				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), String.valueOf(assetId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("assetId"), String.valueOf(assetId), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("fieldId"), String.valueOf(fieldId), NumberOperators.EQUALS))
 				;
 		List<Map<String, Object>> props = builder.get();
@@ -415,8 +408,8 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 	}
 	
 	public static Map<String, Object> getMappedInstance(String device, String instance, long controllerId) throws Exception {
-		FacilioModule module = ModuleFactory.getPointsModule();
-		List<FacilioField> fields = FieldFactory.getPointsFields();
+		FacilioModule module = ModuleFactory.getInstanceMappingModule();
+		List<FacilioField> fields = FieldFactory.getInstanceMappingFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
@@ -424,8 +417,6 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 //				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("device"), device, StringOperators.IS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("instance"), instance, StringOperators.IS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), CommonOperators.IS_NOT_EMPTY))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("fieldId"), CommonOperators.IS_NOT_EMPTY))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"), String.valueOf(controllerId), StringOperators.IS))
 				;
 		List<Map<String, Object>> props = builder.get();
@@ -436,8 +427,8 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 	}
 	
 	public static List<Map<String, Object>> getMappedInstances(Collection<Pair<Long, Long>> assetFieldPairs) throws Exception {
-		FacilioModule module = ModuleFactory.getPointsModule();
-		List<FacilioField> fields = FieldFactory.getPointsFields();
+		FacilioModule module = ModuleFactory.getInstanceMappingModule();
+		List<FacilioField> fields = FieldFactory.getInstanceMappingFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
@@ -447,7 +438,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		Criteria criteriaList = new Criteria();
 		for(Pair<Long, Long> pair: assetFieldPairs) {
 			Criteria criteria = new Criteria();
-			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), String.valueOf(pair.getLeft()), NumberOperators.EQUALS));
+			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("assetId"), String.valueOf(pair.getLeft()), NumberOperators.EQUALS));
 			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("fieldId"), String.valueOf(pair.getRight()), NumberOperators.EQUALS));
 			criteriaList.orCriteria(criteria);
 		}
@@ -456,15 +447,13 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 	}
 	
 	public static List<Map<String, Object>> getMappedInstances(long controllerId) throws Exception {
-		FacilioModule module = ModuleFactory.getPointsModule();
-		List<FacilioField> fields = FieldFactory.getPointsFields();
+		FacilioModule module = ModuleFactory.getInstanceMappingModule();
+		List<FacilioField> fields = FieldFactory.getInstanceMappingFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(module.getTableName())
 //				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), CommonOperators.IS_NOT_EMPTY))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("fieldId"), CommonOperators.IS_NOT_EMPTY))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"), String.valueOf(controllerId), NumberOperators.EQUALS))
 				;
 		return builder.get();
@@ -847,8 +836,8 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 	}
 	
 	public static List<Map<String, Object>> getUnmodeledInstances (String device, Collection<String> instances, Long controllerId, List<Long> ids) throws Exception {
-		FacilioModule module = ModuleFactory.getPointsModule();
-		List<FacilioField> fields = FieldFactory.getPointsFields();
+		FacilioModule module = ModuleFactory.getUnmodeledInstancesModule();
+		List<FacilioField> fields = FieldFactory.getUnmodeledInstanceFields();
 		fields.add(FieldFactory.getIdField(module));
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
@@ -864,8 +853,6 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		else if (instances != null) {
 			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("device"), device, StringOperators.IS))
 				   .andCondition(CriteriaAPI.getCondition(fieldMap.get("instance"), StringUtils.join(instances, ","), StringOperators.IS))
-				   .andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), CommonOperators.IS_EMPTY))
-				   .andCondition(CriteriaAPI.getCondition(fieldMap.get("fieldId"), CommonOperators.IS_EMPTY))
 				   .andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"), String.valueOf(controllerId), StringOperators.IS));
 		}
 		
@@ -873,8 +860,8 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 	}
 	
 	public static List<Map<String, Object>> getSubscribedInstances (long controllerId) throws Exception {
-		FacilioModule module = ModuleFactory.getPointsModule();
-		List<FacilioField> fields = FieldFactory.getPointsFields();
+		FacilioModule module = ModuleFactory.getUnmodeledInstancesModule();
+		List<FacilioField> fields = FieldFactory.getUnmodeledInstanceFields();
 		fields.add(FieldFactory.getIdField(module));
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
@@ -883,8 +870,6 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 				.table(module.getTableName())
 //				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"), String.valueOf(controllerId), StringOperators.IS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), CommonOperators.IS_EMPTY))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("fieldId"), CommonOperators.IS_EMPTY))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("subscribed"), String.valueOf(true), BooleanOperators.IS))
 				;
 		
@@ -915,16 +900,13 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 	}
 	
 	public static int updateUnmodeledInstances(List<Long> ids, Map<String, Object> instance) throws Exception{
-		FacilioModule module = ModuleFactory.getPointsModule();
-		List<FacilioField> fields = FieldFactory.getPointsFields();
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioModule module = ModuleFactory.getUnmodeledInstancesModule();
+		List<FacilioField> fields = FieldFactory.getUnmodeledInstanceFields();
 		fields.add(FieldFactory.getIdField(module));
 		
 		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
 											.fields(fields)
 											.table(module.getTableName())
-											.andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), CommonOperators.IS_EMPTY))
-											.andCondition(CriteriaAPI.getCondition(fieldMap.get("fieldId"), CommonOperators.IS_EMPTY))
 											.andCondition(CriteriaAPI.getIdCondition(ids, module));
 		
 		return builder.update(instance);
@@ -945,7 +927,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("newInstanceId"), String.valueOf(unmodeledInstance.get("id")), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("instanceId"), String.valueOf(unmodeledInstance.get("id")), NumberOperators.EQUALS))
 				.orderBy(fieldMap.get("ttime").getColumnName());
 
 		List<Map<String, Object>> stats = builder.get();	
