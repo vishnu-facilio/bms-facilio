@@ -49,6 +49,7 @@ public class MarkAsAbsentOrLeaveCommand implements Command {
 					} else {
 						attendance.setStatus(Status.ABSENT);
 					}
+					attendance.setShift(shift);
 					attendance.setUser(user);
 					attendance.setDay(day);
 					attendanceList.add(attendance);
