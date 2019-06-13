@@ -60,6 +60,9 @@ public abstract class FacilioJob implements Runnable {
 			reschedule();
 		} finally {
 			long timeTaken = (System.currentTimeMillis()-startTime);
+			if(status == 0) {
+				timeTaken = 1;
+			}
 			JobLogger.log(jc, timeTaken, status);
 			LOGGER.debug("Job completed " +jc.getJobId()+"-"+ jc.getJobName() + " time taken : " + timeTaken);
 			currentThread.setName(threadName);
