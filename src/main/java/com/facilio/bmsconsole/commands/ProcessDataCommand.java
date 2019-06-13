@@ -26,7 +26,7 @@ public class ProcessDataCommand implements Command {
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean execute(Context context) throws Exception {
-		
+
 		JSONObject payLoad =(JSONObject)context.get(FacilioConstants.ContextNames.PAY_LOAD);
 		if (AccountUtil.getCurrentOrg().getId() == 146 ) {
 			LOGGER.info("Payload : "+payLoad);
@@ -34,7 +34,7 @@ public class ProcessDataCommand implements Command {
 		Iterator<String> keyList = payLoad.keySet().iterator();
 		List<Map<String,Object>> pointsStat=null;
 		Criteria criteriaList = new Criteria();
-		
+
 		Map<String, Map<String,String>> deviceData= new HashMap<String, Map<String,String>>();
 		LOGGER.debug("Inside ProcessDataCommand####### incoming JSON: "+payLoad);
 		while(keyList.hasNext())
@@ -61,7 +61,7 @@ public class ProcessDataCommand implements Command {
 					String instanceVal = instanceObj.toString();
 					String deviceName=iKeyName;//incase of POINT_ inner keyName is deviceName
 					String instanceName=keyName;//incase of POINT_ keyName is instanceName
-	
+
 					if(!actualKey.startsWith("POINT_")) {
 						deviceName=keyName;//incase of DEVICE_ & others keyName is deviceName
 						instanceName=iKeyName;//incase of DEVICE_ & others inner KeyName is instanceName
@@ -75,25 +75,21 @@ public class ProcessDataCommand implements Command {
 					instanceList.add(instanceName.replace(",", StringOperators.DELIMITED_COMMA));
 				}
 			}	
-//		if(TimeSeriesAPI.isStage()) {
-				
-				if(instanceList.length()>0) { //if innerKeyList isEmpty,.. so the length will be 0
-					FacilioModule module=ModuleFactory.getPointsModule();
-					Criteria deviceAndInstanceCriteria = new Criteria();
-					//here taking the keyName as deviceName in the assumption that POINT_ will not come hereafter...
-					//so not handling the deviceName as list scenario below..
-					deviceAndInstanceCriteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getDeviceField(module), keyName, StringOperators.IS));
-					deviceAndInstanceCriteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getInstanceField(module), instanceList.toString(), StringOperators.IS));
-					criteriaList.orCriteria(deviceAndInstanceCriteria);
-				}	
-//		}
+
+			if(instanceList.length()>0) { //if innerKeyList isEmpty,.. so the length will be 0
+				FacilioModule module=ModuleFactory.getPointsModule();
+				Criteria deviceAndInstanceCriteria = new Criteria();
+				//here taking the keyName as deviceName in the assumption that POINT_ will not come hereafter...
+				//so not handling the deviceName as list scenario below..
+				deviceAndInstanceCriteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getDeviceField(module), keyName, StringOperators.IS));
+				deviceAndInstanceCriteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getInstanceField(module), instanceList.toString(), StringOperators.IS));
+				criteriaList.orCriteria(deviceAndInstanceCriteria);
+			}	
 		}
-//	if(TimeSeriesAPI.isStage()) {
-			
-			pointsStat= getDataPoints(criteriaList);
-			LOGGER.debug("########### Insert Points Data: "+pointsStat);
-			context.put("DATA_POINTS",pointsStat );
-//	}
+
+		pointsStat= getDataPoints(criteriaList);
+		LOGGER.debug("########### Insert Points Data: "+pointsStat);
+		context.put("DATA_POINTS",pointsStat );
 		LOGGER.debug("Finished ProcessDataCommand####### : ");
 		context.put(FacilioConstants.ContextNames.DEVICE_DATA, deviceData);
 		if (TimeSeriesAPI.isStage() ) {
@@ -109,7 +105,7 @@ public class ProcessDataCommand implements Command {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(module.getTableName())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getPointsModule()))
+				//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getPointsModule()))
 				.andCriteria(criteriaList);
 
 		List<Map<String, Object>> props = builder.get();
