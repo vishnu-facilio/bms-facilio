@@ -47,7 +47,7 @@ public class ModeledDataCommand implements Command {
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 	
 	if(TimeSeriesAPI.isStage()) {
-			LOGGER.debug("Inside ModeledDataCommand####### deviceData: "+deviceData);
+			LOGGER.info("Inside ModeledDataCommand####### deviceData: "+deviceData);
 	}
 			for(Map.Entry<String, Map<String,String>> data:deviceData.entrySet()) {
 
@@ -79,28 +79,28 @@ public class ModeledDataCommand implements Command {
 						Long resourceId= (Long) dataPoints.get("resourceId");
 						Long fieldId= (Long) dataPoints.get("fieldId");
 						if(fieldId!=null && resourceId!=null){
-//							ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-//							FacilioField field =bean.getField(fieldId);
-//							FieldType type = field.getDataTypeEnum();
-//							String moduleName=field.getModule().getName();
-//							if(instanceVal!=null && (instanceVal.equalsIgnoreCase("NaN")||
-//									(type.equals(FieldType.DECIMAL) && instanceVal.equalsIgnoreCase("infinity")))) {
-//								generateEvent(resourceId,timeStamp,field.getDisplayName());
+							ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+							FacilioField field =bean.getField(fieldId);
+							FieldType type = field.getDataTypeEnum();
+							String moduleName=field.getModule().getName();
+							if(instanceVal!=null && (instanceVal.equalsIgnoreCase("NaN")||
+									(type.equals(FieldType.DECIMAL) && instanceVal.equalsIgnoreCase("infinity")))) {
+								generateEvent(resourceId,timeStamp,field.getDisplayName());
 //								//Generate event with resourceId : assetId & 
-//								continue;
-//							}
-//							String readingKey=moduleName+"|"+resourceId;
-//							ReadingContext reading=iModuleVsReading.get(readingKey);
-//							if(reading == null) {
-//								reading = new ReadingContext();
-//								iModuleVsReading.put(readingKey, reading);
-//							}
-//							reading.addReading(field.getName(), instanceVal);
-//							reading.setParentId(resourceId);
-//							reading.setTtime(timeStamp);
+								continue;
+							}
+							String readingKey=moduleName+"|"+resourceId;
+							ReadingContext reading=iModuleVsReading.get(readingKey);
+							if(reading == null) {
+								reading = new ReadingContext();
+								iModuleVsReading.put(readingKey, reading);
+							}
+							reading.addReading(field.getName(), instanceVal);
+							reading.setParentId(resourceId);
+							reading.setTtime(timeStamp);
 							//removing here to avoid going into unmodeled instance..
 							// remove deviceData is important 
-//							instanceList.remove();
+							instanceList.remove();
 							dataPointsValue.remove(dataPoints);
 							//construct the reading to add in their respective module..????
 						}
@@ -124,41 +124,41 @@ public class ModeledDataCommand implements Command {
 			Iterator<String> instanceList = instanceMap.keySet().iterator();
 			while(instanceList.hasNext()) {
 				String instanceName=instanceList.next();
-				String instanceVal=instanceMap.get(instanceName);
+//				String instanceVal=instanceMap.get(instanceName);
 				//for now sending as null till migration..
 				Map<String, Object> stat = ReadingsAPI.getInstanceMapping(deviceName, instanceName,controllerId);
 				if(stat==null)  {
 					continue;
 				}
 				
-				Long assetId= (Long) stat.get("assetId");
-				Long fieldId= (Long) stat.get("fieldId");
+//				Long assetId= (Long) stat.get("assetId");
+//				Long fieldId= (Long) stat.get("fieldId");
 				
-				if(fieldId!=null && assetId!=null) {
-					ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-					FacilioField field =bean.getField(fieldId);
-					FieldType type = field.getDataTypeEnum();
-					String moduleName=field.getModule().getName();
-					
-					if(instanceVal!=null && (instanceVal.equalsIgnoreCase("NaN")||
-							(type.equals(FieldType.DECIMAL) && instanceVal.equalsIgnoreCase("infinity")))) {
-						generateEvent(assetId,timeStamp,field.getDisplayName());
-						//Generate event with resourceId : assetId & 
-						continue;
-					}
-					String readingKey=moduleName+"|"+assetId;
-					ReadingContext reading=iModuleVsReading.get(readingKey);
-					if(reading == null) {
-						reading = new ReadingContext();
-						iModuleVsReading.put(readingKey, reading);
-					}
-					reading.addReading(field.getName(), instanceVal);
-					reading.setParentId(assetId);
-					reading.setTtime(timeStamp);
-					
-					//removing here to avoid going into unmodeled instance..
-					instanceList.remove();
-				}
+//				if(fieldId!=null && assetId!=null) {
+//					ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+//					FacilioField field =bean.getField(fieldId);
+//					FieldType type = field.getDataTypeEnum();
+//					String moduleName=field.getModule().getName();
+//					
+//					if(instanceVal!=null && (instanceVal.equalsIgnoreCase("NaN")||
+//							(type.equals(FieldType.DECIMAL) && instanceVal.equalsIgnoreCase("infinity")))) {
+//						generateEvent(assetId,timeStamp,field.getDisplayName());
+//						//Generate event with resourceId : assetId & 
+//						continue;
+//					}
+//					String readingKey=moduleName+"|"+assetId;
+//					ReadingContext reading=iModuleVsReading.get(readingKey);
+//					if(reading == null) {
+//						reading = new ReadingContext();
+//						iModuleVsReading.put(readingKey, reading);
+//					}
+//					reading.addReading(field.getName(), instanceVal);
+//					reading.setParentId(assetId);
+//					reading.setTtime(timeStamp);
+//					
+//					//removing here to avoid going into unmodeled instance..
+//					instanceList.remove();
+//				}
 			}
 			
 			
@@ -176,7 +176,7 @@ public class ModeledDataCommand implements Command {
 			readings.add(reading);
 		}
 		if(TimeSeriesAPI.isStage()) {
-		LOGGER.debug("Inside ModeledDataCommand####### moduleVsReading: "+moduleVsReading);
+		LOGGER.info("Inside ModeledDataCommand####### moduleVsReading: "+moduleVsReading);
 		}
 
 		context.put(FacilioConstants.ContextNames.READINGS_MAP,moduleVsReading);
