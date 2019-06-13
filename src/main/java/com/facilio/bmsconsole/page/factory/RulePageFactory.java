@@ -23,6 +23,9 @@ public class RulePageFactory extends PageFactory {
 		tab1.addSection(tab1Sec1);
 		addRuleRankCard(tab1Sec1);
 		addRuleDetailsWidget(tab1Sec1);
+		addAssetsNAlarmDetails(tab1Sec1);
+		addAlarmInsight(tab1Sec1);
+		addAssociatedWO(tab1Sec1);
 
 		Tab tab2 = page.new Tab("rule_insight");
 		page.addTab(tab2);
@@ -31,7 +34,9 @@ public class RulePageFactory extends PageFactory {
 		tab2.addSection(tab2Sec1);
 		
 		Tab tab3 = page.new Tab("root_cause_impact");
-
+		Section tab3Sec1 = page.new Section();
+		tab3.addSection(tab3Sec1);
+		page.addTab(tab3);
 
 		return page;
 	}
@@ -44,6 +49,25 @@ public class RulePageFactory extends PageFactory {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
 		cardWidget.addToLayoutParams(section, 24, 2);
 		cardWidget.addToWidgetParams("type", CardType.RANK_RULE.getName());
+		section.addWidget(cardWidget);
+	}
+	private static void addAssetsNAlarmDetails(Section section) {
+		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
+		cardWidget.addToLayoutParams(section, 8, 6);
+		cardWidget.addToWidgetParams("type", CardType.RULE_ASSETS_ALARM.getName());
+		section.addWidget(cardWidget);
+	}
+	
+	private static void addAlarmInsight(Section section) {
+		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
+		cardWidget.addToLayoutParams(section, 16, 6);
+		cardWidget.addToWidgetParams("type", CardType.RULE_ALARM_INSIGHT.getName());
+		section.addWidget(cardWidget);
+	}
+	
+	private static void addAssociatedWO(Section section) {
+		PageWidget cardWidget = new PageWidget(WidgetType.RULE_ASSOCIATED_WO);
+		cardWidget.addToLayoutParams(section, 24, 6);
 		section.addWidget(cardWidget);
 	}
 	

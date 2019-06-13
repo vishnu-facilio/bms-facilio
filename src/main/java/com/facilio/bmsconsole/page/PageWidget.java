@@ -185,7 +185,8 @@ public class PageWidget {
  		ACTIVITY("activity"),
  		GROUP("group"),
  		HISTORY("history"),
- 		RULE_DETIALS_WIGET("ruleDetialsWidget")
+ 		RULE_DETIALS_WIGET("ruleDetialsWidget"),
+ 		RULE_ASSOCIATED_WO("ruleAssociatedWo")
  		;
 		
 		private String name;
@@ -222,9 +223,11 @@ public class PageWidget {
 		FAILURE_RATE("failureRate"),
 		AVG_TTR("avgTtr"),
 		SET_COMMAND("setCommand"),
-		RANK_RULE("rankRule")
+		RANK_RULE("rankRule"),
+		RULE_ASSETS_ALARM("assetsAlarm"),
+		RULE_ALARM_INSIGHT("alarmInsight"),
+		RULE_WO("")
  		;
-		
 		private String name;
 		
 		CardType(String name) {
