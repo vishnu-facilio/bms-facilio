@@ -123,4 +123,12 @@ public class AttendanceContext extends ModuleBaseWithCustomFields{
 	public void setTotalUnpaidBreakHrs(long totalUnpaidBreakHrs) {
 		this.totalUnpaidBreakHrs = totalUnpaidBreakHrs;
 	}
+	
+	private ShiftContext shift;
+	public ShiftContext getShift() {
+		return shift;
+	}
+	public void setShift(ShiftContext shift) {
+		this.shift = shift;
+	}
 }

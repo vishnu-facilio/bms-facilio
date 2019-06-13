@@ -113,6 +113,12 @@ public class AddAttendanceCommand implements Command {
 				throw new IllegalArgumentException("Kindly first check in.");
 			}
 			attendanceContext.setUser(user);
+			List<ShiftUserRelContext> shiftUserMapping = ShiftAPI.getShiftUserMapping(System.currentTimeMillis(), System.currentTimeMillis(), user.getId(), -1);
+			if (CollectionUtils.isNotEmpty(shiftUserMapping)) {
+				long shiftId = shiftUserMapping.get(0).getShiftId();
+				ShiftContext shift = ShiftAPI.getShift(shiftId);
+				attendanceContext.setShift(shift);
+			}
 			long day = DateTimeUtil.getDayStartTimeOf(attendanceTransaction.getTransactionTime());
 			attendanceContext.setDay(day);
 			InsertRecordBuilder<AttendanceContext> insertBuilder = new InsertRecordBuilder<AttendanceContext>()
