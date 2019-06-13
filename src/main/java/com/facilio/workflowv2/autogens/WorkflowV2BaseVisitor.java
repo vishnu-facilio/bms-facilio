@@ -339,6 +339,13 @@ public class WorkflowV2BaseVisitor<T> extends AbstractParseTreeVisitor<T> implem
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitDb_param_group_by(WorkflowV2Parser.Db_param_group_byContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitDb_param_sort(WorkflowV2Parser.Db_param_sortContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}

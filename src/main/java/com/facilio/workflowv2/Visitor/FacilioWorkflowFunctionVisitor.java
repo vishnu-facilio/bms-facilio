@@ -504,6 +504,10 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
 			Value toValue = this.visit(ctx.db_param_range(0).atom(1));
 			dbParamContext.setRange(Pair.of(fromValue.asInt(), toValue.asInt()));
 		}
+		if(ctx.db_param_group_by(0) != null) {
+			Value fieldValue = this.visit(ctx.db_param_group_by(0).atom());
+			dbParamContext.setGroupBy(fieldValue.asString());
+		}
 		if(ctx.db_param_sort(0) != null) {
 			Value sortByField = this.visit(ctx.db_param_sort(0).atom());
 			dbParamContext.setSortByFieldName(sortByField.asString());
