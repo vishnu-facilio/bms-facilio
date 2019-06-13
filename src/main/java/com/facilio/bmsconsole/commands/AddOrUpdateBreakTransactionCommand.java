@@ -42,8 +42,8 @@ public class AddOrUpdateBreakTransactionCommand implements Command {
 			lastBreakStartTime = attendance.getLastBreakStartTime();
 			AttendanceTransactionContext attendanceTransaction = new AttendanceTransactionContext();
 			attendanceTransaction.setAttendance(breakTransactionRecord.getAttendance());
-			attendanceTransaction.setTransactionTime(breakTransactionRecord.getStartTime());
 			if (breakTransactionRecord.getTransactionTypeEnum() == TransactionType.BREAKSTART) {
+				attendanceTransaction.setTransactionTime(breakTransactionRecord.getStartTime());
 				if (attendance.getCheckOutTime() > 0) {
 					throw new IllegalArgumentException("Kindly Check in first");
 				}
@@ -55,6 +55,7 @@ public class AddOrUpdateBreakTransactionCommand implements Command {
 				attendanceTransaction.setTransactionType(
 						com.facilio.bmsconsole.context.AttendanceTransactionContext.TransactionType.BREAKSTART);
 			} else if (breakTransactionRecord.getTransactionTypeEnum() == TransactionType.BREAKSTOP) {
+				attendanceTransaction.setTransactionTime(breakTransactionRecord.getStopTime());
 				if (attendance.getLastBreakStartTime() < 0) {
 					throw new IllegalArgumentException("The User has already checked out break");
 				}
