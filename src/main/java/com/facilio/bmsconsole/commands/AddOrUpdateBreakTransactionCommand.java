@@ -62,13 +62,13 @@ public class AddOrUpdateBreakTransactionCommand implements Command {
 				if (breakTransactionRecord.getBreakId() != null) {
 					BreakContext breakContext = ShiftAPI.getBreak(breakTransactionRecord.getBreakId().getId());
 					if (breakContext.getBreakTypeEnum() == BreakType.PAID) {
-						long totalBreakDur = breakTransactionRecord.getStartTime() - lastBreakStartTime;
+						long totalBreakDur = breakTransactionRecord.getStopTime() - lastBreakStartTime;
 						if (attendance.getTotalPaidBreakHrs() > 0) {
 							totalBreakDur += attendance.getTotalPaidBreakHrs();
 						}
 						attendance.setTotalPaidBreakHrs(totalBreakDur);
 					} else if (breakContext.getBreakTypeEnum() == BreakType.UNPAID) {
-						long totalBreakDur = breakTransactionRecord.getStartTime() - lastBreakStartTime;
+						long totalBreakDur = breakTransactionRecord.getStopTime() - lastBreakStartTime;
 						if (attendance.getTotalUnpaidBreakHrs() > 0) {
 							totalBreakDur += attendance.getTotalUnpaidBreakHrs();
 						}
