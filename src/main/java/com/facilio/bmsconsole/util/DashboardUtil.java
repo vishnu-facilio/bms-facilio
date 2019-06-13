@@ -1858,12 +1858,24 @@ public class DashboardUtil {
 	public static ReportFieldContext getReportField(ReportFieldContext reportField) throws Exception {
 		
 		if (reportField.getId() == null) {
+			
+			if(AccountUtil.getCurrentOrg().getId() == 78l) {
+				LOGGER.severe("reached1");
+			}
+			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioField ff = modBean.getFieldFromDB(reportField.getModuleFieldId());
+			
+			if(AccountUtil.getCurrentOrg().getId() == 78l) {
+				LOGGER.severe("ff -- "+ff);
+			}
 			reportField.setModuleField(ff);
 			return reportField;
 		}
 		else {
+			if(AccountUtil.getCurrentOrg().getId() == 78l) {
+				LOGGER.severe("reached2");
+			}
 			List<FacilioField> fields = FieldFactory.getReportFieldFields();
 			fields.addAll(FieldFactory.getReportFormulaFieldFields());
 			
@@ -1875,6 +1887,11 @@ public class DashboardUtil {
 					.andCustomWhere(ModuleFactory.getReportField().getTableName()+".ID = ?", reportField.getId());
 			
 			List<Map<String, Object>> props = selectBuilder.get();
+			if(AccountUtil.getCurrentOrg().getId() == 78l) {
+				LOGGER.severe("selectBuilder -- "+selectBuilder);
+				LOGGER.severe("props -- "+props);
+			}
+			
 			if (props != null && !props.isEmpty()) {
 				ReportFieldContext reportFieldContext = FieldUtil.getAsBeanFromMap(props.get(0), ReportFieldContext.class);
 				

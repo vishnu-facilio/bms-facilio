@@ -3594,6 +3594,10 @@ public class DashboardAction extends FacilioAction {
 		}
 		ReportFieldContext reportXAxisField = DashboardUtil.getReportField(report.getxAxisField());
 		report.setxAxisField(reportXAxisField);
+		if(AccountUtil.getCurrentOrg().getId() == 78l) {
+			LOGGER.severe("report.getxAxisField() ---- "+report.getxAxisField());
+			LOGGER.severe("reportXAxisField ---- "+reportXAxisField);
+		}
 		FacilioField xAxisField = reportXAxisField.getField();
 		
 		if(!module.getName().equals(xAxisField.getModule().getName()) && !module.getName().equals(FacilioConstants.ContextNames.TICKET)) {
