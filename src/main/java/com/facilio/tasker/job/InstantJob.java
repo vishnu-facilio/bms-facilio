@@ -35,7 +35,9 @@ public abstract class InstantJob {
 
             if (account != null) {
                 try {
+                    AccountUtil.cleanCurrentAccount();
                     AccountUtil.setCurrentAccount(account.getOrg().getOrgId());
+                    AccountUtil.getCurrentAccount().setUser(account.getUser());
                 } catch (Exception e) {
                     LOGGER.log(Level.INFO, "Exception while setting current account ", e);
                 }
