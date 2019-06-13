@@ -1,6 +1,12 @@
 package com.facilio.bmsconsole.context;
 
-public class ShiftRotationDetailsContext {
+import com.facilio.modules.ModuleBaseWithCustomFields;
+
+public class ShiftRotationDetailsContext extends ModuleBaseWithCustomFields{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long shiftRotationId;
 
 	public long getShiftRotationId() {

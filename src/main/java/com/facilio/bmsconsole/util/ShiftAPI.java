@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.util;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.sql.SQLException;
@@ -35,7 +36,9 @@ import com.facilio.bmsconsole.context.BusinessHoursList;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ShiftContext;
+import com.facilio.bmsconsole.context.ShiftRotationApplicableForContext;
 import com.facilio.bmsconsole.context.ShiftRotationContext;
+import com.facilio.bmsconsole.context.ShiftRotationDetailsContext;
 import com.facilio.bmsconsole.context.ShiftUserRelContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
@@ -1088,5 +1091,33 @@ public class ShiftAPI {
 				.addRecord(shiftRotation);
 		builder.save();
 		
+	}
+	
+	public static void addShiftRotationApplicableFor(List<ShiftRotationApplicableForContext> applicableForList, long shiftRotationId) throws Exception {
+		List<Map<String, Object>> props = new ArrayList<>();
+		for(ShiftRotationApplicableForContext applicableFor: applicableForList) {
+			applicableFor.setShiftRotationId(shiftRotationId);
+			props.add(FieldUtil.getAsProperties(applicableFor));
+		}
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getShiftRotationApplicableForModule().getTableName())
+				.fields(FieldFactory.getShiftRotationApplicableForModuleFields());
+		insertBuilder.addRecords(props);
+		insertBuilder.save();
+	
+	}
+	
+	public static void addshiftRotationDetails(List<ShiftRotationDetailsContext> shiftRotationDetails, long shiftRotationId) throws Exception {
+		List<Map<String, Object>> props = new ArrayList<>();
+		for(ShiftRotationDetailsContext detail: shiftRotationDetails) {
+			detail.setShiftRotationId(shiftRotationId);
+			props.add(FieldUtil.getAsProperties(detail));
+		}
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getShiftRotationDetailsModule().getTableName())
+				.fields(FieldFactory.getShiftRotationDetailsModuleFields());
+		insertBuilder.addRecords(props);
+		insertBuilder.save();
+	
 	}
 }

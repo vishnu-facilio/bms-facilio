@@ -40,8 +40,8 @@ public class ShiftRotationAction extends ModuleAction{
 	
 	public String addShiftRotation() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.SHIFT_ROTATION, shiftRotation);
-		context.put(FacilioConstants.ContextNames.USERS, users);
+		context.put(FacilioConstants.ContextNames.RECORD, shiftRotation);
+		context.put(FacilioConstants.ContextNames.SHIFT_ROTATION_APPLICABLE_FOR, shiftRotation.getApplicableFor());
 		context.put(FacilioConstants.ContextNames.SHIFT_ROTATION_DETAILS, shiftRotation.getShiftRotations());
 		
 		Chain c = TransactionChainFactory.getAddShiftRotationChain();

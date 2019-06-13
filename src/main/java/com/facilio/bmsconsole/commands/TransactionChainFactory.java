@@ -3159,6 +3159,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForShiftRotation());
 			c.addCommand(new GenericAddModuleDataCommand());
+			c.addCommand(new AddShiftRotationDetailsCommand());
 			return c;
 		}
 }

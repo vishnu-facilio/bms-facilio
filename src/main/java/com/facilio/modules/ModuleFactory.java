@@ -2229,11 +2229,11 @@ public class ModuleFactory {
 		module.setTableName("Graphics");
 		return module;
 	}
-	public static FacilioModule getShiftRotationUserRelModule() {
+	public static FacilioModule getShiftRotationApplicableForModule() {
 		FacilioModule module = new FacilioModule();
-		module.setName("ShiftRotationUserRel");
-		module.setDisplayName("Shift Rotation User Rel");
-		module.setTableName("Shift_Rotation_User_Rel");
+		module.setName("ShiftRotationApplicableFor");
+		module.setDisplayName("Shift Rotation Applicable For");
+		module.setTableName("Shift_Rotation_Applicable_For");
 		return module;
 	}
 	

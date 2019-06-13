@@ -1085,7 +1085,7 @@ public class FacilioConstants {
 		public static final String GRAPHICS_LIST = "graphics_list";
 		public static final String SHIFT_ROTATION = "shiftRotation";
 		public static final String SHIFT_ROTATION_DETAILS = "shiftRotationDetails";
-
+		public static final String SHIFT_ROTATION_APPLICABLE_FOR = "shiftRotationApplicableFor";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
