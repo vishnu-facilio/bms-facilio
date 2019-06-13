@@ -4,11 +4,13 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.time.DateRange;
 import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowFunctionContext;
@@ -429,6 +431,9 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
     		}
     		else if(operatorValue.asObject() instanceof Boolean) {
     			operator = BooleanOperators.IS;
+    		}
+    		else if(operatorValue.asObject() instanceof DateRange) {
+    			operator = DateOperators.BETWEEN;
     		}
     		else {
     			operator = NumberOperators.EQUALS;

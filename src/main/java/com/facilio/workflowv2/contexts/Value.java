@@ -1,10 +1,11 @@
 package com.facilio.workflowv2.contexts;
 
-import com.facilio.db.criteria.Criteria;
-import com.facilio.modules.FacilioModule;
-
 import java.util.List;
 import java.util.Map;
+
+import com.facilio.db.criteria.Criteria;
+import com.facilio.modules.FacilioModule;
+import com.facilio.time.DateRange;
 
 public class Value {
 
@@ -25,6 +26,10 @@ public class Value {
     
     public FacilioModule asModule() {
     	return (FacilioModule) value;
+    }
+    
+    public DateRange asDateRange() {
+    	return (DateRange) value;
     }
     
     public Criteria asCriteria() {
@@ -59,6 +64,9 @@ public class Value {
     }
 
     public String asString() {
+    	if(value instanceof DateRange) {
+    		return value.toString();
+    	}
         return String.valueOf(value);
     }
 

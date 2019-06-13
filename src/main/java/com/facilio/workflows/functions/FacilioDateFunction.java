@@ -1,5 +1,7 @@
 package com.facilio.workflows.functions;
 
+import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.criteria.operators.Operator;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
@@ -433,6 +435,24 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 			else {
 				return Long.parseLong( objects[0].toString());
 			}
+		}
+		public void checkParam(Object... objects) throws Exception {
+
+		}
+	},
+	GET_DATE_RANGE(23, "getDateRange") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			String name = objects[0].toString();
+			Map<String, Operator> operators = DateOperators.getAllOperators();
+			DateOperators operator = (DateOperators) operators.get(name);
+			
+			String operatorParam = null; 
+			if(objects.length > 1 && objects[1] != null) {
+				operatorParam = objects[1].toString();
+			}
+			return operator.getRange(operatorParam);
 		}
 		public void checkParam(Object... objects) throws Exception {
 
