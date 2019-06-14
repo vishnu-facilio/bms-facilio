@@ -102,8 +102,8 @@
 	</package>
 	
 	<package name="state" namespace="/api/v2/state" extends="v2Api">
-		<action name="addOrUpdate"
-			class="com.facilio.bmsconsole.actions.StateFlowAction" method="addOrUpdateState" />
+		<action name="list"
+			class="com.facilio.bmsconsole.actions.TicketStatusAction" method="v2StatusList" />
 	</package>
 	
 	<package name="stateFlow" namespace="/api/v2/stateflow" extends="v2Api">
@@ -194,8 +194,21 @@
 		<action name="updateTemplate"
 			class="com.facilio.bmsconsole.actions.ImportTemplateAction" method="updateTemplate"></action>
 	</package>
-
-
+	
+	<package name="mvModule" namespace="/api/v2/mv" extends="v2Api">
+	
+		<action name="addMVProject"
+			class="com.facilio.mv.action.MVAction" method="addMVProject"></action>
+			
+		<action name="updateMVProject"
+			class="com.facilio.mv.action.MVAction" method="updateMVProject"></action>
+			
+		<action name="deleteMVProject"
+			class="com.facilio.mv.action.MVAction" method="deleteMVProject">
+		</action>
+		
+	</package>
+	
 	<package name="viewApiV2" namespace="/api/v2/views" extends="v2Api">
 		<action name="viewList" class="com.facilio.bmsconsole.actions.ViewAction"
 			method="v2viewlist">
@@ -940,6 +953,8 @@
 			method="setReadingInputValues">
 		</action>
 	</package>
+	<package name="dashboardApiv2" namespace="/api/v2/dashboard" extends="v2Api">
+	</package>
 	<package name="reportApiv2" namespace="/api/v2/report" extends="v2Api">
 		<action name="fetchReportData" class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="fetchReportData">
@@ -1200,14 +1215,28 @@
 		</action>
 	</package>
 
-	<package name="workflowApiv2" namespace="/api/v2/workflow"
-		extends="v2Api">
+	<package name="workflowApiv2" namespace="/api/v2/workflow" extends="v2Api">
+		
 		<action name="xml" class="com.facilio.workflows.action.WorkflowAction"
 			method="getWorkflowXmlFromObject">
 		</action>
 		<action name="execute" class="com.facilio.bmsconsole.actions.CommonAction"
 			method="executeWorkflow">
 		</action>
+		<action name="addWorkflow"
+			class="com.facilio.workflows.action.WorkflowAction" method="addWorkflow"></action>
+			
+		<action name="updateWorkflow"
+			class="com.facilio.workflows.action.WorkflowAction" method="updateWorkflow"></action>
+			
+		<action name="deleteWorkflow"
+			class="com.facilio.workflows.action.WorkflowAction" method="deleteWorkflow"></action>
+			
+		<action name="runWorkflow"
+			class="com.facilio.workflows.action.WorkflowAction" method="runWorkflow"></action>
+			
+		<action name="getDefaultWorkflowResult"
+			class="com.facilio.workflows.action.WorkflowAction" method="getDefaultWorkflowResultV2"></action>
 	</package>
 
 	<package name="timeseriesApiv2" namespace="/api/v2/timeseries"
@@ -1361,9 +1390,15 @@
 			</result>
 		</action>
 	</package>
-	
 	<package name="pageApiv2" namespace="/api/v2/pages" extends="v2Api">
 		<action name="*" class="com.facilio.bmsconsole.actions.PageAction" method="fetchPage">
+			<param name="moduleName">{1}</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+		</action>
+	</package>
+	
+	<package name="pageSpecialApiv2" namespace="/api/v2/pages/specialModule" extends="v2Api">
+	   <action name="*" class="com.facilio.bmsconsole.actions.PageAction" method="fetchSpecialModulePage">
 			<param name="moduleName">{1}</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 		</action>

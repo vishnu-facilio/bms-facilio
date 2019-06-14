@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -328,7 +329,7 @@ public class WorkflowUtil {
 		
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getIdCondition(ids, module));
 		
 		deleteBuilder.delete();
@@ -401,9 +402,18 @@ public class WorkflowUtil {
 		}
 	}
 	
+	public static int updateWorkflow(WorkflowContext workflowContext) throws Exception {
+		GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder();
+		update.table(ModuleFactory.getWorkflowModule().getTableName());
+		update.fields(FieldFactory.getWorkflowFields())
+		.andCondition(CriteriaAPI.getIdCondition(workflowContext.getId(), ModuleFactory.getWorkflowModule()));
+		
+		Map<String, Object> prop = FieldUtil.getAsProperties(workflowContext);
+		return update.update(prop);
+	}
+	
 	public static Long addWorkflow(WorkflowContext workflowContext) throws Exception {
 
-		
 		WorkflowContext workflow = new WorkflowContext();
 		
 		if(workflowContext.getWorkflowUIMode() == WorkflowContext.WorkflowUIMode.NEW_WORKFLOW.getValue()) {
@@ -528,7 +538,7 @@ public class WorkflowUtil {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.table(module.getTableName())
 														.select(fields)
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(workflowIdField, String.valueOf(workflowId), PickListOperators.IS))
 														;
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -549,7 +559,7 @@ public class WorkflowUtil {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.table(module.getTableName())
 														.select(fields)
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(workflowIdField, StringUtils.join(workflowIds, ","), PickListOperators.IS))
 														;
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -580,7 +590,7 @@ public class WorkflowUtil {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getWorkflowFields())
 				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getIdCondition(workflowId, module));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -601,7 +611,7 @@ public class WorkflowUtil {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getWorkflowFields())
 				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getIdCondition(ids, module));
 		
 		List<Map<String, Object>> props = selectBuilder.get();

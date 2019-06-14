@@ -1,11 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardContext.DashboardPublishStatus;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
@@ -30,7 +33,11 @@ public class AddDashboardCommand implements Command {
 			
 			List<FacilioField> fields = FieldFactory.getDashboardFields();
 			
-			getDashboardLinkName(dashboard);
+			Boolean isSkip = (Boolean)context.get(FacilioConstants.ContextNames.IS_SKIP_LINKNAME_CHECK);
+			
+			if(isSkip == null || !isSkip) {
+			   getDashboardLinkName(dashboard);
+			}
 			
 			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 					.table(ModuleFactory.getDashboardModule().getTableName())
@@ -63,7 +70,6 @@ public class AddDashboardCommand implements Command {
 				temp = linkName + i++;
 			}
 		}
-		
 	}
 
 }

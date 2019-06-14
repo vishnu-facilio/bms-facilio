@@ -170,8 +170,19 @@ public class ImportFieldFactory {
 	
 	public static JSONObject getImportOptions(FacilioModule module){
 		JSONObject options = new JSONObject();
-		if(module.getName().equals(FacilioConstants.ContextNames.ASSET)
-				|| (module.getExtendModule() != null && module.getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))
+
+		if(module.getName().equals(FacilioConstants.ContextNames.ASSET)) {
+			options.put(ImportProcessContext.ImportSetting.INSERT.toString(), ImportProcessContext.ImportSetting.INSERT.getValue());
+		}
+		else if(
+				// || module.getName().equals(FacilioConstants.ContextNames.BASE_SPACE) 
+				
+
+				module.getExtendModule() != null && 
+				(module.getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET)
+						// ||
+				// module.getExtendModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE)
+				)
 				) {
 			for(ImportSetting setting : ImportProcessContext.ImportSetting.values()) {
 				options.put(setting.toString(), setting.getValue());
@@ -181,6 +192,37 @@ public class ImportFieldFactory {
 			options.put(ImportProcessContext.ImportSetting.INSERT.toString(),ImportProcessContext.ImportSetting.INSERT.getValue());
 		}
 		return options;
+	}
+	public static List<String> includeFields (String moduleName){
+		ArrayList<String> includeFields = new ArrayList<String>();
+		
+		switch(moduleName) {
+		case "site":{
+			break;
+		}
+		case "building":{
+			includeFields.add("site");
+			break;
+		}
+		case "floor":{
+			 includeFields.add("site");
+			includeFields.add("building");
+			break;
+		}
+		case "space":{
+			includeFields.add("site");
+			includeFields.add("building");
+			includeFields.add("floor");
+			includeFields.add("spaceType");
+			includeFields.add("space1");
+			includeFields.add("space2");
+			includeFields.add("space3");
+			includeFields.add("space4");
+			break;
+		}
+		}
+		
+		return includeFields;
 	}
 	public static List<String> getFieldsTobeRemoved(String moduleName){
 		List<String> removedFields= new ArrayList<String>();
@@ -222,6 +264,24 @@ public class ImportFieldFactory {
 			removedFields.add("sysModifiedTime");
 			removedFields.add("lastIssuedDate");
 			removedFields.add("isApprovalNeeded");
+		}
+		case "site":
+		case "building":
+		case "floor":
+		case "space":
+		{
+			removedFields.add("site");
+			removedFields.add("building");
+			removedFields.add("floor");
+			removedFields.add("space");
+			removedFields.add("space1");
+			removedFields.add("space2");
+			removedFields.add("space3");
+			removedFields.add("space4");
+			removedFields.add("cdd");
+			removedFields.add("hdd");
+			removedFields.add("wdd");
+
 		}
 		}
 		return removedFields;

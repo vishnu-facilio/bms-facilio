@@ -45,7 +45,7 @@ public class SpaceAPI {
 				.moduleName(module.getName())
 				.beanClass(PhotosContext.class)
 				.module(module)
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(module.getTableName()+".PARENT_SPACE", "basespaceId", baseSpaceId+"", NumberOperators.EQUALS));
 		
 		List<PhotosContext> photos = builder.get();
@@ -127,7 +127,7 @@ public class SpaceAPI {
 		UpdateRecordBuilder<BaseSpaceContext> updateBuilder = new UpdateRecordBuilder<BaseSpaceContext>()
 																	.fields(bean.getAllFields(FacilioConstants.ContextNames.BASE_SPACE))
 																	.module(module)
-																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																	.andCondition(CriteriaAPI.getIdCondition(space.getId(), module))
 																	;
 		
@@ -147,7 +147,7 @@ public class SpaceAPI {
 																	.moduleName(module.getName())
 																	.maxLevel(0)
 																	.beanClass(SiteContext.class)
-																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																	.andCustomWhere(module.getTableName()+".ID = ?", id);
 		List<SiteContext> spaces = selectBuilder.get();
 		
@@ -169,7 +169,7 @@ public class SpaceAPI {
 																	.table(module.getTableName())
 																	.moduleName(module.getName())
 																	.beanClass(SiteContext.class)
-																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																	.andCondition(CriteriaAPI.getCondition(whereField,values,NumberOperators.EQUALS));
 		return selectBuilder.get();
 	}
@@ -185,7 +185,7 @@ public class SpaceAPI {
 																	.moduleName(module.getName())
 																	.maxLevel(0)
 																	.beanClass(SiteContext.class)
-																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																	.andCondition(CriteriaAPI.getIdCondition(spaceList, module));
 		return selectBuilder.get();
 	}
@@ -266,7 +266,7 @@ public class SpaceAPI {
 																	.moduleName(module.getName())
 																	.maxLevel(0)
 																	.beanClass(BuildingContext.class)
-																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																	.andCustomWhere(module.getTableName()+".ID = ?", id);
 		List<BuildingContext> spaces = selectBuilder.get();
 		
@@ -289,7 +289,7 @@ public class SpaceAPI {
 																	.maxLevel(0)
 																	.beanClass(BuildingContext.class)
 																	.orderBy("LOCAL_ID")
-																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																	.andCondition(CriteriaAPI.getCondition(fieldName,fieldName, 
 																			buildingList,NumberOperators.EQUALS));
 		List<BuildingContext> props = selectBuilder.get();
@@ -309,7 +309,7 @@ public class SpaceAPI {
 																	.moduleName(module.getName())
 																	.maxLevel(0)
 																	.beanClass(LocationContext.class)
-																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																	.andCustomWhere(module.getTableName()+".ID = ?", id);
 		List<LocationContext> spaces = selectBuilder.get();
 		
@@ -330,7 +330,7 @@ public class SpaceAPI {
 																	.moduleName(module.getName())
 																	.maxLevel(0)
 																	.beanClass(FloorContext.class)
-																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																	.andCustomWhere(module.getTableName()+".ID = ?", id);
 		List<FloorContext> spaces = selectBuilder.get();
 		
@@ -350,7 +350,7 @@ public class SpaceAPI {
 																	.table(module.getTableName())
 																	.moduleName(module.getName())
 																	.beanClass(SpaceContext.class)
-																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																	.andCustomWhere(module.getTableName()+".ID = ?", id);
 		List<SpaceContext> spaces = selectBuilder.get();
 		
@@ -370,7 +370,7 @@ public class SpaceAPI {
 																	.table(module.getTableName())
 																	.moduleName(module.getName())
 																	.beanClass(BaseSpaceContext.class)
-																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																	.andCustomWhere(module.getTableName()+".ID = ?", id);
 		
 		List<BaseSpaceContext> spaces = selectBuilder.get();
@@ -449,7 +449,7 @@ public class SpaceAPI {
 													.beanClass(ZoneContext.class)
 													.innerJoin(tenantModule.getTableName())
 													.on(tenantModule.getTableName()+".ZONE_ID = "+module.getTableName()+".ID")
-													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCondition(isDeletedCond)
 													.andCustomWhere(tenantModule.getTableName()+".STATUS = ?", 1)
 													.andCustomWhere(module.getTableName()+".TENANT_ZONE = ?", 1)
@@ -578,7 +578,7 @@ public class SpaceAPI {
 																		.table(module.getTableName())
 																		.moduleName(module.getName())
 																		.beanClass(BaseSpaceContext.class)
-																		.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//																		.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																		.andCriteria(criteria)
 																		;
 			List<BaseSpaceContext> spaces = selectBuilder.get();
@@ -619,7 +619,7 @@ public class SpaceAPI {
 																		.table(module.getTableName())
 																		.moduleName(module.getName())
 																		.beanClass(BaseSpaceContext.class)
-																		.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//																		.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																		.andCustomWhere(ids.toString());
 			List<BaseSpaceContext> spaces = selectBuilder.get();
 			return spaces;
@@ -659,7 +659,7 @@ public class SpaceAPI {
 																		.table(module.getTableName())
 																		.moduleName(module.getName())
 																		.beanClass(BaseSpaceContext.class)
-																		.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//																		.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																		.andCustomWhere(ids.toString());
 			List<BaseSpaceContext> spaces = selectBuilder.get();
 			return spaces;
@@ -677,7 +677,7 @@ public class SpaceAPI {
 				.module(module)
 				.maxLevel(0)
 				.beanClass(BaseSpaceContext.class)
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCustomWhere("SITE_ID=? AND SPACE_TYPE=?",siteId,BaseSpaceContext.SpaceType.BUILDING.getIntVal());
 		
 		List<BaseSpaceContext> spaces = selectBuilder.get();
@@ -694,7 +694,7 @@ public class SpaceAPI {
 																	.module(module)
 																	.maxLevel(0)
 																	.beanClass(BaseSpaceContext.class)
-																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																	.andCustomWhere("BaseSpace.SITE_ID =? AND BaseSpace.SPACE_TYPE=? and exists(select BS.ID FROM BaseSpace BS INNER JOIN Resources RS ON BS.ID = RS.ID WHERE (RS.SYS_DELETED IS NULL OR NOT(RS.SYS_DELETED)) AND BS.BUILDING_ID=BaseSpace.ID AND BS.SPACE_TYPE=? LIMIT 1)",sitedId,BaseSpaceContext.SpaceType.BUILDING.getIntVal(),BaseSpaceContext.SpaceType.FLOOR.getIntVal());
 		List<BaseSpaceContext> spaces = selectBuilder.get();
 		return spaces;
@@ -710,7 +710,7 @@ public class SpaceAPI {
 																	.module(module)
 																	.maxLevel(0)
 																	.beanClass(BaseSpaceContext.class)
-																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																	.andCustomWhere("BUILDING_ID =? AND SPACE_TYPE=?",buildingId,BaseSpaceContext.SpaceType.FLOOR.getIntVal());
 		List<BaseSpaceContext> spaces = selectBuilder.get();
 		return spaces;
@@ -726,7 +726,7 @@ public class SpaceAPI {
 																	.module(module)
 																	.maxLevel(0)
 																	.beanClass(BuildingContext.class)
-																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																	.andCustomWhere("BaseSpace.SITE_ID =? AND SPACE_TYPE=?",siteId,BaseSpaceContext.SpaceType.BUILDING.getIntVal());
 		
 		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(module.getName());
@@ -754,7 +754,7 @@ public class SpaceAPI {
 																	.module(module)
 																	.maxLevel(0)
 																	.beanClass(BuildingContext.class)
-																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																	.andCustomWhere("SPACE_TYPE=?",BaseSpaceContext.SpaceType.BUILDING.getIntVal());
 		
 		
@@ -784,7 +784,7 @@ public class SpaceAPI {
 																	.module(module)
 																	.maxLevel(0)
 																	.beanClass(FloorContext.class)
-																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																	.andCustomWhere("SPACE_TYPE=?",BaseSpaceContext.SpaceType.FLOOR.getIntVal());
 		List<FloorContext> floors = selectBuilder.get();
 		return floors;
@@ -799,7 +799,7 @@ public class SpaceAPI {
 																	.module(module)
 																	.maxLevel(0)
 																	.beanClass(ZoneContext.class)
-																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																	.andCustomWhere("SPACE_TYPE=?",BaseSpaceContext.SpaceType.ZONE.getIntVal());
 		List<ZoneContext> zones = selectBuilder.get();
 		return zones;
@@ -815,7 +815,7 @@ public class SpaceAPI {
 																	.module(module)
 																	.maxLevel(0)
 																	.beanClass(SpaceContext.class)
-																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																	.andCustomWhere("SPACE_TYPE=?",BaseSpaceContext.SpaceType.SPACE.getIntVal());
 		List<SpaceContext> spaces = selectBuilder.get();
 		return spaces;
@@ -830,7 +830,7 @@ public class SpaceAPI {
 																	.select(fields)
 																	.module(module)
 																	.maxLevel(lookupLevel)
-																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																	.beanClass(SiteContext.class);
 		List<SiteContext> sites = selectBuilder.get();
 		return sites;
@@ -844,7 +844,7 @@ public class SpaceAPI {
 		SelectRecordsBuilder<SiteContext> selectBuilder = new SelectRecordsBuilder<SiteContext>()
 																	.select(fields)
 																	.module(module)
-																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																	.beanClass(SiteContext.class);
 		
 		if (CollectionUtils.isNotEmpty(lookupFields)) {
@@ -864,7 +864,7 @@ public class SpaceAPI {
 																	.select(fields)
 																	.module(module)
 																	.andCustomWhere("SITE_TYPE = ?", siteType)
-																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																	.beanClass(SiteContext.class);
 		List<SiteContext> sites = selectBuilder.get();
 		return sites;
@@ -931,7 +931,7 @@ public static long getSitesCount() throws Exception {
 																		.table(module.getTableName())
 																		.moduleName(module.getName())
 																		.beanClass(BaseSpaceContext.class)
-																		.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//																		.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																		.andCustomWhere(ids.toString());
 			List<BaseSpaceContext> spaces = selectBuilder.get();
 			return spaces;
@@ -971,7 +971,7 @@ public static long getSitesCount() throws Exception {
 																		.on("BaseSpace.ID = Zone_Space.BASE_SPACE_ID")
 																		.moduleName(module.getName())
 																		.beanClass(BaseSpaceContext.class)
-																		.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//																		.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																		.andCustomWhere(ids.toString());
 			if (isImmediate) {
 				selectBuilder.andCustomWhere("Zone_Space.IS_IMMEDIATE = ?", isImmediate);
@@ -1006,7 +1006,7 @@ public static long getSitesCount() throws Exception {
 				.table(module.getTableName())
 				.moduleName(module.getName())
 				.beanClass(BaseSpaceContext.class)
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getIdCondition(idList, module));
 		return selectBuilder.getAsMap();
 	}
@@ -1024,7 +1024,7 @@ public static long getSitesCount() throws Exception {
 				.table(module.getTableName())
 				.moduleName(module.getName())
 				.beanClass(BaseSpaceContext.class)
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getIdCondition(idList, module));
 		List<BaseSpaceContext> spaces = selectBuilder.get();
 		return spaces;
@@ -1054,7 +1054,7 @@ public static long getSitesCount() throws Exception {
 				.table(module.getTableName())
 				.moduleName(module.getName())
 				.beanClass(SpaceContext.class)
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(categoryField, String.valueOf(category), PickListOperators.IS));
 		
 		if(baseSpaceIds != null && !baseSpaceIds.isEmpty()) {
@@ -1088,7 +1088,7 @@ public static long getSitesCount() throws Exception {
 //																	.select Resources.ID, Resources.NAME from BaseSpace 
 //																	.innerJoin("Resources").on("BaseSpace.ID = Resources.ID")
 																	.leftJoin("Floor").on("Floor.ID = BaseSpace.ID")
-																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																	.andCustomWhere("BaseSpace.ORGID = ?", AccountUtil.getCurrentOrg().getId())
 																	.beanClass(BaseSpaceContext.class);
 		if (filterCriteria != null) {
@@ -1319,7 +1319,7 @@ public static long getSitesCount() throws Exception {
 				.innerJoin("Tickets")
 				.on("Alarms.ID = Tickets.ID")
 				.andCondition(ViewFactory.getAlarmSeverityCondition(FacilioConstants.Alarm.CLEAR_SEVERITY, false))
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getAlarmsModule()))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getAlarmsModule()))
 				.andCondition(spaceCond);
 		
 		List<Map<String, Object>> rs = builder.get();
@@ -1354,7 +1354,7 @@ public static long getSitesCount() throws Exception {
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
 				.table(assetModule.getTableName())
 				.select(fields)
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(assetModule))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(assetModule))
 				.andCondition(spaceCond)
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getIsDeletedField(assetModule.getParentModule()), String.valueOf(false), BooleanOperators.IS));
 		
@@ -1411,7 +1411,7 @@ public static long getSitesCount() throws Exception {
 					.table(spaceModule.getTableName())
 					.innerJoin(baseSpaceModule.getTableName())
 					.on(spaceModule.getTableName()+".ID = "+baseSpaceModule.getTableName()+".ID")
-					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(spaceModule))
+//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(spaceModule))
 					.select(selectFields);
 			
 			if (buildingId != null && buildingId > 0) {

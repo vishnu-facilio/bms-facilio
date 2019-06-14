@@ -39,7 +39,7 @@ public class ControllerAPI {
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getControllerFields())
 				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				;
 		
 		List<Map<String, Object>> props = ruleBuilder.get();
@@ -60,7 +60,7 @@ public class ControllerAPI {
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(macAddrField, macAddress, StringOperators.IS))
 				.andCondition(CriteriaAPI.getCondition(activeField, String.valueOf(true), BooleanOperators.IS))
 				;
@@ -86,7 +86,7 @@ public class ControllerAPI {
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(macAddrField, macAddress, StringOperators.IS))
 				;
 		if(deviceName != null) {
@@ -115,7 +115,7 @@ public class ControllerAPI {
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getControllerFields())
 				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getIdCondition(id, module))
 				;
 		
@@ -159,7 +159,7 @@ public class ControllerAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.table(module.getTableName())
 				.select(FieldFactory.getControllerFields())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getIdCondition(ids, module))
 				;
 
@@ -183,7 +183,7 @@ public class ControllerAPI {
 		List<Map<String, Object>> relProps = new GenericSelectRecordBuilder()
 													.select(fields)
 													.table(module.getTableName())
-													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCondition(CriteriaAPI.getCondition(controllerIdField, ids, NumberOperators.EQUALS))
 													.get();
 		
@@ -254,7 +254,7 @@ public class ControllerAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.table(module.getTableName())
 														.select(FieldFactory.getContollerActivityRecordsFields())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getIdCondition(ids, module))
 														;
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -281,7 +281,7 @@ public class ControllerAPI {
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 																.select(fields)
 																.table(module.getTableName())
-																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 																.andCondition(CriteriaAPI.getCondition(macAddrField, macAddr, StringOperators.IS))
 																.andCondition(CriteriaAPI.getCondition(timeField, String.valueOf(time), DateOperators.IS))
 																;
@@ -319,7 +319,7 @@ public class ControllerAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(recordTimeField, String.valueOf(time), DateOperators.IS))
 														.andCondition(CriteriaAPI.getCondition(intervalField, String.valueOf(dataInterval), NumberOperators.EQUALS))
 														.andCondition(CriteriaAPI.getCondition(levelField, String.valueOf(level), NumberOperators.EQUALS))
@@ -372,7 +372,7 @@ public class ControllerAPI {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 														.fields(fields)
 														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getIdCondition(id, module))
 														;
 		return updateBuilder.update(prop);
@@ -387,7 +387,7 @@ public class ControllerAPI {
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 														.select(fields)
 														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(activeField, String.valueOf(true), BooleanOperators.IS))
 														;
 		
@@ -431,7 +431,7 @@ public class ControllerAPI {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(module.getTableName())
 				.fields(fields)
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getIdCondition(ids, module))
 				;
 

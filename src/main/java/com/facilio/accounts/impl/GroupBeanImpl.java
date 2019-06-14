@@ -209,7 +209,7 @@ public class GroupBeanImpl implements GroupBean {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(AccountConstants.getGroupFields())
 				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCustomWhere("GROUPID = ?", groupId);
 		
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -226,7 +226,7 @@ public class GroupBeanImpl implements GroupBean {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(AccountConstants.getGroupFields())
 				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCustomWhere("GROUP_NAME = ?", groupName);
 		
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -279,7 +279,7 @@ public class GroupBeanImpl implements GroupBean {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(AccountConstants.getGroupFields())
 				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				;
 
 		if (criteria != null && !criteria.isEmpty()) {
@@ -306,7 +306,7 @@ public class GroupBeanImpl implements GroupBean {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getAsMap(fields).get("groupId"), ids, NumberOperators.EQUALS))
 				;
 		

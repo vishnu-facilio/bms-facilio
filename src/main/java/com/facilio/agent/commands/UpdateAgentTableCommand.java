@@ -21,7 +21,8 @@ public class UpdateAgentTableCommand implements Command
     public boolean execute(Context context) throws Exception {
         GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder().table(AgentKeys.AGENT_TABLE).fields(FieldFactory.getAgentDataFields())
                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentNameField(ModuleFactory.getAgentDataModule()),context.get(AgentKeys.NAME).toString() , StringOperators.IS))
-                .andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getAgentDataModule()));
+//                .andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getAgentDataModule()));
+                ;
         Map<String, Object> toUpdate = new HashMap<>();
         toUpdate.put(AgentKeys.LAST_DATA_RECEIVED_TIME, System.currentTimeMillis());
         toUpdate.put(AgentKeys.CONNECTION_STATUS, Boolean.TRUE);

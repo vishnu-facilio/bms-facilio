@@ -1,11 +1,49 @@
 package com.facilio.bmsconsole.actions;
 
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.chain.Chain;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.*;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.commands.AddOrUpdateReportCommand;
+import com.facilio.bmsconsole.commands.ConstructReportData;
+import com.facilio.bmsconsole.commands.GenerateCriteriaFromFilterCommand;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.DashboardWidgetContext;
+import com.facilio.bmsconsole.context.FormulaFieldContext;
+import com.facilio.bmsconsole.context.MLAlarmContext;
+import com.facilio.bmsconsole.context.ReadingAlarmContext;
+import com.facilio.bmsconsole.context.ReportInfo;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.SharingContext;
+import com.facilio.bmsconsole.context.SingleSharingContext;
+import com.facilio.bmsconsole.context.WidgetChartContext;
+import com.facilio.bmsconsole.context.WidgetStaticContext;
 import com.facilio.bmsconsole.templates.EMailTemplate;
-import com.facilio.bmsconsole.util.*;
+import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.bmsconsole.util.FacilioFrequency;
+import com.facilio.bmsconsole.util.FormulaFieldAPI;
+import com.facilio.bmsconsole.util.ReadingRuleAPI;
+import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.bmsconsole.util.SharingAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
@@ -24,13 +62,17 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.report.context.*;
+import com.facilio.report.context.ReadingAnalysisContext;
 import com.facilio.report.context.ReadingAnalysisContext.ReportFilterMode;
-import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
+import com.facilio.report.context.ReportBaseLineContext;
+import com.facilio.report.context.ReportContext;
+import com.facilio.report.context.ReportContext.ReportType;
+import com.facilio.report.context.ReportFactoryFields;
 import com.facilio.report.context.ReportFolderContext;
 import com.facilio.report.context.ReportUserFilterContext;
-import com.facilio.report.context.ReportContext.ReportType;
+import com.facilio.report.context.ReportYAxisContext;
+import com.facilio.report.context.WorkorderAnalysisContext;
 import com.facilio.report.util.ReportUtil;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
@@ -40,16 +82,6 @@ import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.workflows.util.WorkflowUtil;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
-import java.time.ZonedDateTime;
-import java.util.*;
 
 public class V2ReportAction extends FacilioAction {
 	
@@ -1383,13 +1415,13 @@ public class V2ReportAction extends FacilioAction {
 		
 		Chain exportChain;
 		if (reportId != -1) {
-			exportChain = isNewFormat() ? ReadOnlyChainFactory.getExportNewReportFileChain() : ReadOnlyChainFactory.getExportReportFileChain();
+			exportChain = TransactionChainFactory.getExportReportFileChain();
 			setReportWithDataContext(context);
 			reportContext.setDateOperator(dateOperator);
 			reportContext.setDateValue(dateOperatorValue);
 		}
 		else {
-			exportChain = isNewFormat() ? ReadOnlyChainFactory.getExportNewAnalyticsFileChain() : ReadOnlyChainFactory.getExportAnalyticsFileChain();
+			exportChain =  TransactionChainFactory.getExportAnalyticsFileChain();
 			setReadingsDataContext(context);
 			context.put(FacilioConstants.ContextNames.TABULAR_STATE, tabularState);
 		}
@@ -1408,14 +1440,11 @@ public class V2ReportAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		Chain exportChain = null;
 		if (reportId != -1) {
-			exportChain = ReadOnlyChainFactory.getExportNewModuleReportFileChain();
+			exportChain = TransactionChainFactory.getExportModuleReportFileChain();
 			getReport(context);
 		} else {
 			updateContext(context);
-			
-			exportChain = FacilioChain.getNonTransactionChain();
-			exportChain.addCommand(new ConstructReportData());
-			exportChain.addCommand(ReadOnlyChainFactory.getExportNewModuleReportFileChain());
+			exportChain = TransactionChainFactory.getExportModuleAnalyticsFileChain();
 		}
 		context.put(FacilioConstants.ContextNames.FILE_FORMAT, fileFormat);
 		context.put("chartType", chartType);	// Temp
@@ -1439,13 +1468,13 @@ public class V2ReportAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		Chain mailReportChain;
 		if (reportId != -1) {
-			mailReportChain = isNewFormat() ? ReadOnlyChainFactory.sendNewReportMailChain()  : ReadOnlyChainFactory.sendReportMailChain();
+			mailReportChain = TransactionChainFactory.sendReportMailChain();
 			setReportWithDataContext(context);
 			reportContext.setDateOperator(dateOperator);
 			reportContext.setDateValue(dateOperatorValue);
 		}
 		else {
-			mailReportChain = isNewFormat() ? ReadOnlyChainFactory.sendNewAnalyticsMailChain() : ReadOnlyChainFactory.sendAnalyticsMailChain();
+			mailReportChain = TransactionChainFactory.sendAnalyticsMailChain();
 			setReadingsDataContext(context);
 			context.put(FacilioConstants.ContextNames.TABULAR_STATE, tabularState);
 		}
@@ -1467,10 +1496,10 @@ public class V2ReportAction extends FacilioAction {
 		
 		if (reportId != -1) {
 			getReport(context);
+			mailReportChain = TransactionChainFactory.sendModuleReportMailChain();
 		} else {
 			updateContext(context);
-			
-			mailReportChain.addCommand(new ConstructReportData());
+			mailReportChain = TransactionChainFactory.sendModuleAnalyticsMailChain();
 		}
 		context.put(FacilioConstants.ContextNames.FILE_FORMAT, fileFormat);
 		context.put("chartType", chartType);	// Temp
@@ -1478,8 +1507,6 @@ public class V2ReportAction extends FacilioAction {
 		
 		context.put("isS3Url", true);
 
-		mailReportChain.addCommand(ReadOnlyChainFactory.getExportNewModuleReportFileChain());
-		mailReportChain.addCommand(new SendReadingReportMailCommand());
 		mailReportChain.execute(context);
 
 		setResult("fileUrl", context.get(FacilioConstants.ContextNames.FILE_URL));

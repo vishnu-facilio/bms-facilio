@@ -1,16 +1,62 @@
 
 package com.facilio.bmsconsole.util;
 
+import java.sql.SQLException;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.OptionalDouble;
+import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.apache.commons.collections.list.SetUniqueList;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.LogManager;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.DashboardContext;
+import com.facilio.bmsconsole.context.DashboardFolderContext;
+import com.facilio.bmsconsole.context.DashboardSharingContext;
 import com.facilio.bmsconsole.context.DashboardSharingContext.SharingType;
+import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
+import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
+import com.facilio.bmsconsole.context.FloorContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.context.ReportBenchmarkRelContext;
+import com.facilio.bmsconsole.context.ReportColumnContext;
+import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.ReportContext.LegendMode;
 import com.facilio.bmsconsole.context.ReportContext.ReportChartType;
+import com.facilio.bmsconsole.context.ReportDateFilterContext;
+import com.facilio.bmsconsole.context.ReportEnergyMeterContext;
+import com.facilio.bmsconsole.context.ReportFieldContext;
+import com.facilio.bmsconsole.context.ReportFolderContext;
+import com.facilio.bmsconsole.context.ReportFormulaFieldContext;
+import com.facilio.bmsconsole.context.ReportSpaceFilterContext;
+import com.facilio.bmsconsole.context.ReportThreshold;
+import com.facilio.bmsconsole.context.ReportUserFilterContext;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SiteContext.SiteType;
+import com.facilio.bmsconsole.context.SpaceFilteredDashboardSettings;
+import com.facilio.bmsconsole.context.UserWorkHourReading;
+import com.facilio.bmsconsole.context.WidgetChartContext;
+import com.facilio.bmsconsole.context.WidgetVsWorkflowContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -19,13 +65,26 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.*;
+import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.Operator;
+import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.AggregateOperator.CommonAggregateOperator;
 import com.facilio.modules.AggregateOperator.DateAggregateOperator;
 import com.facilio.modules.AggregateOperator.NumberAggregateOperator;
+import com.facilio.modules.BaseLineContext;
 import com.facilio.modules.BaseLineContext.RangeType;
+import com.facilio.modules.DeleteRecordBuilder;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
@@ -35,18 +94,6 @@ import com.facilio.workflows.util.WorkflowUtil;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
-import org.apache.commons.collections.list.SetUniqueList;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.LogManager;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import java.sql.SQLException;
-import java.time.ZonedDateTime;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class DashboardUtil {
 	
@@ -88,6 +135,7 @@ public class DashboardUtil {
 	public static final String ENERGY_METER_PURPOSE_MAIN = "Main";
 	
 	public static String BUILDING_DASHBOARD_KEY = "buildingdashboard";
+	public static String SITE_DASHBOARD_KEY = "sitedashboard";
 	
 	static {
 		RESERVED_DASHBOARD_LINK_NAME.add("portfolio");
@@ -706,7 +754,7 @@ public class DashboardUtil {
 				.andCustomWhere("ID = ?", dashboard.getId());
 
 		Map<String, Object> props = FieldUtil.getAsProperties(dashboard);
-		props.put("mobileEnabled", dashboard.getMobileEnabled());
+		props.put("mobileEnabled", dashboard.isMobileEnabled());
 		int updatedRows = updateBuilder.update(props);
 		if (updatedRows > 0) {
 			return true;
@@ -756,7 +804,8 @@ public class DashboardUtil {
 			dashboardJson.put("dashboardFolderId", dashboard.getDashboardFolderId());
 			dashboardJson.put("linkName", dashboard.getLinkName());
 			dashboardJson.put("children", childrenArray);
-			dashboardJson.put("mobileEnabled", dashboard.getMobileEnabled());
+			dashboardJson.put("mobileEnabled", dashboard.isMobileEnabled());
+			dashboardJson.put("dashboardSharingContext", dashboard.getDashboardSharingContext());
 			result.add(dashboardJson);
 		 }
 		return result;
@@ -890,6 +939,7 @@ public class DashboardUtil {
 			List<DashboardWidgetContext> dashbaordWidgets = DashboardUtil.getDashboardWidgetsFormDashboardId(dashboard.getId());
 			dashboard.setDashboardWidgets(dashbaordWidgets);
 			dashboard.setReportSpaceFilterContext(getDashboardSpaceFilter(dashboard.getId()));
+			dashboard.setDashboardSharingContext(getDashboardSharing(dashboard.getId()));
 			return dashboard;
 		}
 		return null;
@@ -910,7 +960,7 @@ public class DashboardUtil {
 		return null;
 	}
 
-	public static List<DashboardContext> getDashboardList(String moduleName) throws Exception {
+	public static List<DashboardContext> getDashboardList(String moduleName) throws Exception {			// depricated
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
@@ -924,16 +974,14 @@ public class DashboardUtil {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		
-		List<Long> dashboardIds = new ArrayList<>();
 		if (props != null && !props.isEmpty()) {
 			Map<Long, DashboardContext> dashboardMap = new HashMap<Long, DashboardContext>();
 			for (Map<String, Object> prop : props) {
 				DashboardContext dashboard = FieldUtil.getAsBeanFromMap(prop, DashboardContext.class);
 				dashboard.setReportSpaceFilterContext(getDashboardSpaceFilter(dashboard.getId()));
 				dashboardMap.put(dashboard.getId(), dashboard);
-				dashboardIds.add(dashboard.getId());
 			}
-			return getFilteredDashboards(dashboardMap, dashboardIds);
+			return getFilteredDashboards(dashboardMap);
 		}
 		return null;
 	}
@@ -941,11 +989,14 @@ public class DashboardUtil {
 	
 	public static List<DashboardFolderContext> getDashboardListWithFolder(String moduleName,boolean getOnlyMobileDashboard) throws Exception {
 		
+//		Criteria criteria = PermissionUtil.getCurrentUserPermissionCriteria("dashboard", "read");
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getDashboardFields())
 				.table(ModuleFactory.getDashboardModule().getTableName())
 				.andCustomWhere("ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
+//				.andCriteria(criteria)
 				.andCustomWhere("BASE_SPACE_ID IS NULL");
 		
 		if(moduleName != null) {
@@ -953,6 +1004,7 @@ public class DashboardUtil {
 			selectBuilder.andCustomWhere("MODULEID = ?", module.getModuleId());
 		}
 		
+				
 		if(getOnlyMobileDashboard) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("SHOW_HIDE_MOBILE", "mobileEnabled", "true", BooleanOperators.IS));
 		}
@@ -962,39 +1014,124 @@ public class DashboardUtil {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		
-		List<Long> dashboardIds = new ArrayList<>();
 		if (props != null && !props.isEmpty()) {
 			Map<Long, DashboardContext> dashboardMap = new HashMap<Long, DashboardContext>();
 			for (Map<String, Object> prop : props) {
 				DashboardContext dashboard = FieldUtil.getAsBeanFromMap(prop, DashboardContext.class);
 				dashboard.setDashboardSharingContext(getDashboardSharing(dashboard.getId()));
-				dashboard.setSpaceFilteredDashboardSettings(getSpaceFilteredDashboardSettings(dashboard.getId()));
-				dashboard.setReportSpaceFilterContext(getDashboardSpaceFilter(dashboard.getId()));
+//				dashboard.setSpaceFilteredDashboardSettings(getSpaceFilteredDashboardSettings(dashboard.getId()));	// check
+//				dashboard.setReportSpaceFilterContext(getDashboardSpaceFilter(dashboard.getId()));					// check
+				dashboard.setModuleName(modBean.getModule(dashboard.getModuleId()).getName());
 				dashboardMap.put(dashboard.getId(), dashboard);
-				dashboardIds.add(dashboard.getId());
 			}
-			List<DashboardContext> dashboards = getFilteredDashboards(dashboardMap, dashboardIds);
+			List<DashboardContext> dashboards = getFilteredDashboards(dashboardMap);
 			
+			if(AccountUtil.isFeatureEnabled(FeatureLicense.NEW_LAYOUT))  {
+				getAllBuildingsForDashboard(dashboards);
+				
+//				getAllSitesForDashboard(dashboards,baseSpaceIds); site Dashboard not supported for new flow
+			}
 			if(getOnlyMobileDashboard) {
 				splitBuildingDashboardForMobile(dashboards);
 			}
-			if(!AwsUtil.isProduction()) {
-				List<DashboardFolderContext> folders = getDashboardFolder(moduleName);
-				for(DashboardFolderContext folder :folders) {
-					for(DashboardContext dashboard :dashboards) {
-						if(dashboard.getDashboardFolderId() == folder.getId()) {
-							folder.addDashboard(dashboard);
-						}
+			
+			List<DashboardFolderContext> folders = getDashboardFolder(moduleName);
+			for(DashboardFolderContext folder :folders) {
+				for(DashboardContext dashboard :dashboards) {
+					if(dashboard.getDashboardFolderId() == folder.getId()) {
+						folder.addDashboard(dashboard);
 					}
 				}
-				return folders;
 			}
-			return sortDashboardByFolder(dashboards);
+			return folders;
 		}
 		return null;
 	}
 	
-	public static List<DashboardFolderContext> getDashboardListWithFolder(boolean getOnlyMobileDashboard,boolean isfromPortal) throws Exception {
+	public static void getAllBuildingsForDashboard(List<DashboardContext> dashboards) throws Exception {
+		
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		 List<BuildingContext> buildings = new ArrayList<>();
+		 List<Long> spaceIds = new ArrayList<>();
+		 
+         buildings = SpaceAPI.getAllBuildings();
+         
+         for(BuildingContext building:buildings) {
+         	spaceIds.add(building.getId());
+         }
+			
+			String spaceIdsString = new String();			
+			
+			List<DashboardContext> duplicatedDashboardContext =  new ArrayList<>();
+			List<DashboardContext> buildDashboardtoBeRemoved = new ArrayList<>(); 
+			for(DashboardContext dashboard :dashboards) {
+				if(dashboard.getLinkName().equals(BUILDING_DASHBOARD_KEY) && dashboard.getBaseSpaceId() == null) {
+					
+					buildDashboardtoBeRemoved.add(dashboard);
+					
+					FacilioModule module = modBean.getModule(dashboard.getModuleId());
+					if(module.getName().equals(FacilioConstants.ContextNames.ENERGY_DATA_READING)) {
+						spaceIdsString = StringUtils.join(spaceIds, ',');
+						
+						List<EnergyMeterContext> energyMeters = getMainEnergyMeter(spaceIdsString);
+						spaceIds.clear();
+						for(EnergyMeterContext energyMeter:energyMeters) {
+							spaceIds.add(energyMeter.getPurposeSpace().getId());
+						}
+					}
+					
+					for(Long spaceId:spaceIds) {
+						DashboardContext buildingDashboard = (DashboardContext) dashboard.clone();
+						buildingDashboard.setBaseSpaceId(spaceId);
+						buildingDashboard.setId(-1l);
+						
+						buildingDashboard.setLinkName(buildingDashboard.getLinkName()+"/"+spaceId);
+						
+						buildingDashboard.setDashboardName(ResourceAPI.getResource(spaceId).getName());
+						duplicatedDashboardContext.add(buildingDashboard);
+					}
+				}
+			}
+			dashboards.removeAll(buildDashboardtoBeRemoved);
+			dashboards.addAll(duplicatedDashboardContext);
+	}
+	
+	public static void getAllSitesForDashboard(List<DashboardContext> dashboards, List<Long> baseSpaceIds) throws  Exception {
+		List<SiteContext> sites = new ArrayList<>();
+		 List<Long> spaceIds = new ArrayList<>();
+		 
+        sites = SpaceAPI.getAllSites();
+        
+        for(SiteContext site:sites) {
+        	if(!(baseSpaceIds.contains(site.getId()))) {
+        		spaceIds.add(site.getId());
+        	}
+        }
+			
+			List<DashboardContext> dbContext =  new ArrayList<>();
+			DashboardContext siteDashboardToBeRemoved = null;
+			for(DashboardContext dashboard :dashboards) {
+				if(dashboard.getLinkName().equals(SITE_DASHBOARD_KEY) && dashboard.getBaseSpaceId() == null) {
+					siteDashboardToBeRemoved = dashboard;
+					for(Long spaceId:spaceIds) {
+						DashboardContext siteDashboard1 = (DashboardContext) dashboard.clone();
+						siteDashboard1.setBaseSpaceId(spaceId);
+						siteDashboard1.setId(-1l);
+						
+						siteDashboard1.setLinkName(siteDashboard1.getLinkName()+"/"+spaceId);
+						siteDashboard1.setDashboardName(ResourceAPI.getResource(spaceId).getName());
+						dbContext.add(siteDashboard1);
+					}
+				}
+			}
+			dashboards.remove(siteDashboardToBeRemoved);
+			dashboards.addAll(dbContext);
+		
+	}
+	
+	public static List<DashboardFolderContext> getDashboardListWithFolder(boolean getOnlyMobileDashboard,boolean isfromPortal) throws Exception {	// wrong impl
 	
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -1009,7 +1146,6 @@ public class DashboardUtil {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		
-		List<Long> dashboardIds = new ArrayList<>();
 		if (props != null && !props.isEmpty()) {
 			Map<Long, DashboardContext> dashboardMap = new HashMap<Long, DashboardContext>();
 			for (Map<String, Object> prop : props) {
@@ -1020,10 +1156,10 @@ public class DashboardUtil {
 				
 				FacilioModule module = modBean.getModule(dashboard.getModuleId());
 				dashboard.setModuleName(module.getName());
+				dashboard.setModuleName(modBean.getModule(dashboard.getModuleId()).getName());
 				dashboardMap.put(dashboard.getId(), dashboard);
-				dashboardIds.add(dashboard.getId());
 			}
-			List<DashboardContext> dashboards = getFilteredDashboards(dashboardMap, dashboardIds,isfromPortal);
+			List<DashboardContext> dashboards = getFilteredDashboards(dashboardMap,isfromPortal);
 			
 			if(getOnlyMobileDashboard) {
 				splitBuildingDashboardForMobile(dashboards);
@@ -1032,6 +1168,21 @@ public class DashboardUtil {
 			return sortDashboardByFolder(dashboards);
 		}
 		return null;
+	}
+	
+	private static void buildingchanges (List<DashboardContext> dashboards, List<Long> baseSpaceIds) throws Exception {
+		List<DashboardContext> dbContext =  new ArrayList<>();
+		for(DashboardContext dashboard :dashboards) {
+			if(dashboard.getLinkName().equals(BUILDING_DASHBOARD_KEY) && dashboard.getBaseSpaceId() == null) {
+		            for(int i=0;i<baseSpaceIds.size();i++) {
+		            	DashboardContext buildingDashboard1 = (DashboardContext) dashboard.clone();
+						buildingDashboard1.setBaseSpaceId(baseSpaceIds.get(i));
+						buildingDashboard1.setId(-1l);
+						dbContext.add(buildingDashboard1);
+		             }
+			}
+		}
+		dashboards.addAll(dbContext);
 	}
 	
 	
@@ -1060,7 +1211,7 @@ public class DashboardUtil {
 		dashboards.remove(buildingDashboard);
 	}
 
-	public static List<DashboardFolderContext> getDashboardTree(String moduleName) throws Exception {		// check this method
+	public static List<DashboardFolderContext> getDashboardTree(String moduleName) throws Exception {		// depricated
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
@@ -1089,7 +1240,7 @@ public class DashboardUtil {
 				dashboardMap.put(dashboard.getId(), dashboard);
 				dashboardIds.add(dashboard.getId());
 			}
-			List<DashboardContext> dashboards = getFilteredDashboards(dashboardMap, dashboardIds);
+			List<DashboardContext> dashboards = getFilteredDashboards(dashboardMap);
 			
 			DashboardContext portfolioDashboard = null;
 			DashboardContext commercialPortfolioDashboard = null;
@@ -1263,10 +1414,6 @@ public class DashboardUtil {
 		
 		List<DashboardFolderContext> dashboardFolderContexts = new ArrayList<>();
 		
-		DashboardFolderContext defaultFolder = new DashboardFolderContext();						// remove this after mig
-		
-		defaultFolder.setName("default");															// remove this after mig
-		
 		for(DashboardContext dashboard :dashboards) {
 			
 			if(dashboard.getDashboardFolderId() != null && dashboard.getDashboardFolderId() > 0) {
@@ -1286,22 +1433,19 @@ public class DashboardUtil {
 					dashboardFolderContexts.add(folder);
 				}
 			}
-			else {																					// remove this after mig
-				defaultFolder.addDashboard(dashboard);
-			}
-		}
-		if(defaultFolder.getDashboards() != null && !defaultFolder.getDashboards().isEmpty()) {		// remove this after mig
-			
-			dashboardFolderContexts.add(defaultFolder);
 		}
 		return dashboardFolderContexts;
 	}
-	public static List<DashboardContext> getFilteredDashboards(Map<Long, DashboardContext> dashboardMap, List<Long> dashboardIds) throws Exception {
-		return getFilteredDashboards(dashboardMap,dashboardIds,false);
+	public static List<DashboardContext> getFilteredDashboards(Map<Long, DashboardContext> dashboardMap) throws Exception {
+		return getFilteredDashboards(dashboardMap,false);
 	}
-	public static List<DashboardContext> getFilteredDashboards(Map<Long, DashboardContext> dashboardMap, List<Long> dashboardIds,boolean isFromPortal) throws Exception {
+	
+	public static List<DashboardContext> getFilteredDashboards(Map<Long, DashboardContext> dashboardMap,boolean isFromPortal) throws Exception {
+		
+		List<Long> dashboardIds = new ArrayList<>(dashboardMap.keySet());
 		
 		List<DashboardContext> dashboardList = new ArrayList<DashboardContext>();
+		
 		if (!dashboardMap.isEmpty()) {
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 					.select(FieldFactory.getDashboardSharingFields())
@@ -1325,6 +1469,7 @@ public class DashboardUtil {
 					if (dashboardIds.contains(dashboardSharing.getDashboardId())) {
 						dashboardIds.remove(dashboardSharing.getDashboardId());
 					}
+					
 					if(!dashboardList.contains(dashboardMap.get(dashboardSharing.getDashboardId()))) {
 						if (dashboardSharing.getSharingTypeEnum().equals(SharingType.USER) && dashboardSharing.getOrgUserId() == AccountUtil.getCurrentAccount().getUser().getOuid()) {
 							dashboardList.add(dashboardMap.get(dashboardSharing.getDashboardId()));
@@ -1341,7 +1486,6 @@ public class DashboardUtil {
 							}
 						}
 						else if (dashboardSharing.getSharingTypeEnum().equals(SharingType.PORTAL)) {
-							System.out.println("dashboard folders account userid ====>" + AccountUtil.getCurrentAccount().getUser().getOuid() + "dashboardsharing id ==>" + dashboardSharing.getOrgUserId());
 							if(dashboardSharing.getOrgUserId() > 0) {
 								if(dashboardSharing.getOrgUserId() == AccountUtil.getCurrentAccount().getUser().getOuid()) {
 									dashboardList.add(dashboardMap.get(dashboardSharing.getDashboardId()));
@@ -1758,8 +1902,10 @@ public class DashboardUtil {
 	public static ReportFieldContext getReportField(ReportFieldContext reportField) throws Exception {
 		
 		if (reportField.getId() == null) {
+			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioField ff = modBean.getFieldFromDB(reportField.getModuleFieldId());
+			
 			reportField.setModuleField(ff);
 			return reportField;
 		}
@@ -1775,6 +1921,7 @@ public class DashboardUtil {
 					.andCustomWhere(ModuleFactory.getReportField().getTableName()+".ID = ?", reportField.getId());
 			
 			List<Map<String, Object>> props = selectBuilder.get();
+			
 			if (props != null && !props.isEmpty()) {
 				ReportFieldContext reportFieldContext = FieldUtil.getAsBeanFromMap(props.get(0), ReportFieldContext.class);
 				
@@ -2145,7 +2292,7 @@ public class DashboardUtil {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.table(module.getTableName())
 														.select(fields)
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(entityField, String.valueOf(entityId), PickListOperators.IS));
 		
 		selectBuilder.orderBy("SEQUENCE_NUMBER");
@@ -2168,7 +2315,7 @@ public class DashboardUtil {
 			GenericSelectRecordBuilder select = new GenericSelectRecordBuilder();
 			select.select(FieldFactory.getDashboardFields())
 			.table(ModuleFactory.getDashboardModule().getTableName())
-			.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getDashboardModule()))
+//			.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getDashboardModule()))
 			.andCustomWhere(ModuleFactory.getDashboardModule().getTableName()+".MODULEID = ?", moduleId)
 			.orderBy("DISPLAY_ORDER desc")
 			.limit(1);
@@ -2406,9 +2553,9 @@ public class DashboardUtil {
 	
 	public static void updateDashboardFolder(List<DashboardFolderContext> dashboardFolders) throws Exception {
 		
-		GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder();
-		
 		for(DashboardFolderContext dashboardFolder :dashboardFolders) {
+			
+			GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder();
 			update.table(ModuleFactory.getDashboardFolderModule().getTableName());
 			update.fields(FieldFactory.getDashboardFolderFields())
 			.andCustomWhere("ID = ?", dashboardFolder.getId());
@@ -2427,8 +2574,8 @@ public class DashboardUtil {
 		 
 		 GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 					.select(FieldFactory.getDashboardFolderFields())
-					.table(ModuleFactory.getDashboardFolderModule().getTableName())
-					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getDashboardFolderModule()));
+					.table(ModuleFactory.getDashboardFolderModule().getTableName());
+//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getDashboardFolderModule()));
 		 
 		 if(moduleName != null) {
 			 FacilioModule module = modBean.getModule(moduleName);
@@ -2441,6 +2588,7 @@ public class DashboardUtil {
 			for(Map<String, Object> prop :props) {
 				
 				DashboardFolderContext dashboardFolderContext = FieldUtil.getAsBeanFromMap(prop, DashboardFolderContext.class);
+				dashboardFolderContext.setModuleName(modBean.getModule(dashboardFolderContext.getModuleId()).getName());
 				dashboardFolderContexts.add(dashboardFolderContext);
 			}
 			

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -286,7 +287,7 @@ public class TaskAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		try {
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
-		if (taskIdList != null) {
+		if (CollectionUtils.isNotEmpty(taskIdList)) {
 			TaskContext defaultClosedTaskObj = new TaskContext();
 			defaultClosedTaskObj.setParentTicketId(parentTicketId);
 			defaultClosedTaskObj.setStatusNew(TaskStatus.CLOSED);

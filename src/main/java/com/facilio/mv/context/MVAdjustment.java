@@ -13,7 +13,6 @@ public class MVAdjustment extends ModuleBaseWithCustomFields {
 	long projectId;
 	String name;
 	FormulaFieldContext formulaField;
-	long formulaFieldId;
 	int period;				// change to enum;
 	long startTime;
 	long endTime;
@@ -35,12 +34,6 @@ public class MVAdjustment extends ModuleBaseWithCustomFields {
 	}
 	public void setName(String name) {
 		this.name = name;
-	}
-	public long getFormulaFieldId() {
-		return formulaFieldId;
-	}
-	public void setFormulaFieldId(long formulaFieldId) {
-		this.formulaFieldId = formulaFieldId;
 	}
 	public int getPeriod() {
 		return period;

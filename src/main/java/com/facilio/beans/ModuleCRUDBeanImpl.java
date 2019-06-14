@@ -44,6 +44,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import java.io.File;
+import java.sql.BatchUpdateException;
 import java.util.*;
 
 public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
@@ -326,7 +327,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 														.fields(FieldFactory.getPreventiveMaintenanceFields())
 														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getIdCondition(pm.getId(), module))
 														;
 		
@@ -587,7 +588,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
 														;
 		deleteBuilder.delete();
@@ -658,7 +659,9 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	public Map<String, Long> getDeviceMap() throws Exception {
 		// TODO Auto-generated method stub
 		FacilioModule deviceDetailsModule = ModuleFactory.getDeviceDetailsModule();
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().table(deviceDetailsModule.getTableName()).andCondition(CriteriaAPI.getCurrentOrgIdCondition(deviceDetailsModule)).select(FieldFactory.getDeviceDetailsFields());
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().table(deviceDetailsModule.getTableName())
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(deviceDetailsModule))
+				.select(FieldFactory.getDeviceDetailsFields());
 		HashMap<String, Long> deviceData = new HashMap<>();
 		List<Map<String, Object>> data = builder.get();
 		for(Map<String, Object> obj : data) {
@@ -673,7 +676,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		FacilioModule agentDataModule = ModuleFactory.getAgentDataModule();
 		GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder()
 				.table(AgentKeys.AGENT_TABLE).select(FieldFactory.getAgentDataFields())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(agentDataModule))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(agentDataModule))
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getDeletedTimeField(agentDataModule),"NULL", CommonOperators.IS_EMPTY));
 		if (agentName != null)
 		{
@@ -700,7 +703,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder()
 																.table(AgentKeys.METRICS_TABLE)
 																.fields(FieldFactory.getAgentMetricsFields())
-																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(metricsmodule))
+//																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(metricsmodule))
 																.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(metricsmodule), criteria.get(AgentKeys.AGENT_ID).toString(),NumberOperators.EQUALS))
 																.andCondition(CriteriaAPI.getCondition(FieldFactory.getPublishTypeField(metricsmodule), criteria.get(EventUtil.DATA_TYPE).toString(),NumberOperators.EQUALS));
 
@@ -735,7 +738,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 					.select(FieldFactory.getAgentMetricsFields())
 					.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentIdField(metricsModule), agentId.toString(), NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition(FieldFactory.getPublishTypeField(metricsModule), publishType.toString(), NumberOperators.EQUALS))
-					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(metricsModule))
+//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(metricsModule))
 					.andCondition(CriteriaAPI.getCondition(FieldFactory.getCreatedTime(metricsModule),createdTime.toString(),NumberOperators.EQUALS));
 			List<Map<String, Object>> rows = genericSelectRecordBuilder.get();
 			return rows	;
@@ -761,7 +764,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
                     .fields(FieldFactory.getAgentMessageFields());
             return insertRecordBuilder.insert(map);
     }catch (Exception e){
-            if(e instanceof MySQLIntegrityConstraintViolationException){
+            if(e instanceof MySQLIntegrityConstraintViolationException || e instanceof BatchUpdateException){
                 LOGGER.info("Duplicate Message,insertion failed "+e.getMessage());
             }
             else {
@@ -778,7 +781,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder()
 					.table(messageModule.getTableName())
 					.fields(FieldFactory.getAgentMessageFields())
-					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(messageModule))
+//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(messageModule))
                     .andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentMessageStatusField(messageModule),"0",NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentMessagePartitionKeyField(messageModule),map.get(AgentKeys.RECORD_ID).toString(),StringOperators.IS));
 
@@ -804,7 +807,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
             GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
                     .table(context.get(FacilioConstants.ContextNames.TABLE_NAME).toString())
                     .select((Collection<FacilioField>) context.get(FacilioConstants.ContextNames.FIELDS))
-                    .andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//                    .andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
                     .andCriteria((Criteria) context.get(FacilioConstants.ContextNames.CRITERIA));
             if( context.containsKey(FacilioConstants.ContextNames.SORT_FIELDS)){
                 selectRecordBuilder.orderBy(context.get(FacilioConstants.ContextNames.SORT_FIELDS).toString());

@@ -237,9 +237,13 @@ public class AccountConstants {
 		
 		VIEW_DASHBOARDS(34359738368L),
 		
+		SHARE_DASHBOARD(34359738368L), // for New layout
+		
 		VIEW_APPROVAL(68719476736L),
 		
 		INVENTORY_APPROVAL(137438953472L),
+		
+		
 
 		
 //		GENERAL(34359738368L),
@@ -1582,6 +1586,22 @@ public class AccountConstants {
 		fields.add(siteId);
 		
 		return fields;
+	}
+
+	public static FacilioField getOrgIdField() {
+		return getOrgIdField(null);
+	}
+
+	public static FacilioField getOrgIdField(FacilioModule module) {
+		FacilioField field = new FacilioField();
+		field.setName("orgId");
+		field.setDisplayName("Org Id");
+		field.setDataType(FieldType.NUMBER);
+		field.setColumnName("ORGID");
+		if (module != null) {
+			field.setModule(module);
+		}
+		return field;
 	}
 	
 	public static List<FacilioField> getRoleFields() {

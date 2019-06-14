@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 public class ControllerActivityWatcherJob extends InstantJob {
 
 	private static final Logger LOGGER = LogManager.getLogger(ControllerActivityWatcherJob.class.getName());
-	private static final long THREAD_SLEEP_BUFFER = 5000;
+	private static final long THREAD_SLEEP_BUFFER = 60000;
 	private static final long TIME_OUT = 15 * 60 * 1000;
 	private boolean timedOut = false;
 	
@@ -54,7 +54,7 @@ public class ControllerActivityWatcherJob extends InstantJob {
 		catch (Exception e) {
 			LOGGER.error("Error occurred in Controller Watcher Job", e);
 			
-			if ( !(e instanceof InterruptedException) && !(e instanceof NullPointerException && ExceptionUtils.getStackTrace(e).contains("com.mysql.jdbc")) && !(e instanceof SQLException && (e.getMessage().contains("No operations allowed after statement closed") || e.getMessage().contains("Operation not allowed after ResultSet closed") || e.getMessage().contains("No operations allowed after connection closed."))) ) { //Not sending email for transaction timeout
+			if ( !(e instanceof InterruptedException) && !(e instanceof NullPointerException && ExceptionUtils.getStackTrace(e).contains("com.mysql.jdbc")) && !(e instanceof SQLException && (e.getMessage().contains("No operations allowed after statement closed") || e.getMessage().contains("Operation not allowed after ResultSet closed") || e.getMessage().contains("No operations allowed after connection closed"))) ) { //Not sending email for transaction timeout
 				CommonCommandUtil.emailException("ControllerActivityWatcherJob", "Error occurred in Controller Watcher Job", e);
 			}
 		}

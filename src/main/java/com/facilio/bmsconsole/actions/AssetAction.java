@@ -109,6 +109,14 @@ public class AssetAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	private Long stateTransitionId;
+	public Long getStateTransitionId() {
+		return stateTransitionId;
+	}
+	public void setStateTransitionId(Long stateTransitionId) {
+		this.stateTransitionId = stateTransitionId;
+	}
+	
 	public String updateAsset() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
@@ -116,6 +124,12 @@ public class AssetAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(asset.getId()));
 		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		
+		// cannot update module state directly
+		if (asset.getModuleState() != null) {
+			asset.setModuleState(null);
+		}
+		context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
 		
 		Chain updateAssetChain = TransactionChainFactory.getUpdateAssetChain();
 		updateAssetChain.execute(context);

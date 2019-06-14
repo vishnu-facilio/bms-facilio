@@ -1,5 +1,6 @@
 package com.facilio.modules;
 
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentKeys;
 import com.facilio.constants.FacilioConstants;
@@ -704,23 +705,23 @@ public class FieldFactory {
 		return fields;
 	}
 
-	public static FacilioField getOrgIdField() {
-		return getOrgIdField(null);
-	}
-
-	public static FacilioField getOrgIdField(FacilioModule module) {
-		FacilioField field = new FacilioField();
-		field.setName("orgId");
-		field.setDisplayName("Org Id");
-		field.setDataType(FieldType.NUMBER);
-		field.setColumnName("ORGID");
-		if (module != null) {
-			field.setModule(module);
-		}
-
-
-		return field;
-		}
+//	public static FacilioField getOrgIdField() {
+//		return getOrgIdField(null);
+//	}
+//
+//	public static FacilioField getOrgIdField(FacilioModule module) {
+//		FacilioField field = new FacilioField();
+//		field.setName("orgId");
+//		field.setDisplayName("Org Id");
+//		field.setDataType(FieldType.NUMBER);
+//		field.setColumnName("ORGID");
+//		if (module != null) {
+//			field.setModule(module);
+//		}
+//
+//
+//		return field;
+//		}
 	
 
 	public static FacilioField getSiteIdField() {
@@ -1598,7 +1599,7 @@ public class FieldFactory {
 		FacilioModule module = ModuleFactory.getSupportEmailsModule();
 
 		fields.add(getIdField(module));
-		fields.add(getOrgIdField(module));
+		fields.add(AccountConstants.getOrgIdField(module));
 		fields.add(getSiteIdField(module));
 
 		FacilioField replyName = new FacilioField();
@@ -2934,8 +2935,8 @@ public class FieldFactory {
 		fields.add(getDeletedTimeField(module));
 		return fields;
 	}
-	public static FacilioField getControllerIdField() { return getOrgIdField(null);
-	}
+//	public static FacilioField getControllerIdField() { return getOrgIdField(null);
+//	}
 
 
 	
@@ -5484,7 +5485,7 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 		
 		fields.add(getIdField(module));
-		fields.add(getOrgIdField(module));
+		fields.add(AccountConstants.getOrgIdField(module));
 		fields.add(getField("name", "NAME", module, FieldType.STRING));
 		fields.add(getField("screenId", "SCREEN_ID", module, FieldType.LOOKUP));
 		fields.add(getField("token", "TOKEN", module, FieldType.STRING));
@@ -5890,7 +5891,7 @@ public class FieldFactory {
 	
 	public static List<FacilioField> getRuleTemplateRelFields() {
 		List<FacilioField> fields = new ArrayList<>();
-		FacilioModule module = ModuleFactory.getReadingRuleModule();
+		FacilioModule module = ModuleFactory.getRuleTemplatesRelModule();
 
 		FacilioField id = new FacilioField();
 		id.setName("id");

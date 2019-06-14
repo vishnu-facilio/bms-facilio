@@ -4,11 +4,13 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.time.DateRange;
 import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowFunctionContext;
@@ -406,8 +408,7 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
     @Override
     public Value visitLog(WorkflowV2Parser.LogContext ctx) {
         Value value = this.visit(ctx.expr());
-        workflowContext.getLogString().append(value.asString()+"\n");
-        System.out.println(value);
+        workflowContext.getLogStringBuilder().append(value.asString()+"\n");
         return value;
     }
     
@@ -429,6 +430,9 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
     		}
     		else if(operatorValue.asObject() instanceof Boolean) {
     			operator = BooleanOperators.IS;
+    		}
+    		else if(operatorValue.asObject() instanceof DateRange) {
+    			operator = DateOperators.BETWEEN;
     		}
     		else {
     			operator = NumberOperators.EQUALS;
@@ -503,6 +507,10 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
 			Value fromValue = this.visit(ctx.db_param_range(0).atom(0));
 			Value toValue = this.visit(ctx.db_param_range(0).atom(1));
 			dbParamContext.setRange(Pair.of(fromValue.asInt(), toValue.asInt()));
+		}
+		if(ctx.db_param_group_by(0) != null) {
+			Value fieldValue = this.visit(ctx.db_param_group_by(0).atom());
+			dbParamContext.setGroupBy(fieldValue.asString());
 		}
 		if(ctx.db_param_sort(0) != null) {
 			Value sortByField = this.visit(ctx.db_param_sort(0).atom());

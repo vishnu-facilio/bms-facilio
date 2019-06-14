@@ -21,9 +21,9 @@ import java.time.Instant;
 import java.util.*;
 import java.util.logging.Logger;
 
-public class DataParseForImportCommand implements Command {
+public class GenericParseDataForImportCommand implements Command {
 
-	private static final Logger LOGGER = Logger.getLogger(DataParseForImportCommand.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(GenericParseDataForImportCommand.class.getName());
 	
 	@Override
 	public boolean execute(Context context) throws Exception {

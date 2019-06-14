@@ -110,7 +110,7 @@ public class BusinessHoursAPI {
 		String businessHoursTable = ModuleFactory.getBusinessHoursModule().getTableName();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getBusinessHoursFields()).table(businessHoursTable)
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getIdCondition(ids, module)).orderBy("Id");
 		List<Map<String, Object>> props = selectBuilder.get();
 		List<BusinessHoursContext> businessHours = new ArrayList<>();
@@ -133,7 +133,7 @@ public class BusinessHoursAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getSingleDayBusinessHoursFields()).table(businessHoursTable)
 				.innerJoin(singleDayTable).on(businessHoursTable + ".ID = " + singleDayTable + ".PARENT_ID")
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getIdCondition(ids, module)).orderBy("dayOfWeek");
 		List<Map<String, Object>> props = selectBuilder.get();
 		List<BusinessHourContext> businessHours = new ArrayList<>();

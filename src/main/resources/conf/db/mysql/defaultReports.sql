@@ -2,7 +2,7 @@
 
 -- dashbaord population starts
 
-INSERT INTO Dashboard_Folder (ORGID,MODULEID,NAME,DISPLAY_ORDER) VALUES (${orgId},${workOrderModuleId},'default',1);
+INSERT INTO Dashboard_Folder (ORGID,MODULEID,NAME,DISPLAY_ORDER) VALUES (${orgId},${workOrderModuleId},'Maintenance',1);
 SET @WO_DASHBOARD_FOLDER_ID := (SELECT LAST_INSERT_ID());
 
 INSERT INTO Dashboard (ORGID,MODULEID,DASHBOARD_NAME,PUBLISH_STATUS,LINK_NAME,DISPLAY_ORDER,DASHBOARD_FOLDER_ID) VALUES (${orgId},${workOrderModuleId},'Overview',0,'overview',1,@WO_DASHBOARD_FOLDER_ID);
@@ -654,14 +654,14 @@ INSERT INTO Widget_Chart (ORGID,ID,REPORT_ID) VALUES (${orgId},@WIDGET_ID,@REPOR
 
 -- alarm Module Population Starts
 
-INSERT INTO Dashboard_Folder (ORGID,MODULEID,NAME,DISPLAY_ORDER) VALUES (${orgId},${alarmModuleId},'default',1);
+INSERT INTO Dashboard_Folder (ORGID,MODULEID,NAME,DISPLAY_ORDER) VALUES (${orgId},${alarmModuleId},'Fault diagnosis',1);
 SET @ALARM_DASHBOARD_FOLDER_ID := (SELECT LAST_INSERT_ID());
 
-INSERT INTO Dashboard (ORGID,MODULEID,DASHBOARD_NAME,PUBLISH_STATUS,LINK_NAME,DISPLAY_ORDER,DASHBOARD_FOLDER_ID) VALUES (${orgId},${alarmModuleId},'Portfolio',0,'portfolio',1,@ALARM_DASHBOARD_FOLDER_ID);
+INSERT INTO Dashboard (ORGID,MODULEID,DASHBOARD_NAME,PUBLISH_STATUS,LINK_NAME,DISPLAY_ORDER,DASHBOARD_FOLDER_ID) VALUES (${orgId},${alarmModuleId},'Fdd Portfolio',0,'alarmportfolio',1,@ALARM_DASHBOARD_FOLDER_ID);
 SET @PORTFOLIO_DASHBOARD_ID := (SELECT LAST_INSERT_ID());
 
-INSERT INTO Dashboard (ORGID,MODULEID,DASHBOARD_NAME,PUBLISH_STATUS,LINK_NAME,DISPLAY_ORDER,DASHBOARD_FOLDER_ID) VALUES (${orgId},${alarmModuleId},'Building Dashboard',0,'buildingdashboard',2,@ALARM_DASHBOARD_FOLDER_ID);
-SET @ALARM_BUILDING_DASHBOARD_ID := (SELECT LAST_INSERT_ID());
+-- INSERT INTO Dashboard (ORGID,MODULEID,DASHBOARD_NAME,PUBLISH_STATUS,LINK_NAME,DISPLAY_ORDER,DASHBOARD_FOLDER_ID) VALUES (${orgId},${alarmModuleId},'Building Dashboard',0,'buildingdashboard',2,@ALARM_DASHBOARD_FOLDER_ID);
+-- SET @ALARM_BUILDING_DASHBOARD_ID := (SELECT LAST_INSERT_ID());
 
 -- static widget starts
 
@@ -681,15 +681,15 @@ set @WIDGET_ID = (SELECT LAST_INSERT_ID());
 INSERT INTO Widget_List_View (ORGID,ID,MODULE_NAME,VIEW_NAME) VALUES (${orgId},@WIDGET_ID,'alarm','active');
 
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${alarmModuleId},'Open Alarms',0,100,'Open Alarms',@ALARM_BUILDING_DASHBOARD_ID,'{"layoutWidth":24,"layoutHeight":32,"xPosition":32,"yPosition":0,"layoutPosition":4}');
-set @WIDGET_ID = (SELECT LAST_INSERT_ID());
+-- INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${alarmModuleId},'Open Alarms',0,100,'Open Alarms',@ALARM_BUILDING_DASHBOARD_ID,'{"layoutWidth":24,"layoutHeight":32,"xPosition":32,"yPosition":0,"layoutPosition":4}');
+-- set @WIDGET_ID = (SELECT LAST_INSERT_ID());
 
-INSERT INTO Widget_Static (ORGID,ID,STATIC_KEY) VALUES (${orgId},@WIDGET_ID,'buildingopenalarms');
+-- INSERT INTO Widget_Static (ORGID,ID,STATIC_KEY) VALUES (${orgId},@WIDGET_ID,'buildingopenalarms');
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${alarmModuleId},'Recent Alarms',2,100,'Recent Alarms',@ALARM_BUILDING_DASHBOARD_ID,'{"layoutWidth":56,"layoutHeight":32,"xPosition":40,"yPosition":32,"layoutPosition":5}');
-set @WIDGET_ID = (SELECT LAST_INSERT_ID());
+-- INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${alarmModuleId},'Recent Alarms',2,100,'Recent Alarms',@ALARM_BUILDING_DASHBOARD_ID,'{"layoutWidth":56,"layoutHeight":32,"xPosition":40,"yPosition":32,"layoutPosition":5}');
+-- set @WIDGET_ID = (SELECT LAST_INSERT_ID());
 
-INSERT INTO Widget_List_View (ORGID,ID,MODULE_NAME,VIEW_NAME) VALUES (${orgId},@WIDGET_ID,'alarm','active');
+-- INSERT INTO Widget_List_View (ORGID,ID,MODULE_NAME,VIEW_NAME) VALUES (${orgId},@WIDGET_ID,'alarm','active');
 
 -- static widget ends
 
@@ -815,10 +815,10 @@ INSERT INTO Report_SpaceFilter(ORGID,REPORT_ID,BUILDING_ID) VALUES(${orgId},@REP
 
 INSERT INTO Report_DateFilter (ORGID,REPORT_ID,FIELD_ID,OPERATOR,VAL) VALUES (${orgId},@REPORT_ID,${alarm_createdTime},49,'30');
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${alarmModuleId},'Alarm Summary',1,100,'Alarm Summary',@ALARM_BUILDING_DASHBOARD_ID,'{"layoutWidth":32,"layoutHeight":32,"xPosition":0,"yPosition":0,"layoutPosition":1}');
-set @WIDGET_ID = (SELECT LAST_INSERT_ID());
+-- INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${alarmModuleId},'Alarm Summary',1,100,'Alarm Summary',@ALARM_BUILDING_DASHBOARD_ID,'{"layoutWidth":32,"layoutHeight":32,"xPosition":0,"yPosition":0,"layoutPosition":1}');
+-- set @WIDGET_ID = (SELECT LAST_INSERT_ID());
 
-INSERT INTO Widget_Chart (ORGID,ID,REPORT_ID) VALUES (${orgId},@WIDGET_ID,@REPORT_ID);
+-- INSERT INTO Widget_Chart (ORGID,ID,REPORT_ID) VALUES (${orgId},@WIDGET_ID,@REPORT_ID);
 
 INSERT INTO Report_Entity (ORGID) VALUES (${orgId});
 SET @REPORT_ENTITY_ID := (SELECT LAST_INSERT_ID());
@@ -838,10 +838,10 @@ INSERT INTO Conditions (ORGID,PARENT_CRITERIA_ID,SEQUENCE,FIELD_NAME,COLUMN_NAME
 INSERT INTO Report_Criteria (ORGID,REPORT_ID,CRITERIA_ID) VALUES (${orgId},@REPORT_ID,@CRITERIA_ID);
 
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${alarmModuleId},'Avg Response Time By Technicians',1,100,'Avg Response Time By Technicians',@ALARM_BUILDING_DASHBOARD_ID,'{"layoutWidth":40,"layoutHeight":32,"xPosition":56,"yPosition":0,"layoutPosition":3}');
-set @WIDGET_ID = (SELECT LAST_INSERT_ID());
+-- INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${alarmModuleId},'Avg Response Time By Technicians',1,100,'Avg Response Time By Technicians',@ALARM_BUILDING_DASHBOARD_ID,'{"layoutWidth":40,"layoutHeight":32,"xPosition":56,"yPosition":0,"layoutPosition":3}');
+-- set @WIDGET_ID = (SELECT LAST_INSERT_ID());
 
-INSERT INTO Widget_Chart (ORGID,ID,REPORT_ID) VALUES (${orgId},@WIDGET_ID,@REPORT_ID);
+-- INSERT INTO Widget_Chart (ORGID,ID,REPORT_ID) VALUES (${orgId},@WIDGET_ID,@REPORT_ID);
 
 INSERT INTO Report_Entity (ORGID) VALUES (${orgId});
 SET @REPORT_ENTITY_ID := (SELECT LAST_INSERT_ID());
@@ -861,10 +861,10 @@ INSERT INTO Conditions (ORGID,PARENT_CRITERIA_ID,SEQUENCE,FIELD_NAME,COLUMN_NAME
 
 INSERT INTO Report_Criteria (ORGID,REPORT_ID,CRITERIA_ID) VALUES (${orgId},@REPORT_ID,@CRITERIA_ID);
 
-INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${alarmModuleId},'Avg Resolution time By Technicians',1,100,'Avg Resolution time By Technicians',@ALARM_BUILDING_DASHBOARD_ID,'{"layoutWidth":40,"layoutHeight":32,"xPosition":0,"yPosition":32,"layoutPosition":2}');
-set @WIDGET_ID = (SELECT LAST_INSERT_ID());
+-- INSERT INTO Widget (ORGID,MODULEID,WIDGET_NAME,TYPE,DATA_REFRESH_INTERTVEL,HEADER_TEXT,DASHBOARD_ID,META_JSON) VALUES (${orgId},${alarmModuleId},'Avg Resolution time By Technicians',1,100,'Avg Resolution time By Technicians',@ALARM_BUILDING_DASHBOARD_ID,'{"layoutWidth":40,"layoutHeight":32,"xPosition":0,"yPosition":32,"layoutPosition":2}');
+-- set @WIDGET_ID = (SELECT LAST_INSERT_ID());
 
-INSERT INTO Widget_Chart (ORGID,ID,REPORT_ID) VALUES (${orgId},@WIDGET_ID,@REPORT_ID);
+-- INSERT INTO Widget_Chart (ORGID,ID,REPORT_ID) VALUES (${orgId},@WIDGET_ID,@REPORT_ID);
 
 -- building report ends
 
@@ -874,10 +874,10 @@ INSERT INTO Widget_Chart (ORGID,ID,REPORT_ID) VALUES (${orgId},@WIDGET_ID,@REPOR
 
 -- energy module population starts
 
-INSERT INTO Dashboard_Folder (ORGID,MODULEID,NAME,DISPLAY_ORDER) VALUES (${orgId},${energyDataModuleId},'default',1);
+INSERT INTO Dashboard_Folder (ORGID,MODULEID,NAME,DISPLAY_ORDER) VALUES (${orgId},${energyDataModuleId},'Analytics',1);
 SET @ENERGY_DASHBOARD_FOLDER_ID := (SELECT LAST_INSERT_ID());
 
-INSERT INTO Dashboard (ORGID,MODULEID,DASHBOARD_NAME,PUBLISH_STATUS,LINK_NAME,DISPLAY_ORDER,DASHBOARD_FOLDER_ID) VALUES (${orgId},${energyDataModuleId},'Portfolio',0,'portfolio',1,@ENERGY_DASHBOARD_FOLDER_ID);
+INSERT INTO Dashboard (ORGID,MODULEID,DASHBOARD_NAME,PUBLISH_STATUS,LINK_NAME,DISPLAY_ORDER,DASHBOARD_FOLDER_ID) VALUES (${orgId},${energyDataModuleId},'Analytics Portfolio',0,'energyportfolio',1,@ENERGY_DASHBOARD_FOLDER_ID);
 SET @PORTFOLIO_DASHBOARD_ID := (SELECT LAST_INSERT_ID());
 
 INSERT INTO Dashboard (ORGID,MODULEID,DASHBOARD_NAME,PUBLISH_STATUS,LINK_NAME,DISPLAY_ORDER,DASHBOARD_FOLDER_ID) VALUES (${orgId},${energyDataModuleId},'Building Dashboard',0,'buildingdashboard',2,@ENERGY_DASHBOARD_FOLDER_ID);

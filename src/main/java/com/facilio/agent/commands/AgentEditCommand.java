@@ -23,7 +23,7 @@ public class AgentEditCommand implements Command
         GenericUpdateRecordBuilder genericUpdateRecordBuilder = new GenericUpdateRecordBuilder()
                 .table(AgentKeys.AGENT_TABLE)
                 .fields(FieldFactory.getAgentDataFields())
-                .andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getAgentDataModule()))
+//                .andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getAgentDataModule()))
                 .andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(ModuleFactory.getAgentDataModule()),payload.get(AgentKeys.ID).toString(), NumberOperators.EQUALS));
         int updatedRows= genericUpdateRecordBuilder.update(payload);
         return (updatedRows > 0);

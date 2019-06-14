@@ -52,7 +52,7 @@ public class ReportScheduledListCommand implements Command {
 				.on(module.getTableName()+".REPORTID = "+reportModule.getTableName()+".ID")
 /*				.innerJoin(emailModule.getTableName())
 				.on(module.getTableName()+".TEMPLATEID = "+emailModule.getTableName()+".ID")*/
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(reportModule))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(reportModule))
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(reportModule),String.valueOf(moduleToFetch.getModuleId()), NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -78,7 +78,7 @@ public class ReportScheduledListCommand implements Command {
 			selectBuilder = new GenericSelectRecordBuilder()
 					.select(jobsField)
 					.table(jobsModule.getTableName())
-					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(jobsModule))
+//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(jobsModule))
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("jobId"), reportIds, NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("jobName"), "ReportScheduler", StringOperators.IS));
 			

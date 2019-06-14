@@ -4,6 +4,7 @@ import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -17,7 +18,7 @@ public class CreateSuperAdminCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		long orgId = (long) context.get("orgId");
-		Role superAdminRole = AccountUtil.getRoleBean().getRole(orgId, AccountConstants.DefaultRole.SUPER_ADMIN, false);
+		Role superAdminRole = AccountUtil.getRoleBean(orgId).getRole(orgId, AccountConstants.DefaultRole.SUPER_ADMIN, false);
 		
 		JSONObject signupInfo = (JSONObject) context.get(FacilioConstants.ContextNames.SIGNUP_INFO);
 		String name = (String) signupInfo.get("name");
@@ -45,6 +46,9 @@ public class CreateSuperAdminCommand implements Command {
 		user.setInvitedTime(System.currentTimeMillis());
 		user.setPassword(password);
 		user.setServerName(serverName);
+		if(AwsUtil.isDevelopment()) {
+			user.setUserVerified(true);
+		}
 		long ouid = AccountUtil.getUserBean().createUser(orgId, user);
 		context.put("ouid", ouid);
 		

@@ -83,7 +83,6 @@ public class AddReadingsForMLCommand implements Command {
 					 {
 						 updateExistingPredictReading(parentID,predictModule,predictReadingList);
 	
-	
 					 }
 					 catch(Exception e)
 					 {

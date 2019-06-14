@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -24,10 +25,18 @@ public class MVProject extends ModuleBaseWithCustomFields {
 	FacilioFrequency frequency;
 	boolean isAutoGenVmMeter;
 	EnergyMeterContext energyMeter;
-
+	User owner;
 	List<MVBaseline> baselines;
 	List<MVAdjustment> ajustments;
 	List<MVAdjustmentVsBaseline> ajustmentVsBaseline;
+	
+	public User getOwner() {
+		return owner;
+	}
+
+	public void setOwner(User owner) {
+		this.owner = owner;
+	}
 	
 	public EnergyMeterContext getEnergyMeter() {
 		return energyMeter;

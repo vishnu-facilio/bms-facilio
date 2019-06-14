@@ -1087,7 +1087,8 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 
 		GenericUpdateRecordBuilder recordBuilder = new GenericUpdateRecordBuilder()
 				.table(workorderModule.getTableName()).fields(Arrays.asList(preRequestStatusField))
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(workorderModule)).andCondition(idFieldCondition);
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(workorderModule))
+				.andCondition(idFieldCondition);
 		recordBuilder.update(updateMap);
 	}
   public static Map<Long, Object> getTeamsCountBySite() throws Exception {
@@ -1844,7 +1845,8 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 			Condition inputValueCondition = CriteriaAPI.getCondition(inputValueField, "1", StringOperators.ISN_T);
 			GenericSelectRecordBuilder select = new GenericSelectRecordBuilder().table(module.getTableName()).select(fields)
 					.groupBy(parentIdField.getCompleteColumnName())
-					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module)).andCondition(condition)
+//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+					.andCondition(condition)
 					.andCondition(preRequestCondition).andCondition(inputValueCondition);
 			List<Map<String, Object>> countList = select.get();
               

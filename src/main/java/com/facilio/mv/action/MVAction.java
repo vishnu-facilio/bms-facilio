@@ -16,6 +16,14 @@ public class MVAction extends FacilioAction {
 	private static final long serialVersionUID = 1L;
 	MVProject mvProject;
 	
+	public MVProject getMvProject() {
+		return mvProject;
+	}
+
+	public void setMvProject(MVProject mvProject) {
+		this.mvProject = mvProject;
+	}
+	
 	public String addMVProject() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
@@ -34,6 +42,8 @@ public class MVAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		
 		context.put(MVUtil.MV_PROJECT, mvProject);
+		
+		context.put(MVUtil.MV_PROJECT_OLD, MVUtil.getMVProject(mvProject.getId()));
 		
 		Chain addMVProjectChain =  TransactionChainFactory.getUpdateMVProjectChain(); 
 		addMVProjectChain.execute(context);

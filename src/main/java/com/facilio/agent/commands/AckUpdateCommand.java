@@ -27,7 +27,7 @@ public class AckUpdateCommand implements Command {
         int count = new GenericUpdateRecordBuilder()
                 .table(module.getTableName())
                 .fields(FieldFactory.getPublishMessageFields())
-                .andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//                .andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
                 .andCondition(CriteriaAPI.getIdCondition(Integer.parseInt(context.get(FacilioConstants.ContextNames.ID).toString()), module))
                 .update((Map<String, Object>) context.get(FacilioConstants.ContextNames.TO_UPDATE_MAP))
                 ;

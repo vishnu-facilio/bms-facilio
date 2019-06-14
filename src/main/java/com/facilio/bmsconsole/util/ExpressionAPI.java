@@ -35,7 +35,7 @@ public class ExpressionAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getExpressionFields())
 				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCustomWhere(ModuleFactory.getExpressionModule().getTableName()+".ID = ?", expressionId);
 		
 		List<Map<String, Object>> props = selectBuilder.get();

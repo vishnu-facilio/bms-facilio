@@ -5,6 +5,7 @@ import com.amazonaws.services.kinesis.clientlibrary.types.InitializationInput;
 import com.amazonaws.services.kinesis.clientlibrary.types.ProcessRecordsInput;
 import com.amazonaws.services.kinesis.clientlibrary.types.ShutdownInput;
 import com.amazonaws.services.kinesis.model.Record;
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -73,7 +74,7 @@ public class AgentProcessor implements IRecordProcessor {
 
         deviceDetailsModule = ModuleFactory.getDeviceDetailsModule();
 
-        orgIdCondition.setField(FieldFactory.getOrgIdField(deviceDetailsModule));
+        orgIdCondition.setField(AccountConstants.getOrgIdField(deviceDetailsModule));
         orgIdCondition.setOperator(NumberOperators.EQUALS);
         orgIdCondition.setValue(String.valueOf(orgId));
 

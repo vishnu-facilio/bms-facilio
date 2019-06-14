@@ -22,7 +22,7 @@ public class EnableMobileDashboardCommand  implements Command {
 		
 		DashboardContext dashboard = (DashboardContext) context.get(FacilioConstants.ContextNames.DASHBOARD);
 		
-		if (dashboard != null && dashboard.getMobileEnabled()) {
+		if (dashboard != null && dashboard.isMobileEnabled()) {
 			// generate mobile layout only when mobile mode enabled for dashboard
 			
 			Long dashboardId = dashboard.getId();

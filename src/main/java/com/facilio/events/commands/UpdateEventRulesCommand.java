@@ -25,7 +25,7 @@ public class UpdateEventRulesCommand implements Command {
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 															.table(module.getTableName())
 															.fields(EventConstants.EventFieldFactory.getEventRuleFields())
-															.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//															.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 															.andCustomWhere("EVENT_RULE_ID = ?", eventRule.getEventRuleId());
 			
 			updateBuilder.update(FieldUtil.getAsProperties(eventRule));

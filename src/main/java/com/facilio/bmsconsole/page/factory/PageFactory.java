@@ -1,3 +1,4 @@
+
 package com.facilio.bmsconsole.page.factory;
 
 import org.json.simple.JSONObject;
@@ -8,6 +9,7 @@ import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.PageWidget.WidgetType;
 import com.facilio.bmsconsole.page.WidgetGroup.WidgetGroupType;
+import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
@@ -15,12 +17,14 @@ public class PageFactory {
 
 //	private static final Map<String, Page> PAGE_MAP = Collections.unmodifiableMap(initPages());
 
-	public static Page getPage(String moduleName, ModuleBaseWithCustomFields record) {
+	public static Page getPage(String moduleName, Object record) {
 //		return PAGE_MAP.get(moduleName);
 		switch(moduleName) {
 			case ContextNames.ASSET:
 				return AssetPageFactory.getAssetPage((AssetContext) record);
-		}
+			case ContextNames.READING_RULE_MODULE:
+				return RulePageFactory.getRulePage((AlarmRuleContext) record);
+		} 
 		return null;
 	}
 

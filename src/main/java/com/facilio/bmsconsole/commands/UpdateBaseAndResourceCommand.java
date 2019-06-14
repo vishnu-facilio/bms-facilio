@@ -1,23 +1,28 @@
 package com.facilio.bmsconsole.commands;
 
+import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.logging.Logger;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.google.common.collect.ArrayListMultimap;
-import nl.basjes.shaded.org.springframework.util.StringUtils;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.logging.Logger;
+import nl.basjes.shaded.org.springframework.util.StringUtils;
 
 public class UpdateBaseAndResourceCommand implements Command,Serializable {
 	/**
@@ -32,7 +37,9 @@ public class UpdateBaseAndResourceCommand implements Command,Serializable {
 				//ConnectionPool does not return the same connection (Caution)	
 			ArrayListMultimap<String, Long> recordsList = (ArrayListMultimap<String, Long>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 			Organization org = AccountUtil.getCurrentOrg();
-			for(String module : recordsList.keySet()) {
+			HashMap<String, List<ReadingContext>> groupedContext = (HashMap<String, List<ReadingContext>>) context.get(ImportAPI.ImportProcessConstants.GROUPED_READING_CONTEXT);
+			
+			for(String module : groupedContext.keySet()) {
 				ModuleBean modBean = (ModuleBean)BeanFactory.lookup("ModuleBean");
 				FacilioModule facilioModule = modBean.getModule(module);
 				List<Long> readingsList = recordsList.get(module);
@@ -55,7 +62,7 @@ public class UpdateBaseAndResourceCommand implements Command,Serializable {
 						break;
 					}
 				}
-				if(facilioModule.getExtendModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE)) {
+				if(facilioModule.getExtendModule() != null && facilioModule.getExtendModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE)) {
 					for(int done= 0 ;done< readingsList.size();) {
 						String updateResourceQuery = "UPDATE Resources SET SPACE_ID = CASE ID";
 						String updateBaseSpaceQuery = "UPDATE BaseSpace SET "+ updateBaseQueryColumn +" = CASE ID";

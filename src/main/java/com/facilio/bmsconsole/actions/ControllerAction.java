@@ -297,7 +297,47 @@ public class ControllerAction extends FacilioAction {
 			setResult("logCount",bean.getRows(context).size());
 			return SUCCESS;
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.info("Exception Occurred ",e);
+		}
+		return ERROR;
+	}
+
+    public Long getMessageId() {
+        return messageId;
+    }
+
+    public void setMessageId(Long messageId) {
+        this.messageId = messageId;
+    }
+
+    private Long messageId;
+	public String getPublishMessage(){
+		ModuleCRUDBean bean;
+		try{
+			LOGGER.info(" getting pub msg -"+getMessageId());
+			bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", Objects.requireNonNull(AccountUtil.getCurrentOrg()).getId());
+			FacilioModule publishMessageModule = ModuleFactory.getPublishMessageModule();
+			FacilioContext context = new FacilioContext();
+			Criteria criteria = new Criteria();
+			JSONArray publishMessage = new JSONArray();
+			Long messageId = getMessageId();
+            if(messageId != null) {
+                criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(publishMessageModule), messageId.toString(), NumberOperators.EQUALS));
+            }
+            context.put(FacilioConstants.ContextNames.TABLE_NAME,AgentKeys.PUBLISH_MESSAGE_TBALE);
+            context.put(FacilioConstants.ContextNames.FIELDS,FieldFactory.getPublishMessageFields());
+            context.put(FacilioConstants.ContextNames.CRITERIA,criteria);
+            context.put(FacilioConstants.ContextNames.LIMIT_VALUE,1);
+            List<Map<String ,Object>> rows = bean.getRows(context);
+            if(!rows.isEmpty()) {
+                setResult("publishMessage", rows.get(0));
+                return SUCCESS;
+            }else {
+                setResult("publishMessage",new ArrayList<>());
+                return SUCCESS;
+            }
+		} catch (Exception e) {
+			LOGGER.info("Exception Occurred ",e);
 		}
 		return ERROR;
 	}

@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -125,9 +124,8 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 	
 	private void addReadings(FacilioModule module, List<FacilioField> fields, List<ReadingContext> readings,
 			Map<String, ReadingDataMeta> metaMap, Map<String, ReadingDataMeta> currentReadingMap, boolean isUpdateLastReading) throws Exception {
-		
-//		System.err.println( Thread.currentThread().getName()+"Inside addReadings in  AddorUpdateCommand#######  "+readings);
 
+//		System.err.println( Thread.currentThread().getName()+"Inside addReadings in  AddorUpdateCommand#######  "+readings);
 		if (AccountUtil.getCurrentOrg().getId() == 78 && module.getName().equals(FacilioConstants.ContextNames.WATER_READING)) {
 			LOGGER.info("Adding readings : "+readings);
 		}
@@ -136,11 +134,6 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 																	.fields(fields)
 																	.addRecords(readings);
 		readingBuilder.save();
-		long orgCheck = 78;
-		Boolean isStage = !AwsUtil.isProduction();
-		if(isStage && (orgCheck == Objects.requireNonNull(AccountUtil.getCurrentOrg()).getOrgId()) ){
-			LOGGER.info("   Debugging log in AddOrUpdateReadingValueCommand--"+readings);
-		}
 		if (isUpdateLastReading) {
 			Map<String, ReadingDataMeta> currentRDMs = ReadingsAPI.updateReadingDataMeta(fields,readings,metaMap);
 			if (currentRDMs != null) {

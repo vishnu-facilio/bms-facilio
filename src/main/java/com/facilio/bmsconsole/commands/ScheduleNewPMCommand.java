@@ -49,6 +49,9 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
         for(PreventiveMaintenance pm: pms) {
             if (pm.getTriggers() != null && pm.isActive()) {
                 try {
+                    if (pm.getId() == 1132719L) {
+                        LOGGER.log(Level.SEVERE, "Scheduling started " + pm.getId());
+                    }
                     schedulePM(pm, context);
                 } catch (Exception e) {
                     LOGGER.log(Level.SEVERE, "Exception scheduling " + pm.getId());

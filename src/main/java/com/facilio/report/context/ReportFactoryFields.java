@@ -420,11 +420,13 @@ public class ReportFactoryFields {
 		
 		if (module.equals("workorder")) {
 			metricFields.add(ReportFactory.getReportField(WorkOrder.FIRST_RESPONSE_TIME_COL));
+			metricFields.add(ReportFactory.getReportField(WorkOrder.ESTIMATED_DURATION_COL));
 			List<FacilioField> workorderFields = dimensionFieldMap.get(module);
 			workorderFields.add(ReportFactory.getReportField(WorkOrder.OPENVSCLOSE_COL));
 			workorderFields.add(ReportFactory.getReportField(WorkOrder.OVERDUE_OPEN_COL));
 			workorderFields.add(ReportFactory.getReportField(WorkOrder.OVERDUE_CLOSED_COL));
 			workorderFields.add(ReportFactory.getReportField(WorkOrder.PLANNED_VS_UNPLANNED_COL));
+			
 			
 		}
 		else if(module.equals("alarm")) {

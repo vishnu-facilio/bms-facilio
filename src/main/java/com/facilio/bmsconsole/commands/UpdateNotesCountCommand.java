@@ -58,7 +58,7 @@ public class UpdateNotesCountCommand implements Command {
 					.table(module.getTableName())
 					.select(fields)
 					.groupBy(parentIdField.getCompleteColumnName())
-					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 					.andCondition(CriteriaAPI.getCondition(parentIdField, parentIds, NumberOperators.EQUALS));
 			
 			List<Map<String, Object>> list = select.get();
@@ -72,7 +72,7 @@ public class UpdateNotesCountCommand implements Command {
 				UpdateRecordBuilder<WorkOrderContext> updateRecordBuilder = new UpdateRecordBuilder<WorkOrderContext>()
 						.module(tModule)
 						.fields(Collections.singletonList(noOfNotesField))
-						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(tModule))
+//						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(tModule))
 						.andCondition(CriteriaAPI.getIdCondition(id, tModule))
 						;
 				

@@ -1,17 +1,38 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Chain;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.agent.ConfigureAgentCommand;
 import com.facilio.agent.ConfigureControllerCommand;
 import com.facilio.agent.DeleteAgentCommand;
-import com.facilio.agent.commands.*;
+import com.facilio.agent.commands.AckUpdateCommand;
+import com.facilio.agent.commands.AddAgentMessageCommand;
+import com.facilio.agent.commands.AddAgentMetricsCommand;
+import com.facilio.agent.commands.AddLogChainCommand;
+import com.facilio.agent.commands.AgentCreate;
+import com.facilio.agent.commands.AgentEditCommand;
+import com.facilio.agent.commands.UpdateAgentDetailsCommand;
+import com.facilio.agent.commands.UpdateAgentMessageCommand;
+import com.facilio.agent.commands.UpdateAgentMetricsCommand;
+import com.facilio.agent.commands.UpdateAgentTableCommand;
 import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
-import com.facilio.mv.command.*;
-import org.apache.commons.chain.Chain;
+import com.facilio.mv.command.AddMVAjustmentCommand;
+import com.facilio.mv.command.AddMVAjustmentVsBaselineCommand;
+import com.facilio.mv.command.AddMVBaselineCommand;
+import com.facilio.mv.command.AddMVProjectCommand;
+import com.facilio.mv.command.DeleteMVProjectCommand;
+import com.facilio.mv.command.UpdateMVAdjustmentCommand;
+import com.facilio.mv.command.UpdateMVAjustmentVsBaselineCommand;
+import com.facilio.mv.command.UpdateMVBaselineCommand;
+import com.facilio.mv.command.UpdateMVPojectCommand;
+import com.facilio.workflows.command.AddWorkflowCommand;
+import com.facilio.workflows.command.DeleteWorkflowCommand;
+import com.facilio.workflows.command.UpdateWorkflowCommand;
 
 public class TransactionChainFactory {
 
@@ -821,7 +842,7 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateEventListForStateFlowCommand());
 			c.addCommand(new UpdateWorkOrderCommand());
 			c.addCommand(new BackwardCompatibleStateFlowUpdateCommand());
-			c.addCommand(new UpdateStateForWorkorderCommand());
+			c.addCommand(new UpdateStateForModuleDataCommand());
 			c.addCommand(new SendNotificationCommand());
 			c.addCommand(new AddTicketActivityCommand());
 //			c.addCommand(getAddOrUpdateReadingValuesChain());
@@ -1076,6 +1097,8 @@ public class TransactionChainFactory {
 			c.addCommand(new AddCategoryOnAssetUpdateCommand());
 			c.addCommand(new SetModuleForSpecialAssetsCommand());
 			c.addCommand(new GenericUpdateModuleDataCommand());
+			c.addCommand(new GenericGetModuleDataListCommand());
+			c.addCommand(new UpdateStateForModuleDataCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(FacilioChainFactory.getCategoryReadingsChain());
 			c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
@@ -1094,8 +1117,32 @@ public class TransactionChainFactory {
 			c.addCommand(new SwitchToAddResourceChain());
 			return c;
 		}
-
-		public static Chain getAssetImportChain() {
+		
+		public static Chain parseReadingDataForImport() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ParseDataForReadingLogsCommand());
+			c.addCommand(new InsertImportDataIntoLogCommand());
+			return c;
+		}
+		
+		public static Chain parseImportData() {
+			Chain c = getDefaultChain();
+			c.addCommand(new GenericParseDataForImportCommand());
+			c.addCommand(new InsertImportDataIntoLogCommand());
+			return c;
+		}
+		
+		public static Chain getImportReadingChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ConstructVirtualSheetForReadingsImport());
+			c.addCommand(new InsertReadingCommand());
+			c.addCommand(new WriteSkippedToFileCommand());
+			c.addCommand(new SendEmailCommand());
+			return c;
+		}
+		
+		
+		public static Chain getGenericImportChain() {
 			Chain c= getDefaultChain();
 			c.addCommand(new PopulateImportProcessCommand());
 			c.addCommand(new UpdateBaseAndResourceCommand());
@@ -1430,6 +1477,62 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain getExportReportFileChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(ReadOnlyChainFactory.newFetchReportDataChain());
+			c.addCommand(new GetExportReportFileCommand());
+			return c;
+		}
+		
+		public static Chain sendReportMailChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(getExportReportFileChain());
+			c.addCommand(new SendReadingReportMailCommand());
+			return c;
+		}
+		
+		public static Chain getExportAnalyticsFileChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(ReadOnlyChainFactory.newFetchReadingReportChain());
+			c.addCommand(new GetExportReportFileCommand());
+			return c;
+		}
+		
+		public static Chain sendAnalyticsMailChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(getExportAnalyticsFileChain());
+			c.addCommand(new SendReadingReportMailCommand());
+			return c;
+		}
+		
+		public static Chain getExportModuleReportFileChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(ReadOnlyChainFactory.newFetchReportDataChain());
+			c.addCommand(new GetExportModuleReportFileCommand());
+			return c;
+		}
+		
+		public static Chain sendModuleReportMailChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(getExportModuleReportFileChain());
+			c.addCommand(new SendReadingReportMailCommand());
+			return c;
+		}
+		
+		public static Chain getExportModuleAnalyticsFileChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ConstructReportData());
+			c.addCommand(getExportModuleReportFileChain());
+			return c;
+		}
+		
+		public static Chain sendModuleAnalyticsMailChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(getExportModuleAnalyticsFileChain());
+			c.addCommand(new SendReadingReportMailCommand());
+			return c;
+		}
+		
 
 	    public static Chain getAddWidgetChain() {
 			Chain c = getDefaultChain();
@@ -1443,13 +1546,14 @@ public class TransactionChainFactory {
 		}
 	    public static Chain getUpdateDashboardChain() {
 			Chain c = getDefaultChain();
-			c.addCommand(new getUpdateWithBuildingsCommand());
+			c.addCommand(new DuplicateDashboardForBuildingCommand());
 			c.addCommand(new UpdateDashboardWithWidgetCommand());
 			c.addCommand(new EnableMobileDashboardCommand());
 			return c;
 		}
 	    public static Chain getUpdateDashboardsChain() {
 			Chain c = FacilioChain.getTransactionChain();
+			c.addCommand(new DuplicateBaseSpaceForDashboard());
 			c.addCommand(new UpdateDashboardsCommand());
 			return c;
 		}
@@ -2917,6 +3021,22 @@ public class TransactionChainFactory {
 		public static Chain getDeleteMVProjectChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new DeleteMVProjectCommand());
+			return c;
+		}
+		
+		public static Chain getAddWorkflowChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddWorkflowCommand());
+			return c;
+		}
+		public static Chain getUpdateWorkflowChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateWorkflowCommand());
+			return c;
+		}
+		public static Chain getDeleteWorkflowChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new DeleteWorkflowCommand());
 			return c;
 		}
 

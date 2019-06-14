@@ -57,7 +57,7 @@ public class LicenseApi {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(AccountConstants.getLicenseModule().getTableName())
 				.fields(fields)
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(AccountConstants.getLicenseModule()))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(AccountConstants.getLicenseModule()))
 				.andCustomWhere("LICENSE = ?", license.getValue());
 
 		Map<String, Object> props = new HashMap<>();
@@ -74,7 +74,7 @@ public class LicenseApi {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(AccountConstants.getLicenseModule().getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(AccountConstants.getLicenseModule()))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(AccountConstants.getLicenseModule()))
 				.andCustomWhere("LICENSE = ?", license.getValue());
 		
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -91,7 +91,7 @@ public class LicenseApi {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(AccountConstants.getLicenseModule().getTableName())
 				.fields(fields)
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(AccountConstants.getLicenseModule()))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(AccountConstants.getLicenseModule()))
 				.andCustomWhere("LICENSE = ?", license.getValue());
 
 		Map<String, Object> props = new HashMap<>();
@@ -108,8 +108,8 @@ public class LicenseApi {
 		List<FacilioField> fields = AccountConstants.getLicenseFields();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
-				.table(AccountConstants.getLicenseModule().getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(AccountConstants.getLicenseModule()));
+				.table(AccountConstants.getLicenseModule().getTableName());
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(AccountConstants.getLicenseModule()));
 				
 		List<Map<String, Object>> props = selectBuilder.get();
 		

@@ -23,6 +23,19 @@ public class PageAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String fetchSpecialModulePage() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.ID, id);
+		context.put(FacilioConstants.ContextNames.IS_SPECIAL_MODULE, true);
+		Chain chain = ReadOnlyChainFactory.getSpecialModulePageChain();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.PAGE, context.get(FacilioConstants.ContextNames.PAGE));
+		
+		return SUCCESS;
+	}
+	
 	private String moduleName;
 	public String getModuleName() {
 		return moduleName;
@@ -38,5 +51,6 @@ public class PageAction extends FacilioAction {
 	public void setId(long id) {
 		this.id = id;
 	}
+	
 
 }

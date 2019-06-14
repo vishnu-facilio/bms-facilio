@@ -10,6 +10,8 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.modules.fields.FacilioField;
+import com.fasterxml.jackson.databind.Module;
+
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
@@ -25,12 +27,15 @@ public class ReportFactory {
 		String OVERDUE_CLOSED_COL = "overdue_closed";
 		String PLANNED_VS_UNPLANNED_COL = "plannedvsunplanned";
 		String FIRST_RESPONSE_TIME_COL = "firstresponsetime";
+		String ESTIMATED_DURATION_COL = "estimatedduration";
 		
 		int OPENVSCLOSE = 1;
 		int OVERDUE_OPEN = 2;
 		int OVERDUE_CLOSED = 3;
 		int PLANNED_VS_UNPLANNED = 4;
 		int FIRST_RESPONSE_TIME = 5;
+		int ESTIMATED_DURATION = 6;
+		
 	}
 	
 	public interface Alarm {
@@ -67,6 +72,9 @@ public class ReportFactory {
 			plannedVsUnplannedField.addCondition("Planned", CriteriaAPI.getCondition("SOURCE_TYPE", "sourceType", "5", NumberOperators.EQUALS));
 			plannedVsUnplannedField.addCondition("Unplanned", CriteriaAPI.getCondition("SOURCE_TYPE", "sourceType", "5", NumberOperators.NOT_EQUALS));
 			reportFields.add(plannedVsUnplannedField);
+			
+			ReportFacilioField estimatedDurationField = (ReportFacilioField) getField(WorkOrder.ESTIMATED_DURATION_COL, "Estimated Duration", ModuleFactory.getWorkOrdersModule(), " CASE WHEN Tickets.DUE_DATE IS NOT NULL THEN Tickets.DUE_DATE - WorkOrders.CREATED_TIME ELSE 0 END",FieldType.NUMBER, WorkOrder.ESTIMATED_DURATION);
+			reportFields.add(estimatedDurationField);
 			
 			reportFields.add(getField(WorkOrder.FIRST_RESPONSE_TIME_COL, "Response Time", ModuleFactory.getWorkOrdersModule(), "Tickets.ACTUAL_WORK_START - WorkOrders.CREATED_TIME", FieldType.NUMBER, WorkOrder.FIRST_RESPONSE_TIME));
 			

@@ -296,12 +296,12 @@
 				<param name="includeProperties">tasks.*,sections.*,preRequests.*,preRequestSections.*</param>
 			</result>
 		</action>
-		<action name="dashboard" class="com.facilio.bmsconsole.actions.DashboardAction"
+		<!-- <action name="dashboard" class="com.facilio.bmsconsole.actions.DashboardAction"
 			method="getDashboardList">
 			<result name="success" type="json">
 				<param name="includeProperties">dashboards,dashboards\[\d+\],dashboards\[\d+\].*</param>
 			</result>
-		</action>
+		</action> -->
 		
 		<action name="dashboardWithFolder" class="com.facilio.bmsconsole.actions.DashboardAction"
 			method="getDashboardListWithFolder">
@@ -3152,6 +3152,12 @@
 				<param name="includeProperties">importProcessContext.*</param>
 			</result>
 		</action>
+		<action name="checkModule" class="com.facilio.bmsconsole.actions.ImportDataAction"
+			method="checkModule">
+				<result name="success" type="json">
+				<param name="includeProperties">moduleExists.*</param>
+			</result>
+		</action>
 		<action name="processImport" class="com.facilio.bmsconsole.actions.ImportDataAction"
 			method="processImport">
 				<!--  <param name="moduleName">setup</param> 
@@ -3343,26 +3349,6 @@
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>
 				<param name="includeProperties">functions,functions\[\d+\],functions\[\d+\].*</param>
-			</result>
-			<result name="error" type="json">
-				<param name="statusCode">400</param>
-			</result>
-		</action>
-		
-		<action name="runWorkflow" class="com.facilio.workflows.action.WorkflowAction" method="runWorkflow">
-			<result name="success" type="json">
-				<param name="enumAsBean">true</param>
-				<param name="includeProperties">^resultMap.*,^logResult.*</param>
-			</result>
-			<result name="error" type="json">
-				<param name="statusCode">400</param>
-			</result>
-		</action>
-		
-		<action name="getDefaultWorkflowResult" class="com.facilio.workflows.action.WorkflowAction" method="getDefaultWorkflowResult">
-			<result name="success" type="json">
-				<param name="enumAsBean">true</param>
-				<param name="includeProperties">^workflowResult.*</param>
 			</result>
 			<result name="error" type="json">
 				<param name="statusCode">400</param>
@@ -3673,11 +3659,11 @@
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
-		<action name="toggleMobileDashboard" class="com.facilio.bmsconsole.actions.DashboardAction" method="toggleMobileDashboard">
+		<!-- <action name="toggleMobileDashboard" class="com.facilio.bmsconsole.actions.DashboardAction" method="toggleMobileDashboard">
 			<result name="success" type="json">
 				<param name="includeProperties">dashboard</param>
 			</result>
-		</action>
+		</action> -->
 		<action name="addDerivation" class="com.facilio.bmsconsole.actions.DashboardAction" method="addDerivation">
 			<result name="success" type="json">
 				<param name="includeProperties">^derivation.*</param>
@@ -3711,11 +3697,11 @@
 		</action>
 	</package>
 	<package name="dashboardsharing" namespace="/api/dashboardsharing" extends="homeApi">
-		<action name="apply" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboards">
+		<!-- <action name="apply" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboards">
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboardSharing.*</param>
 			</result>
-		</action>
+		</action> -->
 		<action name="*" class="com.facilio.bmsconsole.actions.DashboardAction" method="viewDashboardSharing">
 			<param name="dashboardId">{1}</param>
 			<result name="success" type="json">

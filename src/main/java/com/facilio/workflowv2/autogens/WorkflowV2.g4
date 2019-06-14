@@ -102,7 +102,7 @@ map_opperations
  ;	
 
 db_param
- : OPEN_BRACE db_param_criteria (db_param_field)* (db_param_aggr)* (db_param_limit)* (db_param_range)* (db_param_sort)* CLOSE_BRACE
+ : OPEN_BRACE db_param_criteria (db_param_field)* (db_param_aggr)* (db_param_limit)* (db_param_range)* (db_param_group_by)* (db_param_sort)* CLOSE_BRACE
  ;
  
 db_param_criteria
@@ -123,6 +123,10 @@ db_param_limit
  
 db_param_range
  : 'range' COLON atom 'to' atom (COMMA)*
+ ;
+ 
+db_param_group_by
+ : 'groupBy' COLON atom (COMMA)*
  ;
  
 db_param_sort

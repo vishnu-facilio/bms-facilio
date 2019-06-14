@@ -270,17 +270,13 @@ public class WorkflowContext implements Serializable {
 	public void setWorkflowUIMode(int workflowUIMode) {
 		this.workflowUIMode = WorkflowUIMode.valueOf(workflowUIMode);
 	}
-	boolean isDebugMode;
-	public boolean isDebugMode() {
-		return isDebugMode;
-	}
-	public void setDebugMode(boolean isDebugMode) {
-		this.isDebugMode = isDebugMode;
-	}
 	StringBuilder logString = new StringBuilder();
     
-	public StringBuilder getLogString() {
+	public StringBuilder getLogStringBuilder() {
 		return logString;
+	}
+	public String getLogString() {
+		return logString.toString();
 	}
 	public void setLogString(StringBuilder logString) {
 		this.logString = logString;
@@ -322,19 +318,11 @@ public class WorkflowContext implements Serializable {
 		        visitor.setParams(params);
 		        visitor.visit(tree);
 		        
-		        if(isDebugMode) {
-		        	return this.getLogString().toString();
-		        }
-		        
 		        return this.getReturnValue();
 			}
 			catch(Exception e) {
-				this.getLogString().append(e.toString()+"\n");
+				this.getLogStringBuilder().append(e.toString()+"\n");
 				LOGGER.log(Level.SEVERE, e.getMessage(), e);
-				if(isDebugMode) {
-		        	return this.getLogString().toString();
-		        }
-				throw e;
 			}
 		}
 		

@@ -97,7 +97,7 @@ public class ProcessDataCommand implements Command {
 		LOGGER.debug("Finished ProcessDataCommand####### : ");
 		context.put(FacilioConstants.ContextNames.DEVICE_DATA, deviceData);
 		if (TimeSeriesAPI.isStage() ) {
-			LOGGER.info("Device Data : "+deviceData);
+			LOGGER.debug("Device Data : "+deviceData);
 		}
 		return false;
 	}
@@ -109,11 +109,11 @@ public class ProcessDataCommand implements Command {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getPointsModule()))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getPointsModule()))
 				.andCriteria(criteriaList);
 
 		List<Map<String, Object>> props = builder.get();
-		LOGGER.info("###### DataPoints Query ########"+builder.toString());
+		LOGGER.debug("###### DataPoints Query ########"+builder.toString());
 		return props;
 	}
 }

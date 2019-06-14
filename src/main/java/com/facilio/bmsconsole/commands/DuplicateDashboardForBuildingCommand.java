@@ -9,7 +9,7 @@ import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-public class getUpdateWithBuildingsCommand implements Command {
+public class DuplicateDashboardForBuildingCommand implements Command {
 	
 	public boolean execute(Context context) throws Exception {
 		Long buildingId= (Long) context.get(FacilioConstants.ContextNames.BUILDING_ID);
@@ -24,6 +24,8 @@ public class getUpdateWithBuildingsCommand implements Command {
 			dashboard = DashboardUtil.getDashboardForBaseSpace(buildingId, db.getModuleId());
 			
 			if(dashboard == null) { 
+				
+				context.put(FacilioConstants.ContextNames.IS_SKIP_LINKNAME_CHECK,true);
 				db.setBaseSpaceId(buildingId);
 				
 				db.setId(-1l);

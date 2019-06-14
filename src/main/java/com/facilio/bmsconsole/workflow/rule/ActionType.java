@@ -360,7 +360,7 @@ public enum ActionType {
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields).table("ORG_Users")
 					.innerJoin("Users").on("Users.USERID = ORG_Users.USERID").innerJoin("User_Mobile_Setting")
 					.on("ORG_Users.USERID = User_Mobile_Setting.USERID")
-					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(AccountConstants.getOrgUserModule()))
+//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(AccountConstants.getOrgUserModule()))
 					.andCondition(CriteriaAPI.getCondition("ORG_Users.ORG_USERID", "ouid", idList, NumberOperators.EQUALS))
 					.andCustomWhere("ORG_Users.USER_STATUS = true and ORG_Users.DELETED_TIME = -1")
 					.orderBy("USER_MOBILE_SETTING_ID");
@@ -407,7 +407,7 @@ public enum ActionType {
 			FacilioModule module = ModuleFactory.getPMTriggersModule();
 			GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 					.select(FieldFactory.getPMTriggerFields()).table(module.getTableName())
-					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 					.andCustomWhere("RULE_ID = ?", currentRule.getId());
 			List<Map<String, Object>> pmProps = selectRecordBuilder.get();
 			if (pmProps != null && !pmProps.isEmpty()) {
@@ -947,7 +947,7 @@ public enum ActionType {
 			
 			List<Object> currentRecordList = new ArrayList<>();
 			currentRecordList.add(props);
-			WorkflowV2API.executeWorkflow(workflowContext, currentRecordList, null, false, false, false);
+			WorkflowV2API.executeWorkflow(workflowContext, currentRecordList, null, false, false);
 			
 //			Map<String,Object> currentRecordMap = new HashMap<>();
 //			

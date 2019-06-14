@@ -95,8 +95,11 @@ public class FormFactory {
 	
 	public static Map<String, FacilioForm> getForms(String moduleName, FormType formtype) {
 		Map<String, FacilioForm> forms = getForms(moduleName);
-		if (MapUtils.isEmpty(forms) || formtype == null) {
+		if (MapUtils.isEmpty(forms)) {
 			return new HashMap<>();
+		}
+		if (formtype == null) {
+			return forms;
 		}
 		return forms.entrySet().stream().filter(f -> f.getValue().getFormTypeEnum() == formtype)
 	            .collect(Collectors.toMap(f -> f.getKey(), f -> f.getValue()));

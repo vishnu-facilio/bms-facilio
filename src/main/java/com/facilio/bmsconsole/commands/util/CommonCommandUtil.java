@@ -468,8 +468,8 @@ public class CommonCommandUtil {
     	FacilioModule module = AccountConstants.getOrgInfoModule();
     	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(AccountConstants.getOrgInfoFields())
-				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+				.table(module.getTableName());
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -553,7 +553,7 @@ public class CommonCommandUtil {
 	    	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 					.select(fields)
 					.table(module.getTableName())
-					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 					.andCondition(CriteriaAPI.getCondition(name, String.join(",", names), StringOperators.IS))
 					;
 			

@@ -191,7 +191,7 @@ public class MLUtil
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(mlModuleFields)
 														.table(mlModule.getTableName())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(mlModule))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(mlModule))
 														.andCondition(CriteriaAPI.getIdCondition(jc.getJobId(), mlModule));
 		
 		List<Map<String, Object>> listMap = selectBuilder.get();
@@ -210,7 +210,7 @@ public class MLUtil
 			GenericSelectRecordBuilder selectMlContextBuilder = new GenericSelectRecordBuilder()
 																	.select(mlModuleFields)
 																	.table(mlModule.getTableName())
-																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(mlModule))
+//																	.andCondition(CriteriaAPI.getCurrentOrgIdCondition(mlModule))
 																	.andCondition(CriteriaAPI.getIdCondition(listdata, mlModule));
 			
 			listMap = selectMlContextBuilder.get();
@@ -239,7 +239,7 @@ public class MLUtil
 				GenericSelectRecordBuilder selectBuilder2 = new GenericSelectRecordBuilder()
 																.select(mlAssetVariableFields)
 																.table(mlAssetVariablesModule.getTableName())
-																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(mlAssetVariablesModule))
+//																.andCondition(CriteriaAPI.getCurrentOrgIdCondition(mlAssetVariablesModule))
 																.andCondition(mlIDCondition)
 																.andCondition(assetCondition);
 					
@@ -288,7 +288,7 @@ public class MLUtil
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 														.select(fieldList)
 														.table(module.getTableName())
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(mlIDCondition);
 		return selectBuilder.get();
 	}

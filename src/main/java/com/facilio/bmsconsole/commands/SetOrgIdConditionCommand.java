@@ -1,5 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
@@ -7,9 +11,6 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
 public class SetOrgIdConditionCommand implements Command{
 
@@ -24,7 +25,7 @@ public class SetOrgIdConditionCommand implements Command{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
 		Condition orgCondition = new Condition();
-		orgCondition.setField(FieldFactory.getOrgIdField(module));
+		orgCondition.setField(AccountConstants.getOrgIdField(module));
 		orgCondition.setOperator(NumberOperators.EQUALS);
 		orgCondition.setValue(String.valueOf(AccountUtil.getCurrentOrg().getOrgId()));
 

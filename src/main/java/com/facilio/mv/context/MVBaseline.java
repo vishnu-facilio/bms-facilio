@@ -13,7 +13,6 @@ public class MVBaseline extends ModuleBaseWithCustomFields {
 	long projectId;
 	String name;
 	FormulaFieldContext formulaField;
-	long formulaFieldId;
 	long startTime;
 	long endTime;
 	
@@ -34,12 +33,6 @@ public class MVBaseline extends ModuleBaseWithCustomFields {
 	}
 	public void setName(String name) {
 		this.name = name;
-	}
-	public long getFormulaFieldId() {
-		return formulaFieldId;
-	}
-	public void setFormulaFieldId(long formulaFieldId) {
-		this.formulaFieldId = formulaFieldId;
 	}
 	public long getStartTime() {
 		return startTime;

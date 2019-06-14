@@ -56,8 +56,12 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.NumberField;
 import com.facilio.time.SecondsChronoUnit;
 import com.facilio.timeseries.TimeSeriesAPI;
+import com.facilio.unitconversion.Metric;
+import com.facilio.unitconversion.Unit;
+import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowFieldContext;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -100,7 +104,7 @@ public class ReadingsAPI {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 														.table(module.getTableName())
 														.fields(fields)
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition(resourceIdField, String.valueOf(rdm.getResourceId()), PickListOperators.IS))
 														.andCondition(CriteriaAPI.getCondition(fieldIdField, String.valueOf(rdm.getFieldId()), PickListOperators.IS))
 														;
@@ -132,7 +136,7 @@ public class ReadingsAPI {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 														.table(module.getTableName())
 														.fields(fields)
-														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCriteria(pkCriteriaList);
 														
 		return updateBuilder.update(prop);
@@ -156,7 +160,7 @@ public class ReadingsAPI {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(module.getTableName())
 				.fields(fields)
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCriteria(pkCriteriaList);
 				
 		return updateBuilder.update(FieldUtil.getAsProperties(rdm));
@@ -172,7 +176,7 @@ public class ReadingsAPI {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(module.getTableName())
 				.fields(fields)
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(resourceIdField, String.valueOf(parentId), PickListOperators.IS))
 				.andCondition(CriteriaAPI.getCondition(fieldIdField, fieldIds, PickListOperators.IS));
 				
@@ -185,7 +189,7 @@ public class ReadingsAPI {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getReadingDataMetaFields())
 				.table(ModuleFactory.getReadingDataMetaModule().getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCustomWhere(module.getTableName()+".RESOURCE_ID = ?", resourceId)
 				.andCustomWhere(module.getTableName()+".FIELD_ID = ?", field.getFieldId());
 		
@@ -217,7 +221,7 @@ public class ReadingsAPI {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 													.select(fields)
 													.table(module.getTableName())
-													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCriteria(pkCriteriaList);
 		return getReadingDataFromProps(builder.get(), fieldIdMap);
 	}
@@ -247,7 +251,7 @@ public class ReadingsAPI {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 													.select(fields)
 													.table(module.getTableName())
-													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCriteria(pkCriteriaList);
 		return getRDMMapFromProps(builder.get(), fieldIdMap);
 	}
@@ -295,7 +299,8 @@ public class ReadingsAPI {
 		Map<String, FacilioField> readingFieldsMap = FieldFactory.getAsMap(redingFields);
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+		;
 		
 		if (fetchCount) {
 			builder.select(FieldFactory.getCountField(module, readingFieldsMap.get("resourceId")));
@@ -446,11 +451,17 @@ public class ReadingsAPI {
 
 		
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
+		FacilioModule module = ModuleFactory.getPointsModule();
+		List<FacilioField> fields = FieldFactory.getPointsFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getInstanceMappingFields())
-				.table("Instance_To_Asset_Mapping")
+				.select(fields)
+				.table(module.getTableName())
 				.andCustomWhere("ORGID=?",orgId)
 				.andCustomWhere("DEVICE_NAME= ?",deviceName)
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), CommonOperators.IS_NOT_EMPTY))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("fieldId"), CommonOperators.IS_NOT_EMPTY))
 				.andCustomWhere("INSTANCE_NAME=?",instanceName);
 		if(controllerId!=null) {
 			builder=builder.andCustomWhere("CONTROLLER_ID=?", controllerId);
@@ -467,9 +478,14 @@ public class ReadingsAPI {
 	private static List<Map<String, Object>> getDeviceVsInstances() throws Exception {
 
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
+		FacilioModule module = ModuleFactory.getPointsModule();
+		List<FacilioField> fields = FieldFactory.getPointsFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getInstanceMappingFields())
-				.table("Instance_To_Asset_Mapping")
+				.select(fields)
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), CommonOperators.IS_NOT_EMPTY))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("fieldId"), CommonOperators.IS_NOT_EMPTY))
 				.andCustomWhere("ORGID=?",orgId);
 
 		List<Map<String, Object>> stats = builder.get();	
@@ -511,9 +527,9 @@ public class ReadingsAPI {
 		
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
-				.table("Unmodeled_Instance")
-				.innerJoin("Unmodeled_Data")
-				.on("Unmodeled_Data.INSTANCE_ID=Unmodeled_Instance.ID")
+				.table(ModuleFactory.getPointsModule().getTableName())
+				.innerJoin(ModuleFactory.getUnmodeledDataModule().getTableName())
+				.on("Unmodeled_Data.INSTANCE_ID=Points.ID")
 				.andCustomWhere("ORGID=?",orgId)
 				.andCondition(CriteriaAPI.getCondition("DEVICE_NAME", "device", StringUtils.join(deviceList,","), StringOperators.IS))
 				.orderBy("TTIME");
@@ -875,7 +891,7 @@ public class ReadingsAPI {
 			instances.forEach(inst -> {
 				Long controllerId = (Long) inst.get(FacilioConstants.ContextNames.CONTROLLER_ID);
 				if (controllerId != null && controllerId != -1) {
-					assetVsControllerIdMap.put((long) inst.get(FacilioConstants.ContextNames.ASSET_ID), controllerId);
+					assetVsControllerIdMap.put((Long) inst.get("resourceId"), controllerId);
 					controllerIds.add(controllerId);
 				}
 			});
@@ -988,7 +1004,7 @@ public class ReadingsAPI {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(module.getTableName())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("rdmId"), rdmIds, NumberOperators.EQUALS))
 				;
 		return builder.get();
@@ -1001,6 +1017,27 @@ public class ReadingsAPI {
 		
 		if (task.getResource() != null && task.getResource().getId() > 0) {
 			reading.addReading("resourceId", task.getResource().getId());
+		}
+	}
+	
+	public static void convertUnitForRdmData (ReadingDataMeta meta) throws Exception {
+		if (meta.getField() instanceof NumberField) {
+			Object value = meta.getValue();
+			
+			NumberField numberField =  (NumberField)meta.getField();
+			if(numberField.getMetric() > 0) {
+				
+				if(numberField.getUnitId() > 0) {
+					Unit siUnit = Unit.valueOf(Metric.valueOf(numberField.getMetric()).getSiUnitId());
+					value = UnitsUtil.convert(meta.getValue(), siUnit.getUnitId(), numberField.getUnitId());
+				}
+				else {
+					value = UnitsUtil.convertToOrgDisplayUnitFromSi(meta.getValue(), numberField.getMetric());
+				}
+			}
+			if(value != null) {
+				meta.setValue(value);
+			}
 		}
 	}
 }

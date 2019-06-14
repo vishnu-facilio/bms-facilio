@@ -107,7 +107,7 @@ public class AddCVCommand implements Command {
 			else if (viewSharingList == null || viewSharingList.isEmpty()) {
 				GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 						.table(module.getTableName())
-						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 						.andCondition(CriteriaAPI.getCondition("VIEWID", "viewId", String.valueOf(viewId), NumberOperators.EQUALS));
 				
 				int count = builder.delete();

@@ -37,8 +37,11 @@ public class updateAssetDownTimeDetailsCommand implements Command {
                        fields.add(modBean.getField("downtimeStatus", ContextNames.ASSET));
                        fields.add(modBean.getField("lastDowntimeId", ContextNames.ASSET));
                        GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder().table(module.getTableName())
-                                       .fields(fields).andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+
+                                       .fields(fields)
+//                                       .andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
                                        .andCondition(CriteriaAPI.getIdCondition(assetBreakdown.getParentId(), module));
+
                        updateBuilder.update(props);
                }
                return false;

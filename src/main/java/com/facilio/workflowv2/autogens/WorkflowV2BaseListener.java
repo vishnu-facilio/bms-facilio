@@ -568,6 +568,18 @@ public class WorkflowV2BaseListener implements WorkflowV2Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterDb_param_group_by(WorkflowV2Parser.Db_param_group_byContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitDb_param_group_by(WorkflowV2Parser.Db_param_group_byContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterDb_param_sort(WorkflowV2Parser.Db_param_sortContext ctx) { }
 	/**
 	 * {@inheritDoc}
