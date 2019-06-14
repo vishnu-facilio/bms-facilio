@@ -29,11 +29,6 @@ public class AssetPageFactory extends PageFactory {
 	private static final Logger LOGGER = LogManager.getLogger(AssetPageFactory.class.getName());
 	
 	public static Page getAssetPage(AssetContext asset) {
-		// TODO do the check based on status or category
-		return getConnectedAssetPage(asset.getId());
-	}
-
-	private static Page getConnectedAssetPage(long assetId) {
 		Page page = new Page();
 
 		Tab tab1 = page.new Tab("summary");
@@ -68,39 +63,42 @@ public class AssetPageFactory extends PageFactory {
 		tab2.addSection(tab2Sec3);
 		addUnPlannedWoWidget(tab2Sec3);
 
-
-		Tab tab3 = page.new Tab("readings");
-		page.addTab(tab3);
-		
-		Section tab3Sec1 = page.new Section();
-		tab3.addSection(tab3Sec1);
-		
-		addReadingWidget(tab3Sec1);
-		
-		try {
-			if (AccountUtil.isFeatureEnabled(FeatureLicense.CONTROL_ACTIONS)) {
-				Section tab3Sec2 = page.new Section("commands");
-				tab3.addSection(tab3Sec2);
-				
-				addCommandWidget(tab3Sec2, assetId);
+		if (asset.isConnected()) {
+			
+			Tab tab3 = page.new Tab("readings");
+			page.addTab(tab3);
+			
+			Section tab3Sec1 = page.new Section();
+			tab3.addSection(tab3Sec1);
+			
+			addReadingWidget(tab3Sec1);
+			
+			try {
+				if (AccountUtil.isFeatureEnabled(FeatureLicense.CONTROL_ACTIONS)) {
+					Section tab3Sec2 = page.new Section("commands");
+					tab3.addSection(tab3Sec2);
+					
+					addCommandWidget(tab3Sec2, asset.getId());
+				}
+			} catch (Exception e) {
+				LOGGER.error("Error in checking control action license or adding command widget", e);
 			}
-		} catch (Exception e) {
-			LOGGER.error("Error in checking control action license or adding command widget", e);
+			
+			
+			Tab tab4 = page.new Tab("performance");
+			page.addTab(tab4);
+			
+			Section tab4Sec1 = page.new Section();
+			tab4.addSection(tab4Sec1);
+			
+			addAssetLifeWidget(tab4Sec1);
+			addAlarmInsightsWidget(tab4Sec1);
+			addLastDownTimeWidget(tab4Sec1);
+			addOverallDowntimeWidget(tab4Sec1);
+			addFailureRateWidget(tab4Sec1);
+			addAvgTtrWidget(tab4Sec1);
+			
 		}
-		
-		
-		Tab tab4 = page.new Tab("performance");
-		page.addTab(tab4);
-		
-		Section tab4Sec1 = page.new Section();
-		tab4.addSection(tab4Sec1);
-		
-		addAssetLifeWidget(tab4Sec1);
-		addAlarmInsightsWidget(tab4Sec1);
-		addLastDownTimeWidget(tab4Sec1);
-		addOverallDowntimeWidget(tab4Sec1);
-		addFailureRateWidget(tab4Sec1);
-		addAvgTtrWidget(tab4Sec1);
 		
 		
 		Tab tab5 = page.new Tab("history", "history");

@@ -11,14 +11,11 @@ import com.facilio.bmsconsole.page.PageWidget.WidgetType;
 import com.facilio.bmsconsole.page.WidgetGroup.WidgetGroupType;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.constants.FacilioConstants.ContextNames;
-import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class PageFactory {
 
-//	private static final Map<String, Page> PAGE_MAP = Collections.unmodifiableMap(initPages());
 
 	public static Page getPage(String moduleName, Object record) {
-//		return PAGE_MAP.get(moduleName);
 		switch(moduleName) {
 			case ContextNames.ASSET:
 				return AssetPageFactory.getAssetPage((AssetContext) record);
@@ -28,13 +25,6 @@ public class PageFactory {
 		return null;
 	}
 
-	/*private static Map<String, Page> initPages() {
-		Map<String, Page> allPages = new HashMap<>();
-		allPages.put(FacilioConstants.ContextNames.ASSET, getAssetPage());
-		// allPages.put(FacilioConstants.ContextNames.CHILLER, getChillerPage());
-		return allPages;
-	}
-*/
 	
 
 	protected static PageWidget addCommonSubModuleGroup(Section section) {
