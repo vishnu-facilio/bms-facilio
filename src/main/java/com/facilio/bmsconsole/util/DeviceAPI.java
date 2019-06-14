@@ -539,26 +539,26 @@ public class DeviceAPI
 				}
 			}
 			
-			if (AccountUtil.getCurrentOrg().getId() == 78 || AccountUtil.getCurrentOrg().getId() == 88 || AccountUtil.getCurrentOrg().getId() == 114) {
-				LOGGER.info("Calculating Consumption for VM : "+meter.getId() + " between " + interval);
-				LOGGER.info("Intervals : "+interval);
-			}
+//			if (AccountUtil.getCurrentOrg().getId() == 78 || AccountUtil.getCurrentOrg().getId() == 88 || AccountUtil.getCurrentOrg().getId() == 114) {
+//				LOGGER.info("Calculating Consumption for VM : "+meter.getId() + " between " + interval);
+//				LOGGER.info("Intervals : "+interval);
+//			}
 			ReadingContext virtualMeterReading = calculateVMReading(meter,intervalReadings, childMeterIds, interval, isHistorical || i != (intervals.size() - 1));
-			if (AccountUtil.getCurrentOrg().getId() == 78 || AccountUtil.getCurrentOrg().getId() == 88 || AccountUtil.getCurrentOrg().getId() == 114) {
-				LOGGER.info("Calculated VM Reading : "+virtualMeterReading);
-			}
+//			if (AccountUtil.getCurrentOrg().getId() == 78 || AccountUtil.getCurrentOrg().getId() == 88 || AccountUtil.getCurrentOrg().getId() == 114) {
+//				LOGGER.info("Calculated VM Reading : "+virtualMeterReading);
+//			}
 			if(virtualMeterReading != null) {
-				if (AccountUtil.getCurrentOrg().getId() == 78 || AccountUtil.getCurrentOrg().getId() == 88 || AccountUtil.getCurrentOrg().getId() == 114) {
-					LOGGER.info("Adding VM reading for time : "+virtualMeterReading.getTtime());
-				}
+//				if (AccountUtil.getCurrentOrg().getId() == 78 || AccountUtil.getCurrentOrg().getId() == 88 || AccountUtil.getCurrentOrg().getId() == 114) {
+//					LOGGER.info("Adding VM reading for time : "+virtualMeterReading.getTtime());
+//				}
 				vmReadings.add(virtualMeterReading);
 				intervalReadings=new ArrayList<ReadingContext>();
 			}
 		}
 
-		if (AccountUtil.getCurrentOrg().getId() == 78 || AccountUtil.getCurrentOrg().getId() == 88 || AccountUtil.getCurrentOrg().getId() == 114) {
-			LOGGER.info("VM Readings size for meter : "+meter.getId()+" is : " + vmReadings.size());
-		}
+//		if (AccountUtil.getCurrentOrg().getId() == 78 || AccountUtil.getCurrentOrg().getId() == 88 || AccountUtil.getCurrentOrg().getId() == 114) {
+//			LOGGER.info("VM Readings size for meter : "+meter.getId()+" is : " + vmReadings.size());
+//		}
 		if (!vmReadings.isEmpty()) {
 
 			ReadingContext firstReading=vmReadings.get(0);
