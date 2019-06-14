@@ -208,7 +208,7 @@
 		</action>
 		
 	</package>
-
+	
 	<package name="viewApiV2" namespace="/api/v2/views" extends="v2Api">
 		<action name="viewList" class="com.facilio.bmsconsole.actions.ViewAction"
 			method="v2viewlist">
@@ -1215,14 +1215,28 @@
 		</action>
 	</package>
 
-	<package name="workflowApiv2" namespace="/api/v2/workflow"
-		extends="v2Api">
+	<package name="workflowApiv2" namespace="/api/v2/workflow" extends="v2Api">
+		
 		<action name="xml" class="com.facilio.workflows.action.WorkflowAction"
 			method="getWorkflowXmlFromObject">
 		</action>
 		<action name="execute" class="com.facilio.bmsconsole.actions.CommonAction"
 			method="executeWorkflow">
 		</action>
+		<action name="addWorkflow"
+			class="com.facilio.workflows.action.WorkflowAction" method="addWorkflow"></action>
+			
+		<action name="updateWorkflow"
+			class="com.facilio.workflows.action.WorkflowAction" method="updateWorkflow"></action>
+			
+		<action name="deleteWorkflow"
+			class="com.facilio.workflows.action.WorkflowAction" method="deleteWorkflow"></action>
+			
+		<action name="runWorkflow"
+			class="com.facilio.workflows.action.WorkflowAction" method="runWorkflow"></action>
+			
+		<action name="getDefaultWorkflowResult"
+			class="com.facilio.workflows.action.WorkflowAction" method="getDefaultWorkflowResultV2"></action>
 	</package>
 
 	<package name="timeseriesApiv2" namespace="/api/v2/timeseries"

@@ -408,8 +408,7 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
     @Override
     public Value visitLog(WorkflowV2Parser.LogContext ctx) {
         Value value = this.visit(ctx.expr());
-        workflowContext.getLogString().append(value.asString()+"\n");
-        System.out.println(value);
+        workflowContext.getLogStringBuilder().append(value.asString()+"\n");
         return value;
     }
     

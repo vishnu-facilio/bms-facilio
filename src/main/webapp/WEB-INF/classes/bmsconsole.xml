@@ -3355,16 +3355,6 @@
 			</result>
 		</action>
 		
-		<action name="runWorkflow" class="com.facilio.workflows.action.WorkflowAction" method="runWorkflow">
-			<result name="success" type="json">
-				<param name="enumAsBean">true</param>
-				<param name="includeProperties">^resultMap.*,^logResult.*</param>
-			</result>
-			<result name="error" type="json">
-				<param name="statusCode">400</param>
-			</result>
-		</action>
-		
 		<action name="getDefaultWorkflowResult" class="com.facilio.workflows.action.WorkflowAction" method="getDefaultWorkflowResult">
 			<result name="success" type="json">
 				<param name="enumAsBean">true</param>

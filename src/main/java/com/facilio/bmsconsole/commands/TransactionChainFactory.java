@@ -7,13 +7,32 @@ import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.agent.ConfigureAgentCommand;
 import com.facilio.agent.ConfigureControllerCommand;
 import com.facilio.agent.DeleteAgentCommand;
-import com.facilio.agent.commands.*;
+import com.facilio.agent.commands.AckUpdateCommand;
+import com.facilio.agent.commands.AddAgentMessageCommand;
+import com.facilio.agent.commands.AddAgentMetricsCommand;
+import com.facilio.agent.commands.AddLogChainCommand;
+import com.facilio.agent.commands.AgentCreate;
+import com.facilio.agent.commands.AgentEditCommand;
+import com.facilio.agent.commands.UpdateAgentDetailsCommand;
+import com.facilio.agent.commands.UpdateAgentMessageCommand;
+import com.facilio.agent.commands.UpdateAgentMetricsCommand;
+import com.facilio.agent.commands.UpdateAgentTableCommand;
 import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
-import com.facilio.mv.command.*;
-import org.apache.commons.chain.Chain;
+import com.facilio.mv.command.AddMVAjustmentCommand;
+import com.facilio.mv.command.AddMVAjustmentVsBaselineCommand;
+import com.facilio.mv.command.AddMVBaselineCommand;
+import com.facilio.mv.command.AddMVProjectCommand;
+import com.facilio.mv.command.DeleteMVProjectCommand;
+import com.facilio.mv.command.UpdateMVAdjustmentCommand;
+import com.facilio.mv.command.UpdateMVAjustmentVsBaselineCommand;
+import com.facilio.mv.command.UpdateMVBaselineCommand;
+import com.facilio.mv.command.UpdateMVPojectCommand;
+import com.facilio.workflows.command.AddWorkflowCommand;
+import com.facilio.workflows.command.DeleteWorkflowCommand;
+import com.facilio.workflows.command.UpdateWorkflowCommand;
 
 public class TransactionChainFactory {
 
@@ -3002,6 +3021,22 @@ public class TransactionChainFactory {
 		public static Chain getDeleteMVProjectChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new DeleteMVProjectCommand());
+			return c;
+		}
+		
+		public static Chain getAddWorkflowChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddWorkflowCommand());
+			return c;
+		}
+		public static Chain getUpdateWorkflowChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateWorkflowCommand());
+			return c;
+		}
+		public static Chain getDeleteWorkflowChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new DeleteWorkflowCommand());
 			return c;
 		}
 

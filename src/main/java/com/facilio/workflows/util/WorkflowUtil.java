@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -401,9 +402,18 @@ public class WorkflowUtil {
 		}
 	}
 	
+	public static int updateWorkflow(WorkflowContext workflowContext) throws Exception {
+		GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder();
+		update.table(ModuleFactory.getWorkflowModule().getTableName());
+		update.fields(FieldFactory.getWorkflowFields())
+		.andCondition(CriteriaAPI.getIdCondition(workflowContext.getId(), ModuleFactory.getWorkflowModule()));
+		
+		Map<String, Object> prop = FieldUtil.getAsProperties(workflowContext);
+		return update.update(prop);
+	}
+	
 	public static Long addWorkflow(WorkflowContext workflowContext) throws Exception {
 
-		
 		WorkflowContext workflow = new WorkflowContext();
 		
 		if(workflowContext.getWorkflowUIMode() == WorkflowContext.WorkflowUIMode.NEW_WORKFLOW.getValue()) {

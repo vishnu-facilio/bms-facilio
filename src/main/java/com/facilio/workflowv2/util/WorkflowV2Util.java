@@ -59,6 +59,8 @@ public class WorkflowV2Util {
 	public static final String CRUD_MODULE_KEY = "default_module";
 	
 	public static JSONObject defaultWorkflows = new JSONObject();
+	
+	public static final String WORKFLOW_CONTEXT = "workflow";
 
 	static {
 		try {
@@ -131,12 +133,12 @@ public class WorkflowV2Util {
 		return MODULE_DISPLAY_NAME_MAP.get(moduleDisplayName);
 	}
 	
-	public static Object getDefaultWorkflowResult(int defaultWorkflowId,List<Object> params) throws Exception {
+	public static WorkflowContext getDefaultWorkflowResult(int defaultWorkflowId,List<Object> params) throws Exception {
 		JSONObject workflowJson = (JSONObject)defaultWorkflows.get(""+defaultWorkflowId);
 		String workflowString = (String) workflowJson.get("workflow");
 		WorkflowContext workflow = new WorkflowContext();
 		workflow.setWorkflowV2String(workflowString);
-		return WorkflowV2API.executeWorkflow(workflow, params, null, true, true, false);
+		return WorkflowV2API.executeWorkflow(workflow, params, null, true, true);
 	}
 	
 	public static void fillExtraInfo(Value paramValue, FacilioModule module) throws Exception {

@@ -947,7 +947,7 @@ public enum ActionType {
 			
 			List<Object> currentRecordList = new ArrayList<>();
 			currentRecordList.add(props);
-			WorkflowV2API.executeWorkflow(workflowContext, currentRecordList, null, false, false, false);
+			WorkflowV2API.executeWorkflow(workflowContext, currentRecordList, null, false, false);
 			
 //			Map<String,Object> currentRecordMap = new HashMap<>();
 //			
