@@ -5,6 +5,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
@@ -66,16 +67,16 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 							}
 							ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(meterId, deltaField);
 							long startTime = meta.getTtime()+1;
-							DeviceAPI.insertVirtualMeterReadings(meter,childMeterIds,startTime,endTime,minutesInterval,true, false);
+							List<ReadingContext> readings = DeviceAPI.insertVirtualMeterReadings(meter,childMeterIds,startTime,endTime,minutesInterval,true, false);
+//							if (AccountUtil.getCurrentOrg().getId() == 78 || AccountUtil.getCurrentOrg().getId() == 88 || AccountUtil.getCurrentOrg().getId() == 114) {
+//								LOGGER.info("Calculation completed for VM : "+meter.getId()+". Readings : "+readings);
+//							}
 						}
 
 					}
 					catch (Exception e) {
 						LOGGER.info("Exception occurred ", e);
 						CommonCommandUtil.emailException("VMEnergyDataCalculatorForMeter", "VM Calculation failed for meter : "+meterId, e);
-					}
-					if (AccountUtil.getCurrentOrg().getId() == 78 || AccountUtil.getCurrentOrg().getId() == 88 || AccountUtil.getCurrentOrg().getId() == 114) {
-						LOGGER.info("Calculation completed for VM : "+meter.getId());
 					}
 					completedVms.add(meter.getId());
 					itr.remove();

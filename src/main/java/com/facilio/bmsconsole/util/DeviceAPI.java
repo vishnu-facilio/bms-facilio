@@ -508,16 +508,16 @@ public class DeviceAPI
 
 	
 
-	public static void insertVirtualMeterReadings(EnergyMeterContext meter, List<Long> childMeterIds,  long startTime, long endTime, int minutesInterval, boolean updateReading, boolean isHistorical) throws Exception {
+	public static List<ReadingContext> insertVirtualMeterReadings(EnergyMeterContext meter, List<Long> childMeterIds,  long startTime, long endTime, int minutesInterval, boolean updateReading, boolean isHistorical) throws Exception {
 
 		
 		if(childMeterIds == null) {
-			return;
+			return null;
 		}
 		List<DateRange> intervals= DateTimeUtil.getTimeIntervals(startTime, endTime, minutesInterval);
 		List<ReadingContext> completeReadings = new LinkedList<>(getChildMeterReadings(childMeterIds, startTime, endTime, minutesInterval));
 		if(completeReadings.isEmpty()) {
-			return;
+			return null;
 		}
 		List<ReadingContext> vmReadings = new ArrayList<ReadingContext>();
 		List<ReadingContext> intervalReadings=new ArrayList<ReadingContext>();
@@ -539,24 +539,26 @@ public class DeviceAPI
 				}
 			}
 			
-			LOGGER.debug("Calculating Consumption for VM : "+meter.getName() + " between " + interval);
-//			if (AccountUtil.getCurrentOrg().getId() == 116) {
-				LOGGER.debug("Intervals : "+interval);
-//			}
+			if (AccountUtil.getCurrentOrg().getId() == 78 || AccountUtil.getCurrentOrg().getId() == 88 || AccountUtil.getCurrentOrg().getId() == 114) {
+				LOGGER.info("Calculating Consumption for VM : "+meter.getId() + " between " + interval);
+				LOGGER.info("Intervals : "+interval);
+			}
 			ReadingContext virtualMeterReading = calculateVMReading(meter,intervalReadings, childMeterIds, interval, isHistorical || i != (intervals.size() - 1));
-//			if (AccountUtil.getCurrentOrg().getId() == 116) {
-				LOGGER.debug("Calculated VM Reading : "+virtualMeterReading);
-//			}
+			if (AccountUtil.getCurrentOrg().getId() == 78 || AccountUtil.getCurrentOrg().getId() == 88 || AccountUtil.getCurrentOrg().getId() == 114) {
+				LOGGER.info("Calculated VM Reading : "+virtualMeterReading);
+			}
 			if(virtualMeterReading != null) {
-//				if (AccountUtil.getCurrentOrg().getId() == 116) {
-					LOGGER.debug("Adding VM reading for time : "+virtualMeterReading.getTtime());
-//				}
+				if (AccountUtil.getCurrentOrg().getId() == 78 || AccountUtil.getCurrentOrg().getId() == 88 || AccountUtil.getCurrentOrg().getId() == 114) {
+					LOGGER.info("Adding VM reading for time : "+virtualMeterReading.getTtime());
+				}
 				vmReadings.add(virtualMeterReading);
 				intervalReadings=new ArrayList<ReadingContext>();
 			}
 		}
 
-		LOGGER.debug("VM Readings size : "+vmReadings.size());
+		if (AccountUtil.getCurrentOrg().getId() == 78 || AccountUtil.getCurrentOrg().getId() == 88 || AccountUtil.getCurrentOrg().getId() == 114) {
+			LOGGER.info("VM Readings size for meter : "+meter.getId()+" is : " + vmReadings.size());
+		}
 		if (!vmReadings.isEmpty()) {
 
 			ReadingContext firstReading=vmReadings.get(0);
@@ -590,6 +592,7 @@ public class DeviceAPI
 			Chain addReading = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
 			addReading.execute(context);
 		}
+		return vmReadings;
 	}
 
 	
