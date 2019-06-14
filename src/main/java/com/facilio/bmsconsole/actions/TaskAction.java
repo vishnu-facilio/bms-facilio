@@ -717,6 +717,9 @@ public class TaskAction extends FacilioAction {
 		StringBuilder body = new StringBuilder("\n\nDetails: \n");
 		if (e != null) {
 			if (e instanceof IllegalArgumentException) {
+				if (e.getMessage().equals("Task cannot be updated for completed tickets")) {
+					return;
+				}
 				errorTrace = ExceptionUtils.getStackTrace(e);
 				body.append(inComingDetails.toString())
 				.append("\nOrgId: ")

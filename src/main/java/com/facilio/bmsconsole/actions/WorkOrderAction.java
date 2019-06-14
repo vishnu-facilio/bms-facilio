@@ -1347,6 +1347,9 @@ public class WorkOrderAction extends FacilioAction {
 		StringBuilder body = new StringBuilder("\n\nDetails: \n");
 		if (e != null) {
 			if (e instanceof IllegalArgumentException) {
+				if (e.getMessage().equals("Please close all tasks before closing/resolving the workorder")) {
+					return;
+				}
 				errorTrace = ExceptionUtils.getStackTrace(e);
 				body.append(inComingDetails.toString())
 				.append("\nOrgId: ")
