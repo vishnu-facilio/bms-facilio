@@ -6,8 +6,8 @@ import java.util.Map;
 
 public class WorkflowNamespaceContext {
 
-	long id;
-	long orgid;
+	long id = -1;
+	long orgid = -1;
 	String name;
 	Map<String,WorkflowContext> workflowMap;
 	

@@ -31,6 +31,9 @@ public class AddNameSpaceCommand implements Command {
 
 		Map<String, Object> props = FieldUtil.getAsProperties(namespaceContext);
 		insertBuilder.addRecord(props);
+		insertBuilder.save();
+		
+		namespaceContext.setId((long)props.get("id"));
 	}
 
 
