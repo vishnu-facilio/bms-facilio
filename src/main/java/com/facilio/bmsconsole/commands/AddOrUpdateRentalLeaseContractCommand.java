@@ -12,11 +12,14 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.InventoryType;
+import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.context.PurchaseContractContext;
 import com.facilio.bmsconsole.context.PurchaseContractLineItemContext;
 import com.facilio.bmsconsole.context.RentalLeaseContractContext;
 import com.facilio.bmsconsole.context.RentalLeaseContractLineItemsContext;
 import com.facilio.bmsconsole.context.ServiceContext;
+import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.bmsconsole.context.WarrantyContractContext;
 import com.facilio.bmsconsole.context.WarrantyContractLineItemContext;
 import com.facilio.bmsconsole.context.ContractsContext.ContractType;
@@ -31,6 +34,8 @@ import com.facilio.bmsconsole.modules.InsertRecordBuilder;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
+import com.facilio.bmsconsole.util.ItemsApi;
+import com.facilio.bmsconsole.util.ToolsApi;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.sql.GenericDeleteRecordBuilder;
@@ -87,6 +92,8 @@ public class AddOrUpdateRentalLeaseContractCommand implements Command{
 					updateLineItems(revisedContract);
 					updateAssetsAssociated(revisedContract);
 					addRecord(false,revisedContract.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
+					context.put(FacilioConstants.ContextNames.REVISED_RECORD, revisedContract);
+					
 				}
 				else {
 					throw new IllegalArgumentException("Only Approved contracts can be revised");
@@ -108,8 +115,20 @@ public class AddOrUpdateRentalLeaseContractCommand implements Command{
 		return false;
 	}
 	
-	private void updateLineItems(RentalLeaseContractContext rentalLeaseContractContext) {
+	private void updateLineItems(RentalLeaseContractContext rentalLeaseContractContext) throws Exception{
 		for (RentalLeaseContractLineItemsContext lineItemContext : rentalLeaseContractContext.getLineItems()) {
+			if(lineItemContext.getInventoryType() == InventoryType.ITEM.getValue()) {
+				ItemTypesContext itemType = ItemsApi.getItemTypes(lineItemContext.getItemType().getId());
+				if(!itemType.isRotating()) {
+					throw new IllegalArgumentException("Only Rotating Items/tools can be rented/leased");
+				}
+			}
+			else if(lineItemContext.getInventoryType() == InventoryType.TOOL.getValue()) {
+				ToolTypesContext toolType = ToolsApi.getToolTypes(lineItemContext.getToolType().getId());
+				if(!toolType.isRotating()) {
+					throw new IllegalArgumentException("Only Rotating Items/tools can be rented/leased");
+				}
+			}
 			lineItemContext.setRentalLeaseContractId(rentalLeaseContractContext.getId());
 		}
 	  }

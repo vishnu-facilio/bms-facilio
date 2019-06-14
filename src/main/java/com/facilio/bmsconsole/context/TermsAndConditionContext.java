@@ -4,6 +4,10 @@ import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class TermsAndConditionContext extends ModuleBaseWithCustomFields{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private String name;
 	private String termType;
 	private String shortDesc;

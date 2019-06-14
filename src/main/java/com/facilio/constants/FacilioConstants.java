@@ -89,6 +89,7 @@ public class FacilioConstants {
 		public static final String CHANGE_SET = "changeSet";
 		public static final String CHANGE_SET_MAP = "changeSetMap";
 		public static final String RECORD = "record";
+		public static final String REVISED_RECORD = "revisedRecord";
 		public static final String RECORD_LIST = "records";
 		public static final String RECORD_MAP = "recordMap";
 		public static final String RECORD_ID = "recordId";

@@ -271,7 +271,8 @@ public class PurchaseContractsAction extends FacilioAction {
 		Chain chain = TransactionChainFactory.getAddPurchaseContractChain();
 		chain.execute(context);
 		
-		setResult(FacilioConstants.ContextNames.PURCHASE_CONTRACTS, context.get(FacilioConstants.ContextNames.RECORD));
+		setResult(FacilioConstants.ContextNames.PURCHASE_CONTRACT, context.get(FacilioConstants.ContextNames.RECORD));
+		setResult(FacilioConstants.ContextNames.REVISED_RECORD, context.get(FacilioConstants.ContextNames.REVISED_RECORD));
 		
 		return SUCCESS;
 	}

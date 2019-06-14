@@ -218,6 +218,8 @@ public class LabourContractAction extends FacilioAction{
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.LABOUR_CONTRACTS, context.get(FacilioConstants.ContextNames.RECORD));
+		setResult(FacilioConstants.ContextNames.REVISED_RECORD, context.get(FacilioConstants.ContextNames.REVISED_RECORD));
+		
 		
 		return SUCCESS;
 	}

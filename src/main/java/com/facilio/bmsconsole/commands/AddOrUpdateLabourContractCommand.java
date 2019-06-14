@@ -78,6 +78,8 @@ public class AddOrUpdateLabourContractCommand implements Command{
 					updateLineItems(revisedContract);
 					addLabourRecords(revisedContract.getLineItems(),labourModule,labourFields);
 					addRecord(false,revisedContract.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
+					context.put(FacilioConstants.ContextNames.REVISED_RECORD, revisedContract);
+					
 				}
 				else {
 					throw new IllegalArgumentException("Only Approved contracts can be revised");

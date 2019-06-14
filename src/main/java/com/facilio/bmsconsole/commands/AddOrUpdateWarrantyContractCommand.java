@@ -80,6 +80,7 @@ public class AddOrUpdateWarrantyContractCommand implements Command{
 				//addServiceRecords(warrantyContractContext.getLineItems(),serviceModule,serviceFields);
 				//also add service vendor association
 				addRecord(false,warrantyContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
+				
 			} 
 			else if (isContractRevised && warrantyContractContext.getId() > 0) {
 				if(warrantyContractContext.getStatusEnum() == Status.APPROVED) {
@@ -93,6 +94,8 @@ public class AddOrUpdateWarrantyContractCommand implements Command{
 					//addServiceRecords(warrantyContractContext.getLineItems(),serviceModule,serviceFields);
 					//also add service vendor association
 					addRecord(false,revisedContract.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
+					context.put(FacilioConstants.ContextNames.REVISED_RECORD, revisedContract);
+					
 				}
 				else {
 					throw new IllegalArgumentException("Only Approved contracts can be revised");

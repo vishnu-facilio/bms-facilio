@@ -209,6 +209,8 @@ public class WarrantyContractAction extends FacilioAction {
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.WARRANTY_CONTRACTS, context.get(FacilioConstants.ContextNames.RECORD));
+		setResult(FacilioConstants.ContextNames.REVISED_RECORD, context.get(FacilioConstants.ContextNames.REVISED_RECORD));
+		
 		
 		return SUCCESS;
 	}

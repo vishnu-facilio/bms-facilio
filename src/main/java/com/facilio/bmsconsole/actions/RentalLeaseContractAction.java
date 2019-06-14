@@ -251,6 +251,8 @@ public class RentalLeaseContractAction extends FacilioAction{
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS, context.get(FacilioConstants.ContextNames.RECORD));
+		setResult(FacilioConstants.ContextNames.REVISED_RECORD, context.get(FacilioConstants.ContextNames.REVISED_RECORD));
+		
 		
 		return SUCCESS;
 	}

@@ -2908,7 +2908,7 @@
 			<param name="moduleName">contract</param>
 			<param name="permission">DELETE</param>
 		</action>
-			<action name="termsAndConditionsCount" class="com.facilio.bmsconsole.actions.TermsAndConditionsAction" method="rentalLeaseContractCount">
+			<action name="termsAndConditionsCount" class="com.facilio.bmsconsole.actions.TermsAndConditionsAction" method="termsAndConditionsCount">
 			<param name="moduleName">contract</param>
 			<param name="permission">READ</param>
 		</action>
