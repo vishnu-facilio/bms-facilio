@@ -58,7 +58,7 @@ public class BulkModeledReadingCommand implements Command {
 						//need to decide whether  Nan can be ignored..
 						continue;
 					}
-					Long assetId= (Long) stat.get("assetId");
+					Long assetId= (Long) stat.get("resourceId");
 					Long fieldId= (Long) stat.get("fieldId");
 
 					if(fieldId!=null && assetId!=null) {

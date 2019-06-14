@@ -45,125 +45,125 @@ public class ModeledDataCommand implements Command {
 		List<Map<String, Object>> insertNewPointsData= new ArrayList< >();
 		Map<String,Object>  dataPoints= null;
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-	
-	if(TimeSeriesAPI.isStage()) {
+
+		if(TimeSeriesAPI.isStage()) {
 			LOGGER.debug("Inside ModeledDataCommand####### deviceData: "+deviceData);
-	}
-			for(Map.Entry<String, Map<String,String>> data:deviceData.entrySet()) {
+		}
+		for(Map.Entry<String, Map<String,String>> data:deviceData.entrySet()) {
 
-				String deviceName=data.getKey();
-				Map<String,String> instanceMap= data.getValue();
-				Iterator<String> instanceList = instanceMap.keySet().iterator();
-				while(instanceList.hasNext()) {
-					String instanceName=instanceList.next();                
-					String instanceVal=instanceMap.get(instanceName);
-					if(deviceName ==null || instanceName==null) {
-						continue;
-					}
-						dataPoints=  getValueContainsPointsData( deviceName,  instanceName, controllerId , dataPointsValue);
-						if(dataPoints==null) {
-
-						Map<String, Object> value=new HashMap<String,Object>();
-						value.put("orgId", orgId);
-						value.put("device",deviceName);
-						value.put("instance", instanceName);
-						value.put("createdTime", System.currentTimeMillis());
-						if(controllerId!=null) {
-							//this will ensure the new inserts after addition of controller gets proper controller id
-							value.put("controllerId", controllerId);
-						}
-						insertNewPointsData.add(value);
-						continue;
-					}
-					else {
-						Long resourceId= (Long) dataPoints.get("resourceId");
-						Long fieldId= (Long) dataPoints.get("fieldId");
-						if(fieldId!=null && resourceId!=null){
-//							ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-//							FacilioField field =bean.getField(fieldId);
-//							FieldType type = field.getDataTypeEnum();
-//							String moduleName=field.getModule().getName();
-//							if(instanceVal!=null && (instanceVal.equalsIgnoreCase("NaN")||
-//									(type.equals(FieldType.DECIMAL) && instanceVal.equalsIgnoreCase("infinity")))) {
-//								generateEvent(resourceId,timeStamp,field.getDisplayName());
-//								//Generate event with resourceId : assetId & 
-//								continue;
-//							}
-//							String readingKey=moduleName+"|"+resourceId;
-//							ReadingContext reading=iModuleVsReading.get(readingKey);
-//							if(reading == null) {
-//								reading = new ReadingContext();
-//								iModuleVsReading.put(readingKey, reading);
-//							}
-//							reading.addReading(field.getName(), instanceVal);
-//							reading.setParentId(resourceId);
-//							reading.setTtime(timeStamp);
-							//removing here to avoid going into unmodeled instance..
-							// remove deviceData is important 
-//							instanceList.remove();
-							dataPointsValue.remove(dataPoints);
-							//construct the reading to add in their respective module..????
-						}
-
-					}
+			String deviceName=data.getKey();
+			Map<String,String> instanceMap= data.getValue();
+			Iterator<String> instanceList = instanceMap.keySet().iterator();
+			while(instanceList.hasNext()) {
+				String instanceName=instanceList.next();                
+				String instanceVal=instanceMap.get(instanceName);
+				if(deviceName ==null || instanceName==null) {
+					continue;
 				}
-			}	
-			if(!insertNewPointsData.isEmpty()) {
-					TimeSeriesAPI.insertPoints(insertNewPointsData);
-				
-				dataPointsValue.addAll(insertNewPointsData);
+				dataPoints=  getValueContainsPointsData( deviceName,  instanceName, controllerId , dataPointsValue);
+				if(dataPoints==null) {
+
+					Map<String, Object> value=new HashMap<String,Object>();
+					value.put("orgId", orgId);
+					value.put("device",deviceName);
+					value.put("instance", instanceName);
+					value.put("createdTime", System.currentTimeMillis());
+					if(controllerId!=null) {
+						//this will ensure the new inserts after addition of controller gets proper controller id
+						value.put("controllerId", controllerId);
+					}
+					insertNewPointsData.add(value);
+					continue;
+				}
+				else {
+					Long resourceId= (Long) dataPoints.get("resourceId");
+					Long fieldId= (Long) dataPoints.get("fieldId");
+					if(fieldId!=null && resourceId!=null){
+						ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+						FacilioField field =bean.getField(fieldId);
+						FieldType type = field.getDataTypeEnum();
+						String moduleName=field.getModule().getName();
+						if(instanceVal!=null && (instanceVal.equalsIgnoreCase("NaN")||
+								(type.equals(FieldType.DECIMAL) && instanceVal.equalsIgnoreCase("infinity")))) {
+							generateEvent(resourceId,timeStamp,field.getDisplayName());
+							//								//Generate event with resourceId : assetId & 
+							continue;
+						}
+						String readingKey=moduleName+"|"+resourceId;
+						ReadingContext reading=iModuleVsReading.get(readingKey);
+						if(reading == null) {
+							reading = new ReadingContext();
+							iModuleVsReading.put(readingKey, reading);
+						}
+						reading.addReading(field.getName(), instanceVal);
+						reading.setParentId(resourceId);
+						reading.setTtime(timeStamp);
+						//removing here to avoid going into unmodeled instance..
+						// remove deviceData is important 
+						instanceList.remove();
+						dataPointsValue.remove(dataPoints);
+						//construct the reading to add in their respective module..????
+					}
+
+				}
 			}
-//	}
+		}	
+		if(!insertNewPointsData.isEmpty()) {
+			TimeSeriesAPI.insertPoints(insertNewPointsData);
+
+			dataPointsValue.addAll(insertNewPointsData);
+		}
+		//	}
 
 		//oldPublish data
 		for(Map.Entry<String, Map<String,String>> data:deviceData.entrySet()) {
-			
-			
+
+
 			String deviceName=data.getKey();
 			Map<String,String> instanceMap= data.getValue();
 			Iterator<String> instanceList = instanceMap.keySet().iterator();
 			while(instanceList.hasNext()) {
 				String instanceName=instanceList.next();
-				String instanceVal=instanceMap.get(instanceName);
+//				String instanceVal=instanceMap.get(instanceName);
 				//for now sending as null till migration..
 				Map<String, Object> stat = ReadingsAPI.getInstanceMapping(deviceName, instanceName,controllerId);
 				if(stat==null)  {
 					continue;
 				}
-				
-				Long assetId= (Long) stat.get("assetId");
-				Long fieldId= (Long) stat.get("fieldId");
-				
-				if(fieldId!=null && assetId!=null) {
-					ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-					FacilioField field =bean.getField(fieldId);
-					FieldType type = field.getDataTypeEnum();
-					String moduleName=field.getModule().getName();
-					
-					if(instanceVal!=null && (instanceVal.equalsIgnoreCase("NaN")||
-							(type.equals(FieldType.DECIMAL) && instanceVal.equalsIgnoreCase("infinity")))) {
-						generateEvent(assetId,timeStamp,field.getDisplayName());
-						//Generate event with resourceId : assetId & 
-						continue;
-					}
-					String readingKey=moduleName+"|"+assetId;
-					ReadingContext reading=iModuleVsReading.get(readingKey);
-					if(reading == null) {
-						reading = new ReadingContext();
-						iModuleVsReading.put(readingKey, reading);
-					}
-					reading.addReading(field.getName(), instanceVal);
-					reading.setParentId(assetId);
-					reading.setTtime(timeStamp);
-					
-					//removing here to avoid going into unmodeled instance..
-					instanceList.remove();
-				}
+
+				//				Long assetId= (Long) stat.get("assetId");
+				//				Long fieldId= (Long) stat.get("fieldId");
+
+				//				if(fieldId!=null && assetId!=null) {
+				//					ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				//					FacilioField field =bean.getField(fieldId);
+				//					FieldType type = field.getDataTypeEnum();
+				//					String moduleName=field.getModule().getName();
+				//					
+				//					if(instanceVal!=null && (instanceVal.equalsIgnoreCase("NaN")||
+				//							(type.equals(FieldType.DECIMAL) && instanceVal.equalsIgnoreCase("infinity")))) {
+				//						generateEvent(assetId,timeStamp,field.getDisplayName());
+				//						//Generate event with resourceId : assetId & 
+				//						continue;
+				//					}
+				//					String readingKey=moduleName+"|"+assetId;
+				//					ReadingContext reading=iModuleVsReading.get(readingKey);
+				//					if(reading == null) {
+				//						reading = new ReadingContext();
+				//						iModuleVsReading.put(readingKey, reading);
+				//					}
+				//					reading.addReading(field.getName(), instanceVal);
+				//					reading.setParentId(assetId);
+				//					reading.setTtime(timeStamp);
+				//					
+				//					//removing here to avoid going into unmodeled instance..
+				//					instanceList.remove();
+				//				}
 			}
-			
-			
+
+
 		}
-		
+
 		for(Map.Entry<String, ReadingContext> iMap:iModuleVsReading.entrySet()) { //send the data to their's module eg.Energy_Meter...
 			String key=iMap.getKey();
 			String moduleName=key.substring(0, key.indexOf("|"));
@@ -176,14 +176,13 @@ public class ModeledDataCommand implements Command {
 			readings.add(reading);
 		}
 		if(TimeSeriesAPI.isStage()) {
-		LOGGER.debug("Inside ModeledDataCommand####### moduleVsReading: "+moduleVsReading);
+			LOGGER.debug("Inside ModeledDataCommand####### moduleVsReading: "+moduleVsReading);
 		}
 
 		context.put(FacilioConstants.ContextNames.READINGS_MAP,moduleVsReading);
 		context.put(FacilioConstants.ContextNames.HISTORY_READINGS, false);
-//		if(TimeSeriesAPI.isStage()) {
-			context.put("POINTS_DATA_RECORD", dataPointsValue);
-//		}
+		context.put("POINTS_DATA_RECORD", dataPointsValue);
+
 		return false;
 	}
 	private Map<String,Object> getValueContainsPointsData(String deviceName, String instanceName,Long controllerId ,List<Map<String , Object>> points_Data) throws Exception{
@@ -192,9 +191,9 @@ public class ModeledDataCommand implements Command {
 			String mDeviceName=(String) map.get("device");
 			String mInstanceName=(String) map.get("instance");
 			Long mControllerId=(Long)map.get("controllerId");
-			
+
 			if(deviceName.equals(mDeviceName) && instanceName.equals(mInstanceName)) {
-				
+
 				if(controllerId==null || controllerId.equals(mControllerId) ) {
 					// if controller is null.. then return map..
 					// if not null.. then it should be equal to return map..
@@ -214,5 +213,5 @@ public class ModeledDataCommand implements Command {
 		addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, json);
 		Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
 		getAddEventChain.execute(addEventContext);
-}
+	}
 }
