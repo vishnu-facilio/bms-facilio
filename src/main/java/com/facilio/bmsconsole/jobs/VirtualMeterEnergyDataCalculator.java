@@ -54,6 +54,9 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 						if(childMeterIds==null) {
 							childMeterIds=DeviceAPI.getChildrenMeters(meter);
 						}
+						if (AccountUtil.getCurrentOrg().getId() == 78 || AccountUtil.getCurrentOrg().getId() == 88 || AccountUtil.getCurrentOrg().getId() == 114) {
+							LOGGER.info("Child meter IDS for meter : "+meter.getId()+" is : "+childMeterIds);
+						}
 						if(childMeterIds!=null) {
 
 							//check any childMeter is a VM..
