@@ -3171,6 +3171,14 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain getDeleteShiftRotationChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForShiftRotation());
+			c.addCommand(new GenericDeleteModuleDataCommand());
+			c.addCommand(new DeleteShiftRotationCommand());
+			return c;
+		}
+		
 		public static Chain getExecuteShiftRotationCommand() {
 			Chain c = getDefaultChain();
 			c.addCommand(new ExecuteShiftRotationCommand());

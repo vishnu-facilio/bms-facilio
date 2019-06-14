@@ -76,6 +76,17 @@ public class ShiftRotationAction extends ModuleAction {
 		return SUCCESS;
 	}
 
+	public String deleteShiftRotation() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
+		
+		Chain chain = TransactionChainFactory.getDeleteShiftRotationChain();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
+		return SUCCESS;
+	}
+	
 	private long shiftRotationId;
 
 	public long getShiftRotationId() {
@@ -181,5 +192,13 @@ public class ShiftRotationAction extends ModuleAction {
 
 	public void setIncludeParentFilter(boolean includeParentFilter) {
 		this.includeParentFilter = includeParentFilter;
+	}
+	
+	private List<Long> recordIds;
+	public List<Long> getRecordIds() {
+		return recordIds;
+	}
+	public void setRecordIds(List<Long> recordIds) {
+		this.recordIds = recordIds;
 	}
 }

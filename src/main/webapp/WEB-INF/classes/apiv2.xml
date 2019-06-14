@@ -2565,6 +2565,9 @@
 		<action name="update" class="com.facilio.bmsconsole.actions.ShiftRotationAction"
 			method="updateShiftRotation">
 		</action>
+		<action name="delete" class="com.facilio.bmsconsole.actions.ShiftRotationAction"
+			method="deleteShiftRotation">
+		</action>
 		<action name="execute" class="com.facilio.bmsconsole.actions.ShiftRotationAction"
 			method="executeShiftRotation">
 		</action>
