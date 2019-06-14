@@ -103,25 +103,6 @@ public class WorkflowAction extends FacilioAction {
 		}
 	}
 	
-	Object workflowResult;
-	
-
-	public Object getWorkflowResult() {
-		return workflowResult;
-	}
-
-	public void setWorkflowResult(Object workflowResult) {
-		this.workflowResult = workflowResult;
-	}
-	
-	public String getDefaultWorkflowResult() throws Exception {
-		if(defaultWorkflowId > -1) {
-			workflowResult = WorkflowV2Util.getDefaultWorkflowResult(defaultWorkflowId, paramList);
-		}
-		return SUCCESS;
-	}
-
-	
 	// $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$  V2 APIS $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 	
 	private WorkflowContext workflow;
