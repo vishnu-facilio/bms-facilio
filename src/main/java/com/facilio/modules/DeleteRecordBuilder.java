@@ -1,5 +1,6 @@
 package com.facilio.modules;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.db.builder.DeleteBuilderIfc;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -159,11 +160,18 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		List<FacilioField> fields = new ArrayList<>(2);
 		FacilioField isDeletedField = FieldFactory.getIsDeletedField(module.getParentModule());
 		FacilioField deletedTimeField = FieldFactory.getSysDeletedTimeField(module.getParentModule());
+		FacilioField deletedByField = FieldFactory.getSysDeletedByField(module.getParentModule());
 		fields.add(isDeletedField);
 		fields.add(deletedTimeField);
+		fields.add(deletedByField);
+
 		Map<String, Object> prop = new HashMap<>();
 		prop.put(isDeletedField.getName(), true);
 		prop.put(deletedTimeField.getName(), System.currentTimeMillis());
+		if (AccountUtil.getCurrentUser() != null) {
+			prop.put(deletedByField.getName(), Collections.singletonMap("id", AccountUtil.getCurrentUser().getId()));
+		}
+
 		updateBuilder.fields(fields)
 						.andCustomWhere(where.getWhereClause(),  where.getValues());
 		return updateBuilder.updateViaMap(prop);

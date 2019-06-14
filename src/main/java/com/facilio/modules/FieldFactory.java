@@ -902,6 +902,11 @@ public class FieldFactory {
 	public static FacilioField getSysDeletedTimeField(FacilioModule module) {
 		return getField("sysDeletedTime", "SYS_DELETED_TIME", module, FieldType.DATE_TIME);
 	}
+	public static FacilioField getSysDeletedByField(FacilioModule module) {
+		LookupField deletedBy = (LookupField) getField("sysDeletedBy", "SYS_DELETED_BY", module, FieldType.LOOKUP);
+		deletedBy.setSpecialType(FacilioConstants.ContextNames.USERS);
+		return deletedBy;
+	}
 
 	public static FacilioField getIsDeletedField() {
 		return getIsDeletedField(null);
