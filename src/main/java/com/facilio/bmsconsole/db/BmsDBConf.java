@@ -404,9 +404,6 @@ public class BmsDBConf extends DBConf {
 
     @Override
     public boolean logQueries() {
-        if (AccountUtil.getCurrentOrg() != null && isProduction() && (AccountUtil.getCurrentOrg().getId() == 78 || AccountUtil.getCurrentOrg().getId() == 155)) {
-            return true;
-        }
         return super.logQueries();
     }
 }
