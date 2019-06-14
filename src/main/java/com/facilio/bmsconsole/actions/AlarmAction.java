@@ -612,6 +612,7 @@ public class AlarmAction extends FacilioAction {
 	public String fetchAlarmInsightsForResource() throws Exception{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ASSET_ID, assetId);
+		context.put(FacilioConstants.ContextNames.READING_RULE_ID, ruleId);
 		context.put(FacilioConstants.ContextNames.DATE_RANGE, dateRange);
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateOperatorValue);
@@ -619,7 +620,15 @@ public class AlarmAction extends FacilioAction {
 		setResult(ContextNames.ALARM_LIST, context.get(ContextNames.ALARM_LIST));
 		return SUCCESS;
 	}
+	private long ruleId = -1;
 	
+	public long getRuleId() {
+		return ruleId;
+	}
+	public void setRuleId(long ruleId) {
+		this.ruleId = ruleId;
+	}
+
 	private long assetId = -1;
 	public long getAssetId() {
 		return assetId;

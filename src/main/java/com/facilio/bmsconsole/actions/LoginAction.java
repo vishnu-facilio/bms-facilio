@@ -337,6 +337,7 @@ public class LoginAction extends FacilioAction {
 			Map<String, Collection<FacilioForm>> forms = FormsAPI.getAllForms(FormType.MOBILE);
 			data.put("forms", forms);
 			data.put("ticketStatus", getTicketStatus());
+			data.put("ticket_status", TicketAPI.getAllStatus(true));
 		}
 		else {
 			Map<String, Collection<FacilioForm>> forms = FormsAPI.getAllForms(FormType.WEB);
