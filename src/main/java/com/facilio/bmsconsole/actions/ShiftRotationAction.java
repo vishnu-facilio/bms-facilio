@@ -49,5 +49,23 @@ public class ShiftRotationAction extends ModuleAction{
 		
 		return SUCCESS;
 	}
+	
+	private long shiftRotationId;
+	public long getShiftRotationId() {
+		return shiftRotationId;
+	}
+	public void setShiftRotationId(long shiftRotationId) {
+		this.shiftRotationId = shiftRotationId;
+	}
+	
+	public String executeShiftRotation() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, shiftRotation);
+		
+		Chain c = TransactionChainFactory.getExecuteShiftRotationCommand();
+		c.execute(context);
+		
+		return SUCCESS;
+	}
 
 }

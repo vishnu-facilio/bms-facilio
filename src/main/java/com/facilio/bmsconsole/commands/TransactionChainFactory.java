@@ -3162,6 +3162,12 @@ public class TransactionChainFactory {
 			c.addCommand(new AddShiftRotationDetailsCommand());
 			return c;
 		}
+		
+		public static Chain getExecuteShiftRotationCommand() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ExecuteShiftRotationCommand());
+			return c;
+		}
 }
 
 

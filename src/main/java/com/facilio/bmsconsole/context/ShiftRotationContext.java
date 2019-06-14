@@ -102,5 +102,13 @@ public class ShiftRotationContext extends ModuleBaseWithCustomFields {
 	public void setApplicableFor(List<ShiftRotationApplicableForContext> applicableFor) {
 		this.applicableFor = applicableFor;
 	}
+	
+	private long timeOfSchedule = -1;
+	public long getTimeOfSchedule() {
+		return timeOfSchedule;
+	}
+	public void setTimeOfSchedule(long timeOfSchedule) {
+		this.timeOfSchedule = timeOfSchedule;
+	}
 
 }

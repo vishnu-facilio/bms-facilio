@@ -51,6 +51,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.BaseLineContext;
 import com.facilio.modules.DeleteRecordBuilder;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
@@ -1119,5 +1120,58 @@ public class ShiftAPI {
 		insertBuilder.addRecords(props);
 		insertBuilder.save();
 	
+	}
+	
+	public static List<ShiftRotationApplicableForContext> getApplicableForShiftRotation(long id) throws Exception {
+		List<ShiftRotationApplicableForContext> list = new ArrayList<>();
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getShiftRotationApplicableForModule().getTableName())
+				.select(FieldFactory.getShiftRotationApplicableForModuleFields())
+				.andCondition(CriteriaAPI.getCondition("SHIFT_ROTATION_ID", "shiftRotationId", String.valueOf(id), NumberOperators.EQUALS));
+		List<Map<String, Object>> props = builder.get();
+		if (CollectionUtils.isNotEmpty(props)) {
+			for (Map<String, Object> prop : props) {
+				list.add(FieldUtil.getAsBeanFromMap(prop, ShiftRotationApplicableForContext.class));
+			}
+		}
+		return list;
+	}
+	
+	public static List<ShiftRotationDetailsContext> getShiftRotationDetailsForShiftRotation(long id) throws Exception {
+		List<ShiftRotationDetailsContext> list = new ArrayList<>();
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getShiftRotationDetailsModule().getTableName())
+				.select(FieldFactory.getShiftRotationDetailsModuleFields())
+				.andCondition(CriteriaAPI.getCondition("SHIFT_ROTATION_ID", "shiftRotationId", String.valueOf(id), NumberOperators.EQUALS));
+		List<Map<String, Object>> props = builder.get();
+		if (CollectionUtils.isNotEmpty(props)) {
+			for (Map<String, Object> prop : props) {
+				list.add(FieldUtil.getAsBeanFromMap(prop, ShiftRotationDetailsContext.class));
+			}
+		}
+		return list;
+	}
+	
+	public static void updateShiftUserMapping(List<ShiftUserRelContext> shiftUserRels) throws Exception {
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(FieldFactory.getField("endTime", "END_TIME", FieldType.NUMBER));
+		fields.add(FieldFactory.getField("shiftId", "SHIFTID", FieldType.NUMBER));
+		fields.add(FieldFactory.getField("startTime", "START_TIME", FieldType.NUMBER));
+		for (ShiftUserRelContext shiftUserRel : shiftUserRels) {
+			Map<String, Object> prop = new HashMap<>();
+			GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+					.table(ModuleFactory.getShiftUserRelModule().getTableName())
+					.fields(FieldFactory.getShiftUserRelModuleFields())
+					// .andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getShiftUserRelModule()))
+					.andCondition(
+							CriteriaAPI.getIdCondition(shiftUserRel.getId(), ModuleFactory.getShiftUserRelModule()));
+
+			prop.put("endTime", shiftUserRel.getEndTime());
+			prop.put("startTime", shiftUserRel.getStartTime());
+			prop.put("shiftId", shiftUserRel.getShiftId());
+			builder.update(prop);
+			prop.clear();
+		}
+
 	}
 }
