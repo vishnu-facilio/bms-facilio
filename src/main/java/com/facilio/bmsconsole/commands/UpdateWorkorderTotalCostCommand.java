@@ -60,7 +60,7 @@ public class UpdateWorkorderTotalCostCommand implements Command {
 				c.execute(context);
 					
 				context.put(FacilioConstants.ContextNames.WO_TOTAL_COST, totalcost);
-				System.out.println("totalcost" + totalcost);
+				
 			}
 		}
 		return false;

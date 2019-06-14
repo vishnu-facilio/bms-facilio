@@ -159,6 +159,8 @@ public class LabourContractAction extends FacilioAction{
 	public String addLabourContract() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, labourContract);
+		context.put(FacilioConstants.ContextNames.IS_CONTRACT_REVISED, false );
+		
 		
 		Chain chain = TransactionChainFactory.getAddLabourContractChain();
 		chain.execute(context);
@@ -202,6 +204,32 @@ public class LabourContractAction extends FacilioAction{
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(recordId));
+		
+		return SUCCESS;
+	}
+	
+
+	public String reviseContract() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID, recordId );
+		context.put(FacilioConstants.ContextNames.IS_CONTRACT_REVISED, true );
+		
+		Chain chain = TransactionChainFactory.getAddLabourContractChain();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.LABOUR_CONTRACTS, context.get(FacilioConstants.ContextNames.RECORD));
+		
+		return SUCCESS;
+	}
+	
+	public String duplicateContract() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, labourContract );
+		
+		Chain chain = TransactionChainFactory.getDuplicateLabourContract();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.LABOUR_CONTRACTS, context.get(FacilioConstants.ContextNames.RECORD));
 		
 		return SUCCESS;
 	}

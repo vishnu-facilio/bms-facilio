@@ -45,6 +45,26 @@ public class WorkOrderServiceContext extends ModuleBaseWithCustomFields{
 		this.vendor = vendor;
 	}
 	
+	private double unitPrice;
+	private double quantity;
+
+	public double getUnitPrice() {
+		return unitPrice;
+	}
+
+	public void setUnitPrice(double unitPrice) {
+		this.unitPrice = unitPrice;
+	}
+
+	public double getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(double quantity) {
+		this.quantity = quantity;
+	}
+	
+	
 
 	
 }

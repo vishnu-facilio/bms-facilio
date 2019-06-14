@@ -7,14 +7,14 @@ public class ServiceVendorContext extends ModuleBaseWithCustomFields {
 
 	private static final long serialVersionUID = 1L;
 
-	private ServiceContext service;
+	private long serviceId;
 
-	public ServiceContext getService() {
-		return service;
+	public long getServiceId() {
+		return serviceId;
 	}
 
-	public void setService(ServiceContext service) {
-		this.service = service;
+	public void setServiceId(long serviceId) {
+		this.serviceId = serviceId;
 	}
 
 	private VendorContext vendor;

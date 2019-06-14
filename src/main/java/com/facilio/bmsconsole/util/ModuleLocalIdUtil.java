@@ -49,8 +49,11 @@ public class ModuleLocalIdUtil {
 		modulesWithLocalId.add(FacilioConstants.ContextNames.GATE_PASS);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.INVENTORY_REQUESTS);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.SERVICE);
-		modulesWithLocalId.add(FacilioConstants.ContextNames.SERVICE_CONTRACTS);
-		modulesWithLocalId.add(FacilioConstants.ContextNames.SERVICE_CONTRACTS_LINE_ITEMS);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.WARRANTY_CONTRACTS);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.WARRANTY_CONTRACTS_LINE_ITEMS);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS_LINE_ITEMS);
+		modulesWithLocalId.add(FacilioConstants.ContextNames.TERMS_AND_CONDITIONS);
 
 		modulesWithLocalId.add(FacilioConstants.ContextNames.SHIPMENT);
 

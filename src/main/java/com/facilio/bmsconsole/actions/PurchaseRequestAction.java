@@ -78,7 +78,24 @@ public class PurchaseRequestAction extends FacilioAction {
 		this.includeParentFilter = includeParentFilter;
 	}
 
-		
+	private long vendorId;
+	
+	
+	public long getVendorId() {
+		return vendorId;
+	}
+	public void setVendorId(long vendorId) {
+		this.vendorId = vendorId;
+	}
+	
+	private long serviceId;
+	
+	public long getServiceId() {
+		return serviceId;
+	}
+	public void setServiceId(long serviceId) {
+		this.serviceId = serviceId;
+	}
 	public String addPurchaseRequest() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, purchaseRequest);
@@ -202,5 +219,20 @@ public class PurchaseRequestAction extends FacilioAction {
 	public String purchaseRequestCount() throws Exception {
 		return getPurchaseRequestList();
 	}
+	
+	public String getServicePriceForVendor() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.VENDOR_ID, getVendorId());
+		context.put(FacilioConstants.ContextNames.SERVICE, getServiceId());
+		Chain chain = TransactionChainFactory.getServicePriceForVendor();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.UNIT_PRICE, context.get(FacilioConstants.ContextNames.UNIT_PRICE));
+		
+		return SUCCESS;
+	
+	}
+	
 
 }

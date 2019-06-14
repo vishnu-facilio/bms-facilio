@@ -35,7 +35,7 @@ public class UseInventoryRequestLineItemsCommand implements Command{
 				lineItemIds.add(String.valueOf(lineItem.getId()));
 			}
 		}
-		context.put(FacilioConstants.ContextNames.RECORD_LIST, inventoryType == InventoryType.ITEM.getValue() ? woItemList : woToolList);
+		context.put(FacilioConstants.ContextNames.RECORD_LIST, inventoryType == InventoryType.ITEM.getValue() ? woItemList : inventoryType == InventoryType.TOOL.getValue() ? woToolList : null);
 		
 		return false;
 	}

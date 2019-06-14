@@ -333,19 +333,33 @@ public class SetTableNamesCommand implements Command {
 	}
 
 	public static SetTableNamesCommand getForService() {
+
+	public static SetTableNamesCommand getForServices() {
 		return new SetTableNamesCommand("service", "Service");
 	}
-
-	public static SetTableNamesCommand getForServiceContract() {
-		return new SetTableNamesCommand("servicecontracts", "Service_Contracts");
+	
+	public static SetTableNamesCommand getForWarrantyContract() {
+		return new SetTableNamesCommand("warrantycontracts", "Warranty_Contracts");
 	}
-
-	public static SetTableNamesCommand getForServiceContractLineItems() {
-		return new SetTableNamesCommand("servicecontractlineitems", "ServiceContractLineItems");
+	
+	public static SetTableNamesCommand getForWarrantyContractLineItems() {
+		return new SetTableNamesCommand("warrantycontractlineitems", "WarrantyContractLineItems");
 	}
 	
 	public static SetTableNamesCommand getForWorkorderService() {
 		return new SetTableNamesCommand("workorderService", "Workorder_service");
+	}
+
+	public static SetTableNamesCommand getForRentalLeaseContract() {
+		return new SetTableNamesCommand("rentalleasecontracts", "Rental_Lease_Contracts");
+	}
+
+	public static SetTableNamesCommand getForRentalLeaseContractLineItem() {
+		return new SetTableNamesCommand("rentalleasecontractlineitems", "RentalLeaseContractLineItems");
+	}
+
+	public static SetTableNamesCommand getForToolTypeVendor() {
+		return new SetTableNamesCommand("toolVendors", "Tool_vendors");
 	}
 
 	public static SetTableNamesCommand getForShipment() {
@@ -361,6 +375,10 @@ public class SetTableNamesCommand implements Command {
 	}
 	public static SetTableNamesCommand getForShiftRotation() {
 		return new SetTableNamesCommand("shiftRotation", "Shift_Rotation");
+	}
+
+	public static SetTableNamesCommand getForTermsAndConditions() {
+		return new SetTableNamesCommand("termsandconditions", "Terms_And_Conditions");
 	}
 
 	public static void setForModule (Context context, String moduleName) {

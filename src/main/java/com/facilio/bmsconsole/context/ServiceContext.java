@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.List;
+
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class ServiceContext extends ModuleBaseWithCustomFields{
@@ -62,5 +64,14 @@ private ServiceStatus status;
 			return null;
 		}
 	}
+	
+	private List<ServiceVendorContext> serviceVendors;
+	public List<ServiceVendorContext> getServiceVendors() {
+		return serviceVendors;
+	}
+	public void setServiceVendors(List<ServiceVendorContext> serviceVendors) {
+		this.serviceVendors = serviceVendors;
+	}
+	
 
 }

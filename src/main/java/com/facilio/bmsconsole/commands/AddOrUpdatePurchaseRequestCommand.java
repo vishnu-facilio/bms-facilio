@@ -41,7 +41,7 @@ public class AddOrUpdatePurchaseRequestCommand implements Command {
 			FacilioModule module = modBean.getModule(moduleName);
 			List<FacilioField> fields = modBean.getAllFields(moduleName);
 			
-			FacilioModule lineModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_REQUEST_LINE_ITEMS);
+			FacilioModule lineModule = modBean.getModule(FacilioConstants.ContextNames.SERVICE_VENDOR);
 			
 			if (CollectionUtils.isEmpty(purchaseRequestContext.getLineItems())) {
 				throw new Exception("Line items cannot be empty");

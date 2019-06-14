@@ -185,8 +185,10 @@ public class RentalLeaseContractAction extends FacilioAction{
 	public String addRentalLeaseContract() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, rentalLeaseContract);
+		context.put(FacilioConstants.ContextNames.IS_CONTRACT_REVISED, false );
 		
-		Chain chain = TransactionChainFactory.getAddPurchaseContractChain();
+		
+		Chain chain = TransactionChainFactory.getAddRentalLeaseContractChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACT, context.get(FacilioConstants.ContextNames.RECORD));
@@ -243,12 +245,25 @@ public class RentalLeaseContractAction extends FacilioAction{
 	public String reviseContract() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, recordId );
-		Chain chain = TransactionChainFactory.getActivePurchaseContractPrice();
+		context.put(FacilioConstants.ContextNames.IS_CONTRACT_REVISED, true );
+		
+		Chain chain = TransactionChainFactory.getAddRentalLeaseContractChain();
 		chain.execute(context);
 		
-		setResult(FacilioConstants.ContextNames.UNIT_PRICE, context.get(FacilioConstants.ContextNames.UNIT_PRICE));
+		setResult(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS, context.get(FacilioConstants.ContextNames.RECORD));
 		
 		return SUCCESS;
 	}
 
+	public String duplicateContract() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, rentalLeaseContract );
+		
+		Chain chain = TransactionChainFactory.getDuplicateRentalLeaseContract();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS, context.get(FacilioConstants.ContextNames.RECORD));
+		
+		return SUCCESS;
+	}
 }

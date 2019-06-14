@@ -10,6 +10,7 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ServiceContext;
+import com.facilio.bmsconsole.context.ServiceVendorContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -87,10 +88,10 @@ public class ServiceAction extends FacilioAction{
 		this.status = status;
 	}
 
+	
 	public String addOrUpdateService() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, service);
-		
 		Chain chain = TransactionChainFactory.getAddOrUpdateServiceChain();
 		chain.execute(context);
 		

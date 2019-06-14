@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -75,9 +76,13 @@ public class GetRentalLeaseContractListCommand implements Command{
 		
 		if(assetId != null && assetId > 0) {
 			assetAssociatedIds = ContractsAPI.fetchAssociatedContractIds(assetId);
-			ids.addAll(assetAssociatedIds);
+			if(CollectionUtils.isNotEmpty(assetAssociatedIds)) {
+				ids.addAll(assetAssociatedIds);
+			}
 		}
-		ids.addAll(idsToSelect);
+		if(CollectionUtils.isNotEmpty(idsToSelect)) {
+			ids.addAll(idsToSelect);
+		}
 		
 		
 		if (ids != null && !ids.isEmpty()) {
@@ -120,6 +125,10 @@ public class GetRentalLeaseContractListCommand implements Command{
 		}
 
 		List<RentalLeaseContractContext> records = builder.get();
+		for(RentalLeaseContractContext record : records) {
+			record.setAssetIds(ContractsAPI.fetchAssociatedAssets(record.getId()));
+		}
+	
 	
 		if (records != null && !records.isEmpty()) {
 			if (getCount != null && getCount) {

@@ -2078,6 +2078,10 @@
 			<param name="moduleName">purchaseorder</param>
 			<param name="permission">READ</param>
 		</action>
+		<action name="getServicePriceForVendor" class="com.facilio.bmsconsole.actions.PurchaseRequestAction" method="getServicePriceForVendor">
+			<param name="moduleName">purchaseorder</param>
+			<param name="permission">READ</param>
+		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.PurchaseRequestAction" method="getPurchaseRequestList">
 			<param name="viewName">{1}</param>
 			<param name="moduleName">purchaseorder</param>
@@ -2117,9 +2121,17 @@
 			<param name="moduleName">purchaseorder</param>
 			<param name="permission">READ</param>
 		</action>
+		<action name="usePoServiceLineItem" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="usePoServiceLineItems">
+			<param name="moduleName">purchaseorder</param>
+			<param name="permission">UPDATE</param>
+		</action>
 		<action name="deleteLineItem" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="deleteLineItem">
 			<param name="moduleName">purchaseorder</param>
 			<param name="permission">DELETE</param>
+		</action>
+		<action name="getAvailableServiceLineItems" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="getAvailableServiceLineItems">
+			<param name="moduleName">purchaseorder</param>
+			<param name="permission">READ</param>
 		</action>
 		<action name="convertPrToPo" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="convertPRToPO">
 			<param name="moduleName">purchaseorder</param>
@@ -2138,6 +2150,10 @@
 			<param name="permission">APPROVE_REJECT_WORKREQUEST</param>
 		</action>
 		 <action name="filterPO" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="filterPoOnInventoryTypeAndStoreRoomId">
+			<param name="moduleName">purchaseorder</param>
+			<param name="permission">READ</param>
+		</action>
+		<action name="getServicePriceForVendor" class="com.facilio.bmsconsole.actions.PurchaseOrderAction" method="getServicePriceForVendor">
 			<param name="moduleName">purchaseorder</param>
 			<param name="permission">READ</param>
 		</action>
@@ -2217,6 +2233,16 @@
 			<param name="moduleName">contract</param>
 			<param name="permission">READ</param>
 		</action>
+		<action name="reviseContract" class="com.facilio.bmsconsole.actions.PurchaseContractsAction" method="reviseContract">
+			<param name="moduleName">contract</param>
+			<param name="permission">READ</param>
+		</action>
+
+		<action name="duplicateContract" class="com.facilio.bmsconsole.actions.PurchaseContractsAction" method="duplicateContract">
+			<param name="moduleName">contract</param>
+			<param name="permission">READ</param>
+		</action>
+
 		 <action name="*" class="com.facilio.bmsconsole.actions.PurchaseContractsAction" method="getPurchaseContractList">
 			<param name="viewName">{1}</param>
 			<param name="moduleName">contract</param>
@@ -2250,6 +2276,15 @@
 			<param name="moduleName">contract</param>
 			<param name="permission">DELETE</param>
 		</action>
+		<action name="reviseContract" class="com.facilio.bmsconsole.actions.LabourContractAction" method="reviseContract">
+			<param name="moduleName">contract</param>
+			<param name="permission">READ</param>
+		</action>
+		<action name="duplicateContract" class="com.facilio.bmsconsole.actions.LabourContractAction" method="duplicateContract">
+			<param name="moduleName">contract</param>
+			<param name="permission">READ</param>
+		</action>
+
 		 <action name="*" class="com.facilio.bmsconsole.actions.LabourContractAction" method="getLabourContractList">
 			<param name="viewName">{1}</param>
 			<param name="moduleName">contract</param>
@@ -2597,36 +2632,96 @@
 		
 	</package>
 	
-	<package name="serviceContractsApi" namespace="/api/v2/servicecontract" extends="v2Api">
-		<action name="list" class="com.facilio.bmsconsole.actions.ServiceContractAction" method="getServiceContractList">
+	<package name="warrantyContractsApi" namespace="/api/v2/warrantycontract" extends="v2Api">
+		<action name="list" class="com.facilio.bmsconsole.actions.WarrantyContractAction" method="getWarrantyContractList">
 			<param name="moduleName">contract</param>
 			<param name="permission">READ</param>
 		</action>
-		<action name="getById" class="com.facilio.bmsconsole.actions.ServiceContractAction" method="getServiceContractDetails">
+		<action name="getById" class="com.facilio.bmsconsole.actions.WarrantyContractAction" method="getWarrantyContractDetails">
 			<param name="moduleName">contract</param>
 			<param name="permission">READ</param>
 		</action>
-			<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.ServiceContractAction" method="addServiceContract">
+			<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.WarrantyContractAction" method="addWarrantyContract">
 			<param name="moduleName">contract</param>
 			<param name="permission">CREATE,UPDATE</param>
 		</action>
-			<action name="changeStatus" class="com.facilio.bmsconsole.actions.ServiceContractAction" method="bulkStatusUpdate">
+			<action name="changeStatus" class="com.facilio.bmsconsole.actions.WarrantyContractAction" method="bulkStatusUpdate">
 			<param name="moduleName">contract</param>
 			<param name="permission">APPROVE_REJECT_WORKREQUEST</param>
 		</action>
-		<action name="serviceContractCount" class="com.facilio.bmsconsole.actions.ServiceContractAction" method="serviceContractCount">
+		<action name="warrantyContractCount" class="com.facilio.bmsconsole.actions.WarrantyContractAction" method="warrantyContractCount">
 			<param name="moduleName">contract</param>
 			<param name="permission">READ</param>
 		</action>
-		<action name="delete" class="com.facilio.bmsconsole.actions.ServiceContractAction" method="deleteServiceContract">
+		<action name="delete" class="com.facilio.bmsconsole.actions.WarrantyContractAction" method="deleteWarrantyContract">
 			<param name="moduleName">contract</param>
 			<param name="permission">DELETE</param>
 		</action>
-		 <action name="*" class="com.facilio.bmsconsole.actions.ServiceContractAction" method="getServiceContractList">
+		 <action name="getWarrantyContractForAsset" class="com.facilio.bmsconsole.actions.WarrantyContractAction" method="getWarrantyContractForAsset">
+			<param name="moduleName">contract</param>
+			<param name="permission">READ</param>
+		</action>
+		<action name="reviseContract" class="com.facilio.bmsconsole.actions.WarrantyContractAction" method="reviseContract">
+			<param name="moduleName">contract</param>
+			<param name="permission">READ</param>
+		</action>
+		<action name="duplicateContract" class="com.facilio.bmsconsole.actions.WarrantyContractAction" method="duplicateContract">
+			<param name="moduleName">contract</param>
+			<param name="permission">READ</param>
+		</action>
+		 <action name="*" class="com.facilio.bmsconsole.actions.WarrantyContractAction" method="getWarrantyContractList">
 			<param name="viewName">{1}</param>
 			<param name="moduleName">contract</param>
 			<param name="permission">READ</param>
 		</action>
+
+
+	</package>
+
+	<package name="rentalLeaseContractsApi" namespace="/api/v2/rentalleasecontract" extends="v2Api">
+		<action name="list" class="com.facilio.bmsconsole.actions.RentalLeaseContractAction" method="getRentalLeaseContractList">
+			<param name="moduleName">contract</param>
+			<param name="permission">READ</param>
+		</action>
+		<action name="getById" class="com.facilio.bmsconsole.actions.RentalLeaseContractAction" method="getRentalLeaseContractDetails">
+			<param name="moduleName">contract</param>
+			<param name="permission">READ</param>
+		</action>
+			<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.RentalLeaseContractAction" method="addRentalLeaseContract">
+			<param name="moduleName">contract</param>
+			<param name="permission">CREATE,UPDATE</param>
+		</action>
+			<action name="changeStatus" class="com.facilio.bmsconsole.actions.RentalLeaseContractAction" method="bulkStatusUpdate">
+			<param name="moduleName">contract</param>
+			<param name="permission">APPROVE_REJECT_WORKREQUEST</param>
+		</action>
+		<action name="rentalLeaseContractCount" class="com.facilio.bmsconsole.actions.RentalLeaseContractAction" method="rentalLeaseContractCount">
+			<param name="moduleName">contract</param>
+			<param name="permission">READ</param>
+		</action>
+		<action name="delete" class="com.facilio.bmsconsole.actions.RentalLeaseContractAction" method="deleteRentalLeaseContract">
+			<param name="moduleName">contract</param>
+			<param name="permission">DELETE</param>
+		</action>
+		 <action name="getWarrantyContractForAsset" class="com.facilio.bmsconsole.actions.RentalLeaseContractAction" method="getRentalLeaseContractForAsset">
+			<param name="moduleName">contract</param>
+			<param name="permission">READ</param>
+		</action>
+		<action name="reviseContract" class="com.facilio.bmsconsole.actions.RentalLeaseContractAction" method="reviseContract">
+			<param name="moduleName">contract</param>
+			<param name="permission">READ</param>
+		</action>
+		<action name="duplicateContract" class="com.facilio.bmsconsole.actions.RentalLeaseContractAction" method="duplicateContract">
+			<param name="moduleName">contract</param>
+			<param name="permission">READ</param>
+		</action>
+
+		 <action name="*" class="com.facilio.bmsconsole.actions.RentalLeaseContractAction" method="getRentalLeaseContractList">
+			<param name="viewName">{1}</param>
+			<param name="moduleName">contract</param>
+			<param name="permission">READ</param>
+		</action>
+
 
 	</package>
 	
@@ -2757,4 +2852,75 @@
 			<param name="viewName">{1}</param>
 		</action>
 	</package>
+
+
+
+
+
+	<package name="toolTypesVendorsApi" namespace="/api/v2/toolTypesVendors"
+		extends="v2Api">
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.ToolTypeVendorAction" method="deleteToolVendors">
+		</action>
+
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.ToolTypeVendorAction" method="udpateToolVendors">
+		</action>
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.ToolTypeVendorAction" method="addToolVendors">
+		</action>
+	</package>
+
+	<package name="toolVendorsList" namespace="/api/v2/toolTypesVendors/tool"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.ToolTypeVendorAction" method="toolVendorsList">
+			<param name = "toolTypesId">{1}</param>
+		</action>
+	</package>
+
+	<package name="toolTypesForVendorList" namespace="/api/v2/toolTypesForVendors/vendor"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.ToolTypeVendorAction" method="toolTypesForVendorsList">
+			<param name = "vendorsId">{1}</param>
+		</action>
+	</package>
+
+	<package name="termsAndConditionsApi" namespace="/api/v2/termsandconditions" extends="v2Api">
+		<action name="list" class="com.facilio.bmsconsole.actions.TermsAndConditionsAction" method="termsAndConditionsList">
+			<param name="moduleName">contract</param>
+			<param name="permission">READ</param>
+		</action>
+		<action name="getById" class="com.facilio.bmsconsole.actions.TermsAndConditionsAction" method="termsAndConditionsDetails">
+			<param name="moduleName">contract</param>
+			<param name="permission">READ</param>
+		</action>
+			<action name="add" class="com.facilio.bmsconsole.actions.TermsAndConditionsAction" method="addTermsAndConditions">
+			<param name="moduleName">contract</param>
+			<param name="permission">CREATE,UPDATE</param>
+		</action>
+			<action name="update" class="com.facilio.bmsconsole.actions.TermsAndConditionsAction" method="updateTermsAndConditions">
+			<param name="moduleName">contract</param>
+			<param name="permission">APPROVE_REJECT_WORKREQUEST</param>
+		</action>
+		<action name="delete" class="com.facilio.bmsconsole.actions.TermsAndConditionsAction" method="deleteTermsAndConditions">
+			<param name="moduleName">contract</param>
+			<param name="permission">DELETE</param>
+		</action>
+			<action name="termsAndConditionsCount" class="com.facilio.bmsconsole.actions.TermsAndConditionsAction" method="rentalLeaseContractCount">
+			<param name="moduleName">contract</param>
+			<param name="permission">READ</param>
+		</action>
+
+		 <action name="*" class="com.facilio.bmsconsole.actions.TermsAndConditionsAction" method="termsAndConditionsList">
+			<param name="viewName">{1}</param>
+			<param name="moduleName">contract</param>
+			<param name="permission">READ</param>
+		</action>
+
+
+	</package>
+
+
 </struts>

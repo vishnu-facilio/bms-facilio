@@ -11,8 +11,8 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ContractsContext;
-import com.facilio.bmsconsole.context.ServiceContractContext;
-import com.facilio.bmsconsole.context.ServiceContractLineItemContext;
+import com.facilio.bmsconsole.context.WarrantyContractContext;
+import com.facilio.bmsconsole.context.WarrantyContractLineItemContext;
 import com.facilio.bmsconsole.context.WorkOrderServiceContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
@@ -79,27 +79,27 @@ public class AddOrUpdateWorkorderServiceCommand implements Command{
 	private double getCostForService(long vendorId, long serviceId) throws Exception {
 	
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SERVICE_CONTRACTS);
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SERVICE_CONTRACTS);
-		SelectRecordsBuilder<ServiceContractContext> selectBuilder = new SelectRecordsBuilder<ServiceContractContext>()
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WARRANTY_CONTRACTS);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WARRANTY_CONTRACTS);
+		SelectRecordsBuilder<WarrantyContractContext> selectBuilder = new SelectRecordsBuilder<WarrantyContractContext>()
 				.select(fields).table(module.getTableName()).moduleName(module.getName())
-				.beanClass(ServiceContractContext.class).
+				.beanClass(WarrantyContractContext.class).
 				andCondition(CriteriaAPI.getCondition("VENDOR", "vendor", String.valueOf(vendorId), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition("STATUS", "status", String.valueOf(ContractsContext.Status.APPROVED.getValue()), NumberOperators.EQUALS))
 				
 				;
-		List<ServiceContractContext> activeServiceContracts = selectBuilder.get();
+		List<WarrantyContractContext> activeServiceContracts = selectBuilder.get();
 		if(CollectionUtils.isNotEmpty(activeServiceContracts)) {
-			FacilioModule lineItemModule = modBean.getModule(FacilioConstants.ContextNames.SERVICE_CONTRACTS_LINE_ITEMS);
-			List<FacilioField> lineItemFields = modBean.getAllFields(FacilioConstants.ContextNames.SERVICE_CONTRACTS_LINE_ITEMS);
-			SelectRecordsBuilder<ServiceContractLineItemContext> lineItemsBuilder = new SelectRecordsBuilder<ServiceContractLineItemContext>()
+			FacilioModule lineItemModule = modBean.getModule(FacilioConstants.ContextNames.WARRANTY_CONTRACTS_LINE_ITEMS);
+			List<FacilioField> lineItemFields = modBean.getAllFields(FacilioConstants.ContextNames.WARRANTY_CONTRACTS_LINE_ITEMS);
+			SelectRecordsBuilder<WarrantyContractLineItemContext> lineItemsBuilder = new SelectRecordsBuilder<WarrantyContractLineItemContext>()
 					.select(lineItemFields).table(lineItemModule.getTableName()).moduleName(lineItemModule.getName())
-					.beanClass(ServiceContractLineItemContext.class).
+					.beanClass(WarrantyContractLineItemContext.class).
 					andCondition(CriteriaAPI.getCondition("SERVICE", "service", String.valueOf(serviceId), NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition("SERVICE_CONTRACT", "serviceContract", String.valueOf(activeServiceContracts.get(0).getId()), NumberOperators.EQUALS))
 					
 					;
-			List<ServiceContractLineItemContext> serviceContractLineItems = lineItemsBuilder.get();
+			List<WarrantyContractLineItemContext> serviceContractLineItems = lineItemsBuilder.get();
 			if(CollectionUtils.isNotEmpty(serviceContractLineItems)) {
 				return serviceContractLineItems.get(0).getCost();
 			}

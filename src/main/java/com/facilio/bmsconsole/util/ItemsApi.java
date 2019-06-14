@@ -97,7 +97,7 @@ public class ItemsApi {
 
 
 
-	
+
 	public static Map<String, Long> getAllItemTypes() throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM_TYPES);
@@ -277,5 +277,22 @@ public class ItemsApi {
      throw new IllegalArgumentException("No appropriate item found");
     }
 
+
+
+	public static List<ItemContext> getItemsForType(long itemTypeId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
+		SelectRecordsBuilder<ItemContext> selectBuilder = new SelectRecordsBuilder<ItemContext>().select(fields)
+				.table(module.getTableName()).moduleName(module.getName()).beanClass(ItemContext.class)
+				.andCondition(CriteriaAPI.getCondition("ITEM_TYPES_ID", "itemType", String.valueOf(itemTypeId), NumberOperators.EQUALS))
+
+				;
+		List<ItemContext> items = selectBuilder.get();
+		if(!CollectionUtils.isEmpty(items)) {
+			return items;
+		}
+	 throw new IllegalArgumentException("No appropriate item found");
+	}
 
 }

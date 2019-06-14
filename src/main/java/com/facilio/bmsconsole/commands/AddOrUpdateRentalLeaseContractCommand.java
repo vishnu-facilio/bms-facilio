@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.context.ServiceContext;
 import com.facilio.bmsconsole.context.WarrantyContractContext;
 import com.facilio.bmsconsole.context.WarrantyContractLineItemContext;
 import com.facilio.bmsconsole.context.ContractsContext.ContractType;
+import com.facilio.bmsconsole.context.ContractsContext.Status;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.criteria.NumberOperators;
 import com.facilio.bmsconsole.modules.DeleteRecordBuilder;
@@ -42,6 +43,8 @@ public class AddOrUpdateRentalLeaseContractCommand implements Command{
 		// TODO Auto-generated method stub
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		RentalLeaseContractContext rentalLeaseContractContext = (RentalLeaseContractContext) context.get(FacilioConstants.ContextNames.RECORD);
+		boolean isContractRevised = (boolean) context.get(FacilioConstants.ContextNames.IS_CONTRACT_REVISED);
+		
 		if (rentalLeaseContractContext != null) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
@@ -56,7 +59,7 @@ public class AddOrUpdateRentalLeaseContractCommand implements Command{
 			}
 			rentalLeaseContractContext.setContractType(ContractType.RENTAL_LEASE);
 			
-			if (rentalLeaseContractContext.getId() > 0) {
+			if (!isContractRevised && rentalLeaseContractContext.getId() > 0) {
 				updateRecord(rentalLeaseContractContext, module, fields);
 				
 				DeleteRecordBuilder<RentalLeaseContractLineItemsContext> deleteBuilder = new DeleteRecordBuilder<RentalLeaseContractLineItemsContext>()
@@ -70,17 +73,36 @@ public class AddOrUpdateRentalLeaseContractCommand implements Command{
 						.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(AccountUtil.getCurrentOrg().getId()), NumberOperators.EQUALS));
 						;
 				deleteAssetRelationBuilder.delete();
-			} else {
-				
-				rentalLeaseContractContext.setStatus(WarrantyContractContext.Status.WAITING_FOR_APPROVAL);
-				addRecord(true,Collections.singletonList(rentalLeaseContractContext), module, fields);
+				updateLineItems(rentalLeaseContractContext);
+				updateAssetsAssociated(rentalLeaseContractContext);
+				addRecord(false,rentalLeaseContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
+			
+			} 
+			else if (isContractRevised && rentalLeaseContractContext.getId() > 0) {
+				if(rentalLeaseContractContext.getStatusEnum() == Status.APPROVED) {
+					RentalLeaseContractContext revisedContract = (RentalLeaseContractContext)rentalLeaseContractContext.clone();
+					addRecord(true,Collections.singletonList(revisedContract), module, fields);
+					rentalLeaseContractContext.setStatus(Status.REVISED);
+					updateRecord(rentalLeaseContractContext, module, fields);
+					updateLineItems(revisedContract);
+					updateAssetsAssociated(revisedContract);
+					addRecord(false,revisedContract.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
+				}
+				else {
+					throw new IllegalArgumentException("Only Approved contracts can be revised");
+				}
 			}
+			else {
+				rentalLeaseContractContext.setStatus(WarrantyContractContext.Status.WAITING_FOR_APPROVAL);
+				rentalLeaseContractContext.setRevisionNumber(0);
+				addRecord(true,Collections.singletonList(rentalLeaseContractContext), module, fields);
+				rentalLeaseContractContext.setParentId(rentalLeaseContractContext.getLocalId());
+				updateRecord(rentalLeaseContractContext, module, fields);
+				updateLineItems(rentalLeaseContractContext);
+				updateAssetsAssociated(rentalLeaseContractContext);
+				addRecord(false,rentalLeaseContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 			
-			updateLineItems(rentalLeaseContractContext);
-			updateAssetsAssociated(rentalLeaseContractContext);
-			
-			addRecord(false,rentalLeaseContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
-			
+			}
 			context.put(FacilioConstants.ContextNames.RECORD, rentalLeaseContractContext);
 		}
 		return false;
@@ -94,20 +116,22 @@ public class AddOrUpdateRentalLeaseContractCommand implements Command{
 		
 	private void updateAssetsAssociated(RentalLeaseContractContext contractContext) throws Exception {
 		List<Map<String, Object>> values = new ArrayList<Map<String,Object>>();
-		for (Long assetId : contractContext.getAssetIds()) {
-			Map<String, Object> val = new HashMap<String, Object>();
-			val.put("contractId", contractContext.getId());
-			val.put("assetId", assetId);
-			val.put("orgId", AccountUtil.getCurrentOrg().getId());
-			values.add(val);
+		if(CollectionUtils.isNotEmpty(contractContext.getAssetIds())) {
+			for (Long assetId : contractContext.getAssetIds()) {
+				Map<String, Object> val = new HashMap<String, Object>();
+				val.put("contractId", contractContext.getId());
+				val.put("assetId", assetId);
+				val.put("orgId", AccountUtil.getCurrentOrg().getId());
+				values.add(val);
+			}
+			FacilioModule associateAssetModule = ModuleFactory.getContractAssociatedAssetsModule();
+			List<FacilioField> fields = FieldFactory.getContractAssociatedAssetModuleFields();
+			GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
+		                    .table(associateAssetModule.getTableName())
+		                    .fields(fields);
+		    insertRecordBuilder.addRecords(values);
+		    insertRecordBuilder.save();
 		}
-		FacilioModule associateAssetModule = ModuleFactory.getContractAssociatedAssetsModule();
-		List<FacilioField> fields = FieldFactory.getContractAssociatedAssetModuleFields();
-		GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
-	                    .table(associateAssetModule.getTableName())
-	                    .fields(fields);
-	    insertRecordBuilder.addRecords(values);
-	    insertRecordBuilder.save();
 	}
 		
 	

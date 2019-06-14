@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.context;
 
 import java.util.List;
 
+import com.facilio.bmsconsole.context.ContractsContext.Status;
 import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class RentalLeaseContractContext extends ContractsContext {
@@ -18,7 +19,14 @@ public class RentalLeaseContractContext extends ContractsContext {
 	public void setLineItems(List<RentalLeaseContractLineItemsContext> lineItems) {
 		this.lineItems = lineItems;
 	}
+	public RentalLeaseContractContext() {
+		// TODO Auto-generated constructor stub
+	}
 	
+	public RentalLeaseContractContext(RentalLeaseContractContext rentalContract) {
+		super(rentalContract);
+		this.lineItems = rentalContract.lineItems;
+	}
 	private RentalLeaseContractType rentalLeaseContractType;
 	public RentalLeaseContractType getRentalLeaseContractTypeEnum() {
 		return rentalLeaseContractType;
@@ -60,5 +68,11 @@ public class RentalLeaseContractContext extends ContractsContext {
 	}
 	public void setAssetIds(List<Long> assetIds) {
 		this.assetIds = assetIds;
+	}
+	
+	public RentalLeaseContractContext clone() {
+		RentalLeaseContractContext rental = new RentalLeaseContractContext(this);
+		rental.setRentalLeaseContractType(this.getRentalLeaseContractType());
+		return rental;
 	}
 }

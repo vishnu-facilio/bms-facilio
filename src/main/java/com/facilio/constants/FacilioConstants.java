@@ -887,6 +887,8 @@ public class FacilioConstants {
 		public static final String SHOW_ITEM_FOR_WORKORDER = "showItemsForWorkorder";
 
 		public static final String ITEM_VENDORS = "itemVendors";
+		public static final String TOOL_VENDORS = "toolVendors";
+
 		public static final String TRANSACTION_TYPE = "transactionType";
 		public static final String TRANSACTION_STATE = "transactionState";
 
@@ -946,7 +948,8 @@ public class FacilioConstants {
 		public static final String PO_LINE_ITEMS_SERIAL_NUMBERS = "poLineItemSerialNumbers";
 		public static final String SERIAL_NUMBERS = "serialNumbers";
 		public static final String ASSETS = "assets";
-		
+		public static final String PO_LINE_ITEMS = "poLineItems";
+
 		public static final String TOTAL_COST = "totalCost";
 		public static final String TOTAL_QUANTITY = "totalQuantity";
 		public static final String WO_TOTAL_COST = "woTotalCost";
@@ -1019,9 +1022,32 @@ public class FacilioConstants {
 
 		public static final String BEAN_CLASS_NAME = "beanClassName";
 		
+		public static final String SERVICE_VENDOR = "serviceVendors";
+
+		public static final String WARRANTY_CONTRACTS = "warrantycontracts";
+		public static final String WARRANTY_CONTRACT = "warrantycontract";
+		public static final String WARRANTY_CONTRACTS_LINE_ITEMS = "warrantycontractlineitems";
 		public static final String WO_SERVICE = "workorderService";
 		public static final String WO_SERVICES = "workorderServices";
 		public static final String WO_SERVICE_IDS = "workorderServiceIds";
+		
+		public static final String CONTRACT_ASSET_RELATION = "Contracts_Associated_Assets";
+		public static final String WARRANTY_CONTRACT_TYPE = "Warranty_Contract_Type";
+
+		public static final String RENTAL_LEASE_CONTRACTS = "rentalleasecontracts";
+		public static final String RENTAL_LEASE_CONTRACT = "rentalleasecontract";
+		public static final String RENTAL_LEASE_CONTRACTS_LINE_ITEMS = "rentalleasecontractlineitems";
+
+		public static final String TOOL_VENDORS_LIST = "toolTypesVendorsList";
+		public static final String IS_CONTRACT_REVISED = "isContractRevised";
+
+		public static final String TERMS_AND_CONDITIONS = "termsandconditions";
+		public static final String TERMS_AND_CONDITION = "termsandcondition";
+
+		public static final String IS_MARK_AS_DELETE = "markAsDelete";
+
+		
+		
 
 
 
@@ -1138,9 +1164,18 @@ public class FacilioConstants {
 			classMap.put(INVENTORY_REQUEST, InventoryRequestContext.class);
 			classMap.put(INVENTORY_REQUEST_LINE_ITEMS, InventoryRequestLineItemContext.class);
 			classMap.put(SERVICE, ServiceContext.class);
-			classMap.put(SERVICE_CONTRACTS, ServiceContractContext.class);
-			classMap.put(SERVICE_CONTRACTS_LINE_ITEMS, ServiceContractLineItemContext.class);
+			classMap.put(WARRANTY_CONTRACTS, WarrantyContractContext.class);
+			classMap.put(WARRANTY_CONTRACTS_LINE_ITEMS, WarrantyContractLineItemContext.class);
 			classMap.put(WO_SERVICE, WorkOrderServiceContext.class);
+
+			classMap.put(SERVICE_VENDOR, ServiceVendorContext.class);
+			classMap.put(RENTAL_LEASE_CONTRACTS, RentalLeaseContractContext.class);
+			classMap.put(RENTAL_LEASE_CONTRACTS_LINE_ITEMS, RentalLeaseContractLineItemsContext.class);
+			classMap.put(RENTAL_LEASE_CONTRACTS_LINE_ITEMS, RentalLeaseContractLineItemsContext.class);
+			classMap.put(TOOL_VENDORS, ToolTypeVendorContext.class);
+			classMap.put(TERMS_AND_CONDITIONS, TermsAndConditionContext.class);
+
+
 
 
 			classMap.put(ATTENDANCE, AttendanceContext.class);

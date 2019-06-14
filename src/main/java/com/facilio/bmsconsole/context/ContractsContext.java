@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.bmsconsole.context.ContractsContext.Status;
+import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class ContractsContext extends ModuleBaseWithCustomFields{
 
@@ -8,6 +10,25 @@ public class ContractsContext extends ModuleBaseWithCustomFields{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
+	public ContractsContext() {
+		// TODO Auto-generated constructor stub
+	}
+
+	public ContractsContext(ContractsContext contract) {
+		setContractType(contract.getContractType());
+		setName(contract.getName());
+		setDescription(contract.getDescription());
+		setVendor(contract.getVendor());
+		setFromDate(contract.getFromDate());
+		setEndDate(contract.getFromDate());
+		setRenewalDate(contract.getRenewalDate());
+		setRevisionNumber(contract.getRevisionNumber() + 1);
+		setTotalCost(contract.getTotalCost());
+		setStatus(Status.WAITING_FOR_APPROVAL);
+		setParentId(contract.getParentId());
+		setId(-1);
+	}
 
 	private String name;
 	private String description;
@@ -73,12 +94,23 @@ public class ContractsContext extends ModuleBaseWithCustomFields{
 	}
 	private double totalCost = -1;
 	
+	private long revisionNumber = -1;
+
+
+	public long getRevisionNumber() {
+		return revisionNumber;
+	}
+	public void setRevisionNumber(long revisionNumber) {
+		this.revisionNumber = revisionNumber;
+	}
+
 	public static enum Status {
 		WAITING_FOR_APPROVAL(),
 		APPROVED(),
 		CLOSED(),
 		CANCELLED(),
-		SUSPENDED()
+		SUSPENDED(),
+		REVISED()
 		;
 		
 		public int getValue() {
@@ -113,7 +145,8 @@ public class ContractsContext extends ModuleBaseWithCustomFields{
 	public static enum ContractType {
 		PURCHASE(),
 		LABOUR(),
-		SERVICE()
+		WARRANTY(),
+		RENTAL_LEASE()
 		
 		;
 		
@@ -133,5 +166,11 @@ public class ContractsContext extends ModuleBaseWithCustomFields{
 	private long endDate = -1;
 	private long renewalDate = -1;
 	
-	
+	private long parentId;
+	public long getParentId() {
+		return parentId;
+	}
+	public void setParentId(long parentId) {
+		this.parentId = parentId;
+	}
 }

@@ -7,14 +7,14 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ServiceContractContext;
+import com.facilio.bmsconsole.context.WarrantyContractContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
 import com.facilio.bmsconsole.modules.DeleteRecordBuilder;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
-public class DeleteServiceContractCommand implements Command{
+public class DeleteWarrantyContractCommand implements Command{
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -25,7 +25,7 @@ public class DeleteServiceContractCommand implements Command{
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
 			
-			DeleteRecordBuilder<ServiceContractContext> deleteRecordBuilder = new DeleteRecordBuilder<ServiceContractContext>()
+			DeleteRecordBuilder<WarrantyContractContext> deleteRecordBuilder = new DeleteRecordBuilder<WarrantyContractContext>()
 					.moduleName(moduleName)
 					.andCondition(CriteriaAPI.getIdCondition(recordIds, module));
 			int updatedCount = deleteRecordBuilder.markAsDelete();

@@ -2500,8 +2500,10 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(new PurchaseOrderAutoCompleteCommand());
 			c.addCommand(getAddOrUpdateItemTypeVendorChain());
+			c.addCommand(getAddOrUpdateToolTypeVendorChain());
 			c.addCommand(getBulkAddToolChain());
 			c.addCommand(getAddBulkItemChain());
+			c.addCommand(new UpdateServiceVendorPriceCommand());
 			return c;
 		}
 		
@@ -2509,8 +2511,10 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(new PurchaseOrderCompleteCommand());
 			c.addCommand(getAddOrUpdateItemTypeVendorChain());
+			c.addCommand(getAddOrUpdateToolTypeVendorChain());
 			c.addCommand(getBulkAddToolChain());
 			c.addCommand(getAddBulkItemChain());
+			c.addCommand(new UpdateServiceVendorPriceCommand());
 			return c;
 		}
 		
@@ -2538,7 +2542,13 @@ public class TransactionChainFactory {
 			c.addCommand(new AddOrUpdateItemTypeVendorCommand());
 			return c;
 		}
-		
+
+		public static Chain getAddOrUpdateToolTypeVendorChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddOrUpdateToolVendorCommand());
+			return c;
+		}
+
 		public static  Chain getImportItemChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new ImportItemCommand());
@@ -2875,36 +2885,37 @@ public class TransactionChainFactory {
 
 		public static Chain getAddOrUpdateServiceChain() {
 			Chain chain = getDefaultChain();
-			chain.addCommand(SetTableNamesCommand.getForService());
+			chain.addCommand(SetTableNamesCommand.getForServices());
 			chain.addCommand(new AddOrUpdateServiceCommand());
 			return chain;
 		}
 
 		public static Chain getServiceDeleteChain() {
 			Chain c = getDefaultChain();
-			c.addCommand(SetTableNamesCommand.getForService());
+			c.addCommand(SetTableNamesCommand.getForServices());
 			c.addCommand(new DeleteServiceCommand());
 			return c;
 		}
-
-		public static Chain getUpdateServiceContractStatusChain() {
+		
+		public static Chain getUpdateWarrantyContractStatusChain() {
 			Chain chain = getDefaultChain();
-			chain.addCommand(SetTableNamesCommand.getForServiceContract());
-			chain.addCommand(new UpdateBulkServiceContractCommand());
+			chain.addCommand(SetTableNamesCommand.getForWarrantyContract());
+			chain.addCommand(new UpdateBulkWarrantyContractCommand());
 			return chain;
 		}
-
-		public static Chain getAddServiceContractChain() {
+		
+		public static Chain getAddWarrantyContractChain() {
 			Chain chain = getDefaultChain();
-			chain.addCommand(SetTableNamesCommand.getForServiceContract());
-			chain.addCommand(new AddOrUpdateServiceContractCommand());
+			chain.addCommand(SetTableNamesCommand.getForWarrantyContract());
+			chain.addCommand(new AddOrUpdateWarrantyContractCommand());
+			chain.addCommand(getWarrantContractTotalCostChain());
 			return chain;
 		}
-
-		public static Chain getServiceContractDeleteChain() {
+		
+		public static Chain getWarrantyContractDeleteChain() {
 			Chain c = getDefaultChain();
-			c.addCommand(SetTableNamesCommand.getForServiceContract());
-			c.addCommand(new DeleteServiceContractCommand());
+			c.addCommand(SetTableNamesCommand.getForWarrantyContract());
+			c.addCommand(new DeleteWarrantyContractCommand());
 			return c;
 		}
 		public static Chain getPMPlannerSettingsChain() {
@@ -3266,6 +3277,124 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+		public static Chain getServicePriceForVendor() {
+			Chain c = getDefaultChain();
+			c.addCommand(new GetServicePriceForVendorCommand());
+			return c;
+		}
+
+		public static Chain getUseLineItemsForServiceChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UsePOServiceLineItemsCommand());
+			c.addCommand(getAddOrUdpateWorkorderServiceChain());
+			c.addCommand(new UpdateUsedQuanityForPoServiceItemCommand());
+
+			return c;
+		}
+
+		public static Chain getRentalLeaseContractDeleteChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForRentalLeaseContract());
+			c.addCommand(new GenericDeleteModuleDataCommand());
+			return c;
+		}
+
+		public static Chain getUpdateRentalLeaseContractStatusChain() {
+			Chain chain = getDefaultChain();
+			chain.addCommand(SetTableNamesCommand.getForRentalLeaseContract());
+			chain.addCommand(new UpdateBulkRentalLeaseContractStatusCommand());
+			return chain;
+		}
+
+		public static Chain getAddRentalLeaseContractChain() {
+			Chain chain = getDefaultChain();
+			chain.addCommand(SetTableNamesCommand.getForRentalLeaseContract());
+			chain.addCommand(new AddOrUpdateRentalLeaseContractCommand());
+		    chain.addCommand(getRentalLeaseTotalCostChain()); //roll up for calculating total cost
+			return chain;
+		}
+
+		public static Chain getAddToolTypesVendorsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForToolTypeVendor());
+			c.addCommand(new GenericAddModuleDataListCommand());
+			return c;
+		}
+
+		public static Chain getUpdateToolTypesVendorsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForToolTypeVendor());
+			c.addCommand(new GenericUpdateListModuleDataCommand());
+			return c;
+		}
+
+		public static Chain getDeleteToolTypesVendorsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForToolTypeVendor());
+			c.addCommand(new GenericDeleteModuleDataCommand());
+			return c;
+		}
+
+		public static Chain getRentalLeaseTotalCostChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new RentalLeaseContractTotalCostRollUpCommand());
+			return c;
+		}
+
+		public static Chain getWarrantContractTotalCostChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new WarrantyContractTotalCostRollUpCommand());
+			return c;
+		}
+
+
+		public static Chain getDuplicatePurchaseContract() {
+			Chain c = getDefaultChain();
+			c.addCommand(new DuplicatePurchaseContractCommand());
+			return c;
+		}
+
+		public static Chain getDuplicateLabourContract() {
+			Chain c = getDefaultChain();
+			c.addCommand(new DuplicateLabourContractCommand());
+			return c;
+		}
+
+		public static Chain getDuplicateWarrantyContract() {
+			Chain c = getDefaultChain();
+			c.addCommand(new DuplicateWarrantyContractCommand());
+			return c;
+		}
+
+		public static Chain getDuplicateRentalLeaseContract() {
+			Chain c = getDefaultChain();
+			c.addCommand(new DuplicateRentalLeaseContractCommand());
+			return c;
+		}
+
+		public static Chain getAddTermsAndConditionsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForTermsAndConditions());
+			c.addCommand(new GenericAddModuleDataCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
+			return c;
+		}
+
+		public static Chain getDeleteTermsAndConditionsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForTermsAndConditions());
+			c.addCommand(new GenericDeleteModuleDataCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
+			return c;
+		}
+
+
+		public static Chain getUpdateTermsAndConditionsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForTermsAndConditions());
+			c.addCommand(new GenericUpdateModuleDataCommand());
+			return c;
+		}
 }
 
 

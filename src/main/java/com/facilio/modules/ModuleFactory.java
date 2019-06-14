@@ -88,6 +88,7 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.GRAPHICS, getGraphicsModule());
 		moduleMap.put(FacilioConstants.ContextNames.NEW_READING_ALARM, getReadingAlarmModule());
 
+
 		return moduleMap;
 	}
 	
@@ -368,13 +369,13 @@ public class ModuleFactory {
 		
 		return scheduledRule;
 	}
-	
+
 	public static FacilioModule getScheduledWorkflowModule() {
 		FacilioModule scheduledRule = new FacilioModule();
 		scheduledRule.setName("ScheduledWorkflow");
 		scheduledRule.setDisplayName("Scheduled Workflow");
 		scheduledRule.setTableName("Scheduled_Workflow");
-		
+
 		return scheduledRule;
 	}
 	
@@ -404,8 +405,8 @@ public class ModuleFactory {
 	public static FacilioModule getApprovalStepsModule() {
 		return constructModule("approvalSteps", "Approval Steps", "Approval_Steps");
 	}
-	
-	
+
+
 	public static FacilioModule getRuleTemplatesRelModule() {
 		return constructModule("ruleTemplatesRel", "Rule Templates Rel", "Rule_Templates_Rel");
 	}
@@ -804,7 +805,7 @@ public class ModuleFactory {
 		module.setTableName("Shift");
 		return module;
 	}
-	
+
 	public static FacilioModule getBreakModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("break");
@@ -970,7 +971,7 @@ public class ModuleFactory {
 		dashboardWigetModule.setExtendModule(getWidgetModule());
 		return dashboardWigetModule;
 	}
-	
+
 	public static FacilioModule getWidgetGraphicsModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();
 		dashboardWigetModule.setTableName("Widget_Graphics");
@@ -1162,8 +1163,8 @@ public class ModuleFactory {
 		module.setTableName("Workflow");
 		return module;
 	}
-	
-	
+
+
 	public static FacilioModule getWorkflowUserFunctionModule() {
 		FacilioModule module = new FacilioModule();
 		module.setExtendModule(getWorkflowModule());
@@ -1591,7 +1592,7 @@ public class ModuleFactory {
 		module.setTableName("Shift_Break_Rel");
 		return module;
 	}
-	
+
 	public static FacilioModule getCostsModule() {
 		FacilioModule costs = new FacilioModule();
 		costs.setName("cost");
@@ -2113,11 +2114,11 @@ public class ModuleFactory {
 	}
 	
 	public static FacilioModule getInventoryRequestModule() {
-		FacilioModule gatePass = new FacilioModule();
-		gatePass.setName("inventoryrequest");
-		gatePass.setDisplayName("Inventory Request");
-		gatePass.setTableName("Inventory_Requests");
-		return gatePass;
+		FacilioModule invReq = new FacilioModule();
+		invReq.setName("inventoryrequest");
+		invReq.setDisplayName("Inventory Request");
+		invReq.setTableName("Inventory_Requests");
+		return invReq;
 	}
 
 	public static FacilioModule getPageModule() {
@@ -2202,6 +2203,14 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getContractAssociatedAssetsModule() {
+		FacilioModule associatedAssetModule = new FacilioModule();
+		associatedAssetModule.setName("associatedassets");
+		associatedAssetModule.setDisplayName("Associated Assets");
+		associatedAssetModule.setTableName("Contracts_Associated_Assets");
+		return associatedAssetModule;
+	}
+
 	public static FacilioModule getShipmentModule() {
 		FacilioModule labourcontract = new FacilioModule();
 		labourcontract.setName("shipment");
@@ -2209,7 +2218,7 @@ public class ModuleFactory {
 		labourcontract.setTableName("Shipment");
 		return labourcontract;
 	}
-	
+
 	public static FacilioModule getAttendanceModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("attendance");
@@ -2217,7 +2226,7 @@ public class ModuleFactory {
 		module.setTableName("Attendance");
 		return module;
 	}
-	
+
 	public static FacilioModule getAttendanceTransactionModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("attendanceTransaction");
@@ -2225,7 +2234,7 @@ public class ModuleFactory {
 		module.setTableName("Attendance_Transactions");
 		return module;
 	}
-	
+
 	public static FacilioModule getGraphicsModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("graphics");
@@ -2264,7 +2273,7 @@ public class ModuleFactory {
 		module.setTableName("Break_Transaction");
 		return module;
 	}
-	
+
 	public static FacilioModule getStoreNotificationConfigModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("storeRoomRule");

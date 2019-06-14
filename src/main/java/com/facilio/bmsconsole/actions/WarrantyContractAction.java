@@ -9,11 +9,11 @@ import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.ServiceContractContext;
+import com.facilio.bmsconsole.context.WarrantyContractContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
-public class ServiceContractAction extends FacilioAction {
+public class WarrantyContractAction extends FacilioAction {
 
 	private static final long serialVersionUID = 1L;
 
@@ -53,13 +53,13 @@ public class ServiceContractAction extends FacilioAction {
 		this.fetchCount = fetchCount;
 	}
 	
-	private ServiceContractContext serviceContract;
+	private WarrantyContractContext warrantyContract;
 	
-	public ServiceContractContext getServiceContract() {
-		return serviceContract;
+	public WarrantyContractContext getWarrantyContract() {
+		return warrantyContract;
 	}
-	public void setServiceContract(ServiceContractContext serviceContract) {
-		this.serviceContract = serviceContract;
+	public void setWarrantyContract(WarrantyContractContext warrantyContract) {
+		this.warrantyContract = warrantyContract;
 	}
 
 	private boolean includeParentFilter;
@@ -81,13 +81,28 @@ public class ServiceContractAction extends FacilioAction {
 		this.status = status;
 	}
 
+	private int type;
+	private long assetId;
 	
-	public String getServiceContractList() throws Exception {
+	
+	public int getType() {
+		return type;
+	}
+	public void setType(int type) {
+		this.type = type;
+	}
+	public long getAssetId() {
+		return assetId;
+	}
+	public void setAssetId(long assetId) {
+		this.assetId = assetId;
+	}
+	public String getWarrantyContractList() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.FETCH_COUNT, getFetchCount());
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, "servicecontracts");
-		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Service_Contracts.ID asc");
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, "warrantycontracts");
+		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Warranty_Contracts.ID asc");
  		
  		if(getFilters() != null)
  		{	
@@ -99,7 +114,7 @@ public class ServiceContractAction extends FacilioAction {
 		}
  		if (getSearch() != null) {
  			JSONObject searchObj = new JSONObject();
- 			searchObj.put("fields", "servicecontracts.name");
+ 			searchObj.put("fields", "warrantycontracts.name");
  			searchObj.put("query", getSearch());
 	 		context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
  		}
@@ -110,15 +125,15 @@ public class ServiceContractAction extends FacilioAction {
  	 		pagination.put("perPage", 5000);
  	 	}
  	 	
-		Chain chain = ReadOnlyChainFactory.getServiceContractListChain();
+		Chain chain = ReadOnlyChainFactory.getWarrantyContractListChain();
 		chain.execute(context);
 		
 		if (getFetchCount()) {
 			setResult(FacilioConstants.ContextNames.RECORD_COUNT,(Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
 		}
 		else {
-			List<ServiceContractContext> serviceContracts = (List<ServiceContractContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
-			setResult(FacilioConstants.ContextNames.SERVICE_CONTRACTS, serviceContracts);
+			List<WarrantyContractContext> warrantyContracts = (List<WarrantyContractContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+			setResult(FacilioConstants.ContextNames.WARRANTY_CONTRACTS, warrantyContracts);
 		}
 		return SUCCESS;
 	}
@@ -129,7 +144,7 @@ public class ServiceContractAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
 		context.put(FacilioConstants.ContextNames.STATUS, getStatus());
 		
-		Chain chain = TransactionChainFactory.getUpdateServiceContractStatusChain();
+		Chain chain = TransactionChainFactory.getUpdateWarrantyContractStatusChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
@@ -137,43 +152,75 @@ public class ServiceContractAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	public String addServiceContract() throws Exception {
+	public String addWarrantyContract() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD, serviceContract);
+		context.put(FacilioConstants.ContextNames.RECORD, warrantyContract);
+		context.put(FacilioConstants.ContextNames.IS_CONTRACT_REVISED, false );
 		
-		Chain chain = TransactionChainFactory.getAddServiceContractChain();
+		Chain chain = TransactionChainFactory.getAddWarrantyContractChain();
 		chain.execute(context);
 		
-		setResult(FacilioConstants.ContextNames.SERVICE_CONTRACTS, context.get(FacilioConstants.ContextNames.RECORD));
+		setResult(FacilioConstants.ContextNames.WARRANTY_CONTRACTS, context.get(FacilioConstants.ContextNames.RECORD));
 		return SUCCESS;
 	}
 	
-	public String getServiceContractDetails() throws Exception {
+	public String getWarrantyContractDetails() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, recordId);
 		
-		Chain chain = ReadOnlyChainFactory.getServiceContractDetailsChain();
+		Chain chain = ReadOnlyChainFactory.getWarrantyContractDetailsChain();
 		chain.execute(context);
 		
-		ServiceContractContext serviceContractContext = (ServiceContractContext) context.get(FacilioConstants.ContextNames.RECORD);
-		setResult(FacilioConstants.ContextNames.SERVICE_CONTRACT, serviceContractContext);
+		WarrantyContractContext warrantyContractContext = (WarrantyContractContext) context.get(FacilioConstants.ContextNames.RECORD);
+		setResult(FacilioConstants.ContextNames.WARRANTY_CONTRACT, warrantyContractContext);
 		
 		return SUCCESS;
 	}
 	
-	public String deleteServiceContract() throws Exception {
+	public String deleteWarrantyContract() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordId != -1 ? Collections.singletonList(recordId) : recordIds);
-		Chain chain = TransactionChainFactory.getServiceContractDeleteChain();
+		Chain chain = TransactionChainFactory.getWarrantyContractDeleteChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, recordId != -1 ? Collections.singletonList(recordId) : recordIds);
 		return SUCCESS;
 	}
 	
-	public String serviceContractCount() throws Exception {
-		return getServiceContractList();
+	public String warrantyContractCount() throws Exception {
+		return getWarrantyContractList();
 	}
 	
+	public String getWarrantyContractForAsset() throws Exception {
+	    
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ASSET_ID, assetId);
+		getWarrantyContractList();
+		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, recordId != -1 ? Collections.singletonList(recordId) : recordIds);
+		return SUCCESS;
+	}
 	
+	public String reviseContract() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID, recordId );
+		context.put(FacilioConstants.ContextNames.IS_CONTRACT_REVISED, true );
+		
+		Chain chain = TransactionChainFactory.getAddWarrantyContractChain();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.WARRANTY_CONTRACTS, context.get(FacilioConstants.ContextNames.RECORD));
+		
+		return SUCCESS;
+	}
+	public String duplicateContract() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, warrantyContract );
+		
+		Chain chain = TransactionChainFactory.getDuplicateWarrantyContract();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.WARRANTY_CONTRACTS, context.get(FacilioConstants.ContextNames.RECORD));
+		
+		return SUCCESS;
+	}
 }

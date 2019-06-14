@@ -77,7 +77,7 @@ public class GetReceiptsListCommand implements Command {
 					receipt.getLineItem().setItemType(null);
 				}
 			}
-			else {
+			else if(receipt.getLineItem().getInventoryTypeEnum() == InventoryType.TOOL){
 				FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TOOL_TYPES);
 				List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL_TYPES);
                 SelectRecordsBuilder<ToolTypesContext> toolBuilder = new SelectRecordsBuilder<ToolTypesContext>()

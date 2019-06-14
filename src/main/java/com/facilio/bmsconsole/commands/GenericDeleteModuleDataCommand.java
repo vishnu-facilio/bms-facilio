@@ -23,6 +23,7 @@ public class GenericDeleteModuleDataCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
+		Boolean markAsDelete = (Boolean)context.get(FacilioConstants.ContextNames.IS_MARK_AS_DELETE);
 		if(recordIds != null && !recordIds.isEmpty()) {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -36,8 +37,12 @@ public class GenericDeleteModuleDataCommand implements Command {
 			DeleteRecordBuilder<ModuleBaseWithCustomFields> builder = new DeleteRecordBuilder<ModuleBaseWithCustomFields>()
 																		.module(module)
 																		.andCondition(CriteriaAPI.getIdCondition(recordIds, module));
-			
-			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, builder.delete());
+			if(markAsDelete != null && markAsDelete) {
+				context.put(FacilioConstants.ContextNames.ROWS_UPDATED, builder.markAsDelete());
+			}
+			else {
+				context.put(FacilioConstants.ContextNames.ROWS_UPDATED, builder.delete());
+			}
 		}
 		return false;
 	}

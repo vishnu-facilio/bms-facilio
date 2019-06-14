@@ -146,7 +146,7 @@ public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 							itemTypeLineItem.setQuantity(quantity);
 						}
 					}
-					else {
+					else if(prItem.getInventoryTypeEnum() == InventoryType.TOOL) {
 						if(!toolTypeItems.containsKey(prItem.getToolType().getId())) {
 							toolTypeItems.put(prItem.getToolType().getId(), PurchaseOrderLineItemContext.from(prItem));
 						}

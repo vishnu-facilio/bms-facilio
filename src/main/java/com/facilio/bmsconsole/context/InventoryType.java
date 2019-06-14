@@ -2,7 +2,9 @@ package com.facilio.bmsconsole.context;
 
 public enum InventoryType {
 	ITEM,
-	TOOL;
+	TOOL,
+	SERVICE
+	;
 	
 	public int getValue() {
 		return ordinal()+1;

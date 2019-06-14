@@ -1,28 +1,35 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ServiceContractContext;
+import com.facilio.bmsconsole.context.WarrantyContractContext;
 import com.facilio.bmsconsole.criteria.Criteria;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.criteria.PickListOperators;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.LookupField;
+import com.facilio.bmsconsole.modules.ModuleFactory;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.ContractsAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.sql.GenericSelectRecordBuilder;
 
-public class GetServiceContractListCommand implements Command {
+public class GetWarrantyContractListCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -32,6 +39,7 @@ public class GetServiceContractListCommand implements Command {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(moduleName);
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
+		Long assetId = (Long)context.get(FacilioConstants.ContextNames.ASSET_ID);
 		
 		Boolean getCount = (Boolean) context.get(FacilioConstants.ContextNames.FETCH_COUNT);
 		List<FacilioField> fields;
@@ -46,7 +54,7 @@ public class GetServiceContractListCommand implements Command {
 		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 		
 		
-		SelectRecordsBuilder<ServiceContractContext> builder = new SelectRecordsBuilder<ServiceContractContext>()
+		SelectRecordsBuilder<WarrantyContractContext> builder = new SelectRecordsBuilder<WarrantyContractContext>()
 				.module(module)
 				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName))
 				.select(fields)
@@ -60,14 +68,30 @@ public class GetServiceContractListCommand implements Command {
 	
 		}
 		
+		
 		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
 		if (getCount!=null && !getCount && orderBy != null && !orderBy.isEmpty()) {
 			builder.orderBy(orderBy);
 		}
 
 		List<Long> idsToSelect = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
-		if (idsToSelect != null && !idsToSelect.isEmpty()) {
-			builder.andCondition(CriteriaAPI.getIdCondition(idsToSelect, module));
+		List<Long> assetAssociatedIds = new ArrayList<Long>();
+		List<Long> ids = new ArrayList<Long>();
+		
+		if(assetId != null && assetId > 0) {
+			assetAssociatedIds = ContractsAPI.fetchAssociatedContractIds(assetId);
+			if(CollectionUtils.isNotEmpty(assetAssociatedIds)) {
+				ids.addAll(assetAssociatedIds);
+			}
+		}
+		
+		if(CollectionUtils.isNotEmpty(idsToSelect)) {
+			ids.addAll(idsToSelect);
+		}
+		
+		
+		if (ids != null && !ids.isEmpty()) {
+			builder.andCondition(CriteriaAPI.getIdCondition(ids, module));
 		}
 
 		JSONObject filters = (JSONObject) context.get(FacilioConstants.ContextNames.FILTERS);
@@ -105,7 +129,10 @@ public class GetServiceContractListCommand implements Command {
 			builder.limit(perPage);
 		}
 
-		List<ServiceContractContext> records = builder.get();
+		List<WarrantyContractContext> records = builder.get();
+		for(WarrantyContractContext record : records) {
+			record.setAssetIds(ContractsAPI.fetchAssociatedAssets(record.getId()));
+		}
 	
 		if (records != null && !records.isEmpty()) {
 			if (getCount != null && getCount) {
@@ -118,5 +145,6 @@ public class GetServiceContractListCommand implements Command {
 
 		return false;
 	}
+	
 	
 }

@@ -871,4 +871,47 @@ public class AssetsAPI {
 
 	}
 
+
+   public static List<AssetContext> getAssetForItemType(long itemTypeId) throws Exception {
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<ItemContext> rotatingItems = ItemsApi.getItemsForType(itemTypeId);
+		Map<Long,ItemContext> items = FieldUtil.getAsMap(rotatingItems);
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
+		SelectRecordsBuilder<AssetContext> selectBuilder = new SelectRecordsBuilder<AssetContext>().select(fields)
+				.table(module.getTableName()).moduleName(module.getName()).beanClass(AssetContext.class)
+				.andCondition(CriteriaAPI.getCondition("ROTATING_ITEM", "rotatingItem", String.valueOf(items.keySet()), NumberOperators.EQUALS))
+				;
+		List<AssetContext> assets = selectBuilder.get();
+		if(!CollectionUtils.isEmpty(assets)) {
+			return assets;
+		}
+	   throw new IllegalArgumentException("No appropriate asset found");
+
+
+	}
+
+   public static List<AssetContext> getAssetForToolType(long toolTypeId) throws Exception {
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<ToolContext> rotatingTools = ToolsApi.getToolsForType(toolTypeId);
+		Map<Long,ToolContext> tools = FieldUtil.getAsMap(rotatingTools);
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
+		SelectRecordsBuilder<AssetContext> selectBuilder = new SelectRecordsBuilder<AssetContext>().select(fields)
+				.table(module.getTableName()).moduleName(module.getName()).beanClass(AssetContext.class)
+				.andCondition(CriteriaAPI.getCondition("ROTATING_TOOL", "rotatingTool", String.valueOf(tools.keySet()), NumberOperators.EQUALS))
+				;
+		List<AssetContext> assets = selectBuilder.get();
+		if(!CollectionUtils.isEmpty(assets)) {
+			return assets;
+		}
+	   throw new IllegalArgumentException("No appropriate asset found");
+
+
+	}
+
+
+
 }

@@ -5,10 +5,16 @@ import java.util.List;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.PurchaseRequestContext;
+import com.facilio.bmsconsole.context.PurchaseRequestLineItemContext;
 import com.facilio.bmsconsole.context.ServiceContext;
+import com.facilio.bmsconsole.context.ServiceVendorContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
+import com.facilio.bmsconsole.criteria.NumberOperators;
+import com.facilio.bmsconsole.modules.DeleteRecordBuilder;
 import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FacilioModule;
 import com.facilio.bmsconsole.modules.InsertRecordBuilder;
@@ -27,14 +33,24 @@ public class AddOrUpdateServiceCommand implements Command{
 		if (serviceContext != null) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
+			FacilioModule serviceVendorModule = modBean.getModule(FacilioConstants.ContextNames.SERVICE_VENDOR);
+			
 			List<FacilioField> fields = modBean.getAllFields(moduleName);
 			if (serviceContext.getId() > 0) {
 				updateRecord(serviceContext, module, fields);
+				DeleteRecordBuilder<ServiceVendorContext> deleteBuilder = new DeleteRecordBuilder<ServiceVendorContext>()
+						.module(serviceVendorModule)
+						.andCondition(CriteriaAPI.getCondition("SERVICE_ID", "service", String.valueOf(serviceContext.getId()), NumberOperators.EQUALS));
+				deleteBuilder.delete();
 			} else {
 				serviceContext.setStatus(ServiceContext.ServiceStatus.ACTIVE);
 				addRecord(true, Collections.singletonList(serviceContext), module, fields);
 			}
-			
+			if(CollectionUtils.isNotEmpty(serviceContext.getServiceVendors())) {
+				updateServiceVendors(serviceContext);
+				addRecord(false, serviceContext.getServiceVendors(), serviceVendorModule, modBean.getAllFields(serviceVendorModule.getName()));
+			}
+		
 			context.put(FacilioConstants.ContextNames.RECORD, serviceContext);
 		}
 		return false;
@@ -58,6 +74,13 @@ public class AddOrUpdateServiceCommand implements Command{
 				.andCondition(CriteriaAPI.getIdCondition(data.getId(), module));
 		updateRecordBuilder.update(data);
 	}
+	
+	private void updateServiceVendors(ServiceContext serviceContext) {
+		for (ServiceVendorContext serviceVendorContext : serviceContext.getServiceVendors()) {
+			serviceVendorContext.setServiceId(serviceContext.getId());
+		}
+	}
+	
 	
 
 }

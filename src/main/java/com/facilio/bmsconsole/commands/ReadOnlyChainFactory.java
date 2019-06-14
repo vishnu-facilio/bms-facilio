@@ -326,7 +326,7 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 
-	
+
 	public static Chain fetchTenantDetails() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForTenants());
@@ -980,7 +980,7 @@ public class ReadOnlyChainFactory {
 
 	public static Chain getServiceListChain() {
 		Chain chain = getDefaultChain();
-		chain.addCommand(SetTableNamesCommand.getForService());
+		chain.addCommand(SetTableNamesCommand.getForServices());
 		chain.addCommand(new LoadAllFieldsCommand());
 		chain.addCommand(new LoadViewCommand());
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
@@ -1027,28 +1027,30 @@ public class ReadOnlyChainFactory {
 
 	public static Chain getServiceDetailsChain() {
 		Chain c = getDefaultChain();
-		c.addCommand(SetTableNamesCommand.getForService());
+		c.addCommand(SetTableNamesCommand.getForServices());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
+		c.addCommand(new GetServiceVendorListCommand());
+
 		return c;
 	}
 
-	public static Chain getServiceContractListChain() {
+	public static Chain getWarrantyContractListChain() {
 		Chain chain = getDefaultChain();
-		chain.addCommand(SetTableNamesCommand.getForServiceContract());
+		chain.addCommand(SetTableNamesCommand.getForWarrantyContract());
 		chain.addCommand(new LoadAllFieldsCommand());
 		chain.addCommand(new LoadViewCommand());
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
 		chain.addCommand(new GenerateSearchConditionCommand());
-		chain.addCommand(new GetServiceContractListCommand());
+		chain.addCommand(new GetWarrantyContractListCommand());
 		return chain;
 	}
 
-	public static Chain getServiceContractDetailsChain() {
+	public static Chain getWarrantyContractDetailsChain() {
 		Chain c = getDefaultChain();
-		c.addCommand(SetTableNamesCommand.getForServiceContract());
+		c.addCommand(SetTableNamesCommand.getForWarrantyContract());
 		c.addCommand(new LoadContractLookUpCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
-		c.addCommand(new FetchServiceContractDetailsCommand());
+		c.addCommand(new FetchWarrantyContractDetailsCommand());
 		return c;
 	}
 
@@ -1060,6 +1062,67 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GenericGetModuleDataListCommand());
 		return c;
 	}
+
+	public static Chain getReceivedPoLineItemList() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForPurchaseOrderLineItem());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetAvailableReceivedPoLineItemsCommand());
+		return c;
+	}
+
+	public static Chain getRentalLeaseContractListChain() {
+		Chain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForRentalLeaseContract());
+		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new GetRentalLeaseContractListCommand());
+		return chain;
+	}
+
+	public static Chain getRentalLeaseContractDetailsChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForRentalLeaseContract());
+		c.addCommand(new LoadContractLookUpCommand());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		c.addCommand(new FetchRentalLeaseContractDetailsCommand());
+		return c;
+	}
+
+
+	public static Chain GetToolTypesForVendorCommand(){
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForToolTypeVendor());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetToolTypesForVendorCommand());
+		return c;
+	}
+
+	public static Chain getToolVendorsList(){
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForToolTypeVendor());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GetToolVendorsListCommand());
+		return c;
+	}
+
+	public static Chain fetchTermsAndConditionsDetails() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForTermsAndConditions());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		return c;
+	}
+
+	public static Chain getTermsAndConditionsList(){
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForTermsAndConditions());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenericGetModuleDataListCommand());
+		return c;
+	}
+
 
 	public static Chain getAllWorkflowNameSpaceChain() {
 		Chain c = getDefaultChain();

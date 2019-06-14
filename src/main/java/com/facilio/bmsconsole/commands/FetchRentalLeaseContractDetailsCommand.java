@@ -8,8 +8,6 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.PurchaseContractContext;
-import com.facilio.bmsconsole.context.PurchaseContractLineItemContext;
 import com.facilio.bmsconsole.context.RentalLeaseContractContext;
 import com.facilio.bmsconsole.context.RentalLeaseContractLineItemsContext;
 import com.facilio.bmsconsole.criteria.CriteriaAPI;
@@ -18,6 +16,7 @@ import com.facilio.bmsconsole.modules.FacilioField;
 import com.facilio.bmsconsole.modules.FieldFactory;
 import com.facilio.bmsconsole.modules.LookupField;
 import com.facilio.bmsconsole.modules.SelectRecordsBuilder;
+import com.facilio.bmsconsole.util.ContractsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 
@@ -42,6 +41,8 @@ public class FetchRentalLeaseContractDetailsCommand implements Command{
 					(LookupField) fieldsAsMap.get("toolType")));
 		
 			List<RentalLeaseContractLineItemsContext> list = builder.get();
+			rentalLeaseContractContext.setAssetIds(ContractsAPI.fetchAssociatedAssets(rentalLeaseContractContext.getId()));
+			
 			rentalLeaseContractContext.setLineItems(list);
 		}
 		return false;

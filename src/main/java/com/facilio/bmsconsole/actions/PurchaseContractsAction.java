@@ -194,6 +194,8 @@ public class PurchaseContractsAction extends FacilioAction {
 	public String addPurchaseContract() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, purchaseContract);
+		context.put(FacilioConstants.ContextNames.IS_CONTRACT_REVISED, false );
+		
 		
 		Chain chain = TransactionChainFactory.getAddPurchaseContractChain();
 		chain.execute(context);
@@ -259,6 +261,32 @@ public class PurchaseContractsAction extends FacilioAction {
 		
 		return SUCCESS;
 	
+	}
+	
+	public String reviseContract() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, purchaseContract );
+		context.put(FacilioConstants.ContextNames.IS_CONTRACT_REVISED, true );
+		
+		Chain chain = TransactionChainFactory.getAddPurchaseContractChain();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.PURCHASE_CONTRACTS, context.get(FacilioConstants.ContextNames.RECORD));
+		
+		return SUCCESS;
+	}
+	
+	
+	public String duplicateContract() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, purchaseContract );
+		
+		Chain chain = TransactionChainFactory.getDuplicatePurchaseContract();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.PURCHASE_CONTRACTS, context.get(FacilioConstants.ContextNames.RECORD));
+		
+		return SUCCESS;
 	}
 	
 }

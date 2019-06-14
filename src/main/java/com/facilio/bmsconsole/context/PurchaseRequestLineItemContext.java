@@ -73,4 +73,14 @@ public class PurchaseRequestLineItemContext extends ModuleBaseWithCustomFields {
 	public void setCost(double cost) {
 		this.cost = cost;
 	}
+	
+	private ServiceContext service;
+	public ServiceContext getService() {
+		return service;
+	}
+	public void setService(ServiceContext service) {
+		this.service = service;
+	}
+	
+	
 }

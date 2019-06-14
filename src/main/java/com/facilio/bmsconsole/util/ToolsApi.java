@@ -116,6 +116,23 @@ public class ToolsApi {
 		}
 		throw new IllegalArgumentException("Tool shoud be issued before being used");
 	}
+	
+	public static List<ToolContext> getToolsForType(long toolTypeId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
+		SelectRecordsBuilder<ToolContext> selectBuilder = new SelectRecordsBuilder<ToolContext>().select(fields)
+				.table(module.getTableName()).moduleName(module.getName()).beanClass(ToolContext.class)
+				.andCondition(CriteriaAPI.getCondition("TOOL_TYPES_ID", "toolType", String.valueOf(toolTypeId), NumberOperators.EQUALS))
+				
+				;
+		List<ToolContext> tools = selectBuilder.get();
+		if(!CollectionUtils.isEmpty(tools)) {
+			return tools;
+		}
+	 throw new IllegalArgumentException("No appropriate tool found");
+	}
+
 
 	public static long getLastPurchasedToolDateForToolId(long id) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

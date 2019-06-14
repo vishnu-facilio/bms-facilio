@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.actions;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.InventoryType;
 import com.facilio.bmsconsole.context.PurchaseOrderContext;
 import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
 import com.facilio.chain.FacilioContext;
@@ -88,6 +89,33 @@ public class PurchaseOrderAction extends FacilioAction {
 	}
 	public void setStoreRoomId(long storeRoomId) {
 		this.storeRoomId = storeRoomId;
+	}
+	private long vendorId;
+	
+	public long getVendorId() {
+		return vendorId;
+	}
+	public void setVendorId(long vendorId) {
+		this.vendorId = vendorId;
+	}
+	
+	private long serviceId;
+	
+	public long getServiceId() {
+		return serviceId;
+	}
+	public void setServiceId(long serviceId) {
+		this.serviceId = serviceId;
+	}
+	
+	private long parentId;
+	
+	
+	public long getParentId() {
+		return parentId;
+	}
+	public void setParentId(long parentId) {
+		this.parentId = parentId;
 	}
 	public String addPurchaseOrder() throws Exception {
 		FacilioContext context = new FacilioContext();
@@ -317,6 +345,48 @@ public class PurchaseOrderAction extends FacilioAction {
 		return SUCCESS;
 
 		
+	}
+	
+	public String getServicePriceForVendor() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.VENDOR_ID, getVendorId());
+		context.put(FacilioConstants.ContextNames.SERVICE, getServiceId());
+		Chain chain = TransactionChainFactory.getServicePriceForVendor();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.UNIT_PRICE, context.get(FacilioConstants.ContextNames.UNIT_PRICE));
+		
+		return SUCCESS;
+	
+	}
+	
+	public String usePoServiceLineItems() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS, purchaseOrdersLineItems);
+		context.put(FacilioConstants.ContextNames.INVENTORY_CATEGORY, inventoryType);
+		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
+		
+		if(inventoryType == InventoryType.SERVICE.getValue()) {
+			Chain useLineItemListChain = TransactionChainFactory.getUseLineItemsForServiceChain();
+			useLineItemListChain.execute(context);
+		}
+		
+		setResult(FacilioConstants.ContextNames.WO_TOTAL_COST, context.get(FacilioConstants.ContextNames.WO_TOTAL_COST));
+		return SUCCESS;
+	}
+	
+	public String getAvailableServiceLineItems() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.INVENTORY_CATEGORY, inventoryType);
+		
+		if(inventoryType == InventoryType.SERVICE.getValue()) {
+			Chain getReceivedListListChain = ReadOnlyChainFactory.getReceivedPoLineItemList();
+			getReceivedListListChain.execute(context);
+		}
+		
+		setResult(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS, context.get(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS));
+		return SUCCESS;
 	}
 
 }

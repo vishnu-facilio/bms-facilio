@@ -30,4 +30,21 @@ public class ContractsAPI {
 		return contractIds;
 			                 
 	}
+	
+	public static List<Long> fetchAssociatedAssets(Long contractId) throws Exception {
+		FacilioModule module = ModuleFactory.getContractAssociatedAssetsModule();
+		List<FacilioField> facilioFields = FieldFactory.getContractAssociatedAssetModuleFields();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.table(module.getTableName())
+				.select(facilioFields)
+			    .andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCondition("CONTRACT_ID", "contractId", String.valueOf(contractId),NumberOperators.EQUALS));
+		List<Map<String,Object>> list = selectBuilder.get();
+		List<Long> assetIds = new ArrayList<Long>();
+		for(Map<String,Object> map : list) {
+			assetIds.add((Long)map.get("assetId"));
+		}
+		return assetIds;
+			                 
+	}
 }
