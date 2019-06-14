@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.jobs;
 
+import com.facilio.accounts.dto.Account;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
@@ -36,6 +38,9 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 			
 			List<Long> completedVms= new ArrayList<Long>();
 			List<Long> vmList=getVmList(virtualMeters);
+			if (AccountUtil.getCurrentOrg().getId() == 78 || AccountUtil.getCurrentOrg().getId() == 88 || AccountUtil.getCurrentOrg().getId() == 114) {
+				LOGGER.info("Calculating VM for Meters : "+vmList);
+			}
 			Map <Long, List<Long>> childMeterMap= new HashMap<Long,List<Long>> ();
 			
 			while (!virtualMeters.isEmpty()) {
@@ -54,6 +59,9 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 							List<Long> vmChildren= getVmChildren(vmList,childMeterIds);
 							if(!vmChildren.isEmpty() && !isCompleted(completedVms,vmChildren)) {
 								childMeterMap.put(meterId, childMeterIds);
+								if (AccountUtil.getCurrentOrg().getId() == 78 || AccountUtil.getCurrentOrg().getId() == 88 || AccountUtil.getCurrentOrg().getId() == 114) {
+									LOGGER.info("Not calculating for meter : "+meterId+". Since it has a VM child and it's not calculated yet.");
+								}
 								continue;
 							}
 							ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(meterId, deltaField);
@@ -66,9 +74,15 @@ public class VirtualMeterEnergyDataCalculator extends FacilioJob {
 						LOGGER.info("Exception occurred ", e);
 						CommonCommandUtil.emailException("VMEnergyDataCalculatorForMeter", "VM Calculation failed for meter : "+meterId, e);
 					}
+					if (AccountUtil.getCurrentOrg().getId() == 78 || AccountUtil.getCurrentOrg().getId() == 88 || AccountUtil.getCurrentOrg().getId() == 114) {
+						LOGGER.info("Calculation completed for VM : "+meter.getId());
+					}
 					completedVms.add(meter.getId());
 					itr.remove();
 				}
+			}
+			if (AccountUtil.getCurrentOrg().getId() == 78 || AccountUtil.getCurrentOrg().getId() == 88 || AccountUtil.getCurrentOrg().getId() == 114) {
+				LOGGER.info("VM Calculation job completed for meters : "+completedVms);
 			}
 
 		} catch (Exception e) {
