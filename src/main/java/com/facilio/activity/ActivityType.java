@@ -1,13 +1,14 @@
 package com.facilio.activity;
 
+import java.util.Collections;
+import java.util.Map;
+
+import org.json.simple.JSONObject;
+
 import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.activity.ItemActivityType;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.collections.UniqueMap;
-import org.json.simple.JSONObject;
-
-import java.util.Collections;
-import java.util.Map;
 
 public interface ActivityType {
 	public int getValue();
@@ -28,12 +29,10 @@ public interface ActivityType {
 		for (ActivityType type : WorkOrderActivityType.values()) {
 			activityMap.put(type.getValue(), type);
 		}
-		
-		// Max number = 12
-		
 		for (ActivityType type : ItemActivityType.values()) {
 			activityMap.put(type.getValue(), type);
 		}
+		// Max number = 28
 		
 		return activityMap;
 	}

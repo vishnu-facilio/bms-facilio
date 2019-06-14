@@ -1090,10 +1090,12 @@ public class TransactionChainFactory {
 			c.addCommand(new SetAssetCategoryCommand());
 			c.addCommand(new SetModuleForSpecialAssetsCommand());
 			c.addCommand(new GenericAddModuleDataCommand());
+			c.addCommand(new ConstructAddAssetActivityCommand());
 			c.addCommand(new AddRotatingItemToolCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(FacilioChainFactory.getCategoryReadingsChain());
 			c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
+			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
 		

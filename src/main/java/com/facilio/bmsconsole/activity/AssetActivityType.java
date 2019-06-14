@@ -1,7 +1,8 @@
 package com.facilio.bmsconsole.activity;
 
-import com.facilio.activity.ActivityType;
 import org.json.simple.JSONObject;
+
+import com.facilio.activity.ActivityType;
 
 public enum AssetActivityType implements ActivityType {
 	LOCATION(1) {
@@ -10,7 +11,21 @@ public enum AssetActivityType implements ActivityType {
 			// TODO Auto-generated method stub
 			return "Location was updated to "+json.get("value");
 		}
-	}
+	},
+	ADD(27) {
+		@Override
+		public String constructMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return " added the asset";
+		}
+	},
+	UPDATE(28) {
+		@Override
+		public String constructMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return " updated the asset";
+		}
+	},
 	;
 
 	private AssetActivityType(int value) {
