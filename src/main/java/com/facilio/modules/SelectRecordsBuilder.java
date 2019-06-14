@@ -342,7 +342,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		return lookupFields;
 	}
 
-	private Set<FacilioField> computeFields(FacilioField orgIdField, FacilioField moduleIdField, FacilioField siteIdField, FacilioField isDeletedField) {
+	private Set<FacilioField> computeFields(FacilioField orgIdField, FacilioField moduleIdField, FacilioField siteIdField, FacilioField isDeletedField, FacilioField deletedTimeField) {
 		Set<FacilioField> selectFields = new HashSet<>();
 		if (!isAggregation) {
 			selectFields.add(orgIdField);
@@ -359,6 +359,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			}
 			if (module.isTrashEnabled()) {
 				selectFields.add(isDeletedField);
+				selectFields.add(deletedTimeField);
 			}
 		}
 
@@ -426,11 +427,14 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			siteIdField = FieldFactory.getSiteIdField(module);
 		}
 		FacilioField isDeletedField = null;
+		FacilioField deletedTimeField = null;
 		if (module.isTrashEnabled()) {
-			isDeletedField = FieldFactory.getIsDeletedField(module.getParentModule());
+			FacilioModule parentModule = module.getParentModule();
+			isDeletedField = FieldFactory.getIsDeletedField(parentModule);
+			deletedTimeField = FieldFactory.getSysDeletedTimeField(parentModule);
 		}
 		
-		Set<FacilioField> selectFields = computeFields(orgIdField, moduleIdField, siteIdField, isDeletedField);
+		Set<FacilioField> selectFields = computeFields(orgIdField, moduleIdField, siteIdField, isDeletedField, deletedTimeField);
 		builder.select(selectFields);
 
 		builder.groupBy(groupBy);

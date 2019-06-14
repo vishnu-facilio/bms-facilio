@@ -899,6 +899,9 @@ public class FieldFactory {
 	public static FacilioField getIsDeletedField(FacilioModule module) {
 		return getField("deleted", "SYS_DELETED", module, FieldType.BOOLEAN);
 	}
+	public static FacilioField getSysDeletedTimeField(FacilioModule module) {
+		return getField("sysDeletedTime", "SYS_DELETED_TIME", module, FieldType.DATE_TIME);
+	}
 
 	public static FacilioField getIsDeletedField() {
 		return getIsDeletedField(null);

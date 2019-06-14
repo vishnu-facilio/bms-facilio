@@ -14,9 +14,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
 
 import java.sql.Connection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implements DeleteBuilderIfc<E> {
@@ -157,10 +155,16 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		if (!module.isTrashEnabled()) {
 			throw new IllegalArgumentException("Trash is not enabled for this module and so cannot be marked as delete");
 		}
-		
+
+		List<FacilioField> fields = new ArrayList<>(2);
 		FacilioField isDeletedField = FieldFactory.getIsDeletedField(module.getParentModule());
-		Map<String, Object> prop = Collections.singletonMap(isDeletedField.getName(), true);
-		updateBuilder.fields(Collections.singletonList(isDeletedField))
+		FacilioField deletedTimeField = FieldFactory.getSysDeletedTimeField(module.getParentModule());
+		fields.add(isDeletedField);
+		fields.add(deletedTimeField);
+		Map<String, Object> prop = new HashMap<>();
+		prop.put(isDeletedField.getName(), true);
+		prop.put(deletedTimeField.getName(), System.currentTimeMillis());
+		updateBuilder.fields(fields)
 						.andCustomWhere(where.getWhereClause(),  where.getValues());
 		return updateBuilder.updateViaMap(prop);
 	}
