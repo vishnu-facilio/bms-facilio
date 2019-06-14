@@ -1100,6 +1100,7 @@ public class ShiftAPI {
 			applicableFor.setShiftRotationId(shiftRotationId);
 			props.add(FieldUtil.getAsProperties(applicableFor));
 		}
+		deleteShiftRotationApplicableFor(shiftRotationId);
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getShiftRotationApplicableForModule().getTableName())
 				.fields(FieldFactory.getShiftRotationApplicableForModuleFields());
@@ -1114,6 +1115,9 @@ public class ShiftAPI {
 			detail.setShiftRotationId(shiftRotationId);
 			props.add(FieldUtil.getAsProperties(detail));
 		}
+		
+		deleteShiftRotationDetails(shiftRotationId);
+		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getShiftRotationDetailsModule().getTableName())
 				.fields(FieldFactory.getShiftRotationDetailsModuleFields());
@@ -1172,6 +1176,20 @@ public class ShiftAPI {
 			builder.update(prop);
 			prop.clear();
 		}
-
 	}
+	
+	public static void deleteShiftRotationApplicableFor(long shiftRotationId) throws Exception {
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(ModuleFactory.getShiftRotationApplicableForModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("SHIFT_ROTATION_ID", "shiftRotationId", String.valueOf(shiftRotationId), NumberOperators.EQUALS));
+		builder.delete();
+	}
+	
+	public static void deleteShiftRotationDetails(long shiftRotationId) throws Exception {
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(ModuleFactory.getShiftRotationDetailsModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("SHIFT_ROTATION_ID", "shiftRotationId", String.valueOf(shiftRotationId), NumberOperators.EQUALS));
+		builder.delete();
+	}
+
 }

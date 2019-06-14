@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
@@ -57,6 +58,19 @@ public class ShiftRotationAction extends ModuleAction {
 		context.put(FacilioConstants.ContextNames.SHIFT_ROTATION_DETAILS, shiftRotation.getShiftRotations());
 
 		Chain c = TransactionChainFactory.getAddShiftRotationChain();
+		c.execute(context);
+
+		return SUCCESS;
+	}
+	
+	public String updateShiftRotation() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, shiftRotation);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(shiftRotation.getId()));
+		context.put(FacilioConstants.ContextNames.SHIFT_ROTATION_APPLICABLE_FOR, shiftRotation.getApplicableFor());
+		context.put(FacilioConstants.ContextNames.SHIFT_ROTATION_DETAILS, shiftRotation.getShiftRotations());
+
+		Chain c = TransactionChainFactory.getUpdateShiftRotationChain();
 		c.execute(context);
 
 		return SUCCESS;

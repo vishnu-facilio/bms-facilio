@@ -2562,6 +2562,9 @@
 		<action name="add" class="com.facilio.bmsconsole.actions.ShiftRotationAction"
 			method="addShiftRotation">
 		</action>
+		<action name="update" class="com.facilio.bmsconsole.actions.ShiftRotationAction"
+			method="updateShiftRotation">
+		</action>
 		<action name="execute" class="com.facilio.bmsconsole.actions.ShiftRotationAction"
 			method="executeShiftRotation">
 		</action>
