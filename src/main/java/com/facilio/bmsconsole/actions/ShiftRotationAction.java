@@ -11,6 +11,7 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ShiftContext;
 import com.facilio.bmsconsole.context.ShiftRotationContext;
 import com.facilio.bmsconsole.context.ShiftRotationDetailsContext;
@@ -86,6 +87,19 @@ public class ShiftRotationAction extends ModuleAction {
 		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
 		return SUCCESS;
 	}
+	
+	public String details() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ID, getShiftRotationId());
+
+		Chain chain = ReadOnlyChainFactory.getShiftRotationDetails();
+		chain.execute(context);
+
+		setShiftRotation((ShiftRotationContext) context.get(FacilioConstants.ContextNames.SHIFT_ROTATION));
+		setResult(FacilioConstants.ContextNames.SHIFT_ROTATION, shiftRotation);
+		return SUCCESS;
+	}
+	
 	
 	private long shiftRotationId;
 

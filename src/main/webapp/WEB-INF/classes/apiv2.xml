@@ -2571,6 +2571,10 @@
 		<action name="execute" class="com.facilio.bmsconsole.actions.ShiftRotationAction"
 			method="executeShiftRotation">
 		</action>
+		<action name="*" class="com.facilio.bmsconsole.actions.ShiftRotationAction"
+			method="details">
+			<param name="shiftRotationId">{1}</param>
+		</action>
 	</package>
 	
 	<package name="shiftRotationList" namespace="/api/v2/shiftRotation/view"

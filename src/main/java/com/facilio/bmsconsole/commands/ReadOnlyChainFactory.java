@@ -1031,4 +1031,16 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetShiftRotationListCommand());
 		return c;
 	}
+	
+	public static Chain getShiftRotationDetails() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForShiftRotation());
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		c.addCommand(new GetShiftRotationDetailCommand());
+		return c;
+	}
 }
