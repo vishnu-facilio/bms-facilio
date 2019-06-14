@@ -1133,6 +1133,12 @@ public class ModuleFactory {
 		module.setTableName("Workflow");
 		return module;
 	}
+	public static FacilioModule getWorkflowUserFunctionModule() {
+		FacilioModule module = new FacilioModule();
+		module.setExtendModule(getWorkflowModule());
+		module.setTableName("Workflow_User_Function");
+		return module;
+	}
 
 	public static FacilioModule getWorkflowNamespaceModule() {
 		FacilioModule module = new FacilioModule();

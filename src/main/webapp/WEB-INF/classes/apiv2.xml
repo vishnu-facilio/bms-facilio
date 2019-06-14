@@ -1232,6 +1232,24 @@
 		<action name="deleteWorkflow"
 			class="com.facilio.workflows.action.WorkflowAction" method="deleteWorkflow"></action>
 			
+		<action name="addNameSpace"
+			class="com.facilio.workflows.action.WorkflowAction" method="addNameSpace"></action>
+			
+		<action name="updateNameSpace"
+			class="com.facilio.workflows.action.WorkflowAction" method="updateNameSpace"></action>
+			
+		<action name="deleteNameSpace"
+			class="com.facilio.workflows.action.WorkflowAction" method="deleteNameSpace"></action>
+			
+		<action name="addUserFunction"
+			class="com.facilio.workflows.action.WorkflowAction" method="addUserFunction"></action>
+			
+		<action name="updateUserFunction"
+			class="com.facilio.workflows.action.WorkflowAction" method="updateUserFunction"></action>
+			
+		<action name="deleteUserFunction"
+			class="com.facilio.workflows.action.WorkflowAction" method="deleteUserFunction"></action>
+			
 		<action name="runWorkflow"
 			class="com.facilio.workflows.action.WorkflowAction" method="runWorkflow"></action>
 			

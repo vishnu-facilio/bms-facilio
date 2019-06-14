@@ -5,7 +5,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.workflows.context.WorkflowExpression.WorkflowExpressionType;
 import com.facilio.workflows.util.WorkflowUtil;
-import com.facilio.workflowv2.Visitor.FacilioWorkflowFunctionVisitor;
+import com.facilio.workflowv2.Visitor.WorkflowFunctionVisitor;
 import com.facilio.workflowv2.autogens.WorkflowV2Lexer;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser;
 import org.antlr.v4.runtime.CharStreams;
@@ -66,8 +66,6 @@ public class WorkflowContext implements Serializable {
 
 	long id = -1l;
 	Long orgId;
-	Long nameSpaceId;
-	String name;
 	String workflowString;
 	String workflowV2String;
 	List<ParameterContext> parameters;
@@ -77,6 +75,17 @@ public class WorkflowContext implements Serializable {
 	
 	Object returnValue;
 	
+	WorkflowType type;
+	
+	public int getType() {
+		if(type != null) {
+			type.getValue();
+		}
+		return -1;
+	}
+	public void setType(int type) {
+		this.type = WorkflowType.valueOf(type);
+	}
 	public Object getReturnValue() {
 		return returnValue;
 	}
@@ -105,25 +114,13 @@ public class WorkflowContext implements Serializable {
 		this.params = params;
 	}
 	
-	public String getName() {
-		return name;
-	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	
 	public boolean isLogNeeded() {
 		return isLogNeeded;
 	}
 	public boolean getIsLogNeeded() {
 		return isLogNeeded;
 	}
-	public Long getNameSpaceId() {
-		return nameSpaceId;
-	}
-	public void setNameSpaceId(Long nameSpaceId) {
-		this.nameSpaceId = nameSpaceId;
-	}
+	
 	public void setLogNeeded(boolean isLogNeeded) {
 		this.isLogNeeded = isLogNeeded;
 	}
@@ -292,7 +289,7 @@ public class WorkflowContext implements Serializable {
 		WorkflowV2Parser parser = new WorkflowV2Parser(new CommonTokenStream(lexer));
         ParseTree tree = parser.parse();
         
-        FacilioWorkflowFunctionVisitor visitor = new FacilioWorkflowFunctionVisitor();
+        WorkflowFunctionVisitor visitor = new WorkflowFunctionVisitor();
         visitor.setWorkflowContext(this);
         visitor.visitFunctionHeader(tree);
 	}
@@ -303,7 +300,7 @@ public class WorkflowContext implements Serializable {
 		
 		if(workflowUIMode == WorkflowUIMode.NEW_WORKFLOW) {
 			
-			FacilioWorkflowFunctionVisitor visitor = null;
+			WorkflowFunctionVisitor visitor = null;
 			try {
 				InputStream stream = new ByteArrayInputStream(workflowV2String.getBytes(StandardCharsets.UTF_8));
 				
@@ -312,7 +309,7 @@ public class WorkflowContext implements Serializable {
 				WorkflowV2Parser parser = new WorkflowV2Parser(new CommonTokenStream(lexer));
 		        ParseTree tree = parser.parse();
 		        
-		        visitor = new FacilioWorkflowFunctionVisitor();
+		        visitor = new WorkflowFunctionVisitor();
 		        visitor.setWorkflowContext(this);
 		        visitor.visitFunctionHeader(tree);
 		        visitor.setParams(params);
@@ -446,6 +443,23 @@ public class WorkflowContext implements Serializable {
 		}
 		
 		public static WorkflowUIMode valueOf (int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+	}
+	
+	public enum WorkflowType {
+		SYSTEM,
+		USER_DEFINED,
+		;
+		
+		public int getValue() {
+			return ordinal() + 1;
+		}
+		
+		public static WorkflowType valueOf (int value) {
 			if (value > 0 && value <= values().length) {
 				return values()[value - 1];
 			}

@@ -35,7 +35,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.workflows.context.WorkflowContext;
-import com.facilio.workflowv2.Visitor.FacilioWorkflowFunctionVisitor;
+import com.facilio.workflowv2.Visitor.WorkflowFunctionVisitor;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.DataTypeSpecificFunctionContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.ExprContext;
 import com.facilio.workflowv2.contexts.DBParamContext;
@@ -61,6 +61,8 @@ public class WorkflowV2Util {
 	public static JSONObject defaultWorkflows = new JSONObject();
 	
 	public static final String WORKFLOW_CONTEXT = "workflow";
+	public static final String WORKFLOW_USER_FUNCTION_CONTEXT = "workflowUserFunction";
+	public static final String WORKFLOW_NAMESPACE_CONTEXT = "workflowNameSpace";
 
 	static {
 		try {
@@ -133,14 +135,6 @@ public class WorkflowV2Util {
 		return MODULE_DISPLAY_NAME_MAP.get(moduleDisplayName);
 	}
 	
-	public static WorkflowContext getDefaultWorkflowResult(int defaultWorkflowId,List<Object> params) throws Exception {
-		JSONObject workflowJson = (JSONObject)defaultWorkflows.get(""+defaultWorkflowId);
-		String workflowString = (String) workflowJson.get("workflow");
-		WorkflowContext workflow = new WorkflowContext();
-		workflow.setWorkflowV2String(workflowString);
-		return WorkflowV2API.executeWorkflow(workflow, params, null, true, true);
-	}
-	
 	public static void fillExtraInfo(Value paramValue, FacilioModule module) throws Exception {
 
 		if (paramValue.asObject() instanceof DBParamContext || paramValue.asObject() instanceof Criteria) {
@@ -162,7 +156,7 @@ public class WorkflowV2Util {
 		}
 	}
 
-	public static List<Object> getParamList(DataTypeSpecificFunctionContext ctx, boolean isDataTypeSpecificFunction,FacilioWorkflowFunctionVisitor facilioWorkflowFunctionVisitor, Value value) throws Exception {
+	public static List<Object> getParamList(DataTypeSpecificFunctionContext ctx, boolean isDataTypeSpecificFunction,WorkflowFunctionVisitor facilioWorkflowFunctionVisitor, Value value) throws Exception {
 		List<Object> paramValues = new ArrayList<>();
 		if (isDataTypeSpecificFunction) {
 			paramValues.add(value.asObject());
@@ -177,26 +171,6 @@ public class WorkflowV2Util {
 		return paramValues;
 	}
 
-	public static WorkflowNamespaceContext getNameSpace(String name) throws Exception {
-
-		FacilioModule module = ModuleFactory.getWorkflowNamespaceModule();
-		List<FacilioField> fields = FieldFactory.getWorkflowNamespaceFields();
-
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields)
-				.table(module.getTableName())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("name"), name, StringOperators.IS));
-
-		List<Map<String, Object>> props = selectBuilder.get();
-
-		WorkflowNamespaceContext workflowNamespaceContext = null;
-		if (props != null && !props.isEmpty()) {
-			workflowNamespaceContext = FieldUtil.getAsBeanFromMap(props.get(0), WorkflowNamespaceContext.class);
-		}
-		return workflowNamespaceContext;
-	}
-	
 	public static String adjustCriteriaPattern(String criteriaPattern) {
 		
     	criteriaPattern = criteriaPattern.replace("||", " or ");
@@ -204,33 +178,4 @@ public class WorkflowV2Util {
     	criteriaPattern = criteriaPattern.substring(1, criteriaPattern.length()-1);
     	return criteriaPattern;
 	}
-
-	public static WorkflowContext getWorkflowFunction(String nameSpace, String functionName) throws Exception {
-
-		WorkflowNamespaceContext workflowNamespaceContext = getNameSpace(nameSpace);
-		return getWorkflowFunction(workflowNamespaceContext.getId(), functionName);
-	}
-
-	public static WorkflowContext getWorkflowFunction(Long nameSpaceId, String functionName) throws Exception {
-
-		FacilioModule module = ModuleFactory.getWorkflowModule();
-		List<FacilioField> fields = FieldFactory.getWorkflowFields();
-
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields)
-				.table(module.getTableName())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("name"), functionName, StringOperators.IS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("nameSpaceId"), nameSpaceId + "",
-						NumberOperators.EQUALS));
-
-		List<Map<String, Object>> props = selectBuilder.get();
-
-		WorkflowContext workflowContext = null;
-		if (props != null && !props.isEmpty()) {
-			workflowContext = FieldUtil.getAsBeanFromMap(props.get(0), WorkflowContext.class);
-		}
-		return workflowContext;
-	}
-
 }

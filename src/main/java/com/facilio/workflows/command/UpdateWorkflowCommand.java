@@ -4,6 +4,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.context.WorkflowUserFunctionContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 
@@ -14,6 +15,10 @@ public class UpdateWorkflowCommand implements Command {
 		// TODO Auto-generated method stub
 		
 		WorkflowContext workflow = (WorkflowContext) context.get(WorkflowV2Util.WORKFLOW_CONTEXT);
+		
+		if(workflow == null) {
+			workflow = (WorkflowUserFunctionContext) context.get(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT);
+		}
 		
 		WorkflowUtil.updateWorkflow(workflow);
 		return false;

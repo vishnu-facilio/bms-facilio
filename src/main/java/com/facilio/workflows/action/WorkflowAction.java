@@ -5,9 +5,11 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioContext;
 import com.facilio.mv.util.MVUtil;
 import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.context.WorkflowUserFunctionContext;
 import com.facilio.workflows.functions.FacilioSystemFunctionNameSpace;
 import com.facilio.workflows.functions.FacilioWorkflowFunctionInterface;
 import com.facilio.workflows.util.WorkflowUtil;
+import com.facilio.workflowv2.contexts.WorkflowNamespaceContext;
 import com.facilio.workflowv2.util.WorkflowV2API;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 
@@ -112,7 +114,25 @@ public class WorkflowAction extends FacilioAction {
 	public void setWorkflow(WorkflowContext workflow) {
 		this.workflow = workflow;
 	}
+	private WorkflowNamespaceContext namespace;
+	private WorkflowUserFunctionContext userFunction;
 	
+	public WorkflowNamespaceContext getNamespace() {
+		return namespace;
+	}
+
+	public void setNamespace(WorkflowNamespaceContext namespace) {
+		this.namespace = namespace;
+	}
+
+	public WorkflowUserFunctionContext getUserFunction() {
+		return userFunction;
+	}
+
+	public void setUserFunction(WorkflowUserFunctionContext userFunction) {
+		this.userFunction = userFunction;
+	}
+
 	public String getWorkflowXmlFromObject() throws Exception {
 		setResult("workflowString", WorkflowUtil.getXmlStringFromWorkflow(workflow));
 		return SUCCESS;
@@ -153,9 +173,69 @@ public class WorkflowAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String addNameSpace() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		
+		context.put(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT, namespace);
+		Chain addWorkflowChain =  TransactionChainFactory.getAddWorkflowNameSpaceChain(); 
+		addWorkflowChain.execute(context);
+		setResult(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT, namespace);
+		return SUCCESS;
+	}
+	public String updateNameSpace() throws Exception {
+		FacilioContext context = new FacilioContext();
+		
+		context.put(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT, namespace);
+		Chain addWorkflowChain =  TransactionChainFactory.getUpdateWorkflowNameSpaceChain(); 
+		addWorkflowChain.execute(context);
+		setResult(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT, namespace);
+		return SUCCESS;
+	}
+	
+	public String deleteNameSpace() throws Exception {
+		FacilioContext context = new FacilioContext();
+		
+		context.put(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT, namespace);
+		Chain addWorkflowChain =  TransactionChainFactory.getDeleteWorkflowNameSpaceChain(); 
+		addWorkflowChain.execute(context);
+		setResult(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT, namespace);
+		return SUCCESS;
+	}
+	
+	public String addUserFunction() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		
+		context.put(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT, userFunction);
+		Chain addWorkflowChain =  TransactionChainFactory.getAddWorkflowUserFunctionChain(); 
+		addWorkflowChain.execute(context);
+		setResult(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT, userFunction);
+		return SUCCESS;
+	}
+	
+	public String updateUserFunction() throws Exception {
+		FacilioContext context = new FacilioContext();
+		
+		context.put(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT, userFunction);
+		Chain addWorkflowChain =  TransactionChainFactory.getUpdateWorkflowUserFunctionChain(); 
+		addWorkflowChain.execute(context);
+		setResult(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT, userFunction);
+		return SUCCESS;
+	}
+	public String deleteUserFunction() throws Exception {
+		FacilioContext context = new FacilioContext();
+		
+		context.put(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT, userFunction);
+		Chain addWorkflowChain =  TransactionChainFactory.getDeleteWorkflowUserFunctionChain(); 
+		addWorkflowChain.execute(context);
+		setResult(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT, userFunction);
+		return SUCCESS;
+	}
+	
 	public String getDefaultWorkflowResultV2() throws Exception {
 		if(defaultWorkflowId > -1) {
-			setResult(WorkflowV2Util.WORKFLOW_CONTEXT, WorkflowV2Util.getDefaultWorkflowResult(defaultWorkflowId, paramList));;
+			setResult(WorkflowV2Util.WORKFLOW_CONTEXT, WorkflowV2API.getDefaultWorkflowResult(defaultWorkflowId, paramList));
 		}
 		return SUCCESS;
 	}

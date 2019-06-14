@@ -30,8 +30,13 @@ import com.facilio.mv.command.UpdateMVAdjustmentCommand;
 import com.facilio.mv.command.UpdateMVAjustmentVsBaselineCommand;
 import com.facilio.mv.command.UpdateMVBaselineCommand;
 import com.facilio.mv.command.UpdateMVPojectCommand;
+import com.facilio.workflows.command.AddNameSpaceCommand;
+import com.facilio.workflows.command.AddUserFunctionCommand;
 import com.facilio.workflows.command.AddWorkflowCommand;
+import com.facilio.workflows.command.DeleteNameSpaceCommand;
 import com.facilio.workflows.command.DeleteWorkflowCommand;
+import com.facilio.workflows.command.UpdateNameSpaceCommand;
+import com.facilio.workflows.command.UpdateUserFunctionCommand;
 import com.facilio.workflows.command.UpdateWorkflowCommand;
 
 public class TransactionChainFactory {
@@ -3039,6 +3044,41 @@ public class TransactionChainFactory {
 			c.addCommand(new DeleteWorkflowCommand());
 			return c;
 		}
+
+		public static Chain getAddWorkflowNameSpaceChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddNameSpaceCommand());
+			return c;
+		}
+		public static Chain getUpdateWorkflowNameSpaceChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateNameSpaceCommand());
+			return c;
+		}
+		public static Chain getDeleteWorkflowNameSpaceChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new DeleteNameSpaceCommand());
+			return c;
+		}
+		
+		public static Chain getAddWorkflowUserFunctionChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddWorkflowCommand());
+			c.addCommand(new AddUserFunctionCommand());
+			return c;
+		}
+		public static Chain getUpdateWorkflowUserFunctionChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateWorkflowCommand());
+			c.addCommand(new UpdateUserFunctionCommand());
+			return c;
+		}
+		public static Chain getDeleteWorkflowUserFunctionChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new DeleteWorkflowCommand());
+			return c;
+		}
+		
 
 }
 

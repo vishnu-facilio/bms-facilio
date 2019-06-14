@@ -1,5 +1,17 @@
 package com.facilio.workflowv2.Visitor;
 
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.antlr.v4.runtime.misc.ParseCancellationException;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.RuleNode;
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -14,6 +26,7 @@ import com.facilio.time.DateRange;
 import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowFunctionContext;
+import com.facilio.workflows.context.WorkflowUserFunctionContext;
 import com.facilio.workflows.functions.FacilioSystemFunctionNameSpace;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.autogens.WorkflowV2BaseVisitor;
@@ -22,16 +35,10 @@ import com.facilio.workflowv2.autogens.WorkflowV2Parser.Function_paramContext;
 import com.facilio.workflowv2.contexts.DBParamContext;
 import com.facilio.workflowv2.contexts.Value;
 import com.facilio.workflowv2.contexts.WorkflowNamespaceContext;
+import com.facilio.workflowv2.util.UserFunctionAPI;
 import com.facilio.workflowv2.util.WorkflowV2Util;
-import org.antlr.v4.runtime.misc.ParseCancellationException;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.RuleNode;
-import org.apache.commons.lang3.tuple.Pair;
 
-import java.lang.reflect.Method;
-import java.util.*;
-
-public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
+public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
 
     private Map<String, Value> varMemoryMap = new HashMap<String, Value>();
     
@@ -142,7 +149,7 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
     			WorkflowNamespaceContext namespaceContext = (WorkflowNamespaceContext) value.asObject();
     			List<Object> paramValues = WorkflowV2Util.getParamList(ctx,false,this,null);
     			
-    			WorkflowContext wfContext = WorkflowV2Util.getWorkflowFunction(namespaceContext.getId(), ctx.VAR().getText());
+    			WorkflowContext wfContext = UserFunctionAPI.getWorkflowFunction(namespaceContext.getId(), ctx.VAR().getText());
     			wfContext.setParams(paramValues);
     			
     			Object res = wfContext.executeWorkflow();
@@ -216,7 +223,9 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
     	
     	String functionName = ctx.function_name_declare().getText();
     	
-    	workflowContext.setName(functionName);
+    	if(workflowContext instanceof WorkflowUserFunctionContext) {
+    		((WorkflowUserFunctionContext)workflowContext).setName(functionName);
+    	}
     	
     	List<ParameterContext> params = new ArrayList<>();
 		for(Function_paramContext param :ctx.function_param()) {
@@ -304,7 +313,7 @@ public class FacilioWorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value>
     		String nameSpaceString = this.visit(ctx.atom()).asString();
         	FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.getFacilioDefaultFunction(nameSpaceString);
         	if(nameSpaceEnum == null) {
-        		WorkflowNamespaceContext namespace = WorkflowV2Util.getNameSpace(nameSpaceString);
+        		WorkflowNamespaceContext namespace = UserFunctionAPI.getNameSpace(nameSpaceString);
         		if(namespace == null) {
         			throw new ParseCancellationException("No such namespace - "+nameSpaceString);
         		}
