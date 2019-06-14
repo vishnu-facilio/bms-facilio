@@ -1,18 +1,62 @@
 
 package com.facilio.bmsconsole.util;
 
+import java.sql.SQLException;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.OptionalDouble;
+import java.util.Stack;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.apache.commons.collections.list.SetUniqueList;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.LogManager;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.DashboardContext;
+import com.facilio.bmsconsole.context.DashboardFolderContext;
+import com.facilio.bmsconsole.context.DashboardSharingContext;
 import com.facilio.bmsconsole.context.DashboardSharingContext.SharingType;
+import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
+import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
+import com.facilio.bmsconsole.context.FloorContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.context.ReportBenchmarkRelContext;
+import com.facilio.bmsconsole.context.ReportColumnContext;
+import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.ReportContext.LegendMode;
 import com.facilio.bmsconsole.context.ReportContext.ReportChartType;
+import com.facilio.bmsconsole.context.ReportDateFilterContext;
+import com.facilio.bmsconsole.context.ReportEnergyMeterContext;
+import com.facilio.bmsconsole.context.ReportFieldContext;
+import com.facilio.bmsconsole.context.ReportFolderContext;
+import com.facilio.bmsconsole.context.ReportFormulaFieldContext;
+import com.facilio.bmsconsole.context.ReportSpaceFilterContext;
+import com.facilio.bmsconsole.context.ReportThreshold;
+import com.facilio.bmsconsole.context.ReportUserFilterContext;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.SiteContext.SiteType;
+import com.facilio.bmsconsole.context.SpaceFilteredDashboardSettings;
+import com.facilio.bmsconsole.context.UserWorkHourReading;
+import com.facilio.bmsconsole.context.WidgetChartContext;
+import com.facilio.bmsconsole.context.WidgetVsWorkflowContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -21,35 +65,35 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.*;
+import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.Operator;
+import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.AggregateOperator.CommonAggregateOperator;
 import com.facilio.modules.AggregateOperator.DateAggregateOperator;
 import com.facilio.modules.AggregateOperator.NumberAggregateOperator;
+import com.facilio.modules.BaseLineContext;
 import com.facilio.modules.BaseLineContext.RangeType;
+import com.facilio.modules.DeleteRecordBuilder;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.workflows.util.WorkflowUtil;
-import com.fasterxml.jackson.annotation.JsonFormat.Feature;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multiset;
-import org.apache.commons.collections.list.SetUniqueList;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.LogManager;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import java.sql.SQLException;
-import java.time.ZonedDateTime;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class DashboardUtil {
 	
@@ -2509,9 +2553,9 @@ public class DashboardUtil {
 	
 	public static void updateDashboardFolder(List<DashboardFolderContext> dashboardFolders) throws Exception {
 		
-		GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder();
-		
 		for(DashboardFolderContext dashboardFolder :dashboardFolders) {
+			
+			GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder();
 			update.table(ModuleFactory.getDashboardFolderModule().getTableName());
 			update.fields(FieldFactory.getDashboardFolderFields())
 			.andCustomWhere("ID = ?", dashboardFolder.getId());
