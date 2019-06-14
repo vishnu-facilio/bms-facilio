@@ -23,7 +23,7 @@ public class AddUserFunctionCommand implements Command {
 		
 		WorkflowUserFunctionContext userFunctionContext = (WorkflowUserFunctionContext) context.get(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT);
 		
-		userFunctionContext.fillName();
+		userFunctionContext.fillNameFromScript();
 		
 		addUserFunction(userFunctionContext);
 		return false;
@@ -37,8 +37,6 @@ public class AddUserFunctionCommand implements Command {
 		Map<String, Object> props = FieldUtil.getAsProperties(userFunctionContext);
 		insertBuilder.addRecord(props);
 		insertBuilder.save();
-		
-		userFunctionContext.setId((long)props.get("id"));
 	}
 
 }

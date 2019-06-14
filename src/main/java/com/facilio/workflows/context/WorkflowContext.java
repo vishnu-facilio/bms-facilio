@@ -79,7 +79,7 @@ public class WorkflowContext implements Serializable {
 	
 	public int getType() {
 		if(type != null) {
-			type.getValue();
+			return type.getValue();
 		}
 		return -1;
 	}

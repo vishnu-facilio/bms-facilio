@@ -4056,7 +4056,7 @@ public class FieldFactory {
 	
 	public static List<FacilioField> getWorkflowUserFunctionFields() {
 		List<FacilioField> fields = new ArrayList<>();
-		FacilioModule module = ModuleFactory.getWorkflowModule();
+		FacilioModule module = ModuleFactory.getWorkflowUserFunctionModule();
 
 		fields.add(getIdField(module));
 

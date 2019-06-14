@@ -35,7 +35,7 @@ public class WorkflowUserFunctionContext extends WorkflowContext {
 		this.name = name;
 	}
 	
-	public void fillName() throws Exception {
+	public void fillNameFromScript() throws Exception {
 		WorkflowFunctionVisitor visitor = null;
 		
 		InputStream stream = new ByteArrayInputStream(workflowV2String.getBytes(StandardCharsets.UTF_8));

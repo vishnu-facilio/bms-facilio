@@ -436,6 +436,8 @@ public class WorkflowUtil {
 		
 		workflow.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		
+		workflow.setType(workflowContext.getType());
+		
 		workflowContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
