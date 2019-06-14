@@ -7,16 +7,7 @@ import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.agent.ConfigureAgentCommand;
 import com.facilio.agent.ConfigureControllerCommand;
 import com.facilio.agent.DeleteAgentCommand;
-import com.facilio.agent.commands.AckUpdateCommand;
-import com.facilio.agent.commands.AddAgentMessageCommand;
-import com.facilio.agent.commands.AddAgentMetricsCommand;
-import com.facilio.agent.commands.AddLogChainCommand;
-import com.facilio.agent.commands.AgentCreate;
-import com.facilio.agent.commands.AgentEditCommand;
-import com.facilio.agent.commands.UpdateAgentDetailsCommand;
-import com.facilio.agent.commands.UpdateAgentMessageCommand;
-import com.facilio.agent.commands.UpdateAgentMetricsCommand;
-import com.facilio.agent.commands.UpdateAgentTableCommand;
+import com.facilio.agent.commands.*;
 import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
@@ -34,6 +25,7 @@ import com.facilio.mv.command.UpdateMVPojectCommand;
 import com.facilio.workflows.command.AddNameSpaceCommand;
 import com.facilio.workflows.command.AddScheduledWorkflowCommand;
 import com.facilio.workflows.command.AddUserFunctionCommand;
+import com.facilio.events.commands.NewEventsToAlarmsConversionCommand;
 import com.facilio.workflows.command.AddWorkflowCommand;
 import com.facilio.workflows.command.DeleteNameSpaceCommand;
 import com.facilio.workflows.command.DeleteScheduledWorkflowCommand;
@@ -1144,21 +1136,21 @@ public class TransactionChainFactory {
 			c.addCommand(new SwitchToAddResourceChain());
 			return c;
 		}
-		
+
 		public static Chain parseReadingDataForImport() {
 			Chain c = getDefaultChain();
 			c.addCommand(new ParseDataForReadingLogsCommand());
 			c.addCommand(new InsertImportDataIntoLogCommand());
 			return c;
 		}
-		
+
 		public static Chain parseImportData() {
 			Chain c = getDefaultChain();
 			c.addCommand(new GenericParseDataForImportCommand());
 			c.addCommand(new InsertImportDataIntoLogCommand());
 			return c;
 		}
-		
+
 		public static Chain getImportReadingChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new ConstructVirtualSheetForReadingsImport());
@@ -1167,8 +1159,8 @@ public class TransactionChainFactory {
 			c.addCommand(new SendEmailCommand());
 			return c;
 		}
-		
-		
+
+
 		public static Chain getGenericImportChain() {
 			Chain c= getDefaultChain();
 			c.addCommand(new PopulateImportProcessCommand());
@@ -1435,7 +1427,7 @@ public class TransactionChainFactory {
 			c.addCommand(new UnsubscribeInstanceIoTCommand());
 			return c;
 		}
-		
+
 		public static Chain getChangeNewPreventiveMaintenanceStatusChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new ChangePreventiveMaintenanceStatusCommand());
@@ -1504,63 +1496,63 @@ public class TransactionChainFactory {
 			c.addCommand(new ScheduleV2ReportCommand());
 			return c;
 		}
-		
+
 		public static Chain getExportReportFileChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(ReadOnlyChainFactory.newFetchReportDataChain());
 			c.addCommand(new GetExportReportFileCommand());
 			return c;
 		}
-		
+
 		public static Chain sendReportMailChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(getExportReportFileChain());
 			c.addCommand(new SendReadingReportMailCommand());
 			return c;
 		}
-		
+
 		public static Chain getExportAnalyticsFileChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(ReadOnlyChainFactory.newFetchReadingReportChain());
 			c.addCommand(new GetExportReportFileCommand());
 			return c;
 		}
-		
+
 		public static Chain sendAnalyticsMailChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(getExportAnalyticsFileChain());
 			c.addCommand(new SendReadingReportMailCommand());
 			return c;
 		}
-		
+
 		public static Chain getExportModuleReportFileChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(ReadOnlyChainFactory.newFetchReportDataChain());
 			c.addCommand(new GetExportModuleReportFileCommand());
 			return c;
 		}
-		
+
 		public static Chain sendModuleReportMailChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(getExportModuleReportFileChain());
 			c.addCommand(new SendReadingReportMailCommand());
 			return c;
 		}
-		
+
 		public static Chain getExportModuleAnalyticsFileChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new ConstructReportData());
 			c.addCommand(getExportModuleReportFileChain());
 			return c;
 		}
-		
+
 		public static Chain sendModuleAnalyticsMailChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(getExportModuleAnalyticsFileChain());
 			c.addCommand(new SendReadingReportMailCommand());
 			return c;
 		}
-		
+
 
 	    public static Chain getAddWidgetChain() {
 			Chain c = getDefaultChain();
@@ -3020,7 +3012,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ConstructBaselineFromulaWithAjustmentCommand());
 			return c;
 		}
-		
+
 		public static Chain getUpdateMVProjectChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new UpdateMVPojectCommand());
@@ -3031,31 +3023,31 @@ public class TransactionChainFactory {
 			c.addCommand(new ConstructBaselineFromulaWithAjustmentCommand());
 			return c;
 		}
-		
+
 		public static Chain getAddMVBaselineChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddMVBaselineCommand());
 			return c;
 		}
-		
+
 		public static Chain getAddMVAdjustmentChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddMVAjustmentCommand());
 			return c;
 		}
-		
+
 		public static Chain getAddMVAjustmentVsBaselineChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddMVAjustmentVsBaselineCommand());
 			return c;
 		}
-		
+
 		public static Chain getDeleteMVProjectChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new DeleteMVProjectCommand());
 			return c;
 		}
-		
+
 		public static Chain getAddWorkflowChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddWorkflowCommand());
@@ -3190,6 +3182,13 @@ public class TransactionChainFactory {
 			c.addCommand(new AddOrUpdateFacilioStatusCommand());
 			return c;
 		}
+		public static Chain getV2AddEventChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new InsertNewEventsCommand());
+			c.addCommand(new NewEventsToAlarmsConversionCommand());
+			return c;
+		}
+
 }
 
 

@@ -267,7 +267,7 @@ public class EventContext {
 		this.subRuleId = subRuleId;
 	}
 
-	private static final EventInternalState[] INETERNAL_STATES = EventInternalState.values();
+	public static final EventInternalState[] INETERNAL_STATES = EventInternalState.values();
 	public static enum EventInternalState {
 		ADDED,
 		FILTERED,
@@ -282,7 +282,7 @@ public class EventContext {
 		}
 	}
 	
-	private static final EventState[] EVENT_STATES = EventState.values();
+	public static final EventState[] EVENT_STATES = EventState.values();
 	public static enum EventState {
 		READY,
 		IGNORED,

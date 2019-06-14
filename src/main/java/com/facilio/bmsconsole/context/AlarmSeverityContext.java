@@ -55,4 +55,15 @@ public class AlarmSeverityContext extends ModuleBaseWithCustomFields {
 	public void setColor(String color) {
 		this.color = color;
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		if (obj instanceof AlarmSeverityContext) {
+			return ((AlarmSeverityContext) obj).getId() == getId();
+		}
+		return false;
+	}
 }

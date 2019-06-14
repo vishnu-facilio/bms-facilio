@@ -11,6 +11,7 @@ import org.json.simple.JSONObject;
 import com.facilio.activity.ActivityContext;
 import com.facilio.bmsconsole.context.AHUContext;
 import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.AlarmSeverityContext;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
@@ -18,6 +19,7 @@ import com.facilio.bmsconsole.context.AssetDepartmentContext;
 import com.facilio.bmsconsole.context.AssetTypeContext;
 import com.facilio.bmsconsole.context.AttendanceContext;
 import com.facilio.bmsconsole.context.AttendanceTransactionContext;
+import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BreakContext;
 import com.facilio.bmsconsole.context.BuildingContext;
@@ -302,6 +304,8 @@ public class FacilioConstants {
 		public static final String ML_ALARM_OCCURRENCE = "mlalarmoccurrence";
 		public static final String ALARM_LIST = "alarms";
 		public static final String ALARM_ENTITY_ID = "alarmentityid";
+		public static final String ALARM_OCCURANCE = "alarmoccurance";
+		public static final String BASE_AlARM = "basealarm";
 		
 		
 		public static final String EVENT = "event";
@@ -1220,6 +1224,9 @@ public class FacilioConstants {
 			classMap.put(MV_BASELINE_MODULE, MVBaseline.class);
 			classMap.put(MV_ADJUSTMENT_MODULE, MVAdjustment.class);
 			classMap.put(FORMULA_FIELD, FormulaFieldContext.class);
+			
+			classMap.put(ALARM_OCCURANCE, AlarmOccurrenceContext.class);
+			classMap.put(BASE_AlARM, BaseAlarmContext.class);
 			return classMap;
 		}
 		
