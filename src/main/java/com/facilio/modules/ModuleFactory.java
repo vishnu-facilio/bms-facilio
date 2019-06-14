@@ -2245,4 +2245,11 @@ public class ModuleFactory {
 		return module;
 	}
 	
+	public static FacilioModule getShiftRotationModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("shiftRotation");
+		module.setDisplayName("Shift Rotation");
+		module.setTableName("Shift_Rotation");
+		return module;
+	}
 }

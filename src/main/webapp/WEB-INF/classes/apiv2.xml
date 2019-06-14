@@ -2567,4 +2567,11 @@
 		</action>
 	</package>
 	
+	<package name="shiftRotationList" namespace="/api/v2/shiftRotation/view"
+		extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.ShiftRotationAction"
+			method="shiftRotationList">
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
 </struts>

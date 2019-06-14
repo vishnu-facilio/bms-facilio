@@ -372,6 +372,11 @@ public class ViewFactory {
 		views.put("all", getAllBreakView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.BREAK, views);
 		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllShiftRotationView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.SHIFT_ROTATION, views);
+		
 		
 		return viewsMap;
 	}
@@ -3646,6 +3651,20 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Break");
+		allView.setSortFields(Arrays.asList(new SortField(name, false)));
+		return allView;
+	}
+	
+	private static FacilioView getAllShiftRotationView() {
+		FacilioField name = new FacilioField();
+		name.setName("schedularName");
+		name.setDataType(FieldType.STRING);
+		name.setColumnName("SCHEDULAR_NAME");
+		name.setModule(ModuleFactory.getShiftRotationModule());
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Shift Rotation");
 		allView.setSortFields(Arrays.asList(new SortField(name, false)));
 		return allView;
 	}
