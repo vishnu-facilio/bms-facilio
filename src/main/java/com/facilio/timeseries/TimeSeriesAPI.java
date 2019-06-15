@@ -915,21 +915,14 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		}
 	}
 	
-	public static int markUnmodeledInstancesAsUsed(List<Long> ids) throws Exception {
-		return updateUnmodeledInstances(ids, Collections.singletonMap("inUse", true));
-	}
-	
-	public static int updateUnmodeledInstances(List<Long> ids, Map<String, Object> instance) throws Exception{
+	public static int updateInstances(List<Long> ids, Map<String, Object> instance) throws Exception{
 		FacilioModule module = ModuleFactory.getPointsModule();
 		List<FacilioField> fields = FieldFactory.getPointsFields();
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		fields.add(FieldFactory.getIdField(module));
 		
 		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
 											.fields(fields)
 											.table(module.getTableName())
-											 .andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), CommonOperators.IS_EMPTY))
-											 .andCondition(CriteriaAPI.getCondition(fieldMap.get("fieldId"), CommonOperators.IS_EMPTY))
 											.andCondition(CriteriaAPI.getIdCondition(ids, module));
 		
 		return builder.update(instance);

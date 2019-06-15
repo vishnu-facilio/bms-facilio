@@ -1,15 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.util.ControllerAPI;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.timeseries.TimeSeriesAPI;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
+import com.facilio.bmsconsole.util.ControllerAPI;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.timeseries.TimeSeriesAPI;
 
 public class MarkUnmodeledInstanceCommand implements Command {
 
@@ -24,11 +25,11 @@ public class MarkUnmodeledInstanceCommand implements Command {
 			// TODO implement update case
 			for (Map.Entry<String, String> entry : deviceNames.entrySet()) {
 				instance.put("device", entry.getValue());
-				TimeSeriesAPI.updateUnmodeledInstances(Collections.singletonList(Long.parseLong(entry.getKey())), instance);
+				TimeSeriesAPI.updateInstances(Collections.singletonList(Long.parseLong(entry.getKey())), instance);
 			}
 		}
 		else {
-			TimeSeriesAPI.updateUnmodeledInstances(ids, instance);
+			TimeSeriesAPI.updateInstances(ids, instance);
 		}
 		
 		long controllerId = (long) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);

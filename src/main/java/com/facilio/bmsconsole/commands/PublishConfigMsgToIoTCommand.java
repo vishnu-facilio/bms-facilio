@@ -36,7 +36,7 @@ public class PublishConfigMsgToIoTCommand implements Command {
 	
 	public static void markInstancesAsNotInUse (List<Long> ids) { //static because this is used in lambda
 		try {
-			TimeSeriesAPI.updateUnmodeledInstances(ids, Collections.singletonMap("inUse", false));
+			TimeSeriesAPI.updateInstances(ids, Collections.singletonMap("inUse", false));
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			LOGGER.error("Error occurred while marking instances as not in use", e);

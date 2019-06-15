@@ -27,7 +27,7 @@ public class SubscribeInstanceIoTCommand implements Command {
 			ids.add(id);
 			
 			instance.put("subscribed", true);
-			TimeSeriesAPI.updateUnmodeledInstances(Collections.singletonList(id), instance);
+			TimeSeriesAPI.updateInstances(Collections.singletonList(id), instance);
 		}
 		
 		List<Map<String, Object>> instanceList =  TimeSeriesAPI.getUnmodeledInstances(ids);
@@ -44,7 +44,7 @@ public class SubscribeInstanceIoTCommand implements Command {
 			Map<String, Object> prop = new HashMap<>();
 			prop.put("subscribed", false);
 			prop.put("thresholdJson", null);
-			TimeSeriesAPI.updateUnmodeledInstances(ids, prop);
+			TimeSeriesAPI.updateInstances(ids, prop);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			LOGGER.error("Error occurred while subscribing", e);
