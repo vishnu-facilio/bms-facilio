@@ -1076,7 +1076,7 @@ public class ReadingAction extends FacilioAction {
 	}
 	
 	public String setReading () throws Exception {
-		Map<String, Object> instance = TimeSeriesAPI.getInstance(assetId,fieldId);
+		Map<String, Object> instance = TimeSeriesAPI.getMappedInstance(assetId,fieldId);
 		if (instance != null && AccountUtil.getCurrentOrg()!= null) {
 			instance.put("value", value);
 			instance.put("fieldId", fieldId);
@@ -1088,7 +1088,7 @@ public class ReadingAction extends FacilioAction {
 	}
 	
 	public String getLiveReading () throws Exception {
-		Map<String, Object> instance = TimeSeriesAPI.getInstance(assetId,fieldId);
+		Map<String, Object> instance = TimeSeriesAPI.getMappedInstance(assetId,fieldId);
 		if (instance != null && AccountUtil.getCurrentOrg()!= null) {
 			IoTMessageAPI.publishIotMessage(Collections.singletonList(instance), IotCommandType.GET);
 		}
