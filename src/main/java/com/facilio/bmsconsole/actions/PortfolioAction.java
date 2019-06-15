@@ -196,74 +196,76 @@ public class PortfolioAction extends ActionSupport {
 		for(Map<String, Object> prop :props) {
 			mainMeterList.add((Long)prop.get("meterId"));
 		}
+		JSONObject result = new JSONObject();
 		
-		FacilioModule energyDataModule = modBean.getModule(FacilioConstants.ContextNames.ENERGY_DATA_READING);
-		Map<String, FacilioField> energyDataFieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.ContextNames.ENERGY_DATA_READING));
-		
-		FacilioField energyField = energyDataFieldMap.get("totalEnergyConsumptionDelta").clone();
-		
-		selectfields = new ArrayList<>();
-		selectfields.add(energyDataFieldMap.get("parentId"));
-		
-		SelectRecordsBuilder<ModuleBaseWithCustomFields> select1 = new SelectRecordsBuilder<>();
-		select1.select(selectfields);
-		select1.aggregate(AggregateOperator.NumberAggregateOperator.SUM, energyField);
-		select1.module(energyDataModule)
-		.andCondition(CriteriaAPI.getCondition(energyDataFieldMap.get("parentId"), mainMeterList, NumberOperators.EQUALS))
-		.andCondition(CriteriaAPI.getCondition(energyDataFieldMap.get("ttime"), DateOperators.CURRENT_MONTH_UPTO_NOW))
-		.groupBy("PARENT_METER_ID");
-		
-		List<Map<String, Object>> propsThisMonth = select1.getAsProps();
-		
-		Map<Long,Double> thisMeterVsConsumption=ReportsUtil.getMapping(propsThisMonth,"parentId","totalEnergyConsumptionDelta");
-		
-		long prevMonthStartTime= DateTimeUtil.getMonthStartTime(-1);
-		long currentMonthStartTime=DateTimeUtil.getMonthStartTime();
-		long currentEndTime=DateTimeUtil.getCurrenTime();
-		long previousEndTime=prevMonthStartTime+(currentEndTime-currentMonthStartTime);
-		
-		select1 = new SelectRecordsBuilder<>();
-		select1.select(selectfields);
-		select1.aggregate(AggregateOperator.NumberAggregateOperator.SUM, energyField);
-		select1.module(energyDataModule)
-		.andCondition(CriteriaAPI.getCondition(energyDataFieldMap.get("parentId"), mainMeterList, NumberOperators.EQUALS))
-		.andCondition(CriteriaAPI.getCondition(energyDataFieldMap.get("ttime"),prevMonthStartTime+","+previousEndTime ,DateOperators.BETWEEN))
-		.groupBy("PARENT_METER_ID");
-		
-		List<Map<String, Object>> propsLastMonth = select1.getAsProps();
-		
-		Map<Long,Double> prevMeterVsConsumption=ReportsUtil.getMapping(propsLastMonth,"parentId","totalEnergyConsumptionDelta");
-		
-		for(Map<String, Object> prop : props) {
+		if(!mainMeterList.isEmpty()) {
+			FacilioModule energyDataModule = modBean.getModule(FacilioConstants.ContextNames.ENERGY_DATA_READING);
+			Map<String, FacilioField> energyDataFieldMap = FieldFactory.getAsMap(modBean.getAllFields(FacilioConstants.ContextNames.ENERGY_DATA_READING));
 			
-			Long buildingId = (Long)prop.get("building");
+			FacilioField energyField = energyDataFieldMap.get("totalEnergyConsumptionDelta").clone();
 			
-			ResourceContext resourceContext = ResourceAPI.getResource(buildingId);
-			Long meterId = (Long) prop.get("meterId");
-			Double thisMonthKwh = (Double) thisMeterVsConsumption.get(meterId);
-			Double lastMonthKwh = (Double) prevMeterVsConsumption.get(meterId);
+			selectfields = new ArrayList<>();
+			selectfields.add(energyDataFieldMap.get("parentId"));
 			
-			prop.put("thisMonthKwh", thisMonthKwh);
-			prop.put("lastMonthKwh", lastMonthKwh);
+			SelectRecordsBuilder<ModuleBaseWithCustomFields> select1 = new SelectRecordsBuilder<>();
+			select1.select(selectfields);
+			select1.aggregate(AggregateOperator.NumberAggregateOperator.SUM, energyField);
+			select1.module(energyDataModule)
+			.andCondition(CriteriaAPI.getCondition(energyDataFieldMap.get("parentId"), mainMeterList, NumberOperators.EQUALS))
+			.andCondition(CriteriaAPI.getCondition(energyDataFieldMap.get("ttime"), DateOperators.CURRENT_MONTH_UPTO_NOW))
+			.groupBy("PARENT_METER_ID");
 			
-			if(resourceContext.getPhotoId() <= 0) {
+			List<Map<String, Object>> propsThisMonth = select1.getAsProps();
+			
+			Map<Long,Double> thisMeterVsConsumption=ReportsUtil.getMapping(propsThisMonth,"parentId","totalEnergyConsumptionDelta");
+			
+			long prevMonthStartTime= DateTimeUtil.getMonthStartTime(-1);
+			long currentMonthStartTime=DateTimeUtil.getMonthStartTime();
+			long currentEndTime=DateTimeUtil.getCurrenTime();
+			long previousEndTime=prevMonthStartTime+(currentEndTime-currentMonthStartTime);
+			
+			select1 = new SelectRecordsBuilder<>();
+			select1.select(selectfields);
+			select1.aggregate(AggregateOperator.NumberAggregateOperator.SUM, energyField);
+			select1.module(energyDataModule)
+			.andCondition(CriteriaAPI.getCondition(energyDataFieldMap.get("parentId"), mainMeterList, NumberOperators.EQUALS))
+			.andCondition(CriteriaAPI.getCondition(energyDataFieldMap.get("ttime"),prevMonthStartTime+","+previousEndTime ,DateOperators.BETWEEN))
+			.groupBy("PARENT_METER_ID");
+			
+			List<Map<String, Object>> propsLastMonth = select1.getAsProps();
+			
+			Map<Long,Double> prevMeterVsConsumption=ReportsUtil.getMapping(propsLastMonth,"parentId","totalEnergyConsumptionDelta");
+			
+			for(Map<String, Object> prop : props) {
 				
-				List<PhotosContext> photos = SpaceAPI.getBaseSpacePhotos(resourceContext.getId());
+				Long buildingId = (Long)prop.get("building");
 				
-				if(photos != null && !photos.isEmpty()) {
-					resourceContext.setPhotoId(photos.get(0).getPhotoId());
+				ResourceContext resourceContext = ResourceAPI.getResource(buildingId);
+				Long meterId = (Long) prop.get("meterId");
+				Double thisMonthKwh = (Double) thisMeterVsConsumption.get(meterId);
+				Double lastMonthKwh = (Double) prevMeterVsConsumption.get(meterId);
+				
+				prop.put("thisMonthKwh", thisMonthKwh);
+				prop.put("lastMonthKwh", lastMonthKwh);
+				
+				if(resourceContext.getPhotoId() <= 0) {
+					
+					List<PhotosContext> photos = SpaceAPI.getBaseSpacePhotos(resourceContext.getId());
+					
+					if(photos != null && !photos.isEmpty()) {
+						resourceContext.setPhotoId(photos.get(0).getPhotoId());
+					}
+				}
+				
+				prop.put("avatar", resourceContext.getAvatarUrl());
+				
+				if(thisMonthKwh != null && thisMonthKwh > 0 && lastMonthKwh != null && lastMonthKwh > 0) {
+					double variance= ReportsUtil.getVariance(thisMonthKwh, lastMonthKwh);
+					prop.put("variance", variance);
 				}
 			}
-			
-			prop.put("avatar", resourceContext.getAvatarUrl());
-			
-			if(thisMonthKwh != null && thisMonthKwh > 0 && lastMonthKwh != null && lastMonthKwh > 0) {
-				double variance= ReportsUtil.getVariance(thisMonthKwh, lastMonthKwh);
-				prop.put("variance", variance);
-			}
+			result.put("buildingsWithRootMeterMeta", props);
 		}
-		JSONObject result = new JSONObject();
-		result.put("buildingsWithRootMeterMeta", props);
 		
 		setReportData(result);
 			
