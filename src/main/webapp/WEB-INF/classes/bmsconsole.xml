@@ -3292,17 +3292,6 @@
 				<param name="root">allDevices</param>
 			</result>
 		</action>
-		<action name="mapInstanceAsset" class="com.facilio.bmsconsole.actions.TimeSeries"
-			method="mapInstanceAsset">
-			<result name="success" type="json">
-				<param name="statusCode">200</param>
-			</result>
-			<result name="error" type="json">
-				<param name="statusCode">500</param>
-				<param name="ignoreHierarchy">false</param>
-				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
-			</result>
-		</action>
 		<action name="getFieldMap" class="com.facilio.bmsconsole.actions.TimeSeries"
 			method="getDefaultFieldMap">
 			<result name="success" type="json">

@@ -1,15 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.constants.FacilioConstants;
-import com.facilio.timeseries.TimeSeriesAPI;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
+import com.facilio.beans.ModuleBean;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.timeseries.TimeSeriesAPI;
 
 public class GetUnmodelledInstancesForControllerCommand implements Command {
 
@@ -35,15 +38,20 @@ public class GetUnmodelledInstancesForControllerCommand implements Command {
 			instances = TimeSeriesAPI.getPointsInstancesForController(controllerId, configured, fetchMapped, pagination, isSubscribed, isCount, searchText, false);
 			setResources(context,fetchMapped, isCount, instances,"resourceId");
 //		}
+			
+		context.put(FacilioConstants.ContextNames.PAGINATION, null);
 		context.put(FacilioConstants.ContextNames.INSTANCE_INFO, instances);
 		return false;
 	}
 
 	private void setResources(Context context,Boolean fetchMapped, Boolean isCount,
-			List<Map<String, Object>> instances, String fieldName) {
+			List<Map<String, Object>> instances, String fieldName) throws Exception {
 		if (fetchMapped != null && fetchMapped && instances != null && !isCount) {
 			Set<Long> assetIds = instances.stream().map(inst -> (Long) inst.get(fieldName)).collect(Collectors.toSet());
+			Set<Long> fieldIds = instances.stream().map(inst -> (Long) inst.get("fieldId")).collect(Collectors.toSet());
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, assetIds);
+			context.put(FacilioConstants.ContextNames.MODULE_FIELD_MAP, modBean.getFields(fieldIds));
 		}
 	}
 }

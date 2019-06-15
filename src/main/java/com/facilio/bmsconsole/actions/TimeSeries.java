@@ -1,5 +1,19 @@
 package com.facilio.bmsconsole.actions;
 
+import java.io.BufferedReader;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.chain.Chain;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.apache.struts2.ServletActionContext;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -13,18 +27,6 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.timeseries.TimeSeriesAPI;
 import com.facilio.wms.message.Message;
 import com.facilio.wms.util.WmsApi;
-import org.apache.commons.chain.Chain;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.struts2.ServletActionContext;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
-import javax.servlet.http.HttpServletRequest;
-import java.io.BufferedReader;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 public class TimeSeries extends FacilioAction {
 	
@@ -116,34 +118,6 @@ public class TimeSeries extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	@SuppressWarnings("unchecked")
-	public String mapInstanceAsset() throws Exception
-	{
-		Map<String,Object> object = getInstanceAssetMap();
-		String deviceName = (String) object.get("deviceName");
-		long assetId = (long) object.get("assetId");
-		Long controllerId=(Long)object.get(FacilioConstants.ContextNames.CONTROLLER_ID);
-		Map<String,Long> instanceFieldMap = (Map<String, Long>) object.get("instanceFieldMap");
-		
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.DEVICE_DATA , deviceName);
-		context.put(FacilioConstants.ContextNames.ASSET_ID, assetId);
-		context.put(FacilioConstants.ContextNames.RECORD_MAP, instanceFieldMap);
-		
-		if(controllerId!=null) {
-			context.put(FacilioConstants.ContextNames.CONTROLLER_ID, controllerId);
-		}
-		
-		Chain mappingChain = TransactionChainFactory.getInstanceAssetMappingChain();
-		mappingChain.execute(context);
-		
-		if (doMigration) {
-			setDeviceList(Collections.singletonList(deviceName));
-			migrateData();
-		}
-		
-		return SUCCESS;
-	}
 	
 	public String mapInstance() throws Exception {
 		

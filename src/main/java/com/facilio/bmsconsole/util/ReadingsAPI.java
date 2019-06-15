@@ -256,12 +256,12 @@ public class ReadingsAPI {
 		return getRDMMapFromProps(builder.get(), fieldIdMap);
 	}
 	
-	public static long getReadingDataMetaCount(Long resourceId, boolean excludeEmptyFields, String search, ReadingInputType...readingTypes) throws Exception {
-		return getReadingDataMetaCount(Collections.singletonList(resourceId), excludeEmptyFields, search, readingTypes);
+	public static long getReadingDataMetaCount(Long resourceId, boolean excludeEmptyFields, String search, ReadingInputType...inputTypes) throws Exception {
+		return getReadingDataMetaCount(Collections.singletonList(resourceId), excludeEmptyFields, search, inputTypes);
 	}
 	
-	public static long getReadingDataMetaCount(Collection<Long> resourceIds, boolean excludeEmptyFields, String search, ReadingInputType...readingTypes) throws Exception {
-		List<Map<String, Object>> props = getRDMProps(resourceIds, null, excludeEmptyFields, true, null, search, null, readingTypes);
+	public static long getReadingDataMetaCount(Collection<Long> resourceIds, boolean excludeEmptyFields, String search, ReadingInputType...inputTypes) throws Exception {
+		List<Map<String, Object>> props = getRDMProps(resourceIds, null, excludeEmptyFields, true, null, search, null, inputTypes);
 		if (props != null && !props.isEmpty()) {
 			return (long) props.get(0).get("count");
 		}
@@ -272,12 +272,16 @@ public class ReadingsAPI {
 		return getReadingDataMetaList(resourceId, fieldList, false);
 	}
 	
-	public static List<ReadingDataMeta> getReadingDataMetaList(Long resourceId, Collection<FacilioField> fieldList, boolean excludeEmptyFields, ReadingInputType...readingTypes) throws Exception {
-		return getReadingDataMetaList(Collections.singletonList(resourceId), fieldList, excludeEmptyFields, null, null, readingTypes);
+	public static List<ReadingDataMeta> getReadingDataMetaList(Long resourceId, Collection<FacilioField> fieldList, boolean excludeEmptyFields, ReadingInputType...inputTypes) throws Exception {
+		return getReadingDataMetaList(Collections.singletonList(resourceId), fieldList, excludeEmptyFields, null, null, inputTypes);
 	}
 	
-	public static List<ReadingDataMeta> getReadingDataMetaList(Collection<Long> resourceIds, Collection<FacilioField> fieldList, boolean excludeEmptyFields, JSONObject pagination, String search, ReadingInputType...readingTypes) throws Exception {
-		return getReadingDataMetaList(resourceIds, fieldList, excludeEmptyFields, pagination, search, null, readingTypes);
+	public static List<ReadingDataMeta> getReadingDataMetaList(Collection<Long> resourceIds, Collection<FacilioField> fieldList, boolean excludeEmptyFields, JSONObject pagination, String search, ReadingInputType...inputTypes) throws Exception {
+		return getReadingDataMetaList(resourceIds, fieldList, excludeEmptyFields, pagination, search, null, inputTypes);
+	}
+	
+	public static List<ReadingDataMeta> getReadingDataMetaList(Collection<Long> resourceIds, Map<Long, FacilioField> fieldMap, boolean excludeEmptyFields, JSONObject pagination, String search, ReadingInputType...inputTypes) throws Exception {
+		return getReadingDataMetaList(resourceIds, fieldMap, excludeEmptyFields, pagination, search, null, inputTypes);
 	}
 	
 	public static List<ReadingDataMeta> getReadingDataMetaList(Collection<Long> resourceIds, Collection<FacilioField> fieldList, boolean excludeEmptyFields, ReadingType readingType) throws Exception {
@@ -289,6 +293,10 @@ public class ReadingsAPI {
 		if (fieldList != null) {
 			fieldMap = FieldFactory.getAsIdMap(fieldList);
 		}
+		return getReadingDataMetaList(resourceIds, fieldMap, excludeEmptyFields, pagination, search, readingType, inputTypes);
+	}
+	
+	public static List<ReadingDataMeta> getReadingDataMetaList(Collection<Long> resourceIds, Map<Long, FacilioField> fieldMap, boolean excludeEmptyFields, JSONObject pagination, String search, ReadingType readingType, ReadingInputType...inputTypes) throws Exception {
 		List<Map<String, Object>> stats = getRDMProps(resourceIds, fieldMap, excludeEmptyFields, false, pagination, search, readingType, inputTypes);
 		return getReadingDataFromProps(stats, fieldMap);
 	}

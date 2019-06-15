@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.fields.FacilioField;
 
 public class GetLatestReadingDataCommand implements Command {
 
@@ -68,7 +69,9 @@ public class GetLatestReadingDataCommand implements Command {
 				return false;
 			}
 			
-			List<ReadingDataMeta> rdmList = ReadingsAPI.getReadingDataMetaList(parentIds, null, excludeEmptyFields, pagination, search, types);
+			Map<Long, FacilioField> fieldMap = (Map<Long, FacilioField>) context.get(FacilioConstants.ContextNames.MODULE_FIELD_MAP);
+			
+			List<ReadingDataMeta> rdmList = ReadingsAPI.getReadingDataMetaList(parentIds, fieldMap, excludeEmptyFields, pagination, search, types);
 			
 			Boolean fetchInputValues = (Boolean) context.get(FacilioConstants.ContextNames.FETCH_READING_INPUT_VALUES);
 			if (rdmList != null && fetchInputValues != null && fetchInputValues) {
