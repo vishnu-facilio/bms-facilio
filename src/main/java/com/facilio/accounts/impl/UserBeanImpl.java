@@ -329,7 +329,7 @@ public class UserBeanImpl implements UserBean {
 
 		if (uid == -1) {
 			if( (AccountUtil.getCurrentOrg() != null) && (user.getTimezone() == null) ) {
-				user.setTimezone(AccountUtil.getCurrentOrg().getTimezone());
+				user.setTimezone(AccountUtil.getCurrentAccount().getTimeZone());
 			}
 			if( (AccountUtil.getCurrentUser() != null) && (user.getLanguage() == null) ) {
 				user.setLanguage(AccountUtil.getCurrentUser().getLanguage());

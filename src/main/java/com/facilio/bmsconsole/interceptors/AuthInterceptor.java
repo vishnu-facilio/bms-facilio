@@ -20,6 +20,7 @@ import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
@@ -154,16 +155,16 @@ public class AuthInterceptor extends AbstractInterceptor {
 					request.setAttribute("USERID", currentAccount.getUser().getOuid());
 										
 
-					String timezonevar = null;
+					String timezoneVar = null;
 					if (AccountUtil.getCurrentAccount().getCurrentSiteId() > 0)
 					{
-						timezonevar = SpaceAPI.getSiteSpace(AccountUtil.getCurrentAccount().getCurrentSiteId()).getTimeZone();	
+						timezoneVar = SpaceAPI.getSiteSpace(AccountUtil.getCurrentAccount().getCurrentSiteId()).getTimeZone();
 					}
-					if (timezonevar == null || "".equals(timezonevar.trim())) 
+					if (StringUtils.isEmpty(timezoneVar))
 					{
-						timezonevar = AccountUtil.getCurrentOrg().getTimezone();
+						timezoneVar = AccountUtil.getCurrentOrg().getTimezone();
 					}
-					AccountUtil.setTimeZone(timezonevar);
+					AccountUtil.setTimeZone(timezoneVar);
 					
 					
 					Parameter permission = ActionContext.getContext().getParameters().get("permission");

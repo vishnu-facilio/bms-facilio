@@ -1,7 +1,9 @@
 package com.facilio.accounts.dto;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.opensymphony.xwork2.ActionContext;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 
 import javax.servlet.http.HttpServletRequest;
@@ -245,11 +247,14 @@ public class Account implements Serializable {
     	return requestUri;
 	}
 
-	public String timeZone;
+	private String timeZone;
 	public void setTimeZone(String timeZone) {
 		this.timeZone = timeZone;	
 	}
 	public String getTimeZone() {
+		if(StringUtils.isEmpty(timeZone) && org != null) {
+			return org.getTimezone();
+		}
     	return timeZone;
 	}
 }

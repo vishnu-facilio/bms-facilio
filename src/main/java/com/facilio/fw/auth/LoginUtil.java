@@ -45,7 +45,7 @@ public class LoginUtil {
 				createUser.setName(cognitoUser.getName());
 				createUser.setEmail(cognitoUser.getEmail());
 				createUser.setUserVerified(false);
-				createUser.setTimezone(org.getTimezone());
+				createUser.setTimezone(AccountUtil.getCurrentAccount().getTimeZone());
 				createUser.setLanguage(locale.getLanguage());
 				createUser.setCountry(locale.getCountry());
 				createUser.setPhone(cognitoUser.getPhoneNumber());

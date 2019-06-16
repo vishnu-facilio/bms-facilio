@@ -123,7 +123,7 @@ public class MLHistoricalForecastingJob extends FacilioJob
 					postObj.put("predictedFieldID",1095);
 					postObj.put("maximumDays", 180);
 					postObj.put("Threshold", 269);
-					postObj.put("Timezone", AccountUtil.getCurrentOrg().getTimezone());
+					postObj.put("Timezone", AccountUtil.getCurrentAccount().getTimeZone());
 					postObj.put("meterInterval",60);
 					postObj.put("AssetDetails", array);
 					 

@@ -16,6 +16,7 @@ import com.facilio.modules.fields.FileField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -124,16 +125,9 @@ public class BmsDBConf extends DBConf {
         //TODO TimeZone related changes to be done.
     	
     		Account currentAccount = AccountUtil.getCurrentAccount();
-    		if(currentAccount != null)
-    		{
+    		if(currentAccount != null) {
     			String zone = currentAccount.getTimeZone();
-    			
-    			if(zone == null && AccountUtil.getCurrentOrg() != null) {
-    				zone = AccountUtil.getCurrentOrg().getTimezone();
-    			}
-    			
-    		 	if(zone != null && !zone.isEmpty()) 
-    		 	{
+    		 	if(StringUtils.isNotEmpty(zone)) {
     		 		return ZoneId.of(zone.trim());
     		 	}
     		}    	

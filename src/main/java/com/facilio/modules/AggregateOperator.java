@@ -389,7 +389,7 @@ public interface AggregateOperator {
         private String getTimeZoneString() {
             String db = DBConf.getInstance().getDBName();
             if (db.equalsIgnoreCase("mysql")) {
-                String timeZone = AccountUtil.getCurrentOrg().getTimezone();
+                String timeZone = AccountUtil.getCurrentAccount().getTimeZone();
                 if(timeZone == null) {
                     timeZone = "UTC";
                 }

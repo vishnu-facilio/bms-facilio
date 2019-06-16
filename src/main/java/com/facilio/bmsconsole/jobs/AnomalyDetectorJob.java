@@ -226,7 +226,7 @@ public class AnomalyDetectorJob extends FacilioJob {
 		postData.outlierDistance =configContext.getOutlierDistance();
 		postData.temperatureData = siteTemperatureReadings;
 		postData.energyData = meterReadings;
-		postData.timezone = AccountUtil.getCurrentOrg().getTimezone();
+		postData.timezone = AccountUtil.getCurrentAccount().getTimeZone();
 		postData.meterInterval = configContext.getMeterInterval();
 		postData.clusterSize = configContext.getClusterSize();
 		postData.bucketSize = configContext.getBucketSize();

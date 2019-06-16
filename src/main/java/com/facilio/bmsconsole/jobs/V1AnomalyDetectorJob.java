@@ -252,12 +252,12 @@ public class V1AnomalyDetectorJob extends FacilioJob {
 		}
 		
 		Long mainMeter = mainMeterList.get(0);
-		rootCauseAnalysisApi(mainMeter, orgID, startTime ,endTime,AccountUtil.getCurrentOrg().getTimezone());
+		rootCauseAnalysisApi(mainMeter, orgID, startTime ,endTime,AccountUtil.getCurrentAccount().getTimeZone());
 		
 		// get level 1 
 		List<Long> levelOneNodes=getKeyFromValue(parentChildTree, mainMeter);
 		for(Long meterIds: levelOneNodes) {
-			rootCauseAnalysisApi(meterIds, orgID, startTime ,endTime,AccountUtil.getCurrentOrg().getTimezone());
+			rootCauseAnalysisApi(meterIds, orgID, startTime ,endTime,AccountUtil.getCurrentAccount().getTimeZone());
 		}
 	}
 	
@@ -276,7 +276,7 @@ public class V1AnomalyDetectorJob extends FacilioJob {
 		postData.dimension1Value = configContext.getDimension1Value();
 		postData.temperatureData = siteTemperatureReadings;
 		postData.energyData = meterReadings;
-		postData.timezone = AccountUtil.getCurrentOrg().getTimezone();
+		postData.timezone = AccountUtil.getCurrentAccount().getTimeZone();
 		postData.meterInterval = configContext.getMeterInterval();
 		postData.adjustmentPercentage = configContext.getAdjustmentPercentage();
 		postData.tableValue = configContext.getTableValue();

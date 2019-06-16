@@ -30,7 +30,7 @@ public class GenerateMLModelCommand implements Command {
 		JSONObject postObj = new JSONObject();
 		postObj.put("ml_id",mlContext.getId());
 		postObj.put("orgid", mlContext.getOrgId());
-		postObj.put("date", LocalDate.now(TimeZone.getTimeZone(AccountUtil.getCurrentOrg().getTimezone()).toZoneId()));
+		postObj.put("date", LocalDate.now(TimeZone.getTimeZone(AccountUtil.getCurrentAccount().getTimeZone()).toZoneId()));
 		
 		JSONObject modelVariables = new JSONObject();
 		if(mlContext.getMLModelVariable()!=null)

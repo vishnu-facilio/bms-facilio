@@ -166,13 +166,12 @@ public class V1RefreshAnomalyModelJob extends FacilioJob {
 	private void doRefreshAnomalyModel(long meterID, long orgID, String s3EnergyFileUrl, String s3WeatherFileUrl, 
 			AnomalyAssetConfigurationContext configContext) throws JsonProcessingException,IOException {
 		BuildAnomalyModelPostData postData=new BuildAnomalyModelPostData();
-		postData.timezone = AccountUtil.getCurrentOrg().getTimezone();
 		postData.readingFile=s3EnergyFileUrl;
 		postData.temperatureFile=s3WeatherFileUrl;
 		postData.meterID = meterID;
 		postData.dimension1 = configContext.getDimension1Buckets();
 		postData.dimension1Value = configContext.getDimension1Value();
-		postData.timezone = AccountUtil.getCurrentOrg().getTimezone();
+		postData.timezone = AccountUtil.getCurrentAccount().getTimeZone();
 		postData.meterInterval = configContext.getMeterInterval();
 		postData.adjustmentPercentage = configContext.getAdjustmentPercentage();
 		postData.tableValue = configContext.getTableValue();
