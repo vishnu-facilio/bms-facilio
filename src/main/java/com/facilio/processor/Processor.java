@@ -144,15 +144,15 @@ public class Processor implements IRecordProcessor {
                     if(payLoad.containsKey(EventUtil.DATA_TYPE)) {
                         dataType = (String)payLoad.remove(EventUtil.DATA_TYPE);
                     }
+                    else if (orgId == 133l) {
+                    	   dataType =  PublishType.timeseries.getValue();
+                    }
                     // Temp fix - bug: Publish_Type wrongly set to "agents"
                     if("agents".equals(dataType)){
                         dataType = PublishType.agent.getValue();
                     }
                     //Temp fix  - bug: Publish_Type wrongly set to "agents"
                     PublishType publishType = PublishType.valueOf(dataType);
-                    if (publishType == null && orgId == 133l) {
-                    		publishType = PublishType.timeseries;
-                    }
                     String agentName = orgDomainName;
                     if ( payLoad.containsKey(PublishType.agent.getValue())) {
                        agentName = (String)payLoad.remove(PublishType.agent.getValue());
