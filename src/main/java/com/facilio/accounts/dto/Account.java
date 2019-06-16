@@ -257,5 +257,24 @@ public class Account implements Serializable {
 		}
     	return timeZone;
 	}
+
+	public void clearCounters() {
+		selectQueries = 0;
+		insertQueries = 0;
+		updateQueries = 0;
+		deleteQueries = 0;
+		redisQueries = 0;
+		redisGetCount = 0;
+		redisPutCount = 0;
+		redisDeleteCount = 0;
+		selectQueriesTime = 0L;
+		insertQueriesTime = 0L;
+		updateQueriesTime = 0L;
+		deleteQueriesTime = 0L;
+		redisTime = 0L;
+		redisGetTime = 0L;
+		redisPutTime = 0L;
+		redisDeleteTime = 0L;
+	}
 }
 
