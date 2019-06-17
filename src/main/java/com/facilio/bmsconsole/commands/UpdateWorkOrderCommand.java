@@ -283,9 +283,8 @@ public class UpdateWorkOrderCommand implements Command {
 	}
 	
 	private void validateCloseStatus (WorkOrderContext workOrder, List<WorkOrderContext> oldWos, List<WorkOrderContext> newWos, List<ReadingContext> userReadings, EventType activityType, Context context, List<Long> recordIds) throws Exception {
-		WorkOrderContext oldwork = oldWos.get(0);
-		FacilioStatus statusoldObj = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), oldwork.getStatus().getId());
 		FacilioStatus statusObj = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), workOrder.getStatus().getId());
+		workOrder.setStatus(statusObj);	// Temp
 		
 		for(WorkOrderContext oldWo: oldWos) {
 			
