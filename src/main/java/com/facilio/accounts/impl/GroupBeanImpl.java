@@ -364,9 +364,14 @@ public class GroupBeanImpl implements GroupBean {
 		}
 		return groups;
 	}
-	
+
 	@Override
 	public List<Group> getOrgGroups(long orgId, boolean status) throws Exception {
+		return getOrgGroups(orgId, status, true);
+	}
+	
+	@Override
+	public List<Group> getOrgGroups(long orgId, boolean status, boolean fetchMembers) throws Exception {
 		
 		List<Group> groups = new ArrayList<>();
 		
@@ -401,20 +406,26 @@ public class GroupBeanImpl implements GroupBean {
 		if (props != null && !props.isEmpty()) {
 			for(Map<String, Object> prop : props) {
 				Group group = FieldUtil.getAsBeanFromMap(prop, Group.class);
-				populateGroupEmailAndPhone(group);
-				if (group.getMembers() != null) {
-					for (GroupMember member: group.getMembers()) {
-						long ouid = member.getOuid();
-						ouids.add(ouid);
+
+				if (fetchMembers) {
+					populateGroupEmailAndPhone(group);
+					if (group.getMembers() != null) {
+						for (GroupMember member : group.getMembers()) {
+							long ouid = member.getOuid();
+							ouids.add(ouid);
+						}
 					}
 				}
 				groups.add(group);
 			}
-			Map<Long, List<Long>> ouidVsAccSpace = UserBeanImpl.getAccessibleSpaceList(ouids);
-			for (Group group: groups) {
-				if (group.getMembers() != null) {
-					for (GroupMember member: group.getMembers()) {
-						member.setAccessibleSpace(ouidVsAccSpace.get(member.getOuid()));
+
+			if (fetchMembers) {
+				Map<Long, List<Long>> ouidVsAccSpace = UserBeanImpl.getAccessibleSpaceList(ouids);
+				for (Group group : groups) {
+					if (group.getMembers() != null) {
+						for (GroupMember member : group.getMembers()) {
+							member.setAccessibleSpace(ouidVsAccSpace.get(member.getOuid()));
+						}
 					}
 				}
 			}

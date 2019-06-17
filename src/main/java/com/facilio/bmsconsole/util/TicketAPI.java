@@ -907,7 +907,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 	
 	private static void loadTicketGroups(Collection<? extends TicketContext> tickets) throws Exception {
 		if(tickets != null && !tickets.isEmpty()) {
-			List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(AccountUtil.getCurrentOrg().getOrgId(), true);
+			List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(AccountUtil.getCurrentOrg().getOrgId(), true, false);
 			
 			Map<Long, Group> groupMap = new HashMap<>();
 			for(Group group : groups) {

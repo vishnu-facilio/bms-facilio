@@ -39,6 +39,8 @@ public interface GroupBean {
 	public List<Group> getGroups(Criteria criteria) throws Exception;
 
 	public List<Group> getAllOrgGroups(long orgId) throws Exception;
+
+	public List<Group> getOrgGroups(long orgId, boolean status, boolean fetchMembers) throws Exception;
 	
 	public List<Group> getOrgGroups(long orgId, boolean status) throws Exception;
 	
