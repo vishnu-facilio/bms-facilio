@@ -35,12 +35,12 @@ public class FetchExtraMetaForAlarmRuleCommand implements Command {
 		int activeAlarmCount = getActiveAlarmCount(preRequsite);
 		int alarmsCreatedThusWeek = getAlarmsCountCreatedThisWeek(preRequsite);
 		Map<ResourceContext, Integer> resourceVsAlarmCount = getAllCriticalAssets(preRequsite);
-//		Map<String, Double> wfSummaryRes = getWorkflowSummary(preRequsite);
+		Map<String, Double> wfSummaryRes = getWorkflowSummary(preRequsite);
 		
 		context.put(FacilioConstants.ContextNames.ALARM_RULE_ACTIVE_ALARM, activeAlarmCount);
 		context.put(FacilioConstants.ContextNames.ALARM_RULE_THIS_WEEK, alarmsCreatedThusWeek);
 		context.put(FacilioConstants.ContextNames.ALARM_RULE_TOP_5_ASSETS, resourceVsAlarmCount);
-//		context.put(FacilioConstants.ContextNames.ALARM_RULE_WO_SUMMARY, wfSummaryRes);
+		context.put(FacilioConstants.ContextNames.ALARM_RULE_WO_SUMMARY, wfSummaryRes);
 		
 		return false;
 	}
@@ -51,6 +51,8 @@ public class FetchExtraMetaForAlarmRuleCommand implements Command {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		FacilioModule ticketModule = modBean.getModule(FacilioConstants.ContextNames.TICKET);
+		
+		FacilioModule alarmModule = modBean.getModule(FacilioConstants.ContextNames.ALARM);
 		
 		FacilioModule ticketStatusModule = modBean.getModule(FacilioConstants.ContextNames.TICKET_STATUS);
 		
@@ -67,8 +69,10 @@ public class FetchExtraMetaForAlarmRuleCommand implements Command {
 		
 		SelectRecordsBuilder<ReadingAlarmContext> selectBuilder = new SelectRecordsBuilder<ReadingAlarmContext>()
 				.select(fields)
-				.innerJoin(ticketModule.getTableName())
-				.on(ticketModule.getTableName()+".ID = Alarms.WO_ID")
+//				.innerJoin(alarmModule.getTableName())
+//				.on("Alarms.id = Reading_Alarms.id") 
+//				.innerJoin(ticketModule.getTableName())
+//				.on(ticketModule.getTableName()+".ID = Alarms.WO_ID")
 				.moduleName(FacilioConstants.ContextNames.READING_ALARM)
 				.beanClass(ReadingAlarmContext.class)
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("ruleId"), String.valueOf(rule.getId()), NumberOperators.EQUALS))
@@ -82,8 +86,8 @@ public class FetchExtraMetaForAlarmRuleCommand implements Command {
 		 
 		 selectBuilder = new SelectRecordsBuilder<ReadingAlarmContext>()
 					.select(fields)
-					.innerJoin(ticketModule.getTableName())
-					.on(ticketModule.getTableName()+".ID = Alarms.WO_ID")
+//					.innerJoin(ticketModule.getTableName())
+//					.on(ticketModule.getTableName()+".ID = Alarms.WO_ID")
 					.innerJoin(ticketStatusModule.getTableName())
 					.on(ticketStatusModule.getTableName()+".ID = "+ticketModule.getTableName()+".STATUS_ID")
 					.moduleName(FacilioConstants.ContextNames.READING_ALARM)
@@ -102,7 +106,7 @@ public class FetchExtraMetaForAlarmRuleCommand implements Command {
 		 field.setColumnName("avg((ACKNOWLEDGED_TIME - CREATED_TIME)/1000/60)");
 		 
 		 FacilioModule readingAlarmModule = modBean.getModule(FacilioConstants.ContextNames.READING_ALARM);
-		 FacilioModule alarmModule = modBean.getModule(FacilioConstants.ContextNames.ALARM);
+		 // FacilioModule alarmModule = modBean.getModule(FacilioConstants.ContextNames.ALARM);
 		 
 		 GenericSelectRecordBuilder selectBuilder1 = new GenericSelectRecordBuilder()
 					.select(Collections.singletonList(field))

@@ -2,7 +2,7 @@
    "0": {
         "description" : "sample",
         "usage" : "test",
-        "workflow" : "Number getSquareOf(Number i) 
+        "workflow" : "Number getSquareOf(Number i)
                       {
                       		return i * i;
                       }"
@@ -40,6 +40,49 @@
                             resMap = {};
                             resMap[\"responseTime\"] = responseTime;
                             resMap[\"previousMonthresponseTime\"] = previousMonthresponseTime;
+         					return resMap; 
+        			  	}"
+        },
+        "101": {
+        	"description" : "meanTimeBetweenTriggers",
+        	"usage" : "rulesSummary",
+        	"workflow": "Number test(Number ruleId) 
+        			  	{ 
+        			  		{ 
+                          cri = {
+							criteria : [ruleId == 36 && clearedTime > 0 ],
+        					orderBy : \"createdTime\" asc
+						}
+        			  		readingAlarmModule = Module(\"readingalarm\"); 
+        			  		res = readingAlarmModule.fetch(cri);
+                           firstRes =res[0];
+                          previousClearedTime = firstRes.clearedTime;
+                          meanTimeBetweenTigger = 0;
+                          for each index,value in res {
+							if(index > 0) {
+                              if (value != null) {
+                                 createdTime = value.createdTime;
+      						     meanTimeBetweenTigger = meanTimeBetweenTigger + (createdTime -previousClearedTime); 
+       						     previousClearedTime = value.clearedTime;
+                              }                                
+						    }
+                          }
+						meanTimeBetweenTigger = meanTimeBetweenTigger / res.size();
+						
+						
+						 timeToClear = 0;
+                          for each index,value in res {
+							if(index > 0) {
+                              if (value != null) {
+      						     timeToClear = timeToClear + (value.clearedTime - value.createdTime); 
+                              }                                
+						    }
+                          }
+                        meanTimeToClear =   timeToClear / res.size();
+						resMap = {};
+                            resMap[\"meanTimeBetweenTigger\"] = meanTimeBetweenTigger;
+                            resMap[\"timeToClear\"] = timeToClear;
+                              resMap[\"meanTimeToClear\"] = meanTimeToClear;
          					return resMap; 
         			  	}"
         }

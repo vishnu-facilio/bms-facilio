@@ -186,7 +186,8 @@ public class PageWidget {
  		GROUP("group"),
  		HISTORY("history"),
  		RULE_DETIALS_WIGET("ruleDetialsWidget"),
- 		RULE_ASSOCIATED_WO("ruleAssociatedWo")
+ 		RULE_ASSOCIATED_WO("ruleAssociatedWo"),
+ 		RULE_RCA("ruleRCA")
  		;
 		
 		private String name;

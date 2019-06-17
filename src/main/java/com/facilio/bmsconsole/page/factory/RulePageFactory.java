@@ -35,10 +35,15 @@ public class RulePageFactory extends PageFactory {
 		
 		addRuleInsight(tab2Sec1);
 		
-		Tab tab3 = page.new Tab("root_cause_impact");
+		
+		Tab tab3 = page.new Tab("root_cause_impact", "root_cause_impact");
+		page.addTab(tab3);
+		
 		Section tab3Sec1 = page.new Section();
 		tab3.addSection(tab3Sec1);
-		page.addTab(tab3);
+		
+		addRCAWidget(tab3Sec1);
+		
 
 		return page;
 	}
@@ -55,14 +60,14 @@ public class RulePageFactory extends PageFactory {
 	}
 	private static void addAssetsNAlarmDetails(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
-		cardWidget.addToLayoutParams(section, 8, 6);
+		cardWidget.addToLayoutParams(section, 8, 7);
 		cardWidget.addToWidgetParams("type", CardType.RULE_ASSETS_ALARM.getName());
 		section.addWidget(cardWidget);
 	}
 	
 	private static void addAlarmInsight(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
-		cardWidget.addToLayoutParams(section, 16, 6);
+		cardWidget.addToLayoutParams(section, 16, 7);
 		cardWidget.addToWidgetParams("type", CardType.RULE_ALARM_INSIGHT.getName());
 		section.addWidget(cardWidget);
 	}
@@ -79,6 +84,12 @@ public class RulePageFactory extends PageFactory {
 		cardWidget.addToLayoutParams(section, 24, 11);
 		cardWidget.addToWidgetParams("type", CardType.ALARM_INSIGHTS.getName());
 		section.addWidget(cardWidget);
+	}
+	
+	private static void addRCAWidget(Section section) {
+		PageWidget rcaWidget = new PageWidget(WidgetType.RULE_RCA);
+		rcaWidget.addToLayoutParams(section, 24, 3);
+		section.addWidget(rcaWidget);
 	}
 	
 	
