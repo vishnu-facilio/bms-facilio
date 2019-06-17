@@ -1009,6 +1009,20 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain getExportModuleChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ExportCommand());
+			return c;
+		}
+		
+		
+		public static Chain sendModuleMailChain () {
+			Chain c = getDefaultChain();
+			c.addCommand(FacilioChainFactory.fetchExportModuleChain());
+			c.addCommand(new SendReadingReportMailCommand());
+			return c;
+		}
+		
 		public static Chain addWorkflowRuleChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddWorkflowRuleCommand());
@@ -1216,6 +1230,7 @@ public class TransactionChainFactory {
 			c.addCommand(new DeleteSingleDayBusinessHoursCommand());
 			return c;
 		}
+		
 		
 		
 		public static Chain getAddAlarmChain() {

@@ -1350,16 +1350,12 @@ public class FacilioChainFactory {
 	}
 	public static Chain fetchExportModuleChain() {
 		Chain c = FacilioChain.getNonTransactionChain();
-		c.addCommand(new GetExportModuleCommand());
+//		c.addCommand(new GetExportModuleCommand());
+		c.addCommand(new ExportCommand());
 		return c;
 	}
 	
-	public static Chain sendModuleMailChain () {
-		Chain c = FacilioChain.getNonTransactionChain();
-		c.addCommand(FacilioChainFactory.fetchExportModuleChain());
-		c.addCommand(new SendReadingReportMailCommand());
-		return c;
-	}
+
 	public static Chain getAllSpaceCategoriesChain() {
 		Chain c = FacilioChain.getNonTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForSpaceCategory());

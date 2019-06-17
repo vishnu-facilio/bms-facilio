@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.actions;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.bmsconsole.util.FreeMarkerAPI;
@@ -31,7 +32,7 @@ public class CommonAction extends FacilioAction {
 	
 	public String executeWorkflow() throws Exception {
 		if (workflow.getWorkflowString() == null) {
-			workflow.setWorkflowString(WorkflowUtil.getXmlStringFromWorkflow(workflow));
+			workflow.setWorkflowString(WorkflowUtil.getXmlStringFromWorkflow(workflow)); 
 		}
 		setResult("workflowResult", WorkflowUtil.getWorkflowExpressionResult(workflow, null));
 		return SUCCESS;
@@ -42,14 +43,28 @@ public class CommonAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.SUB_VIEW, viewName);
 		context.put(FacilioConstants.ContextNames.FILTERS, getFilters());
+		context.put(FacilioConstants.ContextNames.IS_S3_VALUE, false);
+		context.put(FacilioConstants.ContextNames.SPECIAL_FIELDS, false);
+		context.put(FacilioConstants.ContextNames.VIEW_LIMIT, null);
 		context.put(FacilioConstants.Workflow.TEMPLATE, emailTemplate);
-		Chain mailModuleChain = FacilioChainFactory.sendModuleMailChain();
+		Chain mailModuleChain = TransactionChainFactory.sendModuleMailChain();
 		mailModuleChain.execute(context);
 		setResult(FacilioConstants.ContextNames.WORK_ORDER, moduleName);
 		return SUCCESS;
 	}
 	public String exportModule() throws Exception {
-		fileUrl = ExportUtil.exportModule(FileFormat.getFileFormat(type), moduleName, viewName, filters, false, specialFields, null);
+		
+		FacilioContext context=new FacilioContext();
+		context.put(FacilioConstants.ContextNames.FILE_FORMAT, FileFormat.getFileFormat(type));
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.SUB_VIEW, viewName);
+		context.put(FacilioConstants.ContextNames.FILTERS, getFilters());
+		context.put(FacilioConstants.ContextNames.IS_S3_VALUE, false);
+		context.put(FacilioConstants.ContextNames.SPECIAL_FIELDS, specialFields);
+		context.put(FacilioConstants.ContextNames.VIEW_LIMIT, null);
+		Chain exportModule = TransactionChainFactory.getExportModuleChain();
+		exportModule.execute(context);
+		fileUrl = (String) context.get(FacilioConstants.ContextNames.FILE_URL);
 		return SUCCESS;
 	}
 	
