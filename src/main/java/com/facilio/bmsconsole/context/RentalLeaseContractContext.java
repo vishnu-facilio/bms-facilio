@@ -67,6 +67,14 @@ public class RentalLeaseContractContext extends ContractsContext {
 		this.assetIds = assetIds;
 	}
 	
+	private List<AssetContext> associatedAssets;
+	
+	public List<AssetContext> getAssociatedAssets() {
+		return associatedAssets;
+	}
+	public void setAssociatedAssets(List<AssetContext> associatedAssets) {
+		this.associatedAssets = associatedAssets;
+	}
 	public RentalLeaseContractContext clone() {
 		RentalLeaseContractContext rental = new RentalLeaseContractContext(this);
 		rental.setRentalLeaseContractType(this.getRentalLeaseContractType());

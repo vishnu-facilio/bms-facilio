@@ -70,6 +70,17 @@ public class WarrantyContractContext extends ContractsContext {
 	public void setAssetIds(List<Long> assetIds) {
 		this.assetIds = assetIds;
 	}
+	
+	private List<AssetContext> associatedAssets;
+	
+	
+	public List<AssetContext> getAssociatedAssets() {
+		return associatedAssets;
+	}
+
+	public void setAssociatedAssets(List<AssetContext> associatedAssets) {
+		this.associatedAssets = associatedAssets;
+	}
 
 	public WarrantyContractContext clone() {
 		WarrantyContractContext warranty = new WarrantyContractContext(this);

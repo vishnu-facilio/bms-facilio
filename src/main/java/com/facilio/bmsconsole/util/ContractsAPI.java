@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -31,7 +32,7 @@ public class ContractsAPI {
 			                 
 	}
 	
-	public static List<Long> fetchAssociatedAssets(Long contractId) throws Exception {
+	public static List<AssetContext> fetchAssociatedAssets(Long contractId) throws Exception {
 		FacilioModule module = ModuleFactory.getContractAssociatedAssetsModule();
 		List<FacilioField> facilioFields = FieldFactory.getContractAssociatedAssetModuleFields();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -39,11 +40,11 @@ public class ContractsAPI {
 				.select(facilioFields)
 				.andCondition(CriteriaAPI.getCondition("CONTRACT_ID", "contractId", String.valueOf(contractId),NumberOperators.EQUALS));
 		List<Map<String,Object>> list = selectBuilder.get();
-		List<Long> assetIds = new ArrayList<Long>();
+		List<AssetContext> assets = new ArrayList<AssetContext>();
 		for(Map<String,Object> map : list) {
-			assetIds.add((Long)map.get("assetId"));
+			assets.add(AssetsAPI.getAssetInfo((Long)map.get("assetId")));
 		}
-		return assetIds;
+		return assets;
 			                 
 	}
 }

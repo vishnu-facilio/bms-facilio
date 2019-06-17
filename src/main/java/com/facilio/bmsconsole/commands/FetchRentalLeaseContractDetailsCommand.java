@@ -41,7 +41,7 @@ public class FetchRentalLeaseContractDetailsCommand implements Command{
 					(LookupField) fieldsAsMap.get("toolType")));
 		
 			List<RentalLeaseContractLineItemsContext> list = builder.get();
-			rentalLeaseContractContext.setAssetIds(ContractsAPI.fetchAssociatedAssets(rentalLeaseContractContext.getId()));
+			rentalLeaseContractContext.setAssociatedAssets(ContractsAPI.fetchAssociatedAssets(rentalLeaseContractContext.getId()));
 			
 			rentalLeaseContractContext.setLineItems(list);
 		}

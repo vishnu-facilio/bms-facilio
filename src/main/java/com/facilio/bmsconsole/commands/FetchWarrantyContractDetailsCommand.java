@@ -40,7 +40,7 @@ public class FetchWarrantyContractDetailsCommand implements Command{
 					.fetchLookups(Arrays.asList((LookupField) fieldsAsMap.get("service")));
 		
 			List<WarrantyContractLineItemContext> list = builder.get();
-			serviceContractContext.setAssetIds(ContractsAPI.fetchAssociatedAssets(serviceContractContext.getId()));
+			serviceContractContext.setAssociatedAssets(ContractsAPI.fetchAssociatedAssets(serviceContractContext.getId()));
 			serviceContractContext.setLineItems(list);
 		}
 		return false;
