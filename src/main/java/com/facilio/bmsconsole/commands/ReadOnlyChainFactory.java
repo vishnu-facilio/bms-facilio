@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import com.facilio.bmsconsole.actions.GetToolTransactionsListCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
+import com.facilio.workflows.command.GetAllNameSpaceWithFunctionCommand;
 
 public class ReadOnlyChainFactory {
 	private static Logger LOGGER = LogManager.getLogger(ReadOnlyChainFactory.class.getName());
@@ -964,6 +965,12 @@ public class ReadOnlyChainFactory {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForAttendance());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
+		return c;
+	}
+	
+	public static Chain getAllWorkflowNameSpaceChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetAllNameSpaceWithFunctionCommand());
 		return c;
 	}
 }

@@ -1,15 +1,15 @@
 package com.facilio.workflowv2.contexts;
 
-import com.facilio.workflows.context.WorkflowContext;
+import java.util.List;
 
-import java.util.Map;
+import com.facilio.workflows.context.WorkflowUserFunctionContext;
 
 public class WorkflowNamespaceContext {
 
 	long id = -1;
 	long orgid = -1;
 	String name;
-	Map<String,WorkflowContext> workflowMap;
+	List<WorkflowUserFunctionContext> functions;
 	
 	public long getId() {
 		return id;
@@ -29,10 +29,10 @@ public class WorkflowNamespaceContext {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public Map<String, WorkflowContext> getWorkflowMap() {
-		return workflowMap;
+	public List<WorkflowUserFunctionContext> getFunctions() {
+		return functions;
 	}
-	public void setWorkflowMap(Map<String, WorkflowContext> workflowMap) {
-		this.workflowMap = workflowMap;
+	public void setFunctions(List<WorkflowUserFunctionContext> functions) {
+		this.functions = functions;
 	}
 }

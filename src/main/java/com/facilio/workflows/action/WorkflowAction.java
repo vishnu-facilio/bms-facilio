@@ -1,6 +1,7 @@
 package com.facilio.workflows.action;
 
 import com.facilio.bmsconsole.actions.FacilioAction;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioContext;
 import com.facilio.mv.util.MVUtil;
@@ -230,6 +231,15 @@ public class WorkflowAction extends FacilioAction {
 		Chain addWorkflowChain =  TransactionChainFactory.getDeleteWorkflowUserFunctionChain(); 
 		addWorkflowChain.execute(context);
 		setResult(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT, userFunction);
+		return SUCCESS;
+	}
+	
+	public String getNameSpaceListWithFunctions() throws Exception {
+		FacilioContext context = new FacilioContext();
+		
+		Chain getNameSpaceChain =  ReadOnlyChainFactory.getAllWorkflowNameSpaceChain(); 
+		getNameSpaceChain.execute(context);
+		setResult(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT_LIST, context.get(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT_LIST));
 		return SUCCESS;
 	}
 	

@@ -63,6 +63,7 @@ public class WorkflowV2Util {
 	public static final String WORKFLOW_CONTEXT = "workflow";
 	public static final String WORKFLOW_USER_FUNCTION_CONTEXT = "workflowUserFunction";
 	public static final String WORKFLOW_NAMESPACE_CONTEXT = "workflowNameSpace";
+	public static final String WORKFLOW_NAMESPACE_CONTEXT_LIST = "workflowNameSpaceList";
 
 	static {
 		try {
