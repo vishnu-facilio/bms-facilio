@@ -6828,6 +6828,11 @@ public class DashboardAction extends FacilioAction {
 	// data part starts
 	public String getCardData() throws Exception {
 		
+			if (widgetId == null  && staticKey== null && baseSpaceId == null && workflow == null && paramsJson == null && reportSpaceFilterContext == null ) {
+
+				throw new IllegalArgumentException(" Send Atleast one of widgetId,staticKey,baseSpaceId,workflow,paramsJson,reportSpaceFilterContext Params Should be specified");
+			}
+		
 		Chain fetchCardData = ReadOnlyChainFactory.fetchCardDataChain();
 		FacilioContext context = new FacilioContext();
 		
