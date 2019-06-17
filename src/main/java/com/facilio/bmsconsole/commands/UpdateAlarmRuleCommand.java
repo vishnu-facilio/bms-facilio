@@ -39,7 +39,6 @@ public class UpdateAlarmRuleCommand implements Command {
 		
 		preRequsiteRule.setRuleType(null); //Type is not allowed to be changed
 		
-		preRequsiteRule.setReportBreakdown(alarmRule.isReportBreakdown());
 		preRequsiteRule = ReadingRuleAPI.updateReadingRuleWithChildren(preRequsiteRule);
 		
 		updateTriggerAndClearRule(alarmRule,oldRule,context);
@@ -54,6 +53,7 @@ public class UpdateAlarmRuleCommand implements Command {
 			deleteReadingAlarmRuleAndActions(readingAlarmRules);
 		}
 		
+		WorkflowRuleAPI.UpdateReportDowntimeRule(alarmRule);
 		return false;
 	}
 
@@ -81,18 +81,6 @@ public class UpdateAlarmRuleCommand implements Command {
 		update.update(value);
 	}
 	
-	public void updateReportBreakDown(long ruleGroupId, boolean reportBreakdownValue) throws Exception {
-		FacilioModule readingRuleModule = ModuleFactory.getReadingRuleModule();
-		FacilioField ruleGroupIdField = FieldFactory.getField("ruleGroupId", "RULE_GROUP_ID", readingRuleModule,FieldType.LOOKUP);
-		FacilioField reportBreakdownField = FieldFactory.getField("reportBreakdown", "REPORT_BREAKDOWN",readingRuleModule, FieldType.BOOLEAN);
-		Condition ruleGroupIdCondition = CriteriaAPI.getCondition(ruleGroupIdField,Collections.singletonList(ruleGroupId), NumberOperators.EQUALS);
-		GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder().table(readingRuleModule.getTableName())
-				.fields(Collections.singletonList(reportBreakdownField)).andCondition(ruleGroupIdCondition);
-		Map<String, Object> value = new HashMap<>();
-		value.put("reportBreakdown", reportBreakdownValue);
-		update.update(value);
-	}
-	
 	private void updateTriggerAndClearRule(AlarmRuleContext alarmRule,AlarmRuleContext oldRule, Context context) throws Exception {
 		
 		ReadingRuleContext preRequsiteRule = alarmRule.getPreRequsite();
@@ -105,7 +93,6 @@ public class UpdateAlarmRuleCommand implements Command {
 			alarmTriggerRule.setOnSuccess(true);
 			alarmTriggerRule.setClearAlarm(alarmRule.isAutoClear());
 			
-			alarmTriggerRule.setReportBreakdown(alarmRule.isReportBreakdown());
 			
 			Chain chain = TransactionChainFactory.updateVersionedWorkflowRuleChain();
 			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, alarmTriggerRule);
@@ -118,7 +105,6 @@ public class UpdateAlarmRuleCommand implements Command {
 		
 		if(alarmTriggerRule == null) {
 			alarmTriggerRule = oldRule.getAlarmTriggerRule();			// setting it here since its used bellow
-			updateReportBreakDown(alarmTriggerRule.getRuleGroupId(),alarmRule.isReportBreakdown());
 		}
 		
 		List<ReadingRuleContext> alarmRCARules = alarmRule.getAlarmRCARules();
@@ -134,7 +120,6 @@ public class UpdateAlarmRuleCommand implements Command {
 					alarmRCARule.setOnSuccess(true);
 				}
 				alarmRCARule.setClearAlarm(false);
-				alarmRCARule.setReportBreakdown(alarmRule.isReportBreakdown());
 				ReadingRuleAPI.fillDefaultPropsForAlarmRule(alarmRCARule,preRequsiteRule,WorkflowRuleContext.RuleType.ALARM_RCA_RULES,parentId);
 				if(alarmRCARule.getId() > 0) {
 					long oldId = alarmRCARule.getId();
@@ -167,7 +152,6 @@ public class UpdateAlarmRuleCommand implements Command {
 			ReadingRuleAPI.fillDefaultPropsForAlarmRule(alarmClearRule,preRequsiteRule,WorkflowRuleContext.RuleType.ALARM_CLEAR_RULE,alarmTriggerRule.getId());
 			alarmClearRule.setOnSuccess(false);
 			alarmClearRule.setClearAlarm(false);
-			alarmClearRule.setReportBreakdown(alarmRule.isReportBreakdown());
 			WorkflowRuleAPI.addWorkflowRule(alarmClearRule);
 			ruleNameVsIdMap.put(alarmClearRule.getName(), alarmClearRule.getId());
 			
@@ -177,7 +161,6 @@ public class UpdateAlarmRuleCommand implements Command {
 			ReadingRuleAPI.fillDefaultPropsForAlarmRule(alarmClearRuleDuplicate,preRequsiteRule,WorkflowRuleContext.RuleType.ALARM_CLEAR_RULE,preRequsiteRule.getId());
 			alarmClearRuleDuplicate.setOnSuccess(false);
 			alarmClearRuleDuplicate.setClearAlarm(false);
-			alarmClearRuleDuplicate.setReportBreakdown(alarmRule.isReportBreakdown());
 			WorkflowRuleAPI.addWorkflowRule(alarmClearRuleDuplicate);
 			ruleNameVsIdMap.put(alarmClearRuleDuplicate.getName(), alarmClearRuleDuplicate.getId());
 		}

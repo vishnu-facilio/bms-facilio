@@ -37,6 +37,7 @@ import java.util.Map;
 
 public class EventsToAlarmsCommand implements Command {
 	private static final Logger LOGGER = LogManager.getLogger(EventsToAlarmsCommand.class.getName());
+	List<AlarmContext> alarms=new ArrayList<>();
 	private long getAlarmId (EventContext event) throws Exception {
 		if (event.getAlarmId() == -1) {
 			FacilioModule module = EventConstants.EventModuleFactory.getEventModule();
@@ -88,6 +89,7 @@ public class EventsToAlarmsCommand implements Command {
 			for (EventContext event : events) {
 				processEventToAlarm(event);
 			}
+			context.put(FacilioConstants.ContextNames.ALARM_LIST, alarms);
 		}
 		return false;
 	}
@@ -338,6 +340,7 @@ public class EventsToAlarmsCommand implements Command {
 		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD");
 		AlarmContext alarm = bean.processAlarm(json);
 		
+		alarms.add(alarm);
 		event.setAlarmId(alarm.getId());
 		event.setEventState(EventState.ALARM_CREATED);
 		

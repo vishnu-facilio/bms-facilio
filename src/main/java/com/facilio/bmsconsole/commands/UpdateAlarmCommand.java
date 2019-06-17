@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.context.AssetBDSourceDetailsContext;
 import com.facilio.bmsconsole.context.AssetBDSourceDetailsContext.SourceType;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.bmsconsole.util.AssetBreakdownAPI;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -132,24 +133,19 @@ public class UpdateAlarmCommand implements Command {
 			
 			ReadingAlarmContext alarmContext = AlarmAPI.getReadingAlarmContext(recordIds.get(0));
 			Long assetId = alarmContext.getResource().getId();
-			Boolean reportBreakDown = false;
-			if (alarmContext.getAdditionInfo() != null&&alarmContext.getAdditionInfo().get("reportBreakdown")!=null) {
-				if (alarmContext.getAdditionInfo().get("reportBreakdown") instanceof String) {
-					reportBreakDown = Boolean.valueOf((String) alarmContext.getAdditionInfo().get("reportBreakdown"));
-				} else {
-					reportBreakDown = (Boolean) alarmContext.getAdditionInfo().get("reportBreakdown");
-				}
-			}
 			for(Long id:recordIds){
-				if (isCleared && reportBreakDown) {
-					AssetBDSourceDetailsContext assetBreakdown = new AssetBDSourceDetailsContext();
-					assetBreakdown.setTotime(alarm.getClearedTime());
-					assetBreakdown.setAssetid(assetId);
-					assetBreakdown.setSourceId(id);
-					assetBreakdown.setSourceTypeEnum(SourceType.ALARM);
-					context.put(FacilioConstants.ContextNames.ASSET_BD_SOURCE_DETAILS, assetBreakdown);
-					Chain newAssetBreakdown = TransactionChainFactory.getAddNewAssetBreakdownChain();
-					newAssetBreakdown.execute(context);
+				if (isCleared) {
+					List<AssetBDSourceDetailsContext> assetBDList=AssetBreakdownAPI.getAssetBDSourceDetailsBySourceidAndType(id,SourceType.ALARM);
+					if (!assetBDList.isEmpty()) {
+						AssetBDSourceDetailsContext assetBreakdown = new AssetBDSourceDetailsContext();
+						assetBreakdown.setTotime(alarm.getClearedTime());
+						assetBreakdown.setAssetid(assetId);
+						assetBreakdown.setSourceId(id);
+						assetBreakdown.setSourceTypeEnum(SourceType.ALARM);
+						context.put(FacilioConstants.ContextNames.ASSET_BD_SOURCE_DETAILS, assetBreakdown);
+						Chain newAssetBreakdown = TransactionChainFactory.getAddNewAssetBreakdownChain();
+						newAssetBreakdown.execute(context);
+					}
 				}
 			}
 			try {

@@ -299,6 +299,7 @@ public class ActionAPI {
 							case CONTROL_ACTION:
 								setControlActionTemplate(action, rule);
 								break;
+							case REPORT_DOWNTIME_ACTION:
 							case CHANGE_STATE:
 								setDefaultTemplate(action, rule);
 								break;
@@ -448,5 +449,12 @@ public class ActionAPI {
 		}
 		action.setTemplate(woTemplate);
 		checkAndSetWorkflow(action.getTemplateJson(), woTemplate);
+	}
+	public static ActionContext getDefaultPropsForDowntimeAction(ActionType actionType){
+		ActionContext action=new ActionContext();
+		action.setActionType(actionType);
+		action.setStatus(Boolean.TRUE);
+		action.setTemplateJson(new JSONObject());
+		return action;
 	}
 }

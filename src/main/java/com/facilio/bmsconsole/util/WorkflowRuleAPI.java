@@ -18,6 +18,7 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.events.util.EventAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
@@ -1001,6 +1002,17 @@ public class WorkflowRuleAPI {
 		}
 	}
 	
+	public static WorkflowRuleContext getWorkflowRuleByRuletype(long parentRuleId,RuleType ruletype) throws Exception {
+		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder();
+		select.table(ModuleFactory.getWorkflowRuleModule().getTableName()).select(fields)
+		.andCondition(CriteriaAPI.getCondition(fieldMap.get("ruleType"),String.valueOf(ruletype.getIntVal()) ,NumberOperators.EQUALS))
+		.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentRuleId"), String.valueOf(parentRuleId), NumberOperators.EQUALS));
+		List<Map<String, Object>> props = select.get();
+		List<WorkflowRuleContext> workflowRuleContexts = getWorkFlowsFromMapList(props, false, true, true);
+		return (workflowRuleContexts!=null) ? workflowRuleContexts.get(0) : null;
+	}
 	public static List<ReadingAlarmRuleContext> getReadingAlarmRulesFromReadingRuleGroupId(long readingGroupId) throws Exception {
 		
 		if(readingGroupId > 0) {
@@ -1040,4 +1052,35 @@ public class WorkflowRuleAPI {
 		WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(Collections.singletonList(rule), module, null, null, null, recordPlaceHolders, (FacilioContext)context,true, Collections.singletonList(rule.getEvent().getActivityTypeEnum()));
 	}
 	
+	public static void fillDefaultPropsForDowntimeRule(WorkflowRuleContext workFlowRule,ReadingRuleContext preRequsiteRule, WorkflowRuleContext.RuleType ruleType, Long parentId)throws Exception {
+		workFlowRule.setCriteriaId(-1l);
+		workFlowRule.setWorkflowId(-1l);
+		workFlowRule.setRuleType(ruleType);
+		workFlowRule.setName("ReportDowntimeRule");
+		workFlowRule.setEventId(preRequsiteRule.getEventId());
+		workFlowRule.setStatus(true);
+		workFlowRule.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+		workFlowRule.setParentRuleId(parentId);
+		workFlowRule.setOnSuccess(true);
+	}
+
+	public static void AddReportDowntimeRule(AlarmRuleContext alarmRule) throws Exception {
+		if (alarmRule.isReportBreakdown()) {
+			if (alarmRule.getReportDowntimeRule() == null) {
+				alarmRule.setReportDowntimeRule(new WorkflowRuleContext());
+			}
+			WorkflowRuleContext reportDowntimeRule = alarmRule.getReportDowntimeRule();
+			fillDefaultPropsForDowntimeRule(reportDowntimeRule, alarmRule.getPreRequsite(),RuleType.REPORT_DOWNTIME_RULE, alarmRule.getPreRequsite().getId());
+			addWorkflowRule(reportDowntimeRule);
+		}
+	}
+
+	public static void UpdateReportDowntimeRule(AlarmRuleContext alarmRule) throws Exception {
+		WorkflowRuleContext existingReportDowntimeRule = getWorkflowRuleByRuletype(alarmRule.getPreRequsite().getId(), RuleType.REPORT_DOWNTIME_RULE);
+		if (alarmRule.isReportBreakdown() && existingReportDowntimeRule == null ) {
+			AddReportDowntimeRule(alarmRule);
+		} else if ((!alarmRule.isReportBreakdown()) && existingReportDowntimeRule != null) {
+			deleteWorkFlowRules(Collections.singletonList(existingReportDowntimeRule.getId()));
+		}
+	}
 }

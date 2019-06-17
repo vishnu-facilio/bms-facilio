@@ -244,6 +244,7 @@ public enum ActionType {
 					if (currentRule instanceof ReadingRuleContext) {
 						processAlarmMeta((ReadingRuleContext) currentRule, (long) obj.get("resourceId"), (long) obj.get("timestamp"), event, context);
 					}
+					context.put(FacilioConstants.ContextNames.ALARM_LIST, (List<AlarmContext>)addEventContext.get(FacilioConstants.ContextNames.ALARM_LIST));
 				} catch (Exception e) {
 					LOGGER.error("Exception occurred ", e);
 				}
@@ -968,6 +969,29 @@ public enum ActionType {
 			return false;
 		}
 		
+	},
+	REPORT_DOWNTIME_ACTION (22) {
+		@Override
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception 
+		{
+			List<AlarmContext> alarms=(List<AlarmContext>)context.get(FacilioConstants.ContextNames.ALARM_LIST);
+			if (alarms != null) {
+				for (AlarmContext alarm : alarms) {
+					if (alarm != null) {
+						AssetBDSourceDetailsContext assetBreakdown = new AssetBDSourceDetailsContext();
+						assetBreakdown.setCondition((String) alarm.getAdditionInfo().get("alarmRuleName"));
+						assetBreakdown.setFromtime(alarm.getCreatedTime());
+						assetBreakdown.setTotime(alarm.getClearedTime());
+						assetBreakdown.setAssetid(alarm.getResource().getId());
+						assetBreakdown.setSourceId(alarm.getId());
+						assetBreakdown.setSourceTypeEnum(AssetBDSourceDetailsContext.SourceType.ALARM);
+						context.put(FacilioConstants.ContextNames.ASSET_BD_SOURCE_DETAILS, assetBreakdown);
+						Chain newAssetBreakdown = TransactionChainFactory.getAddNewAssetBreakdownChain();
+						newAssetBreakdown.execute(context);
+					}
+				}
+			}
+		}
 	}
 	;
 

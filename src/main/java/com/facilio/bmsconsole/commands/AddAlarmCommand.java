@@ -70,22 +70,6 @@ public class AddAlarmCommand implements Command {
 			
 			JSONObject record = new JSONObject();
 			record.put("id", alarmId);
-			Boolean reportBreakdown=false;
-			if(alarm.getAdditionInfo()!=null&&alarm.getAdditionInfo().get("reportBreakdown")!=null){
-				reportBreakdown=Boolean.valueOf((String) alarm.getAdditionInfo().get("reportBreakdown"));
-			}
-			
-			if (reportBreakdown) {
-				AssetBDSourceDetailsContext assetBreakdown = new AssetBDSourceDetailsContext();
-				assetBreakdown.setCondition((String) alarm.getAdditionInfo().get("alarmRuleName"));
-				assetBreakdown.setFromtime(alarm.getCreatedTime());
-				assetBreakdown.setAssetid(alarm.getResource().getId());
-				assetBreakdown.setSourceId(alarmId);
-				assetBreakdown.setSourceTypeEnum(SourceType.ALARM);
-				context.put(FacilioConstants.ContextNames.ASSET_BD_SOURCE_DETAILS, assetBreakdown);
-				Chain newAssetBreakdown = TransactionChainFactory.getAddNewAssetBreakdownChain();
-				newAssetBreakdown.execute(context);
-			}
 			try {
 				if (AccountUtil.getCurrentOrg().getOrgId() != 88 || (alarm.getSeverity() != null && alarm.getSeverity().getId() == AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.CRITICAL_SEVERITY).getId())) {
 					WmsEvent event = new WmsEvent();

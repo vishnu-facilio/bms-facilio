@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -8,9 +9,11 @@ import org.apache.commons.chain.Chain;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.AssetBDSourceDetailsContext;
+import com.facilio.bmsconsole.context.AssetBDSourceDetailsContext.SourceType;
 import com.facilio.bmsconsole.context.AssetBreakdownContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -65,5 +68,20 @@ public class AssetBreakdownAPI {
 			return -1;
 		}
 		
+	}
+	public static List<AssetBDSourceDetailsContext> getAssetBDSourceDetailsBySourceidAndType(long sourceid,SourceType sourceType)throws Exception{
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(ContextNames.ASSET_BD_SOURCE_DETAILS);
+		List<FacilioField> fields = modBean.getAllFields(ContextNames.ASSET_BD_SOURCE_DETAILS);
+		fields.add(FieldFactory.getModuleIdField(module));
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		SelectRecordsBuilder<AssetBDSourceDetailsContext> selectBuilder = new SelectRecordsBuilder<AssetBDSourceDetailsContext>()
+				.select(fields)
+				.module(module)
+				.beanClass(AssetBDSourceDetailsContext.class)
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("sourceId"), String.valueOf(sourceid), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("sourceType"), String.valueOf(sourceType.getValue()), NumberOperators.EQUALS));
+		return selectBuilder.get();
 	}
 }

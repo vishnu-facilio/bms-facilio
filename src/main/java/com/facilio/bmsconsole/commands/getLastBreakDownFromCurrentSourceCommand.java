@@ -36,7 +36,6 @@ public class getLastBreakDownFromCurrentSourceCommand implements Command {
 				.beanClass(AssetBDSourceDetailsContext.class)
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(assetBreakdownId), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("sourceId"), String.valueOf(sourceId), NumberOperators.EQUALS))
-				.limit(1)
 				;
     	List<AssetBDSourceDetailsContext> assetBDSourceDetailFromThisSource= selectBuilder.get();
 		if(!assetBDSourceDetailFromThisSource.isEmpty()){

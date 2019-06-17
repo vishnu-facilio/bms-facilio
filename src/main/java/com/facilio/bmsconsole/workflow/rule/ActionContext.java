@@ -119,10 +119,6 @@ public class ActionContext implements Serializable {
             	 actionObj.put("alarmRuleName", rule.getName());
              }
             }
-            actionObj.put("resourceid",(Long)placeHolders.get("resourceId"));
-            if(currentRule instanceof ReadingRuleContext){
-            	actionObj.put("reportBreakdown", ((ReadingRuleContext) currentRule).getReportBreakdown());
-            }
 			if (AccountUtil.getCurrentOrg().getId() == 151 && actionType == ActionType.BULK_EMAIL_NOTIFICATION) {
 				LOGGER.info("Email json : "+actionObj.toJSONString());
 			}

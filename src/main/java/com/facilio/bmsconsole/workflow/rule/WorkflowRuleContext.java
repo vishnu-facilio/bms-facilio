@@ -473,7 +473,8 @@ public class WorkflowRuleContext implements Serializable {
 		STATE_RULE(true),
 		STATE_FLOW(true),
 		
-		BUSSINESS_LOGIC_ASSET_RULE //30
+		BUSSINESS_LOGIC_ASSET_RULE, //30
+		REPORT_DOWNTIME_RULE //31
 		;
 		//Always add at the end
 		
@@ -529,6 +530,16 @@ public class WorkflowRuleContext implements Serializable {
 		}
 	}
 	
+	public boolean reportBreakdown;
+
+	public boolean isReportBreakdown() {
+		return reportBreakdown;
+	}
+
+	public void setReportBreakdown(boolean reportBreakdown) {
+		this.reportBreakdown = reportBreakdown;
+	}
+
 	public static enum ScheduledRuleType {
 		BEFORE,
 		ON,

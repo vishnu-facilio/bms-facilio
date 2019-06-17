@@ -4,6 +4,8 @@ import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingAlarmRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -22,6 +24,10 @@ public class FetchAlarmRuleCommand implements Command {
 		List<ReadingAlarmRuleContext> readingAlarmRules = WorkflowRuleAPI.getReadingAlarmRulesFromReadingRuleGroupId(id);
 		AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(id),readingAlarmRules);
 		ReadingRuleAPI.setMatchedResources(alarmRule.getPreRequsite());
+		WorkflowRuleContext breakDownRule= WorkflowRuleAPI.getWorkflowRuleByRuletype(id, RuleType.REPORT_DOWNTIME_RULE);
+		if(breakDownRule!=null){
+			alarmRule.setReportBreakdown(Boolean.TRUE);
+		}
 		context.put(FacilioConstants.ContextNames.ALARM_RULE, alarmRule);
 		
 		return false;

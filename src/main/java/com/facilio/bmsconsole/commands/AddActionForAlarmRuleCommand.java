@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -28,6 +29,13 @@ public class AddActionForAlarmRuleCommand implements Command {
 			ActionAPI.addWorkflowRuleActionRel(alarmTriggerRule.getId(), actions);
 		}
 		
+		WorkflowRuleContext reportDowntimeRule=alarmRule.getReportDowntimeRule();
+		if(reportDowntimeRule!=null){
+			ActionContext action= ActionAPI.getDefaultPropsForDowntimeAction(ActionType.REPORT_DOWNTIME_ACTION);
+			reportDowntimeRule.setActions(Collections.singletonList(action));
+			actions = ActionAPI.addActions(reportDowntimeRule.getActions(), reportDowntimeRule);
+			ActionAPI.addWorkflowRuleActionRel(reportDowntimeRule.getId(), actions);
+		}
 		if(alarmRule.getAlarmRCARules() != null) {
 			for( ReadingRuleContext rule :alarmRule.getAlarmRCARules()) {
 				
