@@ -53,8 +53,5 @@ public class MVAdjustment extends ModuleBaseWithCustomFields {
 	public void setEndTime(long endTime) {
 		this.endTime = endTime;
 	}
-	
-	
-	
 
 }

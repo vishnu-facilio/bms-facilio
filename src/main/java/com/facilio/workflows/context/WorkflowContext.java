@@ -73,6 +73,24 @@ public class WorkflowContext implements Serializable {
 	
 	List<WorkflowExpression> expressions;
 	
+	WorkflowFieldType returnType;
+	
+	public int getReturnType() {
+		if(returnType != null) {
+			return returnType.getIntValue();
+		}
+		return -1;
+	}
+	public String getReturnTypeString() {
+		if(returnType != null) {
+			return returnType.getStringValue();
+		}
+		return null;
+	}
+	public void setReturnType(int returnType) {
+		this.returnType = WorkflowFieldType.getIntvaluemap().get(returnType);
+	}
+	
 	Object returnValue;
 	
 	WorkflowType type;

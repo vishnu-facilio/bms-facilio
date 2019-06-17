@@ -13,8 +13,8 @@ public enum WorkflowFieldType {
 	LIST(5,"List"),
 	;
 	
-	int intValue;
-	String stringValue;
+	private int intValue;
+	private String stringValue;
 	
 	
 	private WorkflowFieldType(int intValue,String stringValue) {
@@ -26,18 +26,10 @@ public enum WorkflowFieldType {
 		return intValue;
 	}
 
-	public void setIntValue(int intValue) {
-		this.intValue = intValue;
-	}
-
 	public String getStringValue() {
 		return stringValue;
 	}
 
-	public void setStringValue(String stringValue) {
-		this.stringValue = stringValue;
-	}
-	
 	private static final Map<Integer, WorkflowFieldType> intValueMap = Collections.unmodifiableMap(initIntValueMap());
 	private static final Map<String, WorkflowFieldType> stringValueMap = Collections.unmodifiableMap(initStringValueMap());
 

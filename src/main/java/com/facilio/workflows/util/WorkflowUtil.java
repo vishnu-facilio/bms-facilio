@@ -437,6 +437,7 @@ public class WorkflowUtil {
 		workflow.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		
 		workflow.setType(workflowContext.getType());
+		workflow.setReturnType(workflowContext.getReturnType());
 		
 		workflowContext.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		
