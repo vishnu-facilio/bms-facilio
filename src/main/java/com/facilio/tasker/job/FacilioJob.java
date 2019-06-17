@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.jobs.JobLogger;
 import com.facilio.chain.FacilioContext;
 import com.facilio.tasker.executor.Executor;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -45,6 +46,9 @@ public abstract class FacilioJob implements Runnable {
 			if(orgId != -1) {
 				AccountUtil.setCurrentAccount(orgId);
 				AccountUtil.setReqUri(jc.getJobName());
+			}
+			if (StringUtils.isNotEmpty(jc.getTimezone())) {
+				AccountUtil.setTimeZone(jc.getTimezone());
 			}
 			
 			FacilioContext context = new FacilioContext();

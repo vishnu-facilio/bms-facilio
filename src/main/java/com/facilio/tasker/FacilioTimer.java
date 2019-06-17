@@ -83,6 +83,11 @@ public class FacilioTimer {
 		if(endTime != -1) {
 			jc.setEndExecutionTime(endTime/1000);
 		}
+
+		if (AccountUtil.getCurrentAccount() != null) {
+			jc.setTimezone(AccountUtil.getCurrentAccount().getTimeZone());
+		}
+
 		JobStore.addJob(jc);
 	}
 
@@ -117,6 +122,9 @@ public class FacilioTimer {
 		jc.setActive(true);
 		jc.setExecutionTime(nextExecutionTime);
 		jc.setExecutorName(executorName);
+		if (AccountUtil.getCurrentAccount() != null) {
+			jc.setTimezone(AccountUtil.getCurrentAccount().getTimeZone());
+		}
 		JobStore.addJob(jc);
 	}
 	
@@ -130,6 +138,9 @@ public class FacilioTimer {
 		jc.setExecutionTime(nextExecutionTime);
 		jc.setExecutorName(executorName);
 		jc.setMaxExecution(max_execution);
+		if (AccountUtil.getCurrentAccount() != null) {
+			jc.setTimezone(AccountUtil.getCurrentAccount().getTimeZone());
+		}
 		JobStore.addJob(jc);
 	}
 	

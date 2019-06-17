@@ -39,7 +39,7 @@ public class JobStore {
 			
 			try {
 				conn = FacilioConnectionPool.INSTANCE.getConnection();
-				pstmt = conn.prepareStatement("INSERT INTO Jobs (JOBID, ORGID, JOBNAME, IS_ACTIVE, TRANSACTION_TIMEOUT, IS_PERIODIC, PERIOD, SCHEDULE_INFO, NEXT_EXECUTION_TIME, EXECUTOR_NAME, END_EXECUTION_TIME, MAX_EXECUTION, STATUS, JOB_SERVER_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
+				pstmt = conn.prepareStatement("INSERT INTO Jobs (JOBID, ORGID, JOBNAME, TIMEZONE, IS_ACTIVE, TRANSACTION_TIMEOUT, IS_PERIODIC, PERIOD, SCHEDULE_INFO, NEXT_EXECUTION_TIME, EXECUTOR_NAME, END_EXECUTION_TIME, MAX_EXECUTION, STATUS, JOB_SERVER_ID) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS);
 				
 				pstmt.setLong(1, job.getJobId());
 				
@@ -51,51 +51,59 @@ public class JobStore {
 				}
 				
 				pstmt.setString(3, job.getJobName());
-				pstmt.setBoolean(4, true);
+
+				if (job.getTimezone() != null && !job.getTimezone().isEmpty()) {
+					pstmt.setString(4, job.getTimezone());
+				}
+				else {
+					pstmt.setNull(4, Types.VARCHAR);
+				}
+
+				pstmt.setBoolean(5, true);
 				
 				if(job.getTransactionTimeout() != -1) {
-					pstmt.setInt(5, job.getTransactionTimeout());
+					pstmt.setInt(6, job.getTransactionTimeout());
 				}
 				else {
                     SchedulerJobConf.Job schedulerJob = FacilioScheduler.getSchedulerJob(job.getJobName());
-                    pstmt.setInt(5, schedulerJob.getTransactionTimeout());
+                    pstmt.setInt(6, schedulerJob.getTransactionTimeout());
 				}
 				
-				pstmt.setBoolean(6, job.isPeriodic());
+				pstmt.setBoolean(7, job.isPeriodic());
 				
 				if(job.getPeriod() != -1) {
-					pstmt.setInt(7, job.getPeriod());
+					pstmt.setInt(8, job.getPeriod());
 				}
 				else {
-					pstmt.setNull(7, Types.INTEGER);
+					pstmt.setNull(8, Types.INTEGER);
 				}
 				
 				if(job.getSchedule() != null) {
-					pstmt.setString(8, job.getScheduleJson());
+					pstmt.setString(9, job.getScheduleJson());
 				}
 				else {
-					pstmt.setNull(8, Types.VARCHAR);
+					pstmt.setNull(9, Types.VARCHAR);
 				}
 				
-				pstmt.setLong(9, job.getExecutionTime());
-				pstmt.setString(10, job.getExecutorName());
+				pstmt.setLong(10, job.getExecutionTime());
+				pstmt.setString(11, job.getExecutorName());
 				
 				if(job.getEndExecutionTime() != -1) {
-					pstmt.setLong(11, job.getEndExecutionTime());
+					pstmt.setLong(12, job.getEndExecutionTime());
 				}
 				else {
-					pstmt.setNull(11, Types.BIGINT);
+					pstmt.setNull(12, Types.BIGINT);
 				}
 				
 				if(job.getMaxExecution() != -1) {
-					pstmt.setInt(12, job.getMaxExecution());
+					pstmt.setInt(13, job.getMaxExecution());
 				}
 				else {
-					pstmt.setNull(12, Types.INTEGER);
+					pstmt.setNull(13, Types.INTEGER);
 				}
 
-				pstmt.setInt(13, JobConstants.JOB_COMPLETED);
-				pstmt.setLong(14, job.getJobServerId());
+				pstmt.setInt(14, JobConstants.JOB_COMPLETED);
+				pstmt.setLong(15, job.getJobServerId());
 
 				
 				if(pstmt.executeUpdate() < 1) {
@@ -298,6 +306,10 @@ public class JobStore {
 		}
 		
 		jc.setJobName(rs.getString("JOBNAME"));
+
+		if (rs.getObject("TIMEZONE") != null) {
+			jc.setTimezone(rs.getString("TIMEZONE"));
+		}
 		
 		jc.setActive(rs.getBoolean("IS_ACTIVE"));
 		

@@ -36,7 +36,15 @@ public class JobContext {
 	public void setJobName(String jobName) {
 		this.jobName = jobName;
 	}
-	
+
+	private String timezone;
+	public String getTimezone() {
+		return timezone;
+	}
+	public void setTimezone(String timezone) {
+		this.timezone = timezone;
+	}
+
 	private Boolean active;
 	public boolean isActive() {
 		if(active != null) {
