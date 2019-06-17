@@ -19,7 +19,7 @@ public class BackwardCompatibleStateFlowUpdateCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
-		List<WorkOrderContext> oldWos = (List<WorkOrderContext>) context.get(FacilioConstants.TicketActivity.OLD_TICKETS);
+		List<WorkOrderContext> oldWos = (List<WorkOrderContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioField field = modBean.getField("moduleState", moduleName);
