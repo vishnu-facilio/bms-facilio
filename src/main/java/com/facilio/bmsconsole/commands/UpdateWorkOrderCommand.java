@@ -283,8 +283,7 @@ public class UpdateWorkOrderCommand implements Command {
 	}
 	
 	private void validateCloseStatus (WorkOrderContext workOrder, List<WorkOrderContext> oldWos, List<WorkOrderContext> newWos, List<ReadingContext> userReadings, EventType activityType, Context context, List<Long> recordIds) throws Exception {
-		FacilioStatus statusObj = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), workOrder.getStatus().getId());
-		workOrder.setStatus(statusObj);	// Temp
+		FacilioStatus statusObj = workOrder.getStatus();
 		
 		for(WorkOrderContext oldWo: oldWos) {
 			
@@ -399,13 +398,17 @@ public class UpdateWorkOrderCommand implements Command {
 		return true;
 	}
 	
-	private void updateWODetails (WorkOrderContext wo) {
+	private void updateWODetails (WorkOrderContext wo) throws Exception {
 		TicketAPI.updateTicketAssignedBy(wo);
 		if (wo.getOfflineModifiedTime() != -1) {
 			wo.setModifiedTime(wo.getOfflineModifiedTime());
 		}
 		else {
 			wo.setModifiedTime(System.currentTimeMillis());
+		}
+		if(wo.getStatus() != null &&  wo.getStatus().getId() > 0) {
+			FacilioStatus statusObj = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), wo.getStatus().getId());
+			wo.setStatus(statusObj);
 		}
 	}
 	
