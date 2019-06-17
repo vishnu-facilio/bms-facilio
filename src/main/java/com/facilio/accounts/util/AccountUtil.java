@@ -112,13 +112,28 @@ public class AccountUtil {
 	public static void setRequestParams(Map<String, String[]> requestParams) {
 		if (currentAccount.get() != null && requestParams != null) {
 			StringBuilder builder = new StringBuilder("[");
+			boolean isFirst = true;
 			for (Map.Entry<String, String[]> param : requestParams.entrySet()) {
-				builder.append("(")
-						.append(param.getKey())
-						.append(" : ")
-						.append(Arrays.toString(param.getValue()))
-						.append(")")
-						;
+				if (isFirst) {
+					isFirst = false;
+				}
+				else {
+					builder.append(",");
+				}
+
+				builder.append(param.getKey())
+						.append(" : ");
+				if (param.getValue() != null) {
+					if (param.getValue().length == 1) {
+						builder.append(param.getValue()[0]);
+					}
+					else {
+						builder.append(Arrays.toString(param.getValue()));
+					}
+				}
+				else {
+					builder.append(param.getValue());
+				}
 			}
 			builder.append("]");
 			currentAccount.get().setRequestParams(builder.toString());
