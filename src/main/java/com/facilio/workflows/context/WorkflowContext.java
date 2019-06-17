@@ -280,7 +280,7 @@ public class WorkflowContext implements Serializable {
 	}
 	
 	
-	public void visitFunctionHeader() throws Exception {
+	public void fillFunctionHeaderFromScript() throws Exception {
 		
 		InputStream stream = new ByteArrayInputStream(workflowV2String.getBytes(StandardCharsets.UTF_8));
 		

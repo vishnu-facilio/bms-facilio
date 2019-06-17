@@ -289,7 +289,7 @@ public class WorkflowUtil {
 			
 		}
 		else {
-			workflowContext.visitFunctionHeader();
+			workflowContext.fillFunctionHeaderFromScript();
 			List<Object> params = new ArrayList<>();
 			for(ParameterContext parameterContext : workflowContext.getParameters()) {
 				params.add(paramMap.get(parameterContext.getName()));
