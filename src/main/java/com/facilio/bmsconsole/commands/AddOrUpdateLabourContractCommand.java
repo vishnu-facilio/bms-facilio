@@ -1,34 +1,30 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.ContractsContext.ContractType;
-import com.facilio.bmsconsole.context.LabourContext;
-import com.facilio.bmsconsole.context.LabourContractContext;
-import com.facilio.bmsconsole.context.LabourContractLineItemContext;
-import com.facilio.bmsconsole.context.LocationContext;
-import com.facilio.bmsconsole.context.ContractsContext.ContractType;
-import com.facilio.bmsconsole.context.ContractsContext.Status;
-import com.facilio.bmsconsole.criteria.CriteriaAPI;
-import com.facilio.bmsconsole.criteria.NumberOperators;
-import com.facilio.bmsconsole.modules.DeleteRecordBuilder;
-import com.facilio.bmsconsole.modules.FacilioField;
-import com.facilio.bmsconsole.modules.FacilioModule;
-import com.facilio.bmsconsole.modules.InsertRecordBuilder;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.modules.UpdateRecordBuilder;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
-import com.facilio.modules.fields.FacilioField;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ContractsContext.ContractType;
+import com.facilio.bmsconsole.context.ContractsContext.Status;
+import com.facilio.bmsconsole.context.LabourContext;
+import com.facilio.bmsconsole.context.LabourContractContext;
+import com.facilio.bmsconsole.context.LabourContractLineItemContext;
+import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.DeleteRecordBuilder;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.InsertRecordBuilder;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.UpdateRecordBuilder;
+import com.facilio.modules.fields.FacilioField;
 
 public class AddOrUpdateLabourContractCommand implements Command{
 

@@ -1,8 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+
+import com.facilio.constants.FacilioConstants;
 
 public class SetTableNamesCommand implements Command {
 
@@ -331,8 +332,6 @@ public class SetTableNamesCommand implements Command {
 	public static SetTableNamesCommand getForBreakTransaction() {
 		return new SetTableNamesCommand("breakTransaction", "BREAK_TRANSACTION");
 	}
-
-	public static SetTableNamesCommand getForService() {
 
 	public static SetTableNamesCommand getForServices() {
 		return new SetTableNamesCommand("service", "Service");

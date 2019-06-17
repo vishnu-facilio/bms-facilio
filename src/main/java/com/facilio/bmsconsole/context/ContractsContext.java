@@ -1,8 +1,6 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.bmsconsole.context.ContractsContext.Status;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
 
 public class ContractsContext extends ModuleBaseWithCustomFields{
 

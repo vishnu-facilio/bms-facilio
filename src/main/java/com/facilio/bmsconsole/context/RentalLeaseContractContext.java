@@ -2,9 +2,6 @@ package com.facilio.bmsconsole.context;
 
 import java.util.List;
 
-import com.facilio.bmsconsole.context.ContractsContext.Status;
-import com.facilio.bmsconsole.modules.ModuleBaseWithCustomFields;
-
 public class RentalLeaseContractContext extends ContractsContext {
 
 	/**
