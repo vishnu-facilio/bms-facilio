@@ -984,7 +984,7 @@ public enum ActionType {
 						assetBreakdown.setTotime(alarm.getClearedTime());
 						assetBreakdown.setAssetid(alarm.getResource().getId());
 						assetBreakdown.setSourceId(alarm.getId());
-						assetBreakdown.setSourceTypeEnum(AssetBDSourceDetailsContext.SourceType.ALARM);
+						assetBreakdown.setSourceType(AssetBDSourceDetailsContext.SourceType.ALARM.getValue());
 						context.put(FacilioConstants.ContextNames.ASSET_BD_SOURCE_DETAILS, assetBreakdown);
 						Chain newAssetBreakdown = TransactionChainFactory.getAddNewAssetBreakdownChain();
 						newAssetBreakdown.execute(context);

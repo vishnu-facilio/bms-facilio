@@ -27,7 +27,7 @@ public class updateAssetDownTimeDetailsCommand implements Command {
                                .get(FacilioConstants.ContextNames.ASSET_BD_SOURCE_DETAILS);
                Boolean assetDowntimeStatus = (Boolean) context.get(FacilioConstants.ContextNames.ASSET_DOWNTIME_STATUS);
                Long assetDowntimeId = (Long) context.get(FacilioConstants.ContextNames.ASSET_DOWNTIME_ID);
-               if (assetBDSourceDetail.getAssetid() != -1) {
+               if (assetBDSourceDetail!=null&&assetBDSourceDetail.getAssetid() != -1) {
                        AssetContext asset=new AssetContext();
                        asset.setDowntimeStatus(assetDowntimeStatus);
                        asset.setLastDowntimeId(assetDowntimeId);

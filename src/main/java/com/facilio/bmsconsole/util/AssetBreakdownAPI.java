@@ -4,17 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
-
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.AssetBDSourceDetailsContext;
 import com.facilio.bmsconsole.context.AssetBDSourceDetailsContext.SourceType;
 import com.facilio.bmsconsole.context.AssetBreakdownContext;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
@@ -42,6 +37,23 @@ public class AssetBreakdownAPI {
 				.orderBy(fieldMap.get("totime").getColumnName() + " desc");
 		return selectBuilder.get();
 	}
+	public static void updateTotimeAndDuration(AssetBreakdownContext assetBreakdown,List<AssetBDSourceDetailsContext> AssetBDdetailsList)throws Exception{
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule assetBreakdownModule = modBean.getModule(ContextNames.ASSET_BREAKDOWN);
+		assetBreakdown.setTotime(AssetBDdetailsList.get(0).getTotime());
+		assetBreakdown.setDuration(AssetBreakdownAPI.calculateDurationInSeconds(assetBreakdown.getFromtime(), assetBreakdown.getTotime()));
+
+		Map<String, Object> props = FieldUtil.getAsProperties(assetBreakdown);
+		List<FacilioField> fieldsToUpdate = new ArrayList<>();
+		fieldsToUpdate.add(modBean.getField("totime", ContextNames.ASSET_BREAKDOWN));
+		fieldsToUpdate.add(modBean.getField("duration", ContextNames.ASSET_BREAKDOWN));
+
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder().table(assetBreakdownModule.getTableName())
+				.fields(fieldsToUpdate)
+				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(assetBreakdownModule))
+				.andCondition(CriteriaAPI.getIdCondition(assetBreakdown.getId(),assetBreakdownModule));
+		updateBuilder.update(props);
+	}
 	public static AssetBreakdownContext getAssetBreakdown(FacilioModule module, List<FacilioField> fields,long id) throws Exception {
 		SelectRecordsBuilder<AssetBreakdownContext> selectBuilder = new SelectRecordsBuilder<AssetBreakdownContext>()
 				.select(fields)
@@ -51,13 +63,13 @@ public class AssetBreakdownAPI {
                 .andCondition(CriteriaAPI.getIdCondition(id, module));
 		return selectBuilder.fetchFirst();
 	}
-	public static long getAssetLastBreakdownIdByTime(FacilioModule module, List<FacilioField> fields,long parentId)throws Exception{
+	public static long getAssetLastBreakdownIdByTime(FacilioModule module, List<FacilioField> fields,long assetId)throws Exception{
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		SelectRecordsBuilder<AssetBreakdownContext> selectBuilder = new SelectRecordsBuilder<AssetBreakdownContext>()
 				.select(fields)
 				.module(module)
 				.beanClass(AssetBreakdownContext.class)
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(parentId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(assetId), NumberOperators.EQUALS))
 				.orderBy(fieldMap.get("fromtime").getColumnName() + " desc")
 				.limit(1)
 				;

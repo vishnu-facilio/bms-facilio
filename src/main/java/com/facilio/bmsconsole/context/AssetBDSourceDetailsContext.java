@@ -75,32 +75,25 @@ public class AssetBDSourceDetailsContext extends ModuleBaseWithCustomFields {
 	private long sourceType = -1;
 	
 	public long getSourceType() {
-		if (sourceTypeEnum != null) {
-			return sourceTypeEnum.getValue();
-		} else {
 			return sourceType;
-		}
 	}
 
 	public void setSourceType(long sourceType) {
 		this.sourceType = sourceType;
 	}
 
-	private SourceType sourceTypeEnum;
-
-	public SourceType getSourceTypeEnum() {
-		return sourceTypeEnum;
-	}
-
-	public void setSourceTypeEnum(SourceType sourceTypeEnum) {
-		this.sourceTypeEnum = sourceTypeEnum;
-	}
-
 	public static enum SourceType {
-		WORKORDER, ALARM, ASSET;
+		WORKORDER(1),
+		ALARM(2),
+		ASSET(3)
+		;
+		private int value;
 
+		private SourceType(int value) {
+			this.value = value;
+		}
 		public int getValue() {
-			return ordinal() + 1;
+			return value;
 		}
 
 		public static SourceType valueOf(int val) {

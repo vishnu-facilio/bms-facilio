@@ -2995,14 +2995,6 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
-		public static Chain getAddAssetBreakdownChain() {
-			Chain c = getDefaultChain();
-			c.addCommand(new ValidateAssetBreakdownCommand());
-			c.addCommand(new getAssetDownTimeDetailsCommand());
-			c.addCommand(new AddAssetBreakDownCommand());
-			c.addCommand(new updateAssetDownTimeDetailsCommand());
-			return c;
-		}
 		public static Chain getAddNewAssetBreakdownChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new getAssetDownTimeDetailsCommand());

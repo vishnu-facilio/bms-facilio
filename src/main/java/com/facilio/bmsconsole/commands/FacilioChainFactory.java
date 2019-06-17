@@ -320,6 +320,8 @@ public class FacilioChainFactory {
 		Chain c = FacilioChain.getTransactionChain();
 		c.addCommand(SetTableNamesCommand.getForAlarm());
 		c.addCommand(new RemoveAlarmFromEventCommand());
+		c.addCommand(new RemoveAssetBreakdownCommand());
+		c.addCommand(new updateAssetDownTimeDetailsCommand());
 		c.addCommand(new SplitDependentTicketsCommand());
 		c.addCommand(new DeleteTicketDependenciesCommand());
 		c.addCommand(new DeleteTicketCommand());
