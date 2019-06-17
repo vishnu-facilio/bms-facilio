@@ -24,6 +24,7 @@ public class AccessLogFilter implements Filter {
     private static final String REMOTE_IP = "remoteIp";
     private static final String REQUEST_METHOD = "req_method";
     private static final String REQUEST_URL = "req_uri";
+    private static final String REQUEST_PARAMS = "req_params";
     private static final String DEFAULT_QUERY_STRING = "-";
     private static final String QUERY = "query";
     private static final String RESPONSE_CODE = "responseCode";
@@ -94,6 +95,9 @@ public class AccessLogFilter implements Filter {
             event.setProperty("userId", String.valueOf(user.getOuid()));
         } else {
             event.setProperty("userId", DEFAULT_ORG_USER_ID);
+        }
+        if (AccountUtil.getCurrentAccount() != null && AccountUtil.getCurrentAccount().getRequestParams() != null) {
+            event.setProperty(REQUEST_PARAMS, AccountUtil.getCurrentAccount().getRequestParams());
         }
 
         String origin = request.getHeader("Origin");

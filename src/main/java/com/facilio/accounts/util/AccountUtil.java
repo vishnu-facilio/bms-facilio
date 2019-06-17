@@ -24,10 +24,7 @@ import com.facilio.modules.fields.FacilioField;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class AccountUtil {
 
@@ -112,6 +109,21 @@ public class AccountUtil {
 			currentAccount.get().setRequestUri(requestURI);
 		}
     }
+	public static void setRequestParams(Map<String, String[]> requestParams) {
+		if (currentAccount.get() != null && requestParams != null) {
+			StringBuilder builder = new StringBuilder("[");
+			for (Map.Entry<String, String[]> param : requestParams.entrySet()) {
+				builder.append("(")
+						.append(param.getKey())
+						.append(" : ")
+						.append(Arrays.toString(param.getValue()))
+						.append(")")
+						;
+			}
+			builder.append("]");
+			currentAccount.get().setRequestParams(builder.toString());
+		}
+	}
     
     public static void setTimeZone(String timeZone) {
 		if (currentAccount.get() != null) {

@@ -59,6 +59,7 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 		try {
 			HttpServletRequest request = ServletActionContext.getRequest();
 			AccountUtil.setReqUri(request.getRequestURI());
+			AccountUtil.setRequestParams(request.getParameterMap());
 			return arg0.invoke();
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "error thrown from action class", e);

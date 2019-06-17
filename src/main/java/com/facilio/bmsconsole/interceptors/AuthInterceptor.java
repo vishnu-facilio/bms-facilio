@@ -81,6 +81,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 					
 					try {
 						AccountUtil.setReqUri(request.getRequestURI());
+						AccountUtil.setRequestParams(request.getParameterMap());
 						return arg0.invoke();
 					} catch (Exception e) {
 						System.out.println("exception code 154");
@@ -221,6 +222,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 
 		try {
 			AccountUtil.setReqUri(request.getRequestURI());
+            AccountUtil.setRequestParams(request.getParameterMap());
 			return arg0.invoke();
 		} catch (Exception e) {
 			System.out.println("exception code 154");

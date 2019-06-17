@@ -247,6 +247,14 @@ public class Account implements Serializable {
     	return requestUri;
 	}
 
+	private String requestParams;
+	public String getRequestParams() {
+		return requestParams;
+	}
+	public void setRequestParams(String requestParams) {
+		this.requestParams = requestParams;
+	}
+
 	private String timeZone;
 	public void setTimeZone(String timeZone) {
 		this.timeZone = timeZone;	
