@@ -32,7 +32,6 @@ public class AssetBreakdownAPI {
 				.select(fields)
 				.module(module)
 				.beanClass(AssetBDSourceDetailsContext.class)
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(breakDownId), NumberOperators.EQUALS))
 				.orderBy(fieldMap.get("totime").getColumnName() + " desc");
 		return selectBuilder.get();
@@ -50,7 +49,6 @@ public class AssetBreakdownAPI {
 
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder().table(assetBreakdownModule.getTableName())
 				.fields(fieldsToUpdate)
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(assetBreakdownModule))
 				.andCondition(CriteriaAPI.getIdCondition(assetBreakdown.getId(),assetBreakdownModule));
 		updateBuilder.update(props);
 	}
@@ -59,7 +57,6 @@ public class AssetBreakdownAPI {
 				.select(fields)
 				.module(module)
 				.beanClass(AssetBreakdownContext.class)
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
                 .andCondition(CriteriaAPI.getIdCondition(id, module));
 		return selectBuilder.fetchFirst();
 	}
@@ -91,7 +88,6 @@ public class AssetBreakdownAPI {
 				.select(fields)
 				.module(module)
 				.beanClass(AssetBDSourceDetailsContext.class)
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("sourceId"), String.valueOf(sourceid), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("sourceType"), String.valueOf(sourceType.getValue()), NumberOperators.EQUALS));
 		return selectBuilder.get();

@@ -76,7 +76,6 @@ public class AddAssetBreakDownCommand implements Command {
 
 				GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder().table(assetBreakdownModule.getTableName())
 						.fields(fieldsToUpdate)
-						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(assetBreakdownModule))
 						.andCondition(CriteriaAPI.getIdCondition(assetBDSourceDetails.getParentId(),assetBreakdownModule));
 				updateBuilder.update(props);
 			}
