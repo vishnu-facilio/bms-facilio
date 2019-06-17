@@ -1,5 +1,7 @@
 package com.facilio.accounts.dto;
 
+import org.apache.struts2.json.annotations.JSON;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -104,6 +106,8 @@ public class Group implements Serializable {
 	}
 	
 	private String groupMembersEmail;
+
+	@JSON(serialize=false)
 	public String getGroupMembersEmail() {
 		return groupMembersEmail;
 	}
@@ -112,6 +116,8 @@ public class Group implements Serializable {
 	}
 	
 	private String groupMembersPhone;
+
+	@JSON(serialize=false)
 	public String getGroupMembersPhone() {
 		return groupMembersPhone;
 	}
@@ -120,6 +126,8 @@ public class Group implements Serializable {
 	}
 	
 	private String groupMembersIds;
+
+	@JSON(serialize=false)
 	public String getGroupMembersIds() {
 		return groupMembersIds;
 	}
