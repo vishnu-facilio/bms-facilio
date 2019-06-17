@@ -2,25 +2,35 @@ package com.facilio.workflows.context;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public enum WorkflowFieldType {
 
-	VOID(0, "Void"),
-	STRING(1, "String"),
-	NUMBER(2, "Number"),
-	BOOLEAN(3, "Boolean"),
-	MAP(4,"Map"),
-	LIST(5,"List"),
+	VOID(0, "void"),
+	STRING(1, "String",String.class),
+	NUMBER(2, "Number",Integer.class,Long.class,Double.class),
+	BOOLEAN(3, "Boolean",Boolean.class),
+	MAP(4,"Map",Map.class),
+	LIST(5,"List",List.class),
 	;
 	
+	public Class[] getObjectClass() {
+		return objectClass;
+	}
+
 	private int intValue;
 	private String stringValue;
-	
+	private Class[] objectClass;
 	
 	private WorkflowFieldType(int intValue,String stringValue) {
 		this.intValue = intValue;
 		this.stringValue = stringValue;
+	}
+	private WorkflowFieldType(int intValue,String stringValue,Class<?>... objectClass) {
+		this.intValue = intValue;
+		this.stringValue = stringValue;
+		this.objectClass = objectClass;
 	}
 
 	public int getIntValue() {

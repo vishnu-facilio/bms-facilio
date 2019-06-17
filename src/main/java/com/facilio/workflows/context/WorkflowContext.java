@@ -75,6 +75,10 @@ public class WorkflowContext implements Serializable {
 	
 	WorkflowFieldType returnType;
 	
+	public WorkflowFieldType getReturnTypeEnum() {
+		return returnType;
+	}
+	
 	public int getReturnType() {
 		if(returnType != null) {
 			return returnType.getIntValue();
@@ -336,8 +340,8 @@ public class WorkflowContext implements Serializable {
 		        return this.getReturnValue();
 			}
 			catch(Exception e) {
-				this.getLogStringBuilder().append(e.toString()+"\n");
-				LOGGER.log(Level.SEVERE, e.getMessage(), e);
+				this.getLogStringBuilder().append("ERROR ::: "+e.getMessage()+"\n");
+				throw e;
 			}
 		}
 		

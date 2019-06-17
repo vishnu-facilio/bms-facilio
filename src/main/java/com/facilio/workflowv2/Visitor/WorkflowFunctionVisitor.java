@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.RuleNode;
 import org.apache.commons.lang3.tuple.Pair;
@@ -25,6 +24,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.time.DateRange;
 import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflows.context.WorkflowFieldType;
 import com.facilio.workflows.context.WorkflowFunctionContext;
 import com.facilio.workflows.context.WorkflowUserFunctionContext;
 import com.facilio.workflows.functions.FacilioSystemFunctionNameSpace;
@@ -57,7 +57,7 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     public void setParams(List<Object> parmasObjects) throws Exception {
     	if(workflowContext.getParameters().size() > 0) {
     		if(parmasObjects.size() < workflowContext.getParameters().size()) {
-        		throw new Exception("param count mismatched");
+        		throw new RuntimeException("param count mismatched");
         	}
         	
         	for(int i = 0;i<workflowContext.getParameters().size(); i++) {
@@ -185,7 +185,7 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     		}
     	}
     	catch(Exception e) {
-    		throw new ParseCancellationException(e); 
+    		throw new RuntimeException(e);
     	}
     }
     
@@ -222,6 +222,10 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     public Value visitFunction_block(WorkflowV2Parser.Function_blockContext ctx) {
     	
     	String functionName = ctx.function_name_declare().getText();
+    	
+    	WorkflowFieldType returnType = WorkflowFieldType.getStringvaluemap().get(ctx.data_type().op.getText());
+    	
+    	workflowContext.setReturnType(returnType.getIntValue());
     	
     	if(workflowContext instanceof WorkflowUserFunctionContext) {
     		((WorkflowUserFunctionContext)workflowContext).setName(functionName);
@@ -287,10 +291,13 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     		String moduleDisplayName = ctx.VAR(0).getText();
         	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         	FacilioModule module = modBean.getModule(WorkflowV2Util.getModuleName(moduleDisplayName));
+        	if(module == null) {
+        		throw new RuntimeException("Module "+moduleDisplayName+ " Does not exist");
+        	}
         	return new Value(module); 
     	}
     	catch(Exception e) {
-    		throw new ParseCancellationException(e);
+    		throw new RuntimeException(e.getMessage());
     	}
     }
     
@@ -300,10 +307,13 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     		String moduleName = this.visit(ctx.atom()).asString();
         	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         	FacilioModule module = modBean.getModule(moduleName);
+        	if(module == null) {
+        		throw new RuntimeException("Module "+moduleName+ " Does not exist");
+        	}
         	return new Value(module); 
     	}
     	catch(Exception e) {
-    		throw new ParseCancellationException(e);
+    		throw new RuntimeException(e.getMessage());
     	}
     }
     
@@ -315,14 +325,14 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
         	if(nameSpaceEnum == null) {
         		WorkflowNamespaceContext namespace = UserFunctionAPI.getNameSpace(nameSpaceString);
         		if(namespace == null) {
-        			throw new ParseCancellationException("No such namespace - "+nameSpaceString);
+        			throw new RuntimeException("No such namespace - "+nameSpaceString);
         		}
         		return new Value(namespace);
         	}
         	return new Value(nameSpaceEnum); 
     	}
     	catch(Exception e) {
-    		throw new ParseCancellationException(e);
+    		throw new RuntimeException(e);
     	}
     	
     }
@@ -596,7 +606,27 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     @Override 
     public Value visitFunction_return(WorkflowV2Parser.Function_returnContext ctx)
     {
-    	Value returnValue = this.visit(ctx.expr());
+		Value returnValue = this.visit(ctx.expr());
+    	
+    	if(workflowContext.getReturnTypeEnum() != null) {
+    		switch(workflowContext.getReturnTypeEnum()) {
+    		case VOID:
+    			throw new RuntimeException("Method Return Type is Void But has a Return Statement");
+    		
+    		default:
+    			Class[] ObjectClass = workflowContext.getReturnTypeEnum().getObjectClass();
+    			boolean flag = false;
+    			for(int i=0;i<ObjectClass.length;i++) {
+    				if(returnValue.asObject().getClass().equals(ObjectClass[i])) {
+    					flag = true;
+    				}
+    			}
+    			if(!flag) {
+    				throw new RuntimeException("Method Return Type is "+workflowContext.getReturnTypeEnum().getStringValue()+" But has a Return Value of "+returnValue.asObject().getClass());
+    			}
+    		}
+    	}
+    	
     	workflowContext.setReturnValue(returnValue.asObject());
     	this.breakCodeFlow = true;
     	return Value.VOID; 

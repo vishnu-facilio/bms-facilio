@@ -16,6 +16,7 @@ import com.facilio.workflowv2.util.WorkflowV2Util;
 
 import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
+import org.apache.log4j.Priority;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -140,7 +141,12 @@ public class WorkflowAction extends FacilioAction {
 	}
 
 	public String runWorkflow() throws Exception {
-	    workflow = WorkflowV2API.executeWorkflow(workflow, paramList);
+		try {
+			workflow = WorkflowV2API.executeWorkflow(workflow, paramList);
+		}
+	    catch(Exception e) {
+	    	log.log(Priority.ERROR, e);
+	    }
 	    setResult(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
 		return SUCCESS;
 	}
