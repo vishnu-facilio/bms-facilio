@@ -81,6 +81,8 @@ public class GetAllNameSpaceWithFunctionCommand implements Command {
 			for(Map<String, Object> prop :props) {
 				WorkflowUserFunctionContext workflowContext = FieldUtil.getAsBeanFromMap(prop, WorkflowUserFunctionContext.class);
 				
+				workflowContext.fillFunctionHeaderFromScript();
+				
 				List<WorkflowUserFunctionContext> workflowUserFunctionContexts = nameSpaceMap.get(workflowContext.getNameSpaceId());
 				
 				workflowUserFunctionContexts = workflowUserFunctionContexts == null ? new ArrayList<>() : workflowUserFunctionContexts;

@@ -23,7 +23,7 @@ public class AddUserFunctionCommand implements Command {
 		
 		WorkflowUserFunctionContext userFunctionContext = (WorkflowUserFunctionContext) context.get(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT);
 		
-		userFunctionContext.fillNameFromScript();
+		userFunctionContext.fillFunctionHeaderFromScript();
 		
 		addUserFunction(userFunctionContext);
 		return false;

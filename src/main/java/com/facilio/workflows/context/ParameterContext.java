@@ -1,7 +1,5 @@
 package com.facilio.workflows.context;
 
-import com.facilio.modules.FieldType;
-
 import java.io.Serializable;
 
 public class ParameterContext implements Serializable {
@@ -18,8 +16,9 @@ public class ParameterContext implements Serializable {
 		this.value = value;
 	}
 	String name;
-	String typeString;
-	Object value;
+	WorkflowFieldType workflowFieldType;
+	Object value;							// depricate this in new Workflow  
+	
 	public String getName() {
 		return name;
 	}
@@ -27,16 +26,16 @@ public class ParameterContext implements Serializable {
 		this.name = name;
 	}
 	public String getTypeString() {
-		return typeString;
+		return workflowFieldType.getStringValue();
 	}
 	public void setTypeString(String typeString) {
-		this.typeString = typeString;
+		this.workflowFieldType =  WorkflowFieldType.getStringvaluemap().get(typeString);
 	}
-	public FieldType getType() {
-		if(getTypeString() != null) {
-			return FieldType.getCFType(getTypeString());
-		}
-		return null;
+	public WorkflowFieldType getWorkflowFieldType() {
+		return workflowFieldType;
+	}
+	public void setWorkflowFieldType(WorkflowFieldType workflowFieldType) {
+		this.workflowFieldType = workflowFieldType;
 	}
 	public Object getValue() {
 		return value;
@@ -44,6 +43,4 @@ public class ParameterContext implements Serializable {
 	public void setValue(Object value) {
 		this.value = value;
 	}
-	
-	
 }

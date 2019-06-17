@@ -1,10 +1,8 @@
 package com.facilio.workflows.context;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.antlr.v4.runtime.CharStreams;
@@ -17,6 +15,11 @@ import com.facilio.workflowv2.autogens.WorkflowV2Parser;
 
 public class WorkflowUserFunctionContext extends WorkflowContext {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private static final Logger LOGGER = Logger.getLogger(WorkflowUserFunctionContext.class.getName());
 	
 	Long nameSpaceId;
@@ -35,7 +38,7 @@ public class WorkflowUserFunctionContext extends WorkflowContext {
 		this.name = name;
 	}
 	
-	public void fillNameFromScript() throws Exception {
+	public void fillFunctionHeaderFromScript() throws Exception {
 		WorkflowFunctionVisitor visitor = null;
 		
 		InputStream stream = new ByteArrayInputStream(workflowV2String.getBytes(StandardCharsets.UTF_8));

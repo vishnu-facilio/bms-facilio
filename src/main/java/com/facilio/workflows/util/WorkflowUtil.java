@@ -710,7 +710,7 @@ public class WorkflowUtil {
 	
 	public static boolean checkType(ParameterContext parameterContext,Object value) throws Exception {
 		
-		FieldType type =  parameterContext.getType();
+		 WorkflowFieldType type = parameterContext.getWorkflowFieldType();
 		
 		if (value == null) {
 			return true;
@@ -729,11 +729,6 @@ public class WorkflowUtil {
 				throw new IllegalArgumentException(parameterContext.getName()+" type mismatched "+value);
 			case NUMBER:
 				if(value instanceof Integer || value instanceof Long) {
-					return true;
-				}
-				throw new IllegalArgumentException(parameterContext.getName()+" type mismatched "+value);
-			case DECIMAL:
-				if(value instanceof Double) {
 					return true;
 				}
 				throw new IllegalArgumentException(parameterContext.getName()+" type mismatched "+value);
