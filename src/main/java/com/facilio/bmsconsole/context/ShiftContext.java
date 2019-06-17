@@ -1,6 +1,10 @@
 package com.facilio.bmsconsole.context;
 
 import java.time.LocalTime;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoField;
+import java.time.temporal.TemporalAdjusters;
+import java.time.temporal.TemporalField;
 import java.util.Calendar;
 import java.util.List;
 
@@ -12,6 +16,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.time.DateTimeUtil;
 
 public class ShiftContext extends ModuleBaseWithCustomFields {
 	/**
@@ -78,6 +83,14 @@ public class ShiftContext extends ModuleBaseWithCustomFields {
 		this.defaultShift = defaultShift;
 	}
 	
+	private String colorCode;
+	public String getColorCode() {
+		return colorCode;
+	}
+	public void setColorCode(String colorCode) {
+		this.colorCode = colorCode;
+	}
+	
 	private JSONObject weekend;
 	public JSONObject getWeekendJSON() {
 		return weekend;
@@ -98,13 +111,12 @@ public class ShiftContext extends ModuleBaseWithCustomFields {
 	}
 	
 	public boolean isWeekend(long timestamp) {
-		Calendar c = Calendar.getInstance();
-		c.setTimeInMillis(timestamp);
-		int weekOfMonth = c.get(Calendar.WEEK_OF_MONTH);
+		ZonedDateTime dateTime = DateTimeUtil.getDateTime(timestamp);
+		int weekOfMonth = dateTime.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
 		if (weekend != null) {
 			List<Long> dayList = (List<Long>) weekend.get(String.valueOf(weekOfMonth));
 			if (CollectionUtils.isNotEmpty(dayList)) {
-				int i = c.get(Calendar.DAY_OF_WEEK);
+				int i = dateTime.getDayOfWeek().getValue();
 				return dayList.contains((long) i);
 			}
 		}
