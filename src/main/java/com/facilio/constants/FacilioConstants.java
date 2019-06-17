@@ -660,6 +660,7 @@ public class FacilioConstants {
 		public static final String WO_DUE_ENDTIME = "woDueEndtime";
 		public static final String WO_LIST_COUNT = "woListCount";
 		public static final String WO_IDS = "woIds";
+		public static final String PM_IDS = "pmIds";
 		public static final String NOTE_IDS = "noteIds";
 		public static final String WO_VIEW_COUNT = "woListAndCount";
 		public static final String IS_APPROVAL = "isApproval";
@@ -670,6 +671,9 @@ public class FacilioConstants {
 		public static final String NEW_CV = "newCV";
 		public static final String VIEW_SHARING_LIST = "viewSharingList";
 		public static final String FILTERS = "filters";
+		public static final String SPECIAL_FIELDS = "specialFields";
+		public static final String VIEW_LIMIT = "viewLimit";
+		public static final String IS_S3_VALUE = "isS3Value";
 		public static final String FILTER_CONDITIONS = "filterConditions";
 		public static final String CRITERIA_IDS = "criteria";
 		public static final String COUNT = "count";
