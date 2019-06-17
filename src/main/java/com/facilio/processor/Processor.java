@@ -122,7 +122,7 @@ public class Processor implements IRecordProcessor {
                             }
                         }
                     }catch (Exception e1){
-                        LOGGER.info("Exception Occured ",e1);
+                        LOGGER.info("Exception Occurred ",e1);
                     }
 
                     data = decoder.decode(record.getData()).toString();
@@ -144,7 +144,7 @@ public class Processor implements IRecordProcessor {
                     if(payLoad.containsKey(EventUtil.DATA_TYPE)) {
                         dataType = (String)payLoad.remove(EventUtil.DATA_TYPE);
                     }
-                    else if (orgId == 133l) {
+                    else if (orgId == 133L) {
                     	   dataType =  PublishType.timeseries.getValue();
                     }
                     // Temp fix - bug: Publish_Type wrongly set to "agents"
@@ -221,7 +221,7 @@ public class Processor implements IRecordProcessor {
                         dataTypeLastMessageTime.put(dataType, lastMessageReceivedTime);
                         deviceMessageTime.put(deviceId, dataTypeLastMessageTime);
                     } else {
-                        LOGGER.info("Duplicate message for device " + deviceId + " and type " + dataType);
+                        LOGGER.info("Duplicate message for device " + deviceId + " and type " + dataType + " data : " + data);
                     }
                     if ( i == 0 ) {
 
