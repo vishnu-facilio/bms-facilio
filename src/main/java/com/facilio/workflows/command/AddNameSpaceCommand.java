@@ -10,6 +10,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.workflowv2.contexts.WorkflowNamespaceContext;
+import com.facilio.workflowv2.util.UserFunctionAPI;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 
 public class AddNameSpaceCommand implements Command {
@@ -19,6 +20,8 @@ public class AddNameSpaceCommand implements Command {
 		// TODO Auto-generated method stub
 		
 		WorkflowNamespaceContext workflowNamespaceContext = (WorkflowNamespaceContext) context.get(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT);
+		
+		checkWhetherNameSpaceAlreadyExist(workflowNamespaceContext.getName());
 		
 		addNameSpace(workflowNamespaceContext);
 		return false;
@@ -36,5 +39,10 @@ public class AddNameSpaceCommand implements Command {
 		namespaceContext.setId((long)props.get("id"));
 	}
 
+	private void checkWhetherNameSpaceAlreadyExist(String name) throws Exception {
+		if(UserFunctionAPI.getNameSpace(name) != null) {
+			throw new Exception("Namespace name already exist");
+		}
 
+	}
 }
