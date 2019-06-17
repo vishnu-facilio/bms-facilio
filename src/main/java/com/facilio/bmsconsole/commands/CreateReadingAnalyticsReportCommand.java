@@ -84,7 +84,7 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 					dataPoint.setOrderByFunc(metric.getOrderByFuncEnum());
 					
 					List<String> orderBy = new ArrayList<>();
-					orderBy.add(dataPoint.getyAxis().getField().getName());
+					orderBy.add(ReportUtil.getAggrFieldName(dataPoint.getyAxis().getField(), dataPoint.getyAxis().getAggrEnum()));
 					orderBy.add(dataPoint.getxAxis().getField().getName());
 					dataPoint.setOrderBy(orderBy);
 				}
