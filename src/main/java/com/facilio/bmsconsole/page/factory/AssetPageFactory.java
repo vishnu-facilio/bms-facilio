@@ -250,14 +250,14 @@ public class AssetPageFactory extends PageFactory {
 	
 	private static void addFailureRateWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART);
-		cardWidget.addToLayoutParams(section, 12, 15);
+		cardWidget.addToLayoutParams(section, 12, 14);
 		cardWidget.addToWidgetParams("type", CardType.FAILURE_RATE.getName());
 		section.addWidget(cardWidget);
 	}
 	
 	private static void addAvgTtrWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART);
-		cardWidget.addToLayoutParams(section, 12, 15);
+		cardWidget.addToLayoutParams(section, 12, 14);
 		cardWidget.addToWidgetParams("type", CardType.AVG_TTR.getName());
 		section.addWidget(cardWidget);
 	}
