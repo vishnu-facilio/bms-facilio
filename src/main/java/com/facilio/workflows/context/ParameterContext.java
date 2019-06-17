@@ -26,7 +26,10 @@ public class ParameterContext implements Serializable {
 		this.name = name;
 	}
 	public String getTypeString() {
-		return workflowFieldType.getStringValue();
+		if(workflowFieldType != null) {
+			return workflowFieldType.getStringValue();
+		}
+		return null;
 	}
 	public void setTypeString(String typeString) {
 		this.workflowFieldType =  WorkflowFieldType.getStringvaluemap().get(typeString);

@@ -6,6 +6,7 @@ import java.util.Map;
 
 public enum WorkflowFieldType {
 
+	VOID(0, "Void"),
 	STRING(1, "String"),
 	NUMBER(2, "Number"),
 	BOOLEAN(3, "Boolean"),
