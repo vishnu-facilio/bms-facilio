@@ -74,6 +74,8 @@ public class WarrantyContractContext extends ContractsContext {
 	public WarrantyContractContext clone() {
 		WarrantyContractContext warranty = new WarrantyContractContext(this);
 		warranty.setWarrantyContractType(this.getWarrantyContractType());
+		warranty.setAssetIds(this.getAssetIds());
+
 		return warranty;
 	}
 }

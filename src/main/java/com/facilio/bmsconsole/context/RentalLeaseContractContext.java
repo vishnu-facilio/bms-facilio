@@ -73,6 +73,7 @@ public class RentalLeaseContractContext extends ContractsContext {
 	public RentalLeaseContractContext clone() {
 		RentalLeaseContractContext rental = new RentalLeaseContractContext(this);
 		rental.setRentalLeaseContractType(this.getRentalLeaseContractType());
+		rental.setAssetIds(this.getAssetIds());
 		return rental;
 	}
 }
