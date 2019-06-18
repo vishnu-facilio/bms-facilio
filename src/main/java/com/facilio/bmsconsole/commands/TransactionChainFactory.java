@@ -1357,7 +1357,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(new GetReadingDataMetaCommand());
 			c.addCommand(new ReadingUnitAndInputConversionCommand());
-			c.addCommand(new DeltaCalculationCommand());
+			c.addCommand(new EnergyDataDeltaCalculationCommand());
 			c.addCommand(new CalculateDeltaCommand());
 			c.addCommand(new CalculatePreFormulaCommand());
 			c.addCommand(new ExecuteValidationRule());

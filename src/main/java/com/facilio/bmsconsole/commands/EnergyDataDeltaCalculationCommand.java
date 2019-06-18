@@ -30,8 +30,8 @@ import java.util.Map;
 
 ;
 
-public class DeltaCalculationCommand implements Command {
-	private static final Logger LOGGER = LogManager.getLogger(DeltaCalculationCommand.class.getName());
+public class EnergyDataDeltaCalculationCommand implements Command {
+	private static final Logger LOGGER = LogManager.getLogger(EnergyDataDeltaCalculationCommand.class.getName());
 	
 	@SuppressWarnings("unchecked")
 	@Override
