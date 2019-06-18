@@ -171,7 +171,7 @@ public class UserAction extends FacilioAction {
 //		        .build();
 		
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-		AccountUtil.getRoleBean(orgId).getRoles();
+		AccountUtil.getRoleBean().getRoles(orgId);
 		// AccountUtil.getUserBean().updateUserLicense(2, 4);
 		Role admin = AccountUtil.getRoleBean().getRole(orgId, "Administrator", false);
 		System.out.println(admin.getId());

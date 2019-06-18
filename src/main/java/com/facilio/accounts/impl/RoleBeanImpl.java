@@ -234,11 +234,11 @@ public class RoleBeanImpl implements RoleBean {
 	}
 
 	@Override
-	public List<Role> getRoles() throws Exception {
+	public List<Role> getRoles(long orgId) throws Exception {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(AccountConstants.getRoleFields())
 				.table(AccountConstants.getRoleModule().getTableName())
-				;
+				.andCustomWhere("ORGID = ?", orgId);
 		
 		return getRolesFromProps(selectBuilder.get(), false);
 	}

@@ -1,14 +1,5 @@
 package com.facilio.accounts.util;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.facilio.accounts.bean.GroupBean;
 import com.facilio.accounts.bean.OrgBean;
 import com.facilio.accounts.bean.RoleBean;
@@ -19,6 +10,8 @@ import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.TransactionBeanFactory;
@@ -27,6 +20,11 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.*;
 
 public class AccountUtil {
 
@@ -83,21 +81,11 @@ public class AccountUtil {
 		return userBean;
 	}
 
-	public static UserBean getUserBean(long orgId) throws Exception {
-		UserBean userBean = (UserBean) BeanFactory.lookup("UserBean",orgId);
-		return userBean;
-	}
-	
 	public static UserBean getTransactionalUserBean() throws Exception {
 		return (UserBean) TransactionBeanFactory.lookup("UserBean");
 	}
 	
 	public static OrgBean getOrgBean() throws Exception {
-		OrgBean orgBean = (OrgBean) BeanFactory.lookup("OrgBean");
-		return orgBean;
-	}
-
-	public static OrgBean getOrgBean(long orgId) throws Exception {
 		OrgBean orgBean = (OrgBean) BeanFactory.lookup("OrgBean");
 		return orgBean;
 	}
@@ -208,12 +196,22 @@ public class AccountUtil {
 	}
 
     
-    public static int getOrgFeatureLicense(long orgId) throws Exception
+    public static int getOrgFeatureLicense(long orgid) throws Exception
     {
-    	OrgBean bean = (OrgBean) BeanFactory.lookup("OrgBean", orgId);
-    	int licence =bean.getFeatureLicense();
-    	System.out.println("#########$$$$ Orgbean : orgid "+orgId+", license : "+licence);
-    	return licence;
+    	
+    	Object module;
+    	String orgidString = String.valueOf(orgid);
+    	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(AccountConstants.getFeatureLicenseFields())
+				.table(AccountConstants.getFeatureLicenseModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(AccountConstants.getOrgIdField(AccountConstants.getFeatureLicenseModule()), orgidString, StringOperators.IS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		Map<String, Object> modulemap=props.get(0);
+		module = modulemap.get("module");
+		int moduleint = (int)module;
+		return moduleint;
+    	
     	
     }
 

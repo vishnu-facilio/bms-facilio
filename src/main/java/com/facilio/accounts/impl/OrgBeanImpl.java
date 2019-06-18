@@ -1,15 +1,5 @@
 package com.facilio.accounts.impl;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Chain;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.bean.OrgBean;
 import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Organization;
@@ -39,6 +29,13 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.chain.Chain;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class OrgBeanImpl implements OrgBean {
 
@@ -466,54 +463,8 @@ public class OrgBeanImpl implements OrgBean {
 		
 		return ((List<EnergyMeterContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST));
 	}
-		
-	public int getFeatureLicense() throws Exception{
-
-//    	String orgidString = String.valueOf(orgId);
-    	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(AccountConstants.getFeatureLicenseFields())
-				.table(AccountConstants.getFeatureLicenseModule().getTableName());
-//				.andCondition(CriteriaAPI.getCondition(AccountConstants.getOrgIdField(AccountConstants.getFeatureLicenseModule()), orgidString, StringOperators.IS));
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (CollectionUtils.isNotEmpty(props)) {
-			Map<String, Object> modulemap=props.get(0);
-			return (int) modulemap.get("module");
-		}
-		return -1;
-	}
-
-	public long  addLicence(long summodule, long orgId) throws Exception{
-    	GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(AccountConstants.getFeatureLicenseModule().getTableName())
-				.fields(AccountConstants.getFeatureLicenseFields())
-				.andCustomWhere("ORGID = ?", orgId);
-				//				.andCondition(CriteriaAPI.getCondition(AccountConstants.getOrgIdField(AccountConstants.getFeatureLicenseModule()), orgidstring, StringOperators.IS));
-
-		Map<String, Object> props = new HashMap<>();
-		props.put("module", summodule);
-	 long value = updateBuilder.update(props);
-	 return value;
-	}
 	
-	public JSONObject orgInfo() throws Exception{
-		JSONObject result = new JSONObject();
-    	FacilioModule module = AccountConstants.getOrgInfoModule();
-    	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(AccountConstants.getOrgInfoFields())
-				.table(module.getTableName());
-//				.andCustomWhere("ORGID = ?", orgId);
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			for (Map<String, Object> prop : props) {
-				result.put(prop.get("name"), prop.get("value"));
-			}
-			
-		}
-			
-		return result;
-	}
+	
 	
 	public void testTransaction(String prefix) throws Exception
 	{

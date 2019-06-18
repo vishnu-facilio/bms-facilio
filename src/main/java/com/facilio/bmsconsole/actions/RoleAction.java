@@ -42,7 +42,7 @@ public class RoleAction extends ActionSupport {
 	public String roleList() throws Exception  {
 		
 		setSetup(SetupLayout.getRolesListLayout());
-		setRoles(AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getOrgId()).getRoles());
+		setRoles(AccountUtil.getRoleBean().getRoles(AccountUtil.getCurrentOrg().getOrgId()));
 //	x	setGroups(AccountUtil.getGroupBean().getAllOrgGroups(AccountUtil.getCurrentOrg().getOrgId()));
 		
 		ActionContext.getContext().getValueStack().set("roles", getRoles());

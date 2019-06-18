@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands.util;
 
-import com.facilio.accounts.bean.OrgBean;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
@@ -418,8 +417,20 @@ public class CommonCommandUtil {
     
     public static JSONObject getOrgInfo(long orgId) throws Exception {
     	
-    	OrgBean bean = (OrgBean) BeanFactory.lookup("OrgBean", orgId);	
-    	return bean.orgInfo();	
+    	JSONObject result = new JSONObject();
+    	FacilioModule module = AccountConstants.getOrgInfoModule();
+    	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(AccountConstants.getOrgInfoFields())
+				.table(module.getTableName())
+				.andCustomWhere("ORGID = ?", orgId);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			for (Map<String, Object> prop : props) {
+				result.put(prop.get("name"), prop.get("value"));
+			}
+		}
+		return result;		
 	}
     public static Boolean verifiedUser(long userID) throws Exception {
 //    	GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()

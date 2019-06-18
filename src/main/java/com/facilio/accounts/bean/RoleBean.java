@@ -32,7 +32,7 @@ public interface RoleBean {
 	
 	public List<Role> getRoles(Collection<Long> ids) throws Exception;
 	
-	public List<Role> getRoles() throws Exception;
+	public List<Role> getRoles(long orgId) throws Exception;
 	
 	public Map<String, Role> getRoleMap() throws Exception;
 	

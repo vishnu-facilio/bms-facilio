@@ -90,7 +90,7 @@ public class LookupSpecialTypeUtil {
 			return groupList;
 		}
 		else if (FacilioConstants.ContextNames.ROLE.equals(specialType)) {
-			List<Role> roles = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getId()).getRoles();
+			List<Role> roles = AccountUtil.getRoleBean().getRoles(AccountUtil.getCurrentOrg().getId());
 			return roles.stream().collect(Collectors.toMap(Role::getRoleId, Role::getName));
 		}
 		return null;
