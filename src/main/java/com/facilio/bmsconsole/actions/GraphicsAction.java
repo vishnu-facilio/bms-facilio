@@ -109,7 +109,7 @@ public class GraphicsAction extends FacilioAction{
 		Chain chain = ReadOnlyChainFactory.getGraphicsDetailsChain();
 		chain.execute(context);
 		
-		GraphicsContext graphicsContext = (GraphicsContext) context.get(FacilioConstants.ContextNames.RECORD);
+		GraphicsContext graphicsContext = (GraphicsContext) context.get(FacilioConstants.ContextNames.GRAPHICS);
 		setResult(FacilioConstants.ContextNames.GRAPHICS, graphicsContext);
 		
 		return SUCCESS;

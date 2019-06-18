@@ -992,7 +992,7 @@ public class ReadOnlyChainFactory {
 	public static Chain getGraphicsDetailsChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForGraphics());
-		c.addCommand(new GenericGetModuleDataDetailCommand());
+		c.addCommand(new GetGraphicsDetailCommand());
 		return c;
 	}
 }
