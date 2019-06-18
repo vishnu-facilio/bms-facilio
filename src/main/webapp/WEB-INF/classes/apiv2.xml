@@ -2542,18 +2542,9 @@
 			<param name="moduleName">graphics</param>
 			<param name="permission">CREATE,UPDATE</param>
 		</action>
-		<action name="graphicsCount" class="com.facilio.bmsconsole.actions.GraphicsAction" method="graphicsCount">
-			<param name="moduleName">graphics</param>
-			<param name="permission">READ</param>
-		</action>
 		<action name="delete" class="com.facilio.bmsconsole.actions.GraphicsAction" method="deleteGraphics">
 			<param name="moduleName">graphics</param>
 			<param name="permission">DELETE</param>
-		</action>
-		 <action name="*" class="com.facilio.bmsconsole.actions.GraphicsAction" method="getGraphicsList">
-			<param name="viewName">{1}</param>
-			<param name="moduleName">graphics</param>
-			<param name="permission">READ</param>
 		</action>
 
 	</package>

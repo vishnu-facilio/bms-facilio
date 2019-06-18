@@ -3124,7 +3124,7 @@ public class TransactionChainFactory {
 		public static Chain getDeleteGraphicsChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForGraphics());
-			c.addCommand(new GenericDeleteModuleDataCommand());
+			c.addCommand(new DeleteGraphicsCommand());
 			return c;
 		}
 		

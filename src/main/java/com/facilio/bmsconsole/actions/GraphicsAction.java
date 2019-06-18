@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
@@ -15,13 +14,6 @@ public class GraphicsAction extends FacilioAction{
 
 	private static final long serialVersionUID = 1L;
 
-	private String moduleName;
-	public String getModuleName() {
-		return moduleName;
-	}
-	public void setModuleName(String moduleName) {
-		this.moduleName = moduleName;
-	}
 	
 	private long recordId = -1;
 	public long getRecordId() {
@@ -31,51 +23,12 @@ public class GraphicsAction extends FacilioAction{
 		this.recordId = recordId;
 	}
 	
-    private List<Long> recordIds;
-	
-	public List<Long> getRecordIds() {
-		return recordIds;
-	}
-	public void setRecordIds(List<Long> recordIds) {
-		this.recordIds = recordIds;
-	}
-
-	private Boolean fetchCount;
-	public Boolean getFetchCount() {
-		if (fetchCount == null) {
-			return false;
-		}
-		return fetchCount;
-	}
-	public void setFetchCount(Boolean fetchCount) {
-		this.fetchCount = fetchCount;
-	}
-	
 	private GraphicsContext graphics;
 	public GraphicsContext getGraphics() {
 		return graphics;
 	}
 	public void setGraphics(GraphicsContext graphics) {
 		this.graphics = graphics;
-	}
-
-	private boolean includeParentFilter;
-
-	public boolean getIncludeParentFilter() {
-		return includeParentFilter;
-	}
-
-	public void setIncludeParentFilter(boolean includeParentFilter) {
-		this.includeParentFilter = includeParentFilter;
-	}
-	
-	private int status;
-	
-	public int getStatus() {
-		return status;
-	}
-	public void setStatus(int status) {
-		this.status = status;
 	}
 
 	
@@ -117,11 +70,11 @@ public class GraphicsAction extends FacilioAction{
 	
 	public String deleteGraphics() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordId != -1 ? Collections.singletonList(recordId) : recordIds);
+		context.put(FacilioConstants.ContextNames.RECORD_ID, recordId);
 		Chain chain = TransactionChainFactory.getDeleteGraphicsChain();
 		chain.execute(context);
 		
-		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, recordId != -1 ? Collections.singletonList(recordId) : recordIds);
+		setResult(FacilioConstants.ContextNames.RECORD_ID, recordId);
 		return SUCCESS;
 	}
 	
