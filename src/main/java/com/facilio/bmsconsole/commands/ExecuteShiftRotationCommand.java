@@ -59,20 +59,22 @@ public class ExecuteShiftRotationCommand implements Command {
 			if (!CollectionUtils.isEmpty(shiftRotationDetails)) {
 				for (ShiftRotationDetailsContext detail : shiftRotationDetails) {
 					for (Long userId : userIds) {
-						List<ShiftUserRelContext> shiftUsers = ShiftAPI.getShiftUserMapping(System.currentTimeMillis(),
-								System.currentTimeMillis(), userId, detail.getFromShiftId());
+						List<ShiftUserRelContext> shiftUsers = ShiftAPI.getShiftsForUser(userId);
 						if (!CollectionUtils.isEmpty(shiftUsers)) {
-							ShiftUserRelContext shiftUserContext = shiftUsers.get(0);
-							long shiftId = shiftUserContext.getShiftId();
-							if (shiftId > 0) {
-								ShiftUserRelContext shiftUser = new ShiftUserRelContext();
-								ShiftContext shift = ShiftAPI.getShift(detail.getToShiftId());
-								shiftUser.setStartTime(shift.getStartTime());
-								shiftUser.setEndTime(shift.getEndTime());
-								shiftUser.setShiftId(detail.getToShiftId());
-								shiftUser.setOuid(userId);
-								shiftUser.setId(shiftUserContext.getId());
-								shiftUserRel.add(shiftUser);
+							for (ShiftUserRelContext shiftUserContext : shiftUsers) {
+								long shiftId = shiftUserContext.getShiftId();
+								if (shiftId > 0) {
+									if (shiftId == detail.getFromShiftId()) {
+										ShiftUserRelContext shiftUser = new ShiftUserRelContext();
+										ShiftContext shift = ShiftAPI.getShift(detail.getToShiftId());
+										shiftUser.setStartTime(shift.getStartTime());
+										shiftUser.setEndTime(shift.getEndTime());
+										shiftUser.setShiftId(detail.getToShiftId());
+										shiftUser.setOuid(userId);
+										shiftUser.setId(shiftUserContext.getId());
+										shiftUserRel.add(shiftUser);
+									}
+								}
 							}
 						}
 					}

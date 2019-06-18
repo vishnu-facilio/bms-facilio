@@ -1202,5 +1202,16 @@ public class ShiftAPI {
 				.andCondition(CriteriaAPI.getCondition("SHIFT_ROTATION_ID", "shiftRotationId", String.valueOf(shiftRotationId), NumberOperators.EQUALS));
 		builder.delete();
 	}
+	
+	public static List<ShiftUserRelContext> getShiftsForUser(long ouId) throws Exception {
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getShiftUserRelModule().getTableName())
+				.select(FieldFactory.getShiftUserRelModuleFields());
+		builder.andCondition(CriteriaAPI.getCondition("ORG_USERID", "orgUserid", String.valueOf(ouId), NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> list = builder.get();
+		List<ShiftUserRelContext> shiftUserMapping = FieldUtil.getAsBeanListFromMapList(list, ShiftUserRelContext.class);
+		return shiftUserMapping;	
+	}
 
 }
