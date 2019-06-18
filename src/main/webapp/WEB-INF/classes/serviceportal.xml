@@ -32,7 +32,13 @@
 			</result>
 			</global-results>
 
-		
+		<action name="validateRegistration" class="com.facilio.auth.actions.FacilioAuthAction"
+		method="verifyEmail">
+			<param name="auth">false</param>
+			<result name="success" type="json">
+			<param name="includeProperties">invitation.*</param>
+			</result>
+		</action>
   	<action name="index" >
         <result>/service/index.jsp</result>
     </action>
