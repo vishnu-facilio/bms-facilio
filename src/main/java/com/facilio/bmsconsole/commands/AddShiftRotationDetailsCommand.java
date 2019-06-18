@@ -17,6 +17,7 @@ public class AddShiftRotationDetailsCommand implements Command{
 	public boolean execute(Context context) throws Exception {
 		ShiftRotationContext shiftRotation = (ShiftRotationContext) context.get(FacilioConstants.ContextNames.RECORD);
 		if (shiftRotation != null) {
+			ShiftAPI.addShiftRotationScheduler(shiftRotation);
 			List<ShiftRotationApplicableForContext> applicableFor = (List<ShiftRotationApplicableForContext>) context
 					.get(FacilioConstants.ContextNames.SHIFT_ROTATION_APPLICABLE_FOR);
 			List<ShiftRotationDetailsContext> shiftRotationDetails = (List<ShiftRotationDetailsContext>) context

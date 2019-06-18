@@ -763,10 +763,26 @@ public class ShiftAPI {
 		FacilioTimer.scheduleCalendarJob(shift.getId(), "AttendanceAbsentSchedulerJob", System.currentTimeMillis(), schedule, "facilio");
 	}
 	
+	private static void addShiftRotationSchedulers(ShiftRotationContext shiftRotation) throws Exception {
+		ScheduleInfo schedule = new ScheduleInfo();
+		if(shiftRotation.getSchedularFrequency() == 1) {
+			schedule.setFrequencyType(FrequencyType.DAILY);
+		} else if(shiftRotation.getSchedularFrequency() == 2) {
+			schedule.setFrequencyType(FrequencyType.WEEKLY);
+		} else if(shiftRotation.getSchedularFrequency() == 3){
+			schedule.setFrequencyType(FrequencyType.MONTHLY_DAY);
+		}
+		schedule.addValue(shiftRotation.getSchedularDay());
+		schedule.addTime(LocalTime.ofSecondOfDay(shiftRotation.getTimeOfSchedule()));
+		FacilioTimer.scheduleCalendarJob(shiftRotation.getId(), "ShiftRotationSchedulerJob", System.currentTimeMillis(), schedule, "facilio");
+	}
 	private static void deleteSchedulers(long id) throws Exception {
 		FacilioTimer.deleteJob(id, "AttendanceAbsentSchedulerJob");
 	}
-
+	
+	public static void deleteShiftRotationScheduler(long id) throws Exception {
+		FacilioTimer.deleteJob(id, "ShiftRotationSchedulerJob");
+	}
 	private static void checkValidation(ShiftContext shift) throws Exception {
 		if (StringUtils.isEmpty(shift.getName())) {
 			throw new IllegalArgumentException("Name is mandatory");
@@ -1083,15 +1099,9 @@ public class ShiftAPI {
 		return list;
 	}
 	
-	public static void addShiftRotation(ShiftRotationContext shiftRotation) throws Exception {
-		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		InsertRecordBuilder<ShiftRotationContext> builder = new InsertRecordBuilder<ShiftRotationContext>()
-				.module(modBean.getModule(FacilioConstants.ContextNames.SHIFT_ROTATION))
-				.fields(modBean.getAllFields(FacilioConstants.ContextNames.SHIFT_ROTATION))
-				.addRecord(shiftRotation);
-		builder.save();
-		
+	public static void addShiftRotationScheduler(ShiftRotationContext shiftRotation) throws Exception {
+		deleteShiftRotationScheduler(shiftRotation.getId());
+		addShiftRotationSchedulers(shiftRotation);
 	}
 	
 	public static void addShiftRotationApplicableFor(List<ShiftRotationApplicableForContext> applicableForList, long shiftRotationId) throws Exception {

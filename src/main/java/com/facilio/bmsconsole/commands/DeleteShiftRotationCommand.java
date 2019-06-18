@@ -15,6 +15,7 @@ public class DeleteShiftRotationCommand implements Command{
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		if(recordIds != null && !recordIds.isEmpty()) {
 			for(Long id: recordIds) {
+				ShiftAPI.deleteShiftRotationScheduler(id);
 				ShiftAPI.deleteShiftRotationApplicableFor(id);
 				ShiftAPI.deleteShiftRotationDetails(id);
 			}

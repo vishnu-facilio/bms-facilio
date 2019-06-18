@@ -25,13 +25,13 @@ public class ExecuteShiftRotationCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		ShiftRotationContext shiftRotation = (ShiftRotationContext) context.get(FacilioConstants.ContextNames.RECORD);
-		if (shiftRotation != null) {
+		long shiftRotationId = (long) context.get(FacilioConstants.ContextNames.RECORD);
+		if (shiftRotationId > 0) {
 			List<ShiftUserRelContext> shiftUserRel = new ArrayList<>();
 			List<ShiftRotationApplicableForContext> applicableFors = ShiftAPI
-					.getApplicableForShiftRotation(shiftRotation.getId());
+					.getApplicableForShiftRotation(shiftRotationId);
 			List<ShiftRotationDetailsContext> shiftRotationDetails = ShiftAPI
-					.getShiftRotationDetailsForShiftRotation(shiftRotation.getId());
+					.getShiftRotationDetailsForShiftRotation(shiftRotationId);
 			Set<Long> userIds = new HashSet();
 			if (!CollectionUtils.isEmpty(applicableFors)) {
 				for (ShiftRotationApplicableForContext applicableFor : applicableFors) {
