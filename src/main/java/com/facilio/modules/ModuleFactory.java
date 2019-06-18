@@ -83,6 +83,7 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.SHIPMENT, getShipmentModule());
 		moduleMap.put(FacilioConstants.ContextNames.ATTENDANCE, getAttendanceModule());
 		moduleMap.put(FacilioConstants.ContextNames.ATTENDANCE_TRANSACTIONS, getAttendanceTransactionModule());
+		moduleMap.put(FacilioConstants.ContextNames.GRAPHICS, getGraphicsModule());
 
 		return moduleMap;
 	}
@@ -2214,4 +2215,11 @@ public class ModuleFactory {
 		return module;
 	}
 	
+	public static FacilioModule getGraphicsModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("graphics");
+		module.setDisplayName("Graphics");
+		module.setTableName("Graphics");
+		return module;
+	}
 }

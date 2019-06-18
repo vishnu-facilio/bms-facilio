@@ -33,6 +33,7 @@ import com.facilio.bmsconsole.context.FCUContext;
 import com.facilio.bmsconsole.context.FloorContext;
 import com.facilio.bmsconsole.context.GatePassContext;
 import com.facilio.bmsconsole.context.GatePassLineItemsContext;
+import com.facilio.bmsconsole.context.GraphicsContext;
 import com.facilio.bmsconsole.context.HeatPumpContext;
 import com.facilio.bmsconsole.context.InventoryCategoryContext;
 import com.facilio.bmsconsole.context.InventoryContext;
@@ -1077,6 +1078,8 @@ public class FacilioConstants {
 		public static final String BREAK = "break";
 		public static final String BREAK_LIST = "break_list";
 		public static final String BREAK_TRANSACTION = "breakTransaction";
+		public static final String GRAPHICS = "graphics";
+		public static final String GRAPHICS_LIST = "graphics_list";
 
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
@@ -1195,6 +1198,7 @@ public class FacilioConstants {
 			classMap.put(ATTENDANCE_TRANSACTIONS, AttendanceTransactionContext.class);
 			classMap.put(SHIFT, ShiftContext.class);
 			classMap.put(BREAK, BreakContext.class);
+			classMap.put(GRAPHICS, GraphicsContext.class);
 			return classMap;
 		}
 		

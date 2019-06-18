@@ -3113,6 +3113,27 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteWorkflowCommand());
 			return c;
 		}
+		
+		public static Chain getAddGraphicsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForGraphics());
+			c.addCommand(new GenericAddModuleDataCommand());
+			return c;
+		}
+		
+		public static Chain getDeleteGraphicsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForGraphics());
+			c.addCommand(new GenericDeleteModuleDataCommand());
+			return c;
+		}
+		
+		public static Chain getUpdateGraphicsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForGraphics());
+			c.addCommand(new GenericUpdateModuleDataCommand());
+			return c;
+		}
 
 		public static Chain getAddScheduledWorkflowChain() {
 			Chain c = getDefaultChain();

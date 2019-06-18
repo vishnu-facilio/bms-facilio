@@ -339,6 +339,10 @@ public class SetTableNamesCommand implements Command {
 	public static SetTableNamesCommand getForShipmentLineItems() {
 		return new SetTableNamesCommand("shipmentLineItem", "Shipment_line_item");
 	}
+	
+	public static SetTableNamesCommand getForGraphics() {
+		return new SetTableNamesCommand("graphics", "Graphics");
+	}
 
 	public static void setForModule (Context context, String moduleName) {
 		//TODO handle all module and get from map
