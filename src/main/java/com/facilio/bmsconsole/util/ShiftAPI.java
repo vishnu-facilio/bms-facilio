@@ -867,20 +867,6 @@ public class ShiftAPI {
 		while (count < shiftUserMapping.size()) {
 			ShiftUserRelContext shiftUserRel = shiftUserMapping.get(count);
 			
-//			if (count == 0 && shiftUserRel.getStartTime() > startTime) {
-//				if (shiftUserRel.getStartTime() < endTime) {
-//					endTime = shiftUserRel.getStartTime() - 1;
-//				}
-//				
-//				ShiftUserRelContext add = new ShiftUserRelContext();
-//				add.setStartTime(startTime);
-//				add.setEndTime(endTime);
-//				add.setShiftId(shift.getId());
-//				add.setOuid(orgUserId);
-//				insertShiftUserMapping(add);
-//				break;
-//			}
-			
 			count++;
 			boolean containsTime = shiftUserRel.containsTime(startTime);
 			if (containsTime) {
@@ -891,7 +877,6 @@ public class ShiftAPI {
 				GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
 						.table(ModuleFactory.getShiftUserRelModule().getTableName())
 						.fields(fields)
-//						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getShiftUserRelModule()))
 						.andCondition(CriteriaAPI.getIdCondition(shiftUserRel.getId(), ModuleFactory.getShiftUserRelModule()));
 				
 				boolean shouldRearrangeShifts = endTime != shiftUserRel.getEndTime();
@@ -900,7 +885,15 @@ public class ShiftAPI {
 				} else {
 					prop.put("shiftId", shift.getId());
 				}
-				builder.update(prop);
+				if (shouldRearrangeShifts && shiftUserRel.getStartTime() > (startTime - 1)) {
+					// If start time is greater than end time, delete it
+					GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+							.table(ModuleFactory.getShiftBreakRelModule().getTableName())
+							.andCondition(CriteriaAPI.getIdCondition(shiftUserRel.getId(), ModuleFactory.getShiftUserRelModule()));
+					deleteBuilder.delete();
+				} else {
+					builder.update(prop);
+				}
 				prop.clear();
 				
 				if (shouldRearrangeShifts) {
@@ -921,15 +914,6 @@ public class ShiftAPI {
 					add.setOuid(orgUserId);
 					insertShiftUserMapping(add);
 				}
-//				else if (shouldRearrangeShifts && (count - 1) == 0) {
-//					// When changing first row, need to handle special case
-//					ShiftUserRelContext add = new ShiftUserRelContext();
-//					add.setStartTime(shiftUserRel.getStartTime());
-//					add.setEndTime(startTime - 1);
-//					add.setShiftId(shiftUserRel.getShiftId());
-//					add.setOuid(orgUserId);
-//					insertShiftUserMapping(add);
-//				}
 				break;
 			}
 		}
@@ -946,7 +930,6 @@ public class ShiftAPI {
 					GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
 							.table(ModuleFactory.getShiftUserRelModule().getTableName())
 							.fields(Collections.singletonList(FieldFactory.getField("startTime", "START_TIME", FieldType.NUMBER)))
-//							.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getShiftUserRelModule()))
 							.andCondition(CriteriaAPI.getIdCondition(shiftUserRel.getId(), ModuleFactory.getShiftUserRelModule()));
 					prop.put("startTime", endTime + 1);
 					builder.update(prop);
@@ -961,7 +944,6 @@ public class ShiftAPI {
 			GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 					.table(ModuleFactory.getShiftUserRelModule().getTableName())
 					.andCondition(CriteriaAPI.getIdCondition(deleteIds, ModuleFactory.getShiftUserRelModule()));
-//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getShiftUserRelModule()));
 			builder.delete();
 		}
 	}
