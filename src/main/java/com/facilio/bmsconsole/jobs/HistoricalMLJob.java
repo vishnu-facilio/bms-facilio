@@ -43,8 +43,8 @@ public class HistoricalMLJob extends FacilioJob {
 	@Override
 	public void execute(JobContext jc) throws Exception 
 	{
-		long startTime = 1546275600000L;//
-		long endTime = 1556643600000L;
+		long startTime = 1546286400000L;//
+		long endTime = 1556654400000L;
 		LOGGER.info("Job started");
 		try
 		{
