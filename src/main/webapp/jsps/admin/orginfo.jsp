@@ -1,4 +1,5 @@
 <%@page import="com.facilio.logging.SysOutLogger"%>
+<%@page import="com.facilio.accounts.bean.OrgBean"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
     <%@page import="com.facilio.accounts.util.AccountUtil,java.util.Comparator, com.facilio.accounts.dto.User,com.facilio.accounts.dto.Role, java.util.*, java.util.Iterator ,org.json.simple.JSONObject,org.json.simple.JSONArray,java.util.List, com.facilio.accounts.dto.Organization ,org.json.simple.JSONObject,com.facilio.accounts.impl.OrgBeanImpl, com.facilio.bmsconsole.commands.util.CommonCommandUtil, com.facilio.accounts.util.AccountUtil.FeatureLicense"%>
@@ -17,10 +18,12 @@
   	Map<String,Boolean>FEATUREMAPstring = new HashMap<>();
   	Map<String,Long> NEWMAP = new HashMap<String,Long>();
     if (orgid != null) {
-  	  org = AccountUtil.getOrgBean().getOrg(Long.parseLong(orgid));
-  	  result = CommonCommandUtil.getOrgInfo(Long.parseLong(orgid));
-  	  users = AccountUtil.getOrgBean().getAllOrgUsers(Long.parseLong(orgid));
-  	  roles =AccountUtil.getRoleBean(Long.parseLong(orgid)).getRoles();
+	long orgId=Long.parseLong(orgid);
+    	OrgBean orgBean =  AccountUtil.getOrgBean();
+  	  org =orgBean.getOrg(Long.parseLong(orgid));
+  	  result = AccountUtil.getOrgBean(orgId).orgInfo();
+  	  users = orgBean.getAllOrgUsers(orgId);
+  	  roles =AccountUtil.getRoleBean(orgId).getRoles();
   	  
   	 for(Long key :FEATUREMAPUNORDERED.keySet())
      {

@@ -85,7 +85,7 @@ public class AdminAction extends ActionSupport
 		newUser.setUserVerified(true);
 		newUser.setUserStatus(true);
 		try {
-			AccountUtil.getUserBean(orgId).inviteAdminConsoleUser(orgId, newUser);
+			AccountUtil.getTransactionalUserBean(orgId).inviteAdminConsoleUser(orgId, newUser);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

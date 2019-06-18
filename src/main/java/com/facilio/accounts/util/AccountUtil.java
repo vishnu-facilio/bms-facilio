@@ -92,6 +92,11 @@ public class AccountUtil {
 		return (UserBean) TransactionBeanFactory.lookup("UserBean");
 	}
 	
+	public static UserBean getTransactionalUserBean(long orgId) throws Exception {
+		return (UserBean) TransactionBeanFactory.lookup("UserBean",orgId);
+	}
+	
+	
 	public static OrgBean getOrgBean() throws Exception {
 		OrgBean orgBean = (OrgBean) BeanFactory.lookup("OrgBean");
 		return orgBean;
