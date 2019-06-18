@@ -769,10 +769,11 @@ public class ShiftAPI {
 			schedule.setFrequencyType(FrequencyType.DAILY);
 		} else if(shiftRotation.getSchedularFrequency() == 2) {
 			schedule.setFrequencyType(FrequencyType.WEEKLY);
+			schedule.addValue(shiftRotation.getSchedularDay());
 		} else if(shiftRotation.getSchedularFrequency() == 3){
 			schedule.setFrequencyType(FrequencyType.MONTHLY_DAY);
+			schedule.addValue(shiftRotation.getSchedularDay());
 		}
-		schedule.addValue(shiftRotation.getSchedularDay());
 		schedule.addTime(LocalTime.ofSecondOfDay(shiftRotation.getTimeOfSchedule()));
 		FacilioTimer.scheduleCalendarJob(shiftRotation.getId(), "ShiftRotationSchedulerJob", System.currentTimeMillis(), schedule, "facilio");
 	}
