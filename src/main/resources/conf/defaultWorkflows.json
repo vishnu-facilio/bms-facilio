@@ -46,7 +46,7 @@
         "101": {
         	"description" : "meanTimeBetweenTriggers",
         	"usage" : "rulesSummary",
-        	"workflow": "Number test(Number ruleId) 
+        	"workflow": "Map test(Number ruleId) 
         			  	{ 
         			  		{ 
                           cri = {

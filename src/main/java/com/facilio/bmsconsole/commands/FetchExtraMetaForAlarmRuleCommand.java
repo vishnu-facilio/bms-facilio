@@ -29,6 +29,8 @@ public class FetchExtraMetaForAlarmRuleCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
+		Boolean isSummary = (Boolean) context.get(FacilioConstants.ContextNames.IS_SUMMARY);
+		if (isSummary != null && isSummary ) {
 		AlarmRuleContext alarmRule = (AlarmRuleContext) context.get(FacilioConstants.ContextNames.ALARM_RULE);
 		ReadingRuleContext preRequsite = alarmRule.getPreRequsite();
 		
@@ -41,7 +43,7 @@ public class FetchExtraMetaForAlarmRuleCommand implements Command {
 		context.put(FacilioConstants.ContextNames.ALARM_RULE_THIS_WEEK, alarmsCreatedThusWeek);
 		context.put(FacilioConstants.ContextNames.ALARM_RULE_TOP_5_ASSETS, resourceVsAlarmCount);
 		context.put(FacilioConstants.ContextNames.ALARM_RULE_WO_SUMMARY, wfSummaryRes);
-		
+		}
 		return false;
 	}
 	private Map<String, Double> getWorkflowSummary(ReadingRuleContext rule) throws Exception {

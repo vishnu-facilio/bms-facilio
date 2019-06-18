@@ -698,6 +698,7 @@ public class FacilioConstants {
 		public static final String RULE_COUNT = "ruleCount";
 		public static final String RULES = "rules";
 		public static final String ALARM_RULE = "alarmRule";
+		public static final String IS_SUMMARY ="isSummary";
 		public static final String OLD_ALARM_RULE = "oldalarmRule";
 		public static final String ALARM_RULE_ACTIVE_ALARM = "alarmRuleActiveAlarm";
 		public static final String ALARM_RULE_THIS_WEEK = "alarmRuleThisWeek";

@@ -370,6 +370,7 @@ public class WorkflowRuleAction extends FacilioAction {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, ruleId);
+		context.put(FacilioConstants.ContextNames.IS_SUMMARY, getIsSummary());
 		Chain fetchAlarmChain = ReadOnlyChainFactory.fetchAlarmRuleWithActionsChain();
 		fetchAlarmChain.execute(context);
 		alarmRule =  (AlarmRuleContext) context.get(FacilioConstants.ContextNames.ALARM_RULE);
@@ -488,6 +489,17 @@ public class WorkflowRuleAction extends FacilioAction {
 		this.status = status;
 	}
 	
+	private Boolean isSummary;
+	
+	public Boolean getIsSummary() {
+		if (isSummary == null) {
+			return false;
+		}
+		return isSummary;
+	}
+	public void setIsSummary(Boolean isSummary) {
+		this.isSummary = isSummary;
+	}
 	public String changeWorkflowStatus() throws Exception {
 		WorkflowRuleContext workFlow = new WorkflowRuleContext();
 		workFlow.setStatus(status);

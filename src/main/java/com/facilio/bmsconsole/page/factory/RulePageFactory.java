@@ -74,7 +74,7 @@ public class RulePageFactory extends PageFactory {
 	
 	private static void addAssociatedWO(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.RULE_ASSOCIATED_WO);
-		cardWidget.addToLayoutParams(section, 24, 6);
+		cardWidget.addToLayoutParams(section, 24, 5);
 		section.addWidget(cardWidget);
 	}
 	
@@ -88,7 +88,6 @@ public class RulePageFactory extends PageFactory {
 	
 	private static void addRCAWidget(Section section) {
 		PageWidget rcaWidget = new PageWidget(WidgetType.RULE_RCA);
-		rcaWidget.addToLayoutParams(section, 24, 3);
 		section.addWidget(rcaWidget);
 	}
 	
