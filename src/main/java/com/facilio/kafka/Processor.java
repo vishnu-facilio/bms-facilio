@@ -227,10 +227,12 @@ public class Processor extends FacilioProcessor {
     }
 
     private void processLog(JSONObject payLoad,Long agentId){
-
+        if(isStage){
+            LOGGER.info(" agent_Log payload "+payLoad);
+        }
         if(isStage && (payLoad.containsKey(AgentKeys.COMMAND_STATUS) || payLoad.containsKey(AgentKeys.CONTENT))){
             int connectionCount = -1;
-            //checks for key status in payload and if it 'agent'-publishype
+            //checks for key status in payload and if it is of 'agent'-publishype
             if( payLoad.containsKey(AgentKeys.COMMAND_STATUS) && ! payLoad.containsKey(AgentKeys.COMMAND)){
 
                 Long status = (Long)payLoad.remove(AgentKeys.COMMAND_STATUS);
@@ -244,10 +246,10 @@ public class Processor extends FacilioProcessor {
                     if (connectionCount == -1) {
                         payLoad.put(AgentKeys.CONTENT, AgentContent.Connected.getKey());
                     } else {
-                        if (connectionCount == 1) {
+                        if (connectionCount == 1) { // first connection after reconnect - add restarted first
                             payLoad.put(AgentKeys.CONTENT, AgentContent.Restarted.getKey());
                             AgentUtil.putLog(payLoad,orgId, agentId,false);
-                        }
+                        } //add another with connection count
                         payLoad.put(AgentKeys.CONTENT, AgentContent.Connected.getKey()+connectionCount);
                     }
 
