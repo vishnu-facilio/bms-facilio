@@ -35,6 +35,7 @@ import com.facilio.bmsconsole.util.CommonAPI;
 import com.facilio.bmsconsole.util.CommonAPI.NotificationType;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.transaction.FacilioConnectionPool;
+import com.facilio.db.transaction.FacilioTransactionManager;
 import com.facilio.email.EmailUtil;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -61,6 +62,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.mail.Session;
 import javax.mail.internet.*;
+import javax.transaction.*;
 import java.io.*;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -235,7 +237,7 @@ public class AwsUtil
 		return clientInfo;
 	}
 
-	public static int updateClientVersion(String newVersion,boolean isNewClientBuild) {
+	public static int updateClientVersion(String newVersion,boolean isNewClientBuild) throws SystemException {
 		int updatedRows = 0;
 		if(newVersion != null) {
 			newVersion = newVersion.trim();
@@ -246,6 +248,7 @@ public class AwsUtil
 				if(checkIfVersionExistsInS3(newVersion)) {
 					com.facilio.accounts.dto.User currentUser = AccountUtil.getCurrentUser();
 					if (environment != null && currentUser != null) {
+						FacilioTransactionManager.INSTANCE.getTransactionManager().begin();
 						conn = FacilioConnectionPool.INSTANCE.getConnection();
 						pstmt = conn.prepareStatement("Update ClientApp set version=?, updatedTime=?, updatedBy=?, is_new_client_build=?  WHERE environment=?");
 						pstmt.setString(1, newVersion);
@@ -258,10 +261,12 @@ public class AwsUtil
 						if(updatedRows > 0) {
 						    LOGGER.info("Updated client version successfully");
                         }
+						FacilioTransactionManager.INSTANCE.getTransactionManager().commit();
 					}
 				}
-			} catch (SQLException | RuntimeException e) {
-				LOGGER.info("Exception while verifying password, ", e);
+			} catch (Exception e) {
+				FacilioTransactionManager.INSTANCE.getTransactionManager().rollback();
+				LOGGER.info("Exception while updating client version, ", e);
 			} finally {
 				DBUtil.closeAll(conn, pstmt);
 			}
