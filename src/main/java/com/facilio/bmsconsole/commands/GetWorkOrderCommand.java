@@ -1,5 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -11,13 +19,6 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class GetWorkOrderCommand implements Command {
 
@@ -49,6 +50,7 @@ public class GetWorkOrderCommand implements Command {
 				WorkOrderContext workOrder = workOrders.get(0);
 				
 				context.put(FacilioConstants.ContextNames.WORK_ORDER, workOrder);
+				context.put(FacilioConstants.ContextNames.RECORD, workOrder);
 				
 				TicketAPI.loadRelatedModules(workOrder);
 				TicketAPI.loadTicketLookups(Collections.singleton(workOrder));

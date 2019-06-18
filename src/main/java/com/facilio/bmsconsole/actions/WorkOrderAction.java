@@ -1243,7 +1243,8 @@ public class WorkOrderAction extends FacilioAction {
 		getWorkOrderChain.execute(context);
 
 		setWorkorder((WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER));
-		setActionForm((ActionForm) context.get(FacilioConstants.ContextNames.ACTION_FORM));
+		setAvailableStates((List<WorkflowRuleContext>) context.get("availableStates"));
+		setCurrentState((FacilioStatus) context.get("currentState"));
 	}
 	catch (Exception e) {
 		JSONObject inComingDetails = new JSONObject();
@@ -1255,8 +1256,22 @@ public class WorkOrderAction extends FacilioAction {
 	}
 	
 
+	private FacilioStatus currentState;
+	public FacilioStatus getCurrentState() {
+		return currentState;
+	}
+	public void setCurrentState(FacilioStatus currentState) {
+		this.currentState = currentState;
+	}
 
-	
+	List<WorkflowRuleContext> availableStates;
+	public List<WorkflowRuleContext> getAvailableStates() {
+		return availableStates;
+	}
+	public void setAvailableStates(List<WorkflowRuleContext> availableStates) {
+		this.availableStates = availableStates;
+	}
+
 	private WorkorderTemplate workorderTemplate;
 
 	public WorkorderTemplate getWorkorderTemplate() {
@@ -2205,13 +2220,15 @@ public class WorkOrderAction extends FacilioAction {
 	public String v2viewWorkOrder() throws Exception {
 		viewWorkOrder();
 		setResult(FacilioConstants.ContextNames.WORK_ORDER, workorder);
+		setResult(FacilioConstants.ContextNames.AVAILABLE_STATES, getAvailableStates());
+		setResult(FacilioConstants.ContextNames.CURRENT_STATE, getCurrentState());
+		
 		return SUCCESS;
 	}
 	
 	public String v2addWorkOrder() throws Exception {
 		addWorkOrder();
-		viewWorkOrder();
-		setResult(FacilioConstants.ContextNames.WORK_ORDER, workorder);
+		v2viewWorkOrder();
 		setResult(FacilioConstants.ContextNames.MODIFIED_TIME, workorder.getModifiedTime());
 		return SUCCESS;
 	}
@@ -2219,9 +2236,13 @@ public class WorkOrderAction extends FacilioAction {
 	public String v2updateWorkOrder() throws Exception {
 		updateWorkOrder();
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
-		setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
 		if (workOrders.size() == 1) {
-			setResult(FacilioConstants.ContextNames.MODIFIED_TIME, workOrders.get(0).getModifiedTime());
+			setWorkOrderId(workOrders.get(0).getId());
+			v2viewWorkOrder();
+			setResult(FacilioConstants.ContextNames.MODIFIED_TIME, workorder.getModifiedTime());
+		}
+		else {
+			setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
 		}
 		return SUCCESS;
 	}
@@ -2229,9 +2250,13 @@ public class WorkOrderAction extends FacilioAction {
 	public String v2assignWorkOrder() throws Exception {
 		assignWorkOrder();
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
-		setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
 		if (workOrders.size() == 1) {
-			setResult(FacilioConstants.ContextNames.MODIFIED_TIME, workOrders.get(0).getModifiedTime());
+			setWorkOrderId(workOrders.get(0).getId());
+			v2viewWorkOrder();
+			setResult(FacilioConstants.ContextNames.MODIFIED_TIME, workorder.getModifiedTime());
+		}
+		else {
+			setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
 		}
 
 		return SUCCESS;
@@ -2402,7 +2427,12 @@ public class WorkOrderAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.RESULT, "success");
 		setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
 		if (workOrders.size() == 1) {
-			setResult(FacilioConstants.ContextNames.MODIFIED_TIME, workOrders.get(0).getModifiedTime());
+			setWorkOrderId(workOrders.get(0).getId());
+			v2viewWorkOrder();
+			setResult(FacilioConstants.ContextNames.MODIFIED_TIME, workorder.getModifiedTime());
+		}
+		else {
+			setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
 		}
 		return SUCCESS;
 	}
@@ -2410,9 +2440,13 @@ public class WorkOrderAction extends FacilioAction {
 	public String v2closeWorkorder() throws Exception {
 		closeWorkOrder();
 		setResult(FacilioConstants.ContextNames.RESULT, "success");
-		setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
 		if (workOrders.size() == 1) {
-			setResult(FacilioConstants.ContextNames.MODIFIED_TIME, workOrders.get(0).getModifiedTime());
+			setWorkOrderId(workOrders.get(0).getId());
+			v2viewWorkOrder();
+			setResult(FacilioConstants.ContextNames.MODIFIED_TIME, workorder.getModifiedTime());
+		}
+		else {
+			setResult(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
 		}
 		return SUCCESS;
 	}
