@@ -264,7 +264,8 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 		CHART(1,"chart",WidgetChartContext.class),
 		LIST_VIEW(2,"view",WidgetListViewContext.class),
 		MAP(3,"map",WidgetListViewContext.class),
-		WEB(4,"web",WidgetWebContext.class);
+		WEB(4,"web",WidgetWebContext.class),
+		GRAPHICS(5,"graphics",WidgetGraphicsContext.class);
 		
 		private int value;
 		private String name;

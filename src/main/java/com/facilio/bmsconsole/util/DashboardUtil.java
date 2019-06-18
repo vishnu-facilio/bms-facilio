@@ -638,6 +638,7 @@ public class DashboardUtil {
 		fields.addAll(FieldFactory.getWidgetListViewFields());
 		fields.addAll(FieldFactory.getWidgetStaticFields());
 		fields.addAll(FieldFactory.getWidgetWebFields());
+		fields.addAll(FieldFactory.getWidgetGraphicsFields());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
@@ -650,6 +651,8 @@ public class DashboardUtil {
 				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetStaticModule().getTableName()+".ID")
 				.leftJoin(ModuleFactory.getWidgetWebModule().getTableName())		
 				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetWebModule().getTableName()+".ID")
+				.leftJoin(ModuleFactory.getWidgetGraphicsModule().getTableName())		
+				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetGraphicsModule().getTableName()+".ID")
 				.andCustomWhere(ModuleFactory.getWidgetModule().getTableName()+".DASHBOARD_ID = ?", dashboardId);
 		
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -676,6 +679,7 @@ public class DashboardUtil {
 		fields.addAll(FieldFactory.getWidgetListViewFields());
 		fields.addAll(FieldFactory.getWidgetStaticFields());
 		fields.addAll(FieldFactory.getWidgetWebFields());
+		fields.addAll(FieldFactory.getWidgetGraphicsFields());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
@@ -688,6 +692,8 @@ public class DashboardUtil {
 				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetStaticModule().getTableName()+".ID")
 				.leftJoin(ModuleFactory.getWidgetWebModule().getTableName())		
 				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetWebModule().getTableName()+".ID")
+				.leftJoin(ModuleFactory.getWidgetGraphicsModule().getTableName())		
+				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetGraphicsModule().getTableName()+".ID")
 				.andCustomWhere(ModuleFactory.getWidgetModule().getTableName()+".ID = ?", widgetId);
 		
 		List<Map<String, Object>> props = selectBuilder.get();

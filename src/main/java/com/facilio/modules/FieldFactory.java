@@ -3431,6 +3431,22 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getWidgetGraphicsFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getWidgetGraphicsModule();
+
+		fields.add(getIdField(module));
+
+		FacilioField graphicsId = new FacilioField();
+		graphicsId.setName("graphicsId");
+		graphicsId.setDataType(FieldType.NUMBER);
+		graphicsId.setColumnName("GRAPHICS_ID");
+		graphicsId.setModule(module);
+		fields.add(graphicsId);
+
+		return fields;
+	}
 
 	public static List<FacilioField> getReportFolderFields() {
 

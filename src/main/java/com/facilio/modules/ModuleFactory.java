@@ -958,6 +958,13 @@ public class ModuleFactory {
 		dashboardWigetModule.setExtendModule(getWidgetModule());
 		return dashboardWigetModule;
 	}
+	
+	public static FacilioModule getWidgetGraphicsModule() {
+		FacilioModule dashboardWigetModule = new FacilioModule();
+		dashboardWigetModule.setTableName("Widget_Graphics");
+		dashboardWigetModule.setExtendModule(getWidgetModule());
+		return dashboardWigetModule;
+	}
 
 	public static FacilioModule getFormulaModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();

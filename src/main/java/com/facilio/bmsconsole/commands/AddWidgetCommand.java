@@ -225,6 +225,16 @@ public class AddWidgetCommand implements Command {
 				insertBuilder.addRecord(props);
 				insertBuilder.save();
 			}
+			else if(context.get(FacilioConstants.ContextNames.WIDGET_TYPE).equals(WidgetType.GRAPHICS)) {
+				WidgetGraphicsContext widgetGraphicsContext = (WidgetGraphicsContext) widget;
+						insertBuilder = new GenericInsertRecordBuilder()
+						.table(ModuleFactory.getWidgetGraphicsModule().getTableName())
+						.fields(FieldFactory.getWidgetGraphicsFields());
+
+				props = FieldUtil.getAsProperties(widgetGraphicsContext);
+				insertBuilder.addRecord(props);
+				insertBuilder.save();
+			}
 			else if(context.get(FacilioConstants.ContextNames.WIDGET_TYPE).equals(WidgetType.CHART)) {
 				WidgetChartContext widgetChartContext = (WidgetChartContext) widget;
 						insertBuilder = new GenericInsertRecordBuilder()

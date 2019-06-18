@@ -43,6 +43,57 @@
          					return resMap; 
         			  	}"
         },
+		"2": {
+			"description" : "fetchGraphicsData",
+			"usage" : "graphics",
+			"workflow" : "Map fetchGraphicsData(List variables) 
+							  {
+								  resultMap = {};
+								  if (variables == null) {
+									  return resultMap;
+								  }
+								  for each index, variableObj in variables {
+									  if (variableObj.fetchType == \"record\") {
+										  fetchModule = Module(variableObj.module);
+										  recordObj = fetchModule.fetch([id == variableObj.id]);
+										  
+										  if (recordObj != null && recordObj.size() > 0) {
+											  resultMap[variableObj.key] = recordObj[0];
+										  }
+									  }
+									  else if (variableObj.fetchType == \"liveValue\") {
+										  fetchModule = Module(variableObj.module);
+										  
+										  db = {
+											criteria : [parentId == variableObj.parentId],
+											field : variableObj.select,
+											aggregation : \"lastValue\"
+										  };
+										  
+										  res = fetchModule.fetch(db);
+										  
+										  resultMap[variableObj.key] = res;
+									  }
+									  else if (variableObj.fetchType == \"aggrValue\") {
+										  fetchModule = Module(variableObj.module);
+										  
+										  date = NameSpace(\"date\");
+										month = date.getDateRange(variableObj.dateRange);
+										db = {
+											criteria : [parentId == variableObj.parentId && ttime == month],
+											field : variableObj.select,
+											aggregation : variableObj.aggr
+										};
+										
+										res = fetchModule.fetch(db);
+										
+										resultMap[variableObj.key] = res;
+									  }
+								  }
+									  
+								return resultMap; 
+				}"
+		},
         "101": {
         	"description" : "meanTimeBetweenTriggers",
         	"usage" : "rulesSummary",
