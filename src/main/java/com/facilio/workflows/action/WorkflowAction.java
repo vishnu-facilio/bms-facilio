@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioContext;
 import com.facilio.mv.util.MVUtil;
+import com.facilio.workflows.context.ScheduledWorkflowContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowUserFunctionContext;
 import com.facilio.workflows.functions.FacilioSystemFunctionNameSpace;
@@ -118,7 +119,16 @@ public class WorkflowAction extends FacilioAction {
 	}
 	private WorkflowNamespaceContext namespace;
 	private WorkflowUserFunctionContext userFunction;
+	private ScheduledWorkflowContext scheduledWorkflow;
 	
+	public ScheduledWorkflowContext getScheduledWorkflow() {
+		return scheduledWorkflow;
+	}
+
+	public void setScheduledWorkflow(ScheduledWorkflowContext scheduledWorkflow) {
+		this.scheduledWorkflow = scheduledWorkflow;
+	}
+
 	public WorkflowNamespaceContext getNamespace() {
 		return namespace;
 	}
@@ -268,6 +278,39 @@ public class WorkflowAction extends FacilioAction {
 			
 			setResult(WorkflowV2Util.WORKFLOW_CONTEXT, context.get(WorkflowV2Util.WORKFLOW_CONTEXT));
 		}
+		return SUCCESS;
+	}
+	
+	public String addScheduledWorkflow() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		
+		context.put(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT, scheduledWorkflow);
+		context.put(WorkflowV2Util.WORKFLOW_CONTEXT, scheduledWorkflow.getWorkflowContext());
+		Chain addWorkflowChain =  TransactionChainFactory.getAddScheduledWorkflowChain(); 
+		addWorkflowChain.execute(context);
+		setResult(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT, scheduledWorkflow);
+		return SUCCESS;
+	}
+	
+	public String updateScheduledWorkflow() throws Exception {
+		FacilioContext context = new FacilioContext();
+		
+		context.put(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT, scheduledWorkflow);
+		context.put(WorkflowV2Util.WORKFLOW_CONTEXT, scheduledWorkflow.getWorkflowContext());
+		Chain addWorkflowChain =  TransactionChainFactory.getUpdateScheduledWorkflowChain(); 
+		addWorkflowChain.execute(context);
+		setResult(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT, scheduledWorkflow);
+		return SUCCESS;
+	}
+	public String deleteScheduledWorkflow() throws Exception {
+		FacilioContext context = new FacilioContext();
+		
+		context.put(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT, scheduledWorkflow);
+		context.put(WorkflowV2Util.WORKFLOW_CONTEXT, scheduledWorkflow.getWorkflowContext());
+		Chain addWorkflowChain =  TransactionChainFactory.getDeleteScheduledWorkflowChain(); 
+		addWorkflowChain.execute(context);
+		setResult(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT, scheduledWorkflow);
 		return SUCCESS;
 	}
 }

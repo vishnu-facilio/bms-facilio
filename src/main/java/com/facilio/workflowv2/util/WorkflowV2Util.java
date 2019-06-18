@@ -66,6 +66,9 @@ public class WorkflowV2Util {
 	public static final String WORKFLOW_NAMESPACE_CONTEXT_LIST = "workflowNameSpaceList";
 	public static final String DEFAULT_WORKFLOW_ID = "defaultWorkflowId";
 	public static final String WORKFLOW_PARAMS = "workflowParams";
+	public static final String SCHEDULED_WORKFLOW_CONTEXT = "scheduledWorkflowContext";
+	
+	public static final String SCHEDULED_WORKFLOW_JOB_NAME = "ScheduledWorkflow";
 
 	static {
 		try {

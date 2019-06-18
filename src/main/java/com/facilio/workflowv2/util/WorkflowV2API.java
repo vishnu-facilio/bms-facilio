@@ -8,9 +8,11 @@ import org.json.simple.JSONObject;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.workflows.context.ScheduledWorkflowContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowContext.WorkflowUIMode;
@@ -18,11 +20,16 @@ import com.facilio.workflows.util.WorkflowUtil;
 
 public class WorkflowV2API {
 	
-	public static ScheduledWorkflowContext getScheduledWorkflowContext(long scheduledWorkflowId) throws Exception {
+	public static ScheduledWorkflowContext getScheduledWorkflowContext(long scheduledWorkflowId,Boolean isActive) throws Exception {
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getScheduledWorkflowFields())
 				.table(ModuleFactory.getScheduledWorkflowModule().getTableName())
 				.andCondition(CriteriaAPI.getIdCondition(scheduledWorkflowId, ModuleFactory.getScheduledWorkflowModule()));
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getScheduledWorkflowFields());
+		if(isActive != null) {
+			select.andCondition(CriteriaAPI.getCondition(fieldMap.get("isActive"), isActive.toString(), BooleanOperators.IS));
+		}
 		
 		List<Map<String, Object>> props = select.get();
 		

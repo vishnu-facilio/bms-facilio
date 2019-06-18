@@ -31,15 +31,18 @@ import com.facilio.mv.command.UpdateMVAjustmentVsBaselineCommand;
 import com.facilio.mv.command.UpdateMVBaselineCommand;
 import com.facilio.mv.command.UpdateMVPojectCommand;
 import com.facilio.workflows.command.AddNameSpaceCommand;
+import com.facilio.workflows.command.AddScheduledWorkflowCommand;
 import com.facilio.workflows.command.AddUserFunctionCommand;
 import com.facilio.workflows.command.AddWorkflowCommand;
 import com.facilio.workflows.command.DeleteNameSpaceCommand;
+import com.facilio.workflows.command.DeleteScheduledWorkflowCommand;
 import com.facilio.workflows.command.DeleteWorkflowCommand;
 import com.facilio.workflows.command.ExecuteWorkflowCommand;
 import com.facilio.workflows.command.GetDefaultWorkflowContext;
 import com.facilio.workflows.command.UpdateNameSpaceCommand;
 import com.facilio.workflows.command.UpdateUserFunctionCommand;
 import com.facilio.workflows.command.UpdateWorkflowCommand;
+import com.facilio.workflows.command.updateScheduledWorkflowCommand;
 
 public class TransactionChainFactory {
 
@@ -3111,6 +3114,24 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+		public static Chain getAddScheduledWorkflowChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddWorkflowCommand());
+			c.addCommand(new AddScheduledWorkflowCommand());
+			return c;
+		}
+		public static Chain getUpdateScheduledWorkflowChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateWorkflowCommand());
+			c.addCommand(new updateScheduledWorkflowCommand());
+			return c;
+		}
+		public static Chain getDeleteScheduledWorkflowChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new DeleteWorkflowCommand());
+			c.addCommand(new DeleteScheduledWorkflowCommand());
+			return c;
+		}
 }
 
 
