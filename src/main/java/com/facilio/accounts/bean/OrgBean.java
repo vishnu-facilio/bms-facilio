@@ -7,6 +7,8 @@ import com.facilio.db.criteria.Criteria;
 import java.util.List;
 import java.util.Map;
 
+import org.json.simple.JSONObject;
+
 public interface OrgBean {
 
 	public long createOrg(Organization org) throws Exception;
@@ -43,5 +45,11 @@ public interface OrgBean {
 	
 	public List getEnergyMeterList() throws Exception ;
 
+	public int getFeatureLicense() throws Exception;
+
+	public long addLicence(long summodule, long orgId) throws Exception;
+	
+	public JSONObject orgInfo() throws Exception;
+	
 	Organization getPortalOrg(Long portalId) throws Exception;
 }

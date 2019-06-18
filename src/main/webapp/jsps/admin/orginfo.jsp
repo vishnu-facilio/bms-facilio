@@ -1,3 +1,4 @@
+<%@page import="com.facilio.logging.SysOutLogger"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
     <%@page import="com.facilio.accounts.util.AccountUtil,java.util.Comparator, com.facilio.accounts.dto.User,com.facilio.accounts.dto.Role, java.util.*, java.util.Iterator ,org.json.simple.JSONObject,org.json.simple.JSONArray,java.util.List, com.facilio.accounts.dto.Organization ,org.json.simple.JSONObject,com.facilio.accounts.impl.OrgBeanImpl, com.facilio.bmsconsole.commands.util.CommonCommandUtil, com.facilio.accounts.util.AccountUtil.FeatureLicense"%>
@@ -19,7 +20,7 @@
   	  org = AccountUtil.getOrgBean().getOrg(Long.parseLong(orgid));
   	  result = CommonCommandUtil.getOrgInfo(Long.parseLong(orgid));
   	  users = AccountUtil.getOrgBean().getAllOrgUsers(Long.parseLong(orgid));
-  	  roles =AccountUtil.getRoleBean().getRoles(Long.parseLong(orgid));
+  	  roles =AccountUtil.getRoleBean(Long.parseLong(orgid)).getRoles();
   	  
   	 for(Long key :FEATUREMAPUNORDERED.keySet())
      {
@@ -53,7 +54,7 @@
   %>
 <%!
 public static boolean isFeatureEnabled(FeatureLicense featureLicense,long orgid) throws Exception {
-		return (AccountUtil.getOrgFeatureLicense(orgid) & featureLicense.getLicense()) == featureLicense.getLicense();
+	return (AccountUtil.getOrgFeatureLicense(orgid) & featureLicense.getLicense() ) == featureLicense.getLicense();
 	}%>
 
  
@@ -247,7 +248,7 @@ function myLicenseFunction() {
 			<label>Enter Password:</label><input type = "password" name = "password" id="password" /></br></br>
 			<label>Enter Role:</label><select name="roleId"  id ="roleId">
 			<% for(Role role : roles) {
-			if (!AccountUtil.getRoleBean().getRole(role.getRoleId()).getName().equalsIgnoreCase("Super Administrator")) {
+			if (!AccountUtil.getRoleBean(Long.parseLong(orgid)).getRole(role.getRoleId()).getName().equalsIgnoreCase("Super Administrator")) {
 			%>
 			<option value="<%= role.getId() %>"><%=role.getName()%></option>
 			<% }

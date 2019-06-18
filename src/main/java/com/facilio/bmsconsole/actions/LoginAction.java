@@ -289,7 +289,7 @@ public class LoginAction extends FacilioAction {
 		List<User> users = AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId());
 //		List<Group> groups = AccountUtil.getGroupBean().getMyGroups(AccountUtil.getCurrentUser().getId());
 		List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(AccountUtil.getCurrentOrg().getId(), true);
-		List<Role> roles = AccountUtil.getRoleBean().getRoles(AccountUtil.getCurrentOrg().getOrgId());
+		List<Role> roles = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getOrgId()).getRoles();
 		List<Organization> orgs = AccountUtil.getUserBean().getOrgs(AccountUtil.getCurrentUser().getUid());
 		
 		Map<String, Object> data = new HashMap<>();
@@ -374,7 +374,7 @@ public class LoginAction extends FacilioAction {
 		account.put("user", AccountUtil.getCurrentUser());
 		List<User> users = AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId());
 		List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(AccountUtil.getCurrentOrg().getId(), true);
-		List<Role> roles = AccountUtil.getRoleBean().getRoles(AccountUtil.getCurrentOrg().getOrgId());
+		List<Role> roles = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getOrgId()).getRoles();
 		List<Organization> orgs = AccountUtil.getUserBean().getOrgs(AccountUtil.getCurrentUser().getUid());
 
 		Map<String, Object> data = new HashMap<>();
