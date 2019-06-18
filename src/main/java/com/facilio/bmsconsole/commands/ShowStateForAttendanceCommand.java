@@ -38,6 +38,12 @@ public class ShowStateForAttendanceCommand implements Command {
 			long day = DateTimeUtil.getDayStartTimeOf(time);
 			List<AttendanceStateContext> attendancestateList = new ArrayList<>();
 			AttendanceContext attendance = getAttendance(userId, day);
+			List<ShiftUserRelContext> shiftUserMapping = ShiftAPI.getShiftUserMapping(time, time, userId, -1);
+			ShiftContext shift = null;
+			if (CollectionUtils.isNotEmpty(shiftUserMapping)) {
+				long shiftId = shiftUserMapping.get(0).getShiftId();
+				 shift = ShiftAPI.getShift(shiftId);
+			}
 			if (attendance == null) {
 				attendancestateList.add(new AttendanceStateContext(TransactionType.CHECKIN.name(), null));
 			} else if (attendance != null) {
@@ -51,18 +57,15 @@ public class ShowStateForAttendanceCommand implements Command {
 //				} else if (attendance.getLastBreakStartTime() < 0 && attendance.getCheckOutTime() < 0) {
 					// checked in
 //					attendancestateList.add(new AttendanceStateContext(TransactionType.CHECKOUT.name(), -1));
-					User user = attendance.getUser();
-					List<ShiftUserRelContext> shiftUserMapping = ShiftAPI.getShiftUserMapping(time, time, user.getId(), -1);
-					if (CollectionUtils.isNotEmpty(shiftUserMapping)) {
-						long shiftId = shiftUserMapping.get(0).getShiftId();
-						ShiftContext shift = ShiftAPI.getShift(shiftId);
+					if(shift!=null) {
 						List<BreakContext> breaks = ShiftAPI.getBreakssAttachedToShift(shift.getId());
 						if (!CollectionUtils.isEmpty(breaks)) {
 							for (BreakContext breakContext : breaks) {
 								attendancestateList.add(new AttendanceStateContext(TransactionType.BREAKSTART.name(), breakContext));
 							}
 						}
-					}
+				}
+					
 				} 
 //				else if (attendance.getLastBreakStartTime() > 0) {
 //					attendancestateList.add(new AttendanceStateContext(TransactionType.BREAKSTOP.name(),
@@ -84,6 +87,7 @@ public class ShowStateForAttendanceCommand implements Command {
 				}
 			}
 			context.put(FacilioConstants.ContextNames.RECORD, attendancestateList);
+			context.put(FacilioConstants.ContextNames.SHIFT, shift);
 		}
 		return false;
 	}

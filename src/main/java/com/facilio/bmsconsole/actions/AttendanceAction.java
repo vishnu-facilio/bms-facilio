@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.context.AttendanceContext;
 import com.facilio.bmsconsole.context.AttendanceTransactionContext;
 import com.facilio.bmsconsole.context.AttendanceStateContext;
 import com.facilio.bmsconsole.context.ItemContext;
+import com.facilio.bmsconsole.context.ShiftContext;
 import com.facilio.bmsconsole.context.ShipmentContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -217,6 +218,14 @@ public class AttendanceAction extends ModuleAction{
 	public void setAttendanceTransitions(List<AttendanceStateContext> attendanceTransitions) {
 		this.attendanceTransitions = attendanceTransitions;
 	}
+	
+	private ShiftContext shift;
+	public ShiftContext getShift() {
+		return shift;
+	}
+	public void setShift(ShiftContext shift) {
+		this.shift = shift;
+	}
 	public String showStateForAttendance() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.USER_ID, getUserId());
@@ -224,6 +233,8 @@ public class AttendanceAction extends ModuleAction{
 		Chain chain = TransactionChainFactory.getAttendanceTransitionState();
 		chain.execute(context);
 		attendanceTransitions = (List<AttendanceStateContext>) context.get(FacilioConstants.ContextNames.RECORD);
+		shift =  (ShiftContext) context.get(FacilioConstants.ContextNames.SHIFT);
+		setResult(FacilioConstants.ContextNames.SHIFT, shift);
 		setResult(FacilioConstants.ContextNames.RECORD, attendanceTransitions);
 		return SUCCESS;
 	}
