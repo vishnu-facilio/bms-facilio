@@ -167,11 +167,11 @@ public class Processor extends FacilioProcessor {
                                     break;
                                 case ack:
                                     ackUtil.processAck(payLoad, orgId);
-                                    processLog(payLoad,agent.getId());
+                                    processLog(payLoad,agent.getId(),recordId);
                                     break;
                                 case agent:
                                     numberOfRows = agentUtil.processAgent(payLoad,agentName);
-                                    processLog(payLoad,agent.getId());
+                                    processLog(payLoad,agent.getId(),recordId);
                                     break;
                                 case event:
                                     alarmCreated = eventUtil.processEvents(record.getTimeStamp(), payLoad, record.getPartitionKey(), orgId, eventRules);
@@ -226,9 +226,9 @@ public class Processor extends FacilioProcessor {
         }
     }
 
-    private void processLog(JSONObject payLoad,Long agentId){
+    private void processLog(JSONObject payLoad,Long agentId,String recordId){
         if(isStage){
-            LOGGER.info(" agent_Log payload "+payLoad);
+            LOGGER.info(recordId+" agent_Log payload "+payLoad);
         }
         if((payLoad.containsKey(AgentKeys.COMMAND_STATUS) || payLoad.containsKey(AgentKeys.CONTENT))){
             int connectionCount = -1;
