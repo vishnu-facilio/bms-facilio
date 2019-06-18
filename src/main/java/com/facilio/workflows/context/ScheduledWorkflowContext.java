@@ -27,7 +27,14 @@ public class ScheduledWorkflowContext {
 	String timeZone = null;
 	Boolean isActive;
 	long startTime;
+	String name;
 	
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
 	private ScheduleInfo schedule;
 	public ScheduleInfo getSchedule() {
 		return schedule;

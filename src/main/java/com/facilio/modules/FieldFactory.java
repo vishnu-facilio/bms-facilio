@@ -1346,6 +1346,7 @@ public class FieldFactory {
 		/*fields.add(getOrgIdField(module));*/
 		fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.LOOKUP));
 		fields.add(getField("timeZone", "TIMEZONE", module, FieldType.STRING));
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
 		fields.add(getField("isActive", "IS_ACTIVE", module, FieldType.BOOLEAN));
 		fields.add(getField("scheduleJson", "SCHEDULE_INFO", module, FieldType.STRING));
 		fields.add(getField("startTime", "START_TIME", module, FieldType.DATE_TIME));
