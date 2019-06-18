@@ -354,7 +354,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			if (FieldUtil.isSystemFieldsPresent(module)) {
 				selectFields.addAll(FieldFactory.getSystemFields(module));
 			}
-			if (FieldUtil.isBaseEntityModule(module)) {
+			if (FieldUtil.isBaseEntityRootModule(module)) {
 				selectFields.addAll(FieldFactory.getBaseModuleSystemFields(module));
 			}
 			if (module.isTrashEnabled()) {

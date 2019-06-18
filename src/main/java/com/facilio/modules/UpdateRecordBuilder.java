@@ -196,7 +196,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		if (FieldUtil.isSystemFieldsPresent(module)) {
 			moduleProps.keySet().removeAll(FieldFactory.getSystemFieldNames());
 		}
-		if (FieldUtil.isBaseEntityModule(module)) {
+		if (FieldUtil.isBaseEntityRootModule(module)) {
 			moduleProps.keySet().removeAll(FieldFactory.getBaseModuleSystemFieldNames());
 		}
 	}
@@ -324,7 +324,7 @@ public class UpdateRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		if (FieldUtil.isSystemFieldsPresent(module)) {
 			updateFields.addAll(FieldFactory.getSystemFields(module));
 		}
-		if (FieldUtil.isBaseEntityModule(module)) {
+		if (FieldUtil.isBaseEntityRootModule(module)) {
 			updateFields.addAll(FieldFactory.getBaseModuleSystemFields(module));
 		}
 		

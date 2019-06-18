@@ -1,5 +1,12 @@
 package com.facilio.modules;
 
+import java.lang.reflect.InvocationTargetException;
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.ModuleLocalIdUtil;
@@ -7,13 +14,6 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.InsertBuilderIfc;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
-
-import java.lang.reflect.InvocationTargetException;
-import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implements InsertBuilderIfc<E> {
 	
@@ -160,7 +160,7 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 					currentFields.addAll(FieldFactory.getSystemFields(currentModule));
 				}
 				
-				if (FieldUtil.isBaseEntityModule(currentModule)) {
+				if (FieldUtil.isBaseEntityRootModule(currentModule)) {
 					currentFields.addAll(FieldFactory.getBaseModuleSystemFields(currentModule));
 				}
 				

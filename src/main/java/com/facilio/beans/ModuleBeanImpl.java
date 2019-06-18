@@ -734,7 +734,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			return FieldFactory.getSystemField(fieldName, module);
 		}
 		
-		if (FieldUtil.isBaseEntityModule(module) && FieldFactory.isBaseModuleSystemField(fieldName)) {
+		if (FieldUtil.isBaseEntityRootModule(module) && FieldFactory.isBaseModuleSystemField(fieldName)) {
 			return FieldFactory.getBaseModuleSystemField(fieldName, module);
 		}
 		
