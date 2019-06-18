@@ -199,7 +199,7 @@ public class Processor extends FacilioProcessor {
 
 
                         }
-                        if(isStage && agent != null) {
+                        if( agent != null) {
                             agentUtil.addAgentMetrics(dataLength, agent.getId(), publishType.getKey());
                         }
 
@@ -230,7 +230,7 @@ public class Processor extends FacilioProcessor {
         if(isStage){
             LOGGER.info(" agent_Log payload "+payLoad);
         }
-        if(isStage && (payLoad.containsKey(AgentKeys.COMMAND_STATUS) || payLoad.containsKey(AgentKeys.CONTENT))){
+        if((payLoad.containsKey(AgentKeys.COMMAND_STATUS) || payLoad.containsKey(AgentKeys.CONTENT))){
             int connectionCount = -1;
             //checks for key status in payload and if it is of 'agent'-publishype
             if( payLoad.containsKey(AgentKeys.COMMAND_STATUS) && ! payLoad.containsKey(AgentKeys.COMMAND)){
@@ -289,9 +289,6 @@ public class Processor extends FacilioProcessor {
 
     private void processTimeSeries(FacilioRecord record) throws Exception {
         long orgCheck = 78;
-        if(isStage && orgCheck == orgId){
-            LOGGER.info("   Debugging log -data in ProcessTimeSeries--"+record.getData());
-        }
         ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD",orgId);
         bean.processTimeSeries(getConsumer(), record);
     }

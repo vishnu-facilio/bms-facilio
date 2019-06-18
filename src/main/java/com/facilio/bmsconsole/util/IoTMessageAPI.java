@@ -360,10 +360,7 @@ public class IoTMessageAPI {
 			mqttClient.connect();
 			if(mqttClient.getConnectionStatus() == AWSIotConnectionStatus.CONNECTED) {
 				mqttClient.publish(new AWSIotMessage(topic, AWSIotQos.QOS0, object.toJSONString()));
-				if(isStage) {
-					LOGGER.info("debugging log -object from publishIotMessage--"+object.toJSONString());
-					AgentUtil.putLog(object, AccountUtil.getCurrentOrg().getOrgId(), Long.parseLong(object.get(AgentKeys.AGENT_ID).toString()), true);
-				}
+				AgentUtil.putLog(object, AccountUtil.getCurrentOrg().getOrgId(), Long.parseLong(object.get(AgentKeys.AGENT_ID).toString()), true);
 			}
 		} catch (AWSIotException e) {
 			LOGGER.error("Exception while publishing message ", e);
