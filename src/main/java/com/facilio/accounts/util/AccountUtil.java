@@ -188,6 +188,7 @@ public class AccountUtil {
 		NEW_FORM (65536),
 		CONNECTEDAPPS (131072),
 		M_AND_V (262144),
+		GRAPHICS (524288)
 		;
 		
 		
