@@ -928,6 +928,13 @@ public class UserBeanImpl implements UserBean {
 		fields.addAll(AccountConstants.getUserFields());
 		fields.addAll(AccountConstants.getOrgUserFields());
 		
+		FacilioField orgId = new FacilioField();
+		orgId.setName("orgId");
+		orgId.setDataType(FieldType.NUMBER);
+		orgId.setColumnName("ORGID");
+		orgId.setModule(AccountConstants.getOrgUserModule());
+		fields.add(orgId);
+		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Users")

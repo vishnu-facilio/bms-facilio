@@ -51,7 +51,7 @@ public class GraphicsAction extends FacilioAction{
 		Chain chain = TransactionChainFactory.getAddGraphicsChain();
 		chain.execute(context);
 		
-		setResult(FacilioConstants.ContextNames.GRAPHICS, context.get(FacilioConstants.ContextNames.RECORD));
+		setResult(FacilioConstants.ContextNames.GRAPHICS, graphics);
 		return SUCCESS;
 	}
 	

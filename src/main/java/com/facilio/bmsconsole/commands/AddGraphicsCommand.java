@@ -31,9 +31,8 @@ public boolean execute(Context context) throws Exception {
 				
 		insertRecordBuilder.save();
 		
-		if(prop.containsKey("id")) {
-			graphicsContext.setId((Long)prop.get("id"));
-		}
+		long recorId = (Long) prop.get("id");
+		graphicsContext.setId(recorId);
 		
 		return false;
 	}
