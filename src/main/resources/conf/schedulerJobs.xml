@@ -63,5 +63,8 @@
 
 	 <!-- Facilio DemoJob -->
 	 <job name='DemoRollUpJob' classname='com.facilio.bmsconsole.jobs.DemoRollUpJob' transcationTimeout='36000000'/> 
+	 
+	 <!-- scheduled Action jobs -->
+	 <job name='ScheduledWorkflow' classname='com.facilio.bmsconsole.jobs.ScheduledWorkflowJob' transcationTimeout='36000000'/>
 
 </scheduler>

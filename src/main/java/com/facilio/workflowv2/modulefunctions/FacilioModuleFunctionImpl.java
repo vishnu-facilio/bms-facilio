@@ -78,7 +78,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		}
 		
 		if(criteria == null) {
-			throw new Exception("criteria cannot be null during update");
+			throw new RuntimeException("criteria cannot be null during update");
 		}
 		
 		Map<String, Object> updateMap = (Map<String, Object>)objects.get(2);

@@ -33,6 +33,7 @@ import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2API;
+import com.facilio.workflowv2.util.WorkflowV2Util;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.chain.Chain;
@@ -939,7 +940,6 @@ public enum ActionType {
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception 
 		{
 			
-			
 			WorkflowContext workflowContext = WorkflowUtil.getWorkflowContext((Long)obj.get("resultWorkflowId"));
 			workflowContext.setLogNeeded(true);
 			
@@ -947,7 +947,13 @@ public enum ActionType {
 			
 			List<Object> currentRecordList = new ArrayList<>();
 			currentRecordList.add(props);
-			WorkflowV2API.executeWorkflow(workflowContext, currentRecordList, null, false, false);
+			
+			context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflowContext);
+			context.put(WorkflowV2Util.WORKFLOW_PARAMS, currentRecordList);
+			
+			Chain chain = TransactionChainFactory.getExecuteWorkflowChain();
+			
+			chain.execute(context);
 			
 //			Map<String,Object> currentRecordMap = new HashMap<>();
 //			

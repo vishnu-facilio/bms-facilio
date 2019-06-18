@@ -142,7 +142,14 @@ public class WorkflowAction extends FacilioAction {
 
 	public String runWorkflow() throws Exception {
 		try {
-			workflow = WorkflowV2API.executeWorkflow(workflow, paramList);
+			
+			FacilioContext context = new FacilioContext();
+			context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
+			context.put(WorkflowV2Util.WORKFLOW_PARAMS, paramList);
+			
+			Chain chain = TransactionChainFactory.getExecuteWorkflowChain();
+			
+			chain.execute(context);
 		}
 	    catch(Exception e) {
 	    	log.log(Priority.ERROR, e);
@@ -251,7 +258,15 @@ public class WorkflowAction extends FacilioAction {
 	
 	public String getDefaultWorkflowResultV2() throws Exception {
 		if(defaultWorkflowId > -1) {
-			setResult(WorkflowV2Util.WORKFLOW_CONTEXT, WorkflowV2API.getDefaultWorkflowResult(defaultWorkflowId, paramList));
+			FacilioContext context = new FacilioContext();
+			context.put(WorkflowV2Util.DEFAULT_WORKFLOW_ID, defaultWorkflowId);
+			context.put(WorkflowV2Util.WORKFLOW_PARAMS, paramList);
+			
+			Chain chain = TransactionChainFactory.getExecuteDefaultWorkflowChain();
+			
+			chain.execute(context);
+			
+			setResult(WorkflowV2Util.WORKFLOW_CONTEXT, context.get(WorkflowV2Util.WORKFLOW_CONTEXT));
 		}
 		return SUCCESS;
 	}

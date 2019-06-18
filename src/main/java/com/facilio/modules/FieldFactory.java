@@ -1325,6 +1325,19 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	
+	public static List<FacilioField> getScheduledWorkflowFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getScheduledWorkflowModule();
+		
+		fields.add(getIdField(module));
+		/*fields.add(getOrgIdField(module));*/
+		fields.add(getField("workflowId", "WORKFLOW_ID", module, FieldType.LOOKUP));
+		fields.add(getField("timeZone", "TIMEZONE", module, FieldType.STRING));
+		
+		return fields;
+	}
+	
 	public static List<FacilioField> getApprovalRuleFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getApprovalRulesModule();

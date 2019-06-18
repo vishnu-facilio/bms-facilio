@@ -185,7 +185,7 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     		}
     	}
     	catch(Exception e) {
-    		throw new RuntimeException(e);
+    		throw new RuntimeException(e.getCause());
     	}
     }
     

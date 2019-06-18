@@ -356,6 +356,15 @@ public class ModuleFactory {
 		return scheduledRule;
 	}
 	
+	public static FacilioModule getScheduledWorkflowModule() {
+		FacilioModule scheduledRule = new FacilioModule();
+		scheduledRule.setName("ScheduledWorkflow");
+		scheduledRule.setDisplayName("Scheduled Workflow");
+		scheduledRule.setTableName("Scheduled_Workflow");
+		
+		return scheduledRule;
+	}
+	
 	public static FacilioModule getApprovalRulesModule() {
 		FacilioModule approvalRules = new FacilioModule();
 		approvalRules.setName("approvalRules");
@@ -1133,6 +1142,8 @@ public class ModuleFactory {
 		module.setTableName("Workflow");
 		return module;
 	}
+	
+	
 	public static FacilioModule getWorkflowUserFunctionModule() {
 		FacilioModule module = new FacilioModule();
 		module.setExtendModule(getWorkflowModule());

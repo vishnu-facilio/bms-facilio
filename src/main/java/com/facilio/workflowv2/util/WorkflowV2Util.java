@@ -64,6 +64,8 @@ public class WorkflowV2Util {
 	public static final String WORKFLOW_USER_FUNCTION_CONTEXT = "workflowUserFunction";
 	public static final String WORKFLOW_NAMESPACE_CONTEXT = "workflowNameSpace";
 	public static final String WORKFLOW_NAMESPACE_CONTEXT_LIST = "workflowNameSpaceList";
+	public static final String DEFAULT_WORKFLOW_ID = "defaultWorkflowId";
+	public static final String WORKFLOW_PARAMS = "workflowParams";
 
 	static {
 		try {
@@ -157,7 +159,7 @@ public class WorkflowV2Util {
 		}
 	}
 
-	public static List<Object> getParamList(DataTypeSpecificFunctionContext ctx, boolean isDataTypeSpecificFunction,WorkflowFunctionVisitor facilioWorkflowFunctionVisitor, Value value) throws Exception {
+	public static List<Object> getParamList(DataTypeSpecificFunctionContext ctx, boolean isDataTypeSpecificFunction,WorkflowFunctionVisitor facilioWorkflowFunctionVisitor, Value value) throws RuntimeException {
 		List<Object> paramValues = new ArrayList<>();
 		if (isDataTypeSpecificFunction) {
 			paramValues.add(value.asObject());

@@ -35,6 +35,8 @@ import com.facilio.workflows.command.AddUserFunctionCommand;
 import com.facilio.workflows.command.AddWorkflowCommand;
 import com.facilio.workflows.command.DeleteNameSpaceCommand;
 import com.facilio.workflows.command.DeleteWorkflowCommand;
+import com.facilio.workflows.command.ExecuteWorkflowCommand;
+import com.facilio.workflows.command.GetDefaultWorkflowContext;
 import com.facilio.workflows.command.UpdateNameSpaceCommand;
 import com.facilio.workflows.command.UpdateUserFunctionCommand;
 import com.facilio.workflows.command.UpdateWorkflowCommand;
@@ -3096,6 +3098,18 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain getExecuteDefaultWorkflowChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new GetDefaultWorkflowContext());
+			c.addCommand(new ExecuteWorkflowCommand());
+			return c;
+		}
+		
+		public static Chain getExecuteWorkflowChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ExecuteWorkflowCommand());
+			return c;
+		}
 
 }
 
