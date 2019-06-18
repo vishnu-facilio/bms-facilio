@@ -4,13 +4,10 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.GraphicsContext;
-import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -84,48 +81,17 @@ public class GraphicsAction extends FacilioAction{
 	
 	public String getGraphicsList() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.FETCH_COUNT, getFetchCount());
-		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, "graphice");
-		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "GRAPHICS.ID asc");
  		
- 		if(getFilters() != null)
- 		{	
-	 		JSONParser parser = new JSONParser();
-	 		JSONObject json = (JSONObject) parser.parse(getFilters());
-	 		context.put(FacilioConstants.ContextNames.FILTERS, json);
-	 		context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
-	 		
-		}
- 		if (getSearch() != null) {
- 			JSONObject searchObj = new JSONObject();
- 			searchObj.put("fields", "graphics.name");
- 			searchObj.put("query", getSearch());
-	 		context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
- 		}
- 		JSONObject pagination = new JSONObject();
- 	 	pagination.put("page", getPage());
- 	 	pagination.put("perPage", getPerPage());
- 	 	if (getPerPage() < 0) {
- 	 		pagination.put("perPage", 5000);
- 	 	}
- 	 	
-		Chain chain = ReadOnlyChainFactory.getGraphicsListChain();
-		chain.execute(context);
+ 		
+		List<GraphicsContext> graphicsList = (List<GraphicsContext>) context.get(FacilioConstants.ContextNames.GRAPHICS_LIST);
+		setResult(FacilioConstants.ContextNames.GRAPHICS_LIST, graphicsList);
 		
-		if (getFetchCount()) {
-			setResult(FacilioConstants.ContextNames.RECORD_COUNT,(Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
-		}
-		else {
-			List<GraphicsContext> graphicsList = (List<GraphicsContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
-			setResult(FacilioConstants.ContextNames.GRAPHICS_LIST, graphicsList);
-		}
 		return SUCCESS;
 	}
 
 	public String addGraphics() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD, graphics);
+		context.put(FacilioConstants.ContextNames.GRAPHICS, graphics);
 		
 		Chain chain = TransactionChainFactory.getAddGraphicsChain();
 		chain.execute(context);
@@ -163,16 +129,11 @@ public class GraphicsAction extends FacilioAction{
 	
 	public String updateGraphics() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
-		context.put(FacilioConstants.ContextNames.RECORD, graphics);
-		context.put(FacilioConstants.ContextNames.ID, graphics.getId());
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(graphics.getId()));
-		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
+		context.put(FacilioConstants.ContextNames.GRAPHICS, graphics);
 
 		Chain updateGraphicsChain = TransactionChainFactory.getUpdateGraphicsChain();
 		updateGraphicsChain.execute(context);
 		setRecordId(graphics.getId());
-		getGraphicsDetails();
 		setResult(FacilioConstants.ContextNames.GRAPHICS, graphics);
 		return SUCCESS;
 	}

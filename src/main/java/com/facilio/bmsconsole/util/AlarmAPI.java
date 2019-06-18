@@ -457,9 +457,11 @@ public class AlarmAPI {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.READING_ALARM);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		SelectRecordsBuilder<ReadingAlarmContext> selectBuilder = getReadingAlarmsSelectBuilder(startTime, endTime, isWithAnomaly, fields, fieldMap)
-																	.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), resourceId, PickListOperators.IS))
-																	;
+		SelectRecordsBuilder<ReadingAlarmContext> selectBuilder = getReadingAlarmsSelectBuilder(startTime, endTime, isWithAnomaly, fields, fieldMap);
+		if (resourceId != null && resourceId.size() > 0) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), resourceId, PickListOperators.IS));
+		}
+
 		boolean ruleAvailable = false;
 		if (ruleId != null && ruleId != -1) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("ruleId"), String.valueOf(ruleId), NumberOperators.EQUALS));

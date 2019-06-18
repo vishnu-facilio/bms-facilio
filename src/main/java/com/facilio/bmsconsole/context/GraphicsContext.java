@@ -1,8 +1,7 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.modules.ModuleBaseWithCustomFields;
 
-public class GraphicsContext extends ModuleBaseWithCustomFields {
+public class GraphicsContext {
 	/**
 	 * 
 	 */
@@ -52,8 +51,24 @@ public class GraphicsContext extends ModuleBaseWithCustomFields {
 		this.assetCategoryId = assetCategoryId;
 	}
 
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
+
+	public long getOrgId() {
+		return orgId;
+	}
+	public void setOrgId(long orgId) {
+		this.orgId = orgId;
+	}
+
 	private long assetId;
 	private long assetCategoryId;
+	private long id;
+	private long orgId;
 
 	
 }

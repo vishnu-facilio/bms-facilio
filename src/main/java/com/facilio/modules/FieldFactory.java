@@ -6026,4 +6026,18 @@ public class FieldFactory {
 		
 		return fields;
 	}
+	
+	public static List<FacilioField> getGraphicsFields() {
+		FacilioModule module = ModuleFactory.getGraphicsModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getField("id", "ID", module, FieldType.ID));
+		fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
+		fields.add(getField("canvas", "CANVAS", module, FieldType.STRING));
+		fields.add(getField("variables", "VARIABLES", module, FieldType.STRING));
+		fields.add(getField("assetId", "ASSET_ID", module, FieldType.NUMBER));
+		fields.add(getField("assetCategoryId", "ASSET_CATEGORY_ID", module, FieldType.NUMBER));
+		
+		return fields;
+	}
 }

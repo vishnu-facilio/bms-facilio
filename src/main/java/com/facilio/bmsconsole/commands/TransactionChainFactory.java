@@ -3117,7 +3117,7 @@ public class TransactionChainFactory {
 		public static Chain getAddGraphicsChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForGraphics());
-			c.addCommand(new GenericAddModuleDataCommand());
+			c.addCommand(new AddGraphicsCommand());
 			return c;
 		}
 		
@@ -3131,7 +3131,7 @@ public class TransactionChainFactory {
 		public static Chain getUpdateGraphicsChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForGraphics());
-			c.addCommand(new GenericUpdateModuleDataCommand());
+			c.addCommand(new UpdateGraphicsCommand());
 			return c;
 		}
 
