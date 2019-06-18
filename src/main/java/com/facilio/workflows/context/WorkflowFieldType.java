@@ -3,6 +3,7 @@ package com.facilio.workflows.context;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Map;
 
 public enum WorkflowFieldType {
@@ -11,8 +12,8 @@ public enum WorkflowFieldType {
 	STRING(1, "String",String.class),
 	NUMBER(2, "Number",Integer.class,Long.class,Double.class),
 	BOOLEAN(3, "Boolean",Boolean.class),
-	MAP(4,"Map",Map.class),
-	LIST(5,"List",List.class),
+	MAP(4,"Map",Map.class,HashMap.class),
+	LIST(5,"List",List.class,ArrayList.class),
 	;
 	
 	public Class[] getObjectClass() {
