@@ -159,7 +159,7 @@ public class WorkflowV2Util {
 		}
 	}
 
-	public static List<Object> getParamList(DataTypeSpecificFunctionContext ctx, boolean isDataTypeSpecificFunction,WorkflowFunctionVisitor facilioWorkflowFunctionVisitor, Value value) throws RuntimeException {
+	public static List<Object> getParamList(DataTypeSpecificFunctionContext ctx, boolean isDataTypeSpecificFunction,WorkflowFunctionVisitor facilioWorkflowFunctionVisitor, Value value) throws Exception {
 		List<Object> paramValues = new ArrayList<>();
 		if (isDataTypeSpecificFunction) {
 			paramValues.add(value.asObject());
