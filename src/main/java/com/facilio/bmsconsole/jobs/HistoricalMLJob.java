@@ -58,6 +58,7 @@ public class HistoricalMLJob extends FacilioJob {
 		catch(Exception e)
 		{
 			LOGGER.error("Error while running Historical ML Job", e);
+			throw e;
 		}
 
 	}
@@ -89,7 +90,7 @@ public class HistoricalMLJob extends FacilioJob {
 		JSONObject modelVariables = new JSONObject();
 		modelVariables.put("timezone","Asia/Dubai");
 		modelVariables.put("weekend","6,7");
-		modelVariables.put("meterInterval","10");
+		modelVariables.put("meterinterval","10");
 		
 		postObj.put("modelvariables",modelVariables);
 		
