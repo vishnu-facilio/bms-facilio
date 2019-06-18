@@ -652,6 +652,11 @@ public class LoginAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String getMySitesList() throws Exception {
+		setResult("mysites", CommonCommandUtil.getMySites());
+		return SUCCESS;
+	}
+	
 	private String permalink;
 	
 	public void setPermalink(String permalink) {

@@ -61,6 +61,9 @@
 		<action name="account" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="v2currentAccount">
 		</action>
+		<action name="getMySites" class="com.facilio.bmsconsole.actions.LoginAction"
+			method="getMySitesList">
+		</action>
 
 		<action name="basespace" class="com.facilio.bmsconsole.actions.BaseSpaceAction"
 			method="v2baseSpaceList">
@@ -1094,6 +1097,7 @@
 			method="getModuleDataList">
 			<param name="viewName">{1}</param>
 		</action>
+		
 	</package>
 
 	<package name="assetApiV2" namespace="/api/v2/assets" extends="v2Api">
