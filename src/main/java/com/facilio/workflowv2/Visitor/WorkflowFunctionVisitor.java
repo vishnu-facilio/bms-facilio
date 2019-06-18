@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.RuleNode;
@@ -39,6 +41,8 @@ import com.facilio.workflowv2.util.UserFunctionAPI;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 
 public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
+	
+	private static final Logger LOGGER = Logger.getLogger(WorkflowFunctionVisitor.class.getName());
 
     private Map<String, Value> varMemoryMap = new HashMap<String, Value>();
     
@@ -185,6 +189,7 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     		}
     	}
     	catch(Exception e) {
+    		LOGGER.log(Level.SEVERE, e.getMessage(), e);
     		throw new RuntimeException(e.getCause());
     	}
     }

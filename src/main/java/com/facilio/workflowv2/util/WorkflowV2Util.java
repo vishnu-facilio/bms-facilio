@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -184,5 +185,20 @@ public class WorkflowV2Util {
     	criteriaPattern = criteriaPattern.replace("&&", " and ");
     	criteriaPattern = criteriaPattern.substring(1, criteriaPattern.length()-1);
     	return criteriaPattern;
+	}
+	public static JSONObject getAsJSONObject(Map<String, Object> object) {
+    	JSONObject json = new JSONObject();
+
+    	if(object == null || object.isEmpty()) {
+    		return null;
+    	}
+	    Iterator<String> keysItr = object.keySet().iterator();
+	    while(keysItr.hasNext()) {
+	        String key = keysItr.next();
+	        Object value = object.get(key);
+
+	        json.put(key, value);
+	    }
+	    return json;
 	}
 }

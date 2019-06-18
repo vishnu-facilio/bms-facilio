@@ -1516,6 +1516,9 @@ public class WorkflowUtil {
 				case ML:
 					facilioWorkflowFunction = MLFunctions.getFacilioMLFunction(functionName);
 					break;
+				case NOTIFICATION:
+					facilioWorkflowFunction = FacilioNotificationFunctions.getFacilioNotificationFunctions(functionName);
+					break;
 			}
 		}
 		return facilioWorkflowFunction;
@@ -1580,6 +1583,8 @@ public class WorkflowUtil {
 					break;
 				case ML:
 					facilioWorkflowFunction = new ArrayList<>( MLFunctions.getAllFunctions().values());
+				case NOTIFICATION:
+					facilioWorkflowFunction = new ArrayList<>( FacilioNotificationFunctions.getAllFunctions().values());
 					break;
 		
 			}
