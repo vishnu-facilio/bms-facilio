@@ -37,7 +37,7 @@ public class ScheduledWorkflowJob extends FacilioJob{
 			chain.execute(context);
 		}
 		catch (Exception e) {
-			CommonCommandUtil.emailException("Scheduled Workflow Failed", "ScheduledWorkflow - orgid -- "+AccountUtil.getCurrentOrg().getId() + " jobid -- "+jc.getJobId(), e);
+			CommonCommandUtil.emailException("Scheduled Workflow Failed", "Orgid -- "+AccountUtil.getCurrentOrg().getId() + " jobid -- "+jc.getJobId(), e);
 			LOGGER.log(Priority.ERROR, e.getMessage(), e);
 		}
 	}

@@ -26,7 +26,7 @@ public class DeleteScheduledWorkflowCommand implements Command {
 	}
 	
 	private void deleteScheduledWorkflows(ScheduledWorkflowContext scheduledWorkflowContext) throws Exception {
-		FacilioModule module = ModuleFactory.getWorkflowModule();
+		FacilioModule module = ModuleFactory.getScheduledWorkflowModule();
 		
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 														.table(module.getTableName())
