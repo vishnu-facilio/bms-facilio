@@ -1262,6 +1262,9 @@
 		<action name="deleteScheduledWorkflow"
 			class="com.facilio.workflows.action.WorkflowAction" method="deleteScheduledWorkflow"></action>
 			
+		<action name="getScheduledWorkflowList"
+		class="com.facilio.workflows.action.WorkflowAction" method="getScheduledWorkflowList"></action>
+			
 		<action name="runWorkflow"
 			class="com.facilio.workflows.action.WorkflowAction" method="runWorkflow"></action>
 			

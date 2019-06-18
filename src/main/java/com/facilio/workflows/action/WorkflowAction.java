@@ -313,4 +313,13 @@ public class WorkflowAction extends FacilioAction {
 		setResult(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT, scheduledWorkflow);
 		return SUCCESS;
 	}
+	
+	public String getScheduledWorkflowList() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		Chain getNameSpaceChain =  ReadOnlyChainFactory.getAllScheduledWorkflowChain(); 
+		getNameSpaceChain.execute(context);
+		setResult(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT_LIST, context.get(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT_LIST));
+		return SUCCESS;
+	}
 }

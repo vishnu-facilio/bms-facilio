@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.actions.GetToolTransactionsListCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.workflows.command.GetAllNameSpaceWithFunctionCommand;
+import com.facilio.workflows.command.GetAllScheduledWorkflowCommand;
 
 public class ReadOnlyChainFactory {
 	private static Logger LOGGER = LogManager.getLogger(ReadOnlyChainFactory.class.getName());
@@ -971,6 +972,12 @@ public class ReadOnlyChainFactory {
 	public static Chain getAllWorkflowNameSpaceChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new GetAllNameSpaceWithFunctionCommand());
+		return c;
+	}
+	
+	public static Chain getAllScheduledWorkflowChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetAllScheduledWorkflowCommand());
 		return c;
 	}
 }
