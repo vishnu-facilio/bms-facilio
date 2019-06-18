@@ -71,7 +71,8 @@ public class IoTMessageAPI {
 		object.put("instanceNumber", controller.getInstanceNumber());
 		object.put("broadcastAddress", controller.getBroadcastIp());
 		object.put("clientId", controller.getId());
-		
+		object.put(AgentKeys.AGENT_ID, controller.getAgentId()); // Agent_Id key must be changes to camelcase.
+
 		if (command == IotCommandType.PROPERTY) {
 			object.putAll(property);
 		}
@@ -360,7 +361,10 @@ public class IoTMessageAPI {
 			mqttClient.connect();
 			if(mqttClient.getConnectionStatus() == AWSIotConnectionStatus.CONNECTED) {
 				mqttClient.publish(new AWSIotMessage(topic, AWSIotQos.QOS0, object.toJSONString()));
-				AgentUtil.putLog(object, AccountUtil.getCurrentOrg().getOrgId(), Long.parseLong(object.get(AgentKeys.AGENT_ID).toString()), true);
+				if(object.containsKey(AgentKeys.AGENT_ID)) {
+					AgentUtil.putLog(object, AccountUtil.getCurrentOrg().getOrgId(), Long.parseLong(object.get(AgentKeys.AGENT_ID).toString()), true);
+
+				}
 			}
 		} catch (AWSIotException e) {
 			LOGGER.error("Exception while publishing message ", e);
