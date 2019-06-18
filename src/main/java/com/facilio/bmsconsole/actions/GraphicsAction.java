@@ -82,7 +82,9 @@ public class GraphicsAction extends FacilioAction{
 	public String getGraphicsList() throws Exception {
 		FacilioContext context = new FacilioContext();
  		
- 		
+		Chain chain = ReadOnlyChainFactory.getGraphicsListChain();
+		chain.execute(context);
+		
 		List<GraphicsContext> graphicsList = (List<GraphicsContext>) context.get(FacilioConstants.ContextNames.GRAPHICS_LIST);
 		setResult(FacilioConstants.ContextNames.GRAPHICS_LIST, graphicsList);
 		

@@ -985,11 +985,7 @@ public class ReadOnlyChainFactory {
 	public static Chain getGraphicsListChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForGraphics());
-		c.addCommand(new LoadViewCommand());
-		c.addCommand(new LoadAllFieldsCommand());
-		c.addCommand(new GenerateCriteriaFromFilterCommand());
-		c.addCommand(new GenerateSearchConditionCommand());
-		c.addCommand(new GenericGetModuleDataListCommand());
+		c.addCommand(new GetGraphicsListCommand());
 		return c;
 	}
 	

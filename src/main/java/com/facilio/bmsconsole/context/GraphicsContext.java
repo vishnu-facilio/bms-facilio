@@ -2,10 +2,6 @@ package com.facilio.bmsconsole.context;
 
 
 public class GraphicsContext {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 	private String name;
 	public String getName() {
 		return name;

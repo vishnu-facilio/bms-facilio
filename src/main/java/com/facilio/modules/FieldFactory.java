@@ -6032,6 +6032,7 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 		
 		fields.add(getField("id", "ID", module, FieldType.ID));
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
 		fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
 		fields.add(getField("canvas", "CANVAS", module, FieldType.STRING));
 		fields.add(getField("variables", "VARIABLES", module, FieldType.STRING));
