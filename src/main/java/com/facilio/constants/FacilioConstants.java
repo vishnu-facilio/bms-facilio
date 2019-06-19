@@ -1034,7 +1034,9 @@ public class FacilioConstants {
 		
 		public static final String CONTRACT_ASSET_RELATION = "Contracts_Associated_Assets";
 		public static final String WARRANTY_CONTRACT_TYPE = "Warranty_Contract_Type";
-
+		public static final String CONTRACT_ASSOCIATED_ASSETS = "contractassets";
+		public static final String CONTRACT_ASSOCIATED_TERMS = "contractterms";
+		
 		public static final String RENTAL_LEASE_CONTRACTS = "rentalleasecontracts";
 		public static final String RENTAL_LEASE_CONTRACT = "rentalleasecontract";
 		public static final String RENTAL_LEASE_CONTRACTS_LINE_ITEMS = "rentalleasecontractlineitems";
@@ -1156,6 +1158,7 @@ public class FacilioConstants {
 			classMap.put(RECEIPT_LINE_ITEMS, ReceiptLineItemContext.class);
 			classMap.put(SHIPMENT, ShipmentContext.class);
 			classMap.put(SHIPMENT_LINE_ITEM, ShipmentLineItemContext.class);
+			classMap.put(CONTRACTS, ContractsContext.class);
 
 			classMap.put(ML, MLContext.class);
 			classMap.put(PO_LINE_ITEMS_SERIAL_NUMBERS, PoLineItemsSerialNumberContext.class);
@@ -1175,10 +1178,8 @@ public class FacilioConstants {
 			classMap.put(RENTAL_LEASE_CONTRACTS_LINE_ITEMS, RentalLeaseContractLineItemsContext.class);
 			classMap.put(TOOL_VENDORS, ToolTypeVendorContext.class);
 			classMap.put(TERMS_AND_CONDITIONS, TermsAndConditionContext.class);
-
-
-
-
+			classMap.put(CONTRACT_ASSOCIATED_ASSETS, ContractAssociatedAssetsContext.class);
+			classMap.put(CONTRACT_ASSOCIATED_TERMS, ContractAssociatedTermsContext.class);
 			classMap.put(ATTENDANCE, AttendanceContext.class);
 			classMap.put(ATTENDANCE_TRANSACTIONS, AttendanceTransactionContext.class);
 			classMap.put(SHIFT, ShiftContext.class);

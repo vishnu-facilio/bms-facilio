@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.List;
+
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class ContractsContext extends ModuleBaseWithCustomFields{
@@ -25,6 +27,7 @@ public class ContractsContext extends ModuleBaseWithCustomFields{
 		setTotalCost(contract.getTotalCost());
 		setStatus(Status.WAITING_FOR_APPROVAL);
 		setParentId(contract.getParentId());
+		setTermsAssociated(contract.getTermsAssociated());
 		setId(-1);
 	}
 
@@ -171,4 +174,64 @@ public class ContractsContext extends ModuleBaseWithCustomFields{
 	public void setParentId(long parentId) {
 		this.parentId = parentId;
 	}
+	
+	private PaymentPeriod paymentPeriod;
+	public PaymentPeriod getPaymentPeriodEnum() {
+		return paymentPeriod;
+	}
+	public int getPaymentPeriod() {
+		if (paymentPeriod != null) {
+			return paymentPeriod.getValue();
+		}
+		return -1;
+	}
+	public void setPaymentPeriod(int paymentPeriod) {
+		this.paymentPeriod = PaymentPeriod.valueOf(paymentPeriod);
+	}
+	public void setPaymentPeriod(PaymentPeriod paymentPeriod) {
+		this.paymentPeriod = paymentPeriod;
+	}
+	
+	public static enum PaymentPeriod {
+		DAILY(),
+		WEEKLY(),
+		MONTHLY(),
+		YEARLY(),
+		ONCE()
+		
+		;
+		
+		public int getValue() {
+			return ordinal()+1;
+		}
+
+		public static PaymentPeriod valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+	}
+	
+	private List<ContractAssociatedTermsContext> termsAssociated;
+
+	public List<ContractAssociatedTermsContext> getTermsAssociated() {
+		return termsAssociated;
+	}
+
+	public void setTermsAssociated(List<ContractAssociatedTermsContext> termsAssociated) {
+		this.termsAssociated = termsAssociated;
+	}
+	
+	private List<ContractAssociatedAssetsContext> associatedAssets;
+	
+	
+	public List<ContractAssociatedAssetsContext> getAssociatedAssets() {
+		return associatedAssets;
+	}
+
+	public void setAssociatedAssets(List<ContractAssociatedAssetsContext> associatedAssets) {
+		this.associatedAssets = associatedAssets;
+	}
+	
 }

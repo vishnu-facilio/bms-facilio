@@ -127,6 +127,7 @@ public class GetRentalLeaseContractListCommand implements Command{
 		List<RentalLeaseContractContext> records = builder.get();
 		for(RentalLeaseContractContext record : records) {
 			record.setAssociatedAssets(ContractsAPI.fetchAssociatedAssets(record.getId()));
+			record.setTermsAssociated(ContractsAPI.fetchAssociatedTerms(record.getId()));
 		}
 	
 	

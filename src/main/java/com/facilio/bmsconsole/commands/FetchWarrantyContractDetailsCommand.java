@@ -41,6 +41,8 @@ public class FetchWarrantyContractDetailsCommand implements Command{
 		
 			List<WarrantyContractLineItemContext> list = builder.get();
 			serviceContractContext.setAssociatedAssets(ContractsAPI.fetchAssociatedAssets(serviceContractContext.getId()));
+			serviceContractContext.setTermsAssociated(ContractsAPI.fetchAssociatedTerms(serviceContractContext.getId()));
+			
 			serviceContractContext.setLineItems(list);
 		}
 		return false;

@@ -34,13 +34,13 @@ public class RentalLeaseContractContext extends ContractsContext {
 		}
 		return -1;
 	}
-	public void setRentalLeaseContractType(RentalLeaseContractType rentalLeaseContractType) {
-		this.rentalLeaseContractType = rentalLeaseContractType;
-	}
 	public void setRentalLeaseContractType(int rentalLeaseContractType) {
 		this.rentalLeaseContractType = RentalLeaseContractType.valueOf(rentalLeaseContractType);
 	}
 	
+	public void setRentalLeaseContractType(RentalLeaseContractType rentalLeaseContractType) {
+		this.rentalLeaseContractType = rentalLeaseContractType;
+	}
 	public static enum RentalLeaseContractType {
 		RENTAL(),
 		LEASE()
@@ -59,26 +59,11 @@ public class RentalLeaseContractContext extends ContractsContext {
 		}
 	}
 	
-	private List<Long> assetIds;
-	public List<Long> getAssetIds() {
-		return assetIds;
-	}
-	public void setAssetIds(List<Long> assetIds) {
-		this.assetIds = assetIds;
-	}
 	
-	private List<AssetContext> associatedAssets;
-	
-	public List<AssetContext> getAssociatedAssets() {
-		return associatedAssets;
-	}
-	public void setAssociatedAssets(List<AssetContext> associatedAssets) {
-		this.associatedAssets = associatedAssets;
-	}
 	public RentalLeaseContractContext clone() {
 		RentalLeaseContractContext rental = new RentalLeaseContractContext(this);
 		rental.setRentalLeaseContractType(this.getRentalLeaseContractType());
-		rental.setAssetIds(this.getAssetIds());
+		rental.setAssociatedAssets(this.getAssociatedAssets());
 		return rental;
 	}
 }

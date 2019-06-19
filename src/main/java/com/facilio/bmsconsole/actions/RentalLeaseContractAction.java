@@ -9,6 +9,7 @@ import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.ContractAssociatedAssetsContext;
 import com.facilio.bmsconsole.context.RentalLeaseContractContext;
 import com.facilio.bmsconsole.context.RentalLeaseContractLineItemsContext;
 import com.facilio.chain.FacilioContext;
@@ -61,7 +62,7 @@ public class RentalLeaseContractAction extends FacilioAction{
 	}
 	public void setRentalLeaseContract(RentalLeaseContractContext rentalLeaseContract) {
 		this.rentalLeaseContract = rentalLeaseContract;
-	}
+	} 
 
 	private boolean includeParentFilter;
 
@@ -117,6 +118,15 @@ public class RentalLeaseContractAction extends FacilioAction{
 	}
 	public void setInventoryType(int inventoryType) {
 		this.inventoryType = inventoryType;
+	}
+	
+	private List<ContractAssociatedAssetsContext> associatedAssets;
+	
+	public List<ContractAssociatedAssetsContext> getAssociatedAssets() {
+		return associatedAssets;
+	}
+	public void setAssociatedAssets(List<ContractAssociatedAssetsContext> associatedAssets) {
+		this.associatedAssets = associatedAssets;
 	}
 	public String getRentalLeaseContractList() throws Exception {
 		FacilioContext context = new FacilioContext();
@@ -244,7 +254,7 @@ public class RentalLeaseContractAction extends FacilioAction{
 	
 	public String reviseContract() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD_ID, recordId );
+		context.put(FacilioConstants.ContextNames.RECORD, rentalLeaseContract );
 		context.put(FacilioConstants.ContextNames.IS_CONTRACT_REVISED, true );
 		
 		Chain chain = TransactionChainFactory.getAddRentalLeaseContractChain();
@@ -262,6 +272,42 @@ public class RentalLeaseContractAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.RECORD, rentalLeaseContract );
 		
 		Chain chain = TransactionChainFactory.getDuplicateRentalLeaseContract();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS, context.get(FacilioConstants.ContextNames.RECORD));
+		
+		return SUCCESS;
+	}
+	public String returnAsset() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.CONTRACT_ASSOCIATED_ASSETS, associatedAssets );
+		
+		Chain chain = TransactionChainFactory.getReturnAssetChain();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
+		
+		return SUCCESS;
+	}
+	
+	public String purchaseAsset() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.CONTRACT_ASSOCIATED_ASSETS, associatedAssets );
+		
+		Chain chain = TransactionChainFactory.getPurchaseAssetChain();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.PURCHASE_ORDER, context.get(FacilioConstants.ContextNames.PURCHASE_ORDER));
+		
+		return SUCCESS;
+	}
+	
+	public String associateAsset() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, rentalLeaseContract );
+		
+		Chain chain = TransactionChainFactory.getAssociateAssetChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS, context.get(FacilioConstants.ContextNames.RECORD));

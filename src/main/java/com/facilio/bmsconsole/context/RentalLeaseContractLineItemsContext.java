@@ -85,5 +85,14 @@ public class RentalLeaseContractLineItemsContext  extends ModuleBaseWithCustomFi
 		this.quantityReceived = quantityReceived;
 	}
 
+	private double leaseEndValue;
+
+	public double getLeaseEndValue() {
+		return leaseEndValue;
+	}
+	public void setLeaseEndValue(double leaseEndValue) {
+		this.leaseEndValue = leaseEndValue;
+	}
+	
 		
 }

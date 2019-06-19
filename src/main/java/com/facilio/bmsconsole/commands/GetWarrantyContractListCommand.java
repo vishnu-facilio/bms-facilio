@@ -129,6 +129,8 @@ public class GetWarrantyContractListCommand implements Command {
 		List<WarrantyContractContext> records = builder.get();
 		for(WarrantyContractContext record : records) {
 			record.setAssociatedAssets(ContractsAPI.fetchAssociatedAssets(record.getId()));
+			record.setTermsAssociated(ContractsAPI.fetchAssociatedTerms(record.getId()));
+			
 		}
 	
 		if (records != null && !records.isEmpty()) {

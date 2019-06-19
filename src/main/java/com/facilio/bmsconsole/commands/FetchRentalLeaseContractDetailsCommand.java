@@ -42,6 +42,7 @@ public class FetchRentalLeaseContractDetailsCommand implements Command{
 		
 			List<RentalLeaseContractLineItemsContext> list = builder.get();
 			rentalLeaseContractContext.setAssociatedAssets(ContractsAPI.fetchAssociatedAssets(rentalLeaseContractContext.getId()));
+			rentalLeaseContractContext.setTermsAssociated(ContractsAPI.fetchAssociatedTerms(rentalLeaseContractContext.getId()));
 			
 			rentalLeaseContractContext.setLineItems(list);
 		}

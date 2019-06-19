@@ -2,34 +2,27 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ContractAssociatedAssetsContext;
+import com.facilio.bmsconsole.context.ContractAssociatedTermsContext;
 import com.facilio.bmsconsole.context.ContractsContext.ContractType;
 import com.facilio.bmsconsole.context.ContractsContext.Status;
 import com.facilio.bmsconsole.context.ServiceContext;
 import com.facilio.bmsconsole.context.WarrantyContractContext;
 import com.facilio.bmsconsole.context.WarrantyContractLineItemContext;
+import com.facilio.bmsconsole.util.ContractsAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericDeleteRecordBuilder;
-import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.DeleteRecordBuilder;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.InsertRecordBuilder;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 
 public class AddOrUpdateWarrantyContractCommand implements Command{
@@ -46,53 +39,61 @@ public class AddOrUpdateWarrantyContractCommand implements Command{
 			FacilioModule module = modBean.getModule(moduleName);
 			List<FacilioField> fields = modBean.getAllFields(moduleName);
 			FacilioModule serviceModule = modBean.getModule(FacilioConstants.ContextNames.SERVICE);
+			
 			List<FacilioField> serviceFields = modBean.getAllFields(serviceModule.getName());
+			FacilioModule termsModule = modBean.getModule(FacilioConstants.ContextNames.CONTRACT_ASSOCIATED_TERMS);
+			FacilioModule assetAssociatedModule = modBean.getModule(FacilioConstants.ContextNames.CONTRACT_ASSOCIATED_ASSETS);
 			
 			
 			FacilioModule lineModule = modBean.getModule(FacilioConstants.ContextNames.WARRANTY_CONTRACTS_LINE_ITEMS);
 			
-			if (CollectionUtils.isEmpty(warrantyContractContext.getLineItems())) {
-				throw new Exception("Line items cannot be empty");
-			}
+//			if (CollectionUtils.isEmpty(warrantyContractContext.getLineItems())) {
+//				throw new Exception("Line items cannot be empty");
+//			}
 			if (warrantyContractContext.getVendor() == null) {
 				throw new Exception("Vendor cannot be empty");
 			}
 			warrantyContractContext.setContractType(ContractType.WARRANTY);
 			
 			if (!isContractRevised && warrantyContractContext.getId() > 0) {
-				updateRecord(warrantyContractContext, module, fields);
+				ContractsAPI.updateRecord(warrantyContractContext, module, fields);
 				
 				DeleteRecordBuilder<WarrantyContractLineItemContext> deleteBuilder = new DeleteRecordBuilder<WarrantyContractLineItemContext>()
 						.module(lineModule)
 						.andCondition(CriteriaAPI.getCondition("WARRANTY_CONTRACT", "warrantyContractId", String.valueOf(warrantyContractContext.getId()), NumberOperators.EQUALS));
 				deleteBuilder.delete();
 				
-				GenericDeleteRecordBuilder deleteAssetRelationBuilder = new GenericDeleteRecordBuilder()
-						.table(FacilioConstants.ContextNames.CONTRACT_ASSET_RELATION)
-						.andCondition(CriteriaAPI.getCondition("CONTRACT_ID", "contractId", String.valueOf(warrantyContractContext.getId()), NumberOperators.EQUALS))
-						.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(AccountUtil.getCurrentOrg().getId()), NumberOperators.EQUALS));
-						;
+				DeleteRecordBuilder<ContractAssociatedAssetsContext> deleteAssetRelationBuilder = new DeleteRecordBuilder<ContractAssociatedAssetsContext>()
+						.module(assetAssociatedModule)
+						.andCondition(CriteriaAPI.getCondition("CONTRACT_ID", "contractId", String.valueOf(warrantyContractContext.getId()), NumberOperators.EQUALS));
 				deleteAssetRelationBuilder.delete();
+				DeleteRecordBuilder<ContractAssociatedTermsContext> deleteTermsBuilder = new DeleteRecordBuilder<ContractAssociatedTermsContext>()
+						.module(termsModule)
+						.andCondition(CriteriaAPI.getCondition("CONTRACT_ID", "contractId", String.valueOf(warrantyContractContext.getId()), NumberOperators.EQUALS));
+				deleteBuilder.delete();
 				updateLineItems(warrantyContractContext);
 				updateAssetsAssociated(warrantyContractContext);
+				ContractsAPI.updateTermsAssociated(warrantyContractContext);
 				//add service if newly added here as lineItem
 				//addServiceRecords(warrantyContractContext.getLineItems(),serviceModule,serviceFields);
 				//also add service vendor association
-				addRecord(false,warrantyContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
+				ContractsAPI.addRecord(false,warrantyContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 				
 			} 
 			else if (isContractRevised && warrantyContractContext.getId() > 0) {
 				if(warrantyContractContext.getStatusEnum() == Status.APPROVED) {
 					WarrantyContractContext revisedContract = (WarrantyContractContext)warrantyContractContext.clone();
-					addRecord(true,Collections.singletonList(revisedContract), module, fields);
+					ContractsAPI.addRecord(true,Collections.singletonList(revisedContract), module, fields);
 					warrantyContractContext.setStatus(Status.REVISED);
-					updateRecord(warrantyContractContext, module, fields);
+					ContractsAPI.updateRecord(warrantyContractContext, module, fields);
 					updateLineItems(revisedContract);
 					updateAssetsAssociated(revisedContract);
+					ContractsAPI.updateTermsAssociated(revisedContract);
+					
 					//add service if newly added here as lineItem
 					//addServiceRecords(warrantyContractContext.getLineItems(),serviceModule,serviceFields);
 					//also add service vendor association
-					addRecord(false,revisedContract.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
+					ContractsAPI.addRecord(false,revisedContract.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 					context.put(FacilioConstants.ContextNames.REVISED_RECORD, revisedContract);
 					
 				}
@@ -104,15 +105,17 @@ public class AddOrUpdateWarrantyContractCommand implements Command{
 				
 				warrantyContractContext.setStatus(WarrantyContractContext.Status.WAITING_FOR_APPROVAL);
 				warrantyContractContext.setRevisionNumber(0);
-				addRecord(true,Collections.singletonList(warrantyContractContext), module, fields);
+				ContractsAPI.addRecord(true,Collections.singletonList(warrantyContractContext), module, fields);
 				warrantyContractContext.setParentId(warrantyContractContext.getLocalId());
-				updateRecord(warrantyContractContext, module, fields);
+				ContractsAPI.updateRecord(warrantyContractContext, module, fields);
 				updateLineItems(warrantyContractContext);
 				updateAssetsAssociated(warrantyContractContext);
+				ContractsAPI.updateTermsAssociated(warrantyContractContext);
+				
 				//add service if newly added here as lineItem
 				//addServiceRecords(warrantyContractContext.getLineItems(),serviceModule,serviceFields);
 				//also add service vendor association
-				addRecord(false,warrantyContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
+				ContractsAPI.addRecord(false,warrantyContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 	
 			}
 			
@@ -124,28 +127,23 @@ public class AddOrUpdateWarrantyContractCommand implements Command{
 	}
 	
 	private void updateLineItems(WarrantyContractContext warrantycontractContext) {
-		for (WarrantyContractLineItemContext lineItemContext : warrantycontractContext.getLineItems()) {
-			lineItemContext.setWarrantyContractId(warrantycontractContext.getId());
+		if(CollectionUtils.isNotEmpty(warrantycontractContext.getLineItems())) {
+			for (WarrantyContractLineItemContext lineItemContext : warrantycontractContext.getLineItems()) {
+				lineItemContext.setWarrantyContractId(warrantycontractContext.getId());
+			}
 		}
 	  }
 		
 	private void updateAssetsAssociated(WarrantyContractContext warrantycontractContext) throws Exception {
-		List<Map<String, Object>> values = new ArrayList<Map<String,Object>>();
-		if(CollectionUtils.isNotEmpty(warrantycontractContext.getAssetIds())) {
-			for (Long assetId : warrantycontractContext.getAssetIds()) {
-				Map<String, Object> val = new HashMap<String, Object>();
-				val.put("contractId", warrantycontractContext.getId());
-				val.put("assetId", assetId);
-				val.put("orgId", AccountUtil.getCurrentOrg().getId());
-				values.add(val);
+		List<ContractAssociatedAssetsContext> associatedAssets = warrantycontractContext.getAssociatedAssets();
+		if(CollectionUtils.isNotEmpty(associatedAssets)) {
+			for(ContractAssociatedAssetsContext asset : associatedAssets) {
+				asset.setContractId(warrantycontractContext.getId());
 			}
-			FacilioModule associateAssetModule = ModuleFactory.getContractAssociatedAssetsModule();
-			List<FacilioField> fields = FieldFactory.getContractAssociatedAssetModuleFields();
-			GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()
-		                    .table(associateAssetModule.getTableName())
-		                    .fields(fields);
-		    insertRecordBuilder.addRecords(values);
-		    insertRecordBuilder.save();
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTRACT_ASSOCIATED_ASSETS);
+			List<FacilioField> fields = modBean.getAllFields(module.getName());
+			ContractsAPI.addRecord(true,associatedAssets , module, fields);
 		}
 	}
 		
@@ -160,26 +158,8 @@ public class AddOrUpdateWarrantyContractCommand implements Command{
 			}
 		}
 		if(!CollectionUtils.isEmpty(newServiceRecords)) {
-			addRecord(true,newServiceRecords, serviceModule, serviceFields);
+			ContractsAPI.addRecord(true,newServiceRecords, serviceModule, serviceFields);
 		}
 	}
-	private void addRecord(boolean isLocalIdNeeded,List<? extends ModuleBaseWithCustomFields> list, FacilioModule module, List<FacilioField> fields) throws Exception {
-		InsertRecordBuilder insertRecordBuilder = new InsertRecordBuilder<>()
-				.module(module)
-				.fields(fields);
-		if(isLocalIdNeeded) {
-			insertRecordBuilder.withLocalId();
-		}
-		insertRecordBuilder.addRecords(list);
-		insertRecordBuilder.save();
-	}
-	
-	public void updateRecord(ModuleBaseWithCustomFields data, FacilioModule module, List<FacilioField> fields) throws Exception {
-		UpdateRecordBuilder updateRecordBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
-				.module(module)
-				.fields(fields)
-				.andCondition(CriteriaAPI.getIdCondition(data.getId(), module));
-		updateRecordBuilder.update(data);
-	}
-	
+		
 }

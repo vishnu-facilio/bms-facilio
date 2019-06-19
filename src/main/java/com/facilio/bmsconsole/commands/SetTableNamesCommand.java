@@ -379,6 +379,10 @@ public class SetTableNamesCommand implements Command {
 	public static SetTableNamesCommand getForTermsAndConditions() {
 		return new SetTableNamesCommand("termsandconditions", "Terms_And_Conditions");
 	}
+	
+	public static SetTableNamesCommand getForContractAssociatedAssets() {
+		return new SetTableNamesCommand("contractassets", "Contracts_Associated_Assets");
+	}
 
 	public static void setForModule (Context context, String moduleName) {
 		//TODO handle all module and get from map

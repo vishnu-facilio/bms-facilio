@@ -10,8 +10,13 @@ import org.apache.commons.collections4.CollectionUtils;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ContractsContext.ContractType;
 import com.facilio.bmsconsole.context.ContractsContext.Status;
+import com.facilio.bmsconsole.context.ContractAssociatedAssetsContext;
+import com.facilio.bmsconsole.context.ContractAssociatedTermsContext;
+import com.facilio.bmsconsole.context.ContractsContext;
 import com.facilio.bmsconsole.context.PurchaseContractContext;
 import com.facilio.bmsconsole.context.PurchaseContractLineItemContext;
+import com.facilio.bmsconsole.context.WarrantyContractContext;
+import com.facilio.bmsconsole.util.ContractsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -37,33 +42,41 @@ public class AddOrUpdatePurchaseContractCommand implements Command {
 			List<FacilioField> fields = modBean.getAllFields(moduleName);
 		
 			FacilioModule lineModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_CONTRACTS_LINE_ITEMS);
+			FacilioModule termsModule = modBean.getModule(FacilioConstants.ContextNames.CONTRACT_ASSOCIATED_TERMS);
 			
-			if (CollectionUtils.isEmpty(purchaseContractContext.getLineItems())) {
-				throw new Exception("Line items cannot be empty");
-			}
+//			if (CollectionUtils.isEmpty(purchaseContractContext.getLineItems())) {
+//				throw new Exception("Line items cannot be empty");
+//			}
 			if (purchaseContractContext.getVendor() == null) {
 				throw new Exception("Vendor cannot be empty");
 			}
 			purchaseContractContext.setContractType(ContractType.PURCHASE);
 			if (!isContractRevised && purchaseContractContext.getId() > 0) {
-				updateRecord(purchaseContractContext, module, fields);
+				ContractsAPI.updateRecord(purchaseContractContext, module, fields);
 				
 				DeleteRecordBuilder<PurchaseContractLineItemContext> deleteBuilder = new DeleteRecordBuilder<PurchaseContractLineItemContext>()
 						.module(lineModule)
 						.andCondition(CriteriaAPI.getCondition("PURCHASE_CONTRACT", "purchaseContractId", String.valueOf(purchaseContractContext.getId()), NumberOperators.EQUALS));
 				deleteBuilder.delete();
+				DeleteRecordBuilder<ContractAssociatedTermsContext> deleteTermsBuilder = new DeleteRecordBuilder<ContractAssociatedTermsContext>()
+						.module(termsModule)
+						.andCondition(CriteriaAPI.getCondition("CONTRACT_ID", "contractId", String.valueOf(purchaseContractContext.getId()), NumberOperators.EQUALS));
+				deleteBuilder.delete();
 				updateLineItems(purchaseContractContext);
-				addRecord(false,purchaseContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
+				ContractsAPI.updateTermsAssociated(purchaseContractContext);
+				
+				ContractsAPI.addRecord(false,purchaseContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 
 			}
 			else if (isContractRevised && purchaseContractContext.getId() > 0) {
 				if(purchaseContractContext.getStatusEnum() == Status.APPROVED) {
 					PurchaseContractContext revisedContract =  purchaseContractContext.clone();
-					addRecord(true,Collections.singletonList(revisedContract), module, fields);
+					ContractsAPI.addRecord(true,Collections.singletonList(revisedContract), module, fields);
 					purchaseContractContext.setStatus(Status.REVISED);
-					updateRecord(purchaseContractContext, module, fields);
+					ContractsAPI.updateRecord(purchaseContractContext, module, fields);
 					updateLineItems(revisedContract);
-					addRecord(false,revisedContract.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
+					ContractsAPI.updateTermsAssociated(revisedContract);
+					ContractsAPI.addRecord(false,revisedContract.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 					context.put(FacilioConstants.ContextNames.REVISED_RECORD, revisedContract);
 					
 				}
@@ -75,11 +88,13 @@ public class AddOrUpdatePurchaseContractCommand implements Command {
 			else {
 				purchaseContractContext.setStatus(PurchaseContractContext.Status.WAITING_FOR_APPROVAL);
 				purchaseContractContext.setRevisionNumber(0);
-				addRecord(true,Collections.singletonList(purchaseContractContext), module, fields);
+				ContractsAPI.addRecord(true,Collections.singletonList(purchaseContractContext), module, fields);
 				purchaseContractContext.setParentId(purchaseContractContext.getLocalId());
-				updateRecord(purchaseContractContext, module, fields);
+				ContractsAPI.updateRecord(purchaseContractContext, module, fields);
 				updateLineItems(purchaseContractContext);
-				addRecord(false,purchaseContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
+				ContractsAPI.updateTermsAssociated(purchaseContractContext);
+				
+				ContractsAPI.addRecord(false,purchaseContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 			}
 
 			
@@ -89,30 +104,14 @@ public class AddOrUpdatePurchaseContractCommand implements Command {
 	}
 	
 		private void updateLineItems(PurchaseContractContext purchasecontractContext) {
-		for (PurchaseContractLineItemContext lineItemContext : purchasecontractContext.getLineItems()) {
-			lineItemContext.setPurchaseContractId(purchasecontractContext.getId());
-			updateLineItemCost(lineItemContext);
+		if(CollectionUtils.isNotEmpty(purchasecontractContext.getLineItems())) {
+			for (PurchaseContractLineItemContext lineItemContext : purchasecontractContext.getLineItems()) {
+				lineItemContext.setPurchaseContractId(purchasecontractContext.getId());
+				updateLineItemCost(lineItemContext);
+			}
 		}
 	}
 	
-	private void addRecord(boolean isLocalIdNeeded, List<? extends ModuleBaseWithCustomFields> list, FacilioModule module, List<FacilioField> fields) throws Exception {
-		InsertRecordBuilder insertRecordBuilder = new InsertRecordBuilder<>()
-				.module(module)
-				.fields(fields);
-		if(isLocalIdNeeded) {
-			insertRecordBuilder.withLocalId();
-		}
-		insertRecordBuilder.addRecords(list);
-		insertRecordBuilder.save();
-	}
-	
-	public void updateRecord(ModuleBaseWithCustomFields data, FacilioModule module, List<FacilioField> fields) throws Exception {
-		UpdateRecordBuilder updateRecordBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
-				.module(module)
-				.fields(fields)
-				.andCondition(CriteriaAPI.getIdCondition(data.getId(), module));
-		updateRecordBuilder.update(data);
-	}
 	
 	private void updateLineItemCost(PurchaseContractLineItemContext lineItemContext){
 		if(lineItemContext.getUnitPrice() > 0) {

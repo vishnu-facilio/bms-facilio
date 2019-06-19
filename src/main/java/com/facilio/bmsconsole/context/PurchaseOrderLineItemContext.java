@@ -142,6 +142,14 @@ public class PurchaseOrderLineItemContext extends ModuleBaseWithCustomFields{
 		this.quantityUsed = quantityUsed;
 	}
 
+	public String othersInfo;
+	
+	public String getOthersInfo() {
+		return othersInfo;
+	}
+	public void setOthersInfo(String othersInfo) {
+		this.othersInfo = othersInfo;
+	}
 	public WorkOrderServiceContext constructWorkOrderServiceContext(long parentId) throws Exception {
 		WorkOrderServiceContext woService = new WorkOrderServiceContext();
 		woService.setService(this.getService());

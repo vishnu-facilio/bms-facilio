@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PurchaseContractContext;
 import com.facilio.bmsconsole.context.PurchaseContractLineItemContext;
+import com.facilio.bmsconsole.util.ContractsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -39,6 +40,8 @@ public class FetchPurchaseContractDetailsCommand implements Command {
 					(LookupField) fieldsAsMap.get("toolType")));
 		
 			List<PurchaseContractLineItemContext> list = builder.get();
+			purchaseContractContext.setTermsAssociated(ContractsAPI.fetchAssociatedTerms(purchaseContractContext.getId()));
+			
 			purchaseContractContext.setLineItems(list);
 		}
 		return false;

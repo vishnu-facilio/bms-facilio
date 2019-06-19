@@ -9,6 +9,7 @@ import com.facilio.agent.commands.*;
 import com.facilio.agentIntegration.AddIntegrationCommand;
 import com.facilio.agentIntegration.UpdateIntegrationCommand;
 import com.facilio.agentIntegration.wattsense.AgentIntegrationDeleteCommand;
+import com.facilio.bmsconsole.actions.AssociateAssetToContractCommand;
 import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
@@ -3393,6 +3394,25 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForTermsAndConditions());
 			c.addCommand(new GenericUpdateModuleDataCommand());
+			return c;
+		}
+
+		public static Chain getReturnAssetChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ReturnAsssociatedAssetCommand());
+			return c;
+		}
+
+		public static Chain getPurchaseAssetChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new PurchaseAssociatedAssetCommand());
+			c.addCommand(getAddPurchaseOrderChain());
+			return c;
+		}
+
+		public static Chain getAssociateAssetChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AssociateAssetToContractCommand());
 			return c;
 		}
 }

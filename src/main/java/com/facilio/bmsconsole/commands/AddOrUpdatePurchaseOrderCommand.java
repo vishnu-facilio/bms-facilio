@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.InventoryType;
 import com.facilio.bmsconsole.context.PurchaseOrderContext;
 import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
 import com.facilio.bmsconsole.context.ReceivableContext;
@@ -42,10 +43,7 @@ public class AddOrUpdatePurchaseOrderCommand implements Command {
 			if (purchaseOrderContext.getVendor() == null) {
 				throw new Exception("Vendor cannot be empty");
 			}
-			
-			if (purchaseOrderContext.getStoreRoom() == null) {
-				throw new Exception("StoreRoom cannot be empty");
-			}
+			checkForStoreRoom(purchaseOrderContext, purchaseOrderContext.getLineItems());
 			// setting current user to requestedBy
 			if(purchaseOrderContext.getRequestedBy() == null) {
 				purchaseOrderContext.setRequestedBy(AccountUtil.getCurrentUser());
@@ -115,6 +113,16 @@ public class AddOrUpdatePurchaseOrderCommand implements Command {
 		else {
 			//need to check this.fetch is required to get the unit price of item/ tool
 			lineItemContext.setCost(0);	
+		}
+	}
+	
+	private void checkForStoreRoom(PurchaseOrderContext po, List<PurchaseOrderLineItemContext> lineItems) throws Exception{
+		if(CollectionUtils.isNotEmpty(lineItems)) {
+			for(PurchaseOrderLineItemContext lineItem : lineItems) {
+				if((lineItem.getInventoryType() == InventoryType.ITEM.getValue() || lineItem.getInventoryType() == InventoryType.TOOL.getValue()) && po.getStoreRoom() == null) {
+					throw new IllegalArgumentException("Storeroom cannot be null for pos with items and tools");
+				}
+			}
 		}
 	}
 }

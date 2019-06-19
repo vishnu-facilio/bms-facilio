@@ -9,6 +9,7 @@ import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.ContractAssociatedAssetsContext;
 import com.facilio.bmsconsole.context.WarrantyContractContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -97,6 +98,7 @@ public class WarrantyContractAction extends FacilioAction {
 	public void setAssetId(long assetId) {
 		this.assetId = assetId;
 	}
+	
 	public String getWarrantyContractList() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.FETCH_COUNT, getFetchCount());
@@ -219,6 +221,19 @@ public class WarrantyContractAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RECORD, warrantyContract );
 		
 		Chain chain = TransactionChainFactory.getDuplicateWarrantyContract();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.WARRANTY_CONTRACTS, context.get(FacilioConstants.ContextNames.RECORD));
+		
+		return SUCCESS;
+	}
+	
+	public String associateAsset() throws Exception {
+	
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, warrantyContract );
+		
+		Chain chain = TransactionChainFactory.getAssociateAssetChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.WARRANTY_CONTRACTS, context.get(FacilioConstants.ContextNames.RECORD));

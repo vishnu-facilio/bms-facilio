@@ -292,4 +292,13 @@ public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 	public void setCompletedTime(long completedTime) {
 		this.completedTime = completedTime;
 	}
+	
+	private long contractId;
+	public long getContractId() {
+		return contractId;
+	}
+	public void setContractId(long contractId) {
+		this.contractId = contractId;
+	}
+	
 }

@@ -3,7 +3,8 @@ package com.facilio.bmsconsole.context;
 public enum InventoryType {
 	ITEM,
 	TOOL,
-	SERVICE
+	SERVICE,
+	OTHERS
 	;
 	
 	public int getValue() {

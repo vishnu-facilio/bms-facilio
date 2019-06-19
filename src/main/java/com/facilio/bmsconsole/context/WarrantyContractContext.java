@@ -38,11 +38,11 @@ public class WarrantyContractContext extends ContractsContext {
 		}
 		return -1;
 	}
-	public void setWarrantyContractType(WarrantyContractType warrantyContractType) {
-		this.warrantyContractType = warrantyContractType;
-	}
 	public void setWarrantyContractType(int warrantyContractType) {
 		this.warrantyContractType = WarrantyContractType.valueOf(warrantyContractType);
+	}
+	public void setWarrantyContractType(WarrantyContractType warrantyContractType) {
+		this.warrantyContractType = warrantyContractType;
 	}
 	
 	public static enum WarrantyContractType {
@@ -63,29 +63,11 @@ public class WarrantyContractContext extends ContractsContext {
 		}
 	}
 	
-	private List<Long> assetIds;
-	public List<Long> getAssetIds() {
-		return assetIds;
-	}
-	public void setAssetIds(List<Long> assetIds) {
-		this.assetIds = assetIds;
-	}
 	
-	private List<AssetContext> associatedAssets;
-	
-	
-	public List<AssetContext> getAssociatedAssets() {
-		return associatedAssets;
-	}
-
-	public void setAssociatedAssets(List<AssetContext> associatedAssets) {
-		this.associatedAssets = associatedAssets;
-	}
-
 	public WarrantyContractContext clone() {
 		WarrantyContractContext warranty = new WarrantyContractContext(this);
 		warranty.setWarrantyContractType(this.getWarrantyContractType());
-		warranty.setAssetIds(this.getAssetIds());
+		warranty.setAssociatedAssets(this.getAssociatedAssets());
 
 		return warranty;
 	}

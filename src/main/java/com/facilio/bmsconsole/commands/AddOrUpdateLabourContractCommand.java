@@ -11,6 +11,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ContractsContext.ContractType;
 import com.facilio.bmsconsole.context.ContractsContext.Status;
+import com.facilio.bmsconsole.util.ContractsAPI;
+import com.facilio.bmsconsole.context.ContractAssociatedTermsContext;
 import com.facilio.bmsconsole.context.LabourContext;
 import com.facilio.bmsconsole.context.LabourContractContext;
 import com.facilio.bmsconsole.context.LabourContractLineItemContext;
@@ -37,6 +39,7 @@ public class AddOrUpdateLabourContractCommand implements Command{
 		if (labourContractContext != null) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
+			FacilioModule termsModule = modBean.getModule(FacilioConstants.ContextNames.CONTRACT_ASSOCIATED_TERMS);
 			List<FacilioField> fields = modBean.getAllFields(module.getName());
 			FacilioModule labourModule = modBean.getModule(FacilioConstants.ContextNames.LABOUR);
 			List<FacilioField> labourFields = modBean.getAllFields(labourModule.getName());
@@ -44,36 +47,42 @@ public class AddOrUpdateLabourContractCommand implements Command{
 			
 			FacilioModule lineModule = modBean.getModule(FacilioConstants.ContextNames.LABOUR_CONTRACTS_LINE_ITEMS);
 			
-			if (CollectionUtils.isEmpty(labourContractContext.getLineItems())) {
-				throw new Exception("Line items cannot be empty");
-			}
+//			if (CollectionUtils.isEmpty(labourContractContext.getLineItems())) {
+//				throw new Exception("Line items cannot be empty");
+//			}
 			if (labourContractContext.getVendor() == null) {
 				throw new Exception("Vendor cannot be empty");
 			}
 			labourContractContext.setContractType(ContractType.LABOUR);
 			
 			if (!isContractRevised && labourContractContext.getId() > 0) {
-				updateRecord(labourContractContext, module, fields);
+				ContractsAPI.updateRecord(labourContractContext, module, fields);
 				
 				DeleteRecordBuilder<LabourContractLineItemContext> deleteBuilder = new DeleteRecordBuilder<LabourContractLineItemContext>()
 						.module(lineModule)
 						.andCondition(CriteriaAPI.getCondition("LABOUR_CONTRACT", "labourContractId", String.valueOf(labourContractContext.getId()), NumberOperators.EQUALS));
 				deleteBuilder.delete();
+				DeleteRecordBuilder<ContractAssociatedTermsContext> deleteTermsBuilder = new DeleteRecordBuilder<ContractAssociatedTermsContext>()
+						.module(termsModule)
+						.andCondition(CriteriaAPI.getCondition("CONTRACT_ID", "contractId", String.valueOf(labourContractContext.getId()), NumberOperators.EQUALS));
+				deleteBuilder.delete();
 				updateLineItems(labourContractContext);
+				ContractsAPI.updateTermsAssociated(labourContractContext);
 				//add labour if newly added here as lineItem
 				addLabourRecords(labourContractContext.getLineItems(),labourModule,labourFields);
-				addRecord(false,labourContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
+				ContractsAPI.addRecord(false,labourContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 
 			}
 			else if (isContractRevised && labourContractContext.getId() > 0) {
 				if(labourContractContext.getStatusEnum() == Status.APPROVED) {
 					LabourContractContext revisedContract = (LabourContractContext)labourContractContext.clone();
-					addRecord(true,Collections.singletonList(revisedContract), module, fields);
+					ContractsAPI.addRecord(true,Collections.singletonList(revisedContract), module, fields);
 					labourContractContext.setStatus(Status.REVISED);
-					updateRecord(labourContractContext, module, fields);
+					ContractsAPI.updateRecord(labourContractContext, module, fields);
 					updateLineItems(revisedContract);
+					ContractsAPI.updateTermsAssociated(revisedContract);
 					addLabourRecords(revisedContract.getLineItems(),labourModule,labourFields);
-					addRecord(false,revisedContract.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
+					ContractsAPI.addRecord(false,revisedContract.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 					context.put(FacilioConstants.ContextNames.REVISED_RECORD, revisedContract);
 					
 				}
@@ -85,13 +94,14 @@ public class AddOrUpdateLabourContractCommand implements Command{
 				
 				labourContractContext.setStatus(LabourContractContext.Status.WAITING_FOR_APPROVAL);
 				labourContractContext.setRevisionNumber(0);
-				addRecord(true,Collections.singletonList(labourContractContext), module, fields);
+				ContractsAPI.addRecord(true,Collections.singletonList(labourContractContext), module, fields);
 				labourContractContext.setParentId(labourContractContext.getLocalId());
-				updateRecord(labourContractContext, module, fields);
+				ContractsAPI.updateRecord(labourContractContext, module, fields);
 				updateLineItems(labourContractContext);
+				ContractsAPI.updateTermsAssociated(labourContractContext);
 				//add labour if newly added here as lineItem
 				addLabourRecords(labourContractContext.getLineItems(),labourModule,labourFields);
-				addRecord(false,labourContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
+				ContractsAPI.addRecord(false,labourContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 
 
 			}
@@ -101,9 +111,11 @@ public class AddOrUpdateLabourContractCommand implements Command{
 		return false;
 	}
 	
-		private void updateLineItems(LabourContractContext labourcontractContext) {
-		for (LabourContractLineItemContext lineItemContext : labourcontractContext.getLineItems()) {
-			lineItemContext.setLabourContractId(labourcontractContext.getId());
+	private void updateLineItems(LabourContractContext labourcontractContext) {
+		if(CollectionUtils.isNotEmpty(labourcontractContext.getLineItems())) {
+			for (LabourContractLineItemContext lineItemContext : labourcontractContext.getLineItems()) {
+				lineItemContext.setLabourContractId(labourcontractContext.getId());
+			}
 		}
 	}
 		
@@ -127,28 +139,11 @@ public class AddOrUpdateLabourContractCommand implements Command{
 				newLabourRecords.add(lineItem.getLabour());
 			}
 		}
-		addRecord(false,newLocationRecords, locationModule, locationFields);
+		ContractsAPI.addRecord(false,newLocationRecords, locationModule, locationFields);
 		if(!CollectionUtils.isEmpty(newLabourRecords)) {
-			addRecord(true,newLabourRecords, labourModule, labourFields);
+			ContractsAPI.addRecord(true,newLabourRecords, labourModule, labourFields);
 		}
-	}
-	private void addRecord(boolean isLocalIdNeeded,List<? extends ModuleBaseWithCustomFields> list, FacilioModule module, List<FacilioField> fields) throws Exception {
-		InsertRecordBuilder insertRecordBuilder = new InsertRecordBuilder<>()
-				.module(module)
-				.fields(fields);
-		if(isLocalIdNeeded) {
-			insertRecordBuilder.withLocalId();
-		}
-		insertRecordBuilder.addRecords(list);
-		insertRecordBuilder.save();
 	}
 	
-	public void updateRecord(ModuleBaseWithCustomFields data, FacilioModule module, List<FacilioField> fields) throws Exception {
-		UpdateRecordBuilder updateRecordBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
-				.module(module)
-				.fields(fields)
-				.andCondition(CriteriaAPI.getIdCondition(data.getId(), module));
-		updateRecordBuilder.update(data);
-	}
 	
 	}
