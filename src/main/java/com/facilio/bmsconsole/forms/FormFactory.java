@@ -62,6 +62,7 @@ public class FormFactory {
 		forms.put("connectedAppForm", getConnectedAppForm());
 		forms.put("inventoryRequestForm", getInventoryRequestForm());
 		forms.put("inventoryRequestWOForm", getInventoryRequestWorkOrderForm());
+		forms.put("serviceForm", getServiceForm());
 			
 		return forms;
 	}
@@ -932,6 +933,27 @@ public class FormFactory {
 		fields.add(new FormField("requestedTime", FieldDisplayType.DATE, "Requested Date", Required.OPTIONAL, 5, 2));
 		fields.add(new FormField("requiredTime", FieldDisplayType.DATE, "Required Date", Required.OPTIONAL, 5, 3));
 		fields.add(new FormField("lineItems", FieldDisplayType.INVREQUEST_LINE_ITEMS, "LINE ITEMS", Required.REQUIRED, 6, 1));
+		
+		return fields;
+	}
+	
+	public static FacilioForm getServiceForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("Service");
+		form.setName("web_default");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.SERVICE));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getServiceFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+	
+	private static List<FormField> getServiceFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("duration", FieldDisplayType.NUMBER, "Duration", Required.REQUIRED, 3, 1));
+		fields.add(new FormField("serviceVendors", FieldDisplayType.PURCHASEDTOOL, "Service Vendors", Required.REQUIRED, 4, 1));
 		
 		return fields;
 	}

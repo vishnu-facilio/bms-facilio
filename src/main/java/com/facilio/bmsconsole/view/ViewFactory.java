@@ -3674,6 +3674,17 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Shift Rotation");
+	}
+	private static FacilioView getAllServiceView() {
+		FacilioField name = new FacilioField();
+		name.setName("name");
+		name.setDataType(FieldType.STRING);
+		name.setColumnName("name");
+		name.setModule(ModuleFactory.getServiceModule());
+		
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Service");
 		allView.setSortFields(Arrays.asList(new SortField(name, false)));
 		return allView;
 	}

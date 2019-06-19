@@ -2612,8 +2612,9 @@
 			<param name="moduleName">service</param>
 			<param name="permission">CREATE,UPDATE,UPDATE_OWN</param>
 		</action>
-		   <action name="list"
+		   <action name="*"
 			class="com.facilio.bmsconsole.actions.ServiceAction" method="getServiceList">
+			<param name="viewName">{1}</param>
 			<param name="moduleName">service</param>
 			<param name="permission">READ,READ_OWN</param>
 		</action>

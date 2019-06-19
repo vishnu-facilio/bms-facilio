@@ -86,6 +86,7 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.ATTENDANCE, getAttendanceModule());
 		moduleMap.put(FacilioConstants.ContextNames.ATTENDANCE_TRANSACTIONS, getAttendanceTransactionModule());
 		moduleMap.put(FacilioConstants.ContextNames.GRAPHICS, getGraphicsModule());
+		moduleMap.put(FacilioConstants.ContextNames.SERVICE, getServiceModule());
 		moduleMap.put(FacilioConstants.ContextNames.NEW_READING_ALARM, getReadingAlarmModule());
 
 
@@ -2281,7 +2282,7 @@ public class ModuleFactory {
 		module.setTableName("Store_Notification_config");
 		return module;
 	}
-	
+
 	public static FacilioModule getReadingAlarmModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName(ContextNames.NEW_READING_ALARM);
