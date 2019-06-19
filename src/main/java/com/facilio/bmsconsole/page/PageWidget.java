@@ -227,7 +227,13 @@ public class PageWidget {
 		RANK_RULE("rankRule"),
 		RULE_ASSETS_ALARM("assetsAlarm"),
 		RULE_ALARM_INSIGHT("alarmInsight"),
-		RULE_WO("")
+		RULE_WO(""),
+		ECM("ecm"),
+		MV_SAVINGS("savings"),
+		MV_ENERGY("mvEnergy"),
+		CARBON_EMISSION("carbonEmision"),
+		BASELINE_EQUATION("baselineEquation"),
+		MV_ADJUSTMENTS("mvAdjustments")
  		;
 		private String name;
 		

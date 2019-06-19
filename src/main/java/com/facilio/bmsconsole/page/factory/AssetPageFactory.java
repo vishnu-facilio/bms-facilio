@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.page.factory;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
@@ -11,6 +12,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingType;
@@ -22,14 +24,23 @@ import com.facilio.bmsconsole.page.PageWidget.CardType;
 import com.facilio.bmsconsole.page.PageWidget.WidgetType;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.fields.FacilioField;
 
 public class AssetPageFactory extends PageFactory {
 	
 	private static final Logger LOGGER = LogManager.getLogger(AssetPageFactory.class.getName());
 	
-	public static Page getAssetPage(AssetContext asset) {
+	public static Page getAssetPage(AssetContext asset) throws Exception {
 		Page page = new Page();
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
 		Tab tab1 = page.new Tab("summary");
 		page.addTab(tab1);
@@ -63,42 +74,46 @@ public class AssetPageFactory extends PageFactory {
 		tab2.addSection(tab2Sec3);
 		addUnPlannedWoWidget(tab2Sec3);
 
-		if (asset.isConnected()) {
-			
-			Tab tab3 = page.new Tab("readings");
-			page.addTab(tab3);
-			
-			Section tab3Sec1 = page.new Section();
-			tab3.addSection(tab3Sec1);
-			
-			addReadingWidget(tab3Sec1);
-			
-			try {
-				if (AccountUtil.isFeatureEnabled(FeatureLicense.CONTROL_ACTIONS)) {
-					Section tab3Sec2 = page.new Section("commands");
-					tab3.addSection(tab3Sec2);
-					
-					addCommandWidget(tab3Sec2, asset.getId());
-				}
-			} catch (Exception e) {
-				LOGGER.error("Error in checking control action license or adding command widget", e);
+		Tab tab3 = page.new Tab("readings");
+		page.addTab(tab3);
+		
+		Section tab3Sec1 = page.new Section();
+		tab3.addSection(tab3Sec1);
+		
+		addReadingWidget(tab3Sec1);
+		
+		try {
+			if (AccountUtil.isFeatureEnabled(FeatureLicense.CONTROL_ACTIONS)) {
+				Section tab3Sec2 = page.new Section("commands");
+				tab3.addSection(tab3Sec2);
+				
+				addCommandWidget(tab3Sec2, asset.getId());
 			}
-			
-			
-			Tab tab4 = page.new Tab("performance");
-			page.addTab(tab4);
-			
-			Section tab4Sec1 = page.new Section();
-			tab4.addSection(tab4Sec1);
-			
-			addAssetLifeWidget(tab4Sec1);
-			addAlarmInsightsWidget(tab4Sec1);
-			addLastDownTimeWidget(tab4Sec1);
-			addOverallDowntimeWidget(tab4Sec1);
-			addFailureRateWidget(tab4Sec1);
-			addAvgTtrWidget(tab4Sec1);
-			
+		} catch (Exception e) {
+			LOGGER.error("Error in checking control action license or adding command widget", e);
 		}
+		
+		
+		Tab tab4 = page.new Tab("performance");
+		page.addTab(tab4);
+		
+		Section tab4Sec1 = page.new Section();
+		tab4.addSection(tab4Sec1);
+		
+		addAssetLifeWidget(tab4Sec1);
+		addAlarmInsightsWidget(tab4Sec1);
+		addLastDownTimeWidget(tab4Sec1);
+		addOverallDowntimeWidget(tab4Sec1);
+		
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.ASSET_BREAKDOWN));
+		
+		Criteria breakdownCriteria = new Criteria();
+		breakdownCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(asset.getId()), NumberOperators.EQUALS));
+		
+		addFailureRateWidget(tab4Sec1, breakdownCriteria);
+		addAvgTtrWidget(tab4Sec1, breakdownCriteria);
+		
 		
 		
 		Tab tab5 = page.new Tab("history", "history");
@@ -248,20 +263,24 @@ public class AssetPageFactory extends PageFactory {
 		section.addWidget(cardWidget);
 	}
 	
-	private static void addFailureRateWidget(Section section) {
-		PageWidget cardWidget = new PageWidget(WidgetType.CHART);
+	private static void addFailureRateWidget(Section section, Criteria breakdownCriteria) {
+		PageWidget cardWidget = new PageWidget(WidgetType.CHART, "failureRate");
 		cardWidget.addToLayoutParams(section, 12, 14);
 		cardWidget.addToWidgetParams("type", CardType.FAILURE_RATE.getName());
+		
+		addChartParams(cardWidget, "fromtime", "timeBetweenFailure", breakdownCriteria);
+		
 		section.addWidget(cardWidget);
 	}
 	
-	private static void addAvgTtrWidget(Section section) {
-		PageWidget cardWidget = new PageWidget(WidgetType.CHART);
+	private static void addAvgTtrWidget(Section section, Criteria breakdownCriteria) {
+		PageWidget cardWidget = new PageWidget(WidgetType.CHART, "avgTtr");
 		cardWidget.addToLayoutParams(section, 12, 14);
 		cardWidget.addToWidgetParams("type", CardType.AVG_TTR.getName());
+		
+		addChartParams(cardWidget, "fromtime", "duration", breakdownCriteria);
+		
 		section.addWidget(cardWidget);
 	}
-	
-	
 	
 }

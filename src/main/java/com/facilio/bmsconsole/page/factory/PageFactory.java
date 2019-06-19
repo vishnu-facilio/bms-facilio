@@ -11,17 +11,25 @@ import com.facilio.bmsconsole.page.PageWidget.WidgetType;
 import com.facilio.bmsconsole.page.WidgetGroup.WidgetGroupType;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.modules.AggregateOperator;
+import com.facilio.modules.AggregateOperator.DateAggregateOperator;
+import com.facilio.modules.AggregateOperator.NumberAggregateOperator;
+import com.facilio.mv.context.MVProject;
 
 public class PageFactory {
 
 
-	public static Page getPage(String moduleName, Object record) {
+	public static Page getPage(String moduleName, Object record) throws Exception {
 		switch(moduleName) {
 			case ContextNames.ASSET:
 				return AssetPageFactory.getAssetPage((AssetContext) record);
 			case ContextNames.READING_RULE_MODULE:
 				return RulePageFactory.getRulePage((AlarmRuleContext) record);
-		} 
+			case ContextNames.MV_PROJECT_MODULE:
+				return MVProjectPageFactory.getMVProjectPage((MVProject) record);
+		}
 		return null;
 	}
 
@@ -91,5 +99,33 @@ public class PageFactory {
 		paramsJson.put("xAggr", xAggr);
 		cardWidget.addToWidgetParams("paramsJson", paramsJson);
 	}
+	
+	protected static void addChartParams(PageWidget widget, String xFieldName, String yFieldName, Criteria criteria) {
+		addChartParams(widget, "line", DateAggregateOperator.MONTHANDYEAR, xFieldName, NumberAggregateOperator.AVERAGE, yFieldName, DateOperators.CURRENT_YEAR, null, criteria);
+	}
+	
+	@SuppressWarnings("unchecked")
+	protected static void addChartParams(PageWidget widget, String chartType, AggregateOperator xAggr, String xFieldName, AggregateOperator yAggr, 
+			String yFieldName, DateOperators dateOperator, String dateOperatorValue, Criteria criteria) {
+		JSONObject obj = new JSONObject();
+		obj.put("chartType", chartType);
+		
+		JSONObject xField = new JSONObject();
+		xField.put("aggr", xAggr.getValue());
+		xField.put("fieldName", xFieldName);
+		obj.put("xField", xField);
+		
+		JSONObject yField = new JSONObject();
+		yField.put("aggr", yAggr.getValue());
+		yField.put("fieldName", yFieldName);
+		obj.put("yField", yField);
+		
+		obj.put("dateOperator", dateOperator.getOperatorId());
+		obj.put("dateOperatorValue", dateOperatorValue);
+		obj.put("criteria", criteria);
+		
+		widget.addToWidgetParams("chartParams", obj);
+	}
+
 
 }
