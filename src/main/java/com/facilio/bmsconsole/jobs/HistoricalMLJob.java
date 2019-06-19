@@ -86,9 +86,13 @@ public class HistoricalMLJob extends FacilioJob {
 	{
 		final Calendar cal = Calendar.getInstance(TimeZone.getTimeZone(timeZone));
         cal.setTimeInMillis(time);
+<<<<<<< HEAD
         SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-DD");
         sdf.setTimeZone(TimeZone.getTimeZone(timeZone));
         return sdf.format(cal.getTimeInMillis());
+=======
+        return new SimpleDateFormat("YYYY-MM-dd").format(cal.getTime());
+>>>>>>> branch 'master' of https://git-codecommit.us-west-2.amazonaws.com/v1/repos/bmsconsole
 	}
 	
 	private void generateMLModel(long predictedTime,long meterID,Hashtable<Long,Hashtable<String,SortedMap<Long,Object>>> mlVariablesDataMap,String modelPath,long logModuleID) throws Exception
@@ -97,7 +101,11 @@ public class HistoricalMLJob extends FacilioJob {
 		postObj.put("ml_id",100);
 		postObj.put("orgid",88);
 		LOGGER.info("Time is "+predictedTime+"::"+"no Time Zone date "+getDate(predictedTime)+":: With Time zone"+getDateByTimeZone(predictedTime,"Asia/Dubai"));
+<<<<<<< HEAD
 		postObj.put("date",getDateByTimeZone(predictedTime,"Asia/Dubai"));
+=======
+		postObj.put("date",getDate(predictedTime));
+>>>>>>> branch 'master' of https://git-codecommit.us-west-2.amazonaws.com/v1/repos/bmsconsole
 		
 		JSONObject modelVariables = new JSONObject();
 		modelVariables.put("timezone","Asia/Dubai");
