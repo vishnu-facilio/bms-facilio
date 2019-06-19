@@ -392,12 +392,13 @@ public class UserBeanImpl implements UserBean {
 		String token = EncryptionUtil.decode(tokenPortal[0]);
 		String[] userObj = token.split(USER_TOKEN_REGEX);
 		User user = null;
-		if(userObj.length == 4) {
+		if(userObj.length == 5) {
 			user = new User();
-			user.setOuid(Long.parseLong(userObj[0]));
-			user.setUid(Long.parseLong(userObj[1]));
+			user.setOrgId(Long.parseLong(userObj[0]));
+			user.setOuid(Long.parseLong(userObj[1]));
+			user.setUid(Long.parseLong(userObj[2]));
 			user.setEmail(userObj[2]);
-			user.setInvitedTime(Long.parseLong(userObj[3]));
+			user.setInvitedTime(Long.parseLong(userObj[4]));
 			if(tokenPortal.length > 1) {
 				String[] portalIdString = tokenPortal[1].split("=");
 				if(portalIdString.length > 1){
@@ -412,16 +413,17 @@ public class UserBeanImpl implements UserBean {
 	public static void main(String []args)
 	{
 		UserBeanImpl us = new UserBeanImpl();
-		User s = us.getUserFromToken("Uwqdpnyarl7sicYMThD3pCWifE3j8vdkBFuw11pebAbgz3nSSxjM0YoRGOTYnYfA&portalid=139");
+		User s = us.getUserFromToken("WQTPY00rLVIT43IDDw5x68VBKwVdPFdcWhyeG04lqhujrQHyTKMT5g==");
 		System.out.println(s.getEmail());
 		System.out.println(s.getUid());
 		System.out.println(s.getOuid());
 		System.out.println(s.getPortalId());
+		System.out.println(s.getOrgId());
 
 		
 	}
 	private String getEncodedToken(User user) {
-		return EncryptionUtil.encode(user.getOuid() + USER_TOKEN_REGEX + user.getUid()+ USER_TOKEN_REGEX + user.getEmail() + USER_TOKEN_REGEX + System.currentTimeMillis());
+		return EncryptionUtil.encode(user.getOrgId()+ USER_TOKEN_REGEX +user.getOuid() + USER_TOKEN_REGEX + user.getUid()+ USER_TOKEN_REGEX + user.getEmail() + USER_TOKEN_REGEX + System.currentTimeMillis());
 	}
 
 	private String getUserLink(User user, String url) {
@@ -590,10 +592,11 @@ public class UserBeanImpl implements UserBean {
 	public boolean acceptInvite(String token, String password) throws Exception {
 		User user = getUserFromToken(token);
 		user.setPassword(password);
-		return acceptUser(user);
+		long orgId=(user.getOrgId());
+		return AccountUtil.getTransactionalUserBean(orgId).acceptUser(user);
 	}
 
-	private boolean acceptUser(User user) throws Exception {
+	public boolean acceptUser(User user) throws Exception {
 		if(user != null) {
 			FacilioField inviteAcceptStatus = new FacilioField();
 			inviteAcceptStatus.setName("inviteAcceptStatus");

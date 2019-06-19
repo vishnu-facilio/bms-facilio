@@ -120,6 +120,8 @@ public interface UserBean {
     List<Long> getAccessibleSpaceList (long uid) throws Exception;
     List<Long> getAccessibleGroupList (long uid) throws Exception;
 
+	public boolean acceptUser(User user) throws Exception;
+
 	//public void sendInvitation(long ouid, User user) throws Exception;
 
 //	public void sendInvitation(long ouid, User user) throws Exception;
