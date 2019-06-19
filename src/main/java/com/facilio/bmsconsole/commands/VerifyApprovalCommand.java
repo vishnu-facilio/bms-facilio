@@ -1,5 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
@@ -9,13 +17,6 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class VerifyApprovalCommand implements Command {
 
@@ -31,7 +32,8 @@ public class VerifyApprovalCommand implements Command {
 			for (WorkOrderContext wo : oldWos) {
 				if (wo.getModuleState() != null) {
 					FacilioStatus stateContext = StateFlowRulesAPI.getStateContext(wo.getModuleState().getId());
-					if (stateContext.getRecordLocked()) {
+					Long stateTransitionId = (Long) context.get(FacilioConstants.ContextNames.TRANSITION_ID);
+					if (stateContext.getRecordLocked() && (stateTransitionId == null || stateTransitionId == -1)) {
 						throw new IllegalArgumentException("Workorder with lock cannot be updated");
 					}
 				}

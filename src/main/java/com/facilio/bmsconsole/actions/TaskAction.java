@@ -717,7 +717,7 @@ public class TaskAction extends FacilioAction {
 		StringBuilder body = new StringBuilder("\n\nDetails: \n");
 		if (e != null) {
 			if (e instanceof IllegalArgumentException) {
-				if (e.getMessage().equals("Task cannot be updated for completed tickets")) {
+				if (e.getMessage().equals("Task cannot be updated for completed tickets") || e.getMessage().equals(" Atleast one file has to be attached since attachment is required to close the task")) {
 					return;
 				}
 				errorTrace = ExceptionUtils.getStackTrace(e);

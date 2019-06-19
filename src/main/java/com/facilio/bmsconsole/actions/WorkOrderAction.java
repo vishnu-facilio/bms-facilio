@@ -1114,6 +1114,7 @@ public class WorkOrderAction extends FacilioAction {
 															// allow close to be
 															// edited
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
+		setUpdateWorkorderContext(context);
 
 		if (actualWorkDuration != -1) {
 			workorder.setActualWorkDuration(actualWorkDuration);
