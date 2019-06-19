@@ -42,6 +42,18 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	
+	public static Chain fetchRegressionReportChain() {
+	
+		Chain c  = getDefaultChain();
+		c.addCommand(new CreateReadingAnalyticsReportCommand());
+		c.addCommand(newFetchReportDataChain());
+		c.addCommand(new AddRegressionPointsCommand());
+		
+		return c;
+	}
+	
+	
 	public static Chain newFetchReportDataChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new FilterFieldCommand());

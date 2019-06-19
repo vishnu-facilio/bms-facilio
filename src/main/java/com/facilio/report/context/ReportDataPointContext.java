@@ -257,6 +257,15 @@ public class ReportDataPointContext {
 		this.aggrCalculated = aggrCalculated;
 	}
 
+	private String expressionString;
+	
+	public String getExpressionString() {
+		return expressionString;
+	}
+	public void setExpressionString(String expressionString) {
+		this.expressionString = expressionString;
+	}
+
 	private boolean fetchResource;
 	public boolean isFetchResource() {
 		return fetchResource;

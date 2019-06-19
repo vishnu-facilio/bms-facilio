@@ -975,9 +975,12 @@
 		<action name="readingReport" class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="fetchReadingsData">
 		</action>
+		<action name="regressionreport" class="com.facilio.bmsconsole.actions.V2ReportAction"
+			method="fetchRegressionReport">
+		</action>
 		<action name="fetchReadingsFromCard" class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="fetchReadingsFromCard">
-		</action>
+		</action>	
 		<action name="fetchReadingsFromAlarm" class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="fetchReadingsFromAlarm">
 		</action>

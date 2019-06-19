@@ -21,6 +21,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.AddOrUpdateReportCommand;
 import com.facilio.bmsconsole.commands.ConstructReportData;
+import com.facilio.bmsconsole.commands.CreateReadingAnalyticsReportCommand;
 import com.facilio.bmsconsole.commands.GenerateCriteriaFromFilterCommand;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -29,6 +30,7 @@ import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.MLAlarmContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
+import com.facilio.bmsconsole.context.RegressionContext;
 import com.facilio.bmsconsole.context.ReportInfo;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SharingContext;
@@ -293,6 +295,9 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.Workflow.WORKFLOW, transformWorkflow);
 		context.put(FacilioConstants.ContextNames.REPORT_HANDLE_BOOLEAN, newFormat);
 		
+		if(regressionConfig != null && !regressionConfig.isEmpty()) {
+			context.put(FacilioConstants.ContextNames.REGRESSION_CONFIG, regressionConfig);
+		}
 		context.put(FacilioConstants.ContextNames.ALARM_ID, alarmId);
 	}
 	
@@ -514,6 +519,32 @@ public class V2ReportAction extends FacilioAction {
 		return setReportResult(context);
 	}
 	
+	public String fetchRegressionReport() throws Exception{
+		FacilioContext context = new FacilioContext();
+		setReadingsDataContext(context);
+		
+		if(regressionConfig == null || regressionConfig.isEmpty()) {
+			setResult("error",  "Regression Config cannot be empty.");
+			return SUCCESS;
+		}
+		else {
+			Chain c = ReadOnlyChainFactory.fetchRegressionReportChain();
+			c.execute(context);
+			return setReportResult(context);
+		}
+		
+	}
+	
+	
+	private List<RegressionContext> regressionConfig;
+	
+	public List<RegressionContext> getRegressionConfig() {
+		return regressionConfig;
+	}
+	public void setRegressionConfig(List<RegressionContext> regressionConfig) {
+		this.regressionConfig = regressionConfig;
+	}
+
 	private JSONObject xField;
 	public JSONObject getxField() {
 		return xField;
@@ -627,7 +658,6 @@ public class V2ReportAction extends FacilioAction {
 
 		return setReportResult(context);
 	}
-	
 	
 	private void getReport(FacilioContext context) throws Exception {
 		ReportContext reportContext = ReportUtil.getReport(reportId);

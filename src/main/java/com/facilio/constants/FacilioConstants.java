@@ -194,6 +194,8 @@ public class FacilioConstants {
 		public static final String ACTIVITY_LIST = "activityList";
 		public static final String CURRENT_ACTIVITY = "currentActivity";
 		public static final String MODIFIED_TIME = "modifiedTime";
+		public static final String REGRESSION_CONFIG = "regressionConfig";
+		public static final String REGRESSION_RESULT = "regressionResult";
 
 		public static final String TENANT_STATUS = "tenantStatus";
 		public static final String USER_ID = "userId";
