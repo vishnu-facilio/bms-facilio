@@ -1,3 +1,4 @@
+<%@page import="com.facilio.logging.SysOutLogger"%>
 <%@page import="com.facilio.accounts.util.AccountUtil, 
 java.util.List, 
 java.sql.Timestamp,
@@ -8,21 +9,21 @@ java.sql.Timestamp,
     pageEncoding="ISO-8859-1"%>
   
  <%
- 	String email = request.getParameter("email");
- List<User> userList = null;
- List<Map<String, Object>> sessions = null;
- User usr = null;
- if (email != null) {
-	 usr = AccountUtil.getUserBean().getFacilioUser(email);
-	 sessions = AccountUtil.getUserBean().getUserSessions(usr.getUid(), null);
-	
-	 long orgId = usr.getOrgId();
-	 long roleId = usr.getRoleId();
-	 if (AccountUtil.getRoleBean().getRole(roleId).getName().equalsIgnoreCase("Super Administrator")) {
-		 userList = AccountUtil.getOrgBean().getAllOrgUsers(orgId);	    
-	 }
- }
- %>
+   	String email = request.getParameter("email");
+    List<User> userList = null;
+    List<Map<String, Object>> sessions = null;
+    User usr = null;
+    			if (email != null) {
+   		usr = AccountUtil.getUserBean().getFacilioUser(email);
+   		sessions = AccountUtil.getUserBean().getUserSessions(usr.getUid(), null);
+
+   		long orgId = usr.getOrgId();
+   		long roleId = usr.getRoleId();
+   		if (AccountUtil.getRoleBean(orgId).getRole(roleId).getName().equalsIgnoreCase("Super Administrator")) {
+   			userList = AccountUtil.getOrgBean(orgId).getAllOrgUsers(orgId);
+   		}
+   	}
+   %>
  
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>

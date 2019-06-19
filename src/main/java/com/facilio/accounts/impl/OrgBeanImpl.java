@@ -248,7 +248,8 @@ public class OrgBeanImpl implements OrgBean {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getUserFields());
 		fields.addAll(AccountConstants.getOrgUserFields());
-//		fields.addAll(FieldFactory.getShiftUserRelModuleFields());
+		fields.add(AccountConstants.getOrgIdField());
+		//		fields.addAll(FieldFactory.getShiftUserRelModuleFields());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
