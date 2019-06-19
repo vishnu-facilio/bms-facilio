@@ -6,15 +6,21 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
-import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.BaseEventContext;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
+import com.facilio.bmsconsole.util.NewEventAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext.EventInternalState;
 import com.facilio.events.context.EventContext.EventState;
+import com.facilio.events.util.EventAPI;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.UpdateRecordBuilder;
 
 public class NewEventsToAlarmsConversionCommand implements Command {
 
@@ -39,6 +45,7 @@ public class NewEventsToAlarmsConversionCommand implements Command {
 			}
 			baseEvent.setInternalState(EventInternalState.COMPLETED);
 		}
+		updateEvent(baseEvent);
 	}
 
 	private void addOrUpdateAlarm(BaseEventContext baseEvent) throws Exception {
@@ -51,28 +58,31 @@ public class NewEventsToAlarmsConversionCommand implements Command {
 		}
 		
 		if (alarmOccurrence == null) {
-			// there is no active alarm for this event
-			//create alarm
-//			NewAlarmAPI.createAlarm(alarm);
-//			BaseAlarmContext alarm = baseEvent.addOrUpdateAlarm(true);
-//			NewAlarmAPI.createAlarm(alarm);
 			alarmOccurrence = NewAlarmAPI.createAlarm(baseEvent);
+			baseEvent.setEventState(EventState.ALARM_CREATED);
 		}
 		else if (alarmOccurrence.getSeverity().equals(AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.CLEAR_SEVERITY))) {
 			// create alarm occurrence
-			
+			alarmOccurrence = NewAlarmAPI.createAlarmOccurrence(alarmOccurrence.getAlarm(), baseEvent);
+			baseEvent.setEventState(EventState.ALARM_CREATED);
 		}
 		else {
 			NewAlarmAPI.updateAlarmOccurrence(alarmOccurrence, baseEvent);
+			baseEvent.setEventState(EventState.ALARM_UPDATED);
 		}
 		
 		baseEvent.setAlarmOccurrence(alarmOccurrence);
-		updateEvent(baseEvent);
 	}
 
-	private void updateEvent(BaseEventContext baseEvent) {
-		// TODO Auto-generated method stub
-		
+	private void updateEvent(BaseEventContext baseEvent) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(NewEventAPI.getEventModuleName(baseEvent.getAlarmType()));
+		UpdateRecordBuilder<BaseEventContext> builder = new UpdateRecordBuilder<BaseEventContext>()
+				.moduleName(module.getName())
+				.fields(modBean.getAllFields(module.getName()))
+				.andCondition(CriteriaAPI.getIdCondition(baseEvent.getId(), module))
+				;
+		builder.update(baseEvent);
 	}
 
 }

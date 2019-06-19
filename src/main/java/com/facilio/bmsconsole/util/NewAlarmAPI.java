@@ -1,21 +1,32 @@
 package com.facilio.bmsconsole.util;
 
+import java.util.Collections;
+import java.util.Map;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.AlarmSeverityContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
+import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.bmsconsole.context.BaseEventContext;
 import com.facilio.bmsconsole.context.ReadingAlarm;
+import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.InsertRecordBuilder;
-import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
+import com.facilio.time.DateTimeUtil;
 
 public class NewAlarmAPI {
 
@@ -31,6 +42,32 @@ public class NewAlarmAPI {
 				.select(modBean.getAllFields(moduleName))
 				.andCondition(CriteriaAPI.getCondition("ALARM_KEY", "key", messageKey, StringOperators.IS));
 		return (BaseAlarmContext) builder.fetchFirst();
+	}
+
+	private static BaseAlarmContext getAlarm(long id) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_AlARM);
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(module.getTableName())
+				.select(Collections.singletonList(FieldFactory.getField("type", "TYPE", module, FieldType.ENUM)))
+				.andCondition(CriteriaAPI.getIdCondition(id, module));
+		Map<String, Object> map = builder.fetchFirst();
+		if (MapUtils.isNotEmpty(map)) {
+			Object typeObject = map.get("type");
+			BaseAlarmContext.Type type = null;
+			if (typeObject != null && typeObject instanceof Number) {
+				type = Type.valueOf(((Number) typeObject).intValue());
+			}
+			if (type != null) {
+				SelectRecordsBuilder<BaseAlarmContext> selectBuilder = new SelectRecordsBuilder<>()
+						.moduleName(getAlarmModuleName(type))
+						.beanClass(getAlarmClass(type))
+						.select(modBean.getAllFields(getAlarmModuleName(type)))
+						.andCondition(CriteriaAPI.getIdCondition(id, module));
+				return selectBuilder.fetchFirst();
+			}
+		}
+		return null;
 	}
 	
 	private static Class getAlarmClass(Type type) {
@@ -75,7 +112,8 @@ public class NewAlarmAPI {
 				.andCondition(CriteriaAPI.getCondition("ALARM_ID", "alarm", String.valueOf(alarm.getId()), NumberOperators.EQUALS))
 				.orderBy("CREATED_TIME DESC")
 				.limit(1);
-		return builder.fetchFirst();
+		AlarmOccurrenceContext alarmOccurrence = builder.fetchFirst();
+		return alarmOccurrence;
 	}
 
 	public static AlarmOccurrenceContext getActiveAlarmOccurance(String messageKey, Type alarmType) throws Exception {
@@ -92,10 +130,22 @@ public class NewAlarmAPI {
 		
 		AlarmOccurrenceContext alarmOccurrence = new AlarmOccurrenceContext();
 		baseEvent.updateAlarmOccurrenceContext(alarmOccurrence, true);
+		
 		BaseAlarmContext baseAlarm = baseEvent.updateAlarmContext(null, true);
+		updateAlarmSystemFields(baseAlarm, alarmOccurrence);
 		addAlarm(baseAlarm, baseEvent.getAlarmType(), alarmOccurrence.getSeverity(), modBean);
 		alarmOccurrence.setAlarm(baseAlarm);
 		
+		addAlarmOccurrence(alarmOccurrence, modBean);
+		return alarmOccurrence;
+	}
+	
+	public static AlarmOccurrenceContext createAlarmOccurrence(BaseAlarmContext baseAlarm, BaseEventContext baseEvent) throws Exception {
+		AlarmOccurrenceContext alarmOccurrence = new AlarmOccurrenceContext();
+		baseEvent.updateAlarmOccurrenceContext(alarmOccurrence, true);
+		alarmOccurrence.setAlarm(baseAlarm);
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		addAlarmOccurrence(alarmOccurrence, modBean);
 		return alarmOccurrence;
 	}
@@ -124,12 +174,33 @@ public class NewAlarmAPI {
 		baseEvent.updateAlarmOccurrenceContext(alarmOccurrence, false);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
+		FacilioModule occurrenceModule = modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURANCE);
 		UpdateRecordBuilder<AlarmOccurrenceContext> builder = new UpdateRecordBuilder<AlarmOccurrenceContext>()
-				.moduleName(FacilioConstants.ContextNames.ALARM_OCCURANCE)
-				.fields(modBean.getAllFields(FacilioConstants.ContextNames.ALARM_OCCURANCE));
+				.module(occurrenceModule)
+				.fields(modBean.getAllFields(occurrenceModule.getName()))
+				.andCondition(CriteriaAPI.getIdCondition(alarmOccurrence.getId(), occurrenceModule));
 		builder.update(alarmOccurrence);
 		
 		// roll-up alarm object
+		BaseAlarmContext baseAlarm = getAlarm(alarmOccurrence.getAlarm().getId());
+		baseEvent.updateAlarmContext(baseAlarm, false);
+		alarmOccurrence.updateAlarm(baseAlarm);
 		
+		updateAlarmSystemFields(baseAlarm, alarmOccurrence);
+		
+		FacilioModule alarmModule = modBean.getModule(getAlarmModuleName(baseAlarm.getTypeEnum()));
+		UpdateRecordBuilder<BaseAlarmContext> alarmUpdateBuilder = new UpdateRecordBuilder<BaseAlarmContext>()
+				.module(alarmModule)
+				.fields(modBean.getAllFields(alarmModule.getName()))
+				.andCondition(CriteriaAPI.getIdCondition(baseAlarm.getId(), alarmModule));
+		alarmUpdateBuilder.update(baseAlarm);
+	}
+
+	private static void updateAlarmSystemFields(BaseAlarmContext baseAlarm, AlarmOccurrenceContext alarmOccurrence) throws Exception {
+		long currenTime = DateTimeUtil.getCurrenTime();
+		baseAlarm.setLastOccurredTime(currenTime);
+		if (alarmOccurrence.getSeverity().equals(AlarmAPI.getAlarmSeverity("Clear"))) {
+			baseAlarm.setLastClearedTime(currenTime);
+		}
 	}
 }

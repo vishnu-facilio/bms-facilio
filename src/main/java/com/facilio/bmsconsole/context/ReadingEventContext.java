@@ -61,13 +61,6 @@ public class ReadingEventContext extends BaseEventContext {
 	@Override
 	public void updateAlarmOccurrenceContext(AlarmOccurrenceContext alarmOccurrence, boolean add) {
 		super.updateAlarmOccurrenceContext(alarmOccurrence, add);
-		AlarmSeverityContext previousSeverity = alarmOccurrence.getSeverity();
-		alarmOccurrence.setSeverity(getSeverity());
-		if (add) {
-			alarmOccurrence.setCondition(getCondition());
-		} else {
-			alarmOccurrence.setPreviousSeverity(previousSeverity);
-		}
 	}
 	
 	private long ruleId = -1;

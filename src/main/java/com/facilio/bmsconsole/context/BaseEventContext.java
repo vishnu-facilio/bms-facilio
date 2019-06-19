@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -24,34 +25,12 @@ public abstract class BaseEventContext extends ModuleBaseWithCustomFields {
 		this.description = description;
 	}
 	
-	private String condition;
-	public String getCondition() {
-		if (condition == null && eventMessage != null) {
-			condition = eventMessage;
-		}
-		return condition;
-	}
-	public void setCondition(String condition) {
-		this.condition = condition;
-	}
-	
 	private String eventMessage;
 	public String getEventMessage() {
-		if (eventMessage == null && condition != null) {
-			eventMessage = condition;
-		}
 		return eventMessage;
 	}
 	public void setEventMessage(String eventMessage) {
 		this.eventMessage = eventMessage;
-	}
-	
-	private String source;
-	public String getSource() {
-		return source;
-	}
-	public void setSource(String source) {
-		this.source = source;
 	}
 	
 	private ResourceContext resource;
@@ -160,38 +139,39 @@ public abstract class BaseEventContext extends ModuleBaseWithCustomFields {
 		this.comment = comment;
 	}
 	
-	private JSONObject additionInfo;
-//	@JsonAnyGetter
-	public JSONObject getAdditionInfo() {
-		return additionInfo;
-	}
-	public void setAdditionInfo(JSONObject additionInfo) {
-		this.additionInfo = additionInfo;
-	}
-//	@JsonAnySetter
-	public void addAdditionInfo(String key, Object value) {
-		if(this.additionInfo == null) {
-			this.additionInfo =  new JSONObject();
-		}
-		this.additionInfo.put(key,value);
-	}
-	public String getAdditionalInfoJsonStr() {
-		if(additionInfo != null) {
-			return additionInfo.toJSONString();
-		}
-		return null;
-	}
-	public void setAdditionalInfoJsonStr(String jsonStr) throws ParseException {
-		JSONParser parser = new JSONParser();
-		additionInfo = (JSONObject) parser.parse(jsonStr);
-	}
-	
 	private Type alarmType;
 	public Type getAlarmType() {
 		return alarmType;
 	}
 	public void setAlarmType(Type alarmType) {
 		this.alarmType = alarmType;
+	}
+	
+	private Boolean autoClear;
+	public Boolean getAutoClear() {
+		if (autoClear == null) {
+			return false;
+		}
+		return autoClear;
+	}
+	public void setAutoClear(Boolean autoClear) {
+		this.autoClear = autoClear;
+	}
+	
+	private String possibleCause;
+	public String getPossibleCause() {
+		return possibleCause;
+	}
+	public void setPossibleCause(String possibleCause) {
+		this.possibleCause = possibleCause;
+	}
+	
+	private String recommendation;
+	public String getRecommendation() {
+		return recommendation;
+	}
+	public void setRecommendation(String recommendation) {
+		this.recommendation = recommendation;
 	}
 	
 	public BaseAlarmContext updateAlarmContext(BaseAlarmContext baseAlarm, boolean add) {
@@ -202,21 +182,39 @@ public abstract class BaseEventContext extends ModuleBaseWithCustomFields {
 			baseAlarm.setResource(getResource());
 			baseAlarm.setKey(getMessageKey());
 		}
-		
-		if (getAdditionInfo() != null) {
-			// TODO check auto clear
-//			baseAlarm.put("autoClear", getAdditionInfo().get("autoClear"));
-		}
 		return baseAlarm;
 	}
 	
 	public void updateAlarmOccurrenceContext(AlarmOccurrenceContext alarmOccurrence, boolean add) {
+		AlarmSeverityContext previousSeverity = alarmOccurrence.getSeverity();
 		alarmOccurrence.setSeverity(getSeverity());
+		alarmOccurrence.setAutoClear(getAutoClear());
 		
 		if (add) {
-			alarmOccurrence.setCondition(getCondition());
-			alarmOccurrence.setSeverity(getSeverity());
-//			alarmOccurrence.setProblem(getpro);
+		} 
+		else {
+			alarmOccurrence.setPreviousSeverity(previousSeverity);
+		}
+		
+		if (StringUtils.isNotEmpty(getPossibleCause())) {
+			String possibleCauses = alarmOccurrence.getPossibleCauses();
+			if (StringUtils.isNotEmpty(possibleCauses)) {
+				possibleCauses += "\n" + getPossibleCause();
+			} else {
+				possibleCauses = getPossibleCause();
+			}
+			alarmOccurrence.setPossibleCauses(possibleCauses);
+		}
+		
+		if (StringUtils.isNotEmpty(getRecommendation())) {
+			String recommendations = alarmOccurrence.getRecommendation();
+			if (StringUtils.isNotEmpty(recommendations)) {
+				recommendations += "\n" + getRecommendation();
+			} 
+			else {
+				recommendations = getRecommendation();
+			}
+			alarmOccurrence.setRecommendation(recommendations);
 		}
 	}
 }

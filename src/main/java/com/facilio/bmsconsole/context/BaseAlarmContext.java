@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.bmsconsole.context.BreakContext.BreakType;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class BaseAlarmContext extends ModuleBaseWithCustomFields {
@@ -47,11 +46,20 @@ public class BaseAlarmContext extends ModuleBaseWithCustomFields {
 	}
 	
 	private Type type;
-	public Type getType() {
+	public int getType() {
+		if (type == null) {
+			return -1;
+		}
+		return type.getValue();
+	}
+	public Type getTypeEnum() {
 		return type;
 	}
 	public void setType(Type type) {
 		this.type = type;
+	}
+	public void setType(int type) {
+		this.type = Type.valueOf(type);
 	}
 	
 //	private AlarmCategoryContext category;
