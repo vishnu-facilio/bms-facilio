@@ -41,9 +41,14 @@ public class UpdateMVAjustmentVsBaselineCommand implements Command {
 		FacilioModule module = ModuleFactory.getMVAjuststmentVsBaselineModule();
 		List<FacilioField> fields = FieldFactory.getMVAjuststmentVsBaselineFields();
 		
-		List<MVAdjustmentVsBaseline> adjustmentVsBaselines = mvProject.getAjustmentVsBaseline();
+		List<MVAdjustmentVsBaseline> adjustmentVsBaselines = new ArrayList<>();
 		
-		List<MVAdjustmentVsBaseline> oldAdjustmentVsBaselines = mvProjectOld.getAjustmentVsBaseline();
+		List<MVAdjustment> adjustments =  mvProject.getAdjustments();
+		for(MVAdjustment adjustment :adjustments) {
+			adjustmentVsBaselines.addAll(adjustment.getAjustmentVsBaseline());
+		}
+		
+		List<MVAdjustmentVsBaseline> oldAdjustmentVsBaselines = new ArrayList<>();
 		
 		List<MVAdjustmentVsBaseline> deletedAdjustmentVsBaselines = new ArrayList<MVAdjustmentVsBaseline>();
 		

@@ -1,5 +1,7 @@
 package com.facilio.mv.util;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -83,12 +85,15 @@ public class MVUtil {
 		
 		List<MVAdjustment> mvAdjustments = selectAjustment.get();
 		
+		Map<Long,MVAdjustment> mvAdjustmentsIdMap = new HashMap<Long, MVAdjustment>();
+		
 		for(MVAdjustment mvAdjustment :mvAdjustments) {
 			FormulaFieldContext formula = FormulaFieldAPI.getFormulaField(mvAdjustment.getFormulaField().getId());
 			mvAdjustment.setFormulaField(formula);
+			mvAdjustmentsIdMap.put(mvAdjustment.getId(), mvAdjustment);
 		}
 		
-		mvProject.setAjustments(mvAdjustments);
+		mvProject.setAdjustments(mvAdjustments);
 		
 		Map<String, FacilioField> mvAjustmentVsBaselineFieldMap = FieldFactory.getAsMap(FieldFactory.getMVAjuststmentVsBaselineFields());
 		
@@ -104,9 +109,11 @@ public class MVUtil {
 		for(MVAdjustmentVsBaseline mvAjustmentVsBaseline :mvAjustmentVsBaselines) {
 			FormulaFieldContext formula = FormulaFieldAPI.getFormulaField(mvAjustmentVsBaseline.getFormulaField().getId());
 			mvAjustmentVsBaseline.setFormulaField(formula);
+			MVAdjustment adjustment = mvAdjustmentsIdMap.get(mvAjustmentVsBaseline.getAdjustmentId());
+			List<MVAdjustmentVsBaseline> adjustmentVsBaselines = adjustment.getAjustmentVsBaseline() == null ? new ArrayList<>() : adjustment.getAjustmentVsBaseline();
+			adjustmentVsBaselines.add(mvAjustmentVsBaseline);
+			adjustment.setAjustmentVsBaseline(mvAjustmentVsBaselines);
 		}
-		
-		mvProject.setAjustmentVsBaseline(mvAjustmentVsBaselines);
 		
 		return mvProject;
 	}

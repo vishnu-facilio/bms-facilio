@@ -1,5 +1,7 @@
 package com.facilio.mv.context;
 
+import java.util.List;
+
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
@@ -16,6 +18,7 @@ public class MVAdjustment extends ModuleBaseWithCustomFields {
 	int period;				// change to enum;
 	long startTime;
 	long endTime;
+	List<MVAdjustmentVsBaseline> ajustmentVsBaseline;
 	
 	public FormulaFieldContext getFormulaField() {
 		return formulaField;
@@ -52,6 +55,14 @@ public class MVAdjustment extends ModuleBaseWithCustomFields {
 	}
 	public void setEndTime(long endTime) {
 		this.endTime = endTime;
+	}
+	
+	public List<MVAdjustmentVsBaseline> getAjustmentVsBaseline() {
+		return ajustmentVsBaseline;
+	}
+
+	public void setAjustmentVsBaseline(List<MVAdjustmentVsBaseline> ajustmentVsBaseline) {
+		this.ajustmentVsBaseline = ajustmentVsBaseline;
 	}
 
 }

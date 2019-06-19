@@ -35,9 +35,9 @@ public class UpdateMVAdjustmentCommand implements Command {
 		FacilioModule module = modbean.getModule(FacilioConstants.ContextNames.MV_ADJUSTMENT_MODULE);
 		List<FacilioField> fields = modbean.getAllFields(FacilioConstants.ContextNames.MV_ADJUSTMENT_MODULE);
 		
-		List<MVAdjustment> adjustments = mvProject.getAjustments();
+		List<MVAdjustment> adjustments = mvProject.getAdjustments();
 		
-		List<MVAdjustment> oldAdjustments = mvProjectOld.getAjustments();
+		List<MVAdjustment> oldAdjustments = mvProjectOld.getAdjustments();
 		
 		List<MVAdjustment> deletedAdjustments = new ArrayList<MVAdjustment>();
 		

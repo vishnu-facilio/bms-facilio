@@ -30,7 +30,7 @@ public class AddMVAjustmentCommand implements Command {
 		MVProject mvProject = (MVProject) context.get(MVUtil.MV_PROJECT);
 		
 		if(adjustment == null) {
-			adjustments = mvProject.getAjustments();
+			adjustments = mvProject.getAdjustments();
 		}
 		else {
 			adjustments = Collections.singletonList(adjustment);

@@ -27,8 +27,7 @@ public class MVProject extends ModuleBaseWithCustomFields {
 	EnergyMeterContext energyMeter;
 	User owner;
 	List<MVBaseline> baselines;
-	List<MVAdjustment> ajustments;
-	List<MVAdjustmentVsBaseline> ajustmentVsBaseline;
+	List<MVAdjustment> adjustments;
 	
 	public User getOwner() {
 		return owner;
@@ -54,20 +53,12 @@ public class MVProject extends ModuleBaseWithCustomFields {
 		this.baselines = baselines;
 	}
 
-	public List<MVAdjustment> getAjustments() {
-		return ajustments;
+	public List<MVAdjustment> getAdjustments() {
+		return adjustments;
 	}
 
-	public void setAjustments(List<MVAdjustment> ajustments) {
-		this.ajustments = ajustments;
-	}
-
-	public List<MVAdjustmentVsBaseline> getAjustmentVsBaseline() {
-		return ajustmentVsBaseline;
-	}
-
-	public void setAjustmentVsBaseline(List<MVAdjustmentVsBaseline> ajustmentVsBaseline) {
-		this.ajustmentVsBaseline = ajustmentVsBaseline;
+	public void setAdjustments(List<MVAdjustment> adjustments) {
+		this.adjustments = adjustments;
 	}
 
 	public String getName() {
