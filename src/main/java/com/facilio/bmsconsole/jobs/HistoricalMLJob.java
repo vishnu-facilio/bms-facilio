@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.StringJoiner;
+import java.util.TimeZone;
 import java.util.TreeMap;
 
 import org.apache.commons.chain.Chain;
@@ -80,11 +81,19 @@ public class HistoricalMLJob extends FacilioJob {
         return new SimpleDateFormat("YYYY-MM-dd").format(cal.getTime());
     }
 	
+	private String getDateByTimeZone(long time ,String timeZone)
+	{
+		final Calendar cal = Calendar.getInstance(TimeZone.getTimeZone(timeZone));
+        cal.setTimeInMillis(time);
+        return new SimpleDateFormat("YYYY-MM-dd").format(cal.getTime());
+	}
+	
 	private void generateMLModel(long predictedTime,long meterID,Hashtable<Long,Hashtable<String,SortedMap<Long,Object>>> mlVariablesDataMap,String modelPath,long logModuleID) throws Exception
 	{
 		JSONObject postObj = new JSONObject();
 		postObj.put("ml_id",100);
 		postObj.put("orgid",88);
+		LOGGER.info("Time is "+predictedTime+"::"+"no Time Zone date "+getDate(predictedTime)+":: With Time zone"+getDateByTimeZone(predictedTime,"Asia/Dubai"));
 		postObj.put("date",getDate(predictedTime));
 		
 		JSONObject modelVariables = new JSONObject();
