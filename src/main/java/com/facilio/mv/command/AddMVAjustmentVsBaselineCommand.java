@@ -10,6 +10,7 @@ import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -39,6 +40,9 @@ public class AddMVAjustmentVsBaselineCommand implements Command {
 			List<MVAdjustment> adjustments =  mvProject.getAdjustments();
 			ajustmentsVsBaselineContexts = new ArrayList<>();
 			for(MVAdjustment adjustment :adjustments) {
+				for(MVAdjustmentVsBaseline adjustmentVsBaseline : adjustment.getAdjustmentVsBaseline()) {
+					adjustmentVsBaseline.setAdjustmentName(adjustment.getName());
+				}
 				ajustmentsVsBaselineContexts.addAll(adjustment.getAdjustmentVsBaseline());
 			}
 		}
@@ -51,7 +55,7 @@ public class AddMVAjustmentVsBaselineCommand implements Command {
 		
 		Map<String,MVAdjustment> adjustmentNameMap = getAjustmentNameMap(mvProject);
 		
-		fillMVAjustmentContext(ajustmentsVsBaselineContexts, baselineNameMap, adjustmentNameMap);
+		fillMVAjustmentContext(ajustmentsVsBaselineContexts, baselineNameMap, adjustmentNameMap,mvProject);
 		
 //		for(MVAdjustmentVsBaseline ajustmentsVsBaselineContext :ajustmentsVsBaselineContexts) {
 //			context.put(FacilioConstants.ContextNames.FORMULA_FIELD, ajustmentsVsBaselineContext.getFormulaField());
@@ -81,9 +85,11 @@ public class AddMVAjustmentVsBaselineCommand implements Command {
 		return false;
 	}
 	
-	void fillMVAjustmentContext(List<MVAdjustmentVsBaseline> ajustmentsVsBaselineContexts,Map<String,MVBaseline> baselineNameMap,Map<String,MVAdjustment> adjustmentNameMap) {
+	void fillMVAjustmentContext(List<MVAdjustmentVsBaseline> ajustmentsVsBaselineContexts,Map<String,MVBaseline> baselineNameMap,Map<String,MVAdjustment> adjustmentNameMap,MVProject mvProject) {
 		
 		for(MVAdjustmentVsBaseline ajustmentsVsBaselineContext :ajustmentsVsBaselineContexts) {
+			ajustmentsVsBaselineContext.setProjectId(mvProject.getId());
+			ajustmentsVsBaselineContext.setOrgId(AccountUtil.getCurrentOrg().getId());
 			ajustmentsVsBaselineContext.setAdjustmentId(adjustmentNameMap.get(ajustmentsVsBaselineContext.getAdjustmentName()).getId());
 			ajustmentsVsBaselineContext.setBaselineId(baselineNameMap.get(ajustmentsVsBaselineContext.getBaselineName()).getId());
 			

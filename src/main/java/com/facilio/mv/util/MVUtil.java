@@ -7,6 +7,9 @@ import java.util.Map;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
+import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
+import com.facilio.bmsconsole.context.FormulaFieldContext.ResourceType;
+import com.facilio.bmsconsole.context.FormulaFieldContext.TriggerType;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -35,6 +38,22 @@ public class MVUtil {
 	public static String MV_ADJUSTMENTS = "mvAdjustments";
 	public static String MV_ADJUSTMENT_VS_BASELINE = "mvAdjustmentVsBaseline";
 	public static String MV_ADJUSTMENT_VS_BASELINES = "mvAdjustmentVsBaselines";
+	
+	
+	public static void fillFormulaFieldDetails(FormulaFieldContext formulaFieldContext,MVProject mvProject,MVBaseline baseline,MVAdjustment mvAdjustment) {
+		
+		formulaFieldContext.setFormulaFieldType(FormulaFieldType.ENPI);
+		formulaFieldContext.setTriggerType(TriggerType.SCHEDULE);
+		formulaFieldContext.setResourceId(mvProject.getMeter().getId());
+		formulaFieldContext.setResourceType(ResourceType.ONE_RESOURCE);
+		formulaFieldContext.setFrequency(mvProject.getFrequency());
+		if(baseline != null) {
+			formulaFieldContext.setName(baseline.getName());
+		}
+		else if(mvAdjustment != null) {
+			formulaFieldContext.setName(mvAdjustment.getName());
+		}
+	}
 	
 	public static MVProject getMVProject(long id) throws Exception {
 		

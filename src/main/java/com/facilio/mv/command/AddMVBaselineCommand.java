@@ -8,6 +8,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.tiles.request.collection.CollectionUtil;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.util.ReadingsAPI;
@@ -39,13 +40,10 @@ public class AddMVBaselineCommand implements Command {
 		}
 		
 		for(MVBaseline baseLine :baseLines) {
+			baseLine.setProjectId(mvProject.getId());
+			baseLine.setOrgId(AccountUtil.getCurrentOrg().getId());
 			context.put(FacilioConstants.ContextNames.FORMULA_FIELD, baseLine.getFormulaField());
-
-			if (baseLine.getFormulaField().getInterval() == -1) {
-				int interval = mvProject.getFrequency();
-				baseLine.getFormulaField().setInterval(interval);
-			}
-
+			MVUtil.fillFormulaFieldDetails(baseLine.getFormulaField(), mvProject,baseLine,null);
 			Chain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
 			addEnpiChain.execute(context);
 		}

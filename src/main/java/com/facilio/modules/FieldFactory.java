@@ -6015,7 +6015,6 @@ public class FieldFactory {
 		fields.add(getField("projectId", "PROJECT_ID", module, FieldType.LOOKUP));
 		fields.add(getField("adjustmentId", "ADJUSTMENT_ID", module, FieldType.LOOKUP));
 		fields.add(getField("baselineId", "BASELINE_ID", module, FieldType.LOOKUP));
-		fields.add(getField("baselineId", "BASELINE_ID", module, FieldType.LOOKUP));
 //		fields.add(getField("formulaField", "FORMULA_FIELD_ID", module, FieldType.LOOKUP));
 		
 		return fields;

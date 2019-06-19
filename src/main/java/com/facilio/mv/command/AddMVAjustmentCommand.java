@@ -7,6 +7,7 @@ import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.constants.FacilioConstants;
@@ -37,6 +38,9 @@ public class AddMVAjustmentCommand implements Command {
 		}
 		
 		for(MVAdjustment adjustment1 :adjustments) {
+			adjustment1.setProjectId(mvProject.getId());
+			adjustment1.setOrgId(AccountUtil.getCurrentOrg().getId());
+			MVUtil.fillFormulaFieldDetails(adjustment1.getFormulaField(), mvProject,null,adjustment1);
 			context.put(FacilioConstants.ContextNames.FORMULA_FIELD, adjustment1.getFormulaField());
 
 			if (adjustment1.getFormulaField().getInterval() == -1) {
