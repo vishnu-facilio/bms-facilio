@@ -45,7 +45,7 @@ public class UpdateMVAjustmentVsBaselineCommand implements Command {
 		
 		List<MVAdjustment> adjustments =  mvProject.getAdjustments();
 		for(MVAdjustment adjustment :adjustments) {
-			adjustmentVsBaselines.addAll(adjustment.getAjustmentVsBaseline());
+			adjustmentVsBaselines.addAll(adjustment.getAdjustmentVsBaseline());
 		}
 		
 		List<MVAdjustmentVsBaseline> oldAdjustmentVsBaselines = new ArrayList<>();

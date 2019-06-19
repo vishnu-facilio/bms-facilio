@@ -18,7 +18,7 @@ public class MVAdjustment extends ModuleBaseWithCustomFields {
 	int period;				// change to enum;
 	long startTime;
 	long endTime;
-	List<MVAdjustmentVsBaseline> ajustmentVsBaseline;
+	List<MVAdjustmentVsBaseline> adjustmentVsBaseline;
 	
 	public FormulaFieldContext getFormulaField() {
 		return formulaField;
@@ -57,12 +57,12 @@ public class MVAdjustment extends ModuleBaseWithCustomFields {
 		this.endTime = endTime;
 	}
 	
-	public List<MVAdjustmentVsBaseline> getAjustmentVsBaseline() {
-		return ajustmentVsBaseline;
+	public List<MVAdjustmentVsBaseline> getAdjustmentVsBaseline() {
+		return adjustmentVsBaseline;
 	}
 
-	public void setAjustmentVsBaseline(List<MVAdjustmentVsBaseline> ajustmentVsBaseline) {
-		this.ajustmentVsBaseline = ajustmentVsBaseline;
+	public void setAdjustmentVsBaseline(List<MVAdjustmentVsBaseline> adjustmentVsBaseline) {
+		this.adjustmentVsBaseline = adjustmentVsBaseline;
 	}
 
 }

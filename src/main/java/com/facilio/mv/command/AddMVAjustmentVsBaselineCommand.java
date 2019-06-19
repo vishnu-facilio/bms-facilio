@@ -39,7 +39,7 @@ public class AddMVAjustmentVsBaselineCommand implements Command {
 			List<MVAdjustment> adjustments =  mvProject.getAdjustments();
 			ajustmentsVsBaselineContexts = new ArrayList<>();
 			for(MVAdjustment adjustment :adjustments) {
-				ajustmentsVsBaselineContexts.addAll(adjustment.getAjustmentVsBaseline());
+				ajustmentsVsBaselineContexts.addAll(adjustment.getAdjustmentVsBaseline());
 			}
 		}
 		else {

@@ -110,9 +110,9 @@ public class MVUtil {
 			FormulaFieldContext formula = FormulaFieldAPI.getFormulaField(mvAjustmentVsBaseline.getFormulaField().getId());
 			mvAjustmentVsBaseline.setFormulaField(formula);
 			MVAdjustment adjustment = mvAdjustmentsIdMap.get(mvAjustmentVsBaseline.getAdjustmentId());
-			List<MVAdjustmentVsBaseline> adjustmentVsBaselines = adjustment.getAjustmentVsBaseline() == null ? new ArrayList<>() : adjustment.getAjustmentVsBaseline();
+			List<MVAdjustmentVsBaseline> adjustmentVsBaselines = adjustment.getAdjustmentVsBaseline() == null ? new ArrayList<>() : adjustment.getAdjustmentVsBaseline();
 			adjustmentVsBaselines.add(mvAjustmentVsBaseline);
-			adjustment.setAjustmentVsBaseline(mvAjustmentVsBaselines);
+			adjustment.setAdjustmentVsBaseline(mvAjustmentVsBaselines);
 		}
 		
 		return mvProject;
