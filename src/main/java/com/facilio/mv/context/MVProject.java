@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.accounts.dto.User;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -24,7 +25,7 @@ public class MVProject extends ModuleBaseWithCustomFields {
 	long endTime;
 	FacilioFrequency frequency;
 	boolean isAutoGenVmMeter;
-	EnergyMeterContext energyMeter;
+	AssetContext meter;
 	User owner;
 	List<MVBaseline> baselines;
 	List<MVAdjustment> adjustments;
@@ -64,12 +65,13 @@ public class MVProject extends ModuleBaseWithCustomFields {
 		this.owner = owner;
 	}
 	
-	public EnergyMeterContext getEnergyMeter() {
-		return energyMeter;
+
+	public AssetContext getMeter() {
+		return meter;
 	}
 
-	public void setEnergyMeter(EnergyMeterContext energyMeter) {
-		this.energyMeter = energyMeter;
+	public void setMeter(AssetContext meter) {
+		this.meter = meter;
 	}
 
 	public List<MVBaseline> getBaselines() {

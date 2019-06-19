@@ -27,10 +27,10 @@ public class AddMVProjectCommand implements Command {
 		
 		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		if(mvProject.getEnergyMeter().getId() == -1l) {
+		if(mvProject.getMeter().getId() == -1l) {
 			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 			context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
-			context.put(FacilioConstants.ContextNames.RECORD, mvProject.getEnergyMeter());
+			context.put(FacilioConstants.ContextNames.RECORD, mvProject.getMeter());
 			Chain addAssetChain = FacilioChainFactory.getAddEnergyMeterChain();
 			addAssetChain.execute(context);
 			
