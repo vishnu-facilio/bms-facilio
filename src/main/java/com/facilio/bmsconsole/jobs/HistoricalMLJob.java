@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.StringJoiner;
+import java.util.TimeZone;
 import java.util.TreeMap;
 
 import org.apache.commons.chain.Chain;
@@ -43,6 +44,7 @@ public class HistoricalMLJob extends FacilioJob {
 	@Override
 	public void execute(JobContext jc) throws Exception 
 	{
+						 
 		long startTime = 1546286400000L;//
 		long endTime = 1556654400000L;
 		LOGGER.info("Job started");
@@ -80,12 +82,22 @@ public class HistoricalMLJob extends FacilioJob {
         return new SimpleDateFormat("YYYY-MM-dd").format(cal.getTime());
     }
 	
+	private String getDateByTimeZone(long time ,String timeZone)
+	{
+		final Calendar cal = Calendar.getInstance(TimeZone.getTimeZone(timeZone));
+        cal.setTimeInMillis(time);
+        SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-DD");
+        sdf.setTimeZone(TimeZone.getTimeZone(timeZone));
+        return sdf.format(cal.getTimeInMillis());
+	}
+	
 	private void generateMLModel(long predictedTime,long meterID,Hashtable<Long,Hashtable<String,SortedMap<Long,Object>>> mlVariablesDataMap,String modelPath,long logModuleID) throws Exception
 	{
 		JSONObject postObj = new JSONObject();
 		postObj.put("ml_id",100);
 		postObj.put("orgid",88);
-		postObj.put("date",getDate(predictedTime));
+		LOGGER.info("Time is "+predictedTime+"::"+"no Time Zone date "+getDate(predictedTime)+":: With Time zone"+getDateByTimeZone(predictedTime,"Asia/Dubai"));
+		postObj.put("date",getDateByTimeZone(predictedTime,"Asia/Dubai"));
 		
 		JSONObject modelVariables = new JSONObject();
 		modelVariables.put("timezone","Asia/Dubai");
