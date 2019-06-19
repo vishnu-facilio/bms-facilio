@@ -53,17 +53,17 @@ public class AddMVAjustmentVsBaselineCommand implements Command {
 		
 		fillMVAjustmentContext(ajustmentsVsBaselineContexts, baselineNameMap, adjustmentNameMap);
 		
-		for(MVAdjustmentVsBaseline ajustmentsVsBaselineContext :ajustmentsVsBaselineContexts) {
-			context.put(FacilioConstants.ContextNames.FORMULA_FIELD, ajustmentsVsBaselineContext.getFormulaField());
-
-			if (ajustmentsVsBaselineContext.getFormulaField().getInterval() == -1) {
-				int interval = mvProject.getFrequency();
-				ajustmentsVsBaselineContext.getFormulaField().setInterval(interval);
-			}
-
-			Chain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
-			addEnpiChain.execute(context);
-		}
+//		for(MVAdjustmentVsBaseline ajustmentsVsBaselineContext :ajustmentsVsBaselineContexts) {
+//			context.put(FacilioConstants.ContextNames.FORMULA_FIELD, ajustmentsVsBaselineContext.getFormulaField());
+//
+//			if (ajustmentsVsBaselineContext.getFormulaField().getInterval() == -1) {
+//				int interval = mvProject.getFrequency();
+//				ajustmentsVsBaselineContext.getFormulaField().setInterval(interval);
+//			}
+//
+//			Chain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
+//			addEnpiChain.execute(context);
+//		}
 		
 		FacilioModule module = ModuleFactory.getMVAjuststmentVsBaselineModule();
 		List<FacilioField> fields = FieldFactory.getMVAjuststmentVsBaselineFields();
