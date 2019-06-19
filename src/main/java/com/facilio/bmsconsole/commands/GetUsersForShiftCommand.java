@@ -23,9 +23,9 @@ public class GetUsersForShiftCommand implements Command {
 		boolean sameDayShift = shift.getStartTimeAsLocalTime().isBefore(shift.getEndTimeAsLocalTime());
 		long currentDay;
 		if (sameDayShift) {
-			currentDay = DateTimeUtil.getDayStartTime(true);
+			currentDay = DateTimeUtil.getDayStartTime(false);
 		} else {
-			currentDay = DateTimeUtil.getDayStartTime(-1, true);
+			currentDay = DateTimeUtil.getDayStartTime(-1, false);
 		}
 		
 		List<ShiftUserRelContext> shiftUserMapping = ShiftAPI.getShiftUserMapping(currentDay, currentDay, shift.getId());

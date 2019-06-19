@@ -36,7 +36,7 @@ public class MarkAsAbsentOrLeaveCommand implements Command {
 			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ATTENDANCE);
 			ShiftContext shift = (ShiftContext) context.get(FacilioConstants.ContextNames.SHIFT);
 			long date = (long) context.get(FacilioConstants.ContextNames.DATE);
-			long day = DateTimeUtil.getDayStartTimeOf(date) * 1000;
+			long day = DateTimeUtil.getDayStartTimeOf(date);
 			List<Long> absentUserIds = getAbsentUsers(userIds, day);
 			List<AttendanceContext> attendanceList = new ArrayList<>();
 			if (absentUserIds != null && !absentUserIds.isEmpty()) {
