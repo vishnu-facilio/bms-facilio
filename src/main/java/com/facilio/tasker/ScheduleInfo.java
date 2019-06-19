@@ -943,11 +943,12 @@ public class ScheduleInfo implements Serializable {
 		}
 		else {
 			if(dayOfWeek > currentDay) {
-				newZdt = zdt.with(LocalTime.of(0, 0)).plusDays(dayOfWeek - currentDay).with(ChronoField.ALIGNED_WEEK_OF_MONTH, weekFrequency);
+				newZdt = zdt.with(LocalTime.of(0, 0)).plusDays(dayOfWeek - currentDay);
 			}
 			else if(currentDay > dayOfWeek) {
-				newZdt = zdt.with(LocalTime.of(0, 0)).plusDays(dayOfWeek + 7 - currentDay).with(ChronoField.ALIGNED_WEEK_OF_MONTH, weekFrequency);
+				newZdt = zdt.with(LocalTime.of(0, 0)).plusDays(dayOfWeek + 7 - currentDay);
 			}
+			newZdt = newZdt.with(ChronoField.ALIGNED_WEEK_OF_MONTH, weekFrequency);
 		}
 		return newZdt;
 	}
