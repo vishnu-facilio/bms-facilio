@@ -13,6 +13,13 @@ public class MVBaseline extends ModuleBaseWithCustomFields {
 	long projectId;
 	String name;
 	FormulaFieldContext formulaField;
+	FormulaFieldContext formulaFieldWithAjustment;
+	public FormulaFieldContext getFormulaFieldWithAjustment() {
+		return formulaFieldWithAjustment;
+	}
+	public void setFormulaFieldWithAjustment(FormulaFieldContext formulaFieldWithAjustment) {
+		this.formulaFieldWithAjustment = formulaFieldWithAjustment;
+	}
 	long startTime;
 	long endTime;
 	

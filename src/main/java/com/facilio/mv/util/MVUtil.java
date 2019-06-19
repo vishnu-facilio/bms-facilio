@@ -107,8 +107,8 @@ public class MVUtil {
 		List<MVAdjustmentVsBaseline> mvAjustmentVsBaselines = FieldUtil.getAsBeanListFromMapList(props, MVAdjustmentVsBaseline.class);
 		
 		for(MVAdjustmentVsBaseline mvAjustmentVsBaseline :mvAjustmentVsBaselines) {
-			FormulaFieldContext formula = FormulaFieldAPI.getFormulaField(mvAjustmentVsBaseline.getFormulaField().getId());
-			mvAjustmentVsBaseline.setFormulaField(formula);
+//			FormulaFieldContext formula = FormulaFieldAPI.getFormulaField(mvAjustmentVsBaseline.getFormulaField().getId());
+//			mvAjustmentVsBaseline.setFormulaField(formula);
 			MVAdjustment adjustment = mvAdjustmentsIdMap.get(mvAjustmentVsBaseline.getAdjustmentId());
 			List<MVAdjustmentVsBaseline> adjustmentVsBaselines = adjustment.getAdjustmentVsBaseline() == null ? new ArrayList<>() : adjustment.getAdjustmentVsBaseline();
 			adjustmentVsBaselines.add(mvAjustmentVsBaseline);

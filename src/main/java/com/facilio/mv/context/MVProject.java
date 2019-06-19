@@ -28,7 +28,34 @@ public class MVProject extends ModuleBaseWithCustomFields {
 	User owner;
 	List<MVBaseline> baselines;
 	List<MVAdjustment> adjustments;
+	int saveGoal;
+	long reportingPeriodStartTime;
+	long reportingPeriodEndTime;
 	
+	public int getSaveGoal() {
+		return saveGoal;
+	}
+
+	public void setSaveGoal(int saveGoal) {
+		this.saveGoal = saveGoal;
+	}
+
+	public long getReportingPeriodStartTime() {
+		return reportingPeriodStartTime;
+	}
+
+	public void setReportingPeriodStartTime(long reportingPeriodStartTime) {
+		this.reportingPeriodStartTime = reportingPeriodStartTime;
+	}
+
+	public long getReportingPeriodEndTime() {
+		return reportingPeriodEndTime;
+	}
+
+	public void setReportingPeriodEndTime(long reportingPeriodEndTime) {
+		this.reportingPeriodEndTime = reportingPeriodEndTime;
+	}
+
 	public User getOwner() {
 		return owner;
 	}
