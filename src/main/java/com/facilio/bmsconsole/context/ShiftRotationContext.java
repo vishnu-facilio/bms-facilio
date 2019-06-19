@@ -1,8 +1,12 @@
 package com.facilio.bmsconsole.context;
 
+import java.time.ZonedDateTime;
 import java.util.List;
 
+import org.apache.struts2.json.annotations.JSON;
+
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.time.DateTimeUtil;
 
 public class ShiftRotationContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
@@ -53,7 +57,7 @@ public class ShiftRotationContext extends ModuleBaseWithCustomFields {
 		}
 	}
 
-	private int schedularDay;
+	private int schedularDay = -1;
 
 	public int getSchedularDay() {
 		return schedularDay;
@@ -109,6 +113,31 @@ public class ShiftRotationContext extends ModuleBaseWithCustomFields {
 	}
 	public void setTimeOfSchedule(long timeOfSchedule) {
 		this.timeOfSchedule = timeOfSchedule;
+	}
+
+	@JSON(serialize = false)
+	public long[] getStartAndEndTime() {
+		long[] time = new long[2];
+		switch (schedularFrequency) {
+		case DAILY:
+			time[0] = DateTimeUtil.getDayStartTime();
+			time[1] = DateTimeUtil.getDayStartTime(1) - 1;
+			break;
+			
+		case WEEKLY:
+			time[0] = DateTimeUtil.getWeekStartTime();
+			time[1] = DateTimeUtil.getDayStartTime(1) - 1;
+			break;
+			
+		case MONTHLY:
+			time[0] = DateTimeUtil.getMonthStartTime();
+			time[1] = DateTimeUtil.getMonthStartTime(1) - 1;
+			break;
+
+		default:
+			break;
+		}
+		return time;
 	}
 
 }

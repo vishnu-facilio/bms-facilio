@@ -11,12 +11,15 @@ public class GetShiftRotationDetailCommand implements Command{
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		ShiftRotationContext shiftRotation = (ShiftRotationContext) context.get(FacilioConstants.ContextNames.RECORD);
-		if(shiftRotation!=null) {
-			shiftRotation.setApplicableFor(ShiftAPI.getApplicableForShiftRotation(shiftRotation.getId()));
-			shiftRotation.setShiftRotations(ShiftAPI.getShiftRotationDetailsForShiftRotation(shiftRotation.getId()));
-			context.put(FacilioConstants.ContextNames.SHIFT_ROTATION, shiftRotation);
-		}
+		long recordId = (long) context.get(FacilioConstants.ContextNames.ID);
+		ShiftRotationContext shiftRotation = ShiftAPI.getShiftRotation(recordId);
+		context.put(FacilioConstants.ContextNames.SHIFT_ROTATION, shiftRotation);
+//		ShiftRotationContext shiftRotation = (ShiftRotationContext) context.get(FacilioConstants.ContextNames.RECORD);
+//		if(shiftRotation!=null) {
+//			shiftRotation.setApplicableFor(ShiftAPI.getApplicableForShiftRotation(shiftRotation.getId()));
+//			shiftRotation.setShiftRotations(ShiftAPI.getShiftRotationDetailsForShiftRotation(shiftRotation.getId()));
+//			context.put(FacilioConstants.ContextNames.SHIFT_ROTATION, shiftRotation);
+//		}
 		return false;
 	}
 

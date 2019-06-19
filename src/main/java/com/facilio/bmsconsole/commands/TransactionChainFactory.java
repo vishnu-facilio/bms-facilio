@@ -3158,23 +3158,20 @@ public class TransactionChainFactory {
 		public static Chain getAddShiftRotationChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForShiftRotation());
-			c.addCommand(new GenericAddModuleDataCommand());
-			c.addCommand(new AddShiftRotationDetailsCommand());
+			c.addCommand(new AddOrUpdateShiftRotationCommand());
 			return c;
 		}
 		
 		public static Chain getUpdateShiftRotationChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForShiftRotation());
-			c.addCommand(new GenericUpdateModuleDataCommand());
-			c.addCommand(new AddShiftRotationDetailsCommand());
+			c.addCommand(new AddOrUpdateShiftRotationCommand());
 			return c;
 		}
 		
 		public static Chain getDeleteShiftRotationChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForShiftRotation());
-			c.addCommand(new GenericDeleteModuleDataCommand());
 			c.addCommand(new DeleteShiftRotationCommand());
 			return c;
 		}

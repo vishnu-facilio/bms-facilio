@@ -12,14 +12,8 @@ public class DeleteShiftRotationCommand implements Command{
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
-		if(recordIds != null && !recordIds.isEmpty()) {
-			for(Long id: recordIds) {
-				ShiftAPI.deleteShiftRotationScheduler(id);
-				ShiftAPI.deleteShiftRotationApplicableFor(id);
-				ShiftAPI.deleteShiftRotationDetails(id);
-			}
-		}
+		long id = (long) context.get(FacilioConstants.ContextNames.ID);
+		ShiftAPI.deleteShiftRotation(id);
 		return false;
 	}
 

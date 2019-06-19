@@ -25,16 +25,19 @@ public class ExecuteShiftRotationCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		long shiftRotationId = (long) context.get(FacilioConstants.ContextNames.SHIFT_ROTATION);
+		long shiftRotationId = (long) context.get(FacilioConstants.ContextNames.ID);
 		if (shiftRotationId > 0) {
+			ShiftRotationContext shiftRotation = ShiftAPI.getShiftRotation(shiftRotationId);
+			
+			long[] startAndEndTime = shiftRotation.getStartAndEndTime();
 			List<ShiftUserRelContext> shiftUserRel = new ArrayList<>();
-			List<ShiftRotationApplicableForContext> applicableFors = ShiftAPI
-					.getApplicableForShiftRotation(shiftRotationId);
-			List<ShiftRotationDetailsContext> shiftRotationDetails = ShiftAPI
-					.getShiftRotationDetailsForShiftRotation(shiftRotationId);
+//			List<ShiftRotationApplicableForContext> applicableFors = ShiftAPI
+//					.getApplicableForShiftRotation(shiftRotationId);
+//			List<ShiftRotationDetailsContext> shiftRotationDetails = ShiftAPI
+//					.getShiftRotationDetailsForShiftRotation(shiftRotationId);
 			Set<Long> userIds = new HashSet();
-			if (!CollectionUtils.isEmpty(applicableFors)) {
-				for (ShiftRotationApplicableForContext applicableFor : applicableFors) {
+			if (!CollectionUtils.isEmpty(shiftRotation.getApplicableFor())) {
+				for (ShiftRotationApplicableForContext applicableFor : shiftRotation.getApplicableFor()) {
 					if (applicableFor.getApplicableForTypeEnum() == ApplicableFor.USERS) {
 						userIds.add(applicableFor.getApplicableForId());
 					} else if (applicableFor.getApplicableForTypeEnum() == ApplicableFor.ROLES) {
@@ -56,33 +59,38 @@ public class ExecuteShiftRotationCommand implements Command {
 					}
 				}
 			}
-			if (!CollectionUtils.isEmpty(shiftRotationDetails)) {
-				for (ShiftRotationDetailsContext detail : shiftRotationDetails) {
+			if (!CollectionUtils.isEmpty(shiftRotation.getShiftRotations())) {
+				for (ShiftRotationDetailsContext detail : shiftRotation.getShiftRotations()) {
 					for (Long userId : userIds) {
-						List<ShiftUserRelContext> shiftUsers = ShiftAPI.getShiftsForUser(userId);
+						List<ShiftUserRelContext> shiftUsers = ShiftAPI.getShiftUserMapping(startAndEndTime[0], startAndEndTime[1], userId, detail.getFromShiftId(), true);
 						if (!CollectionUtils.isEmpty(shiftUsers)) {
 							for (ShiftUserRelContext shiftUserContext : shiftUsers) {
 								long shiftId = shiftUserContext.getShiftId();
-								if (shiftId > 0) {
-									if (shiftId == detail.getFromShiftId()) {
-										ShiftUserRelContext shiftUser = new ShiftUserRelContext();
-										ShiftContext shift = ShiftAPI.getShift(detail.getToShiftId());
-										shiftUser.setStartTime(shift.getStartTime());
-										shiftUser.setEndTime(shift.getEndTime());
-										shiftUser.setShiftId(detail.getToShiftId());
-										shiftUser.setOuid(userId);
-										shiftUser.setId(shiftUserContext.getId());
-										shiftUserRel.add(shiftUser);
-									}
-								}
+//								if (shiftId > 0) {
+//									if (shiftId == detail.getFromShiftId()) {
+//										ShiftUserRelContext shiftUser = new ShiftUserRelContext();
+//										ShiftContext shift = ShiftAPI.getShift(detail.getToShiftId());
+//										shiftUser.setStartTime(shift.getStartTime());
+//										shiftUser.setEndTime(shift.getEndTime());
+//										shiftUser.setShiftId(detail.getToShiftId());
+//										shiftUser.setOuid(userId);
+//										shiftUser.setId(shiftUserContext.getId());
+								shiftUserContext.setShiftId(detail.getToShiftId());
+								shiftUserRel.add(shiftUserContext);
+//									}
+//								}
 							}
 						}
 					}
 				}
 			}
 
-			if (!CollectionUtils.isEmpty(shiftUserRel)) {
-				ShiftAPI.updateShiftUserMapping(shiftUserRel);
+			if (CollectionUtils.isNotEmpty(shiftUserRel)) {
+				System.out.println(shiftUserRel);
+				for (ShiftUserRelContext shiftUser : shiftUserRel) {
+					ShiftAPI.addShiftUserMapping(shiftUser.getShiftId(), shiftUser.getOuid(), shiftUser.getStartTime(), shiftUser.getEndTime());
+				}
+//				ShiftAPI.updateShiftUserMapping(shiftUserRel);
 			}
 		}
 		return false;

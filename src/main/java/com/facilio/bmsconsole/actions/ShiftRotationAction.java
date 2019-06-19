@@ -19,7 +19,7 @@ import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
-public class ShiftRotationAction extends ModuleAction {
+public class ShiftRotationAction extends FacilioAction {
 
 	private static final long serialVersionUID = 1L;
 	private ShiftRotationContext shiftRotation;
@@ -54,9 +54,10 @@ public class ShiftRotationAction extends ModuleAction {
 
 	public String addShiftRotation() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD, shiftRotation);
-		context.put(FacilioConstants.ContextNames.SHIFT_ROTATION_APPLICABLE_FOR, shiftRotation.getApplicableFor());
-		context.put(FacilioConstants.ContextNames.SHIFT_ROTATION_DETAILS, shiftRotation.getShiftRotations());
+		context.put(FacilioConstants.ContextNames.SHIFT_ROTATION, shiftRotation);
+//		context.put(FacilioConstants.ContextNames.RECORD, shiftRotation);
+//		context.put(FacilioConstants.ContextNames.SHIFT_ROTATION_APPLICABLE_FOR, shiftRotation.getApplicableFor());
+//		context.put(FacilioConstants.ContextNames.SHIFT_ROTATION_DETAILS, shiftRotation.getShiftRotations());
 
 		Chain c = TransactionChainFactory.getAddShiftRotationChain();
 		c.execute(context);
@@ -66,10 +67,11 @@ public class ShiftRotationAction extends ModuleAction {
 	
 	public String updateShiftRotation() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD, shiftRotation);
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(shiftRotation.getId()));
-		context.put(FacilioConstants.ContextNames.SHIFT_ROTATION_APPLICABLE_FOR, shiftRotation.getApplicableFor());
-		context.put(FacilioConstants.ContextNames.SHIFT_ROTATION_DETAILS, shiftRotation.getShiftRotations());
+		context.put(FacilioConstants.ContextNames.SHIFT_ROTATION, shiftRotation);
+//		context.put(FacilioConstants.ContextNames.RECORD, shiftRotation);
+//		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(shiftRotation.getId()));
+//		context.put(FacilioConstants.ContextNames.SHIFT_ROTATION_APPLICABLE_FOR, shiftRotation.getApplicableFor());
+//		context.put(FacilioConstants.ContextNames.SHIFT_ROTATION_DETAILS, shiftRotation.getShiftRotations());
 
 		Chain c = TransactionChainFactory.getUpdateShiftRotationChain();
 		c.execute(context);
@@ -79,12 +81,12 @@ public class ShiftRotationAction extends ModuleAction {
 
 	public String deleteShiftRotation() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
+		context.put(FacilioConstants.ContextNames.ID, getId());
 		
 		Chain chain = TransactionChainFactory.getDeleteShiftRotationChain();
 		chain.execute(context);
 		
-		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
+		setResult(FacilioConstants.ContextNames.ID, getId());
 		return SUCCESS;
 	}
 	
@@ -113,7 +115,7 @@ public class ShiftRotationAction extends ModuleAction {
 
 	public String executeShiftRotation() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD, shiftRotation);
+		context.put(FacilioConstants.ContextNames.ID, id);
 
 		Chain c = TransactionChainFactory.getExecuteShiftRotationCommand();
 		c.execute(context);
@@ -208,11 +210,19 @@ public class ShiftRotationAction extends ModuleAction {
 		this.includeParentFilter = includeParentFilter;
 	}
 	
-	private List<Long> recordIds;
-	public List<Long> getRecordIds() {
-		return recordIds;
+	private long id = -1;
+	public long getId() {
+		return id;
 	}
-	public void setRecordIds(List<Long> recordIds) {
-		this.recordIds = recordIds;
+	public void setId(long id) {
+		this.id = id;
 	}
+	
+//	private List<Long> recordIds;
+//	public List<Long> getRecordIds() {
+//		return recordIds;
+//	}
+//	public void setRecordIds(List<Long> recordIds) {
+//		this.recordIds = recordIds;
+//	}
 }

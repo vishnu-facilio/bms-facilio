@@ -21,7 +21,7 @@ public class AddShiftUserMappingCommand implements Command {
 			throw new IllegalArgumentException("Invalid shift");
 		}
 		
-		ShiftAPI.addShiftUserMapping(shift, orgUserId, startTime, endTime);
+		ShiftAPI.addShiftUserMapping(shift.getId(), orgUserId, startTime, endTime);
 		
 		return false;
 	}

@@ -40,6 +40,7 @@ import com.facilio.bmsconsole.context.ShiftRotationApplicableForContext;
 import com.facilio.bmsconsole.context.ShiftRotationContext;
 import com.facilio.bmsconsole.context.ShiftRotationDetailsContext;
 import com.facilio.bmsconsole.context.ShiftUserRelContext;
+import com.facilio.bmsconsole.context.ShiftRotationContext.SchedularFrequency;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -763,27 +764,10 @@ public class ShiftAPI {
 		FacilioTimer.scheduleCalendarJob(shift.getId(), "AttendanceAbsentSchedulerJob", System.currentTimeMillis(), schedule, "facilio");
 	}
 	
-	private static void addShiftRotationSchedulers(ShiftRotationContext shiftRotation) throws Exception {
-		ScheduleInfo schedule = new ScheduleInfo();
-		if(shiftRotation.getSchedularFrequency() == 1) {
-			schedule.setFrequencyType(FrequencyType.DAILY);
-		} else if(shiftRotation.getSchedularFrequency() == 2) {
-			schedule.setFrequencyType(FrequencyType.WEEKLY);
-			schedule.addValue(shiftRotation.getSchedularDay());
-		} else if(shiftRotation.getSchedularFrequency() == 3){
-			schedule.setFrequencyType(FrequencyType.MONTHLY_DAY);
-			schedule.addValue(shiftRotation.getSchedularDay());
-		}
-		schedule.addTime(LocalTime.ofSecondOfDay(shiftRotation.getTimeOfSchedule()));
-		FacilioTimer.scheduleCalendarJob(shiftRotation.getId(), "ShiftRotationSchedulerJob", System.currentTimeMillis(), schedule, "facilio");
-	}
 	private static void deleteSchedulers(long id) throws Exception {
 		FacilioTimer.deleteJob(id, "AttendanceAbsentSchedulerJob");
 	}
 	
-	public static void deleteShiftRotationScheduler(long id) throws Exception {
-		FacilioTimer.deleteJob(id, "ShiftRotationSchedulerJob");
-	}
 	private static void checkValidation(ShiftContext shift) throws Exception {
 		if (StringUtils.isEmpty(shift.getName())) {
 			throw new IllegalArgumentException("Name is mandatory");
@@ -840,6 +824,10 @@ public class ShiftAPI {
 	}
 	
 	public static List<ShiftUserRelContext> getShiftUserMapping(long startTime, long endTime, long orgUserId, long shiftId) throws Exception {
+			return getShiftUserMapping(startTime, endTime, orgUserId, shiftId, false);
+	}
+	
+	public static List<ShiftUserRelContext> getShiftUserMapping(long startTime, long endTime, long orgUserId, long shiftId, boolean alignDate) throws Exception {
 		startTime = DateTimeUtil.getDayStartTimeOf(startTime);
         endTime = DateTimeUtil.getDayEndTimeOf(endTime);
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
@@ -866,8 +854,21 @@ public class ShiftAPI {
 		
 		List<Map<String, Object>> list = builder.get();
 		List<ShiftUserRelContext> shiftUserMapping = FieldUtil.getAsBeanListFromMapList(list, ShiftUserRelContext.class);
-		System.out.println(list);
-		return shiftUserMapping;		
+		
+		if (alignDate) {
+			if (CollectionUtils.isNotEmpty(shiftUserMapping)) {
+				for (ShiftUserRelContext rel : shiftUserMapping) {
+					if (rel.getStartTime() == ShiftAPI.UNLIMITED_PERIOD || rel.getStartTime() < startTime) {
+						rel.setStartTime(startTime);
+					}
+					
+					if (rel.getEndTime() == ShiftAPI.UNLIMITED_PERIOD || rel.getEndTime() > endTime) {
+						rel.setEndTime(endTime);
+					}
+				}
+			}
+		}
+		return shiftUserMapping;	
 	}
 	
 	private static void insertShiftUserMapping(ShiftUserRelContext shift) throws Exception {
@@ -878,7 +879,7 @@ public class ShiftAPI {
 		insertBuilder.save();
 	}
 
-	public static void addShiftUserMapping(ShiftContext shift, long orgUserId, long startTime, long endTime) throws Exception {
+	public static void addShiftUserMapping(long shiftId, long orgUserId, long startTime, long endTime) throws Exception {
 		startTime = DateTimeUtil.getDayStartTimeOf(startTime);
         endTime = DateTimeUtil.getDayEndTimeOf(endTime);
         
@@ -905,7 +906,7 @@ public class ShiftAPI {
 				if (shouldRearrangeShifts) {
 					prop.put("endTime", startTime - 1);
 				} else {
-					prop.put("shiftId", shift.getId());
+					prop.put("shiftId", shiftId);
 				}
 				if (shouldRearrangeShifts && shiftUserRel.getStartTime() > (startTime - 1)) {
 					// If start time is greater than end time, delete it
@@ -922,7 +923,7 @@ public class ShiftAPI {
 					ShiftUserRelContext add = new ShiftUserRelContext();
 					add.setStartTime(startTime);
 					add.setEndTime(endTime);
-					add.setShiftId(shift.getId());
+					add.setShiftId(shiftId);
 					add.setOuid(orgUserId);
 					insertShiftUserMapping(add);
 				}
@@ -1100,12 +1101,85 @@ public class ShiftAPI {
 		return list;
 	}
 	
-	public static void addShiftRotationScheduler(ShiftRotationContext shiftRotation) throws Exception {
+	public static void addShiftRotation(ShiftRotationContext shiftRotation) throws Exception {
+		if(shiftRotation.getSchedularFrequencyEnum() == SchedularFrequency.DAILY) {
+			shiftRotation.setSchedularDay(1);
+		}
+		else if (shiftRotation.getSchedularFrequencyEnum() == SchedularFrequency.WEEKLY 
+				|| shiftRotation.getSchedularFrequencyEnum() == SchedularFrequency.MONTHLY) {
+			if (shiftRotation.getSchedularDay() == -1) {
+				shiftRotation.setSchedularDay(1);
+			}
+		}
+		
+		if (shiftRotation.getShiftSpanFrom() == -1) {
+			shiftRotation.setShiftSpanFrom(1);
+		}
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SHIFT_ROTATION);
+		InsertRecordBuilder<ShiftRotationContext> builder = new InsertRecordBuilder<ShiftRotationContext>()
+				.module(module)
+				.fields(modBean.getAllFields(module.getName()));
+		builder.insert(shiftRotation);
+		
+		addShiftRotationScheduler(shiftRotation);
+		addShiftRotationApplicableFor(shiftRotation.getApplicableFor(), shiftRotation.getId());
+		addshiftRotationDetails(shiftRotation.getShiftRotations(), shiftRotation.getId());
+	}
+
+	public static void updateShiftRotation(ShiftRotationContext shiftRotation) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SHIFT_ROTATION);
+		UpdateRecordBuilder<ShiftRotationContext> builder = new UpdateRecordBuilder<ShiftRotationContext>()
+				.module(module)
+				.fields(modBean.getAllFields(module.getName()))
+				.andCondition(CriteriaAPI.getIdCondition(shiftRotation.getId(), module));
+		builder.update(shiftRotation);
+		
+		addShiftRotationScheduler(shiftRotation);
+		addShiftRotationApplicableFor(shiftRotation.getApplicableFor(), shiftRotation.getId());
+		addshiftRotationDetails(shiftRotation.getShiftRotations(), shiftRotation.getId());
+	}
+	
+	public static void deleteShiftRotation(long id) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SHIFT_ROTATION);
+		DeleteRecordBuilder<ShiftRotationContext> builder = new DeleteRecordBuilder<ShiftRotationContext>()
+				.module(module)
+				.andCondition(CriteriaAPI.getIdCondition(id, module));
+		builder.delete();
+		
+		deleteShiftRotationScheduler(id);
+		deleteShiftRotationApplicableFor(id);
+		deleteShiftRotationDetails(id);
+	}
+	
+	private static void addShiftRotationScheduler(ShiftRotationContext shiftRotation) throws Exception {
 		deleteShiftRotationScheduler(shiftRotation.getId());
 		addShiftRotationSchedulers(shiftRotation);
 	}
 	
-	public static void addShiftRotationApplicableFor(List<ShiftRotationApplicableForContext> applicableForList, long shiftRotationId) throws Exception {
+	private static void addShiftRotationSchedulers(ShiftRotationContext shiftRotation) throws Exception {
+		ScheduleInfo schedule = new ScheduleInfo();
+		if(shiftRotation.getSchedularFrequency() == 1) {
+			schedule.setFrequencyType(FrequencyType.DAILY);
+		} else if(shiftRotation.getSchedularFrequency() == 2) {
+			schedule.setFrequencyType(FrequencyType.WEEKLY);
+			schedule.addValue(shiftRotation.getSchedularDay());
+		} else if(shiftRotation.getSchedularFrequency() == 3){
+			schedule.setFrequencyType(FrequencyType.MONTHLY_DAY);
+			schedule.addValue(shiftRotation.getSchedularDay());
+		}
+		schedule.addTime(LocalTime.ofSecondOfDay(shiftRotation.getTimeOfSchedule()));
+		FacilioTimer.scheduleCalendarJob(shiftRotation.getId(), "ShiftRotationSchedulerJob", System.currentTimeMillis(), schedule, "facilio");
+	}
+	
+	private static void deleteShiftRotationScheduler(long id) throws Exception {
+		FacilioTimer.deleteJob(id, "ShiftRotationSchedulerJob");
+	}
+	
+	private static void addShiftRotationApplicableFor(List<ShiftRotationApplicableForContext> applicableForList, long shiftRotationId) throws Exception {
 		List<Map<String, Object>> props = new ArrayList<>();
 		for(ShiftRotationApplicableForContext applicableFor: applicableForList) {
 			applicableFor.setShiftRotationId(shiftRotationId);
@@ -1120,7 +1194,7 @@ public class ShiftAPI {
 	
 	}
 	
-	public static void addshiftRotationDetails(List<ShiftRotationDetailsContext> shiftRotationDetails, long shiftRotationId) throws Exception {
+	private static void addshiftRotationDetails(List<ShiftRotationDetailsContext> shiftRotationDetails, long shiftRotationId) throws Exception {
 		List<Map<String, Object>> props = new ArrayList<>();
 		for(ShiftRotationDetailsContext detail: shiftRotationDetails) {
 			detail.setShiftRotationId(shiftRotationId);
@@ -1137,7 +1211,25 @@ public class ShiftAPI {
 	
 	}
 	
-	public static List<ShiftRotationApplicableForContext> getApplicableForShiftRotation(long id) throws Exception {
+	public static ShiftRotationContext getShiftRotation(long id) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SHIFT_ROTATION);
+		SelectRecordsBuilder<ShiftRotationContext> builder = new SelectRecordsBuilder<ShiftRotationContext>()
+				.module(module)
+				.beanClass(ShiftRotationContext.class)
+				.select(modBean.getAllFields(module.getName()))
+				.andCondition(CriteriaAPI.getIdCondition(id, module));
+		ShiftRotationContext shiftRotation = builder.fetchFirst();
+		if (shiftRotation == null) {
+			throw new IllegalArgumentException("Shift rotation is not found");
+		}
+		
+		shiftRotation.setApplicableFor(getApplicableForShiftRotation(id));
+		shiftRotation.setShiftRotations(getShiftRotationDetailsForShiftRotation(id));
+		return shiftRotation;
+	}
+	
+	private static List<ShiftRotationApplicableForContext> getApplicableForShiftRotation(long id) throws Exception {
 		List<ShiftRotationApplicableForContext> list = new ArrayList<>();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getShiftRotationApplicableForModule().getTableName())
@@ -1152,7 +1244,7 @@ public class ShiftAPI {
 		return list;
 	}
 	
-	public static List<ShiftRotationDetailsContext> getShiftRotationDetailsForShiftRotation(long id) throws Exception {
+	private static List<ShiftRotationDetailsContext> getShiftRotationDetailsForShiftRotation(long id) throws Exception {
 		List<ShiftRotationDetailsContext> list = new ArrayList<>();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getShiftRotationDetailsModule().getTableName())
@@ -1167,51 +1259,51 @@ public class ShiftAPI {
 		return list;
 	}
 	
-	public static void updateShiftUserMapping(List<ShiftUserRelContext> shiftUserRels) throws Exception {
-		List<FacilioField> fields = new ArrayList<>();
-		fields.add(FieldFactory.getField("endTime", "END_TIME", FieldType.NUMBER));
-		fields.add(FieldFactory.getField("shiftId", "SHIFTID", FieldType.NUMBER));
-		fields.add(FieldFactory.getField("startTime", "START_TIME", FieldType.NUMBER));
-		for (ShiftUserRelContext shiftUserRel : shiftUserRels) {
-			Map<String, Object> prop = new HashMap<>();
-			GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
-					.table(ModuleFactory.getShiftUserRelModule().getTableName())
-					.fields(FieldFactory.getShiftUserRelModuleFields())
-					// .andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getShiftUserRelModule()))
-					.andCondition(
-							CriteriaAPI.getIdCondition(shiftUserRel.getId(), ModuleFactory.getShiftUserRelModule()));
-
-			prop.put("endTime", shiftUserRel.getEndTime());
-			prop.put("startTime", shiftUserRel.getStartTime());
-			prop.put("shiftId", shiftUserRel.getShiftId());
-			builder.update(prop);
-			prop.clear();
-		}
-	}
+//	public static void updateShiftUserMapping(List<ShiftUserRelContext> shiftUserRels) throws Exception {
+//		List<FacilioField> fields = new ArrayList<>();
+//		fields.add(FieldFactory.getField("endTime", "END_TIME", FieldType.NUMBER));
+//		fields.add(FieldFactory.getField("shiftId", "SHIFTID", FieldType.NUMBER));
+//		fields.add(FieldFactory.getField("startTime", "START_TIME", FieldType.NUMBER));
+//		for (ShiftUserRelContext shiftUserRel : shiftUserRels) {
+//			Map<String, Object> prop = new HashMap<>();
+//			GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
+//					.table(ModuleFactory.getShiftUserRelModule().getTableName())
+//					.fields(FieldFactory.getShiftUserRelModuleFields())
+//					// .andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getShiftUserRelModule()))
+//					.andCondition(
+//							CriteriaAPI.getIdCondition(shiftUserRel.getId(), ModuleFactory.getShiftUserRelModule()));
+//
+//			prop.put("endTime", shiftUserRel.getEndTime());
+//			prop.put("startTime", shiftUserRel.getStartTime());
+//			prop.put("shiftId", shiftUserRel.getShiftId());
+//			builder.update(prop);
+//			prop.clear();
+//		}
+//	}
 	
-	public static void deleteShiftRotationApplicableFor(long shiftRotationId) throws Exception {
+	private static void deleteShiftRotationApplicableFor(long shiftRotationId) throws Exception {
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 				.table(ModuleFactory.getShiftRotationApplicableForModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition("SHIFT_ROTATION_ID", "shiftRotationId", String.valueOf(shiftRotationId), NumberOperators.EQUALS));
 		builder.delete();
 	}
 	
-	public static void deleteShiftRotationDetails(long shiftRotationId) throws Exception {
+	private static void deleteShiftRotationDetails(long shiftRotationId) throws Exception {
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 				.table(ModuleFactory.getShiftRotationDetailsModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition("SHIFT_ROTATION_ID", "shiftRotationId", String.valueOf(shiftRotationId), NumberOperators.EQUALS));
 		builder.delete();
 	}
 	
-	public static List<ShiftUserRelContext> getShiftsForUser(long ouId) throws Exception {
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.table(ModuleFactory.getShiftUserRelModule().getTableName())
-				.select(FieldFactory.getShiftUserRelModuleFields());
-		builder.andCondition(CriteriaAPI.getCondition("ORG_USERID", "orgUserid", String.valueOf(ouId), NumberOperators.EQUALS));
-		
-		List<Map<String, Object>> list = builder.get();
-		List<ShiftUserRelContext> shiftUserMapping = FieldUtil.getAsBeanListFromMapList(list, ShiftUserRelContext.class);
-		return shiftUserMapping;	
-	}
+//	public static List<ShiftUserRelContext> getShiftsForUser(long ouId) throws Exception {
+//		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+//				.table(ModuleFactory.getShiftUserRelModule().getTableName())
+//				.select(FieldFactory.getShiftUserRelModuleFields());
+//		builder.andCondition(CriteriaAPI.getCondition("ORG_USERID", "orgUserid", String.valueOf(ouId), NumberOperators.EQUALS));
+//		
+//		List<Map<String, Object>> list = builder.get();
+//		List<ShiftUserRelContext> shiftUserMapping = FieldUtil.getAsBeanListFromMapList(list, ShiftUserRelContext.class);
+//		return shiftUserMapping;	
+//	}
 
 }

@@ -1037,9 +1037,9 @@ public class ReadOnlyChainFactory {
 		c.addCommand(SetTableNamesCommand.getForShiftRotation());
 		c.addCommand(new LoadViewCommand());
 		c.addCommand(new LoadAllFieldsCommand());
-		c.addCommand(new GenerateCriteriaFromFilterCommand());
-		c.addCommand(new GenerateSearchConditionCommand());
-		c.addCommand(new GenericGetModuleDataDetailCommand());
+//		c.addCommand(new GenerateCriteriaFromFilterCommand());
+//		c.addCommand(new GenerateSearchConditionCommand());
+//		c.addCommand(new GenericGetModuleDataDetailCommand());
 		c.addCommand(new GetShiftRotationDetailCommand());
 		return c;
 	}
