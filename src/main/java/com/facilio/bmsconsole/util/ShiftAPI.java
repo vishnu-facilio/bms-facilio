@@ -819,7 +819,7 @@ public class ShiftAPI {
 	
 	public static List<ShiftUserRelContext> getShiftUserMapping(long startTime, long endTime, long orgUserId, long shiftId) throws Exception {
 		startTime = DateTimeUtil.getDayStartTimeOf(startTime);
-        endTime = DateTimeUtil.getDayEndTimeOf(endTime) + 999;    // to preserve millis
+        endTime = DateTimeUtil.getDayEndTimeOf(endTime);
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getShiftUserRelModule().getTableName())
 				.select(FieldFactory.getShiftUserRelModuleFields())
@@ -858,7 +858,7 @@ public class ShiftAPI {
 
 	public static void addShiftUserMapping(ShiftContext shift, long orgUserId, long startTime, long endTime) throws Exception {
 		startTime = DateTimeUtil.getDayStartTimeOf(startTime);
-        endTime = DateTimeUtil.getDayEndTimeOf(endTime) + 999;    // to preserve millis
+        endTime = DateTimeUtil.getDayEndTimeOf(endTime);
         
 		List<ShiftUserRelContext> shiftUserMapping = getShiftUserMapping(startTime, endTime, orgUserId, -1);
 		
