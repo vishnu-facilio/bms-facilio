@@ -62,23 +62,27 @@ public class NotificationProcessor implements Runnable {
         try {
             LOGGER.info("Running notification processor");
             while (true) {
-                ConsumerRecords<String, String> records = consumer.poll(500L);
-                long startTime = System.currentTimeMillis();
-                long timeToSendMessage = 0L;
-                for (ConsumerRecord<String, String> record : records) {
-                    try {
-                        JSONParser parser = new JSONParser();
-                        JSONObject data = (JSONObject) parser.parse(record.value());
-                        JSONObject messageData = (JSONObject) data.get("data");
-                        Message message = Message.getMessage(messageData);
-                        LOGGER.debug("Going to send message to " + message.getTo() + " from " + message.getFrom());
-                        timeToSendMessage = timeToSendMessage + SessionManager.getInstance().sendMessage(message);
-                        consumer.commitSync(Collections.singletonMap(topicPartition, new OffsetAndMetadata(record.offset() + 1)));
-                    } catch (ParseException e) {
-                        LOGGER.log(Priority.INFO, "Exception while parsing data to JSON ", e);
+                try {
+                    ConsumerRecords<String, String> records = consumer.poll(500L);
+                    long startTime = System.currentTimeMillis();
+                    long timeToSendMessage = 0L;
+                    for (ConsumerRecord<String, String> record : records) {
+                        try {
+                            JSONParser parser = new JSONParser();
+                            JSONObject data = (JSONObject) parser.parse(record.value());
+                            JSONObject messageData = (JSONObject) data.get("data");
+                            Message message = Message.getMessage(messageData);
+                            LOGGER.debug("Going to send message to " + message.getTo() + " from " + message.getFrom());
+                            timeToSendMessage = timeToSendMessage + SessionManager.getInstance().sendMessage(message);
+                            consumer.commitSync(Collections.singletonMap(topicPartition, new OffsetAndMetadata(record.offset() + 1)));
+                        } catch (ParseException e) {
+                            LOGGER.log(Priority.INFO, "Exception while parsing data to JSON ", e);
+                        }
                     }
+                    LOGGER.debug("Processed " + records.count() + " in " + (System.currentTimeMillis() - startTime) + " ms. Time to send Messaage " + timeToSendMessage);
+                } catch (Exception e) {
+                    LOGGER.info("Exception occurred ", e);
                 }
-                LOGGER.debug("Processed " + records.count() +  " in " + (System.currentTimeMillis() - startTime) + " ms. Time to send Messaage " + timeToSendMessage);
             }
         } catch (Exception e){
             LOGGER.info("Exception occurred ", e);
