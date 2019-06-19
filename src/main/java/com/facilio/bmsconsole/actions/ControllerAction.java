@@ -319,7 +319,7 @@ public class ControllerAction extends FacilioAction {
 			JSONArray publishMessage = new JSONArray();
 			Long messageId = getMessageId();
             if(messageId != null) {
-                criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(publishMessageModule), messageId.toString(), NumberOperators.EQUALS));
+                criteria.addAndCondition(CriteriaAPI.getCondition(FieldFactory.getPublishMessageParentIdField(publishMessageModule), messageId.toString(), NumberOperators.EQUALS));
             }
             context.put(FacilioConstants.ContextNames.TABLE_NAME,AgentKeys.PUBLISH_MESSAGE_TBALE);
             context.put(FacilioConstants.ContextNames.FIELDS,FieldFactory.getPublishMessageFields());
