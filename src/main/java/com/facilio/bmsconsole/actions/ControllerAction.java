@@ -22,10 +22,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class ControllerAction extends FacilioAction {
 
@@ -333,7 +330,7 @@ public class ControllerAction extends FacilioAction {
                 setResult("publishMessage", rows.get(0));
                 return SUCCESS;
             }else {
-                setResult("publishMessage",new ArrayList<>());
+                setResult("publishMessage",new HashMap<>());
                 return SUCCESS;
             }
 		} catch (Exception e) {
