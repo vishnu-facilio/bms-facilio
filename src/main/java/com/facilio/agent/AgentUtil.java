@@ -432,10 +432,6 @@ public  class AgentUtil
             if (payLoad.containsKey(AgentKeys.CONTENT)) {
                 toUpdate.put(AgentKeys.CONTENT, payLoad.get(AgentKeys.CONTENT));
             }
-            long checkOrgId = 152;
-            if(orgId == checkOrgId){
-                LOGGER.info("debugging log -toUpdate--"+toUpdate);
-            }
             try {
                 context.put(FacilioConstants.ContextNames.TO_INSERT_MAP,toUpdate);
                 addLogChain.execute(context);

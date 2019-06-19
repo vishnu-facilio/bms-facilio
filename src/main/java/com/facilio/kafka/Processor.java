@@ -227,9 +227,6 @@ public class Processor extends FacilioProcessor {
     }
 
     private void processLog(JSONObject payLoad,Long agentId,String recordId){
-        if(isStage){
-            LOGGER.info(recordId+" agent_Log payload "+payLoad);
-        }
         if((payLoad.containsKey(AgentKeys.COMMAND_STATUS) || payLoad.containsKey(AgentKeys.CONTENT))){
             int connectionCount = -1;
             //checks for key status in payload and if it is of 'agent'-publishype
@@ -265,22 +262,11 @@ public class Processor extends FacilioProcessor {
             }
             // agent type - with message alone - temp fix
             else if(  (!payLoad.containsKey(AgentKeys.COMMAND)) && payLoad.containsKey(AgentKeys.CONTENT)){
-                long checkOrgId = 152;
-                if(orgId == checkOrgId){
-                    LOGGER.info("debugging payload--With content alone-1-"+payLoad);
-                }
                 payLoad.put(AgentKeys.CONTENT,AgentContent.Subscribed.getKey());
                 payLoad.put(AgentKeys.COMMAND,ControllerCommand.subscribe.getCommand());
-                if(orgId == checkOrgId){
-                    LOGGER.info("debugging payload--With content alone-2-"+payLoad);
-                }
             }
             // ack type - so content is always msgid.
             else {
-                long checkOrgId = 152;
-                if(orgId == checkOrgId){
-                    LOGGER.info("debugging payload--ACK--"+payLoad);
-                }
                 payLoad.put(AgentKeys.CONTENT, payLoad.get(AgentKeys.MESSAGE_ID));
             }
             AgentUtil.putLog(payLoad,orgId,agentId,false);
