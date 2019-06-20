@@ -7,6 +7,7 @@ import org.apache.struts2.json.annotations.JSON;
 
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.time.DateTimeUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ShiftRotationContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
@@ -115,6 +116,7 @@ public class ShiftRotationContext extends ModuleBaseWithCustomFields {
 		this.timeOfSchedule = timeOfSchedule;
 	}
 
+	@JsonIgnore
 	@JSON(serialize = false)
 	public long[] getStartAndEndTime() {
 		long[] time = new long[2];
