@@ -54,7 +54,7 @@ public class HistoricalMLJob extends FacilioJob {
 			while(startTime<endTime)
 			{
 				runModel(startTime);
-				startTime = startTime + 3600000L;
+				startTime = startTime + 24 * 3600 * 1000L;
 			}
 			LOGGER.info("Job completed");
 		}
