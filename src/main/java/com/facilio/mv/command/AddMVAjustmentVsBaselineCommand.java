@@ -22,7 +22,8 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.mv.context.MVAdjustment;
 import com.facilio.mv.context.MVAdjustmentVsBaseline;
 import com.facilio.mv.context.MVBaseline;
-import com.facilio.mv.context.MVProject;
+import com.facilio.mv.context.MVProjectContext;
+import com.facilio.mv.context.MVProjectWrapper;
 import com.facilio.mv.util.MVUtil;
 
 public class AddMVAjustmentVsBaselineCommand implements Command {
@@ -34,10 +35,10 @@ public class AddMVAjustmentVsBaselineCommand implements Command {
 		
 		MVAdjustmentVsBaseline ajustmentVsBaselineContext = (MVAdjustmentVsBaseline) context.get(MVUtil.MV_ADJUSTMENT_VS_BASELINE);
 		
-		MVProject mvProject = (MVProject) context.get(MVUtil.MV_PROJECT);
+		MVProjectWrapper mvProjectWrapper = (MVProjectWrapper) context.get(MVUtil.MV_PROJECT_WRAPPER);
 		
 		if(ajustmentVsBaselineContext ==  null) {
-			List<MVAdjustment> adjustments =  mvProject.getAdjustments();
+			List<MVAdjustment> adjustments =  mvProjectWrapper.getAdjustments();
 			ajustmentsVsBaselineContexts = new ArrayList<>();
 			for(MVAdjustment adjustment :adjustments) {
 				for(MVAdjustmentVsBaseline adjustmentVsBaseline : adjustment.getAdjustmentVsBaseline()) {
@@ -51,23 +52,11 @@ public class AddMVAjustmentVsBaselineCommand implements Command {
 		}
 		
 		
-		Map<String,MVBaseline> baselineNameMap = getBaseLineNameMap(mvProject);
+		Map<String,MVBaseline> baselineNameMap = getBaseLineNameMap(mvProjectWrapper);
 		
-		Map<String,MVAdjustment> adjustmentNameMap = getAjustmentNameMap(mvProject);
+		Map<String,MVAdjustment> adjustmentNameMap = getAjustmentNameMap(mvProjectWrapper);
 		
-		fillMVAjustmentContext(ajustmentsVsBaselineContexts, baselineNameMap, adjustmentNameMap,mvProject);
-		
-//		for(MVAdjustmentVsBaseline ajustmentsVsBaselineContext :ajustmentsVsBaselineContexts) {
-//			context.put(FacilioConstants.ContextNames.FORMULA_FIELD, ajustmentsVsBaselineContext.getFormulaField());
-//
-//			if (ajustmentsVsBaselineContext.getFormulaField().getInterval() == -1) {
-//				int interval = mvProject.getFrequency();
-//				ajustmentsVsBaselineContext.getFormulaField().setInterval(interval);
-//			}
-//
-//			Chain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
-//			addEnpiChain.execute(context);
-//		}
+		fillMVAjustmentContext(ajustmentsVsBaselineContexts, baselineNameMap, adjustmentNameMap,mvProjectWrapper.getMvProject());
 		
 		FacilioModule module = ModuleFactory.getMVAjuststmentVsBaselineModule();
 		List<FacilioField> fields = FieldFactory.getMVAjuststmentVsBaselineFields();
@@ -85,20 +74,18 @@ public class AddMVAjustmentVsBaselineCommand implements Command {
 		return false;
 	}
 	
-	void fillMVAjustmentContext(List<MVAdjustmentVsBaseline> ajustmentsVsBaselineContexts,Map<String,MVBaseline> baselineNameMap,Map<String,MVAdjustment> adjustmentNameMap,MVProject mvProject) {
+	void fillMVAjustmentContext(List<MVAdjustmentVsBaseline> ajustmentsVsBaselineContexts,Map<String,MVBaseline> baselineNameMap,Map<String,MVAdjustment> adjustmentNameMap,MVProjectContext mvProject) {
 		
 		for(MVAdjustmentVsBaseline ajustmentsVsBaselineContext :ajustmentsVsBaselineContexts) {
 			ajustmentsVsBaselineContext.setProjectId(mvProject.getId());
 			ajustmentsVsBaselineContext.setOrgId(AccountUtil.getCurrentOrg().getId());
 			ajustmentsVsBaselineContext.setAdjustmentId(adjustmentNameMap.get(ajustmentsVsBaselineContext.getAdjustmentName()).getId());
 			ajustmentsVsBaselineContext.setBaselineId(baselineNameMap.get(ajustmentsVsBaselineContext.getBaselineName()).getId());
-			
-			// construct formula field here
 		}
 	}
 
 	
-	Map<String,MVBaseline> getBaseLineNameMap(MVProject mvProject) {
+	Map<String,MVBaseline> getBaseLineNameMap(MVProjectWrapper mvProject) {
 		
 		List<MVBaseline> baselines = mvProject.getBaselines();
 		Map<String,MVBaseline> baselineNameMap = new HashMap<>();
@@ -110,7 +97,7 @@ public class AddMVAjustmentVsBaselineCommand implements Command {
 		return baselineNameMap;
 	}
 	
-	Map<String,MVAdjustment> getAjustmentNameMap(MVProject mvProject) {
+	Map<String,MVAdjustment> getAjustmentNameMap(MVProjectWrapper mvProject) {
 		
 		List<MVAdjustment> adjustments = mvProject.getAdjustments();
 		Map<String,MVAdjustment> adjustmentNameMap = new HashMap<>();

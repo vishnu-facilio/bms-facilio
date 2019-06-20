@@ -11,7 +11,7 @@ import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
-public class MVProject extends ModuleBaseWithCustomFields {
+public class MVProjectContext extends ModuleBaseWithCustomFields {
 
 	/**
 	 * 
@@ -27,8 +27,6 @@ public class MVProject extends ModuleBaseWithCustomFields {
 	boolean isAutoGenVmMeter;
 	AssetContext meter;
 	User owner;
-	List<MVBaseline> baselines;
-	List<MVAdjustment> adjustments;
 	int saveGoal;
 	long reportingPeriodStartTime;
 	long reportingPeriodEndTime;
@@ -72,22 +70,6 @@ public class MVProject extends ModuleBaseWithCustomFields {
 
 	public void setMeter(AssetContext meter) {
 		this.meter = meter;
-	}
-
-	public List<MVBaseline> getBaselines() {
-		return baselines;
-	}
-
-	public void setBaselines(List<MVBaseline> baselines) {
-		this.baselines = baselines;
-	}
-
-	public List<MVAdjustment> getAdjustments() {
-		return adjustments;
-	}
-
-	public void setAdjustments(List<MVAdjustment> adjustments) {
-		this.adjustments = adjustments;
 	}
 
 	public String getName() {

@@ -19,7 +19,8 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.mv.context.MVBaseline;
-import com.facilio.mv.context.MVProject;
+import com.facilio.mv.context.MVProjectContext;
+import com.facilio.mv.context.MVProjectWrapper;
 import com.facilio.mv.util.MVUtil;
 
 public class AddMVBaselineCommand implements Command {
@@ -29,21 +30,22 @@ public class AddMVBaselineCommand implements Command {
 		
 		List<MVBaseline> baseLines = null;
 		
+		MVProjectWrapper mvProjectWrapper = (MVProjectWrapper) context.get(MVUtil.MV_PROJECT_WRAPPER);
+		
 		MVBaseline baseline = (MVBaseline) context.get(MVUtil.MV_BASELINE);
-		MVProject mvProject = (MVProject) context.get(MVUtil.MV_PROJECT);
 		
 		if(baseline == null) {
-			baseLines = mvProject.getBaselines();
+			baseLines = mvProjectWrapper.getBaselines();
 		}
 		else {
 			baseLines = Collections.singletonList(baseline);
 		}
 		
 		for(MVBaseline baseLine :baseLines) {
-			baseLine.setProjectId(mvProject.getId());
+			baseLine.setProject(mvProjectWrapper.getMvProject());
 			baseLine.setOrgId(AccountUtil.getCurrentOrg().getId());
 			context.put(FacilioConstants.ContextNames.FORMULA_FIELD, baseLine.getFormulaField());
-			MVUtil.fillFormulaFieldDetails(baseLine.getFormulaField(), mvProject,baseLine,null);
+			MVUtil.fillFormulaFieldDetails(baseLine.getFormulaField(), mvProjectWrapper.getMvProject(),baseLine,null);
 			Chain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
 			addEnpiChain.execute(context);
 		}

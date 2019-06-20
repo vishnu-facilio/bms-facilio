@@ -24,7 +24,8 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.mv.context.MVBaseline;
-import com.facilio.mv.context.MVProject;
+import com.facilio.mv.context.MVProjectContext;
+import com.facilio.mv.context.MVProjectWrapper;
 import com.facilio.mv.util.MVUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -35,17 +36,17 @@ public class UpdateMVBaselineCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		MVProject mvProject = (MVProject) context.get(MVUtil.MV_PROJECT);
-		MVProject mvProjectOld = (MVProject) context.get(MVUtil.MV_PROJECT_OLD);
+		MVProjectWrapper mvProjectWrapper = (MVProjectWrapper) context.get(MVUtil.MV_PROJECT_WRAPPER);
+		
+		MVProjectWrapper mvProjectWrapperOld = (MVProjectWrapper) context.get(MVUtil.MV_PROJECT_WRAPPER_OLD);
 		
 		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		FacilioModule module = modbean.getModule(FacilioConstants.ContextNames.MV_BASELINE_MODULE);
-		List<FacilioField> fields = modbean.getAllFields(FacilioConstants.ContextNames.MV_BASELINE_MODULE);
 		
-		List<MVBaseline> baselines = mvProject.getBaselines();
+		List<MVBaseline> baselines = mvProjectWrapper.getBaselines();
 		
-		List<MVBaseline> oldBaselines = mvProjectOld.getBaselines();
+		List<MVBaseline> oldBaselines = mvProjectWrapperOld.getBaselines();
 		
 		List<MVBaseline> deletedBaselines = new ArrayList<MVBaseline>();
 		
@@ -68,25 +69,18 @@ public class UpdateMVBaselineCommand implements Command {
 			for(MVBaseline baseline :baselines) {
 				
 				if(baseline.getId() < 0) {
-					// add here
 					context.put(MVUtil.MV_BASELINE, baseline);
 					Chain chain = TransactionChainFactory.getAddMVBaselineChain();
 					chain.execute(context);
 				}
 				else {
-					// update here
 					
 					context.put(FacilioConstants.ContextNames.FORMULA_FIELD, baseline.getFormulaField());
 					
 					Chain updateEnPIChain = FacilioChainFactory.updateFormulaChain();
 					updateEnPIChain.execute(context);
 					
-					UpdateRecordBuilder<MVBaseline> update = new UpdateRecordBuilder<MVBaseline>()
-							.module(module)
-							.fields(fields)
-							.andCondition(CriteriaAPI.getIdCondition(baseline.getId(), module));
-					
-					update.update(baseline);
+					MVUtil.updateMVBaseline(baseline);
 				}
 			}
 		}

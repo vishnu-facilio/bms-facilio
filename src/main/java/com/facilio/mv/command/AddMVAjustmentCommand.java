@@ -17,7 +17,8 @@ import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.mv.context.MVAdjustment;
 import com.facilio.mv.context.MVBaseline;
-import com.facilio.mv.context.MVProject;
+import com.facilio.mv.context.MVProjectContext;
+import com.facilio.mv.context.MVProjectWrapper;
 import com.facilio.mv.util.MVUtil;
 
 public class AddMVAjustmentCommand implements Command {
@@ -28,23 +29,23 @@ public class AddMVAjustmentCommand implements Command {
 		List<MVAdjustment> adjustments = null;
 		
 		MVAdjustment adjustment = (MVAdjustment) context.get(MVUtil.MV_ADJUSTMENT);
-		MVProject mvProject = (MVProject) context.get(MVUtil.MV_PROJECT);
+		MVProjectWrapper mvProjectWrapper = (MVProjectWrapper) context.get(MVUtil.MV_PROJECT_WRAPPER);
 		
 		if(adjustment == null) {
-			adjustments = mvProject.getAdjustments();
+			adjustments = mvProjectWrapper.getAdjustments();
 		}
 		else {
 			adjustments = Collections.singletonList(adjustment);
 		}
 		
 		for(MVAdjustment adjustment1 :adjustments) {
-			adjustment1.setProjectId(mvProject.getId());
+			adjustment1.setProjectId(mvProjectWrapper.getMvProject().getId());
 			adjustment1.setOrgId(AccountUtil.getCurrentOrg().getId());
-			MVUtil.fillFormulaFieldDetails(adjustment1.getFormulaField(), mvProject,null,adjustment1);
+			MVUtil.fillFormulaFieldDetails(adjustment1.getFormulaField(), mvProjectWrapper.getMvProject(),null,adjustment1);
 			context.put(FacilioConstants.ContextNames.FORMULA_FIELD, adjustment1.getFormulaField());
 
 			if (adjustment1.getFormulaField().getInterval() == -1) {
-				int interval = mvProject.getFrequency();
+				int interval = mvProjectWrapper.getMvProject().getFrequency();
 				adjustment1.getFormulaField().setInterval(interval);
 			}
 

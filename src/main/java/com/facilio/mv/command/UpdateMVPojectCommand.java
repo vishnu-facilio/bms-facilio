@@ -12,7 +12,8 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.mv.context.MVProject;
+import com.facilio.mv.context.MVProjectContext;
+import com.facilio.mv.context.MVProjectWrapper;
 import com.facilio.mv.util.MVUtil;
 
 public class UpdateMVPojectCommand implements Command {
@@ -21,14 +22,16 @@ public class UpdateMVPojectCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		MVProject mvProject = (MVProject) context.get(MVUtil.MV_PROJECT);
+		MVProjectWrapper mvProjectWrapper = (MVProjectWrapper) context.get(MVUtil.MV_PROJECT_WRAPPER);
+		
+		MVProjectContext mvProject = mvProjectWrapper.getMvProject();
 		
 		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		FacilioModule module = modbean.getModule(FacilioConstants.ContextNames.MV_PROJECT_MODULE);
 		List<FacilioField> fields = modbean.getAllFields(FacilioConstants.ContextNames.MV_PROJECT_MODULE);
 		
-		UpdateRecordBuilder<MVProject> update = new UpdateRecordBuilder<MVProject>()
+		UpdateRecordBuilder<MVProjectContext> update = new UpdateRecordBuilder<MVProjectContext>()
 				.module(module)
 				.fields(fields)
 				.andCondition(CriteriaAPI.getIdCondition(mvProject.getId(), module));

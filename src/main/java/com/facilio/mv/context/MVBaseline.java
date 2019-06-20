@@ -10,7 +10,7 @@ public class MVBaseline extends ModuleBaseWithCustomFields {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	long projectId;
+	MVProjectContext project;
 	String name;
 	FormulaFieldContext formulaField;
 	FormulaFieldContext formulaFieldWithAjustment;
@@ -29,11 +29,11 @@ public class MVBaseline extends ModuleBaseWithCustomFields {
 	public void setFormulaField(FormulaFieldContext formulaField) {
 		this.formulaField = formulaField;
 	}
-	public long getProjectId() {
-		return projectId;
+	public MVProjectContext getProject() {
+		return project;
 	}
-	public void setProjectId(long projectId) {
-		this.projectId = projectId;
+	public void setProject(MVProjectContext project) {
+		this.project = project;
 	}
 	public String getName() {
 		return name;

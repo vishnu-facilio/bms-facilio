@@ -21,16 +21,18 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.mv.context.MVAdjustment;
 import com.facilio.mv.context.MVAdjustmentVsBaseline;
 import com.facilio.mv.context.MVBaseline;
-import com.facilio.mv.context.MVProject;
+import com.facilio.mv.context.MVProjectContext;
+import com.facilio.mv.context.MVProjectWrapper;
 
 public class MVUtil {
 	
-	public static String MV_PROJECT = "mvProject";
-	public static String MV_PROJECT_OLD = "mvProjectOld";
+	public static String MV_PROJECT_WRAPPER = "mvProjectWrapper";
+	public static String MV_PROJECT_WRAPPER_OLD = "mvProjectWrapperOld";
 	
 	public static String MV_BASELINE = "mvBaseline";
 	public static String MV_BASELINES = "mvBaselines";
@@ -39,8 +41,10 @@ public class MVUtil {
 	public static String MV_ADJUSTMENT_VS_BASELINE = "mvAdjustmentVsBaseline";
 	public static String MV_ADJUSTMENT_VS_BASELINES = "mvAdjustmentVsBaselines";
 	
+    public static String WORKLFOW_MODULE_INITITALIZATION_STMT = "module = Module(\"${moduleName}\");";
+    public static String WORKLFOW_VALUE_FETCH_STMT = "module.fetch({criteria : [parentId == ${parentId}],field : \"${fieldName}\",aggregation : \"lastValue\"});";
 	
-	public static void fillFormulaFieldDetails(FormulaFieldContext formulaFieldContext,MVProject mvProject,MVBaseline baseline,MVAdjustment mvAdjustment) {
+	public static void fillFormulaFieldDetails(FormulaFieldContext formulaFieldContext,MVProjectContext mvProject,MVBaseline baseline,MVAdjustment mvAdjustment) {
 		
 		formulaFieldContext.setFormulaFieldType(FormulaFieldType.ENPI);
 		formulaFieldContext.setTriggerType(TriggerType.SCHEDULE);
@@ -55,20 +59,39 @@ public class MVUtil {
 		}
 	}
 	
-	public static MVProject getMVProject(long id) throws Exception {
+	public static void updateMVBaseline(MVBaseline baseline) throws Exception {
+		
+		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		FacilioModule module = modbean.getModule(FacilioConstants.ContextNames.MV_BASELINE_MODULE);
+		List<FacilioField> fields = modbean.getAllFields(FacilioConstants.ContextNames.MV_BASELINE_MODULE);
+		
+		UpdateRecordBuilder<MVBaseline> update = new UpdateRecordBuilder<MVBaseline>()
+				.module(module)
+				.fields(fields)
+				.andCondition(CriteriaAPI.getIdCondition(baseline.getId(), module));
+		
+		update.update(baseline);
+	}
+	
+	public static MVProjectWrapper getMVProject(long id) throws Exception {
+		
+		MVProjectWrapper mvProjectWrapper = new MVProjectWrapper();
 		
 		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		FacilioModule mvProjectModule = modbean.getModule(FacilioConstants.ContextNames.MV_PROJECT_MODULE);
 		List<FacilioField> mvProjectFields = modbean.getAllFields(FacilioConstants.ContextNames.MV_PROJECT_MODULE);
 		
-		SelectRecordsBuilder<MVProject> selectProject = new SelectRecordsBuilder<MVProject>()
+		SelectRecordsBuilder<MVProjectContext> selectProject = new SelectRecordsBuilder<MVProjectContext>()
 				.module(mvProjectModule)
 				.select(mvProjectFields)
-				.beanClass(MVProject.class)
+				.beanClass(MVProjectContext.class)
 				.andCondition(CriteriaAPI.getIdCondition(id, mvProjectModule));
 		
-		MVProject mvProject = selectProject.get().get(0);
+		MVProjectContext mvProject = selectProject.get().get(0);
+		
+		mvProjectWrapper.setMvProject(mvProject);
 		
 		FacilioModule mvBaselineModule = modbean.getModule(FacilioConstants.ContextNames.MV_BASELINE_MODULE);
 		List<FacilioField> mvBaselineFields = modbean.getAllFields(FacilioConstants.ContextNames.MV_BASELINE_MODULE);
@@ -89,7 +112,7 @@ public class MVUtil {
 			mvBaseline.setFormulaField(formula);
 		}
 		
-		mvProject.setBaselines(mvBaselines);
+		mvProjectWrapper.setBaselines(mvBaselines);
 		
 		FacilioModule mvAjustmentModule = modbean.getModule(FacilioConstants.ContextNames.MV_ADJUSTMENT_MODULE);
 		List<FacilioField> mvAjustmentFields = modbean.getAllFields(FacilioConstants.ContextNames.MV_ADJUSTMENT_MODULE);
@@ -112,7 +135,7 @@ public class MVUtil {
 			mvAdjustmentsIdMap.put(mvAdjustment.getId(), mvAdjustment);
 		}
 		
-		mvProject.setAdjustments(mvAdjustments);
+		mvProjectWrapper.setAdjustments(mvAdjustments);
 		
 		Map<String, FacilioField> mvAjustmentVsBaselineFieldMap = FieldFactory.getAsMap(FieldFactory.getMVAjuststmentVsBaselineFields());
 		
@@ -126,14 +149,12 @@ public class MVUtil {
 		List<MVAdjustmentVsBaseline> mvAjustmentVsBaselines = FieldUtil.getAsBeanListFromMapList(props, MVAdjustmentVsBaseline.class);
 		
 		for(MVAdjustmentVsBaseline mvAjustmentVsBaseline :mvAjustmentVsBaselines) {
-//			FormulaFieldContext formula = FormulaFieldAPI.getFormulaField(mvAjustmentVsBaseline.getFormulaField().getId());
-//			mvAjustmentVsBaseline.setFormulaField(formula);
 			MVAdjustment adjustment = mvAdjustmentsIdMap.get(mvAjustmentVsBaseline.getAdjustmentId());
 			List<MVAdjustmentVsBaseline> adjustmentVsBaselines = adjustment.getAdjustmentVsBaseline() == null ? new ArrayList<>() : adjustment.getAdjustmentVsBaseline();
 			adjustmentVsBaselines.add(mvAjustmentVsBaseline);
 			adjustment.setAdjustmentVsBaseline(mvAjustmentVsBaselines);
 		}
 		
-		return mvProject;
+		return mvProjectWrapper;
 	}
 }

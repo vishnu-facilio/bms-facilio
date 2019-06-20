@@ -24,7 +24,8 @@ import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.mv.context.MVAdjustment;
 import com.facilio.mv.context.MVAdjustmentVsBaseline;
-import com.facilio.mv.context.MVProject;
+import com.facilio.mv.context.MVProjectContext;
+import com.facilio.mv.context.MVProjectWrapper;
 import com.facilio.mv.util.MVUtil;
 
 public class UpdateMVAjustmentVsBaselineCommand implements Command {
@@ -33,17 +34,14 @@ public class UpdateMVAjustmentVsBaselineCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
-		MVProject mvProject = (MVProject) context.get(MVUtil.MV_PROJECT);
-		MVProject mvProjectOld = (MVProject) context.get(MVUtil.MV_PROJECT_OLD);
-		
-		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		MVProjectWrapper mvProjectWrapper = (MVProjectWrapper) context.get(MVUtil.MV_PROJECT_WRAPPER);
 		
 		FacilioModule module = ModuleFactory.getMVAjuststmentVsBaselineModule();
 		List<FacilioField> fields = FieldFactory.getMVAjuststmentVsBaselineFields();
 		
 		List<MVAdjustmentVsBaseline> adjustmentVsBaselines = new ArrayList<>();
 		
-		List<MVAdjustment> adjustments =  mvProject.getAdjustments();
+		List<MVAdjustment> adjustments =  mvProjectWrapper.getAdjustments();
 		for(MVAdjustment adjustment :adjustments) {
 			adjustmentVsBaselines.addAll(adjustment.getAdjustmentVsBaseline());
 		}

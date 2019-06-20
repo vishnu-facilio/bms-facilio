@@ -25,6 +25,7 @@ import com.facilio.mv.command.AddMVAjustmentCommand;
 import com.facilio.mv.command.AddMVAjustmentVsBaselineCommand;
 import com.facilio.mv.command.AddMVBaselineCommand;
 import com.facilio.mv.command.AddMVProjectCommand;
+import com.facilio.mv.command.ConstructBaselineFromulaWithAjustmentCommand;
 import com.facilio.mv.command.DeleteMVProjectCommand;
 import com.facilio.mv.command.UpdateMVAdjustmentCommand;
 import com.facilio.mv.command.UpdateMVAjustmentVsBaselineCommand;
@@ -3015,6 +3016,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddMVBaselineCommand());
 			c.addCommand(new AddMVAjustmentCommand());
 			c.addCommand(new AddMVAjustmentVsBaselineCommand());
+			c.addCommand(new ConstructBaselineFromulaWithAjustmentCommand());
 			return c;
 		}
 		
