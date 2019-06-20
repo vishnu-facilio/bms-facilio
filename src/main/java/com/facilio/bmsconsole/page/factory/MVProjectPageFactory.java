@@ -6,11 +6,11 @@ import com.facilio.bmsconsole.page.Page.Tab;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.PageWidget.CardType;
 import com.facilio.bmsconsole.page.PageWidget.WidgetType;
-import com.facilio.mv.context.MVProject;
+import com.facilio.mv.context.MVProjectContext;
 
 public class MVProjectPageFactory {
 	
-	public static Page getMVProjectPage(MVProject project) {
+	public static Page getMVProjectPage(MVProjectContext project) {
 		Page page = new Page();
 		
 		Tab tab1 = page.new Tab("summary");

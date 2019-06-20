@@ -16,7 +16,7 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.AggregateOperator.DateAggregateOperator;
 import com.facilio.modules.AggregateOperator.NumberAggregateOperator;
-import com.facilio.mv.context.MVProject;
+import com.facilio.mv.context.MVProjectContext;
 
 public class PageFactory {
 
@@ -28,7 +28,7 @@ public class PageFactory {
 			case ContextNames.READING_RULE_MODULE:
 				return RulePageFactory.getRulePage((AlarmRuleContext) record);
 			case ContextNames.MV_PROJECT_MODULE:
-				return MVProjectPageFactory.getMVProjectPage((MVProject) record);
+				return MVProjectPageFactory.getMVProjectPage((MVProjectContext) record);
 		}
 		return null;
 	}
