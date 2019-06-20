@@ -532,11 +532,13 @@ public class FieldFactory {
 	public static List<FacilioField> getEnumFieldValuesFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getEnumFieldValuesModule();
-
+		fields.add(getIdField(module));
 		fields.add(getField("fieldId", "FIELDID", module, FieldType.NUMBER));
 		/*fields.add(getOrgIdField(module));*/
 		fields.add(getField("index", "IDX", module, FieldType.NUMBER));
 		fields.add(getField("value", "VAL", module, FieldType.STRING));
+		fields.add(getField("sequence", "SEQUENCE_NUMBER", module, FieldType.NUMBER));
+		fields.add(getField("visible", "VISIBLE", module, FieldType.BOOLEAN));
 
 		return fields;
 	}

@@ -127,7 +127,7 @@ public class AddPMReadingsForTasks implements Command {
 				case RADIO:
 					if (task.getReadingFieldId() == -1) {
 						EnumField enumField = (EnumField) checkAndAddField(task.getSubject(), FieldType.ENUM, task.getUniqueId(), fieldMap);
-						enumField.setValues(task.getOptions());
+						enumField.setOptions(task.getOptions());
 						task.setReadingField(enumField);
 					}
 					else {

@@ -1,5 +1,6 @@
 package com.facilio.beans;
 
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -568,7 +569,7 @@ public class ModuleBeanImpl implements ModuleBean {
 														.table(module.getTableName())
 //														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 														.andCondition(CriteriaAPI.getCondition("FIELDID", "fieldId", StringUtils.join(fieldIds, ","), NumberOperators.EQUALS))
-														.orderBy("FIELDID, IDX")
+														.orderBy("FIELDID, SEQUENCE_NUMBER")
 														;
 		List<Map<String, Object>> props = selectBuilder.get();
 		Map<Long, Map<String, Object>> propsMap = new HashMap<>();
@@ -576,11 +577,14 @@ public class ModuleBeanImpl implements ModuleBean {
 			Long fieldId = (Long) prop.get("fieldId");
 			Map<String, Object> fieldProp = propsMap.get(fieldId);
 			if (fieldProp == null) {
-				fieldProp = new HashMap<>();
-				fieldProp.put("values", new ArrayList<>());
+				List<EnumFieldValue> values = new ArrayList<>();
+				values.add(FieldUtil.getAsBeanFromMap(prop, EnumFieldValue.class));
+				fieldProp = Collections.singletonMap("values", values);
 				propsMap.put(fieldId, fieldProp);
 			}
-			((List<String>) fieldProp.get("values")).add((String) prop.get("value"));
+			else {
+				((List<EnumFieldValue>) fieldProp.get("values")).add(FieldUtil.getAsBeanFromMap(prop, EnumFieldValue.class));
+			}
 		}
 		return propsMap;
 	}
@@ -844,30 +848,60 @@ public class ModuleBeanImpl implements ModuleBean {
 		if (field.getValues() == null || field.getValues().isEmpty()) {
 			throw new IllegalArgumentException("Enum Values cannot be null during addition of Enum Field");
 		}
-		
+		addEnumValues(field, field.getValues());
+		return field.getValues().size();
+	}
+
+	private void addEnumValues(EnumField field, List<EnumFieldValue> values) throws Exception {
 		FacilioModule module = ModuleFactory.getEnumFieldValuesModule();
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-														.table(module.getTableName())
-														.fields(FieldFactory.getEnumFieldValuesFields());
-		int optionsCount = field.getValues().size();
-		for (int i = 1; i <= optionsCount; i++) {
-			Map<String, Object> prop = new HashMap<>();
-			prop.put("fieldId", field.getFieldId());
-			prop.put("orgId", getOrgId());
-			prop.put("index", i);
-			prop.put("value", field.getValue(i));
-			insertBuilder.addRecord(prop);
+				.table(module.getTableName())
+				.fields(FieldFactory.getEnumFieldValuesFields());
+		int i = 1;
+		for (EnumFieldValue enumVal : field.getValues()) {
+			enumVal.setFieldId(field.getFieldId());
+			if (enumVal.getIndex() == -1) {
+				enumVal.setIndex(i);
+			}
+			if (enumVal.getSequence() == -1) {
+				enumVal.setSequence(i);
+			}
+			enumVal.setVisible(true);
+			insertBuilder.addRecord(FieldUtil.getAsProperties(enumVal));
+			i++;
 		}
 		insertBuilder.save();
-		return optionsCount;
+	}
+
+	private int updateEnumVal (EnumFieldValue enumVal) throws Exception {
+		FacilioModule module = ModuleFactory.getEnumFieldValuesModule();
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+													.table(module.getTableName())
+													.fields(FieldFactory.getEnumFieldValuesFields())
+													.andCondition(CriteriaAPI.getIdCondition(enumVal.getId(), module))
+													;
+		return updateBuilder.update(FieldUtil.getAsProperties(enumVal));
+
 	}
 	
 	private int updateEnumField(EnumField field) throws Exception {
 		if (field.getValues() == null || field.getValues().isEmpty()) {
 			return 0;
 		}
-		deleteEnumValues(field);
-		return addEnumField(field);
+		List<EnumFieldValue> enumsToBeAdded = new ArrayList<>();
+		int i = 1;
+		for (EnumFieldValue enumVal : field.getValues()) {
+			if (enumVal.getId() == -1) {
+				enumsToBeAdded.add(enumVal);
+			}
+			else {
+				updateEnumVal(enumVal);
+			}
+			i++;
+		}
+		addEnumValues(field, enumsToBeAdded);
+//		deleteEnumValues(field);
+		return field.getValues().size();
 	}
 	
 	private void deleteEnumValues (EnumField field) throws Exception {

@@ -1094,7 +1094,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 			case RADIO:
 				if (task.getReadingFieldId() != -1) {
 					task.setReadingField(modBean.getField(task.getReadingFieldId()));
-					task.setOptions(((EnumField)task.getReadingField()).getValues());
+					task.setOptions(((EnumField)task.getReadingField()).getVisibleOptions());
 				}
 				else {
 					task.setOptions(TicketAPI.getTaskInputOptions(task.getId()));
