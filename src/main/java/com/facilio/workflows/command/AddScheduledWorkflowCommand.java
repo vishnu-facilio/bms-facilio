@@ -11,6 +11,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.tasker.FacilioTimer;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.workflows.context.ScheduledWorkflowContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflowv2.util.WorkflowV2Util;
@@ -23,6 +24,10 @@ public class AddScheduledWorkflowCommand implements Command {
 		ScheduledWorkflowContext scheduledWorkflowContext = (ScheduledWorkflowContext)context.get(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT);
 		
 		WorkflowContext workflow = (WorkflowContext)context.get(WorkflowV2Util.WORKFLOW_CONTEXT);
+		
+		if (scheduledWorkflowContext.getStartTime() < DateTimeUtil.getCurrenTime()) {
+			scheduledWorkflowContext.setStartTime(DateTimeUtil.getCurrenTime());
+		}
 		
 		scheduledWorkflowContext.setWorkflowId(workflow.getId());
 		scheduledWorkflowContext.setIsActive(true);
