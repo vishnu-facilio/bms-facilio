@@ -11,9 +11,13 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AttendanceContext;
+import com.facilio.bmsconsole.context.AttendanceStateContext;
 import com.facilio.bmsconsole.context.AttendanceContext.Status;
 import com.facilio.bmsconsole.context.AttendanceTransactionContext;
+import com.facilio.bmsconsole.context.BreakContext;
 import com.facilio.bmsconsole.context.AttendanceTransactionContext.TransactionType;
+import com.facilio.bmsconsole.context.BreakContext.BreakMode;
+import com.facilio.bmsconsole.context.BreakContext.BreakType;
 import com.facilio.bmsconsole.context.ShiftContext;
 import com.facilio.bmsconsole.context.ShiftUserRelContext;
 import com.facilio.bmsconsole.util.ShiftAPI;
@@ -118,6 +122,25 @@ public class AddAttendanceCommand implements Command {
 				long shiftId = shiftUserMapping.get(0).getShiftId();
 				ShiftContext shift = ShiftAPI.getShift(shiftId);
 				attendanceContext.setShift(shift);
+				// Automatic break
+				List<BreakContext> breaks = ShiftAPI.getBreakssAttachedToShift(shift.getId());
+				if (!CollectionUtils.isEmpty(breaks)) {
+					long totalPaidBreakHrs = 0;
+					long totalUnpaidBreakHrs = 0;
+					for (BreakContext breakContext : breaks) {
+						if(breakContext.getBreakModeEnum() == BreakMode.AUTOMATIC) {
+							if(breakContext.getBreakTime() > 0) {
+								if(breakContext.getBreakTypeEnum() == BreakType.PAID) {
+									totalPaidBreakHrs += breakContext.getBreakTime();
+								} else if(breakContext.getBreakTypeEnum() == BreakType.UNPAID) {
+									totalUnpaidBreakHrs += breakContext.getBreakTime();
+								}
+							}
+						}
+					}
+					attendanceContext.setTotalPaidBreakHrs(totalPaidBreakHrs);
+					attendanceContext.setTotalUnpaidBreakHrs(totalUnpaidBreakHrs);
+				}
 			}
 			long day = DateTimeUtil.getDayStartTimeOf(attendanceTransaction.getTransactionTime());
 			attendanceContext.setDay(day);

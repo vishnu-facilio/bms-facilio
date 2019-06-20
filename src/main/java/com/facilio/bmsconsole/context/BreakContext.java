@@ -63,4 +63,37 @@ public class BreakContext extends ModuleBaseWithCustomFields {
 			return null;
 		}
 	}
+	
+	private BreakMode breakMode;
+	public BreakMode getBreakModeEnum() {
+		return breakMode;
+	}
+	public void setBreakMode(BreakMode breakMode) {
+		this.breakMode = breakMode;
+	}
+	public int getBreakMode() {
+		if (breakMode != null) {
+			return breakMode.getValue();
+		}
+		return -1;
+	}
+	public void setBreakMode(int breakMode) {
+		this.breakMode = BreakMode.valueOf(breakMode);
+	}
+	
+	public static enum BreakMode {
+		MANUAL,
+		AUTOMATIC;
+		
+		public int getValue() {
+			return ordinal() + 1;
+		}
+		
+		public static BreakMode valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+	}
 }
