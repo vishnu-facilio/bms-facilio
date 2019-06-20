@@ -4,6 +4,9 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -95,6 +98,12 @@ public enum FacilioSystemFunctions implements FacilioWorkflowFunctionInterface {
 			}
 			
 			return "";
+		}
+	},
+	GET_AS_PROP_MAP(4, "getAsMap", 1) {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			return FieldUtil.getAsProperties(objects[0]);
 		}
 	}
 	;
