@@ -31,6 +31,7 @@ import com.facilio.tasker.FacilioTimer;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -535,7 +536,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		if (workflowFlag) {
 			List<Map<String, Object>> flaps = getFlaps(reading.getParentId());
 			boolean flag = checkOccurences(flaps, reading);
-			if (flag) { //Remove oldest entry alone
+			if (flag && CollectionUtils.isNotEmpty(flaps)) { //Remove oldest entry alone
 				deleteOldFlaps(Collections.singletonList((Long) flaps.get(0).get("id")));
 			}
 			return flag;
