@@ -324,6 +324,68 @@ public class AddRegressionPointsCommand implements Command{
 		return groupAlias.toString();
 	}
 	
+	public double computeSumOfSquareErrors(List<Map<String, Object>> data, String pointAlias, String yAlias ) {
+		// SSE
+		double sumOfSquareErrors = 0.0;
+		double diff = 0.0;
+		for(Map<String, Object>d : data) {
+			diff = (double)d.get(yAlias) - (double)d.get(pointAlias);
+			sumOfSquareErrors = sumOfSquareErrors + Math.pow(diff, 2);
+		}
+		
+		return sumOfSquareErrors;
+	}
+	
+	public double computeSumOfSqaureTotal(List<Map<String, Object>> data, String yAlias) {
+		// SST
+		double sumOfSquareTotal = 0.0;
+		double mean  = computeMean(data, yAlias);
+		double diff = 0.0;
+		for(Map<String, Object> d: data) {
+			diff = (double)d.get(yAlias) - mean;
+			sumOfSquareTotal = sumOfSquareTotal + Math.pow(diff, 2);
+		}
+		
+		return sumOfSquareTotal;
+	}
+	
+	public double computeSumOfSquareRegression(List<Map<String, Object>> data, String pointAlias, String yAlias) {
+		// SSR
+		double sumOfSquareRegression = 0.0;
+		double mean  = computeMean(data, yAlias);
+		double diff = 0.0;
+		
+		for(Map<String, Object> d: data) {
+			diff = (double) d.get(pointAlias) - mean;
+			sumOfSquareRegression = sumOfSquareRegression + Math.pow(diff, 2);
+		}
+		
+		return sumOfSquareRegression;
+	}
+	
+	public double computeMean (List<Map<String, Object>> data, String alias) {
+		double sum = 0.0;
+		int count = 0;
+		for(Map<String, Object>d : data) {
+			if(d.get(alias) != null && d.get(alias) != "") {
+				sum  = sum + (double)d.get(alias);
+				count++;
+			}
+		}
+		
+		return sum / count;
+	}
+	
+	public double computeMeanSquareError(List<Map<String, Object>> data, int sampleLength, int numberOfCoeff, String pointAlias, String yAlias) {
+		double sse = computeSumOfSquareErrors(data, pointAlias, yAlias);
+		return sse / (sampleLength - numberOfCoeff);
+	}
+	
+	public double computeMeanSquareRegression(List<Map<String, Object>> data, int numberOfCoeff, String pointAlias, String yAlias) {
+		double ssr = computeSumOfSquareRegression(data, pointAlias, yAlias);
+		return ssr / (numberOfCoeff - 1);
+	}
+	
 	
 	public class StringConstants{
 		final static String COEFFICIENTS = "coefficients";
