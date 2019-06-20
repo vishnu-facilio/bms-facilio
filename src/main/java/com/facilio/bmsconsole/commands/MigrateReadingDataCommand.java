@@ -1,5 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
@@ -14,14 +23,6 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 public class MigrateReadingDataCommand implements Command {
 
@@ -30,7 +31,7 @@ public class MigrateReadingDataCommand implements Command {
 		
 		Map<String, Object> oldData = (Map<String, Object>) context.get(FacilioConstants.ContextNames.RECORD);
 		long oldFieldId = (long) oldData.get(FacilioConstants.ContextNames.FIELD_ID);
-		long oldAssetId = (long) oldData.get(FacilioConstants.ContextNames.ASSET_ID);
+		long oldAssetId = (long) oldData.get("resourceId");
 		long fieldId = (long) context.get(FacilioConstants.ContextNames.FIELD_ID);
 		long assetId = (long) context.get(FacilioConstants.ContextNames.PARENT_ID);
 		

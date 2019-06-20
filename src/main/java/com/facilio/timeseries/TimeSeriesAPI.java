@@ -852,14 +852,6 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		return getUnmodeledInstances(null, null, null, ids);
 	}
 	
-	public static Map<String, Object> getInstance(String device, String instance, long controllerId) throws Exception {
-		List<Map<String, Object>> instances = getUnmodeledInstances(device, Collections.singletonList(instance), controllerId, null);
-		if (instances != null && !instances.isEmpty()) {
-			return instances.get(0);
-		}
-		return null;
-	}
-	
 	public static List<Map<String, Object>> getUnmodeledInstances (String device, Collection<String> instances, Long controllerId, List<Long> ids) throws Exception {
 		FacilioModule module = ModuleFactory.getPointsModule();
 		List<FacilioField> fields = FieldFactory.getPointsFields();
@@ -935,7 +927,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		
 		FacilioModule module = ModuleFactory.getUnmodeledDataModule();
 		
-		Map<String, Object> unmodeledInstance = getInstance(device, instance, controllerId);
+		Map<String, Object> unmodeledInstance = getMappedInstance(device, instance, controllerId);
 		if (unmodeledInstance == null) {
 			LOGGER.info("Unmodelled Instance null check, device: " + device + ",instance: " + instance + ", controllerId: " + controllerId);
 		}
