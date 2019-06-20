@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.workflows.command.GetAllNameSpaceWithFunctionCommand;
 import com.facilio.workflows.command.GetAllScheduledWorkflowCommand;
+import com.google.zxing.multi.GenericMultipleBarcodeReader;
 
 public class ReadOnlyChainFactory {
 	private static Logger LOGGER = LogManager.getLogger(ReadOnlyChainFactory.class.getName());
@@ -421,6 +422,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GenericGetModuleDataListCommand());
 		c.addCommand(new GetItemTypesListCommand());
 		return c;
 	}
@@ -440,6 +442,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GenericGetModuleDataListCommand());
 		c.addCommand(new GetToolTypesListCommand());
 		return c;
 	}
@@ -595,6 +598,8 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new GetGatePassListCommand());
+		c.addCommand(new GenericGetModuleDataListCommand());
+		c.addCommand(new SetGatePassLineItemsCommand());
 		return c;
 	}
 	
@@ -645,6 +650,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(SetTableNamesCommand.getForLabour());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetLabourListCommand());
+		c.addCommand(new GenericGetModuleDataListCommand());
 		return c;
 	}
 	
@@ -671,6 +677,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
 		chain.addCommand(new GenerateSearchConditionCommand());
 		chain.addCommand(new GetPurchaseRequestListCommand());
+		chain.addCommand(new GenericGetModuleDataListCommand());
 		return chain;
 	}
 
@@ -691,6 +698,8 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
 		chain.addCommand(new GenerateSearchConditionCommand());
 		chain.addCommand(new GetPurchaseOrderListCommand());
+		chain.addCommand(new GenericGetModuleDataListCommand());
+		chain.addCommand(new SetPurchaseOrderLineItemsCommand());
 		return chain;
 	}
 
@@ -730,6 +739,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
 		chain.addCommand(new GenerateSearchConditionCommand());
 		chain.addCommand(new GetPurchaseContractListCommand());
+		chain.addCommand(new GenericGetModuleDataListCommand());
 		return chain;
 	}
 
@@ -749,6 +759,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
 		chain.addCommand(new GenerateSearchConditionCommand());
 		chain.addCommand(new GetLabourContractListCommand());
+		chain.addCommand(new GenericGetModuleDataListCommand());
 		return chain;
 	}
 	
@@ -963,6 +974,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
 		chain.addCommand(new GenerateSearchConditionCommand());
 		chain.addCommand(new GetShipmentListCommand());
+		chain.addCommand(new GenericGetModuleDataListCommand());
 		return chain;
 	}
 
