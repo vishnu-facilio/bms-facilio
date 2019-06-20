@@ -413,7 +413,7 @@ public class UserBeanImpl implements UserBean {
 	public static void main(String []args)
 	{
 		UserBeanImpl us = new UserBeanImpl();
-		User s = us.getUserFromToken("WQTPY00rLVIT43IDDw5x68VBKwVdPFdcWhyeG04lqhujrQHyTKMT5g==");
+		User s = us.getUserFromToken("8D6E5CqTOcTDXQdF8q1R8cFNeBoTDstRNlJ5sDuXiINdzVOGDFCRF9o65y-5l9sW");
 		System.out.println(s.getEmail());
 		System.out.println(s.getUid());
 		System.out.println(s.getOuid());
@@ -903,7 +903,7 @@ public class UserBeanImpl implements UserBean {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getUserFields());
 		fields.addAll(AccountConstants.getOrgUserFields());
-		
+		fields.add(AccountConstants.getOrgIdField());
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Users")
