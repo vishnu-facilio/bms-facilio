@@ -150,7 +150,7 @@ public class HistoricalMLJob extends FacilioJob {
 		Map<String, String> headers = new HashMap<>();
 		headers.put("Content-Type", "application/json");
 		LOGGER.info(" Sending request to ML Server "+postURL);
-		String result = AwsUtil.doHttpPost(postURL, headers, null, postObj.toString());
+		String result = AwsUtil.doHttpPost(postURL, headers, null, postObj.toString(),300);
 		LOGGER.info("result is"+result);
 		addReadingToDB(predictedTime,result,meterID,48130,48129);
 	}

@@ -41,11 +41,13 @@ import com.facilio.email.EmailUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.LogManager;
@@ -359,10 +361,24 @@ public class AwsUtil
         return headers;
     }
     
-    public static String doHttpPost(String url, Map<String, String> headers, Map<String, String> params, String bodyContent) throws IOException
+    public static CloseableHttpClient getHttpClient(int timeOutInSeconds)
+    {
+    	if(timeOutInSeconds!=-1L)
+    	{
+    		RequestConfig config = RequestConfig.custom()
+    		    	  .setSocketTimeout(timeOutInSeconds * 1000).build();
+    		return HttpClientBuilder.create().setDefaultRequestConfig(config).build();
+    	}
+  
+   		 return HttpClients.createDefault();
+    }
+    
+    public static String doHttpPost(String url,Map<String,String> headers,Map<String,String> params,String bodyContent,int timeOutInSeconds) throws IOException
     {
     	StringBuilder result = new StringBuilder();
-    	CloseableHttpClient client = HttpClients.createDefault();
+    	
+    	CloseableHttpClient client = AwsUtil.getHttpClient(timeOutInSeconds);
+    	
     	try
     	{
 			HttpPost post = new HttpPost(url);
@@ -407,6 +423,10 @@ public class AwsUtil
 			client.close();
 		}
     	return result.toString();
+    }
+    public static String doHttpPost(String url, Map<String, String> headers, Map<String, String> params, String bodyContent) throws IOException
+    {
+    	return AwsUtil.doHttpPost(url, headers, params, bodyContent,-1);
     }
     
     private static byte[] HmacSHA256(String data, byte[] key) throws Exception
