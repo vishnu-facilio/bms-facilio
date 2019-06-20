@@ -59,7 +59,7 @@ public enum FacilioModuleFunctions implements FacilioWorkflowFunctionInterface {
 			}
 			
 			if(FacilioUtil.isNumeric(fieldRefObject)) {
-				Long fieldId = Long.parseLong(fieldRefObject);
+				long fieldId =(long) Double.parseDouble(fieldRefObject);
 				return modBean.getField(fieldId);
 			}
 			else if(moduleRefObject != null) {
