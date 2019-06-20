@@ -666,6 +666,7 @@ public class FacilioAuthAction extends FacilioAction {
         JSONObject invitation = new JSONObject();
         if(getInviteToken() != null) {
             User user = AccountUtil.getUserBean().resetPassword(getInviteToken(), getPassword());
+            System.out.println("########user resetpass"+user.getOrgId());
             if(user.getUid() > 0){
                 invitation.put("status", "success");
             }
@@ -677,7 +678,8 @@ public class FacilioAuthAction extends FacilioAction {
                 user = AccountUtil.getUserBean().getFacilioUser(getEmailaddress());
             }
             if(user != null) {
-                AccountUtil.getUserBean().sendResetPasswordLink(user);
+            	long orgId=user.getOrgId();
+            	AccountUtil.getTransactionalUserBean(orgId).sendResetPasswordLink(user);
                 invitation.put("status", "success");
             } else {
                 invitation.put("status", "failed");
