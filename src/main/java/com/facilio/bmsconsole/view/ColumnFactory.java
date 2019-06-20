@@ -74,6 +74,7 @@ public class ColumnFactory {
 
 		columnMap.put("rentalleasecontracts-default", getDefaultRentalLeaseContractColumns());
 		columnMap.put("warrantycontracts-default", getDefaultWarrantyContractColumns());
+		columnMap.put("termsandconditions-default", getDefaultTermsAndConditionColumns());
 
 		// Default report columns
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
@@ -529,6 +530,16 @@ public class ColumnFactory {
 		columns.add(new ViewField("description", "Description"));
 		columns.add(new ViewField("duration", "Duration"));
 		columns.add(new ViewField("status", "Status"));
+		return columns;
+	}
+
+	private static List<ViewField> getDefaultTermsAndConditionColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("termType", "Term Type"));
+		columns.add(new ViewField("shortDesc", "Short Description"));
+		columns.add(new ViewField("longDesc", "Long Description"));
+		columns.add(new ViewField("isEditable", "Editable"));
+		columns.add(new ViewField("defaultOnPo", "Default On PO"));
 		return columns;
 	}
 

@@ -65,6 +65,7 @@ public class FormFactory {
 		forms.put("serviceForm", getServiceForm());
 		forms.put("rentalLeaseContractForm", getRentalLeaseContractForm());
 		forms.put("warrantyContractForm", getWarrantyContractForm());
+		forms.put("termsAndConditionForm", getTermsAndConditionForm());
 		
 			
 		return forms;
@@ -1005,6 +1006,29 @@ public class FormFactory {
 		fields.add(new FormField("fromDate", FieldDisplayType.DATE, "From Date", Required.OPTIONAL, 4, 2));
 		fields.add(new FormField("endDate", FieldDisplayType.DATE, "End Date", Required.OPTIONAL, 4, 3));
 		fields.add(new FormField("lineItems", FieldDisplayType.PURCHASEDITEMT, "LINE ITEMS", Required.REQUIRED, 5, 1));
+		
+		return fields;
+	}
+	
+	public static FacilioForm getTermsAndConditionForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("TERMS AND CONDITION");
+		form.setName("web_default");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getTermsAndConditionFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+	
+	private static List<FormField> getTermsAndConditionFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("termType", FieldDisplayType.TEXTBOX, "Term Type", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("shortDesc", FieldDisplayType.TEXTAREA, "Short Description", Required.OPTIONAL, 3, 1));
+		fields.add(new FormField("longDesc", FieldDisplayType.TEXTAREA, "Long Description", Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("isEditable", FieldDisplayType.DECISION_BOX, "Is Editable", Required.OPTIONAL, 5, 2));
+		fields.add(new FormField("defaultOnPo", FieldDisplayType.DECISION_BOX, "Default On PO", Required.OPTIONAL, 5, 3));
 		
 		return fields;
 	}

@@ -1118,7 +1118,10 @@ public class ReadOnlyChainFactory {
 	public static Chain getTermsAndConditionsList(){
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForTermsAndConditions());
+		c.addCommand(new LoadViewCommand());
 		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
 		return c;
 	}

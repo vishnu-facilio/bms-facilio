@@ -396,7 +396,12 @@ public class ViewFactory {
 		views = new LinkedHashMap<>();
 		views.put("all", getAllReadingAlarmViews().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.NEW_READING_ALARM, views);
-		
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllTermsAndConditionView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.TERMS_AND_CONDITIONS, views);
+
 		return viewsMap;
 	}
 
@@ -3740,7 +3745,7 @@ public class ViewFactory {
 		allView.setSortFields(Arrays.asList(new SortField(createdTime, true)));
 		return allView;
 	}
-	
+
 	private static FacilioView getAllReadingAlarmViews() {
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("lastOccurredTime");
@@ -3754,4 +3759,18 @@ public class ViewFactory {
 		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 		return allView;
 	}
+	private static FacilioView getAllTermsAndConditionView() {
+		FacilioField name = new FacilioField();
+		name.setName("name");
+		name.setDataType(FieldType.STRING);
+		name.setColumnName("name");
+		name.setModule(ModuleFactory.getServiceModule());
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All T&C(s)");
+		allView.setSortFields(Arrays.asList(new SortField(name, false)));
+		return allView;
+	}
+
 }
