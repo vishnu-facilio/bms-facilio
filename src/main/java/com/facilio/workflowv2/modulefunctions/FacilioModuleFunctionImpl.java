@@ -2,6 +2,7 @@
 package com.facilio.workflowv2.modulefunctions;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.util.CommonAPI;
@@ -370,6 +371,10 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		}
 		
 		String fileUrl = ExportUtil.exportModule(FileInfo.FileFormat.XLS, module.getName(), viewName, null,criteria, false, false, 2000);
+		
+		if(!AwsUtil.isDevelopment()) {
+			fileUrl = AwsUtil.getClientAppUrl() + fileUrl;
+		}
 		
 		return fileUrl;
 	}
