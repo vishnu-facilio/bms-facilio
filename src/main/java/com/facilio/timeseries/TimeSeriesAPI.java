@@ -765,7 +765,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 	public static List<Map<String, Object>> getPointsInstancesForController (long controllerId, Boolean configuredOnly, Boolean fetchMapped, JSONObject pagination, Boolean isSubscribed, boolean fetchCount, String searchText, boolean fetchAllTypes) throws Exception {
 		FacilioModule module = ModuleFactory.getPointsModule();
 		List<FacilioField> fields = FieldFactory.getPointsFields();
-		fields.add(FieldFactory.getIdField(module));
+//		fields.add(FieldFactory.getIdField(module));
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		FacilioField fieldId = fieldMap.get("fieldId");
 		FacilioField resourceId = fieldMap.get("resourceId");
@@ -855,7 +855,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 	public static List<Map<String, Object>> getUnmodeledInstances (String device, Collection<String> instances, Long controllerId, List<Long> ids) throws Exception {
 		FacilioModule module = ModuleFactory.getPointsModule();
 		List<FacilioField> fields = FieldFactory.getPointsFields();
-		fields.add(FieldFactory.getIdField(module));
+//		fields.add(FieldFactory.getIdField(module));
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
@@ -881,7 +881,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 	public static List<Map<String, Object>> getSubscribedInstances (long controllerId) throws Exception {
 		FacilioModule module = ModuleFactory.getPointsModule();
 		List<FacilioField> fields = FieldFactory.getPointsFields();
-		fields.add(FieldFactory.getIdField(module));
+//		fields.add(FieldFactory.getIdField(module));
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
@@ -910,7 +910,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 	public static int updateInstances(List<Long> ids, Map<String, Object> instance) throws Exception{
 		FacilioModule module = ModuleFactory.getPointsModule();
 		List<FacilioField> fields = FieldFactory.getPointsFields();
-		fields.add(FieldFactory.getIdField(module));
+//		fields.add(FieldFactory.getIdField(module));
 		
 		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder()
 											.fields(fields)
@@ -948,7 +948,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		// TODO Auto-generated method stub
 		FacilioModule module = ModuleFactory.getPointsModule();
 		List<FacilioField> fields = FieldFactory.getPointsFields();
-		fields.add(FieldFactory.getIdField(module));
+//		fields.add(FieldFactory.getIdField(module));
 
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
