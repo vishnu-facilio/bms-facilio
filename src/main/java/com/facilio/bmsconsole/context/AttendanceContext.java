@@ -131,4 +131,14 @@ public class AttendanceContext extends ModuleBaseWithCustomFields{
 	public void setShift(ShiftContext shift) {
 		this.shift = shift;
 	}
+	
+	public long getTotalWorkingHrs() {
+		if(workingHours > 0) {
+			if(totalPaidBreakHrs > 0) {
+				return workingHours+totalPaidBreakHrs;
+			}
+			return workingHours;
+		}
+		return -1;
+	}
 }
