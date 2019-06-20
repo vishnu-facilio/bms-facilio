@@ -72,6 +72,9 @@ public class ColumnFactory {
 
 		columnMap.put("service-default", getDefaultServiceColumns());
 
+		columnMap.put("rentalleasecontracts-default", getDefaultRentalLeaseContractColumns());
+		columnMap.put("warrantycontracts-default", getDefaultWarrantyContractColumns());
+
 		// Default report columns
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
 		columnMap.put("alarm-report", getAlarmReportColumns());
@@ -420,6 +423,31 @@ public class ColumnFactory {
 		return columns;
 	}
 	private static List<ViewField> getDefaultContractColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("vendor", "Vendor"));
+		columns.add(new ViewField("status", "Status"));
+		columns.add(new ViewField("fromDate", "Valid From"));
+		columns.add(new ViewField("endDate", "Valid Till"));
+		columns.add(new ViewField("renewalDate", "Renewal Date"));
+		columns.add(new ViewField("totalCost", "Total Cost"));
+
+		return columns;
+	}
+
+	private static List<ViewField> getDefaultRentalLeaseContractColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("rentalLeaseContractType", "Type"));
+		columns.add(new ViewField("vendor", "Vendor"));
+		columns.add(new ViewField("status", "Status"));
+		columns.add(new ViewField("fromDate", "Valid From"));
+		columns.add(new ViewField("endDate", "Valid Till"));
+		columns.add(new ViewField("renewalDate", "Renewal Date"));
+		columns.add(new ViewField("totalCost", "Total Cost"));
+
+		return columns;
+	}
+
+	private static List<ViewField> getDefaultWarrantyContractColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		columns.add(new ViewField("vendor", "Vendor"));
 		columns.add(new ViewField("status", "Status"));

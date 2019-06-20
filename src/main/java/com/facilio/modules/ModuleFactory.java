@@ -81,6 +81,8 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.RECEIPT, getReceiptModule());
 		moduleMap.put(FacilioConstants.ContextNames.PURCHASE_CONTRACTS, getPurchaseContractModule());
 		moduleMap.put(FacilioConstants.ContextNames.LABOUR_CONTRACTS, getLabourContractModule());
+		moduleMap.put(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS, getRentalLeaseContractModule());
+		moduleMap.put(FacilioConstants.ContextNames.WARRANTY_CONTRACTS, getWarrantyContractModule());
 		moduleMap.put(FacilioConstants.ContextNames.INVENTORY_REQUEST, getInventoryRequestModule());
 		moduleMap.put(FacilioConstants.ContextNames.SHIPMENT, getShipmentModule());
 		moduleMap.put(FacilioConstants.ContextNames.ATTENDANCE, getAttendanceModule());
@@ -2272,6 +2274,20 @@ public class ModuleFactory {
 		module.setName("breakTransaction");
 		module.setDisplayName("Break Transaction");
 		module.setTableName("Break_Transaction");
+
+	public static FacilioModule getRentalLeaseContractModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("rentalleasecontracts");
+		module.setDisplayName("Rental Lease Contracts");
+		module.setTableName("Rental_Lease_Contracts");
+		return module;
+	}
+
+	public static FacilioModule getWarrantyContractModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("warrantycontracts");
+		module.setDisplayName("Warranty Contracts");
+		module.setTableName("Warranty_Contracts");
 		return module;
 	}
 

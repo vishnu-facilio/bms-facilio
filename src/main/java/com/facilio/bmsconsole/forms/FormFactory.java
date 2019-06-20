@@ -63,6 +63,9 @@ public class FormFactory {
 		forms.put("inventoryRequestForm", getInventoryRequestForm());
 		forms.put("inventoryRequestWOForm", getInventoryRequestWorkOrderForm());
 		forms.put("serviceForm", getServiceForm());
+		forms.put("rentalLeaseContractForm", getRentalLeaseContractForm());
+		forms.put("warrantyContractForm", getWarrantyContractForm());
+		
 			
 		return forms;
 	}
@@ -952,9 +955,58 @@ public class FormFactory {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
-		fields.add(new FormField("duration", FieldDisplayType.NUMBER, "Duration", Required.REQUIRED, 3, 1));
+		fields.add(new FormField("duration", FieldDisplayType.NUMBER, "Duration(Hr)", Required.REQUIRED, 3, 1));
 		fields.add(new FormField("serviceVendors", FieldDisplayType.PURCHASEDTOOL, "Service Vendors", Required.REQUIRED, 4, 1));
 		
 		return fields;
 	}
+	
+	public static FacilioForm getRentalLeaseContractForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("RENTAL LEASE CONTRACT");
+		form.setName("web_default");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getRentalLeaseFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+	
+	private static List<FormField> getRentalLeaseFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.REQUIRED, "vendors", 3, 2).setAllowCreate(true).setCreateFormName("vendors_form"));
+		fields.add(new FormField("rentalLeaseContractType", FieldDisplayType.SELECTBOX, "Type", Required.REQUIRED, 3, 3));
+		fields.add(new FormField("renewalDate", FieldDisplayType.DATE, "Renewal Date", Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("fromDate", FieldDisplayType.DATE, "From Date", Required.OPTIONAL, 5, 2));
+		fields.add(new FormField("endDate", FieldDisplayType.DATE, "End Date", Required.OPTIONAL, 5, 3));
+		fields.add(new FormField("lineItems", FieldDisplayType.LINEITEMS, "LINE ITEMS", Required.REQUIRED, 6, 1));
+		
+		return fields;
+	}
+	public static FacilioForm getWarrantyContractForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("WARRANTY CONTRACT");
+		form.setName("web_default");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS));
+		form.setLabelPosition(LabelPosition.LEFT);
+		form.setFields(getWarrantyContractFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+	
+	private static List<FormField> getWarrantyContractFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("vendor", FieldDisplayType.LOOKUP_SIMPLE, "Vendor", Required.REQUIRED, "vendors", 3, 2).setAllowCreate(true).setCreateFormName("vendors_form"));
+		fields.add(new FormField("renewalDate", FieldDisplayType.DATE, "Renewal Date", Required.OPTIONAL, 3, 3));
+		fields.add(new FormField("fromDate", FieldDisplayType.DATE, "From Date", Required.OPTIONAL, 4, 2));
+		fields.add(new FormField("endDate", FieldDisplayType.DATE, "End Date", Required.OPTIONAL, 4, 3));
+		fields.add(new FormField("lineItems", FieldDisplayType.PURCHASEDITEMT, "LINE ITEMS", Required.REQUIRED, 5, 1));
+		
+		return fields;
+	}
+	
 }

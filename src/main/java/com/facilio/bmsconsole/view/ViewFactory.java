@@ -328,6 +328,16 @@ public class ViewFactory {
 		views = new LinkedHashMap<>();
 		views.put("all", getAllLabourContractView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.LABOUR_CONTRACTS, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllRentalLeaseContractView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllWarrantyContractView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.WARRANTY_CONTRACTS, views);
 
 		order = 1;
 		views = new LinkedHashMap<>();
@@ -3320,6 +3330,34 @@ public class ViewFactory {
 		localId.setColumnName("LOCAL_ID");
 		localId.setDataType(FieldType.NUMBER);
 		localId.setModule(ModuleFactory.getLabourContractModule());
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All");
+		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
+		return allView;
+	}
+	
+	private static FacilioView getAllRentalLeaseContractView() {
+		FacilioField localId = new FacilioField();
+		localId.setName("localId");
+		localId.setColumnName("LOCAL_ID");
+		localId.setDataType(FieldType.NUMBER);
+		localId.setModule(ModuleFactory.getRentalLeaseContractModule());
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All");
+		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
+		return allView;
+	}
+	
+	private static FacilioView getAllWarrantyContractView() {
+		FacilioField localId = new FacilioField();
+		localId.setName("localId");
+		localId.setColumnName("LOCAL_ID");
+		localId.setDataType(FieldType.NUMBER);
+		localId.setModule(ModuleFactory.getWarrantyContractModule());
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
