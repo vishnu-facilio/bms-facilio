@@ -413,7 +413,7 @@ public class UserBeanImpl implements UserBean {
 	public static void main(String []args)
 	{
 		UserBeanImpl us = new UserBeanImpl();
-		User s = us.getUserFromToken("xSb_ezHQ_ud23_9gixyHEWyzwcAvL105MgeB7VUq1SkwQchiLmuX8afa6tG-bzcVNzLFdl9XjKEPt8S6vHRlWA==");
+		User s = us.getUserFromToken("xSb_ezHQ_udcFU8l5P67wq_z809tlkMMIZxMbHAV0hbs9TKfyRniDoVCfmvVGF3wl4nuHLJ53Ho=");
 		System.out.println(s.getEmail());
 		System.out.println(s.getUid());
 		System.out.println(s.getOuid());
@@ -526,11 +526,12 @@ public class UserBeanImpl implements UserBean {
 		User user = getUserFromToken(token);
 
 		if(user != null) {
+			long orgId=user.getOrgId();
 			if ((System.currentTimeMillis() - user.getInvitedTime()) < INVITE_LINK_EXPIRE_TIME) {
 				try {
 					user.setPassword(password);
 					user.setUserVerified(true);
-					updateUser(user);
+					AccountUtil.getTransactionalUserBean(orgId).updateUser(user);
 				} catch (Exception e) {
 					log.info("Exception occurred ", e);
 				}
