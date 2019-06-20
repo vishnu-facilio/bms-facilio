@@ -370,7 +370,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			criteria = (Criteria)objects.get(2);
 		}
 		
-		String fileUrl = ExportUtil.exportModule(FileInfo.FileFormat.XLS, module.getName(), viewName, null,criteria, false, false, 2000);
+		String fileUrl = ExportUtil.exportModule(FileInfo.FileFormat.XLS, module.getName(), viewName, null,criteria, true, false, 2000);
 		
 		if(!AwsUtil.isDevelopment()) {
 			fileUrl = AwsUtil.getClientAppUrl() + fileUrl;
