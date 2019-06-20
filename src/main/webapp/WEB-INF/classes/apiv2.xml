@@ -956,6 +956,12 @@
 			method="setReadingInputValues">
 		</action>
 	</package>
+	<package name="readingsApiv2" namespace="/api/v2/readings/asset" extends="v2Api">
+		<action name="add" class="com.facilio.bmsconsole.actions.ReadingAction" method="addReadingData">
+			<param name="moduleName">asset</param>
+			<param name="permission">ADD_READING</param>
+		</action>
+	</package>
 	<package name="dashboardApiv2" namespace="/api/v2/dashboard" extends="v2Api">
 	</package>
 	<package name="reportApiv2" namespace="/api/v2/report" extends="v2Api">

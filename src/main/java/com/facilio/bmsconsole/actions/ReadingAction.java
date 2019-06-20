@@ -395,6 +395,12 @@ public class ReadingAction extends FacilioAction {
 		return addReadingData(FacilioConstants.ContextNames.ENERGY_DATA_READING);
 	}
 	
+	public String v2addReadingData() throws Exception {
+		addReadingData(getReadingName());
+		setResult(ContextNames.RESULT, "success");
+		return SUCCESS;
+	}
+	
 	public String addReadingData() throws Exception {
 		return addReadingData(getReadingName());
 	}
