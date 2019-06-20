@@ -101,11 +101,13 @@
         			  	{ 
         			  		{ 
                           cri = {
-							criteria : [ruleId == 36 && clearedTime > 0 ],
+							criteria : [ruleId == ruleId && clearedTime > 0 ],
         					orderBy : \"createdTime\" asc
 						}
         			  		readingAlarmModule = Module(\"readingalarm\"); 
         			  		res = readingAlarmModule.fetch(cri);
+                          if (res != null) {
+                           
                            firstRes =res[0];
                           previousClearedTime = firstRes.clearedTime;
                           meanTimeBetweenTigger = 0;
@@ -134,7 +136,12 @@
                             resMap[\"meanTimeBetweenTigger\"] = meanTimeBetweenTigger;
                             resMap[\"timeToClear\"] = timeToClear;
                               resMap[\"meanTimeToClear\"] = meanTimeToClear;
-         					return resMap; 
+         					return resMap;
+                                    }
+                              else {
+                                return null;
+                                
+                              }
         			  	}"
         }
         
