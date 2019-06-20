@@ -33,10 +33,10 @@ public class ContractsAPI {
 	public static List<Long> fetchAssociatedContractIds(Long assetId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTRACT_ASSOCIATED_ASSETS);
-		List<FacilioField> fields = modBean.getAllFields(module.getTableName());
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
 		SelectRecordsBuilder<ContractAssociatedAssetsContext> builder = new SelectRecordsBuilder<ContractAssociatedAssetsContext>()
 				.module(module)
-				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(module.getTableName()))
+				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(module.getName()))
 				.select(fields)
 			    .andCondition(CriteriaAPI.getCondition("ASSET_ID", "assetId", String.valueOf(assetId),NumberOperators.EQUALS));
 				;
@@ -116,7 +116,7 @@ public class ContractsAPI {
 		
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTRACTS);
-			List<FacilioField> fields = modBean.getAllFields(module.getTableName());
+			List<FacilioField> fields = modBean.getAllFields(module.getName());
 			Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 			
 			SelectRecordsBuilder<ContractsContext> builder = new SelectRecordsBuilder<ContractsContext>()

@@ -1048,8 +1048,12 @@ public class FacilioConstants {
 		public static final String TERMS_AND_CONDITION = "termsandcondition";
 
 		public static final String IS_MARK_AS_DELETE = "markAsDelete";
+		public static final String NOTIFICATION_CONFIG = "notificationConfig";
+		public static final String NOTIFICATION_USER = "notificationUser";
 
-		
+		public static final String NOTIFICATION_JOB_ID = "notificationJobId";
+		public static final String JOB = "jobContext";
+
 		
 
 
@@ -1197,6 +1201,9 @@ public class FacilioConstants {
 			classMap.put(BASE_ALARM, BaseAlarmContext.class);
 			classMap.put(NEW_READING_ALARM, ReadingAlarm.class);
 			classMap.put(READING_EVENT, ReadingEventContext.class);
+			classMap.put(NOTIFICATION_CONFIG, NotificationConfigContext.class);
+			classMap.put(NOTIFICATION_USER, NotificationUserContext.class);
+			
 			return classMap;
 		}
 		

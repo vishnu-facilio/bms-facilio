@@ -2939,6 +2939,17 @@
 
 
 	</package>
+	
+	<package name="notificationConfigApi" namespace="/api/v2/notificationConfig" extends="v2Api">
+		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.NotificationConfigAction" method="addOrUpdateConfiguration">
+		</action>
+		<action name="list" class="com.facilio.bmsconsole.actions.NotificationConfigAction" method="listConfiguration">
+		</action>
+		<action name="delete" class="com.facilio.bmsconsole.actions.NotificationConfigAction" method="deleteConfiguration">
+		</action>
+		<action name="executeJob" class="com.facilio.bmsconsole.actions.NotificationConfigAction" method="executeJob">
+		</action>
+	</package>
 
 
 </struts>

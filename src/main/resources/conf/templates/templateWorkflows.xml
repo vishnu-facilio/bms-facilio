@@ -807,4 +807,30 @@
 			</iterator>
 		</workflow>
 	</template>
+	<template id="84">
+		<workflow>
+	    	<parameter name="org" type="String"/>
+	    	<parameter name="parentId" type="String" />
+			<parameter name="parentModuleName" type="String" />
+			<expression name="org.domain">
+		        <constant>${org.domain}</constant>
+		    </expression>
+		    <expression name="parentId">
+		        <constant>${parentId}</constant>
+		    </expression>
+		    <expression name="getUserName">
+		            <function>default.getUserName()</function>
+		 	</expression>
+		 	<expression name="toUserEmail">
+		            <function>default.getUserEmail()</function>
+		 	</expression>
+		 	<expression name="getRecord">
+		            <function>default.getRecord(parentModuleName,parentId)</function>
+		 	</expression>
+	        <expression name="contractName">
+                    <constant>${getRecord.vendor.id}</constant>
+        	</expression>
+        
+	 	</workflow>
+	</template>
 </workflows>

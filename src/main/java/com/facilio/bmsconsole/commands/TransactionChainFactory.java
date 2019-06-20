@@ -3415,6 +3415,28 @@ public class TransactionChainFactory {
 			c.addCommand(new AssociateAssetToContractCommand());
 			return c;
 		}
+		
+		public static Chain getAddNotificationConfigChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddOrUpdateNotificationConfigCommand());
+			return c;
+		}
+		
+		public static Chain triggerNotificationChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new TriggerNotificationForUsersCommand());
+			return c;
+		}
+		
+		public static Chain getNotificationConfigDeleteChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForNotificationConfig());
+			c.addCommand(new DeleteNotificationConfigCommand());
+			c.addCommand(new GenericDeleteModuleDataCommand());
+			return c;
+		}
+
+		
 }
 
 

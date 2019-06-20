@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.cards.util.CardUtil;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -36,6 +37,8 @@ import com.facilio.workflows.util.WorkflowUtil;
 import java.net.URLEncoder;
 import java.util.*;
 import java.util.logging.Level;
+
+import org.apache.commons.collections4.CollectionUtils;
 
 ;
 
@@ -400,6 +403,58 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 		}
 		
 	},
+	GET_CURRENT_USER_NAME(11, "getUserName") {
+
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			User user = AccountUtil.getCurrentUser();
+			return user.getName();
+		}
+		
+	},
+	GET_CURRENT_USER_EMAIL(13, "getUserEmail") {
+
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			User user = AccountUtil.getCurrentUser();
+			return user.getEmail();
+		}
+		
+	},
+	GET_RECORD(14, "getRecord") {
+
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(objects[0].toString());
+			List<FacilioField> fields = modBean.getAllFields(objects[0].toString());
+			
+			Class beanClassName = FacilioConstants.ContextNames.getClassFromModuleName(objects[0].toString());
+			if (beanClassName == null) {
+				beanClassName = ModuleBaseWithCustomFields.class;
+			}
+			SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
+																.module(module)
+																.beanClass(beanClassName)
+																.select(fields)
+																.andCondition(CriteriaAPI.getIdCondition(Long.valueOf(objects[1].toString()), module))
+																;
+			
+			List<? extends ModuleBaseWithCustomFields> records = builder.get();
+			if(CollectionUtils.isNotEmpty(records)) {
+				return records.get(0);
+			}
+			else {
+				return null;
+			}
+
+		}
+		
+	}
+	
 
 	;
 	private Integer value;

@@ -1182,12 +1182,20 @@ public class ReadOnlyChainFactory {
 	public static Chain getBreakTransactionsList() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForBreakTransaction());
+		c.addCommand(new LoadBreakTransactionLookupCommand());
+		c.addCommand(new GenericGetModuleDataListCommand());
+		
+	}
+	
+	public static Chain getNotificationConfigList() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForNotificationConfig());
 		c.addCommand(new LoadViewCommand());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
-		c.addCommand(new LoadBreakTransactionLookupCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
+		c.addCommand(new FetchNotificationConfigRelatedListCommand());
 		return c;
 	}
 	
