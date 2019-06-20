@@ -310,7 +310,7 @@ public class PreventiveMaintenanceAPI {
 		}
 		long nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(startTime);
 		if (pm.getId() == 1110712L) {
-			LOGGER.log(Level.SEVERE, "first next execution " + startTime);
+			LOGGER.log(Level.SEVERE, "first next execution " + nextExecutionTime);
 		}
 		long currentTime = System.currentTimeMillis();
 		int currentCount = pm.getCurrentExecutionCount();
