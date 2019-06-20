@@ -46,7 +46,7 @@ public class HistoricalMLJob extends FacilioJob {
 	{
 						 
 		long startTime = 1546286400000L;//
-		long endTime = startTime + (5 * 60 * 60 * 24 * 1000);
+		long endTime = startTime + (60 * 60 * 60 * 24 * 1000);
 		//long endTime = 1556654400000L;//
 		LOGGER.info("Job started");
 		try

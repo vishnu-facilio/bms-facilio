@@ -335,6 +335,7 @@ public class UserAction extends FacilioAction {
 		ServletActionContext.getRequest().getParameter("portal");
 		
 		user = AccountUtil.getUserBean().getUser(getUserId());
+		System.out.println("##########userOrgid   :"+user.getOrgId());
 		if(user.getUserType() == AccountConstants.UserType.REQUESTER.getValue())
 		{
 			// requestore
@@ -345,8 +346,9 @@ public class UserAction extends FacilioAction {
 		}
 		else
 		{
+			long orgId=user.getOrgId();
 			// normal user 
-			AccountUtil.getUserBean().resendInvite(getUserId());
+			AccountUtil.getTransactionalUserBean(orgId).resendInvite(getUserId());
 
 		}
 	

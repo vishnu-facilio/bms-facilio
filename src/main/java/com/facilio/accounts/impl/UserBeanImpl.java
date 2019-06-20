@@ -397,7 +397,7 @@ public class UserBeanImpl implements UserBean {
 			user.setOrgId(Long.parseLong(userObj[0]));
 			user.setOuid(Long.parseLong(userObj[1]));
 			user.setUid(Long.parseLong(userObj[2]));
-			user.setEmail(userObj[2]);
+			user.setEmail(userObj[3]);
 			user.setInvitedTime(Long.parseLong(userObj[4]));
 			if(tokenPortal.length > 1) {
 				String[] portalIdString = tokenPortal[1].split("=");
@@ -413,7 +413,7 @@ public class UserBeanImpl implements UserBean {
 	public static void main(String []args)
 	{
 		UserBeanImpl us = new UserBeanImpl();
-		User s = us.getUserFromToken("WQTPY00rLVIT43IDDw5x68VBKwVdPFdcWhyeG04lqhujrQHyTKMT5g==");
+		User s = us.getUserFromToken("xSb_ezHQ_ud23_9gixyHEWyzwcAvL105MgeB7VUq1SkwQchiLmuX8afa6tG-bzcVNzLFdl9XjKEPt8S6vHRlWA==");
 		System.out.println(s.getEmail());
 		System.out.println(s.getUid());
 		System.out.println(s.getOuid());
@@ -903,7 +903,7 @@ public class UserBeanImpl implements UserBean {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getUserFields());
 		fields.addAll(AccountConstants.getOrgUserFields());
-		
+		fields.add(AccountConstants.getOrgIdField());
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Users")
