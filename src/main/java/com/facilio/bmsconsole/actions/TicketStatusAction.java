@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.actions;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.SetupLayout;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -47,9 +48,39 @@ public class TicketStatusAction extends FacilioAction {
 		Chain statusListChain = FacilioChainFactory.getTicketStatusListChain();
 		statusListChain.execute(context);
 		
-//		setStatuses((List<FacilioStatus>) context.get(FacilioConstants.ContextNames.TICKET_STATUS_LIST));
 		setResult("status", context.get(FacilioConstants.ContextNames.TICKET_STATUS_LIST));
 		
+		return SUCCESS;
+	}
+	
+	private FacilioStatus facilioStatus;
+	public FacilioStatus getFacilioStatus() {
+		return facilioStatus;
+	}
+	public void setFacilioStatus(FacilioStatus facilioStatus) {
+		this.facilioStatus = facilioStatus;
+	}
+	
+	public String v2AddStatus() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.TICKET_STATUS, facilioStatus);
+		context.put(FacilioConstants.ContextNames.PARENT_MODULE, parentModuleName);
+		
+		Chain chain = TransactionChainFactory.getAddOrUpdateTicketStatusChain();
+		chain.execute(context);
+		
+		setResult("status", context.get(FacilioConstants.ContextNames.TICKET_STATUS));
+		return SUCCESS;
+	}
+	
+	public String v2UpdateStatus() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.TICKET_STATUS, facilioStatus);
+		
+		Chain chain = TransactionChainFactory.getAddOrUpdateTicketStatusChain();
+		chain.execute(context);
+		
+		setResult("status", context.get(FacilioConstants.ContextNames.TICKET_STATUS));
 		return SUCCESS;
 	}
 	

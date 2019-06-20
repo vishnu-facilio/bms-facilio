@@ -33,7 +33,7 @@ public class VerifyApprovalCommand implements Command {
 				if (wo.getModuleState() != null) {
 					FacilioStatus stateContext = StateFlowRulesAPI.getStateContext(wo.getModuleState().getId());
 					Long stateTransitionId = (Long) context.get(FacilioConstants.ContextNames.TRANSITION_ID);
-					if (stateContext.getRecordLocked() && (stateTransitionId == null || stateTransitionId == -1)) {
+					if (stateContext.isRecordLocked() && (stateTransitionId == null || stateTransitionId == -1)) {
 						throw new IllegalArgumentException("Workorder with lock cannot be updated");
 					}
 				}

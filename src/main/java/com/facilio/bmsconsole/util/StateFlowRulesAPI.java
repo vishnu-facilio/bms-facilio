@@ -82,7 +82,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 				}
 			}
 		}
-		else if (facilioStatus.getTimerEnabled() && facilioStatus.getType() == StatusType.OPEN) {
+		else if (facilioStatus.isTimerEnabled() && facilioStatus.getType() == StatusType.OPEN) {
 			long currentTime = DateTimeUtil.getCurrenTime();
 			if (timerField != null) {
 				if (prop.get(timerField.getEndTimeFieldName()) != null) {
@@ -205,7 +205,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		
 		long currentTime = DateTimeUtil.getCurrenTime();
 		
-		if (ticketStatus.getTimerEnabled()) {
+		if (ticketStatus.isTimerEnabled()) {
 			prop.put(timerField.getResumeTimeFieldName(), currentTime);
 		} else {
 			Long totalTime = (Long) prop.get(timerField.getTotalTimeFieldName());
@@ -230,7 +230,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			long startTime = -1;
 			long endTime = -1;
 			
-			if (!ticketStatus.getTimerEnabled()) {
+			if (!ticketStatus.isTimerEnabled()) {
 				endTime = currentTime;
 				Map<String, Object> lastTimerLog = TimerLogUtil.getLastTimerActiveLog(timeLogModule, parentId);
 				if (lastTimerLog != null) {

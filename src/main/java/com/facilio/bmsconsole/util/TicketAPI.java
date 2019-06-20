@@ -64,8 +64,10 @@ import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
@@ -407,6 +409,95 @@ public class TicketAPI {
 		 return builder.get();
 	}
 	
+	public static void updateStatus(FacilioStatus status) throws Exception {
+		status.setParentModuleId(-1);
+		status.setStatus(null);
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule ticketStatusModule = modBean.getModule(FacilioConstants.ContextNames.TICKET_STATUS);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TICKET_STATUS);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		checkTicketStatus(status, ticketStatusModule, fieldMap);
+		
+		UpdateRecordBuilder<FacilioStatus> builder = new UpdateRecordBuilder<FacilioStatus>()
+				.module(ticketStatusModule)
+				.fields(fields)
+				.andCondition(CriteriaAPI.getIdCondition(status.getId(), ticketStatusModule));
+		builder.update(status);
+	}
+	
+	public static void addStatus(FacilioStatus status, FacilioModule parentModule) throws Exception {
+		if (parentModule == null) {
+			throw new IllegalArgumentException("Module cannot be empty");
+		}
+		
+		if (StringUtils.isEmpty(status.getDisplayName())) {
+			throw new IllegalArgumentException("Display name cannot be empty");
+		}
+		if (status.getType() == null) {
+			throw new IllegalArgumentException("typecode should not be empty");
+		}
+		
+		String statusName = status.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+","");
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule ticketStatusModule = modBean.getModule(FacilioConstants.ContextNames.TICKET_STATUS);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TICKET_STATUS);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
+		checkTicketStatus(status, ticketStatusModule, fieldMap);
+		
+		SelectRecordsBuilder<FacilioStatus> builder = new SelectRecordsBuilder<FacilioStatus>()
+				.module(ticketStatusModule)
+				.beanClass(FacilioStatus.class)
+				.orderBy(ticketStatusModule.getTableName() + ".ID desc")
+				.select(fields);
+	
+		Criteria criteria = new Criteria();
+		criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("status"), statusName, StringOperators.IS));
+		criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("status"), statusName + "\\_%", StringOperators.CONTAINS));
+		builder.andCriteria(criteria);
+		List<FacilioStatus> list = builder.get();
+		if (CollectionUtils.isNotEmpty(list)) {
+			String name = list.get(0).getStatus();
+			int count = 0;
+			if (name.contains("_")) {
+				count = Integer.parseInt(name.substring(name.lastIndexOf('_') + 1));
+			}
+			statusName = statusName + "_" + (++count);
+		}
+		status.setStatus(statusName);
+		status.setParentModuleId(parentModule.getModuleId());
+		if (status.getRecordLocked() == null) {
+			status.setRecordLocked(false);
+		}
+		if (status.getRequestedState() == null) {
+			status.setRequestedState(false);
+		}
+		if (status.getTimerEnabled() == null) {
+			status.setTimerEnabled(false);
+		}
+		
+		InsertRecordBuilder<FacilioStatus> insertBuilder = new InsertRecordBuilder<FacilioStatus>()
+				.module(ticketStatusModule)
+				.fields(fields);
+		insertBuilder.insert(status);
+	}
+	
+	private static void checkTicketStatus(FacilioStatus status, FacilioModule ticketStatusModule, Map<String, FacilioField> fieldMap) throws Exception {
+		SelectRecordsBuilder<FacilioStatus> builder = new SelectRecordsBuilder<FacilioStatus>()
+				.module(ticketStatusModule)
+				.beanClass(FacilioStatus.class)
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("displayName"), status.getDisplayName(), StringOperators.IS))
+				.select(Collections.singletonList(fieldMap.get("displayName")));
+		if (status.getId() > 0) {
+			builder.andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(status.getId()), NumberOperators.NOT_EQUALS));
+		}
+		if (builder.fetchFirst() != null) {
+			throw new IllegalArgumentException("Status already found");
+		}		
+	}
+
 	public static List<TaskContext> getRelatedTasks(long ticketId) throws Exception {
 		return getRelatedTasks(Collections.singletonList(ticketId));
 	}

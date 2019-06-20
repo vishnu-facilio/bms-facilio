@@ -3161,24 +3161,30 @@ public class TransactionChainFactory {
 			c.addCommand(new AddOrUpdateShiftRotationCommand());
 			return c;
 		}
-		
+
 		public static Chain getUpdateShiftRotationChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForShiftRotation());
 			c.addCommand(new AddOrUpdateShiftRotationCommand());
 			return c;
 		}
-		
+
 		public static Chain getDeleteShiftRotationChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForShiftRotation());
 			c.addCommand(new DeleteShiftRotationCommand());
 			return c;
 		}
-		
+
 		public static Chain getExecuteShiftRotationCommand() {
 			Chain c = getDefaultChain();
 			c.addCommand(new ExecuteShiftRotationCommand());
+			return c;
+		}
+
+		public static Chain getAddOrUpdateTicketStatusChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddOrUpdateFacilioStatusCommand());
 			return c;
 		}
 }
