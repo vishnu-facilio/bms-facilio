@@ -1121,8 +1121,8 @@ public class ShiftAPI {
 		InsertRecordBuilder<ShiftRotationContext> builder = new InsertRecordBuilder<ShiftRotationContext>()
 				.module(module)
 				.fields(modBean.getAllFields(module.getName()));
-		builder.insert(shiftRotation);
-		
+		builder.addRecord(shiftRotation);
+		builder.save();
 		addShiftRotationScheduler(shiftRotation);
 		addShiftRotationApplicableFor(shiftRotation.getApplicableFor(), shiftRotation.getId());
 		addshiftRotationDetails(shiftRotation.getShiftRotations(), shiftRotation.getId());
