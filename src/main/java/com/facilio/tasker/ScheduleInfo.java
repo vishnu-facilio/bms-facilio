@@ -876,12 +876,18 @@ public class ScheduleInfo implements Serializable {
 			}
 		}
 		if(incrementMonth) {
-			zdt = zdt.with(LocalTime.of(0, 0)).plusMonths(frequency).with(ChronoField.DAY_OF_WEEK, 1);
+			zdt = zdt.with(LocalTime.of(0, 0)).plusMonths(frequency);
+			if (zdt.get(ChronoField.ALIGNED_WEEK_OF_MONTH) == 1) { //Special handling to prevent it from going to prev month
+				zdt = zdt.withDayOfMonth(1);
+			}
+			else {
+				zdt = zdt.with(ChronoField.DAY_OF_WEEK, 1);
+			}
 			newZdt = getMinWeek(zdt);
 		}
 		return newZdt;
 	}
-	
+
 	private ZonedDateTime firstMonthlyWeek(ZonedDateTime zdt, int frequency) {
 		ZonedDateTime newZdt =getMinWeek(zdt);
 		if(!zdt.isBefore(newZdt) ) {
