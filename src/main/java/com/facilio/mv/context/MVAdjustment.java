@@ -12,7 +12,7 @@ public class MVAdjustment extends ModuleBaseWithCustomFields {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	long projectId;
+	MVProjectContext project;
 	String name;
 	FormulaFieldContext formulaField;
 //	int period;				// change to enum;
@@ -20,17 +20,17 @@ public class MVAdjustment extends ModuleBaseWithCustomFields {
 	long endTime;
 	List<MVAdjustmentVsBaseline> adjustmentVsBaseline;
 	
+	public MVProjectContext getProject() {
+		return project;
+	}
+	public void setProject(MVProjectContext project) {
+		this.project = project;
+	}
 	public FormulaFieldContext getFormulaField() {
 		return formulaField;
 	}
 	public void setFormulaField(FormulaFieldContext formulaField) {
 		this.formulaField = formulaField;
-	}
-	public long getProjectId() {
-		return projectId;
-	}
-	public void setProjectId(long projectId) {
-		this.projectId = projectId;
 	}
 	public String getName() {
 		return name;

@@ -16,14 +16,14 @@ public class MVAction extends FacilioAction {
 	private static final long serialVersionUID = 1L;
 	MVProjectWrapper mvProjectWrapper;
 	
-	public MVProjectWrapper getMvProject() {
+	public MVProjectWrapper getMvProjectWrapper() {
 		return mvProjectWrapper;
 	}
 
-	public void setMvProject(MVProjectWrapper mvProject) {
-		this.mvProjectWrapper = mvProject;
+	public void setMvProjectWrapper(MVProjectWrapper mvProjectWrapper) {
+		this.mvProjectWrapper = mvProjectWrapper;
 	}
-	
+
 	public String addMVProject() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
