@@ -13,6 +13,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AttendanceContext;
 import com.facilio.bmsconsole.context.AttendanceTransactionContext.TransactionType;
 import com.facilio.bmsconsole.context.BreakContext;
+import com.facilio.bmsconsole.context.BreakTransactionContext;
 import com.facilio.bmsconsole.context.ShiftContext;
 import com.facilio.bmsconsole.context.ShiftUserRelContext;
 import com.facilio.bmsconsole.util.ShiftAPI;
@@ -45,15 +46,15 @@ public class ShowStateForAttendanceCommand implements Command {
 				 shift = ShiftAPI.getShift(shiftId);
 			}
 			if (attendance == null) {
-				attendancestateList.add(new AttendanceStateContext(TransactionType.CHECKIN.name(), null));
+				attendancestateList.add(new AttendanceStateContext(TransactionType.CHECKIN.name(), null, -1));
 			} else if (attendance != null) {
 				if (attendance.getCheckOutTime() > 0 && attendance.getLastBreakStartTime() < 0) {
-					attendancestateList.add(new AttendanceStateContext(TransactionType.CHECKIN.name(), null));
+					attendancestateList.add(new AttendanceStateContext(TransactionType.CHECKIN.name(), null, -1));
 				} else if (attendance.getCheckOutTime() < 0 && attendance.getLastBreakStartTime() > 0) {
 					attendancestateList.add(new AttendanceStateContext(TransactionType.BREAKSTOP.name(), 
-							ShiftAPI.getBreak(attendance.getLastBreakId().getId())));
+							ShiftAPI.getBreak(attendance.getLastBreakId().getId()), -1));
 				} else if (attendance.getLastCheckInTime() > 0 && attendance.getLastBreakStartTime() < 0) {
-					attendancestateList.add(new AttendanceStateContext(TransactionType.CHECKOUT.name(), null));
+					attendancestateList.add(new AttendanceStateContext(TransactionType.CHECKOUT.name(), null, -1));
 //				} else if (attendance.getLastBreakStartTime() < 0 && attendance.getCheckOutTime() < 0) {
 					// checked in
 //					attendancestateList.add(new AttendanceStateContext(TransactionType.CHECKOUT.name(), -1));
@@ -61,7 +62,8 @@ public class ShowStateForAttendanceCommand implements Command {
 						List<BreakContext> breaks = ShiftAPI.getBreakssAttachedToShift(shift.getId());
 						if (!CollectionUtils.isEmpty(breaks)) {
 							for (BreakContext breakContext : breaks) {
-								attendancestateList.add(new AttendanceStateContext(TransactionType.BREAKSTART.name(), breakContext));
+								long timeConsumed = totalBreakTimeTaken(attendance.getId(), breakContext);
+								attendancestateList.add(new AttendanceStateContext(TransactionType.BREAKSTART.name(), breakContext, timeConsumed));
 							}
 						}
 				}
@@ -83,7 +85,7 @@ public class ShowStateForAttendanceCommand implements Command {
 //					}
 //				} 
 				else if (attendance.getCheckOutTime() > 0) {
-					attendancestateList.add(new AttendanceStateContext(TransactionType.CHECKIN.name(), null));
+					attendancestateList.add(new AttendanceStateContext(TransactionType.CHECKIN.name(), null, -1));
 				}
 			}
 			context.put(FacilioConstants.ContextNames.RECORD, attendancestateList);
@@ -108,5 +110,27 @@ public class ShowStateForAttendanceCommand implements Command {
 		}
 
 		return null;
+	}
+	
+	public long totalBreakTimeTaken(long attendanceId, BreakContext breakContext) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BREAK_TRANSACTION);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.BREAK_TRANSACTION);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		SelectRecordsBuilder<BreakTransactionContext> builder = new SelectRecordsBuilder<BreakTransactionContext>().module(module)
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("breakId"), String.valueOf(breakContext.getId()), PickListOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("attendance"), String.valueOf(attendanceId), PickListOperators.IS))
+				.beanClass(BreakTransactionContext.class).select(fields);
+		List<BreakTransactionContext> breakTransactions = builder.get();
+		if(CollectionUtils.isNotEmpty(breakTransactions)) {
+			long time = 0;
+			for(BreakTransactionContext breakTransaction :  breakTransactions) {
+				if(breakTransaction.getTimeTaken() > 0) {
+					time += breakTransaction.getTimeTaken();
+				}
+			}
+			return time;
+		}
+		return -1;
 	}
 }
