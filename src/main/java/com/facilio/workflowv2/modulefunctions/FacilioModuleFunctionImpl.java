@@ -5,6 +5,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.util.CommonAPI;
+import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
@@ -12,6 +13,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fs.FileInfo;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
@@ -354,4 +356,21 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		return result;
 	}
 
+	@Override
+	public String export(List<Object> objects) throws Exception {
+		// TODO Auto-generated method stub
+		
+		FacilioModule module = (FacilioModule) objects.get(0);
+		
+		String viewName = (String) objects.get(1);
+		
+		Criteria criteria = null;
+		if(objects.size() == 3) {
+			criteria = (Criteria)objects.get(2);
+		}
+		
+		String fileUrl = ExportUtil.exportModule(FileInfo.FileFormat.XLS, module.getName(), viewName, null,criteria, false, false, 2000);
+		
+		return fileUrl;
+	}
 }

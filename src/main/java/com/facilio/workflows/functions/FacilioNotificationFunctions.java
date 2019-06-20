@@ -24,7 +24,8 @@ public enum FacilioNotificationFunctions implements FacilioWorkflowFunctionInter
 			}
 			Map<String,Object> sendMailMap =  (Map<String, Object>) objects[0];
 			sendMailMap.put("sender", "noreply@facilio.com");
-			AwsUtil.sendEmail(WorkflowV2Util.getAsJSONObject(sendMailMap));
+			Map<String,String> attachements = (Map<String,String>)sendMailMap.get("attachments");
+			AwsUtil.sendEmail(WorkflowV2Util.getAsJSONObject(sendMailMap),attachements);
 			return null;
 		};
 		

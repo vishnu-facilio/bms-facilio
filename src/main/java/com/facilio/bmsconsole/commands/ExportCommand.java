@@ -41,7 +41,7 @@ public class ExportCommand implements Command {
 		boolean isS3Value = (boolean) context.get(FacilioConstants.ContextNames.IS_S3_VALUE);
 		boolean specialFields = (boolean) context.get(FacilioConstants.ContextNames.SPECIAL_FIELDS);
 		Integer viewLimit = (Integer) context.get(FacilioConstants.ContextNames.VIEW_LIMIT);
-		String fileUrl = ExportUtil.exportModule(fileFormat, moduleName, viewName, filters, isS3Value, specialFields, viewLimit);
+		String fileUrl = ExportUtil.exportModule(fileFormat, moduleName, viewName, filters,null, isS3Value, specialFields, viewLimit);
 		context.put(FacilioConstants.ContextNames.FILE_URL, fileUrl);
 		
 		return false;

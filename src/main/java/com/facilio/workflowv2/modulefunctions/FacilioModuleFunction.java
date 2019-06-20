@@ -7,4 +7,5 @@ public interface FacilioModuleFunction {
 	public void update(List<Object> objects) throws Exception;
 	public void delete(List<Object> objects) throws Exception;
 	public Object fetch(List<Object> objects) throws Exception;
+	public String export(List<Object> objects) throws Exception; 
 }
