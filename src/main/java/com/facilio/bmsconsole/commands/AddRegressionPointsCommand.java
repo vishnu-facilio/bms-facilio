@@ -39,8 +39,8 @@ public class AddRegressionPointsCommand implements Command{
 		List<RegressionContext> regressionConfig = (List<RegressionContext>) context.get(FacilioConstants.ContextNames.REGRESSION_CONFIG);
 		JSONObject reportData = (JSONObject) context.get(FacilioConstants.ContextNames.REPORT_DATA);
 		ReportContext reportContext = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
-		boolean isMultiple = true;
-		
+		Boolean isMultiple;
+				
 		Collection<Map<String, Object>> data = (Collection<Map<String, Object>>) reportData.get(FacilioConstants.ContextNames.DATA_KEY);
 		
 		Map<String, Map<String, Object>> regressionResults = new HashMap<String, Map<String,Object>>();
@@ -48,8 +48,11 @@ public class AddRegressionPointsCommand implements Command{
 			data = cleanData(data);
 			
 			for(RegressionContext rc : regressionConfig) {
+				isMultiple = rc.getIsMultiple();
 				Map<String, Object> regressionResult = prepareData(rc, new ArrayList(data), isMultiple);
-				computeTstatAndP(regressionResult, rc.getxAxisContext(), reportContext.getDataPoints());
+				if(isMultiple) {
+					computeTstatAndP(regressionResult, rc.getxAxisContext(), reportContext.getDataPoints());
+				}
 				String groupAlias = getRegressionPointAlias(rc);
 				String expressionString = getExpressionString(regressionResult, reportContext, rc.getxAxisContext());
 				ReportDataPointContext regressionPoint = getRegressionDataPoint(groupAlias, expressionString);

@@ -7,7 +7,15 @@ public class RegressionContext {
 	List<RegressionPointContext> xAxisContext;
 	RegressionPointContext yAxisContext;
 	String groupAlias;
+	Boolean isMultiple;
 	
+	
+	public Boolean getIsMultiple() {
+		return isMultiple;
+	}
+	public void setIsMultiple(Boolean isMultiple) {
+		this.isMultiple = isMultiple;
+	}
 	public List<RegressionPointContext> getxAxisContext() {
 		return xAxisContext;
 	}
