@@ -182,6 +182,9 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
                 for (PMTriggerContext trigger : pm.getTriggers()) {
                     if (trigger.getSchedule() != null) {
                         long startTime = PreventiveMaintenanceAPI.getStartTimeInSecond(trigger.getStartTime());
+                        if (pm.getId() == 1110712L) {
+                            LOGGER.log(Level.SEVERE, "schedudulenewpm start time " + startTime);
+                        }
                         // PMJobsContext pmJob = null;
                         switch (pm.getTriggerTypeEnum()) {
                             case ONLY_SCHEDULE_TRIGGER:

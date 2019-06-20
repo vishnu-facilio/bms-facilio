@@ -305,11 +305,17 @@ public class PreventiveMaintenanceAPI {
 	}
 
 	public static List<WorkOrderContext> createWOContextsFromPM(Context context, PreventiveMaintenance pm, PMTriggerContext pmTrigger, long startTime, WorkorderTemplate woTemplate) throws Exception {
+		if (pm.getId() == 1110712L) {
+			LOGGER.log(Level.SEVERE, "createWOContextsFromPM start time " + startTime);
+		}
 		long nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(startTime);
+		if (pm.getId() == 1110712L) {
+			LOGGER.log(Level.SEVERE, "first next execution " + startTime);
+		}
+		long currentTime = System.currentTimeMillis();
 		int currentCount = pm.getCurrentExecutionCount();
 		List<WorkOrderContext> wos = new ArrayList<>();
 		long endTime = DateTimeUtil.getDayStartTime(pmTrigger.getFrequencyEnum().getMaxSchedulingDays(), true) - 1;
-		long currentTime = System.currentTimeMillis();
 		boolean isScheduled = false;
 		while (nextExecutionTime <= endTime && (pm.getMaxCount() == -1 || currentCount < pm.getMaxCount()) && (pm.getEndTime() == -1 || nextExecutionTime <= pm.getEndTime())) {
 			if ((nextExecutionTime * 1000) < currentTime) {
