@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,7 +10,9 @@ import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.math3.distribution.TDistribution;
 import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
+import org.apache.commons.math3.util.FastMath;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -24,6 +27,7 @@ import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportYAxisContext;
+import com.facilio.tv.TVAction;
 
 public class AddRegressionPointsCommand implements Command{
 
@@ -45,6 +49,7 @@ public class AddRegressionPointsCommand implements Command{
 			
 			for(RegressionContext rc : regressionConfig) {
 				Map<String, Object> regressionResult = prepareData(rc, new ArrayList(data), isMultiple);
+				computeTstatAndP(regressionResult, rc.getxAxisContext(), reportContext.getDataPoints());
 				String groupAlias = getRegressionPointAlias(rc);
 				String expressionString = getExpressionString(regressionResult, reportContext, rc.getxAxisContext());
 				ReportDataPointContext regressionPoint = getRegressionDataPoint(groupAlias, expressionString);
@@ -66,17 +71,18 @@ public class AddRegressionPointsCommand implements Command{
 		return true;
 	}
 	
+	
 	private void computeRegressionData(String groupAlias, ArrayList<Map<String,Object>> data, Map<String,Object> coefficientMap) {
 		
 		ArrayList<String> coefficientKeys = new ArrayList(coefficientMap.keySet());
 		for(Map<String, Object> record: data) {
 			double value = 0.0;
 			for(String key: coefficientKeys) {
-				if(key != "constant") {
+				if(key != StringConstants.CONSTANT) {
 					value = value + (Double)coefficientMap.get(key) * Double.valueOf((String)record.get(key));
 				}
 			}
-			value = value + (Double)coefficientMap.get("constant");
+			value = value + (Double)coefficientMap.get(StringConstants.CONSTANT);
 			record.put(groupAlias, value);
 		}
 	}
@@ -90,7 +96,7 @@ public class AddRegressionPointsCommand implements Command{
 				int index = xPoints.indexOf(xPoint) + 1;
 				cMap.put(xPoint.getAlias(), coefficients[index]);
 			}
-			cMap.put("constant", coefficients[0]);
+			cMap.put(StringConstants.CONSTANT, coefficients[0]);
 		}
 		
 		return cMap;
@@ -167,13 +173,19 @@ public class AddRegressionPointsCommand implements Command{
 	}
 	
 	
-	private String getDataPointName(List<ReportDataPointContext> dataPoints, RegressionPointContext xPoint) {
+	private String getDataPointName(List<ReportDataPointContext> dataPoints, RegressionPointContext xPoint, boolean isFieldName) {
 		for(ReportDataPointContext dataPoint: dataPoints) {
 			ArrayList<Long> temp = (ArrayList) dataPoint.getMetaData().get("parentIds");
 			if(temp.size() != 0) {
 				Long parentId = temp.get(0);
 				if(dataPoint.getyAxis().getFieldId() == xPoint.getReadingId() && parentId == xPoint.getParentId()) {
-					return dataPoint.getName();
+					if(isFieldName) {
+						return dataPoint.getyAxis().getFieldName();
+					}
+					else {
+						return dataPoint.getName();
+					}
+					
 				}
 				else {
 					continue;
@@ -237,12 +249,64 @@ public class AddRegressionPointsCommand implements Command{
 		
 		olsInstance.newSampleData(yData, xData);
 		Map<String, Object> results = new HashMap<String, Object>();
-		results.put("coefficients", olsInstance.estimateRegressionParameters());
-		results.put("residuals", olsInstance.estimateResiduals());
-		results.put("rsqaured", olsInstance.calculateRSquared());
-		results.put("adjustedrSquared", olsInstance.calculateAdjustedRSquared());
-		results.put("standardError", olsInstance.estimateRegressionStandardError());
+		results.put(StringConstants.COEFFICIENTS, olsInstance.estimateRegressionParameters());
+		results.put(StringConstants.RESIDUALS, olsInstance.estimateResiduals());
+		results.put(StringConstants.RSQUARED, olsInstance.calculateRSquared());
+		results.put(StringConstants.ADJUSTED_R_SQUARED, olsInstance.calculateAdjustedRSquared());
+		results.put(StringConstants.STANDARD_ERROR, olsInstance.estimateRegressionStandardError());
+		results.put(StringConstants.STANDARD_PARAMETER_ERRORS, olsInstance.estimateRegressionParametersStandardErrors());
+		results.put(StringConstants.OBSERVATIONS, data.size());
+		
+		
 		return results;
+	}
+	
+	private void computeTstatAndP (Map<String, Object> results, List<RegressionPointContext> idpPoints, List<ReportDataPointContext> reportDataPoints) {
+		Map<String, Map<String, Object>> metricRecords = new LinkedHashMap<String, Map<String, Object>>();
+		
+		double [] coefficients = (double[]) results.get(StringConstants.COEFFICIENTS);
+		double [] errors = (double []) results.get(StringConstants.STANDARD_PARAMETER_ERRORS);
+		double [] residuals = (double[]) results.get(StringConstants.RESIDUALS);
+		
+		int degreesOfFreedom = residuals.length - coefficients.length;
+		TDistribution tDistribution = new TDistribution(degreesOfFreedom);
+		
+		
+		DecimalFormat format = new DecimalFormat("0.000000000");
+		double tStat;
+		double pValue;
+		
+		double coefficient = coefficients[0];
+		double standardError = errors[0];
+		tStat = coefficient/ standardError;
+		pValue = tDistribution.cumulativeProbability(-FastMath.abs(tStat)) * 2;
+		
+		Map<String, Object> newRecord = new LinkedHashMap<String, Object>();
+		newRecord.put(StringConstants.COEFFICIENT, coefficient);
+		newRecord.put(StringConstants.STANDARD_ERROR, standardError);
+		newRecord.put(StringConstants.T_VALUE, tStat);
+		newRecord.put(StringConstants.P_VALUE, pValue);
+		
+		metricRecords.put(StringConstants.INTERCEPT, newRecord);
+		
+		for(int i =1; i < coefficients.length; i++) {
+			newRecord = new LinkedHashMap<String, Object>();
+			coefficient = coefficients[i];
+			standardError = errors[i];
+			tStat = coefficient / standardError;
+			pValue = tDistribution.cumulativeProbability(-FastMath.abs(tStat)) * 2;
+			
+			newRecord.put(StringConstants.COEFFICIENT, coefficient);
+			newRecord.put(StringConstants.STANDARD_ERROR, standardError);
+			newRecord.put(StringConstants.T_VALUE, tStat);
+			newRecord.put(StringConstants.P_VALUE, pValue);
+			
+			String name = getDataPointName(reportDataPoints, idpPoints.get(i - 1), true);
+			
+			metricRecords.put(name, newRecord);
+		}
+		
+		results.put(StringConstants.REGRESSION_METRICS, metricRecords);
 	}
 	
 	private String getRegressionPointAlias (RegressionContext regressionContext) {
@@ -256,6 +320,24 @@ public class AddRegressionPointsCommand implements Command{
 		
 		groupAlias.append("regr");
 		return groupAlias.toString();
+	}
+	
+	
+	public class StringConstants{
+		final static String COEFFICIENTS = "coefficients";
+		final static String RESIDUALS = "residuals";
+		final static String RSQUARED = "rsquared";
+		final static String ADJUSTED_R_SQUARED= "adjustedrSquared";
+		final static String STANDARD_ERROR = "standardError";
+		final static String STANDARD_PARAMETER_ERRORS = "standardParameterErrors";
+		final static String OBSERVATIONS = "observations";
+		final static String CONSTANT = "constant";
+		final static String REGRESSION_MODEL = "Regression Model";
+		final static String INTERCEPT = "intercept";
+		final static String T_VALUE = "tValue";
+		final static String P_VALUE = "pValue";
+		final static String COEFFICIENT = "coefficient";
+		final static String REGRESSION_METRICS = "regressionMetrics";
 	}
 	
 }
