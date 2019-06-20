@@ -45,8 +45,9 @@ public class HistoricalMLJob extends FacilioJob {
 	public void execute(JobContext jc) throws Exception 
 	{
 						 
-		long startTime = 1546286400000L;//
-		long endTime = startTime + (60 * 60 * 60 * 24 * 1000);
+		long time = 1546286400000L;
+		long startTime = time + (12*60*60*24*1000L);//
+		long endTime = time + (60 * 60 * 60 * 24 * 1000L);
 		//long endTime = 1556654400000L;//
 		LOGGER.info("Job started");
 		try
