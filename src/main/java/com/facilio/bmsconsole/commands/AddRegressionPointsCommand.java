@@ -219,7 +219,6 @@ public class AddRegressionPointsCommand implements Command{
 	
 	private Map<String, Object> prepareData(RegressionContext regressionContext, ArrayList<Map<String, Object>> data, boolean isMultiple){
 		
-		
 		OLSMultipleLinearRegression olsInstance = new OLSMultipleLinearRegression();
 		
 		List<RegressionPointContext> xPoints = regressionContext.getxAxisContext();
@@ -275,14 +274,14 @@ public class AddRegressionPointsCommand implements Command{
 		TDistribution tDistribution = new TDistribution(degreesOfFreedom);
 		
 		
-		DecimalFormat format = new DecimalFormat("0.000000000");
+		DecimalFormat formatter = new DecimalFormat("0.000000000");
 		double tStat;
 		double pValue;
 		
-		double coefficient = coefficients[0];
-		double standardError = errors[0];
-		tStat = coefficient/ standardError;
-		pValue = tDistribution.cumulativeProbability(-FastMath.abs(tStat)) * 2;
+		double coefficient = Double.valueOf(formatter.format(coefficients[0]));
+		double standardError = Double.valueOf(formatter.format(errors[0])); 
+		tStat = Double.valueOf(formatter.format(coefficient/ standardError));
+		pValue = Double.valueOf(formatter.format(tDistribution.cumulativeProbability(-FastMath.abs(tStat)) * 2));
 		
 		Map<String, Object> newRecord = new LinkedHashMap<String, Object>();
 		newRecord.put(StringConstants.COEFFICIENT, coefficient);
@@ -294,17 +293,17 @@ public class AddRegressionPointsCommand implements Command{
 		
 		for(int i =1; i < coefficients.length; i++) {
 			newRecord = new LinkedHashMap<String, Object>();
-			coefficient = coefficients[i];
-			standardError = errors[i];
-			tStat = coefficient / standardError;
-			pValue = tDistribution.cumulativeProbability(-FastMath.abs(tStat)) * 2;
+			coefficient = Double.valueOf(formatter.format(coefficients[i]));
+			standardError = Double.valueOf(formatter.format(errors[i]));
+			tStat = Double.valueOf(formatter.format(coefficient/ standardError));
+			pValue = Double.valueOf(formatter.format(tDistribution.cumulativeProbability(-FastMath.abs(tStat)) * 2));
 			
 			newRecord.put(StringConstants.COEFFICIENT, coefficient);
 			newRecord.put(StringConstants.STANDARD_ERROR, standardError);
 			newRecord.put(StringConstants.T_VALUE, tStat);
 			newRecord.put(StringConstants.P_VALUE, pValue);
 			
-			String name = getDataPointName(reportDataPoints, idpPoints.get(i - 1), true);
+			String name = getDataPointName(reportDataPoints, idpPoints.get(i - 1), false);
 			
 			metricRecords.put(name, newRecord);
 		}
