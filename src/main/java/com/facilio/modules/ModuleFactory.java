@@ -79,6 +79,7 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.PURCHASE_ORDER, getPurchaseOrderModule());
 		moduleMap.put(FacilioConstants.ContextNames.PURCHASE_REQUEST, getPurchaseRequestModule());
 		moduleMap.put(FacilioConstants.ContextNames.RECEIPT, getReceiptModule());
+		moduleMap.put(FacilioConstants.ContextNames.CONTRACTS, getContractsModule());
 		moduleMap.put(FacilioConstants.ContextNames.PURCHASE_CONTRACTS, getPurchaseContractModule());
 		moduleMap.put(FacilioConstants.ContextNames.LABOUR_CONTRACTS, getLabourContractModule());
 		moduleMap.put(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS, getRentalLeaseContractModule());
@@ -1995,6 +1996,14 @@ public class ModuleFactory {
 		purchaseOrder.setDisplayName("Receipts");
 		purchaseOrder.setTableName("Receipts");
 		return purchaseOrder;
+	}
+	
+	public static FacilioModule getContractsModule() {
+		FacilioModule contract = new FacilioModule();
+		contract.setName("contracts");
+		contract.setDisplayName("Contracts");
+		contract.setTableName("Contracts");
+		return contract;
 	}
 
 	public static FacilioModule getPurchaseContractModule() {
