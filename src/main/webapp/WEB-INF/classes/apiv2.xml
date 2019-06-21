@@ -1104,6 +1104,9 @@
 		<action name="delete" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="deleteModuleData">
 		</action>
+		<action name="list" class="com.facilio.bmsconsole.actions.ModuleAction"
+			method="getModuleDataList">
+		</action>
 
 		<action name="*" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="moduleDataDetails">
