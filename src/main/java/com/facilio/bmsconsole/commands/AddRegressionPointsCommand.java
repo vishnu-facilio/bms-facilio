@@ -58,6 +58,7 @@ public class AddRegressionPointsCommand implements Command{
 				reportContext.getDataPoints().add(regressionPoint);
 				Map<String, Object> coefficientMap = getCoefficientMap(regressionResult, rc.getxAxisContext());
 				computeRegressionData(groupAlias, (ArrayList)data, coefficientMap);
+				regressionResult.put(StringConstants.COEFFICIENT_MAP, coefficientMap);
 				if(isMultiple) {
 					computeTstatAndP(regressionResult, rc.getxAxisContext(), reportContext.getDataPoints());
 					computeANOVAResultMetrics(regressionResult, (ArrayList)data, groupAlias, rc.getyAxisContext().getAlias());
@@ -439,6 +440,7 @@ public class AddRegressionPointsCommand implements Command{
 		final static String REGRESSION_METRICS = "regressionMetrics";
 		final static String RESIDUAL = "residual";
 		final static String REGRESSION = "regression";
+		final static String COEFFICIENT_MAP = "coefficientMap";
 	}
 	
 }
