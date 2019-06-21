@@ -109,10 +109,12 @@
 		        	readingAlarmModule = Module(\"readingalarm\"); 
 		        	res = readingAlarmModule.fetch(cri);
 		            previousMonthDetails = readingAlarmModule.fetch([ruleId == ruleId  && createdTime <= temp && clearedTime <= temp]);
+		            meanTimeBetweenTigger = 0;
+		            timeToClear = 0;
+		            meanTimeToClear = 0;
 		            if (res != null) {
 		                firstRes =res[0];
 		                previousClearedTime = firstRes.clearedTime;
-		                meanTimeBetweenTigger = 0;
 		                for each index,value in res {
 							if(index > 0) {
 		                        if (value != null) {
@@ -122,8 +124,7 @@
 		                        }                                
 							}
 		                }
-					    meanTimeBetweenTigger = meanTimeBetweenTigger / res.size();
-					    timeToClear = 0;
+					    meanTimeBetweenTigger = meanTimeBetweenTigger / res.size();	
 		                for each index,value in res {
 					        if(index > 0) {
 		                        if (value != null) {
@@ -133,10 +134,13 @@
 		                } 
 		                 meanTimeToClear =   timeToClear / res.size();
 		            }
+		            previousMonthMeanTimeBetweenTigger = 0;
+		            previousMonthTimeToClear = 0;
+		            previousMonthmeanTimeToClear = 0;
 		            if (previousMonthDetails != null ) {
 		                previousRes =previousMonthDetails[0];
 		                previousMonthClearedTime = previousRes.clearedTime;
-		                previousMonthMeanTimeBetweenTigger = 0;
+		               
 		                for each index,value in previousMonthDetails {
 						    if(index > 0) {
 		                        if (value != null) {
@@ -147,7 +151,6 @@
 							}
 		                }
 						previousMonthMeanTimeBetweenTigger = previousMonthMeanTimeBetweenTigger / previousMonthDetails.size();
-						previousMonthTimeToClear = 0;
 		                for each index,value in res {
 							if(index > 0) {
 		                        if (value != null) {
