@@ -98,51 +98,75 @@
         	"description" : "meanTimeBetweenTriggers",
         	"usage" : "rulesSummary",
         	"workflow": "Map test(Number ruleId) 
-        			  	{ 
-        			  		{ 
-                          cri = {
-							criteria : [ruleId == ruleId && clearedTime > 0 ],
-        					orderBy : \"createdTime\" asc
-						}
-        			  		readingAlarmModule = Module(\"readingalarm\"); 
-        			  		res = readingAlarmModule.fetch(cri);
-                          if (res != null) {
-                           
-                           firstRes =res[0];
-                          previousClearedTime = firstRes.clearedTime;
-                          meanTimeBetweenTigger = 0;
-                          for each index,value in res {
+		    { 
+		        { 
+		            cri = {
+						criteria : [ruleId == ruleId && clearedTime > 0 ],
+		        		orderBy : \"createdTime\" asc
+					}
+		            date = NameSpace(\"date\");
+		            temp = date.getPreviousMonthEndDate();
+		        	readingAlarmModule = Module(\"readingalarm\"); 
+		        	res = readingAlarmModule.fetch(cri);
+		            previousMonthDetails = readingAlarmModule.fetch([ruleId == ruleId  && createdTime <= temp && clearedTime <= temp]);
+		            if (res != null) {
+		                firstRes =res[0];
+		                previousClearedTime = firstRes.clearedTime;
+		                meanTimeBetweenTigger = 0;
+		                for each index,value in res {
 							if(index > 0) {
-                              if (value != null) {
-                                 createdTime = value.createdTime;
-      						     meanTimeBetweenTigger = meanTimeBetweenTigger + (createdTime -previousClearedTime); 
-       						     previousClearedTime = value.clearedTime;
-                              }                                
-						    }
-                          }
-						meanTimeBetweenTigger = meanTimeBetweenTigger / res.size();
-						
-						
-						 timeToClear = 0;
-                          for each index,value in res {
+		                        if (value != null) {
+		                            createdTime = value.createdTime;
+		      						meanTimeBetweenTigger = meanTimeBetweenTigger + (createdTime -previousClearedTime); 
+		       						previousClearedTime = value.clearedTime;
+		                        }                                
+							}
+		                }
+					    meanTimeBetweenTigger = meanTimeBetweenTigger / res.size();
+					    timeToClear = 0;
+		                for each index,value in res {
+					        if(index > 0) {
+		                        if (value != null) {
+		      				        timeToClear = timeToClear + (value.clearedTime - value.createdTime); 
+		                        }                                
+					        }
+		                } 
+		                 meanTimeToClear =   timeToClear / res.size();
+		            }
+		            if (previousMonthDetails != null ) {
+		                previousRes =previousMonthDetails[0];
+		                previousMonthClearedTime = previousRes.clearedTime;
+		                previousMonthMeanTimeBetweenTigger = 0;
+		                for each index,value in previousMonthDetails {
+						    if(index > 0) {
+		                        if (value != null) {
+		                            createdTime = value.createdTime;
+		      						previousMonthMeanTimeBetweenTigger = previousMonthMeanTimeBetweenTigger + (createdTime -previousClearedTime); 
+		       						previousMonthClearedTime = value.clearedTime;
+		                        }                                
+							}
+		                }
+						previousMonthMeanTimeBetweenTigger = previousMonthMeanTimeBetweenTigger / previousMonthDetails.size();
+						previousMonthTimeToClear = 0;
+		                for each index,value in res {
 							if(index > 0) {
-                              if (value != null) {
-      						     timeToClear = timeToClear + (value.clearedTime - value.createdTime); 
-                              }                                
-						    }
-                          }
-                        meanTimeToClear =   timeToClear / res.size();
-						resMap = {};
-                            resMap[\"meanTimeBetweenTigger\"] = meanTimeBetweenTigger;
-                            resMap[\"timeToClear\"] = timeToClear;
-                              resMap[\"meanTimeToClear\"] = meanTimeToClear;
-         					return resMap;
-                                    }
-                              else {
-                                return null;
-                                
-                              }
-        			  	}"
+		                        if (value != null) {
+		      						previousMonthTimeToClear = previousMonthTimeToClear + (value.clearedTime - value.createdTime); 
+		                        }                                
+							}
+		                } 
+		                previousMonthmeanTimeToClear =   previousMonthTimeToClear / previousMonthDetails.size();
+		            }
+					resMap = {};
+		            resMap[\"mtbt\"] = meanTimeBetweenTigger;
+		            resMap[\"timeToClear\"] = timeToClear;
+		            resMap[\"mttc\"] = meanTimeToClear;
+		            resMap[\"pmtbt\"] = previousMonthMeanTimeBetweenTigger;
+		            resMap[\"previousMonthTimeToClear\"] = previousMonthTimeToClear;
+		            resMap[\"pmttc\"] = previousMonthmeanTimeToClear;
+		         	return resMap;
+		        }
+		    }"
         }
         
 }
