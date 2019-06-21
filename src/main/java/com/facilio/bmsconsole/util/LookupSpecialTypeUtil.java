@@ -7,6 +7,7 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BusinessHoursList;
+import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.constants.FacilioConstants;
@@ -39,6 +40,7 @@ public class LookupSpecialTypeUtil {
 				|| EventConstants.EventContextNames.EVENT.equals(specialType)
 				|| FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE.equals(specialType)
 				|| FacilioConstants.ContextNames.WORK_ORDER_TEMPLATE.equals(specialType)
+				|| FacilioConstants.ContextNames.FORMULA_FIELD.equals(specialType)
 				|| "trigger".equals(specialType)
 				|| "connectedApps".equals(specialType)
 				;
@@ -127,6 +129,9 @@ public class LookupSpecialTypeUtil {
 		else if(EventConstants.EventContextNames.EVENT.equals(specialType)) {
 			return EventAPI.getEvent(id);
 		}
+		else if(FacilioConstants.ContextNames.FORMULA_FIELD.equals(specialType)) {
+			return FormulaFieldAPI.getFormulaField(id);
+		}
 		else if("trigger".equals(specialType)) {
 			Map<Long, List<PMTriggerContext>> pmMap = PreventiveMaintenanceAPI.getPMTriggers(Arrays.asList(id));
 			if (pmMap != null && !pmMap.isEmpty()) {
@@ -160,6 +165,9 @@ public class LookupSpecialTypeUtil {
 		}
 		else if(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE.equals(specialType)) {
 			return null; //Returning null for now
+		}
+		else if(FacilioConstants.ContextNames.FORMULA_FIELD.equals(specialType)) {
+			return FormulaFieldAPI.getFormulaFields(criteria);
 		}
 		else if(EventConstants.EventContextNames.EVENT.equals(specialType)) {
 			return EventAPI.getEvent(criteria);
@@ -197,6 +205,12 @@ public class LookupSpecialTypeUtil {
 				return pms.stream().collect(Collectors.toMap(PreventiveMaintenance::getId, Function.identity()));
 			}
 		}
+		else if(FacilioConstants.ContextNames.FORMULA_FIELD.equals(specialType)) {
+			List<FormulaFieldContext> formulaFieldContexts = FormulaFieldAPI.getFormulaFields(ids);
+			if (CollectionUtils.isNotEmpty(formulaFieldContexts)) {
+				return formulaFieldContexts.stream().collect(Collectors.toMap(FormulaFieldContext::getId, Function.identity()));
+			}
+		}
 		else if(EventConstants.EventContextNames.EVENT.equals(specialType)) {
 			List<EventContext> events = EventAPI.getEvents(ids);
 			if (CollectionUtils.isNotEmpty(events)) {
@@ -228,6 +242,9 @@ public class LookupSpecialTypeUtil {
 		}
 		else if(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE.equals(specialType)) {
 			return PreventiveMaintenanceAPI.getPMsDetails(ids);
+		}
+		else if(FacilioConstants.ContextNames.FORMULA_FIELD.equals(specialType)) {
+			return FormulaFieldAPI.getFormulaFields(ids);
 		}
 		else if(EventConstants.EventContextNames.EVENT.equals(specialType)) {
 			return EventAPI.getEvents(ids);
@@ -274,6 +291,11 @@ public class LookupSpecialTypeUtil {
 			event.setId(id);
 			return event;
 		}
+		else if(FacilioConstants.ContextNames.FORMULA_FIELD.equals(specialType)) {
+			FormulaFieldContext formulaFieldContext = new FormulaFieldContext();
+			formulaFieldContext.setId(id);
+			return formulaFieldContext;
+		}
 		else if ("trigger".equals(specialType)) {
 			PMTriggerContext pmTriggerContext = new PMTriggerContext();
 			pmTriggerContext.setId(id);
@@ -315,6 +337,12 @@ public class LookupSpecialTypeUtil {
 			PreventiveMaintenance pm = PreventiveMaintenanceAPI.getPM(id, false);
 			if (pm != null) {
 				return pm.getTitle();
+			}
+		}
+		else if(FacilioConstants.ContextNames.FORMULA_FIELD.equals(specialType)) {
+			FormulaFieldContext formulaFieldContext = FormulaFieldAPI.getFormulaField(id);
+			if (formulaFieldContext != null) {
+				return formulaFieldContext.getName();
 			}
 		}
 		else if(EventConstants.EventContextNames.EVENT.equals(specialType)) {
@@ -374,6 +402,14 @@ public class LookupSpecialTypeUtil {
 				}
 			}
 		}
+		else if(FacilioConstants.ContextNames.FORMULA_FIELD.equals(specialType)) {
+			for(Object obj:listObjects) {
+				FormulaFieldContext formulaFieldContext = (FormulaFieldContext)obj;
+				if(formulaFieldContext != null) {
+					idVsKey.put(formulaFieldContext.getId(), formulaFieldContext.getName());
+				}
+			}
+		}
 		else if(EventConstants.EventContextNames.EVENT.equals(specialType)) {
 			for(Object obj:listObjects) {
 				
@@ -413,6 +449,9 @@ public class LookupSpecialTypeUtil {
 		}
 		else if(FacilioConstants.ContextNames.WORK_ORDER_TEMPLATE.equals(specialType)) {
 			return ModuleFactory.getWorkOrderTemplateModule();
+		}
+		else if(FacilioConstants.ContextNames.FORMULA_FIELD.equals(specialType)) {
+			return ModuleFactory.getFormulaFieldModule();
 		}
 		else if("trigger".equals(specialType)) {
 			return ModuleFactory.getPMTriggersModule();
@@ -454,6 +493,9 @@ public class LookupSpecialTypeUtil {
 			List<FacilioField> fields = FieldFactory.getReadingRuleFields();
 			fields.addAll(FieldFactory.getWorkflowRuleFields());
 			return fields;
+		}
+		else if(FacilioConstants.ContextNames.FORMULA_FIELD.equals(specialType)) {
+			return FieldFactory.getFormulaFieldFields();
 		}
 		else if("trigger".equals(specialType)) {
 			return FieldFactory.getPMTriggerFields();

@@ -31,6 +31,7 @@ import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.FCUContext;
 import com.facilio.bmsconsole.context.FloorContext;
+import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.GatePassContext;
 import com.facilio.bmsconsole.context.GatePassLineItemsContext;
 import com.facilio.bmsconsole.context.GraphicsContext;
@@ -105,6 +106,9 @@ import com.facilio.bmsconsole.context.WorkorderToolsContext;
 import com.facilio.bmsconsole.context.ZoneContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.modules.FacilioStatus;
+import com.facilio.mv.context.MVAdjustment;
+import com.facilio.mv.context.MVBaseline;
+import com.facilio.mv.context.MVProjectContext;
 
 public class FacilioConstants {
 	
@@ -1205,6 +1209,11 @@ public class FacilioConstants {
 			classMap.put(BREAK, BreakContext.class);
 			classMap.put(GRAPHICS, GraphicsContext.class);
 			classMap.put(SHIFT_ROTATION, ShiftRotationContext.class);
+			
+			classMap.put(MV_PROJECT_MODULE, MVProjectContext.class);
+			classMap.put(MV_BASELINE_MODULE, MVBaseline.class);
+			classMap.put(MV_ADJUSTMENT_MODULE, MVAdjustment.class);
+			classMap.put(FORMULA_FIELD, FormulaFieldContext.class);
 			return classMap;
 		}
 		

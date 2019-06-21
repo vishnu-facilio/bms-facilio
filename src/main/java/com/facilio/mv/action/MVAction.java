@@ -16,6 +16,16 @@ public class MVAction extends FacilioAction {
 	private static final long serialVersionUID = 1L;
 	MVProjectWrapper mvProjectWrapper;
 	
+	long mvProjectId = -1;
+	
+	public long getMvProjectId() {
+		return mvProjectId;
+	}
+
+	public void setMvProjectId(long mvProjectId) {
+		this.mvProjectId = mvProjectId;
+	}
+
 	public MVProjectWrapper getMvProjectWrapper() {
 		return mvProjectWrapper;
 	}
@@ -47,6 +57,14 @@ public class MVAction extends FacilioAction {
 		
 		Chain addMVProjectChain =  TransactionChainFactory.getUpdateMVProjectChain(); 
 		addMVProjectChain.execute(context);
+		
+		setResult(MVUtil.MV_PROJECT_WRAPPER, mvProjectWrapper);
+		return SUCCESS;
+	}
+	
+	public String getMVProject() throws Exception {
+		
+		mvProjectWrapper = MVUtil.getMVProject(mvProjectId);
 		
 		setResult(MVUtil.MV_PROJECT_WRAPPER, mvProjectWrapper);
 		return SUCCESS;

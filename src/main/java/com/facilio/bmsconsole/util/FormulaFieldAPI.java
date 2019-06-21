@@ -18,6 +18,7 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.*;
 import com.facilio.fw.BeanFactory;
@@ -181,6 +182,32 @@ public class FormulaFieldAPI {
 			return enpiList.get(0);
 		}
 		return null;
+	}
+	
+	public static List<FormulaFieldContext> getFormulaFields(Collection<Long> ids) throws Exception {
+		FacilioModule module = ModuleFactory.getFormulaFieldModule();
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(FieldFactory.getFormulaFieldFields())
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getIdCondition(ids, module))
+														;
+		
+		List<FormulaFieldContext> enpiList = getFormulaFieldsFromProps(selectBuilder.get(), false);
+		return enpiList;
+	}
+	
+	public static List<FormulaFieldContext> getFormulaFields(Criteria criteria) throws Exception {
+		FacilioModule module = ModuleFactory.getFormulaFieldModule();
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(FieldFactory.getFormulaFieldFields())
+														.table(module.getTableName())
+														.andCriteria(criteria)
+														;
+		
+		List<FormulaFieldContext> enpiList = getFormulaFieldsFromProps(selectBuilder.get(), false);
+		return enpiList;
 	}
 	
 	public static FormulaFieldContext getFormulaField (FacilioField readingField) throws Exception {

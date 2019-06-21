@@ -142,7 +142,7 @@ public class MVUtil {
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getMVAjuststmentVsBaselineModule().getTableName())
 				.select(FieldFactory.getMVAjuststmentVsBaselineFields())
-				.andCondition(CriteriaAPI.getCondition(mvAjustmentVsBaselineFieldMap.get("project"), id+"", NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition(mvAjustmentVsBaselineFieldMap.get("projectId"), id+"", NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> props = select.get();
 		

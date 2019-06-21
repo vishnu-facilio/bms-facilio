@@ -210,6 +210,10 @@
 			class="com.facilio.mv.action.MVAction" method="deleteMVProject">
 		</action>
 		
+		<action name="getMVProject"
+			class="com.facilio.mv.action.MVAction" method="getMVProject">
+		</action>
+		
 	</package>
 	
 	<package name="viewApiV2" namespace="/api/v2/views" extends="v2Api">

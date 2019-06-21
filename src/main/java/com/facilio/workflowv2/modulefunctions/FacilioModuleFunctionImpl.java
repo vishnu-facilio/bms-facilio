@@ -369,12 +369,11 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		if(objects.size() == 3) {
 			criteria = (Criteria)objects.get(2);
 		}
-		
-		String fileUrl = ExportUtil.exportModule(FileInfo.FileFormat.XLS, module.getName(), viewName, null,criteria, true, false, 2000);
-		
-//		if(!AwsUtil.isDevelopment()) {
-//			fileUrl = AwsUtil.getClientAppUrl() + fileUrl;
-//		}
+		boolean isS3Value = true; 
+		if(AwsUtil.isDevelopment()) {
+			isS3Value = false;
+		}
+		String fileUrl = ExportUtil.exportModule(FileInfo.FileFormat.XLS, module.getName(), viewName, null,criteria, isS3Value, false, 2000);
 		
 		return fileUrl;
 	}

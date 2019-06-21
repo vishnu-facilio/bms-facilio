@@ -484,8 +484,13 @@ public class ModuleBeanImpl implements ModuleBean {
 						case LOOKUP:
 								prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
 								Long lookupModuleId = (Long) prop.get("lookupModuleId");
+								String specialType = (String) prop.get("specialType");
 								if(lookupModuleId != null) {
 									FacilioModule lookupModule = getMod(lookupModuleId);
+									prop.put("lookupModule", lookupModule);
+								}
+								else if (specialType != null) {
+									FacilioModule lookupModule = getMod(specialType);
 									prop.put("lookupModule", lookupModule);
 								}
 								fields.add(FieldUtil.getAsBeanFromMap(prop, LookupField.class));
