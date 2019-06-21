@@ -262,10 +262,10 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 			
 			checkParam(objects);
 			
-			Long time = Long.parseLong( objects[0].toString());
-			int yearCount = Integer.parseInt(objects[1].toString());
+			Long time = (long) Double.parseDouble(objects[0].toString());
+			int monthCount = (int) Double.parseDouble(objects[1].toString());
 			
-			return DateTimeUtil.addMonths(time, yearCount);
+			return DateTimeUtil.addMonths(time, monthCount);
 		};
 		public void checkParam(Object... objects) throws Exception {
 			
@@ -277,10 +277,10 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 			
 			checkParam(objects);
 			
-			Long time = Long.parseLong( objects[0].toString());
-			int yearCount = Integer.parseInt(objects[1].toString());
+			Long time = (long) Double.parseDouble(objects[0].toString());
+			int dateCount = (int) Double.parseDouble(objects[1].toString());
 			
-			return DateTimeUtil.addDays(time, yearCount);
+			return DateTimeUtil.addDays(time, dateCount);
 		};
 		public void checkParam(Object... objects) throws Exception {
 			
@@ -457,8 +457,24 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 		public void checkParam(Object... objects) throws Exception {
 
 		}
-	}
+	},
+	GET_TODAY_START_TIME(24, "getDayStartTime") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			
+			if(objects == null || objects.length == 0) {
+				return DateTimeUtil.getDayStartTime();
+			}
+			else {
+				long time = (long) Double.parseDouble(objects[0].toString());
+				return DateTimeUtil.getDayStartTimeOf(time);
+			}
+		}
+		public void checkParam(Object... objects) throws Exception {
 
+		}
+	}
 	;
 	private Integer value;
 	private String functionName;
