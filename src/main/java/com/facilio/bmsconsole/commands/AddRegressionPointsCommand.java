@@ -17,6 +17,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import com.facilio.bmsconsole.context.AnovaResultContext;
 import com.facilio.bmsconsole.context.RegressionContext;
 import com.facilio.bmsconsole.context.RegressionPointContext;
 import com.facilio.constants.FacilioConstants;
@@ -50,15 +51,17 @@ public class AddRegressionPointsCommand implements Command{
 			for(RegressionContext rc : regressionConfig) {
 				isMultiple = rc.getIsMultiple();
 				Map<String, Object> regressionResult = prepareData(rc, new ArrayList(data), isMultiple);
-				if(isMultiple) {
-					computeTstatAndP(regressionResult, rc.getxAxisContext(), reportContext.getDataPoints());
-				}
 				String groupAlias = getRegressionPointAlias(rc);
+				
 				String expressionString = getExpressionString(regressionResult, reportContext, rc.getxAxisContext());
 				ReportDataPointContext regressionPoint = getRegressionDataPoint(groupAlias, expressionString);
 				reportContext.getDataPoints().add(regressionPoint);
 				Map<String, Object> coefficientMap = getCoefficientMap(regressionResult, rc.getxAxisContext());
 				computeRegressionData(groupAlias, (ArrayList)data, coefficientMap);
+				if(isMultiple) {
+					computeTstatAndP(regressionResult, rc.getxAxisContext(), reportContext.getDataPoints());
+					computeANOVAResultMetrics(regressionResult, (ArrayList)data, groupAlias, rc.getyAxisContext().getAlias());
+				}
 				regressionResults.put(groupAlias, regressionResult);
 				
 			}
@@ -86,7 +89,7 @@ public class AddRegressionPointsCommand implements Command{
 				}
 			}
 			value = value + (Double)coefficientMap.get(StringConstants.CONSTANT);
-			record.put(groupAlias, value);
+			record.put(groupAlias, String.valueOf(value));
 		}
 	}
 	
@@ -329,7 +332,7 @@ public class AddRegressionPointsCommand implements Command{
 		double sumOfSquareErrors = 0.0;
 		double diff = 0.0;
 		for(Map<String, Object>d : data) {
-			diff = (double)d.get(yAlias) - (double)d.get(pointAlias);
+			diff = Double.valueOf((String)d.get(yAlias)) - Double.valueOf((String)d.get(pointAlias));
 			sumOfSquareErrors = sumOfSquareErrors + Math.pow(diff, 2);
 		}
 		
@@ -342,7 +345,7 @@ public class AddRegressionPointsCommand implements Command{
 		double mean  = computeMean(data, yAlias);
 		double diff = 0.0;
 		for(Map<String, Object> d: data) {
-			diff = (double)d.get(yAlias) - mean;
+			diff = Double.valueOf((String)d.get(yAlias))- mean;
 			sumOfSquareTotal = sumOfSquareTotal + Math.pow(diff, 2);
 		}
 		
@@ -356,7 +359,7 @@ public class AddRegressionPointsCommand implements Command{
 		double diff = 0.0;
 		
 		for(Map<String, Object> d: data) {
-			diff = (double) d.get(pointAlias) - mean;
+			diff = Double.valueOf((String) d.get(pointAlias)) - mean;
 			sumOfSquareRegression = sumOfSquareRegression + Math.pow(diff, 2);
 		}
 		
@@ -368,7 +371,7 @@ public class AddRegressionPointsCommand implements Command{
 		int count = 0;
 		for(Map<String, Object>d : data) {
 			if(d.get(alias) != null && d.get(alias) != "") {
-				sum  = sum + (double)d.get(alias);
+				sum  = sum + Double.valueOf((String)d.get(alias));
 				count++;
 			}
 		}
@@ -386,6 +389,38 @@ public class AddRegressionPointsCommand implements Command{
 		return ssr / (numberOfCoeff - 1);
 	}
 	
+	public void computeANOVAResultMetrics(Map<String, Object> regressionResult, ArrayList<Map<String, Object>> data, String pointAlias, String yAlias) {
+		
+		List<AnovaResultContext> anovaResults = new ArrayList<AnovaResultContext>();
+		int observations = (int)regressionResult.get(StringConstants.OBSERVATIONS);
+		double [] coeffcients = (double []) regressionResult.get(StringConstants.COEFFICIENTS);
+		
+		AnovaResultContext regression = new AnovaResultContext();
+		AnovaResultContext residuals = new AnovaResultContext();
+		AnovaResultContext total = new AnovaResultContext();
+		
+		regression.setDegreeOfFreedom(coeffcients.length - 1);
+		regression.setSumOfSquare(computeSumOfSquareRegression(data, pointAlias, yAlias));
+		regression.setMeanSumOfSquare(computeMeanSquareRegression(data, coeffcients.length, pointAlias, yAlias));
+		regression.setResultVariable(StringConstants.REGRESSION);
+		regression.setfStat(computeMeanSquareRegression(data, coeffcients.length, pointAlias, yAlias) / computeMeanSquareError(data, data.size(), coeffcients.length, pointAlias, yAlias));
+		
+		
+		residuals.setResultVariable(StringConstants.RESIDUAL);
+		residuals.setDegreeOfFreedom(data.size() - coeffcients.length);
+		residuals.setSumOfSquare(computeSumOfSquareErrors(data, pointAlias, yAlias));
+		residuals.setMeanSumOfSquare(computeMeanSquareError(data, data.size(), coeffcients.length, pointAlias, yAlias));
+		
+		total.setResultVariable("total");
+		total.setDegreeOfFreedom(data.size() - 1);
+		total.setSumOfSquare(computeSumOfSqaureTotal(data, yAlias));
+		
+		anovaResults.add(regression);
+		anovaResults.add(residuals);
+		anovaResults.add(total);
+		
+		regressionResult.put("anovaMetrics", anovaResults);
+	}
 	
 	public class StringConstants{
 		final static String COEFFICIENTS = "coefficients";
@@ -402,6 +437,8 @@ public class AddRegressionPointsCommand implements Command{
 		final static String P_VALUE = "pValue";
 		final static String COEFFICIENT = "coefficient";
 		final static String REGRESSION_METRICS = "regressionMetrics";
+		final static String RESIDUAL = "residual";
+		final static String REGRESSION = "regression";
 	}
 	
 }
