@@ -1,6 +1,5 @@
 package com.facilio.beans;
 
-import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,6 +16,7 @@ import java.util.Map;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONArray;
@@ -26,27 +26,30 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
-import com.facilio.db.builder.*;
+import com.facilio.db.builder.DBUtil;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.db.util.DBConf;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
-import com.facilio.modules.fields.*;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
-import java.sql.*;
-import java.text.MessageFormat;
-import java.util.*;
-import java.util.stream.Collectors;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.BooleanField;
+import com.facilio.modules.fields.EnumField;
+import com.facilio.modules.fields.EnumFieldValue;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.FileField;
+import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.NumberField;
 
 ;
 
@@ -848,20 +851,20 @@ public class ModuleBeanImpl implements ModuleBean {
 		if (field.getValues() == null || field.getValues().isEmpty()) {
 			throw new IllegalArgumentException("Enum Values cannot be null during addition of Enum Field");
 		}
-		addEnumValues(field, field.getValues());
+		addEnumValues(field, field.getValues(), 1);
 		return field.getValues().size();
 	}
 
-	private void addEnumValues(EnumField field, List<EnumFieldValue> values) throws Exception {
+	private void addEnumValues(EnumField field, List<EnumFieldValue> values, int startingIndex) throws Exception {
 		FacilioModule module = ModuleFactory.getEnumFieldValuesModule();
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(module.getTableName())
 				.fields(FieldFactory.getEnumFieldValuesFields());
 		int i = 1;
-		for (EnumFieldValue enumVal : field.getValues()) {
+		for (EnumFieldValue enumVal : values) {
 			enumVal.setFieldId(field.getFieldId());
 			if (enumVal.getIndex() == -1) {
-				enumVal.setIndex(i);
+				enumVal.setIndex(startingIndex++);
 			}
 			if (enumVal.getSequence() == -1) {
 				enumVal.setSequence(i);
@@ -890,16 +893,20 @@ public class ModuleBeanImpl implements ModuleBean {
 		}
 		List<EnumFieldValue> enumsToBeAdded = new ArrayList<>();
 		int i = 1;
+		int maxIndex = 1;
 		for (EnumFieldValue enumVal : field.getValues()) {
+			if (enumVal.getIndex() != -1 && enumVal.getIndex() > maxIndex) {
+				maxIndex = enumVal.getIndex();
+			}
 			if (enumVal.getId() == -1) {
 				enumsToBeAdded.add(enumVal);
 			}
 			else {
 				updateEnumVal(enumVal);
 			}
-			i++;
+			enumVal.setSequence(i++);
 		}
-		addEnumValues(field, enumsToBeAdded);
+		addEnumValues(field, enumsToBeAdded, maxIndex + 1);
 //		deleteEnumValues(field);
 		return field.getValues().size();
 	}
