@@ -89,7 +89,7 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.ATTENDANCE_TRANSACTIONS, getAttendanceTransactionModule());
 		moduleMap.put(FacilioConstants.ContextNames.GRAPHICS, getGraphicsModule());
 		moduleMap.put(FacilioConstants.ContextNames.SERVICE, getServiceModule());
-		moduleMap.put(FacilioConstants.ContextNames.TERMS_AND_CONDITIONS, getTermsAndCondtionModule());
+		moduleMap.put(FacilioConstants.ContextNames.TERMS_AND_CONDITIONS, getTermsAndConditionModule());
 		moduleMap.put(FacilioConstants.ContextNames.NEW_READING_ALARM, getReadingAlarmModule());
 
 
@@ -2300,7 +2300,8 @@ public class ModuleFactory {
 		return module;
 	}
 
-	public static FacilioModule getTermsAndCondtionModule() {
+
+	public static FacilioModule getTermsAndConditionModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("termsandconditions");
 		module.setDisplayName("Terms and Conditions");

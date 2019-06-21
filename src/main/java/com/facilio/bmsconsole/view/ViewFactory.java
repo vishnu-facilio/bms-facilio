@@ -3723,7 +3723,7 @@ public class ViewFactory {
 		name.setName("name");
 		name.setDataType(FieldType.STRING);
 		name.setColumnName("name");
-		name.setModule(ModuleFactory.getServiceModule());
+		name.setModule(ModuleFactory.getTermsAndConditionModule());
 		
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
