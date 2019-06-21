@@ -34,6 +34,8 @@ public class MVUtil {
 	public static String MV_PROJECT_WRAPPER = "mvProjectWrapper";
 	public static String MV_PROJECT_WRAPPER_OLD = "mvProjectWrapperOld";
 	
+	public static String MV_PROJECTS = "mvprojects";
+	
 	public static String MV_BASELINE = "mvBaseline";
 	public static String MV_BASELINES = "mvBaselines";
 	public static String MV_ADJUSTMENT = "mvAdjustment";
@@ -156,5 +158,24 @@ public class MVUtil {
 		}
 		
 		return mvProjectWrapper;
+	}
+	
+	
+	public static List<MVProjectContext> getMVProjects() throws Exception {
+		
+		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		FacilioModule mvProjectModule = modbean.getModule(FacilioConstants.ContextNames.MV_PROJECT_MODULE);
+		List<FacilioField> mvProjectFields = modbean.getAllFields(FacilioConstants.ContextNames.MV_PROJECT_MODULE);
+		
+		SelectRecordsBuilder<MVProjectContext> selectProject = new SelectRecordsBuilder<MVProjectContext>()
+				.module(mvProjectModule)
+				.select(mvProjectFields)
+				.beanClass(MVProjectContext.class);
+		
+		List<MVProjectContext> mvProjects = selectProject.get();
+		
+		return mvProjects;
+		
 	}
 }

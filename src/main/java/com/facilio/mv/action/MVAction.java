@@ -70,6 +70,12 @@ public class MVAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String getMVProjectList() throws Exception {
+		
+		setResult(MVUtil.MV_PROJECTS, MVUtil.getMVProjects());
+		return SUCCESS;
+	}
+	
 	public String deleteMVProject() throws Exception {
 		
 		FacilioContext context = new FacilioContext();

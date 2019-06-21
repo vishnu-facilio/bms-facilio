@@ -214,6 +214,9 @@
 			class="com.facilio.mv.action.MVAction" method="getMVProject">
 		</action>
 		
+		<action name="getMVProjectList"
+			class="com.facilio.mv.action.MVAction" method="getMVProjectList">
+		</action>
 	</package>
 	
 	<package name="viewApiV2" namespace="/api/v2/views" extends="v2Api">
