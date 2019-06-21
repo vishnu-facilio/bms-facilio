@@ -197,6 +197,10 @@ public class GetWorkOrderListCommand implements Command {
 	}
 
 	private static boolean isUpcomingGroup(FacilioView view) {
+
+		if (view == null) {
+			return false;
+		}
 		Map<String, List<String>> woGroup = ViewFactory.getGroupViews(FacilioConstants.ContextNames.WORK_ORDER);
 		List<String> viewList = woGroup.get("upcomingWorkorder");
 		for (String v: viewList) {
