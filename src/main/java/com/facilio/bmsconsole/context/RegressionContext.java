@@ -4,8 +4,8 @@ import java.util.List;
 
 public class RegressionContext {
 	
-	List<RegressionPointContext> xAxisContext;
-	RegressionPointContext yAxisContext;
+	List<RegressionPointContext> xAxis;
+	RegressionPointContext yAxis;
 	String groupAlias;
 	Boolean isMultiple;
 	
@@ -16,17 +16,18 @@ public class RegressionContext {
 	public void setIsMultiple(Boolean isMultiple) {
 		this.isMultiple = isMultiple;
 	}
-	public List<RegressionPointContext> getxAxisContext() {
-		return xAxisContext;
+	
+	public List<RegressionPointContext> getxAxis() {
+		return xAxis;
 	}
-	public void setxAxisContext(List<RegressionPointContext> xAxisContext) {
-		this.xAxisContext = xAxisContext;
+	public void setxAxis(List<RegressionPointContext> xAxis) {
+		this.xAxis = xAxis;
 	}
-	public RegressionPointContext getyAxisContext() {
-		return yAxisContext;
+	public RegressionPointContext getyAxis() {
+		return yAxis;
 	}
-	public void setyAxisContext(RegressionPointContext yAxisContext) {
-		this.yAxisContext = yAxisContext;
+	public void setyAxis(RegressionPointContext yAxis) {
+		this.yAxis = yAxis;
 	}
 	public String getGroupAlias() {
 		return groupAlias;

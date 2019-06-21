@@ -53,15 +53,15 @@ public class AddRegressionPointsCommand implements Command{
 				Map<String, Object> regressionResult = prepareData(rc, new ArrayList(data), isMultiple);
 				String groupAlias = getRegressionPointAlias(rc);
 				
-				String expressionString = getExpressionString(regressionResult, reportContext, rc.getxAxisContext());
+				String expressionString = getExpressionString(regressionResult, reportContext, rc.getxAxis());
 				ReportDataPointContext regressionPoint = getRegressionDataPoint(groupAlias, expressionString);
 				reportContext.getDataPoints().add(regressionPoint);
-				Map<String, Object> coefficientMap = getCoefficientMap(regressionResult, rc.getxAxisContext());
+				Map<String, Object> coefficientMap = getCoefficientMap(regressionResult, rc.getxAxis());
 				computeRegressionData(groupAlias, (ArrayList)data, coefficientMap);
 				regressionResult.put(StringConstants.COEFFICIENT_MAP, coefficientMap);
 				if(isMultiple) {
-					computeTstatAndP(regressionResult, rc.getxAxisContext(), reportContext.getDataPoints());
-					computeANOVAResultMetrics(regressionResult, (ArrayList)data, groupAlias, rc.getyAxisContext().getAlias());
+					computeTstatAndP(regressionResult, rc.getxAxis(), reportContext.getDataPoints());
+					computeANOVAResultMetrics(regressionResult, (ArrayList)data, groupAlias, rc.getyAxis().getAlias());
 				}
 				regressionResults.put(groupAlias, regressionResult);
 				
@@ -225,8 +225,8 @@ public class AddRegressionPointsCommand implements Command{
 		
 		OLSMultipleLinearRegression olsInstance = new OLSMultipleLinearRegression();
 		
-		List<RegressionPointContext> xPoints = regressionContext.getxAxisContext();
-		RegressionPointContext yPoint = regressionContext.getyAxisContext();
+		List<RegressionPointContext> xPoints = regressionContext.getxAxis();
+		RegressionPointContext yPoint = regressionContext.getyAxis();
 		
 		double[][] xData = new double[data.size()][xPoints.size()];
 		double[] yData = new double[data.size()];
@@ -237,8 +237,8 @@ public class AddRegressionPointsCommand implements Command{
 			yData[i] = Double.valueOf((String)entry.get(yPoint.getAlias()));
 			
 			if(isMultiple) {		
-				for(int j=0; j < regressionContext.getxAxisContext().size(); j++) {
-					RegressionPointContext xRecord = regressionContext.getxAxisContext().get(j);
+				for(int j=0; j < regressionContext.getxAxis().size(); j++) {
+					RegressionPointContext xRecord = regressionContext.getxAxis().get(j);
 					xData[i][j] = Double.valueOf((String)entry.get(xRecord.getAlias()));
 					
 				}
@@ -246,7 +246,7 @@ public class AddRegressionPointsCommand implements Command{
 			else {
 				// single regression code
 				
-				RegressionPointContext xRecord = regressionContext.getxAxisContext().get(0);
+				RegressionPointContext xRecord = regressionContext.getxAxis().get(0);
 				xData[i][0] = Double.valueOf((String) entry.get(xRecord.getAlias()));
 				
 			}
@@ -318,8 +318,8 @@ public class AddRegressionPointsCommand implements Command{
 	private String getRegressionPointAlias (RegressionContext regressionContext) {
 		StringBuilder groupAlias = new StringBuilder();
 		
-		groupAlias.append(regressionContext.getyAxisContext().getAlias());
-		for(RegressionPointContext xContext: regressionContext.getxAxisContext()) {
+		groupAlias.append(regressionContext.getyAxis().getAlias());
+		for(RegressionPointContext xContext: regressionContext.getxAxis()) {
 			groupAlias.append("_");
 			groupAlias.append(xContext.getAlias());
 		}
