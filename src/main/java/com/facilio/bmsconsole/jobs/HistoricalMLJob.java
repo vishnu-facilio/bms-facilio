@@ -81,7 +81,7 @@ public class HistoricalMLJob extends FacilioJob {
     {
         final Calendar cal = Calendar.getInstance();
         cal.setTimeInMillis(time);
-        return new SimpleDateFormat("YYYY-MM-dd").format(cal.getTime());
+        return new SimpleDateFormat("yyyy-MM-dd").format(cal.getTime());
     }
 	
 	private String getDateByTimeZone(long time ,String timeZone)
@@ -89,7 +89,7 @@ public class HistoricalMLJob extends FacilioJob {
 		final Calendar cal = Calendar.getInstance(TimeZone.getTimeZone(timeZone));
         cal.setTimeInMillis(time);
 
-        SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-DD");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         sdf.setTimeZone(TimeZone.getTimeZone(timeZone));
         return sdf.format(cal.getTimeInMillis());
 	}
