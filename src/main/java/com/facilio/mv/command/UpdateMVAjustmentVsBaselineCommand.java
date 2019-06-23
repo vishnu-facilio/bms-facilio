@@ -76,11 +76,6 @@ public class UpdateMVAjustmentVsBaselineCommand implements Command {
 				}
 				else {
 					
-//					context.put(FacilioConstants.ContextNames.FORMULA_FIELD, adjustmentVsBaseline.getFormulaField());
-//					
-//					Chain updateEnPIChain = FacilioChainFactory.updateFormulaChain();
-//					updateEnPIChain.execute(context);
-					
 					GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder()
 							.table(module.getTableName())
 							.fields(fields)

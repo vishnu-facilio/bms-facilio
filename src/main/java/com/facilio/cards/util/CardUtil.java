@@ -30,6 +30,14 @@ public class CardUtil {
 		return false;
 	}
 	
+	public static boolean isDynamicWorkflowGenCard(String key) {
+		
+		if(CardType.getCardType(key).isDynamicWfGeneratingCard()) {
+			return true;
+		}
+		return false;
+	}
+	
 	public static Object getUnit(JSONObject params) throws Exception {
 		
 		if(params == null) {
