@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
 import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.cards.util.CardUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.BaseLineContext;
@@ -52,6 +53,10 @@ public class AddWidgetCommand implements Command {
 				props = FieldUtil.getAsProperties(widgetStaticContext);
 				insertBuilder.addRecord(props);
 				insertBuilder.save();
+				
+				if(CardUtil.isDynamicWorkflowGenCard(widgetStaticContext.getStaticKey()) && (widget.getWidgetVsWorkflowContexts() == null || widget.getWidgetVsWorkflowContexts().isEmpty())) {
+					throw new Exception("Widget With Static Key "+widgetStaticContext.getStaticKey()+" should have workflow assoiciated with it");
+				}
 				
 				if(widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD) || widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_WEATHER_CARD_MINI) || widgetStaticContext.getStaticKey().equals(DashboardUtil.STATIC_WIDGET_ENERGY_CARBON_CARD_MINI)) {
 					
@@ -207,7 +212,6 @@ public class AddWidgetCommand implements Command {
 					DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
 					
 				}
-				
 				else if (widget.getWidgetVsWorkflowContexts() != null && !widget.getWidgetVsWorkflowContexts().isEmpty()) {
 					for(WidgetVsWorkflowContext widgetVsWorkflowContext :widget.getWidgetVsWorkflowContexts()) {
 						widgetVsWorkflowContext.setWidgetId(widget.getId());
