@@ -548,6 +548,7 @@ public class ExportUtil {
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(filters);
 			context.put(FacilioConstants.ContextNames.FILTERS, json);
+			context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, true);
 		}
 		if(criteria != null) {
 			context.put(FacilioConstants.ContextNames.FILTER_CRITERIA, criteria);

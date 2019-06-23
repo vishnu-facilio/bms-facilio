@@ -1,5 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.ResourceAPI;
@@ -13,12 +20,6 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-import org.json.simple.JSONObject;
-
-import java.util.List;
 
 public class GenericGetModuleDataListCommand implements Command {
 
@@ -34,7 +35,7 @@ public class GenericGetModuleDataListCommand implements Command {
 		if (CollectionUtils.isEmpty(fields)) {
 			fields = modBean.getAllFields(moduleName);
 		}
-		Class beanClassName = FacilioConstants.ContextNames.getClassFromModuleName(moduleName);
+		Class beanClassName = FacilioConstants.ContextNames.getClassFromModule(module);
 		if (beanClassName == null) {
 			beanClassName = ModuleBaseWithCustomFields.class;
 		}
@@ -60,9 +61,14 @@ public class GenericGetModuleDataListCommand implements Command {
 		
 		JSONObject filters = (JSONObject) context.get(FacilioConstants.ContextNames.FILTERS);
 		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
+		// TODO change this as excludeparentcriteria and include parent criteria by default
+		Boolean includeParentCriteria = (Boolean) context.get(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA);
+		if (includeParentCriteria == null) {
+			includeParentCriteria = false;
+		}
 		if (filterCriteria != null) {
 			builder.andCriteria(filterCriteria);
-		} else if (filters == null && view != null && view.getCriteria() != null && !view.getCriteria().isEmpty()) {
+		} else if (( filters == null || includeParentCriteria) && view != null && view.getCriteria() != null && !view.getCriteria().isEmpty()) {
 			builder.andCriteria(view.getCriteria());
 		}
 		
