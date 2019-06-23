@@ -1,17 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
-import com.facilio.modules.AggregateOperator.DateAggregateOperator;
-import com.facilio.modules.AggregateOperator.NumberAggregateOperator;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
-import com.facilio.report.context.*;
-import com.facilio.report.util.ReportUtil;
+import java.text.DecimalFormat;
+import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.StringJoiner;
+import java.util.TreeSet;
+
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -19,9 +17,27 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
-import java.text.DecimalFormat;
-import java.util.AbstractMap.SimpleEntry;
-import java.util.*;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.AggregateOperator;
+import com.facilio.modules.AggregateOperator.DateAggregateOperator;
+import com.facilio.modules.AggregateOperator.NumberAggregateOperator;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
+import com.facilio.report.context.ReportBaseLineContext;
+import com.facilio.report.context.ReportContext;
+import com.facilio.report.context.ReportDataContext;
+import com.facilio.report.context.ReportDataPointContext;
+import com.facilio.report.context.ReportFieldContext;
+import com.facilio.report.context.ReportGroupByField;
+import com.facilio.report.util.ReportUtil;
 
 public class ConstructReportDataCommand implements Command {
 
@@ -238,7 +254,7 @@ public class ConstructReportDataCommand implements Command {
 				selectFields.add(mainField);
 				selectFields.add(FieldFactory.getIdField(lookupModule));
 				SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder()
-						.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(lookupModule.getName()))
+						.beanClass(FacilioConstants.ContextNames.getClassFromModule(lookupModule, false))
 						.select(selectFields)
 						.module(lookupModule)
 //						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(lookupModule))

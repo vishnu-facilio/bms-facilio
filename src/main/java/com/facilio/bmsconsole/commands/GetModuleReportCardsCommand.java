@@ -1,5 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
@@ -11,11 +17,6 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import java.util.List;
-import java.util.Map;
 
 public class GetModuleReportCardsCommand implements Command {
 	
@@ -58,7 +59,7 @@ public class GetModuleReportCardsCommand implements Command {
 		
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 				.module(module)
-				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName))
+				.beanClass(FacilioConstants.ContextNames.getClassFromModule(module))
 				.andCriteria(criteria);
 				;
 		

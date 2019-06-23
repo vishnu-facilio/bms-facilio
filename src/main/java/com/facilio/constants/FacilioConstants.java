@@ -1232,7 +1232,7 @@ public class FacilioConstants {
 		public static Class getClassFromModule(FacilioModule module, boolean checkParent) {
 			Class moduleClass =  classMap.get(module.getName());
 			if (moduleClass == null && checkParent && module.getExtendModule() != null) {
-				getClassFromModule(module.getExtendModule(), true);
+				return getClassFromModule(module.getExtendModule(), true);
 			}
 			return moduleClass;
 		}
