@@ -1,19 +1,22 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.workflow.rule.EventType;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleBaseWithCustomFields;
+import java.util.Collections;
+import java.util.Map;
+
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Collections;
-import java.util.Map;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class UpdateFieldDataCommand implements Command {
 
@@ -23,10 +26,12 @@ public class UpdateFieldDataCommand implements Command {
 		ModuleBaseWithCustomFields moduleData = (ModuleBaseWithCustomFields) context.get(FacilioConstants.ContextNames.RECORD);
 		Map<String, Object> data = (Map<String, Object>) context.get(FacilioConstants.ContextNames.DATA_KEY);
 		if (data != null && moduleData != null && StringUtils.isNotEmpty(moduleName)) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			
 			switch (moduleName) {
 			case "workorder":
 				FacilioContext updateContext = new FacilioContext();
-				WorkOrderContext workorder = (WorkOrderContext) FieldUtil.getAsBeanFromMap((Map<String, Object>) data.get("workorder"), FacilioConstants.ContextNames.getClassFromModuleName(moduleName));
+				WorkOrderContext workorder = (WorkOrderContext) FieldUtil.getAsBeanFromMap((Map<String, Object>) data.get("workorder"), WorkOrderContext.class);
 				workorder.setId(moduleData.getId());
 				updateContext.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 				updateContext.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(moduleData.getId()));

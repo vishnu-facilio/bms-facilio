@@ -138,7 +138,7 @@ public class AlarmAPI {
 		SelectRecordsBuilder<E> selectBuilder = new SelectRecordsBuilder<E>()
 																.select(modBean.getAllFields(moduleName))
 																.module(module)
-																.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName))
+																.beanClass(FacilioConstants.ContextNames.getClassFromModule(module))
 																.andCondition(CriteriaAPI.getIdCondition(alarmId, module));
 		
 		List<E> props = selectBuilder.get();

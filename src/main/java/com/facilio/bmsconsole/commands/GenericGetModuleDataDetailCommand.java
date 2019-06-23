@@ -1,5 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.constants.FacilioConstants;
@@ -10,11 +16,6 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-
-import java.util.List;
 
 public class GenericGetModuleDataDetailCommand implements Command {
 
@@ -37,7 +38,7 @@ public class GenericGetModuleDataDetailCommand implements Command {
 				fields = modBean.getAllFields(moduleName);
 			}
 			if (beanClassName == null) {
-				beanClassName = FacilioConstants.ContextNames.getClassFromModuleName(moduleName);
+				beanClassName = FacilioConstants.ContextNames.getClassFromModule(module);
 				if (beanClassName == null) {
 					beanClassName = ModuleBaseWithCustomFields.class;
 				}

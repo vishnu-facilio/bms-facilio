@@ -1,16 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
+
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.util.Collections;
 
 public class GetAssetDetailCommand extends GenericGetModuleDataDetailCommand {
 	
@@ -20,12 +21,9 @@ public class GetAssetDetailCommand extends GenericGetModuleDataDetailCommand {
 	public boolean execute(Context context) throws Exception {
 		
 		if (context.get(FacilioConstants.ContextNames.ID) != null) {
-			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-			beanClassName = FacilioConstants.ContextNames.getClassFromModuleName(moduleName);
-			if (beanClassName == null) {
-				beanClassName = AssetContext.class;
-			}
 			super.execute(context);
+			
+			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			AssetContext assetContext = (AssetContext) context.get(FacilioConstants.ContextNames.RECORD);
 			if (assetContext != null && assetContext.getId() > 0) {
 				AssetsAPI.loadAssetsLookups(Collections.singletonList(assetContext));

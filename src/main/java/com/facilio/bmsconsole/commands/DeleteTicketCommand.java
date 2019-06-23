@@ -1,5 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -8,12 +15,6 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.SelectRecordsBuilder;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 public class DeleteTicketCommand implements Command {
 
@@ -54,7 +55,7 @@ public class DeleteTicketCommand implements Command {
 		SelectRecordsBuilder<? extends TicketContext> builder = new SelectRecordsBuilder<TicketContext>()
 																				.select(modBean.getAllFields(module.getName()))
 																				.module(module)
-																				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(module.getName()))
+																				.beanClass(FacilioConstants.ContextNames.getClassFromModule(module))
 																				.andCondition(CriteriaAPI.getIdCondition(recordIds, module))
 																				;
 		return builder.get();

@@ -1,5 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
@@ -13,12 +20,6 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.util.List;
 
 public class FetchScheduledRuleMatchingRecordsCommand implements Command {
 	
@@ -70,7 +71,7 @@ public class FetchScheduledRuleMatchingRecordsCommand implements Command {
 		// LOGGER.info("Date field id : "+rule.getId()+" is "+rule.getDateFieldId());
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		Class beanClassName = FacilioConstants.ContextNames.getClassFromModuleName(module.getName());
+		Class beanClassName = FacilioConstants.ContextNames.getClassFromModule(module);
 		if (beanClassName == null) {
 			beanClassName = ModuleBaseWithCustomFields.class;
 		}

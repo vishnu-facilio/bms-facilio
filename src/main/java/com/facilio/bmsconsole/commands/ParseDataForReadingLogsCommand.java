@@ -1,5 +1,25 @@
 package com.facilio.bmsconsole.commands;
 
+import java.io.InputStream;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.json.simple.JSONObject;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.actions.ImportTemplateAction;
@@ -17,16 +37,6 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
-import org.apache.poi.ss.usermodel.*;
-import org.json.simple.JSONObject;
-
-import java.io.InputStream;
-import java.time.Instant;
-import java.util.*;
-import java.util.logging.Logger;
 
 public class ParseDataForReadingLogsCommand implements Command {
 
@@ -271,7 +281,7 @@ public class ParseDataForReadingLogsCommand implements Command {
 		FacilioModule assetModule = bean.getModule(module);
 		SelectRecordsBuilder selectRecordBuilder = new SelectRecordsBuilder<>();
 		List<FacilioField> facilioFields = bean.getAllFields(module);
-		Class BeanClassName = FacilioConstants.ContextNames.getClassFromModuleName(module);
+		Class BeanClassName = FacilioConstants.ContextNames.getClassFromModule(assetModule);
 		selectRecordBuilder.table(assetModule.getTableName()).select(facilioFields).beanClass(BeanClassName).module(assetModule);
 		
 		for(String field : uniqueMapping.keySet()) {

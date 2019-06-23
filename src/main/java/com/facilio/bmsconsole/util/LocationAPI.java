@@ -1,5 +1,21 @@
 package com.facilio.bmsconsole.util;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Chain;
+import org.apache.commons.collections4.CollectionUtils;
+
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -9,7 +25,6 @@ import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.constants.FacilioConstants.Criteria;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -18,15 +33,9 @@ import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.collections4.CollectionUtils;
-
-import java.sql.*;
-import java.util.*;
 
 ;
 
@@ -344,7 +353,7 @@ public class LocationAPI {
 		
 		SelectRecordsBuilder<StoreRoomContext> builder = new SelectRecordsBuilder<StoreRoomContext>()
 					.module(module)
-					.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(module.getName()))
+					.beanClass(FacilioConstants.ContextNames.getClassFromModule(module))
 					.select(fields)
 					.fetchLookup((LookupField) fieldsAsMap.get(locationFieldName))
 					.andCondition(CriteriaAPI.getIdCondition(id, module));

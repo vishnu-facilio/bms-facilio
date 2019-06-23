@@ -284,7 +284,7 @@ public class FieldUtil {
 				}
 			}
 			else {
-				Class<ModuleBaseWithCustomFields> moduleClass = FacilioConstants.ContextNames.getClassFromModuleName(field.getLookupModule().getName());
+				Class<ModuleBaseWithCustomFields> moduleClass = FacilioConstants.ContextNames.getClassFromModule(field.getLookupModule(), false);
 				if(moduleClass != null) {
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					List<FacilioField> lookupBeanFields = modBean.getAllFields(field.getLookupModule().getName());
@@ -325,7 +325,7 @@ public class FieldUtil {
 				return LookupSpecialTypeUtil.getEmptyLookedupObject(lookupField.getSpecialType(), id);
 			}
 			else {
-				Class<ModuleBaseWithCustomFields> moduleClass = FacilioConstants.ContextNames.getClassFromModuleName(lookupField.getLookupModule().getName());
+				Class<ModuleBaseWithCustomFields> moduleClass = FacilioConstants.ContextNames.getClassFromModule(lookupField.getLookupModule(), false);
 				if(moduleClass != null) {
 					ModuleBaseWithCustomFields lookedupModule = moduleClass.newInstance();
 					lookedupModule.setId(id);
@@ -360,7 +360,7 @@ public class FieldUtil {
 	}
 	
 	public static Object getRecord (FacilioModule module, long id, int level) throws Exception {
-		Class<ModuleBaseWithCustomFields> moduleClass = FacilioConstants.ContextNames.getClassFromModuleName(module.getName());
+		Class<ModuleBaseWithCustomFields> moduleClass = FacilioConstants.ContextNames.getClassFromModule(module);
 		if(moduleClass != null) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			List<FacilioField> lookupBeanFields = modBean.getAllFields(module.getName());

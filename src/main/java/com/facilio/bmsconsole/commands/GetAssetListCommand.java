@@ -1,5 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
@@ -15,15 +25,6 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 public class GetAssetListCommand implements Command {
 	private static final Logger LOGGER = LogManager.getLogger(GetAssetListCommand.class.getName());
@@ -60,10 +61,7 @@ public class GetAssetListCommand implements Command {
 		}
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		
-		Class beanClassName = FacilioConstants.ContextNames.getClassFromModuleName(moduleName);
-		if (beanClassName == null) {
-			beanClassName = AssetContext.class;
-		}
+		Class beanClassName = FacilioConstants.ContextNames.getClassFromModule(module);
 		SelectRecordsBuilder<AssetContext> builder = new SelectRecordsBuilder<AssetContext>()
 															.module(module)
 															.beanClass(beanClassName)

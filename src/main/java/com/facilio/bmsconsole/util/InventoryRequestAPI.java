@@ -1,5 +1,12 @@
 package com.facilio.bmsconsole.util;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.collections4.CollectionUtils;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.InventoryRequestLineItemContext;
 import com.facilio.bmsconsole.context.ItemTransactionsContext;
@@ -16,12 +23,6 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import org.apache.commons.collections4.CollectionUtils;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class InventoryRequestAPI {
 
@@ -41,7 +42,7 @@ public class InventoryRequestAPI {
 		
 		SelectRecordsBuilder<InventoryRequestLineItemContext> builder = new SelectRecordsBuilder<InventoryRequestLineItemContext>()
 				.module(module)
-				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(module.getName()))
+				.beanClass(FacilioConstants.ContextNames.getClassFromModule(module))
 				.select(fields)
 				.andCondition(CriteriaAPI.getCondition("INVENTORY_REQUEST_ID", "inventoryRequestId", requestIds, NumberOperators.EQUALS))
 				.fetchLookups(lookUpFields)
@@ -73,7 +74,7 @@ public class InventoryRequestAPI {
 		
 		SelectRecordsBuilder<InventoryRequestLineItemContext> builder = new SelectRecordsBuilder<InventoryRequestLineItemContext>()
 				.module(module)
-				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(module.getName()))
+				.beanClass(FacilioConstants.ContextNames.getClassFromModule(module))
 				.select(fields)
 				.andCondition(CriteriaAPI.getIdCondition(lineItemId, module))
 			
@@ -93,7 +94,7 @@ public class InventoryRequestAPI {
 			
 			SelectRecordsBuilder<InventoryRequestLineItemContext> builder = new SelectRecordsBuilder<InventoryRequestLineItemContext>()
 					.module(module)
-					.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(module.getName()))
+					.beanClass(FacilioConstants.ContextNames.getClassFromModule(module))
 					.select(fields)
 					.andCondition(CriteriaAPI.getIdCondition(lineItem.getId(), module))
 				

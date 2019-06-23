@@ -105,6 +105,7 @@ import com.facilio.bmsconsole.context.WorkorderPartsContext;
 import com.facilio.bmsconsole.context.WorkorderToolsContext;
 import com.facilio.bmsconsole.context.ZoneContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.mv.context.MVAdjustment;
 import com.facilio.mv.context.MVBaseline;
@@ -1090,6 +1091,8 @@ public class FacilioConstants {
 		public static final String SHIFT_ROTATION = "shiftRotation";
 		public static final String SHIFT_ROTATION_DETAILS = "shiftRotationDetails";
 		public static final String SHIFT_ROTATION_APPLICABLE_FOR = "shiftRotationApplicableFor";
+
+		public static final String BEAN_CLASS_NAME = "beanClassName";
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
@@ -1217,8 +1220,21 @@ public class FacilioConstants {
 			return classMap;
 		}
 		
+		@Deprecated
 		public static Class getClassFromModuleName(String moduleName) {
 			return classMap.get(moduleName);
+		}
+		
+		public static Class getClassFromModule(FacilioModule module) {
+			return getClassFromModule(module, true);
+		}
+		
+		public static Class getClassFromModule(FacilioModule module, boolean checkParent) {
+			Class moduleClass =  classMap.get(module.getName());
+			if (moduleClass == null && checkParent && module.getExtendModule() != null) {
+				getClassFromModule(module.getExtendModule(), true);
+			}
+			return moduleClass;
 		}
 		
 		public static Collection<Class> getAllClasses() {

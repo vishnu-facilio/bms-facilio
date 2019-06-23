@@ -1121,10 +1121,11 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 	@SuppressWarnings("unchecked")
 	public static TicketContext getParentTicket (long parentTicketId, String parentModuleName) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(parentModuleName);
 		SelectRecordsBuilder<? extends TicketContext> ticketBuilder = new SelectRecordsBuilder<TicketContext>()
 																.select(modBean.getAllFields(parentModuleName))
 																.moduleName(parentModuleName)
-																.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(parentModuleName))
+																.beanClass(FacilioConstants.ContextNames.getClassFromModule(module))
 																.andCustomWhere("Tickets.ID = ?", parentTicketId)
 																;
 		List<? extends TicketContext> tickets = ticketBuilder.get();

@@ -46,7 +46,7 @@ public class GetShiftListCommand implements Command{
 		
 		SelectRecordsBuilder<ShiftContext> builder = new SelectRecordsBuilder<ShiftContext>()
 				.module(module)
-				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName))
+				.beanClass(FacilioConstants.ContextNames.getClassFromModule(module))
 				.select(fields)
 				;
 

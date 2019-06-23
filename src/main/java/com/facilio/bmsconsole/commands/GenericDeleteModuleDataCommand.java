@@ -1,5 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -9,10 +14,6 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import java.util.List;
 
 ;
 
@@ -42,7 +43,7 @@ public class GenericDeleteModuleDataCommand implements Command {
 	}
 	
 	private List getRecords(FacilioModule module, List<Long> recordIds, List<FacilioField> fields) throws Exception {
-		Class beanClassName = FacilioConstants.ContextNames.getClassFromModuleName(module.getName());
+		Class beanClassName = FacilioConstants.ContextNames.getClassFromModule(module);
 		if (beanClassName == null) {
 			beanClassName = ModuleBaseWithCustomFields.class;
 		}

@@ -1,5 +1,27 @@
 package com.facilio.bmsconsole.commands;
 
+import java.io.InputStream;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.json.simple.JSONObject;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.actions.ImportTemplateAction;
@@ -11,19 +33,13 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
-import org.apache.poi.ss.usermodel.*;
-import org.json.simple.JSONObject;
-
-import java.io.InputStream;
-import java.time.Instant;
-import java.util.*;
-import java.util.logging.Logger;
 
 ;
 
@@ -267,22 +283,22 @@ public class DataParseForReadingsCommand implements Command {
 	}
 		
 	
-	public static Long getAssetByUniqueness(HashMap<String,Object> colVal, String module, HashMap<String,String> uniqueMapping) throws Exception {
+	public static Long getAssetByUniqueness(HashMap<String,Object> colVal, String moduleName, HashMap<String,String> uniqueMapping) throws Exception {
 		LOGGER.severe("colVal" + colVal.toString());
-		LOGGER.severe("module" + module);
+		LOGGER.severe("module" + moduleName);
 		LOGGER.severe("uniqueMapping" + uniqueMapping.toString());
 		
 		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioField> assetFields = new ArrayList<>();
 		
-		FacilioModule assetModule = bean.getModule(module);
+		FacilioModule assetModule = bean.getModule(moduleName);
 		SelectRecordsBuilder selectRecordBuilder = new SelectRecordsBuilder<>();
-		List<FacilioField> facilioFields = bean.getAllFields(module);
-		Class BeanClassName = FacilioConstants.ContextNames.getClassFromModuleName(module);
+		List<FacilioField> facilioFields = bean.getAllFields(moduleName);
+		Class BeanClassName = FacilioConstants.ContextNames.getClassFromModule(assetModule);
 		selectRecordBuilder.table(assetModule.getTableName()).select(facilioFields).beanClass(BeanClassName).module(assetModule);
 		
 		for(String field : uniqueMapping.keySet()) {
-			List<FacilioField> moduleFields = bean.getAllFields(module);
+			List<FacilioField> moduleFields = bean.getAllFields(moduleName);
 			FacilioField Field = null;
 			for(FacilioField facilioField: moduleFields) {
 				if(facilioField.getName().equals(field)) {
