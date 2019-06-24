@@ -11,6 +11,7 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.math3.distribution.TDistribution;
+import org.apache.commons.math3.exception.MathIllegalArgumentException;
 import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.log4j.LogManager;
@@ -45,30 +46,42 @@ public class AddRegressionPointsCommand implements Command{
 		Collection<Map<String, Object>> data = (Collection<Map<String, Object>>) reportData.get(FacilioConstants.ContextNames.DATA_KEY);
 		
 		Map<String, Map<String, Object>> regressionResults = new HashMap<String, Map<String,Object>>();
-		if(regressionConfig != null && data!= null && !regressionConfig.isEmpty() && !data.isEmpty()) {
+		if(regressionConfig != null && data!= null && !regressionConfig.isEmpty() && data.size() != 0) {
 			data = cleanData(data);
 			
-			for(RegressionContext rc : regressionConfig) {
-				isMultiple = rc.getIsMultiple();
-				Map<String, Object> regressionResult = prepareData(rc, new ArrayList(data), isMultiple);
-				String groupAlias = getRegressionPointAlias(rc);
-				
-				String expressionString = getExpressionString(regressionResult, reportContext, rc.getxAxis());
-				ReportDataPointContext regressionPoint = getRegressionDataPoint(groupAlias, expressionString);
-				reportContext.getDataPoints().add(regressionPoint);
-				Map<String, Object> coefficientMap = getCoefficientMap(regressionResult, rc.getxAxis());
-				computeRegressionData(groupAlias, (ArrayList)data, coefficientMap);
-				regressionResult.put(StringConstants.COEFFICIENT_MAP, coefficientMap);
-				if(isMultiple) {
-					computeTstatAndP(regressionResult, rc.getxAxis(), reportContext.getDataPoints());
-					computeANOVAResultMetrics(regressionResult, (ArrayList)data, groupAlias, rc.getyAxis().getAlias());
+			if(data.size() != 0) {
+				for(RegressionContext rc : regressionConfig) {
+					isMultiple = rc.getIsMultiple();
+					Map<String, Object> regressionResult = prepareData(rc, new ArrayList(data), isMultiple);
+					if(regressionResult.isEmpty()) {
+						return true;
+					}
+					String groupAlias = getRegressionPointAlias(rc);
+					
+					String expressionString = getExpressionString(regressionResult, reportContext, rc.getxAxis());
+					ReportDataPointContext regressionPoint = getRegressionDataPoint(groupAlias, expressionString);
+					reportContext.getDataPoints().add(regressionPoint);
+					Map<String, Object> coefficientMap = getCoefficientMap(regressionResult, rc.getxAxis());
+					computeRegressionData(groupAlias, (ArrayList)data, coefficientMap);
+					regressionResult.put(StringConstants.COEFFICIENT_MAP, coefficientMap);
+					if(isMultiple) {
+						computeTstatAndP(regressionResult, rc.getxAxis(), reportContext.getDataPoints());
+						computeANOVAResultMetrics(regressionResult, (ArrayList)data, groupAlias, rc.getyAxis().getAlias());
+					}
+					regressionResults.put(groupAlias, regressionResult);
+					
 				}
-				regressionResults.put(groupAlias, regressionResult);
 				
+				reportData.put(FacilioConstants.ContextNames.REGRESSION_RESULT, regressionResults);
+			}
+			else {
+				return true;
 			}
 			
-			reportData.put(FacilioConstants.ContextNames.REGRESSION_RESULT, regressionResults);
 			
+		}
+		else if(data.size() == 0) {
+			return true;
 		}
 		else {
 			throw new Exception("Error in regressionConfiguration.");
@@ -176,6 +189,8 @@ public class AddRegressionPointsCommand implements Command{
 				expressionString.append(coefficients[0]);
 			}
 		}
+		Double rSquared = (Double) regressionResult.get(StringConstants.RSQUARED);
+		expressionString = expressionString.append("( R2 = " + rSquared + " )");
 		return expressionString.toString();
 	}
 	
@@ -222,7 +237,7 @@ public class AddRegressionPointsCommand implements Command{
 	}
 	
 	private Map<String, Object> prepareData(RegressionContext regressionContext, ArrayList<Map<String, Object>> data, boolean isMultiple){
-		
+		Map<String, Object> results = new HashMap<String, Object>();
 		OLSMultipleLinearRegression olsInstance = new OLSMultipleLinearRegression();
 		
 		List<RegressionPointContext> xPoints = regressionContext.getxAxis();
@@ -253,8 +268,13 @@ public class AddRegressionPointsCommand implements Command{
 			
 		}
 		
-		olsInstance.newSampleData(yData, xData);
-		Map<String, Object> results = new HashMap<String, Object>();
+		try{
+			olsInstance.newSampleData(yData, xData);
+		}catch(MathIllegalArgumentException e) {
+			return results;
+		}
+		
+		
 		results.put(StringConstants.COEFFICIENTS, olsInstance.estimateRegressionParameters());
 		results.put(StringConstants.RESIDUALS, olsInstance.estimateResiduals());
 		results.put(StringConstants.RSQUARED, olsInstance.calculateRSquared());
@@ -263,8 +283,46 @@ public class AddRegressionPointsCommand implements Command{
 		results.put(StringConstants.STANDARD_PARAMETER_ERRORS, olsInstance.estimateRegressionParametersStandardErrors());
 		results.put(StringConstants.OBSERVATIONS, data.size());
 		
-		
+		results = formatData(results);
 		return results;
+	}
+	
+	private Map<String, Object> formatData(Map<String, Object> regressionResult) {
+		DecimalFormat formatter = new DecimalFormat("0.00");
+		DecimalFormat coeffFormat = new DecimalFormat("0.0000");
+		
+		Map<String, Object> temp = new HashMap<String, Object>();
+		
+		temp.put(StringConstants.RSQUARED, Double.valueOf(formatter.format(regressionResult.get(StringConstants.RSQUARED))));
+		temp.put(StringConstants.ADJUSTED_R_SQUARED, Double.valueOf(formatter.format(regressionResult.get(StringConstants.ADJUSTED_R_SQUARED))));
+		temp.put(StringConstants.STANDARD_ERROR, Double.valueOf(formatter.format(regressionResult.get(StringConstants.STANDARD_ERROR))));
+		
+		double [] arrayStore = (double []) regressionResult.get(StringConstants.COEFFICIENTS);
+		
+		for(int i = 0; i< arrayStore.length; i++) {
+			arrayStore[i] = Double.valueOf(coeffFormat.format(arrayStore[i]));
+		}
+		
+		temp.put(StringConstants.COEFFICIENTS, arrayStore);
+		
+		arrayStore = (double []) regressionResult.get(StringConstants.RESIDUALS);
+		for(int i = 0; i< arrayStore.length; i++) {
+			arrayStore[i] = Double.valueOf(formatter.format(arrayStore[i]));
+		}
+		
+		temp.put(StringConstants.RESIDUALS, arrayStore);
+		
+		arrayStore = (double[]) regressionResult.get(StringConstants.STANDARD_PARAMETER_ERRORS);
+		for(int i = 0; i< arrayStore.length; i++) {
+			arrayStore[i] = Double.valueOf(formatter.format(arrayStore[i]));
+		}
+		
+		temp.put(StringConstants.STANDARD_PARAMETER_ERRORS, arrayStore);
+		temp.put(StringConstants.OBSERVATIONS, regressionResult.get(StringConstants.OBSERVATIONS));
+		
+		
+		return temp;
+		
 	}
 	
 	private void computeTstatAndP (Map<String, Object> results, List<RegressionPointContext> idpPoints, List<ReportDataPointContext> reportDataPoints) {
@@ -278,14 +336,15 @@ public class AddRegressionPointsCommand implements Command{
 		TDistribution tDistribution = new TDistribution(degreesOfFreedom);
 		
 		
-		DecimalFormat formatter = new DecimalFormat("0.000000000");
+		DecimalFormat formatter = new DecimalFormat("0.00");
+		DecimalFormat pFormat = new DecimalFormat("0.0000");
 		double tStat;
 		double pValue;
 		
 		double coefficient = Double.valueOf(formatter.format(coefficients[0]));
 		double standardError = Double.valueOf(formatter.format(errors[0])); 
 		tStat = Double.valueOf(formatter.format(coefficient/ standardError));
-		pValue = Double.valueOf(formatter.format(tDistribution.cumulativeProbability(-FastMath.abs(tStat)) * 2));
+		pValue = Double.valueOf(pFormat.format(tDistribution.cumulativeProbability(-FastMath.abs(tStat)) * 2));
 		
 		Map<String, Object> newRecord = new LinkedHashMap<String, Object>();
 		newRecord.put(StringConstants.COEFFICIENT, coefficient);
@@ -300,7 +359,7 @@ public class AddRegressionPointsCommand implements Command{
 			coefficient = Double.valueOf(formatter.format(coefficients[i]));
 			standardError = Double.valueOf(formatter.format(errors[i]));
 			tStat = Double.valueOf(formatter.format(coefficient/ standardError));
-			pValue = Double.valueOf(formatter.format(tDistribution.cumulativeProbability(-FastMath.abs(tStat)) * 2));
+			pValue = Double.valueOf(pFormat.format(tDistribution.cumulativeProbability(-FastMath.abs(tStat)) * 2));
 			
 			newRecord.put(StringConstants.COEFFICIENT, coefficient);
 			newRecord.put(StringConstants.STANDARD_ERROR, standardError);
@@ -330,6 +389,7 @@ public class AddRegressionPointsCommand implements Command{
 	
 	public double computeSumOfSquareErrors(List<Map<String, Object>> data, String pointAlias, String yAlias ) {
 		// SSE
+		DecimalFormat formatter = new DecimalFormat("0.00");
 		double sumOfSquareErrors = 0.0;
 		double diff = 0.0;
 		for(Map<String, Object>d : data) {
@@ -337,11 +397,12 @@ public class AddRegressionPointsCommand implements Command{
 			sumOfSquareErrors = sumOfSquareErrors + Math.pow(diff, 2);
 		}
 		
-		return sumOfSquareErrors;
+		return Double.valueOf(formatter.format(sumOfSquareErrors));
 	}
 	
 	public double computeSumOfSqaureTotal(List<Map<String, Object>> data, String yAlias) {
 		// SST
+		DecimalFormat formatter = new DecimalFormat("0.00");
 		double sumOfSquareTotal = 0.0;
 		double mean  = computeMean(data, yAlias);
 		double diff = 0.0;
@@ -350,11 +411,12 @@ public class AddRegressionPointsCommand implements Command{
 			sumOfSquareTotal = sumOfSquareTotal + Math.pow(diff, 2);
 		}
 		
-		return sumOfSquareTotal;
+		return Double.valueOf(formatter.format(sumOfSquareTotal));
 	}
 	
 	public double computeSumOfSquareRegression(List<Map<String, Object>> data, String pointAlias, String yAlias) {
 		// SSR
+		DecimalFormat formatter = new DecimalFormat("0.00");
 		double sumOfSquareRegression = 0.0;
 		double mean  = computeMean(data, yAlias);
 		double diff = 0.0;
@@ -363,11 +425,11 @@ public class AddRegressionPointsCommand implements Command{
 			diff = Double.valueOf((String) d.get(pointAlias)) - mean;
 			sumOfSquareRegression = sumOfSquareRegression + Math.pow(diff, 2);
 		}
-		
-		return sumOfSquareRegression;
+		return Double.valueOf(formatter.format(sumOfSquareRegression));
 	}
 	
 	public double computeMean (List<Map<String, Object>> data, String alias) {
+		DecimalFormat formatter = new DecimalFormat("0.00");
 		double sum = 0.0;
 		int count = 0;
 		for(Map<String, Object>d : data) {
@@ -376,21 +438,24 @@ public class AddRegressionPointsCommand implements Command{
 				count++;
 			}
 		}
-		
-		return sum / count;
+		return Double.valueOf(formatter.format(sum / count));
 	}
 	
 	public double computeMeanSquareError(List<Map<String, Object>> data, int sampleLength, int numberOfCoeff, String pointAlias, String yAlias) {
+		DecimalFormat formatter = new DecimalFormat("0.00");
 		double sse = computeSumOfSquareErrors(data, pointAlias, yAlias);
-		return sse / (sampleLength - numberOfCoeff);
+		return Double.valueOf(formatter.format(sse / (sampleLength - numberOfCoeff)));
 	}
 	
 	public double computeMeanSquareRegression(List<Map<String, Object>> data, int numberOfCoeff, String pointAlias, String yAlias) {
+		DecimalFormat formatter = new DecimalFormat("0.00");
 		double ssr = computeSumOfSquareRegression(data, pointAlias, yAlias);
-		return ssr / (numberOfCoeff - 1);
+		return Double.valueOf(formatter.format(ssr / (numberOfCoeff - 1)));
 	}
 	
 	public void computeANOVAResultMetrics(Map<String, Object> regressionResult, ArrayList<Map<String, Object>> data, String pointAlias, String yAlias) {
+		
+		DecimalFormat formatter = new DecimalFormat("0.00");
 		
 		List<AnovaResultContext> anovaResults = new ArrayList<AnovaResultContext>();
 		int observations = (int)regressionResult.get(StringConstants.OBSERVATIONS);
@@ -404,7 +469,7 @@ public class AddRegressionPointsCommand implements Command{
 		regression.setSumOfSquare(computeSumOfSquareRegression(data, pointAlias, yAlias));
 		regression.setMeanSumOfSquare(computeMeanSquareRegression(data, coeffcients.length, pointAlias, yAlias));
 		regression.setResultVariable(StringConstants.REGRESSION);
-		regression.setfStat(computeMeanSquareRegression(data, coeffcients.length, pointAlias, yAlias) / computeMeanSquareError(data, data.size(), coeffcients.length, pointAlias, yAlias));
+		regression.setfStat(Double.valueOf(formatter.format(computeMeanSquareRegression(data, coeffcients.length, pointAlias, yAlias) / computeMeanSquareError(data, data.size(), coeffcients.length, pointAlias, yAlias))));
 		
 		
 		residuals.setResultVariable(StringConstants.RESIDUAL);
@@ -433,7 +498,7 @@ public class AddRegressionPointsCommand implements Command{
 		final static String OBSERVATIONS = "observations";
 		final static String CONSTANT = "constant";
 		final static String REGRESSION_MODEL = "Regression Model";
-		final static String INTERCEPT = "intercept";
+		final static String INTERCEPT = "Intercept";
 		final static String T_VALUE = "tValue";
 		final static String P_VALUE = "pValue";
 		final static String COEFFICIENT = "coefficient";
