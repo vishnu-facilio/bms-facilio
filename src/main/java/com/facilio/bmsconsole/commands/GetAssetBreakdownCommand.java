@@ -17,7 +17,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 
-public class getAssetBreakdownCommand implements Command {
+public class GetAssetBreakdownCommand implements Command {
        @Override
        public boolean execute(Context context) throws Exception {
                AssetBreakdownContext assetBreakdown = (AssetBreakdownContext) context

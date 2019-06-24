@@ -21,7 +21,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 
-public class getAssetDownTimeDetailsCommand implements Command {
+public class GetAssetDownTimeDetailsCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		AssetBDSourceDetailsContext assetBDSourceDetails = (AssetBDSourceDetailsContext) context

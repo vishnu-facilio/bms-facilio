@@ -2997,8 +2997,8 @@ public class TransactionChainFactory {
 		
 		public static Chain getAddNewAssetBreakdownChain() {
 			Chain c = getDefaultChain();
-			c.addCommand(new getAssetDownTimeDetailsCommand());
-			c.addCommand(new getLastBreakDownFromCurrentSourceCommand());
+			c.addCommand(new GetAssetDownTimeDetailsCommand());
+			c.addCommand(new GetLastBreakDownFromCurrentSourceCommand());
 			c.addCommand(new ValidateAssetBreakdownCommand());
 			c.addCommand(new AddAssetBreakDownCommand());
 			c.addCommand(new updateAssetDownTimeDetailsCommand());

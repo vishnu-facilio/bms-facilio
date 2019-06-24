@@ -5,7 +5,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.actions.GetToolTransactionsListCommand;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.workflows.command.GetAllNameSpaceWithFunctionCommand;
@@ -27,8 +26,8 @@ public class ReadOnlyChainFactory {
 
 	public static Chain getLastAssetBreakDownChain() {
 		Chain c = getDefaultChain();
-		c.addCommand(new getAssetDownTimeDetailsCommand());
-		c.addCommand(new getAssetBreakdownCommand());
+		c.addCommand(new GetAssetDownTimeDetailsCommand());
+		c.addCommand(new GetAssetBreakdownCommand());
 		return c;
 	}
 

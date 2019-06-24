@@ -18,7 +18,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 
-public class getLastBreakDownFromCurrentSourceCommand implements Command {
+public class GetLastBreakDownFromCurrentSourceCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		AssetBDSourceDetailsContext assetBDSourceDetails = (AssetBDSourceDetailsContext) context.get(FacilioConstants.ContextNames.ASSET_BD_SOURCE_DETAILS);
