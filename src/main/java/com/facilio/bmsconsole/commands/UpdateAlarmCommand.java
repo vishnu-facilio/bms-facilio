@@ -132,6 +132,7 @@ public class UpdateAlarmCommand implements Command {
 			record.put("id", recordIds.get(0));
 			
 			ReadingAlarmContext alarmContext = AlarmAPI.getReadingAlarmContext(recordIds.get(0));
+			if(alarmContext!=null&&alarmContext.getResource()!=null){
 			Long assetId = alarmContext.getResource().getId();
 			for(Long id:recordIds){
 				if (isCleared) {
@@ -147,6 +148,7 @@ public class UpdateAlarmCommand implements Command {
 						newAssetBreakdown.execute(context);
 					}
 				}
+			}
 			}
 			try {
 				if(EventType.UPDATED_ALARM_SEVERITY.equals(context.get(FacilioConstants.ContextNames.EVENT_TYPE)) && 
