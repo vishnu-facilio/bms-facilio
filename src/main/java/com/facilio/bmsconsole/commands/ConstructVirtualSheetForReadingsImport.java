@@ -68,7 +68,7 @@ public class ConstructVirtualSheetForReadingsImport implements Command{
 		else {
 			rowContext = rowLogContext.getCorrectedRow();
 			}
-		LOGGER.severe("---RowContext----" + rowContext.toString());
+		// LOGGER.severe("---RowContext----" + rowContext.toString());
 
 
 	HashMap<String,Object> colVal = rowContext.getColVal();
@@ -132,10 +132,10 @@ public class ConstructVirtualSheetForReadingsImport implements Command{
 					}
 				}
 			
-			LOGGER.severe("props ---" + props);
+			// LOGGER.severe("props ---" + props);
 			ReadingContext readingContext = FieldUtil.getAsBeanFromMap(props,ReadingContext.class);
 			StringBuilder uniqueId = new StringBuilder();
-			uniqueId.append(String.valueOf(rowContext.getParentId()) + String.valueOf(rowContext.getTtime()));
+			uniqueId.append(rowContext.getParentId()).append(rowContext.getTtime());
 			
 			if(!groupedContext.containsKey(module)) {
 				HashMap<String, ReadingContext> rows = new HashMap<String, ReadingContext>();
