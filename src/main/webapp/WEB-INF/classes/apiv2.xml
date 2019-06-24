@@ -109,6 +109,13 @@
 			class="com.facilio.events.actions.V2EventAction" method="addEvent" />
 	</package>
 	
+	<package name="alarm" namespace="/api/v2/alarm" extends="v2Api">
+		<action name="add"
+			class="com.facilio.events.actions.V2AlarmAction" method="addEvent" />
+		<action name="get"
+			class="com.facilio.events.actions.V2AlarmAction" method="fetchAlarmSummary" />
+	</package>
+	
 	<package name="state" namespace="/api/v2/state" extends="v2Api">
 		<action name="list"
 			class="com.facilio.bmsconsole.actions.TicketStatusAction" method="v2StatusList" />

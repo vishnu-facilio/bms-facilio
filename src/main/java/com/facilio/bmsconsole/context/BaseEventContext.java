@@ -1,18 +1,14 @@
 package com.facilio.bmsconsole.context;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.struts2.json.annotations.JSON;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
+import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.events.context.EventContext;
 import com.facilio.events.context.EventContext.EventInternalState;
 import com.facilio.events.context.EventContext.EventState;
 import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.facilio.time.DateTimeUtil;
 
 public abstract class BaseEventContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
@@ -185,12 +181,18 @@ public abstract class BaseEventContext extends ModuleBaseWithCustomFields {
 		return baseAlarm;
 	}
 	
-	public void updateAlarmOccurrenceContext(AlarmOccurrenceContext alarmOccurrence, boolean add) {
+	public void updateAlarmOccurrenceContext(AlarmOccurrenceContext alarmOccurrence, boolean add) throws Exception {
 		AlarmSeverityContext previousSeverity = alarmOccurrence.getSeverity();
 		alarmOccurrence.setSeverity(getSeverity());
 		alarmOccurrence.setAutoClear(getAutoClear());
 		
+		long currenTime = DateTimeUtil.getCurrenTime();
+		if (getSeverity().equals(AlarmAPI.getAlarmSeverity("Clear"))) {
+			alarmOccurrence.setClearedTime(currenTime);
+		}
+		
 		if (add) {
+			alarmOccurrence.setCreatedTime(DateTimeUtil.getCurrenTime());
 		} 
 		else {
 			alarmOccurrence.setPreviousSeverity(previousSeverity);

@@ -271,6 +271,12 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain getV2AlarmDetailsChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetV2AlarmsCommand());
+		return c;
+	}
+	
 	public static Chain getAddOrUpdateReadingValuesChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new AddOrUpdateReadingsCommand());

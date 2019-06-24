@@ -189,7 +189,8 @@ public class AccountUtil {
 		CONNECTEDAPPS (131072),
 		M_AND_V (262144),
 		GRAPHICS (524288),
-		CONTRACT (1048576)
+		CONTRACT (1048576),
+        NEW_ALARMS (2097152)
 		;
 		
 		

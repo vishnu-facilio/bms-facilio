@@ -1,7 +1,11 @@
 package com.facilio.bmsconsole.util;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -13,7 +17,6 @@ import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.bmsconsole.context.BaseEventContext;
 import com.facilio.bmsconsole.context.ReadingAlarm;
-import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -43,10 +46,55 @@ public class NewAlarmAPI {
 				.andCondition(CriteriaAPI.getCondition("ALARM_KEY", "key", messageKey, StringOperators.IS));
 		return (BaseAlarmContext) builder.fetchFirst();
 	}
+	
+	public static List<BaseAlarmContext> getAlarms(List<Long> ids) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_ALARM);
+		SelectRecordsBuilder<BaseAlarmContext> builder = new SelectRecordsBuilder<BaseAlarmContext>()
+				.module(module)
+				.beanClass(BaseAlarmContext.class)
+				.select(modBean.getAllFields(module.getName()))
+				.andCondition(CriteriaAPI.getIdCondition(ids, module));
+		List<BaseAlarmContext> list = builder.get();
+		return getExtendedAlarms(list);
+	}
+	
+	private static List<BaseAlarmContext> getExtendedAlarms(List<BaseAlarmContext> list) throws Exception {
+		List<BaseAlarmContext> baseAlarms = new ArrayList<>();
+		if (CollectionUtils.isEmpty(list)) {
+			return baseAlarms;
+		}
+		
+		Map<Type, List<Long>> alarmMap = new HashMap<>();
+		for (BaseAlarmContext map : list) {
+			Type type = Type.valueOf((int) map.getType());
+			List<Long> alarmIds = alarmMap.get(type);
+			if (CollectionUtils.isEmpty(alarmIds)) {
+				alarmIds = new ArrayList<>();
+				alarmMap.put(type, alarmIds);
+			}
+			alarmIds.add((Long) map.getId());
+		}
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		for (Entry<Type, List<Long>> entry : alarmMap.entrySet()) {
+			Type type = entry.getKey();
+			FacilioModule module = modBean.getModule(getAlarmModuleName(type));
+			SelectRecordsBuilder<BaseAlarmContext> selectBuilder = new SelectRecordsBuilder<>()
+					.moduleName(getAlarmModuleName(type))
+					.beanClass(getAlarmClass(type))
+					.select(modBean.getAllFields(getAlarmModuleName(type)))
+					.andCondition(CriteriaAPI.getIdCondition(entry.getValue(), module));
+			baseAlarms.addAll(selectBuilder.get());
+		}
+		
+		
+		return baseAlarms;
+	}
 
 	private static BaseAlarmContext getAlarm(long id) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_AlARM);
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_ALARM);
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(module.getTableName())
 				.select(Collections.singletonList(FieldFactory.getField("type", "TYPE", module, FieldType.ENUM)))
@@ -107,8 +155,8 @@ public class NewAlarmAPI {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		SelectRecordsBuilder<AlarmOccurrenceContext> builder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
 				.beanClass(AlarmOccurrenceContext.class)
-				.moduleName(FacilioConstants.ContextNames.ALARM_OCCURANCE)
-				.select(modBean.getAllFields(FacilioConstants.ContextNames.ALARM_OCCURANCE))
+				.moduleName(FacilioConstants.ContextNames.ALARM_OCCURRENCE)
+				.select(modBean.getAllFields(FacilioConstants.ContextNames.ALARM_OCCURRENCE))
 				.andCondition(CriteriaAPI.getCondition("ALARM_ID", "alarm", String.valueOf(alarm.getId()), NumberOperators.EQUALS))
 				.orderBy("CREATED_TIME DESC")
 				.limit(1);
@@ -136,7 +184,7 @@ public class NewAlarmAPI {
 		addAlarm(baseAlarm, baseEvent.getAlarmType(), alarmOccurrence.getSeverity(), modBean);
 		alarmOccurrence.setAlarm(baseAlarm);
 		
-		addAlarmOccurrence(alarmOccurrence, modBean);
+		addAlarmOccurrence(alarmOccurrence, baseEvent, modBean);
 		return alarmOccurrence;
 	}
 	
@@ -146,15 +194,17 @@ public class NewAlarmAPI {
 		alarmOccurrence.setAlarm(baseAlarm);
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		addAlarmOccurrence(alarmOccurrence, modBean);
+		addAlarmOccurrence(alarmOccurrence, baseEvent, modBean);
 		return alarmOccurrence;
 	}
 	
-	private static void addAlarmOccurrence(AlarmOccurrenceContext alarmOccurrence, ModuleBean modBean) throws Exception {
+	private static void addAlarmOccurrence(AlarmOccurrenceContext alarmOccurrence, BaseEventContext baseEvent, ModuleBean modBean) throws Exception {
 		InsertRecordBuilder<AlarmOccurrenceContext> occurranceBuilder = new InsertRecordBuilder<AlarmOccurrenceContext>()
-				.moduleName(FacilioConstants.ContextNames.ALARM_OCCURANCE)
-				.fields(modBean.getAllFields(FacilioConstants.ContextNames.ALARM_OCCURANCE));
+				.moduleName(FacilioConstants.ContextNames.ALARM_OCCURRENCE)
+				.fields(modBean.getAllFields(FacilioConstants.ContextNames.ALARM_OCCURRENCE));
 		occurranceBuilder.insert(alarmOccurrence);
+		
+		rollUpAlarm(alarmOccurrence, baseEvent, modBean);
 	}
 
 	private static void addAlarm(BaseAlarmContext baseAlarm, Type type, AlarmSeverityContext severity, ModuleBean modBean) throws Exception {
@@ -174,13 +224,17 @@ public class NewAlarmAPI {
 		baseEvent.updateAlarmOccurrenceContext(alarmOccurrence, false);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
-		FacilioModule occurrenceModule = modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURANCE);
+		FacilioModule occurrenceModule = modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
 		UpdateRecordBuilder<AlarmOccurrenceContext> builder = new UpdateRecordBuilder<AlarmOccurrenceContext>()
 				.module(occurrenceModule)
 				.fields(modBean.getAllFields(occurrenceModule.getName()))
 				.andCondition(CriteriaAPI.getIdCondition(alarmOccurrence.getId(), occurrenceModule));
 		builder.update(alarmOccurrence);
 		
+		rollUpAlarm(alarmOccurrence, baseEvent, modBean);
+	}
+
+	private static void rollUpAlarm(AlarmOccurrenceContext alarmOccurrence, BaseEventContext baseEvent, ModuleBean modBean) throws Exception {
 		// roll-up alarm object
 		BaseAlarmContext baseAlarm = getAlarm(alarmOccurrence.getAlarm().getId());
 		baseEvent.updateAlarmContext(baseAlarm, false);
@@ -193,7 +247,7 @@ public class NewAlarmAPI {
 				.module(alarmModule)
 				.fields(modBean.getAllFields(alarmModule.getName()))
 				.andCondition(CriteriaAPI.getIdCondition(baseAlarm.getId(), alarmModule));
-		alarmUpdateBuilder.update(baseAlarm);
+		alarmUpdateBuilder.update(baseAlarm);		
 	}
 
 	private static void updateAlarmSystemFields(BaseAlarmContext baseAlarm, AlarmOccurrenceContext alarmOccurrence) throws Exception {

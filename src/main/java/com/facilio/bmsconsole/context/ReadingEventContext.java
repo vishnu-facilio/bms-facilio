@@ -59,7 +59,7 @@ public class ReadingEventContext extends BaseEventContext {
 	}
 	
 	@Override
-	public void updateAlarmOccurrenceContext(AlarmOccurrenceContext alarmOccurrence, boolean add) {
+	public void updateAlarmOccurrenceContext(AlarmOccurrenceContext alarmOccurrence, boolean add) throws Exception {
 		super.updateAlarmOccurrenceContext(alarmOccurrence, add);
 	}
 	

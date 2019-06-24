@@ -140,4 +140,16 @@ public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 	public void updateAlarm(BaseAlarmContext baseAlarm) {
 		baseAlarm.setSeverity(severity);
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
+		
+		if (obj instanceof AlarmOccurrenceContext) {
+			return ((AlarmOccurrenceContext) obj).getId() == getId();
+		}
+		return false;
+	}
 }
