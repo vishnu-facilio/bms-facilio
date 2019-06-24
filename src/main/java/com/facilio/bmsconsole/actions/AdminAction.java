@@ -74,10 +74,10 @@ public class AdminAction extends ActionSupport
 		long roleId =  Long.parseLong(request.getParameter("roleId"));
 		User newUser = new User();
 		
-		if(!email.contains("@"))
+		/*if(!email.contains("@"))
 		{
 			newUser.setMobile(email);
-		}
+		}*/
 		newUser.setName(name);
 		newUser.setEmail(email);
 		newUser.setRoleId(roleId);
