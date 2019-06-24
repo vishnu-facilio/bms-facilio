@@ -27,14 +27,17 @@ public class ScheduledWorkflowJob extends FacilioJob{
 			
 			ScheduledWorkflowContext scheduledWorkflowContext = WorkflowV2API.getScheduledWorkflowContext(id,true);
 			
-			WorkflowContext workflow = WorkflowUtil.getWorkflowContext(scheduledWorkflowContext.getWorkflowId());
-			
-			FacilioContext context = new FacilioContext();
-			context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
-			
-			Chain chain = TransactionChainFactory.getExecuteWorkflowChain();
-			
-			chain.execute(context);
+			if(scheduledWorkflowContext != null) {
+				
+				WorkflowContext workflow = WorkflowUtil.getWorkflowContext(scheduledWorkflowContext.getWorkflowId());
+				
+				FacilioContext context = new FacilioContext();
+				context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
+				
+				Chain chain = TransactionChainFactory.getExecuteWorkflowChain();
+				
+				chain.execute(context);
+			}
 		}
 		catch (Exception e) {
 			CommonCommandUtil.emailException("Scheduled Workflow Failed", "Orgid -- "+AccountUtil.getCurrentOrg().getId() + " jobid -- "+jc.getJobId(), e);
