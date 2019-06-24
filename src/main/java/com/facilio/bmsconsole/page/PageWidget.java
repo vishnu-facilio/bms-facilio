@@ -226,7 +226,7 @@ public class PageWidget {
 		SET_COMMAND("setCommand"),
 		RANK_RULE("rankRule"),
 		RULE_ASSETS_ALARM("assetsAlarm"),
-		RULE_ALARM_INSIGHT("alarmInsight"),
+		RULE_ALARM_INSIGHT("ruleInsights"),
 		RULE_WO(""),
 		ECM("ecm"),
 		MV_SAVINGS("savings"),
