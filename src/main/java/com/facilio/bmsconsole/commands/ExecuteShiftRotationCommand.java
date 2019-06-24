@@ -25,7 +25,7 @@ public class ExecuteShiftRotationCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-		long shiftRotationId = (long) context.get(FacilioConstants.ContextNames.ID);
+		long shiftRotationId = (long) context.get(FacilioConstants.ContextNames.SHIFT_ROTATION);
 		if (shiftRotationId > 0) {
 			ShiftRotationContext shiftRotation = ShiftAPI.getShiftRotation(shiftRotationId);
 			
