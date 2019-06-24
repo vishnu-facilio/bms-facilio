@@ -37,6 +37,7 @@ import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -525,53 +526,65 @@ public class ExportUtil {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.CV_NAME, viewName);
-		
+
 		int limit = 5000;
 		Map<String, String> orgInfo = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.MODULE_EXPORT_LIMIT);
 		String orgLimit = orgInfo.get(FacilioConstants.OrgInfoKeys.MODULE_EXPORT_LIMIT);
-		
+
 		if (orgLimit != null && !orgLimit.isEmpty()) {
 			limit = Integer.parseInt(orgLimit);
 		}
 		if (viewLimit != null) {
 			limit = viewLimit;
 		}
-		
+
 		JSONObject pagination = new JSONObject();
 		pagination.put("page", 1);
 		pagination.put("perPage", limit);
 		context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
-		
+
 //		context.put(FacilioConstants.ContextNames.MAX_LEVEL, 2);
-		
+
 		if (filters != null) {
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(filters);
 			context.put(FacilioConstants.ContextNames.FILTERS, json);
 			context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, true);
 		}
-		if(criteria != null) {
+		if (criteria != null) {
 			context.put(FacilioConstants.ContextNames.FILTER_CRITERIA, criteria);
 		}
-		
+
 		Chain moduleListChain = ReadOnlyChainFactory.fetchModuleDataListChain();
 		moduleListChain.execute(context);
-		
-		List<ModuleBaseWithCustomFields> records = (List<ModuleBaseWithCustomFields>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
-		FacilioView view= (FacilioView)context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
-		
+
+		List<ModuleBaseWithCustomFields> records = (List<ModuleBaseWithCustomFields>) context
+				.get(FacilioConstants.ContextNames.RECORD_LIST);
+		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
+
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
-		List<ViewField> viewFields = view.getFields();
-		if(moduleName.equals("alarm")) {
+		List<ViewField> viewFields = new ArrayList<ViewField>();
+		if (moduleName.equals("asset")) {
+			ViewField id = new ViewField("id", "Id");
+			FacilioField idField = FieldFactory.getIdField(modBean.getModule(moduleName));
+			id.setField(idField);
+			viewFields.add(id);
+		}
+		if (moduleName.equals("workorder")) {
+			ViewField serialNumber = new ViewField("serialNumber", "Serial Number");
+			serialNumber.setField(modBean.getField("serialNumber", moduleName));
+			viewFields.add(serialNumber);
+		}
+		viewFields.addAll(view.getFields());
+		if (moduleName.equals("alarm")) {
 			Iterator<ViewField> it = viewFields.iterator();
-	        while (it.hasNext()) {
-	        	ViewField field = it.next();
-	            if (field.getField().getName().equals("modifiedTime")) {
-	                it.remove();
-	            }
-	        }
-	        
+			while (it.hasNext()) {
+				ViewField field = it.next();
+				if (field.getField().getName().equals("modifiedTime")) {
+					it.remove();
+				}
+			}
+
 			ViewField createdTime = new ViewField("createdTime", "Created Time");
 			createdTime.setField(modBean.getField("createdTime", moduleName));
 			viewFields.add(createdTime);
@@ -585,67 +598,63 @@ public class ExportUtil {
 			noOfEvents.setField(modBean.getField("noOfEvents", moduleName));
 			viewFields.add(noOfEvents);
 		}
+		if (specialFields) {
+			List<Long> ids = records.stream().map(a -> a.getId()).collect(Collectors.toList());
+			for (int j = 0; j < viewFields.size(); j++) {
+				if (viewFields.get(j).getField().getName().equals("noOfNotes")) {
 
-		if(specialFields) {
-		List<Long> ids = records.stream().map(a -> a.getId()).collect(Collectors.toList());
-		for (int j = 0; j < viewFields.size(); j++) { 
-			if (viewFields.get(j).getField().getName().equals("noOfNotes")) {
-				
-				viewFields.remove(viewFields.get(j));
-				
-          }
-			if (viewFields.get(j).getField().getName().equals("noOfTasks")) {		
-				viewFields.remove(viewFields.get(j));		
-          }
-		}
-		ViewField comment = new ViewField("comment", "Comment");
-		FacilioField commentField = new FacilioField();
-		commentField.setName("comment");
-		commentField.setDataType(FieldType.STRING);
-		commentField.setColumnName("COMMENTS");
-		commentField.setModule(modBean.getModule(moduleName));
-		comment.setField(commentField);
-		viewFields.add(comment);		
-		Map<Long, List<String>> map = new HashMap<>();
-		if (ids.size() > 0) {
-		List<NoteContext> notes = NotesAPI.fetchNote(ids, "ticketnotes");
-		if (!(notes.isEmpty())) {
-			for (int j = 0; j < notes.size(); j++) {
-				if (!(notes.get(j).getCreatedBy().getEmail().contains("system+"))) {
-				if (map.containsKey(notes.get(j).getParentId())){
-					map.get(notes.get(j).getParentId()).add(notes.get(j).getBody());
+					viewFields.remove(viewFields.get(j));
+
 				}
-				else {
-					List<String> temp = new ArrayList<>();
-					temp.add(notes.get(j).getBody());
-					map.put(notes.get(j).getParentId(), temp);
-				}
+				if (viewFields.get(j).getField().getName().equals("noOfTasks")) {
+					viewFields.remove(viewFields.get(j));
 				}
 			}
-			for (int i = 0; i < records.size(); i++) {
-				
-				if (fileFormat == FileFormat.CSV && map.containsKey(records.get(i).getId())) {
-					Map<String, Object> props = new HashMap<>();
-					if (map.get(records.get(i).getId()).size() > 1) {
-						props.put("comment", "\"" + StringUtils.join(map.get(records.get(i).getId()), "\n") + "\"");
+			ViewField comment = new ViewField("comment", "Comment");
+			FacilioField commentField = new FacilioField();
+			commentField.setName("comment");
+			commentField.setDataType(FieldType.STRING);
+			commentField.setColumnName("COMMENTS");
+			commentField.setModule(modBean.getModule(moduleName));
+			comment.setField(commentField);
+			viewFields.add(comment);
+			Map<Long, List<String>> map = new HashMap<>();
+			if (ids.size() > 0) {
+				List<NoteContext> notes = NotesAPI.fetchNote(ids, "ticketnotes");
+				if (!(notes.isEmpty())) {
+					for (int j = 0; j < notes.size(); j++) {
+						if (!(notes.get(j).getCreatedBy().getEmail().contains("system+"))) {
+							if (map.containsKey(notes.get(j).getParentId())) {
+								map.get(notes.get(j).getParentId()).add(notes.get(j).getBody());
+							} else {
+								List<String> temp = new ArrayList<>();
+								temp.add(notes.get(j).getBody());
+								map.put(notes.get(j).getParentId(), temp);
+							}
+						}
 					}
-					else {
-						props.put("comment", StringUtils.join(map.get(records.get(i).getId()), "\n"));
+					for (int i = 0; i < records.size(); i++) {
+
+						if (fileFormat == FileFormat.CSV && map.containsKey(records.get(i).getId())) {
+							Map<String, Object> props = new HashMap<>();
+							if (map.get(records.get(i).getId()).size() > 1) {
+								props.put("comment",
+										"\"" + StringUtils.join(map.get(records.get(i).getId()), "\n") + "\"");
+							} else {
+								props.put("comment", StringUtils.join(map.get(records.get(i).getId()), "\n"));
+							}
+							records.get(i).addData(props);
+						} else {
+							Map<String, Object> props = new HashMap<>();
+							props.put("comment", StringUtils.join(map.get(records.get(i).getId()), "\n"));
+							records.get(i).addData(props);
+						}
 					}
-					
-					records.get(i).addData(props);	
-				}
-				else {
-					Map<String, Object> props = new HashMap<>();
-					props.put("comment", StringUtils.join(map.get(records.get(i).getId()), "\n"));
-					records.get(i).addData(props);	
-				}
-			}
 			
-		}
-	}
+				}
+			}
 
-}	
+		}
 		return exportData(fileFormat, modBean.getModule(moduleName), viewFields, records, isS3Value);
 	}
 	
