@@ -11,6 +11,7 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.constants.FacilioConstants;
@@ -29,19 +30,12 @@ public class ConstructBaselineFromulaWithAjustmentCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 
-		List<MVBaseline> baseLines = null;
 		
 		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		MVBaseline baseline = (MVBaseline) context.get(MVUtil.MV_BASELINE);
 		MVProjectWrapper mvProjectWrapper = (MVProjectWrapper) context.get(MVUtil.MV_PROJECT_WRAPPER);
 		
-		if(baseline == null) {
-			baseLines = mvProjectWrapper.getBaselines();
-		}
-		else {
-			baseLines = Collections.singletonList(baseline);
-		}
+		List<MVBaseline> baseLines = mvProjectWrapper.getBaselines();
 		
 		List<MVAdjustment> adjustments =  mvProjectWrapper.getAdjustments();
 		List<MVAdjustmentVsBaseline> ajustmentsVsBaselineContexts = new ArrayList<>();
@@ -93,18 +87,30 @@ public class ConstructBaselineFromulaWithAjustmentCommand implements Command {
 			newBaselineWorkflow.setWorkflowV2String(workflowString.toString());
 			newBaselineWorkflow.setWorkflowUIMode(WorkflowUIMode.NEW_WORKFLOW);
 			
-			FormulaFieldContext formulaFieldContext = new FormulaFieldContext();
-			formulaFieldContext.setWorkflow(newBaselineWorkflow);
-			
-			context.put(FacilioConstants.ContextNames.FORMULA_FIELD,formulaFieldContext);
-			formulaFieldContext.setName(baseLine.getName()+"WithAjustment");
-			MVUtil.fillFormulaFieldDetails(formulaFieldContext, mvProjectWrapper.getMvProject(),null,null);
-			Chain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
-			addEnpiChain.execute(context);
-			
-			baseLine.setFormulaFieldWithAjustment(formulaFieldContext);
-			
-			MVUtil.updateMVBaseline(baseLine);
+			if(baseLine.getFormulaFieldWithAjustment() != null) {
+				
+				FormulaFieldContext formulaFieldContext = baseLine.getFormulaFieldWithAjustment();
+				formulaFieldContext.setWorkflow(newBaselineWorkflow);
+				
+				context.put(FacilioConstants.ContextNames.FORMULA_FIELD, formulaFieldContext);
+				
+				Chain updateEnPIChain = FacilioChainFactory.updateFormulaChain();
+				updateEnPIChain.execute(context);
+				
+			}
+			else {
+				FormulaFieldContext formulaFieldContext = new FormulaFieldContext();
+				formulaFieldContext.setWorkflow(newBaselineWorkflow);
+				
+				context.put(FacilioConstants.ContextNames.FORMULA_FIELD,formulaFieldContext);
+				formulaFieldContext.setName(baseLine.getName()+"WithAjustment");
+				MVUtil.fillFormulaFieldDetails(formulaFieldContext, mvProjectWrapper.getMvProject(),null,null);
+				Chain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
+				addEnpiChain.execute(context);
+				
+				baseLine.setFormulaFieldWithAjustment(formulaFieldContext);
+				MVUtil.updateMVBaseline(baseLine);
+			}
 		}
 		
 		return false;

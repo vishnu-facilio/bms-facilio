@@ -41,6 +41,4 @@ public class ScheduledWorkflowJob extends FacilioJob{
 			LOGGER.log(Priority.ERROR, e.getMessage(), e);
 		}
 	}
-
-	
 }
