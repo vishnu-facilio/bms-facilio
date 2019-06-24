@@ -14,9 +14,6 @@ public class Value {
     final Object value;
 
     public Value(Object value) {
-    	if(!(value instanceof Double) && value instanceof Number) {
-    		value = new Double(((Number)value).doubleValue());
-    	}
         this.value = value;
     }
     
@@ -61,6 +58,13 @@ public class Value {
     		return (Integer)value;
     	}
         return ((Double)value).intValue();
+    }
+    
+    public Long asLong() {
+    	if(value instanceof Long) {
+    		return (Long)value;
+    	}
+        return ((Double)value).longValue();
     }
 
     public String asString() {
