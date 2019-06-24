@@ -24,7 +24,8 @@ public enum FacilioSystemFunctionNameSpace {
 	WORKORDER(16, "workorder"),
 	CONSUMPTION(17, "consumption"),
 	ML(18,"ml"),
-	NOTIFICATION(19,"notification")
+	NOTIFICATION(19,"notification"),
+	DATE_RANGE(20,"dateRange"),
 	;
 	
 	

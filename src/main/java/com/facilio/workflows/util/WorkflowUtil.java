@@ -1519,6 +1519,9 @@ public class WorkflowUtil {
 				case NOTIFICATION:
 					facilioWorkflowFunction = FacilioNotificationFunctions.getFacilioNotificationFunctions(functionName);
 					break;
+				case DATE_RANGE:
+					facilioWorkflowFunction = FacilioDateRangeFunctions.getFacilioDateFunction(functionName);
+					break;
 			}
 		}
 		return facilioWorkflowFunction;
@@ -1583,8 +1586,12 @@ public class WorkflowUtil {
 					break;
 				case ML:
 					facilioWorkflowFunction = new ArrayList<>( MLFunctions.getAllFunctions().values());
+					break;
 				case NOTIFICATION:
 					facilioWorkflowFunction = new ArrayList<>( FacilioNotificationFunctions.getAllFunctions().values());
+					break;
+				case DATE_RANGE:
+					facilioWorkflowFunction = new ArrayList<>( FacilioDateRangeFunctions.getAllFunctions().values());
 					break;
 		
 			}

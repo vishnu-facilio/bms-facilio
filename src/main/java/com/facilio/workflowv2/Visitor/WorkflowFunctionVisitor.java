@@ -178,6 +178,10 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
             		wfFunctionContext.setNameSpace(FacilioSystemFunctionNameSpace.STRING.getName());
             		isDataTypeSpecificFunction = true;
             	}
+            	else if(value.asObject() instanceof DateRange) {
+            		wfFunctionContext.setNameSpace(FacilioSystemFunctionNameSpace.DATE_RANGE.getName());
+            		isDataTypeSpecificFunction = true;
+            	}
             	else if (value.asObject() instanceof FacilioSystemFunctionNameSpace) {
             		wfFunctionContext.setNameSpace(((FacilioSystemFunctionNameSpace)value.asObject()).getName());
             	}
