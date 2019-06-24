@@ -105,10 +105,10 @@
 		        		orderBy : \"createdTime\" asc
 					}
 		            date = NameSpace(\"date\");
-		            temp = date.getPreviousMonthEndDate();
+		            ranges = date.getDateRange(\"Last Month\");
 		        	readingAlarmModule = Module(\"readingalarm\"); 
 		        	res = readingAlarmModule.fetch(cri);
-		            previousMonthDetails = readingAlarmModule.fetch([ruleId == ruleId  && createdTime <= temp && clearedTime <= temp]);
+		            previousMonthDetails = readingAlarmModule.fetch([ruleId == ruleId  && createdTime == ranges]);
 		            meanTimeBetweenTigger = 0;
 		            timeToClear = 0;
 		            meanTimeToClear = 0;
