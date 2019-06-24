@@ -882,7 +882,12 @@ public class AwsUtil
 	    
 	    MimeMultipart messageBody = new MimeMultipart("alternative");
 	    MimeBodyPart textPart = new MimeBodyPart();
-	    textPart.setContent(MimeUtility.encodeText((String) mailJson.get("message"),DefaultCharSet,"B"), "text/plain; charset=UTF-8");
+	    
+	    String type = "text/plain; charset=UTF-8";
+	    if(mailJson.get("mailType") != null && mailJson.get("mailType").equals("html")) {
+	    	type = "text/html; charset=UTF-8";
+		}
+	    textPart.setContent(MimeUtility.encodeText((String) mailJson.get("message"),DefaultCharSet,"B"), type);
         textPart.setHeader("Content-Transfer-Encoding", "base64");
         messageBody.addBodyPart(textPart);
         
