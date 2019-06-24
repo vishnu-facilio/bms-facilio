@@ -1175,6 +1175,12 @@
 			<param name="permission">READ</param>
 		</action>
 		
+		<action name="type" class="com.facilio.bmsconsole.actions.AssetAction"
+			method="fetchAssetForType">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+		</action>
+		
 		<action name="generateqr" class="com.facilio.bmsconsole.actions.AssetAction"
 		method="generateQr">
 		<param name="moduleName">asset</param>
@@ -2951,5 +2957,15 @@
 		</action>
 	</package>
 
-
+    <package name="contractsApi" namespace="/api/v2/contract" extends="v2Api">
+		<action name="expiryDateReminder" class="com.facilio.bmsconsole.actions.ContractsAction" method="configureExpiryDateReminder">
+			<param name="moduleName">contract</param>
+			<param name="permission">READ</param>
+		</action>
+		<action name="paymentScheduleReminder" class="com.facilio.bmsconsole.actions.ContractsAction" method="paymentScheduleReminder">
+			<param name="moduleName">contract</param>
+			<param name="permission">READ</param>
+		</action>
+	</package>
+	
 </struts>

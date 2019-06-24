@@ -916,6 +916,13 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetAssetForTypeAndStoreCommand());
 		return chain;
 	}
+	
+	public static Chain getAssetForTypeChain() {
+		Chain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForAsset());
+		chain.addCommand(new GetAssetForTypeCommand());
+		return chain;
+	}
 	public static Chain getShiftUserMappingChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new GetShiftUserMappingCommand());

@@ -84,6 +84,8 @@ public class AddOrUpdateRentalLeaseContractCommand implements Command{
 				updateAssetsAssociated(rentalLeaseContractContext);
 				ContractsAPI.updateTermsAssociated(rentalLeaseContractContext);
 				ContractsAPI.addRecord(false,rentalLeaseContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
+				context.put(FacilioConstants.ContextNames.RECORD, rentalLeaseContractContext);
+
 			
 			} 
 			else if (isContractRevised && rentalLeaseContractContext.getId() > 0) {
@@ -95,8 +97,11 @@ public class AddOrUpdateRentalLeaseContractCommand implements Command{
 					updateLineItems(revisedContract);
 					updateAssetsAssociated(revisedContract);
 					ContractsAPI.updateTermsAssociated(revisedContract);
+					revisedContract.setStatus(Status.PENDING_FOR_REVISION);
 					ContractsAPI.addRecord(false,revisedContract.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 					context.put(FacilioConstants.ContextNames.REVISED_RECORD, revisedContract);
+					context.put(FacilioConstants.ContextNames.RECORD, revisedContract);
+
 					
 				}
 				else {
@@ -113,9 +118,10 @@ public class AddOrUpdateRentalLeaseContractCommand implements Command{
 				updateAssetsAssociated(rentalLeaseContractContext);
 				ContractsAPI.updateTermsAssociated(rentalLeaseContractContext);
 				ContractsAPI.addRecord(false,rentalLeaseContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
+				context.put(FacilioConstants.ContextNames.RECORD, rentalLeaseContractContext);
+
 			
 			}
-			context.put(FacilioConstants.ContextNames.RECORD, rentalLeaseContractContext);
 		}
 		return false;
 	}

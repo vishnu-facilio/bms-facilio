@@ -18,7 +18,7 @@ public class ContractAction extends FacilioAction{
 	}
 
 
-	public String reviseContract() throws Exception {
+	public String configureNotification() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, recordId );
 		Chain chain = TransactionChainFactory.getActivePurchaseContractPrice();

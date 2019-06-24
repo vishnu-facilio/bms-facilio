@@ -69,7 +69,7 @@ public class PurchaseAssociatedAssetCommand implements Command {
 		for(ContractAssociatedAssetsContext asset : associatedAssets) {
 			PurchaseOrderLineItemContext lineItem = new PurchaseOrderLineItemContext();
 			lineItem.setInventoryType(InventoryType.OTHERS);
-			lineItem.setOthersInfo("payment for asset " + asset.getAsset().getSerialNumber());
+			lineItem.setRemarks("payment for asset " + asset.getAsset().getSerialNumber());
 			lineItem.setQuantity(1);
 			lineItem.setUnitPrice(asset.getLeaseEndValue());
 			lineItems.add(lineItem);

@@ -111,6 +111,7 @@ public class ContractsContext extends ModuleBaseWithCustomFields{
 		CLOSED(),
 		CANCELLED(),
 		SUSPENDED(),
+		PENDING_FOR_REVISION(),
 		REVISED()
 		;
 		
@@ -175,44 +176,6 @@ public class ContractsContext extends ModuleBaseWithCustomFields{
 		this.parentId = parentId;
 	}
 	
-	private PaymentPeriod paymentPeriod;
-	public PaymentPeriod getPaymentPeriodEnum() {
-		return paymentPeriod;
-	}
-	public int getPaymentPeriod() {
-		if (paymentPeriod != null) {
-			return paymentPeriod.getValue();
-		}
-		return -1;
-	}
-	public void setPaymentPeriod(int paymentPeriod) {
-		this.paymentPeriod = PaymentPeriod.valueOf(paymentPeriod);
-	}
-	public void setPaymentPeriod(PaymentPeriod paymentPeriod) {
-		this.paymentPeriod = paymentPeriod;
-	}
-	
-	public static enum PaymentPeriod {
-		DAILY(),
-		WEEKLY(),
-		MONTHLY(),
-		YEARLY(),
-		ONCE()
-		
-		;
-		
-		public int getValue() {
-			return ordinal()+1;
-		}
-
-		public static PaymentPeriod valueOf(int value) {
-			if (value > 0 && value <= values().length) {
-				return values()[value - 1];
-			}
-			return null;
-		}
-	}
-	
 	private List<ContractAssociatedTermsContext> termsAssociated;
 
 	public List<ContractAssociatedTermsContext> getTermsAssociated() {
@@ -225,7 +188,6 @@ public class ContractsContext extends ModuleBaseWithCustomFields{
 	
 	private List<ContractAssociatedAssetsContext> associatedAssets;
 	
-	
 	public List<ContractAssociatedAssetsContext> getAssociatedAssets() {
 		return associatedAssets;
 	}
@@ -233,5 +195,16 @@ public class ContractsContext extends ModuleBaseWithCustomFields{
 	public void setAssociatedAssets(List<ContractAssociatedAssetsContext> associatedAssets) {
 		this.associatedAssets = associatedAssets;
 	}
+	
+	private List<ContractsPaymentScheduleContext> paymentSchedules;
+
+	public List<ContractsPaymentScheduleContext> getPaymentSchedules() {
+		return paymentSchedules;
+	}
+
+	public void setPaymentSchedules(List<ContractsPaymentScheduleContext> paymentSchedules) {
+		this.paymentSchedules = paymentSchedules;
+	}
+	
 	
 }

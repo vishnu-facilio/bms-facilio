@@ -3314,6 +3314,24 @@ public class ViewFactory {
 		receivableStatusCriteria.addAndCondition(statusCond);
 		return receivableStatusCriteria;
 	}
+	
+	private static Criteria getPurchaseContractStatusCriteria(FacilioModule module, int status) {
+		
+		FacilioField receivableStatusField = new FacilioField();
+		receivableStatusField.setName("status");
+		receivableStatusField.setColumnName("STATUS");
+		receivableStatusField.setDataType(FieldType.NUMBER);
+		receivableStatusField.setModule(module);
+		
+		Condition statusCond = new Condition();
+		statusCond.setField(receivableStatusField);
+		statusCond.setOperator(NumberOperators.EQUALS);
+		statusCond.setValue(String.valueOf(status));
+
+		Criteria receivableStatusCriteria = new Criteria();
+		receivableStatusCriteria.addAndCondition(statusCond);
+		return receivableStatusCriteria;
+	}
 
 	private static FacilioView getAllPurchaseContractView() {
 		FacilioField localId = new FacilioField();

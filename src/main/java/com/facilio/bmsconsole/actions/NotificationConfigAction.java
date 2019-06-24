@@ -89,6 +89,16 @@ public class NotificationConfigAction extends FacilioAction {
 		this.includeParentFilter = includeParentFilter;
 	}
 
+	private String jobName;
+	
+	public String getJobName() {
+		return jobName;
+	}
+
+	public void setJobName(String jobName) {
+		this.jobName = jobName;
+	}
+
 	private long recordId;
 	
 
@@ -126,9 +136,10 @@ public class NotificationConfigAction extends FacilioAction {
 	public String executeJob() throws Exception {
 
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.NOTIFICATION_JOB_ID, jobId);
+		context.put(FacilioConstants.ContextNames.JOB, jobId);
+		context.put(FacilioConstants.ContextNames.JOB_NAME, jobName);
 
-		Chain chain = TransactionChainFactory.triggerNotificationChain();
+		Chain chain = TransactionChainFactory.executeJobChain();
 		chain.execute(context);
 
 		setResult("Success", "success");

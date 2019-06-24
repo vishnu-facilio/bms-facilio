@@ -78,6 +78,8 @@ public class AddOrUpdateWarrantyContractCommand implements Command{
 				//addServiceRecords(warrantyContractContext.getLineItems(),serviceModule,serviceFields);
 				//also add service vendor association
 				ContractsAPI.addRecord(false,warrantyContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
+				context.put(FacilioConstants.ContextNames.RECORD, warrantyContractContext);
+				
 				
 			} 
 			else if (isContractRevised && warrantyContractContext.getId() > 0) {
@@ -89,12 +91,15 @@ public class AddOrUpdateWarrantyContractCommand implements Command{
 					updateLineItems(revisedContract);
 					updateAssetsAssociated(revisedContract);
 					ContractsAPI.updateTermsAssociated(revisedContract);
+					revisedContract.setStatus(Status.PENDING_FOR_REVISION);
 					
 					//add service if newly added here as lineItem
 					//addServiceRecords(warrantyContractContext.getLineItems(),serviceModule,serviceFields);
 					//also add service vendor association
 					ContractsAPI.addRecord(false,revisedContract.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 					context.put(FacilioConstants.ContextNames.REVISED_RECORD, revisedContract);
+					context.put(FacilioConstants.ContextNames.RECORD, revisedContract);
+					
 					
 				}
 				else {
@@ -116,12 +121,13 @@ public class AddOrUpdateWarrantyContractCommand implements Command{
 				//addServiceRecords(warrantyContractContext.getLineItems(),serviceModule,serviceFields);
 				//also add service vendor association
 				ContractsAPI.addRecord(false,warrantyContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
+				context.put(FacilioConstants.ContextNames.RECORD, warrantyContractContext);
+				
 	
 			}
 			
 			
 			
-			context.put(FacilioConstants.ContextNames.RECORD, warrantyContractContext);
 		}
 		return false;
 	}

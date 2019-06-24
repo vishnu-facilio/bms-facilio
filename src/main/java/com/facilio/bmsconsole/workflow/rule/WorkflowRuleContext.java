@@ -567,4 +567,21 @@ public class WorkflowRuleContext implements Serializable {
 		return "Workflow Rule ["+id+", "+name+"]";
 		
 	}
+	
+	private Boolean consolidatedAction;
+	public Boolean isConsolidatedAction() {
+		if(consolidatedAction == null) {
+			return false;
+		}
+		return consolidatedAction;
+	}
+	public Boolean getConsolidatedAction() {
+		return consolidatedAction;
+	}
+	public void setConsolidatedAction(Boolean consolidatedAction) {
+		this.consolidatedAction = consolidatedAction;
+	}
+	
+	
+	
 }

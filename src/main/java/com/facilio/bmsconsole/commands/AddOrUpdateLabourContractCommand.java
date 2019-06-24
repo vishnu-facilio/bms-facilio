@@ -71,6 +71,8 @@ public class AddOrUpdateLabourContractCommand implements Command{
 				//add labour if newly added here as lineItem
 				addLabourRecords(labourContractContext.getLineItems(),labourModule,labourFields);
 				ContractsAPI.addRecord(false,labourContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
+				context.put(FacilioConstants.ContextNames.RECORD, labourContractContext);
+				
 
 			}
 			else if (isContractRevised && labourContractContext.getId() > 0) {
@@ -81,9 +83,12 @@ public class AddOrUpdateLabourContractCommand implements Command{
 					ContractsAPI.updateRecord(labourContractContext, module, fields);
 					updateLineItems(revisedContract);
 					ContractsAPI.updateTermsAssociated(revisedContract);
+					revisedContract.setStatus(Status.PENDING_FOR_REVISION);
 					addLabourRecords(revisedContract.getLineItems(),labourModule,labourFields);
 					ContractsAPI.addRecord(false,revisedContract.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 					context.put(FacilioConstants.ContextNames.REVISED_RECORD, revisedContract);
+					context.put(FacilioConstants.ContextNames.RECORD, revisedContract);
+					
 					
 				}
 				else {
@@ -102,11 +107,12 @@ public class AddOrUpdateLabourContractCommand implements Command{
 				//add labour if newly added here as lineItem
 				addLabourRecords(labourContractContext.getLineItems(),labourModule,labourFields);
 				ContractsAPI.addRecord(false,labourContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
+				context.put(FacilioConstants.ContextNames.RECORD, labourContractContext);
+				
 
 
 			}
 			
-			context.put(FacilioConstants.ContextNames.RECORD, labourContractContext);
 		}
 		return false;
 	}

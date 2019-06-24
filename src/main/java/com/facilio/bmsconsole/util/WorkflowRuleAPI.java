@@ -930,6 +930,28 @@ public class WorkflowRuleAPI {
 		return result;
 	}
 	
+	public static boolean evaluateConsolidatedWorkflowAndExecuteActions(WorkflowRuleContext workflowRule, String moduleName, Object record, List<UpdateChangeSet> changeSet, Map<String, Object> recordPlaceHolders, FacilioContext context, boolean shouldExecute) throws Exception {
+		Map<String, Object> rulePlaceHolders = workflowRule.constructPlaceHolders(moduleName, record, recordPlaceHolders, context);
+		boolean fieldChangeFlag = false, miscFlag = false, criteriaFlag = false, workflowFlag = false , siteId = false;
+		
+		siteId = workflowRule.evaluateSite(moduleName, record, rulePlaceHolders, context);
+		
+		if (AccountUtil.getCurrentOrg().getId() == 186 && workflowRule.getId() == 6448) {
+			LOGGER.info("Result of rule : "+workflowRule.getId()+" for record : "+record+" is \nSite ID : "+siteId+"\nField Change : "+fieldChangeFlag+"\nMisc Flag : "+miscFlag+"\nCriteria Flag : "+criteriaFlag+"\nWorkflow Flag : "+workflowFlag);
+		}
+		
+		if (AccountUtil.getCurrentOrg().getId() == 134l && (workflowRule.getId() == 4235l || workflowRule.getId() == 6793l)) {
+			LOGGER.error("Result of rule : "+workflowRule.getId()+" for record : "+record+" is \nSite ID : "+siteId+"\nField Change : "+fieldChangeFlag+"\nMisc Flag : "+miscFlag+"\nCriteria Flag : "+criteriaFlag+"\nWorkflow Flag : "+workflowFlag);
+		}
+		if (AccountUtil.getCurrentOrg().getId() == 88 && workflowRule.getId() == 7762l) {
+			LOGGER.info("Result of rule : "+workflowRule.getId()+" for record : "+record+" is \nSite ID : "+siteId+"\nField Change : "+fieldChangeFlag+"\nMisc Flag : "+miscFlag+"\nCriteria Flag : "+criteriaFlag+"\nWorkflow Flag : "+workflowFlag);
+		}
+		
+		if (shouldExecute) {
+			workflowRule.executeTrueActions(record, context, rulePlaceHolders);
+		}
+		return true;
+	}
 	private static boolean executeRuleAndChildren (WorkflowRuleContext workflowRule, FacilioModule module, Object record, List<UpdateChangeSet> changeSet, Iterator itr, Map<String, Object> recordPlaceHolders, FacilioContext context,boolean propagateError, FacilioField parentRuleField, FacilioField onSuccessField, List<EventType> eventTypes, RuleType... ruleTypes) throws Exception {
 		try {
 			long workflowStartTime = System.currentTimeMillis();

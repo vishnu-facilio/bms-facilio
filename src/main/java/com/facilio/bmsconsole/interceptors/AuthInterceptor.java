@@ -160,7 +160,9 @@ public class AuthInterceptor extends AbstractInterceptor {
 					if (AccountUtil.getCurrentAccount().getCurrentSiteId() > 0)
 					{
 						SiteContext site = SpaceAPI.getSiteSpace(AccountUtil.getCurrentAccount().getCurrentSiteId());
-						timezoneVar = site.getTimeZone();
+						if(site != null) {
+							timezoneVar = site.getTimeZone();
+						}
 					}
 					if (StringUtils.isEmpty(timezoneVar))
 					{

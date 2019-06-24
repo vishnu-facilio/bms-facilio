@@ -1185,6 +1185,8 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(new FetchScheduledRuleMatchingRecordsCommand());
 			c.addCommand(new ExecuteSingleWorkflowRuleCommand());
+			c.addCommand(new ExecuteConsolidatedActionWorkflowRuleCommand());
+			
 			return c;
 		}
 		
@@ -3435,7 +3437,11 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericDeleteModuleDataCommand());
 			return c;
 		}
-
+		public static Chain executeJobChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ExecuteJobChainCommand());
+			return c;
+		}
 		
 }
 

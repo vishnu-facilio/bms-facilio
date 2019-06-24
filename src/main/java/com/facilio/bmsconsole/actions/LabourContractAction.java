@@ -211,13 +211,12 @@ public class LabourContractAction extends FacilioAction{
 
 	public String reviseContract() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD_ID, recordId );
+		context.put(FacilioConstants.ContextNames.RECORD, labourContract );
 		context.put(FacilioConstants.ContextNames.IS_CONTRACT_REVISED, true );
 		
 		Chain chain = TransactionChainFactory.getAddLabourContractChain();
 		chain.execute(context);
 		
-		setResult(FacilioConstants.ContextNames.LABOUR_CONTRACTS, context.get(FacilioConstants.ContextNames.RECORD));
 		setResult(FacilioConstants.ContextNames.REVISED_RECORD, context.get(FacilioConstants.ContextNames.REVISED_RECORD));
 		
 		

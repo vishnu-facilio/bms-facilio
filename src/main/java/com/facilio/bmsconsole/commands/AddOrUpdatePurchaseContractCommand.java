@@ -66,6 +66,8 @@ public class AddOrUpdatePurchaseContractCommand implements Command {
 				ContractsAPI.updateTermsAssociated(purchaseContractContext);
 				
 				ContractsAPI.addRecord(false,purchaseContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
+				context.put(FacilioConstants.ContextNames.RECORD, purchaseContractContext);
+				
 
 			}
 			else if (isContractRevised && purchaseContractContext.getId() > 0) {
@@ -76,8 +78,11 @@ public class AddOrUpdatePurchaseContractCommand implements Command {
 					ContractsAPI.updateRecord(purchaseContractContext, module, fields);
 					updateLineItems(revisedContract);
 					ContractsAPI.updateTermsAssociated(revisedContract);
+					revisedContract.setStatus(Status.PENDING_FOR_REVISION);
 					ContractsAPI.addRecord(false,revisedContract.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 					context.put(FacilioConstants.ContextNames.REVISED_RECORD, revisedContract);
+					context.put(FacilioConstants.ContextNames.RECORD, revisedContract);
+					
 					
 				}
 				else {
@@ -95,10 +100,11 @@ public class AddOrUpdatePurchaseContractCommand implements Command {
 				ContractsAPI.updateTermsAssociated(purchaseContractContext);
 				
 				ContractsAPI.addRecord(false,purchaseContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
+				context.put(FacilioConstants.ContextNames.RECORD, purchaseContractContext);
+				
 			}
 
 			
-			context.put(FacilioConstants.ContextNames.RECORD, purchaseContractContext);
 		}
 		return false;
 	}

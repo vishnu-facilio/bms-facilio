@@ -872,10 +872,10 @@ public class AssetsAPI {
 	}
 
 
-   public static List<AssetContext> getAssetForItemType(long itemTypeId) throws Exception {
+   public static List<AssetContext> getAssetForItemType(List<Long> itemTypeIds) throws Exception {
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		List<ItemContext> rotatingItems = ItemsApi.getItemsForType(itemTypeId);
+		List<ItemContext> rotatingItems = ItemsApi.getItemsForType(itemTypeIds);
 		Map<Long,ItemContext> items = FieldUtil.getAsMap(rotatingItems);
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
@@ -892,10 +892,10 @@ public class AssetsAPI {
 
 	}
 
-   public static List<AssetContext> getAssetForToolType(long toolTypeId) throws Exception {
+   public static List<AssetContext> getAssetForToolType(List<Long> toolTypeIds) throws Exception {
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		List<ToolContext> rotatingTools = ToolsApi.getToolsForType(toolTypeId);
+		List<ToolContext> rotatingTools = ToolsApi.getToolsForType(toolTypeIds);
 		Map<Long,ToolContext> tools = FieldUtil.getAsMap(rotatingTools);
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
@@ -912,6 +912,6 @@ public class AssetsAPI {
 
 	}
 
-
+   
 
 }

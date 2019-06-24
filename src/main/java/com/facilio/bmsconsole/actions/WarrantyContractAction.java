@@ -204,13 +204,12 @@ public class WarrantyContractAction extends FacilioAction {
 	
 	public String reviseContract() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD_ID, recordId );
+		context.put(FacilioConstants.ContextNames.RECORD, warrantyContract );
 		context.put(FacilioConstants.ContextNames.IS_CONTRACT_REVISED, true );
 		
 		Chain chain = TransactionChainFactory.getAddWarrantyContractChain();
 		chain.execute(context);
 		
-		setResult(FacilioConstants.ContextNames.WARRANTY_CONTRACTS, context.get(FacilioConstants.ContextNames.RECORD));
 		setResult(FacilioConstants.ContextNames.REVISED_RECORD, context.get(FacilioConstants.ContextNames.REVISED_RECORD));
 		
 		

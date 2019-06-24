@@ -544,8 +544,27 @@ public class AssetAction extends FacilioAction {
 	
 	private long itemTypeId;
 	private long toolTypeId;
-	private long storeRoomId;
+	private long storeRoomId; 
+	private List<Long> itemTypeIds;
+	private List<Long> toolTypeIds;
 	
+	
+	public List<Long> getItemTypeIds() {
+		return itemTypeIds;
+	}
+
+	public void setItemTypeIds(List<Long> itemTypeIds) {
+		this.itemTypeIds = itemTypeIds;
+	}
+
+	public List<Long> getToolTypeIds() {
+		return toolTypeIds;
+	}
+
+	public void setToolTypeIds(List<Long> toolTypeIds) {
+		this.toolTypeIds = toolTypeIds;
+	}
+
 	private int inventoryType;
 	
 	
@@ -594,6 +613,21 @@ public class AssetAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.STORE_ROOM_ID, storeRoomId);
 		
 		ReadOnlyChainFactory.getAssetForTypeAndStoreChain().execute(context);
+		setResult("assets", context.get(FacilioConstants.ContextNames.ASSETS));
+		return SUCCESS;
+	}
+	
+	public String fetchAssetForType() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.INVENTORY_CATEGORY, inventoryType);
+		if(inventoryType == InventoryType.ITEM.getValue()) {
+			context.put(FacilioConstants.ContextNames.ITEM_TYPES_IDS, itemTypeIds);
+		}
+		else if(inventoryType == InventoryType.TOOL.getValue()) {
+			context.put(FacilioConstants.ContextNames.TOOL_TYPES_IDS, toolTypeIds);
+		}
+		
+		ReadOnlyChainFactory.getAssetForTypeChain().execute(context);
 		setResult("assets", context.get(FacilioConstants.ContextNames.ASSETS));
 		return SUCCESS;
 	}

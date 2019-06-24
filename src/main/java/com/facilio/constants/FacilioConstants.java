@@ -1053,6 +1053,7 @@ public class FacilioConstants {
 
 		public static final String NOTIFICATION_JOB_ID = "notificationJobId";
 		public static final String JOB = "jobContext";
+		public static final String JOB_NAME = "jobName";
 
 		
 
@@ -1204,6 +1205,7 @@ public class FacilioConstants {
 			classMap.put(NOTIFICATION_CONFIG, NotificationConfigContext.class);
 			classMap.put(NOTIFICATION_USER, NotificationUserContext.class);
 			
+
 			return classMap;
 		}
 		

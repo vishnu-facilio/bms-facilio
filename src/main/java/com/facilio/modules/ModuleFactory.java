@@ -91,6 +91,7 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.GRAPHICS, getGraphicsModule());
 		moduleMap.put(FacilioConstants.ContextNames.SERVICE, getServiceModule());
 		moduleMap.put(FacilioConstants.ContextNames.TERMS_AND_CONDITIONS, getTermsAndConditionModule());
+		moduleMap.put(FacilioConstants.ContextNames.CONTRACTS, getContractsModule());
 		moduleMap.put(FacilioConstants.ContextNames.NEW_READING_ALARM, getReadingAlarmModule());
 
 
@@ -2006,6 +2007,13 @@ public class ModuleFactory {
 		return contract;
 	}
 
+	public static FacilioModule getContractsModule() {
+		FacilioModule contract = new FacilioModule();
+		contract.setName("contracts");
+		contract.setDisplayName("Contracts");
+		contract.setTableName("Contracts");
+		return contract;
+	}
 	public static FacilioModule getPurchaseContractModule() {
 		FacilioModule purchasecontract = new FacilioModule();
 		purchasecontract.setName("purchasecontracts");
@@ -2317,6 +2325,22 @@ public class ModuleFactory {
 		module.setTableName("Terms_And_Conditions");
 		return module;
 	}
+	public static FacilioModule getNotificationConfigModule() {
+		FacilioModule notificationConfigModule = new FacilioModule();
+		notificationConfigModule.setName("notificationconfig");
+		notificationConfigModule.setDisplayName("Notification Configuration");
+		notificationConfigModule.setTableName("Notification_Configurations");
+		return notificationConfigModule;
+	}
+
+	public static FacilioModule getNotificationUserModule() {
+		FacilioModule notificationUserModule = new FacilioModule();
+		notificationUserModule.setName("notificationuser");
+		notificationUserModule.setDisplayName("Notification User");
+		notificationUserModule.setTableName("Notification_Users");
+		return notificationUserModule;
+	}
+
 
 	public static FacilioModule getReadingAlarmModule() {
 		FacilioModule module = new FacilioModule();
