@@ -9,7 +9,6 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.workflows.command.GetAllNameSpaceWithFunctionCommand;
 import com.facilio.workflows.command.GetAllScheduledWorkflowCommand;
-import com.google.zxing.multi.GenericMultipleBarcodeReader;
 
 public class ReadOnlyChainFactory {
 	private static Logger LOGGER = LogManager.getLogger(ReadOnlyChainFactory.class.getName());
@@ -330,6 +329,7 @@ public class ReadOnlyChainFactory {
 
 	public static Chain getPageChain() {
 		Chain c = getDefaultChain();
+		c.addCommand(new PageRecordHandlingCommand());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
 		c.addCommand(new GetPageCommand());
 		return c;
