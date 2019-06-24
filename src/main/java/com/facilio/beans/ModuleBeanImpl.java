@@ -10,6 +10,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -898,19 +899,26 @@ public class ModuleBeanImpl implements ModuleBean {
 			return 0;
 		}
 		List<EnumFieldValue> enumsToBeAdded = new ArrayList<>();
+		List<EnumFieldValue> enumsToBeUpdated = new ArrayList<>();
 		int i = 1;
 		int maxIndex = 1;
 		for (EnumFieldValue enumVal : field.getValues()) {
 			if (enumVal.getIndex() != -1 && enumVal.getIndex() > maxIndex) {
 				maxIndex = enumVal.getIndex();
 			}
+			enumVal.setSequence(i++);
 			if (enumVal.getId() == -1) {
 				enumsToBeAdded.add(enumVal);
 			}
 			else {
+				enumsToBeUpdated.add(enumVal);
+			}
+		}
+		if (!enumsToBeUpdated.isEmpty()) {
+			enumsToBeUpdated.sort(Comparator.comparingInt(EnumFieldValue::getSequence).reversed());
+			for(EnumFieldValue enumVal: enumsToBeUpdated) {
 				updateEnumVal(enumVal);
 			}
-			enumVal.setSequence(i++);
 		}
 		addEnumValues(field, enumsToBeAdded, maxIndex + 1);
 //		deleteEnumValues(field);
