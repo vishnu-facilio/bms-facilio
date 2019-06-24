@@ -1,6 +1,7 @@
 package com.facilio.events.actions;
 
 import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.collections4.CollectionUtils;
@@ -23,18 +24,18 @@ public class V2EventAction extends FacilioAction {
 		this.payload = payload;
 	}
 	
-	private ReadingEventContext event;
-	public ReadingEventContext getEvent() {
-		return event;
+	private List<ReadingEventContext> events;
+	public List<ReadingEventContext> getEvents() {
+		return events;
 	}
-	public void setEvent(ReadingEventContext event) {
-		this.event = event;
+	public void setEvents(List<ReadingEventContext> events) {
+		this.events = events;
 	}
 
 	public String addEvent() throws Exception {
 		FacilioContext context = new FacilioContext();
 //		context.put(EventConstants.EventContextNames.EVENT_PAYLOAD, payload);
-		context.put(EventConstants.EventContextNames.EVENT_LIST, Collections.singletonList(event));
+		context.put(EventConstants.EventContextNames.EVENT_LIST, events);
 		
 		Chain chain = TransactionChainFactory.getV2AddEventChain();
 		chain.execute(context);

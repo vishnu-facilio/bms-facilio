@@ -58,11 +58,6 @@ public class ReadingEventContext extends BaseEventContext {
 		return baseAlarm;
 	}
 	
-	@Override
-	public void updateAlarmOccurrenceContext(AlarmOccurrenceContext alarmOccurrence, boolean add) throws Exception {
-		super.updateAlarmOccurrenceContext(alarmOccurrence, add);
-	}
-	
 	private long ruleId = -1;
 	public long getRuleId() {
 		return ruleId;

@@ -8,6 +8,7 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.joda.time.DateTime;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
@@ -18,6 +19,7 @@ import com.facilio.events.constants.EventConstants;
 import com.facilio.events.util.EventAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.InsertRecordBuilder;
+import com.facilio.time.DateTimeUtil;
 
 public class InsertNewEventsCommand implements Command {
 
@@ -52,6 +54,10 @@ public class InsertNewEventsCommand implements Command {
 	private void updateEventObject(BaseEventContext baseEvent) throws Exception {
 		if (baseEvent.getSeverity() == null) {
 			baseEvent.setSeverity(AlarmAPI.getAlarmSeverity(baseEvent.getSeverityString()));
+		}
+		
+		if (baseEvent.getCreatedTime() == -1) {
+			baseEvent.setCreatedTime(DateTimeUtil.getCurrenTime());
 		}
 		
 		if (baseEvent.getSeverity() == null) {

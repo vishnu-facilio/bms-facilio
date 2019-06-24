@@ -186,13 +186,12 @@ public abstract class BaseEventContext extends ModuleBaseWithCustomFields {
 		alarmOccurrence.setSeverity(getSeverity());
 		alarmOccurrence.setAutoClear(getAutoClear());
 		
-		long currenTime = DateTimeUtil.getCurrenTime();
 		if (getSeverity().equals(AlarmAPI.getAlarmSeverity("Clear"))) {
-			alarmOccurrence.setClearedTime(currenTime);
+			alarmOccurrence.setClearedTime(getCreatedTime());
 		}
 		
 		if (add) {
-			alarmOccurrence.setCreatedTime(DateTimeUtil.getCurrenTime());
+			alarmOccurrence.setCreatedTime(getCreatedTime());
 		} 
 		else {
 			alarmOccurrence.setPreviousSeverity(previousSeverity);
