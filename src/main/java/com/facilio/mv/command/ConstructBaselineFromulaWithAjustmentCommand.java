@@ -51,7 +51,7 @@ public class ConstructBaselineFromulaWithAjustmentCommand implements Command {
 			
 			StringBuilder resultStringBuilder = new StringBuilder();
 			
-			workflowString.append("void enpi() {");
+			workflowString.append("Number enpi(Number startTime,Number endTime,Number resourceId,String currentModule,String currentField) {");
 			
 			FormulaFieldContext formulaField = baseLine.getFormulaField();
 			
