@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.unitconversion.Unit;
 
@@ -50,7 +51,7 @@ public class ItemContext extends ModuleBaseWithCustomFields {
 
 	public int getCostType() {
 		if (costType != null) {
-			return costType.getValue();
+			return costType.getIndex();
 		}
 		return -1;
 	}
@@ -59,11 +60,17 @@ public class ItemContext extends ModuleBaseWithCustomFields {
 		this.costType = CostType.valueOf(costType);
 	}
 
-	public static enum CostType {
+	public static enum CostType implements FacilioEnum {
 		FIFO, LIFO;
 
-		public int getValue() {
+		@Override
+		public int getIndex() {
 			return ordinal() + 1;
+		}
+
+		@Override
+		public String getValue() {
+			return name();
 		}
 
 		public static CostType valueOf(int value) {

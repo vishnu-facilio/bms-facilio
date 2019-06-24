@@ -215,6 +215,15 @@ public class ModuleFactory {
 		return fileModule;
 	}
 
+	public static FacilioModule getSystemEnumFieldModule() {
+		FacilioModule systemModule = new FacilioModule();
+		systemModule.setName("systemEnumFields");
+		systemModule.setDisplayName("System Enum Fields");
+		systemModule.setTableName("SystemEnumFields");
+
+		return systemModule;
+	}
+
 	public static FacilioModule getSpaceCategoryReadingRelModule() {
 		FacilioModule fieldModule = new FacilioModule();
 		fieldModule.setName("spacecategoryreading");

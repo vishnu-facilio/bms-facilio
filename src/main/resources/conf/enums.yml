@@ -1,0 +1,5 @@
+version: 1.0
+
+enums:
+  - name: CostType
+    enumClassName: com.facilio.bmsconsole.context.ItemContext$CostType #If it's static inner class use $

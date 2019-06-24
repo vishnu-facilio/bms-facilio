@@ -58,7 +58,6 @@ public class FieldUtil {
 	public static Object castOrParseValueAsPerType(FieldType type, Object value)  {
 		switch (type) {
 			case LOOKUP:
-			case ENUM:
 				throw new IllegalArgumentException("Unsupported DataType. Field Object is required for these types and cannot be used directly");
 			default:
 				FacilioField field = new FacilioField();
@@ -114,6 +113,7 @@ public class FieldUtil {
 			case FILE:
 			case COUNTER:
 			case ID:
+			case SYSTEM_ENUM:
 				if(value != null && !(value instanceof String && ((String)value).isEmpty())) {
 					return FacilioUtil.parseLong(value);
 				}

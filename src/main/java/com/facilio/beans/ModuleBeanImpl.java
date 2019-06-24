@@ -16,6 +16,7 @@ import java.util.Map;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
+import com.facilio.modules.fields.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -43,13 +44,6 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.fields.BooleanField;
-import com.facilio.modules.fields.EnumField;
-import com.facilio.modules.fields.EnumFieldValue;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.FileField;
-import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.NumberField;
 
 ;
 
@@ -507,6 +501,10 @@ public class ModuleBeanImpl implements ModuleBean {
 								prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
 								fields.add(FieldUtil.getAsBeanFromMap(prop, EnumField.class));
 							break;
+						case SYSTEM_ENUM:
+								prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
+								fields.add(FieldUtil.getAsBeanFromMap(prop, SystemEnumField.class));
+								break;
 						default:
 							fields.add(FieldUtil.getAsBeanFromMap(prop, FacilioField.class));
 							break;
@@ -541,6 +539,10 @@ public class ModuleBeanImpl implements ModuleBean {
 					extendedProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getFileFieldModule(), FieldFactory.getFileFieldFields(), entry.getValue()));
 					break;
 				case ENUM:
+					extendedProps.put(entry.getKey(), getEnumExtendedProps(entry.getValue()));
+					break;
+				case SYSTEM_ENUM:
+					extendedProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getSystemEnumFieldModule(), FieldFactory.getSystemEnumFields(), entry.getValue()));
 					extendedProps.put(entry.getKey(), getEnumExtendedProps(entry.getValue()));
 					break;
 				default:
@@ -809,6 +811,10 @@ public class ModuleBeanImpl implements ModuleBean {
 					addExtendedProps(ModuleFactory.getFileFieldModule(), FieldFactory.getFileFieldFields(), fieldProps);
 					break;
 				case ENUM:
+					addEnumField((EnumField) field);
+					break;
+				case SYSTEM_ENUM:
+					addExtendedProps(ModuleFactory.getSystemEnumFieldModule(), FieldFactory.getSystemEnumFields(), fieldProps);
 					addEnumField((EnumField) field);
 					break;
 				default:

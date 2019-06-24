@@ -529,6 +529,15 @@ public class FieldFactory {
 		return fields;
 	}
 
+	public static List<FacilioField> getSystemEnumFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getSystemEnumFieldModule();
+
+		fields.add(getField("fieldId", "FIELDID", module, FieldType.ID));
+		fields.add(getField("enumName", "ENUM_NAME", module, FieldType.STRING));
+		return fields;
+	}
+
 	public static List<FacilioField> getEnumFieldValuesFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getEnumFieldValuesModule();

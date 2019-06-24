@@ -1,13 +1,5 @@
 package com.facilio.fw.listener;
 
-import com.amazonaws.ClientConfiguration;
-import com.amazonaws.auth.AWSCredentialsProvider;
-import com.amazonaws.client.AwsAsyncClientParams;
-import com.amazonaws.handlers.RequestHandler2;
-import com.amazonaws.metrics.RequestMetricCollector;
-import com.amazonaws.services.secretsmanager.AWSSecretsManager;
-import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
-import com.amazonaws.services.secretsmanager.model.*;
 import com.facilio.activity.ActivityType;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
@@ -24,13 +16,12 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.kafka.KafkaProcessor;
 import com.facilio.kinesis.KinesisProcessor;
 import com.facilio.logging.SysOutLogger;
+import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.FieldUtil;
 import com.facilio.queue.FacilioExceptionProcessor;
-import com.facilio.server.ServerInfo;
 import com.facilio.serviceportal.actions.PortalAuthInterceptor;
 import com.facilio.tasker.FacilioScheduler;
 import com.facilio.tasker.executor.InstantJobExecutor;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.flywaydb.core.Flyway;
@@ -101,6 +92,7 @@ public class FacilioContextListener implements ServletContextListener {
 		TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACTION,1);
 		ActivityType.getActivityType(1);
 		FieldUtil.inti();
+		FacilioEnum.getEnumValues("CostType");
 
 		try {
 			migrateSchemaChanges();
