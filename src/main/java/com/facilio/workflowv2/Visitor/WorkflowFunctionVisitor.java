@@ -59,12 +59,12 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
 	boolean breakCodeFlow;
     boolean isFunctionHeaderVisitor;
     public void setParams(List<Object> parmasObjects) throws Exception {
-    	if(workflowContext.getParameters().size() > 0) {
-    		if(parmasObjects.size() < workflowContext.getParameters().size()) {
-        		throw new RuntimeException("param count mismatched");
-        	}
+    	if(parmasObjects != null && parmasObjects.size() > 0) {
+//    		if(parmasObjects.size() < workflowContext.getParameters().size()) {
+//        		throw new RuntimeException("param count mismatched");
+//        	}
         	
-        	for(int i = 0;i<workflowContext.getParameters().size(); i++) {
+        	for(int i = 0;i<parmasObjects.size(); i++) {
         		ParameterContext param = workflowContext.getParameters().get(i);
         		Object value = parmasObjects.get(i);
         		varMemoryMap.put(param.getName(), new Value(value));
