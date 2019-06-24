@@ -11,6 +11,7 @@ import java.util.Map;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext.AssetState;
+import com.facilio.bmsconsole.context.ContractsContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.ViewField;
@@ -39,6 +40,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.time.DateTimeUtil;
+import com.opensymphony.xwork2.util.fs.Revision;
 
 public class ViewFactory {
 
@@ -3358,6 +3360,7 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All");
+		allView.setCriteria(getContractListCriteria());
 		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
 		return allView;
 	}
@@ -3804,8 +3807,7 @@ public class ViewFactory {
 		Condition statusCond = new Condition();
 		statusCond.setField(statusField);
 		statusCond.setOperator(NumberOperators.NOT_EQUALS);
-		statusCond.setValue(String.valueOf(6+""));
-
+		statusCond.setValue(String.valueOf(ContractsContext.Status.REVISED.getValue()));
 		Criteria criteria = new Criteria ();
 		criteria.addAndCondition(statusCond);
 
