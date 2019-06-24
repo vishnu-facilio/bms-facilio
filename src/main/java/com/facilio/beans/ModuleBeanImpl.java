@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
+import com.facilio.modules.*;
 import com.facilio.modules.fields.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -39,12 +40,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.db.util.DBConf;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
 
 ;
 
@@ -504,7 +500,9 @@ public class ModuleBeanImpl implements ModuleBean {
 							break;
 						case SYSTEM_ENUM:
 								prop.putAll(extendedPropsMap.get(type).get(prop.get("fieldId")));
-								fields.add(FieldUtil.getAsBeanFromMap(prop, SystemEnumField.class));
+								SystemEnumField enumField = FieldUtil.getAsBeanFromMap(prop, SystemEnumField.class);
+								enumField.setValues(FacilioEnum.getEnumValues(enumField.getEnumName()));
+								fields.add(enumField);
 								break;
 						default:
 							fields.add(FieldUtil.getAsBeanFromMap(prop, FacilioField.class));
@@ -544,7 +542,6 @@ public class ModuleBeanImpl implements ModuleBean {
 					break;
 				case SYSTEM_ENUM:
 					extendedProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getSystemEnumFieldModule(), FieldFactory.getSystemEnumFields(), entry.getValue()));
-					extendedProps.put(entry.getKey(), getEnumExtendedProps(entry.getValue()));
 					break;
 				default:
 					break;
@@ -816,7 +813,6 @@ public class ModuleBeanImpl implements ModuleBean {
 					break;
 				case SYSTEM_ENUM:
 					addExtendedProps(ModuleFactory.getSystemEnumFieldModule(), FieldFactory.getSystemEnumFields(), fieldProps);
-					addEnumField((EnumField) field);
 					break;
 				default:
 					break;
