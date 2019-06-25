@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Pattern;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.RuleNode;
@@ -515,7 +516,7 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     	
     	int seq = criteria.addConditionMap(condition);
     	
-    	criteria.setPattern(criteria.getPattern().replaceFirst(ctx.getText(), String.valueOf(seq)));
+    	criteria.setPattern(criteria.getPattern().replaceFirst(Pattern.quote(ctx.getText()), String.valueOf(seq)));
     	
     	return visitChildren(ctx); 
     }
