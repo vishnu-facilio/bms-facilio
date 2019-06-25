@@ -99,11 +99,10 @@
         	"usage" : "rulesSummary",
         	"workflow": "Map test(Number ruleId) 
 		    { 
-		        { 
 		            cri = {
 						criteria : [ruleId == ruleId && clearedTime > 0 ],
 		        		orderBy : \"createdTime\" asc
-					}
+					};
 		            date = NameSpace(\"date\");
 		            ranges = date.getDateRange(\"Last Month\");
 		        	readingAlarmModule = Module(\"readingalarm\"); 
@@ -168,7 +167,7 @@
 		            resMap[\"previousMonthTimeToClear\"] = previousMonthTimeToClear;
 		            resMap[\"pmttc\"] = previousMonthmeanTimeToClear;
 		         	return resMap;
-		        }
+		        
 		    }"
         }
         
