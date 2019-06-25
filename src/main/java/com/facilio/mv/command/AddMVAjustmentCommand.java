@@ -20,6 +20,7 @@ import com.facilio.mv.context.MVBaseline;
 import com.facilio.mv.context.MVProjectContext;
 import com.facilio.mv.context.MVProjectWrapper;
 import com.facilio.mv.util.MVUtil;
+import com.facilio.time.DateRange;
 
 public class AddMVAjustmentCommand implements Command {
 
@@ -42,6 +43,7 @@ public class AddMVAjustmentCommand implements Command {
 			adjustment1.setProject(mvProjectWrapper.getMvProject());
 			adjustment1.setOrgId(AccountUtil.getCurrentOrg().getId());
 			MVUtil.fillFormulaFieldDetails(adjustment1.getFormulaField(), mvProjectWrapper.getMvProject(),null,adjustment1);
+			context.put(FacilioConstants.ContextNames.DATE_RANGE,new DateRange(adjustment1.getStartTime(), adjustment1.getEndTime()));
 			context.put(FacilioConstants.ContextNames.FORMULA_FIELD, adjustment1.getFormulaField());
 
 			if (adjustment1.getFormulaField().getInterval() == -1) {

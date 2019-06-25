@@ -22,6 +22,7 @@ import com.facilio.mv.context.MVBaseline;
 import com.facilio.mv.context.MVProjectContext;
 import com.facilio.mv.context.MVProjectWrapper;
 import com.facilio.mv.util.MVUtil;
+import com.facilio.time.DateRange;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowContext.WorkflowUIMode;
 
@@ -91,7 +92,7 @@ public class ConstructBaselineFromulaWithAjustmentCommand implements Command {
 				
 				FormulaFieldContext formulaFieldContext = baseLine.getFormulaFieldWithAjustment();
 				formulaFieldContext.setWorkflow(newBaselineWorkflow);
-				
+				context.put(FacilioConstants.ContextNames.DATE_RANGE,new DateRange(baseLine.getStartTime(), baseLine.getEndTime()));
 				context.put(FacilioConstants.ContextNames.FORMULA_FIELD, formulaFieldContext);
 				
 				Chain updateEnPIChain = FacilioChainFactory.updateFormulaChain();
@@ -104,6 +105,7 @@ public class ConstructBaselineFromulaWithAjustmentCommand implements Command {
 				
 				context.put(FacilioConstants.ContextNames.FORMULA_FIELD,formulaFieldContext);
 				formulaFieldContext.setName(baseLine.getName()+"WithAjustment");
+				context.put(FacilioConstants.ContextNames.DATE_RANGE,new DateRange(baseLine.getStartTime(), baseLine.getEndTime()));
 				MVUtil.fillFormulaFieldDetails(formulaFieldContext, mvProjectWrapper.getMvProject(),null,null);
 				Chain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
 				addEnpiChain.execute(context);

@@ -22,6 +22,7 @@ import com.facilio.mv.context.MVBaseline;
 import com.facilio.mv.context.MVProjectContext;
 import com.facilio.mv.context.MVProjectWrapper;
 import com.facilio.mv.util.MVUtil;
+import com.facilio.time.DateRange;
 
 public class AddMVBaselineCommand implements Command {
 
@@ -46,6 +47,7 @@ public class AddMVBaselineCommand implements Command {
 			baseLine.setOrgId(AccountUtil.getCurrentOrg().getId());
 			context.put(FacilioConstants.ContextNames.FORMULA_FIELD, baseLine.getFormulaField());
 			MVUtil.fillFormulaFieldDetails(baseLine.getFormulaField(), mvProjectWrapper.getMvProject(),baseLine,null);
+			context.put(FacilioConstants.ContextNames.DATE_RANGE,new DateRange(baseLine.getStartTime(), baseLine.getEndTime()));
 			Chain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
 			addEnpiChain.execute(context);
 		}
