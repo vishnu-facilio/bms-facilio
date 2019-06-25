@@ -74,5 +74,13 @@ public class ContractAssociatedAssetsContext extends ModuleBaseWithCustomFields 
 		this.leaseEndValue = leaseEndValue;
 	}
 	
+	private long poId;
+	public long getPoId() {
+		return poId;
+	}
+	public void setPoId(long poId) {
+		this.poId = poId;
+	}
+	
 	
 }

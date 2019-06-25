@@ -3807,7 +3807,8 @@ public class ViewFactory {
 		Condition statusCond = new Condition();
 		statusCond.setField(statusField);
 		statusCond.setOperator(NumberOperators.NOT_EQUALS);
-		statusCond.setValue(String.valueOf(ContractsContext.Status.REVISED.getValue()));
+		statusCond.setValue(String.valueOf(ContractsContext.Status.REVISED));
+
 		Criteria criteria = new Criteria ();
 		criteria.addAndCondition(statusCond);
 

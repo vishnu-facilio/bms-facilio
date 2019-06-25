@@ -72,7 +72,7 @@ public class AddOrUpdateWarrantyContractCommand implements Command{
 						.andCondition(CriteriaAPI.getCondition("CONTRACT_ID", "contractId", String.valueOf(warrantyContractContext.getId()), NumberOperators.EQUALS));
 				deleteBuilder.delete();
 				updateLineItems(warrantyContractContext);
-				updateAssetsAssociated(warrantyContractContext);
+				ContractsAPI.updateAssetsAssociated(warrantyContractContext);
 				ContractsAPI.updateTermsAssociated(warrantyContractContext);
 				//add service if newly added here as lineItem
 				//addServiceRecords(warrantyContractContext.getLineItems(),serviceModule,serviceFields);
@@ -89,7 +89,7 @@ public class AddOrUpdateWarrantyContractCommand implements Command{
 					warrantyContractContext.setStatus(Status.REVISED);
 					ContractsAPI.updateRecord(warrantyContractContext, module, fields);
 					updateLineItems(revisedContract);
-					updateAssetsAssociated(revisedContract);
+					ContractsAPI.updateAssetsAssociated(revisedContract);
 					ContractsAPI.updateTermsAssociated(revisedContract);
 					revisedContract.setStatus(Status.PENDING_FOR_REVISION);
 					
@@ -114,7 +114,7 @@ public class AddOrUpdateWarrantyContractCommand implements Command{
 				warrantyContractContext.setParentId(warrantyContractContext.getLocalId());
 				ContractsAPI.updateRecord(warrantyContractContext, module, fields);
 				updateLineItems(warrantyContractContext);
-				updateAssetsAssociated(warrantyContractContext);
+				ContractsAPI.updateAssetsAssociated(warrantyContractContext);
 				ContractsAPI.updateTermsAssociated(warrantyContractContext);
 				
 				//add service if newly added here as lineItem
@@ -140,19 +140,7 @@ public class AddOrUpdateWarrantyContractCommand implements Command{
 		}
 	  }
 		
-	private void updateAssetsAssociated(WarrantyContractContext warrantycontractContext) throws Exception {
-		List<ContractAssociatedAssetsContext> associatedAssets = warrantycontractContext.getAssociatedAssets();
-		if(CollectionUtils.isNotEmpty(associatedAssets)) {
-			for(ContractAssociatedAssetsContext asset : associatedAssets) {
-				asset.setContractId(warrantycontractContext.getId());
-			}
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTRACT_ASSOCIATED_ASSETS);
-			List<FacilioField> fields = modBean.getAllFields(module.getName());
-			ContractsAPI.addRecord(true,associatedAssets , module, fields);
-		}
-	}
-		
+
 	private void addServiceRecords(List<WarrantyContractLineItemContext> lineItems,FacilioModule serviceModule, List<FacilioField> serviceFields) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<ServiceContext> newServiceRecords = new ArrayList<ServiceContext>();

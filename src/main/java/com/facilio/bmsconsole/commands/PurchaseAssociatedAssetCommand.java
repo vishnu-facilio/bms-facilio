@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.context.InventoryType;
 import com.facilio.bmsconsole.context.PurchaseOrderContext;
 import com.facilio.bmsconsole.context.PurchaseOrderContext.Status;
 import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.ContractsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -32,27 +33,8 @@ public class PurchaseAssociatedAssetCommand implements Command {
 		// TODO Auto-generated method stub
 		List<ContractAssociatedAssetsContext> contractAssociatedAssets = (List<ContractAssociatedAssetsContext>)context.get(FacilioConstants.ContextNames.CONTRACT_ASSOCIATED_ASSETS);
 		if(CollectionUtils.isNotEmpty(contractAssociatedAssets)) {
-			StringJoiner ids = new StringJoiner(",");
-			for(ContractAssociatedAssetsContext asset : contractAssociatedAssets) {
-				ids.add(String.valueOf(asset.getId()));
-			}
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTRACT_ASSOCIATED_ASSETS);
-			List<FacilioField> fields = modBean.getAllFields(module.getName());
-			Map<String, Object> updateMap = new HashMap<>();
-			FacilioField statusField = modBean.getField("status", module.getName());
-			updateMap.put("status", ContractAssociatedAssetsContext.Status.PURCHASED.ordinal()+1);
-			List<FacilioField> updatedfields = new ArrayList<FacilioField>();
-			updatedfields.add(statusField);
-			
-			UpdateRecordBuilder<ContractAssociatedAssetsContext> updateBuilder = new UpdateRecordBuilder<ContractAssociatedAssetsContext>()
-					.module(module)
-					.fields(fields)
-					.andCondition(CriteriaAPI.getIdCondition(ids.toString(),module));
-				    ;
-			updateBuilder.updateViaMap(updateMap);
 			//create po
-			context.put(FacilioConstants.ContextNames.PURCHASE_ORDER, createPo(contractAssociatedAssets.get(0).getContractId(), contractAssociatedAssets));
+			context.put(FacilioConstants.ContextNames.RECORD, createPo(contractAssociatedAssets.get(0).getContractId(), contractAssociatedAssets));
 		}
 		return false;
 	}
@@ -69,7 +51,7 @@ public class PurchaseAssociatedAssetCommand implements Command {
 		for(ContractAssociatedAssetsContext asset : associatedAssets) {
 			PurchaseOrderLineItemContext lineItem = new PurchaseOrderLineItemContext();
 			lineItem.setInventoryType(InventoryType.OTHERS);
-			lineItem.setRemarks("payment for asset " + asset.getAsset().getSerialNumber());
+			lineItem.setRemarks("payment for asset " + AssetsAPI.getAssetInfo(asset.getAsset().getId()).getSerialNumber());
 			lineItem.setQuantity(1);
 			lineItem.setUnitPrice(asset.getLeaseEndValue());
 			lineItems.add(lineItem);

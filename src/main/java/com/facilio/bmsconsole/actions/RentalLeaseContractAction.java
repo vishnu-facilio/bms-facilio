@@ -296,7 +296,7 @@ public class RentalLeaseContractAction extends FacilioAction{
 		Chain chain = TransactionChainFactory.getPurchaseAssetChain();
 		chain.execute(context);
 		
-		setResult(FacilioConstants.ContextNames.PURCHASE_ORDER, context.get(FacilioConstants.ContextNames.PURCHASE_ORDER));
+		setResult(FacilioConstants.ContextNames.PURCHASE_ORDER, context.get(FacilioConstants.ContextNames.RECORD));
 		
 		return SUCCESS;
 	}

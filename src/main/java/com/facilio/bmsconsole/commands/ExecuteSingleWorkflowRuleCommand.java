@@ -28,7 +28,7 @@ public class ExecuteSingleWorkflowRuleCommand implements Command {
 		LOGGER.info("Record Map : "+recordMap);
 		Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = CommonCommandUtil.getChangeSetMap((FacilioContext) context);
 		
-		if (rule != null && recordMap != null && !recordMap.isEmpty()) {
+		if (rule != null && recordMap != null && !recordMap.isEmpty() && !rule.isConsolidatedAction()) {
 			Map<String, Object> placeHolders = WorkflowRuleAPI.getOrgPlaceHolders();
 			for (Map.Entry<String, List> entry : recordMap.entrySet()) {
 				String moduleName = entry.getKey();

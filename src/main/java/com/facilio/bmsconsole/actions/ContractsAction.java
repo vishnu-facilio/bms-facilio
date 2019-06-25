@@ -25,9 +25,18 @@ public class ContractsAction extends FacilioAction{
 	public void setRecordId(long recordId) {
 		this.recordId = recordId;
 	}
+	
+	private int contractType;
+	
+	public int getContractType() {
+		return contractType;
+	}
+	public void setContractType(int contractType) {
+		this.contractType = contractType;
+	}
 	public String addOrUpdateLineItem() throws Exception {
 		FacilioContext context = new FacilioContext();
-		
+		context.put(FacilioConstants.ContextNames.CONTRACT_TYPE, getContractType());
 		Chain chain = TransactionChainFactory.getAddPurchaseContractLineItem();
 		chain.execute(context);
 		
@@ -35,4 +44,15 @@ public class ContractsAction extends FacilioAction{
 		
 		return SUCCESS;
 	} 
+	
+	public String getActiveContractAssociatedAssets() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.CONTRACT_TYPE, getContractType());
+		Chain chain = TransactionChainFactory.getActiveContractAssociatedAssetChain();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.ASSET_ID, context.get(FacilioConstants.ContextNames.ASSET_ID));
+		
+		return SUCCESS;
+	}
 }

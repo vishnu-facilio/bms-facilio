@@ -2958,6 +2958,10 @@
 	</package>
 
     <package name="contractsApi" namespace="/api/v2/contract" extends="v2Api">
+		<action name="activeContractsAssociatedAssets" class="com.facilio.bmsconsole.actions.ContractsAction" method="getActiveContractAssociatedAssets">
+			<param name="moduleName">contract</param>
+			<param name="permission">READ</param>
+		</action>
 		<action name="expiryDateReminder" class="com.facilio.bmsconsole.actions.ContractsAction" method="configureExpiryDateReminder">
 			<param name="moduleName">contract</param>
 			<param name="permission">READ</param>

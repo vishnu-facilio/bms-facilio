@@ -3409,6 +3409,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(new PurchaseAssociatedAssetCommand());
 			c.addCommand(getAddPurchaseOrderChain());
+			c.addCommand(new UpdateAssociatedAssetContextCommand());
 			return c;
 		}
 
@@ -3442,6 +3443,13 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteJobChainCommand());
 			return c;
 		}
+		
+		public static Chain getActiveContractAssociatedAssetChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new GetActiveContractAssociatedAssetsCommand());
+			return c;
+		}
+
 		
 }
 

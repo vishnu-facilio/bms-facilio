@@ -9,6 +9,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ContractAssociatedAssetsContext;
 import com.facilio.bmsconsole.context.ContractsContext;
+import com.facilio.bmsconsole.util.ContractsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -34,7 +35,7 @@ public class AssociateAssetToContractCommand implements Command{
 					.andCondition(CriteriaAPI.getCondition("CONTRACT_ID", "contractId", String.valueOf(contractContext.getId()), NumberOperators.EQUALS));
 			deleteAssetRelationBuilder.delete();
 		
-			updateAssetsAssociated(contractContext);
+			ContractsAPI.updateAssetsAssociated(contractContext);
 		}
 		else {
 			throw new IllegalArgumentException("Assets can be associated to only approved contracts");
@@ -44,26 +45,6 @@ public class AssociateAssetToContractCommand implements Command{
 		return false;
 	}
 	
-	private void updateAssetsAssociated(ContractsContext contractContext) throws Exception {
-		List<ContractAssociatedAssetsContext> associatedAssets = contractContext.getAssociatedAssets();
-		if(CollectionUtils.isNotEmpty(associatedAssets)) {
-			for(ContractAssociatedAssetsContext asset : associatedAssets) {
-				asset.setContractId(contractContext.getId());
-			}
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTRACT_ASSOCIATED_ASSETS);
-			List<FacilioField> fields = modBean.getAllFields(module.getName());
-			addRecord(true,associatedAssets , module, fields);
-		}
-	}
-	private void addRecord(boolean isLocalIdNeeded,List<? extends ModuleBaseWithCustomFields> list, FacilioModule module, List<FacilioField> fields) throws Exception {
-		InsertRecordBuilder insertRecordBuilder = new InsertRecordBuilder<>()
-				.module(module)
-				.fields(fields);
-		if(isLocalIdNeeded) {
-			insertRecordBuilder.withLocalId();
-		}
-		insertRecordBuilder.addRecords(list);
-		insertRecordBuilder.save();
-	}
+	
+	
 }

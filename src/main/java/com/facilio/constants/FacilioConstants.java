@@ -1037,6 +1037,8 @@ public class FacilioConstants {
 		public static final String CONTRACT_ASSOCIATED_ASSETS = "contractassets";
 		public static final String CONTRACT_ASSOCIATED_TERMS = "contractterms";
 		
+		public static final String CONTRACT_TYPE = "Contract_Type";
+		
 		public static final String RENTAL_LEASE_CONTRACTS = "rentalleasecontracts";
 		public static final String RENTAL_LEASE_CONTRACT = "rentalleasecontract";
 		public static final String RENTAL_LEASE_CONTRACTS_LINE_ITEMS = "rentalleasecontractlineitems";

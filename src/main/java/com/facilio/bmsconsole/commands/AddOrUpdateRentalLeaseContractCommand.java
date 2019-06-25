@@ -81,7 +81,7 @@ public class AddOrUpdateRentalLeaseContractCommand implements Command{
 						.andCondition(CriteriaAPI.getCondition("CONTRACT_ID", "contractId", String.valueOf(rentalLeaseContractContext.getId()), NumberOperators.EQUALS));
 				deleteBuilder.delete();
 				updateLineItems(rentalLeaseContractContext);
-				updateAssetsAssociated(rentalLeaseContractContext);
+				ContractsAPI.updateAssetsAssociated(rentalLeaseContractContext);
 				ContractsAPI.updateTermsAssociated(rentalLeaseContractContext);
 				ContractsAPI.addRecord(false,rentalLeaseContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 				context.put(FacilioConstants.ContextNames.RECORD, rentalLeaseContractContext);
@@ -95,7 +95,7 @@ public class AddOrUpdateRentalLeaseContractCommand implements Command{
 					rentalLeaseContractContext.setStatus(Status.REVISED);
 					ContractsAPI.updateRecord(rentalLeaseContractContext, module, fields);
 					updateLineItems(revisedContract);
-					updateAssetsAssociated(revisedContract);
+					ContractsAPI.updateAssetsAssociated(revisedContract);
 					ContractsAPI.updateTermsAssociated(revisedContract);
 					revisedContract.setStatus(Status.PENDING_FOR_REVISION);
 					ContractsAPI.addRecord(false,revisedContract.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
@@ -115,7 +115,7 @@ public class AddOrUpdateRentalLeaseContractCommand implements Command{
 				rentalLeaseContractContext.setParentId(rentalLeaseContractContext.getLocalId());
 				ContractsAPI.updateRecord(rentalLeaseContractContext, module, fields);
 				updateLineItems(rentalLeaseContractContext);
-				updateAssetsAssociated(rentalLeaseContractContext);
+				ContractsAPI.updateAssetsAssociated(rentalLeaseContractContext);
 				ContractsAPI.updateTermsAssociated(rentalLeaseContractContext);
 				ContractsAPI.addRecord(false,rentalLeaseContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 				context.put(FacilioConstants.ContextNames.RECORD, rentalLeaseContractContext);
@@ -146,19 +146,7 @@ public class AddOrUpdateRentalLeaseContractCommand implements Command{
 		}
 	  }
 		
-	private void updateAssetsAssociated(RentalLeaseContractContext contractContext) throws Exception {
-		List<ContractAssociatedAssetsContext> associatedAssets = contractContext.getAssociatedAssets();
-		if(CollectionUtils.isNotEmpty(associatedAssets)) {
-			for(ContractAssociatedAssetsContext asset : associatedAssets) {
-				asset.setContractId(contractContext.getId());
-			}
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTRACT_ASSOCIATED_ASSETS);
-			List<FacilioField> fields = modBean.getAllFields(module.getName());
-			ContractsAPI.addRecord(true,associatedAssets , module, fields);
-		}
-	}
-		
+	
 	
 	
 	

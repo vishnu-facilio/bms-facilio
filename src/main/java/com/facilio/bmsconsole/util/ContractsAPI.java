@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.context.ContractAssociatedTermsContext;
 import com.facilio.bmsconsole.context.ContractsContext;
 import com.facilio.bmsconsole.context.LabourContractLineItemContext;
 import com.facilio.bmsconsole.context.PurchaseContractLineItemContext;
+import com.facilio.bmsconsole.context.RentalLeaseContractContext;
 import com.facilio.bmsconsole.context.RentalLeaseContractLineItemsContext;
 import com.facilio.bmsconsole.context.WarrantyContractLineItemContext;
 import com.facilio.constants.FacilioConstants;
@@ -98,7 +99,7 @@ public class ContractsAPI {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTRACT_ASSOCIATED_TERMS);
 			List<FacilioField> fields = modBean.getAllFields(module.getName());
-			addRecord(true,associatedTerms , module, fields);
+			addRecord(false,associatedTerms , module, fields);
 		}
 	}
 	public static void addRecord(boolean isLocalIdNeeded, List<? extends ModuleBaseWithCustomFields> list, FacilioModule module, List<FacilioField> fields) throws Exception {
@@ -200,5 +201,19 @@ public class ContractsAPI {
 				.andCondition(CriteriaAPI.getIdCondition(data.getId(), module));
 		updateRecordBuilder.update(data);
 	}
+	
+	public static void updateAssetsAssociated(ContractsContext contractContext) throws Exception {
+		List<ContractAssociatedAssetsContext> associatedAssets = contractContext.getAssociatedAssets();
+		if(CollectionUtils.isNotEmpty(associatedAssets)) {
+			for(ContractAssociatedAssetsContext asset : associatedAssets) {
+				asset.setContractId(contractContext.getId());
+			}
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTRACT_ASSOCIATED_ASSETS);
+			List<FacilioField> fields = modBean.getAllFields(module.getName());
+			ContractsAPI.addRecord(false,associatedAssets , module, fields);
+		}
+	}
+		
 
 }
