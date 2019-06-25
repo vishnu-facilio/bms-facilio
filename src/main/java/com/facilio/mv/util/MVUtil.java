@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.context.FormulaFieldContext.ResourceType;
 import com.facilio.bmsconsole.context.FormulaFieldContext.TriggerType;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -178,6 +179,7 @@ public class MVUtil {
 				.beanClass(MVProjectContext.class);
 		
 		List<MVProjectContext> mvProjects = selectProject.get();
+		ResourceAPI.loadModuleResources(mvProjects, mvProjectFields);
 		
 		return mvProjects;
 		
