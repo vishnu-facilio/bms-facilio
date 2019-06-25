@@ -232,25 +232,25 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     	
     	String varName = ctx.VAR().getText();
     	
-    	if (ctx.atom(0) != null) {
+    	if (ctx.expr(1) != null) {
         	
         	Value parentValue = varMemoryMap.get(varName);
         	
         	if(parentValue.asObject() instanceof List) {
         		
-        		Value index = this.visit(ctx.atom(0));
+        		Value index = this.visit(ctx.expr(0));
         		
-        		Value value = this.visit(ctx.expr());
+        		Value value = this.visit(ctx.expr(1));
         		parentValue.asList().add(index.asInt(), value.asObject());
         	}
         	else if (parentValue.asObject() instanceof Map) {
-        		Value key = this.visit(ctx.atom(0));
-        		Value value = this.visit(ctx.expr());
+        		Value key = this.visit(ctx.expr(0));
+        		Value value = this.visit(ctx.expr(1));
         		parentValue.asMap().put(key.asObject(), value.asObject());
         	}
         }
         else {
-        	Value value = this.visit(ctx.expr());
+        	Value value = this.visit(ctx.expr(0));
         	return varMemoryMap.put(varName, value);
         }
         return Value.VOID;
@@ -342,7 +342,7 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     @Override 
     public Value visitCustomModuleInitialization(WorkflowV2Parser.CustomModuleInitializationContext ctx) {
     	try {
-    		String moduleName = this.visit(ctx.atom()).asString();
+    		String moduleName = this.visit(ctx.expr()).asString();
         	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         	FacilioModule module = modBean.getModule(moduleName);
         	if(module == null) {
@@ -358,7 +358,7 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     @Override 
     public Value visitNameSpaceInitialization(WorkflowV2Parser.NameSpaceInitializationContext ctx) {
     	try {
-    		String nameSpaceString = this.visit(ctx.atom()).asString();
+    		String nameSpaceString = this.visit(ctx.expr()).asString();
         	FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.getFacilioDefaultFunction(nameSpaceString);
         	if(nameSpaceEnum == null) {
         		WorkflowNamespaceContext namespace = UserFunctionAPI.getNameSpace(nameSpaceString);
@@ -479,7 +479,7 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     	
     	Operator operator = null;
     	
-    	Value operatorValue = this.visit(ctx.atom());
+    	Value operatorValue = this.visit(ctx.expr());
     	switch(ctx.op.getText()) {
     	case "==" :
     		if(operatorValue.asObject() instanceof String) {
@@ -549,28 +549,28 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
 		dbParamContext.setCriteria(criteriaValue.asCriteria());
 
 		if(ctx.db_param_field(0) != null) {
-			Value fieldValue = this.visit(ctx.db_param_field(0).atom());
+			Value fieldValue = this.visit(ctx.db_param_field(0).expr());
 			dbParamContext.setFieldName(fieldValue.asString());
 		}
 		if(ctx.db_param_aggr(0) != null) {
-			Value aggrValue = this.visit(ctx.db_param_aggr(0).atom());
+			Value aggrValue = this.visit(ctx.db_param_aggr(0).expr());
 			dbParamContext.setAggregateString(aggrValue.asString());
 		}
 		if(ctx.db_param_limit(0) != null) {
-			Value limitValue = this.visit(ctx.db_param_limit(0).atom());
+			Value limitValue = this.visit(ctx.db_param_limit(0).expr());
 			dbParamContext.setLimit(limitValue.asInt());
 		}
 		if(ctx.db_param_range(0) != null) {
-			Value fromValue = this.visit(ctx.db_param_range(0).atom(0));
-			Value toValue = this.visit(ctx.db_param_range(0).atom(1));
+			Value fromValue = this.visit(ctx.db_param_range(0).expr(0));
+			Value toValue = this.visit(ctx.db_param_range(0).expr(1));
 			dbParamContext.setRange(Pair.of(fromValue.asInt(), toValue.asInt()));
 		}
 		if(ctx.db_param_group_by(0) != null) {
-			Value fieldValue = this.visit(ctx.db_param_group_by(0).atom());
+			Value fieldValue = this.visit(ctx.db_param_group_by(0).expr());
 			dbParamContext.setGroupBy(fieldValue.asString());
 		}
 		if(ctx.db_param_sort(0) != null) {
-			Value sortByField = this.visit(ctx.db_param_sort(0).atom());
+			Value sortByField = this.visit(ctx.db_param_sort(0).expr());
 			dbParamContext.setSortByFieldName(sortByField.asString());
 			dbParamContext.setSortOrder(ctx.db_param_sort(0).op.getText());
 		}

@@ -604,19 +604,16 @@ public class WorkflowV2Parser extends Parser {
 	public static class AssignmentContext extends ParserRuleContext {
 		public TerminalNode VAR() { return getToken(WorkflowV2Parser.VAR, 0); }
 		public TerminalNode ASSIGN() { return getToken(WorkflowV2Parser.ASSIGN, 0); }
-		public ExprContext expr() {
-			return getRuleContext(ExprContext.class,0);
+		public List<ExprContext> expr() {
+			return getRuleContexts(ExprContext.class);
+		}
+		public ExprContext expr(int i) {
+			return getRuleContext(ExprContext.class,i);
 		}
 		public TerminalNode SEMICOLON() { return getToken(WorkflowV2Parser.SEMICOLON, 0); }
 		public List<TerminalNode> OPEN_BRACKET() { return getTokens(WorkflowV2Parser.OPEN_BRACKET); }
 		public TerminalNode OPEN_BRACKET(int i) {
 			return getToken(WorkflowV2Parser.OPEN_BRACKET, i);
-		}
-		public List<AtomContext> atom() {
-			return getRuleContexts(AtomContext.class);
-		}
-		public AtomContext atom(int i) {
-			return getRuleContext(AtomContext.class,i);
 		}
 		public List<TerminalNode> CLOSE_BRACKET() { return getTokens(WorkflowV2Parser.CLOSE_BRACKET); }
 		public TerminalNode CLOSE_BRACKET(int i) {
@@ -659,7 +656,7 @@ public class WorkflowV2Parser extends Parser {
 				setState(112);
 				match(OPEN_BRACKET);
 				setState(113);
-				atom();
+				expr(0);
 				setState(114);
 				match(CLOSE_BRACKET);
 				}
@@ -1782,8 +1779,8 @@ public class WorkflowV2Parser extends Parser {
 	}
 	public static class CustomModuleInitializationContext extends AtomContext {
 		public TerminalNode OPEN_PARANTHESIS() { return getToken(WorkflowV2Parser.OPEN_PARANTHESIS, 0); }
-		public AtomContext atom() {
-			return getRuleContext(AtomContext.class,0);
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
 		}
 		public TerminalNode CLOSE_PARANTHESIS() { return getToken(WorkflowV2Parser.CLOSE_PARANTHESIS, 0); }
 		public CustomModuleInitializationContext(AtomContext ctx) { copyFrom(ctx); }
@@ -1820,8 +1817,8 @@ public class WorkflowV2Parser extends Parser {
 	}
 	public static class NameSpaceInitializationContext extends AtomContext {
 		public TerminalNode OPEN_PARANTHESIS() { return getToken(WorkflowV2Parser.OPEN_PARANTHESIS, 0); }
-		public AtomContext atom() {
-			return getRuleContext(AtomContext.class,0);
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
 		}
 		public TerminalNode CLOSE_PARANTHESIS() { return getToken(WorkflowV2Parser.CLOSE_PARANTHESIS, 0); }
 		public NameSpaceInitializationContext(AtomContext ctx) { copyFrom(ctx); }
@@ -2027,7 +2024,7 @@ public class WorkflowV2Parser extends Parser {
 				setState(241);
 				match(OPEN_PARANTHESIS);
 				setState(242);
-				atom();
+				expr(0);
 				setState(243);
 				match(CLOSE_PARANTHESIS);
 				}
@@ -2041,7 +2038,7 @@ public class WorkflowV2Parser extends Parser {
 				setState(246);
 				match(OPEN_PARANTHESIS);
 				setState(247);
-				atom();
+				expr(0);
 				setState(248);
 				match(CLOSE_PARANTHESIS);
 				}
@@ -2504,8 +2501,8 @@ public class WorkflowV2Parser extends Parser {
 
 	public static class Db_param_fieldContext extends ParserRuleContext {
 		public TerminalNode COLON() { return getToken(WorkflowV2Parser.COLON, 0); }
-		public AtomContext atom() {
-			return getRuleContext(AtomContext.class,0);
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
 		}
 		public List<TerminalNode> COMMA() { return getTokens(WorkflowV2Parser.COMMA); }
 		public TerminalNode COMMA(int i) {
@@ -2542,7 +2539,7 @@ public class WorkflowV2Parser extends Parser {
 			setState(323);
 			match(COLON);
 			setState(324);
-			atom();
+			expr(0);
 			setState(328);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
@@ -2572,8 +2569,8 @@ public class WorkflowV2Parser extends Parser {
 
 	public static class Db_param_aggrContext extends ParserRuleContext {
 		public TerminalNode COLON() { return getToken(WorkflowV2Parser.COLON, 0); }
-		public AtomContext atom() {
-			return getRuleContext(AtomContext.class,0);
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
 		}
 		public List<TerminalNode> COMMA() { return getTokens(WorkflowV2Parser.COMMA); }
 		public TerminalNode COMMA(int i) {
@@ -2610,7 +2607,7 @@ public class WorkflowV2Parser extends Parser {
 			setState(332);
 			match(COLON);
 			setState(333);
-			atom();
+			expr(0);
 			setState(337);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
@@ -2640,8 +2637,8 @@ public class WorkflowV2Parser extends Parser {
 
 	public static class Db_param_limitContext extends ParserRuleContext {
 		public TerminalNode COLON() { return getToken(WorkflowV2Parser.COLON, 0); }
-		public AtomContext atom() {
-			return getRuleContext(AtomContext.class,0);
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
 		}
 		public List<TerminalNode> COMMA() { return getTokens(WorkflowV2Parser.COMMA); }
 		public TerminalNode COMMA(int i) {
@@ -2678,7 +2675,7 @@ public class WorkflowV2Parser extends Parser {
 			setState(341);
 			match(COLON);
 			setState(342);
-			atom();
+			expr(0);
 			setState(346);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
@@ -2708,11 +2705,11 @@ public class WorkflowV2Parser extends Parser {
 
 	public static class Db_param_rangeContext extends ParserRuleContext {
 		public TerminalNode COLON() { return getToken(WorkflowV2Parser.COLON, 0); }
-		public List<AtomContext> atom() {
-			return getRuleContexts(AtomContext.class);
+		public List<ExprContext> expr() {
+			return getRuleContexts(ExprContext.class);
 		}
-		public AtomContext atom(int i) {
-			return getRuleContext(AtomContext.class,i);
+		public ExprContext expr(int i) {
+			return getRuleContext(ExprContext.class,i);
 		}
 		public List<TerminalNode> COMMA() { return getTokens(WorkflowV2Parser.COMMA); }
 		public TerminalNode COMMA(int i) {
@@ -2749,11 +2746,11 @@ public class WorkflowV2Parser extends Parser {
 			setState(350);
 			match(COLON);
 			setState(351);
-			atom();
+			expr(0);
 			setState(352);
 			match(T__8);
 			setState(353);
-			atom();
+			expr(0);
 			setState(357);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
@@ -2783,8 +2780,8 @@ public class WorkflowV2Parser extends Parser {
 
 	public static class Db_param_group_byContext extends ParserRuleContext {
 		public TerminalNode COLON() { return getToken(WorkflowV2Parser.COLON, 0); }
-		public AtomContext atom() {
-			return getRuleContext(AtomContext.class,0);
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
 		}
 		public List<TerminalNode> COMMA() { return getTokens(WorkflowV2Parser.COMMA); }
 		public TerminalNode COMMA(int i) {
@@ -2821,7 +2818,7 @@ public class WorkflowV2Parser extends Parser {
 			setState(361);
 			match(COLON);
 			setState(362);
-			atom();
+			expr(0);
 			setState(366);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
@@ -2852,8 +2849,8 @@ public class WorkflowV2Parser extends Parser {
 	public static class Db_param_sortContext extends ParserRuleContext {
 		public Token op;
 		public TerminalNode COLON() { return getToken(WorkflowV2Parser.COLON, 0); }
-		public AtomContext atom() {
-			return getRuleContext(AtomContext.class,0);
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
 		}
 		public List<TerminalNode> COMMA() { return getTokens(WorkflowV2Parser.COMMA); }
 		public TerminalNode COMMA(int i) {
@@ -2890,7 +2887,7 @@ public class WorkflowV2Parser extends Parser {
 			setState(370);
 			match(COLON);
 			setState(371);
-			atom();
+			expr(0);
 			setState(372);
 			((Db_param_sortContext)_localctx).op = _input.LT(1);
 			_la = _input.LA(1);
@@ -3101,8 +3098,8 @@ public class WorkflowV2Parser extends Parser {
 	public static class Condition_atomContext extends ParserRuleContext {
 		public Token op;
 		public TerminalNode VAR() { return getToken(WorkflowV2Parser.VAR, 0); }
-		public AtomContext atom() {
-			return getRuleContext(AtomContext.class,0);
+		public ExprContext expr() {
+			return getRuleContext(ExprContext.class,0);
 		}
 		public TerminalNode LTEQ() { return getToken(WorkflowV2Parser.LTEQ, 0); }
 		public TerminalNode GTEQ() { return getToken(WorkflowV2Parser.GTEQ, 0); }
@@ -3150,7 +3147,7 @@ public class WorkflowV2Parser extends Parser {
 				consume();
 			}
 			setState(401);
-			atom();
+			expr(0);
 			}
 		}
 		catch (RecognitionException re) {
@@ -3245,9 +3242,9 @@ public class WorkflowV2Parser extends Parser {
 		"ad\3\2\2\2b`\3\2\2\2bc\3\2\2\2c\r\3\2\2\2db\3\2\2\2ep\5\20\t\2fp\5\22"+
 		"\n\2gp\5\30\r\2hp\5\32\16\2ij\5 \21\2jk\7)\2\2kp\3\2\2\2lp\5\34\17\2m"+
 		"n\7?\2\2np\b\b\1\2oe\3\2\2\2of\3\2\2\2og\3\2\2\2oh\3\2\2\2oi\3\2\2\2o"+
-		"l\3\2\2\2om\3\2\2\2p\17\3\2\2\2qx\79\2\2rs\7\60\2\2st\5$\23\2tu\7\61\2"+
-		"\2uw\3\2\2\2vr\3\2\2\2wz\3\2\2\2xv\3\2\2\2xy\3\2\2\2y{\3\2\2\2zx\3\2\2"+
-		"\2{|\7+\2\2|}\5\36\20\2}~\7)\2\2~\21\3\2\2\2\177\u0080\7\65\2\2\u0080"+
+		"l\3\2\2\2om\3\2\2\2p\17\3\2\2\2qx\79\2\2rs\7\60\2\2st\5\36\20\2tu\7\61"+
+		"\2\2uw\3\2\2\2vr\3\2\2\2wz\3\2\2\2xv\3\2\2\2xy\3\2\2\2y{\3\2\2\2zx\3\2"+
+		"\2\2{|\7+\2\2|}\5\36\20\2}~\7)\2\2~\21\3\2\2\2\177\u0080\7\65\2\2\u0080"+
 		"\u0086\5\24\13\2\u0081\u0082\7\66\2\2\u0082\u0083\7\65\2\2\u0083\u0085"+
 		"\5\24\13\2\u0084\u0081\3\2\2\2\u0085\u0088\3\2\2\2\u0086\u0084\3\2\2\2"+
 		"\u0086\u0087\3\2\2\2\u0087\u008b\3\2\2\2\u0088\u0086\3\2\2\2\u0089\u008a"+
@@ -3285,12 +3282,12 @@ public class WorkflowV2Parser extends Parser {
 		"\2\2\2\u00e7\u00e3\3\2\2\2\u00e8#\3\2\2\2\u00e9\u00ea\7,\2\2\u00ea\u00eb"+
 		"\5\36\20\2\u00eb\u00ec\7-\2\2\u00ec\u0106\3\2\2\2\u00ed\u0106\t\7\2\2"+
 		"\u00ee\u0106\t\b\2\2\u00ef\u0106\7<\2\2\u00f0\u0106\7\64\2\2\u00f1\u0106"+
-		"\79\2\2\u00f2\u00f3\7\4\2\2\u00f3\u00f4\7,\2\2\u00f4\u00f5\5$\23\2\u00f5"+
+		"\79\2\2\u00f2\u00f3\7\4\2\2\u00f3\u00f4\7,\2\2\u00f4\u00f5\5\36\20\2\u00f5"+
 		"\u00f6\7-\2\2\u00f6\u0106\3\2\2\2\u00f7\u00f8\7\5\2\2\u00f8\u00f9\7,\2"+
-		"\2\u00f9\u00fa\5$\23\2\u00fa\u00fb\7-\2\2\u00fb\u0106\3\2\2\2\u00fc\u00fd"+
-		"\79\2\2\u00fd\u00fe\7,\2\2\u00fe\u0100\7-\2\2\u00ff\u00fc\3\2\2\2\u0100"+
-		"\u0101\3\2\2\2\u0101\u00ff\3\2\2\2\u0101\u0102\3\2\2\2\u0102\u0106\3\2"+
-		"\2\2\u0103\u0106\5&\24\2\u0104\u0106\5(\25\2\u0105\u00e9\3\2\2\2\u0105"+
+		"\2\u00f9\u00fa\5\36\20\2\u00fa\u00fb\7-\2\2\u00fb\u0106\3\2\2\2\u00fc"+
+		"\u00fd\79\2\2\u00fd\u00fe\7,\2\2\u00fe\u0100\7-\2\2\u00ff\u00fc\3\2\2"+
+		"\2\u0100\u0101\3\2\2\2\u0101\u00ff\3\2\2\2\u0101\u0102\3\2\2\2\u0102\u0106"+
+		"\3\2\2\2\u0103\u0106\5&\24\2\u0104\u0106\5(\25\2\u0105\u00e9\3\2\2\2\u0105"+
 		"\u00ed\3\2\2\2\u0105\u00ee\3\2\2\2\u0105\u00ef\3\2\2\2\u0105\u00f0\3\2"+
 		"\2\2\u0105\u00f1\3\2\2\2\u0105\u00f2\3\2\2\2\u0105\u00f7\3\2\2\2\u0105"+
 		"\u00ff\3\2\2\2\u0105\u0103\3\2\2\2\u0105\u0104\3\2\2\2\u0106%\3\2\2\2"+
@@ -3314,33 +3311,33 @@ public class WorkflowV2Parser extends Parser {
 		"\7\6\2\2\u013c\u013d\7*\2\2\u013d\u0141\5:\36\2\u013e\u0140\7(\2\2\u013f"+
 		"\u013e\3\2\2\2\u0140\u0143\3\2\2\2\u0141\u013f\3\2\2\2\u0141\u0142\3\2"+
 		"\2\2\u0142-\3\2\2\2\u0143\u0141\3\2\2\2\u0144\u0145\7\7\2\2\u0145\u0146"+
-		"\7*\2\2\u0146\u014a\5$\23\2\u0147\u0149\7(\2\2\u0148\u0147\3\2\2\2\u0149"+
+		"\7*\2\2\u0146\u014a\5\36\20\2\u0147\u0149\7(\2\2\u0148\u0147\3\2\2\2\u0149"+
 		"\u014c\3\2\2\2\u014a\u0148\3\2\2\2\u014a\u014b\3\2\2\2\u014b/\3\2\2\2"+
 		"\u014c\u014a\3\2\2\2\u014d\u014e\7\b\2\2\u014e\u014f\7*\2\2\u014f\u0153"+
-		"\5$\23\2\u0150\u0152\7(\2\2\u0151\u0150\3\2\2\2\u0152\u0155\3\2\2\2\u0153"+
-		"\u0151\3\2\2\2\u0153\u0154\3\2\2\2\u0154\61\3\2\2\2\u0155\u0153\3\2\2"+
-		"\2\u0156\u0157\7\t\2\2\u0157\u0158\7*\2\2\u0158\u015c\5$\23\2\u0159\u015b"+
-		"\7(\2\2\u015a\u0159\3\2\2\2\u015b\u015e\3\2\2\2\u015c\u015a\3\2\2\2\u015c"+
-		"\u015d\3\2\2\2\u015d\63\3\2\2\2\u015e\u015c\3\2\2\2\u015f\u0160\7\n\2"+
-		"\2\u0160\u0161\7*\2\2\u0161\u0162\5$\23\2\u0162\u0163\7\13\2\2\u0163\u0167"+
-		"\5$\23\2\u0164\u0166\7(\2\2\u0165\u0164\3\2\2\2\u0166\u0169\3\2\2\2\u0167"+
-		"\u0165\3\2\2\2\u0167\u0168\3\2\2\2\u0168\65\3\2\2\2\u0169\u0167\3\2\2"+
-		"\2\u016a\u016b\7\f\2\2\u016b\u016c\7*\2\2\u016c\u0170\5$\23\2\u016d\u016f"+
-		"\7(\2\2\u016e\u016d\3\2\2\2\u016f\u0172\3\2\2\2\u0170\u016e\3\2\2\2\u0170"+
-		"\u0171\3\2\2\2\u0171\67\3\2\2\2\u0172\u0170\3\2\2\2\u0173\u0174\7\r\2"+
-		"\2\u0174\u0175\7*\2\2\u0175\u0176\5$\23\2\u0176\u017a\t\t\2\2\u0177\u0179"+
-		"\7(\2\2\u0178\u0177\3\2\2\2\u0179\u017c\3\2\2\2\u017a\u0178\3\2\2\2\u017a"+
-		"\u017b\3\2\2\2\u017b9\3\2\2\2\u017c\u017a\3\2\2\2\u017d\u017e\7\60\2\2"+
-		"\u017e\u017f\5<\37\2\u017f\u0180\7\61\2\2\u0180;\3\2\2\2\u0181\u0182\b"+
-		"\37\1\2\u0182\u0188\5> \2\u0183\u0184\7,\2\2\u0184\u0185\5<\37\2\u0185"+
-		"\u0186\7-\2\2\u0186\u0188\3\2\2\2\u0187\u0181\3\2\2\2\u0187\u0183\3\2"+
-		"\2\2\u0188\u018e\3\2\2\2\u0189\u018a\f\4\2\2\u018a\u018b\t\6\2\2\u018b"+
-		"\u018d\5<\37\5\u018c\u0189\3\2\2\2\u018d\u0190\3\2\2\2\u018e\u018c\3\2"+
-		"\2\2\u018e\u018f\3\2\2\2\u018f=\3\2\2\2\u0190\u018e\3\2\2\2\u0191\u0192"+
-		"\79\2\2\u0192\u0193\t\5\2\2\u0193\u0194\5$\23\2\u0194?\3\2\2\2%IPbox\u0086"+
-		"\u008b\u0097\u009f\u00b7\u00c5\u00c7\u00ce\u00d6\u00dd\u00e7\u0101\u0105"+
-		"\u010b\u0111\u0118\u011e\u0124\u012a\u0130\u0136\u0141\u014a\u0153\u015c"+
-		"\u0167\u0170\u017a\u0187\u018e";
+		"\5\36\20\2\u0150\u0152\7(\2\2\u0151\u0150\3\2\2\2\u0152\u0155\3\2\2\2"+
+		"\u0153\u0151\3\2\2\2\u0153\u0154\3\2\2\2\u0154\61\3\2\2\2\u0155\u0153"+
+		"\3\2\2\2\u0156\u0157\7\t\2\2\u0157\u0158\7*\2\2\u0158\u015c\5\36\20\2"+
+		"\u0159\u015b\7(\2\2\u015a\u0159\3\2\2\2\u015b\u015e\3\2\2\2\u015c\u015a"+
+		"\3\2\2\2\u015c\u015d\3\2\2\2\u015d\63\3\2\2\2\u015e\u015c\3\2\2\2\u015f"+
+		"\u0160\7\n\2\2\u0160\u0161\7*\2\2\u0161\u0162\5\36\20\2\u0162\u0163\7"+
+		"\13\2\2\u0163\u0167\5\36\20\2\u0164\u0166\7(\2\2\u0165\u0164\3\2\2\2\u0166"+
+		"\u0169\3\2\2\2\u0167\u0165\3\2\2\2\u0167\u0168\3\2\2\2\u0168\65\3\2\2"+
+		"\2\u0169\u0167\3\2\2\2\u016a\u016b\7\f\2\2\u016b\u016c\7*\2\2\u016c\u0170"+
+		"\5\36\20\2\u016d\u016f\7(\2\2\u016e\u016d\3\2\2\2\u016f\u0172\3\2\2\2"+
+		"\u0170\u016e\3\2\2\2\u0170\u0171\3\2\2\2\u0171\67\3\2\2\2\u0172\u0170"+
+		"\3\2\2\2\u0173\u0174\7\r\2\2\u0174\u0175\7*\2\2\u0175\u0176\5\36\20\2"+
+		"\u0176\u017a\t\t\2\2\u0177\u0179\7(\2\2\u0178\u0177\3\2\2\2\u0179\u017c"+
+		"\3\2\2\2\u017a\u0178\3\2\2\2\u017a\u017b\3\2\2\2\u017b9\3\2\2\2\u017c"+
+		"\u017a\3\2\2\2\u017d\u017e\7\60\2\2\u017e\u017f\5<\37\2\u017f\u0180\7"+
+		"\61\2\2\u0180;\3\2\2\2\u0181\u0182\b\37\1\2\u0182\u0188\5> \2\u0183\u0184"+
+		"\7,\2\2\u0184\u0185\5<\37\2\u0185\u0186\7-\2\2\u0186\u0188\3\2\2\2\u0187"+
+		"\u0181\3\2\2\2\u0187\u0183\3\2\2\2\u0188\u018e\3\2\2\2\u0189\u018a\f\4"+
+		"\2\2\u018a\u018b\t\6\2\2\u018b\u018d\5<\37\5\u018c\u0189\3\2\2\2\u018d"+
+		"\u0190\3\2\2\2\u018e\u018c\3\2\2\2\u018e\u018f\3\2\2\2\u018f=\3\2\2\2"+
+		"\u0190\u018e\3\2\2\2\u0191\u0192\79\2\2\u0192\u0193\t\5\2\2\u0193\u0194"+
+		"\5\36\20\2\u0194?\3\2\2\2%IPbox\u0086\u008b\u0097\u009f\u00b7\u00c5\u00c7"+
+		"\u00ce\u00d6\u00dd\u00e7\u0101\u0105\u010b\u0111\u0118\u011e\u0124\u012a"+
+		"\u0130\u0136\u0141\u014a\u0153\u015c\u0167\u0170\u017a\u0187\u018e";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

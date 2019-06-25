@@ -31,7 +31,7 @@ statement
  ;
 
 assignment
- : VAR (OPEN_BRACKET atom CLOSE_BRACKET)* ASSIGN expr SEMICOLON
+ : VAR (OPEN_BRACKET expr CLOSE_BRACKET)* ASSIGN expr SEMICOLON
  ;
 
 if_statement
@@ -90,8 +90,8 @@ atom
  | STRING         																		#stringAtom
  | NULL           						    											#nullAtom
  | VAR           						    											#varAtom
- | 'NameSpace' OPEN_PARANTHESIS atom CLOSE_PARANTHESIS								    #nameSpaceInitialization
- | 'Module' OPEN_PARANTHESIS atom CLOSE_PARANTHESIS										#customModuleInitialization
+ | 'NameSpace' OPEN_PARANTHESIS expr CLOSE_PARANTHESIS								    #nameSpaceInitialization
+ | 'Module' OPEN_PARANTHESIS expr CLOSE_PARANTHESIS										#customModuleInitialization
  | (VAR OPEN_PARANTHESIS CLOSE_PARANTHESIS)+											#moduleInitialization
  | list_opperations																		#listOpp
  | map_opperations																		#mapOpps
@@ -114,27 +114,27 @@ db_param_criteria
  ;
 
 db_param_field
- : 'field' COLON atom (COMMA)*
+ : 'field' COLON expr (COMMA)*
  ;
  
 db_param_aggr
- : 'aggregation' COLON atom (COMMA)*
+ : 'aggregation' COLON expr (COMMA)*
  ;
  
 db_param_limit
- : 'limit' COLON atom (COMMA)*
+ : 'limit' COLON expr (COMMA)*
  ;
  
 db_param_range
- : 'range' COLON atom 'to' atom (COMMA)*
+ : 'range' COLON expr 'to' expr (COMMA)*
  ;
  
 db_param_group_by
- : 'groupBy' COLON atom (COMMA)*
+ : 'groupBy' COLON expr (COMMA)*
  ;
  
 db_param_sort
- : 'orderBy' COLON atom op=('asc' | 'desc') (COMMA)*
+ : 'orderBy' COLON expr op=('asc' | 'desc') (COMMA)*
  ;
  
 criteria
@@ -148,7 +148,7 @@ condition
  ;
  
 condition_atom
- : VAR op=(LTEQ | GTEQ | LT | GT | EQ | NEQ) atom
+ : VAR op=(LTEQ | GTEQ | LT | GT | EQ | NEQ) expr
  ;
  
 VOID : 'void';
