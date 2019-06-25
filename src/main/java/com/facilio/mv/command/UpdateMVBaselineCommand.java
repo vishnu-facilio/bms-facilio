@@ -13,6 +13,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.chain.FacilioContext;
@@ -27,6 +28,7 @@ import com.facilio.mv.context.MVBaseline;
 import com.facilio.mv.context.MVProjectContext;
 import com.facilio.mv.context.MVProjectWrapper;
 import com.facilio.mv.util.MVUtil;
+import com.facilio.time.DateRange;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
@@ -76,7 +78,7 @@ public class UpdateMVBaselineCommand implements Command {
 				else {
 					
 					context.put(FacilioConstants.ContextNames.FORMULA_FIELD, baseline.getFormulaField());
-					
+					context.put(FacilioConstants.ContextNames.DATE_RANGE,new DateRange(baseline.getStartTime(), baseline.getEndTime()));
 					Chain updateEnPIChain = FacilioChainFactory.updateFormulaChain();
 					updateEnPIChain.execute(context);
 					

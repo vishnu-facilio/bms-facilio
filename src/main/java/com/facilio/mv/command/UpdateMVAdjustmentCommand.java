@@ -21,6 +21,7 @@ import com.facilio.mv.context.MVAdjustment;
 import com.facilio.mv.context.MVProjectContext;
 import com.facilio.mv.context.MVProjectWrapper;
 import com.facilio.mv.util.MVUtil;
+import com.facilio.time.DateRange;
 
 public class UpdateMVAdjustmentCommand implements Command {
 
@@ -70,6 +71,8 @@ public class UpdateMVAdjustmentCommand implements Command {
 				else {
 					
 					context.put(FacilioConstants.ContextNames.FORMULA_FIELD, adjustment.getFormulaField());
+					
+					context.put(FacilioConstants.ContextNames.DATE_RANGE,new DateRange(adjustment.getStartTime(), adjustment.getEndTime()));
 					
 					Chain updateEnPIChain = FacilioChainFactory.updateFormulaChain();
 					updateEnPIChain.execute(context);
