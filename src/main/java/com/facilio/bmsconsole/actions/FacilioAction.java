@@ -1,13 +1,17 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.struts2.ServletActionContext;
+import org.json.simple.JSONObject;
+
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
-import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.log4j.LogManager;
-import org.json.simple.JSONObject;
-
-import java.util.List;
 
 public class FacilioAction extends ActionSupport {
 	
@@ -52,7 +56,11 @@ public class FacilioAction extends ActionSupport {
 	public String handleException() {
 		this.responseCode = 1;
 		if (exception != null && exception instanceof IllegalArgumentException) {
-			this.message = exception.getMessage();			
+			HttpServletResponse response = ServletActionContext.getResponse();
+			if (response != null && response.getStatus() == 304) {
+				LogManager.getLogger(this.getClass().getName()).info("Checking 304 response", exception);
+			}
+			this.message = exception.getMessage();
 		}
 		else {
 			this.message = FacilioConstants.ERROR_MESSAGE;
