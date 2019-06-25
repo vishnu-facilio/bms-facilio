@@ -85,9 +85,11 @@ public class AssetPageFactory extends PageFactory {
 		try {
 			if (AccountUtil.isFeatureEnabled(FeatureLicense.CONTROL_ACTIONS)) {
 				Section tab3Sec2 = page.new Section("commands");
-				tab3.addSection(tab3Sec2);
-				
 				addCommandWidget(tab3Sec2, asset.getId());
+				
+				if (CollectionUtils.isNotEmpty(tab3Sec2.getWidgets())) {
+					tab3.addSection(tab3Sec2);
+				}
 			}
 		} catch (Exception e) {
 			LOGGER.error("Error in checking control action license or adding command widget", e);
