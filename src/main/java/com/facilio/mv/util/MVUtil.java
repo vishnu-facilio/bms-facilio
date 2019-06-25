@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
 import com.facilio.bmsconsole.context.FormulaFieldContext.ResourceType;
 import com.facilio.bmsconsole.context.FormulaFieldContext.TriggerType;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -92,6 +93,9 @@ public class MVUtil {
 				.andCondition(CriteriaAPI.getIdCondition(id, mvProjectModule));
 		
 		MVProjectContext mvProject = selectProject.get().get(0);
+		
+		long meterId = mvProject.getMeter().getId();
+		mvProject.setMeter(AssetsAPI.getAssetInfo(meterId, true));
 		
 		mvProjectWrapper.setMvProject(mvProject);
 		
