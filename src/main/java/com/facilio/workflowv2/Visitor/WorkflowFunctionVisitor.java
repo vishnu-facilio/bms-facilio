@@ -479,7 +479,7 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     	
     	Operator operator = null;
     	
-    	Value operatorValue = this.visit(ctx.expr());
+    	Value operatorValue = this.visit(ctx.atom());
     	switch(ctx.op.getText()) {
     	case "==" :
     		if(operatorValue.asObject() instanceof String) {

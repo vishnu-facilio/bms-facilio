@@ -148,7 +148,7 @@ condition
  ;
  
 condition_atom
- : VAR op=(LTEQ | GTEQ | LT | GT | EQ | NEQ) expr
+ : VAR op=(LTEQ | GTEQ | LT | GT | EQ | NEQ) atom
  ;
  
 VOID : 'void';

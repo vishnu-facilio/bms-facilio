@@ -3098,8 +3098,8 @@ public class WorkflowV2Parser extends Parser {
 	public static class Condition_atomContext extends ParserRuleContext {
 		public Token op;
 		public TerminalNode VAR() { return getToken(WorkflowV2Parser.VAR, 0); }
-		public ExprContext expr() {
-			return getRuleContext(ExprContext.class,0);
+		public AtomContext atom() {
+			return getRuleContext(AtomContext.class,0);
 		}
 		public TerminalNode LTEQ() { return getToken(WorkflowV2Parser.LTEQ, 0); }
 		public TerminalNode GTEQ() { return getToken(WorkflowV2Parser.GTEQ, 0); }
@@ -3147,7 +3147,7 @@ public class WorkflowV2Parser extends Parser {
 				consume();
 			}
 			setState(401);
-			expr(0);
+			atom();
 			}
 		}
 		catch (RecognitionException re) {
@@ -3335,7 +3335,7 @@ public class WorkflowV2Parser extends Parser {
 		"\2\2\u018a\u018b\t\6\2\2\u018b\u018d\5<\37\5\u018c\u0189\3\2\2\2\u018d"+
 		"\u0190\3\2\2\2\u018e\u018c\3\2\2\2\u018e\u018f\3\2\2\2\u018f=\3\2\2\2"+
 		"\u0190\u018e\3\2\2\2\u0191\u0192\79\2\2\u0192\u0193\t\5\2\2\u0193\u0194"+
-		"\5\36\20\2\u0194?\3\2\2\2%IPbox\u0086\u008b\u0097\u009f\u00b7\u00c5\u00c7"+
+		"\5$\23\2\u0194?\3\2\2\2%IPbox\u0086\u008b\u0097\u009f\u00b7\u00c5\u00c7"+
 		"\u00ce\u00d6\u00dd\u00e7\u0101\u0105\u010b\u0111\u0118\u011e\u0124\u012a"+
 		"\u0130\u0136\u0141\u014a\u0153\u015c\u0167\u0170\u017a\u0187\u018e";
 	public static final ATN _ATN =
