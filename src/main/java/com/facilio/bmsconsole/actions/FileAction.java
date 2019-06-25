@@ -132,7 +132,7 @@ public class FileAction extends FacilioAction {
 			}
 		} else {
 			response.setStatus(304);
-			return SUCCESS;
+			return NONE;
 		}
 		throw new IllegalArgumentException("Cannot fetch file");
 	}

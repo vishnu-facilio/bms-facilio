@@ -57,12 +57,6 @@ public class FacilioAction extends ActionSupport {
 	public String handleException() {
 		this.responseCode = 1;
 		if (exception != null && exception instanceof IllegalArgumentException) {
-			HttpServletResponse response = ServletActionContext.getResponse();
-			HttpServletRequest request = ServletActionContext.getRequest();
-			if (response != null && response.getStatus() == 304 && request.getRequestURI().contains("preview")) {
-				// LogManager.getLogger(this.getClass().getName()).info("Checking 304 response", exception);
-				return SUCCESS;
-			}
 			this.message = exception.getMessage();
 		}
 		else {
