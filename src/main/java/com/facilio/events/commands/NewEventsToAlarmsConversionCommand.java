@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Stack;
 
 import org.apache.commons.chain.Command;
@@ -13,7 +12,6 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.MutablePair;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.PostTransactionCommand;
@@ -42,9 +40,8 @@ import com.facilio.modules.fields.FacilioField;
 public class NewEventsToAlarmsConversionCommand implements Command, PostTransactionCommand {
 
 	private Map<String, List<BaseEventContext>> eventsMap = new HashMap<>();
-	private Map<String, Stack<AlarmOccurrenceContext>> alarmOccurrenceMap = new HashMap<>();
+	private Map<String, PointedList<AlarmOccurrenceContext>> alarmOccurrenceMap = new HashMap<>();
 	private Map<String, BaseAlarmContext> alarmMap = new HashMap<>();
-//	private Map<String, MutablePair<BaseEventContext, AlarmOccurrenceContext>> occurrenceMap = new HashMap<>();
 	private List<BaseEventContext> baseEvents;
 
 	@Override
@@ -62,65 +59,68 @@ public class NewEventsToAlarmsConversionCommand implements Command, PostTransact
 			}
 			
 			for (Map.Entry<String, List<BaseEventContext>> entry : eventsMap.entrySet()) {
-				for (BaseEventContext baseEvent : entry.getValue()) {
+				List<BaseEventContext> baseEvents = entry.getValue();
+				for (BaseEventContext baseEvent : baseEvents) {
 					processEventToAlarm(baseEvent);
 				}
 			}
 			
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			saveRecords();
+		}
+		return false;
+	}
 
-			
-			if (MapUtils.isNotEmpty(alarmMap)) {
-				for (BaseAlarmContext baseAlarm : alarmMap.values()) {
-					if (baseAlarm.getId() > 0) {
-						UpdateRecordBuilder<BaseAlarmContext> builder = new UpdateRecordBuilder<BaseAlarmContext>()
-								.moduleName(NewAlarmAPI.getAlarmModuleName(baseAlarm.getTypeEnum()))
-								.andCondition(CriteriaAPI.getIdCondition(baseAlarm.getId(), modBean.getModule(NewAlarmAPI.getAlarmModuleName(baseAlarm.getTypeEnum()))))
-								.fields(modBean.getAllFields(NewAlarmAPI.getAlarmModuleName(baseAlarm.getTypeEnum())));
-						builder.update(baseAlarm);
-					}
-					else {
-						InsertRecordBuilder<BaseAlarmContext> builder = new InsertRecordBuilder<BaseAlarmContext>()
-								.moduleName(NewAlarmAPI.getAlarmModuleName(baseAlarm.getTypeEnum()))
-								.fields(modBean.getAllFields(NewAlarmAPI.getAlarmModuleName(baseAlarm.getTypeEnum())));
-						builder.insert(baseAlarm);
-					}
+	private void saveRecords() throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		if (MapUtils.isNotEmpty(alarmMap)) {
+			for (BaseAlarmContext baseAlarm : alarmMap.values()) {
+				if (baseAlarm.getId() > 0) {
+					UpdateRecordBuilder<BaseAlarmContext> builder = new UpdateRecordBuilder<BaseAlarmContext>()
+							.moduleName(NewAlarmAPI.getAlarmModuleName(baseAlarm.getTypeEnum()))
+							.andCondition(CriteriaAPI.getIdCondition(baseAlarm.getId(), modBean.getModule(NewAlarmAPI.getAlarmModuleName(baseAlarm.getTypeEnum()))))
+							.fields(modBean.getAllFields(NewAlarmAPI.getAlarmModuleName(baseAlarm.getTypeEnum())));
+					builder.update(baseAlarm);
 				}
-			}
-			
-			if (MapUtils.isNotEmpty(alarmOccurrenceMap)) {
-				List<FacilioField> allFields = modBean.getAllFields(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
-				InsertRecordBuilder<AlarmOccurrenceContext> builder = new InsertRecordBuilder<AlarmOccurrenceContext>()
-						.moduleName(FacilioConstants.ContextNames.ALARM_OCCURRENCE)
-						.fields(allFields);
-				
-				List<AlarmOccurrenceContext> records = new ArrayList<>();
-				for (Map.Entry<String, Stack<AlarmOccurrenceContext>> entry : alarmOccurrenceMap.entrySet()) {
-					for (AlarmOccurrenceContext alarmOccurrenceContext : entry.getValue()) {
-						if (alarmOccurrenceContext.getId() > 0) {
-							UpdateRecordBuilder<AlarmOccurrenceContext> updateBuilder = new UpdateRecordBuilder<AlarmOccurrenceContext>()
-									.moduleName(FacilioConstants.ContextNames.ALARM_OCCURRENCE)
-									.andCondition(CriteriaAPI.getIdCondition(alarmOccurrenceContext.getId(), modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE)))
-									.fields(allFields);
-							updateBuilder.update(alarmOccurrenceContext);
-						} else {
-							records.add(alarmOccurrenceContext);
-						}
-					}
-				}
-				builder.addRecords(records);
-				builder.save();
-			}
-			
-			if (MapUtils.isNotEmpty(eventsMap)) {
-				for (List<BaseEventContext> baseEvents : eventsMap.values()) {
-					for (BaseEventContext baseEvent : baseEvents) {
-						updateEvent(baseEvent);
-					}
+				else {
+					InsertRecordBuilder<BaseAlarmContext> builder = new InsertRecordBuilder<BaseAlarmContext>()
+							.moduleName(NewAlarmAPI.getAlarmModuleName(baseAlarm.getTypeEnum()))
+							.fields(modBean.getAllFields(NewAlarmAPI.getAlarmModuleName(baseAlarm.getTypeEnum())));
+					builder.insert(baseAlarm);
 				}
 			}
 		}
-		return false;
+		
+		if (MapUtils.isNotEmpty(alarmOccurrenceMap)) {
+			List<FacilioField> allFields = modBean.getAllFields(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
+			InsertRecordBuilder<AlarmOccurrenceContext> builder = new InsertRecordBuilder<AlarmOccurrenceContext>()
+					.moduleName(FacilioConstants.ContextNames.ALARM_OCCURRENCE)
+					.fields(allFields);
+			
+			List<AlarmOccurrenceContext> records = new ArrayList<>();
+			for (Map.Entry<String, PointedList<AlarmOccurrenceContext>> entry : alarmOccurrenceMap.entrySet()) {
+				for (AlarmOccurrenceContext alarmOccurrenceContext : entry.getValue()) {
+					if (alarmOccurrenceContext.getId() > 0) {
+						UpdateRecordBuilder<AlarmOccurrenceContext> updateBuilder = new UpdateRecordBuilder<AlarmOccurrenceContext>()
+								.moduleName(FacilioConstants.ContextNames.ALARM_OCCURRENCE)
+								.andCondition(CriteriaAPI.getIdCondition(alarmOccurrenceContext.getId(), modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE)))
+								.fields(allFields);
+						updateBuilder.update(alarmOccurrenceContext);
+					} else {
+						records.add(alarmOccurrenceContext);
+					}
+				}
+			}
+			builder.addRecords(records);
+			builder.save();
+		}
+		
+		if (MapUtils.isNotEmpty(eventsMap)) {
+			for (List<BaseEventContext> baseEvents : eventsMap.values()) {
+				for (BaseEventContext baseEvent : baseEvents) {
+					updateEvent(baseEvent);
+				}
+			}
+		}		
 	}
 
 	private void processEventToAlarm(BaseEventContext baseEvent) throws Exception {
@@ -133,16 +133,15 @@ public class NewEventsToAlarmsConversionCommand implements Command, PostTransact
 			}
 			baseEvent.setInternalState(EventInternalState.COMPLETED);
 		}
-//		updateEvent(baseEvent);
 	}
 
 	private void addOrUpdateAlarm(BaseEventContext baseEvent) throws Exception {
-		Stack<AlarmOccurrenceContext> stack = alarmOccurrenceMap.get(baseEvent.getMessageKey());
+		PointedList<AlarmOccurrenceContext> stack = alarmOccurrenceMap.get(baseEvent.getMessageKey());
 		if (stack == null) {
-			stack = new Stack<>();
+			stack = new PointedList<>();
 			alarmOccurrenceMap.put(baseEvent.getMessageKey(), stack);
 		}
-		AlarmOccurrenceContext  alarmOccurrence = stack.isEmpty() ? null : stack.peek();
+		AlarmOccurrenceContext  alarmOccurrence = stack.isEmpty() ? null : stack.getCurrentRecord();
 		
 		if (alarmOccurrence == null) {
 			// if no similar event occurred, take from db
@@ -241,6 +240,36 @@ public class NewEventsToAlarmsConversionCommand implements Command, PostTransact
 			}
 		}
 		return false;
+	}
+	
+	public static class PointedList<E> extends ArrayList<E> {
+		private static final long serialVersionUID = 1L;
+		private int position = 0;
+		
+		public PointedList() {
+		}
+		
+		public void moveNext() {
+			position ++;
+			if (position >= size()) {
+				position = size() -1;
+			}
+		}
+		
+		public void movePrevious() {
+			position --;
+			if (position < 0) {
+				position = 0;
+			}
+		}
+		
+		public E getLastRecord() {
+			return get(size() - 1);
+		}
+		
+		public E getCurrentRecord() {
+			return get(position);
+		}
 	}
 
 }

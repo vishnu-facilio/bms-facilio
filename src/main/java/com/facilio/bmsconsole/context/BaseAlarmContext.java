@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class BaseAlarmContext extends ModuleBaseWithCustomFields {
@@ -50,7 +51,7 @@ public class BaseAlarmContext extends ModuleBaseWithCustomFields {
 		if (type == null) {
 			return -1;
 		}
-		return type.getValue();
+		return type.getIndex();
 	}
 	public Type getTypeEnum() {
 		return type;
@@ -110,12 +111,17 @@ public class BaseAlarmContext extends ModuleBaseWithCustomFields {
 		this.lastClearedTime = lastClearedTime;
 	}
 	
-	public static enum Type {
+	public static enum Type implements FacilioEnum {
 		READING_ALARM,
 		;
 		
-		public int getValue() {
+		public int getIndex() {
 			return ordinal() + 1;
+		}
+		
+		@Override
+		public String getValue() {
+			return name();
 		}
 		
 		public static Type valueOf(int value) {

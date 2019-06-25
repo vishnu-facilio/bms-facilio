@@ -208,7 +208,7 @@ public class FacilioConstants {
 		public static final String ML_ALARM_OCCURRENCE = "mlalarmoccurrence";
 		public static final String ALARM_LIST = "alarms";
 		public static final String ALARM_ENTITY_ID = "alarmentityid";
-		public static final String ALARM_OCCURRENCE = "alarmoccurance";
+		public static final String ALARM_OCCURRENCE = "alarmoccurrence";
 		public static final String BASE_ALARM = "basealarm";
 		public static final String BASE_EVENT = "baseevent";
 		public static final String NEW_READING_ALARM = "newreadingalarm";
