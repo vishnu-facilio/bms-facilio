@@ -189,8 +189,8 @@ public class AddRegressionPointsCommand implements Command{
 				expressionString.append(coefficients[0]);
 			}
 		}
-		Double rSquared = (Double) regressionResult.get(StringConstants.RSQUARED);
-		expressionString = expressionString.append("( R2 = " + rSquared + " )");
+//		Double rSquared = (Double) regressionResult.get(StringConstants.RSQUARED);
+//		expressionString = expressionString.append("( R2 = " + rSquared + " )");
 		return expressionString.toString();
 	}
 	
@@ -377,11 +377,12 @@ public class AddRegressionPointsCommand implements Command{
 	private String getRegressionPointAlias (RegressionContext regressionContext) {
 		StringBuilder groupAlias = new StringBuilder();
 		
-		groupAlias.append(regressionContext.getyAxis().getAlias());
+		
 		for(RegressionPointContext xContext: regressionContext.getxAxis()) {
-			groupAlias.append("_");
 			groupAlias.append(xContext.getAlias());
+			groupAlias.append("_");
 		}
+		groupAlias.append(regressionContext.getyAxis().getAlias());
 		
 		groupAlias.append("regr");
 		return groupAlias.toString();
