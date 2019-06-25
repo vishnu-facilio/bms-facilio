@@ -1,5 +1,18 @@
 package com.facilio.bmsconsole.util;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
@@ -11,14 +24,14 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 public class ResourceAPI {
 
@@ -244,7 +257,7 @@ public class ResourceAPI {
 				return false;
 			}).collect(Collectors.toList());
 			if (!resourceFields.isEmpty()) {
-				List<Long> resourceIds = resourceIds = new ArrayList<>();
+				List<Long> resourceIds = new ArrayList<>();
 				for (ModuleBaseWithCustomFields record : records) {
 					if (record.getData() != null) {
 						for (FacilioField resourceField : resourceFields) {

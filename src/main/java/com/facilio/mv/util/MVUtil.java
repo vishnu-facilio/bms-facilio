@@ -4,12 +4,17 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
 import com.facilio.bmsconsole.context.FormulaFieldContext.ResourceType;
 import com.facilio.bmsconsole.context.FormulaFieldContext.TriggerType;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
@@ -179,7 +184,16 @@ public class MVUtil {
 				.beanClass(MVProjectContext.class);
 		
 		List<MVProjectContext> mvProjects = selectProject.get();
-		ResourceAPI.loadModuleResources(mvProjects, mvProjectFields);
+		if (CollectionUtils.isNotEmpty(mvProjects)) {
+			List<Long> resourceIds = mvProjects.stream().map(project -> project.getMeter().getId()).collect(Collectors.toList());
+			Map<Long, ResourceContext> resources = ResourceAPI.getExtendedResourcesAsMapFromIds(resourceIds, true);
+			if(resources != null && !resources.isEmpty()) {
+				for(MVProjectContext project : mvProjects) {
+					ResourceContext resourceDetail = resources.get(project.getMeter().getId());
+					project.setMeter((AssetContext) resourceDetail);
+				}
+			}
+		}
 		
 		return mvProjects;
 		
