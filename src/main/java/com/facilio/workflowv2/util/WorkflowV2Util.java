@@ -3,7 +3,6 @@ package com.facilio.workflowv2.util;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -19,29 +18,18 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.jobs.SingleResourceHistoricalFormulaCalculatorJob;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflowv2.Visitor.WorkflowFunctionVisitor;
-import com.facilio.workflowv2.autogens.WorkflowV2Parser.DataTypeSpecificFunctionContext;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.ExprContext;
+import com.facilio.workflowv2.autogens.WorkflowV2Parser.Recursive_expressionContext;
 import com.facilio.workflowv2.contexts.DBParamContext;
 import com.facilio.workflowv2.contexts.Value;
-import com.facilio.workflowv2.contexts.WorkflowNamespaceContext;
 
 public class WorkflowV2Util {
 
@@ -164,7 +152,7 @@ public class WorkflowV2Util {
 		}
 	}
 
-	public static List<Object> getParamList(DataTypeSpecificFunctionContext ctx, boolean isDataTypeSpecificFunction,WorkflowFunctionVisitor facilioWorkflowFunctionVisitor, Value value) throws Exception {
+	public static List<Object> getParamList(Recursive_expressionContext ctx, boolean isDataTypeSpecificFunction,WorkflowFunctionVisitor facilioWorkflowFunctionVisitor, Value value) throws Exception {
 		List<Object> paramValues = new ArrayList<>();
 		if (isDataTypeSpecificFunction) {
 			paramValues.add(value.asObject());

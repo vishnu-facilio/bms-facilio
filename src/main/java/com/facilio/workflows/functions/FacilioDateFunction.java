@@ -87,7 +87,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 			checkParam(objects);
 			
 			int days = 0;
-			if(objects == null) {
+			if(objects == null || objects.length == 0) {
 				
 				ZonedDateTime zdt = DateTimeUtil.getZonedDateTime(DateTimeUtil.getMonthStartTime());
 				YearMonth yearMonthObject = YearMonth.of(zdt.getYear(), zdt.getMonthValue());

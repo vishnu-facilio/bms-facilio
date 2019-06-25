@@ -165,47 +165,18 @@ public interface WorkflowV2Visitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitRelationalExpr(WorkflowV2Parser.RelationalExprContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code moduleInitialization}
+	 * Visit a parse tree produced by the {@code recursive_expr}
 	 * labeled alternative in {@link WorkflowV2Parser#stand_alone_expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitModuleInitialization(WorkflowV2Parser.ModuleInitializationContext ctx);
+	T visitRecursive_expr(WorkflowV2Parser.Recursive_exprContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code customModuleInitialization}
-	 * labeled alternative in {@link WorkflowV2Parser#stand_alone_expr}.
+	 * Visit a parse tree produced by {@link WorkflowV2Parser#recursive_expression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitCustomModuleInitialization(WorkflowV2Parser.CustomModuleInitializationContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code nameSpaceInitialization}
-	 * labeled alternative in {@link WorkflowV2Parser#stand_alone_expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitNameSpaceInitialization(WorkflowV2Parser.NameSpaceInitializationContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code listOpp}
-	 * labeled alternative in {@link WorkflowV2Parser#stand_alone_expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitListOpp(WorkflowV2Parser.ListOppContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code mapOpps}
-	 * labeled alternative in {@link WorkflowV2Parser#stand_alone_expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitMapOpps(WorkflowV2Parser.MapOppsContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code dataTypeSpecificFunction}
-	 * labeled alternative in {@link WorkflowV2Parser#stand_alone_expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitDataTypeSpecificFunction(WorkflowV2Parser.DataTypeSpecificFunctionContext ctx);
+	T visitRecursive_expression(WorkflowV2Parser.Recursive_expressionContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code paranthesisExpr}
 	 * labeled alternative in {@link WorkflowV2Parser#atom}.
@@ -249,19 +220,40 @@ public interface WorkflowV2Visitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitVarAtom(WorkflowV2Parser.VarAtomContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code listSymbolOperation}
+	 * Visit a parse tree produced by the {@code nameSpaceInitialization}
 	 * labeled alternative in {@link WorkflowV2Parser#atom}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitListSymbolOperation(WorkflowV2Parser.ListSymbolOperationContext ctx);
+	T visitNameSpaceInitialization(WorkflowV2Parser.NameSpaceInitializationContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code mapSymbolOperation}
+	 * Visit a parse tree produced by the {@code customModuleInitialization}
 	 * labeled alternative in {@link WorkflowV2Parser#atom}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitMapSymbolOperation(WorkflowV2Parser.MapSymbolOperationContext ctx);
+	T visitCustomModuleInitialization(WorkflowV2Parser.CustomModuleInitializationContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code moduleInitialization}
+	 * labeled alternative in {@link WorkflowV2Parser#atom}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitModuleInitialization(WorkflowV2Parser.ModuleInitializationContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code listOpp}
+	 * labeled alternative in {@link WorkflowV2Parser#atom}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitListOpp(WorkflowV2Parser.ListOppContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code mapOpps}
+	 * labeled alternative in {@link WorkflowV2Parser#atom}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMapOpps(WorkflowV2Parser.MapOppsContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code listInitialisation}
 	 * labeled alternative in {@link WorkflowV2Parser#list_opperations}.

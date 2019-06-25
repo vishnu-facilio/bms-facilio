@@ -67,20 +67,21 @@ expr
  | expr op=(PLUS | MINUS) expr  	    																			#arithmeticSecondPrecedenceExpr
  | expr op=(LTEQ | GTEQ | LT | GT | EQ | NEQ) expr     			    												#relationalExpr
  | expr op=(AND | OR) expr                        																	#booleanExpr
- | stand_alone_expr																									#standAloneStatements
  | atom                                				    															#atomExpr
+ | stand_alone_expr																									#standAloneStatements
  | db_param																											#dbParamInitialization
  | criteria																											#criteriaInitialization
  ;
  
 stand_alone_expr
- : (VAR OPEN_PARANTHESIS CLOSE_PARANTHESIS)+																		#moduleInitialization
- | 'Module' OPEN_PARANTHESIS atom CLOSE_PARANTHESIS																	#customModuleInitialization
- | 'NameSpace' OPEN_PARANTHESIS atom CLOSE_PARANTHESIS																#nameSpaceInitialization
- | list_opperations																									#listOpp
- | map_opperations																									#mapOpps
- | atom '.' VAR OPEN_PARANTHESIS (expr)*(COMMA expr)* CLOSE_PARANTHESIS												#dataTypeSpecificFunction
+ : atom (recursive_expression)+																					#recursive_expr
  ;
+ 
+recursive_expression
+ : '.' VAR OPEN_PARANTHESIS (expr)*(COMMA expr)* CLOSE_PARANTHESIS
+ | '.' VAR
+ | OPEN_BRACKET atom CLOSE_BRACKET
+ ;													
 
 atom
  : OPEN_PARANTHESIS expr CLOSE_PARANTHESIS 												#paranthesisExpr
@@ -89,8 +90,11 @@ atom
  | STRING         																		#stringAtom
  | NULL           						    											#nullAtom
  | VAR           						    											#varAtom
- | VAR OPEN_BRACKET atom CLOSE_BRACKET													#listSymbolOperation
- | VAR '.' VAR ('.' VAR)*																#mapSymbolOperation
+ | 'NameSpace' OPEN_PARANTHESIS atom CLOSE_PARANTHESIS								    #nameSpaceInitialization
+ | 'Module' OPEN_PARANTHESIS atom CLOSE_PARANTHESIS										#customModuleInitialization
+ | (VAR OPEN_PARANTHESIS CLOSE_PARANTHESIS)+											#moduleInitialization
+ | list_opperations																		#listOpp
+ | map_opperations																		#mapOpps
  ;
  
 list_opperations

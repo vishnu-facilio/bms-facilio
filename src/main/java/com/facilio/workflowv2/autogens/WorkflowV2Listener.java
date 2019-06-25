@@ -268,77 +268,27 @@ public interface WorkflowV2Listener extends ParseTreeListener {
 	 */
 	void exitRelationalExpr(WorkflowV2Parser.RelationalExprContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code moduleInitialization}
+	 * Enter a parse tree produced by the {@code recursive_expr}
 	 * labeled alternative in {@link WorkflowV2Parser#stand_alone_expr}.
 	 * @param ctx the parse tree
 	 */
-	void enterModuleInitialization(WorkflowV2Parser.ModuleInitializationContext ctx);
+	void enterRecursive_expr(WorkflowV2Parser.Recursive_exprContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code moduleInitialization}
+	 * Exit a parse tree produced by the {@code recursive_expr}
 	 * labeled alternative in {@link WorkflowV2Parser#stand_alone_expr}.
 	 * @param ctx the parse tree
 	 */
-	void exitModuleInitialization(WorkflowV2Parser.ModuleInitializationContext ctx);
+	void exitRecursive_expr(WorkflowV2Parser.Recursive_exprContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code customModuleInitialization}
-	 * labeled alternative in {@link WorkflowV2Parser#stand_alone_expr}.
+	 * Enter a parse tree produced by {@link WorkflowV2Parser#recursive_expression}.
 	 * @param ctx the parse tree
 	 */
-	void enterCustomModuleInitialization(WorkflowV2Parser.CustomModuleInitializationContext ctx);
+	void enterRecursive_expression(WorkflowV2Parser.Recursive_expressionContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code customModuleInitialization}
-	 * labeled alternative in {@link WorkflowV2Parser#stand_alone_expr}.
+	 * Exit a parse tree produced by {@link WorkflowV2Parser#recursive_expression}.
 	 * @param ctx the parse tree
 	 */
-	void exitCustomModuleInitialization(WorkflowV2Parser.CustomModuleInitializationContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code nameSpaceInitialization}
-	 * labeled alternative in {@link WorkflowV2Parser#stand_alone_expr}.
-	 * @param ctx the parse tree
-	 */
-	void enterNameSpaceInitialization(WorkflowV2Parser.NameSpaceInitializationContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code nameSpaceInitialization}
-	 * labeled alternative in {@link WorkflowV2Parser#stand_alone_expr}.
-	 * @param ctx the parse tree
-	 */
-	void exitNameSpaceInitialization(WorkflowV2Parser.NameSpaceInitializationContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code listOpp}
-	 * labeled alternative in {@link WorkflowV2Parser#stand_alone_expr}.
-	 * @param ctx the parse tree
-	 */
-	void enterListOpp(WorkflowV2Parser.ListOppContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code listOpp}
-	 * labeled alternative in {@link WorkflowV2Parser#stand_alone_expr}.
-	 * @param ctx the parse tree
-	 */
-	void exitListOpp(WorkflowV2Parser.ListOppContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code mapOpps}
-	 * labeled alternative in {@link WorkflowV2Parser#stand_alone_expr}.
-	 * @param ctx the parse tree
-	 */
-	void enterMapOpps(WorkflowV2Parser.MapOppsContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code mapOpps}
-	 * labeled alternative in {@link WorkflowV2Parser#stand_alone_expr}.
-	 * @param ctx the parse tree
-	 */
-	void exitMapOpps(WorkflowV2Parser.MapOppsContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code dataTypeSpecificFunction}
-	 * labeled alternative in {@link WorkflowV2Parser#stand_alone_expr}.
-	 * @param ctx the parse tree
-	 */
-	void enterDataTypeSpecificFunction(WorkflowV2Parser.DataTypeSpecificFunctionContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code dataTypeSpecificFunction}
-	 * labeled alternative in {@link WorkflowV2Parser#stand_alone_expr}.
-	 * @param ctx the parse tree
-	 */
-	void exitDataTypeSpecificFunction(WorkflowV2Parser.DataTypeSpecificFunctionContext ctx);
+	void exitRecursive_expression(WorkflowV2Parser.Recursive_expressionContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code paranthesisExpr}
 	 * labeled alternative in {@link WorkflowV2Parser#atom}.
@@ -412,29 +362,65 @@ public interface WorkflowV2Listener extends ParseTreeListener {
 	 */
 	void exitVarAtom(WorkflowV2Parser.VarAtomContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code listSymbolOperation}
+	 * Enter a parse tree produced by the {@code nameSpaceInitialization}
 	 * labeled alternative in {@link WorkflowV2Parser#atom}.
 	 * @param ctx the parse tree
 	 */
-	void enterListSymbolOperation(WorkflowV2Parser.ListSymbolOperationContext ctx);
+	void enterNameSpaceInitialization(WorkflowV2Parser.NameSpaceInitializationContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code listSymbolOperation}
+	 * Exit a parse tree produced by the {@code nameSpaceInitialization}
 	 * labeled alternative in {@link WorkflowV2Parser#atom}.
 	 * @param ctx the parse tree
 	 */
-	void exitListSymbolOperation(WorkflowV2Parser.ListSymbolOperationContext ctx);
+	void exitNameSpaceInitialization(WorkflowV2Parser.NameSpaceInitializationContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code mapSymbolOperation}
+	 * Enter a parse tree produced by the {@code customModuleInitialization}
 	 * labeled alternative in {@link WorkflowV2Parser#atom}.
 	 * @param ctx the parse tree
 	 */
-	void enterMapSymbolOperation(WorkflowV2Parser.MapSymbolOperationContext ctx);
+	void enterCustomModuleInitialization(WorkflowV2Parser.CustomModuleInitializationContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code mapSymbolOperation}
+	 * Exit a parse tree produced by the {@code customModuleInitialization}
 	 * labeled alternative in {@link WorkflowV2Parser#atom}.
 	 * @param ctx the parse tree
 	 */
-	void exitMapSymbolOperation(WorkflowV2Parser.MapSymbolOperationContext ctx);
+	void exitCustomModuleInitialization(WorkflowV2Parser.CustomModuleInitializationContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code moduleInitialization}
+	 * labeled alternative in {@link WorkflowV2Parser#atom}.
+	 * @param ctx the parse tree
+	 */
+	void enterModuleInitialization(WorkflowV2Parser.ModuleInitializationContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code moduleInitialization}
+	 * labeled alternative in {@link WorkflowV2Parser#atom}.
+	 * @param ctx the parse tree
+	 */
+	void exitModuleInitialization(WorkflowV2Parser.ModuleInitializationContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code listOpp}
+	 * labeled alternative in {@link WorkflowV2Parser#atom}.
+	 * @param ctx the parse tree
+	 */
+	void enterListOpp(WorkflowV2Parser.ListOppContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code listOpp}
+	 * labeled alternative in {@link WorkflowV2Parser#atom}.
+	 * @param ctx the parse tree
+	 */
+	void exitListOpp(WorkflowV2Parser.ListOppContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code mapOpps}
+	 * labeled alternative in {@link WorkflowV2Parser#atom}.
+	 * @param ctx the parse tree
+	 */
+	void enterMapOpps(WorkflowV2Parser.MapOppsContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code mapOpps}
+	 * labeled alternative in {@link WorkflowV2Parser#atom}.
+	 * @param ctx the parse tree
+	 */
+	void exitMapOpps(WorkflowV2Parser.MapOppsContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code listInitialisation}
 	 * labeled alternative in {@link WorkflowV2Parser#list_opperations}.

@@ -185,42 +185,14 @@ public class WorkflowV2BaseVisitor<T> extends AbstractParseTreeVisitor<T> implem
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitModuleInitialization(WorkflowV2Parser.ModuleInitializationContext ctx) { return visitChildren(ctx); }
+	@Override public T visitRecursive_expr(WorkflowV2Parser.Recursive_exprContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitCustomModuleInitialization(WorkflowV2Parser.CustomModuleInitializationContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitNameSpaceInitialization(WorkflowV2Parser.NameSpaceInitializationContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitListOpp(WorkflowV2Parser.ListOppContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitMapOpps(WorkflowV2Parser.MapOppsContext ctx) { return visitChildren(ctx); }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitDataTypeSpecificFunction(WorkflowV2Parser.DataTypeSpecificFunctionContext ctx) { return visitChildren(ctx); }
+	@Override public T visitRecursive_expression(WorkflowV2Parser.Recursive_expressionContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -269,14 +241,35 @@ public class WorkflowV2BaseVisitor<T> extends AbstractParseTreeVisitor<T> implem
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitListSymbolOperation(WorkflowV2Parser.ListSymbolOperationContext ctx) { return visitChildren(ctx); }
+	@Override public T visitNameSpaceInitialization(WorkflowV2Parser.NameSpaceInitializationContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitMapSymbolOperation(WorkflowV2Parser.MapSymbolOperationContext ctx) { return visitChildren(ctx); }
+	@Override public T visitCustomModuleInitialization(WorkflowV2Parser.CustomModuleInitializationContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitModuleInitialization(WorkflowV2Parser.ModuleInitializationContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitListOpp(WorkflowV2Parser.ListOppContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitMapOpps(WorkflowV2Parser.MapOppsContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

@@ -34,6 +34,7 @@ import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.autogens.WorkflowV2BaseVisitor;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser.Function_paramContext;
+import com.facilio.workflowv2.autogens.WorkflowV2Parser.Recursive_expressionContext;
 import com.facilio.workflowv2.contexts.DBParamContext;
 import com.facilio.workflowv2.contexts.Value;
 import com.facilio.workflowv2.contexts.WorkflowNamespaceContext;
@@ -89,108 +90,136 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     	return new Value(new ArrayList<>()); 
     }
     
-    @Override 
-    public Value visitListSymbolOperation(WorkflowV2Parser.ListSymbolOperationContext ctx)
-	{
-    	String varName = ctx.VAR().getText();
-    	Value value = this.varMemoryMap.get(varName);
-    	if(value.asObject() instanceof List ) {
-    		Value listValue = this.visit(ctx.atom());
-    		Integer index = listValue.asInt();
-    		return new Value(value.asList().get(index));
-    	}
-    	else {
-    		throw new RuntimeException("var "+varName+" is not of list type");
-    	}
-	}
+//    @Override 
+//    public Value visitListSymbolOperation(WorkflowV2Parser.ListSymbolOperationContext ctx)
+//	{
+//    	String varName = ctx.VAR().getText();
+//    	Value value = this.varMemoryMap.get(varName);
+//    	if(value.asObject() instanceof List ) {
+//    		Value listValue = this.visit(ctx.atom());
+//    		Integer index = listValue.asInt();
+//    		return new Value(value.asList().get(index));
+//    	}
+//    	else {
+//    		throw new RuntimeException("var "+varName+" is not of list type");
+//    	}
+//	}
+    
+//    @Override 
+//    public Value visitMapSymbolOperation(WorkflowV2Parser.MapSymbolOperationContext ctx)
+//	{
+//    	String mapVar = ctx.VAR(0).getText();
+//    	Value mapValue = this.varMemoryMap.get(mapVar);
+//    	if(mapValue.asObject() instanceof Map ) {
+//    		Map<Object, Object> map = mapValue.asMap();
+//    		
+//    		int length = ctx.VAR().size();
+//    		
+//    		for(int i=1;i<length;i++) {
+//    			String key = ctx.VAR(i).getText();
+//    			Object currentValue = map.get(key);
+//    			
+//    			if(i == length-1) {
+//    				return new Value(currentValue);
+//    			}
+//    			map = (Map<Object, Object>) currentValue;
+//    		}
+//    	}
+//    	else {
+//    		throw new RuntimeException("not a map " + mapVar);
+//    	}
+//    	return Value.VOID;
+//	}
     
     @Override 
-    public Value visitMapSymbolOperation(WorkflowV2Parser.MapSymbolOperationContext ctx)
-	{
-    	String mapVar = ctx.VAR(0).getText();
-    	Value mapValue = this.varMemoryMap.get(mapVar);
-    	if(mapValue.asObject() instanceof Map ) {
-    		Map<Object, Object> map = mapValue.asMap();
-    		
-    		int length = ctx.VAR().size();
-    		
-    		for(int i=1;i<length;i++) {
-    			String key = ctx.VAR(i).getText();
-    			Object currentValue = map.get(key);
-    			
-    			if(i == length-1) {
-    				return new Value(currentValue);
-    			}
-    			map = (Map<Object, Object>) currentValue;
-    		}
-    	}
-    	else {
-    		throw new RuntimeException("not a map " + mapVar);
-    	}
-    	return Value.VOID;
-	}
-    @Override 
-    public Value visitDataTypeSpecificFunction(WorkflowV2Parser.DataTypeSpecificFunctionContext ctx) {
+    public Value visitRecursive_expr(WorkflowV2Parser.Recursive_exprContext ctx) {
     	try {
     		
     		Value value = this.visit(ctx.atom());
     		
-    		if (value.asObject() instanceof FacilioModule) {									// module Functions
-				FacilioModule module = (FacilioModule) value.asObject();
-				
-				String functionName = ctx.VAR().getText();
-    			
-				Object moduleFunctionObject = WorkflowV2Util.getInstanceOf(module);
-    			Method method = moduleFunctionObject.getClass().getMethod(functionName, List.class);
-    			
-    			List<Object> params = WorkflowV2Util.getParamList(ctx,true,this,value);
+    		for(Recursive_expressionContext functionCall :ctx.recursive_expression()) {
+    			if(functionCall.OPEN_PARANTHESIS() != null && functionCall.CLOSE_PARANTHESIS() != null) {
+    				if (value.asObject() instanceof FacilioModule) {									// module Functions
+        				FacilioModule module = (FacilioModule) value.asObject();
+        				
+        				String functionName = functionCall.VAR().getText();
+            			
+        				Object moduleFunctionObject = WorkflowV2Util.getInstanceOf(module);
+            			Method method = moduleFunctionObject.getClass().getMethod(functionName, List.class);
+            			
+            			List<Object> params = WorkflowV2Util.getParamList(functionCall,true,this,value);
 
-    			Object result = method.invoke(moduleFunctionObject, params);
-    			return new Value(result);
-        	}
-    		else if (value.asObject() instanceof WorkflowNamespaceContext) {					// user defined functions
-    			
-    			WorkflowNamespaceContext namespaceContext = (WorkflowNamespaceContext) value.asObject();
-    			List<Object> paramValues = WorkflowV2Util.getParamList(ctx,false,this,null);
-    			
-    			WorkflowContext wfContext = UserFunctionAPI.getWorkflowFunction(namespaceContext.getId(), ctx.VAR().getText());
-    			wfContext.setParams(paramValues);
-    			
-    			Object res = wfContext.executeWorkflow();
-    			
-    			return new Value(res);
+            			Object result = method.invoke(moduleFunctionObject, params);
+            			value =  new Value(result);
+                	}
+            		else if (value.asObject() instanceof WorkflowNamespaceContext) {					// user defined functions
+            			
+            			WorkflowNamespaceContext namespaceContext = (WorkflowNamespaceContext) value.asObject();
+            			List<Object> paramValues = WorkflowV2Util.getParamList(functionCall,false,this,null);
+            			
+            			WorkflowContext wfContext = UserFunctionAPI.getWorkflowFunction(namespaceContext.getId(), functionCall.VAR().getText());
+            			wfContext.setParams(paramValues);
+            			
+            			Object res = wfContext.executeWorkflow();
+            			
+            			value = new Value(res);
+            		}
+            		else {																				// system functions	
+            			WorkflowFunctionContext wfFunctionContext = new WorkflowFunctionContext();
+                    	wfFunctionContext.setFunctionName(functionCall.VAR().getText());
+                    	
+                    	boolean isDataTypeSpecificFunction = false;
+                    	
+                    	if(value.asObject() instanceof List) {
+                    		wfFunctionContext.setNameSpace(FacilioSystemFunctionNameSpace.LIST.getName());
+                    		isDataTypeSpecificFunction = true;
+                    	}
+                    	else if(value.asObject() instanceof Map) {
+                    		wfFunctionContext.setNameSpace(FacilioSystemFunctionNameSpace.MAP.getName());
+                    		isDataTypeSpecificFunction = true;
+                    	}
+                    	else if(value.asObject() instanceof String) {
+                    		wfFunctionContext.setNameSpace(FacilioSystemFunctionNameSpace.STRING.getName());
+                    		isDataTypeSpecificFunction = true;
+                    	}
+                    	else if(value.asObject() instanceof DateRange) {
+                    		wfFunctionContext.setNameSpace(FacilioSystemFunctionNameSpace.DATE_RANGE.getName());
+                    		isDataTypeSpecificFunction = true;
+                    	}
+                    	else if (value.asObject() instanceof FacilioSystemFunctionNameSpace) {
+                    		wfFunctionContext.setNameSpace(((FacilioSystemFunctionNameSpace)value.asObject()).getName());
+                    	}
+                    	
+                    	List<Object> paramValues = WorkflowV2Util.getParamList(functionCall,isDataTypeSpecificFunction,this,value);
+                    	
+                    	Object result = WorkflowUtil.evalSystemFunctions(wfFunctionContext, paramValues);
+                    	value = new Value(result); 
+            		}
+    			}
+    			else if (functionCall.OPEN_BRACKET() != null && functionCall.CLOSE_BRACKET() != null) {				// list here
+
+    				if(value.asObject() instanceof List ) {
+    		    		Value listValue = this.visit(functionCall.atom());
+    		    		Integer index = listValue.asInt();
+    		    		return new Value(value.asList().get(index));
+    		    	}
+    		    	else {
+    		    		throw new RuntimeException("var "+ctx.atom().getText()+" is not of list type");
+    		    	}
+    			}
+    			else {
+    		    	if(value.asObject() instanceof Map ) {
+    		    		Map<Object, Object> map = value.asMap();
+    		    		
+    		    		Object currentValue = map.get(functionCall.VAR().getText());
+    		    		value = new Value(currentValue);
+    		    	}
+    		    	else {
+    		    		throw new RuntimeException("not a map " + ctx.atom().getText());
+    		    	}
+    			}
     		}
-    		else {																				// system functions	
-    			WorkflowFunctionContext wfFunctionContext = new WorkflowFunctionContext();
-            	wfFunctionContext.setFunctionName(ctx.VAR().getText());
-            	
-            	boolean isDataTypeSpecificFunction = false;
-            	
-            	if(value.asObject() instanceof List) {
-            		wfFunctionContext.setNameSpace(FacilioSystemFunctionNameSpace.LIST.getName());
-            		isDataTypeSpecificFunction = true;
-            	}
-            	else if(value.asObject() instanceof Map) {
-            		wfFunctionContext.setNameSpace(FacilioSystemFunctionNameSpace.MAP.getName());
-            		isDataTypeSpecificFunction = true;
-            	}
-            	else if(value.asObject() instanceof String) {
-            		wfFunctionContext.setNameSpace(FacilioSystemFunctionNameSpace.STRING.getName());
-            		isDataTypeSpecificFunction = true;
-            	}
-            	else if(value.asObject() instanceof DateRange) {
-            		wfFunctionContext.setNameSpace(FacilioSystemFunctionNameSpace.DATE_RANGE.getName());
-            		isDataTypeSpecificFunction = true;
-            	}
-            	else if (value.asObject() instanceof FacilioSystemFunctionNameSpace) {
-            		wfFunctionContext.setNameSpace(((FacilioSystemFunctionNameSpace)value.asObject()).getName());
-            	}
-            	
-            	List<Object> paramValues = WorkflowV2Util.getParamList(ctx,isDataTypeSpecificFunction,this,value);
-            	
-            	Object result = WorkflowUtil.evalSystemFunctions(wfFunctionContext, paramValues);
-            	return new Value(result); 
-    		}
+    		return value;
     	}
     	catch(Exception e) {
     		LOGGER.log(Level.SEVERE, e.getMessage(), e);

@@ -149,7 +149,7 @@ public enum FacilioMapFunction implements FacilioWorkflowFunctionInterface {
 		};
 		
 		public void checkParam(Object... objects) throws Exception {
-			if(objects == null || objects.length <= 1) {
+			if(objects == null || objects.length < 1) {
 				throw new FunctionParamException("Required Object is null");
 			}
 		}
