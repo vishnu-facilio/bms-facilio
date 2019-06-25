@@ -1167,7 +1167,7 @@ public class ReadingAction extends FacilioAction {
 		return this.perPage;
 	}
 	
-	// connected, formula or others
+	// connected, formula or nonformula
 	private String readingType;
 	public String getReadingType() {
 		return readingType;

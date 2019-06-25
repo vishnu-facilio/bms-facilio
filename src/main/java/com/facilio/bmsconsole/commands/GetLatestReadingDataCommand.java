@@ -49,11 +49,11 @@ public class GetLatestReadingDataCommand implements Command {
 				if (readingType.equals("connected")) {
 					readingTypes.add(ReadingInputType.CONTROLLER_MAPPED);
 				}
-				else if (readingType.equals("formula")) {
+				if (readingType.equals("formula")) {
 					readingTypes.add(ReadingInputType.FORMULA_FIELD);
 				}
-				else {
-					readingTypes = EnumSet.allOf(ReadingInputType.class).stream().filter(type -> type != ReadingInputType.CONTROLLER_MAPPED && type != ReadingInputType.FORMULA_FIELD)
+				else if (readingType.equals("nonformula")) {
+					readingTypes = EnumSet.allOf(ReadingInputType.class).stream().filter(type -> type != ReadingInputType.FORMULA_FIELD)
 							.collect(Collectors.toList());
 				}
 			}
