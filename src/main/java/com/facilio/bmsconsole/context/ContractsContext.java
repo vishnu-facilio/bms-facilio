@@ -196,14 +196,70 @@ public class ContractsContext extends ModuleBaseWithCustomFields{
 		this.associatedAssets = associatedAssets;
 	}
 	
-	private List<ContractsPaymentScheduleContext> paymentSchedules;
-
-	public List<ContractsPaymentScheduleContext> getPaymentSchedules() {
-		return paymentSchedules;
+	private long paymentInterval;
+	private long scheduleDay;
+	private int scheduleMonth;
+	private long scheduleTime;
+	public long getPaymentInterval() {
+		return paymentInterval;
 	}
+	public void setPaymentInterval(long paymentInterval) {
+		this.paymentInterval = paymentInterval;
+	}
+	public long getScheduleDay() {
+		return scheduleDay;
+	}
+	public void setScheduleDay(long scheduleDay) {
+		this.scheduleDay = scheduleDay;
+	}
+	public int getScheduleMonth() {
+		return scheduleMonth;
+	}
+	public void setScheduleMonth(int scheduleMonth) {
+		this.scheduleMonth = scheduleMonth;
+	}
+	public long getScheduleTime() {
+		return scheduleTime;
+	}
+	public void setScheduleTime(long scheduleTime) {
+		this.scheduleTime = scheduleTime;
+	}
+	
+	private FrequencyType frequencyType;
+	public FrequencyType getFrequencyTypeEnum() {
+		return frequencyType;
+	}
+	public int getFrequencyType() {
+		if (frequencyType != null) {
+			return frequencyType.getValue();
+		}
+		return -1;
+	}
+	public void setFrequencyType(int frequencyType) {
+		this.frequencyType = FrequencyType.valueOf(frequencyType);
+	}
+	public void setFrequencyType(FrequencyType frequencyType) {
+		this.frequencyType = frequencyType;
+	}
+	
+	public static enum FrequencyType {
+		DAILY(),
+		WEEKLY(),
+		MONTHLY(),
+		YEARLY()
+		
+		;
+		
+		public int getValue() {
+			return ordinal()+1;
+		}
 
-	public void setPaymentSchedules(List<ContractsPaymentScheduleContext> paymentSchedules) {
-		this.paymentSchedules = paymentSchedules;
+		public static FrequencyType valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
 	}
 	
 	
