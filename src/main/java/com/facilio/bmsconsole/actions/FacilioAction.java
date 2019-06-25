@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
@@ -57,8 +58,10 @@ public class FacilioAction extends ActionSupport {
 		this.responseCode = 1;
 		if (exception != null && exception instanceof IllegalArgumentException) {
 			HttpServletResponse response = ServletActionContext.getResponse();
-			if (response != null && response.getStatus() == 304) {
-				LogManager.getLogger(this.getClass().getName()).info("Checking 304 response", exception);
+			HttpServletRequest request = ServletActionContext.getRequest();
+			if (response != null && response.getStatus() == 304 && request.getRequestURI().contains("preview")) {
+				// LogManager.getLogger(this.getClass().getName()).info("Checking 304 response", exception);
+				return SUCCESS;
 			}
 			this.message = exception.getMessage();
 		}
