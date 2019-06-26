@@ -112,13 +112,6 @@ public class ActionContext implements Serializable {
 			JSONObject actionObj = template.getTemplate(placeHolders);
 			String type = placeHolders.get("mailType") != null ? placeHolders.get("mailType").toString() : null;
 			actionObj.put("mailType", type);
-			
-            if(currentRule.getParentRuleId()!=-1){
-            WorkflowRuleContext rule= WorkflowRuleAPI.getWorkflowRule(currentRule.getParentRuleId());
-             if(rule!=null){
-            	 actionObj.put("alarmRuleName", rule.getName());
-             }
-            }
 			if (AccountUtil.getCurrentOrg().getId() == 151 && actionType == ActionType.BULK_EMAIL_NOTIFICATION) {
 				LOGGER.info("Email json : "+actionObj.toJSONString());
 			}
