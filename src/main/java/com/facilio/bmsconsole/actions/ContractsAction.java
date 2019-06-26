@@ -136,7 +136,7 @@ public class ContractsAction extends FacilioAction{
 		return SUCCESS;
 	}
    
-   public String disAssociateAsset() throws Exception {
+   public String disAssociateAssets() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds );
@@ -154,10 +154,10 @@ public class ContractsAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds );
 		
-		Chain chain = TransactionChainFactory.getDisAssociateAssetChain();
+		Chain chain = TransactionChainFactory.getDisAssociateTermsChain();
 		chain.execute(context);
 		
-		setResult(FacilioConstants.ContextNames.CONTRACT_ASSOCIATED_ASSETS, context.get(FacilioConstants.ContextNames.CONTRACT_ASSOCIATED_ASSETS));
+		setResult(FacilioConstants.ContextNames.CONTRACT_ASSOCIATED_TERMS, context.get(FacilioConstants.ContextNames.CONTRACT_ASSOCIATED_ASSETS));
 		
 		return SUCCESS;
 	}
