@@ -139,6 +139,8 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     		
     		Value value = this.visit(ctx.atom());
     		
+    		WorkflowV2Util.checkForNullAndThrowException(value, ctx.atom().getText());
+    		
     		for(Recursive_expressionContext functionCall :ctx.recursive_expression()) {
     			if(functionCall.OPEN_PARANTHESIS() != null && functionCall.CLOSE_PARANTHESIS() != null) {
     				if (value.asObject() instanceof FacilioModule) {									// module Functions
@@ -206,6 +208,7 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
 
     				if(value.asObject() instanceof List ) {
     		    		Value listValue = this.visit(functionCall.atom());
+    		    		WorkflowV2Util.checkForNullAndThrowException(listValue, functionCall.atom().getText());
     		    		Integer index = listValue.asInt();
     		    		return new Value(value.asList().get(index));
     		    	}
@@ -229,6 +232,10 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     	}
     	catch(Exception e) {
     		LOGGER.log(Level.SEVERE, e.getMessage(), e);
+    		workflowContext.getLogStringBuilder().append("ERROR ::: "+e.getMessage()+"\n");
+    		if(e.getCause() != null) {
+    			workflowContext.getLogStringBuilder().append("ERROR ::: "+e.getCause()+"\n");
+    		}
     		throw new RuntimeException(e.getCause());
     	}
     }
@@ -246,11 +253,15 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
         		
         		Value index = this.visit(ctx.expr(0));
         		
+        		WorkflowV2Util.checkForNullAndThrowException(index, ctx.expr(0).getText());
+        		
         		Value value = this.visit(ctx.expr(1));
+        		
         		parentValue.asList().add(index.asInt(), value.asObject());
         	}
         	else if (parentValue.asObject() instanceof Map) {
         		Value key = this.visit(ctx.expr(0));
+        		WorkflowV2Util.checkForNullAndThrowException(key, ctx.expr(0).getText());
         		Value value = this.visit(ctx.expr(1));
         		parentValue.asMap().put(key.asObject(), value.asObject());
         	}
@@ -355,15 +366,21 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     @Override 
     public Value visitReadingInitialization(WorkflowV2Parser.ReadingInitializationContext ctx) 
     {
-    	long fieldId = this.visit(ctx.expr(0)).asLong();
-    	long parentId = this.visit(ctx.expr(1)).asLong();
-    	return new Value(new WorkflowReadingContext(fieldId,parentId)); 
+    	Value fieldValue = this.visit(ctx.expr(0));
+    	WorkflowV2Util.checkForNullAndThrowException(fieldValue, ctx.expr(0).getText());
+    	Value parentValue = this.visit(ctx.expr(1));
+    	WorkflowV2Util.checkForNullAndThrowException(parentValue, ctx.expr(1).getText());
+    	return new Value(new WorkflowReadingContext(fieldValue.asLong(),parentValue.asLong())); 
     }
     
     @Override 
     public Value visitCustomModuleInitialization(WorkflowV2Parser.CustomModuleInitializationContext ctx) {
     	try {
-    		String moduleName = this.visit(ctx.expr()).asString();
+    		Value moduleNameValue = this.visit(ctx.expr());
+    		
+    		WorkflowV2Util.checkForNullAndThrowException(moduleNameValue, ctx.expr().getText());
+    		
+    		String moduleName = moduleNameValue.asString();
         	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         	FacilioModule module = modBean.getModule(moduleName);
         	if(module == null) {
@@ -379,12 +396,13 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     @Override 
     public Value visitNameSpaceInitialization(WorkflowV2Parser.NameSpaceInitializationContext ctx) {
     	try {
-    		String nameSpaceString = this.visit(ctx.expr()).asString();
-        	FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.getFacilioDefaultFunction(nameSpaceString);
+    		Value nameSpaceValue = this.visit(ctx.expr());
+    		WorkflowV2Util.checkForNullAndThrowException(nameSpaceValue, ctx.expr().getText());
+        	FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.getFacilioDefaultFunction(nameSpaceValue.asString());
         	if(nameSpaceEnum == null) {
-        		WorkflowNamespaceContext namespace = UserFunctionAPI.getNameSpace(nameSpaceString);
+        		WorkflowNamespaceContext namespace = UserFunctionAPI.getNameSpace(nameSpaceValue.asString());
         		if(namespace == null) {
-        			throw new RuntimeException("No such namespace - "+nameSpaceString);
+        			throw new RuntimeException("No such namespace - "+nameSpaceValue.asString());
         		}
         		return new Value(namespace);
         	}
@@ -413,7 +431,9 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     public Value visitArithmeticFirstPrecedenceExpr(WorkflowV2Parser.ArithmeticFirstPrecedenceExprContext ctx) {
 
         Value left = this.visit(ctx.expr(0));
+        WorkflowV2Util.checkForNullAndThrowException(left, ctx.expr(0).getText());
         Value right = this.visit(ctx.expr(1));
+        WorkflowV2Util.checkForNullAndThrowException(right, ctx.expr(1).getText());
 
         switch (ctx.op.getType()) {
             case WorkflowV2Parser.MULT:
@@ -431,7 +451,9 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     public Value visitArithmeticSecondPrecedenceExpr(WorkflowV2Parser.ArithmeticSecondPrecedenceExprContext ctx) {
 
         Value left = this.visit(ctx.expr(0));
+        WorkflowV2Util.checkForNullAndThrowException(left, ctx.expr(0).getText());
         Value right = this.visit(ctx.expr(1));
+        WorkflowV2Util.checkForNullAndThrowException(right, ctx.expr(1).getText());
 
         switch (ctx.op.getType()) {
             case WorkflowV2Parser.PLUS:
@@ -449,7 +471,9 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     public Value visitRelationalExpr(WorkflowV2Parser.RelationalExprContext ctx) {
 
         Value left = this.visit(ctx.expr(0));
+        WorkflowV2Util.checkForNullAndThrowException(left, ctx.expr(0).getText());
         Value right = this.visit(ctx.expr(1));
+        WorkflowV2Util.checkForNullAndThrowException(right, ctx.expr(1).getText());
 
         switch (ctx.op.getType()) {
             case WorkflowV2Parser.LT:
@@ -471,7 +495,9 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     
     public Value visitBooleanExpr(WorkflowV2Parser.BooleanExprContext ctx) {
     	 Value left = this.visit(ctx.expr(0));
+    	 WorkflowV2Util.checkForNullAndThrowException(left, ctx.expr(0).getText());
          Value right = this.visit(ctx.expr(1));
+         WorkflowV2Util.checkForNullAndThrowException(right, ctx.expr(1).getText());
 
          switch (ctx.op.getType()) {
              case WorkflowV2Parser.AND:
@@ -571,27 +597,34 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
 
 		if(ctx.db_param_field(0) != null) {
 			Value fieldValue = this.visit(ctx.db_param_field(0).expr());
+			WorkflowV2Util.checkForNullAndThrowException(fieldValue, ctx.db_param_field(0).expr().getText());
 			dbParamContext.setFieldName(fieldValue.asString());
 		}
 		if(ctx.db_param_aggr(0) != null) {
 			Value aggrValue = this.visit(ctx.db_param_aggr(0).expr());
+			WorkflowV2Util.checkForNullAndThrowException(aggrValue, ctx.db_param_aggr(0).expr().getText());
 			dbParamContext.setAggregateString(aggrValue.asString());
 		}
 		if(ctx.db_param_limit(0) != null) {
 			Value limitValue = this.visit(ctx.db_param_limit(0).expr());
+			WorkflowV2Util.checkForNullAndThrowException(limitValue, ctx.db_param_limit(0).expr().getText());
 			dbParamContext.setLimit(limitValue.asInt());
 		}
 		if(ctx.db_param_range(0) != null) {
 			Value fromValue = this.visit(ctx.db_param_range(0).expr(0));
+			WorkflowV2Util.checkForNullAndThrowException(fromValue, ctx.db_param_range(0).expr(0).getText());
 			Value toValue = this.visit(ctx.db_param_range(0).expr(1));
+			WorkflowV2Util.checkForNullAndThrowException(toValue, ctx.db_param_range(0).expr(1).getText());
 			dbParamContext.setRange(Pair.of(fromValue.asInt(), toValue.asInt()));
 		}
 		if(ctx.db_param_group_by(0) != null) {
 			Value fieldValue = this.visit(ctx.db_param_group_by(0).expr());
+			WorkflowV2Util.checkForNullAndThrowException(fieldValue, ctx.db_param_group_by(0).expr().getText());
 			dbParamContext.setGroupBy(fieldValue.asString());
 		}
 		if(ctx.db_param_sort(0) != null) {
 			Value sortByField = this.visit(ctx.db_param_sort(0).expr());
+			WorkflowV2Util.checkForNullAndThrowException(sortByField, ctx.db_param_sort(0).expr().getText());
 			dbParamContext.setSortByFieldName(sortByField.asString());
 			dbParamContext.setSortOrder(ctx.db_param_sort(0).op.getText());
 		}
@@ -628,6 +661,7 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     public Value visitFor_each_statement(WorkflowV2Parser.For_each_statementContext ctx) {
     	
     	Value exprValue = this.visit(ctx.expr());
+    	WorkflowV2Util.checkForNullAndThrowException(exprValue, ctx.expr().getText());
     	String loopVariableIndexName = ctx.VAR(0).getText();
     	String loopVariableValueName = ctx.VAR(1).getText();
     	
@@ -663,14 +697,14 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     @Override 
     public Value visitFunction_return(WorkflowV2Parser.Function_returnContext ctx)
     {
-		Value returnValue = this.visit(ctx.expr());
-    	
+    	Value returnValue = Value.VOID;
     	if(workflowContext.getReturnTypeEnum() != null) {
     		switch(workflowContext.getReturnTypeEnum()) {
     		case VOID:
     			throw new RuntimeException("Method Return Type is Void But has a Return Statement");
     		
     		default:
+    			returnValue = this.visit(ctx.expr());
     			Class[] ObjectClass = workflowContext.getReturnTypeEnum().getObjectClass();
     			boolean flag = false;
     			for(int i=0;i<ObjectClass.length;i++) {

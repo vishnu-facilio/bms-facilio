@@ -166,6 +166,12 @@ public class WorkflowV2Util {
 		}
 		return paramValues;
 	}
+	
+	public static void checkForNullAndThrowException(Value value,String name) {
+		if(value == null || value.asObject() == null) {
+			throw new RuntimeException("Variable "+name+"'s value is null");
+		}
+	}
 
 	public static String adjustCriteriaPattern(String criteriaPattern) {
 		
