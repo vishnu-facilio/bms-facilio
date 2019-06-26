@@ -71,8 +71,7 @@ public class UpdateMVAdjustmentCommand implements Command {
 				else {
 					
 					context.put(FacilioConstants.ContextNames.FORMULA_FIELD, adjustment.getFormulaField());
-					
-					context.put(FacilioConstants.ContextNames.DATE_RANGE,new DateRange(adjustment.getStartTime(), adjustment.getEndTime()));
+					MVUtil.fillFormulaFieldDetails(adjustment.getFormulaField(), mvProjectWrapper.getMvProject(),null,adjustment,context);
 					
 					Chain updateEnPIChain = FacilioChainFactory.updateFormulaChain();
 					updateEnPIChain.execute(context);

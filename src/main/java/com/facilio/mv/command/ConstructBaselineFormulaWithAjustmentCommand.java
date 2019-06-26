@@ -27,7 +27,7 @@ import com.facilio.time.DateRange;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowContext.WorkflowUIMode;
 
-public class ConstructBaselineFromulaWithAjustmentCommand implements Command {
+public class ConstructBaselineFormulaWithAjustmentCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -94,7 +94,7 @@ public class ConstructBaselineFromulaWithAjustmentCommand implements Command {
 				
 				FormulaFieldContext formulaFieldContext = baseLine.getFormulaFieldWithAjustment();
 				formulaFieldContext.setWorkflow(newBaselineWorkflow);
-				context.put(FacilioConstants.ContextNames.DATE_RANGE,new DateRange(baseLine.getStartTime(), baseLine.getEndTime()));
+				MVUtil.fillFormulaFieldDetails(formulaFieldContext, mvProjectWrapper.getMvProject(),baseLine,null,context);
 				context.put(FacilioConstants.ContextNames.FORMULA_FIELD, formulaFieldContext);
 				
 				Chain updateEnPIChain = FacilioChainFactory.updateFormulaChain();

@@ -596,8 +596,6 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
 			dbParamContext.setSortOrder(ctx.db_param_sort(0).op.getText());
 		}
 		
-		System.out.println("ffinal -- "+dbParamContext);
-		
 		return new Value(dbParamContext);
 	}
 
