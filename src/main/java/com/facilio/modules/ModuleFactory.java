@@ -2261,4 +2261,12 @@ public class ModuleFactory {
 		module.setTableName("Shift_Rotation");
 		return module;
 	}
+	
+	public static FacilioModule getBreakTransactionModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("breakTransaction");
+		module.setDisplayName("Break Transaction");
+		module.setTableName("Break_Transaction");
+		return module;
+	}
 }

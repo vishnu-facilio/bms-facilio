@@ -2557,6 +2557,13 @@
 			method="addBreakTransaction">
 		</action>
 	</package>
+	<package name="breakTransactionListApiv2" namespace="/api/v2/breakTransaction/view"
+		extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.BreakTransactionAction"
+			method="breakTransactionList">
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
 	
 	<package name="graphicsApi" namespace="/api/v2/graphics" extends="v2Api">
 		<action name="list" class="com.facilio.bmsconsole.actions.GraphicsAction" method="getGraphicsList">

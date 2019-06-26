@@ -1126,6 +1126,7 @@ public class FacilioConstants {
 			classMap.put(BREAK, BreakContext.class);
 			classMap.put(GRAPHICS, GraphicsContext.class);
 			classMap.put(SHIFT_ROTATION, ShiftRotationContext.class);
+			classMap.put(BREAK_TRANSACTION, BreakTransactionContext.class);
 			
 			classMap.put(MV_PROJECT_MODULE, MVProjectContext.class);
 			classMap.put(MV_BASELINE_MODULE, MVBaseline.class);

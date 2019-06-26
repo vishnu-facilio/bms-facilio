@@ -377,6 +377,10 @@ public class ViewFactory {
 		views.put("all", getAllShiftRotationView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.SHIFT_ROTATION, views);
 		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllBreakTransactionView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.BREAK_TRANSACTION, views);
 		
 		return viewsMap;
 	}
@@ -3615,15 +3619,15 @@ public class ViewFactory {
 	
 	private static FacilioView getAllAttendanceTransactionView() {
 		FacilioField createdTime = new FacilioField();
-		createdTime.setName("sysCreatedTime");
+		createdTime.setName("transactionTime");
 		createdTime.setDataType(FieldType.NUMBER);
-		createdTime.setColumnName("SYS_CREATED_TIME");
+		createdTime.setColumnName("TRANSACTION_TIME");
 		createdTime.setModule(ModuleFactory.getAttendanceTransactionModule());
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Attendance Transactions");
-		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		allView.setSortFields(Arrays.asList(new SortField(createdTime, true)));
 		return allView;
 	}
 	
@@ -3669,4 +3673,17 @@ public class ViewFactory {
 		return allView;
 	}
 	
+	private static FacilioView getAllBreakTransactionView() {
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("startTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("START_TIME");
+		createdTime.setModule(ModuleFactory.getBreakTransactionModule());
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Break Transactions");
+		allView.setSortFields(Arrays.asList(new SortField(createdTime, true)));
+		return allView;
+	}
 }
