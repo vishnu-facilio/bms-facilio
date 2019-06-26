@@ -133,7 +133,7 @@ public class AddRegressionPointsCommand implements Command{
 		rd.setxAxis(xFieldContext);
 		ReportYAxisContext yAxisContext = new ReportYAxisContext();
 		yAxisContext.setDataType(3);
-		yAxisContext.setLabel("RegressionModel" + alias);
+		yAxisContext.setLabel("RegressionModel " + alias);
 		yAxisContext.setUnitStr("");
 		rd.setyAxis(yAxisContext);
 		rd.setType(ReportDataPointContext.DataPointType.DERIVATION);
@@ -150,7 +150,7 @@ public class AddRegressionPointsCommand implements Command{
 			// single regression
 			double [] coefficients = (double [])regressionResult.get("coefficients");
 			if(coefficients != null && coefficients.length != 0) {
-				expressionString.append(coefficients[1] + "x");
+				expressionString.append(coefficients[1] + independentPoints.get(0).getAlias());
 				if(coefficients[0] < 0) {
 					expressionString.append(coefficients[0]);
 				}
