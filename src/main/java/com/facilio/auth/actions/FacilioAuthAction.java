@@ -509,8 +509,14 @@ public class FacilioAuthAction extends FacilioAction {
         } else {
             invitation.put("error", "link_expired");
         }
-//        ActionContext.getContext().getValueStack().set("invitation", invitation);
-        setResult("invitation", invitation);
+        Long portalRequest=user.getPortalId();
+        if(portalRequest == null) {
+        	 ActionContext.getContext().getValueStack().set("invitation", invitation);
+        }
+        else {
+        	setResult("invitation", invitation);
+        }
+        
 
         return SUCCESS;
     }
