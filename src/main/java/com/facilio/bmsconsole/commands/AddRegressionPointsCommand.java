@@ -150,7 +150,7 @@ public class AddRegressionPointsCommand implements Command{
 			// single regression
 			double [] coefficients = (double [])regressionResult.get("coefficients");
 			if(coefficients != null && coefficients.length != 0) {
-				expressionString.append(coefficients[1] + 'x');
+				expressionString.append(coefficients[1] + "x");
 				if(coefficients[0] < 0) {
 					expressionString.append(coefficients[0]);
 				}
