@@ -187,7 +187,8 @@ public class PageWidget {
  		HISTORY("history"),
  		RULE_DETIALS_WIGET("ruleDetialsWidget"),
  		RULE_ASSOCIATED_WO("ruleAssociatedWo"),
- 		RULE_RCA("ruleRCA")
+ 		RULE_RCA("ruleRCA"),
+ 		GRAPHICS("graphics")
  		;
 		
 		private String name;

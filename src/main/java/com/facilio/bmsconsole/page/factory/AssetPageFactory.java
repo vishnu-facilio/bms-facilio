@@ -29,6 +29,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
@@ -41,7 +42,8 @@ public class AssetPageFactory extends PageFactory {
 		Page page = new Page();
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-
+		FacilioModule module = modBean.getModule(asset.getModuleId());
+		
 		Tab tab1 = page.new Tab("summary");
 		page.addTab(tab1);
 
@@ -82,17 +84,13 @@ public class AssetPageFactory extends PageFactory {
 		
 		addReadingWidget(tab3Sec1);
 		
-		try {
-			if (AccountUtil.isFeatureEnabled(FeatureLicense.CONTROL_ACTIONS)) {
-				Section tab3Sec2 = page.new Section("commands");
-				addCommandWidget(tab3Sec2, asset.getId());
-				
-				if (CollectionUtils.isNotEmpty(tab3Sec2.getWidgets())) {
-					tab3.addSection(tab3Sec2);
-				}
+		if (AccountUtil.isFeatureEnabled(FeatureLicense.CONTROL_ACTIONS)) {
+			Section tab3Sec2 = page.new Section("commands");
+			addCommandWidget(tab3Sec2, asset.getId());
+			
+			if (CollectionUtils.isNotEmpty(tab3Sec2.getWidgets())) {
+				tab3.addSection(tab3Sec2);
 			}
-		} catch (Exception e) {
-			LOGGER.error("Error in checking control action license or adding command widget", e);
 		}
 		
 		
@@ -125,6 +123,18 @@ public class AssetPageFactory extends PageFactory {
 		tab5.addSection(tab5Sec1);
 		
 		addHistoryWidget(tab5Sec1);
+		
+		// if (AccountUtil.isFeatureEnabled(FeatureLicense.GRAPHICS)) {
+		if (AccountUtil.getCurrentOrg().getOrgId() == 75 && module.getName().equals("fahu")) {
+			
+			Tab tab6 = page.new Tab("graphics", "graphics");
+			page.addTab(tab6);
+			
+			Section tab6Sec1 = page.new Section();
+			tab6.addSection(tab6Sec1);
+			
+			addGraphicsWidget(tab6Sec1);
+		}
 
 		return page;
 	}
@@ -283,6 +293,13 @@ public class AssetPageFactory extends PageFactory {
 		addChartParams(cardWidget, "fromtime", "duration", breakdownCriteria);
 		
 		section.addWidget(cardWidget);
+	}
+	
+	
+	private static void addGraphicsWidget(Section section) {
+		PageWidget widget = new PageWidget(WidgetType.GRAPHICS);
+		widget.addToLayoutParams(section, 24, 3);
+		section.addWidget(widget);
 	}
 	
 }
