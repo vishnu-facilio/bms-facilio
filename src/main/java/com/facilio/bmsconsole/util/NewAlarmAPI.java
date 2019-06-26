@@ -19,6 +19,8 @@ import com.facilio.bmsconsole.context.BaseEventContext;
 import com.facilio.bmsconsole.context.ReadingAlarm;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.LookupOperator;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -66,7 +68,7 @@ public class NewAlarmAPI {
 		for (Entry<Type, List<Long>> entry : alarmMap.entrySet()) {
 			Type type = entry.getKey();
 			FacilioModule module = modBean.getModule(getAlarmModuleName(type));
-			SelectRecordsBuilder<BaseAlarmContext> selectBuilder = new SelectRecordsBuilder<>()
+			SelectRecordsBuilder<BaseAlarmContext> selectBuilder = new SelectRecordsBuilder<BaseAlarmContext>()
 					.moduleName(getAlarmModuleName(type))
 					.beanClass(getAlarmClass(type))
 					.select(modBean.getAllFields(getAlarmModuleName(type)))
@@ -78,7 +80,7 @@ public class NewAlarmAPI {
 		return baseAlarms;
 	}
 
-	private static BaseAlarmContext getAlarm(long id) throws Exception {
+	public static BaseAlarmContext getAlarm(long id) throws Exception {
 		List<BaseAlarmContext> alarms = getAlarms(Collections.singletonList(id));
 		if (CollectionUtils.isNotEmpty(alarms)) {
 			return alarms.get(0);
@@ -112,6 +114,19 @@ public class NewAlarmAPI {
 		default:
 			throw new IllegalArgumentException("Invalid alarm type");
 		}
+	}
+	
+	public static AlarmOccurrenceContext getLatestAlarmOccurance(BaseAlarmContext baseAlarm) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
+		SelectRecordsBuilder<AlarmOccurrenceContext> builder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
+				.beanClass(AlarmOccurrenceContext.class)
+				.moduleName(FacilioConstants.ContextNames.ALARM_OCCURRENCE)
+				.select(fields)
+				.andCondition(CriteriaAPI.getCondition("ALARM_ID", "alarm", String.valueOf(baseAlarm.getId()), NumberOperators.EQUALS))
+				.orderBy("CREATED_TIME DESC, ID DESC")
+				.limit(1);
+		return builder.fetchFirst();
 	}
 	
 	public static List<AlarmOccurrenceContext> getLatestAlarmOccurance(List<String> messageKeys) throws Exception {
@@ -183,10 +198,6 @@ public class NewAlarmAPI {
 	
 	private static void addAlarmOccurrence(AlarmOccurrenceContext alarmOccurrence, BaseEventContext baseEvent, boolean mostRecent) throws Exception {
 		rollUpAlarm(alarmOccurrence, baseEvent, mostRecent);
-	}
-
-	private static void addAlarm(BaseAlarmContext baseAlarm, Type type, AlarmSeverityContext severity, ModuleBean modBean) throws Exception {
-		
 	}
 
 	public static void updateAlarmOccurrence(AlarmOccurrenceContext alarmOccurrence, BaseEventContext baseEvent, boolean mostRecent) throws Exception {

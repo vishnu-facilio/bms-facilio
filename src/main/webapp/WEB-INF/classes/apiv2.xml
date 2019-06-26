@@ -137,10 +137,10 @@
 	</package>
 	
 	<package name="alarm" namespace="/api/v2/alarm" extends="v2Api">
-		<action name="add"
-			class="com.facilio.events.actions.V2AlarmAction" method="addEvent" />
 		<action name="get"
 			class="com.facilio.events.actions.V2AlarmAction" method="fetchAlarmSummary" />
+		<action name="updateOccurrence"
+			class="com.facilio.events.actions.V2AlarmAction" method="updateAlarmOccurrence" />
 	</package>
 	
 	<package name="readingAlarmList" namespace="/api/v2/readingalarms/view" extends="v2Api">

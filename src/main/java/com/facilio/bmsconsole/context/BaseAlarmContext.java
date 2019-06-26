@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
@@ -79,11 +80,11 @@ public class BaseAlarmContext extends ModuleBaseWithCustomFields {
 		this.acknowledged = acknowledged;
 	}
 	
-	private long acknowledgedBy = -1;
-	public long getAcknowledgedBy() {
+	private User acknowledgedBy;
+	public User getAcknowledgedBy() {
 		return acknowledgedBy;
 	}
-	public void setAcknowledgedBy(long acknowledgedBy) {
+	public void setAcknowledgedBy(User acknowledgedBy) {
 		this.acknowledgedBy = acknowledgedBy;
 	}
 	
@@ -109,6 +110,14 @@ public class BaseAlarmContext extends ModuleBaseWithCustomFields {
 	}
 	public void setLastClearedTime(long lastClearedTime) {
 		this.lastClearedTime = lastClearedTime;
+	}
+	
+	private long lastOccurrenceId = -1;
+	public long getLastOccurrenceId() {
+		return lastOccurrenceId;
+	}
+	public void setLastOccurrenceId(long lastOccurrenceId) {
+		this.lastOccurrenceId = lastOccurrenceId;
 	}
 	
 	public static enum Type implements FacilioEnum {

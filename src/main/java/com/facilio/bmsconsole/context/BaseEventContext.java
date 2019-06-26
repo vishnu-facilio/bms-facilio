@@ -193,8 +193,10 @@ public abstract class BaseEventContext extends ModuleBaseWithCustomFields {
 		AlarmSeverityContext previousSeverity = alarmOccurrence.getSeverity();
 		alarmOccurrence.setSeverity(getSeverity());
 		alarmOccurrence.setAutoClear(getAutoClear());
+		alarmOccurrence.setLastOccurredTime(getCreatedTime());
 		
-		if (getSeverity().equals(AlarmAPI.getAlarmSeverity("Clear"))) {
+		AlarmSeverityContext clearSeverity = AlarmAPI.getAlarmSeverity("Clear");
+		if (getSeverity().equals(clearSeverity)) {
 			alarmOccurrence.setClearedTime(getCreatedTime());
 		}
 		
@@ -203,6 +205,11 @@ public abstract class BaseEventContext extends ModuleBaseWithCustomFields {
 		} 
 		else {
 			if (!previousSeverity.equals(getSeverity())) {
+				if (!getSeverity().equals(clearSeverity)) {
+					alarmOccurrence.setAcknowledged(false);
+					alarmOccurrence.setAcknowledgedBy(null);
+					alarmOccurrence.setAcknowledgedTime(-1l);
+				}
 				alarmOccurrence.setPreviousSeverity(previousSeverity);
 			}
 		}

@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
@@ -53,12 +54,18 @@ public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 	public void setAcknowledged(Boolean acknowledged) {
 		this.acknowledged = acknowledged;
 	}
+	public Boolean isAcknowledged() {
+		if (acknowledged == null) {
+			return false;
+		}
+		return acknowledged;
+	}
 	
-	private long acknowledgedBy = -1;
-	public long getAcknowledgedBy() {
+	private User acknowledgedBy;
+	public User getAcknowledgedBy() {
 		return acknowledgedBy;
 	}
-	public void setAcknowledgedBy(long acknowledgedBy) {
+	public void setAcknowledgedBy(User acknowledgedBy) {
 		this.acknowledgedBy = acknowledgedBy;
 	}
 	
@@ -76,6 +83,14 @@ public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 	}
 	public void setCreatedTime(long createdTime) {
 		this.createdTime = createdTime;
+	}
+	
+	private long lastOccurredTime = -1;
+	public long getLastOccurredTime() {
+		return lastOccurredTime;
+	}
+	public void setLastOccurredTime(long lastOccurredTime) {
+		this.lastOccurredTime = lastOccurredTime;
 	}
 	
 	private long clearedTime = -1;
@@ -139,6 +154,10 @@ public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 	
 	public void updateAlarm(BaseAlarmContext baseAlarm) {
 		baseAlarm.setSeverity(severity);
+		baseAlarm.setAcknowledged(getAcknowledged());
+		baseAlarm.setAcknowledgedBy(getAcknowledgedBy());
+		baseAlarm.setAcknowledgedTime(getAcknowledgedTime());
+		baseAlarm.setLastOccurrenceId(getId());
 	}
 	
 	@Override

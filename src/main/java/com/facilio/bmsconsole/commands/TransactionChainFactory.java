@@ -1311,6 +1311,12 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain getV2UpdateAlarmChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateAlarmOccurrenceCommand());
+			return c;
+		}
+		
 		public static Chain getAddWoFromAlarmChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddWOFromAlarmCommand());

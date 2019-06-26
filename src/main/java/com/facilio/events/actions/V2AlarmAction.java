@@ -6,6 +6,8 @@ import org.apache.commons.chain.Chain;
 
 import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -20,15 +22,43 @@ public class V2AlarmAction extends FacilioAction {
 	public void setIds(List<Long> ids) {
 		this.ids = ids;
 	}
+	
+	private long id = -1;
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
 
 	public String fetchAlarmSummary() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
+		context.put(FacilioConstants.ContextNames.RECORD_ID, getId());
 		
 		Chain chain = ReadOnlyChainFactory.getV2AlarmDetailsChain();
 		chain.execute(context);
 		
-		setResult(FacilioConstants.ContextNames.RECORD_LIST, context.get(FacilioConstants.ContextNames.RECORD_LIST));
+		setResult(FacilioConstants.ContextNames.RECORD, context.get(FacilioConstants.ContextNames.RECORD));
+		setResult(FacilioConstants.ContextNames.LATEST_ALARM_OCCURRENCE, context.get(FacilioConstants.ContextNames.LATEST_ALARM_OCCURRENCE));
+		
+		return SUCCESS;
+	}
+	
+	private AlarmOccurrenceContext alarmOccurrence;
+	public AlarmOccurrenceContext getAlarmOccurrence() {
+		return alarmOccurrence;
+	}
+	public void setAlarmOccurrence(AlarmOccurrenceContext alarmOccurrence) {
+		this.alarmOccurrence = alarmOccurrence;
+	}
+	
+	public String updateAlarmOccurrence() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, getIds());
+		context.put(FacilioConstants.ContextNames.ALARM_OCCURRENCE, getAlarmOccurrence());
+		
+		Chain c = TransactionChainFactory.getV2UpdateAlarmChain();
+		c.execute(context);
 		
 		return SUCCESS;
 	}
