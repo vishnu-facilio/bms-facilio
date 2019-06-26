@@ -756,14 +756,12 @@ public class ReadingsAPI {
 			
 			if(resourceType==ResourceContext.ResourceType.SPACE.getValue()) {
 				context.put(FacilioConstants.ContextNames.PARENT_ID, resourceId);
-				context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getSpaceCategoryReadingRelModule());
 				Chain getSpaceSpecifcReadingsChain = FacilioChainFactory.getSpaceReadingsChain();
 				getSpaceSpecifcReadingsChain.execute(context);
 				moduleList = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
 			}
 			else if(resourceType==ResourceContext.ResourceType.ASSET.getValue()) {
 				context.put(FacilioConstants.ContextNames.PARENT_ID, resourceId);
-				context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE, ModuleFactory.getAssetCategoryReadingRelModule());
 				Chain getSpaceSpecifcReadingsChain = FacilioChainFactory.getAssetReadingsChain();
 				getSpaceSpecifcReadingsChain.execute(context);
 				moduleList = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
@@ -787,7 +785,7 @@ public class ReadingsAPI {
 					rdm.setValue("-1");
 					rdm.setResourceId(resourceId);
 					rdm.setTtime(System.currentTimeMillis());
-					rdm.setInputType(ReadingInputType.WEB);
+					rdm.setInputType(ReadingInputType.IS_MANUAL_DATA);
 					builder.addRecord(FieldUtil.getAsProperties(rdm));
 				}
 			}
