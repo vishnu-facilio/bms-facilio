@@ -431,9 +431,7 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     public Value visitArithmeticFirstPrecedenceExpr(WorkflowV2Parser.ArithmeticFirstPrecedenceExprContext ctx) {
 
         Value left = this.visit(ctx.expr(0));
-        WorkflowV2Util.checkForNullAndThrowException(left, ctx.expr(0).getText());
         Value right = this.visit(ctx.expr(1));
-        WorkflowV2Util.checkForNullAndThrowException(right, ctx.expr(1).getText());
 
         switch (ctx.op.getType()) {
             case WorkflowV2Parser.MULT:
@@ -451,9 +449,7 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     public Value visitArithmeticSecondPrecedenceExpr(WorkflowV2Parser.ArithmeticSecondPrecedenceExprContext ctx) {
 
         Value left = this.visit(ctx.expr(0));
-        WorkflowV2Util.checkForNullAndThrowException(left, ctx.expr(0).getText());
         Value right = this.visit(ctx.expr(1));
-        WorkflowV2Util.checkForNullAndThrowException(right, ctx.expr(1).getText());
 
         switch (ctx.op.getType()) {
             case WorkflowV2Parser.PLUS:
@@ -471,7 +467,6 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     public Value visitRelationalExpr(WorkflowV2Parser.RelationalExprContext ctx) {
 
         Value left = this.visit(ctx.expr(0));
-        WorkflowV2Util.checkForNullAndThrowException(left, ctx.expr(0).getText());
         Value right = this.visit(ctx.expr(1));
 
         switch (ctx.op.getType()) {
@@ -494,9 +489,7 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     
     public Value visitBooleanExpr(WorkflowV2Parser.BooleanExprContext ctx) {
     	 Value left = this.visit(ctx.expr(0));
-    	 WorkflowV2Util.checkForNullAndThrowException(left, ctx.expr(0).getText());
          Value right = this.visit(ctx.expr(1));
-         WorkflowV2Util.checkForNullAndThrowException(right, ctx.expr(1).getText());
 
          switch (ctx.op.getType()) {
              case WorkflowV2Parser.AND:

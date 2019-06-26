@@ -26,6 +26,8 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.fields.BooleanField;
+import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
 import com.facilio.workflows.exceptions.FunctionParamException;
@@ -188,6 +190,40 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 			FacilioModuleFunctionImpl functions = new FacilioModuleFunctionImpl();
 			
 			return functions.fetch(params);
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects == null || objects.length == 0) {
+				throw new FunctionParamException("Required Object is null or empty");
+			}
+		}
+	},
+	
+	GET_ENUM_MAP(4,"getEnumMap") {															//change name
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			WorkflowReadingContext workflowReadingContext = (WorkflowReadingContext)objects[0];
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			
+			FacilioField field = modBean.getField(workflowReadingContext.getFieldId());
+			
+			Map<Integer, Object> enumMap = null;
+			if (field instanceof BooleanField) {
+				BooleanField boolField = (BooleanField) field;
+				enumMap = new HashMap<>();
+				if (boolField.getTrueVal() != null && !boolField.getTrueVal().isEmpty()) {
+					enumMap.put(1, boolField.getTrueVal());
+					enumMap.put(0, boolField.getFalseVal());
+				}
+				else {
+					enumMap.put(1, "True");
+					enumMap.put(0, "False");
+				}
+			}
+			else if (field instanceof EnumField) {
+				enumMap = ((EnumField) field).getEnumMap();
+			}
+			return enumMap;
 		};
 		
 		public void checkParam(Object... objects) throws Exception {
