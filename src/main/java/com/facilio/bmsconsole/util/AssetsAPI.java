@@ -877,11 +877,12 @@ public class AssetsAPI {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<ItemContext> rotatingItems = ItemsApi.getItemsForType(itemTypeIds);
 		Map<Long,ItemContext> items = FieldUtil.getAsMap(rotatingItems);
+		String id = StringUtils.join(items.keySet(), ",");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
 		SelectRecordsBuilder<AssetContext> selectBuilder = new SelectRecordsBuilder<AssetContext>().select(fields)
 				.table(module.getTableName()).moduleName(module.getName()).beanClass(AssetContext.class)
-				.andCondition(CriteriaAPI.getCondition("ROTATING_ITEM", "rotatingItem", String.valueOf(items.keySet()), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("ROTATING_ITEM", "rotatingItem", id, NumberOperators.EQUALS))
 				;
 		List<AssetContext> assets = selectBuilder.get();
 		if(!CollectionUtils.isEmpty(assets)) {
@@ -897,11 +898,12 @@ public class AssetsAPI {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<ToolContext> rotatingTools = ToolsApi.getToolsForType(toolTypeIds);
 		Map<Long,ToolContext> tools = FieldUtil.getAsMap(rotatingTools);
+		String id = StringUtils.join(tools.keySet(), ",");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
 		SelectRecordsBuilder<AssetContext> selectBuilder = new SelectRecordsBuilder<AssetContext>().select(fields)
 				.table(module.getTableName()).moduleName(module.getName()).beanClass(AssetContext.class)
-				.andCondition(CriteriaAPI.getCondition("ROTATING_TOOL", "rotatingTool", String.valueOf(tools.keySet()), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("ROTATING_TOOL", "rotatingTool", id, NumberOperators.EQUALS))
 				;
 		List<AssetContext> assets = selectBuilder.get();
 		if(!CollectionUtils.isEmpty(assets)) {
