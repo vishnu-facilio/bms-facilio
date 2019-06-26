@@ -22,6 +22,7 @@ import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -185,18 +186,23 @@ public class MVUtil {
 	}
 	
 	
-	public static List<MVProjectContext> getMVProjects() throws Exception {
+	public static List<MVProjectContext> getMVProjects(Boolean isOpen) throws Exception {
 		
 		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		FacilioModule mvProjectModule = modbean.getModule(FacilioConstants.ContextNames.MV_PROJECT_MODULE);
 		List<FacilioField> mvProjectFields = modbean.getAllFields(FacilioConstants.ContextNames.MV_PROJECT_MODULE);
 		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(mvProjectFields);
+		
 		SelectRecordsBuilder<MVProjectContext> selectProject = new SelectRecordsBuilder<MVProjectContext>()
 				.module(mvProjectModule)
 				.select(mvProjectFields)
 				.beanClass(MVProjectContext.class);
-		
+
+		if(isOpen != null) {
+			selectProject.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), isOpen.toString(), BooleanOperators.IS));
+		}
 		List<MVProjectContext> mvProjects = selectProject.get();
 		if (CollectionUtils.isNotEmpty(mvProjects)) {
 			List<Long> resourceIds = mvProjects.stream().map(project -> project.getMeter().getId()).collect(Collectors.toList());

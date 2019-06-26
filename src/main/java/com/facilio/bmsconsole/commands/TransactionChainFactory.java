@@ -3023,6 +3023,12 @@ public class TransactionChainFactory {
 			c.addCommand(new ConstructBaselineFormulaWithAjustmentCommand());
 			return c;
 		}
+		
+		public static Chain getUpdateMVProjectMetaChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateMVPojectCommand());
+			return c;
+		}
 
 		public static Chain getAddMVBaselineChain() {
 			Chain c = getDefaultChain();

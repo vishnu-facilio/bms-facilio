@@ -30,15 +30,15 @@ public class MVProjectContext extends ModuleBaseWithCustomFields {
 	int saveGoal;
 	long reportingPeriodStartTime;
 	long reportingPeriodEndTime;
-	boolean status;
+	Boolean status;
 	
-	public boolean isStatus() {
+	public Boolean isStatus() {
 		return status;
 	}
-	public boolean getStatus() {
+	public Boolean getStatus() {
 		return status;
 	}
-	public void setStatus(boolean status) {
+	public void setStatus(Boolean status) {
 		this.status = status;
 	}
 

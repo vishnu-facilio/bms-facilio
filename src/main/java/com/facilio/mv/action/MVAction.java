@@ -16,8 +16,17 @@ public class MVAction extends FacilioAction {
 	private static final long serialVersionUID = 1L;
 	MVProjectWrapper mvProjectWrapper;
 	
+	Boolean isOpen; 
+	
 	long mvProjectId = -1;
 	
+	public Boolean getIsOpen() {
+		return isOpen;
+	}
+
+	public void setIsOpen(Boolean isOpen) {
+		this.isOpen = isOpen;
+	}
 	public long getMvProjectId() {
 		return mvProjectId;
 	}
@@ -62,6 +71,19 @@ public class MVAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String updateMVProjectMeta() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		
+		context.put(MVUtil.MV_PROJECT_WRAPPER, mvProjectWrapper);
+		
+		Chain updateMVProjectChain =  TransactionChainFactory.getUpdateMVProjectMetaChain(); 
+		updateMVProjectChain.execute(context);
+		
+		setResult(MVUtil.MV_PROJECT_WRAPPER, mvProjectWrapper);
+		return SUCCESS;
+	}
+	
 	public String getMVProject() throws Exception {
 		
 		mvProjectWrapper = MVUtil.getMVProject(mvProjectId);
@@ -72,7 +94,7 @@ public class MVAction extends FacilioAction {
 	
 	public String getMVProjectList() throws Exception {
 		
-		setResult(MVUtil.MV_PROJECTS, MVUtil.getMVProjects());
+		setResult(MVUtil.MV_PROJECTS, MVUtil.getMVProjects(isOpen));
 		return SUCCESS;
 	}
 	

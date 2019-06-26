@@ -233,6 +233,10 @@
 			class="com.facilio.mv.action.MVAction" method="getMVProject">
 		</action>
 		
+		<action name="updateMVProjectMeta"
+			class="com.facilio.mv.action.MVAction" method="updateMVProjectMeta">
+		</action>
+		
 		<action name="getMVProjectList"
 			class="com.facilio.mv.action.MVAction" method="getMVProjectList">
 		</action>
