@@ -30,7 +30,7 @@ public class PageRecordHandlingCommand implements Command {
 		}
 		
 		if (context.containsKey(ContextNames.RECORD)) {
-			context.put(ContextNames.ID, -1);
+			context.put(ContextNames.ID, -1l);
 		}
 		
 		return false;
