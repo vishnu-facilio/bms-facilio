@@ -148,7 +148,10 @@ public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 		}
 		
 		if (obj instanceof AlarmOccurrenceContext) {
-			return ((AlarmOccurrenceContext) obj).getId() == getId();
+			if (getId() != -1 && ((AlarmOccurrenceContext) obj).getId() != -1) {
+				return ((AlarmOccurrenceContext) obj).getId() == getId();
+			}
+			return super.equals(obj);
 		}
 		return false;
 	}

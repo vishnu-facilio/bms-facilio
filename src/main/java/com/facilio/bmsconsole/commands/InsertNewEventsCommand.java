@@ -27,26 +27,18 @@ public class InsertNewEventsCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		List<BaseEventContext> baseEvents = (List<BaseEventContext>) context.get(EventConstants.EventContextNames.EVENT_LIST);
 		if (CollectionUtils.isNotEmpty(baseEvents)) {
-			Map<Type, List<BaseEventContext>>  eventsMap = new HashMap<>();
+//			Map<Type, List<BaseEventContext>>  eventsMap = new HashMap<>();
 			for (BaseEventContext baseEvent : baseEvents) {
-				List<BaseEventContext> list = eventsMap.get(baseEvent.getAlarmType());
-				if (list == null) {
-					list = new ArrayList<>();
-					eventsMap.put(baseEvent.getAlarmType(), list);
-				}
+//				List<BaseEventContext> list = eventsMap.get(baseEvent.getAlarmType());
+//				if (list == null) {
+//					list = new ArrayList<>();
+//					eventsMap.put(baseEvent.getAlarmType(), list);
+//				}
 				updateEventObject(baseEvent);
-				list.add(baseEvent);
+//				list.add(baseEvent);
 			}
 			
-			for (Type type : eventsMap.keySet()) {
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				String moduleName = NewEventAPI.getEventModuleName(type);
-				InsertRecordBuilder<BaseEventContext> builder = new InsertRecordBuilder<BaseEventContext>()
-						.moduleName(moduleName)
-						.fields(modBean.getAllFields(moduleName));
-				builder.addRecords(eventsMap.get(type));
-				builder.save();
-			}
+//			context.put("eventMap", eventsMap);
 		}
 		return false;
 	}

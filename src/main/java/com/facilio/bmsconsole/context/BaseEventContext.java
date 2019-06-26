@@ -194,7 +194,9 @@ public abstract class BaseEventContext extends ModuleBaseWithCustomFields {
 			alarmOccurrence.setCreatedTime(getCreatedTime());
 		} 
 		else {
-			alarmOccurrence.setPreviousSeverity(previousSeverity);
+			if (!previousSeverity.equals(getSeverity())) {
+				alarmOccurrence.setPreviousSeverity(previousSeverity);
+			}
 		}
 		
 		if (StringUtils.isNotEmpty(getPossibleCause())) {
@@ -217,5 +219,36 @@ public abstract class BaseEventContext extends ModuleBaseWithCustomFields {
 			}
 			alarmOccurrence.setRecommendation(recommendations);
 		}
+	}
+	
+	public static BaseEventContext createNewEvent(Type typeEnum, ResourceContext resourceContext, AlarmSeverityContext alarmSeverity, String message, String messageKey, long createdTime) {
+		BaseEventContext baseEvent = null;
+		switch (typeEnum) {
+		case READING_ALARM:
+			baseEvent = new ReadingEventContext();
+			break;
+
+		default:
+			throw new IllegalArgumentException("Invalid type");
+		}
+		
+		if (createdTime == -1) {
+			createdTime = DateTimeUtil.getCurrenTime();
+		}
+		
+		if (alarmSeverity == null) {
+			throw new IllegalArgumentException("Severity cannot be empty");
+		}
+		
+		baseEvent.setCreatedTime(createdTime);
+		baseEvent.setSeverity(alarmSeverity);
+		baseEvent.setSeverityString(alarmSeverity.getSeverity());
+		baseEvent.setAlarmType(typeEnum);
+		baseEvent.setEventMessage(message);
+		baseEvent.setMessageKey(messageKey);
+		baseEvent.setComment("Automated event");
+		baseEvent.setResource(resourceContext);
+		
+		return baseEvent;
 	}
 }

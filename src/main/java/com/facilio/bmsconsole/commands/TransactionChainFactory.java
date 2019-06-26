@@ -3186,6 +3186,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(new InsertNewEventsCommand());
 			c.addCommand(new NewEventsToAlarmsConversionCommand());
+			c.addCommand(new SaveAlarmAndEventsCommand());
 			return c;
 		}
 

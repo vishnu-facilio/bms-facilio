@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -26,6 +25,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.events.commands.NewEventsToAlarmsConversionCommand.PointedList;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext.EventInternalState;
 import com.facilio.events.context.EventContext.EventState;
@@ -37,7 +37,7 @@ import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 
-public class NewEventsToAlarmsConversionCommand implements Command, PostTransactionCommand {
+public class NewEventsToAlarmsConversionCommand implements Command {
 
 	private Map<String, List<BaseEventContext>> eventsMap = new HashMap<>();
 	private Map<String, PointedList<AlarmOccurrenceContext>> alarmOccurrenceMap = new HashMap<>();
@@ -58,69 +58,46 @@ public class NewEventsToAlarmsConversionCommand implements Command, PostTransact
 				list.add(baseEvent);
 			}
 			
+			List<AlarmOccurrenceContext> latestAlarmOccurance = NewAlarmAPI.getLatestAlarmOccurance(new ArrayList<>(eventsMap.keySet()));
+			for (AlarmOccurrenceContext alarmOccurrenceContext : latestAlarmOccurance) {
+				String key = alarmOccurrenceContext.getAlarm().getKey();
+				PointedList<AlarmOccurrenceContext> pointedList = alarmOccurrenceMap.get(key);
+				if (pointedList == null) {
+					// expecting records should come here
+					pointedList = new PointedList<>();
+					alarmOccurrenceMap.put(key, pointedList);
+				}
+				pointedList.add(alarmOccurrenceContext);
+			}
+			
 			for (Map.Entry<String, List<BaseEventContext>> entry : eventsMap.entrySet()) {
 				List<BaseEventContext> baseEvents = entry.getValue();
 				for (BaseEventContext baseEvent : baseEvents) {
 					processEventToAlarm(baseEvent);
 				}
+				PointedList<AlarmOccurrenceContext> pointedList = alarmOccurrenceMap.get(entry.getKey());
+				
+				List<AlarmOccurrenceContext> list = new ArrayList<>(pointedList);
+				for (AlarmOccurrenceContext alarmOccurrence : list) {
+					if (!alarmOccurrence.equals(pointedList.getLastRecord()) && !alarmOccurrence.getSeverity().equals(AlarmAPI.getAlarmSeverity("Clear"))) {
+						BaseAlarmContext alarm = alarmOccurrence.getAlarm();
+						BaseEventContext createdEvent = BaseEventContext.createNewEvent(alarm.getTypeEnum(), alarm.getResource(), AlarmAPI.getAlarmSeverity("Clear"), "Automated Clear Event", alarm.getKey(), alarmOccurrence.getCreatedTime());
+						baseEvents.add(createdEvent);
+						this.baseEvents.add(createdEvent);
+						processEventToAlarm(createdEvent);
+					}
+				}
 			}
 			
 			saveRecords();
+			context.put("alarmOccurrenceMap", alarmOccurrenceMap);
+			context.put("alarmMap", alarmMap);
 		}
 		return false;
 	}
 
 	private void saveRecords() throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		if (MapUtils.isNotEmpty(alarmMap)) {
-			for (BaseAlarmContext baseAlarm : alarmMap.values()) {
-				if (baseAlarm.getId() > 0) {
-					UpdateRecordBuilder<BaseAlarmContext> builder = new UpdateRecordBuilder<BaseAlarmContext>()
-							.moduleName(NewAlarmAPI.getAlarmModuleName(baseAlarm.getTypeEnum()))
-							.andCondition(CriteriaAPI.getIdCondition(baseAlarm.getId(), modBean.getModule(NewAlarmAPI.getAlarmModuleName(baseAlarm.getTypeEnum()))))
-							.fields(modBean.getAllFields(NewAlarmAPI.getAlarmModuleName(baseAlarm.getTypeEnum())));
-					builder.update(baseAlarm);
-				}
-				else {
-					InsertRecordBuilder<BaseAlarmContext> builder = new InsertRecordBuilder<BaseAlarmContext>()
-							.moduleName(NewAlarmAPI.getAlarmModuleName(baseAlarm.getTypeEnum()))
-							.fields(modBean.getAllFields(NewAlarmAPI.getAlarmModuleName(baseAlarm.getTypeEnum())));
-					builder.insert(baseAlarm);
-				}
-			}
-		}
 		
-		if (MapUtils.isNotEmpty(alarmOccurrenceMap)) {
-			List<FacilioField> allFields = modBean.getAllFields(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
-			InsertRecordBuilder<AlarmOccurrenceContext> builder = new InsertRecordBuilder<AlarmOccurrenceContext>()
-					.moduleName(FacilioConstants.ContextNames.ALARM_OCCURRENCE)
-					.fields(allFields);
-			
-			List<AlarmOccurrenceContext> records = new ArrayList<>();
-			for (Map.Entry<String, PointedList<AlarmOccurrenceContext>> entry : alarmOccurrenceMap.entrySet()) {
-				for (AlarmOccurrenceContext alarmOccurrenceContext : entry.getValue()) {
-					if (alarmOccurrenceContext.getId() > 0) {
-						UpdateRecordBuilder<AlarmOccurrenceContext> updateBuilder = new UpdateRecordBuilder<AlarmOccurrenceContext>()
-								.moduleName(FacilioConstants.ContextNames.ALARM_OCCURRENCE)
-								.andCondition(CriteriaAPI.getIdCondition(alarmOccurrenceContext.getId(), modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE)))
-								.fields(allFields);
-						updateBuilder.update(alarmOccurrenceContext);
-					} else {
-						records.add(alarmOccurrenceContext);
-					}
-				}
-			}
-			builder.addRecords(records);
-			builder.save();
-		}
-		
-		if (MapUtils.isNotEmpty(eventsMap)) {
-			for (List<BaseEventContext> baseEvents : eventsMap.values()) {
-				for (BaseEventContext baseEvent : baseEvents) {
-					updateEvent(baseEvent);
-				}
-			}
-		}		
 	}
 
 	private void processEventToAlarm(BaseEventContext baseEvent) throws Exception {
@@ -136,43 +113,49 @@ public class NewEventsToAlarmsConversionCommand implements Command, PostTransact
 	}
 
 	private void addOrUpdateAlarm(BaseEventContext baseEvent) throws Exception {
-		PointedList<AlarmOccurrenceContext> stack = alarmOccurrenceMap.get(baseEvent.getMessageKey());
-		if (stack == null) {
-			stack = new PointedList<>();
-			alarmOccurrenceMap.put(baseEvent.getMessageKey(), stack);
+		PointedList<AlarmOccurrenceContext> pointedList = alarmOccurrenceMap.get(baseEvent.getMessageKey());
+		if (pointedList == null) {
+			pointedList = new PointedList<>();
+			alarmOccurrenceMap.put(baseEvent.getMessageKey(), pointedList);
 		}
-		AlarmOccurrenceContext  alarmOccurrence = stack.isEmpty() ? null : stack.getCurrentRecord();
+		AlarmOccurrenceContext alarmOccurrence = pointedList.isEmpty() ? null : pointedList.getCurrentRecord();
 		
+		boolean mostRecent = pointedList.isCurrentLast();
 		if (alarmOccurrence == null) {
-			// if no similar event occurred, take from db
-			if (baseEvent.getAlarmOccurrence() != null) {
-				alarmOccurrence = baseEvent.getAlarmOccurrence();
-			}
-			else {
-				alarmOccurrence = NewAlarmAPI.getLatestAlarmOccurance(baseEvent.getMessageKey(), baseEvent.getAlarmType());
-			}
-		}
-
-		if (alarmOccurrence == null) {
+			// Only for newly creating alarm
 			alarmOccurrence = NewAlarmAPI.createAlarm(baseEvent);
-			stack.add(alarmOccurrence);
+			pointedList.add(alarmOccurrence);
 			baseEvent.setEventState(EventState.ALARM_CREATED);
 		}
 		else if (alarmOccurrence.getSeverity().equals(AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.CLEAR_SEVERITY))) {
 			// create alarm occurrence
-			alarmOccurrence = NewAlarmAPI.createAlarmOccurrence(alarmOccurrence.getAlarm(), baseEvent);
-			stack.add(alarmOccurrence);
+			mostRecent = baseEvent.getCreatedTime() > pointedList.getLastRecord().getCreatedTime();
+			
+			int oldObjectIndex = pointedList.indexOf(alarmOccurrence);
+			if (alarmOccurrence.getCreatedTime() < baseEvent.getCreatedTime()) {
+				oldObjectIndex ++;
+			}
+			alarmOccurrence = NewAlarmAPI.createAlarmOccurrence(alarmOccurrence.getAlarm(), baseEvent, mostRecent);
+			if (mostRecent) {
+				pointedList.add(alarmOccurrence);
+				pointedList.moveNext();
+			} else {
+				pointedList.add(oldObjectIndex, alarmOccurrence);
+				pointedList.setPosition(oldObjectIndex);
+			}
 			baseEvent.setEventState(EventState.ALARM_CREATED);
 		}
 		else {
 			// if alarm is not cleared, only update in local object.
-			NewAlarmAPI.updateAlarmOccurrence(alarmOccurrence, baseEvent);
-			baseEvent.setEventState(EventState.ALARM_UPDATED);
-			
-			// add if its not found in stack
-			if (!stack.contains(alarmOccurrence)) {
-				stack.add(alarmOccurrence);
+			if (baseEvent.getCreatedTime() < alarmOccurrence.getCreatedTime()) {
+				int oldObjectIndex = pointedList.indexOf(alarmOccurrence);
+				alarmOccurrence = NewAlarmAPI.createAlarmOccurrence(alarmOccurrence.getAlarm(), baseEvent, mostRecent);
+				pointedList.add(oldObjectIndex, alarmOccurrence);
+				pointedList.setPosition(oldObjectIndex);
 			}
+			
+			NewAlarmAPI.updateAlarmOccurrence(alarmOccurrence, baseEvent, mostRecent);
+			baseEvent.setEventState(EventState.ALARM_UPDATED);
 		}
 		
 		alarmMap.put(baseEvent.getMessageKey(), alarmOccurrence.getAlarm());
@@ -188,58 +171,6 @@ public class NewEventsToAlarmsConversionCommand implements Command, PostTransact
 				.andCondition(CriteriaAPI.getIdCondition(baseEvent.getId(), module))
 				;
 		builder.update(baseEvent);
-	}
-	
-	@Override
-	public boolean postExecute() throws Exception {
-		if (CollectionUtils.isNotEmpty(baseEvents)) {
-			List<Long> alarmOccurrenceIds = new ArrayList<>();
-			for (BaseEventContext baseEvent : baseEvents) {
-				AlarmOccurrenceContext alarmOccurrence = baseEvent.getAlarmOccurrence();
-				if (!alarmOccurrenceIds.contains(alarmOccurrence)) {
-					alarmOccurrenceIds.add(alarmOccurrence.getId());
-				}
-			}
-			
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule alarmOccurrenceModule = modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
-			FacilioField noOfEventsField = modBean.getField("noOfEvents", alarmOccurrenceModule.getName());
-			
-			FacilioModule eventModule = modBean.getModule(FacilioConstants.ContextNames.BASE_EVENT);
-			Map<String, FacilioField> eventFieldMap = FieldFactory.getAsMap(modBean.getAllFields(eventModule.getName()));
-			List<FacilioField> fields = new ArrayList<>();
-			FacilioField alarmOccurrenceField = eventFieldMap.get("alarmOccurrence");
-			fields.add(alarmOccurrenceField);
-			
-			FacilioField countField = new FacilioField();
-			countField.setName("count");
-			countField.setColumnName("COUNT(*)");
-			countField.setDataType(FieldType.NUMBER);
-			fields.add(countField);
-			
-			GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-					.table(eventModule.getTableName())
-					.select(fields)
-					.groupBy(alarmOccurrenceField.getCompleteColumnName())
-					.andCondition(CriteriaAPI.getCondition(alarmOccurrenceField, StringUtils.join(alarmOccurrenceIds, ","), NumberOperators.EQUALS));
-			
-			List<Map<String, Object>> list = builder.get();
-			Map<String, Object> updateMap = new HashMap<>();
-			for (Map<String, Object> map : list) {
-				long id = ((Number) map.get("alarmOccurrence")).longValue();
-				int numberOfEvents = ((Number) map.get("count")).intValue();
-
-				updateMap.put("noOfEvents", numberOfEvents);
-
-				UpdateRecordBuilder<WorkOrderContext> updateRecordBuilder = new UpdateRecordBuilder<WorkOrderContext>()
-						.module(alarmOccurrenceModule)
-						.fields(Collections.singletonList(noOfEventsField))
-						.andCondition(CriteriaAPI.getIdCondition(id, alarmOccurrenceModule));
-
-				updateRecordBuilder.updateViaMap(updateMap);
-			}
-		}
-		return false;
 	}
 	
 	public static class PointedList<E> extends ArrayList<E> {
@@ -263,11 +194,28 @@ public class NewEventsToAlarmsConversionCommand implements Command, PostTransact
 			}
 		}
 		
+		public void setPosition(int position) {
+			if (position < 0) {
+				position = 0;
+			}
+			else if (position >= size()) {
+				position = size() - 1;
+			}
+			this.position = position;
+		}
+		
+		public boolean isCurrentLast() {
+			return position == (size() - 1);
+		}
+		
 		public E getLastRecord() {
 			return get(size() - 1);
 		}
 		
 		public E getCurrentRecord() {
+			if (CollectionUtils.isEmpty(this)) {
+				return null;
+			}
 			return get(position);
 		}
 	}
