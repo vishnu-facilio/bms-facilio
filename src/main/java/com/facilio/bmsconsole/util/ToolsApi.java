@@ -122,11 +122,11 @@ public class ToolsApi {
 		String ids = StringUtils.join(toolTypeIds, ",");
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM);
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TOOL);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
 		SelectRecordsBuilder<ToolContext> selectBuilder = new SelectRecordsBuilder<ToolContext>().select(fields)
 				.table(module.getTableName()).moduleName(module.getName()).beanClass(ToolContext.class)
-				.andCondition(CriteriaAPI.getCondition("TOOL_TYPES_ID", "toolType", String.valueOf(ids), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("TOOL_TYPE_ID", "toolType", String.valueOf(ids), NumberOperators.EQUALS))
 				
 				;
 		List<ToolContext> tools = selectBuilder.get();

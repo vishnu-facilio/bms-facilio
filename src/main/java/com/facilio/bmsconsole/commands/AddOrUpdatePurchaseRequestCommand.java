@@ -28,7 +28,7 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 
-;
+
 
 public class AddOrUpdatePurchaseRequestCommand implements Command {
 

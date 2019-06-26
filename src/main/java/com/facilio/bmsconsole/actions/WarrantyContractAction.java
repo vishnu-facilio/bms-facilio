@@ -227,16 +227,5 @@ public class WarrantyContractAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	public String associateAsset() throws Exception {
 	
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD, warrantyContract );
-		
-		Chain chain = TransactionChainFactory.getAssociateAssetChain();
-		chain.execute(context);
-		
-		setResult(FacilioConstants.ContextNames.WARRANTY_CONTRACTS, context.get(FacilioConstants.ContextNames.RECORD));
-		
-		return SUCCESS;
-	}
 }
