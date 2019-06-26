@@ -32,7 +32,7 @@ public class MVProjectPageFactory {
 		page.addTab(tab2);
 		
 		Section tab2Sec1 = page.new Section();
-		tab1.addSection(tab2Sec1);
+		tab2.addSection(tab2Sec1);
 		
 		addBaselineEquationWidget(tab2Sec1, false);
 		addBaselineEquationWidget(tab2Sec1, true);

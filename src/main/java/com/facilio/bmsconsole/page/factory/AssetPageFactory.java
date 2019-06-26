@@ -114,16 +114,6 @@ public class AssetPageFactory extends PageFactory {
 		addFailureRateWidget(tab4Sec1, breakdownCriteria);
 		addAvgTtrWidget(tab4Sec1, breakdownCriteria);
 		
-		
-		
-		Tab tab5 = page.new Tab("history", "history");
-		page.addTab(tab5);
-		
-		Section tab5Sec1 = page.new Section();
-		tab5.addSection(tab5Sec1);
-		
-		addHistoryWidget(tab5Sec1);
-		
 		// if (AccountUtil.isFeatureEnabled(FeatureLicense.GRAPHICS)) {
 		if (AccountUtil.getCurrentOrg().getOrgId() == 75 && module.getName().equals("fahu")) {
 			
@@ -135,6 +125,15 @@ public class AssetPageFactory extends PageFactory {
 			
 			addGraphicsWidget(tab6Sec1);
 		}
+		
+		Tab tab5 = page.new Tab("history", "history");
+		page.addTab(tab5);
+		
+		Section tab5Sec1 = page.new Section();
+		tab5.addSection(tab5Sec1);
+		
+		addHistoryWidget(tab5Sec1);
+		
 
 		return page;
 	}
