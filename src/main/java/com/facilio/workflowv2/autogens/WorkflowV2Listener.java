@@ -386,6 +386,18 @@ public interface WorkflowV2Listener extends ParseTreeListener {
 	 */
 	void exitCustomModuleInitialization(WorkflowV2Parser.CustomModuleInitializationContext ctx);
 	/**
+	 * Enter a parse tree produced by the {@code readingInitialization}
+	 * labeled alternative in {@link WorkflowV2Parser#atom}.
+	 * @param ctx the parse tree
+	 */
+	void enterReadingInitialization(WorkflowV2Parser.ReadingInitializationContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code readingInitialization}
+	 * labeled alternative in {@link WorkflowV2Parser#atom}.
+	 * @param ctx the parse tree
+	 */
+	void exitReadingInitialization(WorkflowV2Parser.ReadingInitializationContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code moduleAndSystemNameSpaceInitialization}
 	 * labeled alternative in {@link WorkflowV2Parser#atom}.
 	 * @param ctx the parse tree

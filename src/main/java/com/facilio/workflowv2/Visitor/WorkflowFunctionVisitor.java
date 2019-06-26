@@ -39,6 +39,7 @@ import com.facilio.workflowv2.autogens.WorkflowV2Parser.Recursive_expressionCont
 import com.facilio.workflowv2.contexts.DBParamContext;
 import com.facilio.workflowv2.contexts.Value;
 import com.facilio.workflowv2.contexts.WorkflowNamespaceContext;
+import com.facilio.workflowv2.contexts.WorkflowReadingContext;
 import com.facilio.workflowv2.util.UserFunctionAPI;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 
@@ -185,6 +186,10 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
                     	}
                     	else if(value.asObject() instanceof DateRange) {
                     		wfFunctionContext.setNameSpace(FacilioSystemFunctionNameSpace.DATE_RANGE.getName());
+                    		isDataTypeSpecificFunction = true;
+                    	}
+                    	else if(value.asObject() instanceof WorkflowReadingContext) {
+                    		wfFunctionContext.setNameSpace(FacilioSystemFunctionNameSpace.READINGS.getName());
                     		isDataTypeSpecificFunction = true;
                     	}
                     	else if (value.asObject() instanceof FacilioSystemFunctionNameSpace) {
@@ -345,6 +350,14 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     	catch(Exception e) {
     		throw new RuntimeException(e.getMessage());
     	}
+    }
+    
+    @Override 
+    public Value visitReadingInitialization(WorkflowV2Parser.ReadingInitializationContext ctx) 
+    {
+    	long fieldId = this.visit(ctx.expr(0)).asLong();
+    	long parentId = this.visit(ctx.expr(1)).asLong();
+    	return new Value(new WorkflowReadingContext(fieldId,parentId)); 
     }
     
     @Override 

@@ -25,6 +25,10 @@ public class Value {
     	return (FacilioModule) value;
     }
     
+    public WorkflowReadingContext asWorkflowReadingContext() {
+    	return (WorkflowReadingContext) value;
+    }
+    
     public DateRange asDateRange() {
     	return (DateRange) value;
     }

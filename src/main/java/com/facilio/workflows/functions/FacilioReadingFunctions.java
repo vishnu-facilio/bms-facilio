@@ -1,18 +1,36 @@
 package com.facilio.workflows.functions;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
 import com.facilio.workflows.exceptions.FunctionParamException;
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.*;
+import com.facilio.workflowv2.contexts.DBParamContext;
+import com.facilio.workflowv2.contexts.WorkflowReadingContext;
+import com.facilio.workflowv2.modulefunctions.FacilioModuleFunctionImpl;
 
 public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface  {
 
@@ -100,6 +118,78 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 			}
 		}
 	},
+	
+	GET_LAST_VALUE(2,"getLastValue") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			WorkflowReadingContext workflowReadingContext = (WorkflowReadingContext)objects[0];
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			Criteria criteria = new Criteria();
+			
+			FacilioField field = modBean.getField(workflowReadingContext.getFieldId());
+			
+			FacilioModule module = field.getModule();
+			
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
+			
+			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), workflowReadingContext.getParentId()+"", NumberOperators.EQUALS));
+			
+			DBParamContext dbParamContext = new DBParamContext();
+			dbParamContext.setFieldName(field.getName());
+			dbParamContext.setAggregateString("lastValue");
+			dbParamContext.setCriteria(criteria);
+			
+			List<Object> params = new ArrayList<>();
+			params.add(field.getModule());
+			params.add(dbParamContext);
+			
+			FacilioModuleFunctionImpl functions = new FacilioModuleFunctionImpl();
+			
+			return functions.fetch(params);
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects == null || objects.length == 0) {
+				throw new FunctionParamException("Required Object is null or empty");
+			}
+		}
+	},
+	
+	GET(3,"get") {															//change name
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			WorkflowReadingContext workflowReadingContext = (WorkflowReadingContext)objects[0];
+			Criteria criteria = (Criteria)objects[1];
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			
+			FacilioField field = modBean.getField(workflowReadingContext.getFieldId());
+			
+			FacilioModule module = field.getModule();
+			
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
+			
+			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), workflowReadingContext.getParentId()+"", NumberOperators.EQUALS));
+			
+			DBParamContext dbParamContext = new DBParamContext();
+			dbParamContext.setFieldName(field.getName());
+			dbParamContext.setCriteria(criteria);
+			
+			List<Object> params = new ArrayList<>();
+			params.add(field.getModule());
+			params.add(dbParamContext);
+			
+			FacilioModuleFunctionImpl functions = new FacilioModuleFunctionImpl();
+			
+			return functions.fetch(params);
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects == null || objects.length == 0) {
+				throw new FunctionParamException("Required Object is null or empty");
+			}
+		}
+	},
+	
 	;
 	
 	private Integer value;

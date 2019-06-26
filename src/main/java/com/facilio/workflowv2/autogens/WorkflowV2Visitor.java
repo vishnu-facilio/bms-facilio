@@ -234,6 +234,13 @@ public interface WorkflowV2Visitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitCustomModuleInitialization(WorkflowV2Parser.CustomModuleInitializationContext ctx);
 	/**
+	 * Visit a parse tree produced by the {@code readingInitialization}
+	 * labeled alternative in {@link WorkflowV2Parser#atom}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitReadingInitialization(WorkflowV2Parser.ReadingInitializationContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code moduleAndSystemNameSpaceInitialization}
 	 * labeled alternative in {@link WorkflowV2Parser#atom}.
 	 * @param ctx the parse tree
