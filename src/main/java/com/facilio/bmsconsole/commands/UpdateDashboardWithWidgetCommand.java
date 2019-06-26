@@ -3,7 +3,9 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
+import com.facilio.bmsconsole.context.WidgetVsWorkflowContext;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.cards.util.CardUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -71,12 +73,13 @@ public class UpdateDashboardWithWidgetCommand implements Command {
 			if (updatedWidgets != null && updatedWidgets.size() > 0)  {
 				for (int i = 0; i < updatedWidgets.size(); i++) {
 					
+					DashboardWidgetContext updatewidget = updatedWidgets.get(i);
+					
 					updateBuilder = new GenericUpdateRecordBuilder()
 							.table(ModuleFactory.getWidgetModule().getTableName())
 							.fields(FieldFactory.getWidgetFields())
-							.andCustomWhere(ModuleFactory.getWidgetModule().getTableName()+".DASHBOARD_ID = ? AND " + ModuleFactory.getWidgetModule().getTableName()+".ID = ?", dashboard.getId(), updatedWidgets.get(i).getId());
+							.andCustomWhere(ModuleFactory.getWidgetModule().getTableName()+".DASHBOARD_ID = ? AND " + ModuleFactory.getWidgetModule().getTableName()+".ID = ?", dashboard.getId(), updatewidget.getId());
 
-					DashboardWidgetContext updatewidget = updatedWidgets.get(i);
 					updatewidget.setOrgId(AccountUtil.getCurrentOrg().getId());
 					Map<String, Object> props1 = FieldUtil.getAsProperties(updatewidget);
 					
@@ -89,16 +92,16 @@ public class UpdateDashboardWithWidgetCommand implements Command {
 								.fields(FieldFactory.getWidgetStaticFields())
 								.andCustomWhere(ModuleFactory.getWidgetStaticModule().getTableName()+".ID = ?",updatewidget.getId());
 
-						
 						updateBuilder.update(props1);
+						
+						if (updatewidget.getWidgetVsWorkflowContexts() != null && !updatewidget.getWidgetVsWorkflowContexts().isEmpty()) {	
+							DashboardUtil.deleteWidgetVsWorkflowContext(updatewidget.getId());
+							for(WidgetVsWorkflowContext widgetVsWorkflowContext :updatewidget.getWidgetVsWorkflowContexts()) {
+								widgetVsWorkflowContext.setWidgetId(updatewidget.getId());
+								DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
+							}
+						}
 					}
-					
-					updateBuilder = new GenericUpdateRecordBuilder()
-							.table(ModuleFactory.getWidgetModule().getTableName())
-							.fields(FieldFactory.getWidgetFields())
-							.andCustomWhere(ModuleFactory.getWidgetModule().getTableName()+".ID = ?", updatewidget.getId());
-
-					updateBuilder.update(props1);
 				}
 			}
 			if(removedWidgets.size() > 0) {

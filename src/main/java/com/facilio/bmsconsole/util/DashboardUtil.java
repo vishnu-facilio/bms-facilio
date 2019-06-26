@@ -177,7 +177,18 @@ public class DashboardUtil {
 		
 		return resourceList;
 	}
-	
+	public static boolean deleteWidgetVsWorkflowContext(long widgetId) throws Exception {
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getWidgetVsWorkflowFields());
+		
+		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		deleteRecordBuilder.table(ModuleFactory.getWidgetVsWorkflowModule().getTableName())
+		.andCondition(CriteriaAPI.getCondition(fieldMap.get("widgetId"), widgetId+"", NumberOperators.EQUALS));
+		
+		deleteRecordBuilder.delete();
+		
+		return true;
+	}
 	public static boolean addWidgetVsWorkflowContext(WidgetVsWorkflowContext widgetVsWorkflowContext) throws Exception {
 		if (widgetVsWorkflowContext != null) {
 			

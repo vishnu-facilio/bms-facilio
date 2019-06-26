@@ -32,7 +32,7 @@ public class CardUtil {
 	
 	public static boolean isDynamicWorkflowGenCard(String key) {
 		
-		if(CardType.getCardType(key).isDynamicWfGeneratingCard()) {
+		if(CardType.getCardType(key) != null && CardType.getCardType(key).isDynamicWfGeneratingCard()) {
 			return true;
 		}
 		return false;
