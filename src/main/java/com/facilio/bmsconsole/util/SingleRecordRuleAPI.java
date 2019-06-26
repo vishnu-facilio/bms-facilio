@@ -21,7 +21,6 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.tasker.ScheduleInfo.FrequencyType;
-import com.facilio.tasker.job.JobStore;
 import com.facilio.time.SecondsChronoUnit;
 
 public class SingleRecordRuleAPI extends WorkflowRuleAPI{
@@ -83,6 +82,16 @@ public class SingleRecordRuleAPI extends WorkflowRuleAPI{
 						}
 					}
 				}
+			}
+		}
+	}
+	
+	public static void deleteRuleJobDuringRecordDeletion (long recordId, FacilioModule module) throws Exception{
+		
+		List<WorkflowRuleContext> allRules = (List<WorkflowRuleContext>) getAllWorkFlowRule(recordId, module);
+		if(CollectionUtils.isNotEmpty(allRules)) {
+			for(WorkflowRuleContext rule : allRules) {
+				WorkflowRuleAPI.deleteWorkflowRule(rule.getId());
 			}
 		}
 	}

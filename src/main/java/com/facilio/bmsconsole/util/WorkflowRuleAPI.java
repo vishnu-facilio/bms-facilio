@@ -850,7 +850,7 @@ public class WorkflowRuleAPI {
 					else {
 						deleteIds.add(rule.getId());
 					}
-					if (EventType.SCHEDULED.isPresent(rule.getEvent().getActivityType())) {
+					if (EventType.SCHEDULED.isPresent(rule.getEvent().getActivityType()) ||EventType.SCHEDULED_RECORD_RULE.isPresent(rule.getEvent().getActivityType()) ) {
 						ScheduledRuleAPI.deleteScheduledRuleJob(rule);
 					}
 				}

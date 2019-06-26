@@ -6,6 +6,7 @@ import org.apache.commons.chain.Chain;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.RecordSpecificRuleContext;
 import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.chain.FacilioContext;
@@ -60,10 +61,21 @@ public class RecordSpecificRuleAction extends FacilioAction {
 	public void setRecordRule(RecordSpecificRuleContext recordRule) {
 		this.recordRule = recordRule;
 	}
+	
+	private List<ActionContext> actions;
+	
+	public List<ActionContext> getActions() {
+		return actions;
+	}
+	public void setActions(List<ActionContext> actions) {
+		this.actions = actions;
+	}
 	public String addOrUpdateRecordSpecificRule() throws Exception {
 		FacilioContext context = new FacilioContext();
 		
 		context.put(FacilioConstants.ContextNames.RECORD, recordRule);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, actions);
+		
 		Chain chain = TransactionChainFactory.getAddOrUpdateRecordRuleChain();
 		chain.execute(context);
 		
