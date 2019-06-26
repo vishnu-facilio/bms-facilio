@@ -2664,10 +2664,7 @@
 			<param name="moduleName">contract</param>
 			<param name="permission">DELETE</param>
 		</action>
-		<action name="associateAsset" class="com.facilio.bmsconsole.actions.WarrantyContractAction" method="associateAsset">
-			<param name="moduleName">contract</param>
-			<param name="permission">CREATE,UPDATE</param>
-		</action>
+		
 		 <action name="getWarrantyContractForAsset" class="com.facilio.bmsconsole.actions.WarrantyContractAction" method="getWarrantyContractForAsset">
 			<param name="moduleName">contract</param>
 			<param name="permission">READ</param>
@@ -2706,10 +2703,7 @@
 			<param name="moduleName">contract</param>
 			<param name="permission">APPROVE_REJECT_WORKREQUEST</param>
 		</action>
-		<action name="associateAsset" class="com.facilio.bmsconsole.actions.RentalLeaseContractAction" method="associateAsset">
-			<param name="moduleName">contract</param>
-			<param name="permission">CREATE,UPDATE</param>
-		</action>
+		
 		
 		<action name="rentalLeaseContractCount" class="com.facilio.bmsconsole.actions.RentalLeaseContractAction" method="rentalLeaseContractCount">
 			<param name="moduleName">contract</param>
@@ -2960,6 +2954,11 @@
 			<param name="permission">CREATE,UPDATE</param>
 		</action>
 			<action name="disassociateTerms" class="com.facilio.bmsconsole.actions.ContractsAction" method="disAssociateTerms">
+			<param name="moduleName">contract</param>
+			<param name="permission">CREATE,UPDATE</param>
+		</action>
+		
+		<action name="associateAsset" class="com.facilio.bmsconsole.actions.ContractsAction" method="associateAsset">
 			<param name="moduleName">contract</param>
 			<param name="permission">CREATE,UPDATE</param>
 		</action>
