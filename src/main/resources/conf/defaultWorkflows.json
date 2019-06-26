@@ -169,6 +169,34 @@
 		         	return resMap;
 		        
 		    }"
+        },
+        "102" : {
+        	"description" : "meanTimeBetweenTriggers",
+        	"usage" : "rulesSummary",
+        	"workflow": "Map test(ruleId) 
+		    	{ 
+		     		activeAssetcri = {
+					criteria : [ruleId == ruleId && clearedTime == null ]
+				};
+            	date = NameSpace(\"date\");
+            	ranges = date.getDateRange(\"Current Week\");
+		    	alarmsCurrWeekCri = {
+              		criteria : [ruleId == ruleId && createdTime == ranges ]
+            	};
+		        readingAlarmModule = Module(\"readingalarm\"); 
+		        activeRecord = readingAlarmModule.fetch(activeAssetcri);
+              	activeAlarms = 0;
+              	if (activeRecord != null) {
+                      activeAlarms = res.size();
+                 }
+              	currWeekAlarmRec = readingAlarmModule.fetch(alarmsCurrWeekCri);
+              	currWeekAlarms = 0;
+              	if (currWeekAlarms != null) {
+                	currWeekAlarms = currWeekAlarms.size();
+             	}
+              	resultMap = {};
+              	resultMap[\"activeAlarms\"] = activeAlarms;
+		    }"
         }
         
 }
