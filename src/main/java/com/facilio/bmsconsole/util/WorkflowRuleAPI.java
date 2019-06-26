@@ -553,9 +553,13 @@ public class WorkflowRuleAPI {
 				.on("Workflow_Rule.EVENT_ID = Workflow_Event.ID")
 //				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ruleModule))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), module.getExtendedModuleIds(), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), CommonOperators.IS_EMPTY))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), Boolean.TRUE.toString(), BooleanOperators.IS))
 				.orderBy("EXECUTION_ORDER");
+		
+		if(fieldMap.get("parentId") != null) {
+			ruleBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), CommonOperators.IS_EMPTY));
+
+		}
 		
 		if(ruleTypes != null && ruleTypes.length > 0) {
 			StringJoiner ids = new StringJoiner(",");
