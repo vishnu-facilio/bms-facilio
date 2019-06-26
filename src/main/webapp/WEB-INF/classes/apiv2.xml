@@ -64,7 +64,10 @@
 		<action name="getMySites" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getMySitesList">
 		</action>
-
+		<action name="validateInviteLink" class="com.facilio.auth.actions.FacilioAuthAction"
+			method="validateInviteLink">
+			<param name="auth">false</param>
+		</action>
 		<action name="basespace" class="com.facilio.bmsconsole.actions.BaseSpaceAction"
 			method="v2baseSpaceList">
 		</action>
