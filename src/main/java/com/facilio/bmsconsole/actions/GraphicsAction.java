@@ -92,6 +92,25 @@ public class GraphicsAction extends FacilioAction{
 		setResult(FacilioConstants.ContextNames.GRAPHICS, graphics);
 		return SUCCESS;
 	}
-
-
+	
+	private long assetCategoryId = -1;
+	public long getAssetCategoryId() {
+		return assetCategoryId;
+	}
+	public void setAssetCategoryId(long assetCategoryId) {
+		this.assetCategoryId = assetCategoryId;
+	}
+	
+	public String getGraphicsForAssetCategory() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ASSET_CATEGORY, assetCategoryId);
+		
+		Chain chain = ReadOnlyChainFactory.getGraphicsForAssetCategoryChain();
+		chain.execute(context);
+		
+		List<GraphicsContext> graphicsList = (List<GraphicsContext>) context.get(FacilioConstants.ContextNames.GRAPHICS_LIST);
+		setResult(FacilioConstants.ContextNames.GRAPHICS_LIST, graphicsList);
+		
+		return SUCCESS;
+	}
 }

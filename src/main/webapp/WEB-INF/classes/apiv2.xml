@@ -2564,6 +2564,10 @@
 			<param name="moduleName">graphics</param>
 			<param name="permission">READ</param>
 		</action>
+		<action name="getByAssetCategory" class="com.facilio.bmsconsole.actions.GraphicsAction" method="getGraphicsForAssetCategory">
+			<param name="moduleName">graphics</param>
+			<param name="permission">READ</param>
+		</action>
 		<action name="add" class="com.facilio.bmsconsole.actions.GraphicsAction" method="addGraphics">
 			<param name="moduleName">graphics</param>
 			<param name="permission">CREATE,UPDATE</param>

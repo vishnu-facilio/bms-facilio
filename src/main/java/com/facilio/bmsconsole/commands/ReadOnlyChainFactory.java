@@ -1026,6 +1026,12 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetGraphicsDetailCommand());
 		return c;
 	}
+	public static Chain getGraphicsForAssetCategoryChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForGraphics());
+		c.addCommand(new GetGraphicsForAssetCategoryCommand());
+		return c;
+	}
 	public static Chain getShiftRotationList() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForShiftRotation());
