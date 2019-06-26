@@ -39,6 +39,9 @@ public class PurchaseRequestPurchaseOrderLookUpsCommand implements Command  {
 													(LookupField) fieldsAsMap.get("shipToAddress"),
 													(LookupField) fieldsAsMap.get("billToAddress"),
 													(LookupField) fieldsAsMap.get("requestedBy"));
+		if(moduleName.equals("purchaseorder")) {
+			fetchLookup.add((LookupField) fieldsAsMap.get("contract"));
+		}
 		context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST,fetchLookup);
 		return false;
 	}
