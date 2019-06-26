@@ -42,8 +42,7 @@ public class AddMVAjustmentCommand implements Command {
 		for(MVAdjustment adjustment1 :adjustments) {
 			adjustment1.setProject(mvProjectWrapper.getMvProject());
 			adjustment1.setOrgId(AccountUtil.getCurrentOrg().getId());
-			MVUtil.fillFormulaFieldDetails(adjustment1.getFormulaField(), mvProjectWrapper.getMvProject(),null,adjustment1);
-			context.put(FacilioConstants.ContextNames.DATE_RANGE,new DateRange(adjustment1.getStartTime(), adjustment1.getEndTime()));
+			MVUtil.fillFormulaFieldDetails(adjustment1.getFormulaField(), mvProjectWrapper.getMvProject(),null,adjustment1,context);
 			context.put(FacilioConstants.ContextNames.FORMULA_FIELD, adjustment1.getFormulaField());
 
 			if (adjustment1.getFormulaField().getInterval() == -1) {

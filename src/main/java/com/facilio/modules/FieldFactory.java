@@ -4719,7 +4719,9 @@ public class FieldFactory {
 		fields.add(getField("assetCategoryId", "ASSET_CATEGORY_ID", module, FieldType.LOOKUP));
 		fields.add(getField("spaceCategoryId", "SPACE_CATEGORY_ID", module, FieldType.LOOKUP));
 		fields.add(getField("active", "ACTIVE", module, FieldType.BOOLEAN));
-
+		fields.add(getField("startTime", "START_TIME", module, FieldType.NUMBER));
+		fields.add(getField("endTime", "END_TIME", module, FieldType.NUMBER));
+		
 		return fields;
 	}
 

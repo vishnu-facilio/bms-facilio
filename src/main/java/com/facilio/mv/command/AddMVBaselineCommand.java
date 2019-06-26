@@ -46,8 +46,7 @@ public class AddMVBaselineCommand implements Command {
 			baseLine.setProject(mvProjectWrapper.getMvProject());
 			baseLine.setOrgId(AccountUtil.getCurrentOrg().getId());
 			context.put(FacilioConstants.ContextNames.FORMULA_FIELD, baseLine.getFormulaField());
-			MVUtil.fillFormulaFieldDetails(baseLine.getFormulaField(), mvProjectWrapper.getMvProject(),baseLine,null);
-			context.put(FacilioConstants.ContextNames.DATE_RANGE,new DateRange(baseLine.getStartTime(), baseLine.getEndTime()));
+			MVUtil.fillFormulaFieldDetails(baseLine.getFormulaField(), mvProjectWrapper.getMvProject(),baseLine,null,context);
 			Chain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
 			addEnpiChain.execute(context);
 		}

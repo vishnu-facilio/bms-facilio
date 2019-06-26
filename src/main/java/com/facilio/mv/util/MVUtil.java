@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
@@ -35,6 +36,8 @@ import com.facilio.mv.context.MVAdjustmentVsBaseline;
 import com.facilio.mv.context.MVBaseline;
 import com.facilio.mv.context.MVProjectContext;
 import com.facilio.mv.context.MVProjectWrapper;
+import com.facilio.time.DateRange;
+import com.facilio.time.DateTimeUtil;
 
 public class MVUtil {
 	
@@ -52,19 +55,30 @@ public class MVUtil {
 	
     public static String WORKLFOW_MODULE_INITITALIZATION_STMT = "module = Module(\"${moduleName}\");";
     public static String WORKLFOW_VALUE_FETCH_STMT = "module.fetch({criteria : [parentId == ${parentId} && ttime>=startTime && ttime <endTime],field : \"${fieldName}\",aggregation : \"lastValue\"});";
+    public static String WORKLFOW_VALUE_NULL_CHECK_STMT = "if(${var} == null) { ${var} = 0; }";
 	
-	public static void fillFormulaFieldDetails(FormulaFieldContext formulaFieldContext,MVProjectContext mvProject,MVBaseline baseline,MVAdjustment mvAdjustment) {
+	public static void fillFormulaFieldDetails(FormulaFieldContext formulaFieldContext,MVProjectContext mvProject,MVBaseline baseline,MVAdjustment mvAdjustment, Context context) {
 		
-		formulaFieldContext.setFormulaFieldType(FormulaFieldType.ENPI);
+		formulaFieldContext.setFormulaFieldType(FormulaFieldType.M_AND_V_ENPI);
 		formulaFieldContext.setTriggerType(TriggerType.SCHEDULE);
 		formulaFieldContext.setResourceId(mvProject.getMeter().getId());
 		formulaFieldContext.setResourceType(ResourceType.ONE_RESOURCE);
 		formulaFieldContext.setFrequency(mvProject.getFrequency());
 		if(baseline != null) {
-			formulaFieldContext.setName(baseline.getName());
+			if(formulaFieldContext.getName() == null) {
+				formulaFieldContext.setName(baseline.getName());
+			}
+			formulaFieldContext.setStartTime(baseline.getStartTime());
+			formulaFieldContext.setEndTime(baseline.getEndTime());
+			context.put(FacilioConstants.ContextNames.DATE_RANGE,new DateRange(baseline.getStartTime(), DateTimeUtil.getCurrenTime() < baseline.getEndTime() ? DateTimeUtil.getCurrenTime() : baseline.getEndTime()));
 		}
 		else if(mvAdjustment != null) {
-			formulaFieldContext.setName(mvAdjustment.getName());
+			if(formulaFieldContext.getName() == null) {
+				formulaFieldContext.setName(mvAdjustment.getName());
+			}
+			formulaFieldContext.setStartTime(mvAdjustment.getStartTime());
+			formulaFieldContext.setEndTime(mvAdjustment.getEndTime());
+			context.put(FacilioConstants.ContextNames.DATE_RANGE,new DateRange(mvAdjustment.getStartTime(),  DateTimeUtil.getCurrenTime() <  mvAdjustment.getEndTime() ? DateTimeUtil.getCurrenTime() : mvAdjustment.getEndTime()));
 		}
 	}
 	

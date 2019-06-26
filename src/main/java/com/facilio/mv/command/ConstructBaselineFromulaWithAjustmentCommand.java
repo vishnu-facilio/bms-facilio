@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
@@ -77,6 +78,7 @@ public class ConstructBaselineFromulaWithAjustmentCommand implements Command {
 					fetchStmt = fetchStmt.replace("${fieldName}", modbean.getField(formulaField.getReadingFieldId()).getName());
 					
 					workflowString.append(varName+" = "+fetchStmt);
+					workflowString.append(MVUtil.WORKLFOW_VALUE_NULL_CHECK_STMT.replaceAll(Pattern.quote("${var}"), varName+""));
 					resultStringBuilder.append("+"+varName);
 					varName++;
 				}
@@ -105,8 +107,7 @@ public class ConstructBaselineFromulaWithAjustmentCommand implements Command {
 				
 				context.put(FacilioConstants.ContextNames.FORMULA_FIELD,formulaFieldContext);
 				formulaFieldContext.setName(baseLine.getName()+"WithAjustment");
-				context.put(FacilioConstants.ContextNames.DATE_RANGE,new DateRange(baseLine.getStartTime(), baseLine.getEndTime()));
-				MVUtil.fillFormulaFieldDetails(formulaFieldContext, mvProjectWrapper.getMvProject(),null,null);
+				MVUtil.fillFormulaFieldDetails(formulaFieldContext, mvProjectWrapper.getMvProject(),baseLine,null,context);
 				Chain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
 				addEnpiChain.execute(context);
 				

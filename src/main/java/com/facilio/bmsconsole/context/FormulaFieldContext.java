@@ -1,13 +1,13 @@
 package com.facilio.bmsconsole.context;
 
+import java.io.Serializable;
+import java.util.List;
+
 import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.workflows.context.WorkflowContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import java.io.Serializable;
-import java.util.List;
 
 public class FormulaFieldContext implements Serializable {
 	/**
@@ -15,6 +15,20 @@ public class FormulaFieldContext implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private long id = -1;
+	private long startTime;
+	private long endTime;
+	public long getStartTime() {
+		return startTime;
+	}
+	public void setStartTime(long startTime) {
+		this.startTime = startTime;
+	}
+	public long getEndTime() {
+		return endTime;
+	}
+	public void setEndTime(long endTime) {
+		this.endTime = endTime;
+	}
 	public long getId() {
 		return id;
 	}
@@ -276,7 +290,8 @@ public class FormulaFieldContext implements Serializable {
 
 	public enum FormulaFieldType {
 		ENPI,
-		LIVE_FORMULA
+		LIVE_FORMULA,
+		M_AND_V_ENPI
 		;
 		
 		public int getValue() {
