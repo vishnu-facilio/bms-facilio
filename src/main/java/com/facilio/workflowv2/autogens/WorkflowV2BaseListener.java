@@ -424,13 +424,13 @@ public class WorkflowV2BaseListener implements WorkflowV2Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterModuleInitialization(WorkflowV2Parser.ModuleInitializationContext ctx) { }
+	@Override public void enterModuleAndSystemNameSpaceInitialization(WorkflowV2Parser.ModuleAndSystemNameSpaceInitializationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitModuleInitialization(WorkflowV2Parser.ModuleInitializationContext ctx) { }
+	@Override public void exitModuleAndSystemNameSpaceInitialization(WorkflowV2Parser.ModuleAndSystemNameSpaceInitializationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

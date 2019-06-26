@@ -92,7 +92,7 @@ atom
  | VAR           						    											#varAtom
  | 'NameSpace' OPEN_PARANTHESIS expr CLOSE_PARANTHESIS								    #nameSpaceInitialization
  | 'Module' OPEN_PARANTHESIS expr CLOSE_PARANTHESIS										#customModuleInitialization
- | (VAR OPEN_PARANTHESIS CLOSE_PARANTHESIS)+											#moduleInitialization
+ | (VAR OPEN_PARANTHESIS CLOSE_PARANTHESIS)+											#moduleAndSystemNameSpaceInitialization
  | list_opperations																		#listOpp
  | map_opperations																		#mapOpps
  ;

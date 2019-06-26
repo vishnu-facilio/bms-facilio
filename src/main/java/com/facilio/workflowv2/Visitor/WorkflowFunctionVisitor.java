@@ -325,15 +325,22 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     }
     
     @Override 
-    public Value visitModuleInitialization(WorkflowV2Parser.ModuleInitializationContext ctx) {
+    public Value visitModuleAndSystemNameSpaceInitialization(WorkflowV2Parser.ModuleAndSystemNameSpaceInitializationContext ctx) {
     	try {
     		String moduleDisplayName = ctx.VAR(0).getText();
         	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         	FacilioModule module = modBean.getModule(WorkflowV2Util.getModuleName(moduleDisplayName));
         	if(module == null) {
-        		throw new RuntimeException("Module "+moduleDisplayName+ " Does not exist");
+        		String nameSpaceString = ctx.VAR(0).getText();
+            	FacilioSystemFunctionNameSpace nameSpaceEnum = FacilioSystemFunctionNameSpace.getFacilioDefaultFunction(nameSpaceString);
+            	if(nameSpaceEnum == null) {
+            		throw new RuntimeException("No Module Or System NameSpace With this Name -> "+moduleDisplayName);
+            	}
+            	return new Value(nameSpaceEnum); 
         	}
-        	return new Value(module); 
+        	else {
+        		return new Value(module);
+        	}
     	}
     	catch(Exception e) {
     		throw new RuntimeException(e.getMessage());

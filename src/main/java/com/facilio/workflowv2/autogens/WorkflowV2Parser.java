@@ -1855,6 +1855,34 @@ public class WorkflowV2Parser extends Parser {
 			else return visitor.visitChildren(this);
 		}
 	}
+	public static class ModuleAndSystemNameSpaceInitializationContext extends AtomContext {
+		public List<TerminalNode> VAR() { return getTokens(WorkflowV2Parser.VAR); }
+		public TerminalNode VAR(int i) {
+			return getToken(WorkflowV2Parser.VAR, i);
+		}
+		public List<TerminalNode> OPEN_PARANTHESIS() { return getTokens(WorkflowV2Parser.OPEN_PARANTHESIS); }
+		public TerminalNode OPEN_PARANTHESIS(int i) {
+			return getToken(WorkflowV2Parser.OPEN_PARANTHESIS, i);
+		}
+		public List<TerminalNode> CLOSE_PARANTHESIS() { return getTokens(WorkflowV2Parser.CLOSE_PARANTHESIS); }
+		public TerminalNode CLOSE_PARANTHESIS(int i) {
+			return getToken(WorkflowV2Parser.CLOSE_PARANTHESIS, i);
+		}
+		public ModuleAndSystemNameSpaceInitializationContext(AtomContext ctx) { copyFrom(ctx); }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof WorkflowV2Listener ) ((WorkflowV2Listener)listener).enterModuleAndSystemNameSpaceInitialization(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof WorkflowV2Listener ) ((WorkflowV2Listener)listener).exitModuleAndSystemNameSpaceInitialization(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof WorkflowV2Visitor ) return ((WorkflowV2Visitor<? extends T>)visitor).visitModuleAndSystemNameSpaceInitialization(this);
+			else return visitor.visitChildren(this);
+		}
+	}
 	public static class NumberAtomContext extends AtomContext {
 		public TerminalNode INT() { return getToken(WorkflowV2Parser.INT, 0); }
 		public TerminalNode FLOAT() { return getToken(WorkflowV2Parser.FLOAT, 0); }
@@ -1906,34 +1934,6 @@ public class WorkflowV2Parser extends Parser {
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
 			if ( visitor instanceof WorkflowV2Visitor ) return ((WorkflowV2Visitor<? extends T>)visitor).visitNullAtom(this);
-			else return visitor.visitChildren(this);
-		}
-	}
-	public static class ModuleInitializationContext extends AtomContext {
-		public List<TerminalNode> VAR() { return getTokens(WorkflowV2Parser.VAR); }
-		public TerminalNode VAR(int i) {
-			return getToken(WorkflowV2Parser.VAR, i);
-		}
-		public List<TerminalNode> OPEN_PARANTHESIS() { return getTokens(WorkflowV2Parser.OPEN_PARANTHESIS); }
-		public TerminalNode OPEN_PARANTHESIS(int i) {
-			return getToken(WorkflowV2Parser.OPEN_PARANTHESIS, i);
-		}
-		public List<TerminalNode> CLOSE_PARANTHESIS() { return getTokens(WorkflowV2Parser.CLOSE_PARANTHESIS); }
-		public TerminalNode CLOSE_PARANTHESIS(int i) {
-			return getToken(WorkflowV2Parser.CLOSE_PARANTHESIS, i);
-		}
-		public ModuleInitializationContext(AtomContext ctx) { copyFrom(ctx); }
-		@Override
-		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof WorkflowV2Listener ) ((WorkflowV2Listener)listener).enterModuleInitialization(this);
-		}
-		@Override
-		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof WorkflowV2Listener ) ((WorkflowV2Listener)listener).exitModuleInitialization(this);
-		}
-		@Override
-		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof WorkflowV2Visitor ) return ((WorkflowV2Visitor<? extends T>)visitor).visitModuleInitialization(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -2044,7 +2044,7 @@ public class WorkflowV2Parser extends Parser {
 				}
 				break;
 			case 9:
-				_localctx = new ModuleInitializationContext(_localctx);
+				_localctx = new ModuleAndSystemNameSpaceInitializationContext(_localctx);
 				enterOuterAlt(_localctx, 9);
 				{
 				setState(253); 
