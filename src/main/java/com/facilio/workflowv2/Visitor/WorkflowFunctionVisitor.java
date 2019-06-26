@@ -473,7 +473,6 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
         Value left = this.visit(ctx.expr(0));
         WorkflowV2Util.checkForNullAndThrowException(left, ctx.expr(0).getText());
         Value right = this.visit(ctx.expr(1));
-        WorkflowV2Util.checkForNullAndThrowException(right, ctx.expr(1).getText());
 
         switch (ctx.op.getType()) {
             case WorkflowV2Parser.LT:
