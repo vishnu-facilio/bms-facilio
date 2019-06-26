@@ -6129,4 +6129,16 @@ public class FieldFactory {
 		fields.add(getField("workflowRuleId", "WORKFLOW_RULE_ID", module, FieldType.NUMBER));
 		return fields;
 	}
+
+	public static List<FacilioField> getRecordSpecificRuleFields() {
+		FacilioModule recordSpecificRuleModule = ModuleFactory.getRecordSpecificRuleModule();
+		List<FacilioField> list = new ArrayList<>();
+
+		list.add(getField("id", "ID", recordSpecificRuleModule, FieldType.NUMBER));
+		list.add(getField("parentId", "PARENT_ID", recordSpecificRuleModule, FieldType.NUMBER));
+		list.add(getField("moduleId", "MODULE_ID", recordSpecificRuleModule, FieldType.NUMBER));
+		list.add(getField("scheduleMode", "SCHEDULE_MODE", recordSpecificRuleModule, FieldType.ENUM));
+
+		return list;
+	}
 }

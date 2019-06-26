@@ -34,6 +34,7 @@ public class AddOrUpdateLabourContractCommand implements Command{
 	public boolean execute(Context context) throws Exception {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		LabourContractContext labourContractContext = (LabourContractContext) context.get(FacilioConstants.ContextNames.RECORD);
+		labourContractContext.computeNextPaymentDate();
 		boolean isContractRevised = (boolean) context.get(FacilioConstants.ContextNames.IS_CONTRACT_REVISED);
 
 		if (labourContractContext != null) {
@@ -62,12 +63,7 @@ public class AddOrUpdateLabourContractCommand implements Command{
 						.module(lineModule)
 						.andCondition(CriteriaAPI.getCondition("LABOUR_CONTRACT", "labourContractId", String.valueOf(labourContractContext.getId()), NumberOperators.EQUALS));
 				deleteBuilder.delete();
-				DeleteRecordBuilder<ContractAssociatedTermsContext> deleteTermsBuilder = new DeleteRecordBuilder<ContractAssociatedTermsContext>()
-						.module(termsModule)
-						.andCondition(CriteriaAPI.getCondition("CONTRACT_ID", "contractId", String.valueOf(labourContractContext.getId()), NumberOperators.EQUALS));
-				deleteBuilder.delete();
 				updateLineItems(labourContractContext);
-				ContractsAPI.updateTermsAssociated(labourContractContext);
 				//add labour if newly added here as lineItem
 				addLabourRecords(labourContractContext.getLineItems(),labourModule,labourFields);
 				ContractsAPI.addRecord(false,labourContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
@@ -82,7 +78,7 @@ public class AddOrUpdateLabourContractCommand implements Command{
 					labourContractContext.setStatus(Status.REVISED);
 					ContractsAPI.updateRecord(labourContractContext, module, fields);
 					updateLineItems(revisedContract);
-					ContractsAPI.updateTermsAssociated(revisedContract);
+					ContractsAPI.updateTermsAssociated(revisedContract.getId(), revisedContract.getTermsAssociated());
 					revisedContract.setStatus(Status.PENDING_FOR_REVISION);
 					addLabourRecords(revisedContract.getLineItems(),labourModule,labourFields);
 					ContractsAPI.addRecord(false,revisedContract.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
@@ -103,7 +99,6 @@ public class AddOrUpdateLabourContractCommand implements Command{
 				labourContractContext.setParentId(labourContractContext.getLocalId());
 				ContractsAPI.updateRecord(labourContractContext, module, fields);
 				updateLineItems(labourContractContext);
-				ContractsAPI.updateTermsAssociated(labourContractContext);
 				//add labour if newly added here as lineItem
 				addLabourRecords(labourContractContext.getLineItems(),labourModule,labourFields);
 				ContractsAPI.addRecord(false,labourContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));

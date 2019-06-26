@@ -46,7 +46,7 @@ public class PurchaseAssociatedAssetCommand implements Command {
 		purchaseOrderContext.setVendor(contract.getVendor());
 		purchaseOrderContext.setName("Payment for Purchasing leased Assets");
 		purchaseOrderContext.setDescription("Payment for Purchasing leased Assets");
-		purchaseOrderContext.setContractId(contractId);
+		purchaseOrderContext.setContract(contract);
 		List<PurchaseOrderLineItemContext> lineItems = new ArrayList<PurchaseOrderLineItemContext>();
 		for(ContractAssociatedAssetsContext asset : associatedAssets) {
 			PurchaseOrderLineItemContext lineItem = new PurchaseOrderLineItemContext();

@@ -34,6 +34,7 @@ public class AddOrUpdatePurchaseContractCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		PurchaseContractContext purchaseContractContext = (PurchaseContractContext) context.get(FacilioConstants.ContextNames.RECORD);
+		purchaseContractContext.computeNextPaymentDate();
 		boolean isContractRevised = (boolean) context.get(FacilioConstants.ContextNames.IS_CONTRACT_REVISED);
 
 		if (purchaseContractContext != null) {
@@ -58,12 +59,7 @@ public class AddOrUpdatePurchaseContractCommand implements Command {
 						.module(lineModule)
 						.andCondition(CriteriaAPI.getCondition("PURCHASE_CONTRACT", "purchaseContractId", String.valueOf(purchaseContractContext.getId()), NumberOperators.EQUALS));
 				deleteBuilder.delete();
-				DeleteRecordBuilder<ContractAssociatedTermsContext> deleteTermsBuilder = new DeleteRecordBuilder<ContractAssociatedTermsContext>()
-						.module(termsModule)
-						.andCondition(CriteriaAPI.getCondition("CONTRACT_ID", "contractId", String.valueOf(purchaseContractContext.getId()), NumberOperators.EQUALS));
-				deleteBuilder.delete();
 				updateLineItems(purchaseContractContext);
-				ContractsAPI.updateTermsAssociated(purchaseContractContext);
 				
 				ContractsAPI.addRecord(false,purchaseContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 				context.put(FacilioConstants.ContextNames.RECORD, purchaseContractContext);
@@ -77,8 +73,8 @@ public class AddOrUpdatePurchaseContractCommand implements Command {
 					purchaseContractContext.setStatus(Status.REVISED);
 					ContractsAPI.updateRecord(purchaseContractContext, module, fields);
 					updateLineItems(revisedContract);
-					ContractsAPI.updateTermsAssociated(revisedContract);
 					revisedContract.setStatus(Status.PENDING_FOR_REVISION);
+					ContractsAPI.updateTermsAssociated(revisedContract.getId(), revisedContract.getTermsAssociated());
 					ContractsAPI.addRecord(false,revisedContract.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 					context.put(FacilioConstants.ContextNames.REVISED_RECORD, revisedContract);
 					context.put(FacilioConstants.ContextNames.RECORD, revisedContract);
@@ -97,7 +93,6 @@ public class AddOrUpdatePurchaseContractCommand implements Command {
 				purchaseContractContext.setParentId(purchaseContractContext.getLocalId());
 				ContractsAPI.updateRecord(purchaseContractContext, module, fields);
 				updateLineItems(purchaseContractContext);
-				ContractsAPI.updateTermsAssociated(purchaseContractContext);
 				
 				ContractsAPI.addRecord(false,purchaseContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 				context.put(FacilioConstants.ContextNames.RECORD, purchaseContractContext);

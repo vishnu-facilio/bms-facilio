@@ -1197,15 +1197,15 @@ public class ReadOnlyChainFactory {
 		
 	}
 	
-	public static Chain getNotificationConfigList() {
+	public static Chain viewRecordRule() {
 		Chain c = getDefaultChain();
-		c.addCommand(SetTableNamesCommand.getForNotificationConfig());
-		c.addCommand(new LoadViewCommand());
-		c.addCommand(new LoadAllFieldsCommand());
-		c.addCommand(new GenerateCriteriaFromFilterCommand());
-		c.addCommand(new GenerateSearchConditionCommand());
-		c.addCommand(new GenericGetModuleDataListCommand());
-		c.addCommand(new FetchNotificationConfigRelatedListCommand());
+		c.addCommand(new GetRecordRuleCommand());
+		return c;
+	}
+	
+	public static Chain getRecordSpecificRuleList() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetRecordSpecificRuleListCommand());
 		return c;
 	}
 	

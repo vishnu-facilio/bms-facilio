@@ -90,11 +90,10 @@ public class ContractsAPI {
 			                 
 	}
 	
-	public static void updateTermsAssociated(ContractsContext contract) throws Exception {
-		List<ContractAssociatedTermsContext> associatedTerms = contract.getTermsAssociated();
+	public static void updateTermsAssociated(Long id, List<ContractAssociatedTermsContext> associatedTerms) throws Exception {
 		if(CollectionUtils.isNotEmpty(associatedTerms)) {
 			for(ContractAssociatedTermsContext term : associatedTerms) {
-				term.setContractId(contract.getId());
+				term.setContractId(id);
 			}
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTRACT_ASSOCIATED_TERMS);
@@ -195,6 +194,7 @@ public class ContractsAPI {
 	}
 	
 	public static void updateRecord(ModuleBaseWithCustomFields data, FacilioModule module, List<FacilioField> fields) throws Exception {
+		
 		UpdateRecordBuilder updateRecordBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
 				.module(module)
 				.fields(fields)
@@ -202,16 +202,15 @@ public class ContractsAPI {
 		updateRecordBuilder.update(data);
 	}
 	
-	public static void updateAssetsAssociated(ContractsContext contractContext) throws Exception {
-		List<ContractAssociatedAssetsContext> associatedAssets = contractContext.getAssociatedAssets();
-		if(CollectionUtils.isNotEmpty(associatedAssets)) {
-			for(ContractAssociatedAssetsContext asset : associatedAssets) {
-				asset.setContractId(contractContext.getId());
+	public static void updateAssetsAssociated(long recordId, List<ContractAssociatedAssetsContext> assets) throws Exception {
+		if(CollectionUtils.isNotEmpty(assets)) {
+			for(ContractAssociatedAssetsContext asset : assets) {
+				asset.setContractId(recordId);
 			}
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTRACT_ASSOCIATED_ASSETS);
 			List<FacilioField> fields = modBean.getAllFields(module.getName());
-			ContractsAPI.addRecord(false,associatedAssets , module, fields);
+			ContractsAPI.addRecord(false,assets , module, fields);
 		}
 	}
 		

@@ -384,10 +384,6 @@ public class SetTableNamesCommand implements Command {
 		return new SetTableNamesCommand("contractassets", "Contracts_Associated_Assets");
 	}
 	
-	public static SetTableNamesCommand getForNotificationConfig() {
-		return new SetTableNamesCommand("notificationConfig", "Notification_Configurations");
-	}
-
 	public static void setForModule (Context context, String moduleName) {
 		//TODO handle all module and get from map
 		String tableName = "";

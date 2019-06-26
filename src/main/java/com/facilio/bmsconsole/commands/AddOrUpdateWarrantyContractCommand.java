@@ -32,6 +32,7 @@ public class AddOrUpdateWarrantyContractCommand implements Command{
 		// TODO Auto-generated method stub
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		WarrantyContractContext warrantyContractContext = (WarrantyContractContext) context.get(FacilioConstants.ContextNames.RECORD);
+		warrantyContractContext.computeNextPaymentDate();
 		boolean isContractRevised = (boolean) context.get(FacilioConstants.ContextNames.IS_CONTRACT_REVISED);
 		
 		if (warrantyContractContext != null) {
@@ -70,10 +71,8 @@ public class AddOrUpdateWarrantyContractCommand implements Command{
 				DeleteRecordBuilder<ContractAssociatedTermsContext> deleteTermsBuilder = new DeleteRecordBuilder<ContractAssociatedTermsContext>()
 						.module(termsModule)
 						.andCondition(CriteriaAPI.getCondition("CONTRACT_ID", "contractId", String.valueOf(warrantyContractContext.getId()), NumberOperators.EQUALS));
-				deleteBuilder.delete();
+				deleteTermsBuilder.delete();
 				updateLineItems(warrantyContractContext);
-				ContractsAPI.updateAssetsAssociated(warrantyContractContext);
-				ContractsAPI.updateTermsAssociated(warrantyContractContext);
 				//add service if newly added here as lineItem
 				//addServiceRecords(warrantyContractContext.getLineItems(),serviceModule,serviceFields);
 				//also add service vendor association
@@ -89,8 +88,8 @@ public class AddOrUpdateWarrantyContractCommand implements Command{
 					warrantyContractContext.setStatus(Status.REVISED);
 					ContractsAPI.updateRecord(warrantyContractContext, module, fields);
 					updateLineItems(revisedContract);
-					ContractsAPI.updateAssetsAssociated(revisedContract);
-					ContractsAPI.updateTermsAssociated(revisedContract);
+					ContractsAPI.updateAssetsAssociated(revisedContract.getId(), revisedContract.getAssociatedAssets());
+					ContractsAPI.updateTermsAssociated(revisedContract.getId(), revisedContract.getTermsAssociated());
 					revisedContract.setStatus(Status.PENDING_FOR_REVISION);
 					
 					//add service if newly added here as lineItem
@@ -114,9 +113,6 @@ public class AddOrUpdateWarrantyContractCommand implements Command{
 				warrantyContractContext.setParentId(warrantyContractContext.getLocalId());
 				ContractsAPI.updateRecord(warrantyContractContext, module, fields);
 				updateLineItems(warrantyContractContext);
-				ContractsAPI.updateAssetsAssociated(warrantyContractContext);
-				ContractsAPI.updateTermsAssociated(warrantyContractContext);
-				
 				//add service if newly added here as lineItem
 				//addServiceRecords(warrantyContractContext.getLineItems(),serviceModule,serviceFields);
 				//also add service vendor association

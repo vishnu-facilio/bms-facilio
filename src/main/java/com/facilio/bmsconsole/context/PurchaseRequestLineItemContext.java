@@ -79,7 +79,7 @@ public class PurchaseRequestLineItemContext extends ModuleBaseWithCustomFields {
 		return remarks;
 	}
 	public void setRemarks(String remarks) {
-		this.remarks = remarks;
+		this.remarks = remarks; 
 	}
 	private ServiceContext service;
 	public ServiceContext getService() {

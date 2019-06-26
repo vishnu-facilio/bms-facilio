@@ -1,8 +1,10 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.Collections;
 import java.util.List;
 
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.tasker.ScheduleInfo;
 
 public class ContractsContext extends ModuleBaseWithCustomFields{
 
@@ -28,6 +30,11 @@ public class ContractsContext extends ModuleBaseWithCustomFields{
 		setStatus(Status.WAITING_FOR_APPROVAL);
 		setParentId(contract.getParentId());
 		setTermsAssociated(contract.getTermsAssociated());
+		setFrequencyType(getFrequencyType());
+		setPaymentInterval(getPaymentInterval());
+		setScheduleDay(getScheduleDay());
+		setScheduleMonth(getScheduleMonth());
+		setScheduleTime(getScheduleTime());
 		setId(-1);
 	}
 
@@ -196,20 +203,20 @@ public class ContractsContext extends ModuleBaseWithCustomFields{
 		this.associatedAssets = associatedAssets;
 	}
 	
-	private long paymentInterval;
-	private long scheduleDay;
+	private int paymentInterval;
+	private int scheduleDay;
 	private int scheduleMonth;
 	private long scheduleTime;
-	public long getPaymentInterval() {
+	public int getPaymentInterval() {
 		return paymentInterval;
 	}
-	public void setPaymentInterval(long paymentInterval) {
+	public void setPaymentInterval(int paymentInterval) {
 		this.paymentInterval = paymentInterval;
 	}
-	public long getScheduleDay() {
+	public int getScheduleDay() {
 		return scheduleDay;
 	}
-	public void setScheduleDay(long scheduleDay) {
+	public void setScheduleDay(int scheduleDay) {
 		this.scheduleDay = scheduleDay;
 	}
 	public int getScheduleMonth() {
@@ -262,5 +269,38 @@ public class ContractsContext extends ModuleBaseWithCustomFields{
 		}
 	}
 	
+	private long nextPaymentDate;
+ 
+	public long getNextPaymentDate() {
+		return nextPaymentDate;
+	}
+
+	public void setNextPaymentDate(long nextPaymentDate) {
+		this.nextPaymentDate = nextPaymentDate;
+	}
+
+	public Long computeNextPaymentDate() {
+		if(getFrequencyTypeEnum() != null && getFrequencyType() > 0) {
+			ScheduleInfo info = new ScheduleInfo();
+			info.setFrequency(getPaymentInterval());
+			info.setMonthValue(getScheduleMonth());
+			if(getFrequencyTypeEnum().getValue() == FrequencyType.MONTHLY.getValue()) {
+				info.setValues(Collections.singletonList(getScheduleDay()));
+				info.setFrequencyType(ScheduleInfo.FrequencyType.MONTHLY_DAY);
+			}
+			else if(getFrequencyTypeEnum().getValue() == FrequencyType.DAILY.getValue()) {
+				info.setFrequencyType(ScheduleInfo.FrequencyType.DAILY);
+			}
+			else if(getFrequencyTypeEnum().getValue() == FrequencyType.YEARLY.getValue()) {
+				info.setFrequencyType(ScheduleInfo.FrequencyType.YEARLY);
+				info.setMonthValue(getScheduleMonth());
+				info.setValues(Collections.singletonList(getScheduleDay()));
+			}
+			long nextPaymentDate = info.nextExecutionTime(System.currentTimeMillis());
+			setNextPaymentDate(nextPaymentDate);
+		}
+		return nextPaymentDate;
+		
+	}
 	
 }

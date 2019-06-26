@@ -2340,6 +2340,14 @@ public class ModuleFactory {
 		notificationUserModule.setTableName("Notification_Users");
 		return notificationUserModule;
 	}
+	
+	public static FacilioModule getRecordSpecificRuleModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("recordRule");
+		module.setDisplayName("Record Specific Rule");
+		module.setTableName("Record_Rules");
+		return module;
+	}
 
 
 	public static FacilioModule getReadingAlarmModule() {

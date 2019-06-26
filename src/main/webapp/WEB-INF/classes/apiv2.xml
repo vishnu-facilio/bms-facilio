@@ -2710,6 +2710,7 @@
 			<param name="moduleName">contract</param>
 			<param name="permission">CREATE,UPDATE</param>
 		</action>
+		
 		<action name="rentalLeaseContractCount" class="com.facilio.bmsconsole.actions.RentalLeaseContractAction" method="rentalLeaseContractCount">
 			<param name="moduleName">contract</param>
 			<param name="permission">READ</param>
@@ -2945,31 +2946,38 @@
 
 
 	</package>
-	
-	<package name="notificationConfigApi" namespace="/api/v2/notificationConfig" extends="v2Api">
-		<action name="addOrUpdate" class="com.facilio.bmsconsole.actions.NotificationConfigAction" method="addOrUpdateConfiguration">
-		</action>
-		<action name="list" class="com.facilio.bmsconsole.actions.NotificationConfigAction" method="listConfiguration">
-		</action>
-		<action name="delete" class="com.facilio.bmsconsole.actions.NotificationConfigAction" method="deleteConfiguration">
-		</action>
-		<action name="executeJob" class="com.facilio.bmsconsole.actions.NotificationConfigAction" method="executeJob">
-		</action>
-	</package>
-
-    <package name="contractsApi" namespace="/api/v2/contract" extends="v2Api">
+	<package name="contractsApi" namespace="/api/v2/contract" extends="v2Api">
 		<action name="activeContractsAssociatedAssets" class="com.facilio.bmsconsole.actions.ContractsAction" method="getActiveContractAssociatedAssets">
 			<param name="moduleName">contract</param>
 			<param name="permission">READ</param>
 		</action>
-		<action name="expiryDateReminder" class="com.facilio.bmsconsole.actions.ContractsAction" method="configureExpiryDateReminder">
+		<action name="changePaymentStatus" class="com.facilio.bmsconsole.actions.ContractsAction" method="changeNextPaymentDate">
 			<param name="moduleName">contract</param>
 			<param name="permission">READ</param>
 		</action>
-		<action name="paymentScheduleReminder" class="com.facilio.bmsconsole.actions.ContractsAction" method="paymentScheduleReminder">
+			<action name="associateTerms" class="com.facilio.bmsconsole.actions.ContractsAction" method="associateTerms">
 			<param name="moduleName">contract</param>
-			<param name="permission">READ</param>
+			<param name="permission">CREATE,UPDATE</param>
 		</action>
+			<action name="disassociateTerms" class="com.facilio.bmsconsole.actions.ContractsAction" method="disAssociateTerms">
+			<param name="moduleName">contract</param>
+			<param name="permission">CREATE,UPDATE</param>
+		</action>
+			<action name="disassociateAssets" class="com.facilio.bmsconsole.actions.ContractsAction" method="disAssociateAssets">
+			<param name="moduleName">contract</param>
+			<param name="permission">CREATE,UPDATE</param>
+		</action>
+	
+	</package>
+	
+	<package name="recordRule" namespace="/api/v2/recordrule" extends="v2Api">
+		<action name="addOrUpdate"
+			class="com.facilio.bmsconsole.actions.RecordSpecificRuleAction" method="addOrUpdateRecordSpecificRule" />
+		
+		<action name="list"
+			class="com.facilio.bmsconsole.actions.RecordSpecificRuleAction" method="getRecordSpecificRuleList" />
+		<action name="view"
+			class="com.facilio.bmsconsole.actions.RecordSpecificRuleAction" method="viewRule" />
 	</package>
 	
 </struts>

@@ -1050,16 +1050,12 @@ public class FacilioConstants {
 		public static final String TERMS_AND_CONDITION = "termsandcondition";
 
 		public static final String IS_MARK_AS_DELETE = "markAsDelete";
-		public static final String NOTIFICATION_CONFIG = "notificationConfig";
-		public static final String NOTIFICATION_USER = "notificationUser";
-
-		public static final String NOTIFICATION_JOB_ID = "notificationJobId";
-		public static final String JOB = "jobContext";
+				public static final String JOB = "jobContext";
 		public static final String JOB_NAME = "jobName";
 
 		
-
-
+		public static final String RECORD_RULE = "recordRule";
+		public static final String RECORD_RULE_LIST = "recordRuleList";
 
 
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
@@ -1300,7 +1296,9 @@ public class FacilioConstants {
 		
 		public static final String SCHEDULED_READING_RULE_JOB_NAME = "scheduledReadingRule";
 		public static final String SCHEDULED_ALARM_TRIGGER_RULE_JOB_NAME = "scheduledAlarmTriggerRule";
-		
+
+		public static final String RECORD_SPECIFIC_RULE_JOB_NAME = "singleRecordJob";
+
 	}
 	public static class Ticket{
 		public static final String STATUS_ID = "status_id";

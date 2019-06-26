@@ -47,6 +47,7 @@ public class AddOrUpdateRentalLeaseContractCommand implements Command{
 		// TODO Auto-generated method stub
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		RentalLeaseContractContext rentalLeaseContractContext = (RentalLeaseContractContext) context.get(FacilioConstants.ContextNames.RECORD);
+		rentalLeaseContractContext.computeNextPaymentDate();
 		boolean isContractRevised = (boolean) context.get(FacilioConstants.ContextNames.IS_CONTRACT_REVISED);
 		
 		if (rentalLeaseContractContext != null) {
@@ -54,8 +55,6 @@ public class AddOrUpdateRentalLeaseContractCommand implements Command{
 			FacilioModule module = modBean.getModule(moduleName);
 			List<FacilioField> fields = modBean.getAllFields(moduleName);
 			FacilioModule lineModule = modBean.getModule(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS_LINE_ITEMS);
-			FacilioModule termsModule = modBean.getModule(FacilioConstants.ContextNames.CONTRACT_ASSOCIATED_TERMS);
-			FacilioModule assetAssociatedModule = modBean.getModule(FacilioConstants.ContextNames.CONTRACT_ASSOCIATED_ASSETS);
 			
 //			if (CollectionUtils.isEmpty(rentalLeaseContractContext.getLineItems())) {
 //				throw new Exception("Line items cannot be empty");
@@ -72,17 +71,7 @@ public class AddOrUpdateRentalLeaseContractCommand implements Command{
 						.module(lineModule)
 						.andCondition(CriteriaAPI.getCondition("RENTAL_LEASE_CONTRACT", "rentalLeaseContractId", String.valueOf(rentalLeaseContractContext.getId()), NumberOperators.EQUALS));
 				deleteBuilder.delete();
-				DeleteRecordBuilder<ContractAssociatedAssetsContext> deleteAssetRelationBuilder = new DeleteRecordBuilder<ContractAssociatedAssetsContext>()
-						.module(assetAssociatedModule)
-						.andCondition(CriteriaAPI.getCondition("CONTRACT_ID", "contractId", String.valueOf(rentalLeaseContractContext.getId()), NumberOperators.EQUALS));
-				deleteAssetRelationBuilder.delete();
-				DeleteRecordBuilder<ContractAssociatedTermsContext> deleteTermsBuilder = new DeleteRecordBuilder<ContractAssociatedTermsContext>()
-						.module(termsModule)
-						.andCondition(CriteriaAPI.getCondition("CONTRACT_ID", "contractId", String.valueOf(rentalLeaseContractContext.getId()), NumberOperators.EQUALS));
-				deleteBuilder.delete();
 				updateLineItems(rentalLeaseContractContext);
-				ContractsAPI.updateAssetsAssociated(rentalLeaseContractContext);
-				ContractsAPI.updateTermsAssociated(rentalLeaseContractContext);
 				ContractsAPI.addRecord(false,rentalLeaseContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 				context.put(FacilioConstants.ContextNames.RECORD, rentalLeaseContractContext);
 
@@ -95,8 +84,8 @@ public class AddOrUpdateRentalLeaseContractCommand implements Command{
 					rentalLeaseContractContext.setStatus(Status.REVISED);
 					ContractsAPI.updateRecord(rentalLeaseContractContext, module, fields);
 					updateLineItems(revisedContract);
-					ContractsAPI.updateAssetsAssociated(revisedContract);
-					ContractsAPI.updateTermsAssociated(revisedContract);
+					ContractsAPI.updateAssetsAssociated(revisedContract.getId(), revisedContract.getAssociatedAssets());
+					ContractsAPI.updateTermsAssociated(revisedContract.getId(), revisedContract.getTermsAssociated());
 					revisedContract.setStatus(Status.PENDING_FOR_REVISION);
 					ContractsAPI.addRecord(false,revisedContract.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 					context.put(FacilioConstants.ContextNames.REVISED_RECORD, revisedContract);
@@ -115,8 +104,6 @@ public class AddOrUpdateRentalLeaseContractCommand implements Command{
 				rentalLeaseContractContext.setParentId(rentalLeaseContractContext.getLocalId());
 				ContractsAPI.updateRecord(rentalLeaseContractContext, module, fields);
 				updateLineItems(rentalLeaseContractContext);
-				ContractsAPI.updateAssetsAssociated(rentalLeaseContractContext);
-				ContractsAPI.updateTermsAssociated(rentalLeaseContractContext);
 				ContractsAPI.addRecord(false,rentalLeaseContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 				context.put(FacilioConstants.ContextNames.RECORD, rentalLeaseContractContext);
 

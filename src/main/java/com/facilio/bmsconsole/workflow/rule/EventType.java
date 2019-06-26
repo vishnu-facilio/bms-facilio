@@ -209,6 +209,13 @@ public enum EventType {
 			// TODO Auto-generated method stub
 			return null;
 		}
+	},
+	SCHEDULED_RECORD_RULE (1 << 23) {
+		@Override
+		public String getMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return null;
+		}
 	}
 	;
 

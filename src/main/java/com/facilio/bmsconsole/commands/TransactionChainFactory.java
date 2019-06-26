@@ -1185,8 +1185,13 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(new FetchScheduledRuleMatchingRecordsCommand());
 			c.addCommand(new ExecuteSingleWorkflowRuleCommand());
-			c.addCommand(new ExecuteConsolidatedActionWorkflowRuleCommand());
-			
+			return c;
+		}
+		
+		public static Chain scheduledRecordRuleExecutionChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new FetchScheduledRuleMatchingSpecificRecordCommand());
+			c.addCommand(new ExecuteSingleWorkflowRuleCommand());
 			return c;
 		}
 		
@@ -3419,25 +3424,6 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
-		public static Chain getAddNotificationConfigChain() {
-			Chain c = getDefaultChain();
-			c.addCommand(new AddOrUpdateNotificationConfigCommand());
-			return c;
-		}
-		
-		public static Chain triggerNotificationChain() {
-			Chain c = getDefaultChain();
-			c.addCommand(new TriggerNotificationForUsersCommand());
-			return c;
-		}
-		
-		public static Chain getNotificationConfigDeleteChain() {
-			Chain c = getDefaultChain();
-			c.addCommand(SetTableNamesCommand.getForNotificationConfig());
-			c.addCommand(new DeleteNotificationConfigCommand());
-			c.addCommand(new GenericDeleteModuleDataCommand());
-			return c;
-		}
 		public static Chain executeJobChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new ExecuteJobChainCommand());
@@ -3450,6 +3436,42 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+		public static Chain getChangeContractPaymentStatusChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ChangeContractPaymentStatusCommand());
+			return c;
+		}
+		
+		public static Chain getAddOrUpdateRecordRuleChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddorUpdateRecordRuleCommand());
+			c.addCommand(new AddScheduledJobForRecordCommand());
+			return c;
+		}
+		
+		public static Chain getDeleteRecordRule() {
+			Chain c = getDefaultChain();
+			c.addCommand(new DeleteRecordRuleCommand());
+			return c;
+		}
+
+		public static Chain getAssociateTermsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AssociateTermsToContractCommand());
+			return c;
+		}
+		
+		public static Chain getDisAssociateAssetChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new DisAssociateAssetToContractCommand());
+			return c;
+		}
+		
+		public static Chain getDisAssociateTermsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new DisAsscoiateTermsToContractCommand());
+			return c;
+		}
 		
 }
 
