@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
@@ -167,6 +168,12 @@ public enum FacilioReadingFunctions implements FacilioWorkflowFunctionInterface 
 			FacilioModule module = field.getModule();
 			
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
+			
+			for (String key : criteria.getConditions().keySet()) {
+				Condition condition = criteria.getConditions().get(key);
+				FacilioField field1 = modBean.getField(condition.getFieldName(), module.getName());
+				condition.setField(field1);
+			}
 			
 			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), workflowReadingContext.getParentId()+"", NumberOperators.EQUALS));
 			
