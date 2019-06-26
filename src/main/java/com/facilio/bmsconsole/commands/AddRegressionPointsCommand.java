@@ -64,10 +64,10 @@ public class AddRegressionPointsCommand implements Command{
 					Map<String, Object> coefficientMap = getCoefficientMap(regressionResult, rc.getxAxis());
 					computeRegressionData(groupAlias, (ArrayList)data, coefficientMap);
 					regressionResult.put(StringConstants.COEFFICIENT_MAP, coefficientMap);
-					if(isMultiple) {
-						computeTstatAndP(regressionResult, rc.getxAxis(), reportContext.getDataPoints());
-						computeANOVAResultMetrics(regressionResult, (ArrayList)data, groupAlias, rc.getyAxis().getAlias());
-					}
+					
+					computeTstatAndP(regressionResult, rc.getxAxis(), reportContext.getDataPoints());
+					computeANOVAResultMetrics(regressionResult, (ArrayList)data, groupAlias, rc.getyAxis().getAlias());
+					
 					regressionResults.put(groupAlias, regressionResult);
 					
 				}
