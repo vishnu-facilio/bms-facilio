@@ -6032,19 +6032,6 @@ public class FieldFactory {
 		return fields;
 	}
 	
-	public static List<FacilioField> getMVAjuststmentVsBaselineFields() {
-		FacilioModule module = ModuleFactory.getMVAjuststmentVsBaselineModule();
-		List<FacilioField> fields = new ArrayList<>();
-
-		//fields.add(getOrgIdField(module));
-		fields.add(getField("id", "ID", module, FieldType.ID));
-		fields.add(getField("projectId", "PROJECT_ID", module, FieldType.LOOKUP));
-		fields.add(getField("adjustmentId", "ADJUSTMENT_ID", module, FieldType.LOOKUP));
-		fields.add(getField("baselineId", "BASELINE_ID", module, FieldType.LOOKUP));
-		
-		return fields;
-	}
-	
 	public static List<FacilioField> getGraphicsFields() {
 		FacilioModule module = ModuleFactory.getGraphicsModule();
 		List<FacilioField> fields = new ArrayList<>();
