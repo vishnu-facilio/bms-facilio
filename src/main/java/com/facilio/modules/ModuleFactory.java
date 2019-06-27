@@ -2007,13 +2007,6 @@ public class ModuleFactory {
 		return contract;
 	}
 
-	public static FacilioModule getContractsModule() {
-		FacilioModule contract = new FacilioModule();
-		contract.setName("contracts");
-		contract.setDisplayName("Contracts");
-		contract.setTableName("Contracts");
-		return contract;
-	}
 	public static FacilioModule getPurchaseContractModule() {
 		FacilioModule purchasecontract = new FacilioModule();
 		purchasecontract.setName("purchasecontracts");
@@ -2292,7 +2285,9 @@ public class ModuleFactory {
 		module.setName("breakTransaction");
 		module.setDisplayName("Break Transaction");
 		module.setTableName("Break_Transaction");
-
+		return module;
+	}
+	
 	public static FacilioModule getRentalLeaseContractModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("rentalleasecontracts");

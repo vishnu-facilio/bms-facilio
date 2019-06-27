@@ -6093,30 +6093,6 @@ public class FieldFactory {
 		fields.add(getField("shiftRotationId", "SHIFT_ROTATION_ID", module, FieldType.NUMBER));
 		fields.add(getField("fromShiftId", "FROM_SHIFT", module, FieldType.NUMBER));
 		fields.add(getField("toShiftId", "TO_SHIFT", module, FieldType.NUMBER));
-	}
-	public static List<FacilioField> getNotificationConfigFields() {
-		List<FacilioField> fields = new ArrayList<>();
-		FacilioModule module = ModuleFactory.getNotificationConfigModule();
-		fields.add(getField("id", "ID", module, FieldType.ID));
-		fields.add(getField("parentId", "PARENT_ID", module, FieldType.NUMBER));
-		fields.add(getField("configModuleName", "CONFIG_MODULE_NAME", module, FieldType.STRING));
-		fields.add(getField("actionId", "ACTION_ID", module, FieldType.NUMBER));
-		fields.add(getField("frequencyType", "FREQUENCY_TYPE", module, FieldType.ENUM));
-		fields.add(getField("scheduleMode", "SCHEDULE_MODE", module, FieldType.ENUM));
-		fields.add(getField("scheduleJson", "SCHEDULE_INFO", module, FieldType.STRING));
-		fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.NUMBER));
-		
-		return fields;
-	}
-
-
-	public static List<FacilioField> getNotificationUserFields() {
-		List<FacilioField> fields = new ArrayList<>();
-		FacilioModule module = ModuleFactory.getNotificationConfigModule();
-		fields.add(getField("id", "ID", module, FieldType.ID));
-		fields.add(getField("configId", "CONFIGURATION_ID", module, FieldType.NUMBER));
-		fields.add(getField("toUserId", "TO_USER", module, FieldType.NUMBER));
-		
 		return fields;
 	}
 
@@ -6141,3 +6117,5 @@ public class FieldFactory {
 
 		return list;
 	}
+	
+}

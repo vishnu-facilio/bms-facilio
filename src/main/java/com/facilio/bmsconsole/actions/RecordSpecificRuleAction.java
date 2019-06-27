@@ -7,8 +7,7 @@ import org.apache.commons.chain.Chain;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
-import com.facilio.bmsconsole.workflow.rule.RecordSpecificRuleContext;
-import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -20,11 +19,11 @@ public class RecordSpecificRuleAction extends FacilioAction {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private List<RecordSpecificRuleContext> recordRules;
-	public List<RecordSpecificRuleContext> getRecordRules() {
+	private List<WorkflowRuleContext> recordRules;
+	public List<WorkflowRuleContext> getRecordRules() {
 		return recordRules;
 	}
-	public void setRecordRules(List<RecordSpecificRuleContext> recordRules) {
+	public void setRecordRules(List<WorkflowRuleContext> recordRules) {
 		this.recordRules = recordRules;
 	}
 	
@@ -53,12 +52,12 @@ public class RecordSpecificRuleAction extends FacilioAction {
 		this.parentId = parentId;
 	}
 
-	private RecordSpecificRuleContext recordRule;
+	private WorkflowRuleContext recordRule;
 
-	public RecordSpecificRuleContext getRecordRule() {
+	public WorkflowRuleContext getRecordRule() {
 		return recordRule;
 	}
-	public void setRecordRule(RecordSpecificRuleContext recordRule) {
+	public void setRecordRule(WorkflowRuleContext recordRule) {
 		this.recordRule = recordRule;
 	}
 	
@@ -101,7 +100,7 @@ public class RecordSpecificRuleAction extends FacilioAction {
 		Chain chain = ReadOnlyChainFactory.viewRecordRule();
 		chain.execute(context);
 		
-		setResult(FacilioConstants.ContextNames.RECORD_RULE, (RecordSpecificRuleContext) context.get(FacilioConstants.ContextNames.RECORD));
+		setResult(FacilioConstants.ContextNames.RECORD_RULE, (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.RECORD));
 		return SUCCESS;
 	}
 	

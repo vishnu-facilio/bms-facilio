@@ -1201,8 +1201,6 @@ public class FacilioConstants {
 			classMap.put(BASE_ALARM, BaseAlarmContext.class);
 			classMap.put(NEW_READING_ALARM, ReadingAlarm.class);
 			classMap.put(READING_EVENT, ReadingEventContext.class);
-			classMap.put(NOTIFICATION_CONFIG, NotificationConfigContext.class);
-			classMap.put(NOTIFICATION_USER, NotificationUserContext.class);
 			
 
 			return classMap;

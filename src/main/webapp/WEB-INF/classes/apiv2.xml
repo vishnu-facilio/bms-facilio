@@ -148,6 +148,7 @@
 			class="com.facilio.bmsconsole.actions.TicketStatusAction" method="v2AddStatus" />
 		<action name="update"
 			class="com.facilio.bmsconsole.actions.TicketStatusAction" method="v2UpdateStatus" />
+	</package>
 
 	<package name="stateFlow" namespace="/api/v2/stateflow"
 		extends="v2Api">

@@ -1194,6 +1194,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(SetTableNamesCommand.getForBreakTransaction());
 		c.addCommand(new LoadBreakTransactionLookupCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
+		return c;
 		
 	}
 	

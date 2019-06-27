@@ -3739,6 +3739,7 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Shift Rotation");
+		return allView;
 	}
 	private static FacilioView getAllServiceView() {
 		FacilioField name = new FacilioField();
