@@ -175,6 +175,7 @@ public class PageWidget {
 	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 	public enum WidgetType {
  		PRIMARY_DETAILS_WIDGET("primaryDetailsWidget"),
+ 		MV_DETAILS_WIDGET("mvSummaryWidget"),
  		SECONDARY_DETAILS_WIDGET("secondaryDetailsWidget"),
  		CARD("card"),
  		CHART("chart"),

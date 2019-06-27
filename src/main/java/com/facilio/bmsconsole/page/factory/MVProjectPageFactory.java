@@ -51,7 +51,7 @@ public class MVProjectPageFactory {
 	}
 	
 	private static void addPrimaryDetailsWidget(Section section) {
-		PageWidget pageWidget = new PageWidget(WidgetType.PRIMARY_DETAILS_WIDGET);
+		PageWidget pageWidget = new PageWidget(WidgetType.MV_DETAILS_WIDGET);
 		pageWidget.addToLayoutParams(section, 24, 6);
 		section.addWidget(pageWidget);
 	}
@@ -72,7 +72,7 @@ public class MVProjectPageFactory {
 	
 	private static void addCarbonWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
-		cardWidget.addToLayoutParams(section, 10, 5);
+		cardWidget.addToLayoutParams(section, 4, 5);
 		cardWidget.addToWidgetParams("type", CardType.CARBON_EMISSION.getName());
 		section.addWidget(cardWidget);
 	}
