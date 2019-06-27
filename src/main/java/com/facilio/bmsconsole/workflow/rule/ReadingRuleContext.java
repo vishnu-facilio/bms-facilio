@@ -38,6 +38,7 @@ import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.WordUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -841,7 +842,11 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 			event = new ReadingEventContext();
 		}
 		else {
+			String severity = (String) obj.remove("severity");
 			event = FieldUtil.getAsBeanFromJson(obj, ReadingEventContext.class);
+			if (StringUtils.isNotEmpty(severity)) {
+				event.setSeverityString(severity);
+			}
 		}
 		if (obj.containsKey("subject")) {
 			String subject = (String) obj.get("subject");
