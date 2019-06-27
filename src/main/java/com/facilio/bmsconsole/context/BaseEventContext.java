@@ -28,7 +28,13 @@ public abstract class BaseEventContext extends ModuleBaseWithCustomFields {
 	public void setEventMessage(String eventMessage) {
 		this.eventMessage = eventMessage;
 	}
-	
+	public String getMessage() {
+		return eventMessage;
+	}
+	public void setMessage(String message) {
+		this.eventMessage = message;
+	}
+
 	private ResourceContext resource;
 	public ResourceContext getResource() {
 		return resource;

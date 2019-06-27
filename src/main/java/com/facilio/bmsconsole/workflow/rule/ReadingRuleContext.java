@@ -843,6 +843,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		}
 		else {
 			String severity = (String) obj.remove("severity");
+			obj.remove("alarmType");
 			event = FieldUtil.getAsBeanFromJson(obj, ReadingEventContext.class);
 			if (StringUtils.isNotEmpty(severity)) {
 				event.setSeverityString(severity);
