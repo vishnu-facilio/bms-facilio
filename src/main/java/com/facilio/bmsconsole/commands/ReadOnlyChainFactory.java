@@ -157,6 +157,13 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain getCalendarResourceJobChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetPMCalendarResouceJobsCommand());
+		return c;
+		
+	}
+	
 	public static Chain getWorkOrderStatusPercentageChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForWorkOrder());

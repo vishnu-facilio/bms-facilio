@@ -7,6 +7,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 
 public class PMPlannerAction extends FacilioAction{
 	private static final Logger log = LogManager.getLogger(PMPlannerAction.class.getName());
@@ -53,6 +54,24 @@ public class PMPlannerAction extends FacilioAction{
 				return SUCCESS;
 			}
 			
+	}
+	
+	public String getPMCalendarJobs() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(ContextNames.SITE_ID, siteId);
+		ReadOnlyChainFactory.getCalendarResourceJobChain().execute(context);
+		
+		setResult(ContextNames.RESULT, context.get(ContextNames.RESULT));
+		
+		return SUCCESS;
+	}
+	
+	private long siteId = -1;
+	public long getSiteId() {
+		return siteId;
+	}
+	public void setSiteId(long siteId) {
+		this.siteId = siteId;
 	}
 	
 	

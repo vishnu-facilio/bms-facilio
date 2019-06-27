@@ -377,8 +377,12 @@
 		extends="v2Api">
 		<action name="settings" class="com.facilio.bmsconsole.actions.PMPlannerAction"
 			method="getPMPlannerSettings">
-			
-		</action>		
+		</action>
+		<action name="jobs" class="com.facilio.bmsconsole.actions.PMPlannerAction"
+			method="getPMCalendarJobs">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+		</action>
 	</package>
 	<package name="pmplannerupdate" namespace="/api/v2/pmplanner/update"
 		extends="v2Api">
