@@ -263,7 +263,7 @@ public enum ActionType {
 				if (isHistorical || rule.getRuleGroupId() == 4216) {/*if (AccountUtil.getCurrentOrg().getId() == 135) {*/
 					LOGGER.info("Meta map of rule : "+rule.getId()+" when creating alarm for resource "+resourceId+" at time : "+time+" : "+metaMap);
 				}
-					
+
 				if (metaMap != null) {
 					ReadingRuleAlarmMeta alarmMeta = metaMap.get(resourceId);
 					if (alarmMeta == null) {
@@ -287,7 +287,7 @@ public enum ActionType {
 				}
 			}
 		}
-		
+
 		private ReadingRuleAlarmMeta addAlarmMeta (long alarmId, long resourceId, ReadingRuleContext rule, boolean isHistorical) throws Exception {
 			if (isHistorical) {
 				return ReadingRuleAPI.constructAlarmMeta(alarmId, resourceId, rule);
@@ -709,26 +709,29 @@ public enum ActionType {
 
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
-			
-			Map<Long, ReadingRuleAlarmMeta> alarmMetaMap = (Map<Long, ReadingRuleAlarmMeta>) context.get(FacilioConstants.ContextNames.READING_RULE_ALARM_META);
-			if (alarmMetaMap == null) {
-				alarmMetaMap = ((ReadingRuleContext)currentRule).getAlarmMetaMap();
+			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
+				((ReadingRuleContext) currentRule).constructAndAddClearEvent(context, (ReadingContext) currentRecord);
 			}
-			long resourceId = ((ReadingRuleContext) currentRule).getReadingRuleTypeEnum() == ReadingRuleType.THRESHOLD_RULE ? ((ReadingContext) currentRecord).getParentId() : ((ReadingRuleContext) currentRule).getResourceId(); 
-			ReadingRuleAlarmMeta alarmMeta = alarmMetaMap != null ? alarmMetaMap.get(resourceId) : null;
-			
-			if(alarmMeta != null) {
-				AlarmContext alarm = AlarmAPI.getAlarm(alarmMeta.getAlarmId());
-				long clearTime = ((ReadingRuleContext) currentRule).getReadingRuleTypeEnum() == ReadingRuleType.THRESHOLD_RULE ? ((ReadingContext) currentRecord).getTtime() : (long) context.get(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME);
-				if(alarm.getModifiedTime() == clearTime) {
-					return;
+			else {
+				Map<Long, ReadingRuleAlarmMeta> alarmMetaMap = (Map<Long, ReadingRuleAlarmMeta>) context.get(FacilioConstants.ContextNames.READING_RULE_ALARM_META);
+				if (alarmMetaMap == null) {
+					alarmMetaMap = ((ReadingRuleContext) currentRule).getAlarmMetaMap();
 				}
-				ReadingContext reading = (ReadingContext) currentRecord;
-				if (reading != null) {
-					ReadingRuleAPI.addClearEvent(context, obj, (ReadingRuleContext)currentRule, reading.getId(), ((ReadingRuleContext) currentRule).getMetric(reading), clearTime, resourceId);
-				}
-				else {
-					ReadingRuleAPI.addClearEvent(context, obj, (ReadingRuleContext)currentRule, -1, null, clearTime, resourceId);
+				long resourceId = ((ReadingRuleContext) currentRule).getReadingRuleTypeEnum() == ReadingRuleType.THRESHOLD_RULE ? ((ReadingContext) currentRecord).getParentId() : ((ReadingRuleContext) currentRule).getResourceId();
+				ReadingRuleAlarmMeta alarmMeta = alarmMetaMap != null ? alarmMetaMap.get(resourceId) : null;
+
+				if (alarmMeta != null) {
+					AlarmContext alarm = AlarmAPI.getAlarm(alarmMeta.getAlarmId());
+					long clearTime = ((ReadingRuleContext) currentRule).getReadingRuleTypeEnum() == ReadingRuleType.THRESHOLD_RULE ? ((ReadingContext) currentRecord).getTtime() : (long) context.get(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME);
+					if (alarm.getModifiedTime() == clearTime) {
+						return;
+					}
+					ReadingContext reading = (ReadingContext) currentRecord;
+					if (reading != null) {
+						ReadingRuleAPI.addClearEvent(context, obj, (ReadingRuleContext) currentRule, reading.getId(), ((ReadingRuleContext) currentRule).getMetric(reading), clearTime, resourceId);
+					} else {
+						ReadingRuleAPI.addClearEvent(context, obj, (ReadingRuleContext) currentRule, -1, null, clearTime, resourceId);
+					}
 				}
 			}
 		}
@@ -990,6 +993,62 @@ public enum ActionType {
 						newAssetBreakdown.execute(context);
 					}
 				}
+			}
+		}
+	},
+	ADD_READING_EVENT (23) {
+		@Override
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
+			ReadingEventContext event = ((ReadingRuleContext) currentRule).constructEvent(obj, (ReadingContext) currentRecord);
+
+			context.put(EventConstants.EventContextNames.EVENT_LIST, Collections.singletonList(event));
+			Boolean isHistorical = (Boolean) context.get(EventConstants.EventContextNames.IS_HISTORICAL_EVENT);
+			if (isHistorical == null) {
+				isHistorical = false;
+			}
+
+			if (!isHistorical) {
+				Chain addEvent = TransactionChainFactory.getV2AddEventChain();
+				addEvent.execute(context);
+			}
+			processAlarmMeta((ReadingRuleContext) currentRule, ((ReadingContext) currentRecord).getParentId(), ((ReadingContext) currentRecord).getTtime(), event, isHistorical, context);
+		}
+
+		//Assuming readings will come in ascending order of time
+		private void processAlarmMeta (ReadingRuleContext rule, long resourceId, long time, ReadingEventContext event, boolean isHistorical, Context context) throws Exception {
+			if (event.getAlarmOccurrence() != null || isHistorical) {
+				Map<Long, ReadingRuleAlarmMeta> metaMap = null;
+				if (isHistorical) {
+					metaMap = (Map<Long, ReadingRuleAlarmMeta>) context.get(FacilioConstants.ContextNames.READING_RULE_ALARM_META);
+				}
+				else {
+					metaMap = rule.getAlarmMetaMap();
+				}
+				if (metaMap == null) {
+					ReadingRuleAlarmMeta alarmMeta = metaMap.get(resourceId);
+					if (alarmMeta == null) {
+						metaMap.put(resourceId, addAlarmMeta(event.getAlarmOccurrence(), resourceId, rule, isHistorical));
+					} else if (alarmMeta.isClear()) {
+						alarmMeta.setClear(false);
+						if (isHistorical) {
+							alarmMeta.setAlarmId(event.getAlarmOccurrence().getId());
+							ReadingRuleAPI.markAlarmMetaAsNotClear(alarmMeta.getId(), event.getAlarmOccurrence().getId());
+						}
+					}
+				} else {
+					metaMap = new HashMap<>();
+					rule.setAlarmMetaMap(metaMap);
+					metaMap.put(resourceId, addAlarmMeta(event.getAlarmOccurrence(), resourceId, rule, isHistorical));
+				}
+			}
+		}
+
+		private ReadingRuleAlarmMeta addAlarmMeta (AlarmOccurrenceContext alarmOccurence, long resourceId, ReadingRuleContext rule, boolean isHistorical) throws Exception {
+			if (isHistorical) {
+				return ReadingRuleAPI.constructAlarmMeta(-1, resourceId, rule);
+			}
+			else {
+				return ReadingRuleAPI.addAlarmMeta(alarmOccurence.getId(), resourceId, rule);
 			}
 		}
 	}
