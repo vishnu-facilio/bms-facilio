@@ -10,6 +10,7 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountConstants.GroupMemberRole;
 import com.facilio.accounts.util.AccountEmailTemplate;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -18,8 +19,10 @@ import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
+import com.facilio.bmsconsole.context.ShiftContext;
 import com.facilio.bmsconsole.context.ShiftUserRelContext;
 import com.facilio.bmsconsole.util.EncryptionUtil;
+import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -44,6 +47,7 @@ import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Chain;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
@@ -363,6 +367,16 @@ public class UserBeanImpl implements UserBean {
 		}
 		if(user.getGroups() != null) {
 			addAccessibleTeam(user.getOuid(), user.getGroups());
+		}
+		if (AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE)) {
+			List<ShiftContext> orgShifts = ShiftAPI.getAllShifts();
+			if (CollectionUtils.isNotEmpty(orgShifts)) {
+				for (ShiftContext shift : orgShifts) {
+					if (shift.getDefaultShift()) {
+						ShiftAPI.insertShiftUserRel(shift.getId(), ouid);
+					}
+				}
+			}
 		}
 		return ouid;
 	}
