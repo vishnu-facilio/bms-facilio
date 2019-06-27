@@ -756,8 +756,9 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new LoadViewCommand());
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
 		chain.addCommand(new GenerateSearchConditionCommand());
-		chain.addCommand(new GetPurchaseContractListCommand());
+		chain.addCommand(new GetContractListCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
+		
 		return chain;
 	}
 
@@ -776,7 +777,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new LoadViewCommand());
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
 		chain.addCommand(new GenerateSearchConditionCommand());
-		chain.addCommand(new GetLabourContractListCommand());
+		chain.addCommand(new GetContractListCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
 		return chain;
 	}
@@ -1048,7 +1049,8 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new LoadViewCommand());
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
 		chain.addCommand(new GenerateSearchConditionCommand());
-		chain.addCommand(new GetWarrantyContractListCommand());
+		chain.addCommand(new GetContractListCommand());
+		chain.addCommand(new GenericGetModuleDataListCommand());
 		return chain;
 	}
 
@@ -1085,7 +1087,8 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new LoadViewCommand());
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
 		chain.addCommand(new GenerateSearchConditionCommand());
-		chain.addCommand(new GetRentalLeaseContractListCommand());
+		chain.addCommand(new GetContractListCommand());
+		chain.addCommand(new GenericGetModuleDataListCommand());
 		return chain;
 	}
 
