@@ -10,7 +10,9 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ContractAssociatedAssetsContext;
+import com.facilio.bmsconsole.context.PurchaseContractLineItemContext;
 import com.facilio.bmsconsole.context.WarrantyContractContext;
+import com.facilio.bmsconsole.context.WarrantyContractLineItemContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -227,5 +229,35 @@ public class WarrantyContractAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	private List<WarrantyContractLineItemContext> lineItems;
+	
+	public List<WarrantyContractLineItemContext> getLineItems() {
+		return lineItems;
+	}
+	public void setLineItems(List<WarrantyContractLineItemContext> lineItems) {
+		this.lineItems = lineItems;
+	}
+	public String addOrUpdateLineItem() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_LIST, getLineItems());
+		
+		Chain chain = TransactionChainFactory.getAddWarrantyContractLineItem();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.RECORD_LIST, context.get(FacilioConstants.ContextNames.RECORD_LIST));
+		
+		return SUCCESS;
+	}
+	public String deleteLineItem() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
+		
+		Chain chain = TransactionChainFactory.getDeleteWarrantyContractLineItemChain();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
+		
+		return SUCCESS;
+	}
 	
 }

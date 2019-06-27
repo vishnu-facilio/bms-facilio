@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ContractAssociatedAssetsContext;
 import com.facilio.bmsconsole.context.RentalLeaseContractContext;
 import com.facilio.bmsconsole.context.RentalLeaseContractLineItemsContext;
+import com.facilio.bmsconsole.context.WarrantyContractLineItemContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -297,6 +298,38 @@ public class RentalLeaseContractAction extends FacilioAction{
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.PURCHASE_ORDER, context.get(FacilioConstants.ContextNames.RECORD));
+		
+		return SUCCESS;
+	}
+	public String deleteLineItem() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
+		
+		Chain chain = TransactionChainFactory.getDeleteRentalLeaseContractLineItemChain();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
+		
+		return SUCCESS;
+	}
+	
+	private List<RentalLeaseContractLineItemsContext> lineItems;
+	
+	public List<RentalLeaseContractLineItemsContext> getLineItems() {
+		return lineItems;
+	}
+	public void setLineItems(List<RentalLeaseContractLineItemsContext> lineItems) {
+		this.lineItems = lineItems;
+	}
+	
+	public String addOrUpdateLineItem() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_LIST, getLineItems());
+		
+		Chain chain = TransactionChainFactory.getAddWarrantyContractLineItem();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.RECORD_LIST, context.get(FacilioConstants.ContextNames.RECORD_LIST));
 		
 		return SUCCESS;
 	}

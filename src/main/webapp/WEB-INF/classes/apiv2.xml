@@ -2694,6 +2694,19 @@
 			<param name="permission">READ</param>
 		</action>
 
+		<action name="addOrUpdateLineItem"
+			class="com.facilio.bmsconsole.actions.PurchaseContractsAction"
+			method="addOrUpdateLineItem">
+			<param name="moduleName">contract</param>
+			<param name="permission">CREATE,UPDATE</param>
+		</action>
+		<action name="deleteLineItem"
+			class="com.facilio.bmsconsole.actions.PurchaseContractsAction"
+			method="deleteLineItem">
+			<param name="moduleName">contract</param>
+			<param name="permission">DELETE</param>
+		</action>
+		
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.PurchaseContractsAction"
 			method="getPurchaseContractList">
@@ -2754,6 +2767,19 @@
 			<param name="moduleName">contract</param>
 			<param name="permission">READ</param>
 		</action>
+		<action name="addOrUpdateLineItem"
+			class="com.facilio.bmsconsole.actions.LabourContractAction"
+			method="addOrUpdateLineItem">
+			<param name="moduleName">contract</param>
+			<param name="permission">CREATE,UPDATE</param>
+		</action>
+		<action name="deleteLineItem"
+			class="com.facilio.bmsconsole.actions.LabourContractAction"
+			method="deleteLineItem">
+			<param name="moduleName">contract</param>
+			<param name="permission">DELETE</param>
+		</action>
+		
 
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.LabourContractAction"
@@ -3256,6 +3282,19 @@
 			<param name="moduleName">contract</param>
 			<param name="permission">READ</param>
 		</action>
+		<action name="addOrUpdateLineItem"
+			class="com.facilio.bmsconsole.actions.WarrantyContractAction"
+			method="addOrUpdateLineItem">
+			<param name="moduleName">contract</param>
+			<param name="permission">CREATE,UPDATE</param>
+		</action>
+		<action name="deleteLineItem"
+			class="com.facilio.bmsconsole.actions.WarrantyContractAction"
+			method="deleteLineItem">
+			<param name="moduleName">contract</param>
+			<param name="permission">DELETE</param>
+		</action>
+		
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.WarrantyContractAction"
 			method="getWarrantyContractList">
@@ -3338,6 +3377,18 @@
 			<param name="permission">READ</param>
 		</action>
 
+	<action name="addOrUpdateLineItem"
+			class="com.facilio.bmsconsole.actions.RentalLeaseContractAction"
+			method="addOrUpdateLineItem">
+			<param name="moduleName">contract</param>
+			<param name="permission">CREATE,UPDATE</param>
+		</action>
+		<action name="deleteLineItem"
+			class="com.facilio.bmsconsole.actions.RentalLeaseContractAction"
+			method="deleteLineItem">
+			<param name="moduleName">contract</param>
+			<param name="permission">DELETE</param>
+		</action>
 
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.RentalLeaseContractAction"

@@ -404,6 +404,13 @@ public class ViewFactory {
 		views.put("all", getAllTermsAndConditionView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.TERMS_AND_CONDITIONS, views);
 
+	
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllServiceView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.SERVICE, views);
+	
+		
 		return viewsMap;
 	}
 
@@ -3746,7 +3753,7 @@ public class ViewFactory {
 		name.setName("name");
 		name.setDataType(FieldType.STRING);
 		name.setColumnName("name");
-		name.setModule(ModuleFactory.getTermsAndConditionModule());
+		name.setModule(ModuleFactory.getServiceModule());
 		
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
@@ -3787,8 +3794,8 @@ public class ViewFactory {
 		name.setName("name");
 		name.setDataType(FieldType.STRING);
 		name.setColumnName("name");
-		name.setModule(ModuleFactory.getServiceModule());
-
+		name.setModule(ModuleFactory.getTermsAndConditionModule());
+		
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All T&C(s)");

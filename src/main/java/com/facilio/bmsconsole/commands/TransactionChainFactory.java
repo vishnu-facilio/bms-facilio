@@ -2639,7 +2639,7 @@ public class TransactionChainFactory {
 		public static Chain getDeletePurchaseContractLineItemChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForPurchaseContractLineItem());
-			c.addCommand(new DeletePurchaseContractLineItemCommand());
+			c.addCommand(new GenericDeleteModuleDataCommand());
 			return c;
 		}
 		public static Chain getAddLabourContractChain() {
@@ -2670,7 +2670,7 @@ public class TransactionChainFactory {
 		public static Chain getDeleteLabourContractLineItemChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForLabourContractLineItem());
-			c.addCommand(new DeleteLabourContractLineItemCommand());
+			c.addCommand(new GenericDeleteModuleDataCommand());
 			return c;
 		}
 		public static Chain getUpdatePurchaseContractStatusChain() {
@@ -3472,6 +3472,35 @@ public class TransactionChainFactory {
 			c.addCommand(new DisAsscoiateTermsToContractCommand());
 			return c;
 		}
+		
+		public static Chain getAddWarrantyContractLineItem() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForWarrantyContractLineItems());
+			c.addCommand(new AddOrUpdateWarrantyContractLineItemCommand());
+			c.addCommand(getWarrantContractTotalCostChain()); //roll up for calculating total cost
+			return c;
+		}
+		
+		public static Chain getAddRentalLeaseContractLineItem() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForRentalLeaseContractLineItem());
+			c.addCommand(new AddOrUpdateRentalLeaseContractLineItemCommand());
+			c.addCommand(getRentalLeaseTotalCostChain()); //roll up for calculating total cost
+			return c;
+		}
+		public static Chain getDeleteWarrantyContractLineItemChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForWarrantyContractLineItems());
+			c.addCommand(new GenericDeleteModuleDataCommand());
+			return c;
+		}
+		public static Chain getDeleteRentalLeaseContractLineItemChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForRentalLeaseContractLineItem());
+			c.addCommand(new GenericDeleteModuleDataCommand());
+			return c;
+		}
+
 		
 }
 

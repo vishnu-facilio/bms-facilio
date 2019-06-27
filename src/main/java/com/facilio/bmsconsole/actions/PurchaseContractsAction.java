@@ -166,14 +166,22 @@ public class PurchaseContractsAction extends FacilioAction {
 		this.lineItem = lineItem;
 	}
 	
+	private List<PurchaseContractLineItemContext> lineItems;
+	
+	public List<PurchaseContractLineItemContext> getLineItems() {
+		return lineItems;
+	}
+	public void setLineItems(List<PurchaseContractLineItemContext> lineItems) {
+		this.lineItems = lineItems;
+	}
 	public String addOrUpdateLineItem() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD, getLineItem());
+		context.put(FacilioConstants.ContextNames.RECORD_LIST, getLineItems());
 		
 		Chain chain = TransactionChainFactory.getAddPurchaseContractLineItem();
 		chain.execute(context);
 		
-		setResult(FacilioConstants.ContextNames.RECORD, context.get(FacilioConstants.ContextNames.RECORD));
+		setResult(FacilioConstants.ContextNames.RECORD_LIST, context.get(FacilioConstants.ContextNames.RECORD));
 		
 		return SUCCESS;
 	}
@@ -233,12 +241,12 @@ public class PurchaseContractsAction extends FacilioAction {
 	
 	public String deleteLineItem() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(recordId));
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
 		
 		Chain chain = TransactionChainFactory.getDeletePurchaseContractLineItemChain();
 		chain.execute(context);
 		
-		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(recordId));
+		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
 		
 		return SUCCESS;
 	}
