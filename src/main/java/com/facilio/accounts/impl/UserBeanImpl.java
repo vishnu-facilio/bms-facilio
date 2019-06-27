@@ -374,6 +374,7 @@ public class UserBeanImpl implements UserBean {
 				for (ShiftContext shift : orgShifts) {
 					if (shift.getDefaultShift()) {
 						ShiftAPI.insertShiftUserRel(shift.getId(), ouid);
+						break;
 					}
 				}
 			}
