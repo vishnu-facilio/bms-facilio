@@ -64,6 +64,9 @@
 		<action name="getMySites" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getMySitesList">
 		</action>
+		<action name="getSite" class="com.facilio.bmsconsole.actions.LoginAction"
+			method="getMySiteList">
+		</action>
 		<action name="validateInviteLink" class="com.facilio.auth.actions.FacilioAuthAction"
 			method="validateInviteLink">
 			<param name="auth">false</param>
