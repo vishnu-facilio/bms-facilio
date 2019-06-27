@@ -1,7 +1,5 @@
 package com.facilio.mv.context;
 
-import java.util.List;
-
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
@@ -15,9 +13,16 @@ public class MVAdjustment extends ModuleBaseWithCustomFields {
 	MVProjectContext project;
 	String name;
 	FormulaFieldContext formulaField;
-	long startTime;
-	long endTime;
+	long startTime = -1;
+	long endTime = -1;
+	double constant = -1;
 	
+	public double getConstant() {
+		return constant;
+	}
+	public void setConstant(double constant) {
+		this.constant = constant;
+	}
 	public MVProjectContext getProject() {
 		return project;
 	}
