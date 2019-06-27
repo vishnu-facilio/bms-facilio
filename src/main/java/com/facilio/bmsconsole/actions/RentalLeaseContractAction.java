@@ -326,7 +326,7 @@ public class RentalLeaseContractAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, getLineItems());
 		
-		Chain chain = TransactionChainFactory.getAddWarrantyContractLineItem();
+		Chain chain = TransactionChainFactory.getAddRentalLeaseContractLineItem();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECORD_LIST, context.get(FacilioConstants.ContextNames.RECORD_LIST));
