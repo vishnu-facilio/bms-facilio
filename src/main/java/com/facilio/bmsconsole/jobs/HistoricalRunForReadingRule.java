@@ -3,10 +3,12 @@ package com.facilio.bmsconsole.jobs;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.context.ReadingEventContext;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.bmsconsole.util.ReadingsAPI;
@@ -32,6 +34,7 @@ import com.facilio.tasker.job.JobContext;
 import com.facilio.workflows.context.WorkflowFieldContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.chain.Chain;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -68,6 +71,8 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 					LOGGER.info("Support Fields RDM Values size : "+supportFieldsRDM.size());
 				}
 			}
+
+			List<ReadingEventContext> events = new ArrayList<>();
 			for (long resourceId : readingRule.getMatchedResources().keySet()) {
 				LOGGER.info("Gonna fetch data and execute rule for resource : "+resourceId);
 				Map<String, List<ReadingDataMeta>> currentFields = supportFieldsRDM;
@@ -89,9 +94,17 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 				long processStartTime = System.currentTimeMillis();
 				long currentStartTime = startTime - (ReadingsAPI.getDataInterval(resourceId, readingRule.getReadingField()) * 60 * 1000);
 				List<ReadingContext> readings = fetchReadings(readingRule, resourceId, currentStartTime, endTime);
-				executeWorkflows(readingRule, readings, currentFields, fields);
+				executeWorkflows(readingRule, readings, currentFields, fields, events);
 				LOGGER.info("Time taken for Historical Run for Reading Rule : "+jc.getJobId()+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is "+(System.currentTimeMillis() - processStartTime));
 			}
+
+			if (!events.isEmpty()) {
+				FacilioContext context = new FacilioContext();
+				context.put(EventConstants.EventContextNames.EVENT_LIST, events);
+				Chain addEvent = TransactionChainFactory.getV2AddEventChain();
+				addEvent.execute(context);
+			}
+
 			long timeTaken = (System.currentTimeMillis() - jobStartTime);
 			LOGGER.info("Total Time taken for Historical Run for Reading Rule : "+jc.getJobId()+" between "+startTime+" and "+endTime+" is "+timeTaken);
 			
@@ -111,7 +124,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 		}
 	}
 	
-	private void executeWorkflows(ReadingRuleContext readingRule, List<ReadingContext> readings, Map<String, List<ReadingDataMeta>> supportFieldsRDM, List<WorkflowFieldContext> fields) throws Exception {
+	private void executeWorkflows(ReadingRuleContext readingRule, List<ReadingContext> readings, Map<String, List<ReadingDataMeta>> supportFieldsRDM, List<WorkflowFieldContext> fields, List<ReadingEventContext> readingEvents) throws Exception {
 		if (readings != null && !readings.isEmpty()) {
 			Map<String, Object> placeHolders = new HashMap<>();
 			CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeHolders);
@@ -120,6 +133,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 			FacilioContext context = new FacilioContext();
 			Map<Long, ReadingRuleAlarmMeta> alarmMetaMap = new HashMap<>();
 			context.put(FacilioConstants.ContextNames.READING_RULE_ALARM_META, alarmMetaMap);
+			context.put(EventConstants.EventContextNames.IS_HISTORICAL_EVENT, true);
 			ReadingDataMeta prevRDM = null;			
 			int itr = 0;
 			
@@ -153,6 +167,11 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 						WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(Collections.singletonList(readingRule), readingRule.getReadingField().getModule(), reading, null, null, recordPlaceHolders, context, false, Collections.singletonList(readingRule.getEvent().getActivityTypeEnum()), ruleTypes);
 						
 						prevRDM = currentRDM;
+
+						List<ReadingEventContext> currentEvent = (List<ReadingEventContext>) context.get(EventConstants.EventContextNames.EVENT_LIST);
+						if (CollectionUtils.isNotEmpty(currentEvent)) {
+							readingEvents.addAll(currentEvent);
+						}
 					}
 				}
 				catch (Exception e) {

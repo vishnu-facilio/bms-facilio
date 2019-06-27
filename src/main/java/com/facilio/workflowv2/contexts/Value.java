@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
 
 public class Value {
@@ -23,6 +24,10 @@ public class Value {
     
     public FacilioModule asModule() {
     	return (FacilioModule) value;
+    }
+    
+    public FacilioField asField() {
+    	return (FacilioField) value;
     }
     
     public WorkflowReadingContext asWorkflowReadingContext() {

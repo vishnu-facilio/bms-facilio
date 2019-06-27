@@ -25,6 +25,7 @@ public class EventConstants {
 		public static final String EVENT_LAST_TIMESTAMP = "eventLastTimeStamp";
 		public static final String EVENT_COUNT_MAP = "eventCountMap";
 		public static final String EVENT_LIST = "events";
+		public static final String IS_HISTORICAL_EVENT = "isHistoricalEvent";
 		public static final String READING_VALUES = "readingValue";
 		public static final String FILEURL = "fileurl";
 		public static final String EVENT_PROPERTY = "eventProperty";

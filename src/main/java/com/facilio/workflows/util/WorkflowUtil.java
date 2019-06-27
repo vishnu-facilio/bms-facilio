@@ -1522,6 +1522,10 @@ public class WorkflowUtil {
 				case DATE_RANGE:
 					facilioWorkflowFunction = FacilioDateRangeFunctions.getFacilioDateFunction(functionName);
 					break;
+				case FIELD:
+					facilioWorkflowFunction = FacilioFieldFunctions.getFacilioFieldFunctions(functionName);
+					break;
+					
 			}
 		}
 		return facilioWorkflowFunction;
@@ -1592,6 +1596,9 @@ public class WorkflowUtil {
 					break;
 				case DATE_RANGE:
 					facilioWorkflowFunction = new ArrayList<>( FacilioDateRangeFunctions.getAllFunctions().values());
+					break;
+				case FIELD:
+					facilioWorkflowFunction = new ArrayList<>( FacilioFieldFunctions.getAllFunctions().values());
 					break;
 		
 			}

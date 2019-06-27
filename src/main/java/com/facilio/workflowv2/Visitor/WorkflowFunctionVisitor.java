@@ -24,6 +24,7 @@ import com.facilio.db.criteria.operators.Operator;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
 import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
@@ -192,6 +193,10 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
                     	}
                     	else if(value.asObject() instanceof WorkflowReadingContext) {
                     		wfFunctionContext.setNameSpace(FacilioSystemFunctionNameSpace.READINGS.getName());
+                    		isDataTypeSpecificFunction = true;
+                    	}
+                    	else if(value.asObject() instanceof FacilioField) {
+                    		wfFunctionContext.setNameSpace(FacilioSystemFunctionNameSpace.FIELD.getName());
                     		isDataTypeSpecificFunction = true;
                     	}
                     	else if (value.asObject() instanceof FacilioSystemFunctionNameSpace) {

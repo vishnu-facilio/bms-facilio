@@ -2,9 +2,7 @@ package com.facilio.bmsconsole.util;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.AlarmContext;
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.workflow.rule.*;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ThresholdType;
@@ -474,7 +472,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 			getAddEventChain.execute(addEventContext);
 		}
 	}
-	
+
 	public static String getRuleConditionText(ReadingRuleContext rule) throws Exception {
 		StringBuilder msgBuilder = new StringBuilder();
 		switch (rule.getThresholdTypeEnum()) {

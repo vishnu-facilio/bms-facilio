@@ -3,14 +3,13 @@ package com.facilio.bmsconsole.workflow.rule;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.context.ReadingEventContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.templates.JSONTemplate;
-import com.facilio.bmsconsole.util.ActionAPI;
-import com.facilio.bmsconsole.util.AlarmAPI;
-import com.facilio.bmsconsole.util.ReadingRuleAPI;
-import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.bmsconsole.util.*;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -20,24 +19,35 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.Operator;
 import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.license.LicenseApi;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.NumberField;
 import com.facilio.tasker.FacilioTimer;
+import com.facilio.time.DateRange;
+import com.facilio.time.DateTimeUtil;
+import com.facilio.workflows.context.ExpressionContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
+import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.WordUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import java.text.DecimalFormat;
 import java.util.*;
 
 public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable {
@@ -815,10 +825,361 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		Object val = getMetric(reading);
 		if (val != null || getEvent().getActivityTypeEnum().isPresent(EventType.SCHEDULED_READING_RULE.getValue())) {
 			if (clearAlarm()) {
-				ReadingRuleAPI.addClearEvent(context, placeHolders, this, reading.getId(), val, reading.getTtime(), reading.getParentId());
+				if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
+					constructAndAddClearEvent(context, reading);
+				}
+				else {
+					ReadingRuleAPI.addClearEvent(context, placeHolders, this, reading.getId(), val, reading.getTtime(), reading.getParentId());
+				}
 			}
-			
 			super.executeFalseActions(record, context, placeHolders);
+		}
+	}
+
+	public ReadingEventContext constructEvent(JSONObject obj, ReadingContext reading) throws Exception {
+		ReadingEventContext event = null;
+		if (obj == null) {
+			event = new ReadingEventContext();
+		}
+		else {
+			String severity = (String) obj.remove("severity");
+			event = FieldUtil.getAsBeanFromJson(obj, ReadingEventContext.class);
+			if (StringUtils.isNotEmpty(severity)) {
+				event.setSeverityString(severity);
+			}
+		}
+		if (obj.containsKey("subject")) {
+			String subject = (String) obj.get("subject");
+			event.setEventMessage(subject);
+		}
+		event.setReadingFieldId(this.getReadingFieldId());
+		event.setRuleId(this.getRuleGroupId());
+		event.setSubRuleId(this.getId());
+		DateRange range = getRange(reading);
+		event.setDescription(getMessage(range, reading));
+		event.setResource((ResourceContext) reading.getParent());
+		event.setSiteId(((ResourceContext) reading.getParent()).getSiteId());
+		event.setCreatedTime(reading.getTtime());
+
+
+		return event;
+	}
+
+	public ReadingEventContext constructAndAddClearEvent(Context context, ReadingContext reading) throws Exception {
+		Boolean isHistorical = (Boolean) context.get(EventConstants.EventContextNames.IS_HISTORICAL_EVENT);
+		if (isHistorical == null) {
+			isHistorical = false;
+		}
+		Map<Long, ReadingRuleAlarmMeta> metaMap = null;
+		if (isHistorical) {
+			metaMap = (Map<Long, ReadingRuleAlarmMeta>) context.get(FacilioConstants.ContextNames.READING_RULE_ALARM_META);
+		}
+		else {
+			metaMap = this.getAlarmMetaMap();
+		}
+		ReadingRuleAlarmMeta alarmMeta = metaMap != null ? metaMap.get(resourceId) : null;
+		if (alarmMeta != null && !alarmMeta.isClear()) {
+			alarmMeta.setClear(true);
+
+			ReadingEventContext event = null;
+			event.setReadingFieldId(this.getReadingFieldId());
+			event.setRuleId(this.getRuleGroupId());
+			event.setSubRuleId(this.getId());
+			event.setComment("System auto cleared Alarm because associated rule executed clear condition for the associated resource");
+			event.setCreatedTime(reading.getTtime());
+			event.setAutoClear(true);
+			event.setSiteId(((ResourceContext)reading.getParent()).getSiteId());
+			event.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
+
+//			JSONObject json = AlarmAPI.constructClearEvent(alarm, "System auto cleared Alarm because associated rule executed clear condition for the associated resource", ttime);
+//			if (alarm.getSourceTypeEnum() == SourceType.THRESHOLD_ALARM) {
+//				json.put("readingDataId", readingDataId);
+//				json.put("readingVal", readingVal);
+//			}
+//
+//			if (isHistorical) {
+//				LOGGER.info("Clearing alarm for rule : "+readingRuleContext.getId()+" for resource : "+resourceId);
+//			}
+			context.put(EventConstants.EventContextNames.EVENT_LIST, Collections.singletonList(event));
+			if (!isHistorical) {
+				Chain addEvent = TransactionChainFactory.getV2AddEventChain();
+				addEvent.execute(context);
+			}
+			return event;
+		}
+		return null;
+	}
+
+	private DateRange getRange(ReadingContext reading) {
+		DateRange range = null;
+		switch (this.getThresholdTypeEnum()) {
+			case SIMPLE:
+				if (this.getCriteria() != null) {
+					range = new DateRange();
+					range.setStartTime(reading.getTtime());
+				}
+				else {
+					WorkflowContext workflow = this.getWorkflow();
+					ExpressionContext expression = (ExpressionContext) workflow.getExpressions().get(0);
+					if (expression.getLimit() != null) {
+						range = new DateRange();
+						range.setStartTime(reading.getTtime());
+					}
+					else {
+						Condition condition = expression.getCriteria().getConditions().get("2");
+						if(condition != null) {
+							range = ((DateOperators) condition.getOperator()).getRange(condition.getValue());
+						}
+						else {
+							range = new DateRange();
+							range.setStartTime(reading.getTtime());
+						}
+					}
+				}
+				break;
+			case AGGREGATION:
+			case BASE_LINE:
+				range = DateOperators.LAST_N_HOURS.getRange(String.valueOf(this.getDateRange())+","+reading.getTtime());
+				break;
+			case FLAPPING:
+				range = new DateRange();
+				range.setEndTime(reading.getTtime());
+				range.setStartTime(range.getEndTime() - this.getFlapInterval());
+				break;
+			case ADVANCED:
+			case FUNCTION:
+				range = new DateRange();
+				range.setStartTime(reading.getTtime());
+				break;
+		}
+		return range;
+	}
+
+	private String getMessage(DateRange range, ReadingContext reading) throws Exception {
+		StringBuilder msgBuilder = new StringBuilder();
+		if (this.getAggregation() != null) {
+			if(this.getDateRange() == 1) {
+				msgBuilder.append("Hourly ")
+						.append(this.getAggregation());
+			}
+			else {
+				msgBuilder.append(WordUtils.capitalize(this.getAggregation()));
+			}
+			msgBuilder.append(" of ");
+		}
+		msgBuilder.append("'")
+				.append(this.getReadingField().getDisplayName())
+				.append("' ");
+
+		NumberOperators operator = (NumberOperators) Operator.getOperator(this.getOperatorId());
+		switch (this.getThresholdTypeEnum()) {
+			case SIMPLE:
+				appendSimpleMsg(msgBuilder, operator, reading);
+				appendOccurences(msgBuilder);
+				break;
+			case AGGREGATION:
+				appendSimpleMsg(msgBuilder, operator, reading);
+				break;
+			case BASE_LINE:
+				appendBaseLineMsg(msgBuilder, operator);
+				break;
+			case FLAPPING:
+				appendFlappingMsg(msgBuilder);
+				break;
+			case ADVANCED:
+				appendAdvancedMsg(msgBuilder, reading);
+				break;
+			case FUNCTION:
+				appendFunctionMsg(msgBuilder, reading);
+				break;
+		}
+
+		if (range.getEndTime() != -1) {
+			msgBuilder.append(" between ")
+					.append(DateTimeUtil.getZonedDateTime(range.getStartTime()).format(DateTimeUtil.READABLE_DATE_FORMAT))
+					.append(" and ")
+					.append(DateTimeUtil.getZonedDateTime(range.getEndTime()).format(DateTimeUtil.READABLE_DATE_FORMAT));
+		}
+		else {
+			msgBuilder.append(" at ")
+					.append(DateTimeUtil.getZonedDateTime(range.getStartTime()).format(DateTimeUtil.READABLE_DATE_FORMAT));
+		}
+
+		return msgBuilder.toString();
+	}
+
+	private void appendOccurences (StringBuilder msgBuilder) {
+		WorkflowContext workflow = this.getWorkflow();
+		if (workflow != null) {
+			ExpressionContext expression = (ExpressionContext) workflow.getExpressions().get(0);
+			if (expression.getAggregateCondition() != null && !expression.getAggregateCondition().isEmpty()) {
+				msgBuilder.append(" ")
+						.append(getInWords(Integer.parseInt(this.getPercentage())));
+				if (expression.getLimit() != null) {
+					msgBuilder.append(" consecutively");
+				}
+			}
+		}
+	}
+
+	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.##");
+	private void appendSimpleMsg(StringBuilder msgBuilder, NumberOperators operator, ReadingContext reading) {
+		switch (operator) {
+			case EQUALS:
+				msgBuilder.append("was ");
+				break;
+			case NOT_EQUALS:
+				msgBuilder.append("wasn't ");
+				break;
+			case LESS_THAN:
+			case LESS_THAN_EQUAL:
+				msgBuilder.append("went below ");
+				break;
+			case GREATER_THAN:
+			case GREATER_THAN_EQUAL:
+				msgBuilder.append("exceeded ");
+				break;
+		}
+
+		String value = null;
+		if (this.getWorkflow() != null) {
+
+			ExpressionContext expr = (ExpressionContext) this.getWorkflow().getExpressions().get(0);
+
+			if (expr.getAggregateCondition() != null && !expr.getAggregateCondition().isEmpty()) {
+				Condition aggrCondition = expr.getAggregateCondition().get(0);
+				value = aggrCondition.getValue();
+			}
+		}
+		if (value == null) {
+			value = this.getPercentage();
+		}
+
+		if ("${previousValue}".equals(value)) {
+			msgBuilder.append("previous value (")
+					.append(DECIMAL_FORMAT.format(reading.getReading(this.getReadingField().getName())))
+					.append(")");
+		}
+		else {
+			msgBuilder.append(value);
+		}
+		appendUnit(msgBuilder);
+	}
+
+	private void appendBaseLineMsg (StringBuilder msgBuilder, NumberOperators operator) throws Exception {
+		switch (operator) {
+			case EQUALS:
+				msgBuilder.append("was along ");
+				updatePercentage(this.getPercentage(), msgBuilder);
+				break;
+			case NOT_EQUALS:
+				msgBuilder.append("wasn't along ");
+				updatePercentage(this.getPercentage(), msgBuilder);
+				break;
+			case LESS_THAN:
+			case LESS_THAN_EQUAL:
+				msgBuilder.append("went ");
+				updatePercentage(this.getPercentage(), msgBuilder);
+				msgBuilder.append("lower than ");
+				break;
+			case GREATER_THAN:
+			case GREATER_THAN_EQUAL:
+				msgBuilder.append("went ");
+				updatePercentage(this.getPercentage(), msgBuilder);
+				msgBuilder.append("higher than ");
+				break;
+		}
+
+		BaseLineContext bl = BaseLineAPI.getBaseLine(this.getBaselineId());
+		msgBuilder.append("the ");
+		msgBuilder.append("base line ")
+				.append("'")
+				.append(bl.getName())
+				.append("'");
+	}
+
+	private static String getInWords (int val) {
+		switch (val) {
+			case 1:
+				return "once";
+			case 2:
+				return "twice";
+			case 3:
+				return "thrice";
+			default:
+				return val+" times";
+		}
+	}
+
+	private void appendFlappingMsg (StringBuilder msgBuilder) {
+		msgBuilder.append("flapped ")
+				.append(getInWords(this.getFlapFrequency()));
+
+		switch (this.getReadingField().getDataTypeEnum()) {
+			case NUMBER:
+			case DECIMAL:
+				msgBuilder.append(" below ")
+						.append(this.getMinFlapValue());
+				appendUnit(msgBuilder);
+				msgBuilder.append(" and beyond ")
+						.append(this.getMaxFlapValue());
+				appendUnit(msgBuilder);
+				break;
+			default:
+				break;
+		}
+	}
+
+	private static Object formatValue (ReadingContext reading, FacilioField field) {
+		if (field.getDataTypeEnum() == FieldType.DECIMAL) {
+			return DECIMAL_FORMAT.format(FieldUtil.castOrParseValueAsPerType(field, reading.getReading(field.getName())));
+		}
+		else {
+			return reading.getReading(field.getName());
+		}
+	}
+
+	private void appendAdvancedMsg (StringBuilder msgBuilder, ReadingContext reading) {
+		msgBuilder.append("recorded ")
+				.append(formatValue(reading, this.getReadingField()));
+
+		appendUnit(msgBuilder);
+
+		msgBuilder.append(" when the complex condition set in '")
+				.append(this.getName())
+				.append("'")
+				.append(" rule evaluated to true");
+	}
+
+	private void appendFunctionMsg (StringBuilder msgBuilder, ReadingContext reading) {
+		msgBuilder.append("recorded ")
+				.append(formatValue(reading, this.getReadingField()));
+		appendUnit(msgBuilder);
+
+		String functionName = null;
+		if (this.getWorkflow() != null) {
+			ExpressionContext expr = (ExpressionContext) this.getWorkflow().getExpressions().get(1);
+			functionName = expr.getDefaultFunctionContext().getFunctionName();
+		}
+
+		msgBuilder.append(" when the function (")
+				.append(functionName)
+				.append(") set in '")
+				.append(this.getName())
+				.append("'")
+				.append(" rule evaluated to true");
+	}
+
+	private void appendUnit(StringBuilder msgBuilder) {
+		if (this.getReadingField() instanceof NumberField && ((NumberField)this.getReadingField()).getUnit() != null) {
+			msgBuilder.append(((NumberField)this.getReadingField()).getUnit());
+		}
+	}
+
+	private void updatePercentage(String percentage, StringBuilder msgBuilder) {
+		if (percentage != null && !percentage.equals("0")) {
+			msgBuilder.append(percentage)
+					.append("% ");
 		}
 	}
 }

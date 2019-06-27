@@ -10,6 +10,14 @@ public class ReadingAlarm extends BaseAlarmContext {
 	public void setRuleId(long ruleId) {
 		this.ruleId = ruleId;
 	}
+
+	private long subRuleId = -1;
+	public long getSubRuleId() {
+		return subRuleId;
+	}
+	public void setSubRuleId(long subRuleId) {
+		this.subRuleId = subRuleId;
+	}
 	
 	private long readingFieldId;
 	public long getReadingFieldId() {

@@ -26,6 +26,7 @@ public enum FacilioSystemFunctionNameSpace {
 	ML(18,"ml"),
 	NOTIFICATION(19,"notification"),
 	DATE_RANGE(20,"dateRange"),
+	FIELD(21,"field"),
 	;
 	
 	

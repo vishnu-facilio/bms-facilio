@@ -1,6 +1,5 @@
 package com.facilio.mv.util;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,20 +19,16 @@ import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.mv.context.MVAdjustment;
-import com.facilio.mv.context.MVAdjustmentVsBaseline;
 import com.facilio.mv.context.MVBaseline;
 import com.facilio.mv.context.MVProjectContext;
 import com.facilio.mv.context.MVProjectWrapper;
@@ -163,24 +158,6 @@ public class MVUtil {
 		}
 		
 		mvProjectWrapper.setAdjustments(mvAdjustments);
-		
-		Map<String, FacilioField> mvAjustmentVsBaselineFieldMap = FieldFactory.getAsMap(FieldFactory.getMVAjuststmentVsBaselineFields());
-		
-		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
-				.table(ModuleFactory.getMVAjuststmentVsBaselineModule().getTableName())
-				.select(FieldFactory.getMVAjuststmentVsBaselineFields())
-				.andCondition(CriteriaAPI.getCondition(mvAjustmentVsBaselineFieldMap.get("projectId"), id+"", NumberOperators.EQUALS));
-		
-		List<Map<String, Object>> props = select.get();
-		
-		List<MVAdjustmentVsBaseline> mvAjustmentVsBaselines = FieldUtil.getAsBeanListFromMapList(props, MVAdjustmentVsBaseline.class);
-		
-		for(MVAdjustmentVsBaseline mvAjustmentVsBaseline :mvAjustmentVsBaselines) {
-			MVAdjustment adjustment = mvAdjustmentsIdMap.get(mvAjustmentVsBaseline.getAdjustmentId());
-			List<MVAdjustmentVsBaseline> adjustmentVsBaselines = adjustment.getAdjustmentVsBaseline() == null ? new ArrayList<>() : adjustment.getAdjustmentVsBaseline();
-			adjustmentVsBaselines.add(mvAjustmentVsBaseline);
-			adjustment.setAdjustmentVsBaseline(mvAjustmentVsBaselines);
-		}
 		
 		return mvProjectWrapper;
 	}

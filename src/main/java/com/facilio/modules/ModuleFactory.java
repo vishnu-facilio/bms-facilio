@@ -2223,14 +2223,6 @@ public class ModuleFactory {
 		return module;
 	}
 	
-	public static FacilioModule getMVAjuststmentVsBaselineModule() {
-		FacilioModule module = new FacilioModule();
-		module.setName("ajustmentVsBaseline");
-		module.setDisplayName("Ajustment Vs Baseline");
-		module.setTableName("MV_Adjustment_vs_Baseline");
-		return module;
-	}
-	
 	public static FacilioModule getGraphicsModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("graphics");
