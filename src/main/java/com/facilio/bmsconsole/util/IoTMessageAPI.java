@@ -66,11 +66,12 @@ public class IoTMessageAPI {
 		object.put("command", command.getName());
 		object.put("deviceName", controller.getName());
 		object.put("macAddress", controller.getMacAddr());
-		object.put("subnetPrefix", controller.getSubnetPrefix());
+		object.put("portNumber", controller.getPortNumber());
 		object.put("networkNumber", controller.getNetworkNumber());
 		object.put("instanceNumber", controller.getInstanceNumber());
-		object.put("broadcastAddress", controller.getBroadcastIp());
+		object.put("ipAddress", controller.getIpAddress());
 		object.put("clientId", controller.getId());
+		object.put("type", controller.getControllerType());
 		object.put(AgentKeys.AGENT_ID, controller.getAgentId()); // Agent_Id key must be changes to camelcase.
 
 		if (command == IotCommandType.PROPERTY) {
