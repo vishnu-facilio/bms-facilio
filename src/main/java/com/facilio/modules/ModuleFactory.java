@@ -2325,29 +2325,7 @@ public class ModuleFactory {
 		module.setTableName("Terms_And_Conditions");
 		return module;
 	}
-	public static FacilioModule getNotificationConfigModule() {
-		FacilioModule notificationConfigModule = new FacilioModule();
-		notificationConfigModule.setName("notificationconfig");
-		notificationConfigModule.setDisplayName("Notification Configuration");
-		notificationConfigModule.setTableName("Notification_Configurations");
-		return notificationConfigModule;
-	}
-
-	public static FacilioModule getNotificationUserModule() {
-		FacilioModule notificationUserModule = new FacilioModule();
-		notificationUserModule.setName("notificationuser");
-		notificationUserModule.setDisplayName("Notification User");
-		notificationUserModule.setTableName("Notification_Users");
-		return notificationUserModule;
-	}
 	
-	public static FacilioModule getRecordSpecificRuleModule() {
-		FacilioModule module = new FacilioModule();
-		module.setName("recordRule");
-		module.setDisplayName("Record Specific Rule");
-		module.setTableName("Record_Rules");
-		return module;
-	}
 
 
 	public static FacilioModule getReadingAlarmModule() {

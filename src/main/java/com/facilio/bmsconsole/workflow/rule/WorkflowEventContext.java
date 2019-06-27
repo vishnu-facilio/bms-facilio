@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.workflow.rule;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 
 import java.io.Serializable;
@@ -46,7 +48,18 @@ public class WorkflowEventContext implements Serializable {
 	}
 	
 	private FacilioModule module;
-	public FacilioModule getModule() {
+	public FacilioModule getModule() throws Exception {
+		if(module == null) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			if(moduleId > 0) {
+				return modBean.getModule(moduleId);
+			}
+			else if(moduleName != null) {
+				return modBean.getModule(moduleName);
+			}
+			return null;
+			
+		}
 		return module;
 	}
 	public void setModule(FacilioModule module) {

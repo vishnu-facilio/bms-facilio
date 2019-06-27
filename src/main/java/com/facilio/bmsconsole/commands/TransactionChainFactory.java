@@ -1188,9 +1188,9 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
-		public static Chain scheduledRecordRuleExecutionChain() {
+		public static Chain recordRuleExecutionChain() {
 			Chain c = getDefaultChain();
-			c.addCommand(new FetchScheduledRuleMatchingSpecificRecordCommand());
+			c.addCommand(new FetchRuleMatchingSpecificRecordCommand());
 			c.addCommand(new ExecuteSingleWorkflowRuleCommand());
 			return c;
 		}

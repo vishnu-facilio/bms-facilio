@@ -1298,7 +1298,7 @@ public class FacilioConstants {
 		public static final String SCHEDULED_READING_RULE_JOB_NAME = "scheduledReadingRule";
 		public static final String SCHEDULED_ALARM_TRIGGER_RULE_JOB_NAME = "scheduledAlarmTriggerRule";
 
-		public static final String RECORD_SPECIFIC_RULE_JOB_NAME = "singleRecordJob";
+		public static final String RECORD_SPECIFIC_RULE_JOB_NAME = "singleRecordRuleExecution";
 
 	}
 	public static class Ticket{

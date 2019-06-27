@@ -577,41 +577,6 @@ public class WorkflowRuleContext implements Serializable {
 	public void setParentId(long parentId) {
 		this.parentId = parentId;
 	}
-
-	private ScheduleMode scheduleMode;
-	public ScheduleMode getScheduleModeEnum() {
-		return scheduleMode;
-	}
-	public int getFrequencyType() {
-		if (scheduleMode != null) {
-			return scheduleMode.getValue();
-		}
-		return -1;
-	}
-	public void setScheduleMode(int scheduleMode) {
-		this.scheduleMode = ScheduleMode.valueOf(scheduleMode);
-	}
-	public void setScheduleMode(ScheduleMode scheduleMode) {
-		this.scheduleMode = scheduleMode;
-	}
-	
-	public static enum ScheduleMode {
-		ONCE(),
-		PERIODIC()
-
-		;
-
-		public int getValue() {
-			return ordinal()+1;
-		}
-
-		public static ScheduleMode valueOf(int value) {
-			if (value > 0 && value <= values().length) {
-				return values()[value - 1];
-			}
-			return null;
-		}
-	}
-
+		
 	
 }

@@ -1165,7 +1165,7 @@ public class FieldFactory {
 		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
 		fields.add(getField("modifiedTime", "MODIFIED_TIME", module, FieldType.NUMBER));
 		fields.add(getField("time", "JOB_TIME", module, FieldType.STRING));
-		fields.add(getField("consolidatedAction", "IS_CONSOLIDATED_ACTION", module, FieldType.BOOLEAN));
+		fields.add(getField("parentId", "PARENT_ID", module, FieldType.NUMBER));
 		
 
 		return fields;
@@ -6141,4 +6141,3 @@ public class FieldFactory {
 
 		return list;
 	}
-}

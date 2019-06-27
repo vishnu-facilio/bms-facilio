@@ -153,9 +153,6 @@ public class WorkflowRuleAPI {
 			else if (EventType.SCHEDULED.isPresent(rule.getEvent().getActivityType()) && rule.getRuleType() != RuleType.RECORD_SPECIFIC_RULE.getIntVal()) {
 				ScheduledRuleAPI.addScheduledRuleJob(rule);
 			}
-			else if(EventType.SCHEDULED.isPresent(rule.getEvent().getActivityType()) && rule.getRuleType() == RuleType.RECORD_SPECIFIC_RULE.getIntVal()) {
-				SingleRecordRuleAPI.addJob(rule);
-			}
 		}
 		
 		return rule.getId();
@@ -187,7 +184,7 @@ public class WorkflowRuleAPI {
 			throw new IllegalArgumentException("Event ID cannot be null during addition for Workflow");
 		}
 		
-		if (rule.getEvent() != null && EventType.SCHEDULED.isPresent(rule.getEvent().getActivityType())) {
+		if (rule.getEvent() != null && rule.getRuleType() != RuleType.RECORD_SPECIFIC_RULE.getIntVal() && EventType.SCHEDULED.isPresent(rule.getEvent().getActivityType())) {
 			ScheduledRuleAPI.validateScheduledRule(rule, false);
 		}
 	}
@@ -271,7 +268,7 @@ public class WorkflowRuleAPI {
 		updateWorkflowRule(rule);
 		deleteChildIdsForWorkflow(oldRule, rule);
 		
-		if(EventType.SCHEDULED.isPresent(oldRule.getEvent().getActivityType())) {
+		if(EventType.SCHEDULED.isPresent(oldRule.getEvent().getActivityType()) && rule.getRuleTypeEnum() != RuleType.RECORD_SPECIFIC_RULE) {
 			if (rule.getTimeObj() != null) {
 				ScheduledRuleAPI.validateScheduledRule(rule, true);
 				ScheduledRuleAPI.updateScheduledRuleJob(rule);
@@ -288,6 +285,7 @@ public class WorkflowRuleAPI {
 				}
 			}
 		}
+		
 		if (rule.getName() == null) {
 			rule.setName(oldRule.getName());
 		}
@@ -850,8 +848,11 @@ public class WorkflowRuleAPI {
 					else {
 						deleteIds.add(rule.getId());
 					}
-					if (EventType.SCHEDULED.isPresent(rule.getEvent().getActivityType()) ||EventType.SCHEDULED_RECORD_RULE.isPresent(rule.getEvent().getActivityType()) ) {
+					if (EventType.SCHEDULED.isPresent(rule.getEvent().getActivityType()) && rule.getRuleType() != RuleType.RECORD_SPECIFIC_RULE.getIntVal() ) {
 						ScheduledRuleAPI.deleteScheduledRuleJob(rule);
+					}
+					else if(EventType.SCHEDULED.isPresent(rule.getEvent().getActivityType()) && rule.getRuleType() == RuleType.RECORD_SPECIFIC_RULE.getIntVal()) {
+						SingleRecordRuleAPI.deleteRecordSpecificRuleJob(rule);
 					}
 				}
 			}

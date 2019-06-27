@@ -69,7 +69,7 @@
 	 <job name='ScheduledWorkflow' classname='com.facilio.bmsconsole.jobs.ScheduledWorkflowJob' transcationTimeout='36000000'/>
 	 
 	  <!-- Notifications jobs -->
-	 <job name='singleRecordJob' classname= 'com.facilio.bmsconsole.jobs.SingleRecordJob' transactionTimeout='300000'/>
+	 <job name='singleRecordRuleExecution' classname= 'com.facilio.bmsconsole.jobs.SingleRecordJob' transactionTimeout='300000'/>
 	
 	
 

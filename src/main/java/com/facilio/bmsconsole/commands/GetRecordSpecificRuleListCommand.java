@@ -8,7 +8,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.SingleRecordRuleAPI;
-import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
