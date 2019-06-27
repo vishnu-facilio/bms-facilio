@@ -131,12 +131,12 @@ public class LabourContractAction extends FacilioAction{
 		this.lineItem = lineItem;
 	}
 	
-	private List<LabourContractContext> lineItems;
+	private List<LabourContractLineItemContext> lineItems;
 	
-	public List<LabourContractContext> getLineItems() {
+	public List<LabourContractLineItemContext> getLineItems() {
 		return lineItems;
 	}
-	public void setLineItems(List<LabourContractContext> lineItems) {
+	public void setLineItems(List<LabourContractLineItemContext> lineItems) {
 		this.lineItems = lineItems;
 	}
 	public String addOrUpdateLineItem() throws Exception {
