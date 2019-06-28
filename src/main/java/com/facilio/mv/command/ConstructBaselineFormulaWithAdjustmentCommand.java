@@ -1,8 +1,6 @@
 package com.facilio.mv.command;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.commons.chain.Chain;
@@ -13,6 +11,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
+import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.mv.context.MVAdjustment;
@@ -46,6 +45,9 @@ public class ConstructBaselineFormulaWithAdjustmentCommand implements Command {
 			
 			FormulaFieldContext formulaField = baseLine.getFormulaField();
 			
+			formulaField = FormulaFieldAPI.getFormulaField(formulaField.getId());
+			baseLine.setFormulaField(formulaField);
+			
 			workflowString.append(MVUtil.WORKLFOW_MODULE_INITITALIZATION_STMT.replace("${moduleName}", modbean.getModule(formulaField.getModuleId()).getName()));
 			
 			String fetchStmt = MVUtil.WORKLFOW_VALUE_FETCH_STMT.replace("${parentId}", formulaField.getResourceId()+"");
@@ -59,6 +61,12 @@ public class ConstructBaselineFormulaWithAdjustmentCommand implements Command {
 			for(MVAdjustment adjustment :adjustments) {
 				
 					formulaField = adjustment.getFormulaField();
+					
+					formulaField = FormulaFieldAPI.getFormulaField(formulaField.getId());
+					adjustment.setFormulaField(formulaField);
+					
+					formulaField = FormulaFieldAPI.getFormulaField(formulaField.getId());
+					baseLine.setFormulaField(formulaField);
 					if(formulaField != null) {
 						workflowString.append(MVUtil.WORKLFOW_MODULE_INITITALIZATION_STMT.replace("${moduleName}", modbean.getModule(formulaField.getModuleId()).getName()));
 						
@@ -88,7 +96,7 @@ public class ConstructBaselineFormulaWithAdjustmentCommand implements Command {
 				
 				FormulaFieldContext formulaFieldContext = baseLine.getFormulaFieldWithAjustment();
 				formulaFieldContext.setWorkflow(newBaselineWorkflow);
-				MVUtil.fillFormulaFieldDetails(formulaFieldContext, mvProjectWrapper.getMvProject(),baseLine,null,context);
+				MVUtil.fillFormulaFieldDetailsForUpdate(formulaFieldContext, mvProjectWrapper.getMvProject(),baseLine,null,context);
 				context.put(FacilioConstants.ContextNames.FORMULA_FIELD, formulaFieldContext);
 				
 				Chain updateEnPIChain = FacilioChainFactory.updateFormulaChain();
@@ -101,7 +109,7 @@ public class ConstructBaselineFormulaWithAdjustmentCommand implements Command {
 				
 				context.put(FacilioConstants.ContextNames.FORMULA_FIELD,formulaFieldContext);
 				formulaFieldContext.setName(baseLine.getName()+"WithAjustment");
-				MVUtil.fillFormulaFieldDetails(formulaFieldContext, mvProjectWrapper.getMvProject(),baseLine,null,context);
+				MVUtil.fillFormulaFieldDetailsForAdd(formulaFieldContext, mvProjectWrapper.getMvProject(),baseLine,null,context);
 				Chain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
 				addEnpiChain.execute(context);
 				

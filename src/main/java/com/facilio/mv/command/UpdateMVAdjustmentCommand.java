@@ -69,12 +69,14 @@ public class UpdateMVAdjustmentCommand implements Command {
 					chain.execute(context);
 				}
 				else {
-					
-					context.put(FacilioConstants.ContextNames.FORMULA_FIELD, adjustment.getFormulaField());
-					MVUtil.fillFormulaFieldDetails(adjustment.getFormulaField(), mvProjectWrapper.getMvProject(),null,adjustment,context);
-					
-					Chain updateEnPIChain = FacilioChainFactory.updateFormulaChain();
-					updateEnPIChain.execute(context);
+					if(adjustment.getFormulaField() != null) {
+						
+						context.put(FacilioConstants.ContextNames.FORMULA_FIELD, adjustment.getFormulaField());
+						MVUtil.fillFormulaFieldDetailsForUpdate(adjustment.getFormulaField(), mvProjectWrapper.getMvProject(),null,adjustment,context);
+						
+						Chain updateEnPIChain = FacilioChainFactory.updateFormulaChain();
+						updateEnPIChain.execute(context);
+					}
 					
 					UpdateRecordBuilder<MVAdjustment> update = new UpdateRecordBuilder<MVAdjustment>()
 							.module(module)
