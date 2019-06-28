@@ -32,7 +32,7 @@ public  class DevicePointsUtil {
 		
 		int availablePoints = 0;
 		if(payLoad.containsKey(DevicePointsKeys.AVAILABLE_POINTS)) {
-			availablePoints = (Integer)payLoad.get(DevicePointsKeys.AVAILABLE_POINTS);
+			availablePoints = ((Number) payLoad.get(DevicePointsKeys.AVAILABLE_POINTS)).intValue();
 		}
 		
 		String ipAddress = "";
@@ -50,7 +50,7 @@ public  class DevicePointsUtil {
 		//String broadcastAddress = (String) payLoad.get(DevicePointsKeys.BROADCAST_ADDRESS);
 		int portNumber = -1;
 		if(payLoad.containsKey(DevicePointsKeys.PORT_NUMBER)) {
-			portNumber = (Integer) payLoad.get(DevicePointsKeys.PORT_NUMBER);
+			portNumber = ((Number) payLoad.get(DevicePointsKeys.PORT_NUMBER)).intValue();
 		}
 
 		
