@@ -1,12 +1,17 @@
 package com.facilio.bmsconsole.view;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-
-import java.util.*;
 
 public class ColumnFactory {
 	
@@ -123,7 +128,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("subject", "Subject"));
 		columns.add(new ViewField("category", "Category"));
 		columns.add(new ViewField("resource", "Space / Asset"));
-		columns.add(new ViewField("assignedTo", "Assigned To"));
+		columns.add(new ViewField("assignedTo", "Team / Staff"));
 		columns.add(new ViewField("status", "Status"));
 		columns.add(new ViewField("priority", "Priority"));
 		columns.add(new ViewField("noOfNotes", "Comments"));

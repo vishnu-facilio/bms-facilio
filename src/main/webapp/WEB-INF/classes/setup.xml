@@ -498,13 +498,7 @@
 				<param name="includeProperties">^updateCard.*</param>
 			</result>
 		</action>
-		<action name="controllersettings" class="com.facilio.bmsconsole.actions.SetupActions" method="showControllerSettings">
-		<param name="moduleName">setup</param>
-		<param name="permission">CONTROLLER</param>
-		<result name="success" type="json">
-				<param name="includeProperties">controllerSettings.*</param>
-			</result>
-			</action>
+		
 		<action name="addcontrollersettings" class="com.facilio.bmsconsole.actions.SetupActions" method="addControllerSettings">
 		<param name="moduleName">setup</param>
 		<param name="permission">CONTROLLER</param>

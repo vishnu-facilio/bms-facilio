@@ -301,6 +301,12 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain getControllerListChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetControllerListCommand());
+		return c;
+	}
+	
 	public static Chain getUnmodelledInstancesForController() {
 		Chain c = getDefaultChain();
 		c.addCommand(new GetUnmodelledInstancesForControllerCommand());

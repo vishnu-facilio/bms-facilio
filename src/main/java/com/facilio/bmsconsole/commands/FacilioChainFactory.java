@@ -1074,11 +1074,6 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getControllerSettingsChain() {
-		Chain c = FacilioChain.getNonTransactionChain();
-		c.addCommand(new LoadControllerSettingsCommand());
-		return c;
-	}
 	public static Chain getUpdateSupportEmailChain() {
 		Chain c = FacilioChain.getTransactionChain();
 		c.addCommand(new UpdateSupportEmailCommand());
