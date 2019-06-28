@@ -107,9 +107,9 @@ public class MVProjectPageFactory {
 	}
 	
 	private static void addBaselineEquationListWidget(Section section) {
-		PageWidget cardWidget = new PageWidget(WidgetType.LIST);
+		PageWidget cardWidget = new PageWidget(WidgetType.LIST, CardType.BASELINE_EQUATION.getName());
 		cardWidget.addToLayoutParams(section, 24, 10);
-		cardWidget.addToWidgetParams("type", CardType.BASELINE_EQUATION.getName());
+//		cardWidget.addToWidgetParams("type", CardType.BASELINE_EQUATION.getName());
 		section.addWidget(cardWidget);
 	}
 	

@@ -340,6 +340,7 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 						sort(row);
 						
 						row = new ArrayList<>();
+						datas.add(row);
 						sort(row);
 						
 						addData(row, new ArrayList<>(filteredList), actualField, count, totalCount, true);
