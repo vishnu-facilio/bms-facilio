@@ -78,7 +78,7 @@ public class UpdateMVBaselineCommand implements Command {
 				else {
 					
 					context.put(FacilioConstants.ContextNames.FORMULA_FIELD, baseline.getFormulaField());
-					MVUtil.fillFormulaFieldDetails(baseline.getFormulaField(), mvProjectWrapper.getMvProject(),baseline,null,context);
+					MVUtil.fillFormulaFieldDetailsForUpdate(baseline.getFormulaField(), mvProjectWrapper.getMvProject(),baseline,null,context);
 					Chain updateEnPIChain = FacilioChainFactory.updateFormulaChain();
 					updateEnPIChain.execute(context);
 					
