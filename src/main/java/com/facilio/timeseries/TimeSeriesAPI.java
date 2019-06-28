@@ -794,7 +794,11 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 			Criteria inUseCriteria = new Criteria();
 			inUseCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("inUse"), String.valueOf(configuredOnly), BooleanOperators.IS));
 			if (configuredOnly) {
-				inUseCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("objectInstanceNumber"), CommonOperators.IS_EMPTY));				
+				Criteria typeCriteria = new Criteria();
+				// To get all points if not from niagara and bacnet
+				typeCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("objectInstanceNumber"), CommonOperators.IS_EMPTY));			
+				typeCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("pointPath"), CommonOperators.IS_EMPTY));
+				inUseCriteria.orCriteria(typeCriteria);
 			}
 			builder.andCriteria(inUseCriteria);
 		}
