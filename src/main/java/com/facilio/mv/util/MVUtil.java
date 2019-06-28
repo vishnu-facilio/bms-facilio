@@ -132,6 +132,8 @@ public class MVUtil {
 		for(MVBaseline mvBaseline :mvBaselines) {
 			FormulaFieldContext formula = FormulaFieldAPI.getFormulaField(mvBaseline.getFormulaField().getId());
 			mvBaseline.setFormulaField(formula);
+			formula = FormulaFieldAPI.getFormulaField(mvBaseline.getFormulaFieldWithAjustment().getId());
+			mvBaseline.setFormulaFieldWithAjustment(formula);
 		}
 		
 		mvProjectWrapper.setBaselines(mvBaselines);
