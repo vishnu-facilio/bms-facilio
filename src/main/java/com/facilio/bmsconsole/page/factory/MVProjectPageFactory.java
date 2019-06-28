@@ -1,11 +1,17 @@
 package com.facilio.bmsconsole.page.factory;
 
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.commons.collections.CollectionUtils;
+
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.Page.Tab;
 import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.PageWidget.CardType;
 import com.facilio.bmsconsole.page.PageWidget.WidgetType;
+import com.facilio.mv.context.MVAdjustment;
 import com.facilio.mv.context.MVProjectWrapper;
 
 public class MVProjectPageFactory {
@@ -36,7 +42,12 @@ public class MVProjectPageFactory {
 		
 		addBaselineEquationWidget(tab2Sec1);
 		addBaselineEquationListWidget(tab2Sec1);
-		addAdjustmentWidget(tab2Sec1);
+		
+		project.setAdjustments(Collections.singletonList(new MVAdjustment()));
+		if (CollectionUtils.isNotEmpty(project.getAdjustments())) {
+			addAdjustmentWidget(tab2Sec1, project.getAdjustments());
+		}
+		
 		
 		
 		return page;
@@ -99,23 +110,26 @@ public class MVProjectPageFactory {
 	
 	private static void addBaselineEquationWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD,  "baselineEquation");
-		cardWidget.addToLayoutParams(section, 24, 5);
+		cardWidget.addToLayoutParams(section, 12, 5);
 		cardWidget.addToWidgetParams("type", CardType.BASELINE_EQUATION.getName());
 		section.addWidget(cardWidget);
 	}
 	
 	private static void addBaselineEquationListWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.LIST, CardType.BASELINE_EQUATION.getName());
-		cardWidget.addToLayoutParams(section, 24, 10);
+		cardWidget.addToLayoutParams(section, 0, section.getLatestY() + 5, 24, 10);
 //		cardWidget.addToWidgetParams("type", CardType.BASELINE_EQUATION.getName());
 		section.addWidget(cardWidget);
 	}
 	
-	private static void addAdjustmentWidget(Section section) {
-		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
-		cardWidget.addToLayoutParams(section, 12, 5);
-		cardWidget.addToWidgetParams("type", CardType.MV_ADJUSTMENTS.getName());
-		section.addWidget(cardWidget);
+	private static void addAdjustmentWidget(Section section, List<MVAdjustment> adjustments) {
+		for(int i = 0; i < adjustments.size(); i++) {
+			PageWidget cardWidget = new PageWidget(WidgetType.CARD);
+			cardWidget.addToLayoutParams(section, 12, 6);
+			cardWidget.addToWidgetParams("type", CardType.MV_ADJUSTMENTS.getName());
+			cardWidget.addToWidgetParams("adjustmentIndex", i);
+			section.addWidget(cardWidget);
+		}
 	}
 
 }

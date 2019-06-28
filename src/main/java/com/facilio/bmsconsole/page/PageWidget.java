@@ -136,6 +136,9 @@ public class PageWidget {
 	public void addToLayoutParams(Section section, int width, int height) {
 		int x = section.getLatestX();
 		int y = section.getLatestY();
+		addToLayoutParams(section, x, y, width, height);
+	}
+	public void addToLayoutParams(Section section, int x, int y, int width, int height) {
 		addToLayoutParams(x, y, width, height);
 		x += width;
 		if (x >= 24 || width >= 24) {
