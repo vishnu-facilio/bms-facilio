@@ -150,7 +150,7 @@
 							}
 		                }
 						previousMonthMeanTimeBetweenTigger = previousMonthMeanTimeBetweenTigger / previousMonthDetails.size();
-		                for each index,value in res {
+		                for each index,value in previousMonthDetails {
 							if(index > 0) {
 		                        if (value != null) {
 		      						previousMonthTimeToClear = previousMonthTimeToClear + (value.clearedTime - value.createdTime); 
