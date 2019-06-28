@@ -331,7 +331,7 @@ public class ReadingsAPI {
 			Criteria criteria = new Criteria();
 			criteria.addAndCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), "-1", StringOperators.ISN_T));
 			criteria.addAndCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), CommonOperators.IS_NOT_EMPTY));
-			criteria.addOrCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"),String.valueOf(ReadingInputType.IS_MANUAL_DATA.getValue()), PickListOperators.IS));
+//			criteria.addOrCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"),String.valueOf(ReadingInputType.IS_MANUAL_DATA.getValue()), PickListOperators.IS));
 			builder.andCriteria(criteria);
 		}
 		

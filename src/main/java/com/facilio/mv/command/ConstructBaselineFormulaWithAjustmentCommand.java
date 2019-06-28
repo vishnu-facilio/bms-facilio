@@ -1,7 +1,5 @@
 package com.facilio.mv.command;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,12 +16,9 @@ import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.mv.context.MVAdjustment;
-import com.facilio.mv.context.MVAdjustmentVsBaseline;
 import com.facilio.mv.context.MVBaseline;
-import com.facilio.mv.context.MVProjectContext;
 import com.facilio.mv.context.MVProjectWrapper;
 import com.facilio.mv.util.MVUtil;
-import com.facilio.time.DateRange;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowContext.WorkflowUIMode;
 
@@ -40,12 +35,6 @@ public class ConstructBaselineFormulaWithAjustmentCommand implements Command {
 		List<MVBaseline> baseLines = mvProjectWrapper.getBaselines();
 		
 		List<MVAdjustment> adjustments =  mvProjectWrapper.getAdjustments();
-		List<MVAdjustmentVsBaseline> ajustmentsVsBaselineContexts = new ArrayList<>();
-		for(MVAdjustment adjustment :adjustments) {
-			ajustmentsVsBaselineContexts.addAll(adjustment.getAdjustmentVsBaseline());
-		}
-		
-		Map<Long, MVAdjustment> adjustmentMap = getAjustmentMap(mvProjectWrapper);
 		
 		for(MVBaseline baseLine :baseLines) {
 			
@@ -67,21 +56,26 @@ public class ConstructBaselineFormulaWithAjustmentCommand implements Command {
 			resultStringBuilder.append("A");
 			
 			char varName = 'B';
-			for(MVAdjustmentVsBaseline ajustmentsVsBaselineContext :ajustmentsVsBaselineContexts) {
+			for(MVAdjustment adjustment :adjustments) {
 				
-				if(ajustmentsVsBaselineContext.getBaselineId() == baseLine.getId()) {
-					
-					formulaField = adjustmentMap.get(ajustmentsVsBaselineContext.getAdjustmentId()).getFormulaField();
-					workflowString.append(MVUtil.WORKLFOW_MODULE_INITITALIZATION_STMT.replace("${moduleName}", modbean.getModule(formulaField.getModuleId()).getName()));
-					
-					fetchStmt = MVUtil.WORKLFOW_VALUE_FETCH_STMT.replace("${parentId}", formulaField.getResourceId()+"");
-					fetchStmt = fetchStmt.replace("${fieldName}", modbean.getField(formulaField.getReadingFieldId()).getName());
-					
-					workflowString.append(varName+" = "+fetchStmt);
+					formulaField = adjustment.getFormulaField();
+					if(formulaField != null) {
+						workflowString.append(MVUtil.WORKLFOW_MODULE_INITITALIZATION_STMT.replace("${moduleName}", modbean.getModule(formulaField.getModuleId()).getName()));
+						
+						fetchStmt = MVUtil.WORKLFOW_VALUE_FETCH_STMT.replace("${parentId}", formulaField.getResourceId()+"");
+						fetchStmt = fetchStmt.replace("${fieldName}", modbean.getField(formulaField.getReadingFieldId()).getName());
+						
+						workflowString.append(varName+" = "+fetchStmt);
+					}
+					else {
+						workflowString.append(varName+" = 0;");
+						workflowString.append(MVUtil.WORKLFOW_ADJ_DATE_RANGE_CHECK.replace("${startTime}", adjustment.getStartTime()+"").replace("${endTime}", adjustment.getEndTime()+""));
+						workflowString.append(varName+" = "+adjustment.getConstant()+";");
+						workflowString.append("}");
+					}
 					workflowString.append(MVUtil.WORKLFOW_VALUE_NULL_CHECK_STMT.replaceAll(Pattern.quote("${var}"), varName+""));
 					resultStringBuilder.append("+"+varName);
 					varName++;
-				}
 			}
 			
 			workflowString.append("return "+resultStringBuilder+"; }");

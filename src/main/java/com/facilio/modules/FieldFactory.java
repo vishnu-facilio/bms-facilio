@@ -2970,11 +2970,15 @@ public class FieldFactory {
 		fields.add(getWritableField(module));
 		fields.add(getField("active", "ACTIVE", module, FieldType.BOOLEAN));
 		fields.add(getField("controllerType", "CONTROLLER_TYPE", module, FieldType.NUMBER));
-		fields.add(getField("destinationId", "DESTINATION_ID", module, FieldType.STRING));
+		//fields.add(getField("destinationId", "DESTINATION_ID", module, FieldType.STRING));
 		fields.add(getField("instanceNumber", "INSTANCE_NUMBER", module, FieldType.NUMBER));
-		fields.add(getField("broadcastIp", "BROADCAST_IP", module, FieldType.STRING));
-		fields.add(getField("subnetPrefix", "SUBNET_PREFIX", module, FieldType.NUMBER));
+		fields.add(getField("ipAddress", "IP_ADDRESS", module, FieldType.STRING));
 		fields.add(getField("networkNumber", "NETWORK_NUMBER", module, FieldType.NUMBER));
+		fields.add(getField("portNumber", "PORT_NUMBER", module, FieldType.NUMBER));
+		fields.add(getField("slaveId", "SLAVE_ID", module, FieldType.NUMBER));
+		fields.add(getField("comPort", "COM_PORT", module, FieldType.STRING));
+
+
 		fields.add(getField("availablePoints", "AVAILABLE_POINTS", module, FieldType.NUMBER));
 		fields.add(getField("controllerPropsJsonStr", "CONTROLLER_PROPS", module, FieldType.STRING));
 		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.DATE_TIME));
@@ -4868,6 +4872,9 @@ public class FieldFactory {
         fields.add(getField("objectInstanceNumber", "OBJECT_INSTANCE_NUMBER", module, FieldType.NUMBER));
         fields.add(getField("instanceDescription", "INSTANCE_DESCRIPTION", module, FieldType.STRING));
         fields.add(getField("instanceType", "INSTANCE_TYPE", module, FieldType.NUMBER));
+        fields.add(getField("dataType", "DATA_TYPE", module, FieldType.NUMBER));
+        fields.add(getField("pointPath", "POINT_PATH", module, FieldType.STRING));
+        fields.add(getField("isWritable", "IS_WRITABLE", module, FieldType.BOOLEAN));
         fields.add(getField("inUse", "IN_USE", module, FieldType.BOOLEAN));
         fields.add(getField("subscribed", "IS_SUBSCRIBED", module, FieldType.BOOLEAN));
         fields.add(getField("thresholdJson", "THRESHOLD_JSON", module, FieldType.STRING));
@@ -6029,19 +6036,6 @@ public class FieldFactory {
 		fields.add(getField("name", "NAME", validationModule, FieldType.STRING));
 		fields.add(getField("errorMessage", "ERROR_MESSAGE", validationModule, FieldType.STRING));
 		fields.add(getField("criteriaId", "CRITERIA_ID", validationModule, FieldType.NUMBER));
-		return fields;
-	}
-	
-	public static List<FacilioField> getMVAjuststmentVsBaselineFields() {
-		FacilioModule module = ModuleFactory.getMVAjuststmentVsBaselineModule();
-		List<FacilioField> fields = new ArrayList<>();
-
-		//fields.add(getOrgIdField(module));
-		fields.add(getField("id", "ID", module, FieldType.ID));
-		fields.add(getField("projectId", "PROJECT_ID", module, FieldType.LOOKUP));
-		fields.add(getField("adjustmentId", "ADJUSTMENT_ID", module, FieldType.LOOKUP));
-		fields.add(getField("baselineId", "BASELINE_ID", module, FieldType.LOOKUP));
-		
 		return fields;
 	}
 	

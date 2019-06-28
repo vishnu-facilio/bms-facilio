@@ -16,6 +16,7 @@ import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +26,13 @@ public class SwitchToAddResourceChain implements Command {
 	public boolean execute(Context context) throws Exception {
 		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		ImportProcessContext importProcessContext = (ImportProcessContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
-		List<ReadingContext> readingsContext = (List<ReadingContext>) context.get(ImportAPI.ImportProcessConstants.READINGS_LIST); 
+		HashMap<String, List<ReadingContext>>groupedContext = (HashMap<String, List<ReadingContext>>) context.get(ImportAPI.ImportProcessConstants.GROUPED_READING_CONTEXT);
+		List<ReadingContext>readingsContext = new ArrayList<ReadingContext>();
+		if(groupedContext != null) {
+			for(List<ReadingContext> rContext: groupedContext.values()) {
+				readingsContext.addAll(rContext);
+			}
+		}
 		String moduleName = importProcessContext.getModule().getName();
 		FacilioModule facilioModule = bean.getModule(moduleName);
 		

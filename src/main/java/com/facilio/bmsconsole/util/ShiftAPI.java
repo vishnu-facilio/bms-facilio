@@ -871,6 +871,15 @@ public class ShiftAPI {
 		return shiftUserMapping;	
 	}
 	
+	public static void insertShiftUserRel(long shiftId, long ouId) throws Exception {
+		ShiftUserRelContext add = new ShiftUserRelContext();
+		add.setStartTime(-2);
+		add.setEndTime(-2);
+		add.setShiftId(shiftId);
+		add.setOuid(ouId);
+		insertShiftUserMapping(add);
+	}
+	
 	private static void insertShiftUserMapping(ShiftUserRelContext shift) throws Exception {
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getShiftUserRelModule().getTableName())

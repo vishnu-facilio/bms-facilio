@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.time.DateRange;
 
 public class PMPlannerAction extends FacilioAction{
 	private static final Logger log = LogManager.getLogger(PMPlannerAction.class.getName());
@@ -59,6 +60,9 @@ public class PMPlannerAction extends FacilioAction{
 	public String getPMCalendarJobs() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(ContextNames.SITE_ID, siteId);
+		context.put(FacilioConstants.ContextNames.DATE_RANGE, dateRange);
+		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
+		context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateOperatorValue);
 		ReadOnlyChainFactory.getCalendarResourceJobChain().execute(context);
 		
 		setResult(ContextNames.RESULT, context.get(ContextNames.RESULT));
@@ -72,6 +76,30 @@ public class PMPlannerAction extends FacilioAction{
 	}
 	public void setSiteId(long siteId) {
 		this.siteId = siteId;
+	}
+	
+	private int dateOperator = -1;
+	public int getDateOperator() {
+		return dateOperator;
+	}
+	public void setDateOperator(int dateOperator) {
+		this.dateOperator = dateOperator;
+	}
+	
+	private String dateOperatorValue;
+	public String getDateOperatorValue() {
+		return dateOperatorValue;
+	}
+	public void setDateOperatorValue(String dateOperatorValue) {
+		this.dateOperatorValue = dateOperatorValue;
+	}
+	
+	private DateRange dateRange;
+	public DateRange getDateRange() {
+		return dateRange;
+	}
+	public void setDateRange(DateRange dateRange) {
+		this.dateRange = dateRange;
 	}
 	
 	

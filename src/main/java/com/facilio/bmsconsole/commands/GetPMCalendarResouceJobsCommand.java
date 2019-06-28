@@ -14,11 +14,13 @@ import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.FacilioFrequency;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.Operator;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -26,6 +28,7 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.time.DateRange;
 
 public class GetPMCalendarResouceJobsCommand implements Command {
 	
@@ -72,9 +75,15 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 
 		long siteId = (long) context.get(ContextNames.SITE_ID);
 		
-		DateOperators dateOperator = (DateOperators) context.get(ContextNames.DATE_OPERATOR);
-		if (dateOperator == null) {
-			dateOperator = DateOperators.CURRENT_YEAR;
+		DateOperators operator = DateOperators.CURRENT_YEAR;
+		DateRange dateRange = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE);
+		if (dateRange == null) {
+			Integer dateOperatorInt = (Integer) context.get(FacilioConstants.ContextNames.DATE_OPERATOR);
+			if (dateOperatorInt != null && dateOperatorInt > -1) {
+				String dateOperatorValue = (String) context.get(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE);
+				operator = (DateOperators) Operator.getOperator(dateOperatorInt);
+				dateRange = operator.getRange(dateOperatorValue);
+			}
 		}
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -132,7 +141,7 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 		StringBuilder groupBy = new StringBuilder();
 		groupBy.append(assetIdField.getCompleteColumnName());
 		if (showFrequency) {
-			groupBy.append(",").append(pmTriggerFieldMap.get("frequency").getColumnName()).append(",").append(triggerField.getColumnName());
+			groupBy.append(",").append(pmTriggerFieldMap.get("frequency").getColumnName());
 		}
 		
 
@@ -144,7 +153,6 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 			selectFields.add(categoryNameField);
 		}
 		if (showFrequency) {
-			selectFields.add(triggerField);
 			selectFields.add(pmTriggerFieldMap.get("frequency"));
 		}
 
@@ -154,11 +162,16 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 				.innerJoin(assetTable).on(resourceField.getCompleteColumnName() + "=" + assetTable + ".ID")
 				.innerJoin(resourceTable).on(assetIdField.getCompleteColumnName() + "=" + resourceTable + ".ID")
 				.andCondition(CriteriaAPI.getCondition(woFieldMap.get("pm"), CommonOperators.IS_NOT_EMPTY))
-				.andCondition(CriteriaAPI.getCondition(woFieldMap.get("createdTime"), dateOperator))
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(woModule), String.valueOf(siteId) , NumberOperators.EQUALS))
 				.groupBy(groupBy.toString())
 				.orderBy(orderBy.toString())
 				;
+		if (dateRange != null) {
+			builder.andCondition(CriteriaAPI.getCondition(woFieldMap.get("createdTime"), dateRange.toString(), DateOperators.BETWEEN));
+		}
+		else {
+			builder.andCondition(CriteriaAPI.getCondition(woFieldMap.get("createdTime"), operator));
+		}
 		
 		if (showAssetCategory) {
 			builder.innerJoin(assetCategoryTable).on(assetFieldMap.get("category").getCompleteColumnName() + "=" + assetCategoryTable + ".ID");
@@ -170,14 +183,12 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 		List<Map<String, Object>> props = builder.getAsProps();
 		
 		List<Long> assetIds = null;
-		List<Long> triggerIds = null;
 		
 //		Map<String, List<Map<String, Object>>> resourceTree = new HashMap<>();
 
 		
 		if (CollectionUtils.isNotEmpty(props)) {
 			assetIds = new ArrayList<>();
-			triggerIds = new ArrayList<>();
 			assetIdVsName = new HashMap<>();
 			
 			List<Map<String, Object>> prevHeaderValues = new ArrayList<>();
@@ -188,11 +199,6 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 				long assetId = (Long) prop.get(assetIdField.getName());
 				assetIds.add(assetId);
 				assetIdVsName.put(assetId, (String) prop.get(resourceNameField.getName()));
-				
-				if (showFrequency) {
-					Map<String, Long> trigger = (Map<String, Long>) prop.get(triggerField.getName());
-					triggerIds.add(trigger.get("id"));
-				}
 				
 				List<Map<String, Object>> row = new ArrayList<>();
 				titles.add(row);
@@ -273,34 +279,40 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 					selectFields.add(woFieldMap.get(plannedField));
 				}
 			}
-			/*if (showFrequency) {
+			if (showFrequency) {
 				selectFields.add(pmTriggerFieldMap.get("frequency"));
-			}*/
+			}
 			
 			
 			orderBy = new StringBuilder("FIELD(").append(resourceField.getCompleteColumnName()).append(", ")
 					.append(StringUtils.join(assetIds, ",")).append(")");
 			
 			if (showFrequency) {
-//				orderBy.append(",").append(pmTriggerFieldMap.get("frequency").getCompleteColumnName());
-				orderBy.append(",").append("FIELD(").append(triggerField.getColumnName()).append(",")
-				.append(StringUtils.join(triggerIds, ",")).append(")");
+				orderBy.append(",").append(pmTriggerFieldMap.get("frequency").getCompleteColumnName());
+//				orderBy.append(",").append("FIELD(").append(triggerField.getColumnName()).append(",")
+//				.append(StringUtils.join(triggerIds, ",")).append(")");
 			}
 			
 			builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 					.module(woModule)
 					.select(selectFields)
 					.andCondition(CriteriaAPI.getCondition(woFieldMap.get("pm"), CommonOperators.IS_NOT_EMPTY))
-					.andCondition(CriteriaAPI.getCondition(woFieldMap.get("createdTime"), dateOperator))
 					.andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(woModule), String.valueOf(siteId) , NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition(resourceField, assetIds, NumberOperators.EQUALS))
 					.orderBy(orderBy.toString())
 					;
 			
+			if (dateRange != null) {
+				builder.andCondition(CriteriaAPI.getCondition(woFieldMap.get("createdTime"), dateRange.toString(), DateOperators.BETWEEN));
+			}
+			else {
+				builder.andCondition(CriteriaAPI.getCondition(woFieldMap.get("createdTime"), operator));
+			}
+			
 			if (showFrequency) {
-				builder.andCondition(CriteriaAPI.getCondition(triggerField, triggerIds, NumberOperators.EQUALS));
+//				builder.andCondition(CriteriaAPI.getCondition(triggerField, triggerIds, NumberOperators.EQUALS));
 				
-//				builder.innerJoin(pmTriggerTable).on(triggerField.getCompleteColumnName() + "=" + pmTriggerTable + ".ID");
+				builder.innerJoin(pmTriggerTable).on(triggerField.getCompleteColumnName() + "=" + pmTriggerTable + ".ID");
 			}
 			
 			props = builder.getAsProps();
@@ -316,8 +328,6 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 					List<Map<String, Object>> title = titles.get(i);
 					Map<String, Object> leafNode = title.get(title.size() - 1);
 					long count =  (long) leafNode.get("count");
-					
-					
 					
 					if (showTimeMetric) {
 						addData(row, props, plannedField, count, totalCount, false);

@@ -36,7 +36,7 @@ public class ImportItemCommand implements Command {
 			for (PurchasedItemContext purchasedItem : purchasedItemList) {
 				ItemTypesContext itemType = new ItemTypesContext();
 				ItemContext item = new ItemContext();
-				if (itemNameVsIdMap.containsKey(purchasedItem.getItemType().getName())) {
+				if (itemNameVsIdMap != null && itemNameVsIdMap.containsKey(purchasedItem.getItemType().getName())) {
 					itemType.setId(itemNameVsIdMap.get(purchasedItem.getItemType().getName()));
 				} else {
 					itemType = purchasedItem.getItemType();
@@ -47,7 +47,7 @@ public class ImportItemCommand implements Command {
 						itemType.setIsRotating(true);
 					}
 					InventoryCategoryContext category = new InventoryCategoryContext();;
-					if(categoryNameVsIdMap.containsKey(itemType.getCategory().getName())) {
+					if(categoryNameVsIdMap != null && categoryNameVsIdMap.containsKey(itemType.getCategory().getName())) {
 						category.setId(categoryNameVsIdMap.get(itemType.getCategory().getName()));
 						itemType.setCategory(category);
 					} else {

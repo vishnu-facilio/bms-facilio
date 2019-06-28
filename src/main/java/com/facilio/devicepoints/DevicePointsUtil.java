@@ -1,20 +1,20 @@
 package com.facilio.devicepoints;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.util.ControllerAPI;
 import com.facilio.bmsconsole.util.IoTMessageAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.timeseries.TimeSeriesAPI;
-import com.facilio.util.FacilioUtil;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * AgentProcessor is a dedicated Processor for processing payloads with PUBLISH_TYPE set to 'DevicePoints'.
@@ -24,23 +24,39 @@ public  class DevicePointsUtil {
 
 	public  void processDevicePoints(JSONObject payLoad, long orgId, Long agentId) throws Exception {
 		LOGGER.info("in DevicePointsUtil.ProcessDevicePoints");
-		long instanceNumber = (Long)payLoad.get(DevicePointsKeys.INSTANCE_NUMBER);
-		String destinationAddress = "";
-		if(payLoad.containsKey(DevicePointsKeys.MAC_ADDRESS)) {
-			destinationAddress = (String) payLoad.get(DevicePointsKeys.MAC_ADDRESS);
+		
+		long instanceNumber = -1;
+		if(payLoad.containsKey(DevicePointsKeys.INSTANCE_NUMBER)) {
+			instanceNumber = (Long)payLoad.get(DevicePointsKeys.INSTANCE_NUMBER);
 		}
-		long subnetPrefix = FacilioUtil.parseLong(payLoad.get(DevicePointsKeys.SUBNET_PREFIX));
+		
+		int availablePoints = 0;
+		if(payLoad.containsKey(DevicePointsKeys.AVAILABLE_POINTS)) {
+			availablePoints = (Integer)payLoad.get(DevicePointsKeys.AVAILABLE_POINTS);
+		}
+		
+		String ipAddress = "";
+		if(payLoad.containsKey(DevicePointsKeys.IP_ADDRESS)) {
+			ipAddress = (String) payLoad.get(DevicePointsKeys.IP_ADDRESS);
+		}
+		//long subnetPrefix = FacilioUtil.parseLong(payLoad.get(DevicePointsKeys.SUBNET_PREFIX));
 		long networkNumber = -1;
 		if(payLoad.containsKey(DevicePointsKeys.NETWORK_NUMBER)) {
 			networkNumber = (Long) payLoad.get(DevicePointsKeys.NETWORK_NUMBER);
 		}
-		String broadcastAddress = (String) payLoad.get(DevicePointsKeys.BROADCAST_ADDRESS);
+		//String broadcastAddress = (String) payLoad.get(DevicePointsKeys.BROADCAST_ADDRESS);
+		int portNumber = -1;
+		if(payLoad.containsKey(DevicePointsKeys.PORT_NUMBER)) {
+			portNumber = (Integer) payLoad.get(DevicePointsKeys.PORT_NUMBER);
+		}
+
+		
 		String deviceName = (String) payLoad.get(DevicePointsKeys.DEVICE_NAME);
 		Integer controllerType = 0;
 		if(payLoad.containsKey(DevicePointsKeys.CONTROLLER_TYPE)){
 			controllerType = Integer.parseInt(payLoad.get(DevicePointsKeys.CONTROLLER_TYPE).toString());
 		}
-		String deviceId = instanceNumber+"_"+destinationAddress+"_"+networkNumber;
+		String deviceId = instanceNumber+"_"+ipAddress+"_"+networkNumber;
 		// if( ! deviceMap.containsKey(deviceId)) {
 		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
 		ControllerContext controller = bean.getController(deviceName, deviceId);
@@ -48,13 +64,14 @@ public  class DevicePointsUtil {
 			controller = new ControllerContext();
 			controller.setName(deviceName);
 			controller.setAgentId(agentId);
-			controller.setBroadcastIp(broadcastAddress);
-			controller.setDestinationId(destinationAddress);
+			controller.setAvailablePoints(availablePoints);
+			controller.setIpAddress(ipAddress);
 			controller.setInstanceNumber(instanceNumber);
 			controller.setNetworkNumber(networkNumber);
-			controller.setSubnetPrefix(Math.toIntExact(subnetPrefix));
+			//controller.setSubnetPrefix(Math.toIntExact(subnetPrefix));
 			controller.setMacAddr(deviceId);
 			controller.setControllerType(controllerType);
+			controller.setPortNumber(portNumber);
 			controller = bean.addController(controller);
 		} else {
 			if (controller.getAgentId() < 1 && controller.getId() > -1) {

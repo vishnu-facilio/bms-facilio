@@ -124,20 +124,38 @@ public class ControllerContext implements Serializable {
 		this.controllerType = ControllerType.valueOf(controllerTypeVal);
 	}
 	
-	private String destinationId;
-	public String getDestinationId() {
-		return destinationId;
+	private String ipAddress;
+	public String getIpAddress() {
+		return ipAddress;
 	}
-	public void setDestinationId(String destinationId) {
-		this.destinationId = destinationId;
+	public void setIpAddress(String ipAddress) {
+		this.ipAddress = ipAddress;
 	}
 	
-	private String broadcastIp;
-	public String getBroadcastIp() {
-		return broadcastIp;
+	
+	private String comPort;
+	public String getComPort() {
+		return comPort;
 	}
-	public void setBroadcastIp(String broadcastIp) {
-		this.broadcastIp = broadcastIp;
+	public void setComPort(String comPort) {
+		this.comPort = comPort;
+	}
+	
+	
+	private int slaveId = -1;
+	public int getSlaveId() {
+		return slaveId;
+	}
+	public void setSlaveId(int slaveId) {
+		this.slaveId = slaveId;
+	}
+	
+	private int portNumber = -1;
+	public int getPortNumber() {
+		return portNumber;
+	}
+	public void setPortNumber(int portNumber) {
+		this.portNumber = portNumber;
 	}
 	
 	private long instanceNumber = -1;
@@ -156,13 +174,7 @@ public class ControllerContext implements Serializable {
 		return this.networkNumber;
 	}
 	
-	private int subnetPrefix = -1;
-	public int getSubnetPrefix() {
-		return subnetPrefix;
-	}
-	public void setSubnetPrefix(int subnetPrefix) {
-		this.subnetPrefix = subnetPrefix;
-	}
+	
 	private JSONObject controllerProps;
 	
 	public JSONObject getControllerProps() {

@@ -39,6 +39,7 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.exceptions.importExceptions.ImportFieldValueMissingException;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.ImportAPI;
@@ -73,7 +74,7 @@ public class ProcessImportCommand implements Command {
 	private static ArrayListMultimap<String, Long> recordsList = ArrayListMultimap.create();
 	
 	@Override
-	public boolean execute(Context c) throws Exception {
+	public boolean execute(Context c) throws Exception,ImportFieldValueMissingException {
 
 		HashMap<String, List<ReadingContext>> groupedContext = new HashMap<String, List<ReadingContext>>();
 		
@@ -288,8 +289,10 @@ public class ProcessImportCommand implements Command {
 										e.printStackTrace();
 										throw new ImportParseException(row_no, fieldMapping.get(key), e);
 									}
+							}	
 							}
-							else if (facilioField.getDataTypeEnum().equals(FieldType.LOOKUP) && facilioField instanceof LookupField) {
+							
+							if (facilioField.getDataTypeEnum().equals(FieldType.LOOKUP) && facilioField instanceof LookupField) {
 								LookupField lookupField = (LookupField) facilioField;
 
 								boolean isSkipSpecialLookup = false;
@@ -303,7 +306,19 @@ public class ProcessImportCommand implements Command {
 								}
 
 								if (facilioField.getDisplayType().equals(FacilioField.FieldDisplayType.LOOKUP_SIMPLE) || isSkipSpecialLookup) {
-									List<Map<String, Object>> lookupPropsList = getLookupProps(lookupField,colVal, fieldMapping.get(key), importProcessContext);
+									List<Map<String, Object>> lookupPropsList = null;
+									try {
+										lookupPropsList = getLookupProps(lookupField,colVal, fieldMapping.get(key), importProcessContext);
+									}catch(Exception e) {
+										if(colVal.get(key) == null) {
+											throw new ImportFieldValueMissingException(row_no, fieldMapping.get(key), e);
+										}
+										else {
+											throw e;
+										}
+										
+									}
+									
 									if (lookupPropsList != null) {
 										Map<String, Object> lookupProps = lookupPropsList.get(0);
 										if (!props.containsKey(facilioField.getName())) {
@@ -314,7 +329,18 @@ public class ProcessImportCommand implements Command {
 									}
 								} 
 								else if (facilioField.getDisplayType().equals(FacilioField.FieldDisplayType.LOOKUP_POPUP)) {
-									Map<String, Object> specialLookupList = getSpecialLookupProps(lookupField,colVal, importProcessContext);
+									Map<String, Object> specialLookupList = null;
+									try {
+										specialLookupList = getSpecialLookupProps(lookupField,colVal, importProcessContext);
+									}catch(Exception e) {
+										if(colVal.get(lookupField.getModule().getName() + "__" + fieldMapping.get(lookupField.getName())) == null) {
+											throw new ImportFieldValueMissingException(row_no, lookupField.getModule().getName() + "__" + fieldMapping.get(lookupField.getName()), e);
+										}
+										else {
+											throw e;
+										}
+									}
+									
 									if (specialLookupList != null) {
 										if (!props.containsKey(facilioField.getName())) {
 											props.put(facilioField.getName(), specialLookupList);
@@ -329,8 +355,6 @@ public class ProcessImportCommand implements Command {
 										props.put(facilioField.getName(), cellValue);
 									}
 								}
-								
-							}
 					}	
 						
 				LOGGER.severe("props -- " + props);
@@ -353,7 +377,7 @@ public class ProcessImportCommand implements Command {
 		return false;
 	}
 
-	public static List<Map<String, Object>> getLookupProps(LookupField lookupField, HashMap<String, Object> colVal, String key, ImportProcessContext importProcessContext) {
+	public static List<Map<String, Object>> getLookupProps(LookupField lookupField, HashMap<String, Object> colVal, String key, ImportProcessContext importProcessContext) throws Exception{
 
 		try {
 
@@ -392,6 +416,11 @@ public class ProcessImportCommand implements Command {
 			}
 			else {
 				Object value = colVal.get(key);
+				
+				if(value == null) {
+					throw new Exception("Field value for column: " + key + " is missing.");
+				}
+				
 				LOGGER.severe("getLookupProps -- " + lookupField.getColumnName() + " facilioField.getModule() - "
 						+ lookupField.getLookupModule().getTableName() + " with value -- " + value);
 
@@ -478,8 +507,8 @@ public class ProcessImportCommand implements Command {
 		} catch (Exception e) {
 			LOGGER.severe("Exception occurred at lookup field");
 			LOGGER.severe(e.toString());
+			throw e;
 		}
-		return null;
 	}
 
 	public static boolean isNewLookupFormat(ImportProcessContext importProcessContext) throws Exception{
@@ -498,6 +527,11 @@ public class ProcessImportCommand implements Command {
 	public static Map<String, Object> getSpecialLookupProps(LookupField lookupField, HashMap<String,Object> colVal, ImportProcessContext importProcessContext) throws Exception{
 
 		Object value = colVal.get(importProcessContext.getFieldMapping().get(lookupField.getModule().getName()+ "__" + lookupField.getName()));
+		
+		if(value == null) {
+			throw new Exception("Field value missing under column " + importProcessContext.getFieldMapping().get(lookupField.getModule().getName()+ "__" + lookupField.getName()) + ".");
+		}
+		
 		try {
 			String moduleName;
 			if(lookupField.getLookupModule() == null && lookupField.getSpecialType() != null) {
@@ -575,6 +609,7 @@ public class ProcessImportCommand implements Command {
 		} catch (Exception e) {
 			LOGGER.severe("Exception occured for special lookup");
 			LOGGER.severe(e.toString());
+			throw e;
 		}
 		return null;
 	}
