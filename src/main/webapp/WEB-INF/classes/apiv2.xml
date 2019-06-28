@@ -1560,7 +1560,7 @@
 			<param name="moduleName">inventory</param>
     	</action>
 		
-		<action name="fetchRule"  class="com.facilio.bmsconsole.actions.StoreRoomAction" method="fetchRule">
+		<action name="fetchRule"  class="com.facilio.bmsconsole.actions.StoreRoomAction" method="fetchRuleList">
 			<param name="moduleName">inventory</param>
     	</action>
 		

@@ -207,12 +207,13 @@ public class StoreRoomAction extends FacilioAction{
 		this.actions = actions;
 	}
 	
-	private MultiRuleContext rules;
+	private List<MultiRuleContext> rules;
 	
-	public MultiRuleContext getRules() {
+	
+	public List<MultiRuleContext> getRules() {
 		return rules;
 	}
-	public void setRules(MultiRuleContext rules) {
+	public void setRules(List<MultiRuleContext> rules) {
 		this.rules = rules;
 	}
 
