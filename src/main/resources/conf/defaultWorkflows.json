@@ -10,7 +10,7 @@
    "1": {
     	"description" : "woAverageResponseTime",
         "usage" : "pmSummary",
-        "workflow" : "Number test(Number pmId) 
+        "workflow" : "Map test(Number pmId) 
         			  	{ 
         			  		woModule = Module(\"workorder\"); 
         			  		res = woModule.fetch([pm == pmId && actualWorkStart > 0]); 
