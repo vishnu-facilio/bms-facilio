@@ -112,17 +112,4 @@ public class ConstructBaselineFormulaWithAdjustmentCommand implements Command {
 		
 		return false;
 	}
-
-	
-	Map<Long,MVAdjustment> getAjustmentMap(MVProjectWrapper mvProject) {
-		
-		List<MVAdjustment> adjustments = mvProject.getAdjustments();
-		Map<Long,MVAdjustment> adjustmentNameMap = new HashMap<>();
-		if(adjustments != null) {
-			for(MVAdjustment adjustment :adjustments) {
-				adjustmentNameMap.put(adjustment.getId(), adjustment);
-			}
-		}
-		return adjustmentNameMap;
-	}
 }
