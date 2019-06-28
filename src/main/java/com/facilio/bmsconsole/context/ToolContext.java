@@ -118,4 +118,29 @@ public class ToolContext extends ModuleBaseWithCustomFields {
 	public void setLastPurchasedPrice(double lastPurchasedPrice) {
 		this.lastPurchasedPrice = lastPurchasedPrice;
 	}
+	
+	private double minimumQuantity = -1;
+	public double getMinimumQuantity() {
+		return minimumQuantity;
+	}
+	public void setMinimumQuantity(double minimumQuantity) {
+		this.minimumQuantity = minimumQuantity;
+	}
+	
+	public Boolean isUnderstocked;
+
+	public Boolean getIsUnderstocked() {
+		return isUnderstocked;
+	}
+
+	public void setIsUnderstocked(Boolean understocked) {
+		this.isUnderstocked = understocked;
+	}
+
+	public boolean isUnderstocked() {
+		if (isUnderstocked != null) {
+			return isUnderstocked.booleanValue();
+		}
+		return false;
+	}
 }

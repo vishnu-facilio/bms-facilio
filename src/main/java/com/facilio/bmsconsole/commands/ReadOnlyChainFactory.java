@@ -1074,4 +1074,10 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GenericGetModuleDataListCommand());
 		return c;
 	}
+	
+	public static Chain fetchWorkflowRulesForStoreChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetRulesForStoreCommand());
+		return c;
+	}
 }

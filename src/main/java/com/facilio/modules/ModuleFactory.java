@@ -2262,4 +2262,12 @@ public class ModuleFactory {
 		module.setTableName("Break_Transaction");
 		return module;
 	}
+	
+	public static FacilioModule getStoreNotificationConfigModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("storeRoomRule");
+		module.setDisplayName("Store Room Notification rules");
+		module.setTableName("Store_Notification_config");
+		return module;
+	}
 }

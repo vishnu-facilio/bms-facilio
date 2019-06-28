@@ -1990,6 +1990,9 @@ public class TransactionChainFactory {
 		public static Chain getUpdateItemQuantityRollupChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddOrUpdateItemQuantityCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.CUSTOM_STOREROOM_MINIMUM_QUANTITY_NOTIFICATION_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.CUSTOM_STOREROOM_OUT_OF_STOCK_NOTIFICATION_RULE));
+			
 			c.addCommand(getUpdateItemTypeQuantityRollupChain());
 			return c;
 		}
@@ -2105,7 +2108,8 @@ public class TransactionChainFactory {
 		public static Chain getUpdatetoolQuantityRollupChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new ToolQuantityRollUpCommand());
-			c.addCommand(getUpdateToolTypeQuantityRollupChain());
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.CUSTOM_STOREROOM_MINIMUM_QUANTITY_NOTIFICATION_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.CUSTOM_STOREROOM_OUT_OF_STOCK_NOTIFICATION_RULE));
 			return c;
 		}
 
@@ -3182,6 +3186,14 @@ public class TransactionChainFactory {
 			c.addCommand(new InsertNewEventsCommand());
 			c.addCommand(new NewEventsToAlarmsConversionCommand());
 			c.addCommand(new SaveAlarmAndEventsCommand());
+			return c;
+		}
+		
+		public static Chain configureStoreNotificationsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AssociateFieldIdToStoreRuleTypeCommand());
+			c.addCommand(addWorkflowRuleChain());
+			c.addCommand(new AssociateWorkFlowRuleToStoreCommand());
 			return c;
 		}
 

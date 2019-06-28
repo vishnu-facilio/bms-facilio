@@ -1546,6 +1546,30 @@
 			<param name="viewName">{1}</param>
 		</action>
 	</package>
+	<package name="storeroomRuleApiV2" namespace="/api/v2/storeroom/rules" extends="v2Api">
+	
+		<action name="addRule" class="com.facilio.bmsconsole.actions.StoreRoomAction" method="addStoreNotification">
+			<param name="moduleName">inventory</param>
+    	</action>
+		
+		<action name="updateRule" class="com.facilio.bmsconsole.actions.StoreRoomAction" method="updateStoreNotification">
+			<param name="moduleName">inventory</param>
+    	</action>
+		
+		<action name="deleteRule"  class="com.facilio.bmsconsole.actions.StoreRoomAction" method="removeStoreNotification">
+			<param name="moduleName">inventory</param>
+    	</action>
+		
+		<action name="fetchRule"  class="com.facilio.bmsconsole.actions.StoreRoomAction" method="fetchRule">
+			<param name="moduleName">inventory</param>
+    	</action>
+		
+		
+		<action name="*"  class="com.facilio.bmsconsole.actions.StoreRoomAction" method="fetchRuleList">
+			<param name="moduleName">inventory</param>
+       </action>
+	</package>
+	
 	
 	<package name="itemTypesApi" namespace="/api/v2/itemTypes"
 		extends="v2Api">

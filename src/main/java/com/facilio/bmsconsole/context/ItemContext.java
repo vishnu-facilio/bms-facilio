@@ -161,5 +161,23 @@ public class ItemContext extends ModuleBaseWithCustomFields {
 	public void setMinimumQuantity(double minimumQuantity) {
 		this.minimumQuantity = minimumQuantity;
 	}
+	
+	public Boolean isUnderstocked;
+
+	public Boolean getIsUnderstocked() {
+		return isUnderstocked;
+	}
+
+	public void setIsUnderstocked(Boolean understocked) {
+		this.isUnderstocked = understocked;
+	}
+
+	public boolean isUnderstocked() {
+		if (isUnderstocked != null) {
+			return isUnderstocked.booleanValue();
+		}
+		return false;
+	}
+
 
 }

@@ -1,18 +1,23 @@
 package com.facilio.bmsconsole.actions;
 
-import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.StoreRoomContext;
-import com.facilio.bmsconsole.workflow.rule.EventType;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.StoreRoomContext;
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
+import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 
 public class StoreRoomAction extends FacilioAction{
 	private static final long serialVersionUID = 1L;
@@ -184,5 +189,93 @@ public class StoreRoomAction extends FacilioAction{
 	public void setSiteId(long siteId) {
 		this.siteId = siteId;
 	}
+	
+	WorkflowRuleContext rule;
+	public WorkflowRuleContext getRule() {
+		return rule;
+	}
+	public void setRule(WorkflowRuleContext rule) {
+		this.rule = rule;
+	}
+	private List<ActionContext> actions;
+	public List<ActionContext> getActions() {
+		return this.actions;
+	}
+	
+	public void setActions(List<ActionContext> actions) {
+		this.actions = actions;
+	}
+	
+	private Long ruleId;
+	
+	public Long getRuleId() {
+		return ruleId;
+	}
+	public void setRuleId(Long ruleId) {
+		this.ruleId = ruleId;
+	}
+	public String addStoreNotification() throws Exception {
+			
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.RECORD_ID, storeRoomId);
+			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, rule);
+			context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, actions);
+			
+			Chain addRule = TransactionChainFactory.configureStoreNotificationsChain();
+			addRule.execute(context);
+			setResult("rule", rule);
+			return SUCCESS;
+	}
+	
+	public String updateStoreNotification() throws Exception {
+		rule.setActions(actions);
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, actions);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, rule);
+		
+		Chain updateRule = TransactionChainFactory.updateWorkflowRuleChain();
+		updateRule.execute(context);
+		
+		rule = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
+		setResult("rule", rule);
+		return SUCCESS;
+	}
+	
+	public String removeStoreNotification() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ID, ruleId);
+		
+		Chain deleteRule = FacilioChainFactory.getDeleteWorkflowRuleChain();
+		deleteRule.execute(context);
+		
+		setResult("result", context.get(FacilioConstants.ContextNames.RESULT));
+		return SUCCESS;
+	}
+	
+	public String fetchRule() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ID, ruleId);
+		
+		Chain fetchWorkflowChain = ReadOnlyChainFactory.fetchWorkflowRuleWithActionsChain();
+		fetchWorkflowChain.execute(context);
+		rule = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
+		
+		setResult("rule", rule);
+		return SUCCESS;
+	}
+	public String fetchRuleList() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID, storeRoomId);
+		
+		Chain fetchWorkflowChain = ReadOnlyChainFactory.fetchWorkflowRulesForStoreChain();
+		fetchWorkflowChain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST, context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST));
+		return SUCCESS;
+	}
+	
 	
 }

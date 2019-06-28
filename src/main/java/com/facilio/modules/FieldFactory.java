@@ -6078,4 +6078,14 @@ public class FieldFactory {
 		fields.add(getField("toShiftId", "TO_SHIFT", module, FieldType.NUMBER));
 		return fields;
 	}
+	
+	public static List<FacilioField> getStoreNotificationModuleFields() {
+		FacilioModule module = ModuleFactory.getStoreNotificationConfigModule();
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getField("id", "ID", module, FieldType.ID));
+		fields.add(getField("storeRoomId", "STORE_ID", module, FieldType.NUMBER));
+		fields.add(getField("workflowRuleId", "WORKFLOW_RULE_ID", module, FieldType.NUMBER));
+		return fields;
+	}
 }

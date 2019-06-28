@@ -180,5 +180,15 @@ public class ToolTypesContext extends ModuleBaseWithCustomFields {
 		}
 		return false;
 	}
+	
+	private double minimumQuantity;
+
+	public double getMinimumQuantity() {
+		return minimumQuantity;
+	}
+
+	public void setMinimumQuantity(double minimumQuantity) {
+		this.minimumQuantity = minimumQuantity;
+	}
 
 }

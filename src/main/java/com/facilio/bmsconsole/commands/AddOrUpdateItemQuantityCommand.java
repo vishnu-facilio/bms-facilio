@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +23,9 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 
@@ -46,7 +50,8 @@ public class AddOrUpdateItemQuantityCommand implements Command {
 			if (itemIds != null && !itemIds.isEmpty()) {
 				FacilioModule itemModule = modBean.getModule(FacilioConstants.ContextNames.ITEM);
 				List<FacilioField> itemFields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
-
+                List<ItemContext> itemRecords = new ArrayList<ItemContext>();
+                Map<Long, List<UpdateChangeSet>> changes = new HashMap<Long, List<UpdateChangeSet>>();
 				for (long itemId : itemIds) {
 					ItemContext itemContext = ItemsApi.getItems(itemId);
 					if(!itemContext.getItemType().isRotating()) {
@@ -81,15 +86,26 @@ public class AddOrUpdateItemQuantityCommand implements Command {
 						item.setQuantity(quantity);
 						item.setLastPurchasedDate(lastPurchasedDate);
 						item.setLastPurchasedPrice(lastPurchasedPrice);
+						if(item.getQuantity() <= item.getMinimumQuantity()) {
+							item.setIsUnderstocked(true);
+						}
+						else {
+							item.setIsUnderstocked(false);
+						}
 
 						itemTypesIds.add(itemTypesId);
 						UpdateRecordBuilder<ItemContext> updateBuilder = new UpdateRecordBuilder<ItemContext>()
 								.module(itemModule).fields(modBean.getAllFields(itemModule.getName()))
 								.andCondition(CriteriaAPI.getIdCondition(item.getId(), itemModule));
 
+						updateBuilder.withChangeSet(ItemContext.class);
 						updateBuilder.update(item);
-
+						Map<Long, List<UpdateChangeSet>> recordChanges = updateBuilder.getChangeSet();
+						changes.put(itemContext.getId(), (List<UpdateChangeSet>)recordChanges.get(itemContext.getId()));
+						itemRecords.add(item);
+                        
 						context.put(FacilioConstants.ContextNames.ITEM_TYPES_ID, itemTypesId);
+					
 					}
 					else {
 						double totalConsumed = getTotalQuantityConsumed(itemId, "item");
@@ -97,11 +113,28 @@ public class AddOrUpdateItemQuantityCommand implements Command {
 						UpdateRecordBuilder<ItemContext> updateBuilder = new UpdateRecordBuilder<ItemContext>()
 								.module(itemModule).fields(modBean.getAllFields(itemModule.getName()))
 								.andCondition(CriteriaAPI.getIdCondition(itemId, itemModule));
+						updateBuilder.withChangeSet(ItemContext.class);
 						updateBuilder.update(itemContext);
+						if(itemContext.getQuantity() <= itemContext.getMinimumQuantity()) {
+							itemContext.setIsUnderstocked(true);
+						}
+						else {
+							itemContext.setIsUnderstocked(false);
+						}
+						Map<Long, List<UpdateChangeSet>> recordChanges = updateBuilder.getChangeSet();
+						itemRecords.add(itemContext);
+						changes.put(itemContext.getId(), (List<UpdateChangeSet>)recordChanges.get(itemContext.getId()));
+
 					}
 				}
+				Map<String, Map<Long,List<UpdateChangeSet>>> finalChangeMap = new HashMap<String, Map<Long,List<UpdateChangeSet>>>();
+				finalChangeMap.put(itemModule.getName(), changes);
+				context.put(FacilioConstants.ContextNames.RECORD_MAP, Collections.singletonMap(itemModule.getName(), itemRecords));
 				context.put(FacilioConstants.ContextNames.ITEM_TYPES_IDS, itemTypesIds);
+				context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, finalChangeMap);
+				
 			}
+	
 		}
 		return false;
 	}
