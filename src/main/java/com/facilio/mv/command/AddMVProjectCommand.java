@@ -28,6 +28,8 @@ public class AddMVProjectCommand implements Command {
 		
 		MVProjectContext mvProject = mvProjectWrapper.getMvProject();
 		
+		mvProject.setStatus(Boolean.TRUE);  					//setting project active
+		
 		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		if(mvProject.getMeter().getId() == -1l) {
