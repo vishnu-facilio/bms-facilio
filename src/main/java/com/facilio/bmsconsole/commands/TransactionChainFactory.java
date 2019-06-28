@@ -3005,7 +3005,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddMVProjectCommand());
 			c.addCommand(new AddMVBaselineCommand());
 			c.addCommand(new AddMVAjustmentCommand());
-			c.addCommand(new ConstructBaselineFormulaWithAjustmentCommand());
+			c.addCommand(new ConstructBaselineFormulaWithAdjustmentCommand());
 			return c;
 		}
 
@@ -3014,7 +3014,7 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateMVPojectCommand());
 			c.addCommand(new UpdateMVBaselineCommand());
 			c.addCommand(new UpdateMVAdjustmentCommand());
-			c.addCommand(new ConstructBaselineFormulaWithAjustmentCommand());
+			c.addCommand(new ConstructBaselineFormulaWithAdjustmentCommand());
 			return c;
 		}
 

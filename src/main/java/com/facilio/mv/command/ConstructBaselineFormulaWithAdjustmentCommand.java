@@ -22,7 +22,7 @@ import com.facilio.mv.util.MVUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowContext.WorkflowUIMode;
 
-public class ConstructBaselineFormulaWithAjustmentCommand implements Command {
+public class ConstructBaselineFormulaWithAdjustmentCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
