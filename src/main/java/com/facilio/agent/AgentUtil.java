@@ -424,6 +424,10 @@ public  class AgentUtil
             if (sent) {
                 payLoad.put(AgentKeys.COMMAND_STATUS, CommandStatus.SENT.getKey());
                 toUpdate.put(AgentKeys.COMMAND_STATUS, CommandStatus.SENT.getKey());
+                LOGGER.info(" Sent message logged ");
+                if (payLoad.containsKey(AgentKeys.MESSAGE_ID)) {
+                    LOGGER.info(" sent message logged and messageId - "+payLoad.get(AgentKeys.MESSAGE_ID).toString() );
+                }
             } else {
                 if (payLoad.containsKey(AgentKeys.COMMAND_STATUS)) {
                     toUpdate.put(AgentKeys.COMMAND_STATUS, Integer.parseInt(payLoad.get(AgentKeys.COMMAND_STATUS).toString()));
