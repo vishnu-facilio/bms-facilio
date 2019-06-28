@@ -3,6 +3,7 @@ package com.facilio.beans;
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
 import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
+import com.facilio.agent.AgentType;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.chain.FacilioContext;
 import com.facilio.events.context.EventRuleContext;
@@ -62,7 +63,7 @@ public interface ModuleCRUDBean {
 	
 	public Map<String, Long> getDeviceMap() throws Exception;
 
-	public  List<Map<String,Object>> getAgentDataMap(String agentName) throws Exception;
+	public  List<Map<String,Object>> getAgentDataMap(String agentName, AgentType type) throws Exception;
 
 	public Long addLog(Map<String,Object> logData) throws Exception;
 
@@ -77,6 +78,10 @@ public interface ModuleCRUDBean {
 	public Long updateAgentMessage(Map<String,Object> map)throws Exception;
 
 	public List<Map<String,Object>> getRows(FacilioContext context) throws Exception;
+
+	public Integer updateTable(FacilioContext context) throws Exception;
+
+	public Integer deleteFromDb(FacilioContext context) throws Exception;
 
 	//public List<Map<String, Object>> getIntegration() throws Exception;
 }

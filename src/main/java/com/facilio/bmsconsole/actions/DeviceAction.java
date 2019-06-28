@@ -1,24 +1,10 @@
 package com.facilio.bmsconsole.actions;
 
-import com.amazonaws.services.iot.model.CreateKeysAndCertificateResult;
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
-import com.facilio.kinesis.KinesisProcessor;
+import com.facilio.agentIntegration.DownloadCertFile;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.log4j.LogManager;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 public class DeviceAction extends ActionSupport
 {
@@ -40,68 +26,10 @@ public class DeviceAction extends ActionSupport
 	}
 
 	public String downloadCertificate() {
-	    long orgId = AccountUtil.getCurrentOrg().getOrgId();
-	    
-	    try {
-		    Map<String, Object> orgInfo = CommonCommandUtil.getOrgInfo(orgId, FacilioConstants.ContextNames.FEDGE_CERT_FILE_ID);
-		    if (orgInfo != null) {
-	    			long fileId = Long.parseLong((String) orgInfo.get("value"));
-	    			FileStore fs = FileStoreFactory.getInstance().getFileStore();
-	    			url = fs.getPrivateUrl(fileId);
-		    }
-	    }
-	    catch (Exception e) {
-			logger.log(Level.SEVERE, "Exception in downloading certificate while getting orginfo details for " + FacilioConstants.ContextNames.FEDGE_CERT_FILE_ID, e);
-		}
-	    if (url == null) {
-			String orgName = AccountUtil.getCurrentAccount().getOrg().getDomain();
-			CreateKeysAndCertificateResult certificateResult = AwsUtil.signUpIotToKinesis(orgName);
-			AwsUtil.getIotKinesisTopic(orgName);
-			String directoryName = "facilio/";
-	
-			File file = new File(System.getProperty("user.home")+"/fedge.zip");
-			try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(file))) {
-	
-				addToZip(out,directoryName + "facilio.crt", certificateResult.getCertificatePem());
-				addToZip(out,directoryName + "facilio-private.key", certificateResult.getKeyPair().getPrivateKey());
-				addToZip(out,directoryName + "facilio.config", getFacilioConfig(orgName));
-				out.finish();
-				out.flush();
-				FileStore fs = FileStoreFactory.getInstance().getFileStore();
-				long id = fs.addFile(file.getName(), file, "application/octet-stream");
-				url = fs.getPrivateUrl(id);
-				CommonCommandUtil.insertOrgInfo(orgId, FacilioConstants.ContextNames.FEDGE_CERT_FILE_ID, String.valueOf(id));
-	
-			} catch (Exception e) {
-				log.info("Exception occurred ", e);
-			}
-	
-			KinesisProcessor.startKinesis();
-	    }
-
-		logger.info("Started event processor for org : " + orgId);
+		url = DownloadCertFile.downloadCertificate();
 		return SUCCESS;
 	}
 
-	private void addToZip(ZipOutputStream out, String fileName, String content){
-		try {
-			out.putNextEntry(new ZipEntry(fileName));
-			out.write(content.getBytes("UTF-8"));
-			out.closeEntry();
-		} catch (IOException e){
-			logger.log(Level.INFO, "Exception while creating zip", e);
-		}
-	}
-	
-	private String getFacilioConfig(String domainName) {
-		StringBuilder builder = new StringBuilder("clientId=").append(domainName).append("\n")
-				.append("privateKeyFile=facilio-private.key").append("\n")
-				.append("certificateFile=facilio.crt").append("\n")
-				.append("endpoint=avzdxo3ow2ja2.iot.us-west-2.amazonaws.com").append("\n")
-				.append("topic=").append(domainName);
-		return builder.toString();
-	}
-	
 //	public String show()
 //	{
 //		try 

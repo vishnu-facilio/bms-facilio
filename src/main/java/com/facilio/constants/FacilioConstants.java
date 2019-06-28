@@ -1,13 +1,5 @@
 package com.facilio.constants;
 
-import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.json.simple.JSONObject;
-
 import com.facilio.activity.ActivityContext;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.tenant.TenantContext;
@@ -16,6 +8,13 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.mv.context.MVAdjustment;
 import com.facilio.mv.context.MVBaseline;
 import com.facilio.mv.context.MVProjectContext;
+import org.json.simple.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class FacilioConstants {
 	
@@ -76,6 +75,7 @@ public class FacilioConstants {
         public static final String FIELDS = "fields";
         public static final String TO_UPDATE_MAP = "toUpdateMap";
         public static final String TO_INSERT_MAP = "toInsertMap";
+        public static final String BULK_DATA = "BULK_DATA";
 
 		public static final String FACILIO_RECORD = "facilioRecord";
 		public static final String FACILIO_CONSUMER = "facilioConsumer";

@@ -4,6 +4,7 @@ import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.agent.AgentKeys;
+import com.facilio.agent.AgentType;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
@@ -672,19 +673,24 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		return deviceData;
 	}
 
-	public  List<Map<String,Object>> getAgentDataMap(String agentName) throws Exception{
+	public  List<Map<String,Object>> getAgentDataMap(String agentName, AgentType type) throws Exception{
+		Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getAgentDataFields());
 		FacilioModule agentDataModule = ModuleFactory.getAgentDataModule();
 		GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder()
-				.table(AgentKeys.AGENT_TABLE).select(FieldFactory.getAgentDataFields())
+				.table(AgentKeys.AGENT_TABLE).select(FieldFactory.getAgentDataFields());
 //				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(agentDataModule))
-				.andCondition(CriteriaAPI.getCondition(FieldFactory.getDeletedTimeField(agentDataModule),"NULL", CommonOperators.IS_EMPTY));
+		if( ! AgentType.Wattsense.equals(type)) {
+				genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getDeletedTimeField(agentDataModule), "NULL", CommonOperators.IS_EMPTY));
+
+		}
 		if (agentName != null)
 		{
-			return  genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentNameField(agentDataModule),agentName,StringOperators.IS)).get();
+			genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentNameField(agentDataModule),agentName,StringOperators.IS)).get();
 		}
-		else {
-			return genericSelectRecordBuilder.get();
+		if(type != null){
+		 	genericSelectRecordBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get(AgentKeys.AGENT_TYPE),type.getLabel(),StringOperators.IS));
 		}
+		return genericSelectRecordBuilder.get();
 
 	}
 
@@ -748,10 +754,10 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
 	/*@Override
 	public List<Map<String, Object>> getIntegration() throws Exception {
-		FacilioModule integrationModule = ModuleFactory.getIntegrationModule();
+		FacilioModule integrationModule = ModuleFactory.getAgentIntegrationModule();
 		GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder()
 				.table(WattsenseKeys.INTEGRATION_TABLE_NAME)
-				.select(FieldFactory.getIntegrationFields())
+				.select(FieldFactory.getAgentIntegrationFields())
 				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(integrationModule));
 		return genericSelectRecordBuilder.get();
 	}*/
@@ -829,6 +835,44 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			return rows;
 	}
 
+	public Integer updateTable(FacilioContext context)throws Exception {
+		GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder();
+
+		if(context.containsKey(FacilioConstants.ContextNames.TABLE_NAME)){
+			updateRecordBuilder.table((String) context.get(FacilioConstants.ContextNames.TABLE_NAME));
+
+			if( context.containsKey(FacilioConstants.ContextNames.FIELDS)){
+				updateRecordBuilder.fields((List<FacilioField>) context.get(FacilioConstants.ContextNames.FIELDS));
+
+				if(context.containsKey(FacilioConstants.ContextNames.CRITERIA)){
+					updateRecordBuilder.andCriteria((Criteria) context.get(FacilioConstants.ContextNames.CRITERIA));
+				}
+				if(context.containsKey(FacilioConstants.ContextNames.TO_UPDATE_MAP)){
+					Integer rowsAffected= updateRecordBuilder.update((Map<String, Object>) context.get(FacilioConstants.ContextNames.TO_UPDATE_MAP));
+					return rowsAffected;
+				}else {
+					return 0;
+				}
+			}
+		}
+		return 0;
+	}
+
+	@Override
+	public Integer deleteFromDb(FacilioContext context) throws Exception {
+		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		if(context.containsKey(FacilioConstants.ContextNames.TABLE_NAME)){
+			deleteRecordBuilder.table(String.valueOf(context.get(FacilioConstants.ContextNames.TABLE_NAME)));
+
+			if(context.containsKey(FacilioConstants.ContextNames.CRITERIA)){
+				deleteRecordBuilder.andCriteria((Criteria) context.get(FacilioConstants.ContextNames.CRITERIA));
+				return deleteRecordBuilder.delete();
+			}
+			LOGGER.info("No criteria in delete-builder");
+			return 0;
+		}
+		return 0;
+	}
 
 
 }

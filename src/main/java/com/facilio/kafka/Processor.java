@@ -55,7 +55,7 @@ public class Processor extends FacilioProcessor {
         setConsumer(new FacilioKafkaConsumer(ServerInfo.getHostname(), consumerGroup, getTopic()));
         setProducer(new FacilioKafkaProducer(getTopic()));
         agentUtil = new AgentUtil(orgId, orgDomainName);
-        agentUtil.populateAgentContextMap(null);
+        agentUtil.populateAgentContextMap(null,null);
         devicePointsUtil = new DevicePointsUtil();
         ackUtil = new AckUtil();
         eventUtil = new EventUtil();
@@ -123,6 +123,16 @@ public class Processor extends FacilioProcessor {
                 }
                 //Temp fix  - bug: Publish_Type wrongly set to "agents"
                 PublishType publishType = PublishType.valueOf(dataType);
+                String wattsenseAgentName = record.getPartitionKey();
+               /* LOGGER.info(" wattsense log partitionKey - "+wattsenseAgentName);
+                if(wattsenseAgentName != null){
+                    FacilioAgent wattAgent = agentUtil.getFacilioAgent(wattsenseAgentName);
+                    if(wattAgent != null) {
+                        LOGGER.info("wattsense log agentId - " + wattAgent.getId());
+                    }else{
+                        LOGGER.info("wattsense log agent null ");
+                    }
+                }*/
                 String agentName = orgDomainName.trim();
                 if (payLoad.containsKey(PublishType.agent.getValue())) {
                     agentName = payLoad.remove(PublishType.agent.getValue()).toString().trim();
@@ -139,7 +149,7 @@ public class Processor extends FacilioProcessor {
                     lastMessageReceivedTime = lastTime instanceof Long ? (Long) lastTime : Long.parseLong(lastTime.toString());
                 }
 
-                FacilioAgent agent = agentUtil.getFacilioAgent(agentName);
+                FacilioAgent agent = agentUtil.getFacilioAgent(agentName,null);
                 if (agent == null ) {
                     agent = getFacilioAgent(agentName);
                     long agentId = agentUtil.addAgent(agent);

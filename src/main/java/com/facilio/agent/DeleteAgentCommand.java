@@ -9,8 +9,10 @@ public class DeleteAgentCommand implements Command
     @Override
     public boolean execute(Context context) throws Exception {
         JSONObject payload = new JSONObject();
-        payload.put(AgentKeys.ID,context.get(AgentKeys.ID));
-        return AgentUtil.agentDelete(payload);
+        if(context.containsKey(AgentKeys.ID)) {
+            return AgentUtil.agentDelete(String.valueOf(context.get(AgentKeys.ID)));
+        }
+        return false;
     }
 
 }

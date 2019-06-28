@@ -58,7 +58,7 @@ public class Processor implements IRecordProcessor {
             this.orgDomainName = orgDomainName;
             this.errorStream = orgDomainName + "-error";
             agentUtil = new AgentUtil(orgId, orgDomainName);
-            agentUtil.populateAgentContextMap(null);
+            agentUtil.populateAgentContextMap(null,null);
             devicePointsUtil = new DevicePointsUtil();
             ackUtil = new AckUtil();
             eventUtil = new EventUtil();
@@ -161,7 +161,7 @@ public class Processor implements IRecordProcessor {
                         lastMessageReceivedTime = lastTime instanceof Long ? (Long) lastTime : Long.parseLong(lastTime.toString());
                     }
 
-                    FacilioAgent agent = agentUtil.getFacilioAgent(agentName);
+                    FacilioAgent agent = agentUtil.getFacilioAgent(agentName,null);
                     if (agent == null) {
                         agent = getFacilioAgent(agentName);
                         long agentId = agentUtil.addAgent(agent);

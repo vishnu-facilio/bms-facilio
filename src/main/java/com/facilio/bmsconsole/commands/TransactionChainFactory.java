@@ -1,20 +1,22 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Chain;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.agent.ConfigureAgentCommand;
 import com.facilio.agent.ConfigureControllerCommand;
 import com.facilio.agent.DeleteAgentCommand;
 import com.facilio.agent.commands.*;
+import com.facilio.agentIntegration.AddIntegrationCommand;
+import com.facilio.agentIntegration.UpdateIntegrationCommand;
+import com.facilio.agentIntegration.wattsense.AgentIntegrationDeleteCommand;
 import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
+import com.facilio.events.commands.NewEventsToAlarmsConversionCommand;
 import com.facilio.mv.command.*;
 import com.facilio.workflows.command.*;
-import com.facilio.events.commands.NewEventsToAlarmsConversionCommand;
+import org.apache.commons.chain.Chain;
 
 public class TransactionChainFactory {
 
@@ -549,7 +551,7 @@ public class TransactionChainFactory {
 //		c.addCommand(new AddOrUpdateReadingValuesCommand());
 //		c.addCommand(new AddMarkedReadingValuesCommand());
 //		c.addCommand(new SpaceBudIntegrationCommand()); // For RMZ-SpaceBud
-//														// Integration
+//														// com.facilio.agentIntegration
 //		CommonCommandUtil.addCleanUpCommand(c);
 //		return c;
 //	}
@@ -967,6 +969,22 @@ public class TransactionChainFactory {
 		return c;
 		}
 
+		public static Chain createWattChain(){
+		Chain c = getDefaultChain();
+		c.addCommand(new AddIntegrationCommand());
+		return c;
+		}
+		public static Chain updateWattStatusChain(){
+		Chain c = getDefaultChain();
+		c.addCommand(new UpdateIntegrationCommand());
+		return c;
+		}
+		public static Chain deleteWattsenseChain(){
+		Chain c = getDefaultChain();
+		c.addCommand(new AgentIntegrationDeleteCommand());
+		return c;
+		}
+
 		public static Chain controllerEdit(){
 			Chain c = getDefaultChain();
 			c.addCommand(new ConfigureControllerCommand());
@@ -1338,7 +1356,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteValidationRule());
 			c.addCommand(new AddOrUpdateReadingValuesCommand());
 			c.addCommand(new AddMarkedReadingValuesCommand());
-			c.addCommand(new SpaceBudIntegrationCommand());	//For RMZ-SpaceBud Integration
+			c.addCommand(new SpaceBudIntegrationCommand());	//For RMZ-SpaceBud com.facilio.agentIntegration
 			c.addCommand(new ReadingUnitConversionToDisplayUnit());
 			return c;
 		}
@@ -2997,12 +3015,6 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateMVBaselineCommand());
 			c.addCommand(new UpdateMVAdjustmentCommand());
 			c.addCommand(new ConstructBaselineFormulaWithAjustmentCommand());
-			return c;
-		}
-		
-		public static Chain getUpdateMVProjectMetaChain() {
-			Chain c = getDefaultChain();
-			c.addCommand(new UpdateMVPojectCommand());
 			return c;
 		}
 

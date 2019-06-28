@@ -207,9 +207,22 @@
 
 	</package>
 
+        <package name="integrationApiV2" namespace="/api/v2/setup/agent/integration/wattsense" extends="setupApiV2">
+        <action name="add" class="com.facilio.agentIntegration.AgentIntegrationAction" method="addWattsense">
+        </action>
+
+		<action name="list" class="com.facilio.agentIntegration.AgentIntegrationAction" method="listWattsense">
+		</action>
+
+		<action name="delete" class="com.facilio.agentIntegration.AgentIntegrationAction" method="deleteWattsense">
+		</action>
+
+    </package>
+
 	<package name="controllerApiV2" namespace="/api/v2/setup/controller" extends="setupApiV2">
 		<action name="list"  class="com.facilio.bmsconsole.actions.ControllerAction" method="fetchControllerDetails">
 		</action>
+
 		<action name="edit"  class="com.facilio.bmsconsole.actions.ControllerAction" method="controllerEdit">
 		</action>
 	</package>

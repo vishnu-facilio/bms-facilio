@@ -1,28 +1,17 @@
 package com.facilio.modules;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.tuple.Pair;
-
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentKeys;
+import com.facilio.agentIntegration.AgentIntegrationKeys;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.tasker.tasks.EventUtil;
-import com.facilio.modules.fields.BooleanField;
-import com.facilio.modules.fields.EnumField;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.NumberField;
+import com.facilio.modules.fields.*;
+import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class FieldFactory {
 
@@ -312,8 +301,22 @@ public class FieldFactory {
 		field.setColumnName("count(Controller.ID)");
 		return field;
 	}
-
-
+	public static List<FacilioField> getAgentIntegrationFields(){
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getAgentIntegrationModule();
+		fields.add(getIdField(module));
+		fields.add(getField(AgentIntegrationKeys.NAME,"NAME",module,FieldType.STRING));
+		fields.add(getAgentIntegrationPropKeyField(module));
+		fields.add(getField(AgentIntegrationKeys.INTEGRATION_TYPE,"TYPE",module,FieldType.NUMBER));
+		fields.add(getAgentIntegrationPropValueField(module));
+		return fields;
+	}
+	public static FacilioField getAgentIntegrationPropKeyField(FacilioModule module){
+		return getField(AgentIntegrationKeys.PROP_KEY,"PROP_KEY",module,FieldType.STRING);
+	}
+	public static FacilioField getAgentIntegrationPropValueField(FacilioModule module){
+		return getField(AgentIntegrationKeys.PROP_VALUE,"PROP_VALUE",module,FieldType.STRING);
+	}
 	public static FacilioField getCreatedTime(FacilioModule module) {
 		return getField(AgentKeys.CREATED_TIME,"CREATED_TIME",module,FieldType.NUMBER);
 	}

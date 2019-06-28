@@ -1,6 +1,7 @@
 package com.facilio.modules;
 
 import com.facilio.agent.AgentKeys;
+import com.facilio.agentIntegration.AgentIntegrationKeys;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.fields.FacilioField;
 
@@ -121,11 +122,11 @@ public class ModuleFactory {
 		return agentMetricsModule;
 	}
 
-	public static FacilioModule getIntegrationModule() {
+	public static FacilioModule getAgentIntegrationModule() {
 		FacilioModule integrationModule = new FacilioModule();
-		integrationModule.setName("integrationData");
-		integrationModule.setDisplayName("integrationData");
-		//integrationModule.setTableName(WattsenseKeys.INTEGRATION);
+		integrationModule.setName(AgentIntegrationKeys.TABLE_NAME);
+		integrationModule.setDisplayName(AgentIntegrationKeys.TABLE_NAME);
+		integrationModule.setTableName(AgentIntegrationKeys.TABLE_NAME);
 		return integrationModule;
 	}
 

@@ -42,6 +42,13 @@ public  class AgentUtil
     private String orgDomainName;
     private static final long DEFAULT_TIME = 10L;
     private Map<String, FacilioAgent> agentMap = new HashMap<>();
+    public Map<String, FacilioAgent> getAgentMap() { return agentMap; }
+
+    public int getAgentCount() {
+        return agentMap.size();
+    }
+
+    private int agentCount;
 
     private static final Logger LOGGER = LogManager.getLogger(AgentUtil.class.getName());
 
@@ -50,10 +57,10 @@ public  class AgentUtil
         this.orgDomainName = orgDomainName;
     }
 
-    public void populateAgentContextMap(String agentName) {
+    public void populateAgentContextMap(String agentName,AgentType type) {
         try {
             ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-            List<Map<String, Object>> records = bean.getAgentDataMap(agentName);
+            List<Map<String, Object>> records = bean.getAgentDataMap(agentName,type);
             for (Map<String,Object> record :records) {
                 JSONObject payload = new JSONObject();
                 payload.putAll(record);
@@ -65,10 +72,10 @@ public  class AgentUtil
         }
     }
 
-    public FacilioAgent getFacilioAgent(String agentName) {
+    public FacilioAgent getFacilioAgent(String agentName,AgentType type) {
         FacilioAgent agent = agentMap.get(agentName);
         if(agent == null){
-            populateAgentContextMap(agentName);
+            populateAgentContextMap(agentName,type);
             agent =agentMap.get(agentName);
         }
         return agent;
@@ -149,7 +156,7 @@ public  class AgentUtil
         	agentName = orgDomainName;
             LOGGER.info(" in process agent agentName="+agentName);
         }*/
-        FacilioAgent agent = getFacilioAgent(agentName);
+        FacilioAgent agent = getFacilioAgent(agentName,null);
        if(jsonObject.containsKey(AgentKeys.DATA_INTERVAL)){
            Long currDataInterval = Long.parseLong(jsonObject.get(AgentKeys.DATA_INTERVAL).toString());
            if(currDataInterval.longValue() > 120L){
@@ -359,10 +366,9 @@ public  class AgentUtil
 
     /**
      * This method inserts system's current time to the specified agent's Deleted_Time column so that it will be considered deleted.
-     * @param payload this JSONObject contains agent's ID.
      * @return true if the deletion process happens and false if account is null or deletion doesn't happen.
      */
-    static boolean agentDelete(JSONObject payload) throws SQLException {
+    public static boolean agentDelete(String agentName)  {
         if(AccountUtil.getCurrentOrg()!= null) {
             List<FacilioField> fields = new ArrayList<>();
             fields.add(FieldFactory.getDeletedTimeField(ModuleFactory.getAgentDataModule()));
@@ -372,9 +378,14 @@ public  class AgentUtil
                     .table(AgentKeys.AGENT_TABLE)
                     .fields(fields);
 //                    .andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getAgentDataModule()));
-            if (payload.containsKey(AgentKeys.ID)) {
-                int deletedRows = genericUpdateRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(ModuleFactory.getAgentDataModule()),payload.get(AgentKeys.ID).toString(), NumberOperators.EQUALS))
-                        .update(toUpdate);
+            if (agentName!=null) {
+                int deletedRows = 0;
+                try {
+                    deletedRows = genericUpdateRecordBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getAgentNameField(ModuleFactory.getAgentDataModule()),agentName, StringOperators.IS))
+                            .update(toUpdate);
+                } catch (SQLException e) {
+                    LOGGER.info("Exception occurred");
+                }
                 return (deletedRows > 0);
             } else {
                 return false;

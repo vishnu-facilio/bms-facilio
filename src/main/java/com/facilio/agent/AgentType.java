@@ -9,7 +9,9 @@ public enum AgentType {
 
     BACnet(1, "BACnet"),
 
-    Niagara(3, "Niagara");
+    Niagara(3, "Niagara"),
+
+    Wattsense(4,"Wattsense");
 
 
 

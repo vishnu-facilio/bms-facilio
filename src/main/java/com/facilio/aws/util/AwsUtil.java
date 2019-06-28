@@ -20,15 +20,13 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.secretsmanager.AWSSecretsManager;
 import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
-import com.amazonaws.services.secretsmanager.model.*;
-import com.amazonaws.services.secretsmanager.model.InvalidRequestException;
-import com.amazonaws.services.secretsmanager.model.ResourceNotFoundException;
+import com.amazonaws.services.secretsmanager.model.GetSecretValueRequest;
+import com.amazonaws.services.secretsmanager.model.GetSecretValueResult;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailService;
 import com.amazonaws.services.simpleemail.AmazonSimpleEmailServiceClientBuilder;
 import com.amazonaws.services.simpleemail.model.*;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentKeys;
 import com.facilio.bmsconsole.util.CommonAPI;
@@ -37,7 +35,6 @@ import com.facilio.db.builder.DBUtil;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.db.transaction.FacilioTransactionManager;
 import com.facilio.email.EmailUtil;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
@@ -64,7 +61,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import javax.mail.Session;
 import javax.mail.internet.*;
-import javax.transaction.*;
+import javax.transaction.SystemException;
 import java.io.*;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -707,9 +704,12 @@ public class AwsUtil
 		return user.getUserId();*/
     	return getConfig("user.id");
 	}
+	public static void addIotClient(String policyName, String clientId){
+		addAwsIotClient(policyName,clientId);
+	}
 
-	public static void addIotClient(String policyName, String clientId) {
-    	try {
+	public static boolean addAwsIotClient(String policyName, String clientId) {
+		try {
 			AWSIot client = getIotClient();
 			GetPolicyRequest request = new GetPolicyRequest().withPolicyName(policyName);
 			GetPolicyResult result = client.getPolicy(request);
@@ -735,9 +735,11 @@ public class AwsUtil
 					.withSetAsDefault(true);
 			CreatePolicyVersionResult versionResult = client.createPolicyVersion(versionRequest);
 			LOGGER.info("Policy updated for " + policyName + ", with " + versionResult.getPolicyDocument() + ", status: " + versionResult.getSdkHttpMetadata().getHttpStatusCode());
-		} catch (Exception e){
+		return true;
+    	} catch (Exception e){
     		LOGGER.info("Error ",e);
 		}
+    	return false;
 	}
 
 	private static String getIotArnClientId(String clientId){
