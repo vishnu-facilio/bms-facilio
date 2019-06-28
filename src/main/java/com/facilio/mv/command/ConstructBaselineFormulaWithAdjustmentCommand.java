@@ -65,8 +65,6 @@ public class ConstructBaselineFormulaWithAdjustmentCommand implements Command {
 					formulaField = FormulaFieldAPI.getFormulaField(formulaField.getId());
 					adjustment.setFormulaField(formulaField);
 					
-					formulaField = FormulaFieldAPI.getFormulaField(formulaField.getId());
-					baseLine.setFormulaField(formulaField);
 					if(formulaField != null) {
 						workflowString.append(MVUtil.WORKLFOW_MODULE_INITITALIZATION_STMT.replace("${moduleName}", modbean.getModule(formulaField.getModuleId()).getName()));
 						
