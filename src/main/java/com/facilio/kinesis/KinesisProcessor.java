@@ -33,9 +33,6 @@ public class KinesisProcessor {
         return properties;
     }
     
-    static {
-    	EXISTING_ORGS.add("altayer");
-    }
     private static void updateStream() {
         try {
             AmazonKinesis kinesis = AwsUtil.getKinesisClient();
