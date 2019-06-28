@@ -11,6 +11,8 @@ public class DevicePointsKeys
     public static final String AVAILABLE_POINTS ="availablePoints";
     public static final String CONTROLLER_TYPE="type";
     public static final String PORT_NUMBER ="portNumber";
+    public static final String PROPERTIES="properties";
+
 
 
 

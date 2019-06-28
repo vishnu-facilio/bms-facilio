@@ -59,6 +59,9 @@ public  class DevicePointsUtil {
 		if(payLoad.containsKey(DevicePointsKeys.CONTROLLER_TYPE)){
 			controllerType = Integer.parseInt(payLoad.get(DevicePointsKeys.CONTROLLER_TYPE).toString());
 		}
+		
+		JSONObject properties=(JSONObject) payLoad.get(DevicePointsKeys.PROPERTIES);
+		
 		String deviceId = instanceNumber+"_"+ipAddress+"_"+networkNumber;
 		// if( ! deviceMap.containsKey(deviceId)) {
 		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
@@ -74,6 +77,7 @@ public  class DevicePointsUtil {
 			controller.setMacAddr(deviceId);
 			controller.setControllerType(controllerType);
 			controller.setPortNumber(portNumber);
+			controller.setControllerProps(properties);
 			controller = bean.addController(controller);
 		} else {
 			if (controller.getAgentId() < 1 && controller.getId() > -1) {
