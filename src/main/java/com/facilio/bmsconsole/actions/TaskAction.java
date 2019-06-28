@@ -26,6 +26,7 @@ import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
 import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.context.ViewLayout;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.view.FacilioView;
@@ -280,7 +281,27 @@ public class TaskAction extends FacilioAction {
 	public void setParentTicketId(Long parentTicketId) {
 		this.parentTicketId = parentTicketId;
 	}
+
+	long resourceId = -1;
 	
+	public long getResourceId() {
+		return resourceId;
+	}
+
+	public void setResourceId(long resourceId) {
+		this.resourceId = resourceId;
+	}
+
+	long sectionId = -1;
+
+	public long getSectionId() {
+		return sectionId;
+	}
+
+	public void setSectionId(long sectionId) {
+		this.sectionId = sectionId;
+	}
+
 	private Map<Long, Map<String, String>> error;
 	
 	public String closeAllTask() throws Exception {
@@ -294,6 +315,14 @@ public class TaskAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.TASK, defaultClosedTaskObj);
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, taskIdList);
 			context.put(FacilioConstants.ContextNames.IS_BULK_ACTION, true);
+		    String filterName;
+			if (resourceId > 0) {
+				filterName = ResourceAPI.getResource(resourceId).getName();
+				context.put(FacilioConstants.ContextNames.FILTERED_NAME, filterName);
+			}else if(sectionId > 0) {
+				filterName = TicketAPI.getTaskSection(sectionId).getName();
+		    	context.put(FacilioConstants.ContextNames.FILTERED_NAME, filterName);
+		    }
 			context.put(FacilioConstants.ContextNames.PARENT_ID, parentTicketId);
 			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
 			Chain updateTask = TransactionChainFactory.getUpdateTaskChain();
