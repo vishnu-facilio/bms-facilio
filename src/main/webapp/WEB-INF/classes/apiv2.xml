@@ -61,9 +61,6 @@
 		<action name="account" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="v2currentAccount">
 		</action>
-		<action name="getMySites" class="com.facilio.bmsconsole.actions.LoginAction"
-			method="getMySitesList">
-		</action>
 		<action name="getSite" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getMySiteList">
 		</action>
