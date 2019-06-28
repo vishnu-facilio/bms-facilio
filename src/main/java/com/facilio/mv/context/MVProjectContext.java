@@ -1,15 +1,13 @@
 package com.facilio.mv.context;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MVProjectContext extends ModuleBaseWithCustomFields {
 
@@ -31,7 +29,7 @@ public class MVProjectContext extends ModuleBaseWithCustomFields {
 	long reportingPeriodStartTime;
 	long reportingPeriodEndTime;
 	Boolean status;
-	
+
 	public Boolean isStatus() {
 		return status;
 	}

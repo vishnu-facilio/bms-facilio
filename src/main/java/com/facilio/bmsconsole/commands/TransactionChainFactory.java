@@ -3018,6 +3018,12 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+		public static Chain getUpdateMVProjectMetaChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateMVPojectCommand());
+			return c;
+		}
+
 		public static Chain getAddMVBaselineChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddMVBaselineCommand());
@@ -3029,6 +3035,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddMVAjustmentCommand());
 			return c;
 		}
+
 
 		public static Chain getDeleteMVProjectChain() {
 			Chain c = getDefaultChain();

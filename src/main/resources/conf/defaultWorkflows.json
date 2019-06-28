@@ -173,8 +173,8 @@
         "102" : {
         	"description" : "meanTimeBetweenTriggers",
         	"usage" : "rulesSummary",
-        	"workflow": "Map test(ruleId) 
-		    	{ 
+        	"workflow": "Map test(ruleId)
+		    	{
 		     		activeAssetcri = {
 					criteria : [ruleId == ruleId && clearedTime == null ]
 				};
@@ -183,7 +183,7 @@
 		    	alarmsCurrWeekCri = {
               		criteria : [ruleId == ruleId && createdTime == ranges ]
             	};
-		        readingAlarmModule = Module(\"readingalarm\"); 
+		        readingAlarmModule = Module(\"readingalarm\");
 		        activeRecord = readingAlarmModule.fetch(activeAssetcri);
               	activeAlarms = 0;
               	if (activeRecord != null) {

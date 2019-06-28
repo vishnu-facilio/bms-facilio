@@ -10,7 +10,7 @@
 			"severity": "Major",
 			"threshold_metric": "supplyairdamperstatus",
 			"threshold_metric_display": "Supply Air Damper Status",
-			"possible_solution": "1. Lubricate the bearings and louvres <br/> 2. Check sensor functioning",
+			"possible_solution": "1. Lubricate the bearings and louvres \n 2. Check sensor functioning",
 			"ASSET_SELECTION_CRITERIA": {
 			 	"categoryType": "AHU",
 			 	"includeResource": "${includeResource}",
@@ -266,10 +266,10 @@
                     },
                      "type": "default"
                  },
-                  "2":{
+                 "2":{
                      "label": "Interval",
                      "uniqueId": "interval",
-                     "default_value": 3600,
+                     "default_value": "10",
                      "selection_criteria": {
                      	"displayType": "DURATION"
                     },
@@ -406,10 +406,10 @@
                     },
                      "type": "default"
                  },
-                  "2":{
+                 "2":{
                      "label": "Interval",
                      "uniqueId": "interval",
-                     "default_value": 3600,
+                     "default_value": "10",
                      "selection_criteria": {
                      	"displayType": "DURATION"
                     },
@@ -545,6 +545,15 @@
                      	"displayType": "ASSETCHOOSER"
                     },
                      "type": "default"
+                 },
+                 "2":{
+                     "label": "Interval",
+                     "uniqueId": "interval",
+                     "default_value": "10",
+                     "selection_criteria": {
+                     	"displayType": "DURATION"
+                    },
+                     "type": "rules"
                  }
 			}
 		}
@@ -644,26 +653,6 @@
 				        "workflowUIMode": 1
 				   	},
 				"condition_statement" : "Pre Filter differential pressure is lesser than threshold limit. (Standard 240)"
-			},
-			"placeHolder": {
-				"1": {
-                     "label": "Assets",
-                     "uniqueId": "resource",
-                     "default_value": "All Asset Selected",
-                     "selection_criteria": {
-                     	"displayType": "ASSETCHOOSER"
-                    },
-                     "type": "default"
-                 },
-                  "2":{
-                     "label": "Interval",
-                     "uniqueId": "interval",
-                     "default_value": 3600,
-                     "selection_criteria": {
-                     	"displayType": "DURATION"
-                    },
-                     "type": "rules"
-                 }
 			}
 			
 		}
@@ -763,27 +752,8 @@
 				        "workflowUIMode": 1
 				   	},
 				"condition_statement" : "Bag Filter differential pressure is lesser than threshold limit. (Standard 120)"
-			},
-			"placeHolder": {
-				"1": {
-                     "label": "Assets",
-                     "uniqueId": "resource",
-                     "default_value": "All Asset Selected",
-                     "selection_criteria": {
-                     	"displayType": "ASSETCHOOSER"
-                    },
-                     "type": "default"
-                 },
-                  "2":{
-                     "label": "Interval",
-                     "uniqueId": "interval",
-                     "default_value": 3600,
-                     "selection_criteria": {
-                     	"displayType": "DURATION"
-                    },
-                     "type": "rules"
-                 }
 			}
+			
 		}
 	}, 
 	"8" : {
@@ -979,27 +949,7 @@
 			      "resultEvaluator": "(A==B)&&(C-D>=F)&&(G==H)&&(I==J)"
 			    },
 			    "condition_statement": "When Supply Air Fan Status is on and the differnce of Return air temperature and Outside air temperature is less than 2 °C and Enthalpy Heat Wheel Status is On and Enthalpy Heat Wheel Command is On "
-			  },
-			  "placeHolder": {
-				"1": {
-                     "label": "Assets",
-                     "uniqueId": "resource",
-                     "default_value": "All Asset Selected",
-                     "selection_criteria": {
-                     	"displayType": "ASSETCHOOSER"
-                    },
-                     "type": "default"
-                 },
-                  "2":{
-                     "label": "Interval",
-                     "uniqueId": "interval",
-                     "default_value": 3600,
-                     "selection_criteria": {
-                     	"displayType": "DURATION"
-                    },
-                     "type": "rules"
-                 }
-			}
+			  }
 			}
 	},
 	"9": {
@@ -1195,27 +1145,7 @@
 			      "resultEvaluator": "(A==B)&&(C-D>=F)&&(G==H)&&(I==J)"
 			    },
 			    "condition_statement": "When Supply Air Fan Status is on and the differnce of Return air temperature and Outside air temperature is less than 2 °C and Enthalpy Heat Wheel Status is On and Enthalpy Heat Wheel Command is On "
-			  },
-			  "placeHolder": {
-				"1": {
-                     "label": "Assets",
-                     "uniqueId": "resource",
-                     "default_value": "All Asset Selected",
-                     "selection_criteria": {
-                     	"displayType": "ASSETCHOOSER"
-                    },
-                     "type": "default"
-                 },
-                  "2":{
-                     "label": "Interval",
-                     "uniqueId": "interval",
-                     "default_value": 3600,
-                     "selection_criteria": {
-                     	"displayType": "DURATION"
-                    },
-                     "type": "rules"
-                 }
-			}
+			  }
 			}
 	},
 	"10" : {
@@ -1411,27 +1341,7 @@
 			      "resultEvaluator": "(A==B)&&(C-D>=F)&&(G==H)&&(I==J)"
 			    },
 			    "condition_statement": "When Supply Air Fan Status is on and the differnce of Return air temperature and Outside air temperature is less than 2 °C and Sensible Heat Wheel Status is On and Sensible Heat Wheel Command is On "
-			  },
-			  "placeHolder": {
-				"1": {
-                     "label": "Assets",
-                     "uniqueId": "resource",
-                     "default_value": "All Asset Selected",
-                     "selection_criteria": {
-                     	"displayType": "ASSETCHOOSER"
-                    },
-                     "type": "default"
-                 },
-                  "2":{
-                     "label": "Interval",
-                     "uniqueId": "interval",
-                     "default_value": 3600,
-                     "selection_criteria": {
-                     	"displayType": "DURATION"
-                    },
-                     "type": "rules"
-                 }
-			}
+			  }
 			}
 	},
 	"11" : {
@@ -1627,27 +1537,7 @@
 			      "resultEvaluator": "(A==B)&&(C-D>=F)&&(G==H)&&(I==J)"
 			    },
 			    "condition_statement": "When Supply Air Fan Status is on and the differnce of Return air temperature and Outside air temperature is less than 2 °C and Sensible Heat Wheel Status is On and Sensible Heat Wheel Command is On "
-			  },
-			  "placeHolder": {
-				"1": {
-                     "label": "Assets",
-                     "uniqueId": "resource",
-                     "default_value": "All Asset Selected",
-                     "selection_criteria": {
-                     	"displayType": "ASSETCHOOSER"
-                    },
-                     "type": "default"
-                 },
-                  "2":{
-                     "label": "Interval",
-                     "uniqueId": "interval",
-                     "default_value": 3600,
-                     "selection_criteria": {
-                     	"displayType": "DURATION"
-                    },
-                     "type": "rules"
-                 }
-			}
+			  }
 			}
 	},
 	"12": {
@@ -1772,27 +1662,7 @@
 			      "resultEvaluator": "(A==B)&&(C==D)"
 			    },
 			    "condition_statement": " Enthalpy Heat Wheel Status is On and Enthalpy Heat Wheel Command is Off "
-			  },
-			  "placeHolder": {
-				"1": {
-                     "label": "Assets",
-                     "uniqueId": "resource",
-                     "default_value": "All Asset Selected",
-                     "selection_criteria": {
-                     	"displayType": "ASSETCHOOSER"
-                    },
-                     "type": "default"
-                 },
-                  "2":{
-                     "label": "Interval",
-                     "uniqueId": "interval",
-                     "default_value": 3600,
-                     "selection_criteria": {
-                     	"displayType": "DURATION"
-                    },
-                     "type": "rules"
-                 }
-			}
+			  }
 			}
 	},
 	"13": {
@@ -1917,27 +1787,7 @@
 			      "resultEvaluator": "(A==B)&&(C==D)"
 			    },
 			    "condition_statement": " Sensible Heat Wheel Status is On and Sensible Heat Wheel Command is Off "
-			  },
-			  "placeHolder": {
-				"1": {
-                     "label": "Assets",
-                     "uniqueId": "resource",
-                     "default_value": "All Asset Selected",
-                     "selection_criteria": {
-                     	"displayType": "ASSETCHOOSER"
-                    },
-                     "type": "default"
-                 },
-                  "2":{
-                     "label": "Interval",
-                     "uniqueId": "interval",
-                     "default_value": 3600,
-                     "selection_criteria": {
-                     	"displayType": "DURATION"
-                    },
-                     "type": "rules"
-                 }
-			}
+			  }
 			}
 	},
 	"14" :{
@@ -2080,26 +1930,6 @@
 			      "workflowUIMode": 1
 			    },
 			    "condition_statement": "When cooling coil valve command is On and Supply Air Temperature is greater then Supply air temperature Set-Point "
-			  },
-			  "placeHolder": {
-				"1": {
-                     "label": "Assets",
-                     "uniqueId": "resource",
-                     "default_value": "All Asset Selected",
-                     "selection_criteria": {
-                     	"displayType": "ASSETCHOOSER"
-                    },
-                     "type": "default"
-                 },
-                  "2":{
-                     "label": "Interval",
-                     "uniqueId": "interval",
-                     "default_value": 3600,
-                     "selection_criteria": {
-                     	"displayType": "DURATION"
-                    },
-                     "type": "rules"
-                 }
 			  }
 			}
 		},
@@ -2240,27 +2070,7 @@
 			      "resultEvaluator": "(A==B)&&(C>D)"
 			    },
 			    "condition_statement": "When cooling coil valve command is On and Supply Air Temperature is greater then Supply air temperature Set-Point "
-			  },
-			  "placeHolder": {
-				"1": {
-                     "label": "Assets",
-                     "uniqueId": "resource",
-                     "default_value": "All Asset Selected",
-                     "selection_criteria": {
-                     	"displayType": "ASSETCHOOSER"
-                    },
-                     "type": "default"
-                 },
-                  "2":{
-                     "label": "Interval",
-                     "uniqueId": "interval",
-                     "default_value": 3600,
-                     "selection_criteria": {
-                     	"displayType": "DURATION"
-                    },
-                     "type": "rules"
-                 }
-			   }
+			  }
 			}
 		},
 		"16": {
@@ -2360,27 +2170,7 @@
 			      "resultEvaluator": "(A > B)"
 			    },
 			    "condition_statement": "When Cooling Coil Valve Feedback Value is greater then 2% "
-			  },
-			  "placeHolder": {
-				"1": {
-                     "label": "Assets",
-                     "uniqueId": "resource",
-                     "default_value": "All Asset Selected",
-                     "selection_criteria": {
-                     	"displayType": "ASSETCHOOSER"
-                    },
-                     "type": "default"
-                 },
-                 "2":{
-                     "label": "Interval",
-                     "uniqueId": "interval",
-                     "default_value": 3600,
-                     "selection_criteria": {
-                     	"displayType": "DURATION"
-                    },
-                     "type": "rules"
-                 }
-			 }
+			  }
 			}
 		},
 		"17": {
@@ -2388,13 +2178,13 @@
 				  "name": "Cooling Coil Clogged for Supply Air flow",
 				  "description": "Cooling Coil Clogged for Supply Air flow",
 				  "problem": "Cooling coil airflow pressure drop much higher than the threshold (Only a small fraction of airflow passes through) During the cooling process, condensate forms on the coil. The condensate makes it very easy for dirt and debris to stick to and clog up the coil's air passages. Additionally, coils are great places for mold development that can further obstruct airflow.",
-				  "possible_causes": "1. Reduced airflow due to dirt and debris blockages means reduced comfort for end user. </br> 2. The blower must work harder and use more electricity to pull airflow through the blocked coil passages.  </br> 3. A dirty coil can contaminate supply ducts and reintroduce contaminants to spaces, including mold development and spores.",
+				  "possible_causes": "1. Reduced airflow due to dirt and debris blockages means reduced comfort for end user. 2. The blower must work harder and use more electricity to pull airflow through the blocked coil passages. 3. A dirty coil can contaminate supply ducts and reintroduce contaminants to spaces, including mold development and spores.",
 				  "moduleName": "ahureading",
 				  "category": "AHU",
 				  "severity": "Major",
 				  "threshold_metric": "airflowcoildp",
 				  "threshold_metric_display": "AirFlow Coil Differinatial Pressure",
-				  "possible_solution": "1. Inspect the cooling coil for cleanliness and check any deposited particles and impurities.  </br> 2. Wash and clean the cooling coil ",
+				  "possible_solution": "1. Inspect the cooling coil for cleanliness and check any deposited particles and impurities.2. Wash and clean the cooling coil ",
 				  "ASSET_SELECTION_CRITERIA": {
 				    "categoryType": "AHU",
 				    "includeResource": "${includeResource}",
@@ -2489,30 +2279,8 @@
 				        "resultEvaluator": "b"
 				      },
 				    "condition_statement": "If  AirFlow Coil DP ≥ 1000 continuosly for 1 hour (6 ten min intervals)"
-				  },
-				  "placeHolder": {
-				"1": {
-                     "label": "Assets",
-                     "uniqueId": "resource",
-                     "default_value": "All Asset Selected",
-                     "selection_criteria": {
-                     	"displayType": "ASSETCHOOSER"
-                    },
-                     "type": "default"
-                 }
-			},
-		 	"placeHolder": {
-				"1": {
-                     "label": "Assets",
-                     "uniqueId": "resource",
-                     "default_value": "All Asset Selected",
-                     "selection_criteria": {
-                     	"displayType": "ASSETCHOOSER"
-                    },
-                     "type": "default"
-                 }
-			}
-		  }
+				  }
+				}
 		},
 		"18": {
 			"fdd_rule": {
@@ -2619,19 +2387,8 @@
 				        "resultEvaluator": "b"
 				      },
 				    "condition_statement": "If  AirFlow Coil DP ≥ 1000 continuosly for 1 hour (6 ten min intervals)"
-				  },
-				  "placeHolder": {
-				"1": {
-                     "label": "Assets",
-                     "uniqueId": "resource",
-                     "default_value": "All Asset Selected",
-                     "selection_criteria": {
-                     	"displayType": "ASSETCHOOSER"
-                    },
-                     "type": "default"
-                 }
-			}
-		  }
+				  }
+				}
 		},
 		"19": {
 			"fdd_rule": {
@@ -2715,28 +2472,8 @@
 				    },
 				    "overPeriod": 3600,
 				    "condition_statement": "If  AirFlow Coil DP ≥ 1000 continuosly for 1 hour (6 ten min intervals)"
-				  },
-				"placeHolder": {
-					"1": {
-                     	"label": "Assets",
-                     	"uniqueId": "resource",
-                     	"default_value": "All Asset Selected",
-                     	"selection_criteria": {
-                     		"displayType": "ASSETCHOOSER"
-                    	},
-                     	"type": "default"
-                 	},
-                 "2":{
-                     "label": "Interval",
-                     "uniqueId": "interval",
-                     "default_value": 3600,
-                     "selection_criteria": {
-                     	"displayType": "DURATION"
-                    },
-                     "type": "rules"
-                 }
+				  }
 				}
-			}
 		},
 		"20": {
 			"fdd_rule": {
@@ -2820,19 +2557,8 @@
 				    },
 				    "overPeriod": 3600,
 				    "condition_statement": "If  AirFlow Coil DP ≥ 1000 continuosly for 1 hour (6 ten min intervals)"
-				  },
-				  "placeHolder": {
-					"1": {
-                     	"label": "Assets",
-                     	"uniqueId": "resource",
-                     	"default_value": "All Asset Selected",
-                     	"selection_criteria": {
-                     		"displayType": "ASSETCHOOSER"
-                    	},
-                     	"type": "default"
-                	 }
-					}
-			}
+				  }
+				}
 		},
 		"21": {
 			"fdd_rule": {
@@ -2890,6 +2616,7 @@
 				  },
 				  "alarmCondition": {
 				    "condition": "Cooling Coil Valve Feedback ≥ 95% AND Chilled Water Supply Temp>15 degrees",
+				    "for": "${interval}",
 				    "action": "TRIGGER_ALARM",
 				    "thresholdType": 5,
 				    "workflow": {
@@ -2955,18 +2682,7 @@
 				    },
 				    "overPeriod": 1800,
 				    "condition_statement": "Cooling Coil Valve Feedback is greater than or equal to 95% AND Chilled Water Supply Temp is greater than 15 degrees"
-				  },
-				  "placeHolder": {
-					"1": {
-                     	"label": "Assets",
-                     	"uniqueId": "resource",
-                     	"default_value": "All Asset Selected",
-                     	"selection_criteria": {
-                     		"displayType": "ASSETCHOOSER"
-                   		 },
-                     	"type": "default"
-                 	}
-					}
+				  }
 				}
 		
 		},
@@ -3075,18 +2791,7 @@
 				      "resultEvaluator": "b"
 				    },
 				    "condition_statement": "If Chilled Water Strainer Dp ≥ 10 continuosly for 1 hour (6 ten min intervals)"
-				  },
-				  "placeHolder": {
-					"1": {
-                     	"label": "Assets",
-                     	"uniqueId": "resource",
-                     	"default_value": "All Asset Selected",
-                     	"selection_criteria": {
-                     		"displayType": "ASSETCHOOSER"
-                    	},
-                     	"type": "default"
-                 	 }
-				  	}
+				  }
 				}
 		},
 		"23": {

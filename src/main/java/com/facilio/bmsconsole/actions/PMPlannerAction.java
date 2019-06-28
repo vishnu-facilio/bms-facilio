@@ -1,14 +1,13 @@
 package com.facilio.bmsconsole.actions;
 
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.time.DateRange;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class PMPlannerAction extends FacilioAction{
 	private static final Logger log = LogManager.getLogger(PMPlannerAction.class.getName());
@@ -54,9 +53,9 @@ public class PMPlannerAction extends FacilioAction{
 			finally {
 				return SUCCESS;
 			}
-			
+
 	}
-	
+
 	public String getPMCalendarJobs() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(ContextNames.SITE_ID, siteId);
@@ -64,12 +63,12 @@ public class PMPlannerAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateOperatorValue);
 		ReadOnlyChainFactory.getCalendarResourceJobChain().execute(context);
-		
+
 		setResult(ContextNames.RESULT, context.get(ContextNames.RESULT));
-		
+
 		return SUCCESS;
 	}
-	
+
 	private long siteId = -1;
 	public long getSiteId() {
 		return siteId;
@@ -77,7 +76,7 @@ public class PMPlannerAction extends FacilioAction{
 	public void setSiteId(long siteId) {
 		this.siteId = siteId;
 	}
-	
+
 	private int dateOperator = -1;
 	public int getDateOperator() {
 		return dateOperator;
@@ -85,7 +84,7 @@ public class PMPlannerAction extends FacilioAction{
 	public void setDateOperator(int dateOperator) {
 		this.dateOperator = dateOperator;
 	}
-	
+
 	private String dateOperatorValue;
 	public String getDateOperatorValue() {
 		return dateOperatorValue;
@@ -93,7 +92,7 @@ public class PMPlannerAction extends FacilioAction{
 	public void setDateOperatorValue(String dateOperatorValue) {
 		this.dateOperatorValue = dateOperatorValue;
 	}
-	
+
 	private DateRange dateRange;
 	public DateRange getDateRange() {
 		return dateRange;
