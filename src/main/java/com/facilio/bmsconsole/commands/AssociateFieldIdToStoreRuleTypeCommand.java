@@ -24,12 +24,29 @@ public class AssociateFieldIdToStoreRuleTypeCommand implements Command{
 		WorkflowRuleContext rule = (WorkflowRuleContext)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FieldChangeFieldContext> fieldsChanged = new ArrayList<FieldChangeFieldContext>();
+		String modName = rule.getEvent().getModuleName();
+		List<FacilioField> fields = modBean.getAllFields(modName);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+        
 		if(rule.getRuleType() == RuleType.CUSTOM_STOREROOM_MINIMUM_QUANTITY_NOTIFICATION_RULE.getIntVal()) {
-			String modName = rule.getEvent().getModuleName();
-			List<FacilioField> fields = modBean.getAllFields(modName);
-			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-            if(fieldMap.containsKey("isUnderstocked")) {
+			if(fieldMap.containsKey("isUnderstocked")) {
             	FacilioField fieldChangeId = fieldMap.get("isUnderstocked");
+            	FieldChangeFieldContext field = new FieldChangeFieldContext();
+    			field.setFieldId(fieldChangeId.getFieldId());
+    			fieldsChanged.add(field);
+    			rule.setFields(fieldsChanged);
+    		}
+		}
+		else if(rule.getRuleType() == RuleType.CUSTOM_STOREROOM_OUT_OF_STOCK_NOTIFICATION_RULE.getIntVal()) {
+			if(modName.equals("item") && fieldMap.containsKey("quantity")) {
+            	FacilioField fieldChangeId = fieldMap.get("quantity");
+            	FieldChangeFieldContext field = new FieldChangeFieldContext();
+    			field.setFieldId(fieldChangeId.getFieldId());
+    			fieldsChanged.add(field);
+    			rule.setFields(fieldsChanged);
+    		}
+			else if(modName.equals("tool") && fieldMap.containsKey("currentQuantity")) {
+            	FacilioField fieldChangeId = fieldMap.get("currentQuantity");
             	FieldChangeFieldContext field = new FieldChangeFieldContext();
     			field.setFieldId(fieldChangeId.getFieldId());
     			fieldsChanged.add(field);
