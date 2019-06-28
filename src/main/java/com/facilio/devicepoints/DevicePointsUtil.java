@@ -39,6 +39,9 @@ public  class DevicePointsUtil {
 		if(payLoad.containsKey(DevicePointsKeys.IP_ADDRESS)) {
 			ipAddress = (String) payLoad.get(DevicePointsKeys.IP_ADDRESS);
 		}
+		else if(payLoad.containsKey(DevicePointsKeys.MAC_ADDRESS)){
+			ipAddress = (String) payLoad.get(DevicePointsKeys.MAC_ADDRESS);
+		}
 		//long subnetPrefix = FacilioUtil.parseLong(payLoad.get(DevicePointsKeys.SUBNET_PREFIX));
 		long networkNumber = -1;
 		if(payLoad.containsKey(DevicePointsKeys.NETWORK_NUMBER)) {
@@ -68,7 +71,6 @@ public  class DevicePointsUtil {
 			controller.setIpAddress(ipAddress);
 			controller.setInstanceNumber(instanceNumber);
 			controller.setNetworkNumber(networkNumber);
-			//controller.setSubnetPrefix(Math.toIntExact(subnetPrefix));
 			controller.setMacAddr(deviceId);
 			controller.setControllerType(controllerType);
 			controller.setPortNumber(portNumber);
