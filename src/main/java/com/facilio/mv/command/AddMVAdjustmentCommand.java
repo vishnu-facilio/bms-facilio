@@ -22,7 +22,7 @@ import com.facilio.mv.context.MVProjectWrapper;
 import com.facilio.mv.util.MVUtil;
 import com.facilio.time.DateRange;
 
-public class AddMVAjustmentCommand implements Command {
+public class AddMVAdjustmentCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {

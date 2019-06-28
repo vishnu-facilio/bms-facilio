@@ -3004,7 +3004,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddMVProjectCommand());
 			c.addCommand(new AddMVBaselineCommand());
-			c.addCommand(new AddMVAjustmentCommand());
+			c.addCommand(new AddMVAdjustmentCommand());
 			c.addCommand(new ConstructBaselineFormulaWithAdjustmentCommand());
 			return c;
 		}
@@ -3032,7 +3032,7 @@ public class TransactionChainFactory {
 
 		public static Chain getAddMVAdjustmentChain() {
 			Chain c = getDefaultChain();
-			c.addCommand(new AddMVAjustmentCommand());
+			c.addCommand(new AddMVAdjustmentCommand());
 			return c;
 		}
 
