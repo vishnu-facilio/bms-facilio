@@ -11,6 +11,7 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.MultiRuleContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -206,45 +207,50 @@ public class StoreRoomAction extends FacilioAction{
 		this.actions = actions;
 	}
 	
-	private Long ruleId;
+	private MultiRuleContext rules;
 	
-	public Long getRuleId() {
-		return ruleId;
+	public MultiRuleContext getRules() {
+		return rules;
 	}
-	public void setRuleId(Long ruleId) {
-		this.ruleId = ruleId;
+	public void setRules(MultiRuleContext rules) {
+		this.rules = rules;
+	}
+
+	private List<Long> ruleIds;
+	
+	public List<Long> getRuleIds() {
+		return ruleIds;
+	}
+	public void setRuleIds(List<Long> ruleIds) {
+		this.ruleIds = ruleIds;
 	}
 	public String addStoreNotification() throws Exception {
 			
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.RECORD_ID, storeRoomId);
-			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, rule);
-			context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, actions);
+			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST, rules);
 			
-			Chain addRule = TransactionChainFactory.configureStoreNotificationsChain();
+			Chain addRule = TransactionChainFactory.addMultiStoreRulesChain();
 			addRule.execute(context);
-			setResult("rule", rule);
+			setResult("rules", rules);
 			return SUCCESS;
 	}
 	
 	public String updateStoreNotification() throws Exception {
-		rule.setActions(actions);
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, actions);
-		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, rule);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, rules);
 		
-		Chain updateRule = TransactionChainFactory.updateWorkflowRuleChain();
+		Chain updateRule = TransactionChainFactory.updateMultiStoreRulesChain();
 		updateRule.execute(context);
 		
-		rule = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
-		setResult("rule", rule);
+		setResult("rules", rules);
 		return SUCCESS;
 	}
 	
 	public String removeStoreNotification() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ID, ruleId);
+		context.put(FacilioConstants.ContextNames.ID, ruleIds);
 		
 		Chain deleteRule = FacilioChainFactory.getDeleteWorkflowRuleChain();
 		deleteRule.execute(context);
@@ -253,18 +259,7 @@ public class StoreRoomAction extends FacilioAction{
 		return SUCCESS;
 	}
 	
-	public String fetchRule() throws Exception {
-		
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ID, ruleId);
-		
-		Chain fetchWorkflowChain = ReadOnlyChainFactory.fetchWorkflowRuleWithActionsChain();
-		fetchWorkflowChain.execute(context);
-		rule = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
-		
-		setResult("rule", rule);
-		return SUCCESS;
-	}
+
 	public String fetchRuleList() throws Exception {
 		
 		FacilioContext context = new FacilioContext();

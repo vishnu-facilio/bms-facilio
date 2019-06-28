@@ -3196,7 +3196,19 @@ public class TransactionChainFactory {
 			c.addCommand(new AssociateWorkFlowRuleToStoreCommand());
 			return c;
 		}
-
+		public static Chain addMultiStoreRulesChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddMultiWorkflowsCommand());
+			return c;
+		}
+		
+		public static Chain updateMultiStoreRulesChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateMultiWorkflowsCommand());
+			return c;
+		}
+		
+	
 }
 
 
