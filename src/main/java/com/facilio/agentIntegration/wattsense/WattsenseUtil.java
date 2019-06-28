@@ -137,16 +137,19 @@ public class WattsenseUtil
             }
 
         wattsense.setClientId(wattsense.getClientId());
-        makeWattsenseEntry(AgentIntegrationKeys.USER_NAME, wattsense.getUserName(),wattsense);
-        makeWattsenseEntry(AgentIntegrationKeys.INTEGRATION_STATUS, NOT_INTEGRATED.toString(),wattsense);
-        makeWattsenseEntry(AgentIntegrationKeys.DELETED_TIME,NOT_DELETED,wattsense);
+        if(makeWattsenseEntry(AgentIntegrationKeys.USER_NAME, wattsense.getUserName(),wattsense)
+                && makeWattsenseEntry(AgentIntegrationKeys.INTEGRATION_STATUS, NOT_INTEGRATED.toString(),wattsense)
+                && makeWattsenseEntry(AgentIntegrationKeys.DELETED_TIME,NOT_DELETED,wattsense) ){
 
-
-        if( ! AwsUtil.addAwsIotClient(AccountUtil.getCurrentOrg().getDomain(), wattsense.getClientId())){
-            LOGGER.info("Exception occured while adding IotClient ");
-            return false;
+            if( ! AwsUtil.addAwsIotClient(AccountUtil.getCurrentOrg().getDomain(), wattsense.getClientId())){
+                LOGGER.info("Exception occured while adding IotClient ");
+                return false;
+            }
+            return createCertificateStoreId(wattsense); //create certificate store id
         }
-        return createCertificateStoreId(wattsense); //create certificate store id
+
+
+       return false;
     }
 
     private static Wattsense getWattsense(String wattClientId) {
@@ -258,7 +261,7 @@ public class WattsenseUtil
     }
 
     private static boolean initiateMQTTConnection(Wattsense wattsense){
-        HttpPut put = new HttpPut(AgentIntegrationUtil.getInitiateMqttApi1()+wattsense.getMqttConnectionId()+ AgentIntegrationUtil.getInitiateMqttApi2());
+        HttpPut put = new HttpPut(AgentIntegrationUtil.getMqttConnectionApi()+wattsense.getMqttConnectionId()+ AgentIntegrationUtil.getInitiateMqttApi());
         put.addHeader(HttpHeaders.AUTHORIZATION,  wattsense.getAuthStringEncoded());
         try {
             HttpResponse response = httpclient.execute(put);
@@ -275,7 +278,7 @@ public class WattsenseUtil
     }
 
     private static boolean deleteCertificateStore(Wattsense wattsense){
-        HttpDelete delete = new HttpDelete(AgentIntegrationUtil.getDeleteCertificateStoreApi()+wattsense.getCertificateStoreId());
+        HttpDelete delete = new HttpDelete(AgentIntegrationUtil.getDeleteCertificateStoreApi()+"/"+wattsense.getCertificateStoreId());
         delete.addHeader(HttpHeaders.AUTHORIZATION,wattsense.getAuthStringEncoded());
         try {
             HttpResponse response = httpclient.execute(delete);
@@ -291,7 +294,7 @@ public class WattsenseUtil
     }
 
     private static  boolean deleteMqttConnection(Wattsense wattsense){
-        HttpDelete delete = new HttpDelete(AgentIntegrationUtil.getDeleteMqttConnectionApi()+wattsense.getCertificateStoreId());
+        HttpDelete delete = new HttpDelete(AgentIntegrationUtil.getDeleteMqttConnectionApi()+"/"+wattsense.getCertificateStoreId());
         delete.addHeader(HttpHeaders.AUTHORIZATION, wattsense.getAuthStringEncoded());
         //delete.addHeader(HttpHeaders.AUTHORIZATION,wattsense.getAuthStringEncoded());
         try {

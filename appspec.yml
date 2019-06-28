@@ -37,6 +37,8 @@ files:
     destination: /home/ubuntu/deployment-files/
   - source: /web-stage.xml
     destination: /home/ubuntu/deployment-files/
+  - source: /agentIntegration-production.properties
+    destination: /home/ubuntu/deployment-files/
 
 
 permissions:

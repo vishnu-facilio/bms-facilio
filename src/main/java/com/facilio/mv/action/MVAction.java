@@ -10,7 +10,7 @@
 public class MVAction extends FacilioAction {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	MVProjectWrapper mvProjectWrapper;

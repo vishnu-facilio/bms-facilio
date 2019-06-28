@@ -19,8 +19,7 @@ public class AgentIntegrationUtil {
     private static String wattsenseCertificateStoreApi;
     private static String mqttConnectionApi;
     private static String awsMqttEndpoint;
-    private static String initiateMqttApi1;
-    private static String initiateMqttApi2;
+    private static String initiateMqttApi;
     private static String deleteCertificateStoreApi;
     private static String deleteMqttConnectionApi;
 
@@ -41,12 +40,8 @@ public class AgentIntegrationUtil {
         return awsMqttEndpoint;
     }
 
-    public static String getInitiateMqttApi1() {
-        return initiateMqttApi1;
-    }
-
-    public static String getInitiateMqttApi2() {
-        return initiateMqttApi2;
+    public static String getInitiateMqttApi() {
+        return initiateMqttApi;
     }
 
     public static String getDeleteCertificateStoreApi() {
@@ -70,14 +65,15 @@ public class AgentIntegrationUtil {
             try (InputStream stream = resource.openStream()) {
                 PROPERTIES.load(stream);
                 PROPERTIES.forEach((k, v) -> PROPERTIES.put(k.toString().trim(), v.toString().trim()));
-                wattsenseAuthApi = PROPERTIES.getProperty(AgentIntegrationKeys.WATT_AUTH_API);
-                wattsenseCertificateStoreApi = PROPERTIES.getProperty(AgentIntegrationKeys.WATT_CERTIFICATE_STORE_API);
-                mqttConnectionApi = PROPERTIES.getProperty(AgentIntegrationKeys.WATT_MQTT_CONNECTION_API);
-                awsMqttEndpoint = PROPERTIES.getProperty(AgentIntegrationKeys.WATT_AWS_MQTT_ENDPOINT);
-                initiateMqttApi1 = PROPERTIES.getProperty(AgentIntegrationKeys.WATT_INITIATE_MQTT_API_1);
-                initiateMqttApi2 = PROPERTIES.getProperty(AgentIntegrationKeys.WATT_INITIATE_MQTT_API_2);
-                deleteCertificateStoreApi = PROPERTIES.getProperty(AgentIntegrationKeys.WATT_DELETE_CERT_STORE_API);
-                deleteMqttConnectionApi = PROPERTIES.getProperty(AgentIntegrationKeys.WATT_DELETE_MQTT_CONNECTION_API);
+                String wattBasePath = PROPERTIES.getProperty(AgentIntegrationKeys.WATT_BASE_PATH);
+                String wattMqttPath = PROPERTIES.getProperty(AgentIntegrationKeys.WATT_MQTT_PATH);
+                wattsenseAuthApi =  wattBasePath + PROPERTIES.getProperty(AgentIntegrationKeys.WATT_AUTH_API);
+                mqttConnectionApi = wattBasePath + wattMqttPath ;
+                wattsenseCertificateStoreApi = mqttConnectionApi + PROPERTIES.getProperty(AgentIntegrationKeys.WATT_CERTIFICATE_STORE_API);
+                awsMqttEndpoint = PROPERTIES.getProperty(AgentIntegrationKeys.WATT_AWS_MQTT_ENDPOINT_BASE) + AwsUtil.getIotEndPoint();
+                initiateMqttApi = PROPERTIES.getProperty(AgentIntegrationKeys.WATT_INITIATE_MQTT_API);
+                deleteCertificateStoreApi = wattsenseCertificateStoreApi;
+                deleteMqttConnectionApi = mqttConnectionApi;
             } catch (IOException e) {
                 LOGGER.info("Exception occurred ",e);
 

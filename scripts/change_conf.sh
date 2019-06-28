@@ -28,6 +28,7 @@ if [ "$DEPLOYMENT_GROUP_NAME" = "production_deployment" ]; then
     cp $UBUNTU_HOME/deployment-files/log4j-user.properties $CLASSES_DIR/log4j.properties
     cp $UBUNTU_HOME/setenv.sh $APP_HOME/bin/setenv.sh
     cp $UBUNTU_HOME/deployment-files/awsprops-user.properties $CONF_DIR/awsprops.properties
+    cp $UBUNTU-HOME/deployment-files/agentIntegration-production.properties $CONF_DIR/agentIntegration.properties
     echo "copied $DEPLOYMENT_GROUP_NAME context file" >> /home/ubuntu/deployment.log
 fi
 

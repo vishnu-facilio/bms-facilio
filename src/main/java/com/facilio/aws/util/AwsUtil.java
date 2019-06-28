@@ -135,6 +135,9 @@ public class AwsUtil
 	private static String anomalyDetectWaitTimeInSeconds;
 	private static String anomalyPredictAPIURL;
 
+	private static String iotEndPoint;
+	public static String getIotEndPoint() { return iotEndPoint; }
+
 	private static boolean sysLogEnabled;
     private static HashSet<String> dbIdentifiers = new HashSet<>();
 
@@ -178,6 +181,7 @@ public class AwsUtil
 				anomalyDetectWaitTimeInSeconds = PROPERTIES.getProperty("anomalyDetectWaitTimeInSeconds","3");
 				anomalyPredictAPIURL = PROPERTIES.getProperty("anomalyPredictServiceURL","http://localhost:7444/api");
 				sysLogEnabled = "true".equals(PROPERTIES.getProperty("syslog.enabled", "false"));
+				iotEndPoint = (String) PROPERTIES.get("iot.endpoint");
 				messageReprocessInterval = Long.parseLong(PROPERTIES.getProperty(AgentKeys.MESSAGE_REPROCESS_INTERVAL,"300000"));
 				PROPERTIES.put("clientapp.url", clientAppUrl);
 				URL resourceDir = AwsUtil.class.getClassLoader().getResource("");

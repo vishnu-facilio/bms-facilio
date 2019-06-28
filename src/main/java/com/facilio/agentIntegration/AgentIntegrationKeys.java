@@ -26,13 +26,12 @@ public class AgentIntegrationKeys
     public static final String DELETED_TIME = "deletedTime";
 
     //APIs
-    public static final String WATT_AUTH_API  = "authApi";
-    public static final String WATT_CERTIFICATE_STORE_API ="certificateStoreApi";
-    public static final String WATT_MQTT_CONNECTION_API ="mqttConnectionApi";
-    public static final String WATT_AWS_MQTT_ENDPOINT = "awsMqttEndpoint";
-    public static final String WATT_INITIATE_MQTT_API_1 ="initiateMqttApi1";
-    public static final String WATT_INITIATE_MQTT_API_2 = "initiateMqttApi2";
-    public static final String WATT_DELETE_CERT_STORE_API ="deleteCertificateStoreApi";
-    public static final String WATT_DELETE_MQTT_CONNECTION_API = "deleteMqttConnectionApi";
+    public static final String WATT_AUTH_API  = "wattsenseAuthApi";
+    public static final String WATT_MQTT_PATH = "wattsenseMqttPath";
+    public static final String WATT_CERTIFICATE_STORE_API ="WattsenseCertificateStoreApi";
+    public static final String WATT_BASE_PATH = "wattsenseBasePath";
+    public static final String WATT_AWS_MQTT_ENDPOINT_BASE = "WattsenseAwsMqttEndpointBase";
+    public static final String WATT_INITIATE_MQTT_API = "wattsenseInitiateMqttApi";
+
 
 }
