@@ -17,9 +17,16 @@ public class AddMultiWorkflowsCommand implements Command{
 		List<MultiRuleContext> rules = (List<MultiRuleContext>)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST);
 		if(CollectionUtils.isNotEmpty(rules)) {
 			for(MultiRuleContext rule : rules) {
-				context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, rule.getRule());
-				context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, rule.getActions());
-				TransactionChainFactory.configureStoreNotificationsChain().execute(context);
+				if(rule.getRule().getId() > 0) {
+					context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, rule.getRule());
+					context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, rule.getActions());
+					TransactionChainFactory.updateWorkflowRuleChain().execute(context);
+				}
+				else {
+					context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, rule.getRule());
+					context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, rule.getActions());
+					TransactionChainFactory.configureStoreNotificationsChain().execute(context);
+				}
 			}
 		}
 		return false;

@@ -39,7 +39,7 @@ public class GetRulesForStoreCommand implements Command{
 		if(CollectionUtils.isNotEmpty(result)){
 		 for(Map<String,Object> map : result) {
 			 Long ruleId = (Long)map.get("workflowRuleId");
-			 WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(ruleId);
+			 WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(ruleId, true);
 			 List<ActionContext> actions = ActionAPI.getAllActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), rule.getId());
 			 rule.setActions(actions);
 			 workFlowRuleList.add(rule);

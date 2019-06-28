@@ -1548,7 +1548,7 @@
 	</package>
 	<package name="storeroomRuleApiV2" namespace="/api/v2/storeroom/rules" extends="v2Api">
 	
-		<action name="addRule" class="com.facilio.bmsconsole.actions.StoreRoomAction" method="addStoreNotification">
+		<action name="addOrUpdateRule" class="com.facilio.bmsconsole.actions.StoreRoomAction" method="addStoreNotification">
 			<param name="moduleName">inventory</param>
     	</action>
 		
