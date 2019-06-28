@@ -39,17 +39,14 @@ public class MultipartHttpPost {
             httpConn.disconnect();
         }
 
-        public void addFile(String fieldName, File uploadFile)
+        public void addFile(String fieldName, String fileName, InputStream inputStream)
                 throws IOException {
-            String fileName = uploadFile.getName();
             writer.append("--" + boundary).append(LINE_FEED);
             writer.append("Content-Disposition: form-data; name=\"" + fieldName + "\"; filename=\"" + fileName + "\"").append(LINE_FEED);
             writer.append("Content-Type: " + URLConnection.guessContentTypeFromName(fileName)).append(LINE_FEED);
             writer.append("Content-Transfer-Encoding: binary").append(LINE_FEED);
             writer.append(LINE_FEED);
             writer.flush();
-
-            FileInputStream inputStream = new FileInputStream(uploadFile);
             byte[] buffer = new byte[4096];
             int bytesRead = -1;
             while ((bytesRead = inputStream.read(buffer)) != -1) {

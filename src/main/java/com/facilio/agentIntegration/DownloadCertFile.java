@@ -24,6 +24,26 @@ public class DownloadCertFile
 
     private static final Logger LOGGER = LogManager.getLogger(DownloadCertFile.class.getName());
 
+
+    public static InputStream getCertFileInputStream(){
+        long orgId = AccountUtil.getCurrentOrg().getOrgId();
+        String orgName = AccountUtil.getCurrentAccount().getOrg().getDomain();
+        CreateKeysAndCertificateResult certificateResult = AwsUtil.signUpIotToKinesis(orgName);
+
+        String certPemContent = certificateResult.getCertificatePem();
+        InputStream certFileInputStream = new ByteArrayInputStream(certPemContent.getBytes());
+        return certFileInputStream;
+    }
+
+    public static InputStream getKeyFileInputStream(){
+        long orgId = AccountUtil.getCurrentOrg().getOrgId();
+        String orgName = AccountUtil.getCurrentAccount().getOrg().getDomain();
+        CreateKeysAndCertificateResult keyResult = AwsUtil.signUpIotToKinesis(orgName);
+        String ketFileContent= keyResult.getKeyPair().getPrivateKey();
+        InputStream keyInputStream = new ByteArrayInputStream(ketFileContent.getBytes());
+        return keyInputStream;
+    }
+
     public static String downloadCertificate() {
         long orgId = AccountUtil.getCurrentOrg().getOrgId();
         String url=null;

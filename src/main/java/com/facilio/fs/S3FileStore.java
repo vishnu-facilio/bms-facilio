@@ -137,6 +137,11 @@ public class S3FileStore extends FileStore {
 	}
 
 	@Override
+	public String getDownloadUrl(long fileId) throws Exception {
+		return super.getDownloadUrl(fileId);
+	}
+
+	@Override
 	public InputStream readFile(long fileId) throws Exception {
 		FileInfo fileInfo = getFileInfo(fileId);
 		return readFile(fileInfo);
