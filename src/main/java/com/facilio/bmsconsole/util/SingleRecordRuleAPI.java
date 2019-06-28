@@ -7,7 +7,9 @@ import java.util.Map;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
@@ -15,6 +17,8 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.events.context.EventContext;
+import com.facilio.events.util.EventAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -29,6 +33,59 @@ import com.facilio.time.SecondsChronoUnit;
 
 public class SingleRecordRuleAPI extends WorkflowRuleAPI{
 
+	protected static void validateRecordSpecificScheduledRule(WorkflowRuleContext rule, boolean isUpdate) throws Exception {
+		
+		if (EventType.SCHEDULED.isPresent(rule.getEvent().getActivityType())) {
+			if (rule.getScheduleTypeEnum() != null) {
+				if (rule.getDateFieldId() == -1) {
+					throw new IllegalArgumentException("Date Field Id cannot be null for Record specific Scheduled Rule");
+				}
+				switch (rule.getScheduleTypeEnum()) {
+					case BEFORE:
+					case AFTER:
+						if (rule.getInterval() == -1) {
+							throw new IllegalArgumentException("Interval cannot be null for Record specific Scheduled Rule with type BEFORE/ AFTER");
+						}
+						break;
+					case ON:
+						break;
+				}
+			if (rule.getDateFieldId() != -1) {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioField field = modBean.getField(rule.getDateFieldId());
+				switch (field.getDataTypeEnum()) {
+					case DATE:
+						if (rule.getTimeObj() == null) {
+							throw new IllegalArgumentException("Time is mandatory for DATE field");
+						}
+						if (rule.getInterval() % 86400 != 0) {
+							throw new IllegalArgumentException("Interval should be in multiples of days for DATE field");
+						}
+						break;
+					case DATE_TIME:
+						if (rule.getTimeObj() != null) {
+							throw new IllegalArgumentException("Time is not required for DATE_TIME field");
+						}
+						if (rule.getInterval() % (DATE_TIME_RULE_INTERVAL * 60) != 0) {
+							throw new IllegalArgumentException("Interval should be in multiples of "+DATE_TIME_RULE_INTERVAL+" min for DATE_TIME field");
+						}
+						break;
+					default:
+						throw new IllegalArgumentException("Only DATE/ DATE_TIME field can be used for Record specific Scheduled Rules");
+				   }
+			   }
+			}
+			else {
+				if(rule.getSchedule() == null) {
+					throw new IllegalArgumentException("Either datefield schedule/periodic schedule info has to be present");
+				}
+				if(rule.getDateFieldId() != -1) {
+					throw new IllegalArgumentException("No datefield needed for periodic jobs");
+				}
+			}
+		}
+	}
+	
 	public static List<? extends WorkflowRuleContext> getAllWorkFlowRule(long parentId, FacilioModule module) throws Exception {
 		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
 		fields.addAll(FieldFactory.getWorkflowRuleFields());
@@ -53,12 +110,16 @@ public class SingleRecordRuleAPI extends WorkflowRuleAPI{
 	
 	public static void addJob(WorkflowRuleContext rule) throws Exception{
 		long startTime = ZonedDateTime.now().truncatedTo(new SecondsChronoUnit(DATE_TIME_RULE_INTERVAL * 60)).toInstant().toEpochMilli() - 1;
-
+		WorkflowEventContext event = getWorkflowEvent(rule.getEventId());
 		if(rule.getSchedule() == null) {
-			Long fieldVal = getDateFieldVal(rule.getParentId(), rule.getEvent().getModule(), rule.getDateFieldId());
+			Long fieldVal = getDateFieldVal(rule.getParentId(), event.getModule(), rule.getDateFieldId());
+			fieldVal = fieldVal / 1000;
+			if(rule.getTimeObj() != null) {
+			  fieldVal += rule.getTimeObj().toSecondOfDay();
+			}
 			if(fieldVal != -1) {
 				//assuming date field val in millis,rule interval in seconds
-			   FacilioTimer.scheduleOneTimeJob(rule.getId(), FacilioConstants.Job.RECORD_SPECIFIC_RULE_JOB_NAME, fieldVal + (rule.getInterval() * 1000), "facilio");
+			   FacilioTimer.scheduleOneTimeJob(rule.getId(), FacilioConstants.Job.RECORD_SPECIFIC_RULE_JOB_NAME, fieldVal + rule.getInterval(), "facilio");
 			}
 		}
 		else {
@@ -100,16 +161,21 @@ public class SingleRecordRuleAPI extends WorkflowRuleAPI{
 	}
 	
 	
-	public static void updateRuleJobDuringRecordUpdation (long recordId, FacilioModule module, Map<Long, List<UpdateChangeSet>> changeSet) throws Exception{
+	public static void updateRuleJobDuringRecordUpdation (long recordId, FacilioModule module, List<UpdateChangeSet> changeSet) throws Exception{
 		
 		List<WorkflowRuleContext> allRules = (List<WorkflowRuleContext>) getAllWorkFlowRule(recordId, module);
 		if(CollectionUtils.isNotEmpty(allRules)) {
 			for(WorkflowRuleContext rule : allRules) {
-				if (rule.getEvent() != null) {
-					if (EventType.SCHEDULED.isPresent(rule.getEvent().getActivityType()) && rule.getRuleTypeEnum() == RuleType.RECORD_SPECIFIC_RULE) {
-						if(changeSet.containsKey(rule.getDateFieldId())) {
-							FacilioTimer.deleteJob(rule.getId(), FacilioConstants.Job.RECORD_SPECIFIC_RULE_JOB_NAME);
-							SingleRecordRuleAPI.addJob(rule);
+				WorkflowEventContext event = getWorkflowEvent(rule.getEventId());
+				if (event != null) {
+					if (EventType.SCHEDULED.isPresent(event.getActivityType()) && rule.getRuleTypeEnum() == RuleType.RECORD_SPECIFIC_RULE) {
+						if(rule.getScheduleTypeEnum() != null && rule.getDateFieldId() > 0 && !changeSet.isEmpty()) {
+							for(UpdateChangeSet changes : changeSet) {
+								if(changes.getFieldId() == rule.getDateFieldId()) {
+									FacilioTimer.deleteJob(rule.getId(), FacilioConstants.Job.RECORD_SPECIFIC_RULE_JOB_NAME);
+									SingleRecordRuleAPI.addJob(rule);
+								}
+							}
 						}
 					}
 				}
@@ -117,12 +183,14 @@ public class SingleRecordRuleAPI extends WorkflowRuleAPI{
 		}
 	}
 	
-	public static void deleteRuleJobDuringRecordDeletion (long recordId, FacilioModule module) throws Exception{
+	public static void deleteRuleJobDuringRecordDeletion (List<Long> recordIds, FacilioModule module) throws Exception{
 		
-		List<WorkflowRuleContext> allRules = (List<WorkflowRuleContext>) getAllWorkFlowRule(recordId, module);
-		if(CollectionUtils.isNotEmpty(allRules)) {
-			for(WorkflowRuleContext rule : allRules) {
-				WorkflowRuleAPI.deleteWorkflowRule(rule.getId());
+		for(Long recordId : recordIds) {
+			List<WorkflowRuleContext> allRules = (List<WorkflowRuleContext>) getAllWorkFlowRule(recordId, module);
+			if(CollectionUtils.isNotEmpty(allRules)) {
+				for(WorkflowRuleContext rule : allRules) {
+					WorkflowRuleAPI.deleteWorkflowRule(rule.getId());
+				}
 			}
 		}
 	}

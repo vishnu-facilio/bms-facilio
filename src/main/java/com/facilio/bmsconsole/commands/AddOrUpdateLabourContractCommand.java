@@ -12,6 +12,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ContractsContext.ContractType;
 import com.facilio.bmsconsole.context.ContractsContext.Status;
 import com.facilio.bmsconsole.util.ContractsAPI;
+import com.facilio.chain.FacilioContext;
 import com.facilio.bmsconsole.context.ContractAssociatedTermsContext;
 import com.facilio.bmsconsole.context.LabourContext;
 import com.facilio.bmsconsole.context.LabourContractContext;
@@ -57,7 +58,7 @@ public class AddOrUpdateLabourContractCommand implements Command{
 			labourContractContext.setContractType(ContractType.LABOUR);
 			
 			if (!isContractRevised && labourContractContext.getId() > 0) {
-				ContractsAPI.updateRecord(labourContractContext, module, fields);
+				ContractsAPI.updateRecord(labourContractContext, module, fields, true, (FacilioContext) context);
 				
 				DeleteRecordBuilder<LabourContractLineItemContext> deleteBuilder = new DeleteRecordBuilder<LabourContractLineItemContext>()
 						.module(lineModule)
@@ -76,7 +77,7 @@ public class AddOrUpdateLabourContractCommand implements Command{
 					LabourContractContext revisedContract = (LabourContractContext)labourContractContext.clone();
 					ContractsAPI.addRecord(true,Collections.singletonList(revisedContract), module, fields);
 					labourContractContext.setStatus(Status.REVISED);
-					ContractsAPI.updateRecord(labourContractContext, module, fields);
+					ContractsAPI.updateRecord(labourContractContext, module, fields, true, (FacilioContext) context);
 					updateLineItems(revisedContract);
 					ContractsAPI.updateTermsAssociated(revisedContract.getId(), revisedContract.getTermsAssociated());
 					revisedContract.setStatus(Status.PENDING_FOR_REVISION);
@@ -97,7 +98,7 @@ public class AddOrUpdateLabourContractCommand implements Command{
 				labourContractContext.setRevisionNumber(0);
 				ContractsAPI.addRecord(true,Collections.singletonList(labourContractContext), module, fields);
 				labourContractContext.setParentId(labourContractContext.getLocalId());
-				ContractsAPI.updateRecord(labourContractContext, module, fields);
+				ContractsAPI.updateRecord(labourContractContext, module, fields, true, (FacilioContext) context);
 				updateLineItems(labourContractContext);
 				//add labour if newly added here as lineItem
 				addLabourRecords(labourContractContext.getLineItems(),labourModule,labourFields);

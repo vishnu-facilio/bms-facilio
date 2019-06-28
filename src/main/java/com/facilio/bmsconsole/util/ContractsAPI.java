@@ -16,6 +16,7 @@ import com.facilio.bmsconsole.context.PurchaseContractLineItemContext;
 import com.facilio.bmsconsole.context.RentalLeaseContractContext;
 import com.facilio.bmsconsole.context.RentalLeaseContractLineItemsContext;
 import com.facilio.bmsconsole.context.WarrantyContractLineItemContext;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -193,13 +194,21 @@ public class ContractsAPI {
 		return builder.get();
 	}
 	
-	public static void updateRecord(ModuleBaseWithCustomFields data, FacilioModule module, List<FacilioField> fields) throws Exception {
+	public static void updateRecord(ModuleBaseWithCustomFields data, FacilioModule module, List<FacilioField> fields, boolean isChangeSetNeeded, FacilioContext context) throws Exception {
 		
 		UpdateRecordBuilder updateRecordBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
 				.module(module)
 				.fields(fields)
 				.andCondition(CriteriaAPI.getIdCondition(data.getId(), module));
-		updateRecordBuilder.update(data);
+		
+		if (isChangeSetNeeded) {
+			updateRecordBuilder.withChangeSet(ModuleBaseWithCustomFields.class);
+		}
+		
+		
+		context.put(FacilioConstants.ContextNames.ROWS_UPDATED, updateRecordBuilder.update(data));
+		context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, updateRecordBuilder.getChangeSet());
+		
 	}
 	
 	public static void updateAssetsAssociated(long recordId, List<ContractAssociatedAssetsContext> assets) throws Exception {

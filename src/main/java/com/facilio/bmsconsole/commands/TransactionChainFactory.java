@@ -2611,7 +2611,10 @@ public class TransactionChainFactory {
 			Chain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForPurchaseContract());
 			chain.addCommand(new AddOrUpdatePurchaseContractCommand());
-		    chain.addCommand(getPurchaseContractTotalCostChain()); //roll up for calculating total cost
+			chain.addCommand(new UpdateRecordRuleJobOnRecordUpdationCommand());
+			chain.addCommand(getPurchaseContractTotalCostChain()); //roll up for calculating total cost
+			
+		    
 			return chain;
 		}
 
@@ -2619,6 +2622,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForPurchaseContract());
 			c.addCommand(new DeletePurchaseContractCommand());
+			c.addCommand(new DeleteRecordRuleJobOnRecordDeletionCommand());
 			return c;
 		}
 

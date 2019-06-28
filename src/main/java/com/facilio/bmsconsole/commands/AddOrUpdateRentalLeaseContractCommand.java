@@ -25,6 +25,7 @@ import com.facilio.bmsconsole.context.WarrantyContractContext;
 import com.facilio.bmsconsole.util.ContractsAPI;
 import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.bmsconsole.util.ToolsApi;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -65,7 +66,7 @@ public class AddOrUpdateRentalLeaseContractCommand implements Command{
 			rentalLeaseContractContext.setContractType(ContractType.RENTAL_LEASE);
 			
 			if (!isContractRevised && rentalLeaseContractContext.getId() > 0) {
-				ContractsAPI.updateRecord(rentalLeaseContractContext, module, fields);
+				ContractsAPI.updateRecord(rentalLeaseContractContext, module, fields,true, (FacilioContext) context);
 				
 				DeleteRecordBuilder<RentalLeaseContractLineItemsContext> deleteBuilder = new DeleteRecordBuilder<RentalLeaseContractLineItemsContext>()
 						.module(lineModule)
@@ -82,7 +83,7 @@ public class AddOrUpdateRentalLeaseContractCommand implements Command{
 					RentalLeaseContractContext revisedContract = (RentalLeaseContractContext)rentalLeaseContractContext.clone();
 					ContractsAPI.addRecord(true,Collections.singletonList(revisedContract), module, fields);
 					rentalLeaseContractContext.setStatus(Status.REVISED);
-					ContractsAPI.updateRecord(rentalLeaseContractContext, module, fields);
+					ContractsAPI.updateRecord(rentalLeaseContractContext, module, fields, true, (FacilioContext) context);
 					updateLineItems(revisedContract);
 					ContractsAPI.updateAssetsAssociated(revisedContract.getId(), revisedContract.getAssociatedAssets());
 					ContractsAPI.updateTermsAssociated(revisedContract.getId(), revisedContract.getTermsAssociated());
@@ -102,7 +103,7 @@ public class AddOrUpdateRentalLeaseContractCommand implements Command{
 				rentalLeaseContractContext.setRevisionNumber(0);
 				ContractsAPI.addRecord(true,Collections.singletonList(rentalLeaseContractContext), module, fields);
 				rentalLeaseContractContext.setParentId(rentalLeaseContractContext.getLocalId());
-				ContractsAPI.updateRecord(rentalLeaseContractContext, module, fields);
+				ContractsAPI.updateRecord(rentalLeaseContractContext, module, fields, true, (FacilioContext) context);
 				updateLineItems(rentalLeaseContractContext);
 				ContractsAPI.addRecord(false,rentalLeaseContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 				context.put(FacilioConstants.ContextNames.RECORD, rentalLeaseContractContext);

@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.context.PurchaseContractContext;
 import com.facilio.bmsconsole.context.PurchaseContractLineItemContext;
 import com.facilio.bmsconsole.context.WarrantyContractContext;
 import com.facilio.bmsconsole.util.ContractsAPI;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -53,7 +54,7 @@ public class AddOrUpdatePurchaseContractCommand implements Command {
 			}
 			purchaseContractContext.setContractType(ContractType.PURCHASE);
 			if (!isContractRevised && purchaseContractContext.getId() > 0) {
-				ContractsAPI.updateRecord(purchaseContractContext, module, fields);
+				ContractsAPI.updateRecord(purchaseContractContext, module, fields, true, (FacilioContext) context);
 				
 				DeleteRecordBuilder<PurchaseContractLineItemContext> deleteBuilder = new DeleteRecordBuilder<PurchaseContractLineItemContext>()
 						.module(lineModule)
@@ -63,6 +64,8 @@ public class AddOrUpdatePurchaseContractCommand implements Command {
 				
 				ContractsAPI.addRecord(false,purchaseContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 				context.put(FacilioConstants.ContextNames.RECORD, purchaseContractContext);
+				context.put(FacilioConstants.ContextNames.RECORD_ID, purchaseContractContext.getId());
+				
 				
 
 			}
@@ -71,7 +74,7 @@ public class AddOrUpdatePurchaseContractCommand implements Command {
 					PurchaseContractContext revisedContract =  purchaseContractContext.clone();
 					ContractsAPI.addRecord(true,Collections.singletonList(revisedContract), module, fields);
 					purchaseContractContext.setStatus(Status.REVISED);
-					ContractsAPI.updateRecord(purchaseContractContext, module, fields);
+					ContractsAPI.updateRecord(purchaseContractContext, module, fields, true, (FacilioContext) context);
 					updateLineItems(revisedContract);
 					revisedContract.setStatus(Status.PENDING_FOR_REVISION);
 					ContractsAPI.updateTermsAssociated(revisedContract.getId(), revisedContract.getTermsAssociated());
@@ -91,7 +94,7 @@ public class AddOrUpdatePurchaseContractCommand implements Command {
 				purchaseContractContext.setRevisionNumber(0);
 				ContractsAPI.addRecord(true,Collections.singletonList(purchaseContractContext), module, fields);
 				purchaseContractContext.setParentId(purchaseContractContext.getLocalId());
-				ContractsAPI.updateRecord(purchaseContractContext, module, fields);
+				ContractsAPI.updateRecord(purchaseContractContext, module, fields, true, (FacilioContext) context);
 				updateLineItems(purchaseContractContext);
 				
 				ContractsAPI.addRecord(false,purchaseContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));

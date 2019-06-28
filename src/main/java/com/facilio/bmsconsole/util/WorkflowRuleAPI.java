@@ -187,6 +187,9 @@ public class WorkflowRuleAPI {
 		if (rule.getEvent() != null && rule.getRuleType() != RuleType.RECORD_SPECIFIC_RULE.getIntVal() && EventType.SCHEDULED.isPresent(rule.getEvent().getActivityType())) {
 			ScheduledRuleAPI.validateScheduledRule(rule, false);
 		}
+		if(rule.getEvent() != null && rule.getRuleType() == RuleType.RECORD_SPECIFIC_RULE.getIntVal() && EventType.SCHEDULED.isPresent(rule.getEvent().getActivityType())) {
+			SingleRecordRuleAPI.validateRecordSpecificScheduledRule(rule, false);
+		}
 	}
 	
 	private static void addExtendedProps(FacilioModule module, List<FacilioField> fields, Map<String, Object> ruleProps) throws SQLException, RuntimeException {

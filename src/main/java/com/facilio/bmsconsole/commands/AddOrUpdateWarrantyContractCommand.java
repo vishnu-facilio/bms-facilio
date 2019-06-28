@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.context.ServiceContext;
 import com.facilio.bmsconsole.context.WarrantyContractContext;
 import com.facilio.bmsconsole.context.WarrantyContractLineItemContext;
 import com.facilio.bmsconsole.util.ContractsAPI;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -57,7 +58,7 @@ public class AddOrUpdateWarrantyContractCommand implements Command{
 			warrantyContractContext.setContractType(ContractType.WARRANTY);
 			
 			if (!isContractRevised && warrantyContractContext.getId() > 0) {
-				ContractsAPI.updateRecord(warrantyContractContext, module, fields);
+				ContractsAPI.updateRecord(warrantyContractContext, module, fields, true, (FacilioContext) context);
 				
 				DeleteRecordBuilder<WarrantyContractLineItemContext> deleteBuilder = new DeleteRecordBuilder<WarrantyContractLineItemContext>()
 						.module(lineModule)
@@ -86,7 +87,7 @@ public class AddOrUpdateWarrantyContractCommand implements Command{
 					WarrantyContractContext revisedContract = (WarrantyContractContext)warrantyContractContext.clone();
 					ContractsAPI.addRecord(true,Collections.singletonList(revisedContract), module, fields);
 					warrantyContractContext.setStatus(Status.REVISED);
-					ContractsAPI.updateRecord(warrantyContractContext, module, fields);
+					ContractsAPI.updateRecord(warrantyContractContext, module, fields, true, (FacilioContext) context);
 					updateLineItems(revisedContract);
 					ContractsAPI.updateAssetsAssociated(revisedContract.getId(), revisedContract.getAssociatedAssets());
 					ContractsAPI.updateTermsAssociated(revisedContract.getId(), revisedContract.getTermsAssociated());
@@ -111,7 +112,7 @@ public class AddOrUpdateWarrantyContractCommand implements Command{
 				warrantyContractContext.setRevisionNumber(0);
 				ContractsAPI.addRecord(true,Collections.singletonList(warrantyContractContext), module, fields);
 				warrantyContractContext.setParentId(warrantyContractContext.getLocalId());
-				ContractsAPI.updateRecord(warrantyContractContext, module, fields);
+				ContractsAPI.updateRecord(warrantyContractContext, module, fields, true, (FacilioContext) context);
 				updateLineItems(warrantyContractContext);
 				//add service if newly added here as lineItem
 				//addServiceRecords(warrantyContractContext.getLineItems(),serviceModule,serviceFields);

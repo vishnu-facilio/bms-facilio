@@ -16,7 +16,7 @@ public class DeleteRecordRuleCommand implements Command{
 		if (recordId != null) {
 			WorkflowRuleAPI.deleteWorkflowRule(recordId);
 		}
-	
+
 		return false;
 	}
 
