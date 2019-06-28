@@ -182,7 +182,7 @@ public class FacilioConstants {
 		public static final String WORK_ORDER_TEMPLATE = "workordertemplate";
 		public static final String WORK_ORDER_TEMPLATE_LIST = "workordertemplates";
 		
-		
+		public static final String FILTERED_NAME = "filteredName";
 		
 		public static final String PLACE_HOLDER = "placeHolder";
 		

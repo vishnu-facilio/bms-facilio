@@ -21,6 +21,7 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -113,8 +114,14 @@ public class UpdateTaskCommand implements Command {
 //						}
 						JSONObject newinfo = new JSONObject();
 //						newinfo.put("closetasks", closedtask);
-						CommonCommandUtil.addActivityToContext(oldTasks.get(0).getParentTicketId(), -1, WorkOrderActivityType.CLOSE_ALL_TASK, newinfo, (FacilioContext) context);
-                     }
+						String filteredName = (String) context.get(FacilioConstants.ContextNames.FILTERED_NAME);
+						if (filteredName != null) {
+							newinfo.put(FacilioConstants.ContextNames.FILTERED_NAME,filteredName);
+							CommonCommandUtil.addActivityToContext(oldTasks.get(0).getParentTicketId(), -1,WorkOrderActivityType.CLOSE_FILTERED_TASK, newinfo, (FacilioContext) context);
+						} else {
+							CommonCommandUtil.addActivityToContext(oldTasks.get(0).getParentTicketId(), -1,WorkOrderActivityType.CLOSE_ALL_TASK, newinfo, (FacilioContext) context);
+						}
+					}
 				} else {
 				   if(task.getStatusNewEnum()!=null) {
 					if(task.getStatusNewEnum().toString() == "CLOSED") {

@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.activity;
 
 import com.facilio.activity.ActivityType;
+import com.facilio.constants.FacilioConstants;
 import org.json.simple.JSONObject;
 
 public enum WorkOrderActivityType implements ActivityType {
@@ -9,6 +10,14 @@ public enum WorkOrderActivityType implements ActivityType {
 		public String constructMessage(JSONObject json) {
 			// TODO Auto-generated method stub
 			return " closed all the tasks ";
+		}
+	},
+	CLOSE_FILTERED_TASK(29) {
+		@Override
+		public String constructMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			String filteredName = (String) json.get(FacilioConstants.ContextNames.FILTERED_NAME);
+			return " closed the tasks for " + filteredName;
 		}
 	},
 	ASSIGN(3) {
