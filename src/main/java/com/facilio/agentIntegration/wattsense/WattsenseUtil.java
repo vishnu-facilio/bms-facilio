@@ -179,6 +179,7 @@ public class WattsenseUtil
 
     private static boolean createCertificateStoreId(Wattsense wattsense){
         String certificateStoreId = null;
+
         /*Map<String ,File> files =  getCertAndKeyFiles(); // get both files as map with the spicified key.
         if(files == null){
             LOGGER.info("Exception in downloading certificate and key");
@@ -190,8 +191,18 @@ public class WattsenseUtil
         MultipartHttpPost multipart = null;
         try {
             multipart = new MultipartHttpPost(AgentIntegrationUtil.getWattsenseCertificateStoreApi(),"UTF-8",wattsense.getAuthStringEncoded());
-            multipart.addFile(AgentIntegrationKeys.CERTIFICATE,AgentIntegrationKeys.CERTIFICATE,DownloadCertFile.getCertFileInputStream());
-            multipart.addFile(AgentIntegrationKeys.CERTIFICATE_KEY,AgentIntegrationKeys.CERTIFICATE_KEY,DownloadCertFile.getKeyFileInputStream());
+            Map<String ,InputStream> inputStreamMap = new HashMap<>();
+            inputStreamMap = DownloadCertFile.getCertKeyFileInputStreams();
+            if(inputStreamMap.get(AgentIntegrationKeys.CERT_FILE_NAME) != null){
+                multipart.addFile(AgentIntegrationKeys.CERTIFICATE,AgentIntegrationKeys.CERTIFICATE,inputStreamMap.get(AgentIntegrationKeys.CERT_FILE_NAME));
+            }else{
+                return false;
+            }
+            if(inputStreamMap.get(AgentIntegrationKeys.KEY_FILE_NAME) != null){
+                multipart.addFile(AgentIntegrationKeys.CERTIFICATE_KEY,AgentIntegrationKeys.CERTIFICATE_KEY,inputStreamMap.get(AgentIntegrationKeys.KEY_FILE_NAME));
+            }else {
+                return false;
+            }
             String response = multipart.finish();
             JSONParser parser = new JSONParser();
             JSONObject certificateStoreResponse = (JSONObject) parser.parse(response);
