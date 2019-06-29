@@ -59,29 +59,29 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 			long startTime = (long) props.get("startTime");
 			long endTime = (long) props.get("endTime");
 			
-			LOGGER.info("Historical execution of rule : "+readingRule.getId()+" for resources : "+readingRule.getMatchedResources().keySet());
+//			LOGGER.info("Historical execution of rule : "+readingRule.getId()+" for resources : "+readingRule.getMatchedResources().keySet());
 			Map<String, List<ReadingDataMeta>> supportFieldsRDM = null;
 			List<WorkflowFieldContext> fields = null;
 			if (readingRule.getWorkflow() != null) {
 				fields = WorkflowUtil.getWorkflowFields(readingRule.getWorkflow().getId());
-				LOGGER.info("Dependent fields : "+fields);
+//				LOGGER.info("Dependent fields : "+fields);
 			
 				if (fields != null && !fields.isEmpty()) {
 					supportFieldsRDM = getSupportingData(fields, startTime, endTime, -1);
-					LOGGER.info("Support Fields RDM Values size : "+supportFieldsRDM.size());
+//					LOGGER.info("Support Fields RDM Values size : "+supportFieldsRDM.size());
 				}
 			}
 
 			List<ReadingEventContext> events = new ArrayList<>();
 			for (long resourceId : readingRule.getMatchedResources().keySet()) {
-				LOGGER.info("Gonna fetch data and execute rule for resource : "+resourceId);
+//				LOGGER.info("Gonna fetch data and execute rule for resource : "+resourceId);
 				Map<String, List<ReadingDataMeta>> currentFields = supportFieldsRDM;
 				Map<String, List<ReadingDataMeta>> currentRDMList = null;
 				if (readingRule.getWorkflow() != null) {
 					currentRDMList = getSupportingData(fields, startTime, endTime, resourceId);
 				}
 				if (currentRDMList != null && !currentRDMList.isEmpty()) {
-					LOGGER.info("Current resource Support Fields RDM Values size : "+currentRDMList.size());
+//					LOGGER.info("Current resource Support Fields RDM Values size : "+currentRDMList.size());
 					if (supportFieldsRDM == null) {
 						currentFields = currentRDMList;
 					}
@@ -147,14 +147,14 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 				LOGGER.info("Executing rule for reading : "+reading);
 				try {
 					ReadingDataMeta currentRDM = getRDM(reading, readingRule.getReadingField());
-					LOGGER.info("Current RDM : "+currentRDM);
+//					LOGGER.info("Current RDM : "+currentRDM);
 					if (currentRDM != null) {
 						context.put(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META, Collections.singletonMap(ReadingsAPI.getRDMKey(reading.getParentId(), readingRule.getReadingField()), prevRDM));
 						
 						Map<String, ReadingDataMeta> rdmCache = getCurrentRDMs(reading, fieldMap);
-						LOGGER.info("Current RDMs : "+rdmCache);
+//						LOGGER.info("Current RDMs : "+rdmCache);
 						getOtherRDMs(reading.getParentId(), reading.getTtime(), supportFieldsRDM, rdmCache, lastItr, fields);
-						LOGGER.info("After other RDM : "+rdmCache);
+//						LOGGER.info("After other RDM : "+rdmCache);
 						
 						context.put(FacilioConstants.ContextNames.CURRRENT_READING_DATA_META, rdmCache);
 						
