@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.page.factory;
 
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
@@ -43,12 +42,9 @@ public class MVProjectPageFactory {
 		addBaselineEquationWidget(tab2Sec1);
 		addBaselineEquationListWidget(tab2Sec1);
 		
-		project.setAdjustments(Collections.singletonList(new MVAdjustment()));
 		if (CollectionUtils.isNotEmpty(project.getAdjustments())) {
 			addAdjustmentWidget(tab2Sec1, project.getAdjustments());
 		}
-		
-		
 		
 		return page;
 	}
@@ -110,22 +106,38 @@ public class MVProjectPageFactory {
 	
 	private static void addBaselineEquationWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD,  "baselineEquation");
-		cardWidget.addToLayoutParams(section, 12, 5);
+		cardWidget.addToLayoutParams(section, 12, 6);
 		cardWidget.addToWidgetParams("type", CardType.BASELINE_EQUATION.getName());
 		section.addWidget(cardWidget);
 	}
 	
 	private static void addBaselineEquationListWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.LIST, CardType.BASELINE_EQUATION.getName());
-		cardWidget.addToLayoutParams(section, 0, section.getLatestY() + 5, 24, 10);
+		cardWidget.addToLayoutParams(section, 0, section.getLatestY() + 6, 24, 10);
 //		cardWidget.addToWidgetParams("type", CardType.BASELINE_EQUATION.getName());
 		section.addWidget(cardWidget);
 	}
 	
 	private static void addAdjustmentWidget(Section section, List<MVAdjustment> adjustments) {
-		for(int i = 0; i < adjustments.size(); i++) {
+		int evenWidgetWidth = 0;
+		for(int i = 0, size = adjustments.size(); i < size; i++) {
+			MVAdjustment adjustment = adjustments.get(i);
 			PageWidget cardWidget = new PageWidget(WidgetType.CARD);
-			cardWidget.addToLayoutParams(section, 12, 7);
+			
+			int width = 7;
+			if (i % 2 == 0) {
+				if (adjustment.getFormulaField() == null) {
+					if ((i+1) == size || adjustments.get(i+1).getFormulaField() == null) {
+						width = 5;
+					}
+				} 
+				evenWidgetWidth = width;
+			}
+			else {
+				width = evenWidgetWidth;
+			}
+			
+			cardWidget.addToLayoutParams(section, 12, width);
 			cardWidget.addToWidgetParams("type", CardType.MV_ADJUSTMENTS.getName());
 			cardWidget.addToWidgetParams("adjustmentIndex", i);
 			section.addWidget(cardWidget);
