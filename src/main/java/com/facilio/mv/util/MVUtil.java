@@ -176,12 +176,12 @@ public class MVUtil {
 		
 		List<MVAdjustment> mvAdjustments = selectAjustment.get();
 		
-		Map<Long,MVAdjustment> mvAdjustmentsIdMap = new HashMap<Long, MVAdjustment>();
 		
 		for(MVAdjustment mvAdjustment :mvAdjustments) {
-			FormulaFieldContext formula = FormulaFieldAPI.getFormulaField(mvAdjustment.getFormulaField().getId());
-			mvAdjustment.setFormulaField(formula);
-			mvAdjustmentsIdMap.put(mvAdjustment.getId(), mvAdjustment);
+			if(mvAdjustment.getFormulaField() != null && mvAdjustment.getFormulaField().getId() > 0) {
+				FormulaFieldContext formula = FormulaFieldAPI.getFormulaField(mvAdjustment.getFormulaField().getId());
+				mvAdjustment.setFormulaField(formula);
+			}
 		}
 		
 		mvProjectWrapper.setAdjustments(mvAdjustments);
