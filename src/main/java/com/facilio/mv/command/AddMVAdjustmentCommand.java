@@ -42,16 +42,18 @@ public class AddMVAdjustmentCommand implements Command {
 		for(MVAdjustment adjustment1 :adjustments) {
 			adjustment1.setProject(mvProjectWrapper.getMvProject());
 			adjustment1.setOrgId(AccountUtil.getCurrentOrg().getId());
-			MVUtil.fillFormulaFieldDetailsForAdd(adjustment1.getFormulaField(), mvProjectWrapper.getMvProject(),null,adjustment1,context);
-			context.put(FacilioConstants.ContextNames.FORMULA_FIELD, adjustment1.getFormulaField());
+			if(adjustment1.getFormulaField() != null) {
+				MVUtil.fillFormulaFieldDetailsForAdd(adjustment1.getFormulaField(), mvProjectWrapper.getMvProject(),null,adjustment1,context);
+				context.put(FacilioConstants.ContextNames.FORMULA_FIELD, adjustment1.getFormulaField());
 
-			if (adjustment1.getFormulaField().getInterval() == -1) {
-				int interval = mvProjectWrapper.getMvProject().getFrequency();
-				adjustment1.getFormulaField().setInterval(interval);
+				if (adjustment1.getFormulaField().getInterval() == -1) {
+					int interval = mvProjectWrapper.getMvProject().getFrequency();
+					adjustment1.getFormulaField().setInterval(interval);
+				}
+
+				Chain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
+				addEnpiChain.execute(context);
 			}
-
-			Chain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
-			addEnpiChain.execute(context);
 		}
 		
 		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
