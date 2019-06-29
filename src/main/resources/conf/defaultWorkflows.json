@@ -101,39 +101,43 @@
 							{ 
 							  resultMap = {};
 							  carbonConstant = 0.41;
-  							  costConstant = 0.44;
+							  costConstant = 0.44;
 							  mvProject = Module(\"mvproject\").fetch([id == projectId])[0];
 							  baseline = Module(\"mvbaseline\").fetch([project == projectId])[0];
 							  formulaFieldWithAdj = Module(\"formulaField\").fetch([id == (baseline.formulaFieldWithAjustment.id)])[0];
 							
 							  thisMonthRange = NameSpace(\"date\").getDateRange(\"Current Month\");
 							  db = {
-							   	criteria : [parentId == (mvProject.meter.id) && ttime == thisMonthRange],
+							    criteria : [parentId == (mvProject.meter.id) && ttime == thisMonthRange],
 							    field : \"totalEnergyConsumptionDelta\",
 							    aggregation : \"sum\"
 							  }
 							  thisMonthActualConsumption = Module(\"energydata\").fetch(db);
+							  if(thisMonthActualConsumption == null) {
+							    thisMonthActualConsumption = 0;
+							  }
 							  resultMap[\"thisMonthActualConsumption\"] = thisMonthActualConsumption;
-							  
 							  db = {
-							   	criteria : [parentId == (mvProject.meter.id) && ttime == thisMonthRange],
+							    criteria : [parentId == (mvProject.meter.id) && ttime == thisMonthRange],
 							    field : (formulaFieldWithAdj.readingField.name),
 							    aggregation : \"sum\"
 							  }
 							  thisMonthBaselineConsumption = Module(formulaFieldWithAdj.moduleName).fetch(db);
+							  if(thisMonthBaselineConsumption == null) {
+							    thisMonthBaselineConsumption = 0;
+							  }
 							  resultMap[\"thisMonthBaselineConsumption\"] = thisMonthBaselineConsumption;
-							  
+							
 							  savedConsumption = thisMonthBaselineConsumption - thisMonthActualConsumption;
-  							  carbonEmissionSaved = savedConsumption * carbonConstant;
-  						      resultMap[\"carbonEmissionSaved\"] = carbonEmissionSaved;
-							  
+							  carbonEmissionSaved = savedConsumption * carbonConstant;
+							  resultMap[\"carbonEmissionSaved\"] = carbonEmissionSaved;
+							
 							  costSaved = savedConsumption * costConstant;
 							  resultMap[\"costSaved\"] = costSaved;
-							  
+							
 							  targetSavedConsumption = thisMonthBaselineConsumption - (thisMonthBaselineConsumption - (thisMonthBaselineConsumption*(mvProject.saveGoal)/100));
 							  targetCost = targetSavedConsumption * costConstant;
 							  resultMap[\"targetCost\"] = targetCost;
-							  
 							  return resultMap;
 							}"
 		},
