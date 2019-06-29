@@ -125,7 +125,7 @@ public class MVProjectPageFactory {
 	private static void addAdjustmentWidget(Section section, List<MVAdjustment> adjustments) {
 		for(int i = 0; i < adjustments.size(); i++) {
 			PageWidget cardWidget = new PageWidget(WidgetType.CARD);
-			cardWidget.addToLayoutParams(section, 12, 6);
+			cardWidget.addToLayoutParams(section, 12, 7);
 			cardWidget.addToWidgetParams("type", CardType.MV_ADJUSTMENTS.getName());
 			cardWidget.addToWidgetParams("adjustmentIndex", i);
 			section.addWidget(cardWidget);
