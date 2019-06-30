@@ -1025,6 +1025,10 @@ public enum ActionType {
 					metaMap = rule.getAlarmMetaMap();
 				}
 				if (metaMap == null) {
+					metaMap = new HashMap<>();
+					rule.setAlarmMetaMap(metaMap);
+					metaMap.put(resourceId, addAlarmMeta(event.getAlarmOccurrence(), resourceId, rule, isHistorical));
+				} else {
 					ReadingRuleAlarmMeta alarmMeta = metaMap.get(resourceId);
 					if (alarmMeta == null) {
 						metaMap.put(resourceId, addAlarmMeta(event.getAlarmOccurrence(), resourceId, rule, isHistorical));
@@ -1035,10 +1039,6 @@ public enum ActionType {
 							ReadingRuleAPI.markAlarmMetaAsNotClear(alarmMeta.getId(), event.getAlarmOccurrence().getId());
 						}
 					}
-				} else {
-					metaMap = new HashMap<>();
-					rule.setAlarmMetaMap(metaMap);
-					metaMap.put(resourceId, addAlarmMeta(event.getAlarmOccurrence(), resourceId, rule, isHistorical));
 				}
 			}
 		}
