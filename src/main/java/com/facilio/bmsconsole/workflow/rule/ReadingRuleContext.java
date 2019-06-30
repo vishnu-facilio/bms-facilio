@@ -826,6 +826,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		if (val != null || getEvent().getActivityTypeEnum().isPresent(EventType.SCHEDULED_READING_RULE.getValue())) {
 			if (clearAlarm()) {
 				if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
+					LOGGER.info("Clearing new alarm ");
 					constructAndAddClearEvent(context, reading);
 				}
 				else {
@@ -873,6 +874,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		}
 		Map<Long, ReadingRuleAlarmMeta> metaMap = null;
 		if (isHistorical) {
+			LOGGER.info("Meta map during clearing : "+metaMap);
 			metaMap = (Map<Long, ReadingRuleAlarmMeta>) context.get(FacilioConstants.ContextNames.READING_RULE_ALARM_META);
 		}
 		else {
