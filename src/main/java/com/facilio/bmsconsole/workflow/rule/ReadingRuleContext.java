@@ -874,8 +874,8 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		}
 		Map<Long, ReadingRuleAlarmMeta> metaMap = null;
 		if (isHistorical) {
-			LOGGER.info("Meta map during clearing : "+metaMap);
 			metaMap = (Map<Long, ReadingRuleAlarmMeta>) context.get(FacilioConstants.ContextNames.READING_RULE_ALARM_META);
+			LOGGER.info("Meta map during clearing : "+metaMap);
 		}
 		else {
 			metaMap = this.getAlarmMetaMap();

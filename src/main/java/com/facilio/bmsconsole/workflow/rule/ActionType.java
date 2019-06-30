@@ -1030,7 +1030,7 @@ public enum ActionType {
 						metaMap.put(resourceId, addAlarmMeta(event.getAlarmOccurrence(), resourceId, rule, isHistorical));
 					} else if (alarmMeta.isClear()) {
 						alarmMeta.setClear(false);
-						if (isHistorical) {
+						if (!isHistorical) {
 							alarmMeta.setAlarmId(event.getAlarmOccurrence().getId());
 							ReadingRuleAPI.markAlarmMetaAsNotClear(alarmMeta.getId(), event.getAlarmOccurrence().getId());
 						}
