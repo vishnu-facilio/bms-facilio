@@ -106,14 +106,14 @@ public class MVProjectPageFactory {
 	
 	private static void addBaselineEquationWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD,  "baselineEquation");
-		cardWidget.addToLayoutParams(section, 12, 6);
+		cardWidget.addToLayoutParams(section, 24, 6);
 		cardWidget.addToWidgetParams("type", CardType.BASELINE_EQUATION.getName());
 		section.addWidget(cardWidget);
 	}
 	
 	private static void addBaselineEquationListWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.LIST, CardType.BASELINE_EQUATION.getName());
-		cardWidget.addToLayoutParams(section, 0, section.getLatestY() + 6, 24, 10);
+		cardWidget.addToLayoutParams(section, 24, 10);
 //		cardWidget.addToWidgetParams("type", CardType.BASELINE_EQUATION.getName());
 		section.addWidget(cardWidget);
 	}
