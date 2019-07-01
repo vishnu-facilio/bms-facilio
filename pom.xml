@@ -22,7 +22,7 @@
 		<dependency>
 			<groupId>com.facilio.framework</groupId>
 			<artifactId>facilio-framework</artifactId>
-			<version>1.0.27</version>
+			<version>1.0.28</version>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
