@@ -320,7 +320,20 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		meta.setResourceId(resourceId);
 		meta.setReadingFieldId(rule.getReadingFieldId());
 		meta.setClear(false);
-		
+
+		return meta;
+	}
+
+	public static ReadingRuleAlarmMeta constructNewAlarmMeta (long alarmId, ResourceContext resource, ReadingRuleContext rule) {
+		ReadingRuleAlarmMeta meta = new ReadingRuleAlarmMeta();
+		meta.setOrgId(AccountUtil.getCurrentOrg().getId());
+		meta.setAlarmId(alarmId);
+		meta.setRuleGroupId(rule.getRuleGroupId());
+		meta.setResourceId(resource.getId());
+		meta.setResource(resource);
+		meta.setReadingFieldId(rule.getReadingFieldId());
+		meta.setClear(false);
+
 		return meta;
 	}
 	

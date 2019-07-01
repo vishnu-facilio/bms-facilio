@@ -141,7 +141,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 			List<FacilioField> allFields = modBean.getAllFields(readingRule.getReadingField().getModule().getName());
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
 			Map<String, Integer> lastItr = new HashMap<>(); //To store itr of currently matched rdm itr
-			
+			ReadingEventContext latestEvent = null;
 			for (int i = itr; i < readings.size(); i++) {
 				ReadingContext reading = readings.get(i);
 //				LOGGER.info("Executing rule for reading : "+reading);
@@ -170,7 +170,8 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 
 						List<ReadingEventContext> currentEvent = (List<ReadingEventContext>) context.get(EventConstants.EventContextNames.EVENT_LIST);
 						if (CollectionUtils.isNotEmpty(currentEvent)) {
-							LOGGER.info("Event from history : "+FieldUtil.getAsJSON(currentEvent.get(0)).toJSONString());
+							latestEvent = currentEvent.get(0);
+							LOGGER.info("Event from history : "+FieldUtil.getAsJSON(latestEvent).toJSONString());
 							readingEvents.addAll(currentEvent);
 						}
 					}
@@ -187,7 +188,23 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 				}
 			}
 			if (readingRule.clearAlarm()) {
-				clearLatestAlarms(alarmMetaMap, readingRule);
+				if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
+					newClearLatestAlarm(latestEvent, readingRule, readingEvents);
+				}
+				else {
+					clearLatestAlarms(alarmMetaMap, readingRule);
+				}
+			}
+		}
+	}
+
+	private void newClearLatestAlarm(ReadingEventContext event, ReadingRuleContext rule, List<ReadingEventContext> events) throws Exception {
+		if (event != null && !event.getSeverityString().equals(FacilioConstants.Alarm.CLEAR_SEVERITY)) {
+			int interval = ReadingsAPI.getDataInterval(event.getResource().getId(), rule.getReadingField());
+			ReadingEventContext clearEvent = rule.constructClearEvent(event.getResource(), event.getCreatedTime() + (interval * 60 * 1000));
+			clearEvent.setComment("System auto cleared Historical Alarm because associated rule executed false for the associated resource");
+			if (clearEvent != null) {
+				events.add(clearEvent);
 			}
 		}
 	}
@@ -197,8 +214,8 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 			if (!meta.isClear()) {
 				AlarmContext alarm = AlarmAPI.getAlarm(meta.getAlarmId());
 				int interval = ReadingsAPI.getDataInterval(alarm.getResource().getId(), rule.getReadingField());
-				JSONObject json = AlarmAPI.constructClearEvent(alarm, "System auto cleared Historical Alarm because associated rule executed false for the associated resource", alarm.getModifiedTime()+(interval * 60 * 1000));
-				
+				JSONObject json = AlarmAPI.constructClearEvent(alarm, "System auto cleared Historical Alarm because associated rule executed false for the associated resource", alarm.getModifiedTime() + (interval * 60 * 1000));
+
 				FacilioContext addEventContext = new FacilioContext();
 				addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, json);
 				Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
