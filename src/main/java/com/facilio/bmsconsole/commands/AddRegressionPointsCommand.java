@@ -30,7 +30,6 @@ import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportYAxisContext;
-import com.facilio.tv.TVAction;
 
 public class AddRegressionPointsCommand implements Command{
 
@@ -88,7 +87,7 @@ public class AddRegressionPointsCommand implements Command{
 			return true;
 		}
 		else {
-			throw new Exception("Error in regressionConfiguration.");
+//			throw new Exception("Error in regressionConfiguration.");
 		}
 		
 		
