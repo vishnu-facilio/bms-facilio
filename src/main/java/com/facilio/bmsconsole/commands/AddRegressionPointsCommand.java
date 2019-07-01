@@ -47,6 +47,9 @@ public class AddRegressionPointsCommand implements Command{
 		if(regressionConfig == null && reportContext != null && reportContext.getReportState() != null) {
 			regressionConfig = FieldUtil.getAsBeanListFromMapList((List<Map<String, Object>>)reportContext.getReportState().get(StringConstants.REGRESSION_CONFIG), RegressionContext.class);
 		}
+		if (data == null) {
+			return false;
+		}
 		
 		Map<String, Map<String, Object>> regressionResults = new HashMap<String, Map<String,Object>>();
 		if(regressionConfig != null && data!= null && !regressionConfig.isEmpty() && data.size() != 0) {
