@@ -302,8 +302,8 @@ public class FormFactory {
 	
 	private static FacilioForm getAssetForm() {
 		FacilioForm form = new FacilioForm();
-		form.setDisplayName("Asset");
-		form.setName("asset");
+		form.setDisplayName("Standard");
+		form.setName("default_workorder_web");
 		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.ASSET));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFormType(FormType.WEB);
