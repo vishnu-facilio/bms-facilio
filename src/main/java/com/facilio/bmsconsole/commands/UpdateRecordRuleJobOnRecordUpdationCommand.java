@@ -23,15 +23,19 @@ public class UpdateRecordRuleJobOnRecordUpdationCommand implements Command{
 		Map<Long, List<UpdateChangeSet>> changeSet = (Map<Long, List<UpdateChangeSet>>)context.get(FacilioConstants.ContextNames.CHANGE_SET_MAP);
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		if(CollectionUtils.isEmpty(recordIds)) {
-			recordIds = Collections.singletonList((Long) context.get(FacilioConstants.ContextNames.RECORD_ID ));
+			Long recordId = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+			if(recordId != null) {
+				recordIds = Collections.singletonList(recordId);
+			}
 		}
-		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(moduleName);
-		for(Long recordId : recordIds) {
-			SingleRecordRuleAPI.updateRuleJobDuringRecordUpdation(recordId, module, changeSet.get(recordId));
+		if(CollectionUtils.isNotEmpty(recordIds)) {
+			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(moduleName);
+			for(Long recordId : recordIds) {
+				SingleRecordRuleAPI.updateRuleJobDuringRecordUpdation(recordId, module, changeSet.get(recordId));
+			}
 		}
-		
 		return false;
 	}
 
