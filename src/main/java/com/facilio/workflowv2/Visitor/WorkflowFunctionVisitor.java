@@ -705,7 +705,7 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     			Class[] ObjectClass = workflowContext.getReturnTypeEnum().getObjectClass();
     			boolean flag = false;
     			for(int i=0;i<ObjectClass.length;i++) {
-    				if(returnValue.asObject().getClass().equals(ObjectClass[i])) {
+    				if(returnValue != null && returnValue.asObject().getClass().equals(ObjectClass[i])) {
     					flag = true;
     				}
     			}

@@ -65,8 +65,8 @@ public class MVUtil {
 				formulaFieldContext.setName(baseline.getName());
 			}
 			formulaFieldContext.setStartTime(baseline.getStartTime());
-			formulaFieldContext.setEndTime(baseline.getEndTime());
-			context.put(FacilioConstants.ContextNames.DATE_RANGE,new DateRange(baseline.getStartTime(), DateTimeUtil.getCurrenTime() < baseline.getEndTime() ? DateTimeUtil.getCurrenTime() : baseline.getEndTime()));
+			formulaFieldContext.setEndTime(mvProject.getReportingPeriodEndTime());
+			context.put(FacilioConstants.ContextNames.DATE_RANGE,new DateRange(baseline.getStartTime(), DateTimeUtil.getCurrenTime() < mvProject.getReportingPeriodEndTime() ? DateTimeUtil.getCurrenTime() : mvProject.getReportingPeriodEndTime()));
 		}
 		else if(mvAdjustment != null) {
 			if(formulaFieldContext.getName() == null) {
@@ -90,8 +90,8 @@ public class MVUtil {
 				formulaFieldContext.setName(baseline.getName());
 			}
 			formulaFieldContext.setStartTime(baseline.getStartTime());
-			formulaFieldContext.setEndTime(baseline.getEndTime());
-			context.put(FacilioConstants.ContextNames.DATE_RANGE,new DateRange(baseline.getStartTime(), DateTimeUtil.getCurrenTime() < baseline.getEndTime() ? DateTimeUtil.getCurrenTime() : baseline.getEndTime()));
+			formulaFieldContext.setEndTime(mvProject.getReportingPeriodEndTime());
+			context.put(FacilioConstants.ContextNames.DATE_RANGE,new DateRange(baseline.getStartTime(), DateTimeUtil.getCurrenTime() < mvProject.getReportingPeriodEndTime() ? DateTimeUtil.getCurrenTime() : mvProject.getReportingPeriodEndTime()));
 		}
 		else if(mvAdjustment != null) {
 			if(formulaFieldContext.getName() == null) {

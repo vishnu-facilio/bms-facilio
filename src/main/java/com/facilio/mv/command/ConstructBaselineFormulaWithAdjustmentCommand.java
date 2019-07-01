@@ -55,6 +55,8 @@ public class ConstructBaselineFormulaWithAdjustmentCommand implements Command {
 			
 			workflowString.append("A = "+fetchStmt);
 			
+			workflowString.append("if(A == null) { return null; }") ;
+			
 			resultStringBuilder.append("A");
 			
 			char varName = 'B';
