@@ -907,7 +907,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 
 	public ReadingEventContext constructClearEvent(ResourceContext resource, long ttime) {
 		ReadingEventContext event = new ReadingEventContext();
-		event.setEventMessage("Auto cleared event");
+//		event.setEventMessage("Auto cleared event");
 		event.setResource(resource);
 		event.setReadingFieldId(this.getReadingFieldId());
 		event.setRuleId(this.getRuleGroupId());
