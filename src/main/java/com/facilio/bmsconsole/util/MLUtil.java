@@ -183,6 +183,11 @@ public class MLUtil
 	
 	public static List<MLContext> getMlContext(JobContext jc) throws Exception
 	{
+		return MLUtil.getMLContext(jc.getJobId());
+	}
+	
+	public static List<MLContext> getMLContext(long mlID) throws Exception
+	{
 		List<MLContext> mlContextList = new ArrayList<MLContext>(10);
 		
 		//prepare builder to get ML details
@@ -192,7 +197,7 @@ public class MLUtil
 														.select(mlModuleFields)
 														.table(mlModule.getTableName())
 //														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(mlModule))
-														.andCondition(CriteriaAPI.getIdCondition(jc.getJobId(), mlModule));
+														.andCondition(CriteriaAPI.getIdCondition(mlID, mlModule));
 		
 		List<Map<String, Object>> listMap = selectBuilder.get();
 		MLContext jobMlContext = FieldUtil.getAsBeanFromMap(listMap.get(0), MLContext.class);
@@ -292,6 +297,6 @@ public class MLUtil
 														.andCondition(mlIDCondition);
 		return selectBuilder.get();
 	}
-
+	
 
 }
