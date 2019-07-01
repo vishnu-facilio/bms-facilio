@@ -170,6 +170,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 
 						List<ReadingEventContext> currentEvent = (List<ReadingEventContext>) context.get(EventConstants.EventContextNames.EVENT_LIST);
 						if (CollectionUtils.isNotEmpty(currentEvent)) {
+							LOGGER.info("Event from history : "+FieldUtil.getAsJSON(currentEvent.get(0)).toJSONString());
 							readingEvents.addAll(currentEvent);
 						}
 					}
