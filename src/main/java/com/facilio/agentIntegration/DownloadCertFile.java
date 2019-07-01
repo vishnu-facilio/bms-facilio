@@ -157,7 +157,7 @@ public class DownloadCertFile
     }
 
     public static Map<String,InputStream> getCertKeyFileInputStreams() {
-        FileInputStream fis = (FileInputStream) getCertKeyZipInputStream();
+        InputStream fis = getCertKeyZipInputStream();
         Map<String,InputStream> filesMap = new HashMap<>();
         if(fis == null){
             LOGGER.info(" Inputstream emty ");
