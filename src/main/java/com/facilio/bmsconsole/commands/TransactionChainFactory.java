@@ -2415,7 +2415,7 @@ public class TransactionChainFactory {
 		public static Chain getDeletePurchaseRequestLineItem() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForPurchaseRequestLineItem());
-			c.addCommand(new DeletePurchaseRequestLineItemCommand());
+			c.addCommand(new GenericDeleteModuleDataCommand());
 			return c;
 		}
 		
@@ -2454,7 +2454,7 @@ public class TransactionChainFactory {
 		public static Chain getDeletePurchaseOrderLineItem() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForPurchaseOrderLineItem());
-			c.addCommand(new DeletePurchaseOrderLineItemCommand());
+			c.addCommand(new GenericDeleteModuleDataCommand());
 			return c;
 		}
 
@@ -2823,7 +2823,7 @@ public class TransactionChainFactory {
 		public static Chain getDeleteInventoryRequestLineItem() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForInventoryRequest());
-			c.addCommand(new DeleteInventoryRequestLineItemCommand());
+			c.addCommand(new GenericDeleteModuleDataCommand());
 			return c;
 		}
 
@@ -2945,7 +2945,7 @@ public class TransactionChainFactory {
 		public static Chain getDeleteShipmentLineItemChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForShipmentLineItems());
-			c.addCommand(new DeleteShipmentLineItemCommand());
+			c.addCommand(new GenericDeleteModuleDataCommand());
 			return c;
 		}
 

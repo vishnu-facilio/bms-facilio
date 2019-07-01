@@ -361,6 +361,8 @@ public class WorkflowRuleAPI {
 	public static List<WorkflowRuleContext> getAllWorkflowRuleContextOfType (WorkflowRuleContext.RuleType ruleType,boolean fetchEvent,boolean fetchAction) throws Exception {
 		
 		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
 		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 													.table(module.getTableName())
@@ -375,6 +377,11 @@ public class WorkflowRuleAPI {
 						.on(module.getTableName()+".EVENT_ID = "+eventModule.getTableName()+".ID");
 		}
 		
+		if(fieldMap.get("parentId") != null) {
+			ruleBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), CommonOperators.IS_EMPTY));
+
+		}
+
 		ruleBuilder.select(fields);
 		List<WorkflowRuleContext> rules = getWorkFlowsFromMapList(ruleBuilder.get(), fetchEvent, true, true);
 		
