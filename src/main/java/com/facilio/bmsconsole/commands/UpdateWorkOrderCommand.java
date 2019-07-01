@@ -407,12 +407,7 @@ public class UpdateWorkOrderCommand implements Command {
 	
 	private void updateWODetails (WorkOrderContext wo) throws Exception {
 		TicketAPI.updateTicketAssignedBy(wo);
-		if (wo.getOfflineModifiedTime() != -1) {
-			wo.setModifiedTime(wo.getOfflineModifiedTime());
-		}
-		else {
-			wo.setModifiedTime(System.currentTimeMillis());
-		}
+		wo.setModifiedTime(wo.getTime());
 		if(wo.getStatus() != null &&  wo.getStatus().getId() > 0) {
 			FacilioStatus statusObj = TicketAPI.getStatus(AccountUtil.getCurrentOrg().getOrgId(), wo.getStatus().getId());
 			wo.setStatus(statusObj);
