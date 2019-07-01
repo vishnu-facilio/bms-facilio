@@ -236,6 +236,10 @@ public class EnableAnomalyDetectionCommand implements Command
 		}
 		
 		addMLModelVariables(mlID,"TreeHierachy",treeHierachy);
+		FacilioField energyField = modBean.getField("totalEnergyConsumptionDelta", FacilioConstants.ContextNames.ENERGY_DATA_READING);
+		addMLModelVariables(mlID,"energyfieldid",""+energyField.getId());
+		
+		addMLModelVariables(mlID,"adjustedupperboundfieldid",""+adjustedUpperBoundField.getId());
 		
 		return mlID;
 	}

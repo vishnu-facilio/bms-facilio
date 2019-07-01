@@ -1,7 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
 
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
 
@@ -14,9 +16,13 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.BaseEventContext;
+import com.facilio.bmsconsole.context.MLAnomalyEvent;
 import com.facilio.bmsconsole.context.MLContext;
+import com.facilio.bmsconsole.context.RCAEvent;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
@@ -31,32 +37,25 @@ public class TriggerAlarmForMLCommand implements Command {
 		MLContext mlContext = (MLContext) context.get(FacilioConstants.ContextNames.ML);
 		try
 		{
-			
 			if(mlContext.getModelPath().equals("ratioCheck"))
 			{
 				
 	            Set<Long> assetIDList = mlContext.getMlVariablesDataMap().keySet();
+	            String treeHierachy = mlContext.getMLModelVariable("TreeHeirarchy");
+	            String[] assetList = treeHierachy.split(",");
+	            long parentID = Long.parseLong(assetList[0]);
+	            
+	            long parentAlarmID = checkAndGenerateEvent(mlContext,parentID);
 	            
 	            for(long assetID : assetIDList)
-	            {
-	            	Hashtable<String,SortedMap<Long,Object>> variablesData = mlContext.getMlVariablesDataMap().get(assetID);
-	
-	            	SortedMap<Long,Object> actualValueMap = variablesData.get("actualValue");
-	            	double actualValue = (double) actualValueMap.get(actualValueMap.firstKey());
-	
-	            	SortedMap<Long,Object> adjustedUpperBoundMap = variablesData.get("adjustedUpperBound");
-	            	double adjustedUpperBound = (double) adjustedUpperBoundMap.get(adjustedUpperBoundMap.firstKey());
-	
-	            	LOGGER.info("actual Value is =>"+actualValue +":::"+adjustedUpperBound);
-	            	if(actualValue > adjustedUpperBound)
-	            	{
-	            		generateAnomalyEvent(actualValue,adjustedUpperBound,assetID,mlContext.getMLVariable().get(0).getFieldID(),mlContext.getPredictionTime());
-	            	}
-	            	else
-	            	{
-	            		generateClearEvent(assetID,mlContext.getMLVariable().get(0).getFieldID(),mlContext.getPredictionTime());
-	            	}
-	            }
+            	{
+            		if(assetID==parentID)
+            		{
+            			continue;
+            		}
+            		generateEvent(mlContext,assetID,parentAlarmID);
+            	}
+	            
 	         }
 		}
 		catch(Exception e)
@@ -67,53 +66,131 @@ public class TriggerAlarmForMLCommand implements Command {
 		return false;
 	}
 	
-	private void generateClearEvent(long assetID,long fieldID,long ttime) throws Exception
+	private void generateEvent(MLContext mlContext,long assetID,long parentAlarmID) throws Exception
 	{
-		AssetContext asset = AssetsAPI.getAssetInfo(assetID);
-        String assetName = asset.getName();
-        
-		String message = "Anomaly Cleared";
-        org.json.simple.JSONObject obj = new org.json.simple.JSONObject();
-        obj.put("message", message);
-        obj.put("source", assetName);
-        obj.put("condition", "Anomaly Detected in Energy Consumption");
-        obj.put("resourceId", assetID);
-        obj.put("severity", FacilioConstants.Alarm.CLEAR_SEVERITY);
-        obj.put("timestamp", ttime);
-
-        obj.put("sourceType", SourceType.ANOMALY_ALARM.getIntVal());
-        obj.put("readingFieldId", fieldID);
-        obj.put("startTime", ttime);
-        obj.put("readingMessage", message);
-        FacilioContext addEventContext = new FacilioContext();
-        addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, obj);
-        Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
-        getAddEventChain.execute(addEventContext);
+		if(parentAlarmID==-1)
+		{
+			checkAndGenerateRCAEvent(mlContext,assetID,parentAlarmID);
+		}
+		else
+		{
+			checkAndGenerateEvent(mlContext,assetID);
+		}
 	}
 	
-	private void generateAnomalyEvent(double actualValue,double adjustedUpperBound,long assetID,long fieldID,long ttime) throws Exception
+	private long checkAndGenerateEvent(MLContext mlContext, long parentID) throws Exception
+	{
+		Hashtable<String,SortedMap<Long,Object>> variablesData = mlContext.getMlVariablesDataMap().get(parentID);
+		
+    	SortedMap<Long,Object> actualValueMap = variablesData.get("actualValue");
+    	double actualValue = (double) actualValueMap.get(actualValueMap.firstKey());
+
+    	SortedMap<Long,Object> adjustedUpperBoundMap = variablesData.get("adjustedUpperBound");
+    	double adjustedUpperBound = (double) adjustedUpperBoundMap.get(adjustedUpperBoundMap.firstKey());
+    	 
+
+    	if(actualValue > adjustedUpperBound)
+    	{
+    		return generateAnomalyEvent(actualValue,adjustedUpperBound,parentID,mlContext.getMLVariable().get(0).getFieldID(),mlContext.getPredictionTime(),Long.parseLong(mlContext.getMLModelVariable("energyfieldid")),Long.parseLong(mlContext.getMLModelVariable("adjustedupperboundfieldid")));
+    	}
+    	else
+    	{
+    		generateClearEvent(parentID,mlContext.getMLVariable().get(0).getFieldID(),mlContext.getPredictionTime());
+    	}
+    	return -1;
+	}
+	
+	private void generateClearEvent(long assetID,long fieldID,long ttime) throws Exception
+	{
+		String message = "Anomaly Cleared";
+		MLAnomalyEvent event = new MLAnomalyEvent();
+		event.setEventMessage(message);
+        event.setResource(ResourceAPI.getResource(assetID));
+        event.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
+        event.setReadingTime(ttime);
+        
+        List<BaseEventContext> eventList = new ArrayList<BaseEventContext>();
+        eventList.add(event);
+        
+        FacilioContext context = new FacilioContext();
+		context.put(EventConstants.EventContextNames.EVENT_LIST,eventList);
+		Chain chain = TransactionChainFactory.getV2AddEventChain();
+		chain.execute(context);
+	}
+	
+	private long generateAnomalyEvent(double actualValue,double adjustedUpperBound,long assetID,long fieldID,long ttime,long energyDataFieldid,long upperAnomalyFieldid) throws Exception
 	{
 		AssetContext asset = AssetsAPI.getAssetInfo(assetID);
         String assetName = asset.getName();
         
 		String message = "Anomaly Detected. Actual Consumption :"+actualValue+", Expected Max Consumption :"+adjustedUpperBound;
-        org.json.simple.JSONObject obj = new org.json.simple.JSONObject();
-        obj.put("message", message);
-        obj.put("source", assetName);
-        obj.put("condition", "Anomaly Detected in Energy Consumption");
-        obj.put("resourceId", assetID);
-        obj.put("severity", "Minor");
-        obj.put("timestamp", ttime);
-        obj.put("consumption", actualValue);
+		
+		MLAnomalyEvent event = new MLAnomalyEvent();
+		event.setEventMessage(message);
+        event.setResource(ResourceAPI.getResource(assetID));
+        event.setActualValue(actualValue);
+        event.setAdjustedUpperBoundValue(adjustedUpperBound);
+        event.setSeverityString("Minor");
+        event.setReadingTime(ttime);
+        event.setEnergyDataFieldid(energyDataFieldid);
+        event.setUpperAnomalyFieldid(upperAnomalyFieldid);
+        
+       return addEvent(event); 
+	
+	}
+	
+	private long addEvent(BaseEventContext event) throws Exception
+	{
+		List<BaseEventContext> eventList = new ArrayList<BaseEventContext>();
+        eventList.add(event);
+        
+        FacilioContext context = new FacilioContext();
+		context.put(EventConstants.EventContextNames.EVENT_LIST,eventList);
+		Chain chain = TransactionChainFactory.getV2AddEventChain();
+		chain.execute(context);
+		
+		return event.getAlarmOccurrence().getAlarm().getId();
+	}
+	
+	private boolean checkAndGenerateRCAEvent(MLContext mlContext, long assetID,long parentID) throws Exception
+	{
+		Hashtable<String,SortedMap<Long,Object>> variablesData = mlContext.getMlVariablesDataMap().get(parentID);
+		
+    	SortedMap<Long,Object> actualValueMap = variablesData.get("actualValue");
+    	double actualValue = (double) actualValueMap.get(actualValueMap.firstKey());
 
-        obj.put("sourceType", SourceType.ANOMALY_ALARM.getIntVal());
-        obj.put("readingFieldId", fieldID);
-        obj.put("startTime", ttime);
-        obj.put("readingMessage", message);
-        FacilioContext addEventContext = new FacilioContext();
-        addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, obj);
-        Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
-        getAddEventChain.execute(addEventContext);
+    	SortedMap<Long,Object> adjustedUpperBoundMap = variablesData.get("adjustedUpperBound");
+    	double adjustedUpperBound = (double) adjustedUpperBoundMap.get(adjustedUpperBoundMap.firstKey());
+
+    	if(actualValue > adjustedUpperBound)
+    	{
+    		generateAnomalyEvent(actualValue,adjustedUpperBound,parentID,mlContext.getMLVariable().get(0).getFieldID(),mlContext.getPredictionTime(),parentID,Long.parseLong(mlContext.getMLModelVariable("energyfieldid")),Long.parseLong(mlContext.getMLModelVariable("adjustedupperboundfieldid")));
+    		return true;
+    	}
+    	else
+    	{
+    		generateClearEvent(parentID,mlContext.getMLVariable().get(0).getFieldID(),mlContext.getPredictionTime());
+    	}
+    	return false;
+	}
+	
+	private void generateAnomalyEvent(double actualValue,double adjustedUpperBound,long assetID,long fieldID,long ttime,long parentID,long energyDataFieldid,long upperAnomalyFieldid) throws Exception
+	{   
+		String message = "Anomaly Detected. Actual Consumption :"+actualValue+", Expected Max Consumption :"+adjustedUpperBound;
+		
+		RCAEvent event = new RCAEvent();
+		event.setEventMessage(message);
+        event.setResource(ResourceAPI.getResource(assetID));
+        event.setActualValue(actualValue);
+        event.setAdjustedUpperBoundValue(adjustedUpperBound);
+        event.setSeverityString("Minor");
+        event.setReadingTime(ttime);
+        event.setEnergyDataFieldid(energyDataFieldid);
+        event.setUpperAnomalyFieldid(upperAnomalyFieldid);
+        event.setParentId(parentID);
+        
+        addEvent(event);
+	
 	}
 	
 	public static void main(String arg[])
