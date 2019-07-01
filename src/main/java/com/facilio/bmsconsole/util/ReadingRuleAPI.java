@@ -19,14 +19,14 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.events.constants.EventConstants;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.workflows.context.ExpressionContext;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -265,16 +265,42 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 	}
 	
 	private static void fetchAlarmMeta (ReadingRuleContext rule) throws Exception {
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.NEW_READING_ALARM);
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+			List<ReadingAlarm> readingAlarms = new SelectRecordsBuilder<ReadingAlarm>()
+													.select(fields)
+													.moduleName(FacilioConstants.ContextNames.NEW_READING_ALARM)
+													.andCondition(CriteriaAPI.getCondition(fieldMap.get("ruleId"), String.valueOf(rule.getRuleGroupId()), PickListOperators.IS))
+													.fetchLookup((LookupField) fieldMap.get("severity"))
+													.get();
+			if (CollectionUtils.isNotEmpty(readingAlarms)) {
+				Map<Long, ReadingRuleAlarmMeta> metaMap = new HashMap<>();
+				for (ReadingAlarm alarm : readingAlarms) {
+					ReadingRuleAlarmMeta alarmMeta = constructNewAlarmMeta(alarm.getId(), alarm.getResource(), rule, alarm.getSeverity().getSeverity().equals(FacilioConstants.Alarm.CLEAR_SEVERITY));
+					metaMap.put(alarmMeta.getResourceId(), alarmMeta);
+				}
+				rule.setAlarmMetaMap(metaMap);
+			}
+		}
+		else {
+			oldFetchAlarmMeta(rule);
+		}
+	}
+
+	private static void oldFetchAlarmMeta (ReadingRuleContext rule) throws Exception {
 		FacilioModule module = ModuleFactory.getReadingRuleAlarmMetaModule();
 		List<FacilioField> fields = FieldFactory.getReadingRuleAlarmMetaFields();
 		FacilioField ruleGroupField = FieldFactory.getAsMap(fields).get("ruleGroupId");
-		
+
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-														.select(fields)
-														.table(module.getTableName())
+				.select(fields)
+				.table(module.getTableName())
 //														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.andCondition(CriteriaAPI.getCondition(ruleGroupField, String.valueOf(rule.getRuleGroupId()), PickListOperators.IS))
-														;
+				.andCondition(CriteriaAPI.getCondition(ruleGroupField, String.valueOf(rule.getRuleGroupId()), PickListOperators.IS))
+				;
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			Map<Long, ReadingRuleAlarmMeta> alarmMetaMap = new HashMap<>();
@@ -324,7 +350,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		return meta;
 	}
 
-	public static ReadingRuleAlarmMeta constructNewAlarmMeta (long alarmId, ResourceContext resource, ReadingRuleContext rule) {
+	public static ReadingRuleAlarmMeta constructNewAlarmMeta (long alarmId, ResourceContext resource, ReadingRuleContext rule, boolean isClear) {
 		ReadingRuleAlarmMeta meta = new ReadingRuleAlarmMeta();
 		meta.setOrgId(AccountUtil.getCurrentOrg().getId());
 		meta.setAlarmId(alarmId);
@@ -332,7 +358,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		meta.setResourceId(resource.getId());
 		meta.setResource(resource);
 		meta.setReadingFieldId(rule.getReadingFieldId());
-		meta.setClear(false);
+		meta.setClear(isClear);
 
 		return meta;
 	}
