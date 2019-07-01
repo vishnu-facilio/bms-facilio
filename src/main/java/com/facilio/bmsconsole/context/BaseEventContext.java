@@ -177,7 +177,9 @@ public abstract class BaseEventContext extends ModuleBaseWithCustomFields {
 	}
 	
 	public BaseAlarmContext updateAlarmContext(BaseAlarmContext baseAlarm, boolean add) {
-		baseAlarm.setSubject(getEventMessage());
+		if (StringUtils.isNotEmpty(getEventMessage())) {
+			baseAlarm.setSubject(getEventMessage());
+		}
 		baseAlarm.setDescription(getDescription());
 
 		if (add) {
