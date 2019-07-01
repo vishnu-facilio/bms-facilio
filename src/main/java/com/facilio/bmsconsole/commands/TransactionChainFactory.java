@@ -3006,6 +3006,7 @@ public class TransactionChainFactory {
 		
 		public static Chain getAddMVProjectChain() {
 			Chain c = getDefaultChain();
+			c.addCommand(new ValidateMVProjectCommand());
 			c.addCommand(new AddMVProjectCommand());
 			c.addCommand(new AddMVBaselineCommand());
 			c.addCommand(new AddMVAdjustmentCommand());
@@ -3015,6 +3016,7 @@ public class TransactionChainFactory {
 
 		public static Chain getUpdateMVProjectChain() {
 			Chain c = getDefaultChain();
+			c.addCommand(new ValidateMVProjectCommand());
 			c.addCommand(new UpdateMVPojectCommand());
 			c.addCommand(new UpdateMVBaselineCommand());
 			c.addCommand(new UpdateMVAdjustmentCommand());
