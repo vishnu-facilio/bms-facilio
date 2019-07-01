@@ -81,20 +81,10 @@ public class AddRegressionPointsCommand implements Command{
 				reportData.put(FacilioConstants.ContextNames.REGRESSION_RESULT, regressionResults);
 			}
 			else {
-				return true;
+				return false;
 			}
-			
-			
 		}
-		else if(data.size() == 0) {
-			return true;
-		}
-		else {
-//			throw new Exception("Error in regressionConfiguration.");
-		}
-		
-		
-		return true;
+		return false;
 	}
 	
 	
