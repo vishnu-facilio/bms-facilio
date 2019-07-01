@@ -882,6 +882,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		}
 		ReadingRuleAlarmMeta alarmMeta = metaMap != null ? metaMap.get(resource.getId()) : null;
 		if (alarmMeta != null && !alarmMeta.isClear()) {
+			LOGGER.info("Alarm meta before clearing : "+alarmMeta);
 			alarmMeta.setClear(true);
 			ReadingEventContext event = constructClearEvent(resource, ttime);
 //			JSONObject json = AlarmAPI.constructClearEvent(alarm, "System auto cleared Alarm because associated rule executed clear condition for the associated resource", ttime);
@@ -893,7 +894,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 //			if (isHistorical) {
 //				LOGGER.info("Clearing alarm for rule : "+readingRuleContext.getId()+" for resource : "+resourceId);
 //			}
-//			LOGGER.info("Clear event : "+FieldUtil.getAsJSON(event).toJSONString());
+			LOGGER.info("Clear event : "+FieldUtil.getAsJSON(event).toJSONString()+"\n Alarm Meta : "+alarmMeta);
 			context.put(EventConstants.EventContextNames.EVENT_LIST, Collections.singletonList(event));
 			if (!isHistorical) {
 				Chain addEvent = TransactionChainFactory.getV2AddEventChain();
