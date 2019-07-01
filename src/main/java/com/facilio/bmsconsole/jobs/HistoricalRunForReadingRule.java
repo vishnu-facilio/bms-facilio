@@ -186,7 +186,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 					throw e;
 				}
 			}
-			if (readingRule.clearAlarm() && !AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
+			if (readingRule.clearAlarm()) {
 				clearLatestAlarms(alarmMetaMap, readingRule);
 			}
 		}
