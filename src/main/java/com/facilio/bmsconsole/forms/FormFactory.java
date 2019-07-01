@@ -957,7 +957,7 @@ public class FormFactory {
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("duration", FieldDisplayType.NUMBER, "Duration(Hr)", Required.REQUIRED, 3, 1));
-		fields.add(new FormField("serviceVendors", FieldDisplayType.PURCHASEDTOOL, "Service Vendors", Required.REQUIRED, 4, 1));
+		fields.add(new FormField("serviceVendors", FieldDisplayType.SERVICEVENDORS, "Service Vendors", Required.REQUIRED, 4, 1));
 		
 		return fields;
 	}
@@ -1005,7 +1005,7 @@ public class FormFactory {
 		fields.add(new FormField("renewalDate", FieldDisplayType.DATE, "Renewal Date", Required.OPTIONAL, 3, 3));
 		fields.add(new FormField("fromDate", FieldDisplayType.DATE, "From Date", Required.OPTIONAL, 4, 2));
 		fields.add(new FormField("endDate", FieldDisplayType.DATE, "End Date", Required.OPTIONAL, 4, 3));
-		fields.add(new FormField("lineItems", FieldDisplayType.PURCHASEDITEMT, "LINE ITEMS", Required.REQUIRED, 5, 1));
+		fields.add(new FormField("lineItems", FieldDisplayType.WARRANTY_LINE_ITEMS, "LINE ITEMS", Required.REQUIRED, 5, 1));
 		
 		return fields;
 	}
@@ -1026,7 +1026,7 @@ public class FormFactory {
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("termType", FieldDisplayType.TEXTBOX, "Term Type", Required.OPTIONAL, 2, 1));
 		fields.add(new FormField("shortDesc", FieldDisplayType.TEXTAREA, "Short Description", Required.OPTIONAL, 3, 1));
-		fields.add(new FormField("longDesc", FieldDisplayType.TEXTAREA, "Long Description", Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("longDesc", FieldDisplayType.LONG_DESC, "Long Description", Required.OPTIONAL, 4, 1));
 		fields.add(new FormField("isEditable", FieldDisplayType.DECISION_BOX, "Is Editable", Required.OPTIONAL, 5, 2));
 		fields.add(new FormField("defaultOnPo", FieldDisplayType.DECISION_BOX, "Default On PO", Required.OPTIONAL, 5, 3));
 		
