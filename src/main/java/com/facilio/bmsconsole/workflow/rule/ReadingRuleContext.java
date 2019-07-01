@@ -880,7 +880,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		else {
 			metaMap = this.getAlarmMetaMap();
 		}
-		ReadingRuleAlarmMeta alarmMeta = metaMap != null ? metaMap.get(resourceId) : null;
+		ReadingRuleAlarmMeta alarmMeta = metaMap != null ? metaMap.get(reading.getParentId()) : null;
 		if (alarmMeta != null && !alarmMeta.isClear()) {
 			alarmMeta.setClear(true);
 

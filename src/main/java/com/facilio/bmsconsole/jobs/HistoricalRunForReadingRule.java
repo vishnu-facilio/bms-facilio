@@ -144,7 +144,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 			
 			for (int i = itr; i < readings.size(); i++) {
 				ReadingContext reading = readings.get(i);
-				LOGGER.info("Executing rule for reading : "+reading);
+//				LOGGER.info("Executing rule for reading : "+reading);
 				try {
 					ReadingDataMeta currentRDM = getRDM(reading, readingRule.getReadingField());
 //					LOGGER.info("Current RDM : "+currentRDM);
