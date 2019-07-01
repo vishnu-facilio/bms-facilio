@@ -22,6 +22,38 @@ public class ValidateMVProjectCommand implements Command {
 		
 		List<MVBaseline> baseLines = mvProjectWrapper.getBaselines();
 		
+		//Reporting period should overlap baseline period 
+		
+		long baselineMinStartTime = 0;
+		long baselineMaxEndTime = 0;
+		for(int i=0;i<baseLines.size();i++) {
+			
+			MVBaseline baseLine  = baseLines.get(i);
+			if(i ==0) {
+				baselineMinStartTime = baseLine.getStartTime();
+				baselineMaxEndTime = baseLine.getEndTime();
+				continue;
+			}
+			if(baseLine.getStartTime() < baselineMinStartTime) {
+				baselineMinStartTime = baseLine.getStartTime();
+			}
+			if(baseLine.getEndTime() > baselineMaxEndTime) {
+				baselineMaxEndTime = baseLine.getEndTime();
+			}
+		}
+		
+		if(mvProject.getStartTime() < baselineMaxEndTime) {
+			throw new IllegalArgumentException("ECM period should be Greater than Baseline Period");
+		}
+		
+		if(mvProject.getReportingPeriodStartTime() < mvProject.getEndTime()) {
+			throw new IllegalArgumentException("Reporting period should be Greater than ECM Period");
+		}
+		
+		if(mvProject.getReportingPeriodStartTime() < baselineMaxEndTime) {
+			throw new IllegalArgumentException("Reporting period should be Greater than Baseline Period");
+		}
+		
 		
 		List<MVAdjustment> adjustments =  mvProjectWrapper.getAdjustments();
 		
@@ -47,29 +79,6 @@ public class ValidateMVProjectCommand implements Command {
 			}
 		}
 		
-		//Reporting period should overlap baseline period 
-		
-		long baselineMinStartTime = 0;
-		long baselineMaxEndTime = 0;
-		for(int i=0;i<baseLines.size();i++) {
-			
-			MVBaseline baseLine  = baseLines.get(i);
-			if(i ==0) {
-				baselineMinStartTime = baseLine.getStartTime();
-				baselineMaxEndTime = baseLine.getEndTime();
-				continue;
-			}
-			if(baseLine.getStartTime() < baselineMinStartTime) {
-				baselineMinStartTime = baseLine.getStartTime();
-			}
-			if(baseLine.getEndTime() > baselineMaxEndTime) {
-				baselineMaxEndTime = baseLine.getEndTime();
-			}
-		}
-		
-		if(mvProject.getReportingPeriodStartTime() < baselineMinStartTime || mvProject.getReportingPeriodEndTime() > baselineMaxEndTime) {
-			throw new IllegalArgumentException("Reporting period should lies between baseline period");
-		}
 		return false;
 	}
 
