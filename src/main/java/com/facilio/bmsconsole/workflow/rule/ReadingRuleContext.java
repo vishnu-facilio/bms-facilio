@@ -884,7 +884,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		if (alarmMeta != null && !alarmMeta.isClear()) {
 			alarmMeta.setClear(true);
 
-			ReadingEventContext event = null;
+			ReadingEventContext event = new ReadingEventContext();
 			event.setReadingFieldId(this.getReadingFieldId());
 			event.setRuleId(this.getRuleGroupId());
 			event.setSubRuleId(this.getId());
