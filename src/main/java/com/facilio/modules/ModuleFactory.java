@@ -2321,6 +2321,14 @@ public class ModuleFactory {
 		return module;
 	}
 	
+	public static FacilioModule getServiceModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("service");
+		module.setDisplayName("Service");
+		module.setTableName("Service");
+		return module;
+	}
+	
 
 
 	public static FacilioModule getReadingAlarmModule() {

@@ -1,17 +1,29 @@
 package com.facilio.modules;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentKeys;
 import com.facilio.agentIntegration.AgentIntegrationKeys;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.tasker.tasks.EventUtil;
-import com.facilio.modules.fields.*;
-import org.apache.commons.lang3.tuple.Pair;
-
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
+import com.facilio.modules.fields.BooleanField;
+import com.facilio.modules.fields.EnumField;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.NumberField;
 
 public class FieldFactory {
 
@@ -6106,16 +6118,5 @@ public class FieldFactory {
 		return fields;
 	}
 
-	public static List<FacilioField> getRecordSpecificRuleFields() {
-		FacilioModule recordSpecificRuleModule = ModuleFactory.getRecordSpecificRuleModule();
-		List<FacilioField> list = new ArrayList<>();
-
-		list.add(getField("id", "ID", recordSpecificRuleModule, FieldType.NUMBER));
-		list.add(getField("parentId", "PARENT_ID", recordSpecificRuleModule, FieldType.NUMBER));
-		list.add(getField("moduleId", "MODULE_ID", recordSpecificRuleModule, FieldType.NUMBER));
-		list.add(getField("scheduleMode", "SCHEDULE_MODE", recordSpecificRuleModule, FieldType.ENUM));
-
-		return list;
-	}
 	
 }
