@@ -1965,6 +1965,14 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain addMLReadingChain(){
+		Chain c = FacilioChain.getNonTransactionChain();
+		c.addCommand(new AddReadingsForMLCommand());
+		c.addCommand(new TriggerAlarmForMLCommand());
+		c.addCommand(new ApplyRuleForMLCommand());
+		return c;
+	}
+	
 	public static Chain enableAnomalyDetectionChain() {
 		Chain c = FacilioChain.getTransactionChain();
 		c.addCommand(new EnableAnomalyDetectionCommand());
