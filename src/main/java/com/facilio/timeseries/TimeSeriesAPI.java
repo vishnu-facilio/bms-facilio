@@ -34,7 +34,6 @@ import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingType;
-import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.ControllerAPI;
 import com.facilio.bmsconsole.util.IoTMessageAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
@@ -221,7 +220,6 @@ public class TimeSeriesAPI {
 		else {
 			updateInstanceAssetMapping(deviceName, assetId, categoryId, instance, fieldId, modeledData, unit);
 		}
-		AssetsAPI.updateAssetConnectionStatus(assetId, true);
 	}
 	
 	// Temp

@@ -853,7 +853,7 @@ public class AssetsAPI {
 
 	}
 
-	public static int updateAssetConnectionStatus(long assetId, boolean isConnected) throws Exception {
+	public static int updateAssetConnectionStatus(Collection<Long> assetIds, boolean isConnected) throws Exception {
 
 		AssetContext asset = new AssetContext();
 		asset.setConnected(isConnected);
@@ -865,7 +865,7 @@ public class AssetsAPI {
 		UpdateRecordBuilder<AssetContext> updateBuilder = new UpdateRecordBuilder<AssetContext>()
 				.module(module)
 				.fields(fields)
-				.andCondition(CriteriaAPI.getIdCondition(assetId, module));
+				.andCondition(CriteriaAPI.getIdCondition(assetIds, module));
 
 		return updateBuilder.update(asset);
 
