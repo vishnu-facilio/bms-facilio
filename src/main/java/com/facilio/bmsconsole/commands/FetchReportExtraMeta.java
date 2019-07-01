@@ -45,7 +45,7 @@ public class FetchReportExtraMeta implements Command {
 	public boolean execute(Context context) throws Exception {
 		
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
-		if (report.getTypeEnum() == ReportType.READING_REPORT && report.getFilters() == null) { //Temp fix
+		if ((report.getType() == ReportType.REGRESSION_REPORT.getValue() || report.getTypeEnum() == ReportType.READING_REPORT) && report.getFilters() == null) { //Temp fix
 			List<Object> xValues = (List<Object>) context.get(FacilioConstants.ContextNames.REPORT_X_VALUE_LIST);
 			List<Long> globalParentIds = null;
 			if (xValues != null && !xValues.isEmpty()) {
