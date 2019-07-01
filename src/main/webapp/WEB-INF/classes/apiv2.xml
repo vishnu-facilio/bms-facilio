@@ -1031,6 +1031,9 @@
 		<action name="fetchReport" class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="fetchReport">
 		</action>
+		<action name="fetchreportbytype" class="com.facilio.bmsconsole.actions.V2ReportAction"
+			method="fetchReportByType">
+		</action>
 		<action name="export" class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="exportReport">
 		</action>
