@@ -229,6 +229,24 @@ public enum FacilioListFunction implements FacilioWorkflowFunctionInterface {
 			}
 		}
 	},
+	GET(12,"get") {										
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			List<Object> list = (List<Object>) objects[0];
+			int pos = (int) Double.parseDouble(objects[1].toString());
+			return list.get(pos);
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
 	;
 	private Integer value;
 	private String functionName;
