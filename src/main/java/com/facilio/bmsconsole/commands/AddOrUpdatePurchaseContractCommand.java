@@ -64,7 +64,6 @@ public class AddOrUpdatePurchaseContractCommand implements Command {
 				
 				ContractsAPI.addRecord(false,purchaseContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 				context.put(FacilioConstants.ContextNames.RECORD, purchaseContractContext);
-				context.put(FacilioConstants.ContextNames.RECORD_ID, purchaseContractContext.getId());
 				
 				
 
@@ -81,6 +80,7 @@ public class AddOrUpdatePurchaseContractCommand implements Command {
 					ContractsAPI.addRecord(false,revisedContract.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 					context.put(FacilioConstants.ContextNames.REVISED_RECORD, revisedContract);
 					context.put(FacilioConstants.ContextNames.RECORD, revisedContract);
+					
 					
 					
 				}
@@ -101,6 +101,8 @@ public class AddOrUpdatePurchaseContractCommand implements Command {
 				context.put(FacilioConstants.ContextNames.RECORD, purchaseContractContext);
 				
 			}
+			context.put(FacilioConstants.ContextNames.RECORD_ID, purchaseContractContext.getId());
+			
 
 			
 		}
