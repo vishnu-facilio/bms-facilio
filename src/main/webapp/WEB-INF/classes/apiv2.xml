@@ -30,6 +30,10 @@
 				<param name="actionName">handleException</param>
 				<param name="namespace">/v2/exception</param>
 			</result>
+			<result name="cachedResponse" type="chain">
+				<param name="actionName">cachedResponse</param>
+				<param name="namespace">/v2/cachedResponse</param>
+			</result>
 			<result name="success" type="json">
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">responseCode, ^result.*</param>
@@ -116,6 +120,13 @@
 		<action name="handleException"
 			class="com.facilio.bmsconsole.actions.FacilioAction"
 			method="handleException">
+			<interceptor-ref name="defaultStack" />
+		</action>
+	</package>
+	
+	<package name="cachedResponseV2" namespace="/v2/cachedResponse" extends="v2Api">
+		<action name="cachedResponse" class="com.facilio.bmsconsole.actions.FacilioAction"
+			method="cachedResponse">
 			<interceptor-ref name="defaultStack" />
 		</action>
 	</package>

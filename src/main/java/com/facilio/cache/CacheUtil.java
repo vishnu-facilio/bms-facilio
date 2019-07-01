@@ -25,8 +25,16 @@ public class CacheUtil {
 	
 	public static final String PRIMARY = "primary";
 	
+	public static final String RESPONSE = "response";
+	
+	public static final String USER = "user";
+	
 	public static String ORG_KEY(long orgId) {
 		return ORG + KEY_SEPARATOR + orgId;
+	}
+	
+	public static String USER_KEY(long userId) {
+		return USER + KEY_SEPARATOR + userId;
 	}
 	
 	public static String MODULE_KEY(long orgId, String moduleName) {
@@ -66,6 +74,10 @@ public class CacheUtil {
 	}
 	public static String PRIMARY_FIELD_KEY(long orgId, String moduleName) {
 		return FIELDS_KEY(orgId, moduleName) + KEY_SEPARATOR + PRIMARY;
+	}
+	
+	public static String RESPONSE_KEY(long orgId, long userId, String uri, String hashedParam) {
+		return ORG_KEY(orgId) + KEY_SEPARATOR + USER_KEY(userId) + KEY_SEPARATOR + uri + KEY_SEPARATOR + hashedParam;
 	}
 	
 	public static boolean isCacheEnabled() {

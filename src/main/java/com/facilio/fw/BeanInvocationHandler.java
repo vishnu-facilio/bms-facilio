@@ -2,6 +2,7 @@ package com.facilio.fw;
 
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.cache.CacheUtil;
 import com.facilio.db.transaction.FacilioTransactionManager;
 
 import javax.transaction.Transaction;
@@ -77,6 +78,7 @@ public class BeanInvocationHandler implements InvocationHandler {
 			if (enableTransaction && isTransaction) {
 				LOGGER.info("commit transaction for " + method.getName());
 				FacilioTransactionManager.INSTANCE.getTransactionManager().commit();
+				LRUCache.getResponseCache().remove(CacheUtil.ORG_KEY(AccountUtil.getCurrentOrg().getId()));
 			}
 			if (orgid != 0 && oldAccount != null) {
 				AccountUtil.setCurrentAccount(oldAccount);

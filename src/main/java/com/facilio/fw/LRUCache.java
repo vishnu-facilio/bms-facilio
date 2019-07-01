@@ -47,6 +47,7 @@ public class LRUCache<K, V>{
 	private static LRUCache<String, Object> userSessionCache = new LRUCache<>("userSessionCache", 300);
 	private static LRUCache<String, Object> moduleCache = new LRUCache<>("moduleCache", 2000);
 	private static LRUCache<String, Long> queryCache = new LRUCache<>("queryCache", 500);
+	private static LRUCache<String, Object> responseCache = new LRUCache<>("responseCache", 5000);
 
     private long hitcount = 0;
     private long misscount = 1;
@@ -76,6 +77,9 @@ public class LRUCache<K, V>{
 		return moduleCache;
 	}
 	public static LRUCache<String, Long> getQueryCache() { return queryCache;}
+	public static LRUCache<String, Object> getResponseCache() {
+		return responseCache;
+	}
 
 	public String toString() {
 		double hitc =  ((hitcount*100d)/(hitcount+misscount) );

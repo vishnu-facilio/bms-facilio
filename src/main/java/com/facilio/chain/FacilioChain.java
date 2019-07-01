@@ -1,7 +1,11 @@
 package com.facilio.chain;
 
-import com.facilio.bmsconsole.commands.PostTransactionCommand;
-import com.facilio.db.transaction.FacilioTransactionManager;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.transaction.Transaction;
+import javax.transaction.TransactionManager;
+
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.chain.impl.ChainBase;
@@ -9,10 +13,11 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import javax.transaction.Transaction;
-import javax.transaction.TransactionManager;
-import java.util.ArrayList;
-import java.util.List;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.PostTransactionCommand;
+import com.facilio.cache.CacheUtil;
+import com.facilio.db.transaction.FacilioTransactionManager;
+import com.facilio.fw.LRUCache;
 
 public class FacilioChain extends ChainBase {
 	private static final ThreadLocal<FacilioChain> rootChain = new ThreadLocal<>();
@@ -119,7 +124,7 @@ public class FacilioChain extends ChainBase {
 		
 		boolean istransaction = false;
 		try {
-			if (enableTransaction) {
+			if (enableTransaction) {				
 				TransactionManager tm = FacilioTransactionManager.INSTANCE.getTransactionManager();
 				Transaction currenttrans = tm.getTransaction();
 				if (currenttrans == null) {
@@ -139,6 +144,7 @@ public class FacilioChain extends ChainBase {
 				if (istransaction) {
 				//	LOGGER.info("commit transaction for " + method.getName());
 					FacilioTransactionManager.INSTANCE.getTransactionManager().commit();
+					clearResponseCache();
 				}
 			}
 			
@@ -184,5 +190,9 @@ public class FacilioChain extends ChainBase {
 				rootChain.remove();
 			}
 		}
+	}
+	
+	private void clearResponseCache() {
+		LRUCache.getResponseCache().remove(CacheUtil.ORG_KEY(AccountUtil.getCurrentOrg().getId()));
 	}
 }

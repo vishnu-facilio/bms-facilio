@@ -1,11 +1,19 @@
 package com.facilio.bmsconsole.interceptors;
 
-import com.opensymphony.xwork2.ActionInvocation;
+import java.io.IOException;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.json.JSONResult;
 
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.cache.CacheUtil;
+import com.facilio.filters.MultiReadServletRequest;
+import com.facilio.fw.LRUCache;
+import com.opensymphony.xwork2.ActionInvocation;
 
 public class CacheResult extends JSONResult {
 
@@ -27,6 +35,18 @@ public class CacheResult extends JSONResult {
                  {
 		HttpServletRequest request =
 				  ServletActionContext.getRequest();
+		if (request instanceof HttpServletRequestWrapper) {
+			HttpServletRequestWrapper requestWrapper = ((HttpServletRequestWrapper) request);
+			if (requestWrapper.getRequest() instanceof MultiReadServletRequest && ((MultiReadServletRequest) requestWrapper.getRequest()).isCachedRequest()) {
+				MultiReadServletRequest multiReadServletRequest = ((MultiReadServletRequest) requestWrapper.getRequest());
+				String requestURI = multiReadServletRequest.getRequestURI();
+		        String contentHash = multiReadServletRequest.getContentHash();
+				long userId = AccountUtil.getCurrentUser().getId();
+				long orgId = AccountUtil.getCurrentOrg().getId();
+				
+				LRUCache.getResponseCache().put(CacheUtil.RESPONSE_KEY(orgId, userId, requestURI, contentHash), json);
+			}
+		}
 		Object cacheurl = request.getAttribute("cacheurl");
 		if(cacheurl !=null)
 		{
@@ -36,7 +56,8 @@ public class CacheResult extends JSONResult {
 		{
 			//System.out.println("pls check the cache parameter in struts config file !!!");
 		}
-		
-					super.writeToResponse(response,json,gzip);
+		super.writeToResponse(response,json,gzip);
+
+					
                  }
 }

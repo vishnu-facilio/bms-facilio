@@ -2,14 +2,23 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.chain.FacilioContext;
+import com.facilio.cache.CacheUtil;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.filters.MultiReadServletRequest;
+import com.facilio.fw.LRUCache;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class FacilioAction extends ActionSupport {
@@ -62,6 +71,29 @@ public class FacilioAction extends ActionSupport {
 		}
 		setStackTrace(exception);
 		return ERROR;
+	}
+	
+	public String cachedResponse() throws Exception {
+		HttpServletRequest request = ServletActionContext.getRequest();
+		if (request instanceof HttpServletRequestWrapper) {
+			HttpServletRequestWrapper requestWrapper = ((HttpServletRequestWrapper) request);
+			if (requestWrapper.getRequest() instanceof MultiReadServletRequest && ((MultiReadServletRequest) requestWrapper.getRequest()).isCachedRequest()) {
+				MultiReadServletRequest multiReadServletRequest = ((MultiReadServletRequest) requestWrapper.getRequest());
+				String requestURI = multiReadServletRequest.getRequestURI();
+		        String contentHash = multiReadServletRequest.getContentHash();
+				long userId = AccountUtil.getCurrentUser().getId();
+				long orgId = AccountUtil.getCurrentOrg().getId();
+		
+				Object object = LRUCache.getResponseCache().get(CacheUtil.RESPONSE_KEY(orgId, userId, requestURI, contentHash));
+				
+				HttpServletResponse response = ServletActionContext.getResponse();
+				response.setContentType("application/json;charset=UTF-8");
+				response.setContentLength(object.toString().length());
+				response.getWriter().write(object.toString());
+				response.getWriter().flush();
+			}
+		}
+		return SUCCESS;
 	}
 	
 	private JSONObject result;
