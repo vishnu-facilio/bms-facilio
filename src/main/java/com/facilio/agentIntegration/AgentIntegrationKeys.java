@@ -32,6 +32,8 @@ public class AgentIntegrationKeys
     public static final String WATT_BASE_PATH = "wattsenseBasePath";
     public static final String WATT_AWS_MQTT_ENDPOINT_BASE = "WattsenseAwsMqttEndpointBase";
     public static final String WATT_INITIATE_MQTT_API = "wattsenseInitiateMqttApi";
+    public static final String CERT_FILE_NAME = "facilio.crt";
+    public static final String KEY_FILE_NAME = "facilio-private.key";
 
 
 }

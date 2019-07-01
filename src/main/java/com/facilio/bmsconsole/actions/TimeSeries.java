@@ -122,9 +122,8 @@ public class TimeSeries extends FacilioAction {
 	public String mapInstance() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.INSTANCE_INFO, instanceAssetMap);
+		context.put(FacilioConstants.ContextNames.INSTANCE_INFO, instances);
 		context.put(FacilioConstants.ContextNames.CONTROLLER_ID, controllerId);
-		context.put(FacilioConstants.ContextNames.UNIT_POINTS, unit);
 		Chain mappingChain = TransactionChainFactory.getInstanceAssetMappingChain();
 		mappingChain.execute(context);
 		

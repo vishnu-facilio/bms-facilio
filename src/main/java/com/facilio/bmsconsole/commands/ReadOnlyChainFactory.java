@@ -301,6 +301,12 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain getControllerListChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetControllerListCommand());
+		return c;
+	}
+	
 	public static Chain getUnmodelledInstancesForController() {
 		Chain c = getDefaultChain();
 		c.addCommand(new GetUnmodelledInstancesForControllerCommand());
@@ -1072,6 +1078,12 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new LoadBreakTransactionLookupCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
+		return c;
+	}
+	
+	public static Chain fetchWorkflowRulesForStoreChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetRulesForStoreCommand());
 		return c;
 	}
 }

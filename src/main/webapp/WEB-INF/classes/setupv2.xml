@@ -13,6 +13,12 @@
 			<!-- <param name="moduleName">setup</param>
 			<param name="permission">USER_MANAGEMENT</param> -->
 		</action>
+		
+		<action name="controllers" class="com.facilio.bmsconsole.actions.ControllerAction" method="controllerList">
+			<param name="moduleName">setup</param>
+			<param name="permission">CONTROLLER</param>
+		</action>
+		
 	</package>
 	
 	<package name="approvalRuleApiV2" namespace="/api/v2/setup/approvalrule" extends="v2Api">

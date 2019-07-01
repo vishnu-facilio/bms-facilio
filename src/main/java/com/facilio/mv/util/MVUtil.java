@@ -53,12 +53,37 @@ public class MVUtil {
     public static String WORKLFOW_VALUE_NULL_CHECK_STMT = "if(${var} == null) { ${var} = 0; }";
     public static String WORKLFOW_ADJ_DATE_RANGE_CHECK = "if(startTime >= ${startTime} && endTime < ${endTime}){";
 	
-	public static void fillFormulaFieldDetails(FormulaFieldContext formulaFieldContext,MVProjectContext mvProject,MVBaseline baseline,MVAdjustment mvAdjustment, Context context) {
+	public static void fillFormulaFieldDetailsForAdd(FormulaFieldContext formulaFieldContext,MVProjectContext mvProject,MVBaseline baseline,MVAdjustment mvAdjustment, Context context) {
 		
 		formulaFieldContext.setFormulaFieldType(FormulaFieldType.M_AND_V_ENPI);
 		formulaFieldContext.setTriggerType(TriggerType.SCHEDULE);
 		formulaFieldContext.setResourceId(mvProject.getMeter().getId());
 		formulaFieldContext.setResourceType(ResourceType.ONE_RESOURCE);
+		formulaFieldContext.setFrequency(mvProject.getFrequency());
+		if(baseline != null) {
+			if(formulaFieldContext.getName() == null) {
+				formulaFieldContext.setName(baseline.getName());
+			}
+			formulaFieldContext.setStartTime(baseline.getStartTime());
+			formulaFieldContext.setEndTime(baseline.getEndTime());
+			context.put(FacilioConstants.ContextNames.DATE_RANGE,new DateRange(baseline.getStartTime(), DateTimeUtil.getCurrenTime() < baseline.getEndTime() ? DateTimeUtil.getCurrenTime() : baseline.getEndTime()));
+		}
+		else if(mvAdjustment != null) {
+			if(formulaFieldContext.getName() == null) {
+				formulaFieldContext.setName(mvAdjustment.getName());
+			}
+			formulaFieldContext.setStartTime(mvAdjustment.getStartTime());
+			formulaFieldContext.setEndTime(mvAdjustment.getEndTime());
+			context.put(FacilioConstants.ContextNames.DATE_RANGE,new DateRange(mvAdjustment.getStartTime(),  DateTimeUtil.getCurrenTime() <  mvAdjustment.getEndTime() ? DateTimeUtil.getCurrenTime() : mvAdjustment.getEndTime()));
+		}
+	}
+	
+	public static void fillFormulaFieldDetailsForUpdate(FormulaFieldContext formulaFieldContext,MVProjectContext mvProject,MVBaseline baseline,MVAdjustment mvAdjustment, Context context) {
+		
+		formulaFieldContext.setFormulaFieldType(null);
+		formulaFieldContext.setTriggerType(null);
+		formulaFieldContext.setResourceId(-1);
+		formulaFieldContext.setResourceType(null);
 		formulaFieldContext.setFrequency(mvProject.getFrequency());
 		if(baseline != null) {
 			if(formulaFieldContext.getName() == null) {
@@ -132,6 +157,8 @@ public class MVUtil {
 		for(MVBaseline mvBaseline :mvBaselines) {
 			FormulaFieldContext formula = FormulaFieldAPI.getFormulaField(mvBaseline.getFormulaField().getId());
 			mvBaseline.setFormulaField(formula);
+			formula = FormulaFieldAPI.getFormulaField(mvBaseline.getFormulaFieldWithAjustment().getId());
+			mvBaseline.setFormulaFieldWithAjustment(formula);
 		}
 		
 		mvProjectWrapper.setBaselines(mvBaselines);
@@ -149,12 +176,12 @@ public class MVUtil {
 		
 		List<MVAdjustment> mvAdjustments = selectAjustment.get();
 		
-		Map<Long,MVAdjustment> mvAdjustmentsIdMap = new HashMap<Long, MVAdjustment>();
 		
 		for(MVAdjustment mvAdjustment :mvAdjustments) {
-			FormulaFieldContext formula = FormulaFieldAPI.getFormulaField(mvAdjustment.getFormulaField().getId());
-			mvAdjustment.setFormulaField(formula);
-			mvAdjustmentsIdMap.put(mvAdjustment.getId(), mvAdjustment);
+			if(mvAdjustment.getFormulaField() != null && mvAdjustment.getFormulaField().getId() > 0) {
+				FormulaFieldContext formula = FormulaFieldAPI.getFormulaField(mvAdjustment.getFormulaField().getId());
+				mvAdjustment.setFormulaField(formula);
+			}
 		}
 		
 		mvProjectWrapper.setAdjustments(mvAdjustments);

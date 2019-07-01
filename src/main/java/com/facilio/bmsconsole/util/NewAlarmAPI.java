@@ -30,6 +30,10 @@ import com.facilio.time.DateTimeUtil;
 public class NewAlarmAPI {
 	
 	public static List<BaseAlarmContext> getAlarms(List<Long> ids) throws Exception {
+		if (CollectionUtils.isEmpty(ids)) {
+			return Collections.EMPTY_LIST;
+		}
+
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_ALARM);
 		SelectRecordsBuilder<BaseAlarmContext> builder = new SelectRecordsBuilder<BaseAlarmContext>()

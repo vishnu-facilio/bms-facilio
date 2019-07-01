@@ -1,14 +1,28 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
+import org.apache.commons.chain.Chain;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentKeys;
 import com.facilio.agent.AgentUtil;
 import com.facilio.agent.ControllerUtil;
 import com.facilio.agent.PublishType;
 import com.facilio.beans.ModuleCRUDBean;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -16,13 +30,6 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
-import org.apache.commons.chain.Chain;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import java.util.*;
 
 public class ControllerAction extends FacilioAction {
 
@@ -37,6 +44,18 @@ public class ControllerAction extends FacilioAction {
 	public void setId(long id) {
 		this.id = id;
 	}
+	
+	public String controllerList() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(AgentKeys.AGENT_ID, agentId);
+		ReadOnlyChainFactory.getControllerListChain().execute(context);
+		
+		setResult("controllers", context.get(ContextNames.CONTROLLER_LIST));
+		
+		return SUCCESS;    	
+	}
+	
 
 	/**
 	 * This Action is for Deleting a controller from database's Controller table
@@ -338,6 +357,8 @@ public class ControllerAction extends FacilioAction {
 		}
 		return ERROR;
 	}
+	
+	
 
 	/*public String getMetrics() throws Exception{
 		ModuleCRUDBean bean;

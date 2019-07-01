@@ -652,11 +652,6 @@ public class LoginAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	public String getMySitesList() throws Exception {
-		setResult("mysites", CommonCommandUtil.getMySites());
-		return SUCCESS;
-	}
-	
 	public String getMySiteList() throws Exception {
 		setResult("site", CommonCommandUtil.getMySites());
 		return SUCCESS;

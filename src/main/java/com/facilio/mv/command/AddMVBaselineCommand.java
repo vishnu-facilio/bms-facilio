@@ -46,7 +46,7 @@ public class AddMVBaselineCommand implements Command {
 			baseLine.setProject(mvProjectWrapper.getMvProject());
 			baseLine.setOrgId(AccountUtil.getCurrentOrg().getId());
 			context.put(FacilioConstants.ContextNames.FORMULA_FIELD, baseLine.getFormulaField());
-			MVUtil.fillFormulaFieldDetails(baseLine.getFormulaField(), mvProjectWrapper.getMvProject(),baseLine,null,context);
+			MVUtil.fillFormulaFieldDetailsForAdd(baseLine.getFormulaField(), mvProjectWrapper.getMvProject(),baseLine,null,context);
 			Chain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
 			addEnpiChain.execute(context);
 		}

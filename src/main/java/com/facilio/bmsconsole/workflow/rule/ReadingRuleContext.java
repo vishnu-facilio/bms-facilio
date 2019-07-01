@@ -826,6 +826,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		if (val != null || getEvent().getActivityTypeEnum().isPresent(EventType.SCHEDULED_READING_RULE.getValue())) {
 			if (clearAlarm()) {
 				if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
+					LOGGER.info("Clearing new alarm ");
 					constructAndAddClearEvent(context, reading);
 				}
 				else {
@@ -843,6 +844,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		}
 		else {
 			String severity = (String) obj.remove("severity");
+			obj.remove("alarmType");
 			event = FieldUtil.getAsBeanFromJson(obj, ReadingEventContext.class);
 			if (StringUtils.isNotEmpty(severity)) {
 				event.setSeverityString(severity);
@@ -873,6 +875,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		Map<Long, ReadingRuleAlarmMeta> metaMap = null;
 		if (isHistorical) {
 			metaMap = (Map<Long, ReadingRuleAlarmMeta>) context.get(FacilioConstants.ContextNames.READING_RULE_ALARM_META);
+			LOGGER.info("Meta map during clearing : "+metaMap+"\nFor reading : "+reading);
 		}
 		else {
 			metaMap = this.getAlarmMetaMap();
@@ -900,6 +903,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 //			if (isHistorical) {
 //				LOGGER.info("Clearing alarm for rule : "+readingRuleContext.getId()+" for resource : "+resourceId);
 //			}
+			LOGGER.info("Clear event : "+FieldUtil.getAsJSON(event).toJSONString());
 			context.put(EventConstants.EventContextNames.EVENT_LIST, Collections.singletonList(event));
 			if (!isHistorical) {
 				Chain addEvent = TransactionChainFactory.getV2AddEventChain();

@@ -34,7 +34,6 @@ import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingType;
-import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.ControllerAPI;
 import com.facilio.bmsconsole.util.IoTMessageAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
@@ -221,7 +220,6 @@ public class TimeSeriesAPI {
 		else {
 			updateInstanceAssetMapping(deviceName, assetId, categoryId, instance, fieldId, modeledData, unit);
 		}
-		AssetsAPI.updateAssetConnectionStatus(assetId, true);
 	}
 	
 	// Temp
@@ -794,7 +792,11 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 			Criteria inUseCriteria = new Criteria();
 			inUseCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("inUse"), String.valueOf(configuredOnly), BooleanOperators.IS));
 			if (configuredOnly) {
-				inUseCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("objectInstanceNumber"), CommonOperators.IS_EMPTY));				
+				Criteria typeCriteria = new Criteria();
+				// To get all points if not from niagara and bacnet
+				typeCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("objectInstanceNumber"), CommonOperators.IS_EMPTY));			
+				typeCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("pointPath"), CommonOperators.IS_EMPTY));
+				inUseCriteria.orCriteria(typeCriteria);
 			}
 			builder.andCriteria(inUseCriteria);
 		}

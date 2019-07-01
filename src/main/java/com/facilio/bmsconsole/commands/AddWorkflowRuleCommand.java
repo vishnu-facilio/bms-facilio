@@ -15,6 +15,7 @@ public class AddWorkflowRuleCommand implements Command {
 		rule.setStatus(true);
 		rule.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		long ruleId = WorkflowRuleAPI.addWorkflowRule(rule);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_ID, ruleId);
 		
 		return false;
 	}

@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -41,6 +43,10 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 	
 	
 	Map<Long, String> assetIdVsName;
+	String plannedField = null;
+	String actualField = null;
+	
+	boolean showTimeMetric = true;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -49,10 +55,6 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 		// TODO get from planner settings
 		boolean showAssetCategory = true;
 		boolean showFrequency = true;
-		boolean showTimeMetric = true;
-		
-		String plannedField = null;
-		String actualField = null;
 
 
 		List<List<Map<String, Object>>> titles = new ArrayList<>();
@@ -327,19 +329,27 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 					
 					List<Map<String, Object>> title = titles.get(i);
 					Map<String, Object> leafNode = title.get(title.size() - 1);
-					long count =  (long) leafNode.get("count");
+					int count = (int) (long) leafNode.get("count");
+					
+					List<Map<String, Object>> filteredList = IntStream.range(totalCount, totalCount+count)
+						             .mapToObj(props::get)
+						             .collect(Collectors.toList());
 					
 					if (showTimeMetric) {
-						addData(row, props, plannedField, count, totalCount, false);
+						addData(row, filteredList, plannedField, count, totalCount, false);
+						sort(row);
 						
 						row = new ArrayList<>();
 						datas.add(row);
+						sort(row);
 						
-						addData(row, props, actualField, count, totalCount, true);
+						addData(row, new ArrayList<>(filteredList), actualField, count, totalCount, true);
+						sort(row);
 						i++;
 					}
 					else {
 						addData(row, props, "createdTime", count, totalCount, false);
+						sort(row);
 					}
 					
 					totalCount += count;
@@ -358,11 +368,19 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 	}
 	
 	private void addData(List<Map<String, Object>> row, List<Map<String, Object>> props, String field, long count, int totalCount, boolean isClone) {
-		for(int j = 0; j < count; j++) {
-			Map<String, Object> prop = props.get(totalCount + j);
+		for(int j = 0; j < props.size(); j++) {
+			Map<String, Object> prop = props.get(j);
 			if (!isClone) {
 				Map<String, Object> resource = (Map<String, Object>) prop.get("resource");
 				prop.put("asset", assetIdVsName.get(resource.get("id")));
+			}
+			if (showTimeMetric) {
+				if (field.equals(plannedField)) {
+					prop.put("time", PLANNED);
+				}
+				if (field.equals(actualField)) {
+					prop.put("time", ACTUAL);
+				}
 			}
 			
 			prop = new HashMap<>(prop);
@@ -373,6 +391,17 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 			}
 			
 		}
+	}
+	
+	private void sort(List<Map<String, Object>> props) {
+		props.sort((m1,m2) -> {
+			long d1 = (long) m1.get("start");
+			long d2 = (long) m2.get("start");
+			if(d1 == d2){
+		         return 0;
+		    }
+			return d1 < d2 ? -1 : 1;
+		});
 	}
 
 }

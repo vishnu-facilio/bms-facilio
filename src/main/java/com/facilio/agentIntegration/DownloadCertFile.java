@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -23,6 +24,23 @@ public class DownloadCertFile
 {
 
     private static final Logger LOGGER = LogManager.getLogger(DownloadCertFile.class.getName());
+
+
+    public static InputStream getCertKeyZipInputStream(){
+        long orgId = AccountUtil.getCurrentOrg().getOrgId();
+        Map<String, Object> orgInfo = null;
+        try {
+            orgInfo = CommonCommandUtil.getOrgInfo(orgId, FacilioConstants.ContextNames.FEDGE_CERT_FILE_ID);
+            if (orgInfo != null) {
+                long fileId = Long.parseLong((String) orgInfo.get("value"));
+                FileStore fs = FileStoreFactory.getInstance().getFileStore();
+                return fs.readFile(fileId);
+            }
+        } catch (Exception e) {
+            LOGGER.info("Exception Occurred ",e);
+        }
+        return null;
+    }
 
     public static String downloadCertificate() {
         long orgId = AccountUtil.getCurrentOrg().getOrgId();
@@ -44,7 +62,6 @@ public class DownloadCertFile
             String directoryName = "facilio/";
             File file = new File(System.getProperty("user.home") + "/fedge.zip");
             try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(file))) {
-
                 addToZip(out, directoryName + "facilio.crt", certificateResult.getCertificatePem());
                 addToZip(out, directoryName + "facilio-private.key", certificateResult.getKeyPair().getPrivateKey());
                 addToZip(out, directoryName + "facilio.config", getFacilioConfig(orgName));
@@ -137,5 +154,51 @@ public class DownloadCertFile
                 .append("endpoint=avzdxo3ow2ja2.iot.us-west-2.amazonaws.com").append("\n")
                 .append("topic=").append(domainName);
         return builder.toString();
+    }
+
+    public static Map<String,InputStream> getCertKeyFileInputStreams() {
+        InputStream fis = getCertKeyZipInputStream();
+        Map<String,InputStream> filesMap = new HashMap<>();
+        if(fis == null){
+            LOGGER.info(" Inputstream emty ");
+            return filesMap;
+        }
+        try {
+            ZipInputStream zis = new ZipInputStream(new BufferedInputStream(fis));
+            ZipEntry entry;
+
+            while ((entry = zis.getNextEntry()) != null) {
+                String fileName = entry.getName();
+                int size;
+                byte[] buffer = new byte[2048];
+                FileOutputStream fos = new FileOutputStream(entry.getName());
+                BufferedOutputStream bos = new BufferedOutputStream(fos, buffer.length);
+                while ((size = zis.read(buffer, 0, buffer.length)) != -1) {
+                    bos.write(buffer, 0, size);
+                }
+                bos.flush();
+                bos.close();
+                File file = new File(fileName);
+                FileInputStream inputStream = new FileInputStream(file);
+                BufferedReader br = new BufferedReader(new FileReader(file));
+                for (String line; (line = br.readLine()) != null;) {
+                    LOGGER.info(line);
+                }
+                br.close();
+                filesMap.put(fileName,inputStream);
+                file.delete();
+            }
+            zis.close();
+            fis.close();
+            return filesMap;
+        } catch (Exception e) {
+            LOGGER.info("Exception occurred ",e);
+        }
+
+        return null;
+    }
+
+    public static InputStream getKeyFileInputStream() {
+        return null;
     }
 }

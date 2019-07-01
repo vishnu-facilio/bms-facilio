@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +15,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.ToolTransactionContext;
 import com.facilio.bmsconsole.util.TransactionState;
@@ -27,6 +30,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
@@ -82,6 +86,9 @@ public class ToolQuantityRollUpCommand implements Command {
 		long toolTypeId = -1;
 		List<Long> toolTypesIds = new ArrayList<>();
 		if (uniqueToolIds != null && !uniqueToolIds.isEmpty()) {
+			List<ToolContext> toolRecords = new ArrayList<ToolContext>();
+            Map<Long, List<UpdateChangeSet>> changes = new HashMap<Long, List<UpdateChangeSet>>();
+			
 			for (long stId : uniqueToolIds) {
 				Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(toolFields);
 				List<LookupField>lookUpfields = new ArrayList<>();
@@ -108,15 +115,32 @@ public class ToolQuantityRollUpCommand implements Command {
 					//}
 					tool.setCurrentQuantity(availableQty);
 					toolTypesIds.add(tool.getToolType().getId());
+					if(tool.getCurrentQuantity() <= tool.getMinimumQuantity()) {
+						tool.setIsUnderstocked(true);
+					}
+					else {
+						tool.setIsUnderstocked(false);
+					}
 				}
 
+				
 				UpdateRecordBuilder<ToolContext> updateBuilder = new UpdateRecordBuilder<ToolContext>()
 						.module(module).fields(modBean.getAllFields(module.getName()))
 						.andCondition(CriteriaAPI.getIdCondition(tool.getId(), module));
-
+				updateBuilder.withChangeSet(ToolContext.class);
 				updateBuilder.update(tool);
+				Map<Long, List<UpdateChangeSet>> recordChanges = updateBuilder.getChangeSet();
+				changes.put(tool.getId(), (List<UpdateChangeSet>)recordChanges.get(tool.getId()));
+				toolRecords.add(tool);
+            
+				
 				context.put(FacilioConstants.ContextNames.TOOL_TYPES_ID, toolTypeId);
 			}
+			Map<String, Map<Long,List<UpdateChangeSet>>> finalChangeMap = new HashMap<String, Map<Long,List<UpdateChangeSet>>>();
+			finalChangeMap.put(module.getName(), changes);
+			context.put(FacilioConstants.ContextNames.RECORD_MAP, Collections.singletonMap(module.getName(), toolRecords));
+			context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, finalChangeMap);
+	
 		}
 		context.put(FacilioConstants.ContextNames.TOOL_TYPES_IDS, toolTypesIds);
 	}

@@ -1,10 +1,30 @@
 package com.facilio.bmsconsole.util;
 
-import com.amazonaws.services.iot.client.*;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Chain;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import com.amazonaws.services.iot.client.AWSIotConnectionStatus;
+import com.amazonaws.services.iot.client.AWSIotException;
+import com.amazonaws.services.iot.client.AWSIotMessage;
+import com.amazonaws.services.iot.client.AWSIotMqttClient;
+import com.amazonaws.services.iot.client.AWSIotQos;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentKeys;
 import com.facilio.agent.AgentKeys.AckMessageType;
 import com.facilio.agent.AgentUtil;
+import com.facilio.agent.protocol.ProtocolUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -20,27 +40,19 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.serializable.SerializableConsumer;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.wms.message.WmsPublishResponse;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
-import java.sql.SQLException;
-import java.util.*;
 
 public class IoTMessageAPI {
 	private static final Logger LOGGER = LogManager.getLogger(IoTMessageAPI.class.getName());
 	
 	private static final int MAX_BUFFER = 45000; //45000 fix for db insert 112640  110KiB;  AWS IOT limits max publish message size to 128KiB
-	private static Boolean isStage = !AwsUtil.isProduction();
 	
 	private static PublishData constructIotMessage (List<Map<String, Object>> instances, IotCommandType command) throws Exception {
 		return constructIotMessage((long) instances.get(0).get("controllerId"), command, instances, null);
@@ -85,22 +97,9 @@ public class IoTMessageAPI {
 				JSONObject point = new JSONObject();
 				point.put("instanceType", instance.get("instanceType"));
 				point.put("objectInstanceNumber", instance.get("objectInstanceNumber"));
-				if (command == IotCommandType.CONFIGURE) {
-					point.put("instance", instance.get("instance"));
-					point.put("device", instance.get("device"));
-					point.put("instanceDescription", instance.get("instanceDescription"));
-				}
-				else if (command == IotCommandType.SUBSCRIBE) {
-					if (instance.containsKey("thresholdJson")) {
-						JSONParser parser = new JSONParser();
-						JSONObject threshold = (JSONObject) parser.parse((String) instance.get("thresholdJson"));
-						point.putAll(threshold);
-					}
-				}
-				else if (command == IotCommandType.SET && instance.containsKey("value")) {
-					point.put("newValue", instance.get("value"));
-					point.put("valueType", getValueType(modBean.getField((long) instance.get("fieldId")).getDataTypeEnum()));
-				}
+				
+				ProtocolUtil.setPointData(controller.getControllerTypeEnum(), command, instance, point, modBean);
+				
 				points.add(point);
 			}
 			object.put("points", points);
@@ -136,6 +135,8 @@ public class IoTMessageAPI {
 		}
 		return data;
 	}
+	
+	
 
 	private static PublishMessage getMessageObject(JSONObject object) {
 		PublishMessage msg = new PublishMessage();
@@ -145,24 +146,6 @@ public class IoTMessageAPI {
 		return msg;
 	}
 
-	private static String getValueType(FieldType fieldType) {
-		String type = null;
-		switch(fieldType) {
-			case NUMBER:
-				type = "signed";
-				break;
-			case DECIMAL:
-				type = "double";
-				break;
-			case BOOLEAN:
-				type = "boolean";
-				break;
-			case STRING:
-				type = "string";
-		}
-		return type;
-	}
-	
 	public static int acknowdledgeData (long id, boolean isResponseAck) throws SQLException {
 		Map<String, Object> prop;
 		if  (isResponseAck) {
