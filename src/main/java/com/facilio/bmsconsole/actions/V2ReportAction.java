@@ -301,9 +301,34 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.ALARM_ID, alarmId);
 	}
 	
+	public String fetchReportByType() throws Exception{
+		List<ReportContext> reports= ReportUtil.fetchAllReportsByType(reportType);
+		setResult(FacilioConstants.ContextNames.REGRESSION_REPORT, reports);
+		return SUCCESS;
+	}
+	
 	public String addOrUpdateReadingReport() throws Exception {
 		FacilioContext context = new FacilioContext();
 		setReadingsDataContext(context);
+		
+		if(reportContext != null && regressionConfig != null && regressionConfig.size() != 0 && regressionType != null) {
+			JSONObject reportState;
+			if(reportContext.getReportState() != null && !reportContext.getReportState().isEmpty()) {
+				reportState = reportContext.getReportState();
+			}
+			else {
+				reportState = new JSONObject();
+			}
+			List<Map<String, Object>> regressionConfigJSON = new ArrayList<Map<String, Object>>();
+			for(RegressionContext config : regressionConfig) {
+				regressionConfigJSON.add(FieldUtil.getAsProperties(config));
+			}
+			reportState.put("regressionConfig", regressionConfigJSON);
+			reportState.put("regressionType", regressionType);
+			
+			reportContext.setReportState(reportState);
+			context.put(FacilioConstants.ContextNames.REGRESSION_CONFIG, regressionConfig);
+		}
 		
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateOperatorValue);
@@ -535,7 +560,15 @@ public class V2ReportAction extends FacilioAction {
 		
 	}
 	
+	private Integer reportType;
 	
+	public Integer getReportType() {
+		return reportType;
+	}
+	public void setReportType(Integer reportType) {
+		this.reportType = reportType;
+	}
+
 	private List<RegressionContext> regressionConfig;
 	
 	public List<RegressionContext> getRegressionConfig() {
@@ -543,6 +576,15 @@ public class V2ReportAction extends FacilioAction {
 	}
 	public void setRegressionConfig(List<RegressionContext> regressionConfig) {
 		this.regressionConfig = regressionConfig;
+	}
+	
+	private String regressionType;
+
+	public String getRegressionType() {
+		return regressionType;
+	}
+	public void setRegressionType(String regressionType) {
+		this.regressionType = regressionType;
 	}
 
 	private JSONObject xField;
