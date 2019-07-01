@@ -826,8 +826,8 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		if (val != null || getEvent().getActivityTypeEnum().isPresent(EventType.SCHEDULED_READING_RULE.getValue())) {
 			if (clearAlarm()) {
 				if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
-					LOGGER.info("Clearing new alarm ");
-					constructAndAddClearEvent(context, reading);
+//					LOGGER.info("Clearing new alarm ");
+					constructAndAddClearEvent(context, (ResourceContext) reading.getParent(), reading.getTtime());
 				}
 				else {
 					ReadingRuleAPI.addClearEvent(context, placeHolders, this, reading.getId(), val, reading.getTtime(), reading.getParentId());
@@ -867,7 +867,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		return event;
 	}
 
-	public ReadingEventContext constructAndAddClearEvent(Context context, ReadingContext reading) throws Exception {
+	public ReadingEventContext constructAndAddClearEvent(Context context, ResourceContext resource, long ttime) throws Exception {
 		Boolean isHistorical = (Boolean) context.get(EventConstants.EventContextNames.IS_HISTORICAL_EVENT);
 		if (isHistorical == null) {
 			isHistorical = false;
@@ -875,26 +875,15 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		Map<Long, ReadingRuleAlarmMeta> metaMap = null;
 		if (isHistorical) {
 			metaMap = (Map<Long, ReadingRuleAlarmMeta>) context.get(FacilioConstants.ContextNames.READING_RULE_ALARM_META);
-			LOGGER.info("Meta map during clearing : "+metaMap+"\nFor reading : "+reading);
+//			LOGGER.info("Meta map during clearing : "+metaMap+"\nFor reading : "+reading);
 		}
 		else {
 			metaMap = this.getAlarmMetaMap();
 		}
-		ReadingRuleAlarmMeta alarmMeta = metaMap != null ? metaMap.get(reading.getParentId()) : null;
+		ReadingRuleAlarmMeta alarmMeta = metaMap != null ? metaMap.get(resource.getId()) : null;
 		if (alarmMeta != null && !alarmMeta.isClear()) {
 			alarmMeta.setClear(true);
-
-			ReadingEventContext event = new ReadingEventContext();
-			event.setResource((ResourceContext) reading.getParent());
-			event.setReadingFieldId(this.getReadingFieldId());
-			event.setRuleId(this.getRuleGroupId());
-			event.setSubRuleId(this.getId());
-			event.setComment("System auto cleared Alarm because associated rule executed clear condition for the associated resource");
-			event.setCreatedTime(reading.getTtime());
-			event.setAutoClear(true);
-			event.setSiteId(((ResourceContext)reading.getParent()).getSiteId());
-			event.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
-
+			ReadingEventContext event = constructClearEvent(resource, ttime);
 //			JSONObject json = AlarmAPI.constructClearEvent(alarm, "System auto cleared Alarm because associated rule executed clear condition for the associated resource", ttime);
 //			if (alarm.getSourceTypeEnum() == SourceType.THRESHOLD_ALARM) {
 //				json.put("readingDataId", readingDataId);
@@ -904,7 +893,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 //			if (isHistorical) {
 //				LOGGER.info("Clearing alarm for rule : "+readingRuleContext.getId()+" for resource : "+resourceId);
 //			}
-			LOGGER.info("Clear event : "+FieldUtil.getAsJSON(event).toJSONString());
+//			LOGGER.info("Clear event : "+FieldUtil.getAsJSON(event).toJSONString());
 			context.put(EventConstants.EventContextNames.EVENT_LIST, Collections.singletonList(event));
 			if (!isHistorical) {
 				Chain addEvent = TransactionChainFactory.getV2AddEventChain();
@@ -913,6 +902,22 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 			return event;
 		}
 		return null;
+	}
+
+	public ReadingEventContext constructClearEvent(ResourceContext resource, long ttime) {
+		ReadingEventContext event = new ReadingEventContext();
+		event.setEventMessage("Auto cleared event");
+		event.setResource(resource);
+		event.setReadingFieldId(this.getReadingFieldId());
+		event.setRuleId(this.getRuleGroupId());
+		event.setSubRuleId(this.getId());
+		event.setComment("System auto cleared Alarm because associated rule executed clear condition for the associated resource");
+		event.setCreatedTime(ttime);
+		event.setAutoClear(true);
+		event.setSiteId(resource.getSiteId());
+		event.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
+
+		return event;
 	}
 
 	private DateRange getRange(ReadingContext reading) {

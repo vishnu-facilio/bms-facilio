@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.workflow.rule;
 
+import com.facilio.bmsconsole.context.ResourceContext;
+
 import java.io.Serializable;
 
 public class ReadingRuleAlarmMeta implements Serializable {
@@ -39,7 +41,15 @@ public class ReadingRuleAlarmMeta implements Serializable {
 	public void setRuleGroupId(long ruleGroupId) {
 		this.ruleGroupId = ruleGroupId;
 	}
-	
+
+	private ResourceContext resource;
+	public ResourceContext getResource() {
+		return resource;
+	}
+	public void setResource(ResourceContext resource) {
+		this.resource = resource;
+	}
+
 	private long resourceId = -1;
 	public long getResourceId() {
 		return resourceId;

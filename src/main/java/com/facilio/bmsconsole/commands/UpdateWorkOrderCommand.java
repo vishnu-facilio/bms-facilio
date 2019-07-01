@@ -27,6 +27,7 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -105,13 +106,19 @@ public class UpdateWorkOrderCommand implements Command {
 				    long fieldid = changeset.getFieldId();
 					Object oldValue = changeset.getOldValue();
 					Object newValue = changeset.getNewValue();
-					FacilioField field = modBean.getField(fieldid, moduleName);
+					FacilioField field = modBean.getField(fieldid, moduleName); 
 					
 					JSONObject info = new JSONObject();
 					info.put("field", field.getName());
 					info.put("displayName", field.getDisplayName());
+					if (field.getName().contains("resource")) {
+						ResourceContext resource = ResourceAPI.getResource((long) newValue);
+						info.put("newValue", resource.getName());
+					}
+					else {
+						info.put("newValue", newValue);
+					}
 					info.put("oldValue", oldValue);
-					info.put("newValue", newValue);
 	                wolist.add(info);
 
 				}	
