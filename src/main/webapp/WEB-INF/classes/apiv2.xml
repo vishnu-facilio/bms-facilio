@@ -1196,6 +1196,7 @@
 		<action name="fetchReportData"
 			class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="fetchReportData">
+			<param name="cacheUrl">true</param>
 		</action>
 		<action name="saveReport"
 			class="com.facilio.bmsconsole.actions.V2ReportAction"

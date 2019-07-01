@@ -7,10 +7,8 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
@@ -75,10 +73,8 @@ public class FacilioAction extends ActionSupport {
 	
 	public String cachedResponse() throws Exception {
 		HttpServletRequest request = ServletActionContext.getRequest();
-		if (request instanceof HttpServletRequestWrapper) {
-			HttpServletRequestWrapper requestWrapper = ((HttpServletRequestWrapper) request);
-			if (requestWrapper.getRequest() instanceof MultiReadServletRequest && ((MultiReadServletRequest) requestWrapper.getRequest()).isCachedRequest()) {
-				MultiReadServletRequest multiReadServletRequest = ((MultiReadServletRequest) requestWrapper.getRequest());
+		if (request instanceof HttpServletRequestWrapper && ((MultiReadServletRequest) request).isCachedRequest()) {
+				MultiReadServletRequest multiReadServletRequest = (MultiReadServletRequest) request;
 				String requestURI = multiReadServletRequest.getRequestURI();
 		        String contentHash = multiReadServletRequest.getContentHash();
 				long userId = AccountUtil.getCurrentUser().getId();
@@ -91,7 +87,6 @@ public class FacilioAction extends ActionSupport {
 				response.setContentLength(object.toString().length());
 				response.getWriter().write(object.toString());
 				response.getWriter().flush();
-			}
 		}
 		return SUCCESS;
 	}

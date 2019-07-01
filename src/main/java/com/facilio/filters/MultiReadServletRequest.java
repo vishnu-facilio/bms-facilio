@@ -16,8 +16,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.dispatcher.Parameter;
 
 import com.facilio.aws.util.AwsUtil;
+import com.opensymphony.xwork2.ActionContext;
 
 public class MultiReadServletRequest extends HttpServletRequestWrapper {
 
@@ -39,13 +41,16 @@ public class MultiReadServletRequest extends HttpServletRequestWrapper {
 		}
 	}
 	
-	private static List<String> cacheUrl = Arrays.asList("/api/v2/report/readingReport", "/api/v2/report/fetchReportData");
 	private boolean shouldCacheRequest(HttpServletRequest request) {
 		if (AwsUtil.isProduction()) {
 			return false;
 		}
-		String requestURI = request.getRequestURI();
-		if (!cacheUrl.contains(requestURI)) {
+		Parameter parameter = ActionContext.getContext().getParameters().get("cacheUrl");
+		boolean cacheUrl = false;
+		if (parameter != null) {
+			cacheUrl = Boolean.valueOf(parameter.getValue());
+		}
+		if (!cacheUrl) {
 			return false;
 		}
 		return jsonContentType.equalsIgnoreCase(readContentType(request));

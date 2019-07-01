@@ -33,10 +33,13 @@ public class CacheInterceptor extends AbstractInterceptor {
 	public String intercept(ActionInvocation arg0) throws Exception {
 		HttpServletRequest request = ServletActionContext.getRequest();
 		
-		if (request instanceof HttpServletRequestWrapper) {
-			HttpServletRequestWrapper requestWrapper = ((HttpServletRequestWrapper) request);
-			if (requestWrapper.getRequest() instanceof MultiReadServletRequest && ((MultiReadServletRequest) requestWrapper.getRequest()).isCachedRequest()) {
-				MultiReadServletRequest multiReadServletRequest = ((MultiReadServletRequest) requestWrapper.getRequest());
+		MultiReadServletRequest multiReadServletRequest = new MultiReadServletRequest(request);
+		ServletActionContext.setRequest(multiReadServletRequest);
+		
+		if (multiReadServletRequest.isCachedRequest()) {
+//			HttpServletRequestWrapper requestWrapper = ((HttpServletRequestWrapper) request);
+//			if (requestWrapper.getRequest() instanceof MultiReadServletRequest && ((MultiReadServletRequest) requestWrapper.getRequest()).isCachedRequest()) {
+//				MultiReadServletRequest multiReadServletRequest = ((MultiReadServletRequest) requestWrapper.getRequest());
 				
 				String requestURI = multiReadServletRequest.getRequestURI();
 		        String contentHash = multiReadServletRequest.getContentHash();
@@ -47,7 +50,7 @@ public class CacheInterceptor extends AbstractInterceptor {
 				if (object != null) {
 					return "cachedResponse";
 				}
-			}
+//			}
 		}
 		
 		return arg0.invoke();

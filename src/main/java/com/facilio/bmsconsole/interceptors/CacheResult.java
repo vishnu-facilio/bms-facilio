@@ -3,9 +3,7 @@ package com.facilio.bmsconsole.interceptors;
 import java.io.IOException;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.json.JSONResult;
 
@@ -35,17 +33,14 @@ public class CacheResult extends JSONResult {
                  {
 		HttpServletRequest request =
 				  ServletActionContext.getRequest();
-		if (request instanceof HttpServletRequestWrapper) {
-			HttpServletRequestWrapper requestWrapper = ((HttpServletRequestWrapper) request);
-			if (requestWrapper.getRequest() instanceof MultiReadServletRequest && ((MultiReadServletRequest) requestWrapper.getRequest()).isCachedRequest()) {
-				MultiReadServletRequest multiReadServletRequest = ((MultiReadServletRequest) requestWrapper.getRequest());
-				String requestURI = multiReadServletRequest.getRequestURI();
-		        String contentHash = multiReadServletRequest.getContentHash();
-				long userId = AccountUtil.getCurrentUser().getId();
-				long orgId = AccountUtil.getCurrentOrg().getId();
-				
-				LRUCache.getResponseCache().put(CacheUtil.RESPONSE_KEY(orgId, userId, requestURI, contentHash), json);
-			}
+		if (request instanceof MultiReadServletRequest && ((MultiReadServletRequest) request).isCachedRequest()) {
+			MultiReadServletRequest multiReadServletRequest = (MultiReadServletRequest) request;
+			String requestURI = multiReadServletRequest.getRequestURI();
+	        String contentHash = multiReadServletRequest.getContentHash();
+			long userId = AccountUtil.getCurrentUser().getId();
+			long orgId = AccountUtil.getCurrentOrg().getId();
+			
+			LRUCache.getResponseCache().put(CacheUtil.RESPONSE_KEY(orgId, userId, requestURI, contentHash), json);
 		}
 		Object cacheurl = request.getAttribute("cacheurl");
 		if(cacheurl !=null)
