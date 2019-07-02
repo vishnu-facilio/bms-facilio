@@ -105,9 +105,9 @@
 							  mvProject = Module(\"mvproject\").fetch([id == projectId])[0];
 							  baseline = Module(\"mvbaseline\").fetch([project == projectId])[0];
 							  formulaFieldWithAdj = Module(\"formulaField\").fetch([id == (baseline.formulaFieldWithAjustment.id)])[0];
-							
+							  lastMonthEndTime = NameSpace("date").getDateRange("Last Month").getEndTime();
 							  db = {
-							    criteria : [parentId == (mvProject.meter.id) && ttime >= (mvProject.reportingPeriodStartTime) && ttime < (mvProject.reportingPeriodEndTime)],
+							    criteria : [parentId == (mvProject.meter.id) && ttime >= (mvProject.reportingPeriodStartTime) && ttime < lastMonthEndTime],
 							    field : \"totalEnergyConsumptionDelta\",
 							    aggregation : \"sum\"
 							  }
@@ -117,7 +117,7 @@
 							  }
 							  resultMap[\"thisMonthActualConsumption\"] = thisMonthActualConsumption;
 							  db = {
-							    criteria : [parentId == (mvProject.meter.id) && ttime >= (mvProject.reportingPeriodStartTime) && ttime < (mvProject.reportingPeriodEndTime)],
+							    criteria : [parentId == (mvProject.meter.id) && ttime >= (mvProject.reportingPeriodStartTime) && ttime < lastMonthEndTime],
 							    field : (formulaFieldWithAdj.readingField.name),
 							    aggregation : \"sum\"
 							  }
