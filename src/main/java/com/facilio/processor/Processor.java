@@ -6,6 +6,7 @@ import com.amazonaws.services.kinesis.clientlibrary.types.ProcessRecordsInput;
 import com.amazonaws.services.kinesis.clientlibrary.types.ShutdownInput;
 import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.agent.*;
+import com.facilio.agentIntegration.AgentIntegrationKeys;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -93,6 +94,15 @@ public class Processor implements IRecordProcessor {
                 StringReader reader = null;
                 String recordId = record.getSequenceNumber();
                 try {
+                    try {
+                        String wattClientId = record.getPartitionKey();
+                        LOGGER.info("wattsense clientId "+wattClientId);
+                        if( (wattClientId != null) && ( wattClientId.contains(AgentIntegrationKeys.CLIENT_ID_TAG)) ){
+                            LOGGER.info(" wattsense payload "+record);
+                        }
+                    }catch (Exception e){
+                        LOGGER.info("Exception while testing wattclient ",e);
+                    }
                     try {
                         boolean  isDuplicateMessage = agentUtil.isDuplicate(recordId);
                         if ( isDuplicateMessage ) {
