@@ -3382,6 +3382,7 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All");
+		allView.setCriteria(getContractListCriteria());
 		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
 		return allView;
 	}
@@ -3396,6 +3397,7 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All");
+		allView.setCriteria(getContractListCriteria());
 		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
 		return allView;
 	}
