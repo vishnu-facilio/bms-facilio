@@ -12,8 +12,8 @@ public enum WorkflowFieldType {
 	STRING(1, "String",String.class),
 	NUMBER(2, "Number",Integer.class,Long.class,Double.class),
 	BOOLEAN(3, "Boolean",Boolean.class),
-	MAP(4,"Map",Map.class,HashMap.class),
-	LIST(5,"List",List.class,ArrayList.class),
+	MAP(4,"Map",HashMap.class,Map.class),
+	LIST(5,"List",ArrayList.class,List.class),
 	;
 	
 	public Class[] getObjectClass() {
