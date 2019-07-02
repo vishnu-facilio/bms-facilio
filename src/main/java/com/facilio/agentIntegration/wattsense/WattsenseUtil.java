@@ -59,6 +59,10 @@ public class WattsenseUtil
 
     public static boolean authenticateAndConfigureWattsense(String username, String password)  {
         try {
+            if(username == null || password == null){
+                LOGGER.info("Authentication params not proper");
+                return false;
+            }
             Wattsense wattsense = new Wattsense();
             wattsense.setUserName(username);
             String authStringEnc = getEncodedBasicAuthString(username,password);
@@ -76,6 +80,7 @@ public class WattsenseUtil
                     return false;
                 }
                 String wattClientId = AgentIntegrationKeys.CLIENT_ID_TAG+"-"+ Objects.requireNonNull(AccountUtil.getCurrentOrg()).getDomain();
+                LOGGER.info("wattsense client id generated - "+wattClientId);
                 wattsense.setClientId(wattClientId);
                 wattsense.setAuthStringEncoded(authStringEnc);
                 return integrateWattsense(wattsense);
