@@ -24,7 +24,6 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentKeys;
 import com.facilio.agent.AgentKeys.AckMessageType;
 import com.facilio.agent.AgentUtil;
-import com.facilio.agent.FacilioAgent;
 import com.facilio.agent.protocol.ProtocolUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
@@ -84,13 +83,16 @@ public class IoTMessageAPI {
 		object.put("instanceNumber", controller.getInstanceNumber());
 		object.put("ipAddress", controller.getIpAddress());
 		object.put("type", controller.getControllerType());
+		object.put("subnetPrefix", 1);
+		object.put("broadcastAddress", 1);
 		object.put("timestamp", System.currentTimeMillis());
 		
 		if (controller.getAgentId() != -1) {
-			FacilioAgent agent = AgentUtil.getAgentDetails(controller.getAgentId());
-			object.put("agent", agent.getAgentName());
-			object.put(AgentKeys.AGENT_ID, agent.getId()); // Agent_Id key must be changes to camelcase.
+//			FacilioAgent agent = AgentUtil.getAgentDetails(controller.getAgentId());
+//			object.put("agent", agent.getAgentName());
+//			object.put(AgentKeys.AGENT_ID, agent.getId()); // Agent_Id key must be changes to camelcase.
 		}
+		object.put(AgentKeys.AGENT_ID, controller.getAgentId()); // Agent_Id key must be changes to camelcase.
 
 		if (command == IotCommandType.PROPERTY) {
 			object.putAll(property);
