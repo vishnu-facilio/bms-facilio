@@ -2390,6 +2390,24 @@
 		</action>
 	</package>
 	
+	<package name="connection" namespace="/api/v2/connection"
+		extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.ConnectionAction" method="addConnection">
+		</action>
+		
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.ConnectionAction" method="updateConnection">
+		</action>
+		
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.ConnectionAction" method="deleteConnection">
+		</action>
+		<action name="*/redirect"
+			class="com.facilio.bmsconsole.actions.ConnectionAction" method="updateConnection">
+		</action>
+	</package>
+	
 	<package name="connectedAppsDetails" namespace="/api/v2/connectedApps/details"
 		extends="v2Api">
 		<action name="*"

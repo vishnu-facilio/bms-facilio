@@ -2696,12 +2696,12 @@ public class FieldFactory {
 
 		List<FacilioField> fields = new ArrayList<>();
 		
-		/*fields.add(getOrgIdField(module));*/
 		fields.add(getIdField(module));
 		
 		fields.add(getField("name", "NAME", module, FieldType.STRING));
 		fields.add(getField("serviceName", "SERVICE_NAME", module, FieldType.STRING));
 		fields.add(getField("authType", "AUTH_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("state", "STATE", module, FieldType.NUMBER));
 		fields.add(getField("clientId", "CLIENT_ID", module, FieldType.STRING));
 		fields.add(getField("clientSecretId", "CLIENT_SECRET_ID", module, FieldType.STRING));
 		fields.add(getField("authorizeUrl", "AUTHORIZE_URL", module, FieldType.STRING));
@@ -2709,8 +2709,14 @@ public class FieldFactory {
 		fields.add(getField("refreshTokenUrl", "REFRESH_TOKEN_URL", module, FieldType.STRING));
 		fields.add(getField("revokeTokenUrl", "REVOKE_TOKEN_URL", module, FieldType.STRING));
 		fields.add(getField("authToken", "AUTH_TOKEN", module, FieldType.STRING));
+		fields.add(getField("authCode", "AUTH_CODE", module, FieldType.STRING));
 		fields.add(getField("refreshToken", "REFRESH_TOKEN", module, FieldType.STRING));
 		fields.add(getField("expiryTime", "EXPIRY_TIME", module, FieldType.NUMBER));
+		
+		fields.add(getSystemField("sysCreatedTime", module));
+		fields.add(getSystemField("sysModifiedTime", module));
+		fields.add(getSystemField("sysCreatedBy", module));
+		fields.add(getSystemField("sysModifiedBy", module));
 		
 		return fields;
 	}

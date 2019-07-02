@@ -1,10 +1,14 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.accounts.dto.User;
+
 public class ConnectionContext {
 	long id = -1l;
 	long orgId = -1l;
 	AuthType authType;
-	
+	State state;
+	String name;
+	String serviceName;
 	String clientId;
 	String clientSecretId;
 	String authorizeUrl;
@@ -12,6 +16,7 @@ public class ConnectionContext {
 	String refreshTokenUrl;
 	String revokeTokenUrl;
 	String authToken;
+	String authCode;
 	String refreshToken;
 	
 	long expiryTime = -1l;
@@ -47,6 +52,31 @@ public class ConnectionContext {
 	
 	public AuthType getAuthTypeEnum() {
 		return authType;
+	}
+	
+	public int getState() {
+		if(state != null) {
+			return state.getValue();
+		}
+		return -1;
+	}
+
+	public void setState(int state) {
+		if(state > 0) {
+			this.state = State.valueOf(state);
+		}
+	}
+	
+	public State getStateEnum() {
+		return state;
+	}
+	
+	public String getAuthCode() {
+		return authCode;
+	}
+
+	public void setAuthCode(String authCode) {
+		this.authCode = authCode;
 	}
 
 	public String getClientId() {
@@ -135,5 +165,68 @@ public class ConnectionContext {
 			}
 			return null;
 		}
+	}
+	
+	public enum State {
+		CREATED,
+		CLIENT_ID_MAPPED,
+		AUTHORIZED,
+		AUTH_TOKEN_GENERATED,
+		DISABLED,
+		;
+		
+		public int getValue() {
+			return ordinal() + 1;
+		}
+		
+		public static State valueOf (int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+	}
+	private long sysCreatedTime = -1;
+	public long getSysCreatedTime() {
+		return sysCreatedTime;
+	}
+	public void setSysCreatedTime(long sysCreatedTime) {
+		this.sysCreatedTime = sysCreatedTime;
+	}
+
+	private long sysModifiedTime = -1;
+	public long getSysModifiedTime() {
+		return sysModifiedTime;
+	}
+	public void setSysModifiedTime(long sysModifiedTime) {
+		this.sysModifiedTime = sysModifiedTime;
+	}
+
+	private User sysCreatedBy;
+	public User getSysCreatedBy() {
+		return sysCreatedBy;
+	}
+	public void setSysCreatedBy(User sysCreatedBy) {
+		this.sysCreatedBy = sysCreatedBy;
+	}
+
+	private User sysModifiedBy;
+	public User getSysModifiedBy() {
+		return sysModifiedBy;
+	}
+	public void setSysModifiedBy(User sysModifiedBy) {
+		this.sysModifiedBy = sysModifiedBy;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getServiceName() {
+		return serviceName;
+	}
+	public void setServiceName(String serviceName) {
+		this.serviceName = serviceName;
 	}
 }
