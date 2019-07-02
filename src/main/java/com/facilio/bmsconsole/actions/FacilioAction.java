@@ -2,15 +2,13 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.LogManager;
-import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -180,5 +178,73 @@ public class FacilioAction extends ActionSupport {
 		this.filename = filename;
 	}
 	
+	private boolean includeParentFilter;
+	public boolean getIncludeParentFilter() {
+		return includeParentFilter;
+	}
+	public void setIncludeParentFilter(boolean includeParentFilter) {
+		this.includeParentFilter = includeParentFilter;
+	}
+	
+	private Boolean fetchCount;
+	public boolean isFetchCount() {
+		if (fetchCount == null) {
+			return false;
+		}
+		return fetchCount;
+	}
+	public void setFetchCount(boolean fetchCount) {
+		this.fetchCount = fetchCount;
+	}
+	
+	private String orderBy;
+	public void setOrderBy(String orderBy) {
+		this.orderBy = orderBy;
+	}
+	public String getOrderBy() {
+		return this.orderBy;
+	}
+	
+	private String orderType;
+	public void setOrderType(String orderType) {
+		this.orderType = orderType;
+	}
+	public String getOrderType() {
+		return this.orderType;
+	}
+	
+	protected FacilioContext constructListContext() throws Exception {
+		FacilioContext context = new FacilioContext();
+ 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+ 		if (getPage() == 0) {
+ 			setPage(1);
+ 		}
+ 		if (getPerPage() == -1) {
+ 			setPerPage(50);
+ 		}
+ 		context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
+ 		
+ 		if(getFilters() != null)
+ 		{	
+	 		JSONParser parser = new JSONParser();
+	 		JSONObject json = (JSONObject) parser.parse(getFilters());
+	 		context.put(FacilioConstants.ContextNames.FILTERS, json);
+	 		context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
+ 		}
+ 		
+ 		if (isFetchCount()) {
+			context.put(FacilioConstants.ContextNames.FETCH_COUNT, isFetchCount());
+		}
+ 		
+ 		JSONObject sorting = null;
+ 		if (getOrderBy() != null) {
+ 			sorting = new JSONObject();
+ 			sorting.put("orderBy", getOrderBy());
+ 			sorting.put("orderType", getOrderType());
+ 		}
+ 		context.put(FacilioConstants.ContextNames.SORTING, sorting);
+ 		
+ 		return context;
+	}
 
 }

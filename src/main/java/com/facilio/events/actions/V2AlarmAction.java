@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 
 public class V2AlarmAction extends FacilioAction {
 	private static final long serialVersionUID = 1L;
@@ -31,4 +32,32 @@ public class V2AlarmAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
+	
+	String alarmModule;
+	public String getAlarmModule() {
+		return alarmModule;
+	}
+	public void setAlarmModule(String alarmModule) {
+		this.alarmModule = alarmModule;
+	}
+	
+	public String alarmList() throws Exception {
+ 		FacilioContext context = constructListContext();
+ 		context.put(ContextNames.MODULE_NAME, alarmModule);
+ 		
+ 		Chain alarmListChain = ReadOnlyChainFactory.fetchModuleDataListChain();
+		alarmListChain.execute(context);
+		
+		if (isFetchCount()) {
+			setResult(ContextNames.COUNT, context.get(ContextNames.COUNT));
+		}
+		else {
+			setResult(ContextNames.ALARM_LIST, context.get(ContextNames.RECORD_LIST));
+		}
+ 		
+		
+		return SUCCESS;
+	}
+	
+	
 }

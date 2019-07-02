@@ -16,6 +16,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
@@ -27,14 +28,25 @@ public class GenericGetModuleDataListCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
-		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		FacilioModule module = modBean.getModule(moduleName);
-		if (CollectionUtils.isEmpty(fields)) {
-			fields = modBean.getAllFields(moduleName);
+		
+		boolean fetchCount = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_COUNT, false);
+		
+		List<FacilioField> fields;
+		if (fetchCount) {
+			fields = FieldFactory.getCountField(module);
 		}
+		else {
+			fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+			if (CollectionUtils.isEmpty(fields)) {
+				fields = modBean.getAllFields(moduleName);
+			}
+		}
+		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
+		
+		
 		Class beanClassName = FacilioConstants.ContextNames.getClassFromModule(module);
 		if (beanClassName == null) {
 			beanClassName = ModuleBaseWithCustomFields.class;
@@ -103,8 +115,16 @@ public class GenericGetModuleDataListCommand implements Command {
 		}
 		
 		List<? extends ModuleBaseWithCustomFields> records = builder.get();
-		ResourceAPI.loadModuleResources(records, fields);
-		context.put(FacilioConstants.ContextNames.RECORD_LIST, records);
+		if (fetchCount) {
+			if (CollectionUtils.isNotEmpty(records)) {
+				String countFieldName = fields.get(0).getName();
+				context.put(FacilioConstants.ContextNames.WORK_ORDER_COUNT, records.get(0).getData().get(countFieldName));
+			}
+		}
+		else {
+			ResourceAPI.loadModuleResources(records, fields);
+			context.put(FacilioConstants.ContextNames.RECORD_LIST, records);
+		}		
 
 		return false;
 	}
