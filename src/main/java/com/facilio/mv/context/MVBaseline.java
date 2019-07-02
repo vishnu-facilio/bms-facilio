@@ -2,6 +2,7 @@ package com.facilio.mv.context;
 
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.workflows.context.WorkflowContext;
 
 public class MVBaseline extends ModuleBaseWithCustomFields {
 	
@@ -14,15 +15,16 @@ public class MVBaseline extends ModuleBaseWithCustomFields {
 	String name;
 	FormulaFieldContext formulaField;
 	FormulaFieldContext formulaFieldWithAjustment;
-	public FormulaFieldContext getFormulaFieldWithAjustment() {
-		return formulaFieldWithAjustment;
-	}
-	public void setFormulaFieldWithAjustment(FormulaFieldContext formulaFieldWithAjustment) {
-		this.formulaFieldWithAjustment = formulaFieldWithAjustment;
-	}
 	long startTime;
 	long endTime;
+	WorkflowContext workflow;
 	
+	public WorkflowContext getWorkflow() {
+		return workflow;
+	}
+	public void setWorkflow(WorkflowContext workflow) {
+		this.workflow = workflow;
+	}
 	public FormulaFieldContext getFormulaField() {
 		return formulaField;
 	}
@@ -34,6 +36,12 @@ public class MVBaseline extends ModuleBaseWithCustomFields {
 	}
 	public void setProject(MVProjectContext project) {
 		this.project = project;
+	}
+	public FormulaFieldContext getFormulaFieldWithAjustment() {
+		return formulaFieldWithAjustment;
+	}
+	public void setFormulaFieldWithAjustment(FormulaFieldContext formulaFieldWithAjustment) {
+		this.formulaFieldWithAjustment = formulaFieldWithAjustment;
 	}
 	public String getName() {
 		return name;

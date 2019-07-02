@@ -2,6 +2,7 @@ package com.facilio.mv.context;
 
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.workflows.context.WorkflowContext;
 
 public class MVAdjustment extends ModuleBaseWithCustomFields {
 
@@ -16,6 +17,14 @@ public class MVAdjustment extends ModuleBaseWithCustomFields {
 	long startTime = -1;
 	long endTime = -1;
 	double constant = -1;
+	WorkflowContext workflow;
+	
+	public WorkflowContext getWorkflow() {
+		return workflow;
+	}
+	public void setWorkflow(WorkflowContext workflow) {
+		this.workflow = workflow;
+	}
 	
 	public double getConstant() {
 		return constant;
