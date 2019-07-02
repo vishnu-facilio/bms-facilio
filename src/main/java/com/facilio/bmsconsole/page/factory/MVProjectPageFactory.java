@@ -85,7 +85,7 @@ public class MVProjectPageFactory {
 	
 	private static void addBaselineVsActualWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART, "baselineVsActual");
-		cardWidget.addToLayoutParams(section, 24, 13);
+		cardWidget.addToLayoutParams(section, 24, 14);
 		cardWidget.addToWidgetParams("type", "baselineVsActual");
 		section.addWidget(cardWidget);
 	}
