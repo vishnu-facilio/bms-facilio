@@ -23,6 +23,7 @@ import com.facilio.mv.context.MVProjectContext;
 import com.facilio.mv.context.MVProjectWrapper;
 import com.facilio.mv.util.MVUtil;
 import com.facilio.time.DateRange;
+import com.facilio.workflowv2.util.WorkflowV2Util;
 
 public class AddMVBaselineCommand implements Command {
 
@@ -45,10 +46,18 @@ public class AddMVBaselineCommand implements Command {
 		for(MVBaseline baseLine :baseLines) {
 			baseLine.setProject(mvProjectWrapper.getMvProject());
 			baseLine.setOrgId(AccountUtil.getCurrentOrg().getId());
-			context.put(FacilioConstants.ContextNames.FORMULA_FIELD, baseLine.getFormulaField());
-			MVUtil.fillFormulaFieldDetailsForAdd(baseLine.getFormulaField(), mvProjectWrapper.getMvProject(),baseLine,null,context);
-			Chain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
-			addEnpiChain.execute(context);
+			if( baseLine.getFormulaField() != null) {
+				context.put(FacilioConstants.ContextNames.FORMULA_FIELD, baseLine.getFormulaField());
+				MVUtil.fillFormulaFieldDetailsForAdd(baseLine.getFormulaField(), mvProjectWrapper.getMvProject(),baseLine,null,context);
+				Chain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
+				addEnpiChain.execute(context);
+			}
+			else if(baseLine.getWorkflow() != null) {
+				
+				context.put(WorkflowV2Util.WORKFLOW_CONTEXT, baseLine.getWorkflow());
+				Chain addWorkflowChain =  TransactionChainFactory.getAddWorkflowChain(); 
+				addWorkflowChain.execute(context);
+			}
 		}
 		
 		

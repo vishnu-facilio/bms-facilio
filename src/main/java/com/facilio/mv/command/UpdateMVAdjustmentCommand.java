@@ -22,6 +22,7 @@ import com.facilio.mv.context.MVProjectContext;
 import com.facilio.mv.context.MVProjectWrapper;
 import com.facilio.mv.util.MVUtil;
 import com.facilio.time.DateRange;
+import com.facilio.workflowv2.util.WorkflowV2Util;
 
 public class UpdateMVAdjustmentCommand implements Command {
 
@@ -76,6 +77,12 @@ public class UpdateMVAdjustmentCommand implements Command {
 						
 						Chain updateEnPIChain = FacilioChainFactory.updateFormulaChain();
 						updateEnPIChain.execute(context);
+					}
+					else if(adjustment.getWorkflow() != null) {
+						
+						context.put(WorkflowV2Util.WORKFLOW_CONTEXT, adjustment.getWorkflow());
+						Chain addWorkflowChain =  TransactionChainFactory.getUpdateWorkflowChain(); 
+						addWorkflowChain.execute(context);
 					}
 					
 					UpdateRecordBuilder<MVAdjustment> update = new UpdateRecordBuilder<MVAdjustment>()
