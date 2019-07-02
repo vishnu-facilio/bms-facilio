@@ -12,7 +12,7 @@ public enum WorkOrderActivityType implements ActivityType {
 			return " closed all the tasks ";
 		}
 	},
-	CLOSE_FILTERED_TASK(29) {
+	CLOSE_FILTERED_TASK(32) {
 		@Override
 		public String constructMessage(JSONObject json) {
 			// TODO Auto-generated method stub
