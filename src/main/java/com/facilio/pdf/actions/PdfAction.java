@@ -1,14 +1,16 @@
 package com.facilio.pdf.actions;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.actions.FacilioAction;
-import com.facilio.pdf.PdfUtil;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.actions.FacilioAction;
+import com.facilio.fs.FileInfo.FileFormat;
+import com.facilio.pdf.PdfUtil;
 
 public class PdfAction extends FacilioAction {
 
@@ -38,7 +40,7 @@ public class PdfAction extends FacilioAction {
     }
 
     public String createPdf() throws Exception {
-        String fileName  = PdfUtil.convertUrlToPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(), getUrl());
+        String fileName  = PdfUtil.convertUrlToPdfNew(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(), getUrl(), FileFormat.PDF);
         downloadStream = new FileInputStream(new File(fileName));
         setContentType("application/octet-stream");
         return SUCCESS;
