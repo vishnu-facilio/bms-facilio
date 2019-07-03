@@ -72,7 +72,6 @@ public class Processor extends FacilioProcessor {
                 long numberOfRows = 0;
                 String recordId = record.getId();
             try {
-
                 try {
                     boolean  isDuplicateMessage = agentUtil.isDuplicate(recordId);
                     if ( isDuplicateMessage ) {

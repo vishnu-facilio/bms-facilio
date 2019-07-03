@@ -382,6 +382,11 @@ public class ViewFactory {
 		views.put("all", getAllBreakTransactionView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.BREAK_TRANSACTION, views);
 		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllReadingAlarmViews().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.NEW_READING_ALARM, views);
+		
 		return viewsMap;
 	}
 
@@ -3684,6 +3689,20 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All Break Transactions");
 		allView.setSortFields(Arrays.asList(new SortField(createdTime, true)));
+		return allView;
+	}
+	
+	private static FacilioView getAllReadingAlarmViews() {
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("lastOccurredTime");
+		createdTime.setDataType(FieldType.DATE_TIME);
+		createdTime.setColumnName("LAST_OCCURRED_TIME");
+		createdTime.setModule(ModuleFactory.getReadingAlarmModule());
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Alarms");
+		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 		return allView;
 	}
 }

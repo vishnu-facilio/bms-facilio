@@ -593,7 +593,6 @@ public class WorkflowUtil {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getWorkflowFields())
 				.table(module.getTableName())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getIdCondition(workflowId, module));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -603,6 +602,21 @@ public class WorkflowUtil {
 			workflowContext = getWorkflowFromProp(props.get(0), isWithExpParsed);
 		}
 		return workflowContext;
+	}
+	public static List<WorkflowContext> getWorkflowContext(Criteria criteria) throws Exception  {
+		
+		FacilioModule module = ModuleFactory.getWorkflowModule(); 
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getWorkflowFields())
+				.table(module.getTableName())
+				.andCriteria(criteria);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		if (props != null && !props.isEmpty()) {
+			return FieldUtil.getAsBeanListFromMapList(props, WorkflowContext.class);
+		}
+		return null;
 	}
 	
 	public static Map<Long, WorkflowContext> getWorkflowsAsMap(Collection<Long> ids) throws Exception {

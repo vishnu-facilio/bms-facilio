@@ -50,7 +50,7 @@ public class FetchReportAdditionalInfoCommand implements Command {
 		// TODO Auto-generated method stub
 		
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
-		if (report.getTypeEnum() == ReportType.READING_REPORT) {
+		if (report.getTypeEnum() == ReportType.READING_REPORT || report.getTypeEnum() == ReportType.REGRESSION_REPORT) {
 			Boolean showAlarms = (Boolean) report.getFromReportState(FacilioConstants.ContextNames.REPORT_SHOW_ALARMS);
 			if (showAlarms == null) {
 				showAlarms = false;

@@ -119,6 +119,15 @@
 			class="com.facilio.events.actions.V2AlarmAction" method="fetchAlarmSummary" />
 	</package>
 	
+	<package name="readingAlarmList" namespace="/api/v2/readingalarms/view" extends="v2Api">
+		<action name="*" class="com.facilio.events.actions.V2AlarmAction" method="fetchAlarmSummary">
+			<param name="moduleName">alarm</param>
+			<param name="alarmModule">newreadingalarm</param>
+			<param name="permission">READ,READ_OWN,READ_TEAM</param>
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
+	
 	<package name="state" namespace="/api/v2/state" extends="v2Api">
 		<action name="list"
 			class="com.facilio.bmsconsole.actions.TicketStatusAction" method="v2StatusList" />
@@ -872,6 +881,8 @@
 		</action>
 		<action name="delete" class="com.facilio.bmsconsole.actions.FormAction" method="deleteForm">
 		</action>
+		<action name="fields" class="com.facilio.bmsconsole.actions.FormAction" method="formFieldList">
+		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.FormAction" method="formDetails">
 			<param name="moduleName">{1}</param>
 		</action>
@@ -1030,6 +1041,9 @@
 		</action>
 		<action name="fetchReport" class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="fetchReport">
+		</action>
+		<action name="fetchreportbytype" class="com.facilio.bmsconsole.actions.V2ReportAction"
+			method="fetchReportByType">
 		</action>
 		<action name="export" class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="exportReport">
@@ -2382,6 +2396,24 @@
 		
 		<action name="all"
 			class="com.facilio.bmsconsole.actions.ConnectedAppAction" method="connectedAppList">
+		</action>
+	</package>
+	
+	<package name="connection" namespace="/api/v2/connection"
+		extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.ConnectionAction" method="addConnection">
+		</action>
+		
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.ConnectionAction" method="updateConnection">
+		</action>
+		
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.ConnectionAction" method="deleteConnection">
+		</action>
+		<action name="*/redirect"
+			class="com.facilio.bmsconsole.actions.ConnectionAction" method="updateConnection">
 		</action>
 	</package>
 	

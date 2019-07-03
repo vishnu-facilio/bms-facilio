@@ -157,7 +157,8 @@ public class DownloadCertFile
     }
 
     public static Map<String,InputStream> getCertKeyFileInputStreams() {
-        InputStream fis = getCertKeyZipInputStream();
+        String directoryName = "facilio/";
+        InputStream fis =   getCertKeyZipInputStream();
         Map<String,InputStream> filesMap = new HashMap<>();
         if(fis == null){
             LOGGER.info(" Inputstream emty ");
@@ -169,9 +170,15 @@ public class DownloadCertFile
 
             while ((entry = zis.getNextEntry()) != null) {
                 String fileName = entry.getName();
+                LOGGER.info(" file name "+fileName);
                 int size;
                 byte[] buffer = new byte[2048];
-                FileOutputStream fos = new FileOutputStream(entry.getName());
+                fileName = fileName.replace(directoryName,"");
+                LOGGER.info(" trimmed file name "+fileName);
+                if(fileName.isEmpty()){
+                    continue;
+                }
+                FileOutputStream fos = new FileOutputStream(fileName);
                 BufferedOutputStream bos = new BufferedOutputStream(fos, buffer.length);
                 while ((size = zis.read(buffer, 0, buffer.length)) != -1) {
                     bos.write(buffer, 0, size);
@@ -181,15 +188,13 @@ public class DownloadCertFile
                 File file = new File(fileName);
                 FileInputStream inputStream = new FileInputStream(file);
                 BufferedReader br = new BufferedReader(new FileReader(file));
-                for (String line; (line = br.readLine()) != null;) {
-                    LOGGER.info(line);
-                }
                 br.close();
                 filesMap.put(fileName,inputStream);
                 file.delete();
             }
             zis.close();
             fis.close();
+            LOGGER.info(" files map  "+filesMap);
             return filesMap;
         } catch (Exception e) {
             LOGGER.info("Exception occurred ",e);

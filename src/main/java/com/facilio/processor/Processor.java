@@ -93,6 +93,7 @@ public class Processor implements IRecordProcessor {
                 StringReader reader = null;
                 String recordId = record.getSequenceNumber();
                 try {
+
                     try {
                         boolean  isDuplicateMessage = agentUtil.isDuplicate(recordId);
                         if ( isDuplicateMessage ) {
@@ -173,6 +174,11 @@ public class Processor implements IRecordProcessor {
                     }
                     if( agent != null) {
                         agentUtil.addAgentMetrics(data.length(), agent.getId(), publishType.getKey());
+                        String agentType = agent.getAgentType();
+                        LOGGER.info(recordId+" Agent Type -- "+agentType);
+                        if(AgentType.Wattsense.getLabel().equalsIgnoreCase(agentType)){
+                            LOGGER.info(recordId+" wattsense agent payload- "+payLoad);
+                        }
                     }
 
                     long i = 0;

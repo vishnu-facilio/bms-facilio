@@ -702,14 +702,22 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     		
     		default:
     			returnValue = this.visit(ctx.expr());
-    			Class[] ObjectClass = workflowContext.getReturnTypeEnum().getObjectClass();
-    			boolean flag = false;
-    			for(int i=0;i<ObjectClass.length;i++) {
-    				if(returnValue != null && returnValue.asObject().getClass().equals(ObjectClass[i])) {
-    					flag = true;
-    				}
+    			
+    			boolean correctDataTypeSpecified = false;
+    			if(returnValue == null || returnValue.asObject() == null) {
+    				correctDataTypeSpecified = true;
     			}
-    			if(!flag) {
+    			else {
+    				Class[] ObjectClass = workflowContext.getReturnTypeEnum().getObjectClass();
+    				for(int i=0;i<ObjectClass.length;i++) {
+        				if(returnValue.asObject().getClass().equals(ObjectClass[i])) {
+        					correctDataTypeSpecified = true;
+        					break;
+        				}
+        			}
+    			}
+    			
+    			if(!correctDataTypeSpecified) {
     				throw new RuntimeException("Method Return Type is "+workflowContext.getReturnTypeEnum().getStringValue()+" But has a Return Value of "+returnValue.asObject().getClass());
     			}
     		}

@@ -1,5 +1,16 @@
 package com.facilio.agent;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Chain;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -18,20 +29,11 @@ import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
-import org.apache.commons.chain.Chain;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * This class writes agent's payload data to a table in DB.
@@ -631,7 +633,18 @@ public  class AgentUtil
         return status;
     }
 
-
+    public static FacilioAgent getAgentDetails(long agentId) throws Exception {
+	    	FacilioModule module = ModuleFactory.getAgentDataModule();
+	    	GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+	    							.table(module.getTableName())
+	    							.select(FieldFactory.getAgentDataFields())
+	    							.andCondition(CriteriaAPI.getIdCondition(agentId, module));
+	    	Map<String, Object> prop = builder.fetchFirst();
+	    	if (prop != null) {
+	    		return FieldUtil.getAsBeanFromMap(prop, FacilioAgent.class);
+	    	}
+	    	return null;
+    }
 
 }
 

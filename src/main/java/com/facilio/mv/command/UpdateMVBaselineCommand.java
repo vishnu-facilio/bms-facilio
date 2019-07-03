@@ -31,6 +31,7 @@ import com.facilio.mv.util.MVUtil;
 import com.facilio.time.DateRange;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
+import com.facilio.workflowv2.util.WorkflowV2Util;
 
 public class UpdateMVBaselineCommand implements Command {
 
@@ -76,11 +77,18 @@ public class UpdateMVBaselineCommand implements Command {
 					chain.execute(context);
 				}
 				else {
-					
-					context.put(FacilioConstants.ContextNames.FORMULA_FIELD, baseline.getFormulaField());
-					MVUtil.fillFormulaFieldDetailsForUpdate(baseline.getFormulaField(), mvProjectWrapper.getMvProject(),baseline,null,context);
-					Chain updateEnPIChain = FacilioChainFactory.updateFormulaChain();
-					updateEnPIChain.execute(context);
+					if(baseline.getFormulaField() != null) {
+						context.put(FacilioConstants.ContextNames.FORMULA_FIELD, baseline.getFormulaField());
+						MVUtil.fillFormulaFieldDetailsForUpdate(baseline.getFormulaField(), mvProjectWrapper.getMvProject(),baseline,null,context);
+						Chain updateEnPIChain = FacilioChainFactory.updateFormulaChain();
+						updateEnPIChain.execute(context);
+					}
+					else if(baseline.getWorkflow() != null) {
+						
+						context.put(WorkflowV2Util.WORKFLOW_CONTEXT, baseline.getWorkflow());
+						Chain addWorkflowChain =  TransactionChainFactory.getUpdateWorkflowChain(); 
+						addWorkflowChain.execute(context);
+					}
 					
 					MVUtil.updateMVBaseline(baseline);
 				}

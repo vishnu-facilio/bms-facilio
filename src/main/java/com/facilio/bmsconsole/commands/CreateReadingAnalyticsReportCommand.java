@@ -1,6 +1,20 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringJoiner;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
+
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.RegressionContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.chain.FacilioContext;
@@ -19,20 +33,19 @@ import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.report.context.*;
+import com.facilio.report.context.ReadingAnalysisContext;
 import com.facilio.report.context.ReadingAnalysisContext.ReportFilterMode;
 import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
+import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportContext.ReportType;
+import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportDataPointContext.DataPointType;
 import com.facilio.report.context.ReportDataPointContext.OrderByFunction;
+import com.facilio.report.context.ReportFieldContext;
+import com.facilio.report.context.ReportFilterContext;
+import com.facilio.report.context.ReportYAxisContext;
 import com.facilio.report.util.ReportUtil;
 import com.facilio.time.DateTimeUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONArray;
-
-import java.util.*;
 
 public class CreateReadingAnalyticsReportCommand implements Command {
 	
@@ -44,6 +57,8 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 		long endTime = (long) context.get(FacilioConstants.ContextNames.END_TIME);
 		ReportMode mode = (ReportMode) context.get(FacilioConstants.ContextNames.REPORT_MODE);
 		ReportFilterMode filterMode = (ReportFilterMode) context.get(FacilioConstants.ContextNames.REPORT_FILTER_MODE);
+		List<RegressionContext> regressionConfig = (ArrayList<RegressionContext>) context.get(FacilioConstants.ContextNames.REGRESSION_CONFIG);
+		
 		if (metrics != null && !metrics.isEmpty() && startTime != -1 && endTime != -1) {
 			Map<Long, ResourceContext> resourceMap = null;
 			if (filterMode == null || filterMode == ReportFilterMode.NONE) { //Resource map is needed only when there is no filters. For now
@@ -52,7 +67,15 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			
 			ReportContext report = ReportUtil.constructReport((FacilioContext) context, startTime, endTime);
-			report.setType(ReportType.READING_REPORT);
+			
+			if(regressionConfig != null) {
+				report.setType(ReportContext.ReportType.REGRESSION_REPORT);
+			}
+			else {
+				report.setType(ReportType.READING_REPORT);
+			}
+			
+			
 			setModeWiseXAggr(report, mode);
 			List<ReportFilterContext> filters = constructFilters(filterMode, (FacilioContext) context);
 			if (filters != null) {

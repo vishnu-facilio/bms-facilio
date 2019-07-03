@@ -47,7 +47,6 @@ public class ReadOnlyChainFactory {
 		Chain c  = getDefaultChain();
 		c.addCommand(new CreateReadingAnalyticsReportCommand());
 		c.addCommand(newFetchReportDataChain());
-		c.addCommand(new AddRegressionPointsCommand());
 		
 		return c;
 	}
@@ -66,6 +65,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new FetchResourcesCommand());
 		
 		c.addCommand(new HandleGroupByDataCommand());
+		c.addCommand(new AddRegressionPointsCommand());
 		return c;
 	}
 	

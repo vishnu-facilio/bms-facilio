@@ -1,13 +1,14 @@
 package com.facilio.modules;
 
-import com.facilio.agent.AgentKeys;
-import com.facilio.agentIntegration.AgentIntegrationKeys;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.fields.FacilioField;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.facilio.agent.AgentKeys;
+import com.facilio.agentIntegration.AgentIntegrationKeys;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.modules.fields.FacilioField;
 
 public class ModuleFactory {
 
@@ -85,6 +86,7 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.ATTENDANCE, getAttendanceModule());
 		moduleMap.put(FacilioConstants.ContextNames.ATTENDANCE_TRANSACTIONS, getAttendanceTransactionModule());
 		moduleMap.put(FacilioConstants.ContextNames.GRAPHICS, getGraphicsModule());
+		moduleMap.put(FacilioConstants.ContextNames.NEW_READING_ALARM, getReadingAlarmModule());
 
 		return moduleMap;
 	}
@@ -2268,6 +2270,14 @@ public class ModuleFactory {
 		module.setName("storeRoomRule");
 		module.setDisplayName("Store Room Notification rules");
 		module.setTableName("Store_Notification_config");
+		return module;
+	}
+	
+	public static FacilioModule getReadingAlarmModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ContextNames.NEW_READING_ALARM);
+		module.setDisplayName("New Reading Alarm");
+		module.setTableName("ReadingAlarm");
 		return module;
 	}
 }

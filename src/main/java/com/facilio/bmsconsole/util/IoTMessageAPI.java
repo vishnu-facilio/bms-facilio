@@ -82,8 +82,16 @@ public class IoTMessageAPI {
 		object.put("networkNumber", controller.getNetworkNumber());
 		object.put("instanceNumber", controller.getInstanceNumber());
 		object.put("ipAddress", controller.getIpAddress());
-		object.put("clientId", controller.getId());
 		object.put("type", controller.getControllerType());
+		object.put("subnetPrefix", 1);
+		object.put("broadcastAddress", 1);
+		object.put("timestamp", System.currentTimeMillis());
+		
+		if (controller.getAgentId() != -1) {
+//			FacilioAgent agent = AgentUtil.getAgentDetails(controller.getAgentId());
+//			object.put("agent", agent.getAgentName());
+//			object.put(AgentKeys.AGENT_ID, agent.getId()); // Agent_Id key must be changes to camelcase.
+		}
 		object.put(AgentKeys.AGENT_ID, controller.getAgentId()); // Agent_Id key must be changes to camelcase.
 
 		if (command == IotCommandType.PROPERTY) {
@@ -338,6 +346,7 @@ public class IoTMessageAPI {
 	}
 	
  	private static void publishIotMessage(String client, JSONObject object) throws Exception {
+ 		Long agentId = (Long) object.remove(AgentKeys.AGENT_ID);
 	    String topic = client+"/msgs";
 		LOGGER.info(AwsUtil.getConfig("iot.endpoint") +" " + client+"-facilio" + " " + topic + " " + object);
 		AWSIotMqttClient mqttClient = new AWSIotMqttClient(AwsUtil.getConfig("iot.endpoint"), client+"-facilio", AwsUtil.getConfig("iot.accessKeyId"), AwsUtil.getConfig("iot.secretKeyId"));
@@ -345,9 +354,8 @@ public class IoTMessageAPI {
 			mqttClient.connect();
 			if(mqttClient.getConnectionStatus() == AWSIotConnectionStatus.CONNECTED) {
 				mqttClient.publish(new AWSIotMessage(topic, AWSIotQos.QOS0, object.toJSONString()));
-				if(object.containsKey(AgentKeys.AGENT_ID)) {
-					AgentUtil.putLog(object, AccountUtil.getCurrentOrg().getOrgId(), Long.parseLong(object.get(AgentKeys.AGENT_ID).toString()), true);
-
+				if(agentId != null && agentId > 0) {
+					AgentUtil.putLog(object, AccountUtil.getCurrentOrg().getOrgId(), agentId, true);
 				}
 			}
 		} catch (AWSIotException e) {

@@ -24,12 +24,12 @@ import com.facilio.bmsconsole.context.RegressionPointContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportYAxisContext;
-import com.facilio.tv.TVAction;
 
 public class AddRegressionPointsCommand implements Command{
 
@@ -44,6 +44,12 @@ public class AddRegressionPointsCommand implements Command{
 		Boolean isMultiple;
 				
 		Collection<Map<String, Object>> data = (Collection<Map<String, Object>>) reportData.get(FacilioConstants.ContextNames.DATA_KEY);
+		if(regressionConfig == null && reportContext != null && reportContext.getReportState() != null) {
+			regressionConfig = FieldUtil.getAsBeanListFromMapList((List<Map<String, Object>>)reportContext.getReportState().get(StringConstants.REGRESSION_CONFIG), RegressionContext.class);
+		}
+		if (data == null) {
+			return false;
+		}
 		
 		Map<String, Map<String, Object>> regressionResults = new HashMap<String, Map<String,Object>>();
 		if(regressionConfig != null && data!= null && !regressionConfig.isEmpty() && data.size() != 0) {
@@ -75,20 +81,10 @@ public class AddRegressionPointsCommand implements Command{
 				reportData.put(FacilioConstants.ContextNames.REGRESSION_RESULT, regressionResults);
 			}
 			else {
-				return true;
+				return false;
 			}
-			
-			
 		}
-		else if(data.size() == 0) {
-			return true;
-		}
-		else {
-			throw new Exception("Error in regressionConfiguration.");
-		}
-		
-		
-		return true;
+		return false;
 	}
 	
 	
@@ -197,9 +193,10 @@ public class AddRegressionPointsCommand implements Command{
 	
 	private String getDataPointName(List<ReportDataPointContext> dataPoints, RegressionPointContext xPoint, boolean isFieldName) {
 		for(ReportDataPointContext dataPoint: dataPoints) {
-			ArrayList<Long> temp = (ArrayList) dataPoint.getMetaData().get("parentIds");
+			ArrayList<Object> temp = (ArrayList) dataPoint.getMetaData().get("parentIds");
 			if(temp.size() != 0) {
-				Long parentId = temp.get(0);
+				Long parentId = Long.valueOf(String.valueOf(temp.get(0)));
+				
 				if(dataPoint.getyAxis().getFieldId() == xPoint.getReadingId() && parentId == xPoint.getParentId()) {
 					if(isFieldName) {
 						return dataPoint.getyAxis().getFieldName();
@@ -507,6 +504,7 @@ public class AddRegressionPointsCommand implements Command{
 		final static String RESIDUAL = "residual";
 		final static String REGRESSION = "regression";
 		final static String COEFFICIENT_MAP = "coefficientMap";
+		final static String REGRESSION_CONFIG="regressionConfig";
 	}
 	
 }

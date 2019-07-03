@@ -1,5 +1,13 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
@@ -16,13 +24,6 @@ import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Context;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 public class FormAction extends FacilioAction {
 	
@@ -194,6 +195,13 @@ public class FormAction extends FacilioAction {
 	
 	public String formUnusedFieldList() throws Exception {
 		Map<String, List<FormField>> fields = FormsAPI.getFormUnusedFields(moduleName, formId);
+		setResult("fields", fields);
+		
+		return SUCCESS;
+	}
+	
+	public String formFieldList() throws Exception {
+		List<FormField> fields = FormsAPI.getAllFormFields(moduleName, formType);
 		setResult("fields", fields);
 		
 		return SUCCESS;

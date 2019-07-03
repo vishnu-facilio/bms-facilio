@@ -1,6 +1,16 @@
 package com.facilio.report.context;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.struts2.json.annotations.JSON;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.RegressionContext;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.Operator;
@@ -12,14 +22,6 @@ import com.facilio.report.context.ReadingAnalysisContext.AnalyticsType;
 import com.facilio.time.DateRange;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.WorkflowContext;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.struts2.json.annotations.JSON;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ReportContext {
 
@@ -137,12 +139,12 @@ public class ReportContext {
 	}
 	
 	private JSONObject reportState;
-//	public JSONObject getReportState() {
-//		return reportState;
-//	}
-//	public void setReportState(JSONObject reportState) {
-//		this.reportState = reportState;
-//	}
+	public JSONObject getReportState() {
+		return reportState;
+	}
+	public void setReportState(JSONObject reportState) {
+		this.reportState = reportState;
+	}
 	
 	//Only JSON friendly values can be added
 	public void addToReportState (String key, JSONObject value) {
@@ -446,6 +448,7 @@ public class ReportContext {
 	public void setUserFilters(List<ReportUserFilterContext> userFilters) {
 		this.userFilters = userFilters;
 	}
+	
 	// called when setting from client
 	public void setUserFilters(List<ReportUserFilterContext> userFilters, boolean updateField) {
 		if (userFilters == null) {	// return if its null
@@ -520,7 +523,8 @@ public class ReportContext {
 	
 	public enum ReportType {
 		READING_REPORT,
-		WORKORDER_REPORT
+		WORKORDER_REPORT,
+		REGRESSION_REPORT
 		;
 		
 		public int getValue() {

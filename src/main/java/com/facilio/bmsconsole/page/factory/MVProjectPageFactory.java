@@ -92,14 +92,14 @@ public class MVProjectPageFactory {
 	
 	private static void addCostTrendWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART, "costTrend");
-		cardWidget.addToLayoutParams(section, 24, 14);
+		cardWidget.addToLayoutParams(section, 24, 13);
 		cardWidget.addToWidgetParams("type", "costTrend");
 		section.addWidget(cardWidget);
 	}
 	
 	private static void addCumulativeSavingsWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART, "cumulativeSavings");
-		cardWidget.addToLayoutParams(section, 24, 14);
+		cardWidget.addToLayoutParams(section, 24, 13);
 		cardWidget.addToWidgetParams("type", "cumulativeSavings");
 		section.addWidget(cardWidget);
 	}

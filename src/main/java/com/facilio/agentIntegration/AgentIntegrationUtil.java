@@ -70,7 +70,7 @@ public class AgentIntegrationUtil {
                 wattsenseAuthApi =  wattBasePath + PROPERTIES.getProperty(AgentIntegrationKeys.WATT_AUTH_API);
                 mqttConnectionApi = wattBasePath + wattMqttPath ;
                 wattsenseCertificateStoreApi = mqttConnectionApi + PROPERTIES.getProperty(AgentIntegrationKeys.WATT_CERTIFICATE_STORE_API);
-                awsMqttEndpoint = PROPERTIES.getProperty(AgentIntegrationKeys.WATT_AWS_MQTT_ENDPOINT_BASE) + AwsUtil.getIotEndPoint();
+                awsMqttEndpoint = PROPERTIES.getProperty(AgentIntegrationKeys.WATT_AWS_MQTT_ENDPOINT_BASE) + AwsUtil.getIotEndPoint()+":8883";
                 initiateMqttApi = PROPERTIES.getProperty(AgentIntegrationKeys.WATT_INITIATE_MQTT_API);
                 deleteCertificateStoreApi = wattsenseCertificateStoreApi;
                 deleteMqttConnectionApi = mqttConnectionApi;

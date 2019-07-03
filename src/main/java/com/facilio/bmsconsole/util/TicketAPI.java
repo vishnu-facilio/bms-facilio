@@ -736,12 +736,8 @@ public class TicketAPI {
 				}
 				else {
 					assignTicketToCurrentUser(ticket, oldTicket);
-					if (ticket.getOfflineModifiedTime() != -1) {
-						ticket.setActualWorkStart(ticket.getOfflineModifiedTime());
-					}
-					else {
-						ticket.setActualWorkStart(ticket.getOfflineWorkStart() != -1 ? ticket.getOfflineWorkStart() : System.currentTimeMillis());
-					}
+					// TODO remove offlinework start once mobile changes to new api
+					ticket.setActualWorkStart(ticket.getOfflineWorkStart() != -1 ? ticket.getOfflineWorkStart() : ticket.getTime());
 				}
 			}
 			else if ("On Hold".equalsIgnoreCase(statusObj.getStatus()) || "Resolved".equalsIgnoreCase(statusObj.getStatus()) 
@@ -749,12 +745,8 @@ public class TicketAPI {
 
 				long estimatedDuration;
 				if ("Resolved".equalsIgnoreCase(statusObj.getStatus()) || "Closed".equalsIgnoreCase(statusObj.getStatus())) {
-					if (ticket.getOfflineModifiedTime() != -1) {
-						ticket.setActualWorkEnd(ticket.getOfflineModifiedTime());
-					}
-					else {
-						ticket.setActualWorkEnd(ticket.getOfflineWorkEnd() != -1 ? ticket.getOfflineWorkEnd() : System.currentTimeMillis());
-					}
+					ticket.setActualWorkEnd(ticket.getOfflineWorkEnd() != -1 ? ticket.getOfflineWorkEnd() : ticket.getTime());
+					
 					estimatedDuration = TicketAPI.getEstimatedWorkDuration(oldTicket, ticket.getActualWorkEnd());
 					if(isWorkDurationChangeAllowed) {
 						long actualDuration = ticket.getActualWorkDuration() != -1 ? ticket.getActualWorkDuration() : ticket.getEstimatedWorkDuration();

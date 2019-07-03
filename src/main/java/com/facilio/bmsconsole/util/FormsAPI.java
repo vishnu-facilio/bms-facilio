@@ -511,7 +511,7 @@ public class FormsAPI {
 		List<FacilioField> customFields = modBean.getAllCustomFields(moduleName);
 		
 		List<FormField> customFormFields = new ArrayList<>();
-		if(customFields != null && !customFields.isEmpty()) {
+		if(CollectionUtils.isNotEmpty(customFields)) {
 			customFields = customFields.stream().filter(field -> !formFieldMap.containsKey(field.getName())).collect(Collectors.toList());
 			customFormFields = getFormFieldsFromFacilioFields(customFields, 0);
 		}
@@ -520,6 +520,31 @@ public class FormsAPI {
 		formMap.put("systemFields", defaultFields);
 		formMap.put("customFields", customFormFields);
 		return formMap;
+	}
+	
+	public static List<FormField> getAllFormFields(String moduleName, FormType formType) throws Exception {
+		if (formType == null) {
+			formType = FormType.WEB;
+		}
+		FacilioForm form = new FacilioForm();
+		form.setFormType(formType);
+		List<FormField> allFields = new ArrayList<>();
+		FacilioForm defaultForm = FormFactory.getDefaultForm(moduleName, form, true);
+		if (defaultForm != null) {
+			List<FormField> defaultFields = new ArrayList<>(defaultForm.getFields());
+			if (defaultFields == null) {
+				defaultFields = getFormFieldsFromSections(form.getSections());
+			}
+			allFields.addAll(defaultFields);
+		}
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioField> customFields = modBean.getAllCustomFields(moduleName);
+		if (CollectionUtils.isNotEmpty(customFields)) {
+			List<FormField> customFormFields = getFormFieldsFromFacilioFields(customFields, 0);
+			allFields.addAll(customFormFields);
+		}
+		return allFields;
 	}
 	
 	public static void setFieldDetails(ModuleBean modBean, List<FormField> fields, String moduleName) throws Exception {

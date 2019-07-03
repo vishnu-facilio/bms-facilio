@@ -361,14 +361,6 @@ public class TicketContext extends ModuleBaseWithCustomFields {
 		this.offlineWorkEnd = offlineWorkEnd;
 	}
 	
-	private long offlineModifiedTime = -1;
-	public long getOfflineModifiedTime() {
-		return offlineModifiedTime;
-	}
-	public void setOfflineModifiedTime(long offlineModifiedTime) {
-		this.offlineModifiedTime = offlineModifiedTime;
-	}
-
 	private ResourceContext resource;
 	public ResourceContext getResource() {
 		return resource;

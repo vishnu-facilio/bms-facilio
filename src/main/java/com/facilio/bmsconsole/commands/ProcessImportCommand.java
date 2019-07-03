@@ -292,7 +292,7 @@ public class ProcessImportCommand implements Command {
 							}	
 							}
 							
-							if (facilioField.getDataTypeEnum().equals(FieldType.LOOKUP) && facilioField instanceof LookupField) {
+							if (facilioField.getDataTypeEnum().equals(FieldType.LOOKUP) && facilioField instanceof LookupField && fieldMapping.get(facilioField.getModule().getName() + "__" + facilioField.getName()) != null ) {
 								LookupField lookupField = (LookupField) facilioField;
 
 								boolean isSkipSpecialLookup = false;

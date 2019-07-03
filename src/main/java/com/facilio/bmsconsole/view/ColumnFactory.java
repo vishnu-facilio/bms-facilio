@@ -68,6 +68,7 @@ public class ColumnFactory {
 		columnMap.put("shift-default", getDefaultShiftColumns());
 		columnMap.put("break-default", getDefaultBreakColumns());
 		columnMap.put("shiftRotation-default", getDefaultShiftRotationColumns());
+		columnMap.put("newreadingalarm-default", getDefaultReadingAlarmColumns());
 		
 		// Default report columns 
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
@@ -498,6 +499,20 @@ public class ColumnFactory {
 		columns.add(new ViewField("schedularFrequency", "Schedular Frequency"));
 		columns.add(new ViewField("timeOfSchedule", "Time Of Schedule"));
 		columns.add(new ViewField("schedularDay", "Schedular Day"));
+		return columns;
+	}
+	
+	private static List<ViewField> getDefaultReadingAlarmColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		
+		columns.add(new ViewField("severity", "Severity"));
+		columns.add(new ViewField("subject", "Message"));
+		columns.add(new ViewField("source", "Source"));
+		columns.add(new ViewField("condition", "Condition"));
+		columns.add(new ViewField("resource", "Asset"));
+		columns.add(new ViewField("lastOccurredTime", "Last Reported"));
+		columns.add(new ViewField("acknowledgedBy", "Acknowledged"));
+
 		return columns;
 	}
 
