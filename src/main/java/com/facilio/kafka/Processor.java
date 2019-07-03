@@ -1,7 +1,6 @@
 package com.facilio.kafka;
 
 import com.facilio.agent.*;
-import com.facilio.agentIntegration.AgentIntegrationKeys;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -73,15 +72,6 @@ public class Processor extends FacilioProcessor {
                 long numberOfRows = 0;
                 String recordId = record.getId();
             try {
-                try {
-                    String wattClientId = record.getPartitionKey();
-                    //LOGGER.info("wattsense clientId "+wattClientId);
-                    if( (wattClientId != null) && ( wattClientId.contains(AgentIntegrationKeys.CLIENT_ID_TAG)) ){
-                        LOGGER.info(" wattsense payload "+record);
-                    }
-                }catch (Exception e){
-                    LOGGER.info("Exception while testing wattclient ",e);
-                }
                 try {
                     boolean  isDuplicateMessage = agentUtil.isDuplicate(recordId);
                     if ( isDuplicateMessage ) {
