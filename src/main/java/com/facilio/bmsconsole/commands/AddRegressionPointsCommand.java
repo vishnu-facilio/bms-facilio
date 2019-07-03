@@ -7,19 +7,24 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.*;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.math3.distribution.TDistribution;
 import org.apache.commons.math3.exception.MathIllegalArgumentException;
+import org.apache.commons.math3.linear.MatrixUtils;
+import org.apache.commons.math3.linear.RealMatrix;
+import org.apache.commons.math3.linear.SingularValueDecomposition;
 import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
 import org.apache.commons.math3.util.FastMath;
 import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.AnovaResultContext;
 import com.facilio.bmsconsole.context.RegressionContext;
+import com.facilio.bmsconsole.context.RegressionContext.DataConditions;
 import com.facilio.bmsconsole.context.RegressionPointContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldFactory;
@@ -33,61 +38,174 @@ import com.facilio.report.context.ReportYAxisContext;
 
 public class AddRegressionPointsCommand implements Command{
 
-	private static final Logger LOGGER = LogManager.getLogger(AddRegressionPointsCommand.class.getName());
-	
+	private static final Logger LOGGER = Logger.getLogger(AddRegressionPointsCommand.class.getName());
 	@Override
 	public boolean execute(Context context) throws Exception {
 		
 		List<RegressionContext> regressionConfig = (List<RegressionContext>) context.get(FacilioConstants.ContextNames.REGRESSION_CONFIG);
 		JSONObject reportData = (JSONObject) context.get(FacilioConstants.ContextNames.REPORT_DATA);
 		ReportContext reportContext = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
+		
 		Boolean isMultiple;
 				
 		Collection<Map<String, Object>> data = (Collection<Map<String, Object>>) reportData.get(FacilioConstants.ContextNames.DATA_KEY);
 		if(regressionConfig == null && reportContext != null && reportContext.getReportState() != null) {
-			regressionConfig = FieldUtil.getAsBeanListFromMapList((List<Map<String, Object>>)reportContext.getReportState().get(StringConstants.REGRESSION_CONFIG), RegressionContext.class);
-		}
-		if (data == null) {
-			return false;
+			List<Map<String,Object>> regressionList = (List<Map<String, Object>>)reportContext.getReportState().get(StringConstants.REGRESSION_CONFIG);
+			if(regressionList != null) {
+				regressionConfig = FieldUtil.getAsBeanListFromMapList(regressionList, RegressionContext.class);
+			}
 		}
 		
 		Map<String, Map<String, Object>> regressionResults = new HashMap<String, Map<String,Object>>();
 		if(regressionConfig != null && data!= null && !regressionConfig.isEmpty() && data.size() != 0) {
-			data = cleanData(data);
+			isMultiple = regressionConfig.get(0).getIsMultiple();
 			
 			if(data.size() != 0) {
-				for(RegressionContext rc : regressionConfig) {
-					isMultiple = rc.getIsMultiple();
-					Map<String, Object> regressionResult = prepareData(rc, new ArrayList(data), isMultiple);
-					if(regressionResult.isEmpty()) {
-						return true;
+				for(RegressionContext rc: regressionConfig) {
+					DataConditions dataConditions = checkDataForAuthenticity(new ArrayList(data), rc.getxAxis(), isMultiple);
+					
+					switch(dataConditions) {
+					case NOT_ENOUGH_DATA:{
+						rc.setErrorStateENUM(DataConditions.NOT_ENOUGH_DATA);
+						rc.setErrorState(DataConditions.NOT_ENOUGH_DATA.getValue());
+						break;
 					}
+					case SINGULAR_MATRIX:{
+						rc.setErrorStateENUM(DataConditions.SINGULAR_MATRIX);
+						rc.setErrorState(DataConditions.SINGULAR_MATRIX.getValue());
+						break;
+					}
+					case DATA_AUTHENTICATED:{
+						rc.setErrorStateENUM(DataConditions.DATA_AUTHENTICATED);
+						rc.setErrorState(DataConditions.DATA_AUTHENTICATED.getValue());
+						break;
+					}
+					}
+					
 					String groupAlias = getRegressionPointAlias(rc);
+					rc.setGroupAlias(groupAlias);
 					
-					String expressionString = getExpressionString(regressionResult, reportContext, rc.getxAxis());
-					ReportDataPointContext regressionPoint = getRegressionDataPoint(groupAlias, expressionString);
-					reportContext.getDataPoints().add(regressionPoint);
-					Map<String, Object> coefficientMap = getCoefficientMap(regressionResult, rc.getxAxis());
-					computeRegressionData(groupAlias, (ArrayList)data, coefficientMap);
-					regressionResult.put(StringConstants.COEFFICIENT_MAP, coefficientMap);
+					if(rc.getErrorStateENUM() == dataConditions.DATA_AUTHENTICATED) {
+						isMultiple = rc.getIsMultiple();
+						
+						Map<String, Object> regressionResult = prepareData(rc, new ArrayList(data), isMultiple);
+						
+						if(regressionResult.isEmpty()) {
+							return false;
+						}
+						
+						
+						String expressionString = getExpressionString(regressionResult, reportContext, rc.getxAxis());
+						ReportDataPointContext regressionPoint = getRegressionDataPoint(groupAlias, expressionString);
+						reportContext.getDataPoints().add(regressionPoint);
+						Map<String, Object> coefficientMap = getCoefficientMap(regressionResult, rc.getxAxis());
+						computeRegressionData(groupAlias, (ArrayList)data, coefficientMap);
+						regressionResult.put(StringConstants.COEFFICIENT_MAP, coefficientMap);
+						
+						computeTstatAndP(regressionResult, rc.getxAxis(), reportContext.getDataPoints());
+						computeANOVAResultMetrics(regressionResult, (ArrayList)data, groupAlias, rc.getyAxis().getAlias());
+						
+						regressionResults.put(groupAlias, regressionResult);
+					}
 					
-					computeTstatAndP(regressionResult, rc.getxAxis(), reportContext.getDataPoints());
-					computeANOVAResultMetrics(regressionResult, (ArrayList)data, groupAlias, rc.getyAxis().getAlias());
-					
-					regressionResults.put(groupAlias, regressionResult);
 					
 				}
 				
 				reportData.put(FacilioConstants.ContextNames.REGRESSION_RESULT, regressionResults);
 			}
+			
+		}
+		if(regressionConfig != null && !regressionConfig.isEmpty()) {
+			if(reportContext.getReportState() != null) {
+				reportContext.getReportState().put(FacilioConstants.ContextNames.REGRESSION_CONFIG, regressionConfig);
+			}
 			else {
-				return false;
+				JSONObject reportState = new JSONObject();
+				reportState.put(FacilioConstants.ContextNames.REGRESSION_CONFIG, regressionConfig);
+				reportContext.setReportState(reportState);
 			}
 		}
 		return false;
 	}
 	
+	private DataConditions checkDataForAuthenticity(ArrayList<Map<String, Object>> data, List<RegressionPointContext> idpVariables, boolean isMultiple) {
+		DataConditions finalCondition = DataConditions.DATA_AUTHENTICATED;
+		
+		if(isMultiple == false) {
+			if(checkDataForNull(data, idpVariables)) {
+				finalCondition = DataConditions.NOT_ENOUGH_DATA;
+			}
+		}
+		else {
+			data = cleanData(data);
+			if(data == null || data.size() == 0) {
+				return DataConditions.NOT_ENOUGH_DATA;
+			}
+			
+			if(data.size() < idpVariables.size() + 1) {
+				finalCondition = DataConditions.NOT_ENOUGH_DATA;
+			}
+			
+			if(isDataMatrixNonSingular(data, idpVariables) == false) {
+				finalCondition = DataConditions.SINGULAR_MATRIX;
+			}
+		}
+		
+		
+		return finalCondition;
+	}
 	
+	private boolean checkDataForNull(ArrayList<Map<String, Object>> data, List<RegressionPointContext> idpVariables) {
+		List<Map<String, Object>> finalData = new ArrayList<Map<String,Object>>();
+		for(int i = 0; i< data.size(); i++) {
+			Map<String, Object> record = data.get(i);
+			boolean isMarked = false;
+			for(int j = 0; j< idpVariables.size(); j++) {
+				if(record.get(idpVariables.get(j).getAlias()) == null || record.get(idpVariables.get(j).getAlias()) =="") {
+					isMarked = true;
+					break;
+				}
+			}
+			if(isMarked == false) {
+				finalData.add(record);
+			}
+		}
+		
+		if(finalData.size() == 0 || (finalData.size() < idpVariables.size() + 1)) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
+	private boolean isDataMatrixNonSingular(ArrayList<Map<String, Object>> data, List<RegressionPointContext> idpVariables) {
+		boolean isNonSingularMatrix = true;
+		
+		Integer min  = Math.min(data.size(), idpVariables.size());
+		
+		double [][] x = new double [data.size()][idpVariables.size()];
+		
+		for(int i = 0; i< data.size(); i++) {
+			Map<String, Object> record = data.get(i);
+			for(int j = 0; j< idpVariables.size(); j++) {
+				x[i][j] = Double.valueOf((String)record.get(idpVariables.get(j).getAlias()));
+			}
+		}
+		
+		RealMatrix m = MatrixUtils.createRealMatrix(x);
+		 SingularValueDecomposition singleDc = new SingularValueDecomposition(m);
+		 
+		 Integer rank = singleDc.getRank();
+		 LOGGER.severe("Matrix rank:" + rank.toString());
+		 if(rank < min) {
+			 isNonSingularMatrix = false;
+		 }
+		 
+		 LOGGER.severe("Is Matrix non singular: " + isNonSingularMatrix);
+		 return isNonSingularMatrix;
+		
+	}
 	private void computeRegressionData(String groupAlias, ArrayList<Map<String,Object>> data, Map<String,Object> coefficientMap) {
 		
 		ArrayList<String> coefficientKeys = new ArrayList(coefficientMap.keySet());
@@ -215,8 +333,8 @@ public class AddRegressionPointsCommand implements Command{
 	}
 	
 	
-	private Collection<Map<String, Object>> cleanData(Collection<Map<String, Object>> data) {
-		Collection<Map<String, Object>> finalData = new ArrayList<Map<String,Object>>();
+	private ArrayList<Map<String, Object>> cleanData(ArrayList<Map<String, Object>> data) {
+		ArrayList<Map<String, Object>> finalData = new ArrayList<Map<String,Object>>();
 		for(Map<String, Object> entry: data) {
 			boolean isMarked = false;
 			for(String key: entry.keySet()) {

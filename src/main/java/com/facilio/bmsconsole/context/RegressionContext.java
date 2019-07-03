@@ -17,6 +17,23 @@ public class RegressionContext {
 		this.isMultiple = isMultiple;
 	}
 	
+	private DataConditions errorStateENUM;
+	
+	private Integer errorState;
+	
+	public DataConditions getErrorStateENUM() {
+		return errorStateENUM;
+	}
+	public void setErrorStateENUM(DataConditions errorStateENUM) {
+		this.errorStateENUM = errorStateENUM;
+	}
+	public Integer getErrorState() {
+		return errorState;
+	}
+	
+	public void setErrorState(Integer errorState) {
+		this.errorState = errorState;
+	}
 	public List<RegressionPointContext> getxAxis() {
 		return xAxis;
 	}
@@ -34,6 +51,18 @@ public class RegressionContext {
 	}
 	public void setGroupAlias(String groupAlias) {
 		this.groupAlias = groupAlias;
+	}
+	
+	public enum DataConditions{
+		DATA_AUTHENTICATED,
+		NOT_ENOUGH_DATA,
+		SINGULAR_MATRIX
+		;
+		
+		public int getValue() {
+			return ordinal() + 1;
+		}
+		
 	}
 	
 }
