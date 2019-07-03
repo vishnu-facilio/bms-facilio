@@ -75,7 +75,7 @@ public class Processor extends FacilioProcessor {
             try {
                 try {
                     String wattClientId = record.getPartitionKey();
-                    LOGGER.info("wattsense clientId "+wattClientId);
+                    //LOGGER.info("wattsense clientId "+wattClientId);
                     if( (wattClientId != null) && ( wattClientId.contains(AgentIntegrationKeys.CLIENT_ID_TAG)) ){
                         LOGGER.info(" wattsense payload "+record);
                     }
