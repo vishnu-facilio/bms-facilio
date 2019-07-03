@@ -190,7 +190,8 @@ public class AccountUtil {
 		M_AND_V (262144),
 		GRAPHICS (524288),
 		CONTRACT (1048576),
-        NEW_ALARMS (2097152)
+        NEW_ALARMS (2097152),
+        DEVELOPER_SPACE (4194304)
 		;
 		
 		
