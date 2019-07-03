@@ -175,7 +175,7 @@ public class Processor implements IRecordProcessor {
                     if( agent != null) {
                         agentUtil.addAgentMetrics(data.length(), agent.getId(), publishType.getKey());
                         String agentType = agent.getAgentType();
-                        LOGGER.info(recordId+" Agent Type -- "+agentType);
+                        //LOGGER.info(recordId+" Agent Type -- "+agentType);
                         if(AgentType.Wattsense.getLabel().equalsIgnoreCase(agentType)){
                             LOGGER.info(recordId+" wattsense agent payload- "+payLoad);
                         }
