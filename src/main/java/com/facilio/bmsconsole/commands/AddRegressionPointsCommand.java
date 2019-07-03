@@ -62,7 +62,7 @@ public class AddRegressionPointsCommand implements Command{
 			
 			if(data.size() != 0) {
 				for(RegressionContext rc: regressionConfig) {
-					DataConditions dataConditions = checkDataForAuthenticity(new ArrayList(data), rc.getxAxis(), isMultiple);
+					DataConditions dataConditions = checkDataForAuthenticity(new ArrayList(data), rc.getxAxis(), rc.getyAxis(), isMultiple);
 					
 					switch(dataConditions) {
 					case NOT_ENOUGH_DATA:{
@@ -128,16 +128,16 @@ public class AddRegressionPointsCommand implements Command{
 		return false;
 	}
 	
-	private DataConditions checkDataForAuthenticity(ArrayList<Map<String, Object>> data, List<RegressionPointContext> idpVariables, boolean isMultiple) {
+	private DataConditions checkDataForAuthenticity(ArrayList<Map<String, Object>> data, List<RegressionPointContext> idpVariables, RegressionPointContext depVariable, boolean isMultiple) {
 		DataConditions finalCondition = DataConditions.DATA_AUTHENTICATED;
 		
 		if(isMultiple == false) {
-			if(checkDataForNull(data, idpVariables)) {
+			if(checkDataForNull(data, idpVariables, depVariable)) {
 				finalCondition = DataConditions.NOT_ENOUGH_DATA;
 			}
 		}
 		else {
-			data = cleanData(data);
+			data = cleanData(data, idpVariables, depVariable);
 			if(data == null || data.size() == 0) {
 				return DataConditions.NOT_ENOUGH_DATA;
 			}
@@ -155,17 +155,23 @@ public class AddRegressionPointsCommand implements Command{
 		return finalCondition;
 	}
 	
-	private boolean checkDataForNull(ArrayList<Map<String, Object>> data, List<RegressionPointContext> idpVariables) {
+	private boolean checkDataForNull(ArrayList<Map<String, Object>> data, List<RegressionPointContext> idpVariables, RegressionPointContext depVariable) {
 		List<Map<String, Object>> finalData = new ArrayList<Map<String,Object>>();
 		for(int i = 0; i< data.size(); i++) {
 			Map<String, Object> record = data.get(i);
 			boolean isMarked = false;
-			for(int j = 0; j< idpVariables.size(); j++) {
-				if(record.get(idpVariables.get(j).getAlias()) == null || record.get(idpVariables.get(j).getAlias()) =="") {
-					isMarked = true;
-					break;
+			if(record.get(depVariable.getAlias()) == null || record.get(depVariable.getAlias()) == "") {
+				isMarked = true;
+			}
+			if(isMarked == false) {
+				for(int j = 0; j< idpVariables.size(); j++) {
+					if(record.get(idpVariables.get(j).getAlias()) == null || record.get(idpVariables.get(j).getAlias()) =="") {
+						isMarked = true;
+						break;
+					}
 				}
 			}
+			
 			if(isMarked == false) {
 				finalData.add(record);
 			}
@@ -333,16 +339,24 @@ public class AddRegressionPointsCommand implements Command{
 	}
 	
 	
-	private ArrayList<Map<String, Object>> cleanData(ArrayList<Map<String, Object>> data) {
+	private ArrayList<Map<String, Object>> cleanData(ArrayList<Map<String, Object>> data, List<RegressionPointContext> idpVariables, RegressionPointContext depVariable) {
 		ArrayList<Map<String, Object>> finalData = new ArrayList<Map<String,Object>>();
 		for(Map<String, Object> entry: data) {
 			boolean isMarked = false;
-			for(String key: entry.keySet()) {
-				if(entry.get(key) == null || entry.get(key) == "") {
-					isMarked = true;
-					break;
+			if(entry.get(depVariable.getAlias())== null || entry.get(depVariable.getAlias()) == "") {
+				isMarked = true;
+			}
+			
+			if(isMarked == false) {
+				for(int j =0 ;j<idpVariables.size(); j++ ) {
+					RegressionPointContext idp = idpVariables.get(j);
+					if(entry.get(idp.getAlias()) == null || entry.get(idp.getAlias()) == "") {
+						isMarked = true;
+						break;
+					}
 				}
 			}
+			
 			if(!isMarked) {
 				finalData.add(entry);
 			}
