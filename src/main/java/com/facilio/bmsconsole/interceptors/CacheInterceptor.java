@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.interceptors;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.db.ResponseCacheUtil;
 import com.facilio.cache.CacheUtil;
 import com.facilio.filters.MultiReadServletRequest;
 import com.facilio.fw.LRUCache;
@@ -46,7 +47,7 @@ public class CacheInterceptor extends AbstractInterceptor {
 				long userId = AccountUtil.getCurrentUser().getId();
 				long orgId = AccountUtil.getCurrentOrg().getId();
 
-				Object object = LRUCache.getResponseCache().get(CacheUtil.RESPONSE_KEY(orgId, userId, requestURI, contentHash));
+				Object object = ResponseCacheUtil.getCache(orgId, userId, requestURI, contentHash);
 				if (object != null) {
 					return "cachedResponse";
 				}

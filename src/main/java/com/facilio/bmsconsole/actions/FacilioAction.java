@@ -13,6 +13,7 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.chain.FacilioContext;
+import com.facilio.bmsconsole.db.ResponseCacheUtil;
 import com.facilio.cache.CacheUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.filters.MultiReadServletRequest;
@@ -79,8 +80,8 @@ public class FacilioAction extends ActionSupport {
 		        String contentHash = multiReadServletRequest.getContentHash();
 				long userId = AccountUtil.getCurrentUser().getId();
 				long orgId = AccountUtil.getCurrentOrg().getId();
-		
-				Object object = LRUCache.getResponseCache().get(CacheUtil.RESPONSE_KEY(orgId, userId, requestURI, contentHash));
+				
+				Object object = ResponseCacheUtil.getCache(orgId, userId, requestURI, contentHash);
 				
 				HttpServletResponse response = ServletActionContext.getResponse();
 				response.setContentType("application/json;charset=UTF-8");

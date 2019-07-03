@@ -57,6 +57,7 @@ function init() {
 <div id="tg" style="display:none; margin-top:30px;">
 <br>Module Cache =  <textarea style="width: 600px;height:1500px;overflow-y:auto;"><%out.println(com.facilio.fw.LRUCache.getModuleFieldsCache()); %></textarea>
 <br>Fields Cache = <textarea  style="width: 600px;height:150px;overflow-y:auto; margin-bottom:20px"><%out.println(com.facilio.fw.LRUCache.getFieldsCache()); %></textarea>
+<br>Response Cache = <textarea  style="width: 600px;height:150px;overflow-y:auto; margin-bottom:20px"><%out.println(com.facilio.fw.LRUCache.getResponseCache()); %></textarea>
 </div>
 
 <div style="margin-top:30px;">

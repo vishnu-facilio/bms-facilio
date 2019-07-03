@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.PostTransactionCommand;
+import com.facilio.bmsconsole.db.ResponseCacheUtil;
 import com.facilio.cache.CacheUtil;
 import com.facilio.db.transaction.FacilioTransactionManager;
 import com.facilio.fw.LRUCache;
@@ -193,6 +194,6 @@ public class FacilioChain extends ChainBase {
 	}
 	
 	private void clearResponseCache() {
-		LRUCache.getResponseCache().remove(CacheUtil.ORG_KEY(AccountUtil.getCurrentOrg().getId()));
+		ResponseCacheUtil.removeOrgCache(AccountUtil.getCurrentOrg().getId());
 	}
 }

@@ -190,6 +190,10 @@ public class LRUCache<K, V>{
     private String getRedisKey(String key) {
 		return name + '_' + key;
 	}
+    
+    public boolean contains(K key) {
+    	return cache.containsKey(key);
+    }
 
     public V get(K key){
     	try {

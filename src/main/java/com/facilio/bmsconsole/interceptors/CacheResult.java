@@ -8,6 +8,7 @@ import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.json.JSONResult;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.db.ResponseCacheUtil;
 import com.facilio.cache.CacheUtil;
 import com.facilio.filters.MultiReadServletRequest;
 import com.facilio.fw.LRUCache;
@@ -40,7 +41,8 @@ public class CacheResult extends JSONResult {
 			long userId = AccountUtil.getCurrentUser().getId();
 			long orgId = AccountUtil.getCurrentOrg().getId();
 			
-			LRUCache.getResponseCache().put(CacheUtil.RESPONSE_KEY(orgId, userId, requestURI, contentHash), json);
+			ResponseCacheUtil.addCache(orgId, userId, requestURI, contentHash, json);
+//			LRUCache.getResponseCache().put(CacheUtil.RESPONSE_KEY(orgId, userId, requestURI, contentHash), json);
 		}
 		Object cacheurl = request.getAttribute("cacheurl");
 		if(cacheurl !=null)
