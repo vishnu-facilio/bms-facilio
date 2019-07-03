@@ -27,6 +27,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class HistoricalAnomalyDetectionJob extends FacilioJob
@@ -40,7 +41,7 @@ public class HistoricalAnomalyDetectionJob extends FacilioJob
 	private long variableFieldID=66317L;
 	
 	private long siteParentFieldID = 66059L;
-	private long weatherFieldID = 66054;
+	private long weatherFieldID = 66054L;
 	
 	private long siteID=14152L;
 	
@@ -48,29 +49,36 @@ public class HistoricalAnomalyDetectionJob extends FacilioJob
 	@Override
 	public void execute(JobContext jc) throws Exception 
 	{
-		buildGAMModel(1523077200000L);
-		//buildGAMModel(1523163600000L);
-		checkGam1();
+        long startTime = 1555736400000L;//April 20
+        long endTime = 1556341200000L;//April 27
+        //long endTime = 1556600400000L;
+        while(startTime<endTime)
+        {
+        	buildGAMModel(startTime);
+        	checkGam1(startTime);
+        	startTime = startTime + 86400000;
+        }
 		
 	}
 	
-	private void checkGam1() throws Exception
+	private void checkGam1(long time) throws Exception
 	{
-		long startTime = 0L;
-		long endTime=0L;
+		long startTime = time+3600000L;
+		long endTime= time + 86400000L;
 		
-		while(startTime<endTime)
+		while(startTime<=endTime)
 		{
 			for(long meterID:meterList)
 			{
 				Hashtable<Long,Hashtable<String,SortedMap<Long,Object>>> mlVariablesDataMap = new Hashtable<Long,Hashtable<String,SortedMap<Long,Object>>>(5);		
 				getReadings(meterID,variableFieldID,energyParentFieldID,startTime-3600000,startTime,mlVariablesDataMap);
-				getReadings(siteID,weatherFieldID,siteParentFieldID,startTime-7200000,startTime,mlVariablesDataMap);
+				getReadings(siteID,weatherFieldID,siteParentFieldID,startTime-(3600000*2),startTime,mlVariablesDataMap);
 				
-				generateMLModel(startTime,meterID,mlVariablesDataMap,"checkGam1",45330);
+				generateMLModel(startTime,meterID,mlVariablesDataMap,"checkGam1",46455);
 			}
 			
 			doRatioCheck(startTime);
+			startTime = startTime + 3600000L;
 		}
 	}
 	
@@ -79,25 +87,25 @@ public class HistoricalAnomalyDetectionJob extends FacilioJob
 		Hashtable<Long,Hashtable<String,SortedMap<Long,Object>>> mlVariablesDataMap = new Hashtable<Long,Hashtable<String,SortedMap<Long,Object>>>(5);
 		for(long meterID:meterList)
 		{
-			getReadings(meterID,601450,601458,startTime-3600000,startTime,mlVariablesDataMap);
-			getReadings(meterID,601471,601458,startTime-3600000,startTime,mlVariablesDataMap);
-			getReadings(meterID,601472,601458,startTime-3600000,startTime,mlVariablesDataMap);
-			getReadings(meterID,601473,601458,startTime-3600000,startTime,mlVariablesDataMap);
-			getReadings(meterID,601474,601458,startTime-3600000,startTime,mlVariablesDataMap);
-			getReadings(meterID,601475,601458,startTime-3600000,startTime,mlVariablesDataMap);
-			getReadings(meterID,601476,601458,startTime-3600000,startTime,mlVariablesDataMap);
-			getReadings(meterID,601477,601458,startTime-3600000,startTime,mlVariablesDataMap);
-			getReadings(meterID,601478,601458,startTime-3600000,startTime,mlVariablesDataMap);
-			getReadings(meterID,601479,601458,startTime-3600000,startTime,mlVariablesDataMap);
-			getReadings(meterID,601480,601458,startTime-3600000,startTime,mlVariablesDataMap);
-			getReadings(meterID,601481,601458,startTime-3600000,startTime,mlVariablesDataMap);
-			getReadings(meterID,601482,601458,startTime-3600000,startTime,mlVariablesDataMap);
-			getReadings(meterID,601483,601458,startTime-3600000,startTime,mlVariablesDataMap);
-			getReadings(meterID,601484,601458,startTime-3600000,startTime,mlVariablesDataMap);
-			
+			getReadings(meterID,612883,612891,startTime-3600000,startTime,mlVariablesDataMap);
+            getReadings(meterID,612903,612891,startTime-3600000,startTime,mlVariablesDataMap);
+            getReadings(meterID,612901,612891,startTime-3600000,startTime,mlVariablesDataMap);
+            getReadings(meterID,612905,612891,startTime-3600000,startTime,mlVariablesDataMap);
+            getReadings(meterID,612907,612891,startTime-3600000,startTime,mlVariablesDataMap);
+            getReadings(meterID,612923,612891,startTime-3600000,startTime,mlVariablesDataMap);
+            getReadings(meterID,612925,612891,startTime-3600000,startTime,mlVariablesDataMap);
+            getReadings(meterID,612927,612891,startTime-3600000,startTime,mlVariablesDataMap);
+            getReadings(meterID,612929,612891,startTime-3600000,startTime,mlVariablesDataMap);
+            getReadings(meterID,612931,612891,startTime-3600000,startTime,mlVariablesDataMap);
+            getReadings(meterID,612933,612891,startTime-3600000,startTime,mlVariablesDataMap);
+            getReadings(meterID,612935,612891,startTime-3600000,startTime,mlVariablesDataMap);
+            getReadings(meterID,612937,612891,startTime-3600000,startTime,mlVariablesDataMap);
+            getReadings(meterID,612940,612891,startTime-3600000,startTime,mlVariablesDataMap);
+            getReadings(meterID,612942,612891,startTime-3600000,startTime,mlVariablesDataMap);
+            getReadings(meterID,612944,612891,startTime-3600000,startTime,mlVariablesDataMap);
 		}
 		
-		generateMLModelForRatioCheck(startTime,14196,mlVariablesDataMap,"ratioCheck",45332);
+		generateMLModelForRatioCheck(startTime,14250,mlVariablesDataMap,"ratioCheck",46466);
 	}
 	
 	private void buildGAMModel(long endTime) throws Exception
@@ -105,23 +113,31 @@ public class HistoricalAnomalyDetectionJob extends FacilioJob
 		for(long meterID:meterList)
 		{
 			Hashtable<Long,Hashtable<String,SortedMap<Long,Object>>> mlVariablesDataMap = new Hashtable<Long,Hashtable<String,SortedMap<Long,Object>>>(5);		
-			getReadings(meterID,variableFieldID,energyParentFieldID,endTime-86400000,endTime,mlVariablesDataMap);
-			getReadings(siteID,weatherFieldID,siteParentFieldID,endTime-86400000,endTime,mlVariablesDataMap);
+			getReadings(meterID,variableFieldID,energyParentFieldID,endTime-7776000000L,endTime,mlVariablesDataMap);
+			getReadings(siteID,weatherFieldID,siteParentFieldID,endTime-7776000000L,endTime,mlVariablesDataMap);
 			
 			generateMLModel(endTime,meterID,mlVariablesDataMap,"buildGamModel",0L);
 		}
 	}
+	
+	private String getDate(long time)
+    {
+        final Calendar cal = Calendar.getInstance();
+        cal.setTimeInMillis(time);
+        return new SimpleDateFormat("YYYY-MM-dd").format(cal.getTime());
+    }
 	
 	private void generateMLModel(long predictedTime,long meterID,Hashtable<Long,Hashtable<String,SortedMap<Long,Object>>> mlVariablesDataMap,String modelPath,long logModuleID) throws Exception
 	{
 		JSONObject postObj = new JSONObject();
 		postObj.put("ml_id",100);
 		postObj.put("orgid", 104);
+		postObj.put("date",getDate(predictedTime));
 		
 		JSONObject modelVariables = new JSONObject();
-		modelVariables.put("timezone","Asia/Dubai");
+		modelVariables.put("timezone","US/Central");
 		modelVariables.put("dimension1","WEEKDAY");
-		modelVariables.put("dimension1Value","[1,2,3,4,5],[6,7]");
+		modelVariables.put("dimension1Value","[2,3,4,5,6],[1,7]");
 		modelVariables.put("tableValue","1.96");
 		modelVariables.put("adjustmentPercentage","10");
 		modelVariables.put("orderRange","2");
@@ -134,7 +150,7 @@ public class HistoricalAnomalyDetectionJob extends FacilioJob
 		JSONObject assetData = new JSONObject();
 		
 		JSONObject meterData = new JSONObject();
-		meterData.put("TYPE", "EnergyMeter");
+		meterData.put("TYPE", "Energy Meter");
 		assetData.put(""+meterID,meterData);
 		assetVariables.put(assetData);
 		
@@ -172,7 +188,7 @@ public class HistoricalAnomalyDetectionJob extends FacilioJob
 		LOGGER.info(" Sending request to ML Server "+postURL);
 		String result = AwsUtil.doHttpPost(postURL, headers, null, postObj.toString());
 		LOGGER.info("result is"+result);
-		addReadingToDB(predictedTime,result,meterID,45330,45329);
+		addReadingToDB(predictedTime,result,meterID,46455,46454);
 	}
 	
 	private void generateMLModelForRatioCheck(long predictedTime,long meterID,Hashtable<Long,Hashtable<String,SortedMap<Long,Object>>> mlVariablesDataMap,String modelPath,long logModuleID) throws Exception
@@ -238,61 +254,68 @@ public class HistoricalAnomalyDetectionJob extends FacilioJob
 		LOGGER.info(" Sending request to ML Server "+postURL);
 		String result = AwsUtil.doHttpPost(postURL, headers, null, postObj.toString());
 		LOGGER.info("result is"+result);
-		addReadingToDB(predictedTime,result,meterID,45332,45331);
-		
-		generateAlarm(14196,mlVariablesDataMap,result);
+		addReadingToDB(predictedTime,result,meterID,46466,46465);
+		JSONArray mlArray = (JSONArray) new JSONObject(result).get("data");
+        if(mlArray.length()>0)
+        {
+        	generateAlarm(14250,mlVariablesDataMap,result);
+        }
 	}
 	
 	private void generateAlarm(long parentMeterID,Hashtable<Long,Hashtable<String,SortedMap<Long,Object>>> mlVariablesDataMap , String result) throws Exception
 	{
-		long parentAlertID=0l;
-		Set<Long> assetIDList = mlVariablesDataMap.keySet();
-		for(long assetID : assetIDList)
+		try
 		{
-			AssetContext asset = AssetsAPI.getAssetInfo(assetID);
-			String assetName = asset.getName();
-			
-			Hashtable<String,SortedMap<Long,Object>> variablesData = mlVariablesDataMap.get(assetID);
-			
-			
-			SortedMap<Long,Object> actualValueMap = variablesData.get("actualValue");
-			long ttime = actualValueMap.firstKey();
-			long actualValue = (long) actualValueMap.get(actualValueMap.firstKey());
-			
-			SortedMap<Long,Object> adjustedUpperBoundMap = variablesData.get("adjustedUpperBound"); 
-			long adjustedUpperBound = (long) adjustedUpperBoundMap.get(adjustedUpperBoundMap.firstKey());
-			
-			if(actualValue > adjustedUpperBound)
+			long parentAlertID=0l;
+			Set<Long> assetIDList = mlVariablesDataMap.keySet();
+			for(long assetID : assetIDList)
 			{
-				String message = "Anomaly Detected. Actual Consumption :"+actualValue+", Expected Max Consumption :"+adjustedUpperBound;
-				JSONObject obj = new JSONObject();
-				obj.put("message", message);
-				obj.put("source", assetName);
-				obj.put("condition", "Anomaly Detected in Energy Consumption");
-				obj.put("resourceId", assetID);
-				obj.put("severity", "Minor");
-				obj.put("timestamp", ttime);
-				obj.put("consumption", actualValue);
-
-				obj.put("sourceType", SourceType.ANOMALY_ALARM.getIntVal());
-				//obj.put("readingFieldId", mlVariableContext.getFieldID());
-				obj.put("startTime", ttime);
-				obj.put("readingMessage", message);
-				FacilioContext addEventContext = new FacilioContext();
-				addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, obj);
-				Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
-				getAddEventChain.execute(addEventContext);
+				AssetContext asset = AssetsAPI.getAssetInfo(assetID);
+				String assetName = asset.getName();
 				
-				if(assetID==parentMeterID)
+				Hashtable<String,SortedMap<Long,Object>> variablesData = mlVariablesDataMap.get(assetID);
+				
+				
+				SortedMap<Long,Object> actualValueMap = variablesData.get("actualValue");
+				long ttime = actualValueMap.firstKey();
+				double actualValue = (double) actualValueMap.get(actualValueMap.firstKey());
+				
+				SortedMap<Long,Object> adjustedUpperBoundMap = variablesData.get("adjustedUpperBound"); 
+				double adjustedUpperBound = (double) adjustedUpperBoundMap.get(adjustedUpperBoundMap.firstKey());
+				
+				if(actualValue > adjustedUpperBound)
 				{
-					parentAlertID = 0L;
+					String message = "Anomaly Detected. Actual Consumption :"+actualValue+", Expected Max Consumption :"+adjustedUpperBound;
+					JSONObject obj = new JSONObject();
+					obj.put("message", message);
+					obj.put("source", assetName);
+					obj.put("condition", "Anomaly Detected in Energy Consumption");
+					obj.put("resourceId", assetID);
+					obj.put("severity", "Minor");
+					obj.put("timestamp", ttime);
+					obj.put("consumption", actualValue);
+	
+					obj.put("sourceType", SourceType.ANOMALY_ALARM.getIntVal());
+					//obj.put("readingFieldId", mlVariableContext.getFieldID());
+					obj.put("startTime", ttime);
+					obj.put("readingMessage", message);
+					FacilioContext addEventContext = new FacilioContext();
+					addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, obj);
+					Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
+					getAddEventChain.execute(addEventContext);
+					
+					if(assetID==parentMeterID)
+					{
+						parentAlertID = 0L;
+					}
+					
 				}
-				
 			}
 		}
-		
-		
-		
+		catch(Exception e)
+		{
+			 LOGGER.fatal("Exception while generating Alarm ",e);
+		}
 	}
 	
 	
