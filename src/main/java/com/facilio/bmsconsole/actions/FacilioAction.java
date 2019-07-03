@@ -87,11 +87,10 @@ public class FacilioAction extends ActionSupport {
 				
 				HttpServletResponse response = ServletActionContext.getResponse();
 				response.setContentType("application/json;charset=UTF-8");
-				response.setContentLength(object.toString().length());
 				response.getWriter().write(object.toString());
 				response.getWriter().flush();
 		}
-		return SUCCESS;
+		return NONE;
 	}
 	
 	private JSONObject result;
