@@ -578,4 +578,9 @@ public class WattsenseUtil
         }
         return wattsenseList;
     }
+
+    public static JSONObject reFormatTimeSeriesData(JSONObject payload){
+        JSONObject wattPayload = new JSONObject();
+        return wattPayload;
+    }
 }
