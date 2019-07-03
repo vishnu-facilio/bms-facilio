@@ -115,7 +115,7 @@ public class FetchCardDataCommand implements Command {
 					card.setWorkflow(widgetStaticContext.getWidgetVsWorkflowContexts().get(0).getWorkflowString());
 					if(widgetStaticContext.getWidgetVsWorkflowContexts().get(0).getWorkflowId() != null) {
 						WorkflowContext workflowTemp = WorkflowUtil.getWorkflowContext(widgetStaticContext.getWidgetVsWorkflowContexts().get(0).getWorkflowId());
-						if(workflowTemp.getWorkflowUIMode() == WorkflowUIMode.NEW_WORKFLOW.getValue()) {
+						if(workflowTemp.isV2Script()) {
 							card.setWorkflow(workflowTemp.getWorkflowV2String());
 							isNewWorkflowCard = true;
 						}
@@ -130,7 +130,7 @@ public class FetchCardDataCommand implements Command {
 					
 					Object wfResult = null;
 					if(isNewWorkflowCard) {
-						wfResult = WorkflowUtil.getWorkflowExpressionResult(card.getWorkflow(), widgetStaticContext.getParamsJson(),WorkflowUIMode.NEW_WORKFLOW);
+						wfResult = WorkflowUtil.getWorkflowExpressionResult(card.getWorkflow(), widgetStaticContext.getParamsJson(),true);
 					}
 					else {
 						wfResult = WorkflowUtil.getWorkflowExpressionResult(card.getWorkflow(), widgetStaticContext.getParamsJson());

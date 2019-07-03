@@ -29,7 +29,6 @@ public class WorkflowContext implements Serializable {
 	/**
 	 * 
 	 */
-	
 	public WorkflowContext() {
 		
 	}
@@ -50,7 +49,20 @@ public class WorkflowContext implements Serializable {
 	public void setCachedRDM(Map<String, ReadingDataMeta> cachedRDM) {
 		this.cachedRDM = cachedRDM;
 	}
+	Boolean isV2Script;
 	
+	public Boolean getIsV2Script() {
+		return isV2Script;
+	}
+	public void setIsV2Script(Boolean isV2Script) {
+		this.isV2Script = isV2Script;
+	}
+	public boolean isV2Script() {
+		if(this.isV2Script != null) {
+			return isV2Script;
+		}
+		return false;
+	}
 	public Map<String, List<Map<String, Object>>> getCachedData() {
 		return cachedData;
 	}
@@ -320,7 +332,7 @@ public class WorkflowContext implements Serializable {
 		
 		Object result = null;
 		
-		if(workflowUIMode == WorkflowUIMode.NEW_WORKFLOW) {
+		if(isV2Script()) {
 			
 			WorkflowFunctionVisitor visitor = null;
 			try {
@@ -458,7 +470,6 @@ public class WorkflowContext implements Serializable {
 		GUI,
 		XML,
 		COMPLEX,
-		NEW_WORKFLOW
 		;
 		
 		public int getValue() {

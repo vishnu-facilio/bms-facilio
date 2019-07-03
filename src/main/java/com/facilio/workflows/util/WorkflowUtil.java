@@ -241,10 +241,10 @@ public class WorkflowUtil {
 		return getExpressionResultMap(workflowContext,paramMap);
 	}
 	
-	public static Object getWorkflowExpressionResult(String workflowString,Map<String,Object> paramMap,WorkflowContext.WorkflowUIMode uiMode) throws Exception {
-		if(uiMode == WorkflowUIMode.NEW_WORKFLOW) {
+	public static Object getWorkflowExpressionResult(String workflowString,Map<String,Object> paramMap,boolean isV2Script) throws Exception {
+		if(isV2Script) {
 			WorkflowContext workflow = new WorkflowContext();
-			workflow.setWorkflowUIMode(uiMode);
+			workflow.setIsV2Script(isV2Script);
 			workflow.setWorkflowV2String(workflowString);
 			return getWorkflowResult(workflow,paramMap, null, false, false,false);
 		}
@@ -282,7 +282,7 @@ public class WorkflowUtil {
 	
 	private static Object getWorkflowResult(WorkflowContext workflowContext,Map<String,Object> paramMap, Map<String, ReadingDataMeta> rdmCache, boolean ignoreNullExpressions, boolean ignoreMarked, boolean isVariableMapNeeded) throws Exception {
 
-		if(workflowContext.getWorkflowUIMode() != WorkflowContext.WorkflowUIMode.NEW_WORKFLOW.getValue()) {
+		if(!workflowContext.isV2Script()) {
 			workflowContext = getWorkflowContextFromString(workflowContext.getWorkflowString(),workflowContext);
 			List<ParameterContext> parameterContexts = validateAndGetParameters(workflowContext,paramMap);
 			workflowContext.setParameters(parameterContexts);
@@ -416,7 +416,8 @@ public class WorkflowUtil {
 
 		WorkflowContext workflow = new WorkflowContext();
 		
-		if(workflowContext.getWorkflowUIMode() == WorkflowContext.WorkflowUIMode.NEW_WORKFLOW.getValue()) {
+		workflow.setIsV2Script(workflowContext.getIsV2Script());
+		if(workflowContext.isV2Script()) {
 			workflow.setWorkflowV2String(workflowContext.getWorkflowV2String());
 		}
 		else {
@@ -451,7 +452,7 @@ public class WorkflowUtil {
 		
 		workflowContext.setId((Long) props.get("id"));
 		
-		if(workflowContext.getWorkflowUIMode() != WorkflowContext.WorkflowUIMode.NEW_WORKFLOW.getValue()) {
+		if(!workflowContext.isV2Script()) {
 			
 			insertBuilder = new GenericInsertRecordBuilder()
 					.table(ModuleFactory.getWorkflowFieldModule().getTableName())
@@ -645,7 +646,7 @@ public class WorkflowUtil {
 	
 	private static WorkflowContext getWorkflowFromProp(Map<String, Object> prop, boolean isWithExpParsed) throws Exception {
 		WorkflowContext workflow = FieldUtil.getAsBeanFromMap(prop, WorkflowContext.class);
-		if(workflow.getWorkflowUIMode() != WorkflowUIMode.NEW_WORKFLOW.getValue()) {
+		if(!workflow.isV2Script()) {
 			workflow = getWorkflowContextFromString(workflow.getWorkflowString(),workflow);
 		}
 		

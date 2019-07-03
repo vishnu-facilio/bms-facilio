@@ -34,7 +34,7 @@ public class ExecuteWorkflowCommand implements Command {
 	void fillWorkflowContext(WorkflowContext workflowContext ,Context context) {
 		
 		workflowContext.setCachedRDM((Map<String, ReadingDataMeta>) context.get("rdmCache"));
-		workflowContext.setWorkflowUIMode(WorkflowUIMode.NEW_WORKFLOW);
+		workflowContext.setIsV2Script(true);
 		if(context.containsKey("ignoreMarked")) {
 			workflowContext.setIgnoreMarkedReadings((boolean) context.get("ignoreMarked"));
 		}

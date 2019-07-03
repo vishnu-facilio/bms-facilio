@@ -4138,7 +4138,7 @@ public class FieldFactory {
 		fields.add(getField("type", "TYPE", module, FieldType.NUMBER));
 		fields.add(getField("returnType", "RETURN_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("isLogNeeded", "IS_LOG_NEEDED", module, FieldType.BOOLEAN));
-
+		fields.add(getField("isV2Script", "IS_V2", module, FieldType.BOOLEAN));
 		return fields;
 	}
 

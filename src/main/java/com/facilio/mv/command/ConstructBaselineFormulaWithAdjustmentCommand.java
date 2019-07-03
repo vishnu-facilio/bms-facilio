@@ -90,7 +90,7 @@ public class ConstructBaselineFormulaWithAdjustmentCommand implements Command {
 			
 			WorkflowContext newBaselineWorkflow = new WorkflowContext();
 			newBaselineWorkflow.setWorkflowV2String(workflowString.toString());
-			newBaselineWorkflow.setWorkflowUIMode(WorkflowUIMode.NEW_WORKFLOW);
+			newBaselineWorkflow.setIsV2Script(true);
 			
 			if(baseLine.getFormulaFieldWithAjustment() != null) {
 				
