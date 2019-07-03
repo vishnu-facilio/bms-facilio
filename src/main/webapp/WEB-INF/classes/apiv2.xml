@@ -1214,6 +1214,7 @@
 		<action name="readingReport"
 			class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="fetchReadingsData">
+			<param name="cacheUrl">true</param>
 		</action>
 		<action name="regressionreport" class="com.facilio.bmsconsole.actions.V2ReportAction"
 			method="fetchRegressionReport">
