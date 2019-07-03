@@ -133,7 +133,7 @@
 	</package>
 	
 	<package name="readingAlarmList" namespace="/api/v2/readingalarms/view" extends="v2Api">
-		<action name="*" class="com.facilio.events.actions.V2AlarmAction" method="fetchAlarmSummary">
+		<action name="*" class="com.facilio.events.actions.V2AlarmAction" method="alarmList">
 			<param name="moduleName">alarm</param>
 			<param name="alarmModule">newreadingalarm</param>
 			<param name="permission">READ,READ_OWN,READ_TEAM</param>
