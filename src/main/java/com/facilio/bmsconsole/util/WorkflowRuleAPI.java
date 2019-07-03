@@ -377,11 +377,6 @@ public class WorkflowRuleAPI {
 						.on(module.getTableName()+".EVENT_ID = "+eventModule.getTableName()+".ID");
 		}
 		
-		if(fieldMap.get("parentId") != null) {
-			ruleBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), CommonOperators.IS_EMPTY));
-
-		}
-
 		ruleBuilder.select(fields);
 		List<WorkflowRuleContext> rules = getWorkFlowsFromMapList(ruleBuilder.get(), fetchEvent, true, true);
 		
@@ -400,10 +395,16 @@ public class WorkflowRuleAPI {
 	
 	public static List<WorkflowRuleContext> getWorkflowRules() throws Exception {
 		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
+		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 				.table("Workflow_Rule")
-				.select(FieldFactory.getWorkflowRuleFields());
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+				.select(fields);
+	
+		//to fetch the rules without parent id
+		ruleBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), CommonOperators.IS_EMPTY));
+
 		return getWorkFlowsFromMapList(ruleBuilder.get(), false, true, true);
 	}
 	
@@ -544,7 +545,7 @@ public class WorkflowRuleAPI {
 		if(criteria != null && !criteria.isEmpty()) {
 			builder.andCriteria(criteria);
 		}
-		
+	
 		return getWorkFlowsFromMapList(builder.get(), fetchEvent, fetchChildren, true);
 	}
 	
@@ -564,10 +565,7 @@ public class WorkflowRuleAPI {
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), Boolean.TRUE.toString(), BooleanOperators.IS))
 				.orderBy("EXECUTION_ORDER");
 		
-		if(fieldMap.get("parentId") != null) {
-			ruleBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), CommonOperators.IS_EMPTY));
-
-		}
+		ruleBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), CommonOperators.IS_EMPTY));
 		
 		if(ruleTypes != null && ruleTypes.length > 0) {
 			StringJoiner ids = new StringJoiner(",");
@@ -600,6 +598,7 @@ public class WorkflowRuleAPI {
 			values.add(type.getValue());
 		}
 		ruleBuilder.andCustomWhere(activityTypeWhere.toString(), values.toArray());
+		ruleBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), CommonOperators.IS_EMPTY));
 		List<Map<String, Object>> props = ruleBuilder.get();
 		if(AccountUtil.getCurrentOrg().getId() == 88l && module.getName().equals("alarm")) {
 			LOGGER.error("wokrlfow rule propssss --- "+props);
@@ -974,28 +973,6 @@ public class WorkflowRuleAPI {
 		return result;
 	}
 	
-	public static boolean evaluateConsolidatedWorkflowAndExecuteActions(WorkflowRuleContext workflowRule, String moduleName, Object record, List<UpdateChangeSet> changeSet, Map<String, Object> recordPlaceHolders, FacilioContext context, boolean shouldExecute) throws Exception {
-		Map<String, Object> rulePlaceHolders = workflowRule.constructPlaceHolders(moduleName, record, recordPlaceHolders, context);
-		boolean fieldChangeFlag = false, miscFlag = false, criteriaFlag = false, workflowFlag = false , siteId = false;
-		
-		siteId = workflowRule.evaluateSite(moduleName, record, rulePlaceHolders, context);
-		
-		if (AccountUtil.getCurrentOrg().getId() == 186 && workflowRule.getId() == 6448) {
-			LOGGER.info("Result of rule : "+workflowRule.getId()+" for record : "+record+" is \nSite ID : "+siteId+"\nField Change : "+fieldChangeFlag+"\nMisc Flag : "+miscFlag+"\nCriteria Flag : "+criteriaFlag+"\nWorkflow Flag : "+workflowFlag);
-		}
-		
-		if (AccountUtil.getCurrentOrg().getId() == 134l && (workflowRule.getId() == 4235l || workflowRule.getId() == 6793l)) {
-			LOGGER.error("Result of rule : "+workflowRule.getId()+" for record : "+record+" is \nSite ID : "+siteId+"\nField Change : "+fieldChangeFlag+"\nMisc Flag : "+miscFlag+"\nCriteria Flag : "+criteriaFlag+"\nWorkflow Flag : "+workflowFlag);
-		}
-		if (AccountUtil.getCurrentOrg().getId() == 88 && workflowRule.getId() == 7762l) {
-			LOGGER.info("Result of rule : "+workflowRule.getId()+" for record : "+record+" is \nSite ID : "+siteId+"\nField Change : "+fieldChangeFlag+"\nMisc Flag : "+miscFlag+"\nCriteria Flag : "+criteriaFlag+"\nWorkflow Flag : "+workflowFlag);
-		}
-		
-		if (shouldExecute) {
-			workflowRule.executeTrueActions(record, context, rulePlaceHolders);
-		}
-		return true;
-	}
 	private static boolean executeRuleAndChildren (WorkflowRuleContext workflowRule, FacilioModule module, Object record, List<UpdateChangeSet> changeSet, Iterator itr, Map<String, Object> recordPlaceHolders, FacilioContext context,boolean propagateError, FacilioField parentRuleField, FacilioField onSuccessField, List<EventType> eventTypes, RuleType... ruleTypes) throws Exception {
 		try {
 			long workflowStartTime = System.currentTimeMillis();
@@ -1075,6 +1052,9 @@ public class WorkflowRuleAPI {
 		select.table(ModuleFactory.getWorkflowRuleModule().getTableName()).select(fields)
 		.andCondition(CriteriaAPI.getCondition(fieldMap.get("ruleType"),String.valueOf(ruletype.getIntVal()) ,NumberOperators.EQUALS))
 		.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentRuleId"), String.valueOf(parentRuleId), NumberOperators.EQUALS));
+		//to fetch the rules without parent id
+		select.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), CommonOperators.IS_EMPTY));
+
 		List<Map<String, Object>> props = select.get();
 		List<WorkflowRuleContext> workflowRuleContexts = getWorkFlowsFromMapList(props, false, true, true);
 		return (workflowRuleContexts!=null) ? workflowRuleContexts.get(0) : null;
