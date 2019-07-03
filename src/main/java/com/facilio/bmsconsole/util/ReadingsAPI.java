@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -404,6 +405,10 @@ public class ReadingsAPI {
 		else {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			field = modBean.getField(meta.getFieldId());
+		}
+		if(field == null && !AwsUtil.isProduction()) {
+			LOGGER.error("NULL FIELD IN RDM" + meta);
+			LOGGER.error("NULL FIELD IN RDM"+  meta.getFieldId());
 		}
 		if (field.getDataTypeEnum() == FieldType.ENUM) {
 			if (value != null && value instanceof String) {
