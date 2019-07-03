@@ -406,14 +406,6 @@ public class ReadingsAPI {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			field = modBean.getField(meta.getFieldId());
 		}
-		if(field == null && !AwsUtil.isProduction()) {
-			LOGGER.error("NULL FIELD IN RDM" + meta);
-			LOGGER.error("NULL FIELD IN RDM"+  meta.getFieldId());
-			LOGGER.error("NULL FIELD IN RDM"+  fieldMap.get(meta.getFieldId()));
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			field = modBean.getField(meta.getFieldId());
-			LOGGER.error("NULL FIELD IN RDM"+  field);
-		}
 		if (field.getDataTypeEnum() == FieldType.ENUM) {
 			if (value != null && value instanceof String) {
 				value = Integer.valueOf((String) value);
