@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
+import com.chargebee.internal.StringJoiner;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ItemContext;
@@ -20,6 +22,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
@@ -97,7 +100,7 @@ public class ItemsApi {
 
 
 
-	
+
 	public static Map<String, Long> getAllItemTypes() throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM_TYPES);
@@ -277,5 +280,24 @@ public class ItemsApi {
      throw new IllegalArgumentException("No appropriate item found");
     }
 
+
+
+	public static List<ItemContext> getItemsForType(List<Long> itemTypeIds) throws Exception {
+		
+		String ids = StringUtils.join(itemTypeIds, ",");
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ITEM);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ITEM);
+		SelectRecordsBuilder<ItemContext> selectBuilder = new SelectRecordsBuilder<ItemContext>().select(fields)
+				.table(module.getTableName()).moduleName(module.getName()).beanClass(ItemContext.class)
+				.andCondition(CriteriaAPI.getCondition("ITEM_TYPES_ID", "itemType", String.valueOf(ids), NumberOperators.EQUALS))
+
+				;
+		List<ItemContext> items = selectBuilder.get();
+		if(!CollectionUtils.isEmpty(items)) {
+			return items;
+		}
+	 throw new IllegalArgumentException("No appropriate item found");
+	}
 
 }

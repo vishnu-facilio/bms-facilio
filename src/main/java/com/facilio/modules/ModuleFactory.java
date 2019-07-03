@@ -79,14 +79,21 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.PURCHASE_ORDER, getPurchaseOrderModule());
 		moduleMap.put(FacilioConstants.ContextNames.PURCHASE_REQUEST, getPurchaseRequestModule());
 		moduleMap.put(FacilioConstants.ContextNames.RECEIPT, getReceiptModule());
+		moduleMap.put(FacilioConstants.ContextNames.CONTRACTS, getContractsModule());
 		moduleMap.put(FacilioConstants.ContextNames.PURCHASE_CONTRACTS, getPurchaseContractModule());
 		moduleMap.put(FacilioConstants.ContextNames.LABOUR_CONTRACTS, getLabourContractModule());
+		moduleMap.put(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS, getRentalLeaseContractModule());
+		moduleMap.put(FacilioConstants.ContextNames.WARRANTY_CONTRACTS, getWarrantyContractModule());
 		moduleMap.put(FacilioConstants.ContextNames.INVENTORY_REQUEST, getInventoryRequestModule());
 		moduleMap.put(FacilioConstants.ContextNames.SHIPMENT, getShipmentModule());
 		moduleMap.put(FacilioConstants.ContextNames.ATTENDANCE, getAttendanceModule());
 		moduleMap.put(FacilioConstants.ContextNames.ATTENDANCE_TRANSACTIONS, getAttendanceTransactionModule());
 		moduleMap.put(FacilioConstants.ContextNames.GRAPHICS, getGraphicsModule());
+		moduleMap.put(FacilioConstants.ContextNames.SERVICE, getServiceModule());
+		moduleMap.put(FacilioConstants.ContextNames.TERMS_AND_CONDITIONS, getTermsAndConditionModule());
+		moduleMap.put(FacilioConstants.ContextNames.CONTRACTS, getContractsModule());
 		moduleMap.put(FacilioConstants.ContextNames.NEW_READING_ALARM, getReadingAlarmModule());
+
 
 		return moduleMap;
 	}
@@ -368,13 +375,13 @@ public class ModuleFactory {
 		
 		return scheduledRule;
 	}
-	
+
 	public static FacilioModule getScheduledWorkflowModule() {
 		FacilioModule scheduledRule = new FacilioModule();
 		scheduledRule.setName("ScheduledWorkflow");
 		scheduledRule.setDisplayName("Scheduled Workflow");
 		scheduledRule.setTableName("Scheduled_Workflow");
-		
+
 		return scheduledRule;
 	}
 	
@@ -404,8 +411,8 @@ public class ModuleFactory {
 	public static FacilioModule getApprovalStepsModule() {
 		return constructModule("approvalSteps", "Approval Steps", "Approval_Steps");
 	}
-	
-	
+
+
 	public static FacilioModule getRuleTemplatesRelModule() {
 		return constructModule("ruleTemplatesRel", "Rule Templates Rel", "Rule_Templates_Rel");
 	}
@@ -804,7 +811,7 @@ public class ModuleFactory {
 		module.setTableName("Shift");
 		return module;
 	}
-	
+
 	public static FacilioModule getBreakModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("break");
@@ -970,7 +977,7 @@ public class ModuleFactory {
 		dashboardWigetModule.setExtendModule(getWidgetModule());
 		return dashboardWigetModule;
 	}
-	
+
 	public static FacilioModule getWidgetGraphicsModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();
 		dashboardWigetModule.setTableName("Widget_Graphics");
@@ -1162,8 +1169,8 @@ public class ModuleFactory {
 		module.setTableName("Workflow");
 		return module;
 	}
-	
-	
+
+
 	public static FacilioModule getWorkflowUserFunctionModule() {
 		FacilioModule module = new FacilioModule();
 		module.setExtendModule(getWorkflowModule());
@@ -1591,7 +1598,7 @@ public class ModuleFactory {
 		module.setTableName("Shift_Break_Rel");
 		return module;
 	}
-	
+
 	public static FacilioModule getCostsModule() {
 		FacilioModule costs = new FacilioModule();
 		costs.setName("cost");
@@ -1991,6 +1998,14 @@ public class ModuleFactory {
 		purchaseOrder.setTableName("Receipts");
 		return purchaseOrder;
 	}
+	
+	public static FacilioModule getContractsModule() {
+		FacilioModule contract = new FacilioModule();
+		contract.setName("contracts");
+		contract.setDisplayName("Contracts");
+		contract.setTableName("Contracts");
+		return contract;
+	}
 
 	public static FacilioModule getPurchaseContractModule() {
 		FacilioModule purchasecontract = new FacilioModule();
@@ -2113,11 +2128,11 @@ public class ModuleFactory {
 	}
 	
 	public static FacilioModule getInventoryRequestModule() {
-		FacilioModule gatePass = new FacilioModule();
-		gatePass.setName("inventoryrequest");
-		gatePass.setDisplayName("Inventory Request");
-		gatePass.setTableName("Inventory_Requests");
-		return gatePass;
+		FacilioModule invReq = new FacilioModule();
+		invReq.setName("inventoryrequest");
+		invReq.setDisplayName("Inventory Request");
+		invReq.setTableName("Inventory_Requests");
+		return invReq;
 	}
 
 	public static FacilioModule getPageModule() {
@@ -2202,6 +2217,14 @@ public class ModuleFactory {
 		return module;
 	}
 
+	public static FacilioModule getContractAssociatedAssetsModule() {
+		FacilioModule associatedAssetModule = new FacilioModule();
+		associatedAssetModule.setName("associatedassets");
+		associatedAssetModule.setDisplayName("Associated Assets");
+		associatedAssetModule.setTableName("Contracts_Associated_Assets");
+		return associatedAssetModule;
+	}
+
 	public static FacilioModule getShipmentModule() {
 		FacilioModule labourcontract = new FacilioModule();
 		labourcontract.setName("shipment");
@@ -2209,7 +2232,7 @@ public class ModuleFactory {
 		labourcontract.setTableName("Shipment");
 		return labourcontract;
 	}
-	
+
 	public static FacilioModule getAttendanceModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("attendance");
@@ -2217,7 +2240,7 @@ public class ModuleFactory {
 		module.setTableName("Attendance");
 		return module;
 	}
-	
+
 	public static FacilioModule getAttendanceTransactionModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("attendanceTransaction");
@@ -2225,7 +2248,7 @@ public class ModuleFactory {
 		module.setTableName("Attendance_Transactions");
 		return module;
 	}
-	
+
 	public static FacilioModule getGraphicsModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("graphics");
@@ -2265,6 +2288,22 @@ public class ModuleFactory {
 		return module;
 	}
 	
+	public static FacilioModule getRentalLeaseContractModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("rentalleasecontracts");
+		module.setDisplayName("Rental Lease Contracts");
+		module.setTableName("Rental_Lease_Contracts");
+		return module;
+	}
+
+	public static FacilioModule getWarrantyContractModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("warrantycontracts");
+		module.setDisplayName("Warranty Contracts");
+		module.setTableName("Warranty_Contracts");
+		return module;
+	}
+
 	public static FacilioModule getStoreNotificationConfigModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("storeRoomRule");
@@ -2272,7 +2311,26 @@ public class ModuleFactory {
 		module.setTableName("Store_Notification_config");
 		return module;
 	}
+
+
+	public static FacilioModule getTermsAndConditionModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("termsandconditions");
+		module.setDisplayName("Terms and Conditions");
+		module.setTableName("Terms_And_Conditions");
+		return module;
+	}
 	
+	public static FacilioModule getServiceModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("service");
+		module.setDisplayName("Service");
+		module.setTableName("Service");
+		return module;
+	}
+	
+
+
 	public static FacilioModule getReadingAlarmModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName(ContextNames.NEW_READING_ALARM);

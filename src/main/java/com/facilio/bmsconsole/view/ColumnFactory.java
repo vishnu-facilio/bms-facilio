@@ -69,8 +69,14 @@ public class ColumnFactory {
 		columnMap.put("break-default", getDefaultBreakColumns());
 		columnMap.put("shiftRotation-default", getDefaultShiftRotationColumns());
 		columnMap.put("newreadingalarm-default", getDefaultReadingAlarmColumns());
-		
-		// Default report columns 
+
+		columnMap.put("service-default", getDefaultServiceColumns());
+
+		columnMap.put("rentalleasecontracts-default", getDefaultRentalLeaseContractColumns());
+		columnMap.put("warrantycontracts-default", getDefaultWarrantyContractColumns());
+		columnMap.put("termsandconditions-default", getDefaultTermsAndConditionColumns());
+
+		// Default report columns
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
 		columnMap.put("alarm-report", getAlarmReportColumns());
 		columnMap.put("energydata-report", getDefaultEnergyColumns());
@@ -428,6 +434,31 @@ public class ColumnFactory {
 
 		return columns;
 	}
+
+	private static List<ViewField> getDefaultRentalLeaseContractColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("rentalLeaseContractType", "Type"));
+		columns.add(new ViewField("vendor", "Vendor"));
+		columns.add(new ViewField("status", "Status"));
+		columns.add(new ViewField("fromDate", "Valid From"));
+		columns.add(new ViewField("endDate", "Valid Till"));
+		columns.add(new ViewField("renewalDate", "Renewal Date"));
+		columns.add(new ViewField("totalCost", "Total Cost"));
+
+		return columns;
+	}
+
+	private static List<ViewField> getDefaultWarrantyContractColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("vendor", "Vendor"));
+		columns.add(new ViewField("status", "Status"));
+		columns.add(new ViewField("fromDate", "Valid From"));
+		columns.add(new ViewField("endDate", "Valid Till"));
+		columns.add(new ViewField("renewalDate", "Renewal Date"));
+		columns.add(new ViewField("totalCost", "Total Cost"));
+
+		return columns;
+	}
 	
 	private static List<ViewField> getDefaultPoLineItemsSerialNumberColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
@@ -492,19 +523,38 @@ public class ColumnFactory {
 		columns.add(new ViewField("breakType", "Break Type"));
 		return columns;
 	}
-	
+
+	private static List<ViewField> getDefaultServiceColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+
+		columns.add(new ViewField("description", "Description"));
+		columns.add(new ViewField("duration", "Duration"));
+		columns.add(new ViewField("status", "Status"));
+		return columns;
+	}
+
+	private static List<ViewField> getDefaultTermsAndConditionColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("termType", "Term Type"));
+		columns.add(new ViewField("shortDesc", "Short Description"));
+		columns.add(new ViewField("longDesc", "Long Description"));
+		columns.add(new ViewField("isEditable", "Editable"));
+		columns.add(new ViewField("defaultOnPo", "Default On PO"));
+		return columns;
+	}
+
 	private static List<ViewField> getDefaultShiftRotationColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
-		
+
 		columns.add(new ViewField("schedularFrequency", "Schedular Frequency"));
 		columns.add(new ViewField("timeOfSchedule", "Time Of Schedule"));
 		columns.add(new ViewField("schedularDay", "Schedular Day"));
 		return columns;
 	}
-	
+
 	private static List<ViewField> getDefaultReadingAlarmColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
-		
+
 		columns.add(new ViewField("severity", "Severity"));
 		columns.add(new ViewField("subject", "Message"));
 		columns.add(new ViewField("source", "Source"));

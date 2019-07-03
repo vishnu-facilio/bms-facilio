@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.modules.ModuleBaseWithCustomFields;
-
 import java.util.List;
+
+import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class PurchaseOrderLineItemContext extends ModuleBaseWithCustomFields{
 	/**
@@ -126,5 +126,36 @@ public class PurchaseOrderLineItemContext extends ModuleBaseWithCustomFields{
 		this.noOfSerialNumbers = noOfSerialNumbers;
 	}
 	
+	private ServiceContext service;
+	public ServiceContext getService() {
+		return service;
+	}
+	public void setService(ServiceContext service) {
+		this.service = service;
+	}
 
+	private double quantityUsed;
+	public double getQuantityUsed() {
+		return quantityUsed;
+	}
+	public void setQuantityUsed(double quantityUsed) {
+		this.quantityUsed = quantityUsed;
+	}
+
+	public String remarks;
+	public String getRemarks() {
+		return remarks;
+	}
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
+	public WorkOrderServiceContext constructWorkOrderServiceContext(long parentId) throws Exception {
+		WorkOrderServiceContext woService = new WorkOrderServiceContext();
+		woService.setService(this.getService());
+		woService.setParentId(parentId);
+		woService.setQuantity(this.getQuantity());
+		woService.setUnitPrice(this.getUnitPrice());
+		woService.setCost(this.getQuantity() * this.getUnitPrice());
+		return woService;
+	}
 }

@@ -5,6 +5,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.GatePassContext;
 import com.facilio.bmsconsole.context.GatePassLineItemsContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -33,7 +34,7 @@ public class GetAddOrUpdateGatePassCommand implements Command {
 
 			FacilioModule lineModule = modBean.getModule(FacilioConstants.ContextNames.GATE_PASS_LINE_ITEMS);
 
-			if (CollectionUtils.isEmpty(gatePassContext.getLineItems())) {
+			if (gatePassContext.getId() <= 0 && CollectionUtils.isEmpty(gatePassContext.getLineItems())) {
 				throw new Exception("Line items cannot be empty");
 			}
 			// setting current user to requestedBy
@@ -42,24 +43,27 @@ public class GetAddOrUpdateGatePassCommand implements Command {
 			}
             
 			if (gatePassContext.getId() > 0) {
-				updateRecord(gatePassContext, module, fields);
-
-				DeleteRecordBuilder<GatePassLineItemsContext> deleteBuilder = new DeleteRecordBuilder<GatePassLineItemsContext>()
-						.module(lineModule).andCondition(CriteriaAPI.getCondition("GATE_PASS_ID", "gatePass",
-								String.valueOf(gatePassContext.getId()), NumberOperators.EQUALS));
-				deleteBuilder.delete();
+				RecordAPI.updateRecord(gatePassContext, module, fields);
+                if(gatePassContext.getLineItems() != null) {
+					DeleteRecordBuilder<GatePassLineItemsContext> deleteBuilder = new DeleteRecordBuilder<GatePassLineItemsContext>()
+							.module(lineModule).andCondition(CriteriaAPI.getCondition("GATE_PASS_ID", "gatePass",
+									String.valueOf(gatePassContext.getId()), NumberOperators.EQUALS));
+					deleteBuilder.delete();
+					updateLineItems(gatePassContext);
+					RecordAPI.addRecord(false, gatePassContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
+                }
 			} else {
 				if (gatePassContext.getIssuedTime() == -1) {
 					gatePassContext.setIssuedTime(System.currentTimeMillis());
 				}
 
 				gatePassContext.setStatus(GatePassContext.Status.REQUESTED);
-				addRecord(true, Collections.singletonList(gatePassContext), module, fields);
+				RecordAPI.addRecord(true, Collections.singletonList(gatePassContext), module, fields);
+				updateLineItems(gatePassContext);
+				RecordAPI.addRecord(false, gatePassContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 			}
 
-			updateLineItems(gatePassContext);
-			addRecord(false, gatePassContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
-
+		
 			context.put(FacilioConstants.ContextNames.RECORD, gatePassContext);
 		}
 		return false;
@@ -87,21 +91,5 @@ public class GetAddOrUpdateGatePassCommand implements Command {
 		gatePassContext.getLineItems().addAll(newLineItems);
 	}
 
-	private void addRecord(boolean isLocalIdNeeded, List<? extends ModuleBaseWithCustomFields> list,
-			FacilioModule module, List<FacilioField> fields) throws Exception {
-		InsertRecordBuilder insertRecordBuilder = new InsertRecordBuilder<>().module(module).fields(fields);
-		if (isLocalIdNeeded) {
-			insertRecordBuilder.withLocalId();
-		}
-		insertRecordBuilder.addRecords(list);
-		insertRecordBuilder.save();
-	}
-
-	public void updateRecord(ModuleBaseWithCustomFields data, FacilioModule module, List<FacilioField> fields)
-			throws Exception {
-		UpdateRecordBuilder updateRecordBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>().module(module)
-				.fields(fields).andCondition(CriteriaAPI.getIdCondition(data.getId(), module));
-		updateRecordBuilder.update(data);
-	}
-
+	
 }

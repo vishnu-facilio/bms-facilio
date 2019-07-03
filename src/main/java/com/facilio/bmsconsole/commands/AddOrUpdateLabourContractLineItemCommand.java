@@ -11,6 +11,7 @@ import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
 
@@ -19,20 +20,20 @@ public class AddOrUpdateLabourContractLineItemCommand implements Command{
 	@Override
 	public boolean execute(Context context) throws Exception {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-		LabourContractLineItemContext lineItemContext = (LabourContractLineItemContext) context.get(FacilioConstants.ContextNames.RECORD);
-		if (lineItemContext != null) {
-			if (lineItemContext.getLabourContractId() == -1) {
-				throw new Exception("Labour Contract cannot be null");
-			}
-			
+		List<LabourContractLineItemContext> lineItemContexts = (List<LabourContractLineItemContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+		if (CollectionUtils.isNotEmpty(lineItemContexts)) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
 			List<FacilioField> fields = modBean.getAllFields(moduleName);
-			
-			if (lineItemContext.getId() > 0) {
-				updateRecord(lineItemContext, module, fields);
-			} else {
-				addRecord(lineItemContext, module, fields);
+			for(LabourContractLineItemContext lineItemContext : lineItemContexts) {
+				if (lineItemContext.getLabourContractId() == -1) {
+					throw new Exception("Labour Contract cannot be null");
+				}
+				if (lineItemContext.getId() > 0) {
+					updateRecord(lineItemContext, module, fields);
+				} else {
+					addRecord(lineItemContext, module, fields);
+				}
 			}
 		}
 		return false;

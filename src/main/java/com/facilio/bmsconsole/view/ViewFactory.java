@@ -11,6 +11,7 @@ import java.util.Map;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext.AssetState;
+import com.facilio.bmsconsole.context.ContractsContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.ViewField;
@@ -39,6 +40,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.time.DateTimeUtil;
+import com.opensymphony.xwork2.util.fs.Revision;
 
 public class ViewFactory {
 
@@ -328,6 +330,16 @@ public class ViewFactory {
 		views = new LinkedHashMap<>();
 		views.put("all", getAllLabourContractView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.LABOUR_CONTRACTS, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllRentalLeaseContractView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllWarrantyContractView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.WARRANTY_CONTRACTS, views);
 
 		order = 1;
 		views = new LinkedHashMap<>();
@@ -386,6 +398,18 @@ public class ViewFactory {
 		views = new LinkedHashMap<>();
 		views.put("all", getAllReadingAlarmViews().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.NEW_READING_ALARM, views);
+
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllTermsAndConditionView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.TERMS_AND_CONDITIONS, views);
+
+	
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllServiceView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.SERVICE, views);
+	
 		
 		return viewsMap;
 	}
@@ -3299,6 +3323,24 @@ public class ViewFactory {
 		receivableStatusCriteria.addAndCondition(statusCond);
 		return receivableStatusCriteria;
 	}
+	
+	private static Criteria getPurchaseContractStatusCriteria(FacilioModule module, int status) {
+		
+		FacilioField receivableStatusField = new FacilioField();
+		receivableStatusField.setName("status");
+		receivableStatusField.setColumnName("STATUS");
+		receivableStatusField.setDataType(FieldType.NUMBER);
+		receivableStatusField.setModule(module);
+		
+		Condition statusCond = new Condition();
+		statusCond.setField(receivableStatusField);
+		statusCond.setOperator(NumberOperators.EQUALS);
+		statusCond.setValue(String.valueOf(status));
+
+		Criteria receivableStatusCriteria = new Criteria();
+		receivableStatusCriteria.addAndCondition(statusCond);
+		return receivableStatusCriteria;
+	}
 
 	private static FacilioView getAllPurchaseContractView() {
 		FacilioField localId = new FacilioField();
@@ -3310,6 +3352,7 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All");
+		allView.setCriteria(getContractListCriteria());
 		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
 		return allView;
 	}
@@ -3324,6 +3367,37 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All");
+		allView.setCriteria(getContractListCriteria());
+		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
+		return allView;
+	}
+	
+	private static FacilioView getAllRentalLeaseContractView() {
+		FacilioField localId = new FacilioField();
+		localId.setName("localId");
+		localId.setColumnName("LOCAL_ID");
+		localId.setDataType(FieldType.NUMBER);
+		localId.setModule(ModuleFactory.getRentalLeaseContractModule());
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All");
+		allView.setCriteria(getContractListCriteria());
+		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
+		return allView;
+	}
+	
+	private static FacilioView getAllWarrantyContractView() {
+		FacilioField localId = new FacilioField();
+		localId.setName("localId");
+		localId.setColumnName("LOCAL_ID");
+		localId.setDataType(FieldType.NUMBER);
+		localId.setModule(ModuleFactory.getWarrantyContractModule());
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All");
+		allView.setCriteria(getContractListCriteria());
 		allView.setSortFields(Arrays.asList(new SortField(localId, false)));
 		return allView;
 	}
@@ -3674,6 +3748,18 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Shift Rotation");
+		return allView;
+	}
+	private static FacilioView getAllServiceView() {
+		FacilioField name = new FacilioField();
+		name.setName("name");
+		name.setDataType(FieldType.STRING);
+		name.setColumnName("name");
+		name.setModule(ModuleFactory.getServiceModule());
+		
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Service");
 		allView.setSortFields(Arrays.asList(new SortField(name, false)));
 		return allView;
 	}
@@ -3691,7 +3777,7 @@ public class ViewFactory {
 		allView.setSortFields(Arrays.asList(new SortField(createdTime, true)));
 		return allView;
 	}
-	
+
 	private static FacilioView getAllReadingAlarmViews() {
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("lastOccurredTime");
@@ -3705,4 +3791,39 @@ public class ViewFactory {
 		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 		return allView;
 	}
+	private static FacilioView getAllTermsAndConditionView() {
+		FacilioField name = new FacilioField();
+		name.setName("name");
+		name.setDataType(FieldType.STRING);
+		name.setColumnName("name");
+		name.setModule(ModuleFactory.getTermsAndConditionModule());
+		
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All T&C(s)");
+		allView.setSortFields(Arrays.asList(new SortField(name, false)));
+		return allView;
+	}
+
+	private static Criteria getContractListCriteria() {
+
+		FacilioField statusField = new FacilioField();
+		statusField.setName("status");
+		statusField.setColumnName("STATUS");
+		statusField.setDataType(FieldType.NUMBER);
+		FacilioModule contract = ModuleFactory.getContractsModule();
+		statusField.setModule(contract);
+
+		Condition statusCond = new Condition();
+		statusCond.setField(statusField);
+		statusCond.setOperator(NumberOperators.NOT_EQUALS);
+		statusCond.setValue(String.valueOf(ContractsContext.Status.REVISED.getValue()));
+
+		Criteria criteria = new Criteria ();
+		criteria.addAndCondition(statusCond);
+
+		return criteria;
+	}
+
+
 }

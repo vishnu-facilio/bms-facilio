@@ -871,4 +871,49 @@ public class AssetsAPI {
 
 	}
 
+
+   public static List<AssetContext> getAssetForItemType(List<Long> itemTypeIds) throws Exception {
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<ItemContext> rotatingItems = ItemsApi.getItemsForType(itemTypeIds);
+		Map<Long,ItemContext> items = FieldUtil.getAsMap(rotatingItems);
+		String id = StringUtils.join(items.keySet(), ",");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
+		SelectRecordsBuilder<AssetContext> selectBuilder = new SelectRecordsBuilder<AssetContext>().select(fields)
+				.table(module.getTableName()).moduleName(module.getName()).beanClass(AssetContext.class)
+				.andCondition(CriteriaAPI.getCondition("ROTATING_ITEM", "rotatingItem", id, NumberOperators.EQUALS))
+				;
+		List<AssetContext> assets = selectBuilder.get();
+		if(!CollectionUtils.isEmpty(assets)) {
+			return assets;
+		}
+	   throw new IllegalArgumentException("No appropriate asset found");
+
+
+	}
+
+   public static List<AssetContext> getAssetForToolType(List<Long> toolTypeIds) throws Exception {
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<ToolContext> rotatingTools = ToolsApi.getToolsForType(toolTypeIds);
+		Map<Long,ToolContext> tools = FieldUtil.getAsMap(rotatingTools);
+		String id = StringUtils.join(tools.keySet(), ",");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
+		SelectRecordsBuilder<AssetContext> selectBuilder = new SelectRecordsBuilder<AssetContext>().select(fields)
+				.table(module.getTableName()).moduleName(module.getName()).beanClass(AssetContext.class)
+				.andCondition(CriteriaAPI.getCondition("ROTATING_TOOL", "rotatingTool", id, NumberOperators.EQUALS))
+				;
+		List<AssetContext> assets = selectBuilder.get();
+		if(!CollectionUtils.isEmpty(assets)) {
+			return assets;
+		}
+	   throw new IllegalArgumentException("No appropriate asset found");
+
+
+	}
+
+   
+
 }

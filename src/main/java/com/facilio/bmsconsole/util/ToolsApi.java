@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
@@ -116,6 +117,25 @@ public class ToolsApi {
 		}
 		throw new IllegalArgumentException("Tool shoud be issued before being used");
 	}
+	
+	public static List<ToolContext> getToolsForType(List<Long> toolTypeIds) throws Exception {
+		String ids = StringUtils.join(toolTypeIds, ",");
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TOOL);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL);
+		SelectRecordsBuilder<ToolContext> selectBuilder = new SelectRecordsBuilder<ToolContext>().select(fields)
+				.table(module.getTableName()).moduleName(module.getName()).beanClass(ToolContext.class)
+				.andCondition(CriteriaAPI.getCondition("TOOL_TYPE_ID", "toolType", String.valueOf(ids), NumberOperators.EQUALS))
+				
+				;
+		List<ToolContext> tools = selectBuilder.get();
+		if(!CollectionUtils.isEmpty(tools)) {
+			return tools;
+		}
+	 throw new IllegalArgumentException("No appropriate tool found");
+	}
+
 
 	public static long getLastPurchasedToolDateForToolId(long id) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

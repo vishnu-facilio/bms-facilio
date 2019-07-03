@@ -11,6 +11,7 @@ import com.facilio.modules.fields.LookupField;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -34,12 +35,17 @@ public class PurchaseRequestPurchaseOrderLookUpsCommand implements Command  {
 		LookupField vendorLocationField = (LookupField) modBean.getField("address", FacilioConstants.ContextNames.VENDORS);
 		vendorField.addChildLookupFIeld(vendorLocationField);
 		
-		List<LookupField>fetchLookup = Arrays.asList(vendorField,
-													(LookupField) fieldsAsMap.get("storeRoom"),
-													(LookupField) fieldsAsMap.get("shipToAddress"),
-													(LookupField) fieldsAsMap.get("billToAddress"),
-													(LookupField) fieldsAsMap.get("requestedBy"));
-		context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST,fetchLookup);
+		List<LookupField> additionaLookups = new ArrayList<LookupField>();
+		additionaLookups.add(vendorField);
+		additionaLookups.add((LookupField) fieldsAsMap.get("storeRoom"));
+		additionaLookups.add((LookupField) fieldsAsMap.get("shipToAddress"));
+		additionaLookups.add((LookupField) fieldsAsMap.get("billToAddress"));
+		additionaLookups.add((LookupField) fieldsAsMap.get("requestedBy"));
+		if(moduleName.contentEquals("purchaseorder")) {
+			additionaLookups.add((LookupField) fieldsAsMap.get("contract"));
+		}
+		
+		context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST,additionaLookups);
 		return false;
 	}
 

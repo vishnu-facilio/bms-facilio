@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.LabourContractContext;
 import com.facilio.bmsconsole.context.LabourContractLineItemContext;
+import com.facilio.bmsconsole.util.ContractsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -38,6 +39,7 @@ public class FetchLabourContractDetailsCommand implements Command{
 					.fetchLookups(Arrays.asList((LookupField) fieldsAsMap.get("labour")));
 		
 			List<LabourContractLineItemContext> list = builder.get();
+			labourContractContext.setTermsAssociated(ContractsAPI.fetchAssociatedTerms(labourContractContext.getId()));
 			labourContractContext.setLineItems(list);
 		}
 		return false;

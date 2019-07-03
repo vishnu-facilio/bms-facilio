@@ -65,7 +65,7 @@ public class FacilioConstants {
 		public static final String ITEM_TYPES="itemtypes";
 		public static final String STORE_ROOM="storeroom";
 	}
-	
+
 	public static class ContextNames {
 
 		public static final String CONNECTION = "connectionContext";
@@ -89,9 +89,11 @@ public class FacilioConstants {
 		public static final String CHANGE_SET = "changeSet";
 		public static final String CHANGE_SET_MAP = "changeSetMap";
 		public static final String RECORD = "record";
+		public static final String REVISED_RECORD = "revisedRecord";
 		public static final String RECORD_LIST = "records";
 		public static final String RECORD_MAP = "recordMap";
 		public static final String RECORD_ID = "recordId";
+		public static final String MODULE_ID = "moduleId";
 		public static final String RECORD_ID_LIST = "recordIds";
 		public static final String IS_FROM_SUMMARY = "isFromSummary";
 		public static final String PM_INCLUDE_EXCLUDE_LIST = "pmIcludeExcludeList";
@@ -313,7 +315,7 @@ public class FacilioConstants {
 		public static final String REPORT_SPACE_FILTER_CONTEXT = "reportSpaceFilterContext";
 		public static final String WIDGET_TYPE = "widgetType";
 		public static final String IS_SKIP_LINKNAME_CHECK = "isSkip";
-		
+
 		
 		public static final String WIDGET_ID = "widgetId";
 		public static final String WIDGET_STATIC_KEY = "widgetStaticKey";
@@ -508,7 +510,7 @@ public class FacilioConstants {
 		public static final String USERS = "users";
 		public static final String ORGUSERS = "orgusers";
 		public static final String ORG_USER_ID = "orgUserId";
-		
+
 		public static final String GROUPS = "groups";
 		
 		public static final String LOCATION = "location";
@@ -766,7 +768,7 @@ public class FacilioConstants {
 		public static final String SHIFT_USER_MAPPING = "shiftUserMapping";
 		public static final String ACTUAL_TIMINGS = "actualTimings";
 		public static final String SHIFT_ID = "shiftId";
-		
+
 		public static final String LAST_SYNC_TIME = "lastSyncTime";
 		public static final String CUSTOM_OBJECT = "customObject";
 		public static final String FORM_NAME = "formName";
@@ -887,6 +889,8 @@ public class FacilioConstants {
 		public static final String SHOW_ITEM_FOR_WORKORDER = "showItemsForWorkorder";
 
 		public static final String ITEM_VENDORS = "itemVendors";
+		public static final String TOOL_VENDORS = "toolVendors";
+
 		public static final String TRANSACTION_TYPE = "transactionType";
 		public static final String TRANSACTION_STATE = "transactionState";
 
@@ -946,7 +950,8 @@ public class FacilioConstants {
 		public static final String PO_LINE_ITEMS_SERIAL_NUMBERS = "poLineItemSerialNumbers";
 		public static final String SERIAL_NUMBERS = "serialNumbers";
 		public static final String ASSETS = "assets";
-		
+		public static final String PO_LINE_ITEMS = "poLineItems";
+
 		public static final String TOTAL_COST = "totalCost";
 		public static final String TOTAL_QUANTITY = "totalQuantity";
 		public static final String WO_TOTAL_COST = "woTotalCost";
@@ -975,7 +980,7 @@ public class FacilioConstants {
 		public static final String WO_ITEMS_LIST = "woItemsList";
 		public static final String WO_TOOLS_LIST = "woToolsList";
 		public static final String WO_LABOUR_LIST = "woLabourList";
-		
+
 		public static final String SHIPMENT = "shipment";
 		public static final String SHIPMENT_LINE_ITEM = "shipmentLineItem";
 		public static final String SHIPMENTS = "shipments";
@@ -993,7 +998,17 @@ public class FacilioConstants {
 		public static final String POINTS_DATA_RECORD="points_data_record";
 
 		public static final String DATE = "date";
-		
+
+		public static final String SERVICE = "service";
+		public static final String SERVICES = "services";
+
+		public static final String SERVICE_CONTRACTS = "servicecontracts";
+		public static final String SERVICE_CONTRACT = "servicecontract";
+		public static final String SERVICE_CONTRACTS_LINE_ITEMS = "servicecontractlineitems";
+
+
+
+
 		public static final String PM_PLANNER_SETTINGS="pm_planner_settings";
 
 		public static final String ATTENDANCE = "attendance";
@@ -1009,6 +1024,41 @@ public class FacilioConstants {
 
 		public static final String BEAN_CLASS_NAME = "beanClassName";
 		
+		public static final String SERVICE_VENDOR = "serviceVendors";
+
+		public static final String WARRANTY_CONTRACTS = "warrantycontracts";
+		public static final String WARRANTY_CONTRACT = "warrantycontract";
+		public static final String WARRANTY_CONTRACTS_LINE_ITEMS = "warrantycontractlineitems";
+		public static final String WO_SERVICE = "workorderService";
+		public static final String WO_SERVICES = "workorderServices";
+		public static final String WO_SERVICE_IDS = "workorderServiceIds";
+		
+		public static final String CONTRACT_ASSET_RELATION = "Contracts_Associated_Assets";
+		public static final String WARRANTY_CONTRACT_TYPE = "Warranty_Contract_Type";
+		public static final String CONTRACT_ASSOCIATED_ASSETS = "contractassets";
+		public static final String CONTRACT_ASSOCIATED_TERMS = "contractterms";
+		
+		public static final String CONTRACT_TYPE = "Contract_Type";
+		
+		public static final String RENTAL_LEASE_CONTRACTS = "rentalleasecontracts";
+		public static final String RENTAL_LEASE_CONTRACT = "rentalleasecontract";
+		public static final String RENTAL_LEASE_CONTRACTS_LINE_ITEMS = "rentalleasecontractlineitems";
+
+		public static final String TOOL_VENDORS_LIST = "toolTypesVendorsList";
+		public static final String IS_CONTRACT_REVISED = "isContractRevised";
+
+		public static final String TERMS_AND_CONDITIONS = "termsandconditions";
+		public static final String TERMS_AND_CONDITION = "termsandcondition";
+
+		public static final String IS_MARK_AS_DELETE = "markAsDelete";
+				public static final String JOB = "jobContext";
+		public static final String JOB_NAME = "jobName";
+
+		
+		public static final String RECORD_RULE = "recordRule";
+		public static final String RECORD_RULE_LIST = "recordRuleList";
+
+
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();
@@ -1112,7 +1162,8 @@ public class FacilioConstants {
 			classMap.put(RECEIPT_LINE_ITEMS, ReceiptLineItemContext.class);
 			classMap.put(SHIPMENT, ShipmentContext.class);
 			classMap.put(SHIPMENT_LINE_ITEM, ShipmentLineItemContext.class);
-			
+			classMap.put(CONTRACTS, ContractsContext.class);
+
 			classMap.put(ML, MLContext.class);
 			classMap.put(PO_LINE_ITEMS_SERIAL_NUMBERS, PoLineItemsSerialNumberContext.class);
 			classMap.put(GATE_PASS, GatePassContext.class);
@@ -1120,7 +1171,19 @@ public class FacilioConstants {
 			classMap.put(CONNECTED_APPS, ConnectedAppContext.class);
 			classMap.put(INVENTORY_REQUEST, InventoryRequestContext.class);
 			classMap.put(INVENTORY_REQUEST_LINE_ITEMS, InventoryRequestLineItemContext.class);
+			classMap.put(SERVICE, ServiceContext.class);
+			classMap.put(WARRANTY_CONTRACTS, WarrantyContractContext.class);
+			classMap.put(WARRANTY_CONTRACTS_LINE_ITEMS, WarrantyContractLineItemContext.class);
+			classMap.put(WO_SERVICE, WorkOrderServiceContext.class);
 
+			classMap.put(SERVICE_VENDOR, ServiceVendorContext.class);
+			classMap.put(RENTAL_LEASE_CONTRACTS, RentalLeaseContractContext.class);
+			classMap.put(RENTAL_LEASE_CONTRACTS_LINE_ITEMS, RentalLeaseContractLineItemsContext.class);
+			classMap.put(RENTAL_LEASE_CONTRACTS_LINE_ITEMS, RentalLeaseContractLineItemsContext.class);
+			classMap.put(TOOL_VENDORS, ToolTypeVendorContext.class);
+			classMap.put(TERMS_AND_CONDITIONS, TermsAndConditionContext.class);
+			classMap.put(CONTRACT_ASSOCIATED_ASSETS, ContractAssociatedAssetsContext.class);
+			classMap.put(CONTRACT_ASSOCIATED_TERMS, ContractAssociatedTermsContext.class);
 			classMap.put(ATTENDANCE, AttendanceContext.class);
 			classMap.put(ATTENDANCE_TRANSACTIONS, AttendanceTransactionContext.class);
 			classMap.put(SHIFT, ShiftContext.class);
@@ -1138,6 +1201,8 @@ public class FacilioConstants {
 			classMap.put(BASE_ALARM, BaseAlarmContext.class);
 			classMap.put(NEW_READING_ALARM, ReadingAlarm.class);
 			classMap.put(READING_EVENT, ReadingEventContext.class);
+			
+
 			return classMap;
 		}
 		
@@ -1188,7 +1253,7 @@ public class FacilioConstants {
 		public static final String PAGE = "page";
 		public static final String PER_PAGE = "perPage";
 	}
-	
+
 	public static class ApprovalRule {
 		public static final String APPROVAL_RULE_ID_FIELD_NAME = "approvalRuleId";
 		public static final String APPROVAL_STATE_FIELD_NAME = "approvalState";
@@ -1230,7 +1295,9 @@ public class FacilioConstants {
 		
 		public static final String SCHEDULED_READING_RULE_JOB_NAME = "scheduledReadingRule";
 		public static final String SCHEDULED_ALARM_TRIGGER_RULE_JOB_NAME = "scheduledAlarmTriggerRule";
-		
+
+		public static final String RECORD_SPECIFIC_RULE_JOB_NAME = "singleRecordRuleExecution";
+
 	}
 	public static class Ticket{
 		public static final String STATUS_ID = "status_id";

@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.InventoryRequestContext;
 import com.facilio.bmsconsole.context.InventoryRequestLineItemContext;
 import com.facilio.bmsconsole.context.InventoryType;
+import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -34,7 +35,7 @@ public class AddOrUpdateInventoryRequestCommand implements Command{
 			
 			FacilioModule lineModule = modBean.getModule(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS);
 			
-			if (CollectionUtils.isEmpty(inventoryRequestContext.getLineItems())) {
+			if (inventoryRequestContext.getId() <= 0 && CollectionUtils.isEmpty(inventoryRequestContext.getLineItems())) {
 				throw new Exception("Line items cannot be empty");
 			}
 			// setting current user to requestedFor
@@ -42,23 +43,28 @@ public class AddOrUpdateInventoryRequestCommand implements Command{
 		 	  inventoryRequestContext.setRequestedFor(AccountUtil.getCurrentUser());
 			}
 			if (inventoryRequestContext.getId() > 0) {
-				updateRecord(inventoryRequestContext, module, fields);
+				RecordAPI.updateRecord(inventoryRequestContext, module, fields);
+				if(inventoryRequestContext.getLineItems() != null) {
+					DeleteRecordBuilder<InventoryRequestLineItemContext> deleteBuilder = new DeleteRecordBuilder<InventoryRequestLineItemContext>()
+							.module(lineModule)
+							.andCondition(CriteriaAPI.getCondition("INVENTORY_REQUEST_ID", "inventoryRequestId", String.valueOf(inventoryRequestContext.getId()), NumberOperators.EQUALS));
+					deleteBuilder.delete();
+					updateLineItems(inventoryRequestContext);
+					RecordAPI.addRecord(false, inventoryRequestContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 				
-				DeleteRecordBuilder<InventoryRequestLineItemContext> deleteBuilder = new DeleteRecordBuilder<InventoryRequestLineItemContext>()
-						.module(lineModule)
-						.andCondition(CriteriaAPI.getCondition("INVENTORY_REQUEST_ID", "inventoryRequestId", String.valueOf(inventoryRequestContext.getId()), NumberOperators.EQUALS));
-				deleteBuilder.delete();
+				}
 			} else {
 				if(inventoryRequestContext.getRequestedTime() == -1) {
 					inventoryRequestContext.setRequestedTime(System.currentTimeMillis());
 				}
 				
 				inventoryRequestContext.setStatus(InventoryRequestContext.Status.REQUESTED);
-				addRecord(true, Collections.singletonList(inventoryRequestContext), module, fields);
+				RecordAPI.addRecord(true, Collections.singletonList(inventoryRequestContext), module, fields);
+				updateLineItems(inventoryRequestContext);
+				RecordAPI.addRecord(false, inventoryRequestContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
+			
 			}
 			
-			updateLineItems(inventoryRequestContext);
-			addRecord(false, inventoryRequestContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 			
 			context.put(FacilioConstants.ContextNames.RECORD, inventoryRequestContext);
 		}
@@ -116,24 +122,7 @@ public class AddOrUpdateInventoryRequestCommand implements Command{
 		inventoryRequestContext.getLineItems().addAll(rotatingItems);
 	}
 	
-	private void addRecord(boolean isLocalIdNeeded, List<? extends ModuleBaseWithCustomFields> list, FacilioModule module, List<FacilioField> fields) throws Exception {
-		InsertRecordBuilder insertRecordBuilder = new InsertRecordBuilder<>()
-				.module(module)
-				.fields(fields);
-		if(isLocalIdNeeded) {
-			insertRecordBuilder.withLocalId();
-		}
-		insertRecordBuilder.addRecords(list);
-		insertRecordBuilder.save();
-	}
 	
-	public void updateRecord(ModuleBaseWithCustomFields data, FacilioModule module, List<FacilioField> fields) throws Exception {
-		UpdateRecordBuilder updateRecordBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
-				.module(module)
-				.fields(fields)
-				.andCondition(CriteriaAPI.getIdCondition(data.getId(), module));
-		updateRecordBuilder.update(data);
-	}
 	
 	
 }

@@ -12,11 +12,12 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
-public class GetLabourContractListCommand implements Command{
+public class GetContractListCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
+		
 		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 		Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
 		
@@ -25,5 +26,6 @@ public class GetLabourContractListCommand implements Command{
 
 		return false;
 	}
-
+	
+	
 }

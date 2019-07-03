@@ -1,5 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PurchaseContractLineItemContext;
 import com.facilio.constants.FacilioConstants;
@@ -9,30 +15,27 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import java.util.List;
 
 public class AddOrUpdatePurchaseContractLineItemCommand implements Command{
 
 	@Override
 	public boolean execute(Context context) throws Exception {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-		PurchaseContractLineItemContext lineItemContext = (PurchaseContractLineItemContext) context.get(FacilioConstants.ContextNames.RECORD);
-		if (lineItemContext != null) {
-			if (lineItemContext.getPurchaseContractId() == -1) {
-				throw new Exception("Purchase Contract cannot be null");
-			}
+		List<PurchaseContractLineItemContext> lineItemContexts = (List<PurchaseContractLineItemContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+		if (CollectionUtils.isNotEmpty(lineItemContexts)) {
 			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
 			List<FacilioField> fields = modBean.getAllFields(moduleName);
-			
-			if (lineItemContext.getId() > 0) {
-				updateRecord(lineItemContext, module, fields);
-			} else {
-				addRecord(lineItemContext, module, fields);
+			for(PurchaseContractLineItemContext lineItemContext : lineItemContexts) {
+				if (lineItemContext.getPurchaseContractId() == -1) {
+					throw new Exception("Purchase Contract cannot be null");
+				}
+				if (lineItemContext.getId() > 0) {
+					updateRecord(lineItemContext, module, fields);
+				} else {
+					addRecord(lineItemContext, module, fields);
+				}
 			}
 		}
 		return false;

@@ -166,14 +166,22 @@ public class PurchaseContractsAction extends FacilioAction {
 		this.lineItem = lineItem;
 	}
 	
+	private List<PurchaseContractLineItemContext> lineItems;
+	
+	public List<PurchaseContractLineItemContext> getLineItems() {
+		return lineItems;
+	}
+	public void setLineItems(List<PurchaseContractLineItemContext> lineItems) {
+		this.lineItems = lineItems;
+	}
 	public String addOrUpdateLineItem() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD, getLineItem());
+		context.put(FacilioConstants.ContextNames.RECORD_LIST, getLineItems());
 		
 		Chain chain = TransactionChainFactory.getAddPurchaseContractLineItem();
 		chain.execute(context);
 		
-		setResult(FacilioConstants.ContextNames.RECORD, context.get(FacilioConstants.ContextNames.RECORD));
+		setResult(FacilioConstants.ContextNames.RECORD_LIST, context.get(FacilioConstants.ContextNames.RECORD));
 		
 		return SUCCESS;
 	}
@@ -194,6 +202,8 @@ public class PurchaseContractsAction extends FacilioAction {
 	public String addPurchaseContract() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, purchaseContract);
+		context.put(FacilioConstants.ContextNames.IS_CONTRACT_REVISED, false );
+		
 		
 		Chain chain = TransactionChainFactory.getAddPurchaseContractChain();
 		chain.execute(context);
@@ -231,12 +241,12 @@ public class PurchaseContractsAction extends FacilioAction {
 	
 	public String deleteLineItem() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(recordId));
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
 		
 		Chain chain = TransactionChainFactory.getDeletePurchaseContractLineItemChain();
 		chain.execute(context);
 		
-		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(recordId));
+		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
 		
 		return SUCCESS;
 	}
@@ -259,6 +269,32 @@ public class PurchaseContractsAction extends FacilioAction {
 		
 		return SUCCESS;
 	
+	}
+	
+	public String reviseContract() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, purchaseContract );
+		context.put(FacilioConstants.ContextNames.IS_CONTRACT_REVISED, true );
+		
+		Chain chain = TransactionChainFactory.getAddPurchaseContractChain();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.REVISED_RECORD, context.get(FacilioConstants.ContextNames.REVISED_RECORD));
+		
+		return SUCCESS;
+	}
+	
+	
+	public String duplicateContract() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, purchaseContract );
+		
+		Chain chain = TransactionChainFactory.getDuplicatePurchaseContract();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.PURCHASE_CONTRACTS, context.get(FacilioConstants.ContextNames.RECORD));
+		
+		return SUCCESS;
 	}
 	
 }

@@ -131,8 +131,8 @@ public class LabourAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getLabourId());
 
-		Chain inventryDetailsChain = ReadOnlyChainFactory.fetchStockedToolsDetails();
-		inventryDetailsChain.execute(context);
+		Chain labourDetailsChain = ReadOnlyChainFactory.fetchLabourDetails();
+		labourDetailsChain.execute(context);
 
 		setLabour((LabourContext) context.get(FacilioConstants.ContextNames.LABOUR));
 		setResult(FacilioConstants.ContextNames.LABOUR, labour);

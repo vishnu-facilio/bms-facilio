@@ -146,7 +146,7 @@ public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 							itemTypeLineItem.setQuantity(quantity);
 						}
 					}
-					else {
+					else if(prItem.getInventoryTypeEnum() == InventoryType.TOOL) {
 						if(!toolTypeItems.containsKey(prItem.getToolType().getId())) {
 							toolTypeItems.put(prItem.getToolType().getId(), PurchaseOrderLineItemContext.from(prItem));
 						}
@@ -292,4 +292,14 @@ public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 	public void setCompletedTime(long completedTime) {
 		this.completedTime = completedTime;
 	}
+	
+	private ContractsContext contract;
+	public ContractsContext getContract() {
+		return contract;
+	}
+	public void setContract(ContractsContext contract) {
+		this.contract = contract;
+	}
+	
+	
 }

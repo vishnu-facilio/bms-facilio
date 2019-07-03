@@ -1,61 +1,48 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.PurchaseRequestLineItemContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.InsertRecordBuilder;
-import com.facilio.modules.UpdateRecordBuilder;
-import com.facilio.modules.fields.FacilioField;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.List;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.PurchaseRequestLineItemContext;
+import com.facilio.bmsconsole.util.RecordAPI;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.FacilioField;
 
 public class AddOrUpdatePurchaseRequestLineItemCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
-		PurchaseRequestLineItemContext lineItemContext = (PurchaseRequestLineItemContext) context.get(FacilioConstants.ContextNames.RECORD);
-		if (lineItemContext != null) {
-			if (lineItemContext.getPrid() == -1) {
-				throw new Exception("Purchase Request cannot be null");
-			}
-			
+		List<PurchaseRequestLineItemContext> lineItemContext = (List<PurchaseRequestLineItemContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+		
+		if (CollectionUtils.isNotEmpty(lineItemContext)) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
 			List<FacilioField> fields = modBean.getAllFields(moduleName);
 			
-			if (lineItemContext.getId() > 0) {
-				updateRecord(lineItemContext, module, fields);
-			} else {
-				addRecord(lineItemContext, module, fields);
+			for(PurchaseRequestLineItemContext lineItem : lineItemContext) {
+				if (lineItem.getPrid() == -1) {
+					throw new Exception("Purchase Request cannot be null");
+				}
+				updateLineItemCost(lineItem);
+				
+				if (lineItem.getId() > 0) {
+					RecordAPI.updateRecord(lineItem, module, fields);
+				} else {
+					RecordAPI.addRecord(false,Collections.singletonList(lineItem), module, fields);
+				}
 			}
 		}
 		return false;
 	}
 
-	private void updateRecord(PurchaseRequestLineItemContext lineItemContext, FacilioModule module,
-			List<FacilioField> fields) throws Exception {
-		updateLineItemCost(lineItemContext);
-		UpdateRecordBuilder<PurchaseRequestLineItemContext> updateBuilder = new UpdateRecordBuilder<PurchaseRequestLineItemContext>()
-				.module(module)
-				.fields(fields)
-				.andCondition(CriteriaAPI.getIdCondition(lineItemContext.getId(), module));
-		updateBuilder.update(lineItemContext);
-	}
-
-	private void addRecord(PurchaseRequestLineItemContext lineItemContext, FacilioModule module, List<FacilioField> fields) throws Exception {
-		updateLineItemCost(lineItemContext);
-		InsertRecordBuilder<PurchaseRequestLineItemContext> insertBuilder = new InsertRecordBuilder<PurchaseRequestLineItemContext>()
-				.module(module)
-				.fields(fields);
-		insertBuilder.addRecord(lineItemContext);
-		insertBuilder.save();		
-	}
 	
 	private void updateLineItemCost(PurchaseRequestLineItemContext lineItemContext) throws Exception {
 		if(lineItemContext.getUnitPrice() > 0) {

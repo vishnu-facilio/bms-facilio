@@ -476,8 +476,10 @@ public class WorkflowRuleContext implements Serializable {
 		BUSSINESS_LOGIC_ASSET_RULE, //30
 		REPORT_DOWNTIME_RULE, //31
 		CUSTOM_STOREROOM_OUT_OF_STOCK_NOTIFICATION_RULE,
-		CUSTOM_STOREROOM_MINIMUM_QUANTITY_NOTIFICATION_RULE
-		
+		CUSTOM_STOREROOM_MINIMUM_QUANTITY_NOTIFICATION_RULE,
+
+		RECORD_SPECIFIC_RULE //34
+
 		;
 		//Always add at the end
 		
@@ -567,4 +569,14 @@ public class WorkflowRuleContext implements Serializable {
 		return "Workflow Rule ["+id+", "+name+"]";
 		
 	}
+	
+	private long parentId;
+	public long getParentId() {
+		return parentId;
+	}
+	public void setParentId(long parentId) {
+		this.parentId = parentId;
+	}
+		
+	
 }

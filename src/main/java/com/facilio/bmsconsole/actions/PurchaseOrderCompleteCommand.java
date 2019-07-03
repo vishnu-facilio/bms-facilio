@@ -34,6 +34,8 @@ public class PurchaseOrderCompleteCommand implements Command {
 			List<ItemContext> itemsTobeAdded = new ArrayList<>();
 			List<ToolContext> toolsToBeAdded = new ArrayList<>();
 			List<ItemTypesVendorsContext> itemTypesVendors = new ArrayList<>();
+			List<ToolTypeVendorContext> toolTypesVendors = new ArrayList<>();
+			
 			boolean containsIndividualTrackingItem = false;
 			boolean containsIndividualTrackingTool = false;
 			long storeRoomId = -1;
@@ -71,6 +73,8 @@ public class PurchaseOrderCompleteCommand implements Command {
 										itemsTobeAdded.add(createItem(po, lineItem, containsIndividualTrackingItem));
 									}									
 								} else if (lineItem.getInventoryTypeEnum() == InventoryType.TOOL) {
+									toolTypesVendors.add(new ToolTypeVendorContext(lineItem.getToolType(),
+											po.getVendor(), lineItem.getCost(), po.getOrderedTime()));
 									ToolTypesContext toolType = getToolType(lineItem.getToolType().getId());
 									if (toolType.isRotating()) {
 										containsIndividualTrackingTool = true;
@@ -100,6 +104,7 @@ public class PurchaseOrderCompleteCommand implements Command {
 			context.put(FacilioConstants.ContextNames.STORE_ROOM, storeRoomId);
 			context.put(FacilioConstants.ContextNames.VENDOR_ID, vendorId);
 			context.put(FacilioConstants.ContextNames.ITEM_VENDORS_LIST, itemTypesVendors);
+			context.put(FacilioConstants.ContextNames.TOOL_VENDORS_LIST, toolTypesVendors);
 			context.put(FacilioConstants.ContextNames.ITEMS, itemsTobeAdded);
 			context.put(FacilioConstants.ContextNames.TOOLS, toolsToBeAdded);
 		}

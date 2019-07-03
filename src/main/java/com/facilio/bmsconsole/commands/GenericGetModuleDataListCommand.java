@@ -31,9 +31,9 @@ public class GenericGetModuleDataListCommand implements Command {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		FacilioModule module = modBean.getModule(moduleName);
-		
+
 		boolean fetchCount = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_COUNT, false);
-		
+
 		List<FacilioField> fields;
 		if (fetchCount) {
 			fields = FieldFactory.getCountField(module);
@@ -45,8 +45,8 @@ public class GenericGetModuleDataListCommand implements Command {
 			}
 		}
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
-		
-		
+
+
 		Class beanClassName = FacilioConstants.ContextNames.getClassFromModule(module);
 		if (beanClassName == null) {
 			beanClassName = ModuleBaseWithCustomFields.class;
@@ -124,7 +124,7 @@ public class GenericGetModuleDataListCommand implements Command {
 		else {
 			ResourceAPI.loadModuleResources(records, fields);
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, records);
-		}		
+		}
 
 		return false;
 	}

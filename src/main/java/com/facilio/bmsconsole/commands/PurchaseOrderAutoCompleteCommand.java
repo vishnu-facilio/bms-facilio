@@ -1,8 +1,25 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.InventoryType;
+import com.facilio.bmsconsole.context.ItemContext;
+import com.facilio.bmsconsole.context.ItemTypesContext;
+import com.facilio.bmsconsole.context.ItemTypesVendorsContext;
+import com.facilio.bmsconsole.context.PurchaseOrderContext;
 import com.facilio.bmsconsole.context.PurchaseOrderContext.Status;
+import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
+import com.facilio.bmsconsole.context.PurchasedItemContext;
+import com.facilio.bmsconsole.context.ToolContext;
+import com.facilio.bmsconsole.context.ToolTypeVendorContext;
+import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -12,13 +29,6 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 ;
 
@@ -33,6 +43,8 @@ public class PurchaseOrderAutoCompleteCommand implements Command {
 		boolean containsIndividualTrackingItem = false;
 		boolean containsIndividualTrackingTool = false;
 		List<ItemTypesVendorsContext> itemTypesVendors = new ArrayList<>();	
+		List<ToolTypeVendorContext> toolTypesVendors = new ArrayList<>();
+
 		long storeRoomId = -1;
 		long vendorId =-1;
 		if (purchaseOrders != null && !purchaseOrders.isEmpty()) {
@@ -55,6 +67,7 @@ public class PurchaseOrderAutoCompleteCommand implements Command {
 									itemsTobeAdded.add(createItem(po, lineItem));
 								}
 							} else if (lineItem.getInventoryTypeEnum() == InventoryType.TOOL) {
+								toolTypesVendors.add(new ToolTypeVendorContext(lineItem.getToolType(), po.getVendor(), lineItem.getCost(), po.getOrderedTime()));
 								ToolTypesContext toolType = getToolType(lineItem.getToolType().getId());
 								if (toolType.isRotating()) {
 									containsIndividualTrackingTool = true;
@@ -83,6 +96,8 @@ public class PurchaseOrderAutoCompleteCommand implements Command {
 		context.put(FacilioConstants.ContextNames.STORE_ROOM, storeRoomId);
 		context.put(FacilioConstants.ContextNames.VENDOR_ID, vendorId);
 		context.put(FacilioConstants.ContextNames.ITEM_VENDORS_LIST, itemTypesVendors);
+		context.put(FacilioConstants.ContextNames.TOOL_VENDORS_LIST, toolTypesVendors);
+
 		context.put(FacilioConstants.ContextNames.ITEMS, itemsTobeAdded);
 		context.put(FacilioConstants.ContextNames.TOOLS, toolsToBeAdded);
 		return false;

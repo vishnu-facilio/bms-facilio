@@ -27,20 +27,22 @@ public class UpdateLabourCostRollUpCommand implements Command {
 		FacilioModule labourModule = modBean.getModule(FacilioConstants.ContextNames.LABOUR);
 		
 		LabourContractContext labourcontract = (LabourContractContext)context.get(FacilioConstants.ContextNames.RECORD);
-		for(LabourContractLineItemContext lineItem : labourcontract.getLineItems()) {
-			Map<String, Object> updateMap = new HashMap<>();
-			FacilioField costField = modBean.getField("cost", labourModule.getName());
-			updateMap.put("cost", lineItem.getCost() );
-			List<FacilioField> updatedfields = new ArrayList<FacilioField>();
-			updatedfields.add(costField);
-			if(lineItem.getLabour() != null && lineItem.getLabour().getId() != -1) {
-				UpdateRecordBuilder<LabourContext> updateBuilder = new UpdateRecordBuilder<LabourContext>()
-								.module(labourModule)
-								.fields(updatedfields)
-								.andCondition(CriteriaAPI.getIdCondition(lineItem.getLabour().getId(),labourModule));
-			     updateBuilder.updateViaMap(updateMap);
+		if(labourcontract != null) {
+			for(LabourContractLineItemContext lineItem : labourcontract.getLineItems()) {
+				Map<String, Object> updateMap = new HashMap<>();
+				FacilioField costField = modBean.getField("cost", labourModule.getName());
+				updateMap.put("cost", lineItem.getCost() );
+				List<FacilioField> updatedfields = new ArrayList<FacilioField>();
+				updatedfields.add(costField);
+				if(lineItem.getLabour() != null && lineItem.getLabour().getId() != -1) {
+					UpdateRecordBuilder<LabourContext> updateBuilder = new UpdateRecordBuilder<LabourContext>()
+									.module(labourModule)
+									.fields(updatedfields)
+									.andCondition(CriteriaAPI.getIdCondition(lineItem.getLabour().getId(),labourModule));
+				     updateBuilder.updateViaMap(updateMap);
+				}
+				
 			}
-			
 		}
 		return false;
 	}

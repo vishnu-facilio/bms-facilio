@@ -49,7 +49,8 @@
 	 <job name='ScheduleNewPM' classname= 'com.facilio.bmsconsole.commands.ScheduleNewPMCommand' transactionTimeout='14400000'/>
 	 <job name='AttendanceAbsentSchedulerJob' classname='com.facilio.bmsconsole.commands.AttendanceAbsentSchedulerJob' transactionTimeout='14400000'/>
 	 <job name= 'ShiftRotationSchedulerJob' classname='com.facilio.bmsconsole.commands.ShiftRotationSchedulerJob' transactionTimeout= '14400000'></job>
-	 <!-- Shift jobs -->
+
+     <!-- Shift jobs -->
 	 <job name='scheduledReadingRule' classname= 'com.facilio.bmsconsole.jobs.ScheduledReadingRuleJob' transactionTimeout='300000'/>
 	 <job name='scheduledAlarmTriggerRule' classname= 'com.facilio.bmsconsole.jobs.ScheduledAlarmTriggerJob' transactionTimeout='300000'/>
 	 
@@ -67,5 +68,10 @@
 	 
 	 <!-- scheduled Action jobs -->
 	 <job name='ScheduledWorkflow' classname='com.facilio.bmsconsole.jobs.ScheduledWorkflowJob' transcationTimeout='36000000'/>
+	 
+	  <!-- Notifications jobs -->
+	 <job name='singleRecordRuleExecution' classname= 'com.facilio.bmsconsole.jobs.SingleRecordJob' transactionTimeout='300000'/>
+	
+	
 
 </scheduler>

@@ -86,6 +86,7 @@ public class FetchScheduledRuleMatchingRecordsCommand implements Command {
 			selectBuilder.andCriteria(rule.getCriteria());
 		}
 
+		
 		List<ModuleBaseWithCustomFields> records = selectBuilder.get();
 		// LOGGER.info(selectBuilder.toString());
 		return records;

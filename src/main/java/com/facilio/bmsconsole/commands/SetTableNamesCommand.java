@@ -1,8 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+
+import com.facilio.constants.FacilioConstants;
 
 public class SetTableNamesCommand implements Command {
 
@@ -310,26 +311,54 @@ public class SetTableNamesCommand implements Command {
 	public static SetTableNamesCommand getForInventoryRequestLineItem() {
 		return new SetTableNamesCommand("inventoryrequestlineitems", "InventoryRequestLineItems");
 	}
-	
+
 	public static SetTableNamesCommand getForAttendance() {
 		return new SetTableNamesCommand("attendance", "Attendance");
 	}
-	
+
 	public static SetTableNamesCommand getForAttendanceTransaction() {
 		return new SetTableNamesCommand("attendanceTransaction", "Attendance_Transactions");
 	}
-	
+
 	public static SetTableNamesCommand getForBreak() {
 		return new SetTableNamesCommand("break", "Break");
 	}
-	
+
 	public static SetTableNamesCommand getForShift() {
 		return new SetTableNamesCommand("shift", "Shift");
 	}
-	
-	
+
+
 	public static SetTableNamesCommand getForBreakTransaction() {
 		return new SetTableNamesCommand("breakTransaction", "BREAK_TRANSACTION");
+	}
+
+	public static SetTableNamesCommand getForServices() {
+		return new SetTableNamesCommand("service", "Service");
+	}
+	
+	public static SetTableNamesCommand getForWarrantyContract() {
+		return new SetTableNamesCommand("warrantycontracts", "Warranty_Contracts");
+	}
+	
+	public static SetTableNamesCommand getForWarrantyContractLineItems() {
+		return new SetTableNamesCommand("warrantycontractlineitems", "WarrantyContractLineItems");
+	}
+	
+	public static SetTableNamesCommand getForWorkorderService() {
+		return new SetTableNamesCommand("workorderService", "Workorder_service");
+	}
+
+	public static SetTableNamesCommand getForRentalLeaseContract() {
+		return new SetTableNamesCommand("rentalleasecontracts", "Rental_Lease_Contracts");
+	}
+
+	public static SetTableNamesCommand getForRentalLeaseContractLineItem() {
+		return new SetTableNamesCommand("rentalleasecontractlineitems", "RentalLeaseContractLineItems");
+	}
+
+	public static SetTableNamesCommand getForToolTypeVendor() {
+		return new SetTableNamesCommand("toolVendors", "Tool_vendors");
 	}
 
 	public static SetTableNamesCommand getForShipment() {
@@ -347,6 +376,14 @@ public class SetTableNamesCommand implements Command {
 		return new SetTableNamesCommand("shiftRotation", "Shift_Rotation");
 	}
 
+	public static SetTableNamesCommand getForTermsAndConditions() {
+		return new SetTableNamesCommand("termsandconditions", "Terms_And_Conditions");
+	}
+	
+	public static SetTableNamesCommand getForContractAssociatedAssets() {
+		return new SetTableNamesCommand("contractassets", "Contracts_Associated_Assets");
+	}
+	
 	public static void setForModule (Context context, String moduleName) {
 		//TODO handle all module and get from map
 		String tableName = "";

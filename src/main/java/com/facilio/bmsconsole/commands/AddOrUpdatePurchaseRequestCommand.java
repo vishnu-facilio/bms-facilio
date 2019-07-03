@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.context.PurchaseRequestContext;
 import com.facilio.bmsconsole.context.PurchaseRequestContext.Status;
 import com.facilio.bmsconsole.context.PurchaseRequestLineItemContext;
 import com.facilio.bmsconsole.util.LocationAPI;
+import com.facilio.bmsconsole.util.RecordAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -28,7 +29,7 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 
-;
+
 
 public class AddOrUpdatePurchaseRequestCommand implements Command {
 
@@ -43,7 +44,7 @@ public class AddOrUpdatePurchaseRequestCommand implements Command {
 			
 			FacilioModule lineModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_REQUEST_LINE_ITEMS);
 			
-			if (CollectionUtils.isEmpty(purchaseRequestContext.getLineItems())) {
+			if (purchaseRequestContext.getId() <= 0 && CollectionUtils.isEmpty(purchaseRequestContext.getLineItems())) {
 				throw new Exception("Line items cannot be empty");
 			}
 			// setting current user to requestedBy
@@ -53,23 +54,27 @@ public class AddOrUpdatePurchaseRequestCommand implements Command {
 			purchaseRequestContext.setShipToAddress(LocationAPI.getPoPrLocation(purchaseRequestContext.getStoreRoom(), purchaseRequestContext.getShipToAddress(), "SHIP_TO_Location", true));
             purchaseRequestContext.setBillToAddress(LocationAPI.getPoPrLocation(purchaseRequestContext.getVendor(), purchaseRequestContext.getBillToAddress(), "BILL_TO_Location", false));
             if (purchaseRequestContext.getId() > 0) {
-				updateRecord(purchaseRequestContext, module, fields);
+				RecordAPI.updateRecord(purchaseRequestContext, module, fields);
+				if(purchaseRequestContext.getLineItems() != null) {
+					DeleteRecordBuilder<PurchaseRequestLineItemContext> deleteBuilder = new DeleteRecordBuilder<PurchaseRequestLineItemContext>()
+							.module(lineModule)
+							.andCondition(CriteriaAPI.getCondition("PR_ID", "prid", String.valueOf(purchaseRequestContext.getId()), NumberOperators.EQUALS));
+					deleteBuilder.delete();
+					updateLineItems(purchaseRequestContext);
+					RecordAPI.addRecord(false, purchaseRequestContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 				
-				DeleteRecordBuilder<PurchaseRequestLineItemContext> deleteBuilder = new DeleteRecordBuilder<PurchaseRequestLineItemContext>()
-						.module(lineModule)
-						.andCondition(CriteriaAPI.getCondition("PR_ID", "prid", String.valueOf(purchaseRequestContext.getId()), NumberOperators.EQUALS));
-				deleteBuilder.delete();
+				}
 			} else {
 				if(purchaseRequestContext.getRequestedTime() == -1) {
 					purchaseRequestContext.setRequestedTime(System.currentTimeMillis());
 				}
 				
 				purchaseRequestContext.setStatus(Status.REQUESTED);
-				addRecord(true, Collections.singletonList(purchaseRequestContext), module, fields);
+				RecordAPI.addRecord(true, Collections.singletonList(purchaseRequestContext), module, fields);
+				updateLineItems(purchaseRequestContext);
+				RecordAPI.addRecord(false, purchaseRequestContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 			}
 			
-			updateLineItems(purchaseRequestContext);
-			addRecord(false, purchaseRequestContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 			
 			context.put(FacilioConstants.ContextNames.RECORD, purchaseRequestContext);
 		}
@@ -83,24 +88,7 @@ public class AddOrUpdatePurchaseRequestCommand implements Command {
 		}
 	}
 	
-	private void addRecord(boolean isLocalIdNeeded, List<? extends ModuleBaseWithCustomFields> list, FacilioModule module, List<FacilioField> fields) throws Exception {
-		InsertRecordBuilder insertRecordBuilder = new InsertRecordBuilder<>()
-				.module(module)
-				.fields(fields);
-		if(isLocalIdNeeded) {
-			insertRecordBuilder.withLocalId();
-		}
-		insertRecordBuilder.addRecords(list);
-		insertRecordBuilder.save();
-	}
 	
-	public void updateRecord(ModuleBaseWithCustomFields data, FacilioModule module, List<FacilioField> fields) throws Exception {
-		UpdateRecordBuilder updateRecordBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
-				.module(module)
-				.fields(fields)
-				.andCondition(CriteriaAPI.getIdCondition(data.getId(), module));
-		updateRecordBuilder.update(data);
-	}
 	
 	private void updateLineItemCost(PurchaseRequestLineItemContext lineItemContext){
 		if(lineItemContext.getUnitPrice() > 0) {

@@ -821,5 +821,12 @@
 		"subject": "Daily Maintenance",
 		"to": "",
 		"message_ftl": "dailyMaintenance"
+	},
+	"84": {
+		"name": "TEST_CONTRACT_MAIL",
+		"sender": "report@${org.domain}.facilio.com",
+		"subject": "Contract reminder",
+		"to": "${toUserEmail}",
+		"message": "hi ${getUserName} ${getRecord.id}"
 	}
 }
