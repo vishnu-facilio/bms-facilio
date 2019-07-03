@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.workflows.exceptions.FunctionParamException;
 
@@ -23,6 +24,26 @@ public enum FacilioFieldFunctions implements FacilioWorkflowFunctionInterface {
 			FacilioField field = (FacilioField)objects[0];
 			
 			return field.getId();
+		};
+		
+		public void checkParam(Object... objects) throws Exception {
+			if(objects.length <= 0) {
+				throw new FunctionParamException("Required Object is null");
+			}
+		}
+	},
+	AS_MAP(2,"asMap") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			checkParam(objects);
+			
+			if(objects[0] == null) {
+				return null;
+			}
+			FacilioField field = (FacilioField)objects[0];
+			
+			return FieldUtil.getAsProperties(field);
 		};
 		
 		public void checkParam(Object... objects) throws Exception {
