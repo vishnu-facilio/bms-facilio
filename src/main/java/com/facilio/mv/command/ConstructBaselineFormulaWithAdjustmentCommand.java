@@ -62,28 +62,28 @@ public class ConstructBaselineFormulaWithAdjustmentCommand implements Command {
 			char varName = 'B';
 			for(MVAdjustment adjustment :adjustments) {
 				
-					formulaField = adjustment.getFormulaField();
+				formulaField = adjustment.getFormulaField();
+				
+				if(formulaField != null) {
+					formulaField = FormulaFieldAPI.getFormulaField(formulaField.getId());
+					adjustment.setFormulaField(formulaField);
 					
-					if(formulaField != null) {
-						formulaField = FormulaFieldAPI.getFormulaField(formulaField.getId());
-						adjustment.setFormulaField(formulaField);
-						
-						workflowString.append(MVUtil.WORKLFOW_MODULE_INITITALIZATION_STMT.replace("${moduleName}", modbean.getModule(formulaField.getModuleId()).getName()));
-						
-						fetchStmt = MVUtil.WORKLFOW_VALUE_FETCH_STMT.replace("${parentId}", formulaField.getResourceId()+"");
-						fetchStmt = fetchStmt.replace("${fieldName}", modbean.getField(formulaField.getReadingFieldId()).getName());
-						
-						workflowString.append(varName+" = "+fetchStmt);
-					}
-					else {
-						workflowString.append(varName+" = 0;");
-						workflowString.append(MVUtil.WORKLFOW_ADJ_DATE_RANGE_CHECK.replace("${startTime}", adjustment.getStartTime()+"").replace("${endTime}", adjustment.getEndTime()+""));
-						workflowString.append(varName+" = "+adjustment.getConstant()+";");
-						workflowString.append("}");
-					}
-					workflowString.append(MVUtil.WORKLFOW_VALUE_NULL_CHECK_STMT.replaceAll(Pattern.quote("${var}"), varName+""));
-					resultStringBuilder.append("+"+varName);
-					varName++;
+					workflowString.append(MVUtil.WORKLFOW_MODULE_INITITALIZATION_STMT.replace("${moduleName}", modbean.getModule(formulaField.getModuleId()).getName()));
+					
+					fetchStmt = MVUtil.WORKLFOW_VALUE_FETCH_STMT.replace("${parentId}", formulaField.getResourceId()+"");
+					fetchStmt = fetchStmt.replace("${fieldName}", modbean.getField(formulaField.getReadingFieldId()).getName());
+					
+					workflowString.append(varName+" = "+fetchStmt);
+				}
+				else {
+					workflowString.append(varName+" = 0;");
+					workflowString.append(MVUtil.WORKLFOW_ADJ_DATE_RANGE_CHECK.replace("${startTime}", adjustment.getStartTime()+"").replace("${endTime}", adjustment.getEndTime()+""));
+					workflowString.append(varName+" = "+adjustment.getConstant()+";");
+					workflowString.append("}");
+				}
+				workflowString.append(MVUtil.WORKLFOW_VALUE_NULL_CHECK_STMT.replaceAll(Pattern.quote("${var}"), varName+""));
+				resultStringBuilder.append("+"+varName);
+				varName++;
 			}
 			
 			workflowString.append("return "+resultStringBuilder+"; }");

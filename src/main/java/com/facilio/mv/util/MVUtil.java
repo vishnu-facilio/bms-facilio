@@ -49,7 +49,7 @@ public class MVUtil {
 	public static String MV_ADJUSTMENT_VS_BASELINES = "mvAdjustmentVsBaselines";
 	
     public static String WORKLFOW_MODULE_INITITALIZATION_STMT = "module = Module(\"${moduleName}\");";
-    public static String WORKLFOW_VALUE_FETCH_STMT = "module.fetch({criteria : [parentId == ${parentId} && ttime>=startTime && ttime <endTime],field : \"${fieldName}\",aggregation : \"lastValue\"});";
+    public static String WORKLFOW_VALUE_FETCH_STMT = "module.fetch({criteria : [parentId == ${parentId} && ttime>=startTime && ttime <endTime],field : \"${fieldName}\",aggregation : \"sum\"});";
     public static String WORKLFOW_VALUE_NULL_CHECK_STMT = "if(${var} == null) { ${var} = 0; }";
     public static String WORKLFOW_ADJ_DATE_RANGE_CHECK = "if(startTime >= ${startTime} && endTime < ${endTime}){";
 	
@@ -61,6 +61,7 @@ public class MVUtil {
 		formulaFieldContext.setResourceType(ResourceType.ONE_RESOURCE);
 		formulaFieldContext.setFrequency(mvProject.getFrequency());
 		if(baseline != null) {
+			
 			if(formulaFieldContext.getName() == null) {
 				formulaFieldContext.setName(baseline.getName());
 			}
@@ -69,6 +70,9 @@ public class MVUtil {
 			context.put(FacilioConstants.ContextNames.DATE_RANGE,new DateRange(baseline.getStartTime(), DateTimeUtil.getCurrenTime() < mvProject.getReportingPeriodEndTime() ? DateTimeUtil.getCurrenTime() : mvProject.getReportingPeriodEndTime()));
 		}
 		else if(mvAdjustment != null) {
+			if(mvAdjustment.getFrequency() > 0) {
+				formulaFieldContext.setFrequency(mvAdjustment.getFrequency());
+			}
 			if(formulaFieldContext.getName() == null) {
 				formulaFieldContext.setName(mvAdjustment.getName());
 			}
@@ -94,6 +98,9 @@ public class MVUtil {
 			context.put(FacilioConstants.ContextNames.DATE_RANGE,new DateRange(baseline.getStartTime(), DateTimeUtil.getCurrenTime() < mvProject.getReportingPeriodEndTime() ? DateTimeUtil.getCurrenTime() : mvProject.getReportingPeriodEndTime()));
 		}
 		else if(mvAdjustment != null) {
+			if(mvAdjustment.getFrequency() > 0) {
+				formulaFieldContext.setFrequency(mvAdjustment.getFrequency());
+			}
 			if(formulaFieldContext.getName() == null) {
 				formulaFieldContext.setName(mvAdjustment.getName());
 			}

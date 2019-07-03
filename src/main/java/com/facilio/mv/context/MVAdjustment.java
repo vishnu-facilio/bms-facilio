@@ -1,6 +1,7 @@
 package com.facilio.mv.context;
 
 import com.facilio.bmsconsole.context.FormulaFieldContext;
+import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.workflows.context.WorkflowContext;
 
@@ -13,11 +14,23 @@ public class MVAdjustment extends ModuleBaseWithCustomFields {
 	
 	MVProjectContext project;
 	String name;
+	FacilioFrequency frequency;
 	FormulaFieldContext formulaField;
 	long startTime = -1;
 	long endTime = -1;
 	double constant = -1;
 	WorkflowContext workflow;
+	
+	public int getFrequency() {
+		if (frequency != null) {
+			return frequency.getValue();
+		}
+		return -1;
+	}
+
+	public void setFrequency(int frequency) {
+		this.frequency = FacilioFrequency.valueOf(frequency);
+	}
 	
 	public WorkflowContext getWorkflow() {
 		return workflow;
