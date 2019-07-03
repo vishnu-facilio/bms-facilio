@@ -143,7 +143,7 @@
         "101": {
         	"description" : "meanTimeBetweenTriggers",
         	"usage" : "rulesSummary",
-        	"workflow": "Map test(Number ruleId) 
+        	"workflow": "Map getRuleTriggerDetials(Number ruleId) 
 		    { 
 		            cri = {
 						criteria : [ruleId == ruleId && clearedTime > 0 ],
@@ -159,13 +159,19 @@
 		            meanTimeToClear = 0;
 		            if (res != null) {
 		                firstRes =res[0];
-		                previousClearedTime = firstRes.clearedTime;
+		                previousClearedTime = 0 
+		                if (firstRes.clearedTime != null ) {
+		                  previousClearedTime = firstRes.clearedTime;
+		                }
 		                for each index,value in res {
 							if(index > 0) {
 		                        if (value != null) {
 		                            createdTime = value.createdTime;
 		      						meanTimeBetweenTigger = meanTimeBetweenTigger + (createdTime -previousClearedTime); 
-		       						previousClearedTime = value.clearedTime;
+		      						if (value.clearedTime != null) {
+		      							previousClearedTime = value.clearedTime ;
+		      						
+		      						}
 		                        }                                
 							}
 		                }
@@ -182,16 +188,20 @@
 		            previousMonthMeanTimeBetweenTigger = 0;
 		            previousMonthTimeToClear = 0;
 		            previousMonthmeanTimeToClear = 0;
+                	previousMonthClearedTime = 0;
 		            if (previousMonthDetails != null ) {
 		                previousRes =previousMonthDetails[0];
-		                previousMonthClearedTime = previousRes.clearedTime;
-		               
+                      if (previousRes.clearedTime != null ) {
+                        previousMonthClearedTime = previousRes.clearedTime
+                      }
 		                for each index,value in previousMonthDetails {
 						    if(index > 0) {
 		                        if (value != null) {
 		                            createdTime = value.createdTime;
-		      						previousMonthMeanTimeBetweenTigger = previousMonthMeanTimeBetweenTigger + (createdTime -previousClearedTime); 
-		       						previousMonthClearedTime = value.clearedTime;
+		      						previousMonthMeanTimeBetweenTigger = previousMonthMeanTimeBetweenTigger + (createdTime -previousMonthClearedTime); 
+                                  if (value.clearedTime  != null ) {
+                                    previousMonthClearedTime = value.clearedTime ;
+                                  }
 		                        }                                
 							}
 		                }
@@ -199,7 +209,16 @@
 		                for each index,value in previousMonthDetails {
 							if(index > 0) {
 		                        if (value != null) {
-		      						previousMonthTimeToClear = previousMonthTimeToClear + (value.clearedTime - value.createdTime); 
+                                  previousCreatedTime = 0;
+                                  previousClearedTime = 0;
+                                  if (value.clearedTime != null) {
+                                    previousClearedTime = value.clearedTime
+                                  } 
+                                  if (value.createdTime != null) {
+                                    previousCreatedTime = value.createdTime
+
+                                  }
+		      						previousMonthTimeToClear = previousMonthTimeToClear + (previousClearedTime - previousCreatedTime); 
 		                        }                                
 							}
 		                } 
