@@ -172,6 +172,13 @@ public class Processor implements IRecordProcessor {
                         }
                         agent.setId(agentId);
                     }
+                    try {
+                        if (orgId == 152L) {
+                            LOGGER.info(" agent Name  -- " + agentName + "   agentType " + agent.getAgentType());
+                        }
+                    }catch (Exception e){
+                        LOGGER.info(" Exception occurred ",e);
+                    }
                     if( agent != null) {
                         agentUtil.addAgentMetrics(data.length(), agent.getId(), publishType.getKey());
                         String agentType = agent.getAgentType();
