@@ -94,6 +94,7 @@ public class ProcessImportCommand implements Command {
 		HashMap<Integer, String> headerIndex = new HashMap<Integer, String>();
 		List<Map<String, Object>> allRows = ImportAPI.getValidatedRows(importProcessContext.getId());
 
+		boolean isNewLookupFormat = isNewLookupFormat(importProcessContext);
 		for(Map<String, Object> row: allRows) {
 			ImportProcessLogContext rowLogContext = FieldUtil.getAsBeanFromMap(row, ImportProcessLogContext.class);
 			ImportRowContext rowContext = new ImportRowContext();
@@ -292,7 +293,7 @@ public class ProcessImportCommand implements Command {
 							}	
 							}
 							
-							if (facilioField.getDataTypeEnum().equals(FieldType.LOOKUP) && facilioField instanceof LookupField && fieldMapping.get(facilioField.getModule().getName() + "__" + facilioField.getName()) != null ) {
+							if (facilioField.getDataTypeEnum().equals(FieldType.LOOKUP) && facilioField instanceof LookupField && (isNewLookupFormat || fieldMapping.get(facilioField.getModule().getName() + "__" + facilioField.getName()) != null) ) {
 								LookupField lookupField = (LookupField) facilioField;
 
 								boolean isSkipSpecialLookup = false;
