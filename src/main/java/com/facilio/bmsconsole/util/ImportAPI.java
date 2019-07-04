@@ -588,9 +588,9 @@ public class ImportAPI {
 				fields.addAll(ImportFieldFactory.getImportFieldNames(facilioModule.getName()));
 			}
 			else {
-				if(customFields != null && !customFields.isEmpty()) {
-					fieldsList.addAll(customFields);
-				}
+//				if(customFields != null && !customFields.isEmpty()) {
+//					fieldsList.addAll(customFields);
+//				}
 
 				if(facilioModule.getName().equals(FacilioConstants.ContextNames.ASSET) ||
 						(facilioModule.getExtendModule() != null && facilioModule.getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
