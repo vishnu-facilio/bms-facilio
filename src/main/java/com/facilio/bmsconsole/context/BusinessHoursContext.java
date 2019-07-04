@@ -3,6 +3,10 @@ package com.facilio.bmsconsole.context;
 import java.io.Serializable;
 import java.util.List;
 
+import org.json.JSONObject;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class BusinessHoursContext implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String name;
@@ -156,6 +160,19 @@ public class BusinessHoursContext implements Serializable {
 			}
 			return null;
 		}
+	}
+
+	public static JSONObject getAsJsonObject(BusinessHoursContext value)throws Exception {
+		ObjectMapper mapper = new ObjectMapper();
+		String jsonInString = mapper.writeValueAsString(value);
+		return new JSONObject(jsonInString);
+	}
+	@Override
+	public String toString() {
+		return "BusinessHoursContext [name=" + name + ", businessHourTypeId=" + businessHourTypeId
+				+ ", businessHourType=" + businessHourType + ", customHourTypeId=" + customHourTypeId
+				+ ", customHourType=" + customHourType + ", orgId=" + orgId + ", id=" + id
+				+ ", singleDaybusinessHoursList=" + singleDaybusinessHoursList + "]";
 	}
 
 }

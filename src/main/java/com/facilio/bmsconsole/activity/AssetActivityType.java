@@ -26,6 +26,34 @@ public enum AssetActivityType implements ActivityType {
 			return " updated the asset";
 		}
 	},
+	ASSET_NOTES(29) {
+		@Override
+		public String constructMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return " added a Comment ";
+		}
+	},
+	ADD_ATTACHMENT(30) {
+		@Override
+		public String constructMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return " added the Attachment ";
+		}	
+	},
+	UPDATE_STATUS(33) {
+		@Override
+		public String constructMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return " updated ";
+		}
+	},
+	ASSET_DOWNTIME(34) {
+		@Override
+		public String constructMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return " updated the asset";
+		}
+	},
 	;
 
 	private AssetActivityType(int value) {

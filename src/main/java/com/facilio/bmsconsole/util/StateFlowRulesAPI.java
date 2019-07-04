@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.util;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -52,7 +53,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 	public static void updateState(ModuleBaseWithCustomFields record, FacilioModule module, FacilioStatus facilioStatus, boolean includeStateFlowChange, Context context) throws Exception {
 		if (facilioStatus == null) {
 			return;
-		}
+		} 
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				
@@ -121,8 +122,14 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			info.put("oldValue", oldState.getDisplayName());
 			info.put("newValue", facilioStatus.getDisplayName());
 			CommonCommandUtil.addActivityToContext(record.getId(), -1, WorkOrderActivityType.UPDATE_STATUS, info, (FacilioContext) context);
+		}	
+		if ((module.getName().contains("asset")) && oldState != null && oldState.getDisplayName() != null && facilioStatus != null && facilioStatus.getDisplayName() != null) {
+			JSONObject info = new JSONObject();
+			info.put("status", facilioStatus.getDisplayName());
+			info.put("oldValue", oldState.getDisplayName());
+			info.put("newValue", facilioStatus.getDisplayName());
+			CommonCommandUtil.addActivityToContext(record.getId(), -1, AssetActivityType.UPDATE_STATUS, info, (FacilioContext) context);
 		}
-		
 		checkAutomatedCondition(facilioStatus, module, record, context);
 		addScheduledJobIfAny(facilioStatus.getId(), module.getName(), record, (FacilioContext) context);
 	}

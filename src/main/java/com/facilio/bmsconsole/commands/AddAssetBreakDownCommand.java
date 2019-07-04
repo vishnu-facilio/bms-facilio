@@ -6,13 +6,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 
+import javax.sound.midi.Soundbank;
+
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.activity.AssetActivityType;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AssetBDSourceDetailsContext;
 import com.facilio.bmsconsole.context.AssetBreakdownContext;
+import com.facilio.bmsconsole.context.BusinessHoursContext;
+import com.facilio.bmsconsole.context.AssetBDSourceDetailsContext.SourceType;
 import com.facilio.bmsconsole.util.AssetBreakdownAPI;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -44,6 +52,18 @@ public class AddAssetBreakDownCommand implements Command {
 		FacilioModule assetBreakdownModule = modBean.getModule(ContextNames.ASSET_BREAKDOWN);
 		List<FacilioField> assetBreakdownFields = modBean.getAllFields(ContextNames.ASSET_BREAKDOWN);
 		assetBreakdownFields.add(FieldFactory.getModuleIdField(assetBreakdownModule));
+		if (SourceType.ASSET.equals(SourceType.valueOf((int) assetBDSourceDetails.getSourceType()))) {
+			JSONObject info = new JSONObject();
+			List<Object> changeList = new ArrayList<Object>();
+			JSONObject changeObj = new JSONObject();
+			changeObj.put("field", "downTime");
+			changeObj.put("displayName", "Downtime");
+			changeObj.put("from", assetBDSourceDetails.getFromtime());
+			changeObj.put("to", assetBDSourceDetails.getTotime());
+			changeList.add(changeObj);
+			info.put("changeSet", changeList);
+			CommonCommandUtil.addActivityToContext(assetBDSourceDetails.getAssetid(), -1, AssetActivityType.ASSET_DOWNTIME, info, (FacilioContext) context);
+		}
 		if (assetBreakdownStatus) {
 			if (lastAssetBdSourceId != null && lastAssetBdSourceId != -1) {
 				if (assetBDSourceDetails.getTotime() > 0) {

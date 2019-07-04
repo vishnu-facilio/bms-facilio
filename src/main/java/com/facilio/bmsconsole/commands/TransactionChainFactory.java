@@ -1143,11 +1143,13 @@ public class TransactionChainFactory {
 			c.addCommand(new AddCategoryOnAssetUpdateCommand());
 			c.addCommand(new SetModuleForSpecialAssetsCommand());
 			c.addCommand(new GenericUpdateModuleDataCommand());
+			c.addCommand(new ConstructEditAssetActivityCommand());
 			c.addCommand(new GenericGetModuleDataListCommand());
 			c.addCommand(new UpdateStateForModuleDataCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(FacilioChainFactory.getCategoryReadingsChain());
 			c.addCommand(new InsertReadingDataMetaForNewResourceCommand());
+			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
 		
@@ -1242,6 +1244,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddBusinessHourCommand());
 			c.addCommand(new AddSingleDayBusinessHourCommand());
 			c.addCommand(new UpdateBusinessHourInResourceCommand());
+			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
 		public static Chain updateBusinessHoursChain() {
@@ -1254,6 +1257,7 @@ public class TransactionChainFactory {
 		public static Chain updateBusinessHourInResourceChain () {
 			Chain c = FacilioChain.getTransactionChain();
 			c.addCommand(new UpdateBusinessHourInResourceCommand());
+			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
 		public static Chain deleteBusinessHoursChain () {
@@ -3082,6 +3086,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ValidateAssetBreakdownCommand());
 			c.addCommand(new AddAssetBreakDownCommand());
 			c.addCommand(new updateAssetDownTimeDetailsCommand());
+			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
 

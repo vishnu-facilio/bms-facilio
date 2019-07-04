@@ -5,6 +5,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.activity.ItemActivityType;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -92,6 +93,7 @@ public class AddNotesCommand implements Command, PostTransactionCommand {
 				CommonCommandUtil.addActivityToContext(note.getParentId(), -1, ItemActivityType.ITEM_NOTES, info, (FacilioContext) context);
 	     		}
 	     		else if(moduleName.equals(FacilioConstants.ContextNames.ASSET_NOTES)) {
+	     			CommonCommandUtil.addActivityToContext(note.getParentId(), -1, AssetActivityType.ASSET_NOTES, info, (FacilioContext) context);
 	     		}
 				
 				noteBuilder.addRecord(note);

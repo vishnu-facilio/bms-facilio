@@ -20,6 +20,8 @@ public class BusinessHoursAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.BUSINESS_HOUR, businessHour);
 		context.put(FacilioConstants.ContextNames.RESOURCE_ID, resourceid);
+		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ASSET_ACTIVITY);
+		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 		Chain addBusinessHourChain = TransactionChainFactory.addBusinessHourChain();
 		addBusinessHourChain.execute(context);
 		id = (long) context.get(FacilioConstants.ContextNames.ID);
@@ -33,6 +35,8 @@ public class BusinessHoursAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, id);
 		context.put(FacilioConstants.ContextNames.RESOURCE_ID, resourceid);
+		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ASSET_ACTIVITY);
+		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 		Chain updateBusinessHourInResourceChain = TransactionChainFactory.updateBusinessHourInResourceChain();
 		updateBusinessHourInResourceChain.execute(context);
 		return SUCCESS;

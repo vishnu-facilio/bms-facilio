@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.activity.ItemActivityType;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -129,6 +130,17 @@ public class AddAttachmentRelationshipCommand implements Command, PostTransactio
     			}
     			attach.put("attachment", attachmentActivity);
     			 CommonCommandUtil.addActivityToContext(recordId, -1, ItemActivityType.ITEM_ATTACHMENT, attach, (FacilioContext) context);
+     		}
+     		else if(moduleName.equals(FacilioConstants.ContextNames.ASSET_ATTACHMENTS)) {
+     			for(AttachmentContext attaches : attachments) {
+    				attachmentNames.add(attaches.getFileName());
+    		  		JSONObject info = new JSONObject();
+    						info.put("Filename", attaches.getFileName());
+    						info.put("Url", attaches.getPreviewUrl());
+    						attachmentActivity.add(info);
+    			}
+    			attach.put("attachment", attachmentActivity);
+    			 CommonCommandUtil.addActivityToContext(recordId, -1, AssetActivityType.ADD_ATTACHMENT, attach, (FacilioContext) context);
      		}
 
 		}

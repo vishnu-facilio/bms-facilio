@@ -122,7 +122,6 @@ public class AssetAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		context.put(FacilioConstants.ContextNames.RECORD, asset);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(asset.getId()));
-		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		
 		// cannot update module state directly
@@ -130,7 +129,8 @@ public class AssetAction extends FacilioAction {
 			asset.setModuleState(null);
 		}
 		context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
-		
+		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ASSET_ACTIVITY);
+		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 		Chain updateAssetChain = TransactionChainFactory.getUpdateAssetChain();
 		updateAssetChain.execute(context);
 		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
