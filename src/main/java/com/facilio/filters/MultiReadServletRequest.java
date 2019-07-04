@@ -42,9 +42,9 @@ public class MultiReadServletRequest extends HttpServletRequestWrapper {
 	}
 	
 	private boolean shouldCacheRequest(HttpServletRequest request) {
-		if (AwsUtil.isProduction()) {
-			return false;
-		}
+//		if (AwsUtil.isProduction()) {
+//			return false;
+//		}
 		Parameter parameter = ActionContext.getContext().getParameters().get("cacheUrl");
 		boolean cacheUrl = false;
 		if (parameter != null) {
