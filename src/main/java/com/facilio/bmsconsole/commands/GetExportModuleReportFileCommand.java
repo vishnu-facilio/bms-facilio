@@ -420,7 +420,7 @@ private static final String ALIAS = "alias";
 //	}
 	
 	private StringBuilder getClientUrl(String moduleName, Long reportId, FileFormat fileFormat) {
-		moduleName = FacilioConstants.ContextNames.ENERGY_DATA_READING;	// Temp
+		// moduleName = FacilioConstants.ContextNames.ENERGY_DATA_READING;	// Temp
 		StringBuilder url = new StringBuilder(AwsUtil.getConfig("clientapp.url")).append("/app/");
 		if (moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER)) {
 			url.append("wo");
@@ -428,7 +428,10 @@ private static final String ALIAS = "alias";
 		else if (moduleName.equals(FacilioConstants.ContextNames.ALARM)) {
 			url.append("fa");
 		}
-		else if (moduleName.equals(FacilioConstants.ContextNames.ENERGY_DATA_READING)) {
+		else if(moduleName.equals(FacilioConstants.ContextNames.ASSET)) {
+			url.append("at");
+		}
+		else {
 			url.append("em");
 		}
 		if (reportId > 0) {
