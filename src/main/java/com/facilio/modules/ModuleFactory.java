@@ -2338,4 +2338,12 @@ public class ModuleFactory {
 		module.setTableName("ReadingAlarm");
 		return module;
 	}
+	
+	public static FacilioModule getBaseAlarmModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ContextNames.BASE_ALARM);
+		module.setDisplayName("Base Alarm");
+		module.setTableName("BaseAlarm");
+		return module;
+	}
 }

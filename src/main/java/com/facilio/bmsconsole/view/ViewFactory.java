@@ -40,7 +40,6 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.time.DateTimeUtil;
-import com.opensymphony.xwork2.util.fs.Revision;
 
 public class ViewFactory {
 
@@ -3783,7 +3782,7 @@ public class ViewFactory {
 		createdTime.setName("lastOccurredTime");
 		createdTime.setDataType(FieldType.DATE_TIME);
 		createdTime.setColumnName("LAST_OCCURRED_TIME");
-		createdTime.setModule(ModuleFactory.getReadingAlarmModule());
+		createdTime.setModule(ModuleFactory.getBaseAlarmModule());
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
