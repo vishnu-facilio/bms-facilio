@@ -51,6 +51,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.zip.Inflater;
 
 public class LoginAction extends FacilioAction {
@@ -291,6 +292,10 @@ public class LoginAction extends FacilioAction {
 		List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(AccountUtil.getCurrentOrg().getId(), true);
 		List<Role> roles = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getOrgId()).getRoles();
 		List<Organization> orgs = AccountUtil.getUserBean().getOrgs(AccountUtil.getCurrentUser().getUid());
+		Map<Long, Set<Long>> userSites = new HashMap<>();
+		if (users != null) {
+			userSites = AccountUtil.getUserBean().getUserSites(users.stream().map(i -> i.getOuid()).collect(Collectors.toList()));
+		}
 		
 		Map<String, Object> data = new HashMap<>();
 		data.put("users", users);
@@ -311,6 +316,7 @@ public class LoginAction extends FacilioAction {
 		data.put("assetDepartment", AssetsAPI.getDepartmentList());
 //		data.put("inventoryVendors", InventoryApi.getInventoryVendorList());
 //		data.put("inventoryCategory", InventoryApi.getInventoryCategoryList());
+		data.put("userSites", userSites);
 		
 		try {
 		data.put("inventoryCategory", InventoryApi.getInventoryCategoryList());

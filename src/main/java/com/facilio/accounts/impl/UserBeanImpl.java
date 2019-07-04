@@ -48,6 +48,7 @@ import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
@@ -2046,4 +2047,28 @@ public class UserBeanImpl implements UserBean {
 		}
 		return false;
     }
+
+	@Override
+	public HashMap<Long, Set<Long>> getUserSites(List<Long> users) throws Exception {
+		List<FacilioField> accessibleSpaceFields = AccountConstants.getAccessbileSpaceFields();
+		Map<String, FacilioField> accessibleFieldMap = FieldFactory.getAsMap(accessibleSpaceFields);
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(accessibleSpaceFields)
+				.table(ModuleFactory.getAccessibleSpaceModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(accessibleFieldMap.get("ouid"), users, NumberOperators.EQUALS));
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		HashMap<Long, Set<Long>> userSites = new HashMap<>();
+		if (props != null && !props.isEmpty()) {
+			for(Map<String, Object> prop : props) {
+				Set<Long> sites = userSites.get(prop.get("ouid"));
+				if (sites == null) {
+					sites = new HashSet<>();
+					userSites.put((Long) prop.get("ouid"), sites);
+				}
+				sites.add((Long) prop.get("siteId"));
+			}
+		}
+		return userSites;
+	}
 }

@@ -5,9 +5,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
 import com.facilio.db.criteria.Criteria;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public interface UserBean {
 	
@@ -121,6 +119,8 @@ public interface UserBean {
     List<Long> getAccessibleGroupList (long uid) throws Exception;
 
 	public boolean acceptUser(User user) throws Exception;
+
+	public HashMap<Long, Set<Long>> getUserSites(List<Long> users) throws Exception;
 
 	//public void sendInvitation(long ouid, User user) throws Exception;
 
