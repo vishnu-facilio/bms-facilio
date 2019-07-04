@@ -24,6 +24,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentKeys;
 import com.facilio.agent.AgentKeys.AckMessageType;
 import com.facilio.agent.AgentUtil;
+import com.facilio.agent.FacilioAgent;
 import com.facilio.agent.protocol.ProtocolUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
@@ -83,8 +84,8 @@ public class IoTMessageAPI {
 		object.put("instanceNumber", controller.getInstanceNumber());
 		object.put("ipAddress", controller.getIpAddress());
 		object.put("type", controller.getControllerType());
-		object.put("subnetPrefix", 1);
-		object.put("broadcastAddress", 1);
+		object.put("subnetPrefix", 1l);
+		object.put("broadcastAddress", "1");
 		object.put("timestamp", System.currentTimeMillis());
 		
 		if (controller.getAgentId() != -1) {
@@ -103,9 +104,6 @@ public class IoTMessageAPI {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			for(Map<String, Object> instance : instances) {
 				JSONObject point = new JSONObject();
-				point.put("instanceType", instance.get("instanceType"));
-				point.put("objectInstanceNumber", instance.get("objectInstanceNumber"));
-				
 				ProtocolUtil.setPointData(controller.getControllerTypeEnum(), command, instance, point, modBean);
 				
 				points.add(point);

@@ -25,6 +25,9 @@ public class ProtocolUtil {
 	}
 
 	public static void setBacnetPointData(IotCommandType command, Map<String, Object> instance, Map<String, Object> point, ModuleBean modBean) throws Exception {
+		point.put("instanceType", instance.get("instanceType"));
+		point.put("objectInstanceNumber", instance.get("objectInstanceNumber"));
+		
 		switch(command) {
 			case CONFIGURE:
 				point.put("instance", instance.get("instance"));
@@ -68,8 +71,6 @@ public class ProtocolUtil {
 	public static void setNiagaraPoint(IotCommandType command, Map<String, Object> instance, Map<String, Object> point) throws Exception {
 		switch(command) {
 			case CONFIGURE:
-				point.put("instance", instance.get("instance"));
-				point.put("device", instance.get("device"));
 				point.put("pointPath", instance.get("pointPath"));
 				break;
 		}
