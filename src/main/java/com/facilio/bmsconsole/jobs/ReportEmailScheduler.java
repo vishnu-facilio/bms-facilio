@@ -13,6 +13,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.report.context.ReportContext;
+import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.util.ReportUtil;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
@@ -52,7 +53,13 @@ public class ReportEmailScheduler extends FacilioJob {
 				context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 				context.put("isS3Url", true);
 				
-				Chain mailReportChain = TransactionChainFactory.sendReportMailChain();
+				Chain mailReportChain;
+				if (reportContext.getTypeEnum() == ReportType.WORKORDER_REPORT) {
+					mailReportChain = TransactionChainFactory.sendModuleReportMailChain();
+				}
+				else {
+					mailReportChain = TransactionChainFactory.sendReportMailChain();
+				}
 				mailReportChain.execute(context);				
 				
 			}
