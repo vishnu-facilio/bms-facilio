@@ -83,12 +83,6 @@ public class UpdateMVBaselineCommand implements Command {
 						Chain updateEnPIChain = FacilioChainFactory.updateFormulaChain();
 						updateEnPIChain.execute(context);
 					}
-					else if(baseline.getWorkflow() != null) {
-						
-						context.put(WorkflowV2Util.WORKFLOW_CONTEXT, baseline.getWorkflow());
-						Chain addWorkflowChain =  TransactionChainFactory.getUpdateWorkflowChain(); 
-						addWorkflowChain.execute(context);
-					}
 					
 					MVUtil.updateMVBaseline(baseline);
 				}
@@ -102,6 +96,7 @@ public class UpdateMVBaselineCommand implements Command {
 					.andCondition(CriteriaAPI.getIdCondition(deletedBaseline.getId(), module));
 			
 			delete.delete();
+			
 		}
 		return false;
 	}

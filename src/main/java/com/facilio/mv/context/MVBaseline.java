@@ -17,14 +17,6 @@ public class MVBaseline extends ModuleBaseWithCustomFields {
 	FormulaFieldContext formulaFieldWithAjustment;
 	long startTime;
 	long endTime;
-	WorkflowContext workflow;
-	
-	public WorkflowContext getWorkflow() {
-		return workflow;
-	}
-	public void setWorkflow(WorkflowContext workflow) {
-		this.workflow = workflow;
-	}
 	public FormulaFieldContext getFormulaField() {
 		return formulaField;
 	}

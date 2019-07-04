@@ -144,8 +144,10 @@ public class MVProjectContext extends ModuleBaseWithCustomFields {
 	}
 
 	public enum EMC_Options {
-
-		RETROFIT_ISOLATION_ALL_PARAM_MESUREMENT(1, "Retrofit Isolation: All Parameter Measurement"),
+		
+		RETROFIT_ISOLATION_KEY_PARM_MESUREMENT(1, "Retrofit Isolation (Key Parameter Measurement)"),
+		RETROFIT_ISOLATION_ALL_PARAM_MESUREMENT(2, "Retrofit Isolation: All Parameter Measurement"),
+		WHOLE_FACILITY(3, "Whole Facility"),
 		;
 
 		int intVal;

@@ -37,6 +37,13 @@ public class ConstructBaselineFormulaWithAdjustmentCommand implements Command {
 		
 		for(MVBaseline baseLine :baseLines) {
 			
+			MVBaseline oldBaseline = MVUtil.getMVBaseline(baseLine.getId());
+			
+			if(oldBaseline != null && oldBaseline.getFormulaFieldWithAjustment() != null && oldBaseline.getFormulaFieldWithAjustment().getId() > 0) {
+				FormulaFieldContext formulaField = FormulaFieldAPI.getFormulaField(oldBaseline.getFormulaFieldWithAjustment().getId());
+				baseLine.setFormulaFieldWithAjustment(formulaField);
+			}
+			
 			StringBuilder workflowString = new StringBuilder();
 			
 			StringBuilder resultStringBuilder = new StringBuilder();

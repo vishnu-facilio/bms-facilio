@@ -480,53 +480,54 @@ public class WorkflowUtil {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		List<WorkflowFieldContext> workflowFieldList = null;
-		for(WorkflowExpression workflowExpression :workflowContext.getExpressions()) {
-			
-			if(workflowExpression instanceof ExpressionContext) {
-				ExpressionContext expression = (ExpressionContext)  workflowExpression;
+		if(!workflowContext.isV2Script()) {
+			for(WorkflowExpression workflowExpression :workflowContext.getExpressions()) {
 				
-				String fieldName = expression.getFieldName();
-				String moduleName = expression.getModuleName();
-				
-				if(moduleName != null && fieldName != null && !moduleName.startsWith("$")) {
-					LOGGER.fine("moduleName -- "+moduleName +" fieldName -- "+fieldName);
-					FacilioModule module = modBean.getModule(moduleName);
-					FacilioField field = modBean.getField(fieldName, moduleName);
-					if(field != null) {
-						
-						if(workflowFieldList == null) {
-							workflowFieldList = new ArrayList<>();
-						}
-						
-						WorkflowFieldContext workflowFieldContext = new WorkflowFieldContext();
-						
-						workflowFieldContext.setOrgId(module.getOrgId());
-						workflowFieldContext.setModuleId(module.getModuleId());
-						workflowFieldContext.setFieldId(field.getId());
-						workflowFieldContext.setField(field);
-						if (workflowContext.getId() > 0) {
-							workflowFieldContext.setWorkflowId(workflowContext.getId());
-						}
-						Long parentId = null;
-						if(expression.getCriteria() != null) {
-							Map<String, Condition> conditions = expression.getCriteria().getConditions();
-							for(Condition condition :conditions.values()) {
-								if(condition.getFieldName().equals("parentId") && !condition.getValue().equals("${resourceId}")) {
-									if(condition.getValue() != null && !condition.getValue().contains("${")) {
-										parentId = Long.parseLong(condition.getValue());
+				if(workflowExpression instanceof ExpressionContext) {
+					ExpressionContext expression = (ExpressionContext)  workflowExpression;
+					
+					String fieldName = expression.getFieldName();
+					String moduleName = expression.getModuleName();
+					
+					if(moduleName != null && fieldName != null && !moduleName.startsWith("$")) {
+						FacilioModule module = modBean.getModule(moduleName);
+						FacilioField field = modBean.getField(fieldName, moduleName);
+						if(field != null) {
+							
+							if(workflowFieldList == null) {
+								workflowFieldList = new ArrayList<>();
+							}
+							
+							WorkflowFieldContext workflowFieldContext = new WorkflowFieldContext();
+							
+							workflowFieldContext.setOrgId(module.getOrgId());
+							workflowFieldContext.setModuleId(module.getModuleId());
+							workflowFieldContext.setFieldId(field.getId());
+							workflowFieldContext.setField(field);
+							if (workflowContext.getId() > 0) {
+								workflowFieldContext.setWorkflowId(workflowContext.getId());
+							}
+							Long parentId = null;
+							if(expression.getCriteria() != null) {
+								Map<String, Condition> conditions = expression.getCriteria().getConditions();
+								for(Condition condition :conditions.values()) {
+									if(condition.getFieldName().equals("parentId") && !condition.getValue().equals("${resourceId}")) {
+										if(condition.getValue() != null && !condition.getValue().contains("${")) {
+											parentId = Long.parseLong(condition.getValue());
+										}
 									}
 								}
 							}
-						}
-						if(parentId != null) {
-							workflowFieldContext.setResourceId(parentId);
-						}
-						if(expression.getAggregateOpperator() != null) {
-							workflowFieldContext.setAggregation(expression.getAggregateOpperator());
-						}
-						
-						if(!workflowFieldList.contains(workflowFieldContext)) {
-							workflowFieldList.add(workflowFieldContext);
+							if(parentId != null) {
+								workflowFieldContext.setResourceId(parentId);
+							}
+							if(expression.getAggregateOpperator() != null) {
+								workflowFieldContext.setAggregation(expression.getAggregateOpperator());
+							}
+							
+							if(!workflowFieldList.contains(workflowFieldContext)) {
+								workflowFieldList.add(workflowFieldContext);
+							}
 						}
 					}
 				}

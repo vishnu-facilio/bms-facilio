@@ -47,19 +47,8 @@ public class AddMVAdjustmentCommand implements Command {
 				MVUtil.fillFormulaFieldDetailsForAdd(adjustment1.getFormulaField(), mvProjectWrapper.getMvProject(),null,adjustment1,context);
 				context.put(FacilioConstants.ContextNames.FORMULA_FIELD, adjustment1.getFormulaField());
 
-				if (adjustment1.getFormulaField().getInterval() == -1) {
-					int interval = mvProjectWrapper.getMvProject().getFrequency();
-					adjustment1.getFormulaField().setInterval(interval);
-				}
-
 				Chain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
 				addEnpiChain.execute(context);
-			}
-			else if(adjustment1.getWorkflow() != null) {
-				
-				context.put(WorkflowV2Util.WORKFLOW_CONTEXT, adjustment1.getWorkflow());
-				Chain addWorkflowChain =  TransactionChainFactory.getAddWorkflowChain(); 
-				addWorkflowChain.execute(context);
 			}
 		}
 		

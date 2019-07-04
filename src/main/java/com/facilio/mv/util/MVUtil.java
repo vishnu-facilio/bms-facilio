@@ -85,7 +85,8 @@ public class MVUtil {
 	public static void fillFormulaFieldDetailsForUpdate(FormulaFieldContext formulaFieldContext,MVProjectContext mvProject,MVBaseline baseline,MVAdjustment mvAdjustment, Context context) {
 		
 		formulaFieldContext.setFormulaFieldType(null);
-		formulaFieldContext.setTriggerType(null);
+		formulaFieldContext.setInterval(-1);
+		formulaFieldContext.setTriggerType(-1);
 		formulaFieldContext.setResourceId(-1);
 		formulaFieldContext.setResourceType(null);
 		formulaFieldContext.setFrequency(mvProject.getFrequency());
@@ -196,7 +197,25 @@ public class MVUtil {
 		return mvProjectWrapper;
 	}
 	
-	
+	public static MVBaseline getMVBaseline(Long mvBaselineId) throws Exception {
+		
+		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		FacilioModule mvBaselineModule = modbean.getModule(FacilioConstants.ContextNames.MV_BASELINE_MODULE);
+		List<FacilioField> mvBaselineFields = modbean.getAllFields(FacilioConstants.ContextNames.MV_BASELINE_MODULE);
+		
+		SelectRecordsBuilder<MVBaseline> selectBaseline = new SelectRecordsBuilder<MVBaseline>()
+				.module(mvBaselineModule)
+				.select(mvBaselineFields)
+				.beanClass(MVBaseline.class)
+				.andCondition(CriteriaAPI.getIdCondition(mvBaselineId, mvBaselineModule));
+		
+		List<MVBaseline> mvBaselines = selectBaseline.get();
+		if(mvBaselines != null && !mvBaselines.isEmpty()) {
+			return mvBaselines.get(0);
+		}
+		return null;
+	}
 	public static List<MVProjectContext> getMVProjects(Boolean isOpen) throws Exception {
 		
 		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");

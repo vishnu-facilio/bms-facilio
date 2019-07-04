@@ -19,7 +19,6 @@ public class MVAdjustment extends ModuleBaseWithCustomFields {
 	long startTime = -1;
 	long endTime = -1;
 	double constant = -1;
-	WorkflowContext workflow;
 	
 	public int getFrequency() {
 		if (frequency != null) {
@@ -30,13 +29,6 @@ public class MVAdjustment extends ModuleBaseWithCustomFields {
 
 	public void setFrequency(int frequency) {
 		this.frequency = FacilioFrequency.valueOf(frequency);
-	}
-	
-	public WorkflowContext getWorkflow() {
-		return workflow;
-	}
-	public void setWorkflow(WorkflowContext workflow) {
-		this.workflow = workflow;
 	}
 	
 	public double getConstant() {

@@ -70,20 +70,34 @@ public class UpdateMVAdjustmentCommand implements Command {
 					chain.execute(context);
 				}
 				else {
+					MVAdjustment oldAdjustment = getOldAdjustment(adjustment,oldAdjustments);
 					if(adjustment.getFormulaField() != null) {
-						
-						context.put(FacilioConstants.ContextNames.FORMULA_FIELD, adjustment.getFormulaField());
-						MVUtil.fillFormulaFieldDetailsForUpdate(adjustment.getFormulaField(), mvProjectWrapper.getMvProject(),null,adjustment,context);
-						
-						Chain updateEnPIChain = FacilioChainFactory.updateFormulaChain();
-						updateEnPIChain.execute(context);
+						adjustment.setConstant(-99d);
+						if(oldAdjustment.getFormulaField() == null) {
+							
+							MVUtil.fillFormulaFieldDetailsForAdd(adjustment.getFormulaField(), mvProjectWrapper.getMvProject(),null,adjustment,context);
+							context.put(FacilioConstants.ContextNames.FORMULA_FIELD, adjustment.getFormulaField());
+
+							Chain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
+							addEnpiChain.execute(context);
+						}
+						else {
+							context.put(FacilioConstants.ContextNames.FORMULA_FIELD, adjustment.getFormulaField());
+							MVUtil.fillFormulaFieldDetailsForUpdate(adjustment.getFormulaField(), mvProjectWrapper.getMvProject(),null,adjustment,context);
+							
+							Chain updateEnPIChain = FacilioChainFactory.updateFormulaChain();
+							updateEnPIChain.execute(context);
+						}
 					}
-					else if(adjustment.getWorkflow() != null) {
-						
-						context.put(WorkflowV2Util.WORKFLOW_CONTEXT, adjustment.getWorkflow());
-						Chain addWorkflowChain =  TransactionChainFactory.getUpdateWorkflowChain(); 
-						addWorkflowChain.execute(context);
+					else {
+						if(oldAdjustment.getFormulaField() != null) {
+							context.put(FacilioConstants.ContextNames.RECORD_ID, oldAdjustment.getFormulaField().getId());
+							
+							Chain deleteEnPIChain = FacilioChainFactory.deleteFormulaChain();
+							deleteEnPIChain.execute(context);
+						}
 					}
+					
 					
 					UpdateRecordBuilder<MVAdjustment> update = new UpdateRecordBuilder<MVAdjustment>()
 							.module(module)
@@ -102,8 +116,25 @@ public class UpdateMVAdjustmentCommand implements Command {
 					.andCondition(CriteriaAPI.getIdCondition(deletedAdjustment.getId(), module));
 			
 			delete.delete();
+			
+			if(deletedAdjustment.getFormulaField() != null && deletedAdjustment.getFormulaField().getId() > 0) {
+				context.put(FacilioConstants.ContextNames.RECORD_ID, deletedAdjustment.getFormulaField().getId());
+				
+				Chain deleteEnPIChain = FacilioChainFactory.deleteFormulaChain();
+				deleteEnPIChain.execute(context);
+			}
+			
 		}
 		return false;
+	}
+
+	private MVAdjustment getOldAdjustment(MVAdjustment adjustment, List<MVAdjustment> oldAdjustments) {
+		for(MVAdjustment oldAdjustment :oldAdjustments) {
+			if(oldAdjustment.getId() == adjustment.getId()) {
+				return oldAdjustment;
+			}
+		}
+		return null;
 	}
 
 

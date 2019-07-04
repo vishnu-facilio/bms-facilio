@@ -52,12 +52,6 @@ public class AddMVBaselineCommand implements Command {
 				Chain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
 				addEnpiChain.execute(context);
 			}
-			else if(baseLine.getWorkflow() != null) {
-				
-				context.put(WorkflowV2Util.WORKFLOW_CONTEXT, baseLine.getWorkflow());
-				Chain addWorkflowChain =  TransactionChainFactory.getAddWorkflowChain(); 
-				addWorkflowChain.execute(context);
-			}
 		}
 		
 		
