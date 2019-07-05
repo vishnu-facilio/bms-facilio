@@ -14,12 +14,108 @@ import java.util.List;
 
 public enum FieldOperator implements Operator<Object> {
 
-	EQUAL(74, " = "),
-	NOT_EQUAL(75, " != "),
-	LESS_THAN(76, " < "),
-	LESS_THAN_EQUAL(77, " <= "),
-	GREATER_THAN(78, " > "),
-	GREATER_THAN_EQUAL(79, " >= "),
+	EQUAL(74, " = ") {
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, Object valueField) {
+			return new FacilioModulePredicate(fieldName, new Predicate() {
+				@Override
+				public boolean evaluate(Object object) {
+					if ((object == null || (object instanceof Number && ((Number) object).intValue() == -1)) 
+							&& ((valueField == null || (valueField instanceof Number && ((Number) object).intValue() == -1)))) {
+						return true;
+					}
+					return Objects.equal(object, valueField);
+				}
+			});
+		}
+	},
+	NOT_EQUAL(75, " != ") {
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, Object valueField) {
+			return new FacilioModulePredicate(fieldName, new Predicate() {
+				@Override
+				public boolean evaluate(Object object) {
+					if ((object == null || (object instanceof Number && ((Number) object).intValue() == -1)) 
+							&& ((valueField == null || (valueField instanceof Number && ((Number) object).intValue() == -1)))) {
+						return true;
+					}
+					return !Objects.equal(object, valueField);
+				}
+			});
+		}
+	},
+	LESS_THAN(76, " < ") {
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, Object valueField) {
+			return new FacilioModulePredicate(fieldName, new Predicate() {
+				@Override
+				public boolean evaluate(Object object) {
+					if ((object == null || (object instanceof Number && ((Number) object).intValue() == -1)) 
+							&& ((valueField == null || (valueField instanceof Number && ((Number) object).intValue() == -1)))) {
+						return true;
+					}
+					if (object instanceof Number && valueField instanceof Number) {
+						return ((Number) object).doubleValue() < ((Number) valueField).doubleValue();
+					}
+					return false;
+				}
+			});
+		}
+	},
+	LESS_THAN_EQUAL(77, " <= ") {
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, Object valueField) {
+			return new FacilioModulePredicate(fieldName, new Predicate() {
+				@Override
+				public boolean evaluate(Object object) {
+					if ((object == null || (object instanceof Number && ((Number) object).intValue() == -1)) 
+							&& ((valueField == null || (valueField instanceof Number && ((Number) object).intValue() == -1)))) {
+						return true;
+					}
+					if (object instanceof Number && valueField instanceof Number) {
+						return ((Number) object).doubleValue() <= ((Number) valueField).doubleValue();
+					}
+					return false;
+				}
+			});
+		}
+	},
+	GREATER_THAN(78, " > ") {
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, Object valueField) {
+			return new FacilioModulePredicate(fieldName, new Predicate() {
+				@Override
+				public boolean evaluate(Object object) {
+					if ((object == null || (object instanceof Number && ((Number) object).intValue() == -1)) 
+							&& ((valueField == null || (valueField instanceof Number && ((Number) object).intValue() == -1)))) {
+						return true;
+					}
+					if (object instanceof Number && valueField instanceof Number) {
+						return ((Number) object).doubleValue() > ((Number) valueField).doubleValue();
+					}
+					return false;
+				}
+			});
+		}
+	},
+	GREATER_THAN_EQUAL(79, " >= ") {
+		@Override
+		public FacilioModulePredicate getPredicate(String fieldName, Object valueField) {
+			return new FacilioModulePredicate(fieldName, new Predicate() {
+				@Override
+				public boolean evaluate(Object object) {
+					if ((object == null || (object instanceof Number && ((Number) object).intValue() == -1)) 
+							&& ((valueField == null || (valueField instanceof Number && ((Number) object).intValue() == -1)))) {
+						return true;
+					}
+					if (object instanceof Number && valueField instanceof Number) {
+						return ((Number) object).doubleValue() >= ((Number) valueField).doubleValue();
+					}
+					return false;
+				}
+			});
+		}
+	},
 	;
 	
 	private static Logger log = LogManager.getLogger(FieldOperator.class.getName());
@@ -66,21 +162,6 @@ public enum FieldOperator implements Operator<Object> {
 			log.info("Exception occurred ", e);
 		}
 		return null;
-	}
-
-	@Override
-	public FacilioModulePredicate getPredicate(String fieldName, Object valueField) {
-		FacilioModulePredicate predicate = new FacilioModulePredicate(fieldName, new Predicate() {
-			@Override
-			public boolean evaluate(Object object) {
-				if ((object == null || (object instanceof Number && ((Number) object).intValue() == -1)) 
-						&& ((valueField == null || (valueField instanceof Number && ((Number) object).intValue() == -1)))) {
-					return true;
-				}
-				return Objects.equal(object, valueField);
-			}
-		});
-		return predicate;
 	}
 
 	@Override
