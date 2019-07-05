@@ -330,7 +330,7 @@ public class SetTableNamesCommand implements Command {
 
 
 	public static SetTableNamesCommand getForBreakTransaction() {
-		return new SetTableNamesCommand("breakTransaction", "BREAK_TRANSACTION");
+		return new SetTableNamesCommand("breakTransaction", "Break_Transaction");
 	}
 
 	public static SetTableNamesCommand getForServices() {

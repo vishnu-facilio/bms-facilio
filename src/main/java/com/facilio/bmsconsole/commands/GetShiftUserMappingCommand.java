@@ -21,7 +21,7 @@ public class GetShiftUserMappingCommand implements Command {
 			throw new IllegalArgumentException("Both start and end time is mandatory");
 		}
 		
-		List<ShiftUserRelContext> shiftUserMapping = ShiftAPI.getShiftUserMapping(startTime, endTime);
+		List<ShiftUserRelContext> shiftUserMapping = ShiftAPI.getShiftUserMapping(startTime, endTime, -1, -1, true);
 		
 		context.put(FacilioConstants.ContextNames.SHIFT_USER_MAPPING, shiftUserMapping);
 		return false;
