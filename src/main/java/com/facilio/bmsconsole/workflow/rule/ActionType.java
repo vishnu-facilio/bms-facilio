@@ -1,5 +1,24 @@
 package com.facilio.bmsconsole.workflow.rule;
 
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
@@ -8,13 +27,31 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.commands.UpdateStateCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
+import com.facilio.bmsconsole.context.AlarmSeverityContext;
+import com.facilio.bmsconsole.context.AssetBDSourceDetailsContext;
+import com.facilio.bmsconsole.context.NoteContext;
+import com.facilio.bmsconsole.context.NotificationContext;
+import com.facilio.bmsconsole.context.PMTriggerContext;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.ReadingAlarmContext;
+import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingEventContext;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
-import com.facilio.bmsconsole.util.*;
+import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.bmsconsole.util.NotificationAPI;
+import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
+import com.facilio.bmsconsole.util.ReadingRuleAPI;
+import com.facilio.bmsconsole.util.SMSUtil;
+import com.facilio.bmsconsole.util.StateFlowRulesAPI;
+import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.util.WorkOrderAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ReadingRuleType;
-import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -24,7 +61,15 @@ import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioStatus;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.tasker.FacilioTimer;
@@ -32,23 +77,7 @@ import com.facilio.timeseries.TimeSeriesAPI;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
-import com.facilio.workflowv2.util.WorkflowV2API;
 import com.facilio.workflowv2.util.WorkflowV2Util;
-
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import java.time.Instant;
-import java.util.*;
-import java.util.stream.Collectors;
 
 public enum ActionType {
 
@@ -898,28 +927,23 @@ public enum ActionType {
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
 				Object currentRecord) throws Exception {
 			ModuleBaseWithCustomFields moduleData = ((ModuleBaseWithCustomFields) currentRecord);
-			FacilioStatus state = moduleData.getModuleState();
-			long oldStateId = -1;
-			if (state != null) {
-				oldStateId = state.getId();
-			}
 			Object newState = obj.get("new_state");
 			long newStateId = newState != null ? Long.parseLong(newState.toString()) : -1;
 			
 			String moduleName = (String) obj.get("moduleName");
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(moduleName);
 			
-			List<WorkflowRuleContext> availableState = StateFlowRulesAPI.getAvailableState(moduleData.getStateFlowId(), oldStateId, newStateId, moduleName, (ModuleBaseWithCustomFields) currentRecord, context);
-			
-			if (CollectionUtils.isNotEmpty(availableState)) {
-				FacilioContext c = new FacilioContext();
-				c.put(FacilioConstants.ContextNames.RECORD, currentRecord);
-				c.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-				c.put(FacilioConstants.ContextNames.TRANSITION_ID, availableState.get(0).getId());
-				
-				Chain chain = FacilioChain.getTransactionChain();
-				chain.addCommand(new UpdateStateCommand());
-				chain.execute(c);
+			FacilioStatus status = TicketAPI.getStatus(newStateId);
+			if (status == null) {
+				// Invalid status
+				return;
 			}
+			if (status.getParentModuleId() != module.getModuleId()) {
+				// Invalid status for current module
+				return;
+			}
+			StateFlowRulesAPI.updateState(moduleData, module, status, false, context);
 		}
 	},
 	ML_JOB_ACTION (20) {
