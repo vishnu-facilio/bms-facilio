@@ -55,7 +55,7 @@ public class AddWorkOrderCommand implements Command {
 			if (workOrder.getScheduledStart() > 0) {
 				workOrder.setCreatedTime(workOrder.getScheduledStart());
 			} else {
-				workOrder.setCreatedTime(workOrder.getTime());
+				workOrder.setCreatedTime(workOrder.getCurrentTime());
 			}
 
 			workOrder.setModifiedTime(workOrder.getCreatedTime());

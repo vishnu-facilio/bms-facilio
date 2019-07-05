@@ -156,6 +156,12 @@ public class FormFactory {
 				
 //				form.setFields(null);
 			}
+			else if (moduleName.equals(FacilioConstants.ContextNames.ASSET)) {
+				List<FormSection> sections = new ArrayList<>();
+				form.setSections(sections);
+				FormSection section = new FormSection("Asset", 1, form.getFields(), true);
+				sections.add(section);
+			}
 		}
 		return form;
 	}
