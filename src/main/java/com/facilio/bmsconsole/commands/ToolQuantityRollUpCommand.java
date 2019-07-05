@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.ToolTransactionContext;
 import com.facilio.bmsconsole.util.TransactionState;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -140,6 +141,8 @@ public class ToolQuantityRollUpCommand implements Command {
 			finalChangeMap.put(module.getName(), changes);
 			context.put(FacilioConstants.ContextNames.RECORD_MAP, Collections.singletonMap(module.getName(), toolRecords));
 			context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, finalChangeMap);
+			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
+			
 	
 		}
 		context.put(FacilioConstants.ContextNames.TOOL_TYPES_IDS, toolTypesIds);

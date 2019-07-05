@@ -14,6 +14,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.PurchasedItemContext;
 import com.facilio.bmsconsole.util.ItemsApi;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -114,13 +115,14 @@ public class AddOrUpdateItemQuantityCommand implements Command {
 								.module(itemModule).fields(modBean.getAllFields(itemModule.getName()))
 								.andCondition(CriteriaAPI.getIdCondition(itemId, itemModule));
 						updateBuilder.withChangeSet(ItemContext.class);
-						updateBuilder.update(itemContext);
 						if(itemContext.getQuantity() <= itemContext.getMinimumQuantity()) {
 							itemContext.setIsUnderstocked(true);
 						}
 						else {
 							itemContext.setIsUnderstocked(false);
 						}
+						updateBuilder.update(itemContext);
+						
 						Map<Long, List<UpdateChangeSet>> recordChanges = updateBuilder.getChangeSet();
 						itemRecords.add(itemContext);
 						changes.put(itemContext.getId(), (List<UpdateChangeSet>)recordChanges.get(itemContext.getId()));
@@ -129,7 +131,9 @@ public class AddOrUpdateItemQuantityCommand implements Command {
 				}
 				Map<String, Map<Long,List<UpdateChangeSet>>> finalChangeMap = new HashMap<String, Map<Long,List<UpdateChangeSet>>>();
 				finalChangeMap.put(itemModule.getName(), changes);
+				
 				context.put(FacilioConstants.ContextNames.RECORD_MAP, Collections.singletonMap(itemModule.getName(), itemRecords));
+				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 				context.put(FacilioConstants.ContextNames.ITEM_TYPES_IDS, itemTypesIds);
 				context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, finalChangeMap);
 				
