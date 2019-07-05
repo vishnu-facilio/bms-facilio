@@ -28,6 +28,7 @@ import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
+import org.json.simple.JSONObject;
 
 import java.util.HashMap;
 import java.util.List;
@@ -60,6 +61,7 @@ public class MVUtil {
 		formulaFieldContext.setResourceId(mvProject.getMeter().getId());
 		formulaFieldContext.setResourceType(ResourceType.ONE_RESOURCE);
 		formulaFieldContext.setFrequency(mvProject.getFrequency());
+		context.put(FacilioConstants.ContextNames.SKIP_FORMULA_HISTORICAL_SCHEDULING, Boolean.TRUE);
 		if(baseline != null) {
 			
 			if(formulaFieldContext.getName() == null) {
@@ -67,7 +69,6 @@ public class MVUtil {
 			}
 			formulaFieldContext.setStartTime(baseline.getStartTime());
 			formulaFieldContext.setEndTime(mvProject.getReportingPeriodEndTime());
-			context.put(FacilioConstants.ContextNames.DATE_RANGE,new DateRange(baseline.getStartTime(), DateTimeUtil.getCurrenTime() < mvProject.getReportingPeriodEndTime() ? DateTimeUtil.getCurrenTime() : mvProject.getReportingPeriodEndTime()));
 		}
 		else if(mvAdjustment != null) {
 			if(mvAdjustment.getFrequency() > 0) {
@@ -78,7 +79,6 @@ public class MVUtil {
 			}
 			formulaFieldContext.setStartTime(mvAdjustment.getStartTime());
 			formulaFieldContext.setEndTime(mvAdjustment.getEndTime());
-			context.put(FacilioConstants.ContextNames.DATE_RANGE,new DateRange(mvAdjustment.getStartTime(),  DateTimeUtil.getCurrenTime() <  mvAdjustment.getEndTime() ? DateTimeUtil.getCurrenTime() : mvAdjustment.getEndTime()));
 		}
 	}
 	
@@ -90,13 +90,13 @@ public class MVUtil {
 		formulaFieldContext.setResourceId(-1);
 		formulaFieldContext.setResourceType(null);
 		formulaFieldContext.setFrequency(mvProject.getFrequency());
+		context.put(FacilioConstants.ContextNames.SKIP_FORMULA_HISTORICAL_SCHEDULING, Boolean.TRUE);
 		if(baseline != null) {
 			if(formulaFieldContext.getName() == null) {
 				formulaFieldContext.setName(baseline.getName());
 			}
 			formulaFieldContext.setStartTime(baseline.getStartTime());
 			formulaFieldContext.setEndTime(mvProject.getReportingPeriodEndTime());
-			context.put(FacilioConstants.ContextNames.DATE_RANGE,new DateRange(baseline.getStartTime(), DateTimeUtil.getCurrenTime() < mvProject.getReportingPeriodEndTime() ? DateTimeUtil.getCurrenTime() : mvProject.getReportingPeriodEndTime()));
 		}
 		else if(mvAdjustment != null) {
 			if(mvAdjustment.getFrequency() > 0) {
@@ -107,23 +107,7 @@ public class MVUtil {
 			}
 			formulaFieldContext.setStartTime(mvAdjustment.getStartTime());
 			formulaFieldContext.setEndTime(mvAdjustment.getEndTime());
-			context.put(FacilioConstants.ContextNames.DATE_RANGE,new DateRange(mvAdjustment.getStartTime(),  DateTimeUtil.getCurrenTime() <  mvAdjustment.getEndTime() ? DateTimeUtil.getCurrenTime() : mvAdjustment.getEndTime()));
 		}
-	}
-	
-	public static void updateMVBaseline(MVBaseline baseline) throws Exception {
-		
-		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		
-		FacilioModule module = modbean.getModule(FacilioConstants.ContextNames.MV_BASELINE_MODULE);
-		List<FacilioField> fields = modbean.getAllFields(FacilioConstants.ContextNames.MV_BASELINE_MODULE);
-		
-		UpdateRecordBuilder<MVBaseline> update = new UpdateRecordBuilder<MVBaseline>()
-				.module(module)
-				.fields(fields)
-				.andCondition(CriteriaAPI.getIdCondition(baseline.getId(), module));
-		
-		update.update(baseline);
 	}
 	
 	public static MVProjectWrapper getMVProject(long id) throws Exception {
@@ -197,6 +181,23 @@ public class MVUtil {
 		return mvProjectWrapper;
 	}
 	
+	public static MVProjectContext getMVProjectContext(long projectId) throws Exception {
+		
+		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		FacilioModule mvProjectModule = modbean.getModule(FacilioConstants.ContextNames.MV_PROJECT_MODULE);
+		List<FacilioField> mvProjectFields = modbean.getAllFields(FacilioConstants.ContextNames.MV_PROJECT_MODULE);
+		
+		SelectRecordsBuilder<MVProjectContext> selectProject = new SelectRecordsBuilder<MVProjectContext>()
+				.module(mvProjectModule)
+				.select(mvProjectFields)
+				.beanClass(MVProjectContext.class)
+				.andCondition(CriteriaAPI.getIdCondition(projectId, mvProjectModule));
+		
+		return  selectProject.get().get(0);
+		
+	}
+	
 	public static MVBaseline getMVBaseline(Long mvBaselineId) throws Exception {
 		
 		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -216,6 +217,27 @@ public class MVUtil {
 		}
 		return null;
 	}
+	public static MVAdjustment getMVAdjustment(Long mvAdjustmentId) throws Exception {
+		
+		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		FacilioModule mvAjustmentModule = modbean.getModule(FacilioConstants.ContextNames.MV_ADJUSTMENT_MODULE);
+		List<FacilioField> mvAjustmentFields = modbean.getAllFields(FacilioConstants.ContextNames.MV_ADJUSTMENT_MODULE);
+		
+		SelectRecordsBuilder<MVAdjustment> selectAjustment = new SelectRecordsBuilder<MVAdjustment>()
+				.module(mvAjustmentModule)
+				.select(mvAjustmentFields)
+				.beanClass(MVAdjustment.class)
+				.andCondition(CriteriaAPI.getIdCondition(mvAdjustmentId, mvAjustmentModule));
+		
+		List<MVAdjustment> mvAdjustments = selectAjustment.get();
+		
+		if(mvAdjustments != null && !mvAdjustments.isEmpty()) {
+			return mvAdjustments.get(0);
+		}
+		return null;
+	}
+
 	public static List<MVProjectContext> getMVProjects(Boolean isOpen) throws Exception {
 		
 		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -248,4 +270,50 @@ public class MVUtil {
 		return mvProjects;
 		
 	}
+	
+	public static void updateMVProject(MVProjectContext mvProject) throws Exception {
+		
+		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		FacilioModule module = modbean.getModule(FacilioConstants.ContextNames.MV_PROJECT_MODULE);
+		List<FacilioField> fields = modbean.getAllFields(FacilioConstants.ContextNames.MV_PROJECT_MODULE);
+		
+		UpdateRecordBuilder<MVProjectContext> update = new UpdateRecordBuilder<MVProjectContext>()
+				.module(module)
+				.fields(fields)
+				.andCondition(CriteriaAPI.getIdCondition(mvProject.getId(), module));
+		
+		update.update(mvProject);
+	}
+	
+	public static void updateMVBaseline(MVBaseline baseline) throws Exception {
+		
+		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		FacilioModule module = modbean.getModule(FacilioConstants.ContextNames.MV_BASELINE_MODULE);
+		List<FacilioField> fields = modbean.getAllFields(FacilioConstants.ContextNames.MV_BASELINE_MODULE);
+		
+		UpdateRecordBuilder<MVBaseline> update = new UpdateRecordBuilder<MVBaseline>()
+				.module(module)
+				.fields(fields)
+				.andCondition(CriteriaAPI.getIdCondition(baseline.getId(), module));
+		
+		update.update(baseline);
+	}
+	
+	public static void updateMVAdjustment(MVAdjustment adjustment) throws Exception {
+		
+		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		
+		FacilioModule module = modbean.getModule(FacilioConstants.ContextNames.MV_ADJUSTMENT_MODULE);
+		List<FacilioField> fields = modbean.getAllFields(FacilioConstants.ContextNames.MV_ADJUSTMENT_MODULE);
+		
+		UpdateRecordBuilder<MVAdjustment> update = new UpdateRecordBuilder<MVAdjustment>()
+				.module(module)
+				.fields(fields)
+				.andCondition(CriteriaAPI.getIdCondition(adjustment.getId(), module));
+		
+		update.update(adjustment);
+	}
+	
 }

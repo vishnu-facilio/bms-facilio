@@ -72,6 +72,7 @@
 	  <!-- Notifications jobs -->
 	 <job name='singleRecordRuleExecution' classname= 'com.facilio.bmsconsole.jobs.SingleRecordJob' transactionTimeout='300000'/>
 	
-	
+	<!-- M and V Jobs -->
+	 <job name='mvFormulaFieldCalulationJob' classname= 'com.facilio.bmsconsole.jobs.MVFormulaFieldCalulationJob' transactionTimeout='1800000'/>
 
 </scheduler>

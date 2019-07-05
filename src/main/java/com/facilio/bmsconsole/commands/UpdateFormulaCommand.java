@@ -15,12 +15,14 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
+import com.facilio.mv.util.MVUtil;
 import com.facilio.time.DateRange;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowFieldContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -97,7 +99,12 @@ public class UpdateFormulaCommand implements Command {
 			WorkflowUtil.deleteWorkflow(oldFormula.getWorkflowId());
 			
 			DateRange dateRange = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE);
-			FormulaFieldAPI.recalculateHistoricalData(newFormula.getId(), dateRange);
+			
+			Boolean skipFromulaCalculation = (Boolean) context.get(FacilioConstants.ContextNames.SKIP_FORMULA_HISTORICAL_SCHEDULING);
+			if(skipFromulaCalculation == null || skipFromulaCalculation.equals(Boolean.FALSE)) {
+				
+				FormulaFieldAPI.recalculateHistoricalData(newFormula.getId(), dateRange);
+			}
 		}
 		context.put(FacilioConstants.ContextNames.RESULT, "success");
 		return false;

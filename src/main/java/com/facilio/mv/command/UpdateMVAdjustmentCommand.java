@@ -97,14 +97,7 @@ public class UpdateMVAdjustmentCommand implements Command {
 							deleteEnPIChain.execute(context);
 						}
 					}
-					
-					
-					UpdateRecordBuilder<MVAdjustment> update = new UpdateRecordBuilder<MVAdjustment>()
-							.module(module)
-							.fields(fields)
-							.andCondition(CriteriaAPI.getIdCondition(adjustment.getId(), module));
-					
-					update.update(adjustment);
+					MVUtil.updateMVAdjustment(adjustment);
 				}
 			}
 		}

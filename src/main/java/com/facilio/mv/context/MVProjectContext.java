@@ -29,7 +29,20 @@ public class MVProjectContext extends ModuleBaseWithCustomFields {
 	long reportingPeriodStartTime;
 	long reportingPeriodEndTime;
 	Boolean status;
+	Boolean isLocked;
 
+	public Boolean getIsLocked() {
+		return isLocked;
+	}
+	public void setIsLocked(Boolean isLocked) {
+		this.isLocked = isLocked;
+	}
+	public boolean isLocked() {
+		if(this.isLocked != null) {
+			return this.isLocked.booleanValue();
+		}
+		return false;
+	}
 	public Boolean isStatus() {
 		return status;
 	}

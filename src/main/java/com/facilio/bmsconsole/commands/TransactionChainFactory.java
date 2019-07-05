@@ -30,6 +30,7 @@ import com.facilio.mv.command.AddMVBaselineCommand;
 import com.facilio.mv.command.AddMVProjectCommand;
 import com.facilio.mv.command.ConstructBaselineFormulaWithAdjustmentCommand;
 import com.facilio.mv.command.DeleteMVProjectCommand;
+import com.facilio.mv.command.ScheduleMVFormulaCalculationJob;
 import com.facilio.mv.command.UpdateMVAdjustmentCommand;
 import com.facilio.mv.command.UpdateMVBaselineCommand;
 import com.facilio.mv.command.UpdateMVPojectCommand;
@@ -3110,6 +3111,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddMVBaselineCommand());
 			c.addCommand(new AddMVAdjustmentCommand());
 			c.addCommand(new ConstructBaselineFormulaWithAdjustmentCommand());
+			c.addCommand(new ScheduleMVFormulaCalculationJob());					// always have this as last command
 			return c;
 		}
 
@@ -3120,6 +3122,7 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateMVBaselineCommand());
 			c.addCommand(new UpdateMVAdjustmentCommand());
 			c.addCommand(new ConstructBaselineFormulaWithAdjustmentCommand());
+			c.addCommand(new ScheduleMVFormulaCalculationJob());					// always have this as last command
 			return c;
 		}
 
