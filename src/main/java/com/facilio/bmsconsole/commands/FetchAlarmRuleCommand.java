@@ -24,7 +24,8 @@ public class FetchAlarmRuleCommand implements Command {
 		List<ReadingAlarmRuleContext> readingAlarmRules = WorkflowRuleAPI.getReadingAlarmRulesFromReadingRuleGroupId(id);
 		AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(id),readingAlarmRules);
 		ReadingRuleAPI.setMatchedResources(alarmRule.getPreRequsite());
-		
+		context.put(FacilioConstants.ContextNames.ALARM_RULE, alarmRule);
+
 		return false;
 	}
 
