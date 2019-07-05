@@ -1274,6 +1274,7 @@ public class TransactionChainFactory {
 			c.addCommand(SetTableNamesCommand.getForAlarm());
 			c.addCommand(new AddAlarmCommand());
 			c.addCommand(new AddMLOccurrenceCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.REPORT_DOWNTIME_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.READING_ALARM_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.BUSSINESS_LOGIC_ALARM_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.PM_ALARM_RULE));
@@ -3079,7 +3080,7 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
-		public static Chain getAddNewAssetBreakdownChain() {
+		public static Chain getAddAssetDowntimeChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new GetAssetDownTimeDetailsCommand());
 			c.addCommand(new GetLastBreakDownFromCurrentSourceCommand());

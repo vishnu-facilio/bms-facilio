@@ -721,7 +721,7 @@
  <package name="assetBreakdownApiv2" namespace="/api/v2/assetbreakdown"
 	extends="v2Api">
 	<action name="addNew"
-		class="com.facilio.bmsconsole.actions.AssetBreakdownAction" method="addNewAssetBreakDown">
+		class="com.facilio.bmsconsole.actions.AssetBreakdownAction" method="addAssetDowntime">
 		<param name="moduleName">setup</param>
 		<param name="permission">GENERAL</param>
 	</action>

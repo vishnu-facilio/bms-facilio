@@ -1,5 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
@@ -7,12 +14,6 @@ import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingAlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class AddReadingAlarmRuleCommand implements Command {
 
@@ -30,7 +31,11 @@ public class AddReadingAlarmRuleCommand implements Command {
 			for(ReadingAlarmRuleContext readingAlarmRuleContext : alarmRule.getReadingAlarmRuleContexts()) {
 				readingAlarmRuleContext.setReadingRuleGroupId(alarmRule.getPreRequsite().getRuleGroupId());
 				
-				readingAlarmRuleContext.setRuleType(RuleType.READING_ALARM_RULE);
+				if(readingAlarmRuleContext.getActions() != null && readingAlarmRuleContext.getActions().stream().allMatch(act->act.getActionType()==22)){
+					readingAlarmRuleContext.setRuleType(RuleType.REPORT_DOWNTIME_RULE);
+				}else{
+					readingAlarmRuleContext.setRuleType(RuleType.READING_ALARM_RULE);
+				}
 				
 				readingAlarmRuleContext.setEventId(WorkflowRuleAPI.addOrGetWorkflowEvent(readingAlarmRuleContext.getEvent()));
 				

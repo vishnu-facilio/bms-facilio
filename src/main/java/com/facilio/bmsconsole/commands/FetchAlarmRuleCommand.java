@@ -24,11 +24,6 @@ public class FetchAlarmRuleCommand implements Command {
 		List<ReadingAlarmRuleContext> readingAlarmRules = WorkflowRuleAPI.getReadingAlarmRulesFromReadingRuleGroupId(id);
 		AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(id),readingAlarmRules);
 		ReadingRuleAPI.setMatchedResources(alarmRule.getPreRequsite());
-		WorkflowRuleContext breakDownRule= WorkflowRuleAPI.getWorkflowRuleByRuletype(id, RuleType.REPORT_DOWNTIME_RULE);
-		if(breakDownRule!=null){
-			alarmRule.setReportBreakdown(Boolean.TRUE);
-		}
-		context.put(FacilioConstants.ContextNames.ALARM_RULE, alarmRule);
 		
 		return false;
 	}

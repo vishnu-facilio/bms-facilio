@@ -53,7 +53,6 @@ public class UpdateAlarmRuleCommand implements Command {
 			deleteReadingAlarmRuleAndActions(readingAlarmRules);
 		}
 		
-		WorkflowRuleAPI.UpdateReportDowntimeRule(alarmRule);
 		return false;
 	}
 

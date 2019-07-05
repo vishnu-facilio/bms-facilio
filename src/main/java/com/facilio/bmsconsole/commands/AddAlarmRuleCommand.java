@@ -27,7 +27,6 @@ public class AddAlarmRuleCommand implements Command {
 		WorkflowRuleAPI.updateWorkflowRule(preRequsiteRule);
 		
 		ReadingRuleAPI.addTriggerAndClearRule(alarmRule);
-		WorkflowRuleAPI.AddReportDowntimeRule(alarmRule);
 		return false;
 	}
 	

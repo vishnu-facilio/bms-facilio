@@ -144,7 +144,7 @@ public class UpdateAlarmCommand implements Command {
 						assetBreakdown.setSourceId(id);
 						assetBreakdown.setSourceType(SourceType.ALARM.getValue());
 						context.put(FacilioConstants.ContextNames.ASSET_BD_SOURCE_DETAILS, assetBreakdown);
-						Chain newAssetBreakdown = TransactionChainFactory.getAddNewAssetBreakdownChain();
+						Chain newAssetBreakdown = TransactionChainFactory.getAddAssetDowntimeChain();
 						newAssetBreakdown.execute(context);
 					}
 				}

@@ -11,13 +11,13 @@ import com.facilio.constants.FacilioConstants;
 public class AssetBreakdownAction extends FacilioAction {
        private static final long serialVersionUID = 1L;
 
-	public String addNewAssetBreakDown() throws Exception {
+	public String addAssetDowntime() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ASSET_ACTIVITY);
 		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 		context.put(FacilioConstants.ContextNames.ASSET_BD_SOURCE_DETAILS, assetBDSourceDetails);
-		Chain newAssetBreakdown = TransactionChainFactory.getAddNewAssetBreakdownChain();
-		newAssetBreakdown.execute(context);
+		Chain newAssetDowntime = TransactionChainFactory.getAddAssetDowntimeChain();
+		newAssetDowntime.execute(context);
 		return SUCCESS;
 	}
        private long parentId = -1;
