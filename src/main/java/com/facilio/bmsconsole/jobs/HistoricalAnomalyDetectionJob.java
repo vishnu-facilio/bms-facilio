@@ -140,6 +140,7 @@ public class HistoricalAnomalyDetectionJob extends FacilioJob
 		modelVariables.put("dimension1Value","[2,3,4,5,6],[1,7]");
 		modelVariables.put("tableValue","1.96");
 		modelVariables.put("adjustmentPercentage","10");
+		modelVariables.put("percentile","5");
 		modelVariables.put("orderRange","2");
 		modelVariables.put("meterInterval","10");
 		
