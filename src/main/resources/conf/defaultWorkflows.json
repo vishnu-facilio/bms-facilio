@@ -52,29 +52,51 @@
 								  if (variables == null) {
 									  return resultMap;
 								  }
+								  recordMap = {}
 								  for each index, variableObj in variables {
-									  if (variableObj.fetchType == \"record\") {
-										  fetchModule = Module(variableObj.module);
-										  recordObj = fetchModule.fetch([id == (variableObj.id)]);
-										  
-										  if (recordObj != null && recordObj.size() > 0) {
-											  resultMap[variableObj.key] = recordObj[0];
-										  }
+									  if (variableObj.fetchType == \"field\") {
+									  	  recordKey = variableObj.module + \"_\" + variableObj.parentId;
+									  	  recordObj = {};
+									  	  if (recordMap.get(recordKey) != null) {
+									  	  	  recordObj = recordMap.get(recordKey);
+									  	  }
+									  	  else {
+									  	      fetchModule = Module(variableObj.module);
+									  	      recordObj = fetchModule.fetch([id == (variableObj.parentId)]);
+									  	      recordMap[recordKey] = recordObj;
+									  	  }
+									  	  if (recordObj != null && recordObj.size() > 0) {
+									  	  	  rec = recordObj[0];
+									  	  	  
+									  	  	  valueMap = {};
+											  valueMap[\"value\"] = rec.get(variableObj.select);
+									  	  	  resultMap[variableObj.key] = valueMap;
+									  	  }
 									  }
 									  else if (variableObj.fetchType == \"liveValue\") {
-										  fetchModule = Module(variableObj.module);
+									  	  fieldObj = NameSpace(\"module\").getField(variableObj.select, variableObj.module);
+									  	  fieldid = fieldObj.id();
+									  	  fieldMapInfo = fieldObj.asMap();
+									  	  
+									  	  lastVal = Reading(fieldid, variableObj.parentId).getLastValue();
+									  	  enumMap = Reading(fieldid, variableObj.parentId).getEnumMap();
 										  
-										  db = {
-											criteria : [parentId == (variableObj.parentId)],
-											field : variableObj.select,
-											aggregation : \"lastValue\"
-										  };
+										  valueMap = {};
+										  valueMap[\"value\"] = lastVal;
+										  if (enumMap != null) {
+										      valueMap[\"label\"] = enumMap.get(lastVal + \"\");
+										  }
+										  if (fieldMapInfo != null) {
+										  	valueMap[\"unit\"] = fieldMapInfo.get(\"unit\");
+                                            valueMap[\"dataType\"] = fieldMapInfo.get(\"dataTypeEnum\");
+										  }
 										  
-										  res = fetchModule.fetch(db);
-										  
-										  resultMap[variableObj.key] = res;
+										  resultMap[variableObj.key] = valueMap;
 									  }
 									  else if (variableObj.fetchType == \"aggrValue\") {
+									  	  fieldObj = NameSpace(\"module\").getField(variableObj.select, variableObj.module);
+									  	  fieldMapInfo = fieldObj.asMap();
+									  	  
 										  fetchModule = Module(variableObj.module);
 										  
 										  date = NameSpace(\"date\");
@@ -87,7 +109,20 @@
 										
 										res = fetchModule.fetch(db);
 										
-										resultMap[variableObj.key] = res;
+										valueMap = {};
+										valueMap[\"value\"] = res;
+										
+										enumMap = Reading(fieldid, variableObj.parentId).getEnumMap();
+                                        
+                                        if (enumMap != null) {
+                                          valueMap[\"label\"] = enumMap.get(lastVal + \"\");
+                                        }
+                                        if (fieldMapInfo != null) {
+                                          valueMap[\"unit\"] = fieldMapInfo.get(\"unit\");
+                                          valueMap[\"dataType\"] = fieldMapInfo.get(\"dataTypeEnum\");
+                                        }
+										
+										resultMap[variableObj.key] = valueMap;
 									  }
 								  }
 									  
