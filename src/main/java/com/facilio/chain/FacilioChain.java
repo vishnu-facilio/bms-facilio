@@ -194,6 +194,8 @@ public class FacilioChain extends ChainBase {
 	}
 	
 	private void clearResponseCache() {
-		ResponseCacheUtil.removeOrgCache(AccountUtil.getCurrentOrg().getId());
+    	if (AccountUtil.getCurrentAccount() != null) {
+			ResponseCacheUtil.removeOrgCache(AccountUtil.getCurrentOrg().getId());
+		}
 	}
 }
