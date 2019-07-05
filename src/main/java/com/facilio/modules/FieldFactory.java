@@ -4833,7 +4833,12 @@ public class FieldFactory {
 		List<FacilioField> fields = new ArrayList<>();
 
 		fields.add(getIdField(module));
-		fields.add(getField("settingsJSON", "SETTINGS_JSON", module, FieldType.STRING));
+		fields.add(getField("columnSettingsJson", "COLUMN_SETTINGS", module, FieldType.STRING));
+		fields.add(getField("viewSettingsJson", "VIEW_SETTINGS", module, FieldType.STRING));
+		fields.add(getField("timeMetricSettingsJson", "TIME_METRIC_SETTINGS", module, FieldType.STRING));
+		fields.add(getField("moveType", "MOVE_TYPE", module,FieldType.STRING));
+		fields.add(getField("legendSettingsJson", "LEGEND_SETTINGS", module,FieldType.STRING));
+		
 
 		return fields;
 	}

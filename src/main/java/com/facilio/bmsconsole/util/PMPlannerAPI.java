@@ -11,13 +11,19 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.PMPlannerSettingsContext;
 
 public class PMPlannerAPI {
 	
-	private static final String DEFAULT_SETTING_JSON_STRING=initDefaultSettingsJSON();
+	private static final JSONObject DEFAULT_VIEW_SETTING=initDefaultViewSettings();
+	private static final String DEFAULT_MOVE_TYPE="askEachTime";
+	private static final JSONArray DEFAULT_COLUMN_SETTINGS=initDefaultColumnSettings();
+	private static final JSONArray DEFAULT_TIME_METRIC_SETTINGS=initDefaultTimeMetricSettings();
+	private static final JSONArray DEFAULT_LEGEND_SETTINGS=initDefaultLegendSettings();
 	private static final String GRID_LINES="gridLines";
 	private static final String GROUPING="grouping";
 	private static final String DISPLAY_TYPE="displayType";
@@ -41,7 +47,7 @@ public class PMPlannerAPI {
 		
 	}
 
-	public static void updatePMPlannerSettings(String settingsJson) throws Exception{
+	public static void updatePMPlannerSettings(PMPlannerSettingsContext settingsContext) throws Exception{
 		FacilioModule plannerModule=ModuleFactory.getPMPlannerSettingsModule();
 		GenericSelectRecordBuilder builder=new GenericSelectRecordBuilder()
 				.table(plannerModule.getTableName())
@@ -49,10 +55,10 @@ public class PMPlannerAPI {
 //				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(plannerModule));
 		List<Map<String, Object>> settingRows=builder.get();
 		
-		PMPlannerSettingsContext settingsContext=new PMPlannerSettingsContext();
-		settingsContext.setSettingsJSON(settingsJson);
+		
+		
 		Map<String,Object> props=FieldUtil.getAsProperties(settingsContext);
-
+				
 		
 		if(settingRows.isEmpty())
 		{
@@ -75,11 +81,10 @@ public class PMPlannerAPI {
 		}
 		
 	}
-	private static String initDefaultSettingsJSON()
+	private static JSONObject initDefaultViewSettings()
 	{
-		JSONObject settingsJSON=new JSONObject();
-		JSONObject viewJSON=new JSONObject();
-		
+		JSONObject viewSettingsJSON=new JSONObject();
+				
 		JSONObject daySettings=new JSONObject();
 		daySettings.put(GRID_LINES,"1H");
 		daySettings.put(GROUPING,"4H");
@@ -100,21 +105,60 @@ public class PMPlannerAPI {
 		yearSettings.put(GROUPING,"MONTH");
 		yearSettings.put(DISPLAY_TYPE,"frequency");
 		
-		viewJSON.put("DAY",daySettings);
-		viewJSON.put("WEEK",weekSettings);
-		viewJSON.put("MONTH",monthSettings);
-		viewJSON.put("YEAR",yearSettings);
+		viewSettingsJSON.put("DAY",daySettings);
+		viewSettingsJSON.put("WEEK",weekSettings);
+		viewSettingsJSON.put("MONTH",monthSettings);
+		viewSettingsJSON.put("YEAR",yearSettings);
 		
-		settingsJSON.put("viewSettings", viewJSON);
-		settingsJSON.put("moveType","askEachTime");
-		
-		return settingsJSON.toJSONString();
+				
+		return viewSettingsJSON;
 	}
-	
+	private static JSONArray initDefaultColumnSettings()
+	{	
+		JSONArray columnSettings=new JSONArray();
+		
+		JSONObject resourceName=new JSONObject();
+		resourceName.put("name","resourceName");
+		columnSettings.add(resourceName);
+		
+		
+		return columnSettings;
+		
+	}
+	private static JSONArray initDefaultTimeMetricSettings()
+	{
+		JSONArray timeMetricSettings=new JSONArray();
+		
+		JSONObject actual=new JSONObject();
+		actual.put("name","Actual");
+		timeMetricSettings.add(actual);
+		
+		JSONObject planned=new JSONObject();
+		planned.put("name","Planned");
+		timeMetricSettings.add(planned);
+		
+		return timeMetricSettings;
+		
+		
+	}
+	private static JSONArray initDefaultLegendSettings() {
+		
+		JSONArray legendSettings=new JSONArray();
+		
+		JSONObject none=new JSONObject();
+		none.put("name","none");
+		legendSettings.add(none);
+				
+		return legendSettings;
+	}
 	private static PMPlannerSettingsContext getDefaultSettings() {
 		PMPlannerSettingsContext pmPLannerSettings = new PMPlannerSettingsContext();
-		
-		pmPLannerSettings.setSettingsJSON(DEFAULT_SETTING_JSON_STRING);
+		pmPLannerSettings.setViewSettings(DEFAULT_VIEW_SETTING);
+		pmPLannerSettings.setColumnSettings(DEFAULT_COLUMN_SETTINGS);
+		pmPLannerSettings.setTimeMetricSettings(DEFAULT_TIME_METRIC_SETTINGS);
+        pmPLannerSettings.setMoveType(DEFAULT_MOVE_TYPE);
+        pmPLannerSettings.setLegendSettings(DEFAULT_LEGEND_SETTINGS);
+
 		return pmPLannerSettings;
 	}
 

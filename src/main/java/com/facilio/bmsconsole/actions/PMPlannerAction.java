@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.actions;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.PMPlannerSettingsContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -13,15 +14,16 @@ public class PMPlannerAction extends FacilioAction{
 	private static final Logger log = LogManager.getLogger(PMPlannerAction.class.getName());
 
 	private static final long serialVersionUID = 1L;
-	private String settings;
+	private PMPlannerSettingsContext settings;
 	
-	public String getSettings() {
+
+	
+	public PMPlannerSettingsContext getSettings() {
 		return settings;
 	}
-	public void setSettings(String settings) {
+	public void setSettings(PMPlannerSettingsContext settings) {
 		this.settings = settings;
 	}
-	
 	public String getPMPlannerSettings()
 	{
 		FacilioContext context=new FacilioContext();
