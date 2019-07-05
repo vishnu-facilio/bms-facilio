@@ -23,7 +23,6 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -586,9 +585,9 @@ public class ReadingsAPI {
 											&& lastTimeStamp != -1 
 											&& !"-1".equals(meta.getActualValue()) 
 											&& timeStamp < lastTimeStamp)) {
-//										if (AccountUtil.getCurrentOrg().getId() == 104 || AccountUtil.getCurrentOrg().getId() == 134) {
-//											LOGGER.info("Not updating: time" + timeStamp + ", current: " + currentTime + ", readingId: " + readingId + ", resourceId: "+ resourceId);
-//										}
+										if (AccountUtil.getCurrentOrg().getId() == 154l) {
+											LOGGER.info("Not updating: time" + timeStamp + ", current: " + currentTime + ", readingId: " + readingId + ", resourceId: "+ resourceId);
+										}
 										continue;
 									}
 								}
