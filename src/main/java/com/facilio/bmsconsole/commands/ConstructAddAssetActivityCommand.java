@@ -30,6 +30,10 @@ public class ConstructAddAssetActivityCommand implements Command{
 		}
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<UpdateChangeSet> changeSets = changeSet.get(assetId);
+		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		if (moduleName == null) {
+			moduleName = ContextNames.ASSET;
+		}
 
 		JSONObject info = new JSONObject();
 		List<Object> changeList = new ArrayList<Object>();
@@ -37,7 +41,7 @@ public class ConstructAddAssetActivityCommand implements Command{
 		    long fieldid = changeset.getFieldId();
 			Object oldValue = changeset.getOldValue();
 			Object newValue = changeset.getNewValue();
-			FacilioField field = modBean.getField(fieldid, ContextNames.ASSET);
+			FacilioField field = modBean.getField(fieldid, moduleName);
 			
 			JSONObject changeObj = new JSONObject();
 			changeObj.put("field", field.getName());
