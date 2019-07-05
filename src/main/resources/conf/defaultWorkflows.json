@@ -84,7 +84,7 @@
 										  valueMap = {};
 										  valueMap[\"value\"] = lastVal;
 										  if (enumMap != null) {
-										      valueMap[\"label\"] = enumMap.get(lastVal + \"\");
+										      valueMap[\"enumMap\"] = enumMap;
 										  }
 										  if (fieldMapInfo != null) {
 										  	valueMap[\"unit\"] = fieldMapInfo.get(\"unit\");
@@ -115,7 +115,7 @@
 										enumMap = Reading(fieldid, variableObj.parentId).getEnumMap();
                                         
                                         if (enumMap != null) {
-                                          valueMap[\"label\"] = enumMap.get(lastVal + \"\");
+                                          valueMap[\"enumMap\"] = enumMap;
                                         }
                                         if (fieldMapInfo != null) {
                                           valueMap[\"unit\"] = fieldMapInfo.get(\"unit\");
