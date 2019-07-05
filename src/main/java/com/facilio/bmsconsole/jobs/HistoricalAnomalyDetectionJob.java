@@ -73,6 +73,7 @@ public class HistoricalAnomalyDetectionJob extends FacilioJob
 				Hashtable<Long,Hashtable<String,SortedMap<Long,Object>>> mlVariablesDataMap = new Hashtable<Long,Hashtable<String,SortedMap<Long,Object>>>(5);		
 				getReadings(meterID,variableFieldID,energyParentFieldID,startTime-3600000,startTime,mlVariablesDataMap);
 				getReadings(siteID,weatherFieldID,siteParentFieldID,startTime-(3600000*2),startTime,mlVariablesDataMap);
+				getReadings(meterID,168972,energyParentFieldID,endTime-7776000000L,endTime,mlVariablesDataMap);
 				
 				generateMLModel(startTime,meterID,mlVariablesDataMap,"checkGam1",46455);
 			}
@@ -115,6 +116,7 @@ public class HistoricalAnomalyDetectionJob extends FacilioJob
 			Hashtable<Long,Hashtable<String,SortedMap<Long,Object>>> mlVariablesDataMap = new Hashtable<Long,Hashtable<String,SortedMap<Long,Object>>>(5);		
 			getReadings(meterID,variableFieldID,energyParentFieldID,endTime-7776000000L,endTime,mlVariablesDataMap);
 			getReadings(siteID,weatherFieldID,siteParentFieldID,endTime-7776000000L,endTime,mlVariablesDataMap);
+			getReadings(meterID,168972,energyParentFieldID,endTime-7776000000L,endTime,mlVariablesDataMap);
 			
 			generateMLModel(endTime,meterID,mlVariablesDataMap,"buildGamModel",0L);
 		}
