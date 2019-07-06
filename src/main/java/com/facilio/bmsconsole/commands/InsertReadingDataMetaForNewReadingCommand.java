@@ -1,5 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
@@ -12,11 +18,6 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import java.util.Collections;
-import java.util.List;
 
 ;
 
@@ -51,6 +52,8 @@ public class InsertReadingDataMetaForNewReadingCommand implements Command {
 							dataMeta.setTtime(timestamp);
 							dataMeta.setValue("-1");
 							dataMeta.setInputType(type);
+							dataMeta.setCustom(true);
+							
 							builder.addRecord(FieldUtil.getAsProperties(dataMeta));
 						}
 					}

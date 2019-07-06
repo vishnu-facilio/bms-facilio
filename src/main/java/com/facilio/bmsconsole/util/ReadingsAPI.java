@@ -41,6 +41,7 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
@@ -331,7 +332,7 @@ public class ReadingsAPI {
 			Criteria criteria = new Criteria();
 			criteria.addAndCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), "-1", StringOperators.ISN_T));
 			criteria.addAndCondition(CriteriaAPI.getCondition(readingFieldsMap.get("value"), CommonOperators.IS_NOT_EMPTY));
-//			criteria.addOrCondition(CriteriaAPI.getCondition(readingFieldsMap.get("inputType"),String.valueOf(ReadingInputType.IS_MANUAL_DATA.getValue()), PickListOperators.IS));
+			criteria.addOrCondition(CriteriaAPI.getCondition(readingFieldsMap.get("custom"), String.valueOf(true), BooleanOperators.IS));
 			builder.andCriteria(criteria);
 		}
 		
@@ -785,7 +786,8 @@ public class ReadingsAPI {
 					rdm.setValue("-1");
 					rdm.setResourceId(resourceId);
 					rdm.setTtime(System.currentTimeMillis());
-					rdm.setInputType(ReadingInputType.IS_MANUAL_DATA);
+					rdm.setInputType(ReadingInputType.WEB);
+					rdm.setCustom(!field.isDefault());
 					builder.addRecord(FieldUtil.getAsProperties(rdm));
 				}
 			}

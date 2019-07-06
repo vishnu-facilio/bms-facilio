@@ -4586,6 +4586,7 @@ public class FieldFactory {
 		fields.add(getField("readingDataId", "READING_DATA_ID", module, FieldType.NUMBER));
 		fields.add(getField("inputType", "INPUT_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("readingType", "READING_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("custom", "IS_CUSTOM", module, FieldType.BOOLEAN));
 		fields.add(getField("unit", "UNIT", module, FieldType.NUMBER));
 		return fields;
 	}

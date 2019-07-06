@@ -1,10 +1,10 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.unitconversion.Unit;
-
 import java.io.Serializable;
 import java.util.Map;
+
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.unitconversion.Unit;
 
 public class ReadingDataMeta implements Serializable {
 	/**
@@ -137,14 +137,27 @@ public class ReadingDataMeta implements Serializable {
 	public void setInputValues(Map<Integer, String> inputValues) {
 		this.inputValues = inputValues;
 	}
+	
+	private Boolean custom;
+	public boolean isCustom() {
+		if(custom != null) {
+			return custom.booleanValue();
+		}
+		return false;
+	}
+	public Boolean getCustom() {
+		return custom;
+	}
+	public void setCustom(boolean custom) {
+		this.custom = custom;
+	}
 
 	public static enum ReadingInputType {
 		WEB,
 		TASK,
 		CONTROLLER_MAPPED,
 		FORMULA_FIELD,
-		HIDDEN_FORMULA_FIELD,
-		IS_MANUAL_DATA
+		HIDDEN_FORMULA_FIELD
 		;
 		
 		public int getValue() {
