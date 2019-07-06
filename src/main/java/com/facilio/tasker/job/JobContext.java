@@ -194,6 +194,14 @@ public class JobContext {
 		this.jobExecutionCount = jobExecutionCount;
 	}
 
+	public String getJobKey() {
+		return new StringBuilder()
+				.append(jobId)
+				.append("|")
+				.append(jobName)
+				.toString();
+	}
+
 	@Override
 	public String toString() {
 		return jobId+"::"+orgId+"::"+jobName+"::"+period+"::"+isPeriodic+"::"+executionTime;

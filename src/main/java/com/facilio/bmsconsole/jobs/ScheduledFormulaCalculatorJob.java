@@ -37,6 +37,8 @@ import java.util.List;
 public class ScheduledFormulaCalculatorJob extends FacilioJob {
 	private static final Logger LOGGER = LogManager.getLogger(ScheduledFormulaCalculatorJob.class.getName());
 
+	private boolean timedOut = false;
+
 	@Override
 	public void execute(JobContext jc) {
 		// TODO Auto-generated method stub
@@ -51,7 +53,7 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				fetchFields(formulas, modBean);
 				long endTime = DateTimeUtil.getHourStartTime();
-				while (!formulas.isEmpty()) {
+				while (!formulas.isEmpty() && !timedOut) {
 					Iterator<FormulaFieldContext> it = formulas.iterator();
 					while (it.hasNext()) {
 						FormulaFieldContext formula = it.next();
@@ -174,5 +176,12 @@ public class ScheduledFormulaCalculatorJob extends FacilioJob {
 				formula.getWorkflow().setDependentFields(fields);
 			}
 		}
+	}
+
+	@Override
+	public void handleTimeOut() {
+		LOGGER.info("Scheduled Formula calculator timed out!!");
+		timedOut = true;
+		super.handleTimeOut();
 	}
 }

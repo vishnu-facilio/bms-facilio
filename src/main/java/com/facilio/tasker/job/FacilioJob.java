@@ -35,6 +35,7 @@ public abstract class FacilioJob implements Runnable {
 		int status = 0;
 		try {
 			if ( JobStore.updateStartExecution(jc.getJobId(), jc.getJobName(), jc.getJobStartTime(), jc.getJobExecutionCount()) < 1 ) {
+				executor.jobEnd(jc.getJobKey());
 				return;
 			}
 			startTime = System.currentTimeMillis();
@@ -56,6 +57,7 @@ public abstract class FacilioJob implements Runnable {
 			context.put(JobConstants.FACILIO_JOB, this);
 			JobConstants.ChainFactory.jobExecutionChain(jc.getTransactionTimeout()).execute(context);
 			status = 1;
+			executor.jobEnd(jc.getJobKey());
 		}
 		catch(Exception e) {
 			status = 2;
@@ -76,7 +78,7 @@ public abstract class FacilioJob implements Runnable {
 	private void reschedule() {
 		if(retryExecutionCount <= executor.getMaxRetry()) {
 			LOGGER.error("Rescheduling : "+jc.getJobId()+"::"+jc.getJobName()+" for the "+retryExecutionCount+" time.");
-			executor.schedule(this, 1);
+			executor.reSchedule(this, jc);
 		}
 		else {
 			LOGGER.error("Max retry exceeded for : "+jc+".\nSo making it inactive");
@@ -94,6 +96,10 @@ public abstract class FacilioJob implements Runnable {
 	@Override
 	public String toString() {
 		return this.getClass().getName();
+	}
+
+	public void handleTimeOut() {
+
 	}
 
 }
