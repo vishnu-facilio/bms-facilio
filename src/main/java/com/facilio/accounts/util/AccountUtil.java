@@ -191,8 +191,7 @@ public class AccountUtil {
 		GRAPHICS (524288),
 		CONTRACT (1048576),
         NEW_ALARMS (2097152),
-        DEVELOPER_SPACE (4194304),
-		SKIP_TRIGGERS (8388608)
+        DEVELOPER_SPACE (4194304)
 		;
 		
 		

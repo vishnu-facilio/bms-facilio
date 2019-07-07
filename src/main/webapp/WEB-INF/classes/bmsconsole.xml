@@ -1663,15 +1663,6 @@
 				<param name="includeProperties">^workorder.*</param>
 			</result>
 		</action>
-
-		<action name="calculateNextExecutionTimes" class="com.facilio.bmsconsole.actions.WorkOrderAction"
-				method="calculateNextExecutionTimes">
-			<param name="moduleName">planned</param>
-			<param name="permission">CREATE</param>
-			<result name="success" type="json">
-				<param name="includeProperties">^nextExecutionTimes.*</param>
-			</result>
-		</action>
 		
 		<action name="addNewPreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="addNewPreventiveMaintenance">
