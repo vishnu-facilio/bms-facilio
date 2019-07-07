@@ -80,10 +80,12 @@ public class ExecuteAllWorkflowsCommand implements SerializableCommand
 			}
 		}
 		catch(Exception e) {
-			StringBuilder builder = new StringBuilder("Error during execution of rule : ");
-			builder.append(" for Record : "+recordMap)
-			.append(" this.propagateError " +this.propagateError)
-			.append(" for this.ruleTypes "+Arrays.toString(ruleTypes));
+			StringBuilder builder = new StringBuilder("Error during execution of rules of type : ")
+											.append(Arrays.toString(ruleTypes))
+											.append(" for Record : "+recordMap)
+											.append(" this.propagateError " +this.propagateError)
+											.append(" for this.ruleTypes "+Arrays.toString(ruleTypes))
+											;
 			LOGGER.error(builder.toString(), e);
 			CommonCommandUtil.emailException("RULE EXECUTION FAILED - "+AccountUtil.getCurrentOrg().getId(),builder.toString(), e);
 			if (propagateError) {
