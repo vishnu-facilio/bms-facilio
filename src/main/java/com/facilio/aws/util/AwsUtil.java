@@ -553,15 +553,20 @@ public class AwsUtil
         return secretMap;
     }
 
-    private static void logEmail (JSONObject mailJson) throws Exception {
-		if (AccountUtil.getCurrentOrg() != null) {
-			String toAddress = (String)mailJson.get("to");
-			if (!"error+alert@facilio.com".equals(toAddress) && !"error@facilio.com".equals(toAddress)) {
-				toAddress = toAddress == null ? "" : toAddress;
-				JSONObject info = new JSONObject();
-				info.put("subject", mailJson.get("subject"));
-				CommonAPI.addNotificationLogger(NotificationType.EMAIL, toAddress, info);
+    private static void logEmail (JSONObject mailJson) {
+		try {
+			if (AccountUtil.getCurrentOrg() != null) {
+				String toAddress = (String) mailJson.get("to");
+				if (!"error+alert@facilio.com".equals(toAddress) && !"error@facilio.com".equals(toAddress)) {
+					toAddress = toAddress == null ? "" : toAddress;
+					JSONObject info = new JSONObject();
+					info.put("subject", mailJson.get("subject"));
+					CommonAPI.addNotificationLogger(NotificationType.EMAIL, toAddress, info);
+				}
 			}
+		}
+		catch (Exception e) {
+			LOGGER.error("Error occurred while logging email", e);
 		}
 	}
 	
