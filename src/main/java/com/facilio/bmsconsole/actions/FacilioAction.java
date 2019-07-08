@@ -282,7 +282,9 @@ public class FacilioAction extends ActionSupport {
 	}
 	public void setDebug(boolean debug) {
 		this.debug = debug;
-		setLoggerLevel(2);
+		if (debug) {
+			setLoggerLevel(2);
+		}
 	}
 	private boolean debug;
 

@@ -291,7 +291,9 @@ public class Account implements Serializable {
 		return level;
     }
 	public void setLevel(Level level) {
-		this.level = level;
+    	if (level.toInt() < this.level.toInt()) { //Setting only if incoming level is greater. Useful when we enable logger level org/ user wise and all
+			this.level = level;
+		}
 	}
 }
 
