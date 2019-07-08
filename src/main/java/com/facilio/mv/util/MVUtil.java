@@ -142,6 +142,11 @@ public class MVUtil {
 		
 		mvProjectWrapper.setMvProject(mvProject);
 		
+		if(mvProject.getSaveGoalFormulaField() != null && mvProject.getSaveGoalFormulaField().getId() > 0) {
+			FormulaFieldContext formula = FormulaFieldAPI.getFormulaField(mvProject.getSaveGoalFormulaField().getId());
+			mvProject.setSaveGoalFormulaField(formula);
+		}
+		
 		FacilioModule mvBaselineModule = modbean.getModule(FacilioConstants.ContextNames.MV_BASELINE_MODULE);
 		List<FacilioField> mvBaselineFields = modbean.getAllFields(FacilioConstants.ContextNames.MV_BASELINE_MODULE);
 		
