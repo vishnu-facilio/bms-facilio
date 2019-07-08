@@ -1789,79 +1789,81 @@ public class UserBeanImpl implements UserBean {
 	@Override
 	public long startUserSession(long uid, String email, String token, String ipAddress, String userAgent, String userType) throws Exception {
 
-		TransactionManager transactionManager = null;
-		try {
-			transactionManager = FacilioTransactionManager.INSTANCE.getTransactionManager();
-
-			Transaction transaction = transactionManager.getTransaction();
-			if(transaction == null) {
-				transactionManager.begin();
-			}
-			List<FacilioField> fields = AccountConstants.getUserSessionFields();
-
-			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-					.table(AccountConstants.getUserSessionModule().getTableName())
-					.fields(fields);
-
-			Map<String, Object> props = new HashMap<>();
-			props.put("uid", uid);
-			props.put("sessionType", AccountConstants.SessionType.USER_LOGIN_SESSION.getValue());
-			props.put("token", token);
-			props.put("startTime", System.currentTimeMillis());
-			props.put("isActive", true);
-			props.put("ipAddress", ipAddress);
-			props.put("userAgent", userAgent);
-			props.put("userType", userType);
-
-			insertBuilder.addRecord(props);
-			insertBuilder.save();
-			transactionManager.commit();
-			long sessionId = (Long) props.get("id");
-			return sessionId;
-		} catch (Exception e) {
-			if(transactionManager != null) {
-				transactionManager.rollback();
-			}
-			log.info("exception while adding user session transaction ", e);
-		}
+//		TransactionManager transactionManager = null;
+//		try {
+//			transactionManager = FacilioTransactionManager.INSTANCE.getTransactionManager();
+//
+//			Transaction transaction = transactionManager.getTransaction();
+//			if(transaction == null) {
+//				transactionManager.begin();
+//			}
+//			List<FacilioField> fields = AccountConstants.getUserSessionFields();
+//
+//			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+//					.table(AccountConstants.getUserSessionModule().getTableName())
+//					.fields(fields);
+//
+//			Map<String, Object> props = new HashMap<>();
+//			props.put("uid", uid);
+//			props.put("sessionType", AccountConstants.SessionType.USER_LOGIN_SESSION.getValue());
+//			props.put("token", token);
+//			props.put("startTime", System.currentTimeMillis());
+//			props.put("isActive", true);
+//			props.put("ipAddress", ipAddress);
+//			props.put("userAgent", userAgent);
+//			props.put("userType", userType);
+//
+//			insertBuilder.addRecord(props);
+//			insertBuilder.save();
+//			transactionManager.commit();
+//			long sessionId = (Long) props.get("id");
+//			return sessionId;
+//		} catch (Exception e) {
+//			if(transactionManager != null) {
+//				transactionManager.rollback();
+//			}
+//			log.info("exception while adding user session transaction ", e);
+//		}
+//		return -1L;
 		return -1L;
 	}
 
 	@Override
 	public boolean endUserSession(long uid, String email, String token) throws Exception {
 
-		boolean status = false;
-		TransactionManager transactionManager = null;
-		try {
-			transactionManager = FacilioTransactionManager.INSTANCE.getTransactionManager();
-			Transaction transaction = transactionManager.getTransaction();
-			if(transaction == null) {
-				transactionManager.begin();
-			}
-			List<FacilioField> fields = AccountConstants.getUserSessionFields();
-
-			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-					.table(AccountConstants.getUserSessionModule().getTableName())
-					.fields(fields)
-					.andCustomWhere("USERID = ? AND TOKEN = ?", uid, token);
-
-			Map<String, Object> props = new HashMap<>();
-			props.put("endTime", System.currentTimeMillis());
-			props.put("isActive", false);
-
-			int updatedRows = updateBuilder.update(props);
-			if (updatedRows > 0) {
-				LRUCache.getUserSessionCache().remove(email);
-				status = true;
-			}
-			transactionManager.commit();
-		} catch (Exception e) {
-			if(transactionManager != null) {
-				transactionManager.rollback();
-			}
-			log.info("exception while adding ending user session ", e);
-		}
-		return status;
+//		boolean status = false;
+//		TransactionManager transactionManager = null;
+//		try {
+//			transactionManager = FacilioTransactionManager.INSTANCE.getTransactionManager();
+//			Transaction transaction = transactionManager.getTransaction();
+//			if(transaction == null) {
+//				transactionManager.begin();
+//			}
+//			List<FacilioField> fields = AccountConstants.getUserSessionFields();
+//
+//			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+//					.table(AccountConstants.getUserSessionModule().getTableName())
+//					.fields(fields)
+//					.andCustomWhere("USERID = ? AND TOKEN = ?", uid, token);
+//
+//			Map<String, Object> props = new HashMap<>();
+//			props.put("endTime", System.currentTimeMillis());
+//			props.put("isActive", false);
+//
+//			int updatedRows = updateBuilder.update(props);
+//			if (updatedRows > 0) {
+//				LRUCache.getUserSessionCache().remove(email);
+//				status = true;
+//			}
+//			transactionManager.commit();
+//		} catch (Exception e) {
+//			if(transactionManager != null) {
+//				transactionManager.rollback();
+//			}
+//			log.info("exception while adding ending user session ", e);
+//		}
+//		return status;
+		return true;
 	}
 
 	@Override
@@ -1888,29 +1890,30 @@ public class UserBeanImpl implements UserBean {
 	@Override
 	public boolean verifyUserSession(String email, String token) throws Exception {
 		
-		List sessions = (List) LRUCache.getUserSessionCache().get(email);
-		if (sessions == null) {
-			sessions = new ArrayList<>();
-		}
-		if (sessions.contains(token)) {
-			return true;
-		}
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(AccountConstants.getUserSessionFields())
-				.table("Users")
-				.innerJoin("faciliousers")
-				.on("Users.USERID = faciliousers.USERID")
-				.innerJoin("UserSessions")
-				.on("Users.USERID = UserSessions.USERID")
-				.andCustomWhere("(faciliousers.email = ? or faciliousers.username = ? ) AND UserSessions.TOKEN = ? AND UserSessions.IS_ACTIVE = ?",email, email, token, true);
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			sessions.add(token);
-			LRUCache.getUserSessionCache().put(email, sessions);
-			return true;
-		}
-		return false;
+//		List sessions = (List) LRUCache.getUserSessionCache().get(email);
+//		if (sessions == null) {
+//			sessions = new ArrayList<>();
+//		}
+//		if (sessions.contains(token)) {
+//			return true;
+//		}
+//		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+//				.select(AccountConstants.getUserSessionFields())
+//				.table("Users")
+//				.innerJoin("faciliousers")
+//				.on("Users.USERID = faciliousers.USERID")
+//				.innerJoin("UserSessions")
+//				.on("Users.USERID = UserSessions.USERID")
+//				.andCustomWhere("(faciliousers.email = ? or faciliousers.username = ? ) AND UserSessions.TOKEN = ? AND UserSessions.IS_ACTIVE = ?",email, email, token, true);
+//		
+//		List<Map<String, Object>> props = selectBuilder.get();
+//		if (props != null && !props.isEmpty()) {
+//			sessions.add(token);
+//			LRUCache.getUserSessionCache().put(email, sessions);
+//			return true;
+//		}
+//		return false;
+		return true;
 	}
 
 	@Override
