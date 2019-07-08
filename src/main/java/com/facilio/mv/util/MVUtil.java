@@ -80,6 +80,11 @@ public class MVUtil {
 			formulaFieldContext.setStartTime(mvAdjustment.getStartTime());
 			formulaFieldContext.setEndTime(mvAdjustment.getEndTime());
 		}
+		else {
+			formulaFieldContext.setStartTime(mvProject.getReportingPeriodStartTime());
+			formulaFieldContext.setEndTime(mvProject.getReportingPeriodEndTime());
+			formulaFieldContext.setName(mvProject.getName() +" Save Goal Formula");
+		}
 	}
 	
 	public static void fillFormulaFieldDetailsForUpdate(FormulaFieldContext formulaFieldContext,MVProjectContext mvProject,MVBaseline baseline,MVAdjustment mvAdjustment, Context context) {
@@ -107,6 +112,11 @@ public class MVUtil {
 			}
 			formulaFieldContext.setStartTime(mvAdjustment.getStartTime());
 			formulaFieldContext.setEndTime(mvAdjustment.getEndTime());
+		}
+		else {
+			formulaFieldContext.setStartTime(mvProject.getReportingPeriodStartTime());
+			formulaFieldContext.setEndTime(mvProject.getReportingPeriodEndTime());
+			formulaFieldContext.setName(mvProject.getName() +" Save Goal Formula");
 		}
 	}
 	

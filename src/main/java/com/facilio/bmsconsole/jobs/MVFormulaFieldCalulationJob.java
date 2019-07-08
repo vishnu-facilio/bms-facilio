@@ -28,6 +28,10 @@ public class MVFormulaFieldCalulationJob extends FacilioJob{
 			MVProjectWrapper projectWrapper = MVUtil.getMVProject(id);
 			if(projectWrapper != null) {
 				MVProjectContext mvProject = projectWrapper.getMvProject();
+				if(mvProject.getSaveGoalFormulaField() != null) {
+					DateRange range = new DateRange(mvProject.getReportingPeriodStartTime(), DateTimeUtil.getCurrenTime() < mvProject.getReportingPeriodEndTime() ? DateTimeUtil.getCurrenTime() : mvProject.getReportingPeriodEndTime());
+					FormulaFieldAPI.historicalCalculation(mvProject.getSaveGoalFormulaField(), range, false);
+				}
 				if(projectWrapper.getBaselines() != null) {
 					for(MVBaseline baseline :projectWrapper.getBaselines()) {
 						

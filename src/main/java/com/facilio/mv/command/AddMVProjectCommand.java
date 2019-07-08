@@ -8,6 +8,7 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -41,6 +42,14 @@ public class AddMVProjectCommand implements Command {
 			addAssetChain.execute(context);
 			
 			mvProject.setAutoGenVmMeter(true);
+		}
+		
+		if(mvProject.getSaveGoalFormulaField() != null) {
+			MVUtil.fillFormulaFieldDetailsForAdd(mvProject.getSaveGoalFormulaField(), mvProjectWrapper.getMvProject(),null,null,context);
+			context.put(FacilioConstants.ContextNames.FORMULA_FIELD, mvProject.getSaveGoalFormulaField());
+
+			Chain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
+			addEnpiChain.execute(context);
 		}
 		
 		FacilioModule module = modbean.getModule(FacilioConstants.ContextNames.MV_PROJECT_MODULE);

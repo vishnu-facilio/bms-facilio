@@ -2,6 +2,7 @@ package com.facilio.mv.context;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.util.FacilioFrequency;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
@@ -26,11 +27,20 @@ public class MVProjectContext extends ModuleBaseWithCustomFields {
 	AssetContext meter;
 	User owner;
 	int saveGoal;
+	FormulaFieldContext saveGoalFormulaField;
 	long reportingPeriodStartTime;
 	long reportingPeriodEndTime;
 	Boolean status;
 	Boolean isLocked;
+	
 
+	public FormulaFieldContext getSaveGoalFormulaField() {
+		return saveGoalFormulaField;
+	}
+	public void setSaveGoalFormulaField(FormulaFieldContext saveGoalFormulaField) {
+		this.saveGoalFormulaField = saveGoalFormulaField;
+	}
+	
 	public Boolean getIsLocked() {
 		return isLocked;
 	}
