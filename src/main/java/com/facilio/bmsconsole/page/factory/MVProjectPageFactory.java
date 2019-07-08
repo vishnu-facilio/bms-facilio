@@ -32,6 +32,7 @@ public class MVProjectPageFactory {
 		addBaselineVsActualWidget(tab1Sec1);
 		addCostTrendWidget(tab1Sec1);
 		addCumulativeSavingsWidget(tab1Sec1);
+		addPercentSavingsWidget(tab1Sec1);
 		
 		Tab tab2 = page.new Tab("metrics");
 		page.addTab(tab2);
@@ -101,6 +102,13 @@ public class MVProjectPageFactory {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART, "cumulativeSavings");
 		cardWidget.addToLayoutParams(section, 24, 13);
 		cardWidget.addToWidgetParams("type", "cumulativeSavings");
+		section.addWidget(cardWidget);
+	}
+	
+	private static void addPercentSavingsWidget(Section section) {
+		PageWidget cardWidget = new PageWidget(WidgetType.CHART, "mvPercentageSavings");
+		cardWidget.addToLayoutParams(section, 24, 13);
+		cardWidget.addToWidgetParams("type", "mvPercentageSavings");
 		section.addWidget(cardWidget);
 	}
 	
