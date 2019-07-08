@@ -89,7 +89,14 @@ public class CognitoUtil {
 			DecodedJWT decodedjwt = validateJWT(idToken, "auth0");
 			CognitoUser faciliouser = new CognitoUser();
 			if(decodedjwt != null) {
-				faciliouser.setEmail(decodedjwt.getSubject().split(JWT_DELIMITER)[0]);
+				String email = null;
+				if (decodedjwt.getSubject().contains(JWT_DELIMITER)) {
+					email = decodedjwt.getSubject().split(JWT_DELIMITER)[0];
+				}
+				else {
+					email = decodedjwt.getSubject().split("_")[0];
+				}
+				faciliouser.setEmail(email);
 				faciliouser.setFacilioauth(true);
 				faciliouser.setPortaluser(decodedjwt.getClaim("portaluser").asBoolean());
 

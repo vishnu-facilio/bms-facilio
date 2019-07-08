@@ -68,9 +68,16 @@ public class AuthInterceptor extends AbstractInterceptor {
 				
 				if (AccountUtil.getUserBean().verifyPermalinkForURL(token, urlsToValidate)) {
 					DecodedJWT decodedjwt = CognitoUtil.validateJWT(token, "auth0");
-					
-					long orgId = Long.parseLong(decodedjwt.getSubject().split(CognitoUtil.JWT_DELIMITER)[0].split("-")[0]);
-					long ouid = Long.parseLong(decodedjwt.getSubject().split(CognitoUtil.JWT_DELIMITER)[0].split("-")[1]);
+
+					String[] tokens = null;
+					if (decodedjwt.getSubject().contains(CognitoUtil.JWT_DELIMITER)) {
+						tokens = decodedjwt.getSubject().split(CognitoUtil.JWT_DELIMITER)[0].split("-");
+					}
+					else {
+						tokens = decodedjwt.getSubject().split("_")[0].split("-");
+					}
+					long orgId = Long.parseLong(tokens[0]);
+					long ouid = Long.parseLong(tokens[1]);
 					
 					Account currentAccount = new Account(AccountUtil.getOrgBean().getOrg(orgId), AccountUtil.getUserBean().getUserInternal(ouid, false));
 					
