@@ -169,7 +169,19 @@
 							  costSaved = savedConsumption * costConstant;
 							  resultMap[\"costSaved\"] = costSaved;
 							
-							  targetSavedConsumption = thisMonthBaselineConsumption - (thisMonthBaselineConsumption - (thisMonthBaselineConsumption*(mvProject.saveGoal)/100));
+							  if(mvProject.saveGoal != null) {
+							    targetSavedConsumption =  (thisMonthBaselineConsumption*(mvProject.saveGoal)/100);
+							  }
+							  else {
+							    saveGoalFormulaField = Module(\"formulaField\").fetch([id == (mvProject.saveGoalFormulaField.id)])[0];
+							    db = {
+							    	criteria : [parentId == (mvProject.meter.id) && ttime >= (mvProject.reportingPeriodStartTime) && ttime < lastMonthEndTime],
+							    	field : (saveGoalFormulaField.readingField.name),
+							    	aggregation : \"sum\"
+							  	}
+							    thisMonthTargetConsumption = Module(saveGoalFormulaField.moduleName).fetch(db);
+							    targetSavedConsumption = thisMonthBaselineConsumption - thisMonthTargetConsumption;
+							  }
 							  targetCost = targetSavedConsumption * costConstant;
 							  resultMap[\"targetCost\"] = targetCost;
 							  return resultMap;
