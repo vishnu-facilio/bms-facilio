@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -291,7 +292,9 @@ public class FacilioAction extends ActionSupport {
 	public int getLoggerLevel() {
 		return loggerLevel;
 	}
+	
 	public void setLoggerLevel(int loggerLevel) {
+		Logger.getLogger(FacilioAction.class).info(loggerLevel);
 		this.loggerLevel = loggerLevel;
 		Level level = Level.INFO;
 		switch (loggerLevel) {
