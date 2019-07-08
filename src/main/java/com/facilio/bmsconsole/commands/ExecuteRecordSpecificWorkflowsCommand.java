@@ -74,6 +74,8 @@ public class ExecuteRecordSpecificWorkflowsCommand implements SerializableComman
 
 	private void fetchAndExecuteRules(Map<String, List> recordMap,
 			Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap, FacilioContext context) throws Exception {
+		
+		
 		for (Map.Entry<String, List> entry : recordMap.entrySet()) {
 			String moduleName = entry.getKey();
 			if (moduleName == null || moduleName.isEmpty() || entry.getValue() == null || entry.getValue().isEmpty()) {
@@ -109,9 +111,9 @@ public class ExecuteRecordSpecificWorkflowsCommand implements SerializableComman
 				Iterator it = records.iterator();
 				while (it.hasNext()) {
 					{
-						Object record = records.get(0);
+						Object record = it.next();
 						List<WorkflowRuleContext> workflowRules = (List<WorkflowRuleContext>) SingleRecordRuleAPI
-								.getAllWorkFlowRule(((ModuleBaseWithCustomFields) record).getId(), module);
+								.getAllWorkFlowRule(((ModuleBaseWithCustomFields) record).getId(), module, activities);
 						if (workflowRules != null && !workflowRules.isEmpty()) {
 							List<UpdateChangeSet> changeSet = currentChangeSet == null ? null
 									: currentChangeSet.get(((ModuleBaseWithCustomFields) record).getId());

@@ -31,7 +31,7 @@ public class GetRecordSpecificRuleListCommand implements Command{
 			throw new Exception("Module cannot be empty");
 		}
 		
-		List<WorkflowRuleContext> allWorkFlowRule = (List<WorkflowRuleContext>) SingleRecordRuleAPI.getAllWorkFlowRule(parentId, module);
+		List<WorkflowRuleContext> allWorkFlowRule = (List<WorkflowRuleContext>) SingleRecordRuleAPI.getAllWorkFlowRule(parentId, module, null);
 		context.put(FacilioConstants.ContextNames.RECORD_RULE_LIST, allWorkFlowRule);
 		return false;
 	}

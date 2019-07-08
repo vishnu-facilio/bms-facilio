@@ -1,13 +1,14 @@
 package com.facilio.bmsconsole.util;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
@@ -17,8 +18,6 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.events.context.EventContext;
-import com.facilio.events.util.EventAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -86,7 +85,7 @@ public class SingleRecordRuleAPI extends WorkflowRuleAPI{
 		}
 	}
 	
-	public static List<? extends WorkflowRuleContext> getAllWorkFlowRule(long parentId, FacilioModule module) throws Exception {
+	public static List<? extends WorkflowRuleContext> getAllWorkFlowRule(long parentId, FacilioModule module,List<EventType> eventTypes) throws Exception {
 		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
 		fields.addAll(FieldFactory.getWorkflowRuleFields());
 		fields.addAll(FieldFactory.getWorkflowEventFields());
@@ -101,8 +100,16 @@ public class SingleRecordRuleAPI extends WorkflowRuleAPI{
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), Boolean.TRUE.toString(), BooleanOperators.IS))
 				.orderBy("EXECUTION_ORDER");
+		if(CollectionUtils.isNotEmpty(eventTypes)) {
+			 List<Long> eventVals = new ArrayList<Long>();
+				for(EventType type : eventTypes) {
+					eventVals.add((long)type.getValue());
+				}
+			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("activityType"), eventVals, NumberOperators.EQUALS));
+		}
+			
 		List<Map<String, Object>> list = builder.get();
-		List<WorkflowRuleContext> singleRecordRuleList = getWorkFlowsFromMapList(list, false, true, true);
+		List<WorkflowRuleContext> singleRecordRuleList = getWorkFlowsFromMapList(list, true, true, true);
 		return singleRecordRuleList;
 	}
 	
@@ -163,7 +170,7 @@ public class SingleRecordRuleAPI extends WorkflowRuleAPI{
 	
 	public static void updateRuleJobDuringRecordUpdation (long recordId, FacilioModule module, List<UpdateChangeSet> changeSet) throws Exception{
 		
-		List<WorkflowRuleContext> allRules = (List<WorkflowRuleContext>) getAllWorkFlowRule(recordId, module);
+		List<WorkflowRuleContext> allRules = (List<WorkflowRuleContext>) getAllWorkFlowRule(recordId, module, null);
 		if(CollectionUtils.isNotEmpty(allRules)) {
 			for(WorkflowRuleContext rule : allRules) {
 				WorkflowEventContext event = getWorkflowEvent(rule.getEventId());
@@ -186,7 +193,7 @@ public class SingleRecordRuleAPI extends WorkflowRuleAPI{
 	public static void deleteRuleJobDuringRecordDeletion (List<Long> recordIds, FacilioModule module) throws Exception{
 		
 		for(Long recordId : recordIds) {
-			List<WorkflowRuleContext> allRules = (List<WorkflowRuleContext>) getAllWorkFlowRule(recordId, module);
+			List<WorkflowRuleContext> allRules = (List<WorkflowRuleContext>) getAllWorkFlowRule(recordId, module, null);
 			if(CollectionUtils.isNotEmpty(allRules)) {
 				for(WorkflowRuleContext rule : allRules) {
 					WorkflowRuleAPI.deleteWorkflowRule(rule.getId());
