@@ -35,5 +35,14 @@ public class AgentIntegrationKeys
     public static final String CERT_FILE_NAME = "facilio.crt";
     public static final String KEY_FILE_NAME = "facilio-private.key";
 
+    //reformat
+    public static final String MESSAGE = "message";
+    public static final String ARRIVAL_TIME = "arrivalTime";
+    public static final String DEVICE = "device";
+    public static final String DATA = "data";
+    public static final String PROPERTY ="property";
+    public static final String DEVICE_ID = "deviceId";
+    public static final String PAYLOAD = "payload";
+
 
 }
