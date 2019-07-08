@@ -31,7 +31,7 @@ public class AccessLogFilter implements Filter {
     private static final String TIME_TAKEN = "timetaken";
     private static final String TIME_TAKEN_IN_MILLIS = "timeInMillis";
     private static final String DUMMY_MSG = "accesslog";
-    private static final String APPENDER_NAME = "graylog2";
+    private static final String APPENDER_NAME = "graylog3";
     private static final String DEFAULT_ORG_USER_ID = "-1";
     private static final String X_DEVICE_TYPE = "X-Device-Type";
 
