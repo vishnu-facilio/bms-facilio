@@ -292,9 +292,9 @@ public class FacilioAction extends ActionSupport {
 	public int getLoggerLevel() {
 		return loggerLevel;
 	}
-	
+
 	public void setLoggerLevel(int loggerLevel) {
-		Logger.getLogger(FacilioAction.class).info(loggerLevel);
+		Logger.getLogger(FacilioAction.class.getName()).info(loggerLevel);
 		this.loggerLevel = loggerLevel;
 		Level level = Level.INFO;
 		switch (loggerLevel) {
