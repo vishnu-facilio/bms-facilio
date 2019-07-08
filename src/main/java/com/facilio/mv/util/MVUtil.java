@@ -30,6 +30,8 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.json.simple.JSONObject;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,12 +56,17 @@ public class MVUtil {
     public static String WORKLFOW_VALUE_NULL_CHECK_STMT = "if(${var} == null) { ${var} = 0; }";
     public static String WORKLFOW_ADJ_DATE_RANGE_CHECK = "if(startTime >= ${startTime} && endTime < ${endTime}){";
 	
-	public static void fillFormulaFieldDetailsForAdd(FormulaFieldContext formulaFieldContext,MVProjectContext mvProject,MVBaseline baseline,MVAdjustment mvAdjustment, Context context) {
+	public static void fillFormulaFieldDetailsForAdd(FormulaFieldContext formulaFieldContext,MVProjectContext mvProject,MVBaseline baseline,MVAdjustment mvAdjustment, Context context) throws Exception {
 		
 		formulaFieldContext.setFormulaFieldType(FormulaFieldType.M_AND_V_ENPI);
 		formulaFieldContext.setTriggerType(TriggerType.SCHEDULE);
 		formulaFieldContext.setResourceId(mvProject.getMeter().getId());
-		formulaFieldContext.setResourceType(ResourceType.ONE_RESOURCE);
+		
+		AssetContext asset = AssetsAPI.getAssetInfo(mvProject.getMeter().getId());
+		formulaFieldContext.setAssetCategoryId(asset.getCategory().getId());
+		formulaFieldContext.setIncludedResources(Collections.singletonList(mvProject.getMeter().getId()));
+		
+		formulaFieldContext.setResourceType(ResourceType.ASSET_CATEGORY);
 		formulaFieldContext.setFrequency(mvProject.getFrequency());
 		context.put(FacilioConstants.ContextNames.SKIP_FORMULA_HISTORICAL_SCHEDULING, Boolean.TRUE);
 		if(baseline != null) {
@@ -87,12 +94,16 @@ public class MVUtil {
 		}
 	}
 	
-	public static void fillFormulaFieldDetailsForUpdate(FormulaFieldContext formulaFieldContext,MVProjectContext mvProject,MVBaseline baseline,MVAdjustment mvAdjustment, Context context) {
+	public static void fillFormulaFieldDetailsForUpdate(FormulaFieldContext formulaFieldContext,MVProjectContext mvProject,MVBaseline baseline,MVAdjustment mvAdjustment, Context context) throws Exception {
 		
 		formulaFieldContext.setFormulaFieldType(null);
 		formulaFieldContext.setInterval(-1);
 		formulaFieldContext.setTriggerType(-1);
 		formulaFieldContext.setResourceId(-1);
+		
+		formulaFieldContext.setAssetCategoryId(-1l);
+		formulaFieldContext.setIncludedResources(Collections.singletonList(mvProject.getMeter().getId()));
+		
 		formulaFieldContext.setResourceType(null);
 		formulaFieldContext.setFrequency(mvProject.getFrequency());
 		context.put(FacilioConstants.ContextNames.SKIP_FORMULA_HISTORICAL_SCHEDULING, Boolean.TRUE);
