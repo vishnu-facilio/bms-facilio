@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
@@ -275,5 +276,54 @@ public class FacilioAction extends ActionSupport {
  		
  		return context;
 	}
+
+	public boolean isDebug() {
+		return debug;
+	}
+	public void setDebug(boolean debug) {
+		this.debug = debug;
+		setLoggerLevel(2);
+	}
+	private boolean debug;
+
+	public int getLoggerLevel() {
+		return loggerLevel;
+	}
+	public void setLoggerLevel(int loggerLevel) {
+		this.loggerLevel = loggerLevel;
+		Level level = Level.INFO;
+		switch (loggerLevel) {
+			case 0:
+				level = Level.ALL;
+				break;
+			case 1:
+				level = Level.TRACE;
+				break;
+			case 2:
+				level = Level.DEBUG;
+				break;
+			case 3:
+				level = Level.INFO;
+				break;
+			case 4:
+				level = Level.WARN;
+				break;
+			case 5:
+				level = Level.ERROR;
+				break;
+			case 6:
+				level = Level.FATAL;
+				break;
+			case 7:
+				level = Level.OFF;
+				break;
+			default:
+				break;
+		}
+		if (AccountUtil.getCurrentAccount() != null) {
+			AccountUtil.getCurrentAccount().setLevel(level);
+		}
+	}
+	private int loggerLevel = -1;
 
 }

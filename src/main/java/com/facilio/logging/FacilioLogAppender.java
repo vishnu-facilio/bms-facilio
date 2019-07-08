@@ -102,7 +102,20 @@ public class FacilioLogAppender extends DailyRollingFileAppender {
     }
 
     public void append(LoggingEvent event) {
-        Organization org = AccountUtil.getCurrentOrg();
+        if((lastFreeSpaceCheckedTime + 300_000L) < System.currentTimeMillis()) {
+            lastFreeSpaceCheckedTime = System.currentTimeMillis();
+            freeSpace = ROOT_FILE.getFreeSpace();
+        }
+        if(!(
+                (   (event.getLevel().toInt() > Level.INFO_INT)
+                    || (AccountUtil.getCurrentAccount() != null && (event.getLevel().toInt() >= AccountUtil.getCurrentAccount().getLevel().toInt())) 
+                )
+                && (freeSpace > FREE_SPACE_THRESHOLD)
+            )) {
+            return;
+        }
+
+            Organization org = AccountUtil.getCurrentOrg();
         if(org != null) {
             event.setProperty("orgId", String.valueOf(org.getOrgId()));
         } else {
@@ -134,14 +147,7 @@ public class FacilioLogAppender extends DailyRollingFileAppender {
         } catch (Exception e) {
             event.setProperty("exception", "LogAppenderException");
         }
-        if((lastFreeSpaceCheckedTime + 300_000L) < System.currentTimeMillis()) {
-            lastFreeSpaceCheckedTime = System.currentTimeMillis();
-            freeSpace = ROOT_FILE.getFreeSpace();
-        }
-
-        if(((event.getLevel().toInt() > Level.INFO_INT) || (AccountUtil.getCurrentAccount() != null && (event.getLevel().toInt() == AccountUtil.getCurrentAccount().getLevel())) ) && (freeSpace > FREE_SPACE_THRESHOLD)) {
-            super.append(event);
-        }
+        super.append(event);
     }
 
     protected boolean checkEntryConditions() {

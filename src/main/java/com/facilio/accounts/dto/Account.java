@@ -286,13 +286,12 @@ public class Account implements Serializable {
 		redisDeleteTime = 0L;
 	}
 
-	private int level = Level.INFO_INT;
-    public int getLevel() {
+	private Level level = Level.INFO;
+    public Level getLevel() {
 		return level;
     }
-
 	public void setLevel(Level level) {
-		this.level = level.toInt();
+		this.level = level;
 	}
 }
 
