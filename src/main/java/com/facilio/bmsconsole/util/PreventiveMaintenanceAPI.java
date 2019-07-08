@@ -30,6 +30,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
+import com.facilio.tasker.ScheduleInfo;
 import com.facilio.tasker.ScheduleInfo.FrequencyType;
 import com.facilio.time.DateTimeUtil;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -40,13 +41,16 @@ import com.google.common.collect.Multimap;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -305,27 +309,21 @@ public class PreventiveMaintenanceAPI {
 	}
 
 	public static List<WorkOrderContext> createWOContextsFromPM(Context context, PreventiveMaintenance pm, PMTriggerContext pmTrigger, long startTime, WorkorderTemplate woTemplate) throws Exception {
-		long nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(startTime);
+		Pair<Long, Integer> nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(Pair.of(startTime, 0));
 		int currentCount = pm.getCurrentExecutionCount();
 		List<WorkOrderContext> wos = new ArrayList<>();
 		long endTime = DateTimeUtil.getDayStartTime(pmTrigger.getFrequencyEnum().getMaxSchedulingDays(), true) - 1;
 		long currentTime = System.currentTimeMillis();
 		boolean isScheduled = false;
-		while (nextExecutionTime <= endTime && (pm.getMaxCount() == -1 || currentCount < pm.getMaxCount()) && (pm.getEndTime() == -1 || nextExecutionTime <= pm.getEndTime())) {
-			if ((nextExecutionTime * 1000) < currentTime) {
-//				if (pm.getId() == 1110712L) {
-//					LOGGER.log(Level.SEVERE, "Skipping : next: "+ nextExecutionTime * 1000 + " current: "+ currentTime);
-//				}
+		while (nextExecutionTime.getLeft() <= endTime && (pm.getMaxCount() == -1 || currentCount < pm.getMaxCount()) && (pm.getEndTime() == -1 || nextExecutionTime.getLeft() <= pm.getEndTime())) {
+			if ((nextExecutionTime.getLeft() * 1000) < currentTime) {
 				nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(nextExecutionTime);
 				if (pmTrigger.getSchedule().getFrequencyTypeEnum() == FrequencyType.DO_NOT_REPEAT) {
 					break;
 				}
 				continue;
 			}
-//			if (pm.getId() == 1110712L) {
-//				LOGGER.log(Level.SEVERE, "Generating : next: "+ nextExecutionTime * 1000 + " current: "+ currentTime);
-//			}
-			WorkOrderContext wo = createWoContextFromPM(context, pm, pmTrigger, woTemplate, nextExecutionTime);
+			WorkOrderContext wo = createWoContextFromPM(context, pm, pmTrigger, woTemplate, nextExecutionTime.getLeft());
 
 			wos.add(wo);
 
@@ -1817,265 +1815,54 @@ public class PreventiveMaintenanceAPI {
     }
 
 
-    private static Map<Long, Map<Long, List<String>>> workOrderTriggerSectionMap() throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		Map<String, FacilioField> ticketsMap = FieldFactory.getAsMap(modBean.getAllFields("ticket"));
-
-		FacilioModule workOrderMod = modBean.getModule("workorder");
-
-		FacilioModule taskSectionMod = ModuleFactory.getTaskSectionModule();
-		Map<String, FacilioField> workOrderMap = FieldFactory.getAsMap(modBean.getAllFields("workorder"));
-
-		FacilioStatus assignedStatus = TicketAPI.getStatus("Assigned");
-		FacilioStatus status = TicketAPI.getStatus("Submitted");
-
-		Criteria statusCriteria = new Criteria();
-		statusCriteria.addAndCondition(CriteriaAPI.getCondition(ticketsMap.get("status"), String.valueOf(status.getId()), NumberOperators.EQUALS));
-		statusCriteria.addOrCondition(CriteriaAPI.getCondition(ticketsMap.get("status"), String.valueOf(assignedStatus.getId()), NumberOperators.EQUALS));
-
-		List<FacilioField> taskSectionFields = FieldFactory.getTaskSectionFields();
-		Map<String, FacilioField> taskSectionMap = FieldFactory.getAsMap(taskSectionFields);
-
-		List<FacilioField> selectFields = Arrays.asList(FieldFactory.getIdField(workOrderMod), workOrderMap.get("trigger"),taskSectionMap.get("name"));
-
-		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder();
-		selectRecordBuilder.select(selectFields)
-				.table(taskSectionMod.getTableName())
-				.innerJoin("WorkOrders")
-				.on("WorkOrders.ID = Task_Section.PARENT_TICKET_ID")
-				.innerJoin("Tickets")
-				.on("WorkOrders.ID = Tickets.ID")
-				.innerJoin("TicketStatus")
-				.on("TicketStatus.ID = Tickets.STATUS_ID")
-				.andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getOrgId(), taskSectionMod))
-				.andCriteria(statusCriteria)
-				.andCondition(CriteriaAPI.getCondition(workOrderMap.get("createdTime"), String.valueOf(1555459200000L), NumberOperators.GREATER_THAN_EQUAL))
-				.andCondition(CriteriaAPI.getCondition(workOrderMap.get("trigger"), CommonOperators.IS_NOT_EMPTY))
-				.andCondition(CriteriaAPI.getCondition(workOrderMap.get("jobStatus"), String.valueOf(3), NumberOperators.EQUALS));
-
-		List<Map<String, Object>> props;
-		try {
-			props = selectRecordBuilder.get();
-		} catch (Exception e) {
-			LOGGER.log(Level.SEVERE, "Failed sql: " + selectRecordBuilder.toString());
-			throw e;
-		}
-
-
-
-		Map<Long, Map<Long, List<String>>> triggerSectionMap = new HashMap<>();
-
-		for (Map<String, Object> prop: props) {
-			if (triggerSectionMap.get(prop.get("trigger")) == null) {
-				triggerSectionMap.put((long) prop.get("trigger"), new HashMap<>());
-			}
-
-			Map<Long, List<String>> woMap = triggerSectionMap.get(prop.get("trigger"));
-			if (woMap.get(prop.get("id")) == null) {
-				woMap.put((long) prop.get("id"), new ArrayList<>());
-			}
-
-			woMap.get(prop.get("id")).add((String) prop.get("name"));
-		}
-		return triggerSectionMap;
-	}
-
-    public static void verifyMigration(List<Long> orgs) throws Exception {
+	public static void migrateNewPMMigration (List<Long> orgs) throws Exception {
+		LOGGER.log(Level.SEVERE, "Starting PM Trigger migration");
 		for (long i : orgs) {
 			try {
+				LOGGER.log(Level.SEVERE, "org id " + i);
 				AccountUtil.setCurrentAccount(i);
 				if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
-					LOGGER.log(Level.SEVERE, "Org is missing");
+					LOGGER.log(Level.SEVERE, "org is missing");
 					continue;
 				}
 
-				Map<Long, List<String>> triggerSectionMap = getTriggerSectionMap();
-				Map<Long, Map<Long, List<String>>> woMap = workOrderTriggerSectionMap();
+				List<FacilioField> triggerFields = FieldFactory.getPMTriggerFields();
+				Map<String, FacilioField> triggerFieldMap = FieldFactory.getAsMap(triggerFields);
 
-				Set<Long> trigs = triggerSectionMap.keySet();
-				for (long trig: trigs) {
-					Map<Long, List<String>> woUnit = woMap.get(trig);
-					if (woUnit == null) {
-						LOGGER.log(Level.SEVERE, "==>No wos for trigger " + trig);
-						continue;
-					}
-					List<String> configSections = triggerSectionMap.get(trig);
-					Set<Long> woIds = woUnit.keySet();
+				Criteria triggerCri = new Criteria();
+				triggerCri.addAndCondition(CriteriaAPI.getCondition(triggerFieldMap.get("frequency"), Arrays.asList(3L, 4L, 5L), NumberOperators.EQUALS));
+				List<Map<String, Object>> triggers = getPMTriggers(triggerCri);
 
-					for (long woId: woIds) {
-						List<String> actualSections = woUnit.get(woId);
-						for (String config: configSections) {
-							boolean found = false;
-							for (String actual: actualSections) {
-								if (actual.contains(config)) {
-									found = true;
-									break;
-								}
-							}
-							if (!found) {
-								LOGGER.log(Level.SEVERE, "===> Mismatch TriggerID: " + trig + " WOID: " + woId);
-							} else {
-								LOGGER.log(Level.SEVERE, "Matched TriggerID: " + trig + " WOID: " + woId);
-							}
+				for (Map<String, Object> trigger: triggers) {
+					PMTriggerContext pmt = FieldUtil.getAsBeanFromMap(trigger, PMTriggerContext.class);
+					ScheduleInfo sinfo = pmt.getSchedule();
+					long startTime = pmt.getStartTime();
+
+					LOGGER.log(Level.SEVERE, "Migrating PM: " + pmt.getPmId() + " Trigger: " + pmt.getId() + " Frequency Type: " + sinfo.getFrequencyTypeEnum());
+					try {
+						ZonedDateTime zonedStartTime = DateTimeUtil.getDateTime(startTime, false).with(LocalTime.of(0, 0)).withDayOfMonth(1);
+						ZonedDateTime calculated = DateTimeUtil.getDateTime(sinfo.nextExecutionTime(zonedStartTime.toEpochSecond()), true);
+						ZonedDateTime prev = DateTimeUtil.getDateTime(startTime, false);
+
+						long newStartTime;
+						if (calculated.getMonthValue() == prev.getMonthValue()
+								&& calculated.getDayOfMonth() == prev.getDayOfMonth()
+								&& calculated.getYear() == prev.getYear()
+								&& calculated.getHour() == prev.getHour()
+								&& calculated.getMinute() == prev.getMinute()) {
+							newStartTime = zonedStartTime.toInstant().toEpochMilli();
+						} else {
+							ZonedDateTime nextTime = DateTimeUtil.getDateTime(sinfo.nextExecutionTime(startTime/1000), true);
+							newStartTime = nextTime.with(LocalTime.of(0, 0)).withDayOfMonth(1).toInstant().toEpochMilli();
 						}
-					}
-				}
-			} finally {
-				AccountUtil.cleanCurrentAccount();
-			}
-		}
-	}
 
+						HashMap<String, Object> update = transformScheduleInfo(pmt, newStartTime);
 
-	private static List<Long> fetchAffectedTaskSections(long triggerId, List<String> allowedSectionTemplates) throws Exception {
-		if (allowedSectionTemplates == null || allowedSectionTemplates.isEmpty()) {
-			return null;
-		}
-		List<FacilioField> taskSectionFields = FieldFactory.getTaskSectionFields();
-		FacilioModule taskSectionMod = ModuleFactory.getTaskSectionModule();
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		Map<String, FacilioField> workOrderMap = FieldFactory.getAsMap(modBean.getAllFields("workorder"));
-		Map<String, FacilioField> ticketsMap = FieldFactory.getAsMap(modBean.getAllFields("ticket"));
-
-		FacilioStatus assignedStatus = TicketAPI.getStatus("Assigned");
-		FacilioStatus status = TicketAPI.getStatus("Submitted");
-
-		Map<String, FacilioField> taskSectionMap = FieldFactory.getAsMap(taskSectionFields);
-
-		List<FacilioField> selectFields = Arrays.asList(taskSectionMap.get("id"));
-
-		Criteria statusCriteria = new Criteria();
-		statusCriteria.addAndCondition(CriteriaAPI.getCondition(ticketsMap.get("status"), String.valueOf(status.getId()), NumberOperators.EQUALS));
-		statusCriteria.addOrCondition(CriteriaAPI.getCondition(ticketsMap.get("status"), String.valueOf(assignedStatus.getId()), NumberOperators.EQUALS));
-
-		String customWhere = "NOT (";
-		int size = allowedSectionTemplates.size();
-		for (String allowed : allowedSectionTemplates) {
-			size = size - 1;
-			customWhere += "Task_Section.NAME LIKE '%"+allowed+"%'";
-			if (size != 0) {
-				customWhere += " OR ";
-			}
-		}
-		customWhere = customWhere + ")";
-
-		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder();
-		selectRecordBuilder.select(selectFields)
-				.table(taskSectionMod.getTableName())
-				.innerJoin("WorkOrders")
-				.on("WorkOrders.ID = Task_Section.PARENT_TICKET_ID")
-				.innerJoin("Tickets")
-				.on("WorkOrders.ID = Tickets.ID")
-				.innerJoin("TicketStatus")
-				.on("TicketStatus.ID = Tickets.STATUS_ID")
-				.andCondition(CriteriaAPI.getCondition(workOrderMap.get("trigger"), Collections.singletonList(triggerId), NumberOperators.EQUALS))
-				.andCustomWhere(customWhere)
-				.andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getOrgId(), taskSectionMod))
-				.andCriteria(statusCriteria);
-
-		List<Map<String, Object>> props = selectRecordBuilder.get();
-		
-		List<Long> ids = new ArrayList<>();
-
-		for (Map<String, Object> prop: props) {
-			ids.add((long) prop.get("id"));
-		}
-
-		return ids;
-	}
-
-	private static Map<Long, List<String>> getTriggerSectionMap() throws Exception {
-		List<FacilioField> taskSectionTemplateTriggerFields = FieldFactory.getTaskSectionTemplateTriggersFields();
-		FacilioModule taskSectionMod = ModuleFactory.getTaskSectionTemplateTriggersModule();
-
-		List<FacilioField> templateFields = FieldFactory.getTemplateFields();
-
-
-		Map<String, FacilioField> taskSectionTemplateTriggersMap = FieldFactory.getAsMap(taskSectionTemplateTriggerFields);
-		Map<String, FacilioField> templateMap = FieldFactory.getAsMap(templateFields);
-
-		List<FacilioField> selectFields = Arrays.asList(taskSectionTemplateTriggersMap.get("triggerId"), templateMap.get("name"));
-
-		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder();
-		selectRecordBuilder.select(selectFields)
-				.table(taskSectionMod.getTableName())
-				.innerJoin("Task_Section_Template")
-				.on("Task_Section_Template.ID = Task_Section_Template_Triggers.SECTION_ID")
-				.innerJoin("Templates")
-				.on("Templates.ID = Task_Section_Template.ID")
-				.andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getOrgId(), taskSectionMod));
-
-		List<Map<String, Object>> props = selectRecordBuilder.get();
-
-		Map<Long, List<String>> triggerSectionMap = new HashMap<>();
-
-		for (Map<String, Object> prop: props) {
-			if (triggerSectionMap.get(prop.get("triggerId")) == null) {
-				triggerSectionMap.put((long) prop.get("triggerId"), new ArrayList<>());
-			}
-			triggerSectionMap.get(prop.get("triggerId")).add((String) prop.get("name"));
-		}
-
-		if (triggerSectionMap.isEmpty()) {
-			return triggerSectionMap;
-		}
-
-		Map<String, FacilioField>  trigMap = FieldFactory.getAsMap(FieldFactory.getPMTriggerFields());
-		FacilioField triggerId = trigMap.get("id");
-		triggerId.setName("triggerId");
-
-		List<FacilioField> allSelect = Arrays.asList(triggerId, templateMap.get("name"));
-
-		GenericSelectRecordBuilder allSelectRecordBuilder = new GenericSelectRecordBuilder();
-		allSelectRecordBuilder.select(allSelect)
-				.table("Task_Section_Template")
-				.innerJoin("Templates")
-				.on("Templates.ID = Task_Section_Template.ID")
-				.innerJoin("Preventive_Maintenance")
-				.on("Preventive_Maintenance.TEMPLATE_ID = Task_Section_Template.PARENT_WO_TEMPLATE_ID")
-				.innerJoin("PM_Triggers")
-				.on("PM_Triggers.PM_ID = Preventive_Maintenance.ID")
-				.leftJoin(taskSectionMod.getTableName())
-				.on("Task_Section_Template.ID = Task_Section_Template_Triggers.SECTION_ID")
-				.andCustomWhere("Preventive_Maintenance.ORGID = ?", AccountUtil.getCurrentOrg().getOrgId())
-				.andCustomWhere("Task_Section_Template_Triggers.SECTION_ID IS NULL")
-				.andCondition(CriteriaAPI.getCondition(triggerId, triggerSectionMap.keySet(), NumberOperators.EQUALS));
-
-		List<Map<String, Object>> allProp = allSelectRecordBuilder.get();
-
-		for (Map<String, Object> prop: allProp) {
-			if (triggerSectionMap.get(prop.get("triggerId")) == null) {
-				triggerSectionMap.put((long) prop.get("triggerId"), new ArrayList<>());
-			}
-			triggerSectionMap.get(prop.get("triggerId")).add((String) prop.get("name"));
-		}
-
-
-		return triggerSectionMap;
-	}
-
-    public static void fetchAffectedTaskSection (List<Long> orgs) throws Exception {
-		LOGGER.log(Level.SEVERE, "Migration started");
-		for (long i : orgs) {
-			try {
-				LOGGER.log(Level.SEVERE, "Setting account id " + i);
-				AccountUtil.setCurrentAccount(i);
-				if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
-					LOGGER.log(Level.SEVERE, "Org is missing");
-					continue;
-				}
-
-				Map<Long, List<String>> triggerSectionMap = getTriggerSectionMap();
-
-				LOGGER.log(Level.SEVERE, "Trigger size " + triggerSectionMap.size());
-
-				Set<Map.Entry<Long, List<String>>> entries = triggerSectionMap.entrySet();
-				for (Map.Entry<Long, List<String>> entry: entries) {
-					long triggerId = entry.getKey();
-					List<String> sectionNames = entry.getValue();
-					List<Long> affectedTaskSections = fetchAffectedTaskSections(triggerId, sectionNames);
-					if (affectedTaskSections != null && !affectedTaskSections.isEmpty()) {
-						LOGGER.log(Level.SEVERE, "Affected task sections for triggerId " + triggerId + " affectedTaskSections: " + StringUtils.join(affectedTaskSections, ","));
+						if (!update.isEmpty()) {
+							updatePMTriggers(pmt, update);
+						}
+					} catch (Exception e) {
+						LOGGER.log(Level.SEVERE, "===> Execption Migrating PM: " + pmt.getPmId() + " Trigger: " + pmt.getId() + " Frequency Type: " + sinfo.getFrequencyTypeEnum(), e);
 					}
 				}
 			} catch (Exception e) {
@@ -2087,4 +1874,239 @@ public class PreventiveMaintenanceAPI {
 		}
 		LOGGER.log(Level.SEVERE, "Completing migration");
 	}
+
+	private static HashMap<String, Object> transformScheduleInfo(PMTriggerContext pmt, long newStartTime) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		ScheduleInfo sinfo = pmt.getSchedule();
+		HashMap<String, Object> update = new HashMap<>();
+		if (pmt.getFrequencyEnum() == FacilioFrequency.MONTHLY) { // verify this assumption
+			update.put("startTime", newStartTime);
+		} else if (pmt.getFrequencyEnum() == FacilioFrequency.QUARTERTLY) {
+			update.put("startTime", newStartTime);
+
+			ZonedDateTime zonedNewStartTime = DateTimeUtil.getDateTime(newStartTime, false);
+			int month = zonedNewStartTime.getMonthValue();
+
+			int offsetMonth = ((month - 1) % 3) + 1;
+			ScheduleInfo s = new ScheduleInfo();
+
+			FrequencyType currentFreq = sinfo.getFrequencyTypeEnum();
+			int frequency = sinfo.getFrequency();
+
+			if ((currentFreq != FrequencyType.MONTHLY_DAY && currentFreq != FrequencyType.MONTHLY_WEEK) || frequency != 3)  {
+				throw new IllegalStateException("should not be " + currentFreq + " frequency " + frequency);
+			}
+
+			FrequencyType newFrequencyType = currentFreq == FrequencyType.MONTHLY_DAY ? FrequencyType.QUARTERLY_DAY: FrequencyType.QUARTERLY_WEEK;
+
+			s.setFrequencyType(newFrequencyType);
+			s.setMonthValue(offsetMonth);
+			s.setTimeObjects(sinfo.getTimeObjects());
+			s.setValues(sinfo.getValues());
+
+			if (newFrequencyType == FrequencyType.QUARTERLY_WEEK) {
+				s.setWeekFrequency(sinfo.getWeekFrequency());
+			}
+			update.put("scheduleJson", FieldUtil.getAsJSON(s).toJSONString());
+		} else if (pmt.getFrequencyEnum() == FacilioFrequency.HALF_YEARLY) {
+			update.put("startTime", newStartTime);
+
+			ZonedDateTime zonedNewStartTime = DateTimeUtil.getDateTime(newStartTime, false);
+			int month = zonedNewStartTime.getMonthValue();
+
+			int offsetMonth = ((month - 1) % 6) + 1;
+			ScheduleInfo s = new ScheduleInfo();
+
+			FrequencyType currentFreq = sinfo.getFrequencyTypeEnum();
+			int frequency = sinfo.getFrequency();
+
+			if ((currentFreq != FrequencyType.MONTHLY_DAY && currentFreq != FrequencyType.MONTHLY_WEEK) || frequency != 6)  {
+				throw new IllegalStateException("should not be " + currentFreq + " frequency " + frequency);
+			}
+
+			FrequencyType newFrequencyType = currentFreq == FrequencyType.MONTHLY_DAY ? FrequencyType.HALF_YEARLY_DAY: FrequencyType.HALF_YEARLY_WEEK;
+
+			s.setFrequencyType(newFrequencyType);
+			s.setMonthValue(offsetMonth);
+			s.setTimeObjects(sinfo.getTimeObjects());
+			s.setValues(sinfo.getValues());
+
+			if (newFrequencyType == FrequencyType.HALF_YEARLY_WEEK) {
+				s.setWeekFrequency(sinfo.getWeekFrequency());
+			}
+			update.put("scheduleJson", FieldUtil.getAsJSON(s).toJSONString());
+		}
+		return update;
+	}
+
+	private static void updatePMTriggers(PMTriggerContext pmt, HashMap<String, Object> update) throws SQLException {
+		List<FacilioField> fields = FieldFactory.getPMTriggerFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioModule module = ModuleFactory.getPMTriggersModule();
+		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder();
+		builder = builder.fields(Arrays.asList(fieldMap.get("startTime"), fieldMap.get("scheduleJson")))
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getIdCondition(pmt.getId(), module))
+				.andCondition(CriteriaAPI.getOrgIdCondition(AccountUtil.getCurrentOrg().getOrgId(),module));
+		builder.update(update);
+	}
+
+
+	private static Set<Long> getInactivePMs() throws Exception  {
+		FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
+		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
+		Map<String, FacilioField> pmFieldsMap = FieldFactory.getAsMap(fields);
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table(module.getTableName())
+//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCondition(pmFieldsMap.get("status"), "0", NumberOperators.EQUALS))
+				;
+		List<Map<String, Object>> ret = selectBuilder.get();
+
+		Set<Long> result = new HashSet<>();
+		if (ret == null) {
+			return result;
+		}
+
+		for (Map<String, Object> r : ret) {
+			result.add((long) r.get("id"));
+		}
+
+		return result;
+	}
+
+	public static void activateDeactivatePMs(Long orgId, List<Long> pmIds) throws Exception {
+		try {
+			AccountUtil.setCurrentAccount(orgId);
+			if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
+				LOGGER.log(Level.SEVERE, "Org is missing");
+				return;
+			}
+			for (long pmId: pmIds) {
+				FacilioContext context = new FacilioContext();
+				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(pmId));
+				PreventiveMaintenance pm = new PreventiveMaintenance();
+				pm.setStatus(false);
+				context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
+				Chain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChain();
+				addTemplate.execute(context);
+
+				pm = new PreventiveMaintenance();
+				pm.setStatus(true);
+				context = new FacilioContext();
+				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(pmId));
+				context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
+				addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChain();
+				addTemplate.execute(context);
+			}
+		} catch (Exception e) {
+			LOGGER.log(Level.SEVERE, "Exception verifying org " + orgId, e);
+			throw e;
+		} finally {
+			AccountUtil.cleanCurrentAccount();
+			LOGGER.log(Level.SEVERE, "Migration completed orgId: " + orgId);
+		}
+	}
+
+
+	public static void verifyNewPMMigration (List<Long> orgs) throws Exception {
+		LOGGER.log(Level.SEVERE, "Verifying orgs");
+		for (long i : orgs) {
+			try {
+				AccountUtil.setCurrentAccount(i);
+				if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
+					LOGGER.log(Level.SEVERE, "Org is missing");
+					continue;
+				}
+
+				List<FacilioField> triggerFields = FieldFactory.getPMTriggerFields();
+
+				Map<String, FacilioField> triggerFieldMap = FieldFactory.getAsMap(triggerFields);
+
+				Criteria halfYearlyCri = new Criteria();
+				halfYearlyCri.addAndCondition(CriteriaAPI.getCondition(triggerFieldMap.get("frequency"), Arrays.asList(3L, 4L, 5L), NumberOperators.EQUALS));
+				List<Map<String, Object>> halfYearlyTriggers = getPMTriggers(halfYearlyCri);
+
+				Set<Long> inactivePms = getInactivePMs();
+				long currentTime = System.currentTimeMillis();
+				LOGGER.log(Level.SEVERE, "Verifying orgs");
+				for (Map<String, Object> trigger: halfYearlyTriggers) {
+					PMTriggerContext pmt = FieldUtil.getAsBeanFromMap(trigger, PMTriggerContext.class);
+
+					if (inactivePms.contains(pmt.getPmId())) {
+						continue;
+					}
+
+					ScheduleInfo sinfo = pmt.getSchedule();
+					long startTime = pmt.getStartTime();
+
+
+					LOGGER.log(Level.SEVERE, "PM ID " + pmt.getPmId());
+					LOGGER.log(Level.SEVERE, "TRIGGER ID " + pmt.getId());
+					LOGGER.log(Level.SEVERE, "Frequency type "+ sinfo.getFrequencyTypeEnum());
+
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+					FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+					List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
+					Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+					ZonedDateTime zonedStartTime = DateTimeUtil.getDateTime(startTime, false).with(LocalTime.of(0, 0)).withDayOfMonth(1);
+					ZonedDateTime calculated = DateTimeUtil.getDateTime(sinfo.nextExecutionTime(zonedStartTime.toEpochSecond()), true);
+					ZonedDateTime prev = DateTimeUtil.getDateTime(startTime, false);
+					long newStartTime;
+					long checkTime;
+					boolean isSame = false;
+					if (calculated.getMonthValue() == prev.getMonthValue()
+							&& calculated.getDayOfMonth() == prev.getDayOfMonth()
+							&& calculated.getYear() == prev.getYear()
+							&& calculated.getMinute() == prev.getMinute()
+							&& calculated.getHour() == prev.getHour()) {
+						isSame = true;
+						checkTime = calculated.toInstant().toEpochMilli()/1000;
+					} else {
+						ZonedDateTime nextTime = DateTimeUtil.getDateTime(sinfo.nextExecutionTime(startTime/1000), true);
+						newStartTime = nextTime.with(LocalTime.of(0, 0)).withDayOfMonth(1).toInstant().toEpochMilli();
+						checkTime = sinfo.nextExecutionTime(newStartTime/1000);
+					}
+
+					HashMap<String, Object> transformed = transformScheduleInfo(pmt, checkTime * 1000);
+					ScheduleInfo transformedInfo;
+					if (pmt.getFrequencyEnum() != FacilioFrequency.MONTHLY) {
+						JSONParser parser = new JSONParser();
+						transformedInfo = FieldUtil.getAsBeanFromJson((JSONObject)parser.parse((String) transformed.get("scheduleJson")), ScheduleInfo.class);
+					} else {
+						transformedInfo = pmt.getSchedule();
+					}
+					while((checkTime * 1000) < currentTime) {
+						checkTime = transformedInfo.nextExecutionTime(checkTime);
+					}
+
+					checkTime = checkTime * 1000;
+
+					SelectRecordsBuilder<WorkOrderContext> selectRecordsBuilder = new SelectRecordsBuilder<>();
+					selectRecordsBuilder.module(module)
+							.beanClass(WorkOrderContext.class)
+							.select(Arrays.asList(fieldMap.get("createdTime")))
+							.andCondition(CriteriaAPI.getCondition(fieldMap.get("pm"), Arrays.asList(pmt.getPmId()),NumberOperators.EQUALS))
+							.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), Arrays.asList(checkTime), NumberOperators.EQUALS))
+							.limit(1);
+					List<WorkOrderContext> res = selectRecordsBuilder.get();
+
+					if (res == null || res.isEmpty()) {
+
+						LOGGER.log(Level.SEVERE, "===> No work order found for PM ID: " + pmt.getPmId() + " Trigger Id: " + pmt.getId() + " isSame: " + isSame + " checkTime: " + checkTime);
+					}
+				}
+			} catch (Exception e) {
+				LOGGER.log(Level.SEVERE, "Exception verifying org " + i, e);
+				throw e;
+			} finally {
+				AccountUtil.cleanCurrentAccount();
+				LOGGER.log(Level.SEVERE, "Migration completed orgId: " + i);
+			}
+		}
+	}
+
+
 }

@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import java.io.File;
+import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,10 +13,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import com.facilio.tasker.ScheduleInfo;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
@@ -77,6 +82,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import org.json.simple.parser.ParseException;
 
 public class WorkOrderAction extends FacilioAction {
 
@@ -120,6 +126,26 @@ public class WorkOrderAction extends FacilioAction {
 
 	public void setModuleName(String moduleName) {
 		this.moduleName = moduleName;
+	}
+
+	private List<Long> nextExecutionTimes = new ArrayList<>();
+
+	public void setNextExecutionTimes(List<Long> val) {
+		this.nextExecutionTimes = val;
+	}
+
+	public List<Long> getNextExecutionTimes() {
+		return this.nextExecutionTimes;
+	}
+
+	private String scheduleInfo;
+
+	public void setScheduleInfo(String info) throws JsonParseException, JsonMappingException, IOException, ParseException {
+		this.scheduleInfo = info;
+	}
+
+	public String getScheduleInfo() {
+		return this.scheduleInfo;
 	}
 
 	public String addWorkOrder() throws Exception {
@@ -202,6 +228,22 @@ public class WorkOrderAction extends FacilioAction {
 			setRemindercontex(reminderString);
 		}
 		addPreventiveMaintenance(context);
+		return SUCCESS;
+	}
+
+	public String calculateNextExecutionTimes() throws Exception {
+		JSONParser parser = new JSONParser();
+		ScheduleInfo schedule = FieldUtil.getAsBeanFromJson((JSONObject)parser.parse(this.scheduleInfo), ScheduleInfo.class);
+		Pair<Long, Integer> result = schedule.nextExecutionTime(Pair.of(startTime - 300, 0));
+		long currentTime = System.currentTimeMillis()/1000;
+		while (result.getLeft() < currentTime) {
+			result = schedule.nextExecutionTime(result);
+		}
+		this.nextExecutionTimes.add(result.getLeft());
+		for (int i = 0; i < 9; i++) {
+			result = schedule.nextExecutionTime(result);
+			this.nextExecutionTimes.add(result.getLeft());
+		}
 		return SUCCESS;
 	}
 	
