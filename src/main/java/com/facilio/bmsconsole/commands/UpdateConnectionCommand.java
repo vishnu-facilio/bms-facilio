@@ -47,7 +47,7 @@ public class UpdateConnectionCommand implements Command  {
 
 	private void fillDefaultfields(ConnectionContext connectionContext) {
 		
-		connectionContext.setSysModifiedBy(AccountUtil.getCurrentUser());
+//		connectionContext.setSysModifiedBy(AccountUtil.getCurrentUser());
 		connectionContext.setSysModifiedTime(DateTimeUtil.getCurrenTime());
 	}
 

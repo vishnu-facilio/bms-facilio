@@ -2718,6 +2718,7 @@ public class FieldFactory {
 		fields.add(getField("state", "STATE", module, FieldType.NUMBER));
 		fields.add(getField("clientId", "CLIENT_ID", module, FieldType.STRING));
 		fields.add(getField("clientSecretId", "CLIENT_SECRET_ID", module, FieldType.STRING));
+		fields.add(getField("scope", "SCOPE", module, FieldType.STRING));
 		fields.add(getField("authorizeUrl", "AUTHORIZE_URL", module, FieldType.STRING));
 		fields.add(getField("accessTokenUrl", "ACCESS_TOKEN_URL", module, FieldType.STRING));
 		fields.add(getField("refreshTokenUrl", "REFRESH_TOKEN_URL", module, FieldType.STRING));

@@ -3009,8 +3009,9 @@
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.ConnectionAction" method="deleteConnection">
 		</action>
-		<action name="*/redirect"
-			class="com.facilio.bmsconsole.actions.ConnectionAction" method="updateConnection">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.ConnectionAction" method="addAuthorizationCode">
+			<param name="connectionId">{1}</param>
 		</action>
 	</package>
 	

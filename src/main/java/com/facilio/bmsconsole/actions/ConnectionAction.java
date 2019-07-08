@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.actions;
 
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ConnectionContext;
+import com.facilio.bmsconsole.util.ConnectionUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Chain;
@@ -19,6 +20,26 @@ public class ConnectionAction extends FacilioAction {
 	
 	ConnectionContext connectionContext;
 	
+	long connectionId;
+	
+	public long getConnectionId() {
+		return connectionId;
+	}
+
+	public void setConnectionId(long connectionId) {
+		this.connectionId = connectionId;
+	}
+
+	String code;
+	
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
 	public ConnectionContext getConnectionContext() {
 		return connectionContext;
 	}
@@ -33,6 +54,21 @@ public class ConnectionAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.CONNECTION, connectionContext);
 		
 		Chain chain = TransactionChainFactory.getAddConnectionChain();
+		chain.execute(context);
+		
+		setResult("connection", connectionContext);
+		return SUCCESS;
+	}
+	
+	public String addAuthorizationCode() throws Exception {
+		
+		
+		connectionContext = ConnectionUtil.getConnection(connectionId);
+		connectionContext.setAuthCode(code);
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.CONNECTION, connectionContext);
+		
+		Chain chain = TransactionChainFactory.getUpdateConnectionChain();
 		chain.execute(context);
 		
 		setResult("connection", connectionContext);

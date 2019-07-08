@@ -11,6 +11,7 @@ public class ConnectionContext {
 	String serviceName;
 	String clientId;
 	String clientSecretId;
+	String scope;
 	String authorizeUrl;
 	String accessTokenUrl;
 	String refreshTokenUrl;
@@ -20,7 +21,13 @@ public class ConnectionContext {
 	String refreshToken;
 	
 	long expiryTime = -1l;
-
+	
+	public String getScope() {
+		return scope;
+	}
+	public void setScope(String scope) {
+		this.scope = scope;
+	}
 	public long getId() {
 		return id;
 	}
