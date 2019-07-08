@@ -833,4 +833,88 @@
         
 	 	</workflow>
 	</template>
+	<template id="85">
+		<workflow>
+		    <parameter name="org" type="String" />
+		    <expression name="alarms">
+		        <module name="alarm" />
+		        <criteria pattern="1 and 2 and 3">
+		            <condition sequence="1">isAcknowledged`is`false</condition>
+		            <condition sequence="2">severity`isn't`461</condition>
+		            <condition sequence="3">sourceType`!=`9</condition>
+		        </criteria>
+		        <orderBy name="modifiedTime" sort="desc" />
+		        <limit>4</limit>
+		    </expression>
+		    <expression name="all">
+		        <module name="alarm" />
+		        <criteria pattern="1 and 2">
+		            <condition sequence="1">sourceType`!=`9</condition>
+		            <condition sequence="2">severity`isn't`461</condition>
+		        </criteria>
+		        <field aggregate="count" name="id" />
+		    </expression>
+		    <expression name="active">
+		        <module name="alarm" />
+		        <criteria pattern="1 and 2">
+		            <condition sequence="1">sourceType`!=`9</condition>
+		            <condition sequence="2">createdTime`Yesterday`</condition>
+		        </criteria>
+		        <field aggregate="count" name="id" />
+		    </expression>
+		    <expression name="unack">
+		        <module name="alarm" />
+		        <criteria pattern="1 and 2 and 3">
+		            <condition sequence="1">isAcknowledged`is`false</condition>
+		            <condition sequence="2">sourceType`!=`9</condition>
+		            <condition sequence="3">severity`isn't`461</condition>
+		        </criteria>
+		        <field aggregate="count" name="id" />
+		    </expression>
+		    <expression name="critical">
+		        <module name="alarm" />
+		        <criteria pattern="1 and 2">
+		            <condition sequence="1">sourceType`!=`9</condition>
+		            <condition sequence="2">severity`is`457</condition>
+		        </criteria>
+		        <field aggregate="count" name="id" />
+		    </expression>
+		    <expression name="maxResourceId">
+		        <module name="alarm" />
+		        <criteria pattern="1 and 2">
+		            <condition sequence="1">sourceType`!=`9</condition>
+		            <condition sequence="2">createdTime`Yesterday`</condition>
+		        </criteria>
+		        <field aggregate="[0]" name="resource" />
+		        <orderBy name="count(*)" sort="desc" />
+		        <limit>1</limit>
+		        <groupBy>resource</groupBy>
+		    </expression>
+		    <expression name="maxResource">
+		        <function>resource.getResourceName(maxResourceId, 'true')</function>
+		    </expression>
+		    <expression name="maxResourceCount">
+		        <module name="alarm" />
+		        <criteria pattern="1 and 2">
+		            <condition sequence="1">sourceType`!=`9</condition>
+		            <condition sequence="2">createdTime`Yesterday`</condition>
+		        </criteria>
+		        <field aggregate="count" name="id" />
+		        <orderBy name="count(*)" sort="desc" />
+		        <limit>1</limit>
+		        <groupBy>resource</groupBy>
+		    </expression>
+		    <iterator var="index,alarm:alarms">
+		        <expression name="resource">
+		            <function>map.get(alarm, 'resource')</function>
+		        </expression>
+		        <expression name="resourceName">
+		            <function>resource.getResourceName(resource, 'true')</function>
+		        </expression>
+		        <expression name="result">
+		            <function>map.put(alarm, 'resourceName', resourceName)</function>
+		        </expression>
+		    </iterator>
+		</workflow>
+	</template>
 </workflows>
