@@ -477,4 +477,28 @@ public class JobStore {
 		queryBuilder.append(")");
 		return queryBuilder.toString();
 	}
+	
+public static long setInActiveStatusForJob(long jobId, String jobName, Boolean status) throws SQLException {
+		
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		
+		try {
+			conn = FacilioConnectionPool.INSTANCE.getConnection();
+			pstmt = conn.prepareStatement("UPDATE Jobs set IS_ACTIVE = ? where JOBID = ? AND JOBNAME = ?");
+			
+			pstmt.setBoolean(1, status ? JobConstants.ENABLED : JobConstants.DISABLED);
+			pstmt.setLong(2, jobId);
+			pstmt.setString(3, jobName);
+            return pstmt.executeUpdate();
+		}
+		catch(SQLException e) {
+			LOGGER.error("Error for job id "+jobId+ " : Jobname : "+jobName);
+			throw e;
+		}
+		finally {
+			DBUtil.closeAll(conn, pstmt);
+		}
+		
+	}
 }

@@ -2371,7 +2371,15 @@ public class ModuleFactory {
 		module.setTableName("ReadingAlarm");
 		return module;
 	}
-	
+
+	public static FacilioModule getDigestConfigModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ContextNames.DIGEST_CONFIG);
+		module.setDisplayName("Digest Config");
+		module.setTableName("Digest_Configuration");
+		return module;
+	}
+
 	public static FacilioModule getBaseAlarmModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName(ContextNames.BASE_ALARM);

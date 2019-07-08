@@ -3790,5 +3790,38 @@
 			class="com.facilio.bmsconsole.actions.RecordSpecificRuleAction"
 			method="viewRule" />
 	</package>
+	
+	<package name="digestConfig" namespace="/api/v2/digestConfig"
+		extends="v2Api">
+		<action name="addOrUpdate"
+			class="com.facilio.bmsconsole.actions.DigestMailConfigurationAction"
+			method="addOrUpdateDigestConfig" />
+		<action name="allConfig"
+			class="com.facilio.bmsconsole.actions.DigestMailConfigurationAction"
+			method="getAllDigestConfigs" />
+		<action name="enabledConfig"
+			class="com.facilio.bmsconsole.actions.DigestMailConfigurationAction"
+			method="getEnabledDigestConfigs" />
+		<action name="view"
+			class="com.facilio.bmsconsole.actions.DigestMailConfigurationAction"
+			method="viewEnabledDigestConfig" />
+		<action name="sendInstantMail"
+			class="com.facilio.bmsconsole.actions.DigestMailConfigurationAction"
+			method="sendInstantDigestMail" />
+		<action name="changeStatus"
+			class="com.facilio.bmsconsole.actions.DigestMailConfigurationAction"
+			method="activateDigestConfig" />
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.DigestMailConfigurationAction"
+			method="deleteDigestConfig" />
+	</package>
 
+	<package name="notificationPreference" namespace="/api/v2/notificationPreference"
+		extends="v2Api">
+		<action name="list"
+			class="com.facilio.auth.actions.NotificationPreferenceAction" method="getAllNotificationPreferences" />
+		<action name="add"
+			class="com.facilio.auth.actions.NotificationPreferenceAction" method="addWorkflow" />
+	</package>
+	
 </struts>

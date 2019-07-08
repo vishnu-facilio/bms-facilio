@@ -78,7 +78,7 @@ public class TemplateAPI {
 						if (defaultTemplateType == DefaultTemplateType.RULE) {
 						Map<Integer, DefaultTemplate> templates = new HashMap<>();
 						for (String category: RULE_CATEGORY) {
-							
+
 							String catePath = path + category + '_' +lang;
 							System.out.println("catePath" + catePath);
 							templates.putAll(parseTemplateObject(catePath, classLoader, defaultTemplateType, null));
@@ -88,7 +88,7 @@ public class TemplateAPI {
 							path += lang;
 							defaultTemplates.put(lang, parseTemplateObject(path, classLoader, defaultTemplateType, defaultWorkflows));
 					}
-				} 
+				}
 				typeDefaultTemplates.put(defaultTemplateType, defaultTemplates);
 			}
 			return typeDefaultTemplates;

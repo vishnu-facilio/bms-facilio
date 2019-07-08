@@ -688,6 +688,7 @@ public class FacilioConstants {
 		public static final String EXPORT_INFO = "exportInfo";
 		public static final String END_TIME = "endTime";
 		public static final String MAX_COUNT = "maxCount";
+		public static final String SCHEDULED_ACTION = "scheduledAction";
 		
 		public static final String DATE_OPERATOR = "dateOperator";
 		public static final String DATE_OPERATOR_VALUE = "dateOperatorValue";
@@ -767,6 +768,8 @@ public class FacilioConstants {
 		public static final String READING_RULES_LIST = "readingRulesList";
 		public static final String READING_FIELD_ID = "readingFieldId";
 		public static final String ACTIONS_LIST = "actionsList";
+		public static final String ACTION = "action";
+		
 		public static final String DEL_READING_RULE_IDS = "delReadingRuleIDs";
 		public static final String DEL_READING_RULE = "delReadingRule";
 		public static final String DO_VALIDTION = "doValidation";
@@ -1072,7 +1075,14 @@ public class FacilioConstants {
 		
 		public static final String RECORD_RULE = "recordRule";
 		public static final String RECORD_RULE_LIST = "recordRuleList";
-
+		public static final String DIGEST_CONFIG = "digestConfig";
+		public static final String DIGEST_CONFIG_LIST = "digestConfigList";
+		
+		public static final String DIGEST_CONFIG_ID = "digestConfigId";
+		public static final String WORK_FLOW_EXPRESSIONS = "workflowexpressions";
+		public static final String WORK_FLOW_PARAMS = "workflowparams";
+		
+		
 
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
@@ -1312,6 +1322,8 @@ public class FacilioConstants {
 		public static final String SCHEDULED_ALARM_TRIGGER_RULE_JOB_NAME = "scheduledAlarmTriggerRule";
 
 		public static final String RECORD_SPECIFIC_RULE_JOB_NAME = "singleRecordRuleExecution";
+		
+		public static final String DIGEST_JOB_NAME = "ScheduledActionExecution";
 
 	}
 	public static class Ticket{

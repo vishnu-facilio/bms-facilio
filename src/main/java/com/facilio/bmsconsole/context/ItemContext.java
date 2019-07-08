@@ -40,24 +40,20 @@ public class ItemContext extends ModuleBaseWithCustomFields {
 	}
 
 	private CostType costType;
-
-	public CostType getCostTypeEnum() {
-		return costType;
-	}
-
-	public void setCostType(CostType costType) {
-		this.costType = costType;
-	}
-
 	public int getCostType() {
 		if (costType != null) {
 			return costType.getIndex();
 		}
 		return -1;
 	}
-
 	public void setCostType(int costType) {
 		this.costType = CostType.valueOf(costType);
+	}
+	public CostType getCostTypeEnum() {
+		return costType;
+	}
+	public void setCostType(CostType costType) {
+		this.costType = costType;
 	}
 
 	public static enum CostType implements FacilioEnum {

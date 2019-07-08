@@ -6207,6 +6207,22 @@ public class FieldFactory {
 		fields.add(getField("workflowRuleId", "WORKFLOW_RULE_ID", module, FieldType.NUMBER));
 		return fields;
 	}
+	
+	public static List<FacilioField> getDigestConfigFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getDigestConfigModule();
+		
+		fields.add(getIdField(module));
+		fields.add(getField("scheduledActionId", "SCHEDULED_ACTION_ID", module, FieldType.NUMBER));
+		fields.add(getField("isActive", "IS_ACTIVE", module, FieldType.BOOLEAN));
+		fields.add(getField("defaultTemplateId", "DEFAULT_TEMPLATE_ID", module, FieldType.NUMBER));
+		fields.add(getField("scope", "SCOPE", module, FieldType.NUMBER));
+		fields.add(getField("siteId", "SITE_ID", module, FieldType.NUMBER));
+		fields.add(getField("dashboardId", "DASHBOARD_ID", module, FieldType.NUMBER));
+		
+		return fields;
+	}
+
 
 	
 }

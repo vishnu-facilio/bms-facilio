@@ -2,7 +2,7 @@
 <workflows>
 	<template id="1">
 		<workflow>
-			<parameter name="org.domain" type="String"/>
+			<parameter name="org.domain" type="String" />
 			<parameter name="workorder.assignedTo.email" type="String" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.description" type="String" />
@@ -32,7 +32,7 @@
 			<parameter name="workorder.assignedTo.email" type="String" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.url" type="String" />
-			<parameter name="comment.createdBy.name"  type="String" />
+			<parameter name="comment.createdBy.name" type="String" />
 		</workflow>
 	</template>
 	<template id="5">
@@ -62,7 +62,8 @@
 			<parameter name="user.phone" type="String" />
 			<parameter name="alarm.modifiedTimeString" type="String" />
 			<parameter name="alarm.id" type="Number" />
-			<parameter name="alarm.previousSeverity.severity" type="String" />
+			<parameter name="alarm.previousSeverity.severity"
+				type="String" />
 			<parameter name="alarm.severity.severity" type="String" />
 			<parameter name="alarm.source" type="String" />
 			<parameter name="alarm.subject" type="String" />
@@ -84,7 +85,8 @@
 		<workflow>
 			<parameter name="alarm.modifiedTimeString" type="String" />
 			<parameter name="alarm.id" type="Number" />
-			<parameter name="alarm.previousSeverity.severity" type="String" />
+			<parameter name="alarm.previousSeverity.severity"
+				type="String" />
 			<parameter name="alarm.severity.severity" type="String" />
 			<parameter name="alarm.source" type="String" />
 			<parameter name="alarm.subject" type="String" />
@@ -108,7 +110,7 @@
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.description" type="String" />
 			<parameter name="workorder.url" type="String" />
-		    <parameter name="workorder.dueDateString" type="String" />
+			<parameter name="workorder.dueDateString" type="String" />
 		</workflow>
 	</template>
 	<template id="12">
@@ -116,55 +118,71 @@
 			<parameter name="org.domain" type="String" />
 			<parameter name="org.superAdmin.email" type="String" />
 			<parameter name="workorderrequest.subject" type="String" />
-			<parameter name="workorderrequest.description" type="String" />
+			<parameter name="workorderrequest.description"
+				type="String" />
 			<parameter name="workorderrequest.url" type="String" />
-			<parameter name="workorderrequest.requester.name" type="String" />
+			<parameter name="workorderrequest.requester.name"
+				type="String" />
 		</workflow>
 	</template>
 	<template id="13">
 		<workflow>
 			<parameter name="org.superAdmin.phone" type="String" />
 			<parameter name="workorderrequest.subject" type="String" />
-			<parameter name="workorderrequest.description" type="String" />
+			<parameter name="workorderrequest.description"
+				type="String" />
 			<parameter name="workorderrequest.url" type="String" />
-			<parameter name="workorderrequest.requester.name" type="String" />
+			<parameter name="workorderrequest.requester.name"
+				type="String" />
 		</workflow>
 	</template>
 	<template id="14">
 		<workflow>
 			<parameter name="workorderrequest.subject" type="String" />
-			<parameter name="workorderrequest.description" type="String" />
+			<parameter name="workorderrequest.description"
+				type="String" />
 			<parameter name="workorderrequest.url" type="String" />
 			<parameter name="workorderrequest.id" type="Number" />
-			<parameter name="workorderrequest.requester.id" type="Number" />
-			<parameter name="workorderrequest.requester.name" type="String" />
+			<parameter name="workorderrequest.requester.id"
+				type="Number" />
+			<parameter name="workorderrequest.requester.name"
+				type="String" />
 		</workflow>
 	</template>
 	<template id="15">
 		<workflow>
 			<parameter name="workorderrequest.subject" type="String" />
-			<parameter name="workorderrequest.description" type="String" />
+			<parameter name="workorderrequest.description"
+				type="String" />
 			<parameter name="workorderrequest.url" type="String" />
 			<parameter name="workorderrequest.id" type="Number" />
-			<parameter name="workorderrequest.requester.id" type="Number" />
-			<parameter name="workorderrequest.requester.name" type="String" />
+			<parameter name="workorderrequest.requester.id"
+				type="Number" />
+			<parameter name="workorderrequest.requester.name"
+				type="String" />
 		</workflow>
 	</template>
 	<template id="16">
 		<workflow>
 			<parameter name="org.domain" type="String" />
-			<parameter name="workorderrequest.requester.email" type="String" />
+			<parameter name="workorderrequest.requester.email"
+				type="String" />
 			<parameter name="workorderrequest.subject" type="String" />
-			<parameter name="workorderrequest.description" type="String" />
-			<parameter name="workorderrequest.assignedTo.name" type="String" />
+			<parameter name="workorderrequest.description"
+				type="String" />
+			<parameter name="workorderrequest.assignedTo.name"
+				type="String" />
 		</workflow>
 	</template>
 	<template id="17">
 		<workflow>
-			<parameter name="workorderrequest.requester.phone" type="String" />
+			<parameter name="workorderrequest.requester.phone"
+				type="String" />
 			<parameter name="workorderrequest.subject" type="String" />
-			<parameter name="workorderrequest.description" type="String" />
-			<parameter name="workorderrequest.assignedTo.name" type="String" />
+			<parameter name="workorderrequest.description"
+				type="String" />
+			<parameter name="workorderrequest.assignedTo.name"
+				type="String" />
 		</workflow>
 	</template>
 	<template id="18">
@@ -174,26 +192,33 @@
 	<template id="19">
 		<workflow>
 			<parameter name="workorderrequest.subject" type="String" />
-			<parameter name="workorderrequest.description" type="String" />
+			<parameter name="workorderrequest.description"
+				type="String" />
 			<parameter name="workorderrequest.id" type="Number" />
-			<parameter name="workorderrequest.assignedTo.id" type="Number" />
-			<parameter name="workorderrequest.requester.id" type="Number" />
+			<parameter name="workorderrequest.assignedTo.id"
+				type="Number" />
+			<parameter name="workorderrequest.requester.id"
+				type="Number" />
 		</workflow>
 	</template>
 	<template id="20">
 		<workflow>
 			<parameter name="org.domain" type="String" />
-			<parameter name="workorderrequest.requester.email" type="String" />
+			<parameter name="workorderrequest.requester.email"
+				type="String" />
 			<parameter name="workorderrequest.subject" type="String" />
-			<parameter name="workorderrequest.description" type="String" />
+			<parameter name="workorderrequest.description"
+				type="String" />
 			<parameter name="workorderrequest.url" type="String" />
 		</workflow>
 	</template>
 	<template id="21">
 		<workflow>
-			<parameter name="workorderrequest.requester.phone" type="String" />
+			<parameter name="workorderrequest.requester.phone"
+				type="String" />
 			<parameter name="workorderrequest.subject" type="String" />
-			<parameter name="workorderrequest.description" type="String" />
+			<parameter name="workorderrequest.description"
+				type="String" />
 			<parameter name="workorderrequest.url" type="String" />
 		</workflow>
 	</template>
@@ -204,10 +229,12 @@
 	<template id="23">
 		<workflow>
 			<parameter name="workorderrequest.subject" type="String" />
-			<parameter name="workorderrequest.description" type="String" />
+			<parameter name="workorderrequest.description"
+				type="String" />
 			<parameter name="workorderrequest.url" type="String" />
 			<parameter name="workorderrequest.id" type="Number" />
-			<parameter name="workorderrequest.requester.id" type="Number" />
+			<parameter name="workorderrequest.requester.id"
+				type="Number" />
 		</workflow>
 	</template>
 	<template id="24">
@@ -218,7 +245,7 @@
 			<parameter name="workorder.description" type="String" />
 			<parameter name="workorder.url" type="String" />
 			<parameter name="workorder.assignedTo.name" type="String" />
-			<parameter name="workorder.status.status" type="String" />	
+			<parameter name="workorder.status.status" type="String" />
 		</workflow>
 	</template>
 	<template id="25">
@@ -254,7 +281,7 @@
 			<parameter name="workorder.description" type="String" />
 			<parameter name="workorder.url" type="String" />
 			<parameter name="workorder.assignedTo.name" type="String" />
-			<parameter name="workorder.status.status" type="String" />			
+			<parameter name="workorder.status.status" type="String" />
 		</workflow>
 	</template>
 	<template id="29">
@@ -264,7 +291,7 @@
 			<parameter name="workorder.description" type="String" />
 			<parameter name="workorder.url" type="String" />
 			<parameter name="workorder.assignedTo.name" type="String" />
-			<parameter name="workorder.status.status" type="String" />		
+			<parameter name="workorder.status.status" type="String" />
 		</workflow>
 	</template>
 	<template id="30">
@@ -277,15 +304,16 @@
 			<parameter name="workorder.description" type="String" />
 			<parameter name="workorder.url" type="String" />
 			<parameter name="workorder.id" type="Number" />
-			<parameter name="workorder.assignedTo.name" type="String" />			
+			<parameter name="workorder.assignedTo.name" type="String" />
 			<parameter name="workorder.assignedTo.id" type="Number" />
-			<parameter name="workorder.status.status" type="String" />		
+			<parameter name="workorder.status.status" type="String" />
 		</workflow>
 	</template>
 	<template id="32">
 		<workflow>
 			<parameter name="org.domain" type="String" />
-			<parameter name="workorderrequester.requester.email" type="String" />
+			<parameter name="workorderrequester.requester.email"
+				type="String" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.description" type="String" />
 			<parameter name="workorder.url" type="String" />
@@ -294,7 +322,8 @@
 	</template>
 	<template id="33">
 		<workflow>
-			<parameter name="workorderrequester.requester.phone" type="String" />
+			<parameter name="workorderrequester.requester.phone"
+				type="String" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.description" type="String" />
 			<parameter name="workorder.url" type="String" />
@@ -312,7 +341,8 @@
 			<parameter name="workorder.url" type="String" />
 			<parameter name="workorder.id" type="Number" />
 			<parameter name="workorder.assignedTo.name" type="String" />
-			<parameter name="workorderrequest.requester.id" type="Number" />
+			<parameter name="workorderrequest.requester.id"
+				type="Number" />
 		</workflow>
 	</template>
 	<template id="36">
@@ -333,13 +363,15 @@
 	<template id="38">
 		<workflow>
 			<parameter name="org.domain" type="String" />
-			<parameter name="workorder.assignmentGroup.email" type="String" />
+			<parameter name="workorder.assignmentGroup.email"
+				type="String" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.description" type="String" />
 			<parameter name="workorder.url" type="String" />
 			<parameter name="workorder.assignedBy.name" type="String" />
 			<parameter name="workorder.dueDateString" type="String" />
-			<parameter name="workorder.assignmentGroup.name" type="String" />
+			<parameter name="workorder.assignmentGroup.name"
+				type="String" />
 		</workflow>
 	</template>
 	<template id="39">
@@ -366,7 +398,7 @@
 			<parameter name="workorder.assignedTo.id" type="Number" />
 			<parameter name="workorder.assignedBy.name" type="String" />
 			<parameter name="workorder.dueDateString" type="String" />
-			<parameter name="workorder.team" type="String" />						
+			<parameter name="workorder.team" type="String" />
 		</workflow>
 	</template>
 	<template id="42">
@@ -374,7 +406,7 @@
 			<parameter name="workorder.assignedTo.phone" type="String" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.url" type="String" />
-			<parameter name="comment.createdBy.name"  type="String" />
+			<parameter name="comment.createdBy.name" type="String" />
 		</workflow>
 	</template>
 	<template id="43">
@@ -385,14 +417,14 @@
 		<workflow>
 			<parameter name="workorder.id" type="Number" />
 			<parameter name="workorder.assignedTo.id" type="Number" />
-			<parameter name="comment.createdBy.name"  type="String" />
+			<parameter name="comment.createdBy.name" type="String" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.url" type="String" />
 		</workflow>
 	</template>
 	<template id="45">
 		<workflow>
-			<parameter name="org.domain"  type="String"/>
+			<parameter name="org.domain" type="String" />
 			<parameter name="workorder.assignedTo.email" type="String" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.assignedBy.name" type="String" />
@@ -476,7 +508,7 @@
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.url" type="String" />
 		</workflow>
-	</template>	
+	</template>
 	<template id="57">
 		<workflow>
 			<parameter name="org.domain" type="String" />
@@ -495,7 +527,7 @@
 			<parameter name="workorder.description" type="String" />
 			<parameter name="workorder.url" type="String" />
 			<parameter name="workorder.assignedBy.name" type="String" />
-			<parameter name="workorder.status.status" type="String" />			
+			<parameter name="workorder.status.status" type="String" />
 		</workflow>
 	</template>
 	<template id="59">
@@ -505,7 +537,7 @@
 			<parameter name="workorder.description" type="String" />
 			<parameter name="workorder.url" type="String" />
 			<parameter name="workorder.assignedBy.name" type="String" />
-			<parameter name="workorder.status.status" type="String" />		
+			<parameter name="workorder.status.status" type="String" />
 		</workflow>
 	</template>
 	<template id="60">
@@ -518,9 +550,9 @@
 			<parameter name="workorder.description" type="String" />
 			<parameter name="workorder.url" type="String" />
 			<parameter name="workorder.id" type="Number" />
-			<parameter name="workorder.assignedBy.name" type="String" />			
+			<parameter name="workorder.assignedBy.name" type="String" />
 			<parameter name="workorder.requester.id" type="Number" />
-			<parameter name="workorder.status.status" type="String" />		
+			<parameter name="workorder.status.status" type="String" />
 		</workflow>
 	</template>
 	<template id="62">
@@ -583,7 +615,7 @@
 	</template>
 	<template id="69">
 		<workflow>
-		    <parameter name="org.domain" type="String" />
+			<parameter name="org.domain" type="String" />
 			<parameter name="workorder.assignedBy.email" type="String" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.description" type="String" />
@@ -594,7 +626,7 @@
 	</template>
 	<template id="70">
 		<workflow>
-		    <parameter name="org.domain" type="String" />
+			<parameter name="org.domain" type="String" />
 			<parameter name="workorder.assignedBy.phone" type="String" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.description" type="String" />
@@ -609,11 +641,11 @@
 	</template>
 	<template id="72">
 		<workflow>
-		    <parameter name="org.domain" type="String" />
+			<parameter name="org.domain" type="String" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.description" type="String" />
 			<parameter name="workorder.url" type="String" />
-			<parameter name="workorder.id" type="Number" />	
+			<parameter name="workorder.id" type="Number" />
 			<parameter name="workorder.assignedBy.id" type="Number" />
 			<parameter name="workorder.status.status" type="String" />
 			<parameter name="workorder.assignedTo.name" type="String" />
@@ -649,7 +681,7 @@
 	</template>
 	<template id="76">
 		<workflow>
-		   <parameter name="org.superAdmin.phone" type="String" />
+			<parameter name="org.superAdmin.phone" type="String" />
 			<parameter name="workorder.id" type="Number" />
 			<parameter name="workorder.requestedBy.phone" type="Number" />
 			<parameter name="workorder.subject" type="String" />
@@ -692,7 +724,7 @@
 	</template>
 	<template id="81">
 		<workflow>
-		   <parameter name="org.superAdmin.phone" type="String" />
+			<parameter name="org.superAdmin.phone" type="String" />
 			<parameter name="workorder.id" type="Number" />
 			<parameter name="workorder.subject" type="String" />
 			<parameter name="workorder.url" type="String" />
@@ -709,20 +741,6 @@
 	<template id="83">
 		<workflow>
 			<parameter name="org" type="String" />
-			<expression name="user_email1">
-				<module name="users" />
-				<criteria pattern="(1)">
-					<condition sequence="1">ouid`=`848538</condition>
-				</criteria>
-				<field aggregate="[0]" name="email" />
-			</expression>
-			<expression name="user_email2">
-				<module name="users" />
-				<criteria pattern="(1)">
-					<condition sequence="1">ouid`=`1010220</condition>
-				</criteria>
-				<field aggregate="[0]" name="email" />
-			</expression>
 			<expression name="overdueWos">
 				<module name="workorder" />
 				<criteria pattern="1 and 2">
@@ -780,7 +798,8 @@
 					<function>resource.getResourceName(resource, 'true')</function>
 				</expression>
 				<expression name="result">
-					<function>map.put(workorder, 'resourceName', resourceName)</function>
+					<function>map.put(workorder, 'resourceName', resourceName)
+					</function>
 				</expression>
 			</iterator>
 			<iterator var="index,workorder:dueTodayWos">
@@ -791,7 +810,8 @@
 					<function>resource.getResourceName(resource, 'true')</function>
 				</expression>
 				<expression name="result">
-					<function>map.put(workorder, 'resourceName', resourceName)</function>
+					<function>map.put(workorder, 'resourceName', resourceName)
+					</function>
 				</expression>
 			</iterator>
 			<iterator var="index,workorder:openWos">
@@ -802,36 +822,23 @@
 					<function>resource.getResourceName(resource, 'true')</function>
 				</expression>
 				<expression name="result">
-					<function>map.put(workorder, 'resourceName', resourceName)</function>
+					<function>map.put(workorder, 'resourceName', resourceName)
+					</function>
 				</expression>
 			</iterator>
 		</workflow>
 	</template>
 	<template id="84">
 		<workflow>
-	    	<parameter name="org" type="String"/>
-	    	<parameter name="parentId" type="String" />
-			<parameter name="parentModuleName" type="String" />
+			<parameter name="org" type="String" />
 			<expression name="org.domain">
-		        <constant>${org.domain}</constant>
-		    </expression>
-		    <expression name="parentId">
-		        <constant>${parentId}</constant>
-		    </expression>
-		    <expression name="getUserName">
-		            <function>default.getUserName()</function>
-		 	</expression>
-		 	<expression name="toUserEmail">
-		            <function>default.getUserEmail()</function>
-		 	</expression>
-		 	<expression name="getRecord">
-		            <function>default.getRecord(parentModuleName,parentId)</function>
-		 	</expression>
-	        <expression name="contractName">
-                    <constant>${getRecord.vendor.id}</constant>
-        	</expression>
-        
-	 	</workflow>
+				<constant>${org.domain}</constant>
+			</expression>
+			<expression name="previousMonthName">
+				<function>date.getPreviousMonthName()</function>
+			</expression>
+		</workflow>
+
 	</template>
 	<template id="85">
 		<workflow>

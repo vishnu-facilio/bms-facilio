@@ -1244,7 +1244,8 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 
   
   public static List<Map<String, Object>> getTopNBuildingsWithPlannedTypeCount(String count,long startTime,long endTime, long siteId) throws Exception{
-	  List<BuildingContext> buildings = SpaceAPI.getSiteBuildings(siteId);
+	  List<BuildingContext> buildings = siteId > 0 ? SpaceAPI.getSiteBuildings(siteId) : SpaceAPI.getAllBuildings();
+	  
 	  StringJoiner buildingIdString = new StringJoiner(",");
 	  for(BuildingContext building : buildings) {
 		  buildingIdString.add(String.valueOf(building.getId()));
@@ -1380,7 +1381,7 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 
 
   public static List<Map<String, Object>> getTopNBuildingsWithUnPlannedTypeCount(String count,long startTime,long endTime, long siteId) throws Exception{
-	  List<BuildingContext> buildings = SpaceAPI.getSiteBuildings(siteId);
+	  List<BuildingContext> buildings = siteId > 0 ? SpaceAPI.getSiteBuildings(siteId) : SpaceAPI.getAllBuildings();
 	  StringJoiner buildingIdString = new StringJoiner(",");
 	  for(BuildingContext building : buildings) {
 		  buildingIdString.add(String.valueOf(building.getId()));
@@ -1615,7 +1616,6 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 																	  .beanClass(WorkOrderContext.class)
 																	  .select(fields)
 																	  .andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
-																	  .andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".SITE_ID", "siteId", String.valueOf(siteId), NumberOperators.EQUALS))
 																	  .andCriteria(closedCriteria)
 																	  .andCondition(CriteriaAPI.getCondition(teamField,"",CommonOperators.IS_NOT_EMPTY))
 																	  .groupBy(teamField.getCompleteColumnName())
@@ -1623,6 +1623,9 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 																	  .limit(Integer.parseInt(count))
 
 			                                                          ;
+		if(siteId > 0) {
+			 selectRecordsBuilder.andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".SITE_ID", "siteId", String.valueOf(siteId), NumberOperators.EQUALS));
+		}
 	   List<Map<String, Object>> totalClosedWoCountByTeam = selectRecordsBuilder.getAsProps();
 	   Map<Long,Map<String, Object>> result = new HashMap<Long, Map<String,Object>>();
 	   StringJoiner teamIdString = new StringJoiner(",");
@@ -1642,13 +1645,15 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 				  .beanClass(WorkOrderContext.class)
 				  .select(fields)
 				  .andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
-				  .andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".SITE_ID", "siteId", String.valueOf(siteId), NumberOperators.EQUALS))
 				  .andCondition(CriteriaAPI.getCondition(teamField, String.valueOf(teamIdString), NumberOperators.EQUALS))
 				  .andCondition(openCondition)
 				  .groupBy(teamField.getCompleteColumnName())
 				  .orderBy(idCountField.getColumnName()+" DESC")
 				
                 ;
+		if(siteId > 0) {
+			 openBuilder.andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".SITE_ID", "siteId", String.valueOf(siteId), NumberOperators.EQUALS));
+		}
 		List<Map<String, Object>> openCountByTeam = openBuilder.getAsProps();
 		List<Map<String,Object>> finalResult = new ArrayList<Map<String,Object>>();
 		Map<Long, Map<String, Object>> openMap = new HashMap<Long, Map<String,Object>>();
@@ -1720,7 +1725,6 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 				  .select(fields)
 				  .andCriteria(closedCriteria)
 				  .andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
-				  .andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".SITE_ID", "siteId", String.valueOf(siteId), NumberOperators.EQUALS))
 				  .andCondition(CriteriaAPI.getCondition(technicianField, CommonOperators.IS_NOT_EMPTY))
 				  .groupBy(technicianField.getCompleteColumnName())
 				  .orderBy(countField.getColumnName()+" DESC")
@@ -1728,6 +1732,9 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 
                 ;
 
+		if(siteId > 0) {
+			 selectRecordsBuilder.andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".SITE_ID", "siteId", String.valueOf(siteId), NumberOperators.EQUALS));
+		}
 
        List<Map<String,Object>> avgResolutionTime = selectRecordsBuilder.getAsProps();
        List<Map<String, Object>> result = new ArrayList<Map<String,Object>>();
@@ -1746,12 +1753,13 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 					  .beanClass(WorkOrderContext.class)
 					  .select(fields)
 					  .andCriteria(closedCriteria)
-					  .andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".SITE_ID", "siteId", String.valueOf(siteId), NumberOperators.EQUALS))
 					  .andCondition(CriteriaAPI.getCondition(technicianField.getCompleteColumnName(), "assignedTo", techIdString.toString(),NumberOperators.EQUALS ))
 					  .groupBy(technicianField.getCompleteColumnName())
 					
 	                ;
-			
+			if(siteId > 0) {
+				 selectRecordsBuilderLastMonth.andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".SITE_ID", "siteId", String.valueOf(siteId), NumberOperators.EQUALS));
+			}
 
 			Long lastMonthStartTime = DateTimeUtil.getMonthStartTime(-2,false);
 			Long lastMonthEndTime = DateTimeUtil.getMonthEndTimeOf(lastMonthStartTime,false);
@@ -1936,7 +1944,6 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 																	  .beanClass(WorkOrderContext.class)
 																	  .select(fields)
 																	  .andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
-																	  .andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".SITE_ID", "siteId", String.valueOf(siteId), NumberOperators.EQUALS))
 																	  .andCriteria(closedCriteria)
 																	  .andCondition(CriteriaAPI.getCondition(techField,"",CommonOperators.IS_NOT_EMPTY))
 																	  .groupBy(techField.getCompleteColumnName())
@@ -1944,6 +1951,9 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 																	  .limit(Integer.parseInt(count))
 
 			                                                          ;
+		if(siteId > 0) {
+			 selectRecordsBuilder.andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".SITE_ID", "siteId", String.valueOf(siteId), NumberOperators.EQUALS));
+		}
 	   List<Map<String, Object>> totalClosedWoCountByTech = selectRecordsBuilder.getAsProps();
 	   Map<Long,Map<String, Object>> result = new HashMap<Long, Map<String,Object>>();
 	   StringJoiner techIdString = new StringJoiner(",");
@@ -1963,13 +1973,15 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 				  .beanClass(WorkOrderContext.class)
 				  .select(fields)
 				  .andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
-				  .andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".SITE_ID", "siteId", String.valueOf(siteId), NumberOperators.EQUALS))
 				  .andCondition(CriteriaAPI.getCondition(techField, String.valueOf(techIdString), NumberOperators.EQUALS))
 				  .andCondition(openCondition)
 				  .groupBy(techField.getCompleteColumnName())
 				  .orderBy(idCountField.getColumnName()+" DESC")
 				
                 ;
+		if(siteId > 0) {
+			 openBuilder.andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".SITE_ID", "siteId", String.valueOf(siteId), NumberOperators.EQUALS));
+		}
 		List<Map<String, Object>> openCountByTech = openBuilder.getAsProps();
 		List<Map<String,Object>> finalResult = new ArrayList<Map<String,Object>>();
 		Map<Long, Map<String, Object>> openMap = new HashMap<Long, Map<String,Object>>();

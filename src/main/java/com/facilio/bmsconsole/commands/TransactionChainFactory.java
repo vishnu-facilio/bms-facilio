@@ -934,7 +934,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AdminRemoveDuplicationCommand());
 			return c;
 		}
-		
+
 		public static Chain editAgent(){
 			Chain c = getDefaultChain();
 			c.addCommand(new ConfigureAgentCommand());
@@ -3246,7 +3246,7 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateGraphicsCommand());
 			return c;
 		}
-		
+
 		public static Chain getAddGraphicsFolderChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForGraphicsFolder());
@@ -3582,6 +3582,53 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+		public static Chain getAddOrUpdateDigestConfigChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddActionToDigestConfigCommand());
+			//can use scheduleruleaction/wrte a special job to apply user scope
+			c.addCommand(new AddDigestConfigActionCommand());
+			//command can be added to add digest users rel table
+			return c;
+		}
+
+		public static Chain getActivateDigestConfigChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ActivateDeactivateDigestConfigCommand());
+			return c;
+		}
+
+		public static Chain getAllDigestConfigChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new GetAllDigestConfigCommand());
+			return c;
+		}
+
+		public static Chain getAddOrUpdateDigestMailConfigChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddActionToDigestConfigCommand());
+			c.addCommand(new AddDigestConfigActionCommand());
+			c.addCommand(new AddDigestConfigMetaCommand());
+			//command can be added to add digest users rel table
+			return c;
+		}
+
+		public static Chain getDeleteDigestConfigChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new DeleteDigestConfigCommand());
+			return c;
+		}
+
+		public static Chain getAddNotificationWorkflow() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddNotificationWorkflowCommand());
+			return c;
+		}
+
+		public static Chain getAllEnabledDigestConfigChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new GetEnabledDigestConfigCommand());
+			return c;
+		}
 		public static Chain getV2AlarmOccurrenceCreateWO() {
 			Chain c = getDefaultChain();
 			c.addCommand(new CreateWOForAlarmOccurrenceCommand());
@@ -3617,6 +3664,7 @@ public class TransactionChainFactory {
 			c.addCommand(new DeleteAlarmCommand());
 			return c;
 		}
+
 }
 
 

@@ -391,14 +391,17 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 			User user = AccountUtil.getUserBean().getUser(AccountUtil.getCurrentOrg().getId(), (String) objects[5]);
 			String token = AccountUtil.getUserBean().generatePermalinkForURL(objects[1].toString(), user);
 			DashboardContext dashboard = DashboardUtil.getDashboard(Long.valueOf(objects[6].toString()));
+			if(dashboard == null) {
+				return objects[0].toString()+"/app";
+			}
 			org.json.simple.JSONObject dateJson = new org.json.simple.JSONObject();
 			dateJson.put("startTime", Long.valueOf(objects[2].toString()));
 			dateJson.put("endTime", Long.valueOf(objects[3].toString()));
 			dateJson.put("operatorId", Long.valueOf(objects[4].toString()));
 			
-			SiteContext site = SpaceAPI.getSiteSpace(Long.valueOf(objects[7].toString()));
+			Long siteId = Long.valueOf(objects[7].toString());
 					
-			String permalLinkURL = objects[0].toString()+"/app/maintenanceReport?token="+token+"&id="+dashboard.getId()+"&linkName="+dashboard.getLinkName()+"&siteName="+URLEncoder.encode(site.getName())+"&siteId="+site.getId()+"&moduleName=workorder"+"&name="+URLEncoder.encode(dashboard.getDashboardName())+"&daterange="+URLEncoder.encode(dateJson.toString());
+			String permalLinkURL = objects[0].toString()+"/app/maintenanceReport?token="+token+"&id="+dashboard.getId()+"&linkName="+dashboard.getLinkName()+"&siteId="+siteId+"&moduleName=workorder"+"&name="+URLEncoder.encode(dashboard.getDashboardName())+"&daterange="+URLEncoder.encode(dateJson.toString());
 			return permalLinkURL;
 		}
 		
