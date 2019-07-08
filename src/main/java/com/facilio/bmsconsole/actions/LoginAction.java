@@ -663,6 +663,48 @@ public class LoginAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String getAllSites() throws Exception {
+		setResult("sites", SpaceAPI.getAllSites());
+		return SUCCESS;
+	}
+	
+	public String getRoles() throws Exception {
+		List<Role> roles = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getOrgId()).getRoles();
+		setResult("Roles", roles);
+		return SUCCESS;
+	}
+	
+	public String getOrgs() throws Exception {
+		List<Organization> orgs = AccountUtil.getUserBean().getOrgs(AccountUtil.getCurrentUser().getUid());
+		setResult("Orgs", orgs);
+		return SUCCESS;
+	}
+	
+	public String getOrgInfo() throws Exception {
+		setResult("orgInfo", CommonCommandUtil.getOrgInfo());
+		return SUCCESS;
+	}
+	
+	public String getServiceList() throws Exception {
+		setResult("serviceList", ReportsUtil.getPurposeMapping());
+		return SUCCESS;
+	}
+	
+	public String getAllShifts() throws Exception {
+		setResult("shifts",ShiftAPI.getAllShifts());
+		return SUCCESS;
+	}
+	
+	public String getAllMainEnergyMeters() throws Exception {
+		setResult("energyMeters", DeviceAPI.getAllMainEnergyMeters());
+		return SUCCESS;
+	}
+	
+	public String getCalendarColor() throws Exception {
+		setResult("calendarColor", TicketAPI.getCalendarColor());
+		return SUCCESS;
+	}
+	
 	private String permalink;
 	
 	public void setPermalink(String permalink) {

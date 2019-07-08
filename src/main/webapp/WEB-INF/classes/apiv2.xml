@@ -71,6 +71,31 @@
 		<action name="getSite" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getMySiteList">
 		</action>
+		<action name="getSites" class="com.facilio.bmsconsole.actions.LoginAction"
+			method="getAllSites">
+		</action>
+		<action name="getRoles" class="com.facilio.bmsconsole.actions.LoginAction"
+			method="getRoles">
+		</action>
+		<action name="getOrgs" class="com.facilio.bmsconsole.actions.LoginAction"
+			method="getOrgs">
+		</action>
+		<action name="getOrgInfo" class="com.facilio.bmsconsole.actions.LoginAction"
+			method="getOrgInfo">
+		</action>
+		<action name="getServiceList" class="com.facilio.bmsconsole.actions.LoginAction"
+			method="getServiceList">
+		</action>
+		<action name="getShifts" class="com.facilio.bmsconsole.actions.LoginAction"
+			method="getAllShifts">
+		</action>
+			<action name="getMainEnergyMeters" class="com.facilio.bmsconsole.actions.LoginAction"
+			method="getAllMainEnergyMeters">
+		</action>
+		<action name="getCalendarColor" class="com.facilio.bmsconsole.actions.LoginAction"
+			method="getCalendarColor">
+		</action>
+		
 		<action name="validateInviteLink" class="com.facilio.auth.actions.FacilioAuthAction"
 			method="validateInviteLink">
 			<param name="auth">false</param>
