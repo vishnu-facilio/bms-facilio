@@ -5,6 +5,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import org.apache.log4j.DailyRollingFileAppender;
 import org.apache.log4j.Layout;
+import org.apache.log4j.Level;
 import org.apache.log4j.Priority;
 import org.apache.log4j.spi.ErrorHandler;
 import org.apache.log4j.spi.Filter;
@@ -138,7 +139,7 @@ public class FacilioLogAppender extends DailyRollingFileAppender {
             freeSpace = ROOT_FILE.getFreeSpace();
         }
 
-        if(freeSpace > FREE_SPACE_THRESHOLD) {
+        if(((event.getLevel().toInt() > Level.DEBUG_INT) || (AccountUtil.getCurrentAccount() != null && (event.getLevel().toInt() == AccountUtil.getCurrentAccount().getLevel())) ) && (freeSpace > FREE_SPACE_THRESHOLD)) {
             super.append(event);
         }
     }

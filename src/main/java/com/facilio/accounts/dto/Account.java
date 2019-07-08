@@ -4,6 +4,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.opensymphony.xwork2.ActionContext;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
 import org.apache.struts2.ServletActionContext;
 
 import javax.servlet.http.HttpServletRequest;
@@ -283,6 +284,15 @@ public class Account implements Serializable {
 		redisGetTime = 0L;
 		redisPutTime = 0L;
 		redisDeleteTime = 0L;
+	}
+
+	private int level = Level.INFO_INT;
+    public int getLevel() {
+		return level;
+    }
+
+	public void setLevel(Level level) {
+		this.level = level.toInt();
 	}
 }
 
