@@ -159,6 +159,12 @@ public class AccountUtil {
 			}
 			builder.append("]");
 			currentAccount.get().setRequestParams(builder.toString());
+			try {
+				if(requestParams.containsKey("loggerLevel")) {
+					currentAccount.get().setLoggerLevel(Integer.parseInt(requestParams.get("loggerLevel")[0]));
+				}
+			} catch (NumberFormatException e) {
+			}
 		}
 	}
     
