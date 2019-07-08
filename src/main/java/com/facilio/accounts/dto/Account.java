@@ -295,5 +295,37 @@ public class Account implements Serializable {
 			this.level = level;
 		}
 	}
+	public void setLoggerLevel(int loggerLevel) {
+		Level level = Level.INFO;
+		switch (loggerLevel) {
+			case 0:
+				level = Level.ALL;
+				break;
+			case 1:
+				level = Level.TRACE;
+				break;
+			case 2:
+				level = Level.DEBUG;
+				break;
+			case 3:
+				level = Level.INFO;
+				break;
+			case 4:
+				level = Level.WARN;
+				break;
+			case 5:
+				level = Level.ERROR;
+				break;
+			case 6:
+				level = Level.FATAL;
+				break;
+			case 7:
+				level = Level.OFF;
+				break;
+			default:
+				break;
+		}
+		setLevel(level);
+	}
 }
 
