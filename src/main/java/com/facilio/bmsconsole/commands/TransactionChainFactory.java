@@ -3553,6 +3553,8 @@ public class TransactionChainFactory {
 		public static Chain getV2AlarmOccurrenceCreateWO() {
 			Chain c = getDefaultChain();
 			c.addCommand(new CreateWOForAlarmOccurrenceCommand());
+			c.addCommand(getAddWorkOrderChain());
+			c.addCommand(new UpdateWoIdInNewAlarmCommand());
 			return c;
 		}
 

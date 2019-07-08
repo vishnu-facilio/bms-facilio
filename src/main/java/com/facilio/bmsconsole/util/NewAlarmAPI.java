@@ -117,6 +117,10 @@ public class NewAlarmAPI {
 	}
 	
 	public static AlarmOccurrenceContext getLatestAlarmOccurance(BaseAlarmContext baseAlarm) throws Exception {
+		if (baseAlarm == null) {
+			return null;
+		}
+		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
 		SelectRecordsBuilder<AlarmOccurrenceContext> builder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
