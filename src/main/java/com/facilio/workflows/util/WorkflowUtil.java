@@ -1540,6 +1540,9 @@ public class WorkflowUtil {
 				case FIELD:
 					facilioWorkflowFunction = FacilioFieldFunctions.getFacilioFieldFunctions(functionName);
 					break;
+				case CONNECTION:
+					facilioWorkflowFunction = FacilioConnectionFunctions.getFacilioConnectionFunctions(functionName);
+					break;
 					
 			}
 		}
@@ -1615,7 +1618,9 @@ public class WorkflowUtil {
 				case FIELD:
 					facilioWorkflowFunction = new ArrayList<>( FacilioFieldFunctions.getAllFunctions().values());
 					break;
-		
+				case CONNECTION:
+					facilioWorkflowFunction = new ArrayList<>( FacilioConnectionFunctions.getAllFunctions().values());
+					break;
 			}
 		}
 		

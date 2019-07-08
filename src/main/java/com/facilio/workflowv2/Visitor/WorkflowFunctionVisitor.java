@@ -15,6 +15,8 @@ import org.antlr.v4.runtime.tree.RuleNode;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ConnectionContext;
+import com.facilio.bmsconsole.util.ConnectionUtil;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.BooleanOperators;
@@ -199,6 +201,10 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
                     		wfFunctionContext.setNameSpace(FacilioSystemFunctionNameSpace.FIELD.getName());
                     		isDataTypeSpecificFunction = true;
                     	}
+                    	else if(value.asObject() instanceof ConnectionContext) {
+                    		wfFunctionContext.setNameSpace(FacilioSystemFunctionNameSpace.FIELD.getName());
+                    		isDataTypeSpecificFunction = true;
+                    	}
                     	else if (value.asObject() instanceof FacilioSystemFunctionNameSpace) {
                     		wfFunctionContext.setNameSpace(((FacilioSystemFunctionNameSpace)value.asObject()).getName());
                     	}
@@ -366,6 +372,28 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     	catch(Exception e) {
     		throw new RuntimeException(e.getMessage());
     	}
+    }
+    
+    @Override 
+    public Value visitConnectionInitialization(WorkflowV2Parser.ConnectionInitializationContext ctx) { 
+    	
+    	
+    	try {
+    		Value connectionNameValue = this.visit(ctx.expr());
+    		
+    		WorkflowV2Util.checkForNullAndThrowException(connectionNameValue, ctx.expr().getText());
+    		
+    		String connectionName = connectionNameValue.asString();
+        	ConnectionContext connection = ConnectionUtil.getConnection(connectionName);
+        	if(connection == null) {
+        		throw new RuntimeException("Connection "+connection+ " Does not exist");
+        	}
+        	return new Value(connection); 
+    	}
+    	catch(Exception e) {
+    		throw new RuntimeException(e.getMessage());
+    	}
+    
     }
     
     @Override 

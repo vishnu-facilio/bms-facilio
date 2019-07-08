@@ -424,6 +424,18 @@ public class WorkflowV2BaseListener implements WorkflowV2Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterConnectionInitialization(WorkflowV2Parser.ConnectionInitializationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitConnectionInitialization(WorkflowV2Parser.ConnectionInitializationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterReadingInitialization(WorkflowV2Parser.ReadingInitializationContext ctx) { }
 	/**
 	 * {@inheritDoc}
