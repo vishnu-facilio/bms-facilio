@@ -28,6 +28,7 @@ import java.util.Iterator;
 public class CognitoUtil {
 
 	private static org.apache.log4j.Logger logger = LogManager.getLogger(CognitoUtil.class.getName());
+	public static final String JWT_DELIMITER = "#";
 	
 	public static void main(String args[]) {
 		String s = createJWT("id", "auth0", "yoge@facilio.com", System.currentTimeMillis(),true);
@@ -44,7 +45,7 @@ public class CognitoUtil {
 		try {
 		    Algorithm algorithm = Algorithm.HMAC256("secret");
 		    
-		    String key = subject + "_" + System.currentTimeMillis();
+		    String key = subject + JWT_DELIMITER + System.currentTimeMillis();
 		    JWTCreator.Builder builder = JWT.create().withSubject(key)
 	        .withIssuer(issuer);
 		    builder = builder.withClaim("portaluser", isPortalUser);
@@ -88,7 +89,7 @@ public class CognitoUtil {
 			DecodedJWT decodedjwt = validateJWT(idToken, "auth0");
 			CognitoUser faciliouser = new CognitoUser();
 			if(decodedjwt != null) {
-				faciliouser.setEmail(decodedjwt.getSubject().split("_")[0]);
+				faciliouser.setEmail(decodedjwt.getSubject().split(JWT_DELIMITER)[0]);
 				faciliouser.setFacilioauth(true);
 				faciliouser.setPortaluser(decodedjwt.getClaim("portaluser").asBoolean());
 
