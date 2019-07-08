@@ -168,6 +168,11 @@
 			class="com.facilio.events.actions.V2AlarmAction" method="updateAlarmOccurrence" />
 	</package>
 	
+	<package name="alarmOccurrence" namespace="/api/v2/alarmOccurrence" extends="v2Api">
+		<action name="createWO" 
+			class="com.facilio.events.actions.V2AlarmAction" method="createWO" />
+	</package>
+	
 	<package name="readingAlarmList" namespace="/api/v2/readingalarms/view" extends="v2Api">
 		<action name="*" class="com.facilio.events.actions.V2AlarmAction" method="alarmList">
 			<param name="moduleName">alarm</param>

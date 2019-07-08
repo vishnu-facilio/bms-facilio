@@ -23,7 +23,6 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.time.DateTimeUtil;
 
 public class UpdateAlarmOccurrenceCommand implements Command {
 
@@ -62,7 +61,7 @@ public class UpdateAlarmOccurrenceCommand implements Command {
 			
 			BaseAlarmContext baseAlarm = new BaseAlarmContext();
 			alarmOccurrence.updateAlarm(baseAlarm);
-			baseAlarm.setLastOccurrenceId(-1l); // should not update occurrence id when updating in bulk
+			baseAlarm.setLastOccurrence(null); // should not update occurrence id when updating in bulk
 			if (baseAlarm.getSeverity() != null && baseAlarm.getSeverity().equals(AlarmAPI.getAlarmSeverity("Clear"))) {
 				baseAlarm.setLastClearedTime(currentTimeMillis);
 			}

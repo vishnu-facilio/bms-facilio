@@ -1,8 +1,12 @@
 package com.facilio.bmsconsole.context;
 
+import org.apache.struts2.json.annotations.JSON;
+
 import com.facilio.accounts.dto.User;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 public class BaseAlarmContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
@@ -64,14 +68,6 @@ public class BaseAlarmContext extends ModuleBaseWithCustomFields {
 		this.type = Type.valueOf(type);
 	}
 	
-//	private AlarmCategoryContext category;
-//	public AlarmCategoryContext getCategory() {
-//		return category;
-//	}
-//	public void setCategory(AlarmCategoryContext category) {
-//		this.category = category;
-//	}
-	
 	private Boolean acknowledged;
 	public Boolean getAcknowledged() {
 		return acknowledged;
@@ -112,12 +108,22 @@ public class BaseAlarmContext extends ModuleBaseWithCustomFields {
 		this.lastClearedTime = lastClearedTime;
 	}
 	
-	private long lastOccurrenceId = -1;
-	public long getLastOccurrenceId() {
-		return lastOccurrenceId;
+	private AlarmOccurrenceContext lastOccurrence;
+	@JSON(serialize = false)
+	@JsonIgnore
+	public AlarmOccurrenceContext getLastOccurrence() {
+		return lastOccurrence;
 	}
-	public void setLastOccurrenceId(long lastOccurrenceId) {
-		this.lastOccurrenceId = lastOccurrenceId;
+	@JSON(serialize = false)
+	@JsonIgnore
+	public void setLastOccurrence(AlarmOccurrenceContext lastOccurrence) {
+		this.lastOccurrence = lastOccurrence;
+	}
+	public long getLastOccurrenceId() {
+		if (lastOccurrence != null) {
+			return lastOccurrence.getId();
+		}
+		return -1;
 	}
 	
 	public static enum Type implements FacilioEnum {

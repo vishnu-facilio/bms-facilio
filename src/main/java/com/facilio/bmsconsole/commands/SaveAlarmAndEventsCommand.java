@@ -23,6 +23,7 @@ import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.bmsconsole.util.NewEventAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.events.commands.NewEventsToAlarmsConversionCommand.PointedList;
@@ -32,6 +33,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.InsertRecordBuilder;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 
@@ -41,7 +43,6 @@ public class SaveAlarmAndEventsCommand implements Command, PostTransactionComman
 
 	@Override
 	public boolean execute(Context context) throws Exception {
-//		Map<Type, List<BaseEventContext>> eventsMap = (Map<Type, List<BaseEventContext>>) context.get("eventMap");
 		List<BaseEventContext> eventList = (List<BaseEventContext>) context.get(EventConstants.EventContextNames.EVENT_LIST);
 		Map<String, BaseAlarmContext> alarmMap = (Map<String, BaseAlarmContext>) context.get("alarmMap");
 		alarmOccurrenceMap = (Map<String, PointedList<AlarmOccurrenceContext>>) context.get("alarmOccurrenceMap");
@@ -87,6 +88,20 @@ public class SaveAlarmAndEventsCommand implements Command, PostTransactionComman
 			}
 			builder.addRecords(records);
 			builder.save();
+		}
+		
+		if (MapUtils.isNotEmpty(alarmMap)) {
+			for (BaseAlarmContext baseAlarm : alarmMap.values()) {
+				List<FacilioField> allBaseAlarmField = modBean.getAllFields(NewAlarmAPI.getAlarmModuleName(baseAlarm.getTypeEnum()));
+				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allBaseAlarmField);
+				GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+						.table(ModuleFactory.getBaseAlarmModule().getTableName())
+						.fields(Collections.singletonList(fieldMap.get("lastOccurrenceId")))
+						.andCondition(CriteriaAPI.getIdCondition(baseAlarm.getId(), ModuleFactory.getBaseAlarmModule()));
+				Map<String, Object> map = new HashMap<>();
+				map.put("lastOccurrenceId", baseAlarm.getLastOccurrenceId());
+				updateBuilder.update(map);
+			}
 		}
 		
 		Map<Type, List<BaseEventContext>>  eventsMap = new HashMap<>();

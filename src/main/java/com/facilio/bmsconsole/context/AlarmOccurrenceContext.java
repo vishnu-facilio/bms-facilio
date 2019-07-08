@@ -157,7 +157,7 @@ public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 		baseAlarm.setAcknowledged(getAcknowledged());
 		baseAlarm.setAcknowledgedBy(getAcknowledgedBy());
 		baseAlarm.setAcknowledgedTime(getAcknowledgedTime());
-		baseAlarm.setLastOccurrenceId(getId());
+		baseAlarm.setLastOccurrence(this);
 	}
 	
 	@Override

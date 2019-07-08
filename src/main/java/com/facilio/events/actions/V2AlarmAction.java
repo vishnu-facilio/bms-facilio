@@ -89,5 +89,14 @@ public class V2AlarmAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String createWO() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID, getId());
+		
+		Chain c = TransactionChainFactory.getV2AlarmOccurrenceCreateWO();
+		c.execute(context);
+		
+		return SUCCESS;
+	}
 	
 }
