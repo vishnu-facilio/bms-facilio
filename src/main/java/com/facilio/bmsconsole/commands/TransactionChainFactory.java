@@ -33,7 +33,7 @@ import com.facilio.mv.command.DeleteMVProjectCommand;
 import com.facilio.mv.command.ScheduleMVFormulaCalculationJob;
 import com.facilio.mv.command.UpdateMVAdjustmentCommand;
 import com.facilio.mv.command.UpdateMVBaselineCommand;
-import com.facilio.mv.command.UpdateMVPojectCommand;
+import com.facilio.mv.command.UpdateMVProjectCommand;
 import com.facilio.mv.command.ValidateMVProjectCommand;
 import com.facilio.workflows.command.AddNameSpaceCommand;
 import com.facilio.workflows.command.AddScheduledWorkflowCommand;
@@ -3118,7 +3118,7 @@ public class TransactionChainFactory {
 		public static Chain getUpdateMVProjectChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new ValidateMVProjectCommand());
-			c.addCommand(new UpdateMVPojectCommand());
+			c.addCommand(new UpdateMVProjectCommand());
 			c.addCommand(new UpdateMVBaselineCommand());
 			c.addCommand(new UpdateMVAdjustmentCommand());
 			c.addCommand(new ConstructBaselineFormulaWithAdjustmentCommand());
@@ -3128,7 +3128,7 @@ public class TransactionChainFactory {
 
 		public static Chain getUpdateMVProjectMetaChain() {
 			Chain c = getDefaultChain();
-			c.addCommand(new UpdateMVPojectCommand());
+			c.addCommand(new UpdateMVProjectCommand());
 			return c;
 		}
 

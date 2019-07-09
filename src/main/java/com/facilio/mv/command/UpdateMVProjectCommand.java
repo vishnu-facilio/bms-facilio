@@ -11,7 +11,7 @@ import com.facilio.mv.context.MVProjectContext;
 import com.facilio.mv.context.MVProjectWrapper;
 import com.facilio.mv.util.MVUtil;
 
-public class UpdateMVPojectCommand implements Command {
+public class UpdateMVProjectCommand implements Command {
 
 	@Override
 	public boolean execute(Context context) throws Exception {
