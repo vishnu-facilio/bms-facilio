@@ -100,8 +100,14 @@ public class Executor implements Runnable {
 
 
 	public void schedule(FacilioJob job, JobContext jc) {
-		Future f = executor.schedule (job, (jc.getExecutionTime() - (System.currentTimeMillis() / 1000)), TimeUnit.SECONDS);
-		jobMonitor.put(jc.getJobKey(), new JobTimeOutInfo(jc.getExecutionTime()*1000, (jc.getTransactionTimeout() + JOB_TIMEOUT_BUFFER), f, job));
+		long delay = (jc.getExecutionTime() - (System.currentTimeMillis() / 1000));
+		Future f = executor.schedule (job, delay, TimeUnit.SECONDS);
+		if (delay > 0) { //To Handle jobs that has execution time in the past which are considered as immediate execution
+			jobMonitor.put(jc.getJobKey(), new JobTimeOutInfo(jc.getExecutionTime() * 1000, (jc.getTransactionTimeout() + JOB_TIMEOUT_BUFFER), f, job));
+		}
+		else {
+			jobMonitor.put(jc.getJobKey(), new JobTimeOutInfo(System.currentTimeMillis()+1000, (jc.getTransactionTimeout() + JOB_TIMEOUT_BUFFER), f, job));
+		}
 	}
 
 	public void reSchedule(FacilioJob job, JobContext jc) {
