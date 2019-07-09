@@ -27,6 +27,10 @@ public class MLContext extends ModuleBaseWithCustomFields
 	private long predictionTime;
 	private String sequence;
 	
+	
+	private long executionEndTime;
+	private boolean isHistoric=false;
+	
 	private String result;
 		
 	public void setSequence(String sequence)
@@ -273,4 +277,28 @@ public class MLContext extends ModuleBaseWithCustomFields
         }
 		return null;
     }
+	
+	@JSON(serialize=false)
+	public long getExecutionEndTime() 
+	{
+		return executionEndTime;
+	}
+	
+	@JSON(serialize=false)
+	public void setExecutionEndTime(long executionEndTime) 
+	{
+		this.executionEndTime = executionEndTime;
+	}
+	
+	@JSON(serialize=false)
+	public boolean isHistoric() 
+	{
+		return isHistoric;
+	}
+	
+	@JSON(serialize=false)
+	public void setHistoric(boolean isHistoric) 
+	{
+		this.isHistoric = isHistoric;
+	}
 }

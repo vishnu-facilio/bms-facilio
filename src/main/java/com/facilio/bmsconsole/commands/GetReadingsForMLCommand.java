@@ -26,12 +26,13 @@ public class GetReadingsForMLCommand implements Command {
 		MLContext mlContext = (MLContext) context.get(FacilioConstants.ContextNames.ML);
 		List<MLVariableContext> mlVariable = mlContext.getMLVariable();
 		
-		long currentTime = System.currentTimeMillis();
-		if( AwsUtil.getConfig("environment").equals("development")) 
+		long currentTime = mlContext.isHistoric() ? mlContext.getExecutionEndTime() : System.currentTimeMillis();
+		if( AwsUtil.getConfig("environment").equals("development") && !mlContext.isHistoric()) 
 		{
 			// for dev testing purpose time is moved back 
 			currentTime = 1536300000000L;
 		}
+		
 		
 		SortedMap<Long,Hashtable<String,Object>> variableData = new TreeMap<Long,Hashtable<String,Object>>();
 		SortedMap<Long,Hashtable<String,Object>> criteriavariableData = new TreeMap<Long,Hashtable<String,Object>>();
