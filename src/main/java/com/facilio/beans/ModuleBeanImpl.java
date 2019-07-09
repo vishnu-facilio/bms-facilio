@@ -135,7 +135,6 @@ public class ModuleBeanImpl implements ModuleBean {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(moduleModule.getTableName())
 				.select(FieldFactory.getModuleFields())
-				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(moduleModule))
 				.andCondition(CriteriaAPI.getCondition("MODULE_TYPE", "moduleType", String.valueOf(moduleType.getValue()), NumberOperators.EQUALS));
 		List<Map<String, Object>> props = builder.get();
 		List<FacilioModule> moduleList = FieldUtil.getAsBeanListFromMapList(props, FacilioModule.class);

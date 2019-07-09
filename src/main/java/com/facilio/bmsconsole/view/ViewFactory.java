@@ -8,6 +8,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext.AssetState;
@@ -30,6 +31,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.events.constants.EventConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FacilioStatus.StatusType;
@@ -3822,6 +3824,24 @@ public class ViewFactory {
 		criteria.addAndCondition(statusCond);
 
 		return criteria;
+	}
+
+	public static FacilioView getCustomModuleAllView(String moduleName) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule moduleObj = modBean.getModule(moduleName);
+		
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("SYS_CREATED_TIME");
+		createdTime.setModule(moduleObj);
+		
+		FacilioView allView = new FacilioView();
+		allView.setName("open");
+		allView.setDisplayName("Work Requests");
+		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		
+		return allView;
 	}
 
 
