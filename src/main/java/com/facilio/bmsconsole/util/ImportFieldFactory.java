@@ -172,7 +172,9 @@ public class ImportFieldFactory {
 		JSONObject options = new JSONObject();
 
 		if(module.getName().equals(FacilioConstants.ContextNames.ASSET)) {
-			options.put(ImportProcessContext.ImportSetting.INSERT.toString(), ImportProcessContext.ImportSetting.INSERT.getValue());
+			for(ImportSetting setting : ImportProcessContext.ImportSetting.values()) {
+				options.put(setting.toString(), setting.getValue());
+			}
 		}
 		else if(
 				// || module.getName().equals(FacilioConstants.ContextNames.BASE_SPACE) 
