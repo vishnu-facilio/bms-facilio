@@ -128,22 +128,6 @@ public class FacilioTimer {
 		JobStore.addJob(jc);
 	}
 	
-	public static void scheduleOneTimeJob(long jobId, String jobName, long nextExecutionTime, String executorName, int max_execution) throws Exception {
-		JobContext jc = new JobContext();
-		jc.setJobId(jobId);
-		jc.setOrgId(getCurrentOrgId());
-		jc.setJobName(jobName);
-		jc.setIsPeriodic(false);
-		jc.setActive(true);
-		jc.setExecutionTime(nextExecutionTime);
-		jc.setExecutorName(executorName);
-		jc.setMaxExecution(max_execution);
-		if (AccountUtil.getCurrentAccount() != null) {
-			jc.setTimezone(AccountUtil.getCurrentAccount().getTimeZone());
-		}
-		JobStore.addJob(jc);
-	}
-	
 	public static void deleteJob(long jobId, String jobName) throws Exception {
 		JobStore.deleteJob(jobId, jobName);
 	}
