@@ -95,7 +95,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 				days = yearMonthObject.lengthOfMonth();
 			}
 			else {
-				Long startTime = Long.parseLong( objects[0].toString());
+				Long startTime = (long) Double.parseDouble(objects[0].toString());
 				ZonedDateTime zdt = DateTimeUtil.getZonedDateTime(startTime);
 				YearMonth yearMonthObject = YearMonth.of(zdt.getYear(), zdt.getMonthValue());
 				days = yearMonthObject.lengthOfMonth();
