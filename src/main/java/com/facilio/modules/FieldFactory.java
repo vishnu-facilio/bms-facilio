@@ -6222,6 +6222,21 @@ public class FieldFactory {
 		
 		return fields;
 	}
+	
+	public static List<FacilioField> getPreferencesMetaFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getPreferenceMetaModule();
+		
+		fields.add(getIdField(module));
+		fields.add(getField("moduleId", "MODULE_ID", module, FieldType.NUMBER));
+		fields.add(getField("isActive", "IS_ACTIVE", module, FieldType.BOOLEAN));
+		fields.add(getField("recordId", "RECORD_ID", module, FieldType.NUMBER));
+		fields.add(getField("preferenceName", "PREFERENCE_NAME", module, FieldType.STRING));
+		fields.add(getField("formData", "FORM_DATA", module, FieldType.STRING));
+		fields.add(getField("ruleId", "RULE_ID", module, FieldType.NUMBER));
+		
+		return fields;
+	}
 
 
 	

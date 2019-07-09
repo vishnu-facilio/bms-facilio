@@ -99,7 +99,7 @@ public class DigestConfigAPI {
 	
 	public static void deleteDigestConfig(long configId) throws Exception {
 		FacilioModule module = ModuleFactory.getDigestConfigModule();
-		Map<String, Object> config = DigestConfigAPI.getDigestConfig(configId);
+		Map<String, Object> config = getDigestConfig(configId);
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
 				.table(module.getTableName())
 				.andCondition(CriteriaAPI.getIdCondition(configId, module));

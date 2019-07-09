@@ -2387,4 +2387,12 @@ public class ModuleFactory {
 		module.setTableName("BaseAlarm");
 		return module;
 	}
+	
+	public static FacilioModule getPreferenceMetaModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ContextNames.PREFERENCE_META);
+		module.setDisplayName("Preferences");
+		module.setTableName("Preferences");
+		return module;
+	}
 }

@@ -3815,13 +3815,17 @@
 			class="com.facilio.bmsconsole.actions.DigestMailConfigurationAction"
 			method="deleteDigestConfig" />
 	</package>
-
-	<package name="notificationPreference" namespace="/api/v2/notificationPreference"
+	
+	<package name="preferences" namespace="/api/v2/preference"
 		extends="v2Api">
-		<action name="list"
-			class="com.facilio.auth.actions.NotificationPreferenceAction" method="getAllNotificationPreferences" />
-		<action name="add"
-			class="com.facilio.auth.actions.NotificationPreferenceAction" method="addWorkflow" />
+		<action name="getAllPrefslist"
+			class="com.facilio.bmsconsole.actions.PreferenceAction" method="getAllPreferences" />
+		<action name="enable"
+			class="com.facilio.bmsconsole.actions.PreferenceAction" method="enablePreference" />
+		<action name="disable"
+			class="com.facilio.bmsconsole.actions.PreferenceAction" method="disablePreference" />
+		<action name="getEnabledPrefsList"
+			class="com.facilio.bmsconsole.actions.PreferenceAction" method="getAllEnabledPreferences" />
 	</package>
 	
 </struts>

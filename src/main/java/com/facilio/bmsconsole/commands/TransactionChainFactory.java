@@ -3618,9 +3618,29 @@ public class TransactionChainFactory {
 			return c;
 		}
 
-		public static Chain getAddNotificationWorkflow() {
+		public static Chain getEnablePreference() {
 			Chain c = getDefaultChain();
-			c.addCommand(new AddNotificationWorkflowCommand());
+			c.addCommand(new EnablePreferenceCommand());
+			c.addCommand(new AddEnabledPreferenceMetaCommand());
+			
+			return c;
+		}
+
+		public static Chain getDisablePreference() {
+			Chain c = getDefaultChain();
+			c.addCommand(new DisablePreferenceCommand());
+			return c;
+		}
+		
+		public static Chain getAllPreferences() {
+			Chain c = getDefaultChain();
+			c.addCommand(new GetAllPreferencesCommand());
+			return c;
+		}
+		
+		public static Chain getAllEnabledPreferences() {
+			Chain c = getDefaultChain();
+			c.addCommand(new GetAllEnabledPreferencesCommand());
 			return c;
 		}
 

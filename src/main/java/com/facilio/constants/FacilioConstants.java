@@ -1082,6 +1082,13 @@ public class FacilioConstants {
 		public static final String WORK_FLOW_EXPRESSIONS = "workflowexpressions";
 		public static final String WORK_FLOW_PARAMS = "workflowparams";
 		
+		public static final String PREFERENCE_META = "preferences";
+		public static final String PREFERENCE_LIST = "preferenceList";
+		public static final String PREFERENCE_VALUE_LIST = "preferenceValueList";
+		public static final String PREFERENCE_NAME = "preferenceName";
+		public static final String PREFERENCE_ID = "preferenceId";
+		public static final String MODULE_SPECIFIC = "moduleSpecific";
+			
 		
 
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
