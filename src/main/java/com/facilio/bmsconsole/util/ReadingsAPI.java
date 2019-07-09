@@ -39,6 +39,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
@@ -550,6 +551,64 @@ public class ReadingsAPI {
 		return null;
 	}
 	
+	// This is used on update of a reading
+	public static Map<String, ReadingDataMeta> updateReadingDataMeta(FacilioModule module,List<FacilioField> fields,ReadingContext reading,String fieldName)throws Exception{
+		Map<String, ReadingDataMeta> rdmMap=new HashMap<>();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		Condition condition=CriteriaAPI.getCondition(fieldMap.get("ttime"), String.valueOf(reading.getTtime()),NumberOperators.GREATER_THAN);
+		String orderBy=fieldMap.get("ttime").getColumnName() + " desc";
+		ReadingContext lastReading = getSingleReading(module, fields, reading,fieldName,condition,orderBy);
+		if (lastReading != null) {
+			reading = lastReading;
+		}
+		if (reading != null) {
+			ReadingDataMeta rdm = new ReadingDataMeta();
+			rdm.setTtime(reading.getTtime());
+			FacilioField fField = fieldMap.get(fieldName);
+			if (fField != null) {
+				Object val = FieldUtil.castOrParseValueAsPerType(fField, reading.getReadings().entrySet().stream().filter(x->x.getKey().equalsIgnoreCase(fieldName)).findFirst().get().getValue());
+				if (val != null) {
+					rdm.setValue(val.toString());
+					rdm.setReadingDataId(reading.getId());
+					rdm.setResourceId(reading.getParentId());
+					rdm.setFieldId(fField.getFieldId());
+					updateReadingDataMeta(rdm);
+					String uniqueKey = getRDMKey(rdm.getResourceId(), fField);
+					rdmMap.put(uniqueKey, rdm);
+				}
+			}
+		}
+		return rdmMap;
+	}
+
+	public static ReadingContext getSingleReading(FacilioModule module, List<FacilioField> fields,ReadingContext reading, String fieldName,Condition condition,String orderBy)throws Exception{
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
+				.select(fields)
+				.module(module)
+				.beanClass(ReadingContext.class)
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get(fieldName),CommonOperators.IS_NOT_EMPTY))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(reading.getParentId()), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(module),String.valueOf(reading.getId()),NumberOperators.NOT_EQUALS))
+				.limit(1);
+				if(condition!=null){
+					selectBuilder.andCondition(condition);
+				}
+				if(orderBy!=null){
+					selectBuilder.orderBy(orderBy);
+				}
+		return selectBuilder.fetchFirst();
+	}
+	
+	public static ReadingContext getReading(FacilioModule module, List<FacilioField> fields,long id)throws Exception{
+		SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
+				.select(fields)
+				.module(module)
+				.beanClass(ReadingContext.class)
+				.andCondition(CriteriaAPI.getIdCondition(id, module)).limit(1);
+		return selectBuilder.fetchFirst();
+	}
+	
 	public static Map<String, ReadingDataMeta> updateReadingDataMeta(List<FacilioField> fieldsList,List<ReadingContext> readingList,Map<String, ReadingDataMeta> metaMap) throws SQLException {
 
 
@@ -1049,5 +1108,82 @@ public class ReadingsAPI {
 				meta.setValue(value);
 			}
 		}
+	}
+	
+	public static void updateDeltaForCurrentAndNextRecords(FacilioModule module,List<FacilioField> fields,ReadingContext reading,boolean currentReadingUpdate,Long curReadingTime,boolean isEnergyModule,Map<String, ReadingDataMeta> rdmMap)throws Exception{
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		ReadingContext lastReading,nextReading;
+		for(Map.Entry<String, Object> readingEntry:reading.getReadings().entrySet()){
+			String fieldName = readingEntry.getKey();
+			FacilioField field = fieldMap.get(fieldName);
+			boolean fieldValidation=false;
+			if(!isEnergyModule){
+				fieldValidation=(field.getDataTypeEnum() == FieldType.NUMBER || field.getDataTypeEnum() == FieldType.DECIMAL) && ((NumberField) field).isCounterField();
+			}else{
+				fieldValidation=field.getName().equals("totalEnergyConsumption") || field.getName().equals("phaseEnergyR")||field.getName().equals("phaseEnergyY")||field.getName().equals("phaseEnergyB");
+			}
+			if (field != null && fieldValidation) {
+				ReadingDataMeta rdm = rdmMap.get(ReadingsAPI.getRDMKey(reading.getParentId(), field));
+				Condition condition = CriteriaAPI.getCondition(fieldMap.get("ttime"), String.valueOf(reading.getTtime()), NumberOperators.LESS_THAN);
+				String orderBy = fieldMap.get("ttime").getColumnName() + " desc";
+				lastReading = getSingleReading(module, fields, reading, fieldName, condition, orderBy);
+				condition = CriteriaAPI.getCondition(fieldMap.get("ttime"), String.valueOf(reading.getTtime()),NumberOperators.GREATER_THAN);
+				orderBy = fieldMap.get("ttime").getColumnName() + " asc";
+				nextReading = getSingleReading(module, fields, reading, fieldName, condition, orderBy);
+				
+				if (!currentReadingUpdate && ((lastReading!=null&&lastReading.getTtime() > curReadingTime) || (nextReading!=null&&nextReading.getTtime() < curReadingTime))) {
+					//Delta calculation for next reading, If given date is not between last reading date and next reading date
+					calculateDeltaBtwReadingsAndUpdate(module,fields,field,lastReading,nextReading);
+					if (nextReading != null && rdm != null && nextReading.getId() == rdm.getReadingDataId()) {//Updating delta value in RDM.If Next reading is latest Reading
+						updateReadingDataMeta(module, fields,reading,field.getName()+"Delta");
+					}
+				}
+				if (currentReadingUpdate) {
+					calculateDeltaBtwReadingsAndUpdate(module, fields, field, lastReading, reading);
+					calculateDeltaBtwReadingsAndUpdate(module, fields, field, reading, nextReading);
+					if (nextReading != null && nextReading.getId() == rdm.getReadingDataId()) {//Updating delta value in RDM.If Next reading is latest Reading
+						updateReadingDataMeta(module, fields,reading,field.getName()+"Delta");
+					}
+				}
+			}
+		}
+	}
+	
+	private static void updateReading(FacilioModule module, List<FacilioField> fields, ReadingContext reading)throws Exception {
+        UpdateRecordBuilder<ReadingContext> updateBuilder = new UpdateRecordBuilder<ReadingContext>().module(module)
+				.fields(fields).andCondition(CriteriaAPI.getIdCondition(reading.getId(), module));
+		updateBuilder.update(reading);
+	}
+	
+	private static void calculateDeltaBtwReadingsAndUpdate(FacilioModule module, List<FacilioField> fields,FacilioField field,ReadingContext firstReading,ReadingContext secondReading)throws Exception{
+		if (secondReading != null) {
+			if (field.getDataTypeEnum() == FieldType.DECIMAL) {
+				Double secondReadingVal = (Double) FieldUtil.castOrParseValueAsPerType(field,secondReading.getReadings().entrySet().stream().filter(rd -> rd.getKey().equalsIgnoreCase(field.getName())).findFirst().get().getValue());
+				if (firstReading != null) {
+					Double firstReadingVal = (Double) FieldUtil.castOrParseValueAsPerType(field,firstReading.getReadings().entrySet().stream().filter(rd -> rd.getKey().equalsIgnoreCase(field.getName())).findFirst().get().getValue());
+					addDeltaValue(secondReading, field.getName(),(secondReadingVal - firstReadingVal) > 0 ? (secondReadingVal - firstReadingVal) : 0.0);
+				} else {
+					addDeltaValue(secondReading, field.getName(), 0.0);
+				}
+			}else{
+				Long secondReadingVal = (Long) FieldUtil.castOrParseValueAsPerType(field,secondReading.getReadings().entrySet().stream().filter(rd -> rd.getKey().equalsIgnoreCase(field.getName())).findFirst().get().getValue());
+				if (firstReading != null) {
+					Long firstReadingVal = (Long) FieldUtil.castOrParseValueAsPerType(field,firstReading.getReadings().entrySet().stream().filter(rd -> rd.getKey().equalsIgnoreCase(field.getName())).findFirst().get().getValue());
+					addDeltaValue(secondReading, field.getName(),(secondReadingVal - firstReadingVal) > 0 ? (secondReadingVal - firstReadingVal) : 0.0);
+				} else {
+					addDeltaValue(secondReading, field.getName(), 0.0);
+				}
+			}
+			updateReading(module, fields, secondReading);
+		}
+	}
+	
+	private static void addDeltaValue(ReadingContext reading,String fieldName,Object value){
+		 boolean isDeltaKeyPresent= reading.getReadings().entrySet().stream().filter(rd->rd.getKey().equalsIgnoreCase(fieldName+"Delta")).findFirst().isPresent();
+			if (isDeltaKeyPresent) {
+				reading.getReadings().entrySet().stream().filter(rd -> rd.getKey().equalsIgnoreCase(fieldName + "Delta")).findFirst().get().setValue(value);
+			} else {
+				reading.addReading((fieldName + "Delta"), value);
+			}
 	}
 }

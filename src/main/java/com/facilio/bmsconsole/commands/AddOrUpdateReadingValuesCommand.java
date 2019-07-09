@@ -1,5 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -13,18 +26,13 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.time.SecondsChronoUnit;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.time.ZonedDateTime;
-import java.util.*;
 
 public class AddOrUpdateReadingValuesCommand implements Command {
 	
@@ -155,6 +163,27 @@ public class AddOrUpdateReadingValuesCommand implements Command {
 		updateBuilder.update(reading);
 		if (isUpdateLastReading) {
 			Map<String, ReadingDataMeta> currentRDMs = ReadingsAPI.updateReadingDataMeta(fields,Collections.singletonList(reading),metaMap);
+			long lastReadingDataId = -1;
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+			for (Map.Entry<String, Object> rd : reading.getReadings().entrySet()) {
+				FacilioField fField = fieldMap.get(rd.getKey());
+				if (fField != null) {
+					Object val = FieldUtil.castOrParseValueAsPerType(fField, rd.getValue());
+					if (val != null && metaMap != null) {
+						String uniqueKey = ReadingsAPI.getRDMKey(reading.getParentId(), fField);
+						ReadingDataMeta meta = metaMap.get(uniqueKey);
+						if (meta != null) {
+							lastReadingDataId = meta.getReadingDataId();
+							if ((currentRDMs == null || currentRDMs.isEmpty()
+									||(currentRDMs!=null&&!currentRDMs.isEmpty()&&currentRDMs.get(uniqueKey)==null)) 
+									&& reading.getId() == lastReadingDataId) {
+								currentRDMs = ReadingsAPI.updateReadingDataMeta(module, fields,reading,rd.getKey());
+							}
+						}
+					}
+				}
+			}
+			
 			if (currentRDMs != null) {
 				currentReadingMap.putAll(currentRDMs);
 			}

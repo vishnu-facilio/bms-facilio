@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
@@ -43,6 +44,7 @@ public class CalculateDeltaCommand implements Command {
 				if (moduleName != null && !moduleName.isEmpty()) {
 					List<ReadingContext> readings = entry.getValue();
 					if (readings != null && !readings.isEmpty()) {
+						FacilioModule module = modBean.getModule(moduleName);
 						List<FacilioField> fields = modBean.getAllFields(moduleName);
 						Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 						List<FacilioField> counterFields = fields.stream().filter(field -> (field.getDataTypeEnum() == FieldType.NUMBER || field.getDataTypeEnum() == FieldType.DECIMAL) && ((NumberField) field).isCounterField()).collect(Collectors.toList());
@@ -56,7 +58,8 @@ public class CalculateDeltaCommand implements Command {
 									if (val != null) {
 										ReadingDataMeta rdm = rdmMap.get(ReadingsAPI.getRDMKey(reading.getParentId(), field));
 
-										if (reading.getTtime() != -1 && reading.getTtime() < rdm.getTtime()) {
+										if (reading.getId()!=-1 || (reading.getTtime() != -1 && reading.getTtime() < rdm.getTtime())) {
+											newRdmPairs.add(Pair.of(reading.getParentId(), fieldMap.get(field.getName()+"Delta")));
 											continue; //Not calculating delta for older values
 										}
 
@@ -89,6 +92,13 @@ public class CalculateDeltaCommand implements Command {
 											}
 										}
 									}
+								}
+								if (reading.getId() != -1) {
+									ReadingContext readingBeforeUpdate= ReadingsAPI.getReading(module, fields, reading.getId());
+									if(readingBeforeUpdate.getTtime()!=reading.getTtime()){
+										ReadingsAPI.updateDeltaForCurrentAndNextRecords(module,fields,readingBeforeUpdate,false,reading.getTtime(),false,rdmMap);
+									}
+									ReadingsAPI.updateDeltaForCurrentAndNextRecords(module, fields, reading, true,reading.getTtime(),false,rdmMap);
 								}
 							}
 						}
