@@ -12,7 +12,6 @@ public abstract class NotificationPreference {
 	
 	public NotificationPreference(String name, FacilioForm form) {
 		this.name = name;
-//		this.workflowRule = workflowRule;
 		this.form = form;
 	}
 	
@@ -24,15 +23,6 @@ public abstract class NotificationPreference {
 		this.name = name;
 	}
 
-//	private WorkflowRuleContext workflowRule;
-//	@JSON(serialize = false)
-//	public WorkflowRuleContext getWorkflowRule() {
-//		return workflowRule;
-//	}
-//	public void setWorkflowRule(WorkflowRuleContext workflowRule) {
-//		this.workflowRule = workflowRule;
-//	}
-	
 	private FacilioForm form;
 	public FacilioForm getForm() {
 		return form;

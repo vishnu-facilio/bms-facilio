@@ -11,6 +11,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.chargebee.internal.StringJoiner;
 import com.facilio.bmsconsole.context.DigestConfigContext;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.templates.Template;
@@ -59,12 +60,11 @@ public class AddActionToDigestConfigCommand implements Command{
 				workflow.setParameters(parameters);
 				workflow.setWorkflowString(WorkflowUtil.getXmlStringFromWorkflow(workflow));
 				
-				StringBuilder toAddr = new StringBuilder();
+				StringJoiner toAddr = new StringJoiner(",");
 				for(int i=0;i<expressions.size();i++) {
 					String name = (String) ((Map)expressions.get(i)).get("name");
-					toAddr.append(name);
-					if(i < expressions.size() - 1 ) {
-						toAddr.append(",");
+					if(name.contains("user_email")) {
+						toAddr.add("${" + name + "}");
 					}
 				}
 				JSONObject templateJSON = template.getOriginalTemplate();

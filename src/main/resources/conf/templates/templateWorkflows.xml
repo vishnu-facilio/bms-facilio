@@ -831,12 +831,39 @@
 	<template id="84">
 		<workflow>
 			<parameter name="org" type="String" />
-			<expression name="org.domain">
-				<constant>${org.domain}</constant>
+			<expression name="getPreviousMonthStartDate">
+				<function>date.getPreviousMonthStartDate()</function>
+			</expression>
+			<expression name="getPreviousMonthEndDate">
+				<function>date.getPreviousMonthEndDate()</function>
+			</expression>
+			<expression name="woOnCompletion">
+				<function>workorder.getWorkOrdersByCompletionTime('3',getPreviousMonthStartDate,getPreviousMonthEndDate)
+				</function>
+			</expression>
+			<expression name="topNTechnician">
+				<function>workorder.getTopNTechnicians('3',getPreviousMonthStartDate,getPreviousMonthEndDate)
+				</function>
+			</expression>
+			<expression name="sitesWithResolutionTime">
+				<function>workorder.getAvgResolutionTime('3',getPreviousMonthStartDate,getPreviousMonthEndDate)
+				</function>
+			</expression>
+			<expression name="totalConsumptionBySite">
+				<function>consumption.getDataBySites(getPreviousMonthStartDate,getPreviousMonthEndDate)
+				</function>
 			</expression>
 			<expression name="previousMonthName">
 				<function>date.getPreviousMonthName()</function>
 			</expression>
+			<expression name="previousLastMonthName">
+				<function>date.getPreviousLastMonthName()</function>
+			</expression>
+			<expression name="getPermaLinkUrl">
+				<function>default.getPermaLinkUrl('https://app.facilio.com','/app/permalink/monthlyportfolio',getPreviousMonthStartDate,getPreviousMonthEndDate,'system+spic@facilio.com')
+				</function>
+			</expression>
+
 		</workflow>
 
 	</template>
