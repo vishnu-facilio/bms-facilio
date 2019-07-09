@@ -206,6 +206,9 @@ public class V2ReportAction extends FacilioAction {
 		if (showSafeLimit != null) {
 			reportContext.addToReportState(FacilioConstants.ContextNames.REPORT_SHOW_SAFE_LIMIT, showSafeLimit);
 		}
+		if (xAggr != null) {
+			reportContext.setxAggr(xAggr);
+		}
 
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 		context.put(FacilioConstants.ContextNames.REPORT_HANDLE_BOOLEAN, newFormat);
