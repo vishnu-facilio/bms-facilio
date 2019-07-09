@@ -103,5 +103,12 @@ public class ImportDataJob extends FacilioJob {
 			LOGGER.log(Level.SEVERE, e.getMessage(), e);
 		}
 	}
+	
+	@Override
+	public void handleTimeOut() {
+		// TODO Auto-generated method stub
+		LOGGER.info("Time out called during import");
+	 	super.handleTimeOut();
+	}
 
 }
