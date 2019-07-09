@@ -2,6 +2,7 @@ package com.facilio.workflows.functions;
 
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.Operator;
+import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
@@ -241,6 +242,7 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 
 		}
 	},
+	
 	ADD_YEAR(11,"addYears") {
 		@Override
 		public Object execute(Object... objects) throws Exception {
@@ -473,6 +475,28 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 			else {
 				long time = (long) Double.parseDouble(objects[0].toString());
 				return DateTimeUtil.getDayStartTimeOf(time);
+			}
+		}
+		public void checkParam(Object... objects) throws Exception {
+
+		}
+	},
+	GET_MONTH_RANGE(25, "getMonthRange") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			
+			if(objects == null || objects.length == 0) {
+				long startTime = DateTimeUtil.getMonthStartTime();
+				long endTime = DateTimeUtil.getMonthStartTime(1)-1;
+				
+				return new DateRange(startTime, endTime);
+			}
+			else {
+				long time = (long) Double.parseDouble(objects[0].toString());
+				long startTime = DateTimeUtil.getMonthStartTimeOf(time);
+				long endTime = DateTimeUtil.getMonthEndTimeOf(time);
+				return new DateRange(startTime, endTime);
 			}
 		}
 		public void checkParam(Object... objects) throws Exception {
