@@ -138,7 +138,7 @@ public class ReportFactory {
 		private static final long serialVersionUID = 1L;
 		private int type;
 		private Map<String, Object> config;
-		private Map<String, Object> data = new HashMap<>();
+//		private Map<String, Object> data = new HashMap<>();
 		private Map<String, Condition> conditions = new HashMap<>();
 		
 		public ReportFacilioField(ReportFacilioField reportFacilioField) {
@@ -175,6 +175,7 @@ public class ReportFactory {
 				{
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					List<FacilioStatus> list = TicketAPI.getStatusOfStatusType(StatusType.CLOSED);
+					Map<String, Object> data = new HashMap<>();
 					if (CollectionUtils.isNotEmpty(list)) {
 						List<Long> statusIds = new ArrayList<>();
 						for (FacilioStatus status : list) {
