@@ -109,7 +109,7 @@ public class MVUtil {
 		context.put(FacilioConstants.ContextNames.SKIP_FORMULA_HISTORICAL_SCHEDULING, Boolean.TRUE);
 		if(baseline != null) {
 			if(formulaFieldContext.getName() == null) {
-				formulaFieldContext.setName(baseline.getName());
+				formulaFieldContext.setName(mvProject.getName() +" - "+baseline.getName());
 			}
 			formulaFieldContext.setStartTime(baseline.getStartTime());
 			formulaFieldContext.setEndTime(mvProject.getReportingPeriodEndTime());
@@ -119,7 +119,7 @@ public class MVUtil {
 				formulaFieldContext.setFrequency(mvAdjustment.getFrequency());
 			}
 			if(formulaFieldContext.getName() == null) {
-				formulaFieldContext.setName(mvAdjustment.getName());
+				formulaFieldContext.setName(mvProject.getName() +" - "+mvAdjustment.getName());
 			}
 			formulaFieldContext.setStartTime(mvAdjustment.getStartTime());
 			formulaFieldContext.setEndTime(mvAdjustment.getEndTime());
@@ -127,7 +127,7 @@ public class MVUtil {
 		else {
 			formulaFieldContext.setStartTime(mvProject.getReportingPeriodStartTime());
 			formulaFieldContext.setEndTime(mvProject.getReportingPeriodEndTime());
-			formulaFieldContext.setName(mvProject.getName() +" Save Goal Formula");
+			formulaFieldContext.setName(mvProject.getName() +" - Save Goal Formula");
 		}
 	}
 	
