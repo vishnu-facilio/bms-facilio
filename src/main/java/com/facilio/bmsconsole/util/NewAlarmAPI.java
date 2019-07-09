@@ -253,4 +253,21 @@ public class NewAlarmAPI {
 			}
 		}
 	}
+
+	public static AlarmOccurrenceContext getAlarmOccurrence(long recordId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
+		SelectRecordsBuilder<AlarmOccurrenceContext> builder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
+				.module(module)
+				.select(modBean.getAllFields(FacilioConstants.ContextNames.ALARM_OCCURRENCE))
+				.beanClass(AlarmOccurrenceContext.class)
+				.andCondition(CriteriaAPI.getIdCondition(recordId, module));
+		AlarmOccurrenceContext alarmOccurrenceContext = builder.fetchFirst();
+		if (alarmOccurrenceContext != null) {
+			if (alarmOccurrenceContext.getAlarm() != null) {
+				alarmOccurrenceContext.setAlarm(getAlarm(alarmOccurrenceContext.getAlarm().getId()));
+			}
+		}
+		return alarmOccurrenceContext;
+	}
 }

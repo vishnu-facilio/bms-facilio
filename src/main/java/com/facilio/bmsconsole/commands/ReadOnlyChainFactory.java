@@ -1219,4 +1219,16 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetRulesForStoreCommand());
 		return c;
 	}
+
+	public static Chain getAlarmOccurrenceListChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetAlarmOccurrenceListCommand());
+		return c;
+	}
+
+	public static Chain getEventListChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetV2EventListCommand());
+		return c;
+	}
 }

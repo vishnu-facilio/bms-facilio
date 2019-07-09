@@ -169,6 +169,10 @@
 	</package>
 	
 	<package name="alarmOccurrence" namespace="/api/v2/alarmOccurrence" extends="v2Api">
+		<action name="list"
+			class="com.facilio.events.actions.V2AlarmAction" method="getAlarmOccurrenceList" />
+		<action name="eventList"
+			class="com.facilio.events.actions.V2AlarmAction" method="getEventsList" />
 		<action name="createWO" 
 			class="com.facilio.events.actions.V2AlarmAction" method="createWO" />
 	</package>

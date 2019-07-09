@@ -89,6 +89,30 @@ public class V2AlarmAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String getAlarmOccurrenceList() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID, getId());
+		
+		Chain c = ReadOnlyChainFactory.getAlarmOccurrenceListChain();
+		c.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.RECORD_LIST, context.get(FacilioConstants.ContextNames.RECORD_LIST));
+		
+		return SUCCESS;
+	}
+	
+	public String getEventsList() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID, getId());
+		
+		Chain c = ReadOnlyChainFactory.getEventListChain();
+		c.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.RECORD_LIST, context.get(FacilioConstants.ContextNames.RECORD_LIST));
+		
+		return SUCCESS;
+	}
+	
 	public String createWO() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, getId());

@@ -5,7 +5,7 @@ import com.facilio.bmsconsole.context.ReadingEventContext;
 
 public class NewEventAPI {
 
-	private static Class getEventClass(Type type) {
+	public static Class getEventClass(Type type) {
 		if (type == null) {
 			throw new IllegalArgumentException("Invalid alarm type");
 		}
