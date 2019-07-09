@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -17,6 +18,7 @@ import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.bmsconsole.context.BaseEventContext;
 import com.facilio.bmsconsole.context.ReadingAlarm;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.LookupOperator;
@@ -227,6 +229,28 @@ public class NewAlarmAPI {
 		baseAlarm.setLastOccurredTime(currenTime);
 		if (alarmOccurrence.getSeverity().equals(AlarmAPI.getAlarmSeverity("Clear"))) {
 			baseAlarm.setLastClearedTime(currenTime);
+		}
+	}
+
+	public static void loadAlarmLookups(List<BaseAlarmContext> alarms) throws Exception {
+		updateResource(alarms);
+	}
+
+	private static void updateResource(List<BaseAlarmContext> alarms) throws Exception {
+		if (CollectionUtils.isNotEmpty(alarms)) {
+			List<Long> resourceIds = alarms.stream()
+					.filter(alarm -> alarm != null && alarm.getResource() != null)
+					.map(alarm -> alarm.getResource().getId())
+					.collect(Collectors.toList());
+			Map<Long, ResourceContext> extendedResources = ResourceAPI.getExtendedResourcesAsMapFromIds(resourceIds, false);
+			for (BaseAlarmContext alarm : alarms) {
+				if (alarm != null) {
+					ResourceContext resource = alarm.getResource();
+					if (resource != null) {
+						alarm.setResource(extendedResources.get(resource.getId()));
+					}
+				}
+			}
 		}
 	}
 }

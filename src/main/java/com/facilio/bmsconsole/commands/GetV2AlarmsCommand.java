@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
+
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
@@ -17,6 +19,8 @@ public class GetV2AlarmsCommand implements Command {
 			BaseAlarmContext alarm = NewAlarmAPI.getAlarm(id);
 			
 			AlarmOccurrenceContext latestAlarmOccurance = NewAlarmAPI.getLatestAlarmOccurance(alarm);
+			
+			NewAlarmAPI.loadAlarmLookups(Collections.singletonList(alarm));
 			
 			context.put(FacilioConstants.ContextNames.RECORD, alarm);
 			context.put(FacilioConstants.ContextNames.LATEST_ALARM_OCCURRENCE, latestAlarmOccurance);
