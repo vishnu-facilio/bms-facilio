@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.concurrent.*;
 
 public class Executor implements Runnable {
-	
+
 	private static final int MAX_RETRY = 5;
 	private static final Logger LOGGER = LogManager.getLogger(Executor.class.getName());
 	private static final int JOB_TIMEOUT_BUFFER = 5000;
@@ -122,9 +122,11 @@ public class Executor implements Runnable {
 		Iterator<Map.Entry<String, JobTimeOutInfo>> itr = jobMonitor.entrySet().iterator();
 		long currentTime = System.currentTimeMillis();
 		while (itr.hasNext()) {
-			JobTimeOutInfo info = itr.next().getValue();
+			Map.Entry<String, JobTimeOutInfo> entry = itr.next();
+			JobTimeOutInfo info = entry.getValue();
 			if (currentTime >= (info.getExecutionTime()+info.getTimeOut())) {
 				if (info.getFuture().cancel(true)) {
+					LOGGER.info("Timing out job : "+entry.getKey());
 					info.getFacilioJob().handleTimeOut();
 					itr.remove();
 				}
