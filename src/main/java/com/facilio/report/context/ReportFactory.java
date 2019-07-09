@@ -13,6 +13,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.fasterxml.jackson.databind.Module;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,7 +54,7 @@ public class ReportFactory {
 		try {
 			// workorder fields
 			List<FacilioField> reportFields = new ArrayList<>();
-			ReportFacilioField openVsCloseField = (ReportFacilioField) getField(WorkOrder.OPENVSCLOSE_COL, "Status Type", ModuleFactory.getWorkOrdersModule(), " CASE WHEN STATUS_ID = ? THEN 'Closed' ELSE 'Open' END ", FieldType.STRING, WorkOrder.OPENVSCLOSE);
+			ReportFacilioField openVsCloseField = (ReportFacilioField) getField(WorkOrder.OPENVSCLOSE_COL, "Status Type", ModuleFactory.getWorkOrdersModule(), " CASE WHEN STATUS_ID in (?) THEN 'Closed' ELSE 'Open' END ", FieldType.STRING, WorkOrder.OPENVSCLOSE);
 			openVsCloseField.addCondition("Open", CriteriaAPI.getCondition("STATUS_ID", "status", "?", NumberOperators.NOT_EQUALS));
 			openVsCloseField.addCondition("Closed", CriteriaAPI.getCondition("STATUS_ID", "status", "?", NumberOperators.EQUALS));
 			reportFields.add(openVsCloseField);
@@ -172,21 +173,17 @@ public class ReportFactory {
 				switch (type) {
 				case WorkOrder.OPENVSCLOSE:
 				{
-					if (!data.containsKey("closed_status_id")) {
-						ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-//						SelectRecordsBuilder<FacilioStatus> builder = new SelectRecordsBuilder<FacilioStatus>()
-//								.module(modBean.getModule("ticketstatus"))
-//								.select(modBean.getAllFields("ticketstatus"))
-//								.beanClass(FacilioStatus.class)
-//								.andCondition(CriteriaAPI.getCondition("STATUS_TYPE", "statusType", "2", NumberOperators.EQUALS));
-//						List<FacilioStatus> list = builder.get();
-						List<FacilioStatus> list = TicketAPI.getStatusOfStatusType(StatusType.CLOSED);
-						if (CollectionUtils.isNotEmpty(list)) {
-							FacilioStatus facilioStatus = list.get(0);
-							data.put("closed_status_id", facilioStatus.getId());
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					List<FacilioStatus> list = TicketAPI.getStatusOfStatusType(StatusType.CLOSED);
+					if (CollectionUtils.isNotEmpty(list)) {
+						List<Long> statusIds = new ArrayList<>();
+						for (FacilioStatus status : list) {
+							statusIds.add(status.getId());
 						}
+						data.put("closed_status_id", StringUtils.join(statusIds, ","));
 					}
-					String arguments = String.valueOf((Long) data.get("closed_status_id"));
+
+					String arguments = String.valueOf(data.get("closed_status_id"));
 					
 					for (Condition c : conditions.values()) {
 						String value = c.getValue();
@@ -194,6 +191,7 @@ public class ReportFactory {
 					}
 					
 					setColumnName(getColumnName().replace("?", arguments));
+					data.clear();
 					break;
 				}
 					
