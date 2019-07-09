@@ -258,6 +258,7 @@ public class LoginAction extends FacilioAction {
 		data.put("assetCategory", AssetsAPI.getCategoryList());
 		data.put("sites", SpaceAPI.getAllSites());
 		data.put("orgInfo", CommonCommandUtil.getOrgInfo());
+		data.put("buildingList", ReportsUtil.getBuildingMap());	// temp
 		int license = AccountUtil.getFeatureLicense();
 		account.put("License", license);
 		account.put("data", data);
