@@ -1,24 +1,24 @@
 {
 	"2": {
 		"fdd_rule": {
-			"name":"FAHU Outside Air Damper Stuck open",
-			"description": "FAHU Outside Air Damper is stuck or in open state. Unable to open Damper",
-			"problem": "FAHU Outside Air Damper fails to follow the command",
+			"name":"AHU Outside Air Damper Stuck open",
+			"description": "AHU Outside Air Damper is stuck or in open state. Unable to open Damper",
+			"problem": "AHU Outside Air Damper fails to follow the command",
 			"possible_causes": "1. Poor Lubrication <br/> 2. Sensor Failure",
-			"moduleName": "fahureading",
-			"category": "FAHU",
+			"moduleName": "ahureading",
+			"category": "AHU",
 			"severity": "Major",
 			"threshold_metric": "supplyairdamperstatus",
 			"threshold_metric_display": "Supply Air Damper Status",
 			"possible_solution": "1. Lubricate the bearings and louvres \n 2. Check sensor functioning",
 			"ASSET_SELECTION_CRITERIA": {
-			 	"categoryType": "FAHU",
+			 	"categoryType": "AHU",
 			 	"includeResource": "${includeResource}",
 			 	"excludeResource": "${excludeResource}"
 			},
 			"preRequsite": {
 				"action": "PreRequsite",
-				"moduleName": "fahureading",
+				"moduleName": "ahureading",
 				"threshold_metric": "runstatus",
 				"thresholdType": 1,
 				"operatorId": 9,
@@ -30,7 +30,7 @@
 				            "name": "a",
 				            "aggregateString": "lastValue",
 				            "fieldName": "runstatus",
-				            "moduleName": "fahureading",
+				            "moduleName": "ahureading",
 				            "criteria": {
 				              "pattern": "(1)",
 				              "conditions": {
@@ -65,7 +65,7 @@
 				      	"name": "A",
 				        "aggregateString": "lastValue",
 				        "fieldName": "supplyairdampercommand",
-				        "moduleName": "fahureading",
+				        "moduleName": "ahureading",
 				        "criteria": {
 				        "pattern": "(1)",
 				        "conditions": {
@@ -86,7 +86,7 @@
 				            "name": "D",
 				            "aggregateString": "lastValue",
 				            "fieldName": "supplyairdamperstatus",
-				            "moduleName": "fahureading",
+				            "moduleName": "ahureading",
 				            "criteria": {
 				              "pattern": "(1)",
 				              "conditions": {
@@ -140,24 +140,24 @@
 	},
 	"3": {
 		"fdd_rule": {
-			"name":"FAHU Outside Air Damper Stuck close",
-			"description": "FAHU Outside Air Damper is stuck or in open state. Unable to close Damper",
-			"problem": "FAHU Outside Air Damper fails to follow the command",
+			"name":"AHU Outside Air Damper Stuck close",
+			"description": "AHU Outside Air Damper is stuck or in open state. Unable to close Damper",
+			"problem": "AHU Outside Air Damper fails to follow the command",
 			"possible_causes": "1. Poor Lubrication <br/> 2. Sensor Failure",
-			"moduleName": "fahureading",
-			"category": "FAHU",
+			"moduleName": "ahureading",
+			"category": "AHU",
 			"severity": "Major",
 			"threshold_metric": "supplyairdamperstatus",
 			"threshold_metric_display": "Supply Air Damper Status",
 			"possible_solution": "1. Lubricate the bearings and louvres \n 2. Check sensor functioning",
 			"ASSET_SELECTION_CRITERIA": {
-			 	"categoryType": "FAHU",
+			 	"categoryType": "AHU",
 			 	"includeResource": "${includeResource}",
 			 	"excludeResource": "${excludeResource}"
 			},
 			"preRequsite": {
 				"action": "PreRequsite",
-				"moduleName": "fahureading",
+				"moduleName": "ahureading",
 				"threshold_metric": "runstatus",
 				"thresholdType": 1,
 				"operatorId": 9,
@@ -169,7 +169,7 @@
 				            "name": "a",
 				            "aggregateString": "lastValue",
 				            "fieldName": "runstatus",
-				            "moduleName": "fahureading",
+				            "moduleName": "ahureading",
 				            "criteria": {
 				              "pattern": "(1)",
 				              "conditions": {
@@ -196,7 +196,7 @@
 				"condition": "${{supplyairdampercommand}}==1 && ${{supplyairdamperstatus}}==0",
 				"for": "${interval}",
 				"action": "TRIGGER_ALARM",
-				"moduleName": "fahureading",
+				"moduleName": "ahureading",
 				"thresholdType": 5,
 				"threshold_metric": "supplyairdamperstatus",
 				"workflow": {
@@ -205,7 +205,7 @@
 				      	"name": "A",
 				        "aggregateString": "lastValue",
 				        "fieldName": "supplyairdampercommand",
-				        "moduleName": "fahureading",
+				        "moduleName": "ahureading",
 				        "criteria": {
 				        "pattern": "(1)",
 				        "conditions": {
@@ -226,7 +226,7 @@
 				            "name": "D",
 				            "aggregateString": "lastValue",
 				            "fieldName": "supplyairdamperstatus",
-				            "moduleName": "fahureading",
+				            "moduleName": "ahureading",
 				            "criteria": {
 				              "pattern": "(1)",
 				              "conditions": {
@@ -280,24 +280,24 @@
 	},
 	"4": {
 		"fdd_rule": {
-			"name":"FAHU Exhaust Air Damper Stuck open",
-			"description": "FAHU Exhaust Air Damper is stuck or in open state. Unable to open Damper",
-			"problem": "FAHU Exhaust Air Damper fails to follow the command",
+			"name":"AHU Exhaust Air Damper Stuck open",
+			"description": "AHU Exhaust Air Damper is stuck or in open state. Unable to open Damper",
+			"problem": "AHU Exhaust Air Damper fails to follow the command",
 			"possible_causes": "1. Poor Lubrication <br/> 2. Sensor Failure",
-			"moduleName": "fahureading",
-			"category": "FAHU",
+			"moduleName": "ahureading",
+			"category": "AHU",
 			"severity": "Major",
 			"threshold_metric": "exhaustairdamperstatus",
 			"threshold_metric_display": "Supply Air Damper Status",
 			"possible_solution": "1. Lubricate the bearings and louvres \n 2. Check sensor functioning",
 			"ASSET_SELECTION_CRITERIA": {
-			 	"categoryType": "FAHU",
+			 	"categoryType": "AHU",
 			 	"includeResource": "${includeResource}",
 			 	"excludeResource": "${excludeResource}"
 			},
 			"preRequsite": {
 				"action": "PreRequsite",
-				"moduleName": "fahureading",
+				"moduleName": "ahureading",
 				"threshold_metric": "runstatus",
 				"thresholdType": 1,
 				"operatorId": 9,
@@ -309,7 +309,7 @@
 				            "name": "a",
 				            "aggregateString": "lastValue",
 				            "fieldName": "runstatus",
-				            "moduleName": "fahureading",
+				            "moduleName": "ahureading",
 				            "criteria": {
 				              "pattern": "(1)",
 				              "conditions": {
@@ -336,7 +336,7 @@
 				"condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
 				"for": "${interval}",
 				"action": "TRIGGER_ALARM",
-				"moduleName": "fahureading",
+				"moduleName": "ahureading",
 				"thresholdType": 5,
 				"threshold_metric": "exhaustairdamperstatus",
 				"workflow": {
@@ -345,7 +345,7 @@
 				      	"name": "A",
 				        "aggregateString": "lastValue",
 				        "fieldName": "exhaustairdampercommand",
-				        "moduleName": "fahureading",
+				        "moduleName": "ahureading",
 				        "criteria": {
 				        "pattern": "(1)",
 				        "conditions": {
@@ -366,7 +366,7 @@
 				            "name": "D",
 				            "aggregateString": "lastValue",
 				            "fieldName": "exhaustairdamperstatus",
-				            "moduleName": "fahureading",
+				            "moduleName": "ahureading",
 				            "criteria": {
 				              "pattern": "(1)",
 				              "conditions": {
@@ -420,24 +420,24 @@
 	},
 	"5": {
 		"fdd_rule": {
-			"name":"FAHU Exhaust Air Damper Stuck close",
-			"description": "FAHU Exhaust Air Damper is stuck or in open state. Unable to close Damper",
-			"problem": "FAHU Exhaust Air Damper fails to follow the command",
+			"name":"AHU Exhaust Air Damper Stuck close",
+			"description": "AHU Exhaust Air Damper is stuck or in open state. Unable to close Damper",
+			"problem": "AHU Exhaust Air Damper fails to follow the command",
 			"possible_causes": "1. Poor Lubrication <br/> 2. Sensor Failure",
-			"moduleName": "fahureading",
-			"category": "FAHU",
+			"moduleName": "ahureading",
+			"category": "AHU",
 			"severity": "Major",
 			"threshold_metric": "exhaustairdamperstatus",
 			"threshold_metric_display": "Exhaust Air Damper Status",
 			"possible_solution": "1. Lubricate the bearings and louvres \n 2. Check sensor functioning",
 			"ASSET_SELECTION_CRITERIA": {
-			 	"categoryType": "FAHU",
+			 	"categoryType": "AHU",
 			 	"includeResource": "${includeResource}",
 			 	"excludeResource": "${excludeResource}"
 			},
 			"preRequsite": {
 				"action": "PreRequsite",
-				"moduleName": "fahureading",
+				"moduleName": "ahureading",
 				"threshold_metric": "runstatus",
 				"thresholdType": 1,
 				"operatorId": 9,
@@ -449,7 +449,7 @@
 				            "name": "a",
 				            "aggregateString": "lastValue",
 				            "fieldName": "runstatus",
-				            "moduleName": "fahureading",
+				            "moduleName": "ahureading",
 				            "criteria": {
 				              "pattern": "(1)",
 				              "conditions": {
@@ -476,7 +476,7 @@
 				"condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
 				"for": "${interval}",
 				"action": "TRIGGER_ALARM",
-				"moduleName": "fahureading",
+				"moduleName": "ahureading",
 				"thresholdType": 5,
 				"threshold_metric": "exhaustairdamperstatus",
 				"workflow": {
@@ -485,7 +485,7 @@
 				      	"name": "A",
 				        "aggregateString": "lastValue",
 				        "fieldName": "exhaustairdampercommand",
-				        "moduleName": "fahureading",
+				        "moduleName": "ahureading",
 				        "criteria": {
 				        "pattern": "(1)",
 				        "conditions": {
@@ -506,7 +506,7 @@
 				            "name": "D",
 				            "aggregateString": "lastValue",
 				            "fieldName": "exhaustairdamperstatus",
-				            "moduleName": "fahureading",
+				            "moduleName": "ahureading",
 				            "criteria": {
 				              "pattern": "(1)",
 				              "conditions": {
@@ -560,24 +560,24 @@
 	},
 	"6":  {
 		"fdd_rule": {
-			"name":"FAHU Pre Filter clogged",
-			"description": "FAHU Pre Filter clogged",
-			"problem": "As the outside air contains lot of dust and other pollution particles, the filter being the first line of defence for the FAHU, gets the maximum dirt/debris buildup. ",
+			"name":"AHU Pre Filter clogged",
+			"description": "AHU Pre Filter clogged",
+			"problem": "As the outside air contains lot of dust and other pollution particles, the filter being the first line of defence for the AHU, gets the maximum dirt/debris buildup. ",
 			"possible_causes": "Excessive Dust in ambient Air",
-			"moduleName": "fahureading",
-			"category": "FAHU",
+			"moduleName": "ahureading",
+			"category": "AHU",
 			"severity": "Major",
 			"threshold_metric": "prefilterdp",
 			"threshold_metric_display": "Pre Filter DP",
 			"possible_solution": "Dirty/Clogged air filters lead to excessive air pressure drop resulting in reduced airflow, increased energy consumption by the fan and depositing dirt/debris on cooling coil, ducts etc.",
 			"ASSET_SELECTION_CRITERIA": {
-			 	"categoryType": "FAHU",
+			 	"categoryType": "AHU",
 			 	"includeResource": "${includeResource}",
 			 	"excludeResource": "${excludeResource}"
 			},
 			"preRequsite": {
 				"action": "PreRequsite",
-				"moduleName": "fahureading",
+				"moduleName": "ahureading",
 				"threshold_metric": "runstatus",
 				"thresholdType": 1,
 				"operatorId": 9,
@@ -589,7 +589,7 @@
 				            "name": "a",
 				            "aggregateString": "lastValue",
 				            "fieldName": "runstatus",
-				            "moduleName": "fahureading",
+				            "moduleName": "ahureading",
 				            "criteria": {
 				              "pattern": "(1)",
 				              "conditions": {
@@ -616,7 +616,7 @@
 				"condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
 				"for": "${interval}",
 				"action": "TRIGGER_ALARM",
-				"moduleName": "fahureading",
+				"moduleName": "ahureading",
 				"thresholdType": 5,
 				"threshold_metric": "prefilterdp",
 				"workflow": {
@@ -625,7 +625,7 @@
 				            "name": "A",
 				            "aggregateString": "lastValue",
 				            "fieldName": "exhaustairdamperstatus",
-				            "moduleName": "fahureading",
+				            "moduleName": "ahureading",
 				            "criteria": {
 				              "pattern": "(1)",
 				              "conditions": {
@@ -659,24 +659,24 @@
 	},
 	"7":  {
 		"fdd_rule": {
-			"name":"FAHU Bag Filter clogged",
-			"description": "FAHU Bag Filter clogged",
-			"problem": "As the outside air contains lot of dust and other pollution particles, the filter being the first line of defence for the FAHU, gets the maximum dirt/debris buildup. ",
+			"name":"AHU Bag Filter clogged",
+			"description": "AHU Bag Filter clogged",
+			"problem": "As the outside air contains lot of dust and other pollution particles, the filter being the first line of defence for the AHU, gets the maximum dirt/debris buildup. ",
 			"possible_causes": "Excessive Dust in ambient Air",
-			"moduleName": "fahureading",
-			"category": "FAHU",
+			"moduleName": "ahureading",
+			"category": "AHU",
 			"severity": "Major",
 			"threshold_metric": "bagfilterdp",
 			"threshold_metric_display": "Bag Filter DP",
 			"possible_solution": "Dirty/Clogged air filters lead to excessive air pressure drop resulting in reduced airflow, increased energy consumption by the fan and depositing dirt/debris on cooling coil, ducts etc.",
 			"ASSET_SELECTION_CRITERIA": {
-			 	"categoryType": "FAHU",
+			 	"categoryType": "AHU",
 			 	"includeResource": "${includeResource}",
 			 	"excludeResource": "${excludeResource}"
 			},
 			"preRequsite": {
 				"action": "PreRequsite",
-				"moduleName": "fahureading",
+				"moduleName": "ahureading",
 				"threshold_metric": "runstatus",
 				"thresholdType": 1,
 				"operatorId": 9,
@@ -688,7 +688,7 @@
 				            "name": "a",
 				            "aggregateString": "lastValue",
 				            "fieldName": "runstatus",
-				            "moduleName": "fahureading",
+				            "moduleName": "ahureading",
 				            "criteria": {
 				              "pattern": "(1)",
 				              "conditions": {
@@ -715,7 +715,7 @@
 				"condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
 				"for": "${interval}",
 				"action": "TRIGGER_ALARM",
-				"moduleName": "fahureading",
+				"moduleName": "ahureading",
 				"thresholdType": 5,
 				"threshold_metric": "bagfilterdp",
 				"workflow": {
@@ -724,7 +724,7 @@
 				            "name": "D",
 				            "aggregateString": "lastValue",
 				            "fieldName": "bagfilterdp",
-				            "moduleName": "fahureading",
+				            "moduleName": "ahureading",
 				            "criteria": {
 				              "pattern": "(1)",
 				              "conditions": {
@@ -762,20 +762,20 @@
 			  "description": "Enthalpy Heat Recovery Wheel wasting energy (AUTO mode)",
 			  "problem": "Enthalpy Heat recovery wheel running even when the outside air temperature is lower than the return air temperature and no pre-cooling is required. ",
 			  "possible_causes": "Faulty run of Enthalpy Heat Recovery Wheel may disturb the overall thermal balance of the system and can also lead to increased energy usage (through increased cooling demand).",
-			  "moduleName": "fahureading",
-			  "category": "FAHU",
+			  "moduleName": "ahureading",
+			  "category": "AHU",
 			  "severity": "Major",
 			  "threshold_metric": "returnairtemperature",
 			  "threshold_metric_display": "Return Air Temperature",
 			  "possible_solution": "This fault/alarm may trigger due to miscalibration of temperature and/or humidity sensors.",
 			  "ASSET_SELECTION_CRITERIA": {
-			    "categoryType": "FAHU",
+			    "categoryType": "AHU",
 			    "includeResource": "${includeResource}",
 			    "excludeResource": "${excludeResource}"
 			  },
 			  "preRequsite": {
 			    "action": "PreRequsite",
-			    "moduleName": "fahureading",
+			    "moduleName": "ahureading",
 			    "threshold_metric": "enthalpyheatwheelautomanualstatus",
 			    "thresholdType": 1,
 			    "operatorId": 9,
@@ -787,7 +787,7 @@
 			          "name": "a",
 			          "aggregateString": "lastValue",
 			          "fieldName": "enthalpyheatwheelautomanualstatus",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "aggregateCondition": [],
 			          "criteria": {
 			            "pattern": "(1)",
@@ -822,7 +822,7 @@
 			          "name": "A",
 			          "aggregateString": "lastValue",
 			          "fieldName": "supplyfanairflowstatus",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "criteria": {
 			            "pattern": "(1)",
 			            "conditions": {
@@ -847,7 +847,7 @@
 			          "name": "C",
 			          "aggregateString": "lastValue",
 			          "fieldName": "returnairtemperature",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "criteria": {
 			            "pattern": "(1)",
 			            "conditions": {
@@ -868,7 +868,7 @@
 			          "name": "D",
 			          "aggregateString": "lastValue",
 			          "fieldName": "outsideairtemperature",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "criteria": {
 			            "pattern": "(1)",
 			            "conditions": {
@@ -893,7 +893,7 @@
 			          "name": "G",
 			          "aggregateString": "lastValue",
 			          "fieldName": "enthalpyheatwheelcommand",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "criteria": {
 			            "pattern": "(1)",
 			            "conditions": {
@@ -918,7 +918,7 @@
 			          "name": "I",
 			          "aggregateString": "lastValue",
 			          "fieldName": "enthalpyheatwheelrunstatus",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "criteria": {
 			            "pattern": "(1)",
 			            "conditions": {
@@ -958,20 +958,20 @@
 			  "description": "Enthalpy Heat Recovery Wheel wasting energy (Manual mode)",
 			  "problem": "Enthalpy Heat recovery wheel running even when the outside air temperature is lower than the return air temperature and no pre-cooling is required. ",
 			  "possible_causes": "Faulty run of Enthalpy Heat Recovery Wheel may disturb the overall thermal balance of the system and can also lead to increased energy usage (through increased cooling demand).",
-			  "moduleName": "fahureading",
-			  "category": "FAHU",
+			  "moduleName": "ahureading",
+			  "category": "AHU",
 			  "severity": "Major",
 			  "threshold_metric": "returnairtemperature",
 			  "threshold_metric_display": "Return Air Temperature",
 			  "possible_solution": "This fault/alarm may trigger due to miscalibration of temperature and/or humidity sensors.",
 			  "ASSET_SELECTION_CRITERIA": {
-			    "categoryType": "FAHU",
+			    "categoryType": "AHU",
 			    "includeResource": "${includeResource}",
 			    "excludeResource": "${excludeResource}"
 			  },
 			  "preRequsite": {
 			    "action": "PreRequsite",
-			    "moduleName": "fahureading",
+			    "moduleName": "ahureading",
 			    "threshold_metric": "enthalpyheatwheelautomanualstatus",
 			    "thresholdType": 1,
 			    "operatorId": 9,
@@ -983,7 +983,7 @@
 			          "name": "a",
 			          "aggregateString": "lastValue",
 			          "fieldName": "enthalpyheatwheelautomanualstatus",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "aggregateCondition": [],
 			          "criteria": {
 			            "pattern": "(1)",
@@ -1018,7 +1018,7 @@
 			          "name": "A",
 			          "aggregateString": "lastValue",
 			          "fieldName": "supplyfanairflowstatus",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "criteria": {
 			            "pattern": "(1)",
 			            "conditions": {
@@ -1043,7 +1043,7 @@
 			          "name": "C",
 			          "aggregateString": "lastValue",
 			          "fieldName": "returnairtemperature",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "criteria": {
 			            "pattern": "(1)",
 			            "conditions": {
@@ -1064,7 +1064,7 @@
 			          "name": "D",
 			          "aggregateString": "lastValue",
 			          "fieldName": "outsideairtemperature",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "criteria": {
 			            "pattern": "(1)",
 			            "conditions": {
@@ -1089,7 +1089,7 @@
 			          "name": "G",
 			          "aggregateString": "lastValue",
 			          "fieldName": "enthalpyheatwheelcommand",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "criteria": {
 			            "pattern": "(1)",
 			            "conditions": {
@@ -1114,7 +1114,7 @@
 			          "name": "I",
 			          "aggregateString": "lastValue",
 			          "fieldName": "enthalpyheatwheelrunstatus",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "criteria": {
 			            "pattern": "(1)",
 			            "conditions": {
@@ -1154,20 +1154,20 @@
 			  "description": "Sensible Heat Recovery Wheel wasting energy (AUTO mode)",
 			  "problem": "Sensible Heat recovery wheel running even when the outside air temperature is lower than the return air temperature and no pre-cooling is required. ",
 			  "possible_causes": "Faulty run of Sensible Heat Recovery Wheel may disturb the overall thermal balance of the system and can also lead to increased energy usage (through increased cooling demand).",
-			  "moduleName": "fahureading",
-			  "category": "FAHU",
+			  "moduleName": "ahureading",
+			  "category": "AHU",
 			  "severity": "Major",
 			  "threshold_metric": "returnairtemperature",
 			  "threshold_metric_display": "Return Air Temperature",
 			  "possible_solution": "This fault/alarm may trigger due to miscalibration of temperature and/or humidity sensors.",
 			  "ASSET_SELECTION_CRITERIA": {
-			    "categoryType": "FAHU",
+			    "categoryType": "AHU",
 			    "includeResource": "${includeResource}",
 			    "excludeResource": "${excludeResource}"
 			  },
 			  "preRequsite": {
 			    "action": "PreRequsite",
-			    "moduleName": "fahureading",
+			    "moduleName": "ahureading",
 			    "threshold_metric": "sensibleheatwheelautomanualstatus",
 			    "thresholdType": 1,
 			    "operatorId": 9,
@@ -1179,7 +1179,7 @@
 			          "name": "a",
 			          "aggregateString": "lastValue",
 			          "fieldName": "sensibleheatwheelautomanualstatus",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "aggregateCondition": [],
 			          "criteria": {
 			            "pattern": "(1)",
@@ -1214,7 +1214,7 @@
 			          "name": "A",
 			          "aggregateString": "lastValue",
 			          "fieldName": "supplyfanairflowstatus",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "criteria": {
 			            "pattern": "(1)",
 			            "conditions": {
@@ -1239,7 +1239,7 @@
 			          "name": "C",
 			          "aggregateString": "lastValue",
 			          "fieldName": "returnairtemperature",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "criteria": {
 			            "pattern": "(1)",
 			            "conditions": {
@@ -1260,7 +1260,7 @@
 			          "name": "D",
 			          "aggregateString": "lastValue",
 			          "fieldName": "outsideairtemperature",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "criteria": {
 			            "pattern": "(1)",
 			            "conditions": {
@@ -1285,7 +1285,7 @@
 			          "name": "G",
 			          "aggregateString": "lastValue",
 			          "fieldName": "sensibleheatwheelcommand",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "criteria": {
 			            "pattern": "(1)",
 			            "conditions": {
@@ -1310,7 +1310,7 @@
 			          "name": "I",
 			          "aggregateString": "lastValue",
 			          "fieldName": "sensibleheatwheelrunstatus",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "criteria": {
 			            "pattern": "(1)",
 			            "conditions": {
@@ -1350,20 +1350,20 @@
 			  "description": "Sensible Heat Recovery Wheel wasting energy (Manual mode)",
 			  "problem": "Sensible Heat recovery wheel running even when the outside air temperature is lower than the return air temperature and no pre-cooling is required. ",
 			  "possible_causes": "Faulty run of Sensible Heat Recovery Wheel may disturb the overall thermal balance of the system and can also lead to increased energy usage (through increased cooling demand).",
-			  "moduleName": "fahureading",
-			  "category": "FAHU",
+			  "moduleName": "ahureading",
+			  "category": "AHU",
 			  "severity": "Major",
 			  "threshold_metric": "returnairtemperature",
 			  "threshold_metric_display": "Return Air Temperature",
 			  "possible_solution": "This fault/alarm may trigger due to miscalibration of temperature and/or humidity sensors.",
 			  "ASSET_SELECTION_CRITERIA": {
-			    "categoryType": "FAHU",
+			    "categoryType": "AHU",
 			    "includeResource": "${includeResource}",
 			    "excludeResource": "${excludeResource}"
 			  },
 			  "preRequsite": {
 			    "action": "PreRequsite",
-			    "moduleName": "fahureading",
+			    "moduleName": "ahureading",
 			    "threshold_metric": "sensibleheatwheelautomanualstatus",
 			    "thresholdType": 1,
 			    "operatorId": 9,
@@ -1375,7 +1375,7 @@
 			          "name": "a",
 			          "aggregateString": "lastValue",
 			          "fieldName": "sensibleheatwheelautomanualstatus",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "aggregateCondition": [],
 			          "criteria": {
 			            "pattern": "(1)",
@@ -1410,7 +1410,7 @@
 			          "name": "A",
 			          "aggregateString": "lastValue",
 			          "fieldName": "supplyfanairflowstatus",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "criteria": {
 			            "pattern": "(1)",
 			            "conditions": {
@@ -1435,7 +1435,7 @@
 			          "name": "C",
 			          "aggregateString": "lastValue",
 			          "fieldName": "returnairtemperature",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "criteria": {
 			            "pattern": "(1)",
 			            "conditions": {
@@ -1456,7 +1456,7 @@
 			          "name": "D",
 			          "aggregateString": "lastValue",
 			          "fieldName": "outsideairtemperature",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "criteria": {
 			            "pattern": "(1)",
 			            "conditions": {
@@ -1481,7 +1481,7 @@
 			          "name": "G",
 			          "aggregateString": "lastValue",
 			          "fieldName": "sensibleheatwheelcommand",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "criteria": {
 			            "pattern": "(1)",
 			            "conditions": {
@@ -1506,7 +1506,7 @@
 			          "name": "I",
 			          "aggregateString": "lastValue",
 			          "fieldName": "sensibleheatwheelrunstatus",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "criteria": {
 			            "pattern": "(1)",
 			            "conditions": {
@@ -1546,20 +1546,20 @@
 			  "description": "Enthalpy Heat Recovery wheel fail ",
 			  "problem": "The enthalpy heat recovery wheel failed to start when commanded ON due to mechanical issues.",
 			  "possible_causes": "",
-			  "moduleName": "fahureading",
-			  "category": "FAHU",
+			  "moduleName": "ahureading",
+			  "category": "AHU",
 			  "severity": "Major",
 			  "threshold_metric": "enthalpyheatwheelrunstatus",
 			  "threshold_metric_display": "Enthalpy Heatwheel Run Status",
 			  "possible_solution": "",
 			  "ASSET_SELECTION_CRITERIA": {
-			    "categoryType": "FAHU",
+			    "categoryType": "AHU",
 			    "includeResource": "${includeResource}",
 			    "excludeResource": "${excludeResource}"
 			  },
 			  "preRequsite": {
 			    "action": "PreRequsite",
-			    "moduleName": "fahureading",
+			    "moduleName": "ahureading",
 			    "threshold_metric": "supplyfanairflowstatus",
 			    "thresholdType": 1,
 			    "operatorId": 9,
@@ -1571,7 +1571,7 @@
 			          "name": "a",
 			          "aggregateString": "lastValue",
 			          "fieldName": "enthalpyheatwheelautomanualstatus",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "aggregateCondition": [],
 			          "criteria": {
 			            "pattern": "(1)",
@@ -1606,7 +1606,7 @@
 			          "name": "A",
 			          "aggregateString": "lastValue",
 			          "fieldName": "enthalpyheatwheelcommand",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "criteria": {
 			            "pattern": "(1)",
 			            "conditions": {
@@ -1631,7 +1631,7 @@
 			          "name": "C",
 			          "aggregateString": "lastValue",
 			          "fieldName": "enthalpyheatwheelrunstatus",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "criteria": {
 			            "pattern": "(1)",
 			            "conditions": {
@@ -1671,20 +1671,20 @@
 			  "description": "Sensible Heat Recovery wheel fail ",
 			  "problem": "The Sensible heat recovery wheel failed to start when commanded ON due to mechanical issues.",
 			  "possible_causes": "",
-			  "moduleName": "fahureading",
-			  "category": "FAHU",
+			  "moduleName": "ahureading",
+			  "category": "AHU",
 			  "severity": "Major",
 			  "threshold_metric": "sensibleheatwheelrunstatus",
 			  "threshold_metric_display": "Sensible Heatwheel Run Status",
 			  "possible_solution": "",
 			  "ASSET_SELECTION_CRITERIA": {
-			    "categoryType": "FAHU",
+			    "categoryType": "AHU",
 			    "includeResource": "${includeResource}",
 			    "excludeResource": "${excludeResource}"
 			  },
 			  "preRequsite": {
 			    "action": "PreRequsite",
-			    "moduleName": "fahureading",
+			    "moduleName": "ahureading",
 			    "threshold_metric": "supplyfanairflowstatus",
 			    "thresholdType": 1,
 			    "operatorId": 9,
@@ -1696,7 +1696,7 @@
 			          "name": "a",
 			          "aggregateString": "lastValue",
 			          "fieldName": "sensibleheatwheelautomanualstatus",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "aggregateCondition": [],
 			          "criteria": {
 			            "pattern": "(1)",
@@ -1731,7 +1731,7 @@
 			          "name": "A",
 			          "aggregateString": "lastValue",
 			          "fieldName": "sensibleheatwheelcommand",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "criteria": {
 			            "pattern": "(1)",
 			            "conditions": {
@@ -1756,7 +1756,7 @@
 			          "name": "C",
 			          "aggregateString": "lastValue",
 			          "fieldName": "sensibleheatwheelrunstatus",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "criteria": {
 			            "pattern": "(1)",
 			            "conditions": {
@@ -1792,24 +1792,24 @@
 	},
 	"14" :{
 		"fdd_rule": {
-			  "name": "FAHU Cooling coil Actuator not opening based on Temperature Setpoint",
-			  "description": "FAHU Cooling coil Actuator not opening based on Temperature Setpoint",
+			  "name": "AHU Cooling coil Actuator not opening based on Temperature Setpoint",
+			  "description": "AHU Cooling coil Actuator not opening based on Temperature Setpoint",
 			  "problem": "Cooling Coil Valve is not following the command or feedback sensor error.",
 			  "possible_causes": "This may happen if the cooling valve actuator feedback is different from the command due to physical issues (dirt or debris accumulation restriciting the actuator movement) or sensor/signal recieving issues.",
-			  "moduleName": "fahureading",
-			  "category": "FAHU",
+			  "moduleName": "ahureading",
+			  "category": "AHU",
 			  "severity": "Major",
 			  "threshold_metric": "supplyairtemperature",
 			  "threshold_metric_display": "Supply Air Temperature ",
 			  "possible_solution": "The cooling coil may be opening more than desired or not opening enough as commanded due to which there may be overcooling or undercooling issues.",
 			  "ASSET_SELECTION_CRITERIA": {
-			    "categoryType": "FAHU",
+			    "categoryType": "AHU",
 			    "includeResource": "${includeResource}",
 			    "excludeResource": "${excludeResource}"
 			  },
 			  "preRequsite": {
 			    "action": "PreRequsite",
-			    "moduleName": "fahureading",
+			    "moduleName": "ahureading",
 			    "threshold_metric": "coolingcoilvalvecommand",
 			    "thresholdType": 1,
 			    "operatorId": 9,
@@ -1821,7 +1821,7 @@
 			          "name": "a",
 			          "aggregateString": "lastValue",
 			          "fieldName": "coolingcoilvalvecommand",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "aggregateCondition": [],
 			          "criteria": {
 			            "pattern": "(1)",
@@ -1856,7 +1856,7 @@
 			          "name": "A",
 			          "aggregateString": "lastValue",
 			          "fieldName": "coolingcoilvalvefeedback",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "criteria": {
 			            "pattern": "(1)",
 			            "conditions": {
@@ -1881,7 +1881,7 @@
 			          "name": "C",
 			          "aggregateString": "lastValue",
 			          "fieldName": "supplyairtemperature",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "criteria": {
 			            "pattern": "(1)",
 			            "conditions": {
@@ -1902,7 +1902,7 @@
 			          "name": "D",
 			          "aggregateString": "lastValue",
 			          "fieldName": "supplyairtemperaturesetpoint",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "criteria": {
 			            "pattern": "(1)",
 			            "conditions": {
@@ -1935,24 +1935,24 @@
 		},
 		"15": {
 			"fdd_rule":	{
-			  "name": "FAHU Cooling coil Actuator not closing based on Temperature Setpoint",
-			  "description": "FAHU Cooling coil Actuator not closing based on Temperature Setpoint",
+			  "name": "AHU Cooling coil Actuator not closing based on Temperature Setpoint",
+			  "description": "AHU Cooling coil Actuator not closing based on Temperature Setpoint",
 			  "problem": "Cooling Coil Valve is not following the command or feedback sensor error.",
 			  "possible_causes": "This may happen if the cooling valve actuator feedback is different from the command due to physical issues (dirt or debris accumulation restriciting the actuator movement) or sensor/signal recieving issues.",
-			  "moduleName": "fahureading",
-			  "category": "FAHU",
+			  "moduleName": "ahureading",
+			  "category": "AHU",
 			  "severity": "Major",
 			  "threshold_metric": "supplyairtemperature",
 			  "threshold_metric_display": "Supply Air Temperature ",
 			  "possible_solution": "The cooling coil may be closing more than desired or not closing enough as commanded due to which there may be overcooling or undercooling issues.",
 			  "ASSET_SELECTION_CRITERIA": {
-			    "categoryType": "FAHU",
+			    "categoryType": "AHU",
 			    "includeResource": "${includeResource}",
 			    "excludeResource": "${excludeResource}"
 			  },
 			  "preRequsite": {
 			    "action": "PreRequsite",
-			    "moduleName": "fahureading",
+			    "moduleName": "ahureading",
 			    "threshold_metric": "coolingcoilvalvecommand",
 			    "thresholdType": 1,
 			    "operatorId": 9,
@@ -1964,7 +1964,7 @@
 			          "name": "a",
 			          "aggregateString": "lastValue",
 			          "fieldName": "coolingcoilvalvecommand",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "aggregateCondition": [],
 			          "criteria": {
 			            "pattern": "(1)",
@@ -1999,7 +1999,7 @@
 			          "name": "A",
 			          "aggregateString": "lastValue",
 			          "fieldName": "coolingcoilvalvefeedback",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "criteria": {
 			            "pattern": "(1)",
 			            "conditions": {
@@ -2024,7 +2024,7 @@
 			          "name": "C",
 			          "aggregateString": "lastValue",
 			          "fieldName": "supplyairtemperature",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "criteria": {
 			            "pattern": "(1)",
 			            "conditions": {
@@ -2044,7 +2044,7 @@
 			          "name": "D",
 			          "aggregateString": "lastValue",
 			          "fieldName": "supplyairtemperaturesetpoint",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "criteria": {
 			            "pattern": "(1)",
 			            "conditions": {
@@ -2075,24 +2075,24 @@
 		},
 		"16": {
 			"fdd_rule": {
-			  "name": "FAHU Cooling Coil Valve control issue",
-			  "description": "FAHU Cooling Coil Valve control issue",
+			  "name": "AHU Cooling Coil Valve control issue",
+			  "description": "AHU Cooling Coil Valve control issue",
 			  "problem": "Cooling Coil Valve Modulating when Supply Air Fan is commanded OFF",
 			  "possible_causes": "",
-			  "moduleName": "fahureading",
-			  "category": "FAHU",
+			  "moduleName": "ahureading",
+			  "category": "AHU",
 			  "severity": "Major",
 			  "threshold_metric": "coolingcoilvalvefeedback",
 			  "threshold_metric_display": "Cooling Coil Valve FeedBack  ",
 			  "possible_solution": "",
 			  "ASSET_SELECTION_CRITERIA": {
-			    "categoryType": "FAHU",
+			    "categoryType": "AHU",
 			    "includeResource": "${includeResource}",
 			    "excludeResource": "${excludeResource}"
 			  },
 			  "preRequsite": {
 			    "action": "PreRequsite",
-			    "moduleName": "fahureading",
+			    "moduleName": "ahureading",
 			    "threshold_metric": "supplyairfanautomanualstatus",
 			    "thresholdType": 1,
 			    "operatorId": 9,
@@ -2104,7 +2104,7 @@
 			          "name": "a",
 			          "aggregateString": "lastValue",
 			          "fieldName": "supplyairfanautomanualstatus",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "aggregateCondition": [],
 			          "criteria": {
 			            "pattern": "(1)",
@@ -2139,7 +2139,7 @@
 			          "name": "A",
 			          "aggregateString": "lastValue",
 			          "fieldName": "coolingcoilvalvefeedback",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "criteria": {
 			            "pattern": "(1)",
 			            "conditions": {
@@ -2179,20 +2179,20 @@
 				  "description": "Cooling Coil Clogged for Supply Air flow",
 				  "problem": "Cooling coil airflow pressure drop much higher than the threshold (Only a small fraction of airflow passes through) During the cooling process, condensate forms on the coil. The condensate makes it very easy for dirt and debris to stick to and clog up the coil's air passages. Additionally, coils are great places for mold development that can further obstruct airflow.",
 				  "possible_causes": "1. Reduced airflow due to dirt and debris blockages means reduced comfort for end user. 2. The blower must work harder and use more electricity to pull airflow through the blocked coil passages. 3. A dirty coil can contaminate supply ducts and reintroduce contaminants to spaces, including mold development and spores.",
-				  "moduleName": "fahureading",
-				  "category": "FAHU",
+				  "moduleName": "ahureading",
+				  "category": "AHU",
 				  "severity": "Major",
 				  "threshold_metric": "airflowcoildp",
 				  "threshold_metric_display": "AirFlow Coil Differinatial Pressure",
 				  "possible_solution": "1. Inspect the cooling coil for cleanliness and check any deposited particles and impurities.2. Wash and clean the cooling coil ",
 				  "ASSET_SELECTION_CRITERIA": {
-				    "categoryType": "FAHU",
+				    "categoryType": "AHU",
 				    "includeResource": "${includeResource}",
 				    "excludeResource": "${excludeResource}"
 				  },
 				  "preRequsite": {
 				    "action": "PreRequsite",
-				    "moduleName": "fahureading",
+				    "moduleName": "ahureading",
 				    "threshold_metric": "airflowcoildp",
 				    "thresholdType": 1,
 				    "operatorId": 9,
@@ -2204,7 +2204,7 @@
 				            "name": "a",
 				            "aggregateString": "lastValue",
 				            "fieldName": "airflowcoildp",
-				            "moduleName": "fahureading",
+				            "moduleName": "ahureading",
 				            "aggregateCondition": [],
 				            "criteria": {
 				              "pattern": "(1)",
@@ -2238,7 +2238,7 @@
 				          {
 				            "name": "a",
 				            "fieldName": "airflowcoildp",
-				            "moduleName": "fahureading",
+				            "moduleName": "ahureading",
 				            "criteria": {
 				              "pattern": "(1 and 2)",
 				              "conditions": {
@@ -2284,24 +2284,24 @@
 		},
 		"18": {
 			"fdd_rule": {
-				  "name": "FAHU Cooling coil chilled Water pressure too high",
-				  "description": "FAHU Cooling coil chilled Water pressure too high",
+				  "name": "AHU Cooling coil chilled Water pressure too high",
+				  "description": "AHU Cooling coil chilled Water pressure too high",
 				  "problem": "Mainly due to fouling in the chilled water tubes",
 				  "possible_causes": "",
-				  "moduleName": "fahureading",
-				  "category": "FAHU",
+				  "moduleName": "ahureading",
+				  "category": "AHU",
 				  "severity": "Major",
 				  "threshold_metric": "airflowcoildp",
 				  "threshold_metric_display": "AirFlow Coil Differinatial Pressure",
 				  "possible_solution": "",
 				  "ASSET_SELECTION_CRITERIA": {
-				    "categoryType": "FAHU",
+				    "categoryType": "AHU",
 				    "includeResource": "${includeResource}",
 				    "excludeResource": "${excludeResource}"
 				  },
 				  "preRequsite": {
 				    "action": "PreRequsite",
-				    "moduleName": "fahureading",
+				    "moduleName": "ahureading",
 				    "threshold_metric": "chilledwaterflowdp",
 				    "thresholdType": 1,
 				    "operatorId": 9,
@@ -2313,7 +2313,7 @@
 				            "name": "a",
 				            "aggregateString": "lastValue",
 				            "fieldName": "chilledwaterflowdp",
-				            "moduleName": "fahureading",
+				            "moduleName": "ahureading",
 				            "criteria": {
 				              "pattern": "(1)",
 				              "conditions": {
@@ -2346,7 +2346,7 @@
 				          {
 				            "name": "a",
 				            "fieldName": "chilledwaterflowdp",
-				            "moduleName": "fahureading",
+				            "moduleName": "ahureading",
 				            "criteria": {
 				              "pattern": "(1 and 2)",
 				              "conditions": {
@@ -2396,14 +2396,14 @@
 				  "description": "High Chilled water Delta T",
 				  "problem": "Chilled water delta T across cooling coil too high",
 				  "possible_causes": "High chilled water delta T indicates insufficient flow to the evaporator coil of the OHU which can cause cooling issues. ",
-				  "moduleName": "fahureading",
-				  "category": "FAHU",
+				  "moduleName": "ahureading",
+				  "category": "AHU",
 				  "severity": "Major",
 				  "threshold_metric": "returnairtemperature",
 				  "threshold_metric_display": "Return Air Temperature",
 				  "possible_solution": "",
 				  "ASSET_SELECTION_CRITERIA": {
-				    "categoryType": "FAHU",
+				    "categoryType": "AHU",
 				    "includeResource": "${includeResource}",
 				    "excludeResource": "${excludeResource}"
 				  },
@@ -2419,7 +2419,7 @@
 				          "name": "A",
 				          "aggregateString": "lastValue",
 				          "fieldName": "returnairtemperature",
-				          "moduleName": "fahureading",
+				          "moduleName": "ahureading",
 				          "criteria": {
 				            "pattern": "(1)",
 				            "conditions": {
@@ -2440,7 +2440,7 @@
 				          "name": "B",
 				          "aggregateString": "lastValue",
 				          "fieldName": "supplyairtemperature",
-				          "moduleName": "fahureading",
+				          "moduleName": "ahureading",
 				          "criteria": {
 				            "pattern": "(1)",
 				            "conditions": {
@@ -2481,14 +2481,14 @@
 				  "description": "Low Chilled water delta T",
 				  "problem": "Chilled water delta T across cooling coil too low",
 				  "possible_causes": "Low delta T indicates high CHW flow to coils per TR. This is a serious issue as this may be leading to energy wastage in secondary CHW pumps.",
-				  "moduleName": "fahureading",
-				  "category": "FAHU",
+				  "moduleName": "ahureading",
+				  "category": "AHU",
 				  "severity": "Major",
 				  "threshold_metric": "returnairtemperature",
 				  "threshold_metric_display": "Return Air Temperature",
 				  "possible_solution": "",
 				  "ASSET_SELECTION_CRITERIA": {
-				    "categoryType": "FAHU",
+				    "categoryType": "AHU",
 				    "includeResource": "${includeResource}",
 				    "excludeResource": "${excludeResource}"
 				  },
@@ -2504,7 +2504,7 @@
 				          "name": "A",
 				          "aggregateString": "lastValue",
 				          "fieldName": "returnairtemperature",
-				          "moduleName": "fahureading",
+				          "moduleName": "ahureading",
 				          "criteria": {
 				            "pattern": "(1)",
 				            "conditions": {
@@ -2525,7 +2525,7 @@
 				          "name": "B",
 				          "aggregateString": "lastValue",
 				          "fieldName": "supplyairtemperature",
-				          "moduleName": "fahureading",
+				          "moduleName": "ahureading",
 				          "criteria": {
 				            "pattern": "(1)",
 				            "conditions": {
@@ -2566,20 +2566,20 @@
 				  "description": "High Chilled Water Temperature",
 				  "problem": "May occur due to higher than usual cooling load demand in the spaces or due to malfunctioning of the cooling coil valve.",
 				  "possible_causes": "The required supply air temperature can't be achieved if the chilled water supply temperature is warmer than required.",
-				  "moduleName": "fahureading",
-				  "category": "FAHU",
+				  "moduleName": "ahureading",
+				  "category": "AHU",
 				  "severity": "Major",
 				  "threshold_metric": "chilledwaterenteringtemperature",
 				  "threshold_metric_display": "Chilled Water Entering Temperature",
 				  "possible_solution": "",
 				  "ASSET_SELECTION_CRITERIA": {
-				    "categoryType": "FAHU",
+				    "categoryType": "AHU",
 				    "includeResource": "${includeResource}",
 				    "excludeResource": "${excludeResource}"
 				  },
 				  "preRequsite": {
 				    "action": "PreRequsite",
-				    "moduleName": "fahureading",
+				    "moduleName": "ahureading",
 				    "threshold_metric": "supplyairfanautomanualstatus",
 				    "thresholdType": 1,
 				    "operatorId": 9,
@@ -2591,7 +2591,7 @@
 				          "name": "a",
 				          "aggregateString": "lastValue",
 				          "fieldName": "supplyairfanautomanualstatus",
-				          "moduleName": "fahureading",
+				          "moduleName": "ahureading",
 				          "criteria": {
 				            "pattern": "(1)",
 				            "conditions": {
@@ -2625,7 +2625,7 @@
 				          "name": "A",
 				          "aggregateString": "lastValue",
 				          "fieldName": "coolingcoilvalvefeedback",
-				          "moduleName": "fahureading",
+				          "moduleName": "ahureading",
 				          "criteria": {
 				            "pattern": "(1)",
 				            "conditions": {
@@ -2650,7 +2650,7 @@
 				          "name": "C",
 				          "aggregateString": "lastValue",
 				          "fieldName": "chilledwaterenteringtemperature",
-				          "moduleName": "fahureading",
+				          "moduleName": "ahureading",
 				          "criteria": {
 				            "pattern": "(1)",
 				            "conditions": {
@@ -2688,24 +2688,24 @@
 		},
 		"22": {
 			"fdd_rule": {
-				  "name": "FAHU Cooling coil Chilled Water Strainer needs cleaning",
-				  "description": "FAHU Cooling coil Chilled Water Strainer needs cleaning",
+				  "name": "AHU Cooling coil Chilled Water Strainer needs cleaning",
+				  "description": "AHU Cooling coil Chilled Water Strainer needs cleaning",
 				  "problem": "Chilled water strainer (wire mesh) clogged with debris (Chilled water flow reduced)",
 				  "possible_causes": "Clogging of strainer reduces the chilled water flow, which reduces the ability of the air handler to transfer heat. Hence, reducing the efficiency of the air handling unit.  The strainer removes the rust and mud from the chilled water system. With time, as the openings in the wire mesh are covered with debris, the strainer begins to offer more resistance to water flow. ",
-				  "moduleName": "fahureading",
-				  "category": "FAHU",
+				  "moduleName": "ahureading",
+				  "category": "AHU",
 				  "severity": "Major",
 				  "threshold_metric": "chilledwaterstrainerdp",
 				  "threshold_metric_display": "Chilled Water Strainer DP",
 				  "possible_solution": "",
 				  "ASSET_SELECTION_CRITERIA": {
-				    "categoryType": "FAHU",
+				    "categoryType": "AHU",
 				    "includeResource": "${includeResource}",
 				    "excludeResource": "${excludeResource}"
 				  },
 				  "preRequsite": {
 				    "action": "PreRequsite",
-				    "moduleName": "fahureading",
+				    "moduleName": "ahureading",
 				    "threshold_metric": "chilledwaterstrainerdp",
 				    "thresholdType": 1,
 				    "operatorId": 9,
@@ -2717,7 +2717,7 @@
 				          "name": "a",
 				          "aggregateString": "lastValue",
 				          "fieldName": "chilledwaterflowdp",
-				          "moduleName": "fahureading",
+				          "moduleName": "ahureading",
 				          "criteria": {
 				            "pattern": "(1)",
 				            "conditions": {
@@ -2750,7 +2750,7 @@
 				        {
 				          "name": "a",
 				          "fieldName": "chilledwaterflowdp",
-				          "moduleName": "fahureading",
+				          "moduleName": "ahureading",
 				          "criteria": {
 				            "pattern": "(1 and 2)",
 				            "conditions": {
@@ -2798,7 +2798,7 @@
 			"fdd_rule": {
 				  "severity": "Critical",
 				  "possible_causes": "-Due to improper run of Enthalpy wheel\n-Cooling coil actuator is open when not required",
-				  "moduleName": "fahureading",
+				  "moduleName": "ahureading",
 				  "description": "Supply air temperature is less than supply air temperature set-point by 95% for at least one hour.",
 				  "threshold_metric": "supplyairdamperstatus",
 				  "possible_solution": "Check for valve logic operation",
@@ -2822,7 +2822,7 @@
 				            }
 				          },
 				          "name": "A",
-				          "moduleName": "fahureading",
+				          "moduleName": "ahureading",
 				          "aggregateString": "lastValue"
 				        },
 				        {
@@ -2843,7 +2843,7 @@
 				            }
 				          },
 				          "name": "D",
-				          "moduleName": "fahureading",
+				          "moduleName": "ahureading",
 				          "aggregateString": "lastValue"
 				        }
 				      ],
@@ -2882,7 +2882,7 @@
 				            }
 				          },
 				          "name": "a",
-				          "moduleName": "fahureading",
+				          "moduleName": "ahureading",
 				          "aggregateString": "lastValue"
 				        }
 				      ],
@@ -2895,20 +2895,20 @@
 				    },
 				    "percentage": "1",
 				    "condition_statement": "When supply air fan is in auto mode ",
-				    "moduleName": "fahureading",
+				    "moduleName": "ahureading",
 				    "action": "PreRequsite",
 				    "threshold_metric": "runstatus",
 				    "operatorId": 9,
 				    "thresholdType": 1
 				  },
 				  "ASSET_SELECTION_CRITERIA": {
-				    "categoryType": "FAHU",
+				    "categoryType": "AHU",
 				    "includeResource": "${includeResource}",
 				    "excludeResource": "${excludeResource}"
 				  },
-				  "name": "FAHU Over Cooling",
+				  "name": "AHU Over Cooling",
 				  "threshold_metric_display": "Supply Air Damper Status",
-				  "category": "FAHU",
+				  "category": "AHU",
 				  "placeHolder": {
 				    "1": {
 				      "default_value": "All Asset Selected",
@@ -2955,7 +2955,7 @@
 			"fdd_rule": {
 				  "severity": "Critical",
 				  "possible_causes": "-Faulty sensor\n-Check for control logic",
-				  "moduleName": "fahureading",
+				  "moduleName": "ahureading",
 				  "description": "Relative Higher Humidity",
 				  "threshold_metric": "supplyairhumidity",
 				  "possible_solution": "Replace if faulty sensor",
@@ -2979,7 +2979,7 @@
 				            }
 				          },
 				          "name": "A",
-				          "moduleName": "fahureading",
+				          "moduleName": "ahureading",
 				          "aggregateString": "lastValue"
 				        },
 				        {
@@ -3000,7 +3000,7 @@
 				            }
 				          },
 				          "name": "D",
-				          "moduleName": "fahureading",
+				          "moduleName": "ahureading",
 				          "aggregateString": "lastValue"
 				        }
 				      ],
@@ -3037,7 +3037,7 @@
 				            }
 				          },
 				          "name": "a",
-				          "moduleName": "fahureading",
+				          "moduleName": "ahureading",
 				          "aggregateString": "lastValue"
 				        }
 				      ],
@@ -3050,20 +3050,20 @@
 				    },
 				    "percentage": "1",
 				    "condition_statement": "When Supply Fan Airflow Status is On ",
-				    "moduleName": "fahureading",
+				    "moduleName": "ahureading",
 				    "action": "PreRequsite",
 				    "threshold_metric": "supplyfanairflowstatus",
 				    "operatorId": 9,
 				    "thresholdType": 1
 				  },
 				  "ASSET_SELECTION_CRITERIA": {
-				    "categoryType": "FAHU",
+				    "categoryType": "AHU",
 				    "includeResource": "${includeResource}",
 				    "excludeResource": "${excludeResource}"
 				  },
-				  "name": "FFAHU Relative Higher Humidity",
+				  "name": "FAHU Relative Higher Humidity",
 				  "threshold_metric_display": "Supply Humidity",
-				  "category": "FAHU",
+				  "category": "AHU",
 				  "placeHolder": {
 				    "1": {
 				      "default_value": "All Asset Selected",
@@ -3090,7 +3090,7 @@
 			"fdd_rule": {
 			  "severity": "Critical",
 			  "possible_causes": "-Faulty sensor\n-Check for control logic",
-			  "moduleName": "fahureading",
+			  "moduleName": "ahureading",
 			  "description": "Relative Lower Humidity",
 			  "threshold_metric": "supplyairhumidity",
 			  "possible_solution": "Replace if faulty sensor",
@@ -3114,7 +3114,7 @@
 			            }
 			          },
 			          "name": "A",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "aggregateString": "lastValue"
 			        },
 			        {
@@ -3135,7 +3135,7 @@
 			            }
 			          },
 			          "name": "D",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "aggregateString": "lastValue"
 			        }
 			      ],
@@ -3172,7 +3172,7 @@
 			            }
 			          },
 			          "name": "a",
-			          "moduleName": "fahureading",
+			          "moduleName": "ahureading",
 			          "aggregateString": "lastValue"
 			        }
 			      ],
@@ -3185,20 +3185,20 @@
 			    },
 			    "percentage": "1",
 			    "condition_statement": "When Supply Fan Airflow Status is On ",
-			    "moduleName": "fahureading",
+			    "moduleName": "ahureading",
 			    "action": "PreRequsite",
 			    "threshold_metric": "supplyfanairflowstatus",
 			    "operatorId": 9,
 			    "thresholdType": 1
 			  },
 			  "ASSET_SELECTION_CRITERIA": {
-			    "categoryType": "FAHU",
+			    "categoryType": "AHU",
 			    "includeResource": "${includeResource}",
 			    "excludeResource": "${excludeResource}"
 			  },
-			  "name": "FAHU Relative Lower Humidity",
+			  "name": "AHU Relative Lower Humidity",
 			  "threshold_metric_display": "Supply Humidity",
-			  "category": "FAHU",
+			  "category": "AHU",
 			  "placeHolder": {
 			    "1": {
 			      "default_value": "All Asset Selected",
