@@ -3128,6 +3128,7 @@ public class TransactionChainFactory {
 
 		public static Chain getUpdateMVProjectMetaChain() {
 			Chain c = getDefaultChain();
+			c.addCommand(new ValidateMVProjectCommand());
 			c.addCommand(new UpdateMVProjectCommand());
 			return c;
 		}

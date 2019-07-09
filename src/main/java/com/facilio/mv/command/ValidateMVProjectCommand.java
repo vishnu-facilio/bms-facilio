@@ -18,6 +18,12 @@ public class ValidateMVProjectCommand implements Command {
 
 		MVProjectWrapper mvProjectWrapper = (MVProjectWrapper) context.get(MVUtil.MV_PROJECT_WRAPPER);
 		
+		MVProjectWrapper mvProjectWrapperOld = (MVProjectWrapper) context.get(MVUtil.MV_PROJECT_WRAPPER_OLD);
+		
+		if(mvProjectWrapperOld != null && mvProjectWrapperOld.getMvProject().getIsLocked()) {
+			throw new IllegalArgumentException("Cannot Edit Project Now, Formula Calculation In Progress");
+		}
+		
 		MVProjectContext mvProject = mvProjectWrapper.getMvProject();
 		
 		List<MVBaseline> baseLines = mvProjectWrapper.getBaselines();
