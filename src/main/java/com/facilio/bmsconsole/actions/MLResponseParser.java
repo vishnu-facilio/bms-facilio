@@ -1,10 +1,16 @@
 package com.facilio.bmsconsole.actions;
 
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
+import org.apache.commons.io.IOUtils;
 import org.apache.log4j.LogManager;
+import org.apache.struts2.ServletActionContext;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.MLContext;
@@ -22,6 +28,14 @@ public class MLResponseParser extends ActionSupport
 		try
 		{
 			log.info("ML ID and Result are "+mlID+":::"+result);
+			HttpServletRequest request = ServletActionContext.getRequest();
+			log.info("Request details are "+request.getParameterMap().toString());
+			log.info("Request body "+request.getContentType()+"::"+request.getContentLength());
+			StringWriter writer = new StringWriter();
+			IOUtils.copy(request.getInputStream(), writer, StandardCharsets.UTF_8);
+			String theString = writer.toString();
+			log.info("Input Stream data is "+theString);
+			
 			List<MLContext> mlContextList = MLUtil.getMLContext(mlID);
 			if(mlContextList.isEmpty())
 			{
