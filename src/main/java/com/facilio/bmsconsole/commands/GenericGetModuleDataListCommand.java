@@ -120,7 +120,7 @@ public class GenericGetModuleDataListCommand implements Command {
 		if (fetchCount) {
 			if (CollectionUtils.isNotEmpty(records)) {
 				String countFieldName = fields.get(0).getName();
-				context.put(FacilioConstants.ContextNames.WORK_ORDER_COUNT, records.get(0).getData().get(countFieldName));
+				context.put(FacilioConstants.ContextNames.RECORD_COUNT, records.get(0).getData().get(countFieldName));
 			}
 		}
 		else {

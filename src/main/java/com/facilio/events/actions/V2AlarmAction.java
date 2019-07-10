@@ -79,7 +79,7 @@ public class V2AlarmAction extends FacilioAction {
 		alarmListChain.execute(context);
 		
 		if (isFetchCount()) {
-			setResult(ContextNames.COUNT, context.get(ContextNames.COUNT));
+			setResult(ContextNames.COUNT, context.get(ContextNames.RECORD_COUNT));
 		}
 		else {
 			setResult(ContextNames.ALARM_LIST, context.get(ContextNames.RECORD_LIST));
