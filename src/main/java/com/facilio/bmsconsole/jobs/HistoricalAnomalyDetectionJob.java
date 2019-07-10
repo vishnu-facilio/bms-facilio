@@ -111,6 +111,7 @@ public class HistoricalAnomalyDetectionJob extends FacilioJob
 	
 	private void buildGAMModel(long endTime) throws Exception
 	{
+		LOGGER.info(" Debug Start time \t"+endTime+" and end time"+(endTime-7776000000L));
 		for(long meterID:meterList)
 		{
 			Hashtable<Long,Hashtable<String,SortedMap<Long,Object>>> mlVariablesDataMap = new Hashtable<Long,Hashtable<String,SortedMap<Long,Object>>>(5);		
