@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
 
 public class TemplateAPI {
 	private static Logger log = LogManager.getLogger(TemplateAPI.class.getName());
-	private static final String[] RULE_CATEGORY = new String[] {"Ahu", "Fahu", "Ohu"};
+	private static final String[] RULE_CATEGORY = new String[] {"Ahu", "Fahu", "Ohu", "Fcu"};
 	private static final String DEFAULT_TEMPLATES_FILE_PATH = "conf/templates/defaultTemplates";
 	private static final String[] LANG = new String[]{"en"};
 	private static final Map<DefaultTemplateType, Map<String, Map<Integer,DefaultTemplate>>> DEFAULT_TEMPLATES = Collections.unmodifiableMap(loadDefaultTemplates());
@@ -78,8 +78,10 @@ public class TemplateAPI {
 						if (defaultTemplateType == DefaultTemplateType.RULE) {
 						Map<Integer, DefaultTemplate> templates = new HashMap<>();
 						for (String category: RULE_CATEGORY) {
+							
 							String catePath = path + category + '_' +lang;
-							templates.putAll(parseTemplateObject(catePath, classLoader, defaultTemplateType, defaultWorkflows));
+							System.out.println("catePath" + catePath);
+							templates.putAll(parseTemplateObject(catePath, classLoader, defaultTemplateType, null));
 						}
 						defaultTemplates.put(lang, templates);
 					 } else {
@@ -111,16 +113,18 @@ public class TemplateAPI {
 			defaultTemplate.setJson(template);
 			defaultTemplate.setPlaceholder(getPlaceholders(defaultTemplate));
 			defaultTemplate.setDefaultTemplateType(defaultTemplateType);
-			WorkflowContext defaultWorkflow = defaultWorkflows.get(templateId);
-			if (defaultWorkflow != null) {
-				defaultWorkflow = WorkflowUtil.getWorkflowContextFromString(defaultWorkflow.getWorkflowString());
-				if (!defaultTemplate.isFtl()) { //Temp fix
-					WorkflowUtil.parseExpression(defaultWorkflow);
+			if (defaultWorkflows != null) {
+				WorkflowContext defaultWorkflow = defaultWorkflows.get(templateId);
+				if (defaultWorkflow != null) {
+					defaultWorkflow = WorkflowUtil.getWorkflowContextFromString(defaultWorkflow.getWorkflowString());
+					if (!defaultTemplate.isFtl()) { //Temp fix
+						WorkflowUtil.parseExpression(defaultWorkflow);
+					}
+					defaultTemplate.setWorkflow(defaultWorkflow);
 				}
-				defaultTemplate.setWorkflow(defaultWorkflow);
-			}
-			else {
-				throw new IllegalArgumentException("Workflow cannot be null for Default Template : "+templateId);
+				else {
+					 throw new IllegalArgumentException("Workflow cannot be null for Default Template : "+templateId);
+				}
 			}
 			templates.put(templateId, defaultTemplate);
 		}

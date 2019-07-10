@@ -1,0 +1,707 @@
+{
+"296": {
+		"fdd_rule": {
+			"name": "FCU Valve Leakage",
+			"description": "Room temperature is continuously lower than the set point even when the supply valve is closed",
+			"problem": "",
+			"possible_causes": "",
+			"possible_solution": "",
+			"severity": "Minor",
+			"category": "FCU",
+			"moduleName": "fcureading",
+			"threshold_metric": "roomTemperature",
+			"threshold_metric_display": "Room Temperature",
+			"ASSET_SELECTION_CRITERIA": {
+				"categoryType": "FCU",
+				"includeResource": "${includeResource}",
+				"excludeResource": "${excludeResource}"
+			},
+			"preRequsite": null,
+			"alarmCondition": {
+				"condition": "",
+				"for": "${interval}",
+				"action": "TRIGGER_ALARM",
+				"moduleName": "fcureading",
+				"thresholdType": "5",
+				"threshold_metric": "roomTemperature",
+				"workflow": {
+					"expressions": [
+						{
+							"name": "A",
+							"aggregateString": "lastValue",
+							"fieldName": "roomTemperature",
+							"moduleName": "fcureading",
+							"criteria": {
+								"pattern": "(1)",
+								"conditions": {
+									"1": {
+										"fieldName": "parentId",
+										"sequence": "1",
+										"value": "${resourceId}"
+									}
+								}
+							},
+							"orderByFieldName": "ttime",
+							"sortBy": "desc",
+							"limit": "1"
+						},
+						{
+							"name": "B",
+							"aggregateString": "lastValue",
+							"fieldName": "setPoint",
+							"moduleName": "fcureading",
+							"criteria": {
+								"pattern": "(1)",
+								"conditions": {
+									"1": {
+										"fieldName": "parentId",
+										"sequence": "1",
+										"value": "${resourceId}"
+									}
+								}
+							},
+							"orderByFieldName": "ttime",
+							"sortBy": "desc",
+							"limit": "1"
+						},
+						{
+							"name": "C",
+							"aggregateString": "lastValue",
+							"fieldName": "fceValve",
+							"moduleName": "fcureading",
+							"criteria": {
+								"pattern": "(1)",
+								"conditions": {
+									"1": {
+										"fieldName": "parentId",
+										"sequence": "1",
+										"value": "${resourceId}"
+									}
+								}
+							},
+							"orderByFieldName": "ttime",
+							"sortBy": "desc",
+							"limit": "1"
+						},
+						{
+							"name": "D",
+							"aggregateString": "lastValue",
+							"fieldName": "status",
+							"moduleName": "status",
+							"criteria": {
+								"pattern": "(1)",
+								"conditions": {
+									"1": {
+										"fieldName": "parentId",
+										"sequence": "1",
+										"value": "${resourceId}"
+									}
+								}
+							},
+							"orderByFieldName": "ttime",
+							"sortBy": "desc",
+							"limit": "1"
+						}
+					],
+					"resultEvaluator": "(A<(0.9*B))&&(C>5)&&(D==1)",
+					"workflowUIMode": "3",
+					"parameters": [
+						{
+							"name": "resourceId",
+							"typeString": "Number"
+						}
+					]
+				}
+			},
+			"alarmClear": null,
+			"placeHolder": {
+				"1": {
+					"label": "Assets",
+					"uniqueId": "resource",
+					"default_value": "All Asset Selected",
+					"selection_criteria": {
+						"displayType": "ASSETCHOOSER"
+					},
+					"type": "default"
+				},
+				"2": {
+					"label": "Interval",
+					"uniqueId": "interval",
+					"default_value": "10",
+					"selection_criteria": {
+						"displayType": "DURATION"
+					},
+					"type": "rules"
+				}
+			}
+		}
+	},
+	"297": {
+		"fdd_rule": {
+			"name": "Low set point value for FCU",
+			"description": "Set point value is very low",
+			"problem": "",
+			"possible_causes": "",
+			"possible_solution": "",
+			"severity": "Minor",
+			"category": "FCU",
+			"moduleName": "fcureading",
+			"threshold_metric": "setPoint",
+			"threshold_metric_display": "Set Point",
+			"ASSET_SELECTION_CRITERIA": {
+				"categoryType": "FCU",
+				"includeResource": "${includeResource}",
+				"excludeResource": "${excludeResource}"
+			},
+			"preRequsite": null,
+			"alarmCondition": {
+				"condition": "",
+				"for": "${interval}",
+				"action": "TRIGGER_ALARM",
+				"moduleName": "fcureading",
+				"thresholdType": "1",
+				"threshold_metric": "setPoint",
+				"workflow": {
+					"expressions": [
+						{
+							"name": "a",
+							"aggregateString": "lastValue",
+							"fieldName": "setPoint",
+							"moduleName": "fcureading",
+							"criteria": {
+								"pattern": "(1)",
+								"conditions": {
+									"1": {
+										"fieldName": "parentId",
+										"sequence": "1",
+										"value": "${resourceId}"
+									}
+								}
+							}
+						}
+					],
+					"resultEvaluator": "a<20",
+					"workflowUIMode": "0",
+					"parameters": [
+						{
+							"name": "resourceId",
+							"typeString": "Number"
+						}
+					]
+				}
+			},
+			"alarmClear": null,
+			"placeHolder": {
+				"1": {
+					"label": "Assets",
+					"uniqueId": "resource",
+					"default_value": "All Asset Selected",
+					"selection_criteria": {
+						"displayType": "ASSETCHOOSER"
+					},
+					"type": "default"
+				},
+				"2": {
+					"label": "Interval",
+					"uniqueId": "interval",
+					"default_value": "10",
+					"selection_criteria": {
+						"displayType": "DURATION"
+					},
+					"type": "rules"
+				}
+			}
+		}
+	},
+	"298": {
+		"fdd_rule": {
+			"name": "FCU Fan is off but valve is operating",
+			"description": null,
+			"problem": "",
+			"possible_causes": "",
+			"possible_solution": "",
+			"severity": "Minor",
+			"category": "FCU",
+			"moduleName": "fcureading",
+			"threshold_metric": "fceValve",
+			"threshold_metric_display": "FCU Valve",
+			"ASSET_SELECTION_CRITERIA": {
+				"categoryType": "FCU",
+				"includeResource": "${includeResource}",
+				"excludeResource": "${excludeResource}"
+			},
+			"preRequsite": null,
+			"alarmCondition": {
+				"condition": "",
+				"for": "${interval}",
+				"action": "TRIGGER_ALARM",
+				"moduleName": "fcureading",
+				"thresholdType": "5",
+				"threshold_metric": "fceValve",
+				"workflow": {
+					"expressions": [
+						{
+							"name": "A",
+							"aggregateString": "lastValue",
+							"fieldName": "fceValve",
+							"moduleName": "fcureading",
+							"criteria": {
+								"pattern": "(1)",
+								"conditions": {
+									"1": {
+										"fieldName": "parentId",
+										"sequence": "1",
+										"value": "${resourceId}"
+									}
+								}
+							},
+							"orderByFieldName": "ttime",
+							"sortBy": "desc",
+							"limit": "1"
+						},
+						{
+							"name": "B",
+							"aggregateString": "lastValue",
+							"fieldName": "status",
+							"moduleName": "status",
+							"criteria": {
+								"pattern": "(1)",
+								"conditions": {
+									"1": {
+										"fieldName": "parentId",
+										"sequence": "1",
+										"value": "${resourceId}"
+									}
+								}
+							},
+							"orderByFieldName": "ttime",
+							"sortBy": "desc",
+							"limit": "1"
+						}
+					],
+					"resultEvaluator": "(B==0)&&(A>2)",
+					"workflowUIMode": "3",
+					"parameters": [
+						{
+							"name": "resourceId",
+							"typeString": "Number"
+						}
+					]
+				}
+			},
+			"alarmClear": null,
+			"placeHolder": {
+				"1": {
+					"label": "Assets",
+					"uniqueId": "resource",
+					"default_value": "All Asset Selected",
+					"selection_criteria": {
+						"displayType": "ASSETCHOOSER"
+					},
+					"type": "default"
+				},
+				"2": {
+					"label": "Interval",
+					"uniqueId": "interval",
+					"default_value": "10",
+					"selection_criteria": {
+						"displayType": "DURATION"
+					},
+					"type": "rules"
+				}
+			}
+		}
+	},
+	"299": {
+		"fdd_rule": {
+			"name": "FCU valve is stuck close",
+			"description": null,
+			"problem": "",
+			"possible_causes": "",
+			"possible_solution": "",
+			"severity": "Minor",
+			"category": "FCU",
+			"moduleName": "fcureading",
+			"threshold_metric": "fceValve",
+			"threshold_metric_display": "FCU Valve",
+			"ASSET_SELECTION_CRITERIA": {
+				"categoryType": "FCU",
+				"includeResource": "${includeResource}",
+				"excludeResource": "${excludeResource}"
+			},
+			"preRequsite": null,
+			"alarmCondition": {
+				"condition": "",
+				"for": "${interval}",
+				"action": "TRIGGER_ALARM",
+				"moduleName": "fcureading",
+				"thresholdType": "5",
+				"threshold_metric": "fceValve",
+				"workflow": {
+					"expressions": [
+						{
+							"name": "A",
+							"aggregateString": "lastValue",
+							"fieldName": "roomTemperature",
+							"moduleName": "fcureading",
+							"criteria": {
+								"pattern": "(1)",
+								"conditions": {
+									"1": {
+										"fieldName": "parentId",
+										"sequence": "1",
+										"value": "${resourceId}"
+									}
+								}
+							},
+							"orderByFieldName": "ttime",
+							"sortBy": "desc",
+							"limit": "1"
+						},
+						{
+							"name": "B",
+							"aggregateString": "lastValue",
+							"fieldName": "setPoint",
+							"moduleName": "fcureading",
+							"criteria": {
+								"pattern": "(1)",
+								"conditions": {
+									"1": {
+										"fieldName": "parentId",
+										"sequence": "1",
+										"value": "${resourceId}"
+									}
+								}
+							},
+							"orderByFieldName": "ttime",
+							"sortBy": "desc",
+							"limit": "1"
+						},
+						{
+							"name": "C",
+							"aggregateString": "lastValue",
+							"fieldName": "fceValve",
+							"moduleName": "fcureading",
+							"criteria": {
+								"pattern": "(1)",
+								"conditions": {
+									"1": {
+										"fieldName": "parentId",
+										"sequence": "1",
+										"value": "${resourceId}"
+									}
+								}
+							},
+							"orderByFieldName": "ttime",
+							"sortBy": "desc",
+							"limit": "1"
+						},
+						{
+							"name": "D",
+							"aggregateString": "lastValue",
+							"fieldName": "status",
+							"moduleName": "status",
+							"criteria": {
+								"pattern": "(1)",
+								"conditions": {
+									"1": {
+										"fieldName": "parentId",
+										"sequence": "1",
+										"value": "${resourceId}"
+									}
+								}
+							},
+							"orderByFieldName": "ttime",
+							"sortBy": "desc",
+							"limit": "1"
+						}
+					],
+					"resultEvaluator": "(D==1)&&(A>(1.1*B))&&(C<5)",
+					"workflowUIMode": "3",
+					"parameters": [
+						{
+							"name": "resourceId",
+							"typeString": "Number"
+						}
+					]
+				}
+			},
+			"alarmClear": null,
+			"placeHolder": {
+				"1": {
+					"label": "Assets",
+					"uniqueId": "resource",
+					"default_value": "All Asset Selected",
+					"selection_criteria": {
+						"displayType": "ASSETCHOOSER"
+					},
+					"type": "default"
+				},
+				"2": {
+					"label": "Interval",
+					"uniqueId": "interval",
+					"default_value": "10",
+					"selection_criteria": {
+						"displayType": "DURATION"
+					},
+					"type": "rules"
+				}
+			}
+		}
+	},
+	"300": {
+		"fdd_rule": {
+			"name": "FCU valve is stuck open",
+			"description": null,
+			"problem": "FCU - valve Stuck Open",
+			"possible_causes": null,
+			"possible_solution": null,
+			"severity": "Minor",
+			"category": "FCU",
+			"moduleName": "fcureading",
+			"threshold_metric": "fceValve",
+			"threshold_metric_display": "FCU Valve",
+			"ASSET_SELECTION_CRITERIA": {
+				"categoryType": "FCU",
+				"includeResource": "${includeResource}",
+				"excludeResource": "${excludeResource}"
+			},
+			"preRequsite": null,
+			"alarmCondition": {
+				"condition": "",
+				"for": "${interval}",
+				"action": "TRIGGER_ALARM",
+				"moduleName": "fcureading",
+				"thresholdType": "5",
+				"threshold_metric": "fceValve",
+				"workflow": {
+					"expressions": [
+						{
+							"name": "A",
+							"aggregateString": "lastValue",
+							"fieldName": "roomTemperature",
+							"moduleName": "fcureading",
+							"criteria": {
+								"pattern": "(1)",
+								"conditions": {
+									"1": {
+										"fieldName": "parentId",
+										"sequence": "1",
+										"value": "${resourceId}"
+									}
+								}
+							},
+							"orderByFieldName": "ttime",
+							"sortBy": "desc",
+							"limit": "1"
+						},
+						{
+							"name": "B",
+							"aggregateString": "lastValue",
+							"fieldName": "setPoint",
+							"moduleName": "fcureading",
+							"criteria": {
+								"pattern": "(1)",
+								"conditions": {
+									"1": {
+										"fieldName": "parentId",
+										"sequence": "1",
+										"value": "${resourceId}"
+									}
+								}
+							},
+							"orderByFieldName": "ttime",
+							"sortBy": "desc",
+							"limit": "1"
+						},
+						{
+							"name": "C",
+							"aggregateString": "lastValue",
+							"fieldName": "status",
+							"moduleName": "status",
+							"criteria": {
+								"pattern": "(1)",
+								"conditions": {
+									"1": {
+										"fieldName": "parentId",
+										"sequence": "1",
+										"value": "${resourceId}"
+									}
+								}
+							},
+							"orderByFieldName": "ttime",
+							"sortBy": "desc",
+							"limit": "1"
+						},
+						{
+							"name": "D",
+							"aggregateString": "lastValue",
+							"fieldName": "fceValve",
+							"moduleName": "fcureading",
+							"criteria": {
+								"pattern": "(1)",
+								"conditions": {
+									"1": {
+										"fieldName": "parentId",
+										"sequence": "1",
+										"value": "${resourceId}"
+									}
+								}
+							},
+							"orderByFieldName": "ttime",
+							"sortBy": "desc",
+							"limit": "1"
+						}
+					],
+					"resultEvaluator": "(A<(0.9*B))&&(C==1)&&(D>10)",
+					"workflowUIMode": "3",
+					"parameters": [
+						{
+							"name": "resourceId",
+							"typeString": "Number"
+						}
+					]
+				}
+			},
+			"alarmClear": null,
+			"placeHolder": {
+				"1": {
+					"label": "Assets",
+					"uniqueId": "resource",
+					"default_value": "All Asset Selected",
+					"selection_criteria": {
+						"displayType": "ASSETCHOOSER"
+					},
+					"type": "default"
+				},
+				"2": {
+					"label": "Interval",
+					"uniqueId": "interval",
+					"default_value": "10",
+					"selection_criteria": {
+						"displayType": "DURATION"
+					},
+					"type": "rules"
+				}
+			}
+		}
+	},
+	"301": {
+		"fdd_rule": {
+			"name": "High Fan speed when Temperature is lower than the set point",
+			"description": null,
+			"problem": "High Fan speed when Temperature is lower than the set point",
+			"possible_causes": null,
+			"possible_solution": null,
+			"severity": null,
+			"category": "FCU",
+			"moduleName": "fcureading",
+			"threshold_metric": "fanMode",
+			"threshold_metric_display": "Fan Mode",
+			"ASSET_SELECTION_CRITERIA": {
+				"categoryType": "FCU",
+				"includeResource": "${includeResource}",
+				"excludeResource": "${excludeResource}"
+			},
+			"preRequsite": null,
+			"alarmCondition": {
+				"condition": "",
+				"for": "${interval}",
+				"action": "TRIGGER_ALARM",
+				"moduleName": "fcureading",
+				"thresholdType": "5",
+				"threshold_metric": "fanMode",
+				"workflow": {
+					"expressions": [
+						{
+							"name": "A",
+							"aggregateString": "lastValue",
+							"fieldName": "fanMode",
+							"moduleName": "fcureading",
+							"criteria": {
+								"pattern": "(1)",
+								"conditions": {
+									"1": {
+										"fieldName": "parentId",
+										"sequence": "1",
+										"value": "${resourceId}"
+									}
+								}
+							},
+							"orderByFieldName": "ttime",
+							"sortBy": "desc",
+							"limit": "1"
+						},
+						{
+							"name": "B",
+							"aggregateString": "lastValue",
+							"fieldName": "roomTemperature",
+							"moduleName": "fcureading",
+							"criteria": {
+								"pattern": "(1)",
+								"conditions": {
+									"1": {
+										"fieldName": "parentId",
+										"sequence": "1",
+										"value": "${resourceId}"
+									}
+								}
+							},
+							"orderByFieldName": "ttime",
+							"sortBy": "desc",
+							"limit": "1"
+						},
+						{
+							"name": "C",
+							"aggregateString": "lastValue",
+							"fieldName": "setPoint",
+							"moduleName": "fcureading",
+							"criteria": {
+								"pattern": "(1)",
+								"conditions": {
+									"1": {
+										"fieldName": "parentId",
+										"sequence": "1",
+										"value": "${resourceId}"
+									}
+								}
+							},
+							"orderByFieldName": "ttime",
+							"sortBy": "desc",
+							"limit": "1"
+						}
+					],
+					"resultEvaluator": "(B<(0.9*C))&&(A>2)",
+					"workflowUIMode": "3",
+					"parameters": [
+						{
+							"name": "resourceId",
+							"typeString": "Number"
+						}
+					]
+				}
+			},
+			"alarmClear": null,
+			"placeHolder": {
+				"1": {
+					"label": "Assets",
+					"uniqueId": "resource",
+					"default_value": "All Asset Selected",
+					"selection_criteria": {
+						"displayType": "ASSETCHOOSER"
+					},
+					"type": "default"
+				},
+				"2": {
+					"label": "Interval",
+					"uniqueId": "interval",
+					"default_value": "10",
+					"selection_criteria": {
+						"displayType": "DURATION"
+					},
+					"type": "rules"
+				}
+			}
+		}
+	}
+}
