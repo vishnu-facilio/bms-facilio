@@ -1,9 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.InventoryCategoryContext;
 import com.facilio.bmsconsole.context.PurchasedToolContext;
 import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.context.ToolTypesContext;
+import com.facilio.bmsconsole.util.InventoryCategoryApi;
 import com.facilio.bmsconsole.util.StoreroomApi;
 import com.facilio.bmsconsole.util.ToolsApi;
 import com.facilio.constants.FacilioConstants;
@@ -16,6 +18,7 @@ import org.apache.commons.chain.Context;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -29,6 +32,8 @@ public class ImportToolCommand implements Command {
 		if (purchasedToolList != null && !purchasedToolList.isEmpty() && storeRoomId > 0) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			Map<String, Long> toolNameVsIdMap = ToolsApi.getToolTypesMap();
+			Map<String, Long> categoryNameVsIdMap = InventoryCategoryApi.getAllInventoryCategories();
+			
 			List<ToolContext> toolsList = new ArrayList<>();
 			for (PurchasedToolContext purchasedTool : purchasedToolList) {
 				ToolTypesContext toolType = new ToolTypesContext();
@@ -46,6 +51,20 @@ public class ImportToolCommand implements Command {
 						toolType.setIsRotating(true);
 						// tool.setPurchasedTools(Collections.singletonList(purchasedTool));
 					}
+					InventoryCategoryContext category = new InventoryCategoryContext();;
+					if(categoryNameVsIdMap != null && categoryNameVsIdMap.containsKey(toolType.getCategory().getName())) {
+						category.setId(categoryNameVsIdMap.get(toolType.getCategory().getName()));
+						toolType.setCategory(category);
+					} else {
+						category.setName(toolType.getCategory().getName());
+						category.setDisplayName(toolType.getCategory().getName());
+						category.setId(InventoryCategoryApi.insertInventoryCategory(category));
+						if(categoryNameVsIdMap == null) {
+							categoryNameVsIdMap = new HashMap<String, Long>();
+						}
+						categoryNameVsIdMap.put(category.getName(), category.getId());
+					}
+					toolType.setCategory(category);
 					toolType.setId(insertToolType(modBean, toolType));
 				}
 				if ((purchasedTool.getSerialNumber() == null

@@ -1,5 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.InventoryCategoryContext;
 import com.facilio.bmsconsole.context.ItemContext;
@@ -13,13 +22,6 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 public class ImportItemCommand implements Command {
 
@@ -54,6 +56,10 @@ public class ImportItemCommand implements Command {
 						category.setName(itemType.getCategory().getName());
 						category.setDisplayName(itemType.getCategory().getName());
 						category.setId(InventoryCategoryApi.insertInventoryCategory(category));
+						if(categoryNameVsIdMap == null) {
+							categoryNameVsIdMap = new HashMap<String, Long>();
+						}
+						categoryNameVsIdMap.put(category.getName(), category.getId());
 					}
 					itemType.setCategory(category);
 					itemType.setId(insertItemType(modBean, itemType));
