@@ -89,11 +89,10 @@ public class IoTMessageAPI {
 		object.put("timestamp", System.currentTimeMillis());
 		
 		if (controller.getAgentId() != -1) {
-//			FacilioAgent agent = AgentUtil.getAgentDetails(controller.getAgentId());
-//			object.put("agent", agent.getAgentName());
-//			object.put(AgentKeys.AGENT_ID, agent.getId()); // Agent_Id key must be changes to camelcase.
+			FacilioAgent agent = AgentUtil.getAgentDetails(controller.getAgentId());
+			object.put("agent", agent.getName());
+			object.put(AgentKeys.AGENT_ID, agent.getId()); // Agent_Id key must be changes to camelcase.
 		}
-		object.put(AgentKeys.AGENT_ID, controller.getAgentId()); // Agent_Id key must be changes to camelcase.
 
 		if (command == IotCommandType.PROPERTY) {
 			object.putAll(property);
