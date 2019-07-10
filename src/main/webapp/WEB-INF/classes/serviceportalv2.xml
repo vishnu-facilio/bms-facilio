@@ -402,5 +402,17 @@
 			<param name="moduleName">{1}</param>
 		</action>
 	</package>
+	<package name="assetLatestDataApiv2"
+		namespace="/api/service/v2/reading/latestdata" extends="newServicePortalApiV2">
+		<action name="getReadingsForSpaces"
+			class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="v2GetLatestReadingDataForSpaces">
+		</action>
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="v2GetLatestReadingData">
+			<param name="parentId">{1}</param>
+		</action>
+	</package>
 	<!-- end -->
 </struts>
