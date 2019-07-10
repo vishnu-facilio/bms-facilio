@@ -7,6 +7,7 @@ import com.facilio.agent.AgentType;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.chain.FacilioContext;
 import com.facilio.events.context.EventRuleContext;
+import com.facilio.modules.FacilioModule;
 import com.facilio.procon.consumer.FacilioConsumer;
 import com.facilio.procon.message.FacilioRecord;
 import org.apache.commons.chain.Context;
@@ -82,6 +83,14 @@ public interface ModuleCRUDBean {
 	public Integer updateTable(FacilioContext context) throws Exception;
 
 	public Integer deleteFromDb(FacilioContext context) throws Exception;
+	
+	public  List<AssetCategoryContext> getCategoryList() throws Exception ;
+	
+	public  List<AssetContext> getAssetListOfCategory(long category) throws Exception;
+	
+	public List<FacilioModule> getAssetReadings(long parentCategoryId) throws Exception;
+
+	public  void  updateAdminDeltaCalculation(long orgId, long fieldId, long assetId, long startTtime, long endTtime)throws Exception;
 
 	//public List<Map<String, Object>> getIntegration() throws Exception;
 }

@@ -5,6 +5,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.agent.AgentKeys;
 import com.facilio.agent.AgentType;
+import com.facilio.bmsconsole.actions.ReadingAction;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
@@ -16,6 +17,7 @@ import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -874,5 +876,53 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		return 0;
 	}
 
+	@Override
+	public void updateAdminDeltaCalculation(long orgId, long fieldId, long assetId, long startTtime, long endTtime)
+			throws Exception {
+		// TODO Auto-generated method stub
+			FacilioContext context=new FacilioContext();
+			context.put(ContextNames.ADMIN_DELTA_ORG, orgId);
+			context.put(ContextNames.FIELD_ID,fieldId);
+			context.put(ContextNames.ASSET_ID,assetId);
+			context.put(ContextNames.START_TTIME,startTtime);
+			context.put(ContextNames.END_TTIME,endTtime);
+
+			Chain deltaCalculationChain = TransactionChainFactory.deltaCalculationChain();
+			deltaCalculationChain.execute(context);
+	}
+
+	@Override
+	public List<AssetCategoryContext> getCategoryList() throws Exception {
+		// TODO Auto-generated method stub
+		
+		List<AssetCategoryContext> assetcategory = AssetsAPI.getCategoryList();
+		if(assetcategory != null) {
+			return assetcategory;
+		}
+		return null;
+	}
+
+	@Override
+	public List<AssetContext> getAssetListOfCategory(long category) throws Exception {
+		// TODO Auto-generated method stub
+		
+		List<AssetContext> assetList = AssetsAPI.getAssetListOfCategory(category);
+		if(assetList != null) {
+			return assetList;
+		}
+		return null;
+	}
+
+
+	public List<FacilioModule> getAssetReadings(long parentCategoryId) throws Exception {
+		ReadingAction reading = new ReadingAction();
+		reading.setParentCategoryId(parentCategoryId);
+		reading.getAssetReadings();
+		List<FacilioModule> newReading = reading.getReadings();
+		if(newReading != null) {
+			return newReading;
+		}
+		return null;
+	}
 
 }

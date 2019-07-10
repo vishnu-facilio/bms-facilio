@@ -17,12 +17,19 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.actions.FacilioAuthAction;
+import com.facilio.beans.ModuleBean;
+import com.facilio.beans.ModuleBeanImpl;
+import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.util.AdminAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.fw.BeanFactory;
 import com.facilio.fw.LRUCache;
 import com.facilio.license.FreshsalesUtil;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.wms.message.Message;
 import com.facilio.wms.message.MessageType;
@@ -191,6 +198,7 @@ public class AdminAction extends ActionSupport
 	public void deleteJob()
 	{
 		HttpServletRequest request = ServletActionContext.getRequest();
+		
 		Long jobId = Long.parseLong(request.getParameter("jobId"));
 		
 		try 
@@ -261,6 +269,69 @@ public class AdminAction extends ActionSupport
 
 		return SUCCESS;
 		
+	}
+
+	public String deltaCalculation() throws Exception {
+
+		HttpServletRequest request = ServletActionContext.getRequest();
+		long orgId = Long.parseLong(request.getParameter("orgid"));
+		long assetCategoryId = Long.parseLong(request.getParameter("assetcategory"));
+		long fieldId = Long.parseLong(request.getParameter("fieldId"));
+		long assetId = Long.parseLong(request.getParameter("assetId"));
+		long startTtime = Long.parseLong(request.getParameter("fromTtime"));
+		long endTtime = Long.parseLong(request.getParameter("toTtime"));
+
+		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+		bean.updateAdminDeltaCalculation(orgId,fieldId,assetId,startTtime,endTtime);
+		
+
+		return SUCCESS;
+	}
+	
+	
+	private long fieldId;
+	
+	
+	public long getFieldId() {
+		return fieldId;
+	}
+
+	public void setFieldId(long fieldId) {
+		this.fieldId = fieldId;
+	}
+	private long assetId;
+	
+	public long getAssetId() {
+		return assetId;
+	}
+
+	private long assetCategoryId = -1;
+	
+	public long getAssetCategoryId() {
+		return assetCategoryId;
+	}
+
+	public void setAssetCategoryId(long assetCategoryId) {
+		this.assetCategoryId = assetCategoryId;
+	}
+	private long startTtime;
+	
+	public long getStartTtime() {
+		return startTtime;
+	}
+
+	public void setStartTtime(long startTtime) {
+		this.startTtime = startTtime;
+	}
+
+	private long endTtime;
+	
+	public long getEndTtime() {
+		return endTtime;
+	}
+
+	public void setEndTtime(long endTtime) {
+		this.endTtime = endTtime;
 	}
 	private long orgId;
 

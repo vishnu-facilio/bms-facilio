@@ -923,6 +923,12 @@ public class TransactionChainFactory {
 		}
 
 
+		public static Chain deltaCalculationChain () {
+			Chain c = getDefaultChain();
+			c.addCommand(new AdminDeltaCalculationCommand());
+			return c;
+		}
+		
 		public static Chain editAgent(){
 			Chain c = getDefaultChain();
 			c.addCommand(new ConfigureAgentCommand());

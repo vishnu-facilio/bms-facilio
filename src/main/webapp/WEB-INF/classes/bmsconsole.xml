@@ -1100,7 +1100,12 @@
 			<action name="demoRollUp" class="com.facilio.bmsconsole.actions.AdminAction" method="demoRollUp">
 			<result type="tiles">adminpage/demorollup.jsp</result>
 			</action>
-			
+			<action name="deltacalculation" class="com.facilio.bmsconsole.actions.AdminAction" >
+			<result type="tiles">adminpage/deltacalculation.jsp</result>
+			</action>
+			<action name="deltaCalculation" class="com.facilio.bmsconsole.actions.AdminAction" method="deltaCalculation">
+			<result  type="tiles">adminpage/deltacalculation.jsp</result>
+			</action>			
 			
 			</package>
 

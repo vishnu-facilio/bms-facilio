@@ -999,6 +999,10 @@ public class FacilioConstants {
 		public static final String DATA_POINTS="data_points";
 		public static final String POINTS_DATA_RECORD="points_data_record";
 
+		public static final String START_TTIME = "startTtime";
+		public static final String END_TTIME = "endTtime";
+		public static final String ADMIN_DELTA_ORG = "orgid";
+		
 		public static final String DATE = "date";
 
 		public static final String SERVICE = "service";

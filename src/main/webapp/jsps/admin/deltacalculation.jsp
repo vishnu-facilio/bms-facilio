@@ -1,0 +1,217 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@page import="com.facilio.logging.SysOutLogger"%>
+<%@page import="com.facilio.accounts.bean.OrgBean"%>
+<%@page import=" com.facilio.bmsconsole.context.AssetCategoryContext"%>
+<%@page import=" com.facilio.beans.ModuleBean"%>
+<%@page import=" com.facilio.beans.ModuleCRUDBean"%>
+<%@page import=" com.facilio.bmsconsole.context.AssetContext"%>
+<%@page import="com.facilio.bmsconsole.util.AssetsAPI"%>
+<%@page import=" com.facilio.modules.fields.FacilioField"%>
+<%@page import="com.facilio.modules.FieldFactory"%>
+<%@page import="com.facilio.modules.FacilioModule"%>
+<%@page import="com.facilio.modules.ModuleFactory"%>
+<%@page import="com.facilio.chain.FacilioContext"%>
+<%@page import="com.facilio.bmsconsole.workflow.rule.ReadingRuleContext"%>
+<%@page import="com.facilio.constants.FacilioConstants"%>
+<%@page import="com.facilio.bmsconsole.actions.ReadingAction"%>
+<%@page import="com.facilio.bmsconsole.actions.PickListAction"%>
+<%@page import="com.facilio.modules.FieldType"%>
+<%@page import=" com.facilio.modules.fields.NumberField"%>
+<%@page import=" com.facilio.fw.BeanFactory"%>
+<%@page
+	import="com.facilio.accounts.util.AccountUtil,com.facilio.accounts.dto.Account,java.util.ArrayList,java.util.Comparator,com.facilio.accounts.dto.User,com.facilio.accounts.dto.Role, java.util.*, java.util.Iterator ,org.json.simple.JSONObject,org.json.simple.JSONArray,java.util.List, com.facilio.accounts.dto.Organization ,org.json.simple.JSONObject,com.facilio.accounts.impl.OrgBeanImpl, com.facilio.bmsconsole.commands.util.CommonCommandUtil, com.facilio.accounts.util.AccountUtil.FeatureLicense"%>
+<%
+	String orgid = request.getParameter("orgid");
+	Organization org = null;
+
+	ModuleCRUDBean bean = null;
+	List<AssetCategoryContext> assetcategory = null;
+
+	Map<Long, List<FacilioModule>> moduleMap = new HashMap<>();
+	List<FacilioModule> reading = new ArrayList<>();
+
+	List<AssetContext> AssetListOfCategory = new ArrayList<>();
+	if (orgid != null) {
+		long orgId = Long.parseLong(orgid);
+		bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+		OrgBean orgBean = AccountUtil.getOrgBean();
+		org = orgBean.getOrg(Long.parseLong(orgid));
+
+		assetcategory = bean.getCategoryList();
+	}
+%>
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript">
+	function changeOrgPage() {
+		var selectedOption = "deltacalculation?orgid=" + $("#orgid").val();
+		location.href = selectedOption;
+
+	}
+</script>
+<script type="text/javascript">
+	function changeThePage() {
+		var selectedOption = "deltacalculation?orgid=" + $("#orgid").val()
+				+ "&" + "assetcategory=" + $("#assetcategory").val();
+		location.href = selectedOption;
+
+	}
+</script>
+
+
+<meta charset="UTF-8">
+
+
+<title>Insert title here</title>
+</head>
+<body>
+	<form action="" method="GET">
+		<h2>
+			<i class=" fa fa-building-o  fa-fw"></i>Org Info
+		</h2>
+		<div class=" col-lg-8 col-md-8">
+
+			<div style="margin-top: 40px;"
+				class="input-group col-lg-8 col-md-8 col-sm-8	">
+				<span class="input-group-addon"><i
+					class="glyphicon glyphicon-user"></i></span> <input id="orgid" type="text"
+					value="<%=org == null ? "" : org.getId()%>" class="form-control"
+					name="orgid" onChange="changeOrgPage" />
+			</div>
+			<div style="margin-top: 30px;">
+
+				<button id="show" type="submit">Submit</button>
+			</div>
+		</div>
+	</form>
+	<br>
+	<br>
+	<br>
+	<br>
+	<%
+		if (org != null) {
+	%>
+	<form action="deltaCalculation ">
+
+		<div class=" col-lg-8 col-md-8">
+
+			<input type="hidden" name="orgid" value="<%=org.getOrgId()%>">
+			<br> <br> <br> <label for="assetcategory"><h5>
+					AssetCategory:</h5></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+			<select name="assetcategory" id="assetcategory"
+				onChange="changeThePage()">
+				<option value="" disabled selected>Select</option>
+				<%
+					for (AssetCategoryContext role : assetcategory) {
+				%>
+				<option value="<%=role.getId()%>"
+					<%=(request.getParameter("assetcategory") != null
+							&& request.getParameter("assetcategory").equals(role.getId() + "")) ? "selected" : " "%>><%=role.getName()%></option>
+				<%
+					}
+				%>
+
+			</select> <br> <br> <br> <label for="assetId"><h5>
+					Asset:</h5></label>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; <select
+				name="assetId" id="assetId">
+				<option value="" disabled selected>Select</option>
+				<%
+					if ((request.getParameter("assetcategory") != null)) {
+							long assetCategoryId = Long.parseLong(request.getParameter("assetcategory"));
+							AssetListOfCategory = bean.getAssetListOfCategory(assetCategoryId);
+
+							for (AssetContext list : AssetListOfCategory) {
+				%>
+				<option value="<%=list.getId()%>"><%=list.getName()%></option>
+				<%
+					}
+						}
+				%>
+			</select><br> <br> <br> <label for="fieldId"><h5>
+					Reading :</h5></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+			<select name="fieldId" id="fieldId">
+				<option value="" disabled selected>Select</option>
+				<%
+					if ((request.getParameter("assetcategory") != null)) {
+							long parentCategoryId = Long.parseLong(request.getParameter("assetcategory"));
+							reading = bean.getAssetReadings(parentCategoryId);
+							for (FacilioModule list : reading) {
+								for (FacilioField fields : list.getFields()) {
+									if ((fields.getName().equals("totalEnergyConsumption")
+											|| fields.getName().equals("phaseEnergyR")
+											|| fields.getName().equals("phaseEnergyY")
+											|| fields.getName().equals("phaseEnergyB"))
+											|| (fields.getDataTypeEnum() == FieldType.NUMBER
+													|| fields.getDataTypeEnum() == FieldType.DECIMAL)
+													&& ((NumberField) fields).isCounterField()) {
+				%>
+				<option value="<%=fields.getId()%>"><%=fields.getDisplayName()%></option>
+
+				<%
+					}
+								}
+							}
+						}
+				%>
+			</select> <br> <br> <br> <label for="fromTtime"><h5>Enter
+					From TTIME:</h5></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input
+				type="text" id="fromTtime" name="fromTtime"> <br> <br>
+			<br> <label for="toTtime"><h5>Enter to TTIME:</h5></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<input type="text" id="toTtime" name="toTtime"><br> <br>
+			<br>
+			<div align="center">
+				<input type="submit" style="margin-left: -100px"
+					name="deltaCalculation" value="Submit" />
+			</div>
+			<br> <br> <br>
+		</div>
+
+	</form>
+	<%
+		}
+	%>
+</body>
+<style>
+select {
+	width: 30%;
+	padding: 12px 20px;
+	margin: 8px 16px;
+	margin-top: 8px;
+	display: inline-block;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	box-sizing: border-box;
+	font-size: 16px;
+}
+
+input[type=text] {
+	width: 30%;
+	padding: 12px 20px;
+	margin: 8px 16px;
+	margin-top: 8px;
+	display: inline-block;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	box-sizing: border-box;
+}
+
+input[type=submit] {
+	width: 20%;
+	background-color: #4CAF50;
+	color: white;
+	padding: 12px 20px;
+	margin: 2px 0;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 18px;
+}
+
+input[type=submit]:hover {
+	background-color: #45a049;
+}
+</style>
+</html>
