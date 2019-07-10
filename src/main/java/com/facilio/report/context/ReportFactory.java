@@ -10,10 +10,12 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.modules.fields.FacilioField;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.Module;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.json.annotations.JSON;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,23 +57,23 @@ public class ReportFactory {
 			// workorder fields
 			List<FacilioField> reportFields = new ArrayList<>();
 			ReportFacilioField openVsCloseField = (ReportFacilioField) getField(WorkOrder.OPENVSCLOSE_COL, "Status Type", ModuleFactory.getWorkOrdersModule(), " CASE WHEN STATUS_ID in (?) THEN 'Closed' ELSE 'Open' END ", FieldType.STRING, WorkOrder.OPENVSCLOSE);
-			openVsCloseField.addCondition("Open", CriteriaAPI.getCondition("STATUS_ID", "status", "?", NumberOperators.NOT_EQUALS));
-			openVsCloseField.addCondition("Closed", CriteriaAPI.getCondition("STATUS_ID", "status", "?", NumberOperators.EQUALS));
+			openVsCloseField.addGenericCondition("Open", CriteriaAPI.getCondition("STATUS_ID", "status", "?", NumberOperators.NOT_EQUALS));
+			openVsCloseField.addGenericCondition("Closed", CriteriaAPI.getCondition("STATUS_ID", "status", "?", NumberOperators.EQUALS));
 			reportFields.add(openVsCloseField);
 			
 			ReportFacilioField overdueOpenField = (ReportFacilioField) getField(WorkOrder.OVERDUE_OPEN_COL, "Open Due Status", ModuleFactory.getWorkOrdersModule(), " CASE WHEN DUE_DATE IS NOT NULL THEN CASE WHEN DUE_DATE < ? THEN 'Overdue' ELSE 'On Schedule' END END ", FieldType.STRING, WorkOrder.OVERDUE_OPEN);
-			overdueOpenField.addCondition("Overdue", CriteriaAPI.getCondition("DUE_DATE", "dueDate", "?", NumberOperators.LESS_THAN));
-			overdueOpenField.addCondition("On Schedule", CriteriaAPI.getCondition("DUE_DATE", "dueDate", "?", NumberOperators.GREATER_THAN_EQUAL));
+			overdueOpenField.addGenericCondition("Overdue", CriteriaAPI.getCondition("DUE_DATE", "dueDate", "?", NumberOperators.LESS_THAN));
+			overdueOpenField.addGenericCondition("On Schedule", CriteriaAPI.getCondition("DUE_DATE", "dueDate", "?", NumberOperators.GREATER_THAN_EQUAL));
 			reportFields.add(overdueOpenField);
 			
 			ReportFacilioField overdueClosedField = (ReportFacilioField) getField(WorkOrder.OVERDUE_CLOSED_COL, "Closed Due Status", ModuleFactory.getWorkOrdersModule(), " CASE WHEN DUE_DATE IS NOT NULL AND ACTUAL_WORK_END IS NOT NULL THEN CASE WHEN DUE_DATE < ACTUAL_WORK_END THEN 'Overdue' ELSE 'Ontime' END END ", FieldType.STRING, WorkOrder.OVERDUE_CLOSED);
-			overdueClosedField.addCondition("Overdue", CriteriaAPI.getCondition("DUE_DATE", "dueDate", "actualWorkEnd", FieldOperator.LESS_THAN));
-			overdueClosedField.addCondition("Ontime", CriteriaAPI.getCondition("DUE_DATE", "dueDate", "actualWorkEnd", FieldOperator.GREATER_THAN_EQUAL));
+			overdueClosedField.addGenericCondition("Overdue", CriteriaAPI.getCondition("DUE_DATE", "dueDate", "actualWorkEnd", FieldOperator.LESS_THAN));
+			overdueClosedField.addGenericCondition("Ontime", CriteriaAPI.getCondition("DUE_DATE", "dueDate", "actualWorkEnd", FieldOperator.GREATER_THAN_EQUAL));
 			reportFields.add(overdueClosedField);
 			
 			ReportFacilioField plannedVsUnplannedField = (ReportFacilioField) getField(WorkOrder.PLANNED_VS_UNPLANNED_COL, "Planned Type", ModuleFactory.getWorkOrdersModule(), " CASE WHEN SOURCE_TYPE = 5 THEN 'Planned' ELSE 'Unplanned' END ", FieldType.STRING, WorkOrder.PLANNED_VS_UNPLANNED);
-			plannedVsUnplannedField.addCondition("Planned", CriteriaAPI.getCondition("SOURCE_TYPE", "sourceType", "5", NumberOperators.EQUALS));
-			plannedVsUnplannedField.addCondition("Unplanned", CriteriaAPI.getCondition("SOURCE_TYPE", "sourceType", "5", NumberOperators.NOT_EQUALS));
+			plannedVsUnplannedField.addGenericCondition("Planned", CriteriaAPI.getCondition("SOURCE_TYPE", "sourceType", "5", NumberOperators.EQUALS));
+			plannedVsUnplannedField.addGenericCondition("Unplanned", CriteriaAPI.getCondition("SOURCE_TYPE", "sourceType", "5", NumberOperators.NOT_EQUALS));
 			reportFields.add(plannedVsUnplannedField);
 			
 			ReportFacilioField estimatedDurationField = (ReportFacilioField) getField(WorkOrder.ESTIMATED_DURATION_COL, "Estimated Duration", ModuleFactory.getWorkOrdersModule(), " CASE WHEN Tickets.DUE_DATE IS NOT NULL THEN Tickets.DUE_DATE - WorkOrders.CREATED_TIME ELSE 0 END",FieldType.NUMBER, WorkOrder.ESTIMATED_DURATION);
@@ -99,7 +101,7 @@ public class ReportFactory {
 		f.setName(name);
 		f.setDisplayName(displayName);
 		f.setModule(module);
-		f.setColumnName(columnName);
+		f.setGenericColumnName(columnName);
 		f.setDataType(fieldType);
 		return f;
 	}
@@ -137,12 +139,15 @@ public class ReportFactory {
 		 */
 		private static final long serialVersionUID = 1L;
 		private int type;
-		private Map<String, Object> config;
-//		private Map<String, Object> data = new HashMap<>();
+		private String genericColumnName;
+		@JsonIgnore
+		private Map<String, Condition> genericConditions = new HashMap<>();
 		private Map<String, Condition> conditions = new HashMap<>();
 		
 		public ReportFacilioField(ReportFacilioField reportFacilioField) {
 			super(reportFacilioField);
+			this.genericColumnName = reportFacilioField.genericColumnName;
+			this.genericConditions = reportFacilioField.genericConditions;
 			this.type = reportFacilioField.type;
 		}
 		
@@ -154,8 +159,20 @@ public class ReportFactory {
 			return type;
 		}
 		
-		public void addCondition(String name, Condition condition) {
-			conditions.put(name, condition);
+		public void setGenericColumnName(String genericColumnName) {
+			this.genericColumnName = genericColumnName;
+		}
+		public String getGenericColumnName() {
+			return genericColumnName;
+		}
+		
+		@JSON(serialize=false)
+		public Map<String, Condition> getGenericConditions() {
+			return genericConditions;
+		}
+		
+		public void addGenericCondition(String name, Condition condition) {
+			genericConditions.put(name, condition);
 		}
 
 		@Override
@@ -186,12 +203,16 @@ public class ReportFactory {
 
 					String arguments = String.valueOf(data.get("closed_status_id"));
 					
-					for (Condition c : conditions.values()) {
+					for (String key : genericConditions.keySet()) {
+						Condition condition = genericConditions.get(key);
+						Map<String, Object> conditionProperty = FieldUtil.getAsProperties(condition);
+						Condition c = FieldUtil.getAsBeanFromMap(conditionProperty, Condition.class);
 						String value = c.getValue();
 						c.setValue(value.replace("?", arguments));
+						conditions.put(key, c);
 					}
 					
-					setColumnName(getColumnName().replace("?", arguments));
+					setColumnName(getGenericColumnName().replace("?", arguments));
 					data.clear();
 					break;
 				}
@@ -200,17 +221,21 @@ public class ReportFactory {
 				{
 					String arguments = String.valueOf(System.currentTimeMillis());
 					
-					for (Condition c : conditions.values()) {
+					for (String key : getGenericConditions().keySet()) {
+						Condition condition = genericConditions.get(key);
+						Map<String, Object> conditionProperty = FieldUtil.getAsProperties(condition);
+						Condition c = FieldUtil.getAsBeanFromMap(conditionProperty, Condition.class);
 						String value = c.getValue();
 						c.setValue(value.replace("?", arguments));
+						conditions.put(key, c);
 					}
 					
-					setColumnName(getColumnName().replace("?", arguments));
+					setColumnName(getGenericColumnName().replace("?", arguments));
 					break;
 				}
 				case Alarm.ALARM_DURATION:
 					String arguments = String.valueOf(System.currentTimeMillis());
-					setColumnName(getColumnName().replace("?", arguments));
+					setColumnName(getGenericColumnName().replace("?", arguments));
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
