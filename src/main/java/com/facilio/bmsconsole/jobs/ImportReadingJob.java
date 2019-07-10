@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.chain.FacilioContext;
+import com.facilio.db.transaction.FacilioTransactionManager;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 import org.apache.commons.chain.Chain;
@@ -66,6 +67,11 @@ public class ImportReadingJob extends FacilioJob {
 			CommonCommandUtil.emailException("Import Failed",
 					"Import failed - orgid -- " + AccountUtil.getCurrentOrg().getId(), e);
 			LOGGER.log(Level.SEVERE, e.getMessage(), e);
+			try {
+				FacilioTransactionManager.INSTANCE.getTransactionManager().setRollbackOnly();
+			}catch(Exception transactionException) {
+				LOGGER.severe(transactionException.toString());
+			}
 		}
 	}
 
