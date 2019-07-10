@@ -19,8 +19,12 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 public class GetWorkOrderCommand implements Command {
+
+	private static final Logger LOGGER = LogManager.getLogger(GetWorkOrderCommand.class.getName());
 
 	@Override
 	public boolean execute(Context context) throws Exception {
@@ -70,6 +74,10 @@ public class GetWorkOrderCommand implements Command {
 				if (taskMap != null) {
 					List<TaskContext> tasks = taskMap.values().stream().flatMap(c -> c.stream()).collect(Collectors.toList());
 					context.put(FacilioConstants.ContextNames.TASK_LIST, tasks);
+				}
+
+				if ((AccountUtil.getCurrentOrg().getId() == 146 || AccountUtil.getCurrentOrg().getId() == 155) && workOrder != null) {
+					LOGGER.info("Workorder subject : "+ workOrder.getSubject()+"\n Description : "+workOrder.getDescription());
 				}
 			}
 		}
