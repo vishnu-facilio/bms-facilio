@@ -920,7 +920,7 @@ public class ShiftAPI {
 				if (shouldRearrangeShifts && shiftUserRel.getStartTime() > (startTime - 1)) {
 					// If start time is greater than end time, delete it
 					GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
-							.table(ModuleFactory.getShiftBreakRelModule().getTableName())
+							.table(ModuleFactory.getShiftUserRelModule().getTableName())
 							.andCondition(CriteriaAPI.getIdCondition(shiftUserRel.getId(), ModuleFactory.getShiftUserRelModule()));
 					deleteBuilder.delete();
 				} else {
