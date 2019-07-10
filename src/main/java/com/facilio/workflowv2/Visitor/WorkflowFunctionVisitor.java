@@ -202,7 +202,7 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
                     		isDataTypeSpecificFunction = true;
                     	}
                     	else if(value.asObject() instanceof ConnectionContext) {
-                    		wfFunctionContext.setNameSpace(FacilioSystemFunctionNameSpace.FIELD.getName());
+                    		wfFunctionContext.setNameSpace(FacilioSystemFunctionNameSpace.CONNECTION.getName());
                     		isDataTypeSpecificFunction = true;
                     	}
                     	else if (value.asObject() instanceof FacilioSystemFunctionNameSpace) {
