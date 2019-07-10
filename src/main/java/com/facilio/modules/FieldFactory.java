@@ -2723,7 +2723,7 @@ public class FieldFactory {
 		fields.add(getField("accessTokenUrl", "ACCESS_TOKEN_URL", module, FieldType.STRING));
 		fields.add(getField("refreshTokenUrl", "REFRESH_TOKEN_URL", module, FieldType.STRING));
 		fields.add(getField("revokeTokenUrl", "REVOKE_TOKEN_URL", module, FieldType.STRING));
-		fields.add(getField("authToken", "AUTH_TOKEN", module, FieldType.STRING));
+		fields.add(getField("accessToken", "ACCESS_TOKEN", module, FieldType.STRING));
 		fields.add(getField("authCode", "AUTH_CODE", module, FieldType.STRING));
 		fields.add(getField("refreshToken", "REFRESH_TOKEN", module, FieldType.STRING));
 		fields.add(getField("expiryTime", "EXPIRY_TIME", module, FieldType.NUMBER));

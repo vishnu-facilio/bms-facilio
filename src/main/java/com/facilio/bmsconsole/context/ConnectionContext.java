@@ -16,7 +16,7 @@ public class ConnectionContext {
 	String accessTokenUrl;
 	String refreshTokenUrl;
 	String revokeTokenUrl;
-	String authToken;
+	String accessToken;
 	String authCode;
 	String refreshToken;
 	
@@ -134,14 +134,13 @@ public class ConnectionContext {
 		this.revokeTokenUrl = revokeTokenUrl;
 	}
 
-	public String getAuthToken() {
-		return authToken;
-	}
 
-	public void setAuthToken(String authToken) {
-		this.authToken = authToken;
+	public String getAccessToken() {
+		return accessToken;
 	}
-
+	public void setAccessToken(String accessToken) {
+		this.accessToken = accessToken;
+	}
 	public String getRefreshToken() {
 		return refreshToken;
 	}

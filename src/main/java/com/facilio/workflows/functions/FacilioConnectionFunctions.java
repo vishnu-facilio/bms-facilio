@@ -6,7 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import com.amazonaws.HttpMethod;
 import com.facilio.bmsconsole.context.ConnectionContext;
+import com.facilio.bmsconsole.util.ConnectionUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.workflows.exceptions.FunctionParamException;
 
@@ -21,11 +26,22 @@ public enum FacilioConnectionFunctions implements FacilioWorkflowFunctionInterfa
 			if(objects[0] == null) {
 				return null;
 			}
-			ConnectionContext field = (ConnectionContext)objects[0];
+			ConnectionContext connectionContext = (ConnectionContext)objects[0];
 			
-			String url = (String) objects[0];
+			String url = (String) objects[1];
 			
-			return null;
+			Map<String,String> params = null;
+			if(objects.length > 2) {
+				params = (Map<String, String>) objects[2];
+			}
+			
+			String res = ConnectionUtil.getUrlResult(connectionContext, url, params, HttpMethod.GET);
+			
+			JSONObject resultJson = (JSONObject) new JSONParser().parse(res);
+			
+			System.out.println("res --- "+resultJson);
+			
+			return resultJson;
 		};
 		
 		public void checkParam(Object... objects) throws Exception {
@@ -43,9 +59,22 @@ public enum FacilioConnectionFunctions implements FacilioWorkflowFunctionInterfa
 			if(objects[0] == null) {
 				return null;
 			}
-			FacilioField field = (FacilioField)objects[0];
+			ConnectionContext connectionContext = (ConnectionContext)objects[0];
 			
-			return field.getId();
+			String url = (String) objects[1];
+			
+			Map<String,String> params = null;
+			if(objects.length > 2) {
+				params = (Map<String, String>) objects[2];
+			}
+			
+			String res = ConnectionUtil.getUrlResult(connectionContext, url, params, HttpMethod.POST);
+			
+			JSONObject resultJson = (JSONObject) new JSONParser().parse(res);
+			
+			System.out.println("res --- "+resultJson);
+			
+			return resultJson;
 		};
 		
 		public void checkParam(Object... objects) throws Exception {
