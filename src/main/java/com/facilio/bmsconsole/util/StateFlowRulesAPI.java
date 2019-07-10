@@ -68,7 +68,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		boolean shouldChangeTimer = facilioStatus.shouldChangeTimer(oldState);
 		TimerField timerField = TimerFieldUtil.getTimerField(module.getName());
 		if (shouldChangeTimer) {
-			handleTimerUpdation(prop, facilioStatus, timerField, module);
+			handleTimerUpdation(prop, facilioStatus, timerField, module, record);
 		}
 		
 		// Update start and end time of the record
@@ -84,13 +84,12 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			}
 		}
 		else if (facilioStatus.isTimerEnabled() && facilioStatus.getType() == StatusType.OPEN) {
-			long currentTime = DateTimeUtil.getCurrenTime();
 			if (timerField != null) {
 				if (prop.get(timerField.getEndTimeFieldName()) != null) {
 					prop.put(timerField.getEndTimeFieldName(), -99);
 				}
 				if (prop.get(timerField.getStartTimeFieldName()) == null) {
-					prop.put(timerField.getStartTimeFieldName(), currentTime);
+					prop.put(timerField.getStartTimeFieldName(), record.getCurrentTime());
 				}
 			}
 		}
@@ -102,6 +101,13 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		if (module.getName().equals("workorder")) {
 			fields.add(modBean.getField("status", module.getName()));
 			prop.put("status", FieldUtil.getAsProperties(facilioStatus));
+
+			if (facilioStatus.getStatus().equals("Resolved") &&
+					record.getStateFlowId() == StateFlowRulesAPI.getDefaultStateFlow(module).getId()) {
+				if (timerField != null) {
+					prop.put(timerField.getEndTimeFieldName(), record.getCurrentTime());
+				}
+			}
 		}
 		
 		if (timerField != null && timerField.isTimerEnabled()) {
@@ -205,12 +211,12 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		return null;
 	}
 
-	private static void handleTimerUpdation(Map<String, Object> prop, FacilioStatus ticketStatus, TimerField timerField, FacilioModule module) throws Exception {
+	private static void handleTimerUpdation(Map<String, Object> prop, FacilioStatus ticketStatus, TimerField timerField, FacilioModule module, ModuleBaseWithCustomFields record) throws Exception {
 		if (timerField == null || !timerField.isTimerEnabled()) {
 			return;
 		}
 		
-		long currentTime = DateTimeUtil.getCurrenTime();
+		long currentTime = record.getCurrentTime();
 		
 		if (ticketStatus.isTimerEnabled()) {
 			prop.put(timerField.getResumeTimeFieldName(), currentTime);
