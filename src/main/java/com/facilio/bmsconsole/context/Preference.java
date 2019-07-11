@@ -3,13 +3,13 @@ package com.facilio.bmsconsole.context;
 import java.util.Map;
 
 import com.facilio.bmsconsole.forms.FacilioForm;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 
 public abstract class Preference {
 	
-	public Preference(String name, FacilioForm form) {
+	public Preference(String name, String displayName, FacilioForm form) {
 		this.name = name;
 		this.form = form;
+		this.displayName = displayName;
 	}
 	
 	private String name;
@@ -28,6 +28,13 @@ public abstract class Preference {
 		this.form = form;
 	}
 	
+	private String displayName;
+	public String getDisplayName() {
+		return displayName;
+	}
+	public void setDisplayName(String displayName) {
+		this.displayName = displayName;
+	}
 	public abstract void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception;
 	public abstract void disable(Long recordId, Long moduleId) throws Exception;
 

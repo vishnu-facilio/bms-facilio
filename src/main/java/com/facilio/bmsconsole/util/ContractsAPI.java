@@ -323,7 +323,7 @@ public class ContractsAPI {
 		formSection.setFields(fields);
 		sections.add(formSection);
 		form.setSections(sections);
-		return new Preference("expireDateNotification", form) {
+		return new Preference("expireDateNotification", "Expiry Date Notifications", form) {
 			@Override
 			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
 				Long ruleId = saveExpiryPrefs(map, recordId);
