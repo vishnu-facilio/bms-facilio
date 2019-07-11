@@ -5807,6 +5807,27 @@ public class FieldFactory {
  		return fields;
 	}
 
+	public static List<FacilioField> getMLLogPredictCheckGamFields()
+	{
+ 		List<FacilioField> fields = new ArrayList<>();
+ 		FacilioModule module = ModuleFactory.getMLLogReadingModule();
+ 		fields.add(getField("actualValue","DECIMAL_CF1",module,FieldType.NUMBER));
+ 		fields.add(getField("adjustedLowerBound","DECIMAL_CF2",module,FieldType.NUMBER));
+  		fields.add(getField("predictedTime","PREDICTED_TIME",module,FieldType.NUMBER));
+
+ 		return fields;
+	}
+
+	public static List<FacilioField> getMLPredictCheckGamFields()
+	{
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getMLReadingModule();
+		fields.add(getField("actualValue","DECIMAL_CF1",module,FieldType.NUMBER));
+		fields.add(getField("adjustedLowerBound","DECIMAL_CF2",module,FieldType.NUMBER));
+
+		return fields;
+	}
+	
 	public static List<FacilioField> getMLCheckGamFields()
 	{
 		List<FacilioField> fields = new ArrayList<>();
