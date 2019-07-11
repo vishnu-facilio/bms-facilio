@@ -32,8 +32,16 @@ public class DefaultMLHistoricalJob extends FacilioJob
 	{
 		try {
 			JSONObject props=BmsJobUtil.getJobProps(jc.getJobId(), jc.getJobName());
-			JSONObject child=(JSONObject) props.get("child");
-			long childExecutionTime = Long.parseLong(child.get("executionTime").toString());
+			JSONObject child=null;
+			long childExecutionTime=0l;
+			List<MLContext> childMlList=null;
+			if(props.containsKey("child"))
+			{
+				child=(JSONObject) props.get("child");
+				childExecutionTime = Long.parseLong(child.get("executionTime").toString());
+				String[] childMlid = child.get("childMlid").toString().split(",");
+				childMlList = getList(childMlid);
+			}
 			long startTime = Long.parseLong(props.get("startTime").toString());
 			long endTime = Long.parseLong(props.get("endTime").toString());
 			long executionTime = Long.parseLong(props.get("executionTime").toString());
@@ -42,14 +50,11 @@ public class DefaultMLHistoricalJob extends FacilioJob
 			String[] parentMlid=((String) props.get("parentMlid")).split(",");
 			List<MLContext> parentMlList = getList(parentMlid);
 			
-			String[] childMlid = child.get("childMlid").toString().split(",");
-			List<MLContext> childMlList = getList(childMlid);
-			
 			
 			while(startTime < endTime)
 			{
 				executeParent(parentMlList,startTime);
-				if(!child.isEmpty())
+				if(child != null && !child.isEmpty())
 				{
 					ChildLoop(childMlList,startTime,(startTime + executionTime),childExecutionTime);
 				}
