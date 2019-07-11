@@ -44,6 +44,7 @@ public class DownloadCertFile
     }
 
     public static String downloadCertificate( String policyName, String type) {
+        LOGGER.info(" wattsense policy name "+policyName);
         String certFileId = FacilioAgent.getCertFileId(type);
         long orgId = AccountUtil.getCurrentOrg().getOrgId();
         String url=null;
