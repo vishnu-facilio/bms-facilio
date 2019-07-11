@@ -55,7 +55,7 @@ public class IotPolicy
 
     public String getSql(String topic, Map<String,String> publishTypeMap) {
         if(isToModify()){
-            return "SELECT * ," + publishTypeMap.get(topic) +" as"+ EventUtil.DATA_TYPE +" FROM '" + topic + "'";
+            return "SELECT * ," + publishTypeMap.get(topic) +" as "+ EventUtil.DATA_TYPE +" FROM '" + topic + "'";
         }
         return "SELECT * FROM '" + topic + "'";
     }
