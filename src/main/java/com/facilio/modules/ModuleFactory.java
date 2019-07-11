@@ -1325,6 +1325,14 @@ public class ModuleFactory {
 		return taskSectionModule;
 	}
 	
+	public static FacilioModule getPrerequisiteApproverTemplateModule() {
+		FacilioModule prerequisiteApproverModule = new FacilioModule();
+		prerequisiteApproverModule.setName("prerequsiteApproversTemplate");
+		prerequisiteApproverModule.setDisplayName("Prerequisite Approvers Template");
+		prerequisiteApproverModule.setTableName("Prerequisite_Approvers_Template");
+		prerequisiteApproverModule.setExtendModule(getTemplatesModule());
+		return prerequisiteApproverModule;
+	}
 	public static FacilioModule getTaskSectionTemplateTriggersModule() {
 		FacilioModule taskSectionTriggerModule = new FacilioModule();
 		taskSectionTriggerModule.setName("tasksectiontemplatetriggers");

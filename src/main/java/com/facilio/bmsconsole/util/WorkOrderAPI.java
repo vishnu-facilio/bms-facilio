@@ -12,17 +12,24 @@ import org.apache.commons.collections4.CollectionUtils;
 import com.amazonaws.services.dynamodbv2.xspec.NULL;
 
 import com.chargebee.internal.StringJoiner;
+import com.facilio.accounts.bean.GroupBean;
 import com.facilio.accounts.dto.Group;
+import com.facilio.accounts.dto.GroupMember;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.PhotosContext;
+import com.facilio.bmsconsole.context.PrerequisiteApproversContext;
+import com.facilio.bmsconsole.context.SharingContext;
+import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.TicketTypeContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.context.WorkOrderContext.AllowNegativePreRequisite;
+import com.facilio.bmsconsole.context.WorkOrderContext.PreRequisiteStatus;
 import com.facilio.bmsconsole.context.WorkorderItemContext;
 import com.facilio.bmsconsole.context.WorkorderToolsContext;
 import com.facilio.bmsconsole.view.ViewFactory;
@@ -75,6 +82,62 @@ public class WorkOrderAPI {
 		chain.execute(context);
 		
 		return (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
+	}
+	
+	private static boolean isMatching (PrerequisiteApproversContext permission, User user, Object object) throws Exception {
+		switch (permission.getSharingTypeEnum()) {
+			case USER:
+				if (permission.getUserId() == user.getOuid()) {
+					return true;
+				}
+				break;
+			case ROLE:
+				if (permission.getRoleId() == user.getRoleId()) {
+					return true;
+				}
+			case GROUP:
+				if (permission.getGroupMembers() == null) {
+					GroupBean groupBean = (GroupBean) BeanFactory.lookup("GroupBean");
+					List<GroupMember> members = groupBean.getGroupMembers(permission.getGroupId());
+					permission.setGroupMembers(members);
+				}
+				if (permission.getGroupMembers() != null && !permission.getGroupMembers().isEmpty()) {
+					for (GroupMember member : permission.getGroupMembers()) {
+						if (member.getOuid() == user.getOuid()) {
+							return true;
+						}
+					}
+				}
+				break;
+		}
+		return false;
+	}
+	
+	public static boolean isPrerequisiteApprover(long ticketId) throws Exception {
+		if (ticketId > 0) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			String moduleName = FacilioConstants.ContextNames.PREREQUISITE_APPROVERS;
+			FacilioModule module = modBean.getModule(moduleName);
+			List<FacilioField> fields = modBean.getAllFields(moduleName);
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+			
+			SelectRecordsBuilder<PrerequisiteApproversContext> builder = new SelectRecordsBuilder<PrerequisiteApproversContext>()
+					.module(module).beanClass(PrerequisiteApproversContext.class).select(fields)
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(ticketId),NumberOperators.EQUALS));
+			List<PrerequisiteApproversContext> prerequisiteApprovers = builder.get();
+			
+			if (prerequisiteApprovers.isEmpty()) {
+				return true;
+			} else {
+				for (PrerequisiteApproversContext permission : prerequisiteApprovers) {
+					if (isMatching(permission, AccountUtil.getCurrentUser(), AccountUtil.getCurrentUser())) {
+						return true;
+					}
+				}
+			}
+		}
+		
+		return false;
 	}
 	public static WorkOrderContext getWorkOrder(long ticketId) throws Exception {
 		
@@ -1068,29 +1131,51 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 
 }
 
-	public static void updatePreRequestStatus(Long id)
-			throws Exception {
+	public static void updatePreRequisiteEnabled(Long woId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		String workorderModuleName = "workorder";
 		FacilioModule workorderModule = modBean.getModule(workorderModuleName);
-
-		FacilioField preRequestStatusField = new FacilioField();
-		preRequestStatusField.setName("preRequestStatus");
-		preRequestStatusField.setColumnName("PRE_REQUEST_STATUS");
-		preRequestStatusField.setDataType(FieldType.BOOLEAN);
-
+		List<FacilioField> allFields = modBean.getAllFields(workorderModuleName);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
 		Map<String, Object> updateMap = new HashMap<>();
-		updateMap.put("preRequestStatus", getPreRequestStatus(id));
-
-		FacilioField idField = FieldFactory.getIdField(workorderModule);
-		Condition idFieldCondition = CriteriaAPI.getCondition(idField, NumberOperators.EQUALS);
-		idFieldCondition.setValue(String.valueOf(id));
-
+		int preRequisiteCount=getPreRequisiteCount(woId);
+		updateMap.put("prerequisiteEnabled", preRequisiteCount != 0);
+		Condition idFieldCondition = CriteriaAPI.getCondition(FieldFactory.getIdField(workorderModule),String.valueOf(woId), NumberOperators.EQUALS);
 		GenericUpdateRecordBuilder recordBuilder = new GenericUpdateRecordBuilder()
-				.table(workorderModule.getTableName()).fields(Arrays.asList(preRequestStatusField))
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(workorderModule))
+				.table(workorderModule.getTableName()).fields(Arrays.asList(fieldMap.get("prerequisiteEnabled")))
+				.andCondition(idFieldCondition);
+	    recordBuilder.update(updateMap);
+	}
+	public static PreRequisiteStatus updatePreRequisiteStatus(Long woId) throws Exception {
+		PreRequisiteStatus preRequisiteStatus;
+		WorkOrderContext workorder = getWorkOrder(woId);
+		if (workorder.getPrerequisiteEnabled()) {
+			preRequisiteStatus = getPreRequestStatus(woId);
+			if (AllowNegativePreRequisite.YES_WITH_WARNING.equals(workorder.getAllowNegativePreRequisiteEnum())) {
+				if (preRequisiteStatus.equals(PreRequisiteStatus.PENDING)) {
+					preRequisiteStatus = PreRequisiteStatus.COMPLETED_WITH_NEGATIVE;
+				}
+			} else if (AllowNegativePreRequisite.YES_WITH_APPROVAL.equals(workorder.getAllowNegativePreRequisiteEnum())) {
+				if (preRequisiteStatus.equals(PreRequisiteStatus.PENDING) && (workorder.getPreRequisiteApproved() != null && workorder.getPreRequisiteApproved())) {
+					preRequisiteStatus = PreRequisiteStatus.COMPLETED;
+				}
+			}
+		} else {
+			preRequisiteStatus = PreRequisiteStatus.COMPLETED;
+		}
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		String workorderModuleName = "workorder";
+		FacilioModule workorderModule = modBean.getModule(workorderModuleName);
+		List<FacilioField> allFields = modBean.getAllFields(workorderModuleName);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
+		Map<String, Object> updateMap = new HashMap<>();
+		updateMap.put("preRequestStatus", preRequisiteStatus.getValue());
+		Condition idFieldCondition = CriteriaAPI.getCondition(FieldFactory.getIdField(workorderModule),String.valueOf(woId), NumberOperators.EQUALS);
+		GenericUpdateRecordBuilder recordBuilder = new GenericUpdateRecordBuilder()
+				.table(workorderModule.getTableName()).fields(Arrays.asList(fieldMap.get("preRequestStatus")))
 				.andCondition(idFieldCondition);
 		recordBuilder.update(updateMap);
+		return preRequisiteStatus;
 	}
   public static Map<Long, Object> getTeamsCountBySite() throws Exception {
 
@@ -1824,57 +1909,74 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 		return wo.getSiteId();
 	}
 
-	public static Boolean getPreRequestStatus(Long id)
-			throws Exception {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			String moduleName = "task";
-			FacilioField parentIdField = modBean.getField("parentTicketId", moduleName);
-			FacilioModule module = modBean.getModule(moduleName);
-
-			List<FacilioField> fields = new ArrayList<>();
-			fields.add(parentIdField);
-
-			FacilioField countField = new FacilioField();
-			countField.setName("count");
-			countField.setColumnName("COUNT(*)");
-			countField.setDataType(FieldType.NUMBER);
-			fields.add(countField);
-			FacilioField preRequestField = new FacilioField();
-			preRequestField.setName("isPreRequest");
-			preRequestField.setColumnName("IS_PRE_REQUEST");
-			preRequestField.setDataType(FieldType.BOOLEAN);
-
-			FacilioField inputValueField = new FacilioField();
-			inputValueField.setName("inputValue");
-			inputValueField.setColumnName("INPUT_VALUE");
-			inputValueField.setDataType(FieldType.STRING);
-
-			Condition condition = CriteriaAPI.getCondition(parentIdField, Collections.singletonList(id), NumberOperators.EQUALS);
-			Condition preRequestCondition = CriteriaAPI.getCondition(preRequestField, "1", NumberOperators.EQUALS);
-			Condition inputValueCondition = CriteriaAPI.getCondition(inputValueField, "1", StringOperators.ISN_T);
-			GenericSelectRecordBuilder select = new GenericSelectRecordBuilder().table(module.getTableName()).select(fields)
-					.groupBy(parentIdField.getCompleteColumnName())
-//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-					.andCondition(condition)
-					.andCondition(preRequestCondition).andCondition(inputValueCondition);
-			List<Map<String, Object>> countList = select.get();
-            Boolean preRequestStatus=false;
-			Boolean allPreRequisitesCompleted = countList.isEmpty();
-			if(!allPreRequisitesCompleted){
-				allPreRequisitesCompleted=countList.stream().allMatch(map->(0==((Number) map.get("count")).longValue()));
-			}
-			Boolean photosAddedIfMandatory=isPhotosAddedIfMandatory(id);
-			preRequestStatus=allPreRequisitesCompleted&&photosAddedIfMandatory;
-			return preRequestStatus;
+	public static int getPreRequisiteCount(Long woId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		String moduleName = "task";
+		FacilioModule module = modBean.getModule(moduleName);
+		List<FacilioField> allFields = modBean.getAllFields(moduleName);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
+		FacilioField countField = new FacilioField();
+		countField.setName("count");
+		countField.setColumnName("COUNT(*)");
+		countField.setDataType(FieldType.NUMBER);
+		Condition condition = CriteriaAPI.getCondition(fieldMap.get("parentTicketId"), String.valueOf(woId),NumberOperators.EQUALS);
+		Condition preRequestCondition = CriteriaAPI.getCondition(fieldMap.get("preRequest"), "1",NumberOperators.EQUALS);
+		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder().table(module.getTableName()).select(Collections.singletonList(countField))
+				.groupBy(fieldMap.get("parentTicketId").getCompleteColumnName()).andCondition(condition)
+				.andCondition(preRequestCondition);
+		Map<String, Object> props = select.fetchFirst();
+		int count = 0;
+		if(props != null){
+			count = ((Number) props.get("count")).intValue();
+		}
+		return count;
+	}
+	public static PreRequisiteStatus getPreRequestStatus(Long woId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		String moduleName = "task";
+		FacilioModule module = modBean.getModule(moduleName);
+		List<FacilioField> allFields = modBean.getAllFields(moduleName);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
+		FacilioField countField = new FacilioField();
+		countField.setName("count");
+		countField.setColumnName("COUNT(*)");
+		countField.setDataType(FieldType.NUMBER);
+		Condition condition = CriteriaAPI.getCondition(fieldMap.get("parentTicketId"), Collections.singletonList(woId),NumberOperators.EQUALS);
+		Condition preRequestCondition = CriteriaAPI.getCondition(fieldMap.get("preRequest"), "1",NumberOperators.EQUALS);
+		Condition inputValueCondition = CriteriaAPI.getCondition(fieldMap.get("inputValue"), "1",StringOperators.ISN_T);
+		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder().table(module.getTableName())
+				.select(Collections.singletonList(countField))
+				.groupBy(fieldMap.get("parentTicketId").getCompleteColumnName()).andCondition(condition)
+				.andCondition(preRequestCondition).andCondition(inputValueCondition);
+		Map<String, Object> props = select.fetchFirst();
+		int count = 0;
+		if (props != null) {
+			count = ((Number) props.get("count")).intValue();
+		}
+		PreRequisiteStatus preRequestStatus = PreRequisiteStatus.PENDING;
+		if (count == 0 && isPhotosAddedIfMandatory(woId)) {
+			preRequestStatus = PreRequisiteStatus.COMPLETED;
+		}
+		return preRequestStatus;
 	}
 	public static Boolean isPhotosAddedIfMandatory(Long id)throws Exception{
 		WorkOrderContext workorder=WorkOrderAPI.getWorkOrder(id);
-		boolean isPhtMandatory=workorder.getPhotoMandatory()==null?Boolean.FALSE:workorder.getPhotoMandatory();
+		boolean isPhtMandatory = workorder.getPhotoMandatory() == null ? Boolean.FALSE : workorder.getPhotoMandatory();
 		if(!isPhtMandatory){
 			return true;
 		}else{
-			List<AttachmentContext> attachments=AttachmentsAPI.getAttachments(FacilioConstants.ContextNames.PREREQUISITE_ATTACHMENTS, id);
-            return !attachments.isEmpty();
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			String moduleName=FacilioConstants.ContextNames.PREREQUISITE_PHOTOS;
+			FacilioModule module = modBean.getModule(moduleName);
+			List<FacilioField> fields = modBean.getAllFields(moduleName);
+			Condition idCondition = CriteriaAPI.getCondition(modBean.getField("parentId", moduleName), String.valueOf(id),NumberOperators.EQUALS);
+			SelectRecordsBuilder<PhotosContext> selectBuilder = new SelectRecordsBuilder<PhotosContext>()
+																		.moduleName(moduleName)
+																		.beanClass(PhotosContext.class)
+																		.select(fields)
+																		.table(module.getTableName())
+																		.andCondition(idCondition);
+	        return !selectBuilder.get().isEmpty();
 		}
 	}
     public static WorkorderItemContext getWorkOrderItem(long woItemId) throws Exception {
@@ -2013,6 +2115,10 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 		return finalResult;
 
 	}
-
+    public static void addPrerequisiteApprovers(long parentId, List<SingleSharingContext> sharing) throws Exception {
+		if (CollectionUtils.isNotEmpty(sharing) && parentId > 0) {
+			SharingAPI.addSharing((SharingContext<? extends SingleSharingContext>) sharing, parentId, ModuleFactory.getApproversModule());
+		}
+	}
 	
  }

@@ -1779,7 +1779,7 @@
 			<param name="moduleName">planned</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 			<result name="success" type="json">
-				<param name="includeProperties">^preventivemaintenance.*,^workorder.*,taskList.*,sections.*,^reminders.*,^listOfTasks.*,^sectionTemplates.*,^preRequestList.*,^listOfPreRequests.*,^preRequestSectionTemplates.*</param>
+				<param name="includeProperties">^preventivemaintenance.*,^workorder.*,taskList.*,sections.*,^reminders.*,^listOfTasks.*,^sectionTemplates.*,^preRequestList.*,^listOfPreRequests.*,^preRequestSectionTemplates.*,^prerequisiteApproverTemplates.*</param>
 			</result>
 		</action>
 
@@ -2104,7 +2104,7 @@
 		<action name="add" class="com.facilio.bmsconsole.actions.AttachmentAction"
 			method="addAttachment">
 			<result name="success" type="json">
-				<param name="includeProperties">attachments,attachments\[\d+\],attachments\[\d+\].*,preRequestStatus</param>
+				<param name="includeProperties">attachments,attachments\[\d+\],attachments\[\d+\].*</param>
 			</result>
 		</action>
 

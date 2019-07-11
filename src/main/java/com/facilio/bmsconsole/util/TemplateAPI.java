@@ -10,6 +10,7 @@ import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
 import com.facilio.bmsconsole.templates.*;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.templates.DefaultTemplateWorkflowsConf.TemplateWorkflowConf;
+import com.facilio.bmsconsole.templates.PrerequisiteApproversTemplate.SharingType;
 import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -443,6 +444,13 @@ public class TemplateAPI {
 					template = getControllerActionTemplateFromMap(templateMap);
 				}
 			}break;
+		    case PM_PREREQUISITE_APPROVER: {
+				List<Map<String, Object>> templates = getExtendedProps(ModuleFactory.getPrerequisiteApproverTemplateModule(),FieldFactory.getPrerequisiteApproversTemplateFields(), id);
+				if (templates != null && !templates.isEmpty()) {
+					templateMap.putAll(templates.get(0));
+					template = getPrerequisiteApproversTemplateFromMap(templateMap);
+				}
+			}
 			default: break;
 		}
 		
@@ -761,12 +769,40 @@ public class TemplateAPI {
 		WorkflowTemplate wfTemplate = FieldUtil.getAsBeanFromMap(templateProps, WorkflowTemplate.class);
 		return wfTemplate;
 	}
+
+	private static PrerequisiteApproversTemplate getPrerequisiteApproversTemplateFromMap(Map<String, Object> templateProps) throws Exception {
+		PrerequisiteApproversTemplate template = FieldUtil.getAsBeanFromMap(templateProps,PrerequisiteApproversTemplate.class);
+		return template;
+	}
+
+	public static List<PrerequisiteApproversTemplate> getPrerequisiteApproversTemplateFromWOTemplate(WorkorderTemplate woTemplate) throws Exception {
+		FacilioModule module = ModuleFactory.getPrerequisiteApproverTemplateModule();
+		List<FacilioField> fields = FieldFactory.getPrerequisiteApproversTemplateFields();
+		long parentId;
+		FacilioField parentIdField;
+		parentId = woTemplate.getId();
+		parentIdField = FieldFactory.getAsMap(fields).get("parentId");
+		
+		List<Map<String, Object>> approveTemplateProps = getTemplateJoinedProps(module, fields,
+				CriteriaAPI.getCondition(parentIdField, String.valueOf(parentId), PickListOperators.IS));
+		if (approveTemplateProps != null && !approveTemplateProps.isEmpty()) {
+			List<PrerequisiteApproversTemplate> approveTemplates = new ArrayList<>();
+			for (Map<String, Object> prop : approveTemplateProps) {
+				PrerequisiteApproversTemplate approveTemplate = FieldUtil.getAsBeanFromMap(prop,PrerequisiteApproversTemplate.class);
+				approveTemplates.add(approveTemplate);
+			}
+			return approveTemplates;
+		}
+		return null;
+	}
 	
 	private static WorkorderTemplate getWOTemplateFromMap(Map<String, Object> templateProps) throws Exception {
 		WorkorderTemplate woTemplate = FieldUtil.getAsBeanFromMap(templateProps, WorkorderTemplate.class);
+		woTemplate.setPrerequisiteApproverTemplates(getPrerequisiteApproversTemplateFromWOTemplate(woTemplate));
 		Map<Long, TaskSectionTemplate> sectionMap = getTaskSectionTemplatesFromWOTemplate(woTemplate, null);
 		woTemplate.setTasks(getTasksFromWOTemplate(woTemplate, sectionMap, null));
-		 woTemplate.setPreRequests(getPreRequestsFromWOTemplate(woTemplate, sectionMap));
+		woTemplate.setPreRequests(getPreRequestsFromWOTemplate(woTemplate, sectionMap));
+		woTemplate.setPrerequisiteApprovers(getPrerequisiteApproversFromWOTemplate(woTemplate));
 		List<TaskSectionTemplate> templates = woTemplate.getSectionTemplates();
 		//FIXME this is temporary need to fix this by adding sequence number for task sections
 		if (templates != null) {
@@ -791,6 +827,18 @@ public class TemplateAPI {
 		Map<Long, TaskSectionTemplate> sectionMap = getTaskSectionTemplatesFromWOTemplate(null, jobPlan);
 		Map<String, List<TaskContext>> tasks = getTasksFromWOTemplate(null, sectionMap, jobPlan);
 		return tasks;
+	}
+
+	public static List<PrerequisiteApproversContext> getPrerequisiteApproversFromWOTemplate(WorkorderTemplate woTemplate) throws Exception {
+		List<PrerequisiteApproversContext> approverList = new ArrayList<>();
+		if (woTemplate.getPrerequisiteApproverTemplates() != null) {
+			woTemplate.getPrerequisiteApproverTemplates().forEach(tem -> {
+				if (tem.getPrerequisiteApprover() != null) {
+					approverList.add(tem.getPrerequisiteApprover());
+				}
+			});
+		}
+		return approverList;
 	}
 	
 	public static Map<Long, TaskSectionTemplate> getTaskSectionTemplatesFromWOTemplate(WorkorderTemplate woTemplate, JobPlanContext jobPlan) throws Exception {
@@ -1330,9 +1378,38 @@ public class TemplateAPI {
 		Map<String, Object> templateProps = FieldUtil.getAsProperties(template);
 		long templateId = insertTemplateWithExtendedProps(ModuleFactory.getWorkOrderTemplateModule(), FieldFactory.getWorkOrderTemplateFields(), templateProps); //inserting WO template
 		
+		addPrerequisiteApproverTemplateForWO(templateId,template.getPrerequisiteApproverTemplates());
 		addSectionTemplatesForWO(template.getSectionTemplates(), templateId,taskType, sectionType,preRequestType,preRequestSectionType);
 		return templateId;
 	}
+	private static void addPrerequisiteApproverTemplateForWO(long woTemplateId,List<PrerequisiteApproversTemplate> prerequisiteApproverTemplates) throws Exception{
+		List<Map<String, Object>> templatePropList = new ArrayList<>();
+		if (prerequisiteApproverTemplates != null) {
+			for (PrerequisiteApproversTemplate prerequisiteApprover : prerequisiteApproverTemplates) {
+				prerequisiteApprover.setParentId(woTemplateId);
+				prerequisiteApprover.setOrgId(AccountUtil.getCurrentOrg().getId());
+				SharingType type = prerequisiteApprover.getSharingTypeEnum();
+				long approversId = -1;
+				if (type != null) {
+					switch (type) {
+						case USER:
+							approversId = prerequisiteApprover.getUserId() ;
+							break;
+						case ROLE:
+							approversId = prerequisiteApprover.getRoleId() ;
+							break;
+						case GROUP:
+							approversId = prerequisiteApprover.getGroupId() ;
+							break;
+					}
+				}
+				prerequisiteApprover.setType(Type.PM_PREREQUISITE_APPROVER);
+				prerequisiteApprover.setName("PREREQUISITE_APPROVER_"+woTemplateId+"_"+prerequisiteApprover.getType()+"_"+approversId);
+				templatePropList.add(FieldUtil.getAsProperties(prerequisiteApprover));
+			}
+			insertTemplatesWithExtendedProps(ModuleFactory.getPrerequisiteApproverTemplateModule(),FieldFactory.getPrerequisiteApproversTemplateFields(), templatePropList);
+		}
+		}
 	
 	private static Map<String, Long> addSectionTemplatesForWO(long parentId, Set<String> sectionNames, Type sectionType) throws Exception {
 		List<Map<String, Object>> templatePropList = new ArrayList<>();

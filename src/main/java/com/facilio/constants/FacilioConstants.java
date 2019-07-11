@@ -239,13 +239,17 @@ public class FacilioConstants {
 		public static final String TASK_MAP = "taskMap";
 		public static final String TASK_SECTIONS = "taskSections";
 		public static final String TASK_SECTION_TEMPLATES = "taskSectionTemplates";
+		public static final String PREREQUISITE_APPROVER_TEMPLATES = "prerequisiteApproverTemplates";
 		public static final String TASK_SECTION = "taskSection";
 		public static final String DEFAULT_TASK_SECTION = "default";
 		
+		public static final String PRE_REQUEST_STATUS="prerequestStatus";
 		public static final String PRE_REQUEST_MAP="preRequestMap";
 		public static final String PRE_REQUEST_LIST = "preRequests";
 		public static final String PRE_REQUEST_SECTIONS = "preRequestSections";
-
+		public static final String PREREQUISITE_APPROVERS = "prerequisiteApprovers";
+		public static final String PREREQUISITE_APPROVERS_LIST = "prerequisiteApproversList";
+		
 		public static final String ATTACHMENT = "attachment";
 		public static final String ATTACHMENT_LIST = "attachments";
 		public static final String EXISTING_ATTACHMENT_LIST = "existingAttachments";
@@ -482,6 +486,7 @@ public class FacilioConstants {
 		public static final String UTILITY_BILL_READING = "utilitybillreading";
 		public static final String WATER_READING = "waterreading";
 		
+		public static final String PREREQUISITE_PHOTOS = "prerequisitephotos";
 		public static final String BASE_SPACE_PHOTOS = "basespacephotos";
 		public static final String ASSET_PHOTOS = "assetphotos";
 		public static final String STORE_ROOM_PHOTOS = "storeroomphotos";
@@ -502,7 +507,6 @@ public class FacilioConstants {
 		public static final String BASE_SPACE_ATTACHMENTS = "basespaceattachments";
 		public static final String ASSET_ATTACHMENTS = "assetattachments";
 		public static final String TASK_ATTACHMENTS = "taskattachments";
-		public static final String PREREQUISITE_ATTACHMENTS = "prerequisiteattachments";
 		public static final String INVENTORY_ATTACHMENTS = "inventoryattachments";
 		public static final String ITEM_TYPES_ATTACHMENTS = "itemTypesAttachments";
 		public static final String TOOL_TYPES_ATTACHMENTS = "toolTypesattachments";

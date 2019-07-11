@@ -173,15 +173,16 @@ public class TaskAction extends FacilioAction {
 		this.id = id;
 	}
 
-	private boolean preRequestStatus;
+	private int preRequestStatus;
 
-	public boolean isPreRequestStatus() {
+	public int getPreRequestStatus() {
 		return preRequestStatus;
 	}
 
-	public void setPreRequestStatus(boolean preRequestStatus) {
+	public void setPreRequestStatus(int preRequestStatus) {
 		this.preRequestStatus = preRequestStatus;
 	}
+
 	private int rowsUpdated;
 	public int getRowsUpdated() {
 		return rowsUpdated;
@@ -374,12 +375,10 @@ public class TaskAction extends FacilioAction {
 			if (count != null) {
 				rowsUpdated += (int) count;
 			}
+				if (context.get(FacilioConstants.ContextNames.PRE_REQUEST_STATUS) != null) {
+					preRequestStatus = (Integer) context.get(FacilioConstants.ContextNames.PRE_REQUEST_STATUS);
+				}
 		}
-			List<TaskContext> oldTasks = (List<TaskContext>) context.get(FacilioConstants.TicketActivity.OLD_TICKETS);
-			if (!oldTasks.isEmpty()) {
-				Long workOrderId = oldTasks.get(0).getParentTicketId();
-				preRequestStatus =WorkOrderAPI.getPreRequestStatus(workOrderId);
-			}
 	}
 		catch (Exception e) {
 			JSONObject inComingDetails = new JSONObject();

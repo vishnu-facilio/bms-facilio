@@ -4,7 +4,6 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.AttachmentContext.AttachmentType;
 import com.facilio.bmsconsole.util.AttachmentsAPI;
-import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo;
@@ -84,15 +83,6 @@ public class AttachmentAction  extends FacilioAction {
 		this.attachmentId = attachmentId;
 	}
 
-	private boolean preRequestStatus;
-
-	public boolean isPreRequestStatus() {
-		return preRequestStatus;
-	}
-
-	public void setPreRequestStatus(boolean preRequestStatus) {
-		this.preRequestStatus = preRequestStatus;
-	}
 	
 	public String execute() {
 		return SUCCESS;
@@ -134,10 +124,6 @@ public class AttachmentAction  extends FacilioAction {
 		addAttachmentChain.execute(context);
 		
 		module=(String)context.get(FacilioConstants.ContextNames.MODULE_NAME);
-		Boolean isPrerequisite=(Boolean)context.get(FacilioConstants.ContextNames.IS_PREREQUISITE);
-		if(module.equals(FacilioConstants.ContextNames.TICKET_ATTACHMENTS)&&isPrerequisite){
-			preRequestStatus =WorkOrderAPI.getPreRequestStatus(recordId);
-		}
 		List<AttachmentContext> attachmentList = (List<AttachmentContext>) context.get(FacilioConstants.ContextNames.ATTACHMENT_LIST);
 		setAttachments(attachmentList);
 		

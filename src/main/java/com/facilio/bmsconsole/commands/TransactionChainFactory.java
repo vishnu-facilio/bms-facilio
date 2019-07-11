@@ -807,6 +807,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddAttachmentRelationshipCommand());
 			c.addCommand(new AddTicketActivityCommand());
 			c.addCommand(getAddTasksChain());
+			c.addCommand(new AddPrerequisiteApproversCommand());
 			c.addCommand(getWorkOrderWorkflowsChain());
 			c.addCommand(new AddActivitiesCommand());
 			return c;

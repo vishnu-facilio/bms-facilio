@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.templates.PrerequisiteApproversTemplate;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.Template.Type;
@@ -36,6 +37,8 @@ public class CreateWorkorderTemplateCommand implements Command {
 		WorkorderTemplate workorderTemplate = new WorkorderTemplate();
 		workorderTemplate.setWorkorder(workorder);
 		workorderTemplate.setTasks(tasks);
+		List<PrerequisiteApproversTemplate> prerequisiteApproverTemplates = (List<PrerequisiteApproversTemplate>) context.get(FacilioConstants.ContextNames.PREREQUISITE_APPROVER_TEMPLATES);
+		workorderTemplate.setPrerequisiteApproverTemplates(prerequisiteApproverTemplates);
 		
 		if(context.get(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES) != null) {
 			List<TaskSectionTemplate> sectionTemplates =  (List<TaskSectionTemplate>) context.get(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES);

@@ -140,7 +140,8 @@ public class AddTasksCommand implements Command, PostTransactionCommand {
 		TicketAPI.updateTaskCount(idsToUpdateTaskCount);
 		if (idsToUpdateTaskCount != null) {
 			for (Long id : idsToUpdateTaskCount) {
-				WorkOrderAPI.updatePreRequestStatus(id);
+				WorkOrderAPI.updatePreRequisiteEnabled(id);
+				WorkOrderAPI.updatePreRequisiteStatus(id);
 			}
 		}
 		return false;

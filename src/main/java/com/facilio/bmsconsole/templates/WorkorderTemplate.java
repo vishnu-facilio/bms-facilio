@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import com.facilio.bmsconsole.context.PrerequisiteApproversContext;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -332,6 +333,28 @@ public class WorkorderTemplate extends Template {
 	public void setPreRequestSectionTemplates(List<TaskSectionTemplate> preRequestSectionTemplates) {
 		this.preRequestSectionTemplates = preRequestSectionTemplates;
 	}
+
+	@JsonIgnore
+	private List<PrerequisiteApproversContext> prerequisiteApprovers;
+
+	public List<PrerequisiteApproversContext> getPrerequisiteApprovers() {
+		return prerequisiteApprovers;
+	}
+
+	public void setPrerequisiteApprovers(List<PrerequisiteApproversContext> prerequisiteApproversContext) {
+		this.prerequisiteApprovers = prerequisiteApproversContext;
+	}
+	@JsonIgnore
+	private List<PrerequisiteApproversTemplate> prerequisiteApproverTemplates;
+
+	public List<PrerequisiteApproversTemplate> getPrerequisiteApproverTemplates() {
+		return prerequisiteApproverTemplates;
+	}
+
+	public void setPrerequisiteApproverTemplates(List<PrerequisiteApproversTemplate> prerequisiteApproverTemplates) {
+		this.prerequisiteApproverTemplates = prerequisiteApproverTemplates;
+	}
+
 	@JsonIgnore
 	private List<TaskSectionTemplate> sectionTemplates;
 	public List<TaskSectionTemplate> getSectionTemplates() {

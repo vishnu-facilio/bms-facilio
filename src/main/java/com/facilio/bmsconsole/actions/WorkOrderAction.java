@@ -13,9 +13,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import com.facilio.tasker.ScheduleInfo;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.lang3.StringUtils;
@@ -27,6 +24,7 @@ import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
@@ -61,6 +59,8 @@ import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.context.WorkOrderContext.AllowNegativePreRequisite;
+import com.facilio.bmsconsole.templates.PrerequisiteApproversTemplate;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
@@ -68,6 +68,7 @@ import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.TicketActivity;
@@ -82,7 +83,9 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.json.simple.parser.ParseException;
+import com.facilio.tasker.ScheduleInfo;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 public class WorkOrderAction extends FacilioAction {
 
@@ -261,6 +264,9 @@ public class WorkOrderAction extends FacilioAction {
 		if(preRequestsString != null) {
 			setPreRequestSectioncontext(preRequestsString);
 		}
+		if(workorder.getAllowNegativePreRequisiteEnum().equals(AllowNegativePreRequisite.YES_WITH_APPROVAL) && prerequisiteApproverString != null) {
+			setPreRequisiteApproverContext(prerequisiteApproverString);
+		}
 		if(reminderString != null) {
 			setRemindercontex(reminderString);
 		}
@@ -277,6 +283,7 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, preventivemaintenance);
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 //		context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
+		context.put(FacilioConstants.ContextNames.PREREQUISITE_APPROVER_TEMPLATES, prerequisiteApproverTemplates);
 		context.put(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES, sectionTemplates);
 		context.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
 		
@@ -508,6 +515,9 @@ public class WorkOrderAction extends FacilioAction {
 		}
 		if (preRequestsString != null) {
 			setPreRequestSectioncontext(preRequestsString);
+		}
+		if(workorder.getAllowNegativePreRequisiteEnum().equals(AllowNegativePreRequisite.YES_WITH_APPROVAL) && prerequisiteApproverString != null) {
+			setPreRequisiteApproverContext(prerequisiteApproverString);
 		}
 		if(reminderString != null) {
 			setRemindercontex(reminderString);
@@ -765,6 +775,7 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 //		context.put(FacilioConstants.ContextNames.TASK_MAP, tasks);
 		context.put(FacilioConstants.ContextNames.TASK_SECTION_TEMPLATES, sectionTemplates);
+		context.put(FacilioConstants.ContextNames.PREREQUISITE_APPROVER_TEMPLATES, prerequisiteApproverTemplates);
 		context.put(FacilioConstants.ContextNames.TEMPLATE_TYPE, Type.PM_WORKORDER);
 		context.put(FacilioConstants.ContextNames.IS_UPDATE_PM, true);
 		context.put(FacilioConstants.ContextNames.DEL_READING_RULE_IDS, this.deleteReadingRulesList);
@@ -833,6 +844,7 @@ public class WorkOrderAction extends FacilioAction {
 		setPreRequestList((Map<Long, List<TaskContext>>) context.get(FacilioConstants.ContextNames.PRE_REQUEST_MAP));
 		setListOfTasks((List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST));
 		setListOfPreRequests((List<TaskContext>) context.get(FacilioConstants.ContextNames.PRE_REQUEST_LIST));
+		setPrerequisiteApproverTemplates((List<PrerequisiteApproversTemplate>) context.get(FacilioConstants.ContextNames.PREREQUISITE_APPROVER_TEMPLATES));
 		setSectionTemplates((List<TaskSectionTemplate>) context.get(FacilioConstants.ContextNames.TASK_SECTIONS));
 		setPreRequestSectionTemplates((List<TaskSectionTemplate>) context.get(FacilioConstants.ContextNames.PRE_REQUEST_SECTIONS));
 		setReminders((List<PMReminder>) context.get(FacilioConstants.ContextNames.PM_REMINDERS));
@@ -1508,6 +1520,17 @@ public class WorkOrderAction extends FacilioAction {
 	public void setPreRequestsString(String preRequestsString) {
 		this.preRequestsString = preRequestsString;
 	}
+
+	private String prerequisiteApproverString;
+
+	public String getPrerequisiteApproverString() {
+		return prerequisiteApproverString;
+	}
+
+	public void setPrerequisiteApproverString(String prerequisiteApproverString) {
+		this.prerequisiteApproverString = prerequisiteApproverString;
+	}
+
 	private String tasksString;
 	public String getTasksString() {
 		return tasksString;
@@ -1538,6 +1561,15 @@ public class WorkOrderAction extends FacilioAction {
 		getSectionTemplates().addAll(taskSectionContextList);
 		return taskSectionContextList;
 	}
+	
+	public List<PrerequisiteApproversTemplate> setPreRequisiteApproverContext(String preRequisiteApproverString) throws Exception {
+        JSONParser parser = new JSONParser();
+		JSONArray obj = (JSONArray) parser.parse(preRequisiteApproverString);
+		List<PrerequisiteApproversTemplate> prerequisiteApproverList = FieldUtil.getAsBeanListFromJsonArray(obj,PrerequisiteApproversTemplate.class);
+		setPrerequisiteApproverTemplates(prerequisiteApproverList);
+		return prerequisiteApproverList;
+	}
+	
 	public List<TaskSectionTemplate> setTaskSectioncontext(String taskSectionstring) throws Exception {
 		
 		JSONParser parser = new JSONParser();
@@ -1838,6 +1870,17 @@ public class WorkOrderAction extends FacilioAction {
 	public void setPreRequestSectionTemplates(List<TaskSectionTemplate> preRequestSectionTemplates) {
 		this.preRequestSectionTemplates = preRequestSectionTemplates;
 	}
+
+	List<PrerequisiteApproversTemplate> prerequisiteApproverTemplates;
+
+	public List<PrerequisiteApproversTemplate> getPrerequisiteApproverTemplates() {
+		return prerequisiteApproverTemplates;
+	}
+
+	public void setPrerequisiteApproverTemplates(List<PrerequisiteApproversTemplate> prerequisiteApproverTemplates) {
+		this.prerequisiteApproverTemplates = prerequisiteApproverTemplates;
+	}
+
 	private List<TaskSectionTemplate> sectionTemplates;
 
 	public List<TaskSectionTemplate> getSectionTemplates() {
@@ -2498,4 +2541,21 @@ public class WorkOrderAction extends FacilioAction {
 		return Arrays.asList("createdTime", "subject", "assignedTo", "trigger", "resource");
 	}
 
+
+	private int preRequestStatus;
+
+	public int getPreRequestStatus() {
+		return preRequestStatus;
+	}
+
+	public void setPreRequestStatus(int preRequestStatus) {
+		this.preRequestStatus = preRequestStatus;
+	}
+
+	public String v2GetPrerequisiteStatus() throws Exception {
+		preRequestStatus = WorkOrderAPI.getWorkOrder(workOrderId).getPreRequestStatus();
+		setResult("preRequestStatus", preRequestStatus);
+		return SUCCESS;
+	}
+	
 }

@@ -425,6 +425,11 @@
 			<param name="moduleName">workorder</param>
 			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
 		</action>
+       <action name="getPrerequisiteStatus" class="com.facilio.bmsconsole.actions.WorkOrderAction"
+			method="v2GetPrerequisiteStatus">
+			<param name="moduleName">workorder</param>
+			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
+		</action>
 
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.WorkOrderAction"

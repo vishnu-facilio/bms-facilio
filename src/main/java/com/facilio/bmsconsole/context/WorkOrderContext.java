@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.bmsconsole.workflow.rule.ApproverContext;
@@ -21,15 +22,6 @@ public class WorkOrderContext extends TicketContext {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private boolean preRequestStatus;
-
-	public boolean isPreRequestStatus() {
-		return preRequestStatus;
-	}
-
-	public void setPreRequestStatus(boolean preRequestStatus) {
-		this.preRequestStatus = preRequestStatus;
-	}
 	private static Logger log = LogManager.getLogger(WorkOrderContext.class.getName());
 	private User requester;
 	public User getRequester() {
@@ -219,6 +211,15 @@ public class WorkOrderContext extends TicketContext {
 		this.alarm = alarm;
 	}
 
+	private Boolean prerequisiteEnabled;
+
+	public Boolean getPrerequisiteEnabled() {
+		return prerequisiteEnabled;
+	}
+
+	public void setPrerequisiteEnabled(Boolean prerequisiteEnabled) {
+		this.prerequisiteEnabled = prerequisiteEnabled;
+	}
 	private Boolean photoMandatory;
 
 	public Boolean getPhotoMandatory() {
@@ -371,6 +372,102 @@ public class WorkOrderContext extends TicketContext {
 		}
 	}
 	
+	private PreRequisiteStatus preRequestStatus;
+
+	public PreRequisiteStatus getPreRequestStatusEnum() {
+		return preRequestStatus;
+	}
+
+	public int getPreRequestStatus() {
+		if (preRequestStatus != null) {
+			return preRequestStatus.getValue();
+		}
+		return -1;
+	}
+
+	public void setPreRequestStatus(PreRequisiteStatus preRequestStatus) {
+		this.preRequestStatus = preRequestStatus;
+	}
+
+	public void setPreRequestStatus(int preRequestStatus) {
+		this.preRequestStatus = PreRequisiteStatus.valueOf(preRequestStatus);
+	}
+	public enum PreRequisiteStatus {
+		PENDING(1),
+		COMPLETED_WITH_NEGATIVE(2),
+		COMPLETED(3)
+		;
+
+		private int value;
+		private PreRequisiteStatus(int value) {
+			// TODO Auto-generated constructor stub
+			this.value = value;
+		}
+
+		public static PreRequisiteStatus valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+		public int getValue() {
+			// TODO Auto-generated method stub
+			return value;
+		}
+	}
+
+	private Boolean preRequisiteApproved;
+
+	public Boolean getPreRequisiteApproved() {
+		return preRequisiteApproved;
+	}
+
+	public void setPreRequisiteApproved(Boolean preRequisiteApproved) {
+		this.preRequisiteApproved = preRequisiteApproved;
+	}
+
+	private AllowNegativePreRequisite allowNegativePreRequisite;
+
+	public AllowNegativePreRequisite getAllowNegativePreRequisiteEnum() {
+		return allowNegativePreRequisite;
+	}
+
+	public void setAllowNegativePreRequisite(AllowNegativePreRequisite allowNegativePreRequisite) {
+		this.allowNegativePreRequisite = allowNegativePreRequisite;
+	}
+
+	public void setAllowNegativePreRequisite(int allowNegativePreRequisite) {
+		this.allowNegativePreRequisite = AllowNegativePreRequisite.valueOf(allowNegativePreRequisite);
+	}
+
+	public int getAllowNegativePreRequisite() {
+		if (allowNegativePreRequisite != null) {
+			return allowNegativePreRequisite.getValue();
+		}
+		return -1;
+	}
+	public enum AllowNegativePreRequisite {
+		NO(1),
+		YES_WITH_WARNING(2),
+		YES_WITH_APPROVAL(3)
+		;
+		private int value;
+		private AllowNegativePreRequisite(int value) {
+			// TODO Auto-generated constructor stub
+			this.value = value;
+		}
+		public static AllowNegativePreRequisite valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+		public int getValue() {
+			// TODO Auto-generated method stub
+			return value;
+		}
+
+	}
 	private long syncTime = -1;
 	public long getSyncTime() {
 		return syncTime;
@@ -379,4 +476,13 @@ public class WorkOrderContext extends TicketContext {
 		this.syncTime = syncTime;
 	}
 	
+	boolean prerequisiteApprover;
+
+	public boolean isPrerequisiteApprover() throws Exception {
+		return WorkOrderAPI.isPrerequisiteApprover(this.getId());
+	}
+
+	public void setPrerequisiteApprover(boolean prerequisiteApprover) {
+		this.prerequisiteApprover = prerequisiteApprover;
+	}
 }

@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.TaskTemplate;
+import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
@@ -149,7 +150,9 @@ public class NewPreventiveMaintenanceSummaryCommand implements Command {
 		context.put(FacilioConstants.ContextNames.PRE_REQUEST_MAP, template.getPreRequests());
 		context.put(FacilioConstants.ContextNames.TASK_LIST, listOfTasks);
 		context.put(FacilioConstants.ContextNames.PRE_REQUEST_LIST, listOfPreRequests);
+		context.put(FacilioConstants.ContextNames.PREREQUISITE_APPROVER_TEMPLATES, template.getPrerequisiteApproverTemplates());
 		List<TaskSectionTemplate> sectionTemplate = template.getSectionTemplates();
+		sectionTemplate = sectionTemplate.stream().filter(sec -> !sec.getTypeEnum().equals(Type.PM_PRE_REQUEST_SECTION)).collect(Collectors.toList());
 		sectionTemplate = fillSectionTemplate(template,sectionTemplate);
 		Map<Long, List<ReadingRuleContext>> fieldVsRules = new HashMap<>();
 		if (listOfTasks != null) {

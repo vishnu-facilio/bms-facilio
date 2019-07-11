@@ -4728,6 +4728,18 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static List<FacilioField> getPrerequisiteApproversTemplateFields() {
+		FacilioModule module = ModuleFactory.getPrerequisiteApproverTemplateModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getIdField(module));
+		fields.add(getField("parentId", "PARENT_WO_TEMPLATE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("userId", "ORG_USERID", module, FieldType.LOOKUP));
+		fields.add(getField("roleId", "ROLE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("groupId", "GROUP_ID", module, FieldType.LOOKUP));
+		fields.add(getField("sharingType", "SHARING_TYPE", module, FieldType.NUMBER));
+		return fields;
+	}
+	
 	public static List<FacilioField> getTaskSectionTemplateTriggersFields() {
 		FacilioModule module = ModuleFactory.getTaskSectionTemplateTriggersModule();
 		List<FacilioField> fields = new ArrayList<>();
