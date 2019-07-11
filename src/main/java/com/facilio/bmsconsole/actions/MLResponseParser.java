@@ -1,73 +1,97 @@
 package com.facilio.bmsconsole.actions;
 
-import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
+import java.time.ZoneId;
 import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
-import org.apache.commons.io.IOUtils;
 import org.apache.log4j.LogManager;
-import org.apache.struts2.ServletActionContext;
+import org.json.simple.JSONObject;
 
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.MLContext;
 import com.facilio.bmsconsole.util.MLUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.time.DateTimeUtil;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class MLResponseParser extends ActionSupport 
 {
 	private static org.apache.log4j.Logger log = LogManager.getLogger(MLResponseParser.class.getName());
 	
+	
+	
 	public String parseResponse()
 	{
 		try
 		{
-			log.info("ML ID and Result are "+mlID+":::"+result);
-			HttpServletRequest request = ServletActionContext.getRequest();
-			log.info("Request details are "+request.getParameterMap().toString());
-			Map<String, String[]> data = request.getParameterMap();
-			for(String key:data.keySet())
+			log.info("ML ID and Result are "+ml_id+":::"+result+"::"+orgid+"::"+error);
+			if(error==null || error.isEmpty())
 			{
-				log.info("Parameter name is "+key+"::"+data.get(key));
+				List<MLContext> mlContextList = MLUtil.getMLContext(ml_id);
+				if(mlContextList.isEmpty())
+				{
+					log.error("No ML Context present for "+ml_id);
+					return ERROR;
+				}
+				MLContext mlContext = mlContextList.get(0);
+				mlContext.setResult(result);
+				
+				Context context = new FacilioContext();
+				context.put(FacilioConstants.ContextNames.ML, mlContext);
+				Chain c = FacilioChainFactory.addMLReadingChain();
+				c.execute(context);
 			}
-			log.info("Request body "+request.getContentType()+"::"+request.getContentLength());
-			StringWriter writer = new StringWriter();
-			IOUtils.copy(request.getInputStream(), writer, StandardCharsets.UTF_8);
-			String theString = writer.toString();
-			log.info("Input Stream data is "+theString);
-			
-			List<MLContext> mlContextList = MLUtil.getMLContext(mlID);
-			if(mlContextList.isEmpty())
+			else
 			{
-				log.error("No ML Context present for "+mlID);
-				return ERROR;
+				sendErrorMail();
 			}
-			MLContext mlContext = mlContextList.get(0);
-			mlContext.setResult(result);
-			
-			Context context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.ML, mlContext);
-			Chain c = FacilioChainFactory.addMLReadingChain();
-			c.execute(context);
 			
 		}
 		catch(Exception e)
 		{
-			log.fatal("Exception while parsing mlContext"+mlID, e);
+			log.fatal("Exception while parsing mlContext"+ml_id, e);
 			return ERROR;
 		}
 		
 		return SUCCESS;
 	}
 	
+	private void sendErrorMail()
+	{
+		try
+		{
+			JSONObject json = new JSONObject();
+			json.put("sender", "mlerror@facilio.com");
+			json.put("to", "seenimohamed@facilio.com");
+			json.put("subject", orgid+" - "+ml_id);
+			
+			StringBuilder body = new StringBuilder()
+									.append(error)
+									.append("\n\nInfo : \n--------\n")
+									.append("\n Org Time : ").append(DateTimeUtil.getDateTime())
+									.append("\n Indian Time : ").append(DateTimeUtil.getDateTime(ZoneId.of("Asia/Kolkata")))
+									.append("\n\nMsg : ")
+									.append(error)
+									.append("\n\nOrg Info : \n--------\n")
+									.append(orgid)
+									;
+			json.put("message", body.toString());
+			
+			AwsUtil.sendEmail(json);
+		}
+		catch(Exception e)
+		{
+			log.fatal("Error while sending mail ",e);
+		}
+	}
+	
 	String result;
-	long mlID;
+	long ml_id;
+	long orgid;
+	String error;
 	public void setResult(String result)
 	{
 		this.result = result;
@@ -78,13 +102,30 @@ public class MLResponseParser extends ActionSupport
 		return result;
 	}
 	
-	public void setMlid(long mlID)
+	public void setMl_id(long ml_id)
 	{
-		this.mlID = mlID;
+		this.ml_id = ml_id;
 	}
-	public long getMlid()
+	public long getMl_id()
 	{
-		return mlID;
+		return ml_id;
+	}
+	public long getOrgid()
+	{
+		return orgid;
+	}
+	public void setOrgid(long orgid)
+	{
+		this.orgid = orgid;
+	}
+	
+	public void setError(String error)
+	{
+		this.error = error;
+	}
+	public String getError()
+	{
+		return error;
 	}
 
 }
