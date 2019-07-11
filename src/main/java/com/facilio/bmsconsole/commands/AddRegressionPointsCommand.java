@@ -138,6 +138,10 @@ public class AddRegressionPointsCommand implements Command{
 		}
 		else {
 			data = cleanData(data, idpVariables, depVariable);
+			
+			LOGGER.severe("Data for multiple regression report!");
+			LOGGER.severe(data.toString());
+			
 			if(data == null || data.size() == 0) {
 				return DataConditions.NOT_ENOUGH_DATA;
 			}
@@ -362,6 +366,8 @@ public class AddRegressionPointsCommand implements Command{
 			}
 		}
 		
+		LOGGER.severe("Final Cleaned Data");
+		LOGGER.severe(finalData.toString());
 		return finalData;
 	}
 	
