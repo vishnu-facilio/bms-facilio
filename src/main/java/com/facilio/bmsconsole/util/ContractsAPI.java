@@ -10,6 +10,9 @@ import org.apache.commons.chain.Chain;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
+import com.chargebee.internal.StringJoiner;
+import com.facilio.accounts.bean.UserBean;
+import com.facilio.accounts.dto.User;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ContractAssociatedAssetsContext;
@@ -280,7 +283,17 @@ public class ContractsAPI {
 		ActionContext emailAction = new ActionContext();
 		emailAction.setActionType(ActionType.EMAIL_NOTIFICATION);
 		JSONObject json = new JSONObject();
-		json.put("to", map.get("to"));
+		List<Long> ouIdList = (List<Long>)map.get("to");
+		UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
+		
+		StringJoiner userEmailStr = new StringJoiner(",");
+		for(Long ouId : ouIdList) {
+			User user = userBean.getUser(ouId);
+			if(user != null) {
+				userEmailStr.add(user.getEmail());
+			}
+		}
+		json.put("to", userEmailStr);
 		json.put("subject", "Expiry notification");
 		json.put("name", "Expiry template");
 		String message = "Your contract expires at "+ contract.getEndDate();
