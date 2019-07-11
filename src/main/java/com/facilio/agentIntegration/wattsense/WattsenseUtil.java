@@ -575,16 +575,6 @@ public class WattsenseUtil
         return wattsenseList;
     }
 
-    public static void main(String[] args) {
-        JSONObject payload = new JSONObject();
-        JSONParser parser = new JSONParser();
-        try {
-            payload = (JSONObject) parser.parse("{\"data\":[{\"payload\":0,\"property\":\"Property1\",\"deviceId\":\"604406a90618a1d2\",\"timestamp\":1562226416000},{\"payload\":0,\"property\":\"property88\",\"deviceId\":\"604406a90618a1d2\",\"timestamp\":1562226416000},{\"payload\":0,\"property\":\"propertynew\",\"deviceId\":\"604406a90618a1d2\",\"timestamp\":1562226416000},{\"payload\":0,\"property\":\"vijay_property_2\",\"deviceId\":\"604406a90618a1d2\",\"timestamp\":1562226416000},{\"payload\":\"nan\",\"property\":\"vijay_property_3\",\"deviceId\":\"604406a90618a1d2\",\"timestamp\":1562226417000}]}");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        reFormatPayload(payload,PublishType.timeseries.getValue());
-    }
     public static JSONObject reFormatTimeSeriesData(JSONObject payload){
         System.out.println("payload in  "+payload);
         JSONObject wattPayload = new JSONObject();
