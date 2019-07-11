@@ -285,7 +285,6 @@ public class ExpressionContext implements WorkflowExpression {
 			selectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 					.table(module.getTableName())
 					.module(module)
-//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 					.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
 					.andCriteria(criteria)
 					;
@@ -302,10 +301,6 @@ public class ExpressionContext implements WorkflowExpression {
 				selectBuilder.andCriteria(scopeCriteria);
 			}
 			
-//			if(modBean.getModule(moduleName).getExtendModule() != null) {
-//				selectBuilder.innerJoin(modBean.getModule(moduleName).getExtendModule().getTableName())
-//				.on(modBean.getModule(moduleName).getTableName()+".ID = "+modBean.getModule(moduleName).getExtendModule().getTableName()+".ID");
-//			}
 			
 			if(fieldName != null && !isManualAggregateQuery()) {
 				List<FacilioField> selectFields = new ArrayList<>();
@@ -316,8 +311,6 @@ public class ExpressionContext implements WorkflowExpression {
 					throw new Exception("Field is null for FieldName - "+fieldName +" moduleName - "+moduleName);
 				}
 				
-//				select.setColumnName(select.getTableName()+"."+select.getColumnName());
-//				select.setModule(null);
 				select.setName(RESULT_STRING);
 				
 				selectBuilder.andCustomWhere(select.getCompleteColumnName()+" is not null");
@@ -362,14 +355,16 @@ public class ExpressionContext implements WorkflowExpression {
 								String key = ReadingsAPI.getRDMKey(Long.parseLong(parentIdString), modBean.getField(fieldName, moduleName));
 								readingDataMeta = workflowContext.getCachedRDM().get(key);
 							}
+							boolean isRDMFromCache = true;
 							if(readingDataMeta == null) {
+								isRDMFromCache = false;
 								readingDataMeta = ReadingsAPI.getReadingDataMeta(Long.parseLong(parentIdString), select);
 							}
 							if(readingDataMeta == null) {
 								throw new Exception("readingDataMeta is null for FieldName - "+fieldName +" moduleName - "+moduleName+" parentId - "+parentIdString);
 							}
 							long actualLastRecordedTime = CommonAPI.getActualLastRecordedTime(module);
-							if(actualLastRecordedTime > 0) {
+							if(!isRDMFromCache && actualLastRecordedTime > 0) {
 								if(readingDataMeta.getTtime() >= actualLastRecordedTime) {
 									exprResult = readingDataMeta.getValue();
 								}
