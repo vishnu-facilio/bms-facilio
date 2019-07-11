@@ -34,6 +34,7 @@ public class TriggerAlarmForMLCommand implements Command {
 	@Override
 	public boolean execute(Context context) throws Exception 
 	{
+		LOGGER.info("Inside execute");
 		MLContext mlContext = (MLContext) context.get(FacilioConstants.ContextNames.ML);
 		try
 		{
@@ -68,6 +69,7 @@ public class TriggerAlarmForMLCommand implements Command {
 	
 	private void generateEvent(MLContext mlContext,long assetID,long parentAlarmID) throws Exception
 	{
+		LOGGER.info("Inside Generate Event "+parentAlarmID);
 		if(parentAlarmID==-1)
 		{
 			checkAndGenerateRCAEvent(mlContext,assetID,parentAlarmID);
@@ -80,6 +82,7 @@ public class TriggerAlarmForMLCommand implements Command {
 	
 	private long checkAndGenerateEvent(MLContext mlContext, long parentID) throws Exception
 	{
+		LOGGER.info("Inside check and Generate Event "+parentID);
 		Hashtable<String,SortedMap<Long,Object>> variablesData = mlContext.getMlVariablesDataMap().get(parentID);
 		
     	SortedMap<Long,Object> actualValueMap = variablesData.get("actualValue");
