@@ -1095,9 +1095,9 @@ public class ReadingsAPI {
 			
 			NumberField numberField =  (NumberField)meta.getField();
 			if(numberField.getMetric() > 0) {
-				
-				if(numberField.getUnitId() > 0) {
-					Unit siUnit = Unit.valueOf(Metric.valueOf(numberField.getMetric()).getSiUnitId());
+				Metric metric = Metric.valueOf(numberField.getMetric());
+				if(numberField.getUnitId() > 0 && metric.getSiUnitId() > 0) {
+					Unit siUnit = Unit.valueOf(metric.getSiUnitId());
 					value = UnitsUtil.convert(meta.getValue(), siUnit.getUnitId(), numberField.getUnitId());
 				}
 				else {
@@ -1169,9 +1169,9 @@ public class ReadingsAPI {
 				Long secondReadingVal = (Long) FieldUtil.castOrParseValueAsPerType(field,secondReading.getReadings().entrySet().stream().filter(rd -> rd.getKey().equalsIgnoreCase(field.getName())).findFirst().get().getValue());
 				if (firstReading != null) {
 					Long firstReadingVal = (Long) FieldUtil.castOrParseValueAsPerType(field,firstReading.getReadings().entrySet().stream().filter(rd -> rd.getKey().equalsIgnoreCase(field.getName())).findFirst().get().getValue());
-					addDeltaValue(secondReading, field.getName(),(secondReadingVal - firstReadingVal) > 0 ? (secondReadingVal - firstReadingVal) : 0.0);
+					addDeltaValue(secondReading, field.getName(),(secondReadingVal - firstReadingVal) > 0 ? (secondReadingVal - firstReadingVal) : 0l);
 				} else {
-					addDeltaValue(secondReading, field.getName(), 0.0);
+					addDeltaValue(secondReading, field.getName(), 0l);
 				}
 			}
 			updateReading(module, fields, secondReading);
