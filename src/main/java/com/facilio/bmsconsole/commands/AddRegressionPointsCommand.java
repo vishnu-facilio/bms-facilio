@@ -384,6 +384,11 @@ public class AddRegressionPointsCommand implements Command{
 		
 		for(int i = 0;i < data.size();i ++) {
 			Map<String, Object> entry = data.get(i);
+			LOGGER.info("Record yValue");
+			LOGGER.log(Level.INFO, "ENTRY YPOINT ##### ", yPoint.getAlias());
+			LOGGER.log(Level.INFO, "ENTRY MAP ##### ", entry);
+			LOGGER.log(Level.INFO, "ENTRY GET VALUE ##### ", entry.get(yPoint.getAlias()));
+			
 			yData[i] = Double.valueOf((String)entry.get(yPoint.getAlias()));
 			
 			if(isMultiple) {		
