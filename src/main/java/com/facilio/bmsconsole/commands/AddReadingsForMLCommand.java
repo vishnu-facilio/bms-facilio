@@ -16,7 +16,7 @@ import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
-import org.jboss.logging.Logger;
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
