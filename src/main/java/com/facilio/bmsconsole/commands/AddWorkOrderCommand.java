@@ -88,6 +88,10 @@ public class AddWorkOrderCommand implements Command {
 			if(insertLevel != null) {
 				builder.level(insertLevel);
 			}
+
+			if ((AccountUtil.getCurrentOrg().getId() == 146 || AccountUtil.getCurrentOrg().getId() == 155) && workOrder != null) {
+				LOGGER.info("Workorder subject : "+ workOrder.getSubject()+"\n Description : "+workOrder.getDescription());
+			}
 			
 			long workOrderId = builder.insert(workOrder);
 			workOrder.setId(workOrderId);
