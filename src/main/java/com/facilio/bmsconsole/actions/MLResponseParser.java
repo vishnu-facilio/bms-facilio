@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.actions;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -30,6 +31,11 @@ public class MLResponseParser extends ActionSupport
 			log.info("ML ID and Result are "+mlID+":::"+result);
 			HttpServletRequest request = ServletActionContext.getRequest();
 			log.info("Request details are "+request.getParameterMap().toString());
+			Map<String, String[]> data = request.getParameterMap();
+			for(String key:data.keySet())
+			{
+				log.info("Parameter name is "+key+"::"+data.get(key));
+			}
 			log.info("Request body "+request.getContentType()+"::"+request.getContentLength());
 			StringWriter writer = new StringWriter();
 			IOUtils.copy(request.getInputStream(), writer, StandardCharsets.UTF_8);
