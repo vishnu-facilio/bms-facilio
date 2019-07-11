@@ -35,7 +35,7 @@ public class AddReadingsForMLCommand implements Command {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule logModule = modBean.getModule(mlContext.getPredictionLogModuleID());
 			FacilioModule predictModule = modBean.getModule(mlContext.getPredictionModuleID());
-			
+			LOGGER.info("debug info "+mlContext.getResult());
 			JSONArray mlArray = (JSONArray) new JSONObject(mlContext.getResult()).get("data");
 			if(mlArray.length()>0)
 			{
