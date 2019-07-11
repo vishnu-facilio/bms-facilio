@@ -1,9 +1,8 @@
 package com.facilio.agentIntegration.wattsense;
 
+import com.amazonaws.services.iot.model.CreateKeysAndCertificateResult;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.agent.AgentType;
-import com.facilio.agent.AgentUtil;
-import com.facilio.agent.FacilioAgent;
+import com.facilio.agent.*;
 import com.facilio.agentIntegration.AgentIntegrationKeys;
 import com.facilio.agentIntegration.AgentIntegrationUtil;
 import com.facilio.agentIntegration.DownloadCertFile;
@@ -17,6 +16,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.events.tasker.tasks.EventUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
@@ -34,12 +34,14 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 
@@ -197,15 +199,17 @@ public class WattsenseUtil
         try {
             multipart = new MultipartHttpPost(AgentIntegrationUtil.getWattsenseCertificateStoreApi(),"UTF-8",wattsense.getAuthStringEncoded());
             Map<String ,InputStream> inputStreamMap = new HashMap<>();
-            inputStreamMap = DownloadCertFile.getCertKeyFileInputStreams();
+            inputStreamMap = DownloadCertFile.getCertAndKeyFileAsInputStream(wattsense.getClientId(), AgentType.Wattsense.getLabel());  //getCertAndKeyFiles();
             if(inputStreamMap.get(AgentIntegrationKeys.CERT_FILE_NAME) != null){
                 multipart.addFile(AgentIntegrationKeys.CERTIFICATE,AgentIntegrationKeys.CERTIFICATE,inputStreamMap.get(AgentIntegrationKeys.CERT_FILE_NAME));
             }else{
+                LOGGER.info(" Exception occurred "+AgentIntegrationKeys.CERT_FILE_NAME+" missing form input stream map ");
                 return false;
             }
             if(inputStreamMap.get(AgentIntegrationKeys.KEY_FILE_NAME) != null){
                 multipart.addFile(AgentIntegrationKeys.CERTIFICATE_KEY,AgentIntegrationKeys.CERTIFICATE_KEY,inputStreamMap.get(AgentIntegrationKeys.KEY_FILE_NAME));
             }else {
+                LOGGER.info(" Exception occurred "+AgentIntegrationKeys.KEY_FILE_NAME+" missing form input stream map ");
                 return false;
             }
             String response = multipart.finish();
@@ -312,7 +316,6 @@ public class WattsenseUtil
     private static  boolean deleteMqttConnection(Wattsense wattsense){
         HttpDelete delete = new HttpDelete(AgentIntegrationUtil.getDeleteMqttConnectionApi()+"/"+wattsense.getCertificateStoreId());
         delete.addHeader(HttpHeaders.AUTHORIZATION, wattsense.getAuthStringEncoded());
-        //delete.addHeader(HttpHeaders.AUTHORIZATION,wattsense.getAuthStringEncoded());
         try {
             HttpResponse response = httpclient.execute(delete);
             int status = response.getStatusLine().getStatusCode();
@@ -373,24 +376,17 @@ public class WattsenseUtil
         }
         return "_";
     }
-    private static final String CERT_KEY_FILE_NAME ="certKey.zip";
-    private static final String HOME_DIIRECTORY = "user.home";
-    private static Map getCertAndKeyFiles(){
-        Map<String,File> files = new HashMap<>();
-        String url = DownloadCertFile.downloadCertificate();
-        LOGGER.info(" url generated to download cert file is "+url);
-        try {
-            String fileName = CERT_KEY_FILE_NAME;
-            DownloadCertFile.downloadFileFromUrl(fileName, url);
-            String home = System.getProperty(HOME_DIIRECTORY);
-            DownloadCertFile.unzip(fileName, home);
-            files.put(AgentIntegrationKeys.CERTIFICATE, new File(home+"/facilio.crt"));
-            files.put(AgentIntegrationKeys.CERTIFICATE_KEY, new File(home+"/facilio-private.key"));
-            return files;
-        } catch (IOException e) {
-            LOGGER.info("Exception Occurred");
-        }
-        return null;
+
+    private static Map getCertAndKeyFiles(String policyName){
+        Map<String,InputStream> filesInputStreamMap = new HashMap<>();
+        CreateKeysAndCertificateResult certificateResult = AwsUtil.signUpIotToKinesis(AccountUtil.getCurrentOrg().getDomain(), policyName ,AgentType.Wattsense.getLabel() );
+        String certificateFileString = certificateResult.getCertificatePem();
+        String keyFileString =  certificateResult.getKeyPair().getPrivateKey();
+        LOGGER.info(" certificate String generated is "+certificateFileString);
+        LOGGER.info(" key String generated is "+keyFileString);
+        filesInputStreamMap.put(AgentIntegrationKeys.CERT_FILE_NAME,new ByteArrayInputStream(certificateFileString.getBytes(StandardCharsets.UTF_8)));
+        filesInputStreamMap.put(AgentIntegrationKeys.KEY_FILE_NAME, new ByteArrayInputStream(keyFileString.getBytes(StandardCharsets.UTF_8)));
+        return filesInputStreamMap;
     }
 
 
@@ -414,12 +410,12 @@ public class WattsenseUtil
 
         String topic = AccountUtil.getCurrentOrg().getDomain();
         JSONObject publishTopicJSON = new JSONObject();
-        publishTopicJSON.put("eventsTopic",topic+"/wt/events");
-        publishTopicJSON.put("valuesTopic",topic+"/wt/values");
-        publishTopicJSON.put("alarmsTopic",topic+"/wt/alarms");
+        publishTopicJSON.put("eventsTopic",topic+AgentIntegrationKeys.TOPIC_WT_EVENTS);
+        publishTopicJSON.put("valuesTopic",topic+AgentIntegrationKeys.TOPIC_WT_VALUES);
+        publishTopicJSON.put("alarmsTopic",topic+AgentIntegrationKeys.TOPIC_WT_ALARMS);
         mqttConnJson.put("publishTopics",publishTopicJSON);
         JSONObject subscribeTopicsJSON = new JSONObject();
-        subscribeTopicsJSON.put("propertyCommandTopic", topic+"/wt/cmd");
+        subscribeTopicsJSON.put("propertyCommandTopic", topic+AgentIntegrationKeys.TOPIC_WT_CMD);
         mqttConnJson.put("subscribeTopics", subscribeTopicsJSON);
         mqttConnJson.put("tags", new JSONObject());
         return mqttConnJson.toString();
@@ -579,4 +575,63 @@ public class WattsenseUtil
         return wattsenseList;
     }
 
+    public static void main(String[] args) {
+        JSONObject payload = new JSONObject();
+        JSONParser parser = new JSONParser();
+        try {
+            payload = (JSONObject) parser.parse("{\"data\":[{\"payload\":0,\"property\":\"Property1\",\"deviceId\":\"604406a90618a1d2\",\"timestamp\":1562226416000},{\"payload\":0,\"property\":\"property88\",\"deviceId\":\"604406a90618a1d2\",\"timestamp\":1562226416000},{\"payload\":0,\"property\":\"propertynew\",\"deviceId\":\"604406a90618a1d2\",\"timestamp\":1562226416000},{\"payload\":0,\"property\":\"vijay_property_2\",\"deviceId\":\"604406a90618a1d2\",\"timestamp\":1562226416000},{\"payload\":\"nan\",\"property\":\"vijay_property_3\",\"deviceId\":\"604406a90618a1d2\",\"timestamp\":1562226417000}]}");
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        reFormatPayload(payload,PublishType.timeseries.getValue());
+    }
+    public static JSONObject reFormatTimeSeriesData(JSONObject payload){
+        System.out.println("payload in  "+payload);
+        JSONObject wattPayload = new JSONObject();
+        Map<String,JSONObject> controllerJsonMap = new HashMap<>();
+        Long timeStamp = System.currentTimeMillis();
+            if (payload.containsKey(AgentIntegrationKeys.DATA)) {
+                JSONArray points = (JSONArray) payload.get(AgentIntegrationKeys.DATA);
+                for (Object point : points) {
+                    JSONObject pointData = (JSONObject) point;
+                    timeStamp = (Long) pointData.get(AgentKeys.TIMESTAMP);
+                    if (controllerJsonMap.containsKey(pointData.get(AgentIntegrationKeys.DEVICE_ID))) {
+                        (controllerJsonMap.get(pointData.get(AgentIntegrationKeys.DEVICE_ID))).put(pointData.get(AgentIntegrationKeys.PROPERTY), pointData.get(AgentIntegrationKeys.PAYLOAD));
+                    } else {
+                        controllerJsonMap.put(String.valueOf(pointData.get(AgentIntegrationKeys.DEVICE_ID)), new JSONObject());
+                    }
+            }
+        }
+        JSONObject timeSeriesJson = new JSONObject();
+        for(String controller : controllerJsonMap.keySet()){
+            timeSeriesJson.put(controller,controllerJsonMap.get(controller));
+        }
+        wattPayload.putAll(timeSeriesJson);
+        wattPayload.put(EventUtil.DATA_TYPE, PublishType.timeseries.getValue());
+        wattPayload.put(AgentKeys.TIMESTAMP,timeStamp);
+        System.out.println("result   "+wattPayload.toJSONString());
+        return wattPayload;
+    }
+
+    public static JSONObject reFormatPayload(JSONObject payload,String dataType){
+        JSONObject wattPayload = new JSONObject();
+        String timeseries = PublishType.timeseries.getValue();
+        if(payload.containsKey(AgentIntegrationKeys.MESSAGE)) {
+            JSONObject message = new JSONObject();
+            message = (JSONObject) payload.get(AgentIntegrationKeys.MESSAGE);
+            if (message.containsKey(EventUtil.DATA_TYPE)) {
+                dataType = (String) message.get(EventUtil.DATA_TYPE);
+            }
+        }
+        if(dataType == null){
+                return wattPayload;
+            }
+            switch (dataType){
+                case "timeseries":
+                    System.out.println(" detected timeseries ");
+                    return reFormatTimeSeriesData(payload);
+
+            }
+            return wattPayload;
+        }
 }

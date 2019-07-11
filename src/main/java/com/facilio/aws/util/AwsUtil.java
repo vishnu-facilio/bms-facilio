@@ -29,6 +29,7 @@ import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentKeys;
+import com.facilio.agent.FacilioAgent;
 import com.facilio.bmsconsole.util.CommonAPI;
 import com.facilio.bmsconsole.util.CommonAPI.NotificationType;
 import com.facilio.db.builder.DBUtil;
@@ -740,7 +741,7 @@ public class AwsUtil
 			}
 			clients.add(getIotArnClientId(clientId));
 			CreatePolicyVersionRequest versionRequest = new CreatePolicyVersionRequest().withPolicyName(policyName)
-					.withPolicyDocument(getPolicyDoc(policyName, clients.toArray(new String[]{})).toString())
+					.withPolicyDocument(getPolicyDoc(policyName, new String[] { getIotArnClientId(policyName)},new String[] {getIotArnTopic(policyName)},new String[]{getIotArnTopicFilter(policyName)+"/msgs"},new String[]{getIotArnTopic(policyName)+"/msgs"}).toString())
 					.withSetAsDefault(true);
 			CreatePolicyVersionResult versionResult = client.createPolicyVersion(versionRequest);
 			LOGGER.info("Policy updated for " + policyName + ", with " + versionResult.getPolicyDocument() + ", status: " + versionResult.getSdkHttpMetadata().getHttpStatusCode());
@@ -751,7 +752,7 @@ public class AwsUtil
     	return false;
 	}
 
-	private static String getIotArnClientId(String clientId){
+	public static String getIotArnClientId(String clientId){
     	return getIotArn() + ":client/" + clientId;
 	}
 
@@ -759,7 +760,7 @@ public class AwsUtil
     	return getIotArn() +":topic/"+ topic;
 	}
 
-	private static String getIotArnTopicFilter(String topic) {
+	public static String getIotArnTopicFilter(String topic) {
 		return getIotArn() +":topicfilter/"+ topic;
 	}
 
@@ -775,16 +776,16 @@ public class AwsUtil
 		return object;
 	}
 
-	private static JSONObject getPolicyDoc(String name, String[] clientIds ){
+
+	private static JSONObject getPolicyDoc(String name, String[] clientIds, String[] publish, String[] subscribe, String[] receive ){
 		JSONArray statements = new JSONArray();
 		statements.add(getPolicyInJson("iot:Connect", clientIds));
-		statements.add(getPolicyInJson("iot:Publish", new String[] {getIotArnTopic(name)}));
-		statements.add(getPolicyInJson("iot:Subscribe", new String[]{getIotArnTopicFilter(name)+"/msgs"}));
-		statements.add(getPolicyInJson("iot:Receive", new String[]{getIotArnTopic(name)+"/msgs"}));
+		statements.add(getPolicyInJson("iot:Publish",publish ));
+		statements.add(getPolicyInJson("iot:Subscribe", subscribe));
+		statements.add(getPolicyInJson("iot:Receive", receive));
 		JSONObject policyDocument = new JSONObject();
 		policyDocument.put("Version", "2012-10-17"); //Refer the versions available in AWS policy document before changing.
 		policyDocument.put("Statement", statements);
-
 		return policyDocument;
 	}
 
@@ -792,13 +793,22 @@ public class AwsUtil
 		return "arn:aws:iot:" + getRegion() + ":" + getUserId();
 	}
 
-	private static void createIotPolicy(AWSIot iotClient, String name) {
-    	try {
-			CreatePolicyRequest policyRequest = new CreatePolicyRequest().withPolicyName(name).withPolicyDocument(getPolicyDoc(name, new String[] { getIotArnClientId(name)}).toString());
+	private static void createIotPolicy( AWSIot iotClient , String name , IotPolicy rule) {
+        String[] publish = rule.getPublishtopics();
+        String[] receive = rule.getReceiveTopics();
+    	for(int i=0;i<publish.length;i++){
+    		publish[i] = getIotArnTopic(publish[i]);
+		}
+		for(int i=0;i<receive.length;i++){
+			receive[i] = getIotArnTopic(receive[i]);
+		}
+		try {
+            CreatePolicyRequest policyRequest;
+            policyRequest = new CreatePolicyRequest().withPolicyName(rule.getPolicyName()).withPolicyDocument(getPolicyDoc(name, rule.getClientIds(), publish, rule.getSubscribeTopics(), receive).toString());
 			CreatePolicyResult policyResult = iotClient.createPolicy(policyRequest);
 			LOGGER.info("Policy created : " + policyResult.getPolicyArn() + " version " + policyResult.getPolicyVersionId());
 		} catch (ResourceAlreadyExistsException resourceExists){
-    		LOGGER.info("Policy already exists for name : " + name);
+    		LOGGER.info("Policy already exists for name : " + rule.getPolicyName());
 		}
 	}
 
@@ -836,43 +846,52 @@ public class AwsUtil
 		}
 	}
 
-	private static void createIotTopicRule(AWSIot iotClient, String topicName) {
-    	try {
-			KinesisAction kinesisAction = new KinesisAction().withStreamName(topicName)
-					.withPartitionKey(KINESIS_PARTITION_KEY)
-					.withRoleArn(IAM_ARN_PREFIX + getUserId() + KINESIS_PUT_ROLE_SUFFIX);
 
-			Action action = new Action().withKinesis(kinesisAction);
+	private static void createIotTopicRule(IotPolicy policy) { //  ,Event as Publish
+        Map<String,String> publishTypeMap = policy.getMappedTopicAndPublished();
+		for(String topic : publishTypeMap.keySet()){
+			try {
+				KinesisAction kinesisAction = new KinesisAction().withStreamName(topic)
+						.withPartitionKey(KINESIS_PARTITION_KEY)
+						.withRoleArn(IAM_ARN_PREFIX + getUserId() + KINESIS_PUT_ROLE_SUFFIX);
 
-			TopicRulePayload rulePayload = new TopicRulePayload()
-					.withActions(action)
-					.withSql("SELECT * FROM '" + topicName + "'")
-					.withAwsIotSqlVersion(IOT_SQL_VERSION); //Refer the versions available in AWS iot sql version document before changing.
+				Action action = new Action().withKinesis(kinesisAction);
+				TopicRulePayload rulePayload = new TopicRulePayload();
+                rulePayload.withActions(action);
+                rulePayload.withSql(policy.getSql(topic,publishTypeMap));
+				rulePayload.withAwsIotSqlVersion(IOT_SQL_VERSION); //Refer the versions available in AWS iot sql version document before changing.
+                LOGGER.info(" rulepayload sql  "+rulePayload.getSql());
+				CreateTopicRuleRequest topicRuleRequest = new CreateTopicRuleRequest().withRuleName(topic).withTopicRulePayload(rulePayload);
 
-			CreateTopicRuleRequest topicRuleRequest = new CreateTopicRuleRequest().withRuleName(topicName).withTopicRulePayload(rulePayload);
+				CreateTopicRuleResult topicRuleResult = policy.getIotClient().createTopicRule(topicRuleRequest);
 
-			CreateTopicRuleResult topicRuleResult = iotClient.createTopicRule(topicRuleRequest);
-
-			LOGGER.info("Topic Rule created : " + topicRuleResult.getSdkHttpMetadata().getHttpStatusCode());
-		} catch (ResourceAlreadyExistsException resourceExists ){
-    		LOGGER.info("Topic Rule already exists for name : " + topicName);
+				LOGGER.info("Topic Rule created : " + topicRuleResult.getSdkHttpMetadata().getHttpStatusCode());
+			} catch (ResourceAlreadyExistsException resourceExists ){
+				LOGGER.info("Topic Rule already exists for name : "+topic);
+			}
 		}
+
 	}
 
-	private static CreateKeysAndCertificateResult createIotToKinesis(String name){
-    	AWSIot iotClient = getIotClient();
-    	createIotPolicy(iotClient, name);
+
+	private static CreateKeysAndCertificateResult createIotToKinesis(String name, String policyName, String type){
+		AWSIot iotClient = getIotClient();
+		IotPolicy policy = new IotPolicy();
+		policy = FacilioAgent.getIotRule(name);
+		policy.setPolicyName(policyName);
+		policy.setType(type);
+		createIotPolicy(iotClient, name, policy);
     	CreateKeysAndCertificateResult certificateResult = createCertificate(iotClient);
-    	attachPolicy(iotClient, certificateResult, name);
+    	attachPolicy(iotClient, certificateResult, policyName);
     	createKinesisStream(getKinesisClient(), name);
-    	// createKinesisStream(getKinesisClient(), name+"-error");
-    	createIotTopicRule(iotClient, name);
-    	return certificateResult;
+    	createIotTopicRule(policy);
+    	return null; //certificateResult;
 	}
 
-	public static CreateKeysAndCertificateResult signUpIotToKinesis(String orgDomainName){
+	public static CreateKeysAndCertificateResult signUpIotToKinesis(String orgDomainName, String policyName, String type){
+		LOGGER.info(" signing up to kinesis policyname "+policyName);
 		String name = getIotKinesisTopic(orgDomainName);
-		return AwsUtil.createIotToKinesis(name);
+		return AwsUtil.createIotToKinesis(name, policyName, type);
 	}
 
 	public static String getIotKinesisTopic(String orgDomainName){

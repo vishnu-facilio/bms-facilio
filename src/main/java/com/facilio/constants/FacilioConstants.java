@@ -76,6 +76,7 @@ public class FacilioConstants {
         public static final String TO_UPDATE_MAP = "toUpdateMap";
         public static final String TO_INSERT_MAP = "toInsertMap";
         public static final String BULK_DATA = "BULK_DATA";
+        public static final String FEDGE_ZIP = "/fedge.zip";
 
 		public static final String FACILIO_RECORD = "facilioRecord";
 		public static final String FACILIO_CONSUMER = "facilioConsumer";

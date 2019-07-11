@@ -1,6 +1,10 @@
 package com.facilio.agent;
 
+import com.facilio.agentIntegration.AgentIntegrationKeys;
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.IotPolicy;
 import com.facilio.bmsconsole.context.ControllerContext;
+import com.facilio.constants.FacilioConstants;
 
 import java.util.HashSet;
 
@@ -104,5 +108,45 @@ public class FacilioAgent
         this.displayName = displayName;
     }
     private String displayName;
+
+
+    public static String getCertFileName(String type) {
+        if(AgentType.Wattsense.getLabel().equalsIgnoreCase(type)){
+            return AgentIntegrationKeys.WATT_FEDGE_ZIP;
+        }
+        else {
+            return FacilioConstants.ContextNames.FEDGE_ZIP;
+        }
+    }
+
+    public static String getCertFileId(String type) {
+        if(AgentType.Wattsense.getLabel().equalsIgnoreCase(type)){
+            return AgentIntegrationKeys.WATT_FEDGE_FILE_ID;
+        }
+        else {
+            return FacilioConstants.ContextNames.FEDGE_CERT_FILE_ID;
+        }
+    }
+    public static IotPolicy getIotRule(String name){
+        IotPolicy policy = new IotPolicy();
+        if(AgentType.Wattsense.getLabel().equalsIgnoreCase(policy.getType())){
+            policy.setToModify(true);
+            policy.setClientIds(new String[] {AwsUtil.getIotArnClientId(name)});
+            policy.setPublishtopics(new String[] { (name +AgentIntegrationKeys.TOPIC_WT_EVENTS) ,
+                    ( name+ AgentIntegrationKeys.TOPIC_WT_ALARMS ),
+                    ( name+ AgentIntegrationKeys.TOPIC_WT_VALUES )});
+            policy.setReceiveTopics(new String[]{name+AgentIntegrationKeys.TOPIC_WT_CMD});
+            policy.setSubscribeTopics(new String[]{AwsUtil.getIotArnTopicFilter(name)+AgentIntegrationKeys.TOPIC_WT_CMD});
+            policy.setPublishTypes(new String[]{PublishType.event.getValue(),PublishType.event.getValue(),PublishType.timeseries.getValue()});
+            return policy;
+        }
+        else {
+            policy.setClientIds(new String[] { AwsUtil.getIotArnClientId(name)});
+            policy.setPublishtopics(new String[] {name});
+            policy.setSubscribeTopics(new String[]{ AwsUtil.getIotArnTopicFilter(name)+"/msgs"});
+            policy.setReceiveTopics(new String[]{name+"/msgs"});
+            return policy;
+        }
+    }
 
 }

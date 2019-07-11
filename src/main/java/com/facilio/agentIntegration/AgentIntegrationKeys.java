@@ -22,8 +22,17 @@ public class AgentIntegrationKeys
     public static final String CERTIFICATE = "certificate";
     public static final String CERTIFICATE_KEY = "certificateKey";
     public static final String CLIENT_ID_TAG = "wattsense";
+    public static final String CERT_KEY_FILE = "wattsense_fedge.zip";
     public static final String USER_NAME = "userName";
     public static final String DELETED_TIME = "deletedTime";
+    public static final String TOPIC_WT_EVENTS = "/wt/events";
+    public static final String TOPIC_WT_ALARMS = "/wt/alarms";
+    public static final String TOPIC_WT_VALUES = "/wt/values";
+    public static final String TOPIC_WT_CMD = "/wt/cmd";
+    public static final String TOPIC_WT_WILDCARD = "/wt";
+    public static final String WATT_FEDGE_ZIP = "/wattsenst_fedge.zip";
+    public static final String WATT_FEDGE_FILE_ID = "wattFedgeFileId";
+
 
     //APIs
     public static final String WATT_AUTH_API  = "wattsenseAuthApi";

@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agent.AgentType;
 import com.facilio.agentIntegration.DownloadCertFile;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.log4j.LogManager;
@@ -26,7 +28,7 @@ public class DeviceAction extends ActionSupport
 	}
 
 	public String downloadCertificate() {
-		url = DownloadCertFile.downloadCertificate();
+		url = DownloadCertFile.downloadCertificate( AccountUtil.getCurrentOrg().getDomain(), AgentType.BACnet.getLabel());
 		return SUCCESS;
 	}
 
