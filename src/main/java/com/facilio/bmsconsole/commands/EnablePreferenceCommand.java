@@ -5,10 +5,13 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.Preference;
 import com.facilio.bmsconsole.modules.PreferenceFactory;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 
 public class EnablePreferenceCommand implements Command {
 
@@ -18,6 +21,7 @@ public class EnablePreferenceCommand implements Command {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		long recordId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 		String name = (String) context.get(FacilioConstants.ContextNames.PREFERENCE_NAME);
+		
 		if(name == null) {
 			throw new IllegalArgumentException("Preference name is mandatory");
 		}
@@ -25,19 +29,21 @@ public class EnablePreferenceCommand implements Command {
 			throw new IllegalArgumentException("Module name is mandatory");
 		}
 		Preference preference = null;
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+	
 		if(recordId > 0) {
-			PreferenceFactory.getModuleRecordPreference(moduleName, name);
+			preference = PreferenceFactory.getModuleRecordPreference(moduleName, name);
 		}
 		else {
-			PreferenceFactory.getModulePreference(moduleName, name);
+			preference = PreferenceFactory.getModulePreference(moduleName, name);
 		}
 		if (preference != null) {
-			WorkflowRuleContext rule = preference.subsituteAndEnable(map, recordId);
-			if(rule != null) {
-				context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_ID, rule.getId());
-			}
+			preference.subsituteAndEnable(map, recordId, module.getModuleId());
 		}
-		
+		else {
+			throw new IllegalArgumentException("Invalid preference configuration");
+		}
 		return false;
 	}
 

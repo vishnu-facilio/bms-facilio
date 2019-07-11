@@ -40,12 +40,12 @@ public class PreferenceFactory {
 	
 	private static void initializeMap() {
 		
-		map.put(FacilioConstants.ContextNames.CONTRACTS, getContractsPrefList());
+		map.put(FacilioConstants.ContextNames.PURCHASE_CONTRACTS, getContractsPrefList());
 	}
 	
 	private static void initializeModuleMap() {
 		
-		modulePrefMap.put(FacilioConstants.ContextNames.CONTRACTS, getContractsModulePrefList());
+	//	modulePrefMap.put(FacilioConstants.ContextNames.CONTRACTS, getContractsModulePrefList());
 	}
 	
 	public static List<Preference> getAllPreferencesForModuleRecord(String moduleName) {
@@ -84,12 +84,6 @@ public class PreferenceFactory {
 		
 		List<Preference> contractPreference = new ArrayList<Preference>();
 		contractPreference.add(ContractsAPI.getExpiryNotificationPref());
-		return contractPreference;
-	}
-private static List<Preference> getContractsModulePrefList() {
-		
-		List<Preference> contractPreference = new ArrayList<Preference>();
-		contractPreference.add(ContractsAPI.getExpiryNotificationPref2());
 		return contractPreference;
 	}
 

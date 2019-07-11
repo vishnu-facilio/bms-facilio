@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.context.PurchaseContractContext;
 import com.facilio.bmsconsole.context.PurchaseContractLineItemContext;
 import com.facilio.bmsconsole.context.WarrantyContractContext;
 import com.facilio.bmsconsole.util.ContractsAPI;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -64,6 +65,8 @@ public class AddOrUpdatePurchaseContractCommand implements Command {
 				
 				ContractsAPI.addRecord(false,purchaseContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 				context.put(FacilioConstants.ContextNames.RECORD, purchaseContractContext);
+				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
+				
 				
 				
 
@@ -87,6 +90,8 @@ public class AddOrUpdatePurchaseContractCommand implements Command {
 				else {
 					throw new IllegalArgumentException("Only Approved contracts can be revised");
 				}
+				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
+				
 
 			}
 			else {
@@ -99,6 +104,7 @@ public class AddOrUpdatePurchaseContractCommand implements Command {
 				
 				ContractsAPI.addRecord(false,purchaseContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 				context.put(FacilioConstants.ContextNames.RECORD, purchaseContractContext);
+				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 				
 			}
 			context.put(FacilioConstants.ContextNames.RECORD_ID, purchaseContractContext.getId());

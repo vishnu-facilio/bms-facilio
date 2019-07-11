@@ -1088,7 +1088,7 @@ public class FacilioConstants {
 		public static final String PREFERENCE_NAME = "preferenceName";
 		public static final String PREFERENCE_ID = "preferenceId";
 		public static final String MODULE_SPECIFIC = "moduleSpecific";
-			
+		public static final String PREFERENCE_RULES = "preferenceRules";
 		
 
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());

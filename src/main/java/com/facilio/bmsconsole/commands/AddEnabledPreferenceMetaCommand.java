@@ -31,26 +31,18 @@ public class AddEnabledPreferenceMetaCommand implements Command{
 			FacilioModule prefModule = ModuleFactory.getPreferenceMetaModule();
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule((String)context.get(FacilioConstants.ContextNames.MODULE_NAME));
-			Long ruleId = (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
 			
 			Long enabledPrefId = (Long)context.get(FacilioConstants.ContextNames.PREFERENCE_ID);
 			PreferenceMetaContext preferenceMeta = null;
 			if(enabledPrefId != null && enabledPrefId > 0) {
 				preferenceMeta = PreferenceAPI.getEnabledPreference(enabledPrefId);
 				if(preferenceMeta != null) {
-					Long oldruleId = preferenceMeta.getRuleId();
-					
 					Map<String, Object> map = (Map<String, Object>) context.get(FacilioConstants.ContextNames.PREFERENCE_VALUE_LIST);
 					JSONObject jObj = FieldUtil.getAsJSON(map);
 					preferenceMeta.setFormData(jObj.toString());
 					preferenceMeta.setIsActive(true);
-					if(ruleId != null) {
-						preferenceMeta.setRuleId(ruleId);
-					}
 					PreferenceAPI.updatePref(FieldUtil.getAsProperties(preferenceMeta), Collections.singletonList(preferenceMeta.getId()));
-					if(oldruleId > 0) {
-						WorkflowRuleAPI.deleteWorkflowRule(oldruleId); 
-					}
+					
 				}
 			}
 			else {
@@ -64,9 +56,6 @@ public class AddEnabledPreferenceMetaCommand implements Command{
 				JSONObject jObj = FieldUtil.getAsJSON(map);
 				preferenceMeta.setFormData(jObj.toString());
 				preferenceMeta.setIsActive(true);
-				if(ruleId != null) {
-					preferenceMeta.setRuleId(ruleId);
-				}
 				Map<String, Object> props = FieldUtil.getAsProperties(preferenceMeta);
 				GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 							.table(prefModule.getTableName())

@@ -9,7 +9,6 @@ public class PreferenceMetaContext {
 	private String preferenceName;
 	private String formData;
 	private Boolean isActive;
-	private long ruleId;
 	public long getId() {
 		return id;
 	}
@@ -58,12 +57,5 @@ public class PreferenceMetaContext {
 		}
 		return false;
 	}
-	public long getRuleId() {
-		return ruleId;
-	}
-	public void setRuleId(long ruleId) {
-		this.ruleId = ruleId;
-	}
-	
 	
 }

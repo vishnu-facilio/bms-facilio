@@ -296,8 +296,8 @@ public class ContractsContext extends ModuleBaseWithCustomFields{
 				info.setMonthValue(getScheduleMonth());
 				info.setValues(Collections.singletonList(getScheduleDay()));
 			}
-			long nextPaymentDate = info.nextExecutionTime(System.currentTimeMillis());
-			setNextPaymentDate(nextPaymentDate);
+			long nextPaymentDate = info.nextExecutionTime(System.currentTimeMillis() / 1000);
+			setNextPaymentDate(nextPaymentDate * 1000);
 		}
 		return nextPaymentDate;
 		

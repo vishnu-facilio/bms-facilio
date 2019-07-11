@@ -2,11 +2,8 @@ package com.facilio.bmsconsole.context;
 
 import java.util.Map;
 
-import org.apache.struts2.json.annotations.JSON;
-
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
-import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public abstract class Preference {
 	
@@ -31,5 +28,7 @@ public abstract class Preference {
 		this.form = form;
 	}
 	
-	public abstract WorkflowRuleContext subsituteAndEnable(Map<String, Object> map, Long recordId) throws Exception;
+	public abstract void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception;
+	public abstract void disable(Long recordId, Long moduleId) throws Exception;
+
 }

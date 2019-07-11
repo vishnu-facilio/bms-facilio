@@ -6,13 +6,16 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.chain.Chain;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.ScheduledRuleType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -126,7 +129,17 @@ public class SingleRecordRuleAPI extends WorkflowRuleAPI{
 			}
 			if(fieldVal != -1) {
 				//assuming date field val in millis,rule interval in seconds
-			   FacilioTimer.scheduleOneTimeJob(rule.getId(), FacilioConstants.Job.RECORD_SPECIFIC_RULE_JOB_NAME, fieldVal + rule.getInterval(), "facilio");
+				long nextExecutionTime = 0l;
+				if(rule.getScheduleType() == ScheduledRuleType.BEFORE.getValue()) {
+					nextExecutionTime = fieldVal - rule.getInterval();
+				}
+				else if(rule.getScheduleType() == ScheduledRuleType.AFTER.getValue()) {
+					nextExecutionTime = fieldVal + rule.getInterval();
+				}
+				else {
+					nextExecutionTime = fieldVal ; 
+				}
+			   FacilioTimer.scheduleOneTimeJob(rule.getId(), FacilioConstants.Job.RECORD_SPECIFIC_RULE_JOB_NAME, nextExecutionTime, "facilio");
 			}
 		}
 		else {
@@ -205,4 +218,6 @@ public class SingleRecordRuleAPI extends WorkflowRuleAPI{
 	protected static void deleteRecordSpecificRuleJob(WorkflowRuleContext rule) throws Exception {
 		FacilioTimer.deleteJob(rule.getId(), FacilioConstants.Job.RECORD_SPECIFIC_RULE_JOB_NAME);
 	}
+	
+	
 }

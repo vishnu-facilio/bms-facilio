@@ -2,15 +2,16 @@ package com.facilio.bmsconsole.util;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.chain.Chain;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.text.StringSubstitutor;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ContractAssociatedAssetsContext;
 import com.facilio.bmsconsole.context.ContractAssociatedTermsContext;
 import com.facilio.bmsconsole.context.ContractsContext;
@@ -32,11 +33,15 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.ScheduledRuleType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
@@ -44,6 +49,8 @@ import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.workflows.context.ParameterContext;
+import com.facilio.workflows.context.WorkflowContext;
 
 public class ContractsAPI {
 
@@ -238,78 +245,99 @@ public class ContractsAPI {
 		}
 	}
 		
-	public static WorkflowRuleContext saveExpiryPrefs (Map<String, Object> map, Long contractId) throws Exception {
+	public static Long saveExpiryPrefs (Map<String, Object> map, Long contractId) throws Exception {
 		ContractsContext contract = getContractDetails(contractId);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_CONTRACTS);
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
+		Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+		
 		
 		WorkflowRuleContext workflowRuleContext = new WorkflowRuleContext();
 		workflowRuleContext.setName("Expiry Date Notification");
 		workflowRuleContext.setRuleType(RuleType.RECORD_SPECIFIC_RULE);
 		
 		WorkflowEventContext event = new WorkflowEventContext();
-		event.setModuleName(FacilioConstants.ContextNames.CONTRACTS);
+		event.setModuleName(module.getName());
 		event.setActivityType(EventType.SCHEDULED);
 		workflowRuleContext.setEvent(event);
-		workflowRuleContext.setScheduleType(ScheduledRuleType.ON);
-		workflowRuleContext.setTime("10:00");
+		workflowRuleContext.setScheduleType(ScheduledRuleType.BEFORE);
+		workflowRuleContext.setTime((String)map.get("time"));
+		
+		Condition condition = new Condition();
+		condition.setFieldName("status");
+		condition.setValue(String.valueOf(ContractsContext.Status.APPROVED.getValue()));
+		condition.setOperator(EnumOperators.IS);
+		condition.setColumnName("Contracts.STATUS");
+		
+		Criteria criteria = new Criteria();
+		criteria.addConditionMap(condition);
+		criteria.setPattern("(1)");
+		
+		workflowRuleContext.setCriteria(criteria);
+		
 		
 		ActionContext emailAction = new ActionContext();
 		emailAction.setActionType(ActionType.EMAIL_NOTIFICATION);
 		JSONObject json = new JSONObject();
 		json.put("to", map.get("to"));
 		json.put("subject", "Expiry notification");
-		String message = "Your contract expires at ${expiryDate}";
-		Map<String, Object> substitutorMap = new HashMap<String, Object>();
-		substitutorMap.put("expiryDate", contract.getEndDate());
-		StringSubstitutor.replace(message, substitutorMap);
+		json.put("name", "Expiry template");
+		String message = "Your contract expires at "+ contract.getEndDate();
 		json.put("message", message);
+		WorkflowContext workflow = new WorkflowContext();
+		ParameterContext param = new ParameterContext();
+		param.setName("org.domain");
+		param.setTypeString("String");
+		
+		workflow.setParameters(Collections.singletonList(param));
+		json.put("workflow", FieldUtil.getAsProperties(workflow));
 		emailAction.setTemplateJson(json);
-		workflowRuleContext.addAction(emailAction);
 		
-		workflowRuleContext.setDateFieldId(1422);
+		workflowRuleContext.setDateFieldId(fieldsMap.get("endDate").getFieldId());
 		int days = ((Number) map.get("days")).intValue();
-		workflowRuleContext.setInterval(-1 * days * 24 * 60 * 60);
-		
+		workflowRuleContext.setInterval(1 * days * 24 * 60 * 60);
 		workflowRuleContext.setParentId(contractId);
-		SingleRecordRuleAPI.addWorkflowRule(workflowRuleContext);
-		return workflowRuleContext;
+	   
+		//add rule,action and job
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, workflowRuleContext);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(emailAction));
+		
+		Chain chain = TransactionChainFactory.getAddOrUpdateRecordRuleChain();
+		chain.execute(context);
+	
+		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
 	}
 	
 	public static Preference getExpiryNotificationPref() {
 		FacilioForm form = new FacilioForm();
 		List<FormSection> sections = new ArrayList<FormSection>();
 		FormSection formSection = new FormSection();
-		formSection.setName("Sample");
+		formSection.setName("Expiry Date Notification Preference");
 		List<FormField> fields = new ArrayList<FormField>();
-		fields.add(new FormField("days", FieldDisplayType.NUMBER, "How many days before?", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("days", FieldDisplayType.NUMBER, "How many days before the expiry date has to be notified?", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("to", FieldDisplayType.USER, "Select User", Required.REQUIRED,"users", 1, 1));
+		fields.add(new FormField("time", FieldDisplayType.TEXTBOX, "Enter Time", Required.REQUIRED,1, 1));
+		
 		formSection.setFields(fields);
 		sections.add(formSection);
 		form.setSections(sections);
 		return new Preference("expireDateNotification", form) {
 			@Override
-			public WorkflowRuleContext subsituteAndEnable(Map<String, Object> map, Long recordId) throws Exception {
-				return ContractsAPI.saveExpiryPrefs(map, recordId);
+			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
+				Long ruleId = saveExpiryPrefs(map, recordId);
+				PreferenceRuleUtil.addPreferenceRule(moduleId, recordId, ruleId, getName());
 			}
+
+			@Override
+			public void disable(Long recordId, Long moduleId) throws Exception {
+				// TODO Auto-generated method stub
+				PreferenceRuleUtil.disablePreferenceRule(moduleId, recordId, getName());
+			}
+
 		};
 		
 	}
 	
-	public static Preference getExpiryNotificationPref2() {
-		FacilioForm form = new FacilioForm();
-		List<FormSection> sections = new ArrayList<FormSection>();
-		FormSection formSection = new FormSection();
-		formSection.setName("Sample");
-		List<FormField> fields = new ArrayList<FormField>();
-		fields.add(new FormField("days", FieldDisplayType.NUMBER, "How many days before?", Required.REQUIRED, 1, 1));
-		formSection.setFields(fields);
-		sections.add(formSection);
-		form.setSections(sections);
-		return new Preference("expireDateNotification", form) {
-			@Override
-			public WorkflowRuleContext subsituteAndEnable(Map<String, Object> map, Long recordId) throws Exception {
-				return null;
-			}
-		};
-		
-	}
-
 }

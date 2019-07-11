@@ -2395,4 +2395,12 @@ public class ModuleFactory {
 		module.setTableName("Preferences");
 		return module;
 	}
+	
+	public static FacilioModule getPreferenceRuleModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ContextNames.PREFERENCE_RULES);
+		module.setDisplayName("Preferences Rules");
+		module.setTableName("Preference_Rules");
+		return module;
+	}
 }
