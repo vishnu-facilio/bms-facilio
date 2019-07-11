@@ -185,33 +185,36 @@ public class EnergyDataDeltaCalculationCommand implements Command {
 			else if(currentReading<lastReading && !skipLastReadingCheck) {
 							
 					long ttime=getQueryTime(resourceId, readingField, module, INTERVAL_COUNT);
-					List<Double> actualValues=MarkingUtil.getActualValues(resourceId, energyFieldId, ttime, type);
+					//List<Double> actualValues=MarkingUtil.getActualValues(resourceId, energyFieldId, ttime, type);
+					List<Double> actualValues=MarkingUtil.getActualValues(resourceId, deltaFieldId, ttime, type);
+
 					int size=actualValues.size();
 					
 					 double lastVal= getLastValForMeterReset (currentReading, actualValues);
 					if(lastVal==-1) {
 						type=MarkType.DECREMENTAL_VALUE;//data correction done here	
-						markedList.add(MarkingUtil.getMarkedReading(reading,energyFieldId,moduleId,type,currentReading,lastReading));
+						//markedList.add(MarkingUtil.getMarkedReading(reading,energyFieldId,moduleId,type,currentReading,lastReading));
 						markedList.add(MarkingUtil.getMarkedReading(reading,deltaFieldId,moduleId,type,currentReading,lastReading));
-						reading.addReading(fieldName, lastReading);
-						currentReading=lastReading;
+						//reading.addReading(fieldName, lastReading);
+						//currentReading=lastReading;
 						if(size>=INTERVAL_COUNT) {
 							sendEmail(getDecrementalString(resourceId), getEmailBody(lastReading,currentReading,actualValues));
 						}
 					}
 					else {
 						type=MarkType.RESET_VALUE;//data reset done here, obviously data correction..
-						markedList.add(MarkingUtil.getMarkedReading(reading,energyFieldId,moduleId,type,lastReading,currentReading));
+						//markedList.add(MarkingUtil.getMarkedReading(reading,energyFieldId,moduleId,type,lastReading,currentReading));
 						markedList.add(MarkingUtil.getMarkedReading(reading,deltaFieldId,moduleId,type,lastReading,currentReading));
-						lastReading=lastVal;//inorder to get the complete delta without missing out the previous intervalCheck(4) intervals
+						//lastReading=lastVal;//inorder to get the complete delta without missing out the previous intervalCheck(4) intervals
 						reading.setMarked(true);//this to avoid any spike in graph.. bcoz of above delta setting..
 						//send error email for action..
-						String subject="Reset Done! " +getDecrementalString(resourceId);
+						String subject=getDecrementalString(resourceId);
 						sendEmail(subject, getEmailBody(lastReading,currentReading,actualValues));
 					}
 			}
 			
 			Double delta= currentReading-lastReading;
+			delta = (delta < 0) ? 0:delta;
 			
 			long currentTime=(reading.getTtime()!=-1)? reading.getTtime():System.currentTimeMillis() ;
 			long lastDataTime=consumptionMeta.getTtime();
@@ -222,13 +225,17 @@ public class EnergyDataDeltaCalculationCommand implements Command {
 				// for now assuming that the delta is too high than 10K
 				double estimatedDelta= getEstimatedDelta(lastDelta, dataGapCount);
 				if(delta > estimatedDelta*DELTA_MF ) {
+					/*commenting this as data correction is not needed..
+					 * 
 					type=MarkType.TOO_HIGH_VALUE;//data correction done here	
 					markedList.add(MarkingUtil.getMarkedReading(reading,energyFieldId,moduleId,type,currentReading,lastReading));
 					markedList.add(MarkingUtil.getMarkedReading(reading,deltaFieldId,moduleId,type,currentReading,lastReading));
 					currentReading=lastReading;
 					delta=0.0;
-					String subject="Data correction Done! " +getHighValString(resourceId);
+					*/
+					String subject=getHighValString(resourceId);
 					sendEmail(subject, getEmailBody(lastReading,currentReading,null));
+					
 				}
 				else {
 					//send email alone with no data correction..

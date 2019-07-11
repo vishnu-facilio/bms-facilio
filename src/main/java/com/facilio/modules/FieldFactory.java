@@ -4898,6 +4898,7 @@ public class FieldFactory {
         fields.add(getField("mappedTime", "MAPPED_TIME", module, FieldType.NUMBER));
 		fields.add(getDeviceField(module));
 		fields.add(getInstanceField(module));
+        fields.add(getField("displayName", "DISPLAY_NAME", module, FieldType.STRING));
         fields.add(getField("controllerId", "CONTROLLER_ID", module, FieldType.NUMBER));
         fields.add(getField("objectInstanceNumber", "OBJECT_INSTANCE_NUMBER", module, FieldType.NUMBER));
         fields.add(getField("instanceDescription", "INSTANCE_DESCRIPTION", module, FieldType.STRING));
