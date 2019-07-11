@@ -27,6 +27,7 @@ import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormField.Required;
 import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.forms.FacilioForm.LabelPosition;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -283,12 +284,12 @@ public class ContractsAPI {
 		ActionContext emailAction = new ActionContext();
 		emailAction.setActionType(ActionType.EMAIL_NOTIFICATION);
 		JSONObject json = new JSONObject();
-		List<Long> ouIdList = (List<Long>)map.get("to");
+		List<String> ouIdList = (List<String>)map.get("to");
 		UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
 		
 		StringJoiner userEmailStr = new StringJoiner(",");
-		for(Long ouId : ouIdList) {
-			User user = userBean.getUser(ouId);
+		for(String ouId : ouIdList) {
+			User user = userBean.getUser(Long.parseLong(ouId));
 			if(user != null) {
 				userEmailStr.add(user.getEmail());
 			}
@@ -331,11 +332,13 @@ public class ContractsAPI {
 		List<FormField> fields = new ArrayList<FormField>();
 		fields.add(new FormField("days", FieldDisplayType.NUMBER, "How many days before the expiry date has to be notified?", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("to", FieldDisplayType.USER, "Select User", Required.REQUIRED,"users", 1, 1));
-		fields.add(new FormField("time", FieldDisplayType.TEXTBOX, "Enter Time", Required.REQUIRED,1, 1));
+		fields.add(new FormField("time", FieldDisplayType.DATETIME, "Enter Time", Required.REQUIRED,1, 1));
 		
 		formSection.setFields(fields);
 		sections.add(formSection);
 		form.setSections(sections);
+		form.setFields(fields);
+		form.setLabelPosition(LabelPosition.TOP);
 		return new Preference("expireDateNotification", "Expiry Date Notifications", form) {
 			@Override
 			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
