@@ -5,6 +5,8 @@ import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.IotPolicy;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.constants.FacilioConstants;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.util.HashSet;
 
@@ -127,9 +129,9 @@ public class FacilioAgent
             return FacilioConstants.ContextNames.FEDGE_CERT_FILE_ID;
         }
     }
-    public static IotPolicy getIotRule(String name){
+    public static IotPolicy getIotRule(String name,String type){
         IotPolicy policy = new IotPolicy();
-        if(AgentType.Wattsense.getLabel().equalsIgnoreCase(policy.getType())){
+        if(AgentType.Wattsense.getLabel().equalsIgnoreCase(type)){
             policy.setToModify(true);
             policy.setClientIds(new String[] {AwsUtil.getIotArnClientId(name)});
             policy.setPublishtopics(new String[] { (name +AgentIntegrationKeys.TOPIC_WT_EVENTS) ,
@@ -148,5 +150,7 @@ public class FacilioAgent
             return policy;
         }
     }
+    private static final Logger LOGGER = LogManager.getLogger(FacilioAgent.class.getName());
+
 
 }

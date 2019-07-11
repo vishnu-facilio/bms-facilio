@@ -875,9 +875,10 @@ public class AwsUtil
 
 
 	private static CreateKeysAndCertificateResult createIotToKinesis(String name, String policyName, String type){
+		LOGGER.info(" create Iot Kenesis "+policyName);
 		AWSIot iotClient = getIotClient();
 		IotPolicy policy = new IotPolicy();
-		policy = FacilioAgent.getIotRule(name);
+		policy = FacilioAgent.getIotRule(name,type);
 		policy.setPolicyName(policyName);
 		policy.setType(type);
 		createIotPolicy(iotClient, name, policy);

@@ -16,9 +16,9 @@ public class IotPolicy
     public AWSIot getIotClient() { return iotClient; }
     public void setIotClient(AWSIot iotClient) { this.iotClient = iotClient; }
 
-    private String[] Publishtopics;
-    public String[] getPublishtopics() { return Publishtopics; }
-    public void setPublishtopics(String[] publishtopics) { this.Publishtopics = publishtopics; }
+    private String[] publishtopics;
+    public String[] getPublishtopics() { return publishtopics; }
+    public void setPublishtopics(String[] publishtopics) { this.publishtopics = publishtopics; }
 
     private String[] publishTypes;
     public String[] getPublishTypes() { return publishTypes; }
@@ -51,8 +51,9 @@ public class IotPolicy
 
     public Map<String,String> getMappedTopicAndPublished(){
             Map<String, String> topicAndPublishTypeMap = new HashMap<>();
-            for (int i = 0; i < Publishtopics.length; i++) {
-                topicAndPublishTypeMap.put(Publishtopics[i], publishTypes[i]);
+            for (int i = 0; i < publishtopics.length; i++) {
+                System.out.println(publishtopics[i]+"   "+publishTypes[i]);
+                topicAndPublishTypeMap.put(publishtopics[i], publishTypes[i]);
             }
         return topicAndPublishTypeMap;
     }
