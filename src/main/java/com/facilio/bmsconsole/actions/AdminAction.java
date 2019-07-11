@@ -278,11 +278,18 @@ public class AdminAction extends ActionSupport
 		long assetCategoryId = Long.parseLong(request.getParameter("assetcategory"));
 		long fieldId = Long.parseLong(request.getParameter("fieldId"));
 		long assetId = Long.parseLong(request.getParameter("assetId"));
+		long selectfields = Long.parseLong(request.getParameter("selectfields"));
 		long startTtime = Long.parseLong(request.getParameter("fromTtime"));
 		long endTtime = Long.parseLong(request.getParameter("toTtime"));
 
-		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-		bean.updateAdminDeltaCalculation(orgId,fieldId,assetId,startTtime,endTtime);
+		if(selectfields != 0 && selectfields == 1) {
+			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+			bean.updateAdminDeltaCalculation(orgId,fieldId,assetId,startTtime,endTtime);
+		}
+		else {
+			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
+			bean.removeDuplicates(orgId,fieldId,assetId,startTtime,endTtime);
+		}
 		
 
 		return SUCCESS;

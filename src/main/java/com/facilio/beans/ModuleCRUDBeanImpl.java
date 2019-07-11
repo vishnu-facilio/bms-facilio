@@ -925,4 +925,19 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		return null;
 	}
 
+	@Override
+	public void removeDuplicates(long orgId, long fieldId, long assetId, long startTtime, long endTtime)
+			throws Exception {
+		// TODO Auto-generated method stub
+		FacilioContext context=new FacilioContext();
+		context.put(ContextNames.ADMIN_DELTA_ORG, orgId);
+		context.put(ContextNames.FIELD_ID,fieldId);
+		context.put(ContextNames.ASSET_ID,assetId);
+		context.put(ContextNames.START_TTIME,startTtime);
+		context.put(ContextNames.END_TTIME,endTtime);
+
+		Chain removeDuplicatesChain = TransactionChainFactory.removeDuplicates();
+		removeDuplicatesChain.execute(context);
+	}
+
 }

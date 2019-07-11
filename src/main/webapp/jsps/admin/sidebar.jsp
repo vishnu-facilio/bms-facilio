@@ -95,7 +95,7 @@ if (buildinfo == null) {
                <a href="deltacalculation">
                <span class="nav-icon">
               <i class=" sidebar-icon fa fa-info-circle fa-fw "></i> </span>
-               <span class="nav-title">Delta Calculation</span>
+               <span class="nav-title">Reading Tools</span>
                </a>
            </li> 
 

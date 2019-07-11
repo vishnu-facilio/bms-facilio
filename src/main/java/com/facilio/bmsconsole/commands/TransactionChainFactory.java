@@ -929,6 +929,12 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain removeDuplicates () {
+			Chain c = getDefaultChain();
+			c.addCommand(new AdminRemoveDuplicationCommand());
+			return c;
+		}
+		
 		public static Chain editAgent(){
 			Chain c = getDefaultChain();
 			c.addCommand(new ConfigureAgentCommand());

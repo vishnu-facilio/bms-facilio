@@ -59,6 +59,47 @@
 
 	}
 </script>
+<script type="text/javascript">
+	function changeselectPage() {
+		var selectedOption = "deltacalculation?orgid=" + $("#orgid").val()
+				+ "&" + "assetcategory=" + $("#assetcategory").val()+"&"+  "assetId=" + $("#assetId").val()+"&"+"selectfields=" + $("#selectfields").val();
+		location.href = selectedOption;
+
+	}
+</script>
+<script type="text/javascript">
+	function changeReadingPage() {
+		var selectedOption = "deltacalculation?orgid=" + $("#orgid").val()
+				+ "&" + "assetcategory=" + $("#assetcategory").val()+"&"+  "assetId=" + $("#assetId").val()+"&"+"selectfields=" + $("#selectfields").val()+"&"+"fieldId="+$("#fieldId").val();
+		location.href = selectedOption;
+	
+	}
+	function changeAssetPage(){
+		var selectedOption = "deltacalculation?orgid=" + $("#orgid").val()
+				+ "&" + "assetcategory=" + $("#assetcategory").val()+"&"+ "assetId=" + $("#assetId").val();
+		location.href = selectedOption;
+
+	}
+	function changestartTTimePage(){
+		var selectedOption = "deltacalculation?orgid=" + $("#orgid").val()
+		+ "&" + "assetcategory=" + $("#assetcategory").val()+"&"+  "assetId=" + $("#assetId").val()+"&"+"selectfields=" + $("#selectfields").val()+"&"+"fieldId="+$("#fieldId").val()+"&"+"fromTtime="+$("#fromTtime").val();
+		location.href = selectedOption;
+
+	}
+	function changeendTTimePage(){
+		var selectedOption = "deltacalculation?orgid=" + $("#orgid").val()
+		+ "&" + "assetcategory=" + $("#assetcategory").val()+"&"+  "assetId=" + $("#assetId").val()+"&"+"selectfields=" + $("#selectfields").val()+"&"+"fieldId="+$("#fieldId").val()+"&"+"fromTtime="+$("#fromTtime").val()+"&"+"toTtime="+$("#toTtime").val();
+		location.href = selectedOption;
+
+	}
+	function changeRemoveDuplicateePage(){
+		var selectedOption = "removeduplicates?orgid=" + $("#orgid").val()
+		+ "&" + "assetcategory=" + $("#assetcategory").val()+"&"+  "assetId=" + $("#assetId").val()+"&"+"selectfields=" + $("#selectfields").val()+"&"+"fieldId="+$("#fieldId").val()+"&"+"fromTtime="+$("#fromTtime").val()+"&"+"toTtime="+$("#toTtime").val();
+		location.href = selectedOption;
+
+	}
+</script>
+
 
 
 <meta charset="UTF-8">
@@ -98,25 +139,29 @@
 		<div class=" col-lg-8 col-md-8">
 
 			<input type="hidden" name="orgid" value="<%=org.getOrgId()%>">
-			<br> <br> <br> <label for="assetcategory"><h5>
-					AssetCategory:</h5></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			<br>
+			<br>
+			<br>
+			<label for="assetcategory">
+				<h5>AssetCategory:</h5>
+			</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 
-			<select name="assetcategory" id="assetcategory"
-				onChange="changeThePage()">
+			<select name="assetcategory" id="assetcategory" onChange="changeThePage()">
 				<option value="" disabled selected>Select</option>
-				<%
-					for (AssetCategoryContext role : assetcategory) {
-				%>
-				<option value="<%=role.getId()%>"
-					<%=(request.getParameter("assetcategory") != null
-							&& request.getParameter("assetcategory").equals(role.getId() + "")) ? "selected" : " "%>><%=role.getName()%></option>
-				<%
-					}
-				%>
-
-			</select> <br> <br> <br> <label for="assetId"><h5>
+					<%
+						for (AssetCategoryContext role : assetcategory) {
+					%>
+				<option value="<%=role.getId()%>"<%=(request.getParameter("assetcategory") != null && request.getParameter("assetcategory").equals(role.getId() + "")) ? "selected" : " "%>><%=role.getName()%></option>
+					<%
+						}
+					%>
+		   </select>
+		   <br>
+		   <br>
+		   <br>
+		   <label for="assetId"><h5>
 					Asset:</h5></label>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; <select
-				name="assetId" id="assetId">
+				name="assetId" id="assetId" onChange="changeAssetPage()">
 				<option value="" disabled selected>Select</option>
 				<%
 					if ((request.getParameter("assetcategory") != null)) {
@@ -125,21 +170,34 @@
 
 							for (AssetContext list : AssetListOfCategory) {
 				%>
-				<option value="<%=list.getId()%>"><%=list.getName()%></option>
+				<option value="<%=list.getId()%>"<%=(request.getParameter("assetId") != null && request.getParameter("assetId").equals(list.getId() + "")) ? "selected" : " "%>><%=list.getName()%></option>
 				<%
 					}
 						}
 				%>
-			</select><br> <br> <br> <label for="fieldId"><h5>
+			</select><br> <br> <br>
+			<label for="selectfields"><h5>
+					Field Option:</h5></label>&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;&nbsp;&nbsp;<select
+				name="selectfields" id="selectfields" onChange="changeselectPage()">+
+				<option value="" disabled selected>Select</option>
+				<%if((request.getParameter("assetcategory") != null)) {%>
+				<option value="<%=1%>"<%=(request.getParameter("selectfields") != null && request.getParameter("selectfields").equals("1" + "")) ? "selected" : " "%>>Deltacalculate</option>
+				<option value="<%=2%>"<%=(request.getParameter("selectfields") != null && request.getParameter("selectfields").equals("2" + "")) ? "selected" : " "%>>RemoveDuplicate</option>
+				<%} %>
+			</select><br> <br> <br>
+			
+			 <label for="fieldId"><h5>
 					Reading :</h5></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&emsp;&emsp;&emsp;&emsp;&emsp;
 			<select name="fieldId" id="fieldId">
 				<option value="" disabled selected>Select</option>
-				<%
+				<% 
+					
 					if ((request.getParameter("assetcategory") != null)) {
 							long parentCategoryId = Long.parseLong(request.getParameter("assetcategory"));
 							reading = bean.getAssetReadings(parentCategoryId);
 							for (FacilioModule list : reading) {
 								for (FacilioField fields : list.getFields()) {
+									if((request.getParameter("selectfields") != null) && (request.getParameter("selectfields").equalsIgnoreCase("1"))){
 									if ((fields.getName().equals("totalEnergyConsumption")
 											|| fields.getName().equals("phaseEnergyR")
 											|| fields.getName().equals("phaseEnergyY")
@@ -148,28 +206,50 @@
 													|| fields.getDataTypeEnum() == FieldType.DECIMAL)
 													&& ((NumberField) fields).isCounterField()) {
 				%>
-				<option value="<%=fields.getId()%>"><%=fields.getDisplayName()%></option>
+				<option value="<%=fields.getId()%>"<%=(request.getParameter("fieldId") != null && request.getParameter("fieldId").equals(fields.getId() + "")) ? "selected" : " "%>><%=fields.getDisplayName()%></option>
 
 				<%
 					}
+									}
+									else{%>
+											<option value="<%=fields.getId()%>"<%=(request.getParameter("fieldId") != null && request.getParameter("fieldId").equals(fields.getId() + "")) ? "selected" : " "%>><%=fields.getDisplayName()%></option>
+								<% 	}
 								}
 							}
 						}
 				%>
-			</select> <br> <br> <br> <label for="fromTtime"><h5>Enter
-					From TTIME:</h5></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input
-				type="text" id="fromTtime" name="fromTtime"> <br> <br>
-			<br> <label for="toTtime"><h5>Enter to TTIME:</h5></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-			<input type="text" id="toTtime" name="toTtime"><br> <br>
+			</select> 
 			<br>
-			<div align="center">
-				<input type="submit" style="margin-left: -100px"
-					name="deltaCalculation" value="Submit" />
-			</div>
-			<br> <br> <br>
-		</div>
-
-	</form>
+			<br>
+			<br>
+			<label for="fromTtime">
+				<h5>EnterFrom TTIME:</h5>
+			</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			 
+				<input type="text" id="fromTtime" value="<%=request.getParameter("fromTtime") %>" name="fromTtime" onChange="changestartTTimePage()"> 
+			<br>
+			<br>
+			<br>
+			
+			<label for="toTtime">
+			<h5>Enter to TTIME:</h5>
+			</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+			
+				<input type="text" id="toTtime" value="<%=request.getParameter("toTtime") %>" name="toTtime" onChange="changeendTTimePage()">
+			<br>
+			<br>
+			<br>
+			<br>
+				<input type="submit" style="margin-left: 200px"name="deltaCalculation" value="CalculateDelta" />
+				<br>
+				<br>
+				<br>
+					
+		</form>	
+	<br>
+	<br>
+	<br>
+	<br>
 	<%
 		}
 	%>
@@ -199,7 +279,7 @@ input[type=text] {
 }
 
 input[type=submit] {
-	width: 20%;
+	width: 27%;
 	background-color: #4CAF50;
 	color: white;
 	padding: 12px 20px;
@@ -207,7 +287,7 @@ input[type=submit] {
 	border: none;
 	border-radius: 4px;
 	cursor: pointer;
-	font-size: 18px;
+	font-size: 15px;
 }
 
 input[type=submit]:hover {
