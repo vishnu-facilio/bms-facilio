@@ -8,6 +8,7 @@ import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.MLContext;
@@ -30,6 +31,7 @@ public class MLResponseParser extends ActionSupport
 			log.info("ML ID and Result are "+ml_id+":::"+result+"::"+orgid+"::"+error);
 			if(error==null || error.isEmpty())
 			{
+				AccountUtil.setCurrentAccount(orgid);
 				List<MLContext> mlContextList = MLUtil.getMLContext(ml_id);
 				if(mlContextList.isEmpty())
 				{
