@@ -158,6 +158,8 @@ public class AwsUtil
 				PROPERTIES.load(stream);
 				PROPERTIES.forEach((k,v) -> PROPERTIES.put(k.toString().trim(), v.toString().trim()));
 				environment = PROPERTIES.getProperty("environment");
+				HashMap<String, String> awsSecret = getPassword(environment+"-app.properties");
+				awsSecret.forEach((k,v) ->  PROPERTIES.put(k.trim(), v.trim()));
 				productionEnvironment = "production".equalsIgnoreCase(environment);
 				developmentEnvironment = "development".equalsIgnoreCase(environment);
 				disableCSP = "true".equals(PROPERTIES.getProperty("onpremise", "false").trim());
@@ -201,6 +203,7 @@ public class AwsUtil
 				        dbIdentifiers.add(identifier);
                     }
                 }
+				LOGGER.info(getIotEndPoint() + "iot endpoint");
 			} catch (IOException e) {
 				LOGGER.info("Exception while trying to load property file " + AWS_PROPERTY_FILE);
 			}
@@ -544,9 +547,6 @@ public class AwsUtil
 			ObjectMapper objectMapper = new ObjectMapper();
 			try {
 				secretMap.putAll(objectMapper.readValue(secretBinaryString, HashMap.class));
-
-				String url = String.format("jdbc:mysql://%s:%s/bms", secretMap.get("host"), secretMap.get("port"));
-				secretMap.put("url", url);
 			} catch (IOException e) {
 				LOGGER.info("exception while reading value from secret manager ", e);
 			}

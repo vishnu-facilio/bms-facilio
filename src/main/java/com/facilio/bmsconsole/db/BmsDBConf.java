@@ -117,7 +117,10 @@ public class BmsDBConf extends DBConf {
     }
 
     public HashMap<String, String> getSecret(String secretKey) {
-        return AwsUtil.getPassword(secretKey);
+        HashMap<String, String> password = AwsUtil.getPassword(secretKey);
+        String url = String.format("jdbc:mysql://%s:%s/bms", password.get("host"), password.get("port"));
+        password.put("url", url);
+        return password;
     }
 
     @Override
