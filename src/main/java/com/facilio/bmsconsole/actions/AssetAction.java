@@ -240,6 +240,7 @@ public class AssetAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, category.getId());
 		}
 		context.put(FacilioConstants.ContextNames.SHOW_RELATIONS_COUNT, showRelationsCount);
+		context.put(FacilioConstants.ContextNames.FETCH_HIERARCHY, getFetchHierarchy());
 		Chain assetDetailsChain = FacilioChainFactory.getAssetDetailsChain();
 		assetDetailsChain.execute(context);
 		
@@ -248,6 +249,17 @@ public class AssetAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.ASSET, getAsset());
 		setResult("relationsCount", relationsCount);
 		return SUCCESS;
+	}
+	
+	private Boolean fetchHierarchy;
+	public Boolean getFetchHierarchy() {
+		if (fetchHierarchy == null) {
+			return false;
+		}
+		return fetchHierarchy;
+	}
+	public void setFetchHierarchy(Boolean fetchHierarchy) {
+		this.fetchHierarchy = fetchHierarchy;
 	}
 	
 	public String assetCount () throws Exception {

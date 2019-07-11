@@ -28,6 +28,7 @@ import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.AssetDepartmentContext;
 import com.facilio.bmsconsole.context.AssetTypeContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.context.ResourceContext;
@@ -800,6 +801,12 @@ public class AssetsAPI {
 			if (asset.getSpaceId() > 0) {
 				spaceIds.add(asset.getSpaceId());
 			}
+			if (assets.size() == 1 && asset instanceof EnergyMeterContext) {
+				BaseSpaceContext purposeSpace = ((EnergyMeterContext)asset).getPurposeSpace();
+				if (purposeSpace != null && purposeSpace.getId() > 0) {
+					spaceIds.add(purposeSpace.getId());
+				}
+			}
 			if (asset.getType() != null && asset.getType().getId() > 0) {
 				typeIds.add(asset.getType().getId());
 			}
@@ -814,6 +821,12 @@ public class AssetsAPI {
 			}
 			if(asset.getSpaceId() != -1) {
 				asset.setSpace(spaceMap.get(asset.getSpaceId()));
+			}
+			if (assets.size() == 1 && asset instanceof EnergyMeterContext) {
+				BaseSpaceContext purposeSpace = ((EnergyMeterContext)asset).getPurposeSpace();
+				if (purposeSpace != null && purposeSpace.getId() > 0) {
+					((EnergyMeterContext)asset).setPurposeSpace(spaceMap.get(purposeSpace.getId()));
+				}
 			}
 			if (asset.getType() != null && asset.getType().getId() > 0) {
 				asset.setType(assetTypeMap.get(asset.getType().getId()));

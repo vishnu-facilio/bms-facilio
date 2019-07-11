@@ -1,5 +1,13 @@
 package com.facilio.constants;
 
+import java.text.SimpleDateFormat;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.json.simple.JSONObject;
+
 import com.facilio.activity.ActivityContext;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.tenant.TenantContext;
@@ -8,13 +16,6 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.mv.context.MVAdjustment;
 import com.facilio.mv.context.MVBaseline;
 import com.facilio.mv.context.MVProjectContext;
-import org.json.simple.JSONObject;
-
-import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 public class FacilioConstants {
 	
@@ -669,6 +670,7 @@ public class FacilioConstants {
 		public static final String RESOURCE_ID = "RESOURCE_ID";
 		public static final String SHOW_RELATIONS_COUNT = "showRelationsCount";
 		public static final String RELATIONS_COUNT = "relationsCount";
+		public static final String FETCH_HIERARCHY = "fetchHierarchy";
 		
 		public static final String SPACECATEGORY = "SPACECATEGORY";
 		public static final String SPACECATEGORIESLIST = "SPACECATEGORIESLIST";
