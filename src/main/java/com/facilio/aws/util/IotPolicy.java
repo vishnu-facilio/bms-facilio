@@ -1,6 +1,5 @@
 package com.facilio.aws.util;
 
-import com.amazonaws.services.iot.AWSIot;
 import com.facilio.events.tasker.tasks.EventUtil;
 
 import java.util.HashMap;
@@ -11,10 +10,6 @@ public class IotPolicy
     private String type;
     public String getType() { return type; }
     public void setType(String type) { this.type = type; }
-
-    private AWSIot iotClient;
-    public AWSIot getIotClient() { return iotClient; }
-    public void setIotClient(AWSIot iotClient) { this.iotClient = iotClient; }
 
     private String[] publishtopics;
     public String[] getPublishtopics() { return publishtopics; }

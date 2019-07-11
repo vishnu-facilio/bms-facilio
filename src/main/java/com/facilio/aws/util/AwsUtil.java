@@ -847,7 +847,7 @@ public class AwsUtil
 	}
 
 
-	private static void createIotTopicRule(IotPolicy policy) { //  ,Event as Publish
+	private static void createIotTopicRule(IotPolicy policy, AWSIot iotClient) {
         Map<String,String> publishTypeMap = policy.getMappedTopicAndPublished();
 		for(String topic : publishTypeMap.keySet()){
 			try {
@@ -863,7 +863,7 @@ public class AwsUtil
                 LOGGER.info(" rulepayload sql  "+rulePayload.getSql());
 				CreateTopicRuleRequest topicRuleRequest = new CreateTopicRuleRequest().withRuleName(topic).withTopicRulePayload(rulePayload);
 
-				CreateTopicRuleResult topicRuleResult = policy.getIotClient().createTopicRule(topicRuleRequest);
+				CreateTopicRuleResult topicRuleResult = iotClient.createTopicRule(topicRuleRequest);
 
 				LOGGER.info("Topic Rule created : " + topicRuleResult.getSdkHttpMetadata().getHttpStatusCode());
 			} catch (ResourceAlreadyExistsException resourceExists ){
@@ -885,8 +885,8 @@ public class AwsUtil
     	CreateKeysAndCertificateResult certificateResult = createCertificate(iotClient);
     	attachPolicy(iotClient, certificateResult, policyName);
     	createKinesisStream(getKinesisClient(), name);
-    	createIotTopicRule(policy);
-    	return null; //certificateResult;
+    	createIotTopicRule(policy,iotClient);
+    	return certificateResult;
 	}
 
 	public static CreateKeysAndCertificateResult signUpIotToKinesis(String orgDomainName, String policyName, String type){
