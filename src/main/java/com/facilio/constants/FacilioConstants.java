@@ -507,7 +507,6 @@ public class FacilioConstants {
 		public static final String BASE_SPACE_ATTACHMENTS = "basespaceattachments";
 		public static final String ASSET_ATTACHMENTS = "assetattachments";
 		public static final String TASK_ATTACHMENTS = "taskattachments";
-		public static final String PREREQUISITE_ATTACHMENTS = "prerequisiteattachments";
 		public static final String INVENTORY_ATTACHMENTS = "inventoryattachments";
 		public static final String ITEM_TYPES_ATTACHMENTS = "itemTypesAttachments";
 		public static final String TOOL_TYPES_ATTACHMENTS = "toolTypesattachments";

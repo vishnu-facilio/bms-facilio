@@ -142,16 +142,6 @@ public class AttachmentContext extends ModuleBaseWithCustomFields {
 		this.recordId = recordId;
 	}
 	
-	public Boolean preRequisite;
-
-	public Boolean getPreRequisite() {
-		return preRequisite;
-	}
-
-	public void setPreRequisite(Boolean preRequisite) {
-		this.preRequisite = preRequisite;
-	}
-
 	public static enum AttachmentType {
 		BEFORE,
 		AFTER
