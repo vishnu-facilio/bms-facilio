@@ -62,7 +62,9 @@ public class ConnectionAction extends FacilioAction {
 	
 	public String addAuthorizationCode() throws Exception {
 		
-		
+		if(code == null) {
+			throw new IllegalArgumentException("Auth Code is Empty");
+		}
 		connectionContext = ConnectionUtil.getConnection(connectionId);
 		connectionContext.setAuthCode(code);
 		FacilioContext context = new FacilioContext();

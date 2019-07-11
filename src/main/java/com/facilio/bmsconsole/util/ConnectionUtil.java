@@ -54,6 +54,13 @@ public class ConnectionUtil {
 	
 	public static final String GRANT_TYPE_AUTH_TOKEN = "authorization_code";
 	
+	public static final String DEFAULT_CHARSET_NAME = "UTF-8";
+	
+	
+	public static final String EQUALS = "=";
+	public static final String QUERY_STRING_SEPERATOR = "?";
+	public static final String PARAM_SEPERATOR = "&";
+	
 	public static String getUrlResult(ConnectionContext connectionContext,String urlString,Map<String,String> params,HttpMethod method) throws Exception {
 		
 		validateConnection(connectionContext);
@@ -76,6 +83,9 @@ public class ConnectionUtil {
 			break;
 			
 		case AUTH_TOKEN_GENERATED:
+				if(connectionContext.getExpiryTime() <= DateTimeUtil.getCurrenTime()) {
+					getAuthToken(connectionContext);
+				}
 			break;
 			
 		case DISABLED:
@@ -121,7 +131,35 @@ public class ConnectionUtil {
 			}
 			
 			else if (connectionContext.getStateEnum() == State.AUTH_TOKEN_GENERATED) {
+				String url = connectionContext.getRefreshTokenUrl();
 				
+				Map<String,String> params = new HashMap<>();
+				
+				params.put(REFRESH_TOKEN_STRING, connectionContext.getRefreshToken());
+				params.put(CLIENT_ID_STRING, connectionContext.getClientId());
+				params.put(CLIENT_SECRET_STRING, connectionContext.getClientSecretId());
+				params.put(GRANT_TYPE_STRING, REFRESH_TOKEN_STRING);
+				
+				String res = getUrlResult(url, params, HttpMethod.POST);
+				JSONParser parser = new JSONParser();
+				JSONObject resultJson = (JSONObject) parser.parse(res);
+				
+				System.out.println("res ------ "+resultJson);
+				
+				if(resultJson.containsKey(ACCESS_TOKEN_STRING) && resultJson.containsKey(EXPIRES_IN_STRING)) {
+					connectionContext.setAccessToken((String)resultJson.get(ACCESS_TOKEN_STRING));
+					
+					long expireTimeInSec = (long) resultJson.get(EXPIRES_IN_STRING);
+					
+					expireTimeInSec = expireTimeInSec - 60;
+					
+					connectionContext.setExpiryTime(DateTimeUtil.getCurrenTime() + (expireTimeInSec * 1000));
+					
+					updateConnectionContext(connectionContext);
+				}
+				else {
+					throw new Exception("Required Param is Missing in Response - "+resultJson.toJSONString());
+				}
 			}
 		}
 		else {
@@ -129,44 +167,23 @@ public class ConnectionUtil {
 		}
 	}
 
-	private static String getUrlResult(String urlString,Map<String,String> params,HttpMethod method) throws IOException {
+	private static String getUrlResult(String urlString,Map<String,String> params,HttpMethod method) throws Exception {
 		
-		URL url = new URL(urlString);
-		
-		HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
-		conn.setConnectTimeout(CONNECTION_TIMEOUT_IN_SEC);
-		conn.setRequestMethod(method.name());
-		conn.setDoInput(true);
-		conn.setDoOutput(true);
-		
-		if(params != null && !params.isEmpty()) {
-			
-			conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-			
-			List<NameValuePair> paramsList = new ArrayList<NameValuePair>();
-			
-			for(String key :params.keySet()) {
-				paramsList.add(new BasicNameValuePair(key, params.get(key)));
-			}
-
-			OutputStream os	= conn.getOutputStream();
-			
-			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-			
-			writer.write(getQuery(paramsList));
-			writer.flush();
-			writer.close();	
-			os.close();
+		HttpsURLConnection conn = null;
+		if(method == HttpMethod.GET) {
+			conn  = handleGetConnection(urlString,params);
 		}
-		
+		else if(method == HttpMethod.POST) {
+			conn  = handlePostConnection(urlString,params);
+		}
 		conn.connect();
 		
 		BufferedReader br = null;
 		try {
-			br = new BufferedReader(new InputStreamReader(conn.getInputStream(),Charset.forName("UTF-8")));
+			br = new BufferedReader(new InputStreamReader(conn.getInputStream(),Charset.forName(DEFAULT_CHARSET_NAME)));
 		}
 		catch(IOException e) {
-			br = new BufferedReader(new InputStreamReader(conn.getErrorStream(),Charset.forName("UTF-8")));
+			br = new BufferedReader(new InputStreamReader(conn.getErrorStream(),Charset.forName(DEFAULT_CHARSET_NAME)));
 		}
 			
   	   	String input;
@@ -180,6 +197,66 @@ public class ConnectionUtil {
   	   	return output.toString();
 	}
 	
+	private static HttpsURLConnection handlePostConnection(String urlString, Map<String, String> params) throws Exception {
+		
+		URL url = new URL(urlString);
+		
+		HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+		conn.setDoInput(true);
+		conn.setDoOutput(true);
+		conn.setRequestMethod(HttpMethod.POST.name());
+		conn.setConnectTimeout(CONNECTION_TIMEOUT_IN_SEC);
+		
+		if(params != null && !params.isEmpty()) {
+			
+			conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+			
+			List<NameValuePair> paramsList = new ArrayList<NameValuePair>();
+			
+			for(String key :params.keySet()) {
+				paramsList.add(new BasicNameValuePair(key, params.get(key)));
+			}
+
+			OutputStream os	= conn.getOutputStream();
+			
+			BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, DEFAULT_CHARSET_NAME));
+			
+			writer.write(getQuery(paramsList));
+			writer.flush();
+			writer.close();	
+			os.close();
+		}
+		return conn;
+	}
+
+	private static HttpsURLConnection handleGetConnection(String urlString, Map<String, String> params) throws Exception {
+		
+		String queryString = "";
+		if(params != null && !params.isEmpty()) {
+			
+			StringBuilder queryStringBuilder = new StringBuilder();
+			for(String key :params.keySet()) {
+				queryStringBuilder.append(key);
+				queryStringBuilder.append(EQUALS);
+				queryStringBuilder.append(params.get(key));
+				queryStringBuilder.append(PARAM_SEPERATOR);
+			}
+			queryString = queryStringBuilder.subSequence(0, queryStringBuilder.length()-1).toString();
+		}	
+		
+		URL url = new URL(urlString+QUERY_STRING_SEPERATOR+queryString);
+		HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+		
+		conn.setDoInput(true);
+		conn.setDoOutput(true);
+		conn.setRequestMethod(HttpMethod.GET.name());
+		conn.setConnectTimeout(CONNECTION_TIMEOUT_IN_SEC);
+		conn.setDoInput(true);
+		conn.setDoOutput(true);
+		
+		return conn;
+	}
+
 	private static String getQuery(List<NameValuePair> params) throws UnsupportedEncodingException
 	{
 	    StringBuilder result = new StringBuilder();
@@ -268,7 +345,7 @@ public class ConnectionUtil {
 		else if(connectionContext.getAuthCode() != null) {
 			connectionContext.setState(ConnectionContext.State.AUTHORIZED.getValue());
 		}
-		if(connectionContext.getClientId() != null && connectionContext.getClientSecretId() != null) {
+		else if(connectionContext.getClientId() != null && connectionContext.getClientSecretId() != null) {
 			connectionContext.setState(ConnectionContext.State.CLIENT_ID_MAPPED.getValue());
 		}
 	}

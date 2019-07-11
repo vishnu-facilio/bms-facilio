@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.accounts.dto.User;
+import com.facilio.aws.util.AwsUtil;
 
 public class ConnectionContext {
 	long id = -1l;
@@ -19,6 +20,7 @@ public class ConnectionContext {
 	String accessToken;
 	String authCode;
 	String refreshToken;
+	String callBackURL;
 	
 	long expiryTime = -1l;
 	
@@ -234,5 +236,31 @@ public class ConnectionContext {
 	}
 	public void setServiceName(String serviceName) {
 		this.serviceName = serviceName;
+	}
+	public String getCallBackURL() {
+		if(id > 0) {
+			String protocol = "";
+			if(AwsUtil.isDevelopment()) {
+				protocol = "http://";
+			}
+			else {
+				protocol = "https://";
+			}
+			String domain = AwsUtil.getAppDomain();
+			callBackURL = protocol+ domain +"/api/v2/connection/"+id;
+			return callBackURL;
+		}
+		return null;
+	}
+	@Override
+	public String toString() {
+		return "ConnectionContext [id=" + id + ", orgId=" + orgId + ", authType=" + authType + ", state=" + state
+				+ ", name=" + name + ", serviceName=" + serviceName + ", clientId=" + clientId + ", clientSecretId="
+				+ clientSecretId + ", scope=" + scope + ", authorizeUrl=" + authorizeUrl + ", accessTokenUrl="
+				+ accessTokenUrl + ", refreshTokenUrl=" + refreshTokenUrl + ", revokeTokenUrl=" + revokeTokenUrl
+				+ ", accessToken=" + accessToken + ", authCode=" + authCode + ", refreshToken=" + refreshToken
+				+ ", callBackURL=" + getCallBackURL() + ", expiryTime=" + expiryTime + ", sysCreatedTime=" + sysCreatedTime
+				+ ", sysModifiedTime=" + sysModifiedTime + ", sysCreatedBy=" + sysCreatedBy + ", sysModifiedBy="
+				+ sysModifiedBy + "]";
 	}
 }
