@@ -43,6 +43,7 @@ import com.facilio.report.context.ReportDataPointContext.DataPointType;
 import com.facilio.report.context.ReportDataPointContext.OrderByFunction;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportFilterContext;
+import com.facilio.report.context.ReportTemplateContext;
 import com.facilio.report.context.ReportYAxisContext;
 import com.facilio.report.util.ReportUtil;
 import com.facilio.time.DateTimeUtil;
@@ -70,6 +71,9 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 			
 			if(regressionConfig != null) {
 				report.setType(ReportContext.ReportType.REGRESSION_REPORT);
+			}
+			else if((ReportTemplateContext)context.get(FacilioConstants.ContextNames.REPORT_TEMPLATE) != null) {
+				report.setType(ReportType.TEMPLATE_REPORT);
 			}
 			else {
 				report.setType(ReportType.READING_REPORT);

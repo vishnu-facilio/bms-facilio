@@ -5452,6 +5452,7 @@ public class FieldFactory {
 		
 		fields.add(getField("moduleType", "MODULE_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("userFiltersJson", "USER_FILTER_JSON", module, FieldType.STRING));
+		fields.add(getField("template", "REPORT_TEMPLATE", module, FieldType.STRING));
 		return fields;
 	}
 	

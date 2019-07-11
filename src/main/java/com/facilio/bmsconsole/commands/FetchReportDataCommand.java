@@ -239,6 +239,13 @@ public class FetchReportDataCommand implements Command {
 			newSelectBuilder.andCondition(getEqualsCondition(xAggrField, xValues));
 		}
 		
+		if(report.getReportTemplate() != null ) {
+			Criteria templateCriteria = report.getReportTemplate().getCriteria(report);
+			if(templateCriteria != null) {
+				newSelectBuilder.andCriteria(templateCriteria);
+			}
+		}
+		
 		if (CollectionUtils.isNotEmpty(report.getUserFilters())) {
 			for (ReportUserFilterContext userFilter: report.getUserFilters()) {
 				Criteria criteria = userFilter.getCriteria();
@@ -247,6 +254,8 @@ public class FetchReportDataCommand implements Command {
 				}
 			}
 		}
+		
+	
 		
 		if(report.getCriteria() != null) {
 			newSelectBuilder.andCriteria(report.getCriteria());

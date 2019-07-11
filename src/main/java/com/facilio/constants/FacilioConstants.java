@@ -111,6 +111,7 @@ public class FacilioConstants {
 		public static final String REGRESSION_CONFIG = "regressionConfig";
 		public static final String REGRESSION_RESULT = "regressionResult";
 		public static final String REGRESSION_REPORT = "regressionReport";
+		public static final String REPORT_TEMPLATE = "reportTemplate";
 
 		public static final String TENANT_STATUS = "tenantStatus";
 		public static final String USER_ID = "userId";

@@ -16,12 +16,12 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.AddOrUpdateReportCommand;
 import com.facilio.bmsconsole.commands.ConstructReportData;
-import com.facilio.bmsconsole.commands.CreateReadingAnalyticsReportCommand;
 import com.facilio.bmsconsole.commands.GenerateCriteriaFromFilterCommand;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -72,6 +72,7 @@ import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.context.ReportFactoryFields;
 import com.facilio.report.context.ReportFolderContext;
+import com.facilio.report.context.ReportTemplateContext;
 import com.facilio.report.context.ReportUserFilterContext;
 import com.facilio.report.context.ReportYAxisContext;
 import com.facilio.report.context.WorkorderAnalysisContext;
@@ -206,8 +207,14 @@ public class V2ReportAction extends FacilioAction {
 		if (showSafeLimit != null) {
 			reportContext.addToReportState(FacilioConstants.ContextNames.REPORT_SHOW_SAFE_LIMIT, showSafeLimit);
 		}
+
 		if (xAggr != null) {
 			reportContext.setxAggr(xAggr);
+		}
+		
+		if(template != null) {
+			reportContext.setReportTemplate(template);
+
 		}
 
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
@@ -314,6 +321,10 @@ public class V2ReportAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		setReadingsDataContext(context);
 		
+		if(reportContext.getTemplate() != null) {
+			setTemplate(reportContext.getReportTemplate());
+		}
+		
 		if(reportContext != null && regressionConfig != null && regressionConfig.size() != 0 && regressionType != null) {
 			JSONObject reportState;
 			if(reportContext.getReportState() != null && !reportContext.getReportState().isEmpty()) {
@@ -332,7 +343,7 @@ public class V2ReportAction extends FacilioAction {
 			reportContext.setReportState(reportState);
 			context.put(FacilioConstants.ContextNames.REGRESSION_CONFIG, regressionConfig);
 		}
-		
+		context.put(FacilioConstants.ContextNames.REPORT_TEMPLATE, template);
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateOperatorValue);
 		context.put(FacilioConstants.ContextNames.CHART_STATE, chartState);
@@ -1483,6 +1494,19 @@ public class V2ReportAction extends FacilioAction {
 	}
 	public void setChartType(String chartType) {
 		this.chartType = chartType;
+	}
+	
+	private ReportTemplateContext template;
+	
+	public ReportTemplateContext getTemplate() {
+		return template;
+	}
+	public void setTemplate(ReportTemplateContext template) {
+		this.template = template;
+	}
+	public void setTemplateString(String templateJSON) throws Exception {
+		JSONObject jsonObject = (JSONObject) new JSONParser().parse(templateJSON);
+		this.template = FieldUtil.getAsBeanFromJson(jsonObject, ReportTemplateContext.class);
 	}
 	public String exportReport() throws Exception{
 		

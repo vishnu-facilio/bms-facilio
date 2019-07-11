@@ -449,6 +449,29 @@ public class ReportContext {
 		this.userFilters = userFilters;
 	}
 	
+	public String template;
+	public ReportTemplateContext reportTemplate;
+	
+	public ReportTemplateContext getReportTemplate() throws Exception{
+		if(getTemplate() != null) {
+			JSONParser newParser = new JSONParser();
+			JSONObject parsed = (JSONObject) newParser.parse(getTemplate());
+			setReportTemplate(FieldUtil.getAsBeanFromJson(parsed, ReportTemplateContext.class));
+		}
+		return reportTemplate;
+	}
+	public void setReportTemplate(ReportTemplateContext reportTemplate) throws Exception{
+		JSONObject template = FieldUtil.getAsJSON(reportTemplate);
+		setTemplate(template.toJSONString());
+		this.reportTemplate = reportTemplate;
+	}
+	public String getTemplate() {
+		return template;
+	}
+	public void setTemplate(String template) {
+		this.template = template;
+	}
+
 	// called when setting from client
 	public void setUserFilters(List<ReportUserFilterContext> userFilters, boolean updateField) {
 		if (userFilters == null) {	// return if its null
@@ -524,7 +547,8 @@ public class ReportContext {
 	public enum ReportType {
 		READING_REPORT,
 		WORKORDER_REPORT,
-		REGRESSION_REPORT
+		REGRESSION_REPORT,
+		TEMPLATE_REPORT
 		;
 		
 		public int getValue() {
