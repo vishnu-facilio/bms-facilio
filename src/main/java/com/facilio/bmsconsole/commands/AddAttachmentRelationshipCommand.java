@@ -8,7 +8,6 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.util.AttachmentsAPI;
-import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -68,14 +67,7 @@ public class AddAttachmentRelationshipCommand implements Command, PostTransactio
 		if(attachments != null && !attachments.isEmpty()) {
 			for(AttachmentContext attachment : attachments) {
 				attachment.setParentId(recordId);
-				if(moduleName.equalsIgnoreCase(FacilioConstants.ContextNames.PREREQUISITE_ATTACHMENTS)){
-					attachment.setPreRequisite(Boolean.TRUE);
-					moduleName=FacilioConstants.ContextNames.TICKET_ATTACHMENTS;
-				}else{
-					attachment.setPreRequisite(Boolean.FALSE);
-				}
 				context.put(FacilioConstants.ContextNames.MODULE_NAME,moduleName);
-				context.put(FacilioConstants.ContextNames.IS_PREREQUISITE, attachment.getPreRequisite());
 			}
 			
 //			if (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 151 || AccountUtil.getCurrentOrg().getId() == 92) {
@@ -88,11 +80,6 @@ public class AddAttachmentRelationshipCommand implements Command, PostTransactio
 //			}
 			
 			AttachmentsAPI.addAttachments(attachments, moduleName);
-			for(AttachmentContext attachment : attachments) {
-				if(attachment.getPreRequisite()){
-					WorkOrderAPI.updatePreRequestStatus(attachment.getParentId());
-				}
-			}
 			List<Long> attachmentIds = new ArrayList<>();
 			for (AttachmentContext ac : attachments) {
 				attachmentIds.add(ac.getId());
