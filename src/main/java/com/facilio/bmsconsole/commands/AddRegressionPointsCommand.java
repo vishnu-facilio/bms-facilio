@@ -87,6 +87,7 @@ public class AddRegressionPointsCommand implements Command{
 					
 					if(rc.getErrorStateENUM() == dataConditions.DATA_AUTHENTICATED) {
 						isMultiple = rc.getIsMultiple();
+						data = cleanData(new ArrayList(data), rc.getxAxis(), rc.getyAxis());
 						
 						Map<String, Object> regressionResult = prepareData(rc, new ArrayList(data), isMultiple);
 						
@@ -161,25 +162,8 @@ public class AddRegressionPointsCommand implements Command{
 	
 	private boolean checkDataForNull(ArrayList<Map<String, Object>> data, List<RegressionPointContext> idpVariables, RegressionPointContext depVariable) {
 		List<Map<String, Object>> finalData = new ArrayList<Map<String,Object>>();
-		for(int i = 0; i< data.size(); i++) {
-			Map<String, Object> record = data.get(i);
-			boolean isMarked = false;
-			if(record.get(depVariable.getAlias()) == null || record.get(depVariable.getAlias()) == "") {
-				isMarked = true;
-			}
-			if(isMarked == false) {
-				for(int j = 0; j< idpVariables.size(); j++) {
-					if(record.get(idpVariables.get(j).getAlias()) == null || record.get(idpVariables.get(j).getAlias()) =="") {
-						isMarked = true;
-						break;
-					}
-				}
-			}
-			
-			if(isMarked == false) {
-				finalData.add(record);
-			}
-		}
+		
+		finalData = cleanData(data, idpVariables, depVariable);
 		
 		if(finalData.size() == 0 || (finalData.size() < idpVariables.size() + 1)) {
 			return true;
