@@ -47,6 +47,10 @@ public class ConnectionUtil {
 	public static final String CLIENT_SECRET_STRING = "client_secret";
 	public static final String REDIRECT_URI_STRING = "redirect_uri";	
 	public static final String GRANT_TYPE_STRING = "grant_type";
+	public static final String ACCESS_TYPE_STRING = "access_type";
+	
+	public static final String ACCESS_TYPE_OFFLINE = "offline";
+		
 	
 	public static final String ACCESS_TOKEN_STRING = "access_token";
 	public static final String EXPIRES_IN_STRING = "expires_in";
@@ -106,6 +110,8 @@ public class ConnectionUtil {
 				params.put(CLIENT_ID_STRING, connectionContext.getClientId());
 				params.put(CLIENT_SECRET_STRING, connectionContext.getClientSecretId());
 				params.put(GRANT_TYPE_STRING, GRANT_TYPE_AUTH_TOKEN);
+				params.put(REDIRECT_URI_STRING, connectionContext.getCallBackURL());
+				params.put(ACCESS_TYPE_STRING, ACCESS_TYPE_OFFLINE);
 				
 				String res = getUrlResult(url, params, HttpMethod.POST);
 				JSONParser parser = new JSONParser();
@@ -117,7 +123,7 @@ public class ConnectionUtil {
 					connectionContext.setAccessToken((String)resultJson.get(ACCESS_TOKEN_STRING));
 					connectionContext.setRefreshToken((String)resultJson.get(REFRESH_TOKEN_STRING));
 					
-					int expireTimeInSec = (int) resultJson.get(EXPIRES_IN_STRING);
+					long expireTimeInSec = (long) resultJson.get(EXPIRES_IN_STRING);
 					
 					expireTimeInSec = expireTimeInSec - 60;
 					
