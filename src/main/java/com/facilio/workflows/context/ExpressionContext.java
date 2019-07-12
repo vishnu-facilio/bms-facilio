@@ -289,6 +289,10 @@ public class ExpressionContext implements WorkflowExpression {
 					.andCriteria(criteria)
 					;
 			
+			if(workflowContext.getCriteria() != null) {
+				selectBuilder.andCriteria(workflowContext.getCriteria());
+			}
+			
 			if (FieldUtil.isSiteIdFieldPresent(module) && AccountUtil.getCurrentSiteId() > 0) {
 				selectBuilder.andCondition(CriteriaAPI.getCurrentSiteIdCondition(module));
 			}

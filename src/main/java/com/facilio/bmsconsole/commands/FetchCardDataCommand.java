@@ -40,6 +40,7 @@ import com.facilio.cards.util.CardUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.fw.BeanFactory;
@@ -52,7 +53,6 @@ import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.unitconversion.Unit;
 import com.facilio.workflows.context.WorkflowContext;
-import com.facilio.workflows.context.WorkflowContext.WorkflowUIMode;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class FetchCardDataCommand implements Command {
@@ -107,6 +107,8 @@ public class FetchCardDataCommand implements Command {
 				
 				result = new HashMap<>();
 				
+				Criteria criteria = (Criteria) context.get(FacilioConstants.ContextNames.CRITERIA);
+				
 				CardType card = CardType.getCardType(widgetStaticContext.getStaticKey());
 				
 				boolean isNewWorkflowCard = false;
@@ -133,7 +135,7 @@ public class FetchCardDataCommand implements Command {
 						wfResult = WorkflowUtil.getWorkflowExpressionResult(card.getWorkflow(), widgetStaticContext.getParamsJson(),true);
 					}
 					else {
-						wfResult = WorkflowUtil.getWorkflowExpressionResult(card.getWorkflow(), widgetStaticContext.getParamsJson());
+						wfResult = WorkflowUtil.getWorkflowExpressionResult(card.getWorkflow(), widgetStaticContext.getParamsJson(),criteria);
 					}
 					
 					wfResult = CardUtil.getWorkflowResultForClient(wfResult, widgetStaticContext); // parsing data suitable for client
@@ -148,7 +150,7 @@ public class FetchCardDataCommand implements Command {
 					}
 				}
 				else {
-					Map<String, Object> expResult = WorkflowUtil.getExpressionResultMap(card.getWorkflow(), widgetStaticContext.getParamsJson());
+					Map<String, Object> expResult = WorkflowUtil.getExpressionResultMap(card.getWorkflow(), widgetStaticContext.getParamsJson(),criteria);
 					
 					expResult = (Map<String, Object>) CardUtil.getWorkflowResultForClient(expResult, widgetStaticContext); // parsing data suitable for client
 					
@@ -345,7 +347,7 @@ public class FetchCardDataCommand implements Command {
 								wfResult = WorkflowUtil.getResult(widgetVsWorkflowContext.getWorkflowId(), paramMap);
 							}
 							else {
-								wfResult = WorkflowUtil.getWorkflowExpressionResult(widgetVsWorkflowContext.getWorkflowString(), paramMap);
+								wfResult = WorkflowUtil.getWorkflowExpressionResult(widgetVsWorkflowContext.getWorkflowString(), paramMap,null);
 							}
 							
 							if(widgetStaticContext != null && (widgetStaticContext.getStaticKey().equals("weathercard") || widgetStaticContext.getStaticKey().equals("weathermini")) && widgetVsWorkflowContext.getWorkflowName().equals("weather")) {

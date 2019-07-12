@@ -53,7 +53,7 @@ public class CalculateDerivationCommand implements Command {
 				else if(rdp.getTransformWorkflow() != null) {
 					String wfXmlString = WorkflowUtil.getXmlStringFromWorkflow(rdp.getTransformWorkflow());
 					LOGGER.log(Level.SEVERE, "wfXmlString -- "+wfXmlString);
-					derivationResult = (Map<Object,Object>) WorkflowUtil.getWorkflowExpressionResult(wfXmlString, wfParams);
+					derivationResult = (Map<Object,Object>) WorkflowUtil.getWorkflowExpressionResult(wfXmlString, wfParams,null);
 				}
 				wfParams.put(rdp.getAliases().get("actual"), derivationResult); //To use one derivation in another
 				transformedData.put(rdp.getName(), Collections.singletonMap(FacilioConstants.Reports.ACTUAL_DATA, derivationResult));

@@ -250,16 +250,21 @@ public class WorkflowUtil {
 		}
 		return getWorkflowResult(new WorkflowContext(workflowString),paramMap, null, false, false,false);
 	}
-	public static Object getWorkflowExpressionResult(String workflowString,Map<String,Object> paramMap) throws Exception {
-		return getWorkflowResult(new WorkflowContext(workflowString),paramMap, null, false, false,false);
+	public static Object getWorkflowExpressionResult(String workflowString,Map<String,Object> paramMap,Criteria criteria) throws Exception {
+		
+		WorkflowContext workflow = new WorkflowContext(workflowString);
+		workflow.setCriteria(criteria);
+		return getWorkflowResult(workflow,paramMap, null, false, false,false);
 	}
 	public static Object getWorkflowExpressionResult(WorkflowContext workflowContext,Map<String,Object> paramMap) throws Exception {
 		return getWorkflowResult(workflowContext,paramMap, null, false, false,false);
 	}
 	
 	
-	public static Map<String, Object> getExpressionResultMap(String workflowContext,Map<String,Object> paramMap) throws Exception {
-		return (Map<String, Object>) getWorkflowResult(new WorkflowContext(workflowContext),paramMap, null, false, false,true);
+	public static Map<String, Object> getExpressionResultMap(String workflowContext,Map<String,Object> paramMap,Criteria criteria) throws Exception {
+		WorkflowContext workflow = new WorkflowContext(workflowContext);
+		workflow.setCriteria(criteria);
+		return (Map<String, Object>) getWorkflowResult(workflow,paramMap, null, false, false,true);
 	}
 	public static Map<String, Object> getExpressionResultMap(WorkflowContext workflowContext,Map<String,Object> paramMap) throws Exception {
 		return (Map<String, Object>) getWorkflowResult(workflowContext,paramMap, null, false, false,true);

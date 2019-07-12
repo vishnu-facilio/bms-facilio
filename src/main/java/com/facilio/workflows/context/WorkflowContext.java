@@ -1,18 +1,5 @@
 package com.facilio.workflows.context;
 
-import com.facilio.bmsconsole.context.ReadingDataMeta;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.workflows.context.WorkflowExpression.WorkflowExpressionType;
-import com.facilio.workflows.util.WorkflowUtil;
-import com.facilio.workflowv2.Visitor.WorkflowFunctionVisitor;
-import com.facilio.workflowv2.autogens.WorkflowV2Lexer;
-import com.facilio.workflowv2.autogens.WorkflowV2Parser;
-import org.antlr.v4.runtime.CharStreams;
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.tree.ParseTree;
-import org.json.simple.JSONArray;
-
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.Serializable;
@@ -23,6 +10,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import org.antlr.v4.runtime.CharStreams;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.tree.ParseTree;
+import org.json.simple.JSONArray;
+
+import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.workflows.context.WorkflowExpression.WorkflowExpressionType;
+import com.facilio.workflows.util.WorkflowUtil;
+import com.facilio.workflowv2.Visitor.WorkflowFunctionVisitor;
+import com.facilio.workflowv2.autogens.WorkflowV2Lexer;
+import com.facilio.workflowv2.autogens.WorkflowV2Parser;
 
 public class WorkflowContext implements Serializable {
 	
@@ -51,6 +53,14 @@ public class WorkflowContext implements Serializable {
 	}
 	Boolean isV2Script;
 	
+	Criteria criteria;
+	
+	public Criteria getCriteria() {
+		return criteria;
+	}
+	public void setCriteria(Criteria criteria) {
+		this.criteria = criteria;
+	}
 	public Boolean getIsV2Script() {
 		return isV2Script;
 	}

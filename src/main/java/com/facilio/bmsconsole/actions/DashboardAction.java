@@ -6923,6 +6923,36 @@ public class DashboardAction extends FacilioAction {
 		Chain fetchCardData = ReadOnlyChainFactory.fetchCardDataChain();
 		FacilioContext context = new FacilioContext();
 		
+		if (getFilters() != null) {
+			JSONParser parser = new JSONParser();
+	 		JSONObject filterJson = (JSONObject) parser.parse(getFilters());
+	 		
+	 		if (filterJson.size() > 0) {
+	 			Iterator<String> filterIterator = filterJson.keySet().iterator();
+				Criteria criteria = new Criteria();
+				while(filterIterator.hasNext()) {
+					String fieldName = filterIterator.next();
+					Object fieldJson = filterJson.get(fieldName);
+					List<Condition> conditionList = new ArrayList<>();
+					if(fieldJson!=null && fieldJson instanceof JSONArray) {
+						JSONArray fieldJsonArr = (JSONArray) fieldJson;
+						for(int i=0;i<fieldJsonArr.size();i++) {
+							JSONObject fieldJsonObj = (JSONObject) fieldJsonArr.get(i);
+							String moduleName = (String) fieldJsonObj.get("module");
+							setConditions(moduleName, fieldName, fieldJsonObj, conditionList);
+						}
+					}
+					else if(fieldJson!=null && fieldJson instanceof JSONObject) {
+						JSONObject fieldJsonObj = (JSONObject) fieldJson;
+						String moduleName = (String) fieldJsonObj.get("module");
+						setConditions(moduleName, fieldName, fieldJsonObj, conditionList);
+					}
+					criteria.groupOrConditions(conditionList);
+				}
+				context.put(FacilioConstants.ContextNames.CRITERIA, criteria);
+	 		}
+		}
+		
 		context.put(FacilioConstants.ContextNames.WIDGET_ID, widgetId);
 		context.put(FacilioConstants.ContextNames.WIDGET_STATIC_KEY, staticKey);
 		context.put(FacilioConstants.ContextNames.WIDGET_BASESPACE_ID, baseSpaceId);

@@ -808,7 +808,7 @@ public class FormulaFieldAPI {
 		LOGGER.debug("Meta -- "+workflow.getMetas());
 		LOGGER.debug("wfParams :: "+params);
 		long workflowExecutionStartTime = System.currentTimeMillis();
-		Map<Object, Object> result = (Map<Object,Object>) WorkflowUtil.getWorkflowExpressionResult(wfXmlString, params);
+		Map<Object, Object> result = (Map<Object,Object>) WorkflowUtil.getWorkflowExpressionResult(wfXmlString, params,null);
 		LOGGER.debug("Time taken for optimised workflow execution : "+(System.currentTimeMillis() - workflowExecutionStartTime));
 		
 		long readingsStartTime = System.currentTimeMillis();
