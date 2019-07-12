@@ -70,6 +70,7 @@ public class AdminRemoveDuplicationCommand implements Command {
 			String nameField = valField.getName();
 			FacilioModule module = valField.getModule();
 			String detaFieldName = nameField;
+			
 
 			List<FacilioField> fields = modBean.getAllFields(valField.getModule().getName());
 			fields.add(FieldFactory.getIdField(module));
@@ -84,7 +85,6 @@ public class AdminRemoveDuplicationCommand implements Command {
 			if (isCounterValField(valField)) {
 
 				SelectRecordsBuilder<ReadingContext> builder = new SelectRecordsBuilder<ReadingContext>()
-						.aggregate(CommonAggregateOperator.COUNT, ttimeField)
 						.aggregate(NumberAggregateOperator.MIN,idFields )
 						.select(selectFields)
 						.module(module)
