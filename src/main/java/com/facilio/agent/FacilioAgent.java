@@ -130,6 +130,7 @@ public class FacilioAgent
         }
     }
     public static IotPolicy getIotRule(String name,String type){
+        LOGGER.info(" creating IotRule for "+name+"   and type "+type);
         IotPolicy policy = new IotPolicy();
         if(AgentType.Wattsense.getLabel().equalsIgnoreCase(type)){
             policy.setToModify(true);

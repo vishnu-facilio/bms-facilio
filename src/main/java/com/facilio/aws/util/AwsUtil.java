@@ -793,31 +793,34 @@ public class AwsUtil
 		return "arn:aws:iot:" + getRegion() + ":" + getUserId();
 	}
 
-	private static void createIotPolicy( AWSIot iotClient , String name , IotPolicy rule) {
+    private static void createIotPolicy( AWSIot iotClient , String name , IotPolicy rule) {
+        LOGGER.info(" creating Iot policy for "+name);
         String[] publish = rule.getPublishtopics();
         String[] receive = rule.getReceiveTopics();
-    	for(int i=0;i<publish.length;i++){
-    		publish[i] = getIotArnTopic(publish[i]);
-		}
-		for(int i=0;i<receive.length;i++){
-			receive[i] = getIotArnTopic(receive[i]);
-		}
-		try {
+        for(int i=0;i<publish.length;i++){
+            publish[i] = getIotArnTopic(publish[i]);
+        }
+        for(int i=0;i<receive.length;i++){
+            receive[i] = getIotArnTopic(receive[i]);
+        }
+        try {
             CreatePolicyRequest policyRequest;
             policyRequest = new CreatePolicyRequest().withPolicyName(rule.getPolicyName()).withPolicyDocument(getPolicyDoc(name, rule.getClientIds(), publish, rule.getSubscribeTopics(), receive).toString());
-			CreatePolicyResult policyResult = iotClient.createPolicy(policyRequest);
-			LOGGER.info("Policy created : " + policyResult.getPolicyArn() + " version " + policyResult.getPolicyVersionId());
-		} catch (ResourceAlreadyExistsException resourceExists){
-    		LOGGER.info("Policy already exists for name : " + rule.getPolicyName());
-		}
-	}
+            CreatePolicyResult policyResult = iotClient.createPolicy(policyRequest);
+            LOGGER.info("Policy created : " + policyResult.getPolicyArn() + " version " + policyResult.getPolicyVersionId());
+        } catch (ResourceAlreadyExistsException resourceExists){
+            LOGGER.info("Policy already exists for name : " + rule.getPolicyName());
+        }
+    }
 
 	private static CreateKeysAndCertificateResult createCertificate(AWSIot iotClient){
+	    LOGGER.info(" creating certificate ");
 		CreateKeysAndCertificateRequest certificateRequest = new CreateKeysAndCertificateRequest().withSetAsActive(true);
 		return iotClient.createKeysAndCertificate(certificateRequest);
 	}
 
 	private static void attachPolicy(AWSIot iotClient, CreateKeysAndCertificateResult certificateResult, String policyName){
+	    LOGGER.info(" attaching policy for "+policyName);
 		AttachPolicyRequest attachPolicyRequest = new AttachPolicyRequest().withPolicyName(policyName).withTarget(certificateResult.getCertificateArn());
 		AttachPolicyResult attachPolicyResult = iotClient.attachPolicy(attachPolicyRequest);
 		LOGGER.info("Attached policy : " + attachPolicyResult.getSdkHttpMetadata().getHttpStatusCode());
@@ -838,6 +841,7 @@ public class AwsUtil
 	}
 
 	private static void createKinesisStream(AmazonKinesis kinesisClient, String streamName) {
+	    LOGGER.info(" creating kenisis stream ");
     	try {
 			CreateStreamResult streamResult = kinesisClient.createStream(streamName, 1);
 			LOGGER.info("Stream created : " + streamName + " with status " + streamResult.getSdkHttpMetadata().getHttpStatusCode());
@@ -848,6 +852,7 @@ public class AwsUtil
 
 
 	private static void createIotTopicRule(IotPolicy policy, AWSIot iotClient) {
+	    LOGGER.info(" creating iot rule ");
         Map<String,String> publishTypeMap = policy.getMappedTopicAndPublished();
 		for(String topic : publishTypeMap.keySet()){
 			try {
