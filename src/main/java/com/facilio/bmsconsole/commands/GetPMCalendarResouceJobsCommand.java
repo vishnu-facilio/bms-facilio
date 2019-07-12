@@ -42,7 +42,7 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 	private static final String ACTUAL = "Actual";
 	
 	private static final String PLANNED_FIELD = "createdTime";
-	private static final String ACTUAL_FIELD = "actualWorkStart";
+	private static final String ACTUAL_FIELD = "actualWorkEnd";
 	
 	
 	Map<Long, String> assetIdVsName;
