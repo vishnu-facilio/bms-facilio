@@ -929,7 +929,15 @@ public class ModuleFactory {
 
 		return historicalVMCalModule;
 	}
-
+	
+	public static FacilioModule getHistoricalLoggerModule() {
+		FacilioModule historicalLoggerModule = new FacilioModule();
+		historicalLoggerModule.setName("historicalLoggerModuleCalculation");
+		historicalLoggerModule.setDisplayName("Historical Logger Module");
+		historicalLoggerModule.setTableName("Historical_Logger");
+		return historicalLoggerModule;
+	}
+	
 	public static FacilioModule getDashboardFolderModule() {
 		FacilioModule dashboardWigetModule = new FacilioModule();
 		dashboardWigetModule.setTableName("Dashboard_Folder");
