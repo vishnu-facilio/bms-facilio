@@ -29,6 +29,9 @@ public class KafkaProcessor {
         properties.put("log4j.appender.stdout.layout", "org.apache.log4j.PatternLayout");
         return properties;
     }
+    static {
+    	EXISTING_ORGS.add("fab");
+    }
     private static void updateStream() {
         try {
             AdminClient adminClient = KafkaAdminClient.create(getKafkaProperties());
