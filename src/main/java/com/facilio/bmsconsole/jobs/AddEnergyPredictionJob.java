@@ -79,7 +79,7 @@ public class AddEnergyPredictionJob extends FacilioJob {
 		
 		addMLModelVariables(mlID,"timezone","Asia/Muscat");
 		addMLModelVariables(mlID,"weekend","6,7");
-		addMLModelVariables(mlID,"meterInterval","10");
+		addMLModelVariables(mlID,"meterinterval","10");
 		
 		
 		ScheduleInfo info = new ScheduleInfo();
