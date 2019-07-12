@@ -15,13 +15,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseEventContext;
 import com.facilio.bmsconsole.context.MLAnomalyEvent;
 import com.facilio.bmsconsole.context.MLContext;
 import com.facilio.bmsconsole.context.RCAEvent;
+import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -103,29 +106,41 @@ public class TriggerAlarmForMLCommand implements Command {
     	return -1;
 	}
 	
-	private void generateClearEvent(long assetID,long fieldID,long ttime) throws Exception
+	private void generateClearEvent(long assetID,long fieldID,long ttime)
 	{
-		String message = "Anomaly Cleared";
-		MLAnomalyEvent event = new MLAnomalyEvent();
-		event.setEventMessage(message);
-        event.setResource(ResourceAPI.getResource(assetID));
-        event.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
-        event.setReadingTime(ttime);
-        
-        List<BaseEventContext> eventList = new ArrayList<BaseEventContext>();
-        eventList.add(event);
-        
-        FacilioContext context = new FacilioContext();
-		context.put(EventConstants.EventContextNames.EVENT_LIST,eventList);
-		Chain chain = TransactionChainFactory.getV2AddEventChain();
-		chain.execute(context);
+		try
+		{
+			AlarmOccurrenceContext alarmOccuranceContext = NewAlarmAPI.getActiveAlarmOccurance("Anomaly_" + ResourceAPI.getResource(assetID).getId(),Type.ML_ANOMALY_ALARM);
+			if(alarmOccuranceContext!=null)
+			{
+				String message = "Anomaly Cleared";
+				MLAnomalyEvent event = new MLAnomalyEvent();
+				event.setEventMessage(message);
+		        event.setResource(ResourceAPI.getResource(assetID));
+		        event.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
+		        event.setReadingTime(ttime);
+		        
+		        List<BaseEventContext> eventList = new ArrayList<BaseEventContext>();
+		        eventList.add(event);
+		        
+		        FacilioContext context = new FacilioContext();
+				context.put(EventConstants.EventContextNames.EVENT_LIST,eventList);
+				Chain chain = TransactionChainFactory.getV2AddEventChain();
+				chain.execute(context);
+			}
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 	
 	private long generateAnomalyEvent(double actualValue,double adjustedUpperBound,long assetID,long fieldID,long ttime,long energyDataFieldid,long upperAnomalyFieldid) throws Exception
 	{
 		AssetContext asset = AssetsAPI.getAssetInfo(assetID);
         String assetName = asset.getName();
-        
+     
+        LOGGER.info("Generating Anomaly Event "+assetID);
 		String message = "Anomaly Detected. Actual Consumption :"+actualValue+", Expected Max Consumption :"+adjustedUpperBound;
 		
 		MLAnomalyEvent event = new MLAnomalyEvent();
