@@ -17,6 +17,13 @@ public class FormulaFieldContext implements Serializable {
 	private long id = -1;
 	private long startTime;
 	private long endTime;
+	private long kpiCategory;
+	public long getKpiCategory() {
+		return kpiCategory;
+	}
+	public void setKpiCategory(long kpiCategory) {
+		this.kpiCategory = kpiCategory;
+	}
 	public long getStartTime() {
 		return startTime;
 	}

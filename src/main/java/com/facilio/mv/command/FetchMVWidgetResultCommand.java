@@ -125,8 +125,87 @@ public class FetchMVWidgetResultCommand implements Command {
 			
 			context.put(MVUtil.RESULT_JSON, resultJSON);
 			break;
+			
 		case 2:
 			
+			fieldArray = new JSONArray();
+			
+			dataPointJson = new JSONObject();
+			
+			dataPointJson.put("parentId", FacilioUtil.getSingleTonJsonArray(project.getMeter().getId()));
+			dataPointJson.put("type", DataPointType.MODULE.getValue());
+			
+			aliaseJson = new JSONObject();
+			aliaseJson.put("actual", "A");
+			dataPointJson.put("aliases", aliaseJson);
+			
+			yAxisJson = new JSONObject();
+			yAxisJson.put("aggr", AggregateOperator.NumberAggregateOperator.SUM.getValue());
+			yAxisJson.put("fieldId", energyField.getFieldId());
+			dataPointJson.put("yAxis", yAxisJson);
+			
+			fieldArray.add(dataPointJson);
+			
+			
+			dataPointJson = new JSONObject();
+			
+			dataPointJson.put("parentId", FacilioUtil.getSingleTonJsonArray(project.getMeter().getId()));
+			dataPointJson.put("type", DataPointType.MODULE.getValue());
+			
+			aliaseJson = new JSONObject();
+			aliaseJson.put("actual", "B");
+			dataPointJson.put("aliases", aliaseJson);
+			
+			yAxisJson = new JSONObject();
+			yAxisJson.put("aggr", AggregateOperator.NumberAggregateOperator.SUM.getValue());
+			yAxisJson.put("fieldId", baseline.getFormulaFieldWithAjustment().getReadingFieldId());
+			dataPointJson.put("yAxis", yAxisJson);
+			
+			fieldArray.add(dataPointJson);
+			
+			dataPointJson = new JSONObject();
+			
+//			dataPointJson.put("parentId", null);
+			dataPointJson.put("name", project.getMeter().getName() +" (Actual)");
+			dataPointJson.put("type", DataPointType.DERIVATION.getValue());
+			
+			aliaseJson = new JSONObject();
+			aliaseJson.put("actual", "C");
+			dataPointJson.put("aliases", aliaseJson);
+			
+			yAxisJson = new JSONObject();
+			yAxisJson.put("label", project.getMeter().getName() +" (Actual)");
+			yAxisJson.put("dataType", FieldType.DECIMAL.getTypeAsInt());
+			dataPointJson.put("yAxis", yAxisJson);
+			
+			fieldArray.add(dataPointJson);
+			
+			reportAction = new V2ReportAction();
+			reportAction.setStartTime(project.getReportingPeriodStartTime());
+			reportAction.setEndTime(project.getReportingPeriodEndTime());
+			reportAction.setNewFormat(true);
+			reportAction.setxAggr(AggregateOperator.DateAggregateOperator.FULLDATE.getValue());		// need to be handled
+			reportAction.setMode(ReadingAnalysisContext.ReportMode.TIME_CONSOLIDATED.getValue());
+			reportAction.setFields(fieldArray.toJSONString());
+			
+			WorkflowV2Util.getWorkflowTemplate(1);
+			
+			workflowJson = (JSONObject) WorkflowV2Util.getWorkflowTemplate(1);
+			workflowString = (String) workflowJson.get("workflow");
+			
+			workflowString = workflowString.replaceAll(Pattern.quote("${reportingStartTime}"), ""+project.getReportingPeriodStartTime());
+			
+			workflowContext = new WorkflowContext();
+			workflowContext.setWorkflowV2String(workflowString);
+			workflowContext.setIsV2Script(true);
+			
+			reportAction.setTransformWorkflow(workflowContext);
+			
+			reportAction.fetchReadingsData();
+			
+			resultJSON = reportAction.getResult();
+			
+			context.put(MVUtil.RESULT_JSON, resultJSON);
 			break;
 		case 3:
 	
