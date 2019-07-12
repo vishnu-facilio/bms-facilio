@@ -13,7 +13,7 @@ public class GetDefaultWorkflowContext implements Command {
 	public boolean execute(Context context) throws Exception {
 		
 		int defaultWorkflowId = (int) context.get("defaultWorkflowId");
-		JSONObject workflowJson = (JSONObject) WorkflowV2Util.defaultWorkflows.get(""+defaultWorkflowId);
+		JSONObject workflowJson = (JSONObject) WorkflowV2Util.getDefaultWorkflow(defaultWorkflowId);
 		String workflowString = (String) workflowJson.get("workflow");
 		WorkflowContext workflow = new WorkflowContext();
 		workflow.setWorkflowV2String(workflowString);

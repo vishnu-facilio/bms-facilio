@@ -1,5 +1,7 @@
 package com.facilio.mv.command;
 
+import java.util.regex.Pattern;
+
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
@@ -20,6 +22,8 @@ import com.facilio.mv.util.MVUtil;
 import com.facilio.report.context.ReadingAnalysisContext;
 import com.facilio.report.context.ReportDataPointContext.DataPointType;
 import com.facilio.util.FacilioUtil;
+import com.facilio.workflows.context.WorkflowContext;
+import com.facilio.workflowv2.util.WorkflowV2Util;
 
 public class FetchMVWidgetResultCommand implements Command {
 
@@ -101,6 +105,19 @@ public class FetchMVWidgetResultCommand implements Command {
 			reportAction.setxAggr(AggregateOperator.DateAggregateOperator.FULLDATE.getValue());		// need to be handled
 			reportAction.setMode(ReadingAnalysisContext.ReportMode.TIME_CONSOLIDATED.getValue());
 			reportAction.setFields(fieldArray.toJSONString());
+			
+			WorkflowV2Util.getWorkflowTemplate(1);
+			
+			JSONObject workflowJson = (JSONObject) WorkflowV2Util.getWorkflowTemplate(1);
+			String workflowString = (String) workflowJson.get("workflow");
+			
+			workflowString = workflowString.replaceAll(Pattern.quote("${reportingStartTime}"), ""+project.getReportingPeriodStartTime());
+			
+			WorkflowContext workflowContext = new WorkflowContext();
+			workflowContext.setWorkflowV2String(workflowString);
+			workflowContext.setIsV2Script(true);
+			
+			reportAction.setTransformWorkflow(workflowContext);
 			
 			reportAction.fetchReadingsData();
 			

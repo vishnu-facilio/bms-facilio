@@ -39,15 +39,19 @@ public class WorkflowV2Util {
 	
 	public static Map<String, String> MODULE_DISPLAY_NAME_MAP = new HashMap<>();
 
-	public static final String MODULE_CLASS_MAPPER_FILE_NAME = "conf/workflowModuleClassMapper.xml";
+	private static final String MODULE_CLASS_MAPPER_FILE_NAME = "conf/workflowModuleClassMapper.xml";
 	
-	public static final String DEFAULT_WORKFLOW_FILE_NAME = "conf/defaultWorkflows.json";
+	private static final String DEFAULT_WORKFLOW_FILE_NAME = "conf/defaultWorkflows.json";
+	
+	private static final String WORKFLOW_TEMPLATE_FILE_NAME = "conf/workflowTemplates.json";
 	
 	public static final String MODULE_CRUD_CLASS_NAME = "com.facilio.workflowv2.modulefunctions.FacilioModuleFunctionImpl";
 	
 	public static final String CRUD_MODULE_KEY = "default_module";
 	
-	public static JSONObject defaultWorkflows = new JSONObject();
+	private static JSONObject defaultWorkflows = new JSONObject();
+	
+	private static JSONObject workflowTemplates = new JSONObject();
 	
 	public static final String WORKFLOW_CONTEXT = "workflow";
 	public static final String WORKFLOW_USER_FUNCTION_CONTEXT = "workflowUserFunction";
@@ -121,6 +125,10 @@ public class WorkflowV2Util {
         FileReader reader = new FileReader(classLoader.getResource(DEFAULT_WORKFLOW_FILE_NAME).getFile());
         
         defaultWorkflows = (JSONObject)jsonParser.parse(reader);
+        
+        FileReader reader1 = new FileReader(classLoader.getResource(WORKFLOW_TEMPLATE_FILE_NAME).getFile());
+        
+        workflowTemplates = (JSONObject)jsonParser.parse(reader1);
 	}
 
 	public static String getModuleClassNameFromModuleName(String moduleName) {
@@ -180,6 +188,15 @@ public class WorkflowV2Util {
     	criteriaPattern = criteriaPattern.substring(1, criteriaPattern.length()-1);
     	return criteriaPattern;
 	}
+	
+	public static Object getDefaultWorkflow(int id) {
+		return defaultWorkflows.get(""+id);
+	}
+	
+	public static Object getWorkflowTemplate(int id) {
+		return workflowTemplates.get(""+id);
+	}
+	
 	public static JSONObject getAsJSONObject(Map<String, Object> object) {
     	JSONObject json = new JSONObject();
 

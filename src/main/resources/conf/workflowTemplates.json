@@ -1,0 +1,14 @@
+{
+   "1": {
+        "usage" : "M And V Report 1 transform Workflow",
+        "workflow" : "void test(List data,Map aggr){	
+							for each index,value in data {
+						      time = value.get(\"X\");
+						      C = value.get(\"B\");
+						      if(time >= ${reportingStartTime}) {
+						      	value.put(\"C\",C);
+						      }
+						    }
+					 }"
+        }
+}      
