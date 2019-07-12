@@ -2715,6 +2715,7 @@ public class FieldFactory {
 		fields.add(getField("name", "NAME", module, FieldType.STRING));
 		fields.add(getField("serviceName", "SERVICE_NAME", module, FieldType.STRING));
 		fields.add(getField("authType", "AUTH_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("paramType", "PARAM_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("state", "STATE", module, FieldType.NUMBER));
 		fields.add(getField("clientId", "CLIENT_ID", module, FieldType.STRING));
 		fields.add(getField("clientSecretId", "CLIENT_SECRET_ID", module, FieldType.STRING));
@@ -2732,6 +2733,21 @@ public class FieldFactory {
 		fields.add(getSystemField("sysModifiedTime", module));
 		fields.add(getSystemField("sysCreatedBy", module));
 		fields.add(getSystemField("sysModifiedBy", module));
+		
+		return fields;
+	}
+	
+	
+	public static List<FacilioField> getConnectionParamFields() {
+		FacilioModule module = ModuleFactory.getConnectionParamsModule();
+
+		List<FacilioField> fields = new ArrayList<>();
+		
+		fields.add(getIdField(module));
+		
+		fields.add(getField("connectionId", "CONNECTION_ID", module, FieldType.LOOKUP));
+		fields.add(getField("key", "KEY", module, FieldType.STRING));
+		fields.add(getField("value", "VALUE", module, FieldType.NUMBER));
 		
 		return fields;
 	}

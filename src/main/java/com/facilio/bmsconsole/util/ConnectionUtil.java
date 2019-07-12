@@ -26,10 +26,12 @@ import org.json.simple.parser.JSONParser;
 
 import com.amazonaws.HttpMethod;
 import com.facilio.bmsconsole.context.ConnectionContext;
+import com.facilio.bmsconsole.context.ConnectionParamContext;
 import com.facilio.bmsconsole.context.ConnectionContext.State;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -294,7 +296,25 @@ public class ConnectionUtil {
 		List<Map<String, Object>> props = select.get();
 		
 		if(props != null && !props.isEmpty()) {
-			return FieldUtil.getAsBeanFromMap(props.get(0), ConnectionContext.class);
+			ConnectionContext connectionContext = FieldUtil.getAsBeanFromMap(props.get(0), ConnectionContext.class);
+			connectionContext.setConnectionParams(getConnectionParams(connectionContext.getId()));
+			return connectionContext;
+		}
+		return null;
+	}
+	
+	public static List<ConnectionParamContext> getConnectionParams(long connectionId) throws Exception {
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getConnectionParamFields());
+		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getConnectionParamsModule().getTableName())
+				.select(FieldFactory.getConnectionParamFields())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("connectionId"), connectionId+"", NumberOperators.EQUALS));
+
+		List<Map<String, Object>> props = select.get();
+		
+		if(props != null && !props.isEmpty()) {
+			return FieldUtil.getAsBeanListFromMapList(props, ConnectionParamContext.class);
 		}
 		return null;
 	}
@@ -312,7 +332,9 @@ public class ConnectionUtil {
 		List<Map<String, Object>> props = select.get();
 		
 		if(props != null && !props.isEmpty()) {
-			return FieldUtil.getAsBeanFromMap(props.get(0), ConnectionContext.class);
+			ConnectionContext connectionContext = FieldUtil.getAsBeanFromMap(props.get(0), ConnectionContext.class);
+			connectionContext.setConnectionParams(getConnectionParams(connectionContext.getId()));
+			return connectionContext;
 		}
 		return null;
 	}

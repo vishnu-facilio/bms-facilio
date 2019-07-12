@@ -762,6 +762,13 @@ public class ModuleFactory {
 		connectedApp.setTableName("Connection");
 		return connectedApp;
 	}
+	public static FacilioModule getConnectionParamsModule() {
+		FacilioModule connectedApp = new FacilioModule();
+		connectedApp.setName("connectionParams");
+		connectedApp.setDisplayName("Connection Params");
+		connectedApp.setTableName("Connection_Params");
+		return connectedApp;
+	}
 	public static FacilioModule getIntegrationApiModule() {
 		FacilioModule integrationApi = new FacilioModule();
 		integrationApi.setName("integrationapi");

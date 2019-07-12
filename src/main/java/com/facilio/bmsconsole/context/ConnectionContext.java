@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.List;
+
 import com.facilio.accounts.dto.User;
 import com.facilio.aws.util.AwsUtil;
 
@@ -7,6 +9,7 @@ public class ConnectionContext {
 	long id = -1l;
 	long orgId = -1l;
 	AuthType authType;
+	ParamType paramType;
 	State state;
 	String name;
 	String serviceName;
@@ -21,8 +24,15 @@ public class ConnectionContext {
 	String authCode;
 	String refreshToken;
 	String callBackURL;
-	
+	List<ConnectionParamContext> connectionParams;
 	long expiryTime = -1l;
+	
+	public List<ConnectionParamContext> getConnectionParams() {
+		return connectionParams;
+	}
+	public void setConnectionParams(List<ConnectionParamContext> connectionParams) {
+		this.connectionParams = connectionParams;
+	}
 	
 	public String getScope() {
 		return scope;
@@ -61,6 +71,22 @@ public class ConnectionContext {
 	
 	public AuthType getAuthTypeEnum() {
 		return authType;
+	}
+	
+	public int getParamType() {
+		if(paramType != null) {
+			return paramType.getValue();
+		}
+		return -1;
+	}
+	public void setParamType(int paramType) {
+		if(paramType > 0) {
+			this.paramType = ParamType.valueOf(paramType);
+		}
+	}
+
+	public ParamType getParamTypeEnum() {
+		return paramType;
 	}
 	
 	public int getState() {
@@ -169,6 +195,24 @@ public class ConnectionContext {
 		}
 		
 		public static AuthType valueOf (int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+	}
+	
+	public enum ParamType {
+		QUERY_STRING,
+		FORM_DATA,
+		HEADER
+		;
+		
+		public int getValue() {
+			return ordinal() + 1;
+		}
+		
+		public static ParamType valueOf (int value) {
 			if (value > 0 && value <= values().length) {
 				return values()[value - 1];
 			}
