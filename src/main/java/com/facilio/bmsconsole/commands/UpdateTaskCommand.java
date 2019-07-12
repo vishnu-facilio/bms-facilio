@@ -146,7 +146,9 @@ public class UpdateTaskCommand implements Command {
 			} 
 			
 			
-			updateParentTicketStatus(context, taskActivity, oldTasks.get(0));
+			if (!task.isPreRequest()) {
+				updateParentTicketStatus(context, taskActivity, oldTasks.get(0));
+			}
 			
 			String ids = StringUtils.join(recordIds, ",");
 			Condition idCondition = new Condition();

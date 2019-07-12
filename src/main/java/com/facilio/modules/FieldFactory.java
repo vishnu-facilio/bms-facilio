@@ -110,6 +110,8 @@ public class FieldFactory {
 			workOrderFieldsInclude.add("status");
 			workOrderFieldsInclude.add("type");
 			workOrderFieldsInclude.add("sendForApproval");
+			workOrderFieldsInclude.add("prerequisiteEnabled");
+			workOrderFieldsInclude.add("preRequestStatus");
 		}
 
 		public static List<String> assetFieldsInclude = new ArrayList<String>();
