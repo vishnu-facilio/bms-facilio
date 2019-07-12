@@ -51,6 +51,10 @@ public class MVUtil {
 	public static String MV_ADJUSTMENT_VS_BASELINE = "mvAdjustmentVsBaseline";
 	public static String MV_ADJUSTMENT_VS_BASELINES = "mvAdjustmentVsBaselines";
 	
+	public static String MV_PROJECTS_WIDGET_ID = "widgetId";
+	
+	public static String RESULT_JSON = "resultJSON";
+	
     public static String WORKLFOW_MODULE_INITITALIZATION_STMT = "module = Module(\"${moduleName}\");";
     public static String WORKLFOW_VALUE_FETCH_STMT = "module.fetch({criteria : [parentId == ${parentId} && ttime>=startTime && ttime <endTime],field : \"${fieldName}\",aggregation : \"sum\"});";
     public static String WORKLFOW_VALUE_NULL_CHECK_STMT = "if(${var} == null) { ${var} = 0; }";

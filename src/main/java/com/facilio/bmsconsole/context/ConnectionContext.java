@@ -161,6 +161,7 @@ public class ConnectionContext {
 
 	public enum AuthType {
 		OAUTH2,
+		BASIC
 		;
 		
 		public int getValue() {

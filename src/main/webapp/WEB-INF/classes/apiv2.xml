@@ -330,6 +330,10 @@
 		<action name="getMVProjectList"
 			class="com.facilio.mv.action.MVAction" method="getMVProjectList">
 		</action>
+		
+		<action name="getMVProjectWidgetResult"
+			class="com.facilio.mv.action.MVAction" method="getMVProjectWidgetResult">
+		</action>
 	</package>
 
 	<package name="viewApiV2" namespace="/api/v2/views"

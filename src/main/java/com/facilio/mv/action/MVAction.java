@@ -1,7 +1,8 @@
 	package com.facilio.mv.action;
 
 	import com.facilio.bmsconsole.actions.FacilioAction;
-	import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 	import com.facilio.chain.FacilioContext;
 	import com.facilio.mv.context.MVProjectWrapper;
 	import com.facilio.mv.util.MVUtil;
@@ -15,6 +16,15 @@ public class MVAction extends FacilioAction {
 	private static final long serialVersionUID = 1L;
 	MVProjectWrapper mvProjectWrapper;
 	
+	int widgetId;
+	public int getWidgetId() {
+		return widgetId;
+	}
+
+	public void setWidgetId(int widgetId) {
+		this.widgetId = widgetId;
+	}
+
 	Boolean isOpen;
 
 	long mvProjectId = -1;
@@ -80,6 +90,23 @@ public class MVAction extends FacilioAction {
 		updateMVProjectChain.execute(context);
 
 		setResult(MVUtil.MV_PROJECT_WRAPPER, mvProjectWrapper);
+		return SUCCESS;
+	}
+	
+	public String getMVProjectWidgetResult() throws Exception {
+		
+		mvProjectWrapper = MVUtil.getMVProject(mvProjectId);
+
+		FacilioContext context = new FacilioContext();
+
+		context.put(MVUtil.MV_PROJECT_WRAPPER, mvProjectWrapper);
+		
+		context.put(MVUtil.MV_PROJECTS_WIDGET_ID, widgetId);
+
+		Chain widgetResultChain =  ReadOnlyChainFactory.fetchMVWidgetResultChain();
+		widgetResultChain.execute(context);
+
+		setResult(MVUtil.RESULT_JSON, context.get(MVUtil.RESULT_JSON));
 		return SUCCESS;
 	}
 	

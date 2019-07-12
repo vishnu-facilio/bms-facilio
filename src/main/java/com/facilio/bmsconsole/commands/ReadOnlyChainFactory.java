@@ -4,6 +4,7 @@ import com.facilio.bmsconsole.actions.GetToolTransactionsListCommand;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
+import com.facilio.mv.command.FetchMVWidgetResultCommand;
 import com.facilio.workflows.command.GetAllNameSpaceWithFunctionCommand;
 import com.facilio.workflows.command.GetAllScheduledWorkflowCommand;
 import org.apache.commons.chain.Chain;
@@ -1229,6 +1230,12 @@ public class ReadOnlyChainFactory {
 	public static Chain getEventListChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new GetV2EventListCommand());
+		return c;
+	}
+	
+	public static Chain fetchMVWidgetResultChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new FetchMVWidgetResultCommand());
 		return c;
 	}
 }
