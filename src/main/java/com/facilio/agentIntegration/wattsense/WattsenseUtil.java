@@ -149,10 +149,6 @@ public class WattsenseUtil
                 && makeWattsenseEntry(AgentIntegrationKeys.INTEGRATION_STATUS, NOT_INTEGRATED.toString(),wattsense)
                 && makeWattsenseEntry(AgentIntegrationKeys.DELETED_TIME,NOT_DELETED,wattsense) ){
 
-            if( ! AwsUtil.addAwsIotClient(AgentIntegrationKeys.WATTSENSE_IOT_POLICY, wattsense.getClientId())){
-                LOGGER.info("Exception occured while adding IotClient ");
-                return false;
-            }
             return createCertificateStoreId(wattsense); //create certificate store id
         }
 
@@ -201,6 +197,11 @@ public class WattsenseUtil
             multipart = new MultipartHttpPost(AgentIntegrationUtil.getWattsenseCertificateStoreApi(),"UTF-8",wattsense.getAuthStringEncoded());
             Map<String ,InputStream> inputStreamMap = new HashMap<>();
             inputStreamMap = DownloadCertFile.getCertAndKeyFileAsInputStream(AgentIntegrationKeys.WATTSENSE_IOT_POLICY, AgentType.Wattsense.getLabel());  //getCertAndKeyFiles();
+            if( ! AwsUtil.addAwsIotClient(AgentIntegrationKeys.WATTSENSE_IOT_POLICY, wattsense.getClientId()) ){
+                LOGGER.info("Exception occured while adding IotClient ");
+                return false;
+            }
+
             if(inputStreamMap.get(AgentIntegrationKeys.CERT_FILE_NAME) != null){
                 multipart.addFile(AgentIntegrationKeys.CERTIFICATE,AgentIntegrationKeys.CERTIFICATE,inputStreamMap.get(AgentIntegrationKeys.CERT_FILE_NAME));
             }else{
