@@ -64,7 +64,7 @@ public class TriggerAlarmForMLCommand implements Command {
 		}
 		catch(Exception e)
 		{
-			LOGGER.fatal("Error while triggering alarm for ML_ID"+mlContext.getId());
+			LOGGER.fatal("Error while triggering alarm for ML_ID"+mlContext.getId(),e);
 		}
          
 		return false;
