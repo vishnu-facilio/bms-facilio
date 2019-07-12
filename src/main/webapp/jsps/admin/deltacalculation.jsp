@@ -50,10 +50,15 @@
 		location.href = selectedOption;
 
 	}
+	function changeOrgPage() {
+		var selectedOption = "deltacalculation?orgid=" + $("#orgid").val()+"&"+"email="+$("#email").val();
+		location.href = selectedOption;
+
+	}
 </script>
 <script type="text/javascript">
 	function changeThePage() {
-		var selectedOption = "deltacalculation?orgid=" + $("#orgid").val()
+		var selectedOption = "deltacalculation?orgid=" + $("#orgid").val()+"&"+"email="+$("#email").val()
 				+ "&" + "assetcategory=" + $("#assetcategory").val();
 		location.href = selectedOption;
 
@@ -61,7 +66,7 @@
 </script>
 <script type="text/javascript">
 	function changeselectPage() {
-		var selectedOption = "deltacalculation?orgid=" + $("#orgid").val()
+		var selectedOption = "deltacalculation?orgid=" + $("#orgid").val()+"&"+"email="+$("#email").val()
 				+ "&" + "assetcategory=" + $("#assetcategory").val()+"&"+  "assetId=" + $("#assetId").val()+"&"+"selectfields=" + $("#selectfields").val();
 		location.href = selectedOption;
 
@@ -69,31 +74,31 @@
 </script>
 <script type="text/javascript">
 	function changeReadingPage() {
-		var selectedOption = "deltacalculation?orgid=" + $("#orgid").val()
+		var selectedOption = "deltacalculation?orgid=" + $("#orgid").val()+"&"+"email="+$("#email").val()
 				+ "&" + "assetcategory=" + $("#assetcategory").val()+"&"+  "assetId=" + $("#assetId").val()+"&"+"selectfields=" + $("#selectfields").val()+"&"+"fieldId="+$("#fieldId").val();
 		location.href = selectedOption;
 	
 	}
 	function changeAssetPage(){
-		var selectedOption = "deltacalculation?orgid=" + $("#orgid").val()
+		var selectedOption = "deltacalculation?orgid=" + $("#orgid").val()+"&"+"email="+$("#email").val()
 				+ "&" + "assetcategory=" + $("#assetcategory").val()+"&"+ "assetId=" + $("#assetId").val();
 		location.href = selectedOption;
 
 	}
 	function changestartTTimePage(){
-		var selectedOption = "deltacalculation?orgid=" + $("#orgid").val()
+		var selectedOption = "deltacalculation?orgid=" + $("#orgid").val()+"&"+"email="+$("#email").val()
 		+ "&" + "assetcategory=" + $("#assetcategory").val()+"&"+  "assetId=" + $("#assetId").val()+"&"+"selectfields=" + $("#selectfields").val()+"&"+"fieldId="+$("#fieldId").val()+"&"+"fromTtime="+$("#fromTtime").val();
 		location.href = selectedOption;
 
 	}
 	function changeendTTimePage(){
-		var selectedOption = "deltacalculation?orgid=" + $("#orgid").val()
+		var selectedOption = "deltacalculation?orgid=" + $("#orgid").val()+"&"+"email="+$("#email").val()
 		+ "&" + "assetcategory=" + $("#assetcategory").val()+"&"+  "assetId=" + $("#assetId").val()+"&"+"selectfields=" + $("#selectfields").val()+"&"+"fieldId="+$("#fieldId").val()+"&"+"fromTtime="+$("#fromTtime").val()+"&"+"toTtime="+$("#toTtime").val();
 		location.href = selectedOption;
 
 	}
 	function changeRemoveDuplicateePage(){
-		var selectedOption = "removeduplicates?orgid=" + $("#orgid").val()
+		var selectedOption = "removeduplicates?orgid=" + $("#orgid").val()+"&"+"email="+$("#email").val()
 		+ "&" + "assetcategory=" + $("#assetcategory").val()+"&"+  "assetId=" + $("#assetId").val()+"&"+"selectfields=" + $("#selectfields").val()+"&"+"fieldId="+$("#fieldId").val()+"&"+"fromTtime="+$("#fromTtime").val()+"&"+"toTtime="+$("#toTtime").val();
 		location.href = selectedOption;
 
@@ -118,8 +123,16 @@
 				class="input-group col-lg-8 col-md-8 col-sm-8	">
 				<span class="input-group-addon"><i
 					class="glyphicon glyphicon-user"></i></span> <input id="orgid" type="text"
-					value="<%=org == null ? "" : org.getId()%>" class="form-control"
+					value="<%=org == null ? "" : org.getId()%>" class="form-control" placeholder="OrgId"
 					name="orgid" onChange="changeOrgPage" />
+			</div>
+			<br><br><br>
+			<div style="margin-top: 40px;"
+				class="input-group col-lg-8 col-md-8 col-sm-8	">
+				<span class="input-group-addon"><i
+					class="glyphicon glyphicon-user"></i></span> <input id="email" type="text"
+					value="<%=request.getParameter("email")== null?" Email":request.getParameter("email") %>" class="form-control" 
+					name="email" onChange="changeEmailPage" />
 			</div>
 			<div style="margin-top: 30px;">
 
@@ -139,6 +152,7 @@
 		<div class=" col-lg-8 col-md-8">
 
 			<input type="hidden" name="orgid" value="<%=org.getOrgId()%>">
+			<input type="hidden" name="email" value="<%=request.getParameter("email")%>">
 			<br>
 			<br>
 			<br>
@@ -226,7 +240,7 @@
 				<h5>EnterFrom TTIME:</h5>
 			</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			 
-				<input type="text" id="fromTtime" value="<%=request.getParameter("fromTtime") %>" name="fromTtime" onChange="changestartTTimePage()"> 
+				<input type="text" id="fromTtime" value="<%=request.getParameter("fromTtime")==null?"": request.getParameter("fromTtime") %>" name="fromTtime" onChange="changestartTTimePage()"> 
 			<br>
 			<br>
 			<br>
@@ -235,7 +249,7 @@
 			<h5>Enter to TTIME:</h5>
 			</label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 			
-				<input type="text" id="toTtime" value="<%=request.getParameter("toTtime") %>" name="toTtime" onChange="changeendTTimePage()">
+				<input type="text" id="toTtime" value="<%=request.getParameter("toTtime")==null?"": request.getParameter("toTtime")%>" name="toTtime" onChange="changeendTTimePage()">
 			<br>
 			<br>
 			<br>

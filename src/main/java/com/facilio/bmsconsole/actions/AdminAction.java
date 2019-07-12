@@ -281,14 +281,15 @@ public class AdminAction extends ActionSupport
 		long selectfields = Long.parseLong(request.getParameter("selectfields"));
 		long startTtime = Long.parseLong(request.getParameter("fromTtime"));
 		long endTtime = Long.parseLong(request.getParameter("toTtime"));
+		String email = request.getParameter("email");
 
 		if(selectfields != 0 && selectfields == 1) {
 			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-			bean.updateAdminDeltaCalculation(orgId,fieldId,assetId,startTtime,endTtime);
+			bean.updateAdminDeltaCalculation(orgId,fieldId,assetId,startTtime,endTtime,email);
 		}
 		else {
 			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-			bean.removeDuplicates(orgId,fieldId,assetId,startTtime,endTtime);
+			bean.removeDuplicates(orgId,fieldId,assetId,startTtime,endTtime,email);
 		}
 		
 

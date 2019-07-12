@@ -877,7 +877,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	}
 
 	@Override
-	public void updateAdminDeltaCalculation(long orgId, long fieldId, long assetId, long startTtime, long endTtime)
+	public void updateAdminDeltaCalculation(long orgId, long fieldId, long assetId, long startTtime, long endTtime, String email)
 			throws Exception {
 		// TODO Auto-generated method stub
 			FacilioContext context=new FacilioContext();
@@ -886,6 +886,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			context.put(ContextNames.ASSET_ID,assetId);
 			context.put(ContextNames.START_TTIME,startTtime);
 			context.put(ContextNames.END_TTIME,endTtime);
+			context.put(ContextNames.ADMIN_USER_EMAIL, email);
 
 			Chain deltaCalculationChain = TransactionChainFactory.deltaCalculationChain();
 			deltaCalculationChain.execute(context);
@@ -926,7 +927,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	}
 
 	@Override
-	public void removeDuplicates(long orgId, long fieldId, long assetId, long startTtime, long endTtime)
+	public void removeDuplicates(long orgId, long fieldId, long assetId, long startTtime, long endTtime,String email)
 			throws Exception {
 		// TODO Auto-generated method stub
 		FacilioContext context=new FacilioContext();
@@ -935,6 +936,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		context.put(ContextNames.ASSET_ID,assetId);
 		context.put(ContextNames.START_TTIME,startTtime);
 		context.put(ContextNames.END_TTIME,endTtime);
+		context.put(ContextNames.ADMIN_USER_EMAIL, email);
 
 		Chain removeDuplicatesChain = TransactionChainFactory.removeDuplicates();
 		removeDuplicatesChain.execute(context);
