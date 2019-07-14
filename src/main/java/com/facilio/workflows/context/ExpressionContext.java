@@ -370,11 +370,21 @@ public class ExpressionContext implements WorkflowExpression {
 							long actualLastRecordedTime = CommonAPI.getActualLastRecordedTime(module);
 							if(!isRDMFromCache && actualLastRecordedTime > 0) {
 								if(readingDataMeta.getTtime() >= actualLastRecordedTime) {
-									exprResult = readingDataMeta.getValue();
+									if(readingDataMeta.getActualValue() != null) {
+										exprResult = readingDataMeta.getActualValue();
+									}
+									else {
+										exprResult = readingDataMeta.getValue();
+									}
 								}
 							}
 							else {
-								exprResult = readingDataMeta.getValue();
+								if(readingDataMeta.getActualValue() != null) {
+									exprResult = readingDataMeta.getActualValue();
+								}
+								else {
+									exprResult = readingDataMeta.getValue();
+								}
 							}
 							return exprResult;
 						}
