@@ -11,8 +11,10 @@ import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingEventContext;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.BmsJobUtil;
+import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
@@ -62,14 +64,36 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 //			LOGGER.info("Historical execution of rule : "+readingRule.getId()+" for resources : "+readingRule.getMatchedResources().keySet());
 			Map<String, List<ReadingDataMeta>> supportFieldsRDM = null;
 			List<WorkflowFieldContext> fields = null;
-			if (readingRule.getWorkflow() != null) {
-				fields = WorkflowUtil.getWorkflowFields(readingRule.getWorkflow().getId());
-//				LOGGER.info("Dependent fields : "+fields);
-			
-				if (fields != null && !fields.isEmpty()) {
-					supportFieldsRDM = getSupportingData(fields, startTime, endTime, -1);
-//					LOGGER.info("Support Fields RDM Values size : "+supportFieldsRDM.size());
+			AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(readingRule.getId()),null);
+			if(alarmRule != null) {
+				
+				fields = new ArrayList<>();
+				if(alarmRule.getPreRequsite().getWorkflow() != null) {
+					List<WorkflowFieldContext> workflowFields = WorkflowUtil.getWorkflowFields(alarmRule.getPreRequsite().getWorkflow().getId());
+					if(workflowFields != null) {
+						fields.addAll(workflowFields);
+					}
 				}
+				if(alarmRule.getAlarmTriggerRule().getWorkflow() != null) {
+					List<WorkflowFieldContext> workflowFields = WorkflowUtil.getWorkflowFields(alarmRule.getAlarmTriggerRule().getWorkflow().getId());
+					if(workflowFields != null) {
+						fields.addAll(workflowFields);
+					}
+				}
+				if(alarmRule.getAlarmRCARules() != null) {
+					for(ReadingRuleContext rcaRules :alarmRule.getAlarmRCARules()) {
+						if(rcaRules.getWorkflow() != null) {
+							List<WorkflowFieldContext> workflowFields = WorkflowUtil.getWorkflowFields(rcaRules.getWorkflow().getId());
+							if(workflowFields != null) {
+								fields.addAll(workflowFields);
+							}
+						}
+					}
+				}
+			}
+			
+			if (fields != null && !fields.isEmpty()) {
+				supportFieldsRDM = getSupportingData(fields, startTime, endTime, -1);
 			}
 
 			List<ReadingEventContext> events = new ArrayList<>();
@@ -77,7 +101,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 //				LOGGER.info("Gonna fetch data and execute rule for resource : "+resourceId);
 				Map<String, List<ReadingDataMeta>> currentFields = supportFieldsRDM;
 				Map<String, List<ReadingDataMeta>> currentRDMList = null;
-				if (readingRule.getWorkflow() != null) {
+				if (fields != null) {
 					currentRDMList = getSupportingData(fields, startTime, endTime, resourceId);
 				}
 				if (currentRDMList != null && !currentRDMList.isEmpty()) {
@@ -286,6 +310,10 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 				FacilioField valField = modBean.getField(field.getFieldId());
 				field.setField(valField);
 				String rdmKey = ReadingsAPI.getRDMKey(parentId, valField);
+				
+				if(supportingValues.containsKey(rdmKey)) {
+					continue;
+				}
 				
 				List<FacilioField> allFields = modBean.getAllFields(valField.getModule().getName());
 				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
