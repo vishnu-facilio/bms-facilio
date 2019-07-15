@@ -1070,6 +1070,9 @@
 			<action name="updateUser" class="com.facilio.bmsconsole.actions.AdminAction" method = "updateUser">
 		<result name="success" type="tiles">adminpage/orginfo.jsp</result>
 		 </action>
+		 <action name="statusLog" class="com.facilio.bmsconsole.actions.AdminAction" method= "statusLog" >
+			<result name="success" type="tiles">adminpage/orginfo.jsp</result>
+			</action>
 		 
 		 	<action name="addLicense" class="com.facilio.bmsconsole.actions.AdminAction" method = "addLicense">
 		<result name="success" type="tiles">adminpage/orginfo.jsp</result>
@@ -1105,7 +1108,8 @@
 			</action>
 			<action name="deltaCalculation" class="com.facilio.bmsconsole.actions.AdminAction" method="deltaCalculation">
 			<result  type="tiles">adminpage/deltacalculation.jsp</result>
-			</action>			
+			</action>
+						
 			
 			</package>
 

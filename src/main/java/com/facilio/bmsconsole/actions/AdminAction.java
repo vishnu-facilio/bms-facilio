@@ -14,6 +14,8 @@ import org.apache.commons.chain.Chain;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.bean.OrgBean;
+import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.actions.FacilioAuthAction;
@@ -295,8 +297,34 @@ public class AdminAction extends ActionSupport
 
 		return SUCCESS;
 	}
+
+	public String statusLog() throws IOException {
+
+		HttpServletRequest request = ServletActionContext.getRequest();
+		long orgId = Long.parseLong((request.getParameter("orgid"))) ;
+		int statusLevel =Integer.parseInt((request.getParameter("loggerlevel")));
+		try {
+			OrgBean orgBean = (OrgBean) BeanFactory.lookup("OrgBean",orgId);
+			orgBean.updateLoggerLevel(statusLevel, orgId);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println("####loggerlevel  :"+statusLevel);
+		
+		
+		
+		return SUCCESS;
+	}
 	
-	
+	private long statusLevel;
+	public long getStatusLevel() {
+		return statusLevel;
+	}
+
+	public void setStatusLevel(long statusLevel) {
+		this.statusLevel = statusLevel;
+	}
 	private long fieldId;
 	
 	

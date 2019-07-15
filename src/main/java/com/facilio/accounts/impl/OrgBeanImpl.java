@@ -543,4 +543,21 @@ public class OrgBeanImpl implements OrgBean {
 		
 		return;
 	}
+
+	@Override
+	public void updateLoggerLevel(int level,long orgId) throws Exception {
+		// TODO Auto-generated method stub
+		List<FacilioField> fields = AccountConstants.getOrgFields();
+
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(AccountConstants.getOrgModule().getTableName())
+				.fields(fields)
+				.andCondition(CriteriaAPI.getOrgIdCondition(orgId, AccountConstants.getOrgModule()));
+		
+		
+		
+		Map<String, Object> props = new HashMap<>();
+		props.put("loggerLevel",level);
+		 updateBuilder.update(props);
+	}
 }

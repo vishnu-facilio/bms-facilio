@@ -857,7 +857,14 @@ public class AccountConstants {
 		createdTime.setColumnName("CREATED_TIME");
 		createdTime.setModule(module);
 		fields.add(createdTime);
-
+		
+		FacilioField loggerLevel = new FacilioField();
+		loggerLevel.setName("loggerLevel");
+		loggerLevel.setDataType(FieldType.NUMBER);
+		loggerLevel.setColumnName("LOGGER_LEVEL");
+		loggerLevel.setModule(module);
+		fields.add(loggerLevel);
+		
 		return fields;
 	}
 

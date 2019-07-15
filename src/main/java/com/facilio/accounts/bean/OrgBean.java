@@ -52,4 +52,6 @@ public interface OrgBean {
 	public JSONObject orgInfo() throws Exception;
 	
 	Organization getPortalOrg(Long portalId) throws Exception;
+	
+	public void updateLoggerLevel (int level, long orgId) throws Exception;
 }

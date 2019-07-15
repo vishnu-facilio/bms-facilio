@@ -38,12 +38,14 @@ public class Account implements Serializable {
 	private long redisGetTime = 0L;
 	private long redisPutTime = 0L;
 	private long redisDeleteTime = 0L;
+	
 
 	private RemoteScreenContext remoteScreen;
+	
 
 	public Account(Organization org, User user) {
-		this.org = org;
-		this.user = user;
+		setOrg(org);
+		setUser(user);
 		if (ActionContext.getContext() != null && ServletActionContext.getRequest() != null) {
 			HttpServletRequest request = ServletActionContext.getRequest();
 			setDeviceType(request.getHeader("X-Device-Type"));
@@ -57,8 +59,14 @@ public class Account implements Serializable {
 	
 	public void setOrg(Organization org) {
 		this.org = org;
+		if (org != null && org.getLoggerLevel() != -1 ) {
+			System.out.println("########logger Status"+org.getLoggerLevel());
+			setLoggerLevel(org.getLoggerLevel());
+		}
 	}
 
+	
+	
 	public User getUser() {
 		return this.user;
 	}

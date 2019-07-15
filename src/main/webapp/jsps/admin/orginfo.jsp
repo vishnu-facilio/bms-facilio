@@ -131,6 +131,7 @@ function myLicenseFunction() {
 <th> Currency </th>
 <th> CreatedTime </th>
 <th> PortalId </th>
+<th> LoggerLevel</th>
 </tr>
 
 <tr id="id">
@@ -150,6 +151,7 @@ function myLicenseFunction() {
 <td><%=org.getCurrency() %> </td>
 <td><%=org.getCreatedTime() %> </td>
 <td><%=org.getPortalId() %> </td>
+<td><%=org.getLoggerLevel() %></td>
 </tr>
 </table>
 
@@ -270,7 +272,7 @@ function myLicenseFunction() {
 <%} %>
 </div>
 </div>
- 
+
 <div class=" col-lg-12 col-md-12">
 
 <%if(orgid!=null) {%>
@@ -323,10 +325,43 @@ function myLicenseFunction() {
 </form>
 
 <%} %>
-<br><br><br>
-</div>
-</div>
 
+</div>
+</div>
+<%if (org != null) {%>
+ <form action="statusLog">
+ 
+ <div class=" col-lg-12 col-md-12">
+<br>
+		   <br>
+		   <br>
+		   <input type = "hidden" name = "orgid" value="<%= orgid %>" />
+
+		   <br>
+		   <br><br>
+<label for="loggerlevel">
+			<h4>LoggerLevel:</h4></label>
+			<select name="loggerlevel" id="loggerlevel">
+				<option value="" disabled selected>Select</option>
+				<option value="<%=0%>">ALL</option>
+				<option value="<%=1%>">TRACE</option>
+				<option value="<%=2%>">DEBUG</option>
+				<option value="<%=3%>">INFO</option>
+				<option value="<%=4%>">WARN</option>
+				<option value="<%=5%>">ERROR</option>
+				<option value="<%=6%>">FATAL</option>
+				<option value="<%=7%>">OFF</option>
+				<option value="<%=-99%>">NULL</option>
+		   </select>
+		   <br>	
+		   <input type="submit" style="margin-left: 150px" name="statusLog" value="Submit" />
+		   
+		   	<br>
+		   <br>
+		   <br>
+		   </div>
+</form>
+<%} %>
 
 <style>
 .org-th{
@@ -341,7 +376,45 @@ function myLicenseFunction() {
   font-size: 13px;
   padding: 15px 20px !important;
 }
+select {
+	width: 17%;
+	padding: 12px 20px;
+	margin: 8px 16px;
+	margin-top: 8px;
+	display: inline-block;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	box-sizing: border-box;
+	font-size: 16px;
+	margin-left:44px;
+}
 
+input[type=text]{
+  width: 50	%;
+  padding: 12px 20px;
+  margin: 8px 16px;
+  margin-top:8px;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+input[type=submit] {
+  width: 15%;
+  background-color: #4CAF50;
+  color: white;
+  padding: 14px 10px;
+  margin: 2px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+input[type=submit]:hover {
+  background-color: #45a049;
+}
 </style>
 </body>
 
