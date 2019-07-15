@@ -17,6 +17,15 @@ public class ReadingAnalysisContext {
 		this.transformWorkflowId = transformWorkflowId;
 	}
 	
+	private long buildingId = -1;
+	
+	public long getBuildingId() {
+		return buildingId;
+	}
+	public void setBuildingId(long buildingId) {
+		this.buildingId = buildingId;
+	}
+
 	private WorkflowContext transformWorkflow;
 	public WorkflowContext getTransformWorkflow() {
 		return transformWorkflow;

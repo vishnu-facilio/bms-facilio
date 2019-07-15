@@ -101,6 +101,7 @@ public class CreateReadingAnalyticsReportCommand implements Command {
 				
 				String name = getName(dataPoint.getyAxis(), mode, filterMode, resourceMap, metric, (FacilioContext) context);
 				dataPoint.setName(name);
+				dataPoint.setBuildingId(metric.getBuildingId());
 				dataPoint.setType(metric.getTypeEnum());
 				dataPoint.setAliases(metric.getAliases());
 				dataPoint.setTransformWorkflow(metric.getTransformWorkflow());

@@ -18,6 +18,8 @@ import com.facilio.modules.fields.FacilioField;
 public class ReportTemplateContext {
 
 	private Long categoryId;
+	private Long siteId;
+	private Long buildingId;
 	private Long defaultValue;
 	private List<String> chooseValues;
 	private Long parentId;
@@ -47,6 +49,18 @@ public class ReportTemplateContext {
 		this.parentId = parentId;
 	}
 	
+	public Long getSiteId() {
+		return siteId;
+	}
+	public void setSiteId(Long siteId) {
+		this.siteId = siteId;
+	}
+	public Long getBuildingId() {
+		return buildingId;
+	}
+	public void setBuildingId(Long buildingId) {
+		this.buildingId = buildingId;
+	}
 	public Criteria getCriteria(ReportContext report) throws Exception{
 		Criteria c = new Criteria ();
 		
