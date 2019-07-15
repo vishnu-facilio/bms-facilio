@@ -1130,6 +1130,12 @@
 			<param name="moduleName">alarm</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 		</action>
+		<action name="fetchActiveTemplates"
+			class="com.facilio.bmsconsole.actions.RuleTemplateAction"
+			method="getActiveRuleTemplates">
+			<param name="moduleName">alarm</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+		</action>
 	</package>
 
 
