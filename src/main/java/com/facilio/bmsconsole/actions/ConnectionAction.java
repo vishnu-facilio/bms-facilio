@@ -88,6 +88,13 @@ public class ConnectionAction extends FacilioAction {
 		setResult("connection", connectionContext);
 		return SUCCESS;
 	}
+	
+	public String getAllConnection() throws Exception {
+		
+		setResult("connections", ConnectionUtil.getAllConnections());
+		
+		return SUCCESS;
+	}
 
 	public String deleteConnection() throws Exception {
 	

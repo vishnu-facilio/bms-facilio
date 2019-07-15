@@ -336,7 +336,7 @@
 		</action>
 	</package>
 	
-	<package name="KPIModule" namespace="kpi" extends="v2Api">
+	<package name="KPIModule" namespace="/api/v2/kpi" extends="v2Api">
 
 		<action name="addKPICategory"
 			class="com.facilio.bmsconsole.actions.KPIAction" method="addKPICategory"></action>
@@ -3044,6 +3044,11 @@
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.ConnectionAction" method="deleteConnection">
 		</action>
+		
+		<action name="getAllConnection"
+			class="com.facilio.bmsconsole.actions.ConnectionAction" method="getAllConnection">
+		</action>
+		
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ConnectionAction" method="addAuthorizationCode">
 			<param name="connectionId">{1}</param>
