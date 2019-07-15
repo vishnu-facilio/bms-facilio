@@ -89,6 +89,7 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.ATTENDANCE, getAttendanceModule());
 		moduleMap.put(FacilioConstants.ContextNames.ATTENDANCE_TRANSACTIONS, getAttendanceTransactionModule());
 		moduleMap.put(FacilioConstants.ContextNames.GRAPHICS, getGraphicsModule());
+		moduleMap.put(FacilioConstants.ContextNames.GRAPHICS_FOLDER, getGraphicsFolderModule());
 		moduleMap.put(FacilioConstants.ContextNames.SERVICE, getServiceModule());
 		moduleMap.put(FacilioConstants.ContextNames.TERMS_AND_CONDITIONS, getTermsAndConditionModule());
 		moduleMap.put(FacilioConstants.ContextNames.CONTRACTS, getContractsModule());
@@ -2279,6 +2280,15 @@ public class ModuleFactory {
 		module.setTableName("Graphics");
 		return module;
 	}
+	
+	public static FacilioModule getGraphicsFolderModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("graphicsFolder");
+		module.setDisplayName("Graphics Folder");
+		module.setTableName("Graphics_Folder");
+		return module;
+	}
+	
 	public static FacilioModule getShiftRotationApplicableForModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName("ShiftRotationApplicableFor");

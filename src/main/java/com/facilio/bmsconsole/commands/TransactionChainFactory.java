@@ -3246,6 +3246,27 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateGraphicsCommand());
 			return c;
 		}
+		
+		public static Chain getAddGraphicsFolderChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForGraphicsFolder());
+			c.addCommand(new AddGraphicsFolderCommand());
+			return c;
+		}
+
+		public static Chain getDeleteGraphicsFolderChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForGraphicsFolder());
+			c.addCommand(new DeleteGraphicsFolderCommand());
+			return c;
+		}
+
+		public static Chain getUpdateGraphicsFolderChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForGraphicsFolder());
+			c.addCommand(new UpdateGraphicsFolderCommand());
+			return c;
+		}
 
 		public static Chain getAddScheduledWorkflowChain() {
 			Chain c = getDefaultChain();

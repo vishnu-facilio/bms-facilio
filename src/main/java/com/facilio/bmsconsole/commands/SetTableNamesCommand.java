@@ -372,6 +372,11 @@ public class SetTableNamesCommand implements Command {
 	public static SetTableNamesCommand getForGraphics() {
 		return new SetTableNamesCommand("graphics", "Graphics");
 	}
+	
+	public static SetTableNamesCommand getForGraphicsFolder() {
+		return new SetTableNamesCommand("graphicsFolder", "Graphics_Folder");
+	}
+	
 	public static SetTableNamesCommand getForShiftRotation() {
 		return new SetTableNamesCommand("shiftRotation", "Shift_Rotation");
 	}

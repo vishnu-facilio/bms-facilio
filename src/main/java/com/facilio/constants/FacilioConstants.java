@@ -1030,6 +1030,8 @@ public class FacilioConstants {
 		public static final String BREAK_TRANSACTION = "breakTransaction";
 		public static final String GRAPHICS = "graphics";
 		public static final String GRAPHICS_LIST = "graphics_list";
+		public static final String GRAPHICS_FOLDER = "graphicsFolder";
+		public static final String GRAPHICS_FOLDERS = "graphicsFolders";
 		public static final String SHIFT_ROTATION = "shiftRotation";
 		public static final String SHIFT_ROTATION_DETAILS = "shiftRotationDetails";
 		public static final String SHIFT_ROTATION_APPLICABLE_FOR = "shiftRotationApplicableFor";

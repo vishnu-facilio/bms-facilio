@@ -1164,6 +1164,21 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetGraphicsDetailCommand());
 		return c;
 	}
+	
+	public static Chain getGraphicsFolderListChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForGraphicsFolder());
+		c.addCommand(new GetGraphicsFolderListCommand());
+		return c;
+	}
+	
+	public static Chain getGraphicsFolderDetailsChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForGraphicsFolder());
+		c.addCommand(new GetGraphicsFolderDetailCommand());
+		return c;
+	}
+	
 	public static Chain getGraphicsForAssetCategoryChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForGraphics());

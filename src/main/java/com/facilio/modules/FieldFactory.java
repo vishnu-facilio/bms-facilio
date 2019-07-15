@@ -6149,9 +6149,23 @@ public class FieldFactory {
 		fields.add(getField("variables", "VARIABLES", module, FieldType.STRING));
 		fields.add(getField("assetId", "ASSET_ID", module, FieldType.NUMBER));
 		fields.add(getField("assetCategoryId", "ASSET_CATEGORY_ID", module, FieldType.NUMBER));
+		fields.add(getField("parentFolderId", "PARENT_FOLDER_ID", module, FieldType.NUMBER));
+		fields.add(getField("isDefault", "IS_DEFAULT", module, FieldType.BOOLEAN));
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getGraphicsFolderFields() {
+		FacilioModule module = ModuleFactory.getGraphicsFolderModule();
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getField("id", "ID", module, FieldType.ID));
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
+		fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
+
+		return fields;
+	}
+
 
 	public static List<FacilioField> getContractAssociatedAssetModuleFields() {
 		List<FacilioField> fields = new ArrayList<>();

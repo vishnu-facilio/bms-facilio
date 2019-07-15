@@ -65,6 +65,22 @@ public class GraphicsContext {
 	private long assetCategoryId;
 	private long id;
 	private long orgId;
+	private long parentFolderId;
+	
+	public long getParentFolderId() {
+		return parentFolderId;
+	}
+	public void setParentFolderId(long parentFolderId) {
+		this.parentFolderId = parentFolderId;
+	}
+	public boolean isDefault() {
+		return isDefault;
+	}
+	public void setDefault(boolean isDefault) {
+		this.isDefault = isDefault;
+	}
+
+	private boolean isDefault;
 
 	
 }

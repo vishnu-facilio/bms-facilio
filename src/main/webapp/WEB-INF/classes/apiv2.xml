@@ -3572,7 +3572,7 @@
 			<param name="viewName">{1}</param>
 		</action>
 	</package>
-	
+
 	<package name="graphicsApi" namespace="/api/v2/graphics"
 		extends="v2Api">
 		<action name="list"
@@ -3596,6 +3596,30 @@
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.GraphicsAction"
 			method="deleteGraphics">
+		</action>
+	</package>
+	
+	<package name="graphicsFolderApi" namespace="/api/v2/graphicsFolder"
+		extends="v2Api">
+		<action name="list"
+			class="com.facilio.bmsconsole.actions.GraphicsFolderAction"
+			method="getGraphicsFolderList">
+		</action>
+		<action name="getById"
+			class="com.facilio.bmsconsole.actions.GraphicsFolderAction"
+			method="getGraphicsFolderDetails">
+		</action>
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.GraphicsFolderAction"
+			method="addGraphicsFolder">
+		</action>
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.GraphicsFolderAction"
+			method="updateGraphicsFolder">
+		</action>
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.GraphicsFolderAction"
+			method="deleteGraphicsFolder">
 		</action>
 		</package>
 
