@@ -521,20 +521,39 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
         }
     }
     
-    public Value visitBooleanExpr(WorkflowV2Parser.BooleanExprContext ctx) {
-    	 Value left = this.visit(ctx.expr(0));
-         Value right = this.visit(ctx.expr(1));
-
-         switch (ctx.op.getType()) {
-             case WorkflowV2Parser.AND:
-            	 return new Value(left.asBoolean() && right.asBoolean());
-             case WorkflowV2Parser.OR:
-            	 return new Value(left.asBoolean() || right.asBoolean());
-             default:
-                 throw new RuntimeException("unknown operator: " + WorkflowV2Parser.tokenNames[ctx.op.getType()]);
-         } 
+    @Override 
+    public Value visitBoolean_expr(WorkflowV2Parser.Boolean_exprContext ctx) 
+    { 
+    	return this.visit(ctx.boolean_expr_atom()); 
     }
-
+    
+    @Override 
+    public Value visitExprForBoolean(WorkflowV2Parser.ExprForBooleanContext ctx) { 
+    	return this.visit(ctx.expr()); 
+    }
+    
+    @Override 
+    public Value visitBoolExprParanthesis(WorkflowV2Parser.BoolExprParanthesisContext ctx) 
+    { 
+    	return this.visit(ctx.boolean_expr_atom()); 
+    }
+    
+	@Override
+	public Value visitBooleanExprCalculation(WorkflowV2Parser.BooleanExprCalculationContext ctx) {
+		Value left = this.visit(ctx.boolean_expr_atom(0));
+		Value right = this.visit(ctx.boolean_expr_atom(1));
+		
+		switch (ctx.op.getType()) {
+		case WorkflowV2Parser.AND:
+			return new Value(left.asBoolean() && right.asBoolean());
+		case WorkflowV2Parser.OR:
+			return new Value(left.asBoolean() || right.asBoolean());
+		default:
+			throw new RuntimeException("unknown operator: " + WorkflowV2Parser.tokenNames[ctx.op.getType()]);
+		}
+		
+	}
+    
     @Override
     public Value visitLog(WorkflowV2Parser.LogContext ctx) {
         Value value = this.visit(ctx.expr());
@@ -552,7 +571,7 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     	
     	Operator operator = null;
     	
-    	Value operatorValue = this.visit(ctx.atom());
+    	Value operatorValue = this.visit(ctx.expr());
     	switch(ctx.op.getText()) {
     	case "==" :
     		if(operatorValue.asObject() == null) {
@@ -673,7 +692,7 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
 
         for(WorkflowV2Parser.Condition_blockContext condition : conditions) {
 
-            Value evaluated = this.visit(condition.expr());
+            Value evaluated = this.visit(condition.boolean_expr());
 
             if(evaluated.asBoolean()) {
                 evaluatedBlock = true;

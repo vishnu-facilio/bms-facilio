@@ -148,6 +148,52 @@ public interface WorkflowV2Listener extends ParseTreeListener {
 	 */
 	void exitFunction_return(WorkflowV2Parser.Function_returnContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link WorkflowV2Parser#boolean_expr}.
+	 * @param ctx the parse tree
+	 */
+	void enterBoolean_expr(WorkflowV2Parser.Boolean_exprContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link WorkflowV2Parser#boolean_expr}.
+	 * @param ctx the parse tree
+	 */
+	void exitBoolean_expr(WorkflowV2Parser.Boolean_exprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code exprForBoolean}
+	 * labeled alternative in {@link WorkflowV2Parser#boolean_expr_atom}.
+	 * @param ctx the parse tree
+	 */
+	void enterExprForBoolean(WorkflowV2Parser.ExprForBooleanContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code exprForBoolean}
+	 * labeled alternative in {@link WorkflowV2Parser#boolean_expr_atom}.
+	 * @param ctx the parse tree
+	 */
+	void exitExprForBoolean(WorkflowV2Parser.ExprForBooleanContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code boolExprParanthesis}
+	 * labeled alternative in {@link WorkflowV2Parser#boolean_expr_atom}.
+	 * @param ctx the parse tree
+	 */
+	void enterBoolExprParanthesis(WorkflowV2Parser.BoolExprParanthesisContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code boolExprParanthesis}
+	 * labeled alternative in {@link WorkflowV2Parser#boolean_expr_atom}.
+	 * @param ctx the parse tree
+	 */
+	void exitBoolExprParanthesis(WorkflowV2Parser.BoolExprParanthesisContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code booleanExprCalculation}
+	 * labeled alternative in {@link WorkflowV2Parser#boolean_expr_atom}.
+	 * @param ctx the parse tree
+	 */
+	void enterBooleanExprCalculation(WorkflowV2Parser.BooleanExprCalculationContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code booleanExprCalculation}
+	 * labeled alternative in {@link WorkflowV2Parser#boolean_expr_atom}.
+	 * @param ctx the parse tree
+	 */
+	void exitBooleanExprCalculation(WorkflowV2Parser.BooleanExprCalculationContext ctx);
+	/**
 	 * Enter a parse tree produced by the {@code dbParamInitialization}
 	 * labeled alternative in {@link WorkflowV2Parser#expr}.
 	 * @param ctx the parse tree
@@ -219,18 +265,6 @@ public interface WorkflowV2Listener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitArithmeticSecondPrecedenceExpr(WorkflowV2Parser.ArithmeticSecondPrecedenceExprContext ctx);
-	/**
-	 * Enter a parse tree produced by the {@code booleanExpr}
-	 * labeled alternative in {@link WorkflowV2Parser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void enterBooleanExpr(WorkflowV2Parser.BooleanExprContext ctx);
-	/**
-	 * Exit a parse tree produced by the {@code booleanExpr}
-	 * labeled alternative in {@link WorkflowV2Parser#expr}.
-	 * @param ctx the parse tree
-	 */
-	void exitBooleanExpr(WorkflowV2Parser.BooleanExprContext ctx);
 	/**
 	 * Enter a parse tree produced by the {@code atomExpr}
 	 * labeled alternative in {@link WorkflowV2Parser#expr}.

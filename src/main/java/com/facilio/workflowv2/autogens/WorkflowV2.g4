@@ -39,7 +39,7 @@ if_statement
  ;
 
 condition_block
- : OPEN_PARANTHESIS expr CLOSE_PARANTHESIS statement_block
+ : boolean_expr statement_block
  ;
 
 statement_block
@@ -59,6 +59,15 @@ function_return
  : RETURN expr SEMICOLON
  ;
  
+ boolean_expr
+ : OPEN_PARANTHESIS boolean_expr_atom CLOSE_PARANTHESIS									
+ ;
+ 
+boolean_expr_atom																				
+ : expr																												#exprForBoolean									
+ | boolean_expr_atom op=(AND | OR) boolean_expr_atom																#booleanExprCalculation
+ | OPEN_PARANTHESIS boolean_expr_atom CLOSE_PARANTHESIS																#boolExprParanthesis
+ ;
  
 expr
  : MINUS expr                           																			#unaryMinusExpr
@@ -66,7 +75,6 @@ expr
  | expr op=(MULT | DIV | MOD) expr  	    																		#arithmeticFirstPrecedenceExpr
  | expr op=(PLUS | MINUS) expr  	    																			#arithmeticSecondPrecedenceExpr
  | expr op=(LTEQ | GTEQ | LT | GT | EQ | NEQ) expr     			    												#relationalExpr
- | expr op=(AND | OR) expr                        																	#booleanExpr
  | atom                                				    															#atomExpr
  | stand_alone_expr																									#standAloneStatements
  | db_param																											#dbParamInitialization
@@ -74,7 +82,7 @@ expr
  ;
  
 stand_alone_expr
- : atom (recursive_expression)+																					#recursive_expr
+ : atom (recursive_expression)+																						#recursive_expr
  ;
  
 recursive_expression
@@ -150,7 +158,7 @@ condition
  ;
  
 condition_atom
- : VAR op=(LTEQ | GTEQ | LT | GT | EQ | NEQ) atom
+ : VAR op=(LTEQ | GTEQ | LT | GT | EQ | NEQ) expr
  ;
  
 VOID : 'void';

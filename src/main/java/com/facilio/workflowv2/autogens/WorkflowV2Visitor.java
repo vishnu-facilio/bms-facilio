@@ -95,6 +95,33 @@ public interface WorkflowV2Visitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitFunction_return(WorkflowV2Parser.Function_returnContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link WorkflowV2Parser#boolean_expr}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBoolean_expr(WorkflowV2Parser.Boolean_exprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code exprForBoolean}
+	 * labeled alternative in {@link WorkflowV2Parser#boolean_expr_atom}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExprForBoolean(WorkflowV2Parser.ExprForBooleanContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code boolExprParanthesis}
+	 * labeled alternative in {@link WorkflowV2Parser#boolean_expr_atom}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBoolExprParanthesis(WorkflowV2Parser.BoolExprParanthesisContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code booleanExprCalculation}
+	 * labeled alternative in {@link WorkflowV2Parser#boolean_expr_atom}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBooleanExprCalculation(WorkflowV2Parser.BooleanExprCalculationContext ctx);
+	/**
 	 * Visit a parse tree produced by the {@code dbParamInitialization}
 	 * labeled alternative in {@link WorkflowV2Parser#expr}.
 	 * @param ctx the parse tree
@@ -136,13 +163,6 @@ public interface WorkflowV2Visitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitArithmeticSecondPrecedenceExpr(WorkflowV2Parser.ArithmeticSecondPrecedenceExprContext ctx);
-	/**
-	 * Visit a parse tree produced by the {@code booleanExpr}
-	 * labeled alternative in {@link WorkflowV2Parser#expr}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitBooleanExpr(WorkflowV2Parser.BooleanExprContext ctx);
 	/**
 	 * Visit a parse tree produced by the {@code atomExpr}
 	 * labeled alternative in {@link WorkflowV2Parser#expr}.

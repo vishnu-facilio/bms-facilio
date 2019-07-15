@@ -184,6 +184,54 @@ public class WorkflowV2BaseListener implements WorkflowV2Listener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterBoolean_expr(WorkflowV2Parser.Boolean_exprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitBoolean_expr(WorkflowV2Parser.Boolean_exprContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterExprForBoolean(WorkflowV2Parser.ExprForBooleanContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitExprForBoolean(WorkflowV2Parser.ExprForBooleanContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterBoolExprParanthesis(WorkflowV2Parser.BoolExprParanthesisContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitBoolExprParanthesis(WorkflowV2Parser.BoolExprParanthesisContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterBooleanExprCalculation(WorkflowV2Parser.BooleanExprCalculationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitBooleanExprCalculation(WorkflowV2Parser.BooleanExprCalculationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterDbParamInitialization(WorkflowV2Parser.DbParamInitializationContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -251,18 +299,6 @@ public class WorkflowV2BaseListener implements WorkflowV2Listener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitArithmeticSecondPrecedenceExpr(WorkflowV2Parser.ArithmeticSecondPrecedenceExprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterBooleanExpr(WorkflowV2Parser.BooleanExprContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitBooleanExpr(WorkflowV2Parser.BooleanExprContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
