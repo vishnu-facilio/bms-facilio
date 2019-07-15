@@ -164,7 +164,7 @@ public class DownloadCertFile
 
     public static Map<String,InputStream> getCertAndKeyFileAsInputStream(String policyName, String type){
         Map<String,InputStream> filesInputStream = new HashMap<>();
-        String url =  DownloadCertFile.downloadCertificate(policyName,type);
+        String url = DownloadCertFile.downloadCertificate(policyName,type);
         LOGGER.info(" url for certFile "+url);
         try {
             DownloadCertFile.downloadFileFromUrl(AgentIntegrationKeys.CERT_KEY_FILE,url);
@@ -183,8 +183,9 @@ public class DownloadCertFile
             filesInputStream.put(AgentIntegrationKeys.KEY_FILE_NAME,keyInputStream);
             return filesInputStream;
         } catch (IOException e) {
-            e.printStackTrace();
+            LOGGER.info(" Exception occurred ",e);
         }
+        LOGGER.info(" Exception while downloading cert and key file, returning empty map");
         return new HashMap();
     }
     public static Map<String,InputStream> getCertKeyFileInputStreams() {

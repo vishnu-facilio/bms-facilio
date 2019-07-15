@@ -198,6 +198,9 @@ public class WattsenseUtil
             Map<String ,InputStream> inputStreamMap = new HashMap<>();
             String policyName = AccountUtil.getCurrentOrg().getDomain()+"_"+AgentIntegrationKeys.WATTSENSE_IOT_POLICY;
             inputStreamMap = DownloadCertFile.getCertAndKeyFileAsInputStream(policyName , AgentType.Wattsense.getLabel());  //getCertAndKeyFiles();
+            if(inputStreamMap.isEmpty()){
+                return false;
+            }
             if( ! AwsUtil.addAwsIotClient(policyName, wattsense.getClientId()) ){
                 LOGGER.info("Exception occured while adding IotClient ");
                 return false;
