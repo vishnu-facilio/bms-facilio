@@ -332,7 +332,7 @@ public class ContractsAPI {
 		List<FormField> fields = new ArrayList<FormField>();
 		fields.add(new FormField("days", FieldDisplayType.NUMBER, "How many days before the expiry date has to be notified?", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("to", FieldDisplayType.USER, "Select User", Required.REQUIRED,"users", 1, 1));
-		fields.add(new FormField("time", FieldDisplayType.DATETIME, "Enter Time", Required.REQUIRED,1, 1));
+		fields.add(new FormField("time", FieldDisplayType.TIME, "Enter Time", Required.REQUIRED,1, 1));
 		
 		formSection.setFields(fields);
 		sections.add(formSection);
