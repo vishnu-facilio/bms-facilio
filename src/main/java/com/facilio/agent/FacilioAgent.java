@@ -141,6 +141,7 @@ public class FacilioAgent
             policy.setReceiveTopics(new String[]{name+AgentIntegrationKeys.TOPIC_WT_CMD});
             policy.setSubscribeTopics(new String[]{AwsUtil.getIotArnTopicFilter(name)+AgentIntegrationKeys.TOPIC_WT_CMD});
             policy.setPublishTypes(new String[]{PublishType.event.getValue(),PublishType.event.getValue(),PublishType.timeseries.getValue()});
+            LOGGER.info("topic and pubtype "+policy.getMappedTopicAndPublished());
             return policy;
         }
         else {
@@ -152,6 +153,4 @@ public class FacilioAgent
         }
     }
     private static final Logger LOGGER = LogManager.getLogger(FacilioAgent.class.getName());
-
-
 }
