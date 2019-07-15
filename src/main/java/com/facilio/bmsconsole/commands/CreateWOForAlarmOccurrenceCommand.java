@@ -46,7 +46,10 @@ public class CreateWOForAlarmOccurrenceCommand implements Command {
 				BaseAlarmContext baseAlarm = alarmOccurrenceContext.getAlarm();
 				context.put(FacilioConstants.ContextNames.ALARM_OCCURRENCE, alarmOccurrenceContext);
 
-				WorkOrderContext workorder = new WorkOrderContext();
+				WorkOrderContext workorder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
+				if (workorder == null) {
+					workorder = new WorkOrderContext();
+				}
 				workorder.setSubject(baseAlarm.getSubject());
 				workorder.setDescription(baseAlarm.getDescription());
 				workorder.setSourceType(SourceType.ALARM);

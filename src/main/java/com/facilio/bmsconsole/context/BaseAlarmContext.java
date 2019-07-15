@@ -125,6 +125,12 @@ public class BaseAlarmContext extends ModuleBaseWithCustomFields {
 		}
 		return -1;
 	}
+	public void setLastOccurrenceId(long occurrenceId) {
+		if (occurrenceId > 0) {
+			lastOccurrence = new AlarmOccurrenceContext();
+			lastOccurrence.setId(occurrenceId);
+		}
+	}
 	
 	public static enum Type implements FacilioEnum {
 		READING_ALARM,

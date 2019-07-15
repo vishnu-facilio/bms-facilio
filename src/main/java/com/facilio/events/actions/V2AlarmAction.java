@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -113,9 +114,38 @@ public class V2AlarmAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String deleteAlarm() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID, getId());
+		
+		Chain c = TransactionChainFactory.getDeleteAlarmChain();
+		c.execute(context);
+		
+		return SUCCESS;
+	}
+	
+	public String deleteAlarmOccurrence() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID, getId());
+		
+		Chain c = TransactionChainFactory.getDeleteAlarmOccurrenceChain();
+		c.execute(context);
+		
+		return SUCCESS;
+	}
+	
+	private WorkOrderContext workorder;
+	public WorkOrderContext getWorkorder() {
+		return workorder;
+	}
+	public void setWorkorder(WorkOrderContext workorder) {
+		this.workorder = workorder;
+	}
+	
 	public String createWO() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, getId());
+		context.put(FacilioConstants.ContextNames.WORK_ORDER, getWorkorder());
 		
 		Chain c = TransactionChainFactory.getV2AlarmOccurrenceCreateWO();
 		c.execute(context);

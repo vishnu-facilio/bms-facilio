@@ -3585,6 +3585,18 @@ public class TransactionChainFactory {
 			c.addCommand(new DeleteKPICategoryCommand());
 			return c;
 		}
+
+		public static Chain getDeleteAlarmOccurrenceChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new DeleteAlarmOccurrenceCommand());
+			return c;
+		}
+
+		public static Chain getDeleteAlarmChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new DeleteAlarmCommand());
+			return c;
+		}
 }
 
 

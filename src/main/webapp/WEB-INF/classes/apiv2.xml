@@ -166,6 +166,8 @@
 			class="com.facilio.events.actions.V2AlarmAction" method="fetchAlarmSummary" />
 		<action name="updateOccurrence"
 			class="com.facilio.events.actions.V2AlarmAction" method="updateAlarmOccurrence" />
+		<action name="delete"
+			class="com.facilio.events.actions.V2AlarmAction" method="deleteAlarm" />
 	</package>
 	
 	<package name="alarmOccurrence" namespace="/api/v2/alarmOccurrence" extends="v2Api">
@@ -175,6 +177,8 @@
 			class="com.facilio.events.actions.V2AlarmAction" method="getEventsList" />
 		<action name="createWO" 
 			class="com.facilio.events.actions.V2AlarmAction" method="createWO" />
+		<action name="delete"
+			class="com.facilio.events.actions.V2AlarmAction" method="deleteAlarmOccurrence" />
 	</package>
 	
 	<package name="readingAlarmList" namespace="/api/v2/readingalarms/view" extends="v2Api">
