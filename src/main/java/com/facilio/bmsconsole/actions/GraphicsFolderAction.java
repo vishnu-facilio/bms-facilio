@@ -30,29 +30,27 @@ public class GraphicsFolderAction extends FacilioAction{
 		this.graphicsFolder = graphicsFolder;
 	}
 	private long recordId;
+	private Boolean showChildrenGraphics;
+	public Boolean getShowChildrenGraphics() {
+		if(showChildrenGraphics == null) {
+			return false;
+		}
+		return showChildrenGraphics;
+	}
+	public void setShowChildrenGraphics(Boolean showChildrenGraphics) {
+		this.showChildrenGraphics = showChildrenGraphics;
+	}
 	private GraphicsFolderContext graphicsFolder;
 	
 	public String getGraphicsFolderList() throws Exception {
 		FacilioContext context = new FacilioContext();
  		
+		context.put(FacilioConstants.ContextNames.SHOW_CHILDREN_GRAPHICS, showChildrenGraphics);
 		Chain chain = ReadOnlyChainFactory.getGraphicsFolderListChain();
 		chain.execute(context);
 		
 		List<GraphicsFolderContext> graphicsList = (List<GraphicsFolderContext>) context.get(FacilioConstants.ContextNames.GRAPHICS_FOLDERS);
 		setResult(FacilioConstants.ContextNames.GRAPHICS_FOLDERS, graphicsList);
-		
-		return SUCCESS;
-	}
-	
-	public String getGraphicsFolderDetails() throws Exception {
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.ID, recordId);
-		
-		Chain chain = ReadOnlyChainFactory.getGraphicsFolderDetailsChain();
-		chain.execute(context);
-		
-		GraphicsFolderContext graphicsFolderContext = (GraphicsFolderContext) context.get(FacilioConstants.ContextNames.GRAPHICS_FOLDER);
-		setResult(FacilioConstants.ContextNames.GRAPHICS_FOLDER, graphicsFolderContext);
 		
 		return SUCCESS;
 	}

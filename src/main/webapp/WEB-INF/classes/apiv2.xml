@@ -3605,10 +3605,6 @@
 			class="com.facilio.bmsconsole.actions.GraphicsFolderAction"
 			method="getGraphicsFolderList">
 		</action>
-		<action name="getById"
-			class="com.facilio.bmsconsole.actions.GraphicsFolderAction"
-			method="getGraphicsFolderDetails">
-		</action>
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.GraphicsFolderAction"
 			method="addGraphicsFolder">

@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.List;
+
 public class GraphicsFolderContext {
 	private String name;
 	
@@ -28,8 +30,16 @@ public class GraphicsFolderContext {
 		this.orgId = orgId;
 	}
 	
+	public List<GraphicsContext> getGraphics() {
+		return graphics;
+	}
+	public void setGraphics(List<GraphicsContext> graphics) {
+		this.graphics = graphics;
+	}
+
 	private String description;
 	private long id;
 	private long orgId;
+	private List<GraphicsContext> graphics;
 
 }
