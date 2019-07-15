@@ -188,7 +188,7 @@ public class DownloadCertFile
         LOGGER.info(" Exception while downloading cert and key file, returning empty map");
         return new HashMap();
     }
-    public static Map<String,InputStream> getCertKeyFileInputStreams() {
+    public static Map<String,InputStream> getCertKeyFileInputStreamsFromFileStore() {
         String directoryName = "facilio/";
         InputStream fis =   getCertKeyZipInputStream();
         Map<String,InputStream> filesMap = new HashMap<>();

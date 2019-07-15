@@ -197,8 +197,11 @@ public class WattsenseUtil
             multipart = new MultipartHttpPost(AgentIntegrationUtil.getWattsenseCertificateStoreApi(),"UTF-8",wattsense.getAuthStringEncoded());
             Map<String ,InputStream> inputStreamMap = new HashMap<>();
             String policyName = AccountUtil.getCurrentOrg().getDomain()+"_"+AgentIntegrationKeys.WATTSENSE_IOT_POLICY;
-            inputStreamMap = DownloadCertFile.getCertAndKeyFileAsInputStream(policyName , AgentType.Wattsense.getLabel());  //getCertAndKeyFiles();
+            String url = DownloadCertFile.downloadCertificate( policyName,AgentType.Wattsense.getLabel() );
+            //DownloadCertFile.getCertAndKeyFileAsInputStream(policyName , AgentType.Wattsense.getLabel());
+            inputStreamMap = DownloadCertFile.getCertKeyFileInputStreamsFromFileStore();
             if(inputStreamMap.isEmpty()){
+                LOGGER.info(" Exception occurred certfileInputstream map is empty ");
                 return false;
             }
             if( ! AwsUtil.addAwsIotClient(policyName, wattsense.getClientId()) ){
