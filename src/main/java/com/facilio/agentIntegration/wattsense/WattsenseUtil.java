@@ -196,7 +196,7 @@ public class WattsenseUtil
         try {
             multipart = new MultipartHttpPost(AgentIntegrationUtil.getWattsenseCertificateStoreApi(),"UTF-8",wattsense.getAuthStringEncoded());
             Map<String ,InputStream> inputStreamMap = new HashMap<>();
-            inputStreamMap = DownloadCertFile.getCertAndKeyFileAsInputStream(AgentIntegrationKeys.WATTSENSE_IOT_POLICY, AgentType.Wattsense.getLabel());  //getCertAndKeyFiles();
+            inputStreamMap = DownloadCertFile.getCertAndKeyFileAsInputStream(AccountUtil.getCurrentOrg().getDomain()+"_"+AgentIntegrationKeys.WATTSENSE_IOT_POLICY, AgentType.Wattsense.getLabel());  //getCertAndKeyFiles();
             if( ! AwsUtil.addAwsIotClient(AgentIntegrationKeys.WATTSENSE_IOT_POLICY, wattsense.getClientId()) ){
                 LOGGER.info("Exception occured while adding IotClient ");
                 return false;
