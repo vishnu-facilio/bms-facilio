@@ -53,6 +53,20 @@ public class RuleTemplateAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	
+	
+	public String getTemplatesRuleContext () throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.TEMPLATE_ID, id);
+		context.put(FacilioConstants.ContextNames.PLACE_HOLDER, placeHolder);
+		context.put(FacilioConstants.ContextNames.IS_EDIT_TEMPLATE, true);
+		Chain createRuleChain = TransactionChainFactory.getAddTemplateToRules();
+		createRuleChain.execute(context);
+		setResult("alarmRule", context.get(FacilioConstants.ContextNames.ALARM_RULE));
+		return SUCCESS;
+	}
+	
+	
 	public String getDefaultRuleTemplates() throws Exception {
 		setResult("templates", TemplateAPI.getAllRuleLibraryTemplate());
 		return SUCCESS;

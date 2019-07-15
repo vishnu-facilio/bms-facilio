@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.util.ConnectionUtil;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
@@ -554,7 +555,10 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     	Value operatorValue = this.visit(ctx.atom());
     	switch(ctx.op.getText()) {
     	case "==" :
-    		if(operatorValue.asObject() instanceof String) {
+    		if(operatorValue.asObject() == null) {
+    			operator = CommonOperators.IS_EMPTY;
+    		}
+    		else if(operatorValue.asObject() instanceof String) {
     			operator = StringOperators.IS;
     		}
     		else if(operatorValue.asObject() instanceof Boolean) {
@@ -568,7 +572,10 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     		}
     		break;
     	case "!=" :
-    		if(operatorValue.asObject() instanceof String) {
+    		if(operatorValue.asObject() == null) {
+    			operator = CommonOperators.IS_NOT_EMPTY;
+    		}
+    		else if(operatorValue.asObject() instanceof String) {
     			operator = StringOperators.ISN_T;
     		}
     		else {
