@@ -864,17 +864,21 @@ public class AwsUtil
 	    LOGGER.info(" creating iot rule ");
 		if(AgentType.Wattsense.getLabel().equalsIgnoreCase(type)){
 			Map<String,String> publishTypeMap = policy.getMappedTopicAndPublished();
-			LOGGER.info(" pubtype map "+publishTypeMap);
-			for(String topic : publishTypeMap.keySet()){
+            LOGGER.info(" pubtype map "+publishTypeMap);
+            for(String topic : policy.getPublishtopics()){
 				try {
 					KinesisAction kinesisAction = new KinesisAction().withStreamName(topic)
 							.withPartitionKey(KINESIS_PARTITION_KEY)
 							.withRoleArn(IAM_ARN_PREFIX + getUserId() + KINESIS_PUT_ROLE_SUFFIX);
-
 					Action action = new Action().withKinesis(kinesisAction);
 					TopicRulePayload rulePayload = new TopicRulePayload();
 					rulePayload.withActions(action);
-					rulePayload.withSql(policy.getSql(topic,publishTypeMap));
+					// if(AgentType.Wattsense.getLabel().equalsIgnoreCase(type)) { // future fix
+                        String publishType = publishTypeMap.get(topic);
+                        rulePayload.withSql(policy.getSql(topic,publishType));
+                    /*}else {
+                        rulePayload.withSql(policy.getSql(topic,null));   // future fix
+                    }*/
 					rulePayload.withAwsIotSqlVersion(IOT_SQL_VERSION); //Refer the versions available in AWS iot sql version document before changing.
 					LOGGER.info(" rulepayload sql  "+rulePayload.getSql());
 					CreateTopicRuleRequest topicRuleRequest = new CreateTopicRuleRequest().withRuleName(topic).withTopicRulePayload(rulePayload);

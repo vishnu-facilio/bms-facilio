@@ -1,5 +1,6 @@
 package com.facilio.aws.util;
 
+import com.facilio.agent.AgentType;
 import com.facilio.events.tasker.tasks.EventUtil;
 
 import java.util.HashMap;
@@ -43,19 +44,22 @@ public class IotPolicy
     public String getPolicyName() { return policyName; }
     public void setPolicyName(String policyName) { this.policyName = policyName; }
 
+    public Map<String, String> getPublishTypeAndTopicMap() { return publishTypeAndTopicMap; }
+    public void setPublishTypeAndTopicMap(Map<String, String> publishTypeAndTopicMap) { this.publishTypeAndTopicMap = publishTypeAndTopicMap; }
+    private Map<String,String> publishTypeAndTopicMap;
 
     public Map<String,String> getMappedTopicAndPublished(){
             Map<String, String> topicAndPublishTypeMap = new HashMap<>();
             for (int i = 0; i < publishtopics.length; i++) {
-                System.out.println(publishtopics[i]+"   "+publishTypes[i]);
                 topicAndPublishTypeMap.put(publishtopics[i], publishTypes[i]);
             }
-        return topicAndPublishTypeMap;
+            setPublishTypeAndTopicMap(topicAndPublishTypeMap);
+            return topicAndPublishTypeMap;
     }
 
-    public String getSql(String topic, Map<String,String> publishTypeMap) {
-        if(isToModify()){
-            return "SELECT * ," + publishTypeMap.get(topic) +" as "+ EventUtil.DATA_TYPE +" FROM '" + topic + "'";
+    public String getSql(String topic,String publishType) {
+        if(AgentType.Wattsense.getLabel().equalsIgnoreCase(type) && ( publishType != null ) ){
+            return "SELECT * as data , '" + publishType +"' as "+ EventUtil.DATA_TYPE +" FROM '" + topic + "'";
         }
         return "SELECT * FROM '" + topic + "'";
     }
