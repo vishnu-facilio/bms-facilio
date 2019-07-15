@@ -196,8 +196,9 @@ public class WattsenseUtil
         try {
             multipart = new MultipartHttpPost(AgentIntegrationUtil.getWattsenseCertificateStoreApi(),"UTF-8",wattsense.getAuthStringEncoded());
             Map<String ,InputStream> inputStreamMap = new HashMap<>();
-            inputStreamMap = DownloadCertFile.getCertAndKeyFileAsInputStream(AccountUtil.getCurrentOrg().getDomain()+"_"+AgentIntegrationKeys.WATTSENSE_IOT_POLICY, AgentType.Wattsense.getLabel());  //getCertAndKeyFiles();
-            if( ! AwsUtil.addAwsIotClient(AgentIntegrationKeys.WATTSENSE_IOT_POLICY, wattsense.getClientId()) ){
+            String policyName = AccountUtil.getCurrentOrg().getDomain()+"_"+AgentIntegrationKeys.WATTSENSE_IOT_POLICY;
+            inputStreamMap = DownloadCertFile.getCertAndKeyFileAsInputStream(policyName , AgentType.Wattsense.getLabel());  //getCertAndKeyFiles();
+            if( ! AwsUtil.addAwsIotClient(policyName, wattsense.getClientId()) ){
                 LOGGER.info("Exception occured while adding IotClient ");
                 return false;
             }
@@ -601,7 +602,7 @@ public class WattsenseUtil
         wattPayload.putAll(timeSeriesJson);
         wattPayload.put(EventUtil.DATA_TYPE, PublishType.timeseries.getValue());
         wattPayload.put(AgentKeys.TIMESTAMP,timeStamp);
-        System.out.println("result   "+wattPayload.toJSONString());
+        LOGGER.info(" wattsense payload "+wattPayload);
         return wattPayload;
     }
 
