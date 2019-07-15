@@ -106,7 +106,13 @@ public class AuthInterceptor extends AbstractInterceptor {
 				}
 			}
 			else if (!isRemoteScreenMode(request)) {
+				String currentOrgDomain = FacilioCookie.getUserCookie(request, "fc.currentOrg");
+				if (currentOrgDomain == null) {
+					currentOrgDomain = request.getHeader("X-Current-Org"); 
+				}
+			
 				CognitoUser cognitoUser = AuthenticationUtil.getCognitoUser(request, false);
+				
 				Account currentAccount = null;
 				if ( ! AuthenticationUtil.checkIfSameUser(currentAccount, cognitoUser)) {
 					try {

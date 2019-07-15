@@ -31,11 +31,11 @@ public class LoginUtil {
 		}
 		
 		if (currentOrgDomain != null) {
-			user = AccountUtil.getUserBean().getFacilioUser(cognitoUser.getEmail(), currentOrgDomain);
+			user = AccountUtil.getUserBean().getFacilioUserv2(cognitoUser.getEmail(), currentOrgDomain);
 		}
 
 		if (user == null) {
-			user = AccountUtil.getUserBean().getFacilioUser(cognitoUser.getEmail());
+			user = AccountUtil.getUserBean().getFacilioUserv2(cognitoUser.getEmail());
 		}
 		
 		Organization org = null;

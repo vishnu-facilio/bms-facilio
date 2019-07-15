@@ -560,4 +560,24 @@ public class OrgBeanImpl implements OrgBean {
 		props.put("loggerLevel",level);
 		 updateBuilder.update(props);
 	}
+	
+	public long createOrgv2(Organization org) throws Exception {
+		// TODO Auto-generated method stub
+		Organization existingOrg = getOrg(org.getDomain());
+		if (existingOrg != null) {
+			throw new AccountException(AccountException.ErrorCode.ORG_DOMAIN_ALREADY_EXISTS, "The given domain already registered.");
+		}
+		
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(AccountConstants.getOrgModule().getTableName())
+				.fields(AccountConstants.getOrgFields());
+		
+		Map<String, Object> props = FieldUtil.getAsProperties(org);
+		insertBuilder.addRecord(props);
+		insertBuilder.save();
+		
+		long orgId = (Long) props.get("id");
+		
+		return orgId;
+	}
 }

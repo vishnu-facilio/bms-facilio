@@ -3,6 +3,7 @@ package com.facilio.util;
 import javax.servlet.http.HttpServletRequest;
 
 import com.facilio.accounts.dto.Account;
+import com.facilio.accounts.util.AuthUtill;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.fw.auth.CognitoUtil;
 
@@ -37,7 +38,9 @@ public class AuthenticationUtil {
                     overrideSessionCheck = true;
                 }
             }
-            CognitoUtil.CognitoUser cognitoUser =  CognitoUtil.verifiyFacilioToken(facilioToken, isPortaluser, overrideSessionCheck);
+           // CognitoUtil.CognitoUser cognitoUser =  CognitoUtil.verifiyFacilioToken(facilioToken, isPortaluser, overrideSessionCheck);
+            CognitoUtil.CognitoUser cognitoUser =  AuthUtill.verifiyFacilioToken(facilioToken, isPortaluser, overrideSessionCheck);
+            
             return cognitoUser;
         }
         return  null;

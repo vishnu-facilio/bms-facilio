@@ -28,6 +28,7 @@ import org.json.simple.parser.ParseException;
 
 import com.facilio.accounts.bean.RoleBean;
 import com.facilio.accounts.bean.UserBean;
+import com.facilio.accounts.dto.AccountUser;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
@@ -131,6 +132,31 @@ public class UserBeanImpl implements UserBean {
 		return -1;
 	}
 	
+	private long addUserEntryv2(User user) throws Exception {
+		return addUserEntryv2(user, true, false);
+	}
+
+	private long addUserEntryv2(User user, boolean emailVerificationRequired, boolean isPortalUser) throws Exception {
+
+		List<FacilioField> fields = AccountConstants.getUserV2Fields();
+		fields.add(AccountConstants.getUserPasswordV2Field());
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(AccountConstants.getUserV2Module().getTableName())
+				.fields(fields);
+
+		Map<String, Object> props = FieldUtil.getAsProperties(user);
+
+		insertBuilder.addRecord(props);
+		insertBuilder.save();
+		long userId = (Long) props.get("id");
+		user.setUid(userId);
+		if(emailVerificationRequired) {
+			sendEmailRegistrationv2(user);
+		}
+		return userId;
+	}
+
+	
 	private long addUserEntry(User user) throws Exception {
 		return addUserEntry(user, true, false);
 	}
@@ -162,6 +188,40 @@ public class UserBeanImpl implements UserBean {
 		try {
 			conn = FacilioConnectionPool.getInstance().getConnection();
 			pstmt = conn.prepareStatement("INSERT INTO faciliousers(username, email, mobile, USERID) VALUES(?,?,?,?)");
+			pstmt.setString(1, user.getEmail());
+			pstmt.setString(2, user.getEmail());
+			if (user.getMobile() == null || user.getMobile().isEmpty()){
+				user.setMobile(String.valueOf(user.getUid()));
+			}
+ 			pstmt.setString(3, user.getMobile());
+			pstmt.setLong(4, user.getUid());
+			pstmt.executeUpdate();
+		} catch (Exception e){
+			log.info("Exception occurred ", e);
+		} finally {
+			try {
+				if(pstmt!= null) {
+					pstmt.close();
+				}
+			} catch (SQLException e) {
+				log.info("Exception occurred ", e);
+			}
+			try {
+				if(conn != null) {
+					conn.close();
+				}
+			} catch (SQLException e) {
+				log.info("Exception occurred ", e);
+			}
+		}
+	}
+	
+	private void addFacilioUserv2(AccountUser user){
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		try {
+			conn = FacilioConnectionPool.getInstance().getConnection();
+			pstmt = conn.prepareStatement("INSERT INTO Account_faciliousers(username, email, mobile, USERID) VALUES(?,?,?,?)");
 			pstmt.setString(1, user.getEmail());
 			pstmt.setString(2, user.getEmail());
 			if (user.getMobile() == null || user.getMobile().isEmpty()){
@@ -251,6 +311,22 @@ public class UserBeanImpl implements UserBean {
 		
 		return (updatedRows > 0);
 	}
+	
+	private boolean updateUserEntryv2(User user) throws Exception {
+		List<FacilioField> fields = AccountConstants.getUserV2Fields();
+		fields.add(AccountConstants.getUserPasswordV2Field());
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(AccountConstants.getUserV2Module().getTableName())
+				.fields(fields)
+				.andCustomWhere("USERID = ?", user.getUid());
+		
+
+		Map<String, Object> props = FieldUtil.getAsProperties(user);
+		int updatedRows = updateBuilder.update(props);
+		
+		return (updatedRows > 0);
+	}
+	
 	
 	@Override
 	public long createUser(long orgId, User user) throws Exception {
@@ -1096,6 +1172,31 @@ public class UserBeanImpl implements UserBean {
 				.innerJoin("Organizations")
 				.on("ORG_Users.ORGID=Organizations.ORGID")
 				.andCustomWhere("(faciliousers.email = ? or faciliousers.mobile = ? ) AND ORG_Users.DELETED_TIME = -1 AND Organizations.DELETED_TIME = -1 AND Organizations.FACILIODOMAINNAME = ?", email, email, orgDomain);
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			User user =  createUserFromProps(props.get(0), true, true, false);
+			return user;
+		}
+		return null;
+	}
+	
+	@Override
+	public User getFacilioUserv2(String email, String orgDomain) throws Exception {
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.addAll(AccountConstants.getUserV2Fields());
+		fields.addAll(AccountConstants.getOrgUserV2Fields());
+		fields.add(AccountConstants.getOrgIdField(AccountConstants.getOrgModule()));
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("Users")
+				.innerJoin("ORG_Users")
+				.on("Users.USERID = ORG_Users.USERID")
+				.innerJoin("Organizations")
+				.on("ORG_Users.ORGID=Organizations.ORGID")
+				.andCustomWhere("(Users.EMAIL= ? or USERS.mobile = ? ) AND ORG_Users.DELETED_TIME = -1 AND Organizations.DELETED_TIME = -1 AND Organizations.FACILIODOMAINNAME = ?", email, email, orgDomain);
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -1982,6 +2083,17 @@ public class UserBeanImpl implements UserBean {
 		return user;
 	}
 	
+	static AccountUser createAccountUserFromProps(Map<String, Object> prop, boolean fetchRole, boolean fetchSpace, boolean isPortalRequest) throws Exception {
+		AccountUser user = FieldUtil.getAsBeanFromMap(prop, AccountUser.class);
+		if (user.getPhotoId() > 0) {
+			FileStore fs = FileStoreFactory.getInstance().getFileStoreFromOrg(user.getOrgId(), user.getUid());
+			user.setAvatarUrl(fs.getPrivateUrl(user.getPhotoId(), isPortalRequest));
+			user.setOriginalUrl(fs.orginalFileUrl(user.getPhotoId()));
+		}
+		
+		return user;
+	}
+	
 	public String generatePermalinkForURL(String url, User user) throws Exception {
 		
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
@@ -2084,5 +2196,274 @@ public class UserBeanImpl implements UserBean {
 			}
 		}
 		return userSites;
+	}
+
+	@Override
+	public long createUserv2(long orgId, User user) throws Exception {
+		// TODO Auto-generated method stub
+		AccountUser orgUser = getFacilioUserv2(orgId, user.getEmail());
+		if (orgUser != null) {
+			if (orgUser.getUserType() == AccountConstants.UserType.REQUESTER.getValue()) {
+//				orgUser.setUserType(AccountConstants.UserType.USER.getValue());
+//				updateUserv2(orgUser.getId(), orgUser);
+			}
+			else {
+				throw new Exception("user_already_exists");
+			}
+		}
+		
+		long uid = getUid(user.getEmail());
+		if (uid == -1) {
+			uid = addUserEntryv2(user);
+			user.setUid(uid);
+		//	addFacilioUserv2(user);
+			user.setDefaultOrg(true);
+		}
+		user.setUid(uid);
+		user.setOrgId(orgId);
+		user.setUserType(AccountConstants.UserType.USER.getValue());
+		user.setUserStatus(true);
+		AccountUtil.setCurrentAccount(orgId);
+		return addToORGUsersv2(user);
+	}
+	
+	private long addToORGUsersv2(User user) throws Exception {
+		
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(AccountConstants.getOrgUserV2Module().getTableName())
+				.fields(AccountConstants.getOrgUserV2Fields());
+		
+		Map<String, Object> props = FieldUtil.getAsProperties(user);
+		insertBuilder.addRecord(props);
+		insertBuilder.save();
+		
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID, props.get("id"));
+		
+		return (Long)props.get("id");
+	}
+	
+	private void sendEmailRegistrationv2(User user) throws Exception {
+		
+		String inviteLink = getUserLinkv2(user, "/emailregistration/");
+		Map<String, Object> placeholders = new HashMap<>();
+		CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(user), placeholders);
+		placeholders.put("invitelink", inviteLink);
+		if (user.getEmail().contains("@facilio.com") || AwsUtil.disableCSP()) {
+			 AccountEmailTemplate.EMAIL_VERIFICATION.send(placeholders);
+		}
+		else {
+			AccountEmailTemplate.ALERT_EMAIL_VERIFICATION.send(placeholders);	
+		}
+
+	}
+	
+	private String getUserLinkv2(User user, String url) {
+		String inviteToken = getEncodedTokenv2(user);
+		String hostname = "";
+		if(user.isPortalUser())
+		{
+			try {
+				Organization org = AccountUtil.getOrgBean().getPortalOrg(user.getPortalId());
+				hostname = "https://"+org.getDomain()+"/service";
+				inviteToken = inviteToken +"&portalid="+user.getPortalId();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				log.info("Exception occurred ", e);
+			}
+			
+		}
+		else
+		{
+		//	hostname="https://app."+user.getServerName();
+		 return AwsUtil.getConfig("clientapp.url") +"/app"+ url + inviteToken;
+		}
+		return hostname + url + inviteToken;
+	}
+
+	private String getEncodedTokenv2(User user) {
+		return EncryptionUtil.encode(user.getOrgId()+ USER_TOKEN_REGEX +user.getUid() + USER_TOKEN_REGEX + user.getUid()+ USER_TOKEN_REGEX + user.getEmail() + USER_TOKEN_REGEX + System.currentTimeMillis());
+	}
+
+	@Override
+	public User getFacilioUserv2(String email) throws Exception {
+		// TODO Auto-generated method stub
+		List<FacilioField> fields = new ArrayList<>();
+		fields.addAll(AccountConstants.getUserV2Fields());
+		fields.addAll(AccountConstants.getOrgUserV2Fields());
+		fields.add(AccountConstants.getOrgIdField());
+
+//		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+//				.select(fields)
+//				.table("Account_Users")
+//				.innerJoin("Account_faciliousers")
+//				.on("Account_Users.USERID = Account_faciliousers.USERID")
+//				.innerJoin("Account_ORG_Users")
+//				.on("Account_Users.USERID = Account_ORG_Users.USERID")
+//				.andCustomWhere("(Account_faciliousers.email = ? or Account_faciliousers.username = ?) AND USER_STATUS = 1 AND DELETED_TIME = -1 and ISDEFAULT = ?", email, email, true);
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("Users")
+				.innerJoin("ORG_Users")
+				.on("Users.USERID = ORG_Users.USERID")
+				.andCustomWhere("USER_STATUS = 1 AND DELETED_TIME = -1 and ISDEFAULT = ?", true);
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			User user =  createUserFromProps(props.get(0), true, true, false);
+			return user;
+		}
+		
+		return null;
+	}
+	
+	private AccountUser getFacilioUserv2(long orgId, String email) throws Exception {
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.addAll(AccountConstants.getUserV2Fields());
+		fields.addAll(AccountConstants.getOrgUserV2Fields());
+		fields.add(AccountConstants.getOrgIdField());
+
+//		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+//				.select(fields)
+//				.table("Account_Users")
+//				.innerJoin("Account_faciliousers")
+//				.on("Account_Users.USERID = Account_faciliousers.USERID")
+//				.innerJoin("Account_ORG_Users")
+//				.on("Account_Users.USERID = Account_ORG_Users.USERID")
+//				.andCustomWhere("Account_ORG_Users.ORGID = ? AND (Account_faciliousers.email = ? or Account_faciliousers.mobile = ?)", orgId, email, email);
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("Users")
+				.innerJoin("ORG_Users")
+				.on("Users.USERID = ORG_Users.USERID")
+				.andCustomWhere("ORG_Users.ORGID = ? AND (Users.email = ? or Users.mobile = ?)", orgId, email, email);
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			AccountUser user =  createAccountUserFromProps(props.get(0), true, true, false);
+			return user;
+		}
+		return null;
+	}
+
+	@Override
+	public boolean updateUserv2(long ouid, User user) throws Exception {
+		// TODO Auto-generated method stub
+		boolean userUpdateStatus = updateUserEntryv2(user);
+		if (userUpdateStatus) {
+			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+					.table(AccountConstants.getOrgUserV2Module().getTableName())
+					.fields(AccountConstants.getOrgUserV2Fields())
+					.andCustomWhere("ORG_USERID = ?", ouid);
+
+		    Map<String, Object> props = FieldUtil.getAsProperties(user);
+			
+			int updatedRows = updateBuilder.update(props);
+			if (updatedRows > 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public User getPortalUserv2(String email, long portalId) throws Exception {
+		// TODO Auto-generated method stub
+		FacilioModule portalInfoModule = AccountConstants.getPortalInfoModule();
+		
+		List<FacilioField> fields = new ArrayList<>();
+		fields.addAll(AccountConstants.getPortalUserFields());
+		fields.addAll(AccountConstants.getUserFields());
+		fields.addAll(AccountConstants.getOrgUserFields());
+		fields.add(AccountConstants.getOrgIdField(portalInfoModule));
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("faciliorequestors")
+				.innerJoin("PortalInfo")
+				.on("faciliorequestors.PORTALID = PortalInfo.PORTALID")
+				.innerJoin("Users")
+				.on("faciliorequestors.USERID = Users.USERID")
+				.innerJoin("ORG_Users")
+				.on("Users.USERID = ORG_Users.USERID")
+				.andCustomWhere("faciliorequestors.EMAIL = ? AND DELETED_TIME=-1 AND USER_VERIFIED=1 AND faciliorequestors.PORTALID = ?", email, portalId);
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			return createUserFromProps(props.get(0), true, true, true);
+		}
+		return null;
+	}
+
+	@Override
+	public boolean verifyUserSessionv2(String email, String token) throws Exception {
+		// TODO Auto-generated method stub
+		List sessions = (List) LRUCache.getUserSessionCache().get(email);
+		if (sessions == null) {
+			sessions = new ArrayList<>();
+		}
+		if (sessions.contains(token)) {
+			return true;
+		}
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(AccountConstants.getUserSessionv2Fields())
+				.table("Users")
+				.innerJoin("UserSessions")
+				.on("Users.USERID = UserSessions.USERID")
+				.andCustomWhere("(Users.EMAIL = ? ) AND UserSessions.TOKEN = ? AND UserSessions.IS_ACTIVE = ?", email, token, true);
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			sessions.add(token);
+			LRUCache.getUserSessionCache().put(email, sessions);
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public long startUserSessionv2(long uid, String email, String token, String ipAddress, String userAgent,
+			String userType) throws Exception {
+		// TODO Auto-generated method stub
+		TransactionManager transactionManager = null;
+		try {
+			transactionManager = FacilioTransactionManager.INSTANCE.getTransactionManager();
+
+			Transaction transaction = transactionManager.getTransaction();
+			if (transaction == null) {
+				transactionManager.begin();
+			}
+			List<FacilioField> fields = AccountConstants.getUserSessionv2Fields();
+
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+					.table(AccountConstants.getUserSessionV2Module().getTableName())
+					.fields(fields);
+
+			Map<String, Object> props = new HashMap<>();
+			props.put("uid", uid);
+			props.put("sessionType", AccountConstants.SessionType.USER_LOGIN_SESSION.getValue());
+			props.put("token", token);
+			props.put("startTime", System.currentTimeMillis());
+			props.put("isActive", true);
+			props.put("ipAddress", ipAddress);
+			props.put("userAgent", userAgent);
+			props.put("userType", userType);
+
+			insertBuilder.addRecord(props);
+			insertBuilder.save();
+			transactionManager.commit();
+			long sessionId = (Long) props.get("id");
+			return sessionId;
+		} catch (Exception e) {
+			if (transactionManager != null) {
+				transactionManager.rollback();
+			}
+			log.info("exception while adding user session transaction ", e);
+		}
+		return -1L;
 	}
 }

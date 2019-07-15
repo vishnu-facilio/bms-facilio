@@ -1,5 +1,6 @@
 package com.facilio.accounts.util;
 
+import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -9,6 +10,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.facilio.accounts.bean.GroupBean;
 import com.facilio.accounts.bean.OrgBean;
 import com.facilio.accounts.bean.RoleBean;
@@ -22,6 +28,7 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.TransactionBeanFactory;
+import com.facilio.fw.auth.CognitoUtil.CognitoUser;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -31,6 +38,7 @@ import com.facilio.modules.fields.FacilioField;
 public class AccountUtil {
 
 	private static ThreadLocal<Account> currentAccount = new ThreadLocal<Account>();
+	public static final String JWT_DELIMITER = "#";
 	
 	public static void setCurrentAccount(Account account) throws Exception {
 
@@ -291,4 +299,6 @@ public class AccountUtil {
 		}
 		return null;
 	}
+	
+	
 }

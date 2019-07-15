@@ -32,10 +32,13 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.accounts.commands.AuthenticationTransactionFactory;
+import com.facilio.accounts.dto.AccountUser;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.impl.UserBeanImpl;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AuthUtill;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.actions.FacilioAction;
@@ -47,6 +50,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.fw.auth.CognitoUtil;
+import com.facilio.fw.auth.CognitoUtil.CognitoUser;
 import com.opensymphony.xwork2.ActionContext;
 
 public class FacilioAuthAction extends FacilioAction {
@@ -73,8 +77,19 @@ public class FacilioAuthAction extends FacilioAction {
     private String newPassword;
     private String title;
     private static MessageDigest md;
+    private String token;
     
-    JSONArray entry;
+    
+    
+    public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+
+	JSONArray entry;
     
     public JSONArray getEntry() {
 		return entry;
@@ -436,6 +451,10 @@ public class FacilioAuthAction extends FacilioAction {
 
         return passwordValid;
     }
+    
+
+    
+
     
     public long portalId() {
         if(AccountUtil.getCurrentOrg() != null) {
@@ -909,4 +928,152 @@ public class FacilioAuthAction extends FacilioAction {
 
         return SUCCESS;
     }
+	
+	 public String signupUserv2() throws Exception	{
+
+	        LOGGER.info("signupUser() : username :"+ getUsername() +", password :"+ getPassword() +", email : "+getEmailaddress() );
+	        return addFacilioUserv2(getUsername(), getPassword(), getEmailaddress());
+	    }
+
+	    private String addFacilioUserv2(String username, String password, String emailaddress) throws Exception {
+	        User userObj = AccountUtil.getUserBean().getFacilioUserv2(emailaddress);
+	        if(userObj != null) {
+	            setJsonresponse("message", "Email already exists");
+	            return ERROR;
+	        }
+
+	        Organization orgObj = AccountUtil.getOrgBean().getOrg(getDomainname());
+	        if(orgObj != null) {
+	            setJsonresponse("message", "Org Domain Name already exists");
+	            return ERROR;
+	        }
+	        HttpServletRequest request = ServletActionContext.getRequest();
+	        LOGGER.info("### addFacilioUser() :"+emailaddress);
+
+	        JSONObject signupInfo = new JSONObject();
+	        signupInfo.put("name", getUsername());
+	        signupInfo.put("email", emailaddress);
+	        signupInfo.put("cognitoId", "facilio");
+	        signupInfo.put("phone", getPhone());
+	        signupInfo.put("companyname", getCompanyname());
+	        signupInfo.put("domainname", getDomainname());
+	        signupInfo.put("isFacilioAuth", true);
+	        signupInfo.put("timezone", getTimezone());
+	        signupInfo.put("servername", request.getServerName());
+	        signupInfo.put("password", password);
+	        FacilioContext signupContext = new FacilioContext();
+	        signupContext.put(FacilioConstants.ContextNames.SIGNUP_INFO, signupInfo);
+
+	        Chain c = AuthenticationTransactionFactory.getOrgSignupChain();
+	        c.execute(signupContext);
+	        setJsonresponse("message", "success");
+	        return SUCCESS;
+	    }
+	    
+	    public String validateLoginv2() {
+
+	        boolean portalUser = false;
+
+	        if(getUsername() != null && getPassword() != null) {
+	            try {
+	                LOGGER.info("validateLogin() : username : " + getUsername() + "; password : " + getPassword() + " portal id : " + portalId());
+	                Boolean validPassword = null;
+	                if (portalId() > 0) {
+	                    validPassword = verifyPortalPassword(getUsername(), getPassword(), portalId());
+	                    portalUser = true;
+	                } else {
+	                    validPassword = AuthUtill.verifyPasswordv2(getUsername(), getPassword());
+	                }
+
+	                if (validPassword == null) {
+	                    setJsonresponse("message", "User doesn't exist"); // can be removed later
+	                    setJsonresponse("errorcode", "1");
+	                    return ERROR;
+	                } else {
+	                    if (validPassword) {
+	                        User user;
+	                        if(portalUser) {
+	                            user = AccountUtil.getUserBean().getPortalUserv2(getUsername(), portalId());
+	                        } else {
+	                            user = AccountUtil.getUserBean().getFacilioUserv2(getUsername());
+	                        }
+	                        if(user == null) {
+	                            setJsonresponse("message", "User is deactivated, Please contact admin to activate. ");
+	                            setJsonresponse("errorcode", "1");
+	                            return ERROR;
+	                        }
+	                    } else {
+	                        LOGGER.info(">>>>> invalid Password :" + getUsername());
+	                        setJsonresponse("errorcode", "1");
+	                        return ERROR;
+	                    }
+	                }
+
+	                String jwt = CognitoUtil.createJWT("id", "auth0", getUsername(), System.currentTimeMillis() + 24 * 60 * 60000,portalUser);
+	                LOGGER.info("Response token is " + jwt);
+	                setJsonresponse("token", jwt);
+	                setJsonresponse("username", getUsername());
+
+	                HttpServletRequest request = ServletActionContext.getRequest();
+	                HttpServletResponse response = ServletActionContext.getResponse();
+
+	                Cookie cookie = new Cookie("fc.idToken.facilio", jwt);
+	                if(portalUser) {
+	                    cookie = new Cookie("fc.idToken.facilioportal", jwt);
+	                }
+	                String parentdomain = request.getServerName().replaceAll("app.", "");
+	                cookie.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
+	                cookie.setPath("/");
+	                cookie.setHttpOnly(true);
+	                if( ! (AwsUtil.isDevelopment() || AwsUtil.disableCSP())) {
+	                    cookie.setSecure(true);
+	                }
+	                cookie.setDomain(parentdomain);
+	                response.addCookie(cookie);
+
+	                Cookie authmodel = new Cookie("fc.authtype", "facilio");
+	                authmodel.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
+	                authmodel.setPath("/");
+	                authmodel.setHttpOnly(false);
+	                if( ! (AwsUtil.isDevelopment() || AwsUtil.disableCSP())) {
+	                    authmodel.setSecure(true);
+	                }
+
+	                authmodel.setDomain(parentdomain);
+	                LOGGER.info("#################### facilio.in::: " + request.getServerName());
+	                response.addCookie(authmodel);
+	                User user = AccountUtil.getUserBean().getFacilioUserv2(getUsername());
+	                if(user != null ) {
+	                    long uid = user.getUid();
+	                    String userAgent = request.getHeader("User-Agent");
+	                    userAgent = userAgent != null ? userAgent : "";
+	                    String ipAddress = request.getHeader("X-Forwarded-For");
+	                    ipAddress = (ipAddress == null || "".equals(ipAddress.trim())) ? request.getRemoteAddr() : ipAddress;
+//	                    String userType = (AccountUtil.getCurrentAccount().isFromMobile() ? "mobile" : "web");
+	                    String userType = "web";
+	                    AccountUtil.getUserBean().startUserSessionv2(uid, getUsername(), jwt, ipAddress, userAgent, userType);
+	                }
+	            } catch (Exception e) {
+	                LOGGER.log(Level.INFO, "Exception while validating password, ", e);
+	                setJsonresponse("message", "Error while validating user name and password");
+	                return ERROR;
+	            }
+	            return SUCCESS;
+	        }
+	        setJsonresponse("message", "Invalid username or password");
+	        return ERROR;
+	    }
+	    
+	    public String verifyTokenv2() {
+	    	
+	    	CognitoUser user = AuthUtill.verifiyFacilioToken(getToken(), false, false);
+	    	if(user == null) {
+	    		setJsonresponse("message", "error");
+		        
+	    		return ERROR;
+	    	}
+	    	setJsonresponse("message", "success");
+		    
+	    	return SUCCESS;
+	    }
 }

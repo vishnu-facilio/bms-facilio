@@ -13,6 +13,8 @@ public interface OrgBean {
 
 	public long createOrg(Organization org) throws Exception;
 	
+	public long createOrgv2(Organization org) throws Exception;
+	
 	public boolean updateOrg(long orgId, Organization org) throws Exception;
 	
 	public boolean deleteOrg(long orgId) throws Exception;
