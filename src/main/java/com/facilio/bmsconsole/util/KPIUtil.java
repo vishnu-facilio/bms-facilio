@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.util;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.KPICategoryContext;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -21,6 +22,7 @@ public class KPIUtil {
 	
 	public static void addKPICategoryContext(KPICategoryContext kpiCategoryContext) throws Exception {
 		
+		kpiCategoryContext.setOrgId(AccountUtil.getCurrentOrg().getId());
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getKPICategoryModule().getTableName())
 				.fields(FieldFactory.getKPICategoryFields());
