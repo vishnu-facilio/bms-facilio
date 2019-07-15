@@ -881,7 +881,7 @@ public class AwsUtil
                     }*/
 					rulePayload.withAwsIotSqlVersion(IOT_SQL_VERSION); //Refer the versions available in AWS iot sql version document before changing.
 					LOGGER.info(" rulepayload sql  "+rulePayload.getSql());
-					CreateTopicRuleRequest topicRuleRequest = new CreateTopicRuleRequest().withRuleName(topic).withTopicRulePayload(rulePayload);
+					CreateTopicRuleRequest topicRuleRequest = new CreateTopicRuleRequest().withRuleName( (topic.replaceAll("/","_")) ).withTopicRulePayload(rulePayload);
 
 					CreateTopicRuleResult topicRuleResult = iotClient.createTopicRule(topicRuleRequest);
 

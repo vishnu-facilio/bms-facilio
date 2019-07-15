@@ -32,7 +32,7 @@ public class AgentIntegrationKeys
     public static final String TOPIC_WT_WILDCARD = "/wt";
     public static final String WATT_FEDGE_ZIP = "/wattsenst_fedge.zip";
     public static final String WATT_FEDGE_FILE_ID = "wattFedgeFileId";
-    public static final String WATTSENSE_IOT_POLICY = "wattsenseIotPolicy";
+    public static final String WATTSENSE_IOT_POLICY = "wattsense";
 
 
     //APIs
