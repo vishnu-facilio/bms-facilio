@@ -2835,7 +2835,6 @@ public class TransactionChainFactory {
 
 		public static Chain getAddTemplateToRules () {
 			Chain c = getDefaultChain();
-			c.addCommand(SetTableNamesCommand.getForWorkOrder());
 			c.addCommand(new ConvertToRulesCommand());
 			return c;
 		}

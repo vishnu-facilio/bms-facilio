@@ -192,6 +192,7 @@ public class FacilioConstants {
 		public static final String FILTERED_NAME = "filteredName";
 		
 		public static final String PLACE_HOLDER = "placeHolder";
+		public static final String IS_EDIT_TEMPLATE = "isEditTemplate";
 		
 		public static final String CONTROLLER_ID = "controllerId";
 		public static final String CONTROLLER = "controller";
