@@ -3570,7 +3570,21 @@ public class TransactionChainFactory {
 			return c;
 		}
 
-		
+		public static Chain getAddKPICategoryChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddKPICategoryCommand());
+			return c;
+		}
+		public static Chain getUpdateKPICategoryChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateKPICategoryCommand());
+			return c;
+		}
+		public static Chain getDeleteKPICategoryChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new DeleteKPICategoryCommand());
+			return c;
+		}
 }
 
 

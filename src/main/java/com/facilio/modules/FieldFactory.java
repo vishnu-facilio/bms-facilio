@@ -4762,6 +4762,16 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getKPICategoryFields() {
+		FacilioModule module = ModuleFactory.getKPICategoryModule();
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getIdField(module));
+		fields.add(getNameField(module));
+		
+		return fields;
+	}
 
 	public static List<FacilioField> getFormulaFieldFields() {
 		FacilioModule module = ModuleFactory.getFormulaFieldModule();

@@ -335,6 +335,22 @@
 			class="com.facilio.mv.action.MVAction" method="getMVProjectWidgetResult">
 		</action>
 	</package>
+	
+	<package name="KPIModule" namespace="kpi" extends="v2Api">
+
+		<action name="addKPICategory"
+			class="com.facilio.bmsconsole.actions.KPIAction" method="addKPICategory"></action>
+
+		<action name="updateKPICategory"
+			class="com.facilio.bmsconsole.actions.KPIAction" method="updateKPICategory"></action>
+
+		<action name="deleteKPICategory"
+			class="com.facilio.bmsconsole.actions.KPIAction" method="deleteKPICategory"></action>
+			
+		<action name="getAllKPICategories"
+			class="com.facilio.bmsconsole.actions.KPIAction" method="getAllKPICategories"></action>
+		
+	</package>
 
 	<package name="viewApiV2" namespace="/api/v2/views"
 		extends="v2Api">

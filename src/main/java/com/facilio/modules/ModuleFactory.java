@@ -1340,6 +1340,14 @@ public class ModuleFactory {
 		enpi.setTableName("Formula_Field");
 		return enpi;
 	}
+	
+	public static FacilioModule getKPICategoryModule() {
+		FacilioModule enpi = new FacilioModule();
+		enpi.setName("kpiCategory");
+		enpi.setDisplayName("KPI Categroy");
+		enpi.setTableName("KPI_Category");
+		return enpi;
+	}
 
 	public static FacilioModule getFormulaFieldInclusionsModule() {
 		FacilioModule readingRuleInclusionsExclusions = new FacilioModule();
