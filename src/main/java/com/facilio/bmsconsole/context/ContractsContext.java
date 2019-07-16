@@ -288,6 +288,10 @@ public class ContractsContext extends ModuleBaseWithCustomFields{
 				info.setValues(Collections.singletonList(getScheduleDay()));
 				info.setFrequencyType(ScheduleInfo.FrequencyType.MONTHLY_DAY);
 			}
+			else if(getFrequencyTypeEnum().getValue() == FrequencyType.WEEKLY.getValue()) {
+				info.setValues(Collections.singletonList(getScheduleDay()));
+				info.setFrequencyType(ScheduleInfo.FrequencyType.WEEKLY);
+			}
 			else if(getFrequencyTypeEnum().getValue() == FrequencyType.DAILY.getValue()) {
 				info.setFrequencyType(ScheduleInfo.FrequencyType.DAILY);
 			}
