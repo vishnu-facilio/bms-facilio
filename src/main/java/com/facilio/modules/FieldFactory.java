@@ -3449,6 +3449,7 @@ public class FieldFactory {
 		fields.add(dateFilter);
 		
 		fields.add(getField("newReportId", "NEW_REPORT_ID", module, FieldType.LOOKUP));
+		fields.add(getField("reportTemplate", "REPORT_TEMPLATE", module, FieldType.STRING));
 
 		return fields;
 	}

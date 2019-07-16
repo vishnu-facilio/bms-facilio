@@ -42,6 +42,14 @@ public class WidgetChartContext extends DashboardWidgetContext {
 	public void setDateFilterId(Long dateFilter) {
 		this.dateFilterId = dateFilter;
 	}
+	private String reportTemplate;
+	
+	public String getReportTemplate() {
+		return reportTemplate;
+	}
+	public void setReportTemplate(String reportTemplate) {
+		this.reportTemplate = reportTemplate;
+	}
 	@Override
 	public JSONObject widgetJsonObject() {
 		JSONObject resultJson = new JSONObject();
@@ -92,6 +100,7 @@ public class WidgetChartContext extends DashboardWidgetContext {
 		try {
 			if(getNewReportId() != null && getNewReportId() > 0) {
 				dataOptionsJson.put("newReport", ReportUtil.getReport(getNewReportId()));
+				dataOptionsJson.put("reportTemplate", getReportTemplate());
 			}
 		}
 		catch(Exception e) {
