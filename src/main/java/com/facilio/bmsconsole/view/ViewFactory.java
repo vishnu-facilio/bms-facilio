@@ -3837,8 +3837,8 @@ public class ViewFactory {
 		createdTime.setModule(moduleObj);
 		
 		FacilioView allView = new FacilioView();
-		allView.setName("open");
-		allView.setDisplayName("Work Requests");
+		allView.setName("all");
+		allView.setDisplayName("All " + moduleObj.getDisplayName());
 		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 		
 		return allView;
