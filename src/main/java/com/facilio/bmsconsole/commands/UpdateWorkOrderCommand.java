@@ -102,6 +102,7 @@ public class UpdateWorkOrderCommand implements Command {
 				}
                 JSONObject woupdate = new JSONObject();
                 List<Object> wolist = new ArrayList<Object>();
+                boolean updatingPrereqApproved = false;
 				for (UpdateChangeSet changeset : changeSetList) {
 				    long fieldid = changeset.getFieldId();
 					Object oldValue = changeset.getOldValue();
@@ -116,6 +117,9 @@ public class UpdateWorkOrderCommand implements Command {
 						info.put("newValue", resource.getName());
 					}
 					else {
+						if (field.getName().contains("preRequisiteApproved")) {
+							updatingPrereqApproved = true;
+						}
 						info.put("newValue", newValue);
 					}
 					info.put("oldValue", oldValue);
@@ -123,9 +127,11 @@ public class UpdateWorkOrderCommand implements Command {
 
 				}	
                 woupdate.put("woupdate", wolist);
-
-				CommonCommandUtil.addActivityToContext(recordIds.get(0), -1, WorkOrderActivityType.UPDATE, woupdate, (FacilioContext) context);
-
+				if (updatingPrereqApproved) {
+					CommonCommandUtil.addActivityToContext(recordIds.get(0), -1, WorkOrderActivityType.PREREQUISITE_APPROVE, woupdate,(FacilioContext) context);
+				} else {
+					CommonCommandUtil.addActivityToContext(recordIds.get(0), -1, WorkOrderActivityType.UPDATE, woupdate,(FacilioContext) context);
+				}
 			}
 		}
 		

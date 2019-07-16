@@ -117,6 +117,25 @@ public enum WorkOrderActivityType implements ActivityType {
 			// TODO Auto-generated method stub
 			return " updated ";
 		}
+	},
+	UPDATE_PREREQUISITE(35) {
+		@Override
+		public String constructMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return " updated the Prerequisite";
+		}	
+	},ADD_PREERQUISITE_PHOTO(36) {
+		@Override
+		public String constructMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return "  added Prerequisite Photo";
+		}	
+	},PREREQUISITE_APPROVE(37) {
+		@Override
+		public String constructMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return " approved Prerequisite";
+		}	
 	};
 	private int value;
 

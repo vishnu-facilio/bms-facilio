@@ -71,6 +71,7 @@ public class UpdateTaskCommand implements Command {
 			}
 				
 			List<TaskContext> oldTasks = getTasks(recordIds);
+			TicketAPI.setTasksInputData(oldTasks);
 			Map<Long, TaskContext> taskMap = oldTasks.stream().collect(Collectors.toMap(TaskContext::getId, Function.identity()));
 		
 				if(task.getInputValue() != null) {
@@ -82,10 +83,22 @@ public class UpdateTaskCommand implements Command {
 					
 					JSONObject info = new JSONObject();
 					info.put("subject", oldTask.getSubject());
-					info.put("newvalue", task.getInputValue());
+					if(task.isPreRequest()){
+						if(task.getInputValue().equalsIgnoreCase("1")){
+							info.put("newvalue", oldTask.getTruevalue());
+						}else{
+							info.put("newvalue", oldTask.getFalsevalue());
+						}
+					}else{					
+						info.put("newvalue", task.getInputValue());
+					}
 					JSONObject newinfo = new JSONObject();
 					newinfo.put("taskupdate", info);
-					CommonCommandUtil.addActivityToContext(oldTasks.get(0).getParentTicketId(), -1, WorkOrderActivityType.UPDATE_TASK, newinfo, (FacilioContext) context);
+					if(task.isPreRequest()){
+						CommonCommandUtil.addActivityToContext(oldTasks.get(0).getParentTicketId(), -1, WorkOrderActivityType.UPDATE_PREREQUISITE, newinfo, (FacilioContext) context);
+					}else{
+						CommonCommandUtil.addActivityToContext(oldTasks.get(0).getParentTicketId(), -1, WorkOrderActivityType.UPDATE_TASK, newinfo, (FacilioContext) context);
+					}
 				}
 			
 			Long lastSyncTime = (Long) context.get(FacilioConstants.ContextNames.LAST_SYNC_TIME);

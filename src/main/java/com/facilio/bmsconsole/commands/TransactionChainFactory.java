@@ -1443,6 +1443,7 @@ public class TransactionChainFactory {
 		c.addCommand(SetTableNamesCommand.getForTask());
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new UpdateTaskCommand());
+		c.addCommand(new AddActivitiesCommand());
 		return c;
 	}
 		public static Chain getProcessDataChain() {

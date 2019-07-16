@@ -1,9 +1,12 @@
 package com.facilio.bmsconsole.actions;
 
 import com.amazonaws.services.rekognition.model.TextDetection;
+import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.PhotosContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.chain.FacilioContext;
@@ -11,8 +14,10 @@ import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
 import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
+import org.json.simple.JSONObject;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PhotosAction extends ActionSupport {
@@ -210,7 +215,21 @@ public class PhotosAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, this.file);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, this.fileFileName);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.fileContentType);
-		
+ 		if(FacilioConstants.ContextNames.PREREQUISITE_PHOTOS.equalsIgnoreCase(moduleName)){
+			WorkOrderContext wo = WorkOrderAPI.getWorkOrder(parentId);
+			long parentAttachmentId = wo.getId();
+			List<Object> attachmentActivity = new ArrayList<>();
+			JSONObject attach = new JSONObject();
+			JSONObject info = new JSONObject();
+			info.put("subject", wo.getSubject());
+			info.put("Filename", fileFileName);
+			info.put("type", fileContentType);
+			attachmentActivity.add(info);
+			attach.put("taskattachment", attachmentActivity);
+			CommonCommandUtil.addActivityToContext(parentAttachmentId, -1, WorkOrderActivityType.ADD_PREERQUISITE_PHOTO, attach, (FacilioContext) context);
+ 		    context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
+ 		}
+ 		
 		Chain addPhotosChain = FacilioChainFactory.getUploadPhotosChain();
 		addPhotosChain.execute(context);
 		
