@@ -29,6 +29,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.LRUCache;
+import com.facilio.fw.TransactionBeanFactory;
 import com.facilio.license.FreshsalesUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
@@ -304,8 +305,8 @@ public class AdminAction extends ActionSupport
 		long orgId = Long.parseLong((request.getParameter("orgid"))) ;
 		int statusLevel =Integer.parseInt((request.getParameter("loggerlevel")));
 		try {
-			OrgBean orgBean = (OrgBean) BeanFactory.lookup("OrgBean",orgId);
-			orgBean.updateLoggerLevel(statusLevel, orgId);
+			AccountUtil.getTransactionalOrgBean(orgId).updateLoggerLevel(statusLevel, orgId);
+		
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
