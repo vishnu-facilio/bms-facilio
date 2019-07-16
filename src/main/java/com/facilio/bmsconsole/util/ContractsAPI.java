@@ -47,12 +47,14 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.InsertRecordBuilder;
+import com.facilio.modules.LookupFieldMeta;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
 
@@ -152,6 +154,11 @@ public class ContractsAPI {
 					.select(fields)
 				    .andCondition(CriteriaAPI.getIdCondition(contractId, module))
 			;
+			LookupFieldMeta vendorField = new LookupFieldMeta((LookupField) fieldsAsMap.get("vendor"));
+			
+			List<LookupField> additionaLookups = new ArrayList<LookupField>();
+			additionaLookups.add(vendorField);
+			builder.fetchLookups(additionaLookups);			
 			List<ContractsContext> contracts = builder.get();
 			if(CollectionUtils.isNotEmpty(contracts)) {
 				return contracts.get(0);	
@@ -297,7 +304,7 @@ public class ContractsAPI {
 		json.put("to", userEmailStr);
 		json.put("subject", "Expiry notification");
 		json.put("name", "Expiry template");
-		String message = "Your contract expires at "+ contract.getEndDate();
+		String message = "Your contract " + contract.getName() + " from the vendor "+ contract.getVendor().getName() +" expires on "+ DateTimeUtil.getFormattedTime(contract.getEndDate());
 		json.put("message", message);
 		WorkflowContext workflow = new WorkflowContext();
 		ParameterContext param = new ParameterContext();
