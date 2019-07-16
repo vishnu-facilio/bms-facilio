@@ -189,6 +189,14 @@ public class AssetAction extends FacilioAction {
  	 		context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
  		}
  		
+ 		if(getOverrideViewOrderBy() != null && getOverrideViewOrderBy() && getOrderBy() != null) {
+ 			JSONObject sorting = new JSONObject();
+ 			sorting.put("orderBy", getOrderBy());
+ 			sorting.put("orderType", getOrderType());
+ 			context.put(FacilioConstants.ContextNames.SORTING, sorting);
+ 			context.put(FacilioConstants.ContextNames.OVERRIDE_SORTING, true);
+ 		}
+ 		
  		
  		context.put(FacilioConstants.ContextNames.READING_ID, readingId);
  		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, categoryId);
@@ -300,6 +308,36 @@ public class AssetAction extends FacilioAction {
 		this.reports = reports;
 	}
 	
+	private String orderBy;
+	
+	public String getOrderBy() {
+		return orderBy;
+	}
+
+	public void setOrderBy(String orderBy) {
+		this.orderBy = orderBy;
+	}
+	
+	private String orderType;
+	
+	public String getOrderType() {
+		return orderType;
+	}
+
+	public void setOrderType(String orderType) {
+		this.orderType = orderType;
+	}
+	
+	private Boolean overrideViewOrderBy;
+
+	public Boolean getOverrideViewOrderBy() {
+		return overrideViewOrderBy;
+	}
+
+	public void setOverrideViewOrderBy(Boolean overrideViewOrderBy) {
+		this.overrideViewOrderBy = overrideViewOrderBy;
+	}
+
 	private JSONArray reportcards;
 	public JSONArray getReportcards() {
 		return reportcards;

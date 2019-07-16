@@ -153,10 +153,10 @@ public class DownloadCertFile
     }
 
     private static String getFacilioConfig(String domainName) {
-        StringBuilder builder = new StringBuilder("clientId=").append(domainName).append("\n")
-                .append("privateKeyFile=facilio-private.key").append("\n")
-                .append("certificateFile=facilio.crt").append("\n")
-                .append("endpoint=avzdxo3ow2ja2.iot.us-west-2.amazonaws.com").append("\n")
+        StringBuilder builder = new StringBuilder("clientId=").append(domainName).append(System.lineSeparator())
+                .append("privateKeyFile=facilio-private.key").append(System.lineSeparator())
+                .append("certificateFile=facilio.crt").append(System.lineSeparator())
+                .append("endpoint=").append(AwsUtil.getIotEndPoint()).append(System.lineSeparator())
                 .append("topic=").append(domainName);
         return builder.toString();
     }

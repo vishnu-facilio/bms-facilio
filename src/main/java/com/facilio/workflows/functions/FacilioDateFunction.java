@@ -1,11 +1,15 @@
 package com.facilio.workflows.functions;
 
+import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.Operator;
+import com.facilio.modules.BaseLineContext;
+import com.facilio.modules.BaseLineContext.AdjustType;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
+import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.exceptions.FunctionParamException;
 
 import java.time.YearMonth;
@@ -454,11 +458,36 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 				throw new RuntimeException("No Such Date Operator -- "+name);
 			}
 			String operatorParam = null; 
+			String baselineName = null;
+			String baselineAdjustmentType = null;
 			if(objects.length > 1 && objects[1] != null) {
-				operatorParam = objects[1].toString();
+				String secondParam = objects[1].toString();
+				if(FacilioUtil.isNumeric(secondParam)) {
+					operatorParam = ""+(int) Double.parseDouble(secondParam);
+				}
+				else {
+					baselineName = secondParam;
+					if(objects.length > 2 && objects[2] != null) {
+						baselineAdjustmentType = objects[2].toString();
+					}
+				}
 			}
 			
-			return operator.getRange(operatorParam);
+			DateRange dataRange = operator.getRange(operatorParam);
+			if(baselineName != null) {
+				BaseLineContext baseline = BaseLineAPI.getBaseLine(baselineName);
+				if(baseline != null) {
+					if(baselineAdjustmentType != null) {
+						baseline.setAdjustType(BaseLineContext.AdjustType.getAllAdjustments().get(baselineAdjustmentType));
+					}
+					else {
+						baseline.setAdjustType(AdjustType.WEEK);
+					}
+					dataRange = baseline.calculateBaseLineRange(dataRange, baseline.getAdjustTypeEnum());
+				}
+				
+			}
+			return dataRange;
 		}
 		public void checkParam(Object... objects) throws Exception {
 

@@ -172,6 +172,8 @@ public class TriggerAlarmForMLCommand implements Command {
 	
 	private boolean checkAndGenerateRCAEvent(MLContext mlContext, long assetID,long parentID) throws Exception
 	{
+		Set<Long> keys =mlContext.getMlVariablesDataMap().keySet();
+		LOGGER.info("Variable Data Map keys are "+keys+":"+assetID+"::"+parentID);
 		Hashtable<String,SortedMap<Long,Object>> variablesData = mlContext.getMlVariablesDataMap().get(parentID);
 		
     	SortedMap<Long,Object> actualValueMap = variablesData.get("actualValue");

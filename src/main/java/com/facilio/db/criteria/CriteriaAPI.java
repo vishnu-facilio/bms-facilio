@@ -20,6 +20,7 @@ import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -270,6 +271,15 @@ public class CriteriaAPI {
 		idCondition.setField(FieldFactory.getIdField(module));
 		idCondition.setOperator(NumberOperators.EQUALS);
 		idCondition.setValue(id);
+		
+		return idCondition;
+	}
+	
+	public static Condition getNameCondition(String name, FacilioModule module) {
+		Condition idCondition = new Condition();
+		idCondition.setField(FieldFactory.getNameField(module));
+		idCondition.setOperator(StringOperators.IS);
+		idCondition.setValue(name);
 		
 		return idCondition;
 	}
