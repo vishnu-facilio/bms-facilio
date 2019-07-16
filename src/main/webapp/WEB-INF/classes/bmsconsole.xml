@@ -3329,23 +3329,6 @@
 		</action>
 	</package>
 
-	<package name="autocommissionapi" namespace="/api/autocommision/data" extends="homeApi">
-	<action name="publish" class="com.facilio.bmsconsole.actions.AutoCommission"
-				method="publish">
-			<result name="success" type="json">
-				<param name="statusCode">200</param>
-			</result>
-			<result name="error" type="json">
-				<param name="statusCode">500</param>
-				<param name="ignoreHierarchy">false</param>
-				<param name="includeProperties">^actionErrors.*,^fieldErrors.*</param>
-			</result>
-		</action>
-	
-	
-	</package>
-
-
 	<package name="widget" namespace="/api/widget" extends="homeApi">
 		<action name="getUserCardData" class="com.facilio.bmsconsole.actions.WidgetAction" method="getUserCardData">
 			<result name="success" type="json">

@@ -1444,17 +1444,7 @@ public class TransactionChainFactory {
 		c.addCommand(new UpdateTaskCommand());
 		return c;
 	}
-
-	public static Chain autoCommissionDataChain() {
-		Chain c = getDefaultChain();
-		c.addCommand(new CreateAssetCategoryCommand());
-		c.addCommand(new CreateAssetAndFieldsCommand());
-		c.addCommand(new InsertAutoCommissionDataCommand());
-		return c;
-
-	}
-	
-	public static Chain getProcessDataChain() {
+		public static Chain getProcessDataChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new ProcessDataCommand());
 			c.addCommand(new ModeledDataCommand());
