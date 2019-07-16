@@ -4,6 +4,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.mv.context.MVProjectContext.EMC_Options;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -15,6 +16,9 @@ import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class BaseLineContext {
 	private static final Logger LOGGER = LogManager.getLogger(BaseLineContext.class.getName());
@@ -519,13 +523,27 @@ public class BaseLineContext {
 	}
 	
 	public static enum AdjustType {
-		NONE,
-		WEEK,
-		DATE, //Monthly
-		MONTH_AND_DATE, //Yearly
-		FULL_MONTH_DATE //Monthly & Quarterly
+		NONE("none"),
+		WEEK("week"),
+		DATE("month"), //Monthly
+		MONTH_AND_DATE("yearly"), //Yearly
+		FULL_MONTH_DATE("quaterly") //Monthly & Quarterly
 		;
 		
+		String name;
+		
+		public String getName() {
+			return name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+		
+		AdjustType(String name) {
+			this.name = name;
+		}
+
 		public int getValue() {
 			return ordinal();
 		}
@@ -535,6 +553,21 @@ public class BaseLineContext {
 				return values()[value];
 			}
 			return null;
+		}
+		
+		private static final Map<String, AdjustType> adjustmentMap = Collections.unmodifiableMap(initStringMap());
+
+		private static Map<String, AdjustType> initStringMap() {
+			Map<String, AdjustType> typeMap = new HashMap<>();
+
+			for (AdjustType type : values()) {
+				typeMap.put(type.getName(), type);
+			}
+			return typeMap;
+		}
+
+		public static Map<String, AdjustType> getAllAdjustments() {
+			return adjustmentMap;
 		}
 	}
 }

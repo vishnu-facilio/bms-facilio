@@ -114,6 +114,23 @@ public class BaseLineAPI {
 		return null;
 	}
 	
+	public static BaseLineContext getBaseLine(String name) throws Exception {
+		FacilioModule module = ModuleFactory.getBaseLineModule();
+		List<FacilioField> fields = FieldFactory.getBaseLineFields();
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+														.select(fields)
+														.table(module.getTableName())
+														.andCondition(CriteriaAPI.getNameCondition(name, module))
+														;
+		
+		List<BaseLineContext> baseLines = getBaseLinesFromProps(selectBuilder.get());
+		if (baseLines != null && !baseLines.isEmpty()) {
+			return baseLines.get(0);
+		}
+		return null;
+	}
+	
 	public static BaseLineContext getBaseLine(RangeType rangeType) throws Exception {
 		FacilioModule module = ModuleFactory.getBaseLineModule();
 		List<FacilioField> fields = FieldFactory.getBaseLineFields();
