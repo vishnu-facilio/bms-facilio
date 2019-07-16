@@ -54,6 +54,8 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.iam.accounts.util.AuthUtill;
+import com.iam.accounts.util.UserUtil;
 import com.opensymphony.xwork2.ActionContext;
 
 public class UserAction extends FacilioAction {
@@ -318,8 +320,79 @@ public class UserAction extends FacilioAction {
 		
 		try {
 			Chain addUser = FacilioChainFactory.getAddUserCommand();
+			
 			addUser.execute(context);
 			setUserId(user.getId());
+		}
+		catch (Exception e) {
+			if (e instanceof AccountException) {
+				AccountException ae = (AccountException) e;
+				if (ae.getErrorCode().equals(AccountException.ErrorCode.EMAIL_ALREADY_EXISTS)) {
+					addFieldError("error", "This user already exists in your organization.");
+				}
+			} else {
+				log.info("Exception occurred ", e);
+				addFieldError("error", "This user already exists in your organization.");
+			}
+			return ERROR;
+		}
+		return SUCCESS;
+	}
+
+	public String addUserv2() throws Exception {
+		boolean isEmailEmpty = (user.getEmail() == null ||  user.getEmail().isEmpty());
+		boolean isMobileEmpty = (user.getMobile() == null || user.getMobile().isEmpty());
+		if(isEmailEmpty && isMobileEmpty) {
+			addFieldError("error", "Please enter a valid mobile number or email");
+			return ERROR;
+		}
+
+		if(user.getRoleId() <=0 ) {
+			addFieldError("error", "Please specify a role for this user");
+			return ERROR;
+		}
+
+		user.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+		if(isEmailEmpty) {
+			user.setEmail(user.getMobile());
+		}
+
+		HttpServletRequest request = ServletActionContext.getRequest();
+		String value = FacilioCookie.getUserCookie(request, "fc.authtype");
+		user.setFacilioAuth("facilio".equals(value));
+
+
+//		Integer availableLicensedUsers = AccountUtil.getUserBean().getAvailableUserLicense(AccountUtil.getCurrentOrg().getOrgId());
+//		if (availableLicensedUsers < 1)
+//		{
+//			addFieldError("License", " Users license exceeded in your organization.");
+//			return ERROR;
+//		}
+//		Integer availableLicensedRoles = AccountUtil.getUserBean().getAvailableRoleLicense(AccountUtil.getCurrentOrg().getOrgId(), user.getRoleId());
+//		if (availableLicensedRoles < 1)
+//		{
+//			addFieldError("License", "This Role license exceeded in your organization.");
+//			return ERROR;	
+//		}
+		FacilioContext context = new FacilioContext();
+		//v2 authentication
+		if( (AccountUtil.getCurrentOrg() != null) && (user.getTimezone() == null) ) {
+			user.setTimezone(AccountUtil.getCurrentAccount().getTimeZone());
+		}
+		if( (AccountUtil.getCurrentUser() != null) && (user.getLanguage() == null) ) {
+			user.setLanguage(AccountUtil.getCurrentUser().getLanguage());
+		}
+		context.put(FacilioConstants.ContextNames.USER, user);
+		context.put(FacilioConstants.ContextNames.ACCESSIBLE_SPACE, accessibleSpace);
+		
+		try {
+			//Chain addUser = FacilioChainFactory.getAddUserCommand();
+			//Chain addUser = AuthenticationTransactionFactory.getAddUserChain();
+			
+			//addUser.execute(context);
+			
+			//setUserId(user.getId());
+			setUserId(UserUtil.addUser(user, AccountUtil.getCurrentOrg().getId()));
 		}
 		catch (Exception e) {
 			if (e instanceof AccountException) {

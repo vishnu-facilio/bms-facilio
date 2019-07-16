@@ -1,36 +1,31 @@
 package com.facilio.accounts.dto;
 
+import java.io.Serializable;
 import java.util.List;
-
-import org.apache.struts2.json.annotations.JSON;
 
 import com.facilio.license.LicenseContext.FacilioLicense;
 
-public class AccountUser {
+public class AppUser implements Serializable{
 
+	/**
+	 * 
+	 */
 	private static final long serialVersionUID = 1L;
 	private long uid;
 	private String name;
 	private String email;
 	private long photoId;
 	private String timezone;
-	private String password;
-	private String language;
 	private String phone;
 	private String mobile;
-	private String street;
-	private String city;
-	private String state;
-	private String zip;
-	private String country;
+	private long ouid;
 	private long orgId;
-	private long invitedTime;
-	private int userType;
-	private boolean facilioAuth;
+	private long roleId;
 	private long portalId;
 	private String serverName;
-	public boolean portal_verified;
 	private FacilioLicense license;
+	private Long shiftId;
+	public boolean portal_verified;
 	
 	
 	public boolean getPortal_verified() {
@@ -49,6 +44,22 @@ public class AccountUser {
 	public void setUid(long uid) {
 		this.uid = uid;
 	}
+	public FacilioLicense getLicenseEnum() {
+		return license;
+	}
+	public void setLicense(FacilioLicense license) {
+		this.license = license;
+	}
+	public int getLicense() {
+		if (license != null) {
+			return license.getValue();
+		}
+		return 0;
+	}
+	public void setLicense(int licenseValue) {
+		this.license = FacilioLicense.valueOf(licenseValue);
+	}
+
 	
 	public String getName() {
 		if (this.name == null && this.email != null && !this.email.isEmpty()) {
@@ -60,27 +71,6 @@ public class AccountUser {
 		this.name = name;
 	}
 
-	@JSON(serialize=false)
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-	private Boolean userVerified;
-	public Boolean getUserVerified() {
-		return userVerified;
-	}
-	public void setUserVerified(Boolean userVerified) {
-		this.userVerified = userVerified;
-	}
-	public boolean isUserVerified(){
-		if(userVerified!=null){
-			return userVerified.booleanValue();
-		}
-		return false;
-	}
 	public String getEmail() {
 		return email;
 	}
@@ -115,12 +105,6 @@ public class AccountUser {
 	public void setTimezone(String timezone) {
 		this.timezone = timezone;
 	}
-	public String getLanguage() {
-		return language;
-	}
-	public void setLanguage(String language) {
-		this.language = language;
-	}
 	public String getPhone() {
 		return phone;
 	}
@@ -133,47 +117,24 @@ public class AccountUser {
 	public void setMobile(String mobile) {
 		this.mobile = mobile;
 	}
-	public String getStreet() {
-		return street;
+	
+	public long getOuid() {
+		return ouid;
 	}
-	public void setStreet(String street) {
-		this.street = street;
+	public long getId() {
+		return ouid;
 	}
-	public String getCity() {
-		return city;
+	public void setId(long id) {
+		this.ouid = id;
 	}
-	public void setCity(String city) {
-		this.city = city;
-	}
-	public String getState() {
-		return state;
-	}
-	public void setState(String state) {
-		this.state = state;
-	}
-	public String getZip() {
-		return zip;
-	}
-	public void setZip(String zip) {
-		this.zip = zip;
-	}
-	public String getCountry() {
-		return country;
-	}
-	public void setCountry(String country) {
-		this.country = country;
+	public void setOuid(long ouid) {
+		this.ouid = ouid;
 	}
 	public long getOrgId() {
 		return orgId;
 	}
 	public void setOrgId(long orgId) {
 		this.orgId = orgId;
-	}
-	public long getInvitedTime() {
-		return invitedTime;
-	}
-	public void setInvitedTime(long invitedTime) {
-		this.invitedTime = invitedTime;
 	}
 	
 	private Boolean isDefaultOrg;
@@ -203,34 +164,21 @@ public class AccountUser {
 		}
 		return false;
 	}
-	private Boolean inviteAcceptStatus;
-	public Boolean getInviteAcceptStatus() {
-		return inviteAcceptStatus;
+	public long getRoleId() {
+		return roleId;
 	}
-	public void setInviteAcceptStatus(Boolean inviteAcceptStatus) {
-		this.inviteAcceptStatus = inviteAcceptStatus;
+	
+	private Role role;
+	public Role getRole() {
+		return role;
 	}
-	public boolean isInviteAcceptStatus(){
-		if(inviteAcceptStatus!=null){
-			return inviteAcceptStatus.booleanValue();
-		}
-		return false;
+	public void setRole(Role role) {
+		this.role = role;
 	}
-	public int getUserType() {
-		return userType;
+	
+	public void setRoleId(long roleId) {
+		this.roleId = roleId;
 	}
-	public void setUserType(int userType) {
-		this.userType = userType;
-	}
-
-	public boolean isFacilioAuth() {
-		return facilioAuth;
-	}
-
-	public void setFacilioAuth(boolean facilioAuth) {
-		this.facilioAuth = facilioAuth;
-	}
-
 	public long getPortalId() {
 		return portalId;
 	}
@@ -247,6 +195,23 @@ public class AccountUser {
 		this.portalId = portalId;
 	}
 
+
+	private List<Long> accessibleSpace;
+	public List<Long> getAccessibleSpace() {
+		return accessibleSpace;
+	}
+	public void setAccessibleSpace(List<Long> accessibleSpace) {
+		this.accessibleSpace = accessibleSpace;
+	}
+	private List<Long> groups;
+
+
+	public List<Long> getGroups() {
+		return groups;
+	}
+	public void setGroups(List<Long> groups) {
+		this.groups = groups;
+	}
 	public String getServerName() {
 		return serverName;
 	}
@@ -254,33 +219,16 @@ public class AccountUser {
 		this.serverName = serverName;
 	}
 
+	public Long getShiftId() {
+		return shiftId;
+	}
+	public void setShiftId(Long shiftId) {
+		this.shiftId = shiftId;
+	}
+	
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return new StringBuilder("User [").append(uid).append(", ").append(email).append("]").toString();
+		return new StringBuilder("User [").append(ouid).append(", ").append(email).append("]").toString();
 	}
-	
-	public long getId() {
-		return uid;
-	}
-	public void setId(long id) {
-		this.uid = id;
-	}
-	
-	public FacilioLicense getLicenseEnum() {
-		return license;
-	}
-	public void setLicense(FacilioLicense license) {
-		this.license = license;
-	}
-	public int getLicense() {
-		if (license != null) {
-			return license.getValue();
-		}
-		return 0;
-	}
-	public void setLicense(int licenseValue) {
-		this.license = FacilioLicense.valueOf(licenseValue);
-	}
-
 }

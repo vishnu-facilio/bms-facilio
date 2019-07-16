@@ -3,9 +3,9 @@ package com.facilio.util;
 import javax.servlet.http.HttpServletRequest;
 
 import com.facilio.accounts.dto.Account;
-import com.facilio.accounts.util.AuthUtill;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.fw.auth.CognitoUtil;
+import com.iam.accounts.util.AuthUtill;
 
 
 public class AuthenticationUtil {

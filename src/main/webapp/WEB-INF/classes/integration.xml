@@ -90,7 +90,7 @@
 			<param name="includeProperties">jsonresponse.*</param>
 		</result>
 	</action>	
-	<action name="apisignup" class="com.facilio.auth.actions.FacilioAuthAction" method="signupUserv2">
+	<action name="apisignup" class="com.facilio.auth.actions.FacilioAuthAction" method="signupUser">
 		<param name="auth">false</param>
 		<result name="success" type="json">
 			<param name="includeProperties">jsonresponse.*</param>
@@ -130,6 +130,15 @@
 				<param name="includeProperties">jsonresponse.*</param>
 			</result>
 		</action>
+		<action name="apisignupv2" class="com.iam.accounts.actions.AuthAction" method="signupUserv2">
+			<param name="auth">false</param>
+			<result name="success" type="json">
+				<param name="includeProperties">jsonresponse.*</param>
+			</result>
+			<result name="error" type="json">
+				<param name="includeProperties">jsonresponse.*</param>
+			</result>
+		</action>
 		<action name="loginv2" class="com.facilio.auth.actions.FacilioAuthAction" method="validateLoginv2">
 			<param name="auth">false</param>
 			<result name="success" type="json">
@@ -139,7 +148,16 @@
 				<param name="includeProperties">jsonresponse.*</param>
 			</result>
 		</action>
-		<action name="verifyTokenv2" class="com.facilio.auth.actions.FacilioAuthAction" method="verifyTokenv2">
+		<action name="verifyTokenv2" class="com.iam.accounts.actions.AuthAction" method="verifyTokenv2">
+			<param name="auth">false</param>
+			<result name="success" type="json">
+				<param name="includeProperties">jsonresponse.*</param>
+			</result>
+			<result name="error" type="json">
+				<param name="includeProperties">jsonresponse.*</param>
+			</result>
+		</action>
+		<action name="verifyEmailRegistration" class="com.facilio.auth.actions.FacilioAuthAction" method="verifyEmailv2">
 			<param name="auth">false</param>
 			<result name="success" type="json">
 				<param name="includeProperties">jsonresponse.*</param>
@@ -149,6 +167,22 @@
 			</result>
 		</action>
 		
+		<action name="addUserv2" class="com.facilio.bmsconsole.actions.UserAction" method="addUserv2">
+			<param name="auth">false</param>
+			<result name="success" type="json">
+				<param name="includeProperties">jsonresponse.*</param>
+			</result>
+			<result name="error" type="json">
+				<param name="includeProperties">jsonresponse.*</param>
+			</result>
+		</action>
+		
+		<action name="acceptOpInvitev2" class="com.facilio.auth.actions.FacilioAuthAction" method="acceptUserInvitev2">
+		<param name="auth">false</param>
+		<result name="success" type="json">
+				<param name="includeProperties">jsonresponse.*</param>
+		</result>
+	</action>
 		
 	</package>
 		

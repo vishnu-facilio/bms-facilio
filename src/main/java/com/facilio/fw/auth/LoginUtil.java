@@ -12,6 +12,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.fw.auth.CognitoUtil.CognitoUser;
+import com.iam.accounts.util.AuthUtill;
 
 public class LoginUtil {
 
@@ -31,11 +32,11 @@ public class LoginUtil {
 		}
 		
 		if (currentOrgDomain != null) {
-			user = AccountUtil.getUserBean().getFacilioUserv2(cognitoUser.getEmail(), currentOrgDomain);
+			user = AuthUtill.getUserBean().getFacilioUserv2(cognitoUser.getEmail(), currentOrgDomain);
 		}
 
 		if (user == null) {
-			user = AccountUtil.getUserBean().getFacilioUserv2(cognitoUser.getEmail());
+			user = AuthUtill.getUserBean().getFacilioUserv2(cognitoUser.getEmail());
 		}
 		
 		Organization org = null;

@@ -700,7 +700,6 @@ public class TransactionChainFactory {
 		
 		public static Chain getOrgSignupChain() {
 			Chain c = getDefaultChain();
-			c.addCommand(new CreateOrgCommand());
 			c.addCommand(new AddDefaultModulesCommand());
 //			c.addCommand(new AddDefaultRoleAndPermissionCommand());
 			c.addCommand(new AddDefaultReportCommand());
@@ -708,7 +707,10 @@ public class TransactionChainFactory {
 			c.addCommand(new AddDefaultGraphicsCommand());
 			c.addCommand(new AddEventModuleCommand());
 			c.addCommand(new AddOrgInfoCommand());
-			c.addCommand(new CreateSuperAdminCommand());
+			//add command to insert into product tables
+			c.addCommand(new AddAppUserCommand());
+			
+			//add failiouser table
 			return c;
 		}
 

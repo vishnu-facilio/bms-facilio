@@ -15,8 +15,6 @@ public interface UserBean {
 	
 	public long createUser(long orgId, User user) throws Exception;
 	
-	public long createUserv2(long orgId, User user) throws Exception;
-	
 	public long inviteUser(long orgId, User user) throws Exception;
 	
 	public long inviteAdminConsoleUser(long orgId, User user) throws Exception;
@@ -34,8 +32,6 @@ public interface UserBean {
 	public boolean acceptInvite(String token, String password) throws Exception;
 	
 	public boolean updateUser(long ouid, User user) throws Exception;
-	
-	public boolean updateUserv2(long ouid, User user) throws Exception;
 	
 	public boolean updateUser(User user) throws Exception;
 	
@@ -82,21 +78,14 @@ public interface UserBean {
 	public long addRequester(long orgId, User user) throws Exception;
 	
 	public long createRequestor(long orgId, User user) throws Exception;
-
 	
 	public boolean updateUserPhoto(long uid, long fileId) throws Exception;
 
     public User getFacilioUser(String email) throws Exception;
     
-    public User getFacilioUserv2(String email) throws Exception;
-    
     public User getFacilioUser(String email, String orgDomain) throws Exception;
 
-    public User getFacilioUserv2(String email, String orgDomain) throws Exception;
-
     public User getPortalUser(String email, long portalId) throws Exception;
-    
-    public User getPortalUserv2(String email, long portalId) throws Exception;
     
     public User getPortalUsers(String email, long portalId) throws Exception;
     
@@ -104,30 +93,15 @@ public interface UserBean {
     
     public long startUserSession(long uid, String email, String token, String ipAddress, String userAgent, String userType) throws Exception;
     
-    public long startUserSessionv2(long uid, String email, String token, String ipAddress, String userAgent, String userType) throws Exception;
-    
     public boolean endUserSession(long uid, String email, String token) throws Exception;
     
     public List<Map<String, Object>> getUserSessions(long uid, Boolean isActive) throws Exception;
-    
-//    public long addUserLicense(long orgid, long roleid, Integer number_of_users) throws Exception;
-//    
-//    public boolean updateUserLicense(long id, Integer number_of_users) throws Exception;
-//   
-//    public Integer getAvailableRoleLicense(long orgid, long roleid) throws Exception;
-//    public Map<Long, Integer> getUserRoleLicenseMap(long orgid) throws Exception;
-//    
-//    public Integer getAvailableUserLicense(long orgid) throws Exception;
-//    
-//    public void deleteUserLicense(long id) throws Exception;
     
     public void clearUserSession(long uid, String email, String token) throws Exception;
     
     public void clearAllUserSessions(long uid, String email) throws Exception;
     
     public boolean verifyUserSession(String email, String token) throws Exception;
-    
-    public boolean verifyUserSessionv2(String email, String token) throws Exception;
     
     public String generatePermalinkForURL(String url, User user) throws Exception;
     
@@ -140,8 +114,5 @@ public interface UserBean {
 
 	public HashMap<Long, Set<Long>> getUserSites(List<Long> users) throws Exception;
 
-	//public void sendInvitation(long ouid, User user) throws Exception;
-
-//	public void sendInvitation(long ouid, User user) throws Exception;
 
 }

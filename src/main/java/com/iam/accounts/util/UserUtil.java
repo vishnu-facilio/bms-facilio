@@ -1,27 +1,19 @@
-package com.facilio.accounts.commands;
+package com.iam.accounts.util;
 
 import java.util.Locale;
 
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
-import com.facilio.accounts.dto.AccountUser;
-import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
-import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
-import com.facilio.constants.FacilioConstants;
 
-public class CreateSuperAdminCommand implements Command{
+public class UserUtil {
 
-	@Override
-	public boolean execute(Context context) throws Exception {
-		// TODO Auto-generated method stub
-		long orgId = (long) context.get("orgId");
-		
-		JSONObject signupInfo = (JSONObject) context.get(FacilioConstants.ContextNames.SIGNUP_INFO);
+	public static void inviteUser(long orgId, User user) throws Exception {
+		AuthUtill.getTransactionalUserBean().inviteUserv2(orgId, user);
+	}
+
+		public static Long addSuperAdmin(org.json.simple.JSONObject signupInfo, Long orgId) throws Exception {
+
 		String name = (String) signupInfo.get("name");
 		String email = (String) signupInfo.get("email");
 		String phone = (String) signupInfo.get("phone");
@@ -29,7 +21,7 @@ public class CreateSuperAdminCommand implements Command{
 		String serverName = (String) signupInfo.get("servername");
 		String timezone = (String) signupInfo.get("timezone");
 		Locale locale = (Locale) signupInfo.get("locale");
-		
+
 		User user = new User();
 		user.setName(name);
 		user.setEmail(email);
@@ -46,12 +38,19 @@ public class CreateSuperAdminCommand implements Command{
 		user.setInvitedTime(System.currentTimeMillis());
 		user.setPassword(password);
 		user.setServerName(serverName);
-		if(AwsUtil.isDevelopment()) {
+		if (AwsUtil.isDevelopment()) {
 			user.setUserVerified(true);
 		}
-		long ouid = AccountUtil.getUserBean().createUserv2(orgId, user);
-		context.put("ouid", ouid);
-		return false;
+		long ouid = AuthUtill.getUserBean().createUserv2(orgId, user);
+		return ouid;
+	}
+
+	public static long addUser(User user, long orgId) throws Exception {
+		if ((user != null) && (AccountUtil.getCurrentOrg() != null)) {
+			return AuthUtill.getTransactionalUserBean().inviteUserv2(orgId, user);
+		} else {
+			throw new IllegalArgumentException("User Object cannot be null");
+		}
 	}
 
 }
