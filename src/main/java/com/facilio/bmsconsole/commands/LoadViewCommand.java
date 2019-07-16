@@ -95,9 +95,18 @@ public class LoadViewCommand implements Command {
 				if (overrideSorting != null && overrideSorting) {
 					JSONObject sortObj = (JSONObject) context.get(FacilioConstants.ContextNames.SORTING);
 					SortField sortField = getQuerySortField(modBean, moduleName, sortObj);
-					String sortQuery = getOrderClauseForLookupTable(sortField, moduleName);
+					String sortQuery;
+					if (sortField != null) {
+						sortQuery = getOrderClauseForLookupTable(sortField, moduleName);			
+						view.setSortFields(Collections.singletonList(sortField));
+					}
+					else {
+						String orderByColName = (String) sortObj.get("orderBy");
+						String orderType = (String) sortObj.get("orderType");
+						sortQuery = orderByColName + " " + orderType;
+					}
 					context.put(FacilioConstants.ContextNames.SORTING_QUERY, sortQuery);
-					view.setSortFields(Collections.singletonList(sortField));
+					
 				}
 				else if (view.getSortFields() != null && !view.getSortFields().isEmpty()) {
 					StringBuilder orderBy = new StringBuilder();
