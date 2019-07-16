@@ -1325,8 +1325,8 @@ public class UserBeanImpl implements UserBean {
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
-				.table("Users")
-				.innerJoin("ORG_Users")
+				.table("ORG_Users")
+				.innerJoin("Users")
 				.on("Users.USERID = ORG_Users.USERID")
 //				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getOrgUserModule()))
 				;
