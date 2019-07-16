@@ -116,6 +116,14 @@ public class ReportUtil {
 			report.setModuleId(module.getModuleId());		
 		}
 		
+		if(context.get(FacilioConstants.ContextNames.REPORT_TEMPLATE) != null) {
+			String reportTemplate = (String)context.get(FacilioConstants.ContextNames.REPORT_TEMPLATE);
+			if(report.getTemplate() == null) {
+				report.setTemplate(reportTemplate);
+			}
+		}
+		
+		
 		
 		return report;
 	}
