@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.accounts.dto.User;
-import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
@@ -150,6 +149,14 @@ public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 	}
 	public void setAutoClear(Boolean autoClear) {
 		this.autoClear = autoClear;
+	}
+	
+	private ResourceContext resource;
+	public ResourceContext getResource() {
+		return resource;
+	}
+	public void setResource(ResourceContext resource) {
+		this.resource = resource;
 	}
 	
 	public void updateAlarm(BaseAlarmContext baseAlarm) {

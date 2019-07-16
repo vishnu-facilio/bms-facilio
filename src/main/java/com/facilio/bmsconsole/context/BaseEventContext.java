@@ -202,6 +202,7 @@ public abstract class BaseEventContext extends ModuleBaseWithCustomFields {
 		
 		if (add) {
 			alarmOccurrence.setCreatedTime(getCreatedTime());
+			alarmOccurrence.setResource(getResource());
 		} 
 		else {
 			if (!previousSeverity.equals(getSeverity())) {
