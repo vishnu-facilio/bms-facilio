@@ -108,7 +108,7 @@ public class FacilioLogAppender extends DailyRollingFileAppender {
         }
         if(!(
                 (   (event.getLevel().toInt() > Level.INFO_INT)
-                    || (AccountUtil.getCurrentAccount() != null && (event.getLevel().toInt() >= AccountUtil.getCurrentAccount().getLevel().toInt())) 
+                    && (AccountUtil.getCurrentAccount() == null || (event.getLevel().toInt() > AccountUtil.getCurrentAccount().getLevel().toInt()))
                 )
                 && (freeSpace > FREE_SPACE_THRESHOLD)
             )) {
