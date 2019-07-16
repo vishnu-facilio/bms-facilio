@@ -170,11 +170,15 @@ public class NewAlarmAPI {
 
 	public static AlarmOccurrenceContext getActiveAlarmOccurance(String messageKey, Type alarmType) throws Exception {
 		AlarmOccurrenceContext alarmOccurance = getLatestAlarmOccurance(messageKey);
-		AlarmSeverityContext clearAlarmSeverity = AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.CLEAR_SEVERITY);
-		if (alarmOccurance.getSeverity().equals(clearAlarmSeverity)) {
-			return null;
+		if(alarmOccurance!=null)
+		{
+			AlarmSeverityContext clearAlarmSeverity = AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.CLEAR_SEVERITY);
+			if (!alarmOccurance.getSeverity().equals(clearAlarmSeverity)) 
+			{
+				return alarmOccurance;
+			}
 		}
-		return alarmOccurance;
+		return null;
 	}
 	
 	public static AlarmOccurrenceContext createAlarm(BaseEventContext baseEvent) throws Exception {
