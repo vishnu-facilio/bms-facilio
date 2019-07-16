@@ -127,21 +127,22 @@ public class FacilioLogAppender extends DailyRollingFileAppender {
         } else {
             event.setProperty("userId", DEFAULT_ORG_USER_ID);
         }
+        if( AccountUtil.getCurrentAccount() != null && AccountUtil.getCurrentAccount().getRequestUri() != null) {
+            event.setProperty("req_uri", AccountUtil.getCurrentAccount().getRequestUri());
+        } else {
+            event.setProperty("req_uri", "-");
+        }
         try {
             ThrowableInformation information = event.getThrowableInformation();
             if (information != null) {
                 Throwable throwable = information.getThrowable();
                 String exceptionType = throwable.getClass().getName();
                 event.setProperty("exception", exceptionType);
-                if( AccountUtil.getCurrentAccount() != null && AccountUtil.getCurrentAccount().getRequestUri() != null) {
-                    event.setProperty("req_uri", AccountUtil.getCurrentAccount().getRequestUri());
-                }
                 if( AccountUtil.getCurrentAccount() != null && AccountUtil.getCurrentAccount().getRequestParams() != null) {
                     event.setProperty("req_params", AccountUtil.getCurrentAccount().getRequestParams());
                 }
             } else {
                 event.setProperty("exception", "-");
-                event.setProperty("req_uri", "-");
                 event.setProperty("req_params", "-");
             }
         } catch (Exception e) {
