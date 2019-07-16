@@ -35,14 +35,19 @@
     <meta name="format-detection" content="telephone=no">
     <meta name="msapplication-tap-highlight" content="no">
     <meta name="viewport" content="user-scalable=no,initial-scale=1,maximum-scale=1,minimum-scale=1,width=device-width">
-    <title>Facilio</title>
+    <title>
+    		<% if(request.getServerName().endsWith("buildingsoncloud.com")) {%>
+    			BuildingsTalk
+    		<%} else { %>
+    			Facilio
+    		<%} %>
+    </title>
 
-<% if(brandName != null && (brandName.indexOf("BuildingsTalk") != -1 )) {%>
+<% if(request.getServerName().endsWith("buildingsoncloud.com") || ( brandName != null && (brandName.indexOf("BuildingsTalk") != -1 ))) {%>
 	<link rel="icon" href="<%=staticUrl%>/statics/machinestalk.ico" type="image/x-icon">
 <% } else {%>
 	<link rel="icon" href="<%=staticUrl%>/statics/favicon.png" type="image/x-icon">
 <% }%>
-	
   <!--<link rel="icon" href="<%=staticUrl%>/statics/favicon.png" type="image/x-icon">
     <link rel="icon" href="<%=staticUrl%>/statics/machinestalk.ico" type="image/x-icon"> -->
 
