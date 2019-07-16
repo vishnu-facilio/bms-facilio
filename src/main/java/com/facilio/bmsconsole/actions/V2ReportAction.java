@@ -1578,6 +1578,9 @@ public class V2ReportAction extends FacilioAction {
 		else {
 			mailReportChain = TransactionChainFactory.sendAnalyticsMailChain();
 			setReadingsDataContext(context);
+			if(template != null) {
+				context.put(FacilioConstants.ContextNames.REPORT_TEMPLATE, template);
+			}
 			context.put(FacilioConstants.ContextNames.TABULAR_STATE, tabularState);
 		}
 		context.put(FacilioConstants.ContextNames.FILE_FORMAT, fileFormat);
