@@ -185,8 +185,8 @@ public class UpdateTaskCommand implements Command {
 			context.put(FacilioConstants.TicketActivity.OLD_TICKETS, oldTasks);
 			int prerequestStatus;
 			if (task.isPreRequest()) {
-				List<TaskContext> prerequisite = getTasks(Collections.singletonList(task.getId()));
-				PreRequisiteStatus preReqStatus = WorkOrderAPI.updatePreRequisiteStatus(prerequisite.get(0).getParentTicketId());
+				long woid = oldTasks.stream().filter(x->x.getId() == task.getId()).findFirst().get().getParentTicketId();
+				PreRequisiteStatus preReqStatus = WorkOrderAPI.updatePreRequisiteStatus(woid);
 				prerequestStatus = preReqStatus.getValue();
 			} else {
 				prerequestStatus = WorkOrderAPI.getWorkOrder(oldTasks.get(0).getParentTicketId()).getPreRequestStatus();

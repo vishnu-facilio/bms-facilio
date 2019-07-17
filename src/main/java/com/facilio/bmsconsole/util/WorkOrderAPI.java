@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Command;
@@ -22,9 +23,9 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.PhotosContext;
-import com.facilio.bmsconsole.context.PrerequisiteApproversContext;
 import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
+import com.facilio.bmsconsole.context.SingleSharingContext.SharingType;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.TicketTypeContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -84,8 +85,8 @@ public class WorkOrderAPI {
 		return (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
 	}
 	
-	private static boolean isMatching (PrerequisiteApproversContext permission, User user, Object object) throws Exception {
-		switch (permission.getSharingTypeEnum()) {
+	private static boolean isMatching (SingleSharingContext permission, User user, Object object) throws Exception {
+		switch (permission.getTypeEnum()) {
 			case USER:
 				if (permission.getUserId() == user.getOuid()) {
 					return true;
@@ -113,31 +114,41 @@ public class WorkOrderAPI {
 		return false;
 	}
 	
-	public static boolean isPrerequisiteApprover(long ticketId) throws Exception {
-		if (ticketId > 0) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			String moduleName = FacilioConstants.ContextNames.PREREQUISITE_APPROVERS;
-			FacilioModule module = modBean.getModule(moduleName);
-			List<FacilioField> fields = modBean.getAllFields(moduleName);
+	public static void setPrerequisiteApprover(List<WorkOrderContext> wos) throws Exception {
+		for(WorkOrderContext wo:wos){
+			
+		if (wo.getId() > 0) {
+			FacilioModule module = ModuleFactory.getPrerequisiteApproversModule();
+			List<FacilioField> fields = FieldFactory.getSharingFields(module);
+			for (FacilioField field : fields) {
+				if ("fieldId".equalsIgnoreCase(field.getName())) {
+					fields.remove(field);
+				}
+			}
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+			List<SingleSharingContext> prerequisiteApprovers = new ArrayList<>();
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields)
+					.table(module.getTableName()).andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"),String.valueOf(wo.getId()), NumberOperators.EQUALS));
 			
-			SelectRecordsBuilder<PrerequisiteApproversContext> builder = new SelectRecordsBuilder<PrerequisiteApproversContext>()
-					.module(module).beanClass(PrerequisiteApproversContext.class).select(fields)
-					.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(ticketId),NumberOperators.EQUALS));
-			List<PrerequisiteApproversContext> prerequisiteApprovers = builder.get();
-			
+			List<Map<String, Object>> props = selectBuilder.get();
+			if (props != null && !props.isEmpty()) {
+				for (Map<String, Object> prop : props) {
+					SingleSharingContext approver = FieldUtil.getAsBeanFromMap(prop, SingleSharingContext.class);
+					prerequisiteApprovers.add(approver);
+				}
+			}
+           
 			if (prerequisiteApprovers.isEmpty()) {
-				return true;
+				wo.setPrerequisiteApprover(true);
 			} else {
-				for (PrerequisiteApproversContext permission : prerequisiteApprovers) {
+				for (SingleSharingContext permission : prerequisiteApprovers) {
 					if (isMatching(permission, AccountUtil.getCurrentUser(), AccountUtil.getCurrentUser())) {
-						return true;
+						wo.setPrerequisiteApprover(true);
 					}
 				}
 			}
 		}
-		
-		return false;
+		}
 	}
 	public static WorkOrderContext getWorkOrder(long ticketId) throws Exception {
 		

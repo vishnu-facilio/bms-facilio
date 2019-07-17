@@ -1333,6 +1333,13 @@ public class ModuleFactory {
 		prerequisiteApproverModule.setExtendModule(getTemplatesModule());
 		return prerequisiteApproverModule;
 	}
+	public static FacilioModule getPrerequisiteApproversModule() {
+		FacilioModule prerequisiteApproverModule = new FacilioModule();
+		prerequisiteApproverModule.setName("prerequisiteApprovers");
+		prerequisiteApproverModule.setDisplayName("Prerequisite Approvers");
+		prerequisiteApproverModule.setTableName("Prerequisite_Approvers");
+		return prerequisiteApproverModule;
+	}
 	public static FacilioModule getTaskSectionTemplateTriggersModule() {
 		FacilioModule taskSectionTriggerModule = new FacilioModule();
 		taskSectionTriggerModule.setName("tasksectiontemplatetriggers");

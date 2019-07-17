@@ -215,20 +215,6 @@ public class PhotosAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, this.file);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, this.fileFileName);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.fileContentType);
- 		if(FacilioConstants.ContextNames.PREREQUISITE_PHOTOS.equalsIgnoreCase(moduleName)){
-			WorkOrderContext wo = WorkOrderAPI.getWorkOrder(parentId);
-			long parentAttachmentId = wo.getId();
-			List<Object> attachmentActivity = new ArrayList<>();
-			JSONObject attach = new JSONObject();
-			JSONObject info = new JSONObject();
-			info.put("subject", wo.getSubject());
-			info.put("Filename", fileFileName);
-			info.put("type", fileContentType);
-			attachmentActivity.add(info);
-			attach.put("taskattachment", attachmentActivity);
-			CommonCommandUtil.addActivityToContext(parentAttachmentId, -1, WorkOrderActivityType.ADD_PREERQUISITE_PHOTO, attach, (FacilioContext) context);
- 		    context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
- 		}
  		
 		Chain addPhotosChain = FacilioChainFactory.getUploadPhotosChain();
 		addPhotosChain.execute(context);

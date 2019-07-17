@@ -479,7 +479,7 @@ public class WorkOrderContext extends TicketContext {
 	boolean prerequisiteApprover;
 
 	public boolean isPrerequisiteApprover() throws Exception {
-		return WorkOrderAPI.isPrerequisiteApprover(this.getId());
+		return prerequisiteApprover;
 	}
 
 	public void setPrerequisiteApprover(boolean prerequisiteApprover) {

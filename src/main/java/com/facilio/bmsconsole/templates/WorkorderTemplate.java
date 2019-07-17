@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.templates;
 
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.modules.FieldUtil;
@@ -9,7 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import com.facilio.bmsconsole.context.PrerequisiteApproversContext;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
@@ -335,14 +335,14 @@ public class WorkorderTemplate extends Template {
 	}
 
 	@JsonIgnore
-	private List<PrerequisiteApproversContext> prerequisiteApprovers;
+	private List<SingleSharingContext> prerequisiteApprovers;
 
-	public List<PrerequisiteApproversContext> getPrerequisiteApprovers() {
+	public List<SingleSharingContext> getPrerequisiteApprovers() {
 		return prerequisiteApprovers;
 	}
 
-	public void setPrerequisiteApprovers(List<PrerequisiteApproversContext> prerequisiteApproversContext) {
-		this.prerequisiteApprovers = prerequisiteApproversContext;
+	public void setPrerequisiteApprovers(List<SingleSharingContext> singleSharingContext) {
+		this.prerequisiteApprovers = singleSharingContext;
 	}
 	@JsonIgnore
 	private List<PrerequisiteApproversTemplate> prerequisiteApproverTemplates;

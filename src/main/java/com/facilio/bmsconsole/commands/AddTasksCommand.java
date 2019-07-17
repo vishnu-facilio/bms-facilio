@@ -138,12 +138,6 @@ public class AddTasksCommand implements Command, PostTransactionCommand {
 	@Override
 	public boolean postExecute() throws Exception {
 		TicketAPI.updateTaskCount(idsToUpdateTaskCount);
-		if (idsToUpdateTaskCount != null) {
-			for (Long id : idsToUpdateTaskCount) {
-				WorkOrderAPI.updatePreRequisiteEnabled(id);
-				WorkOrderAPI.updatePreRequisiteStatus(id);
-			}
-		}
 		return false;
 	}
 }

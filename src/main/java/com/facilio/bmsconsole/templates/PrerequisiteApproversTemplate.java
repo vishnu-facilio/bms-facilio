@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.context.PrerequisiteApproversContext;
+import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.modules.FieldUtil;
 
 public class PrerequisiteApproversTemplate extends Template {
@@ -107,14 +107,14 @@ public class PrerequisiteApproversTemplate extends Template {
 		}
 	}
 	
-	public PrerequisiteApproversContext getPrerequisiteApprover() {
+	public SingleSharingContext getPrerequisiteApprover() {
 		Map<String, Object> approverProp = new HashMap<>();
 		if (sharingType != null) {
 			approverProp.put("userId", userId);
 			approverProp.put("roleId", roleId);
 			approverProp.put("groupId", groupId);
-			approverProp.put("sharingType", getSharingType());
-			return FieldUtil.getAsBeanFromMap(approverProp, PrerequisiteApproversContext.class);
+			approverProp.put("type", getSharingType());
+			return FieldUtil.getAsBeanFromMap(approverProp, SingleSharingContext.class);
 		}
 		return null;
 	}

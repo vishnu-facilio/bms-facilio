@@ -123,7 +123,6 @@ public class AttachmentAction  extends FacilioAction {
 		Chain addAttachmentChain = FacilioChainFactory.getAddAttachmentChain();
 		addAttachmentChain.execute(context);
 		
-		module=(String)context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		List<AttachmentContext> attachmentList = (List<AttachmentContext>) context.get(FacilioConstants.ContextNames.ATTACHMENT_LIST);
 		setAttachments(attachmentList);
 		

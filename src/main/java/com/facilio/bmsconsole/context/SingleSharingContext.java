@@ -2,9 +2,12 @@ package com.facilio.bmsconsole.context;
 
 import com.facilio.accounts.dto.GroupMember;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class SingleSharingContext {
+public class SingleSharingContext implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
 	
 	private long id = -1;
 	public long getId() {

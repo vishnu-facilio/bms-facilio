@@ -10,6 +10,8 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
+import com.facilio.bmsconsole.context.WorkOrderContext.AllowNegativePreRequisite;
+import com.facilio.bmsconsole.context.WorkOrderContext.PreRequisiteStatus;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.*;
@@ -208,6 +210,19 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				}
 				
 				wo = workorderTemplate.getWorkorder();
+				
+				int preRequisiteCount= workorderTemplate.getPreRequestSectionTemplates().size();
+				wo.setPrerequisiteEnabled(preRequisiteCount != 0);
+				if (wo.getPrerequisiteEnabled()) {
+					if (AllowNegativePreRequisite.YES_WITH_WARNING.equals(wo.getAllowNegativePreRequisiteEnum())) {
+						wo.setPreRequestStatus(PreRequisiteStatus.COMPLETED_WITH_NEGATIVE);
+					} else {
+						wo.setPreRequestStatus(PreRequisiteStatus.PENDING.getValue());
+					}
+				} else {
+					wo.setPreRequestStatus(PreRequisiteStatus.COMPLETED.getValue());
+				}
+				
 				wo.setResource(ResourceAPI.getResource(resourceId));
 				taskMap = workorderTemplate.getTasks();
 
