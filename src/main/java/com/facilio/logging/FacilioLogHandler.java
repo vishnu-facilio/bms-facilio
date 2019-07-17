@@ -61,8 +61,8 @@ public class FacilioLogHandler extends Handler {
         }
 
         return (
-                (   (event.getLevel().toInt() > org.apache.log4j.Level.INFO_INT)
-                        && (AccountUtil.getCurrentAccount() == null || (event.getLevel().toInt() > AccountUtil.getCurrentAccount().getLevel().toInt()))
+                (   (event.getLevel().toInt() >= org.apache.log4j.Level.INFO_INT)
+                        && (AccountUtil.getCurrentAccount() == null || (event.getLevel().toInt() >= AccountUtil.getCurrentAccount().getLevel().toInt()))
                 )
                         && (freeSpace > FREE_SPACE_THRESHOLD)
         );
