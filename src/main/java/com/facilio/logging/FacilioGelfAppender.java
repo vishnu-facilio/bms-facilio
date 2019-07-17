@@ -1,22 +1,16 @@
 package com.facilio.logging;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.accounts.dto.Organization;
-import com.facilio.accounts.dto.User;
 import org.apache.log4j.Layout;
-import org.apache.log4j.Level;
 import org.apache.log4j.Priority;
 import org.apache.log4j.spi.ErrorHandler;
 import org.apache.log4j.spi.Filter;
 import org.apache.log4j.spi.LoggingEvent;
-import org.apache.log4j.spi.ThrowableInformation;
 import org.graylog2.GelfAMQPSender;
 import org.graylog2.GelfSender;
 import org.graylog2.GelfTCPSender;
 import org.graylog2.GelfUDPSender;
 import org.graylog2.log.GelfAppender;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.security.KeyManagementException;
@@ -24,8 +18,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
 public class FacilioGelfAppender extends GelfAppender {
-
-    private static final String DEFAULT_ORG_USER_ID = "-1";
 
     public void append(LoggingEvent event) {
         if(!FacilioLogHandler.isLoggable(event)) {

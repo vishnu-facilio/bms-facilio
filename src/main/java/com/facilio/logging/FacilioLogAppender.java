@@ -1,16 +1,11 @@
 package com.facilio.logging;
 
-import com.facilio.accounts.dto.Organization;
-import com.facilio.accounts.dto.User;
-import com.facilio.accounts.util.AccountUtil;
 import org.apache.log4j.DailyRollingFileAppender;
 import org.apache.log4j.Layout;
-import org.apache.log4j.Level;
 import org.apache.log4j.Priority;
 import org.apache.log4j.spi.ErrorHandler;
 import org.apache.log4j.spi.Filter;
 import org.apache.log4j.spi.LoggingEvent;
-import org.apache.log4j.spi.ThrowableInformation;
 
 import java.io.*;
 
