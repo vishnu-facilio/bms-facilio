@@ -749,21 +749,49 @@ public class ViewFactory {
 
 		return open;
 	}
+	
+
+	private static Criteria getAssetStatusCriteria(String status) {
+		FacilioField statusTypeField = new FacilioField();
+		statusTypeField.setName("status");
+		statusTypeField.setColumnName("STATUS");
+		statusTypeField.setDataType(FieldType.STRING);
+		statusTypeField.setModule(ModuleFactory.getTicketStatusModule());
+
+		Condition statusActive = new Condition();
+		statusActive.setField(statusTypeField);
+		statusActive.setOperator(StringOperators.IS);
+		statusActive.setValue(status);
+
+		Criteria statusCriteria = new Criteria();
+		statusCriteria.addAndCondition(statusActive);
+
+		LookupField statusField = new LookupField();
+		statusField.setName("moduleState");
+		statusField.setColumnName("MODULE_STATE");
+		statusField.setDataType(FieldType.LOOKUP);
+		statusField.setModule(ModuleFactory.getAssetsModule());
+		statusField.setLookupModule(ModuleFactory.getTicketStatusModule());
+
+		Condition ticketActive = new Condition();
+		ticketActive.setField(statusField);
+		ticketActive.setOperator(LookupOperator.LOOKUP);
+		ticketActive.setCriteriaValue(statusCriteria);
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(ticketActive);
+		return criteria;
+	}
 
 	private static FacilioView getAssetsByState(String state) {
 
 		FacilioView assetView = new FacilioView();
+		Criteria criteria = getAssetStatusCriteria(state);
 		if (state.equals("Active")) {
-			Criteria criteria = new Criteria();
-			criteria.addAndCondition(getAssetStateCondition(state));
-
 			assetView.setName("active");
 			assetView.setDisplayName("Active Assets");
 			assetView.setCriteria(criteria);
 		} else if (state.equals("Retired")) {
-			Criteria criteria = new Criteria();
-			criteria.addAndCondition(getAssetStateCondition(state));
-
 			assetView.setName("retired");
 			assetView.setDisplayName("Retired Assets");
 			assetView.setCriteria(criteria);
