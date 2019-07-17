@@ -77,11 +77,11 @@ public class FormRuleAPI {
 	
 	public static List<FormRuleActionContext> getFormRuleActionContext(long formRuleId) throws Exception {
 		
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormRuleFields());
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getFormRuleActionFields());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getFormRuleFields())
-				.table(ModuleFactory.getFormRuleModule().getTableName())
+				.select(FieldFactory.getFormRuleActionFields())
+				.table(ModuleFactory.getFormRuleActionModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("formRuleId"), ""+formRuleId, NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();

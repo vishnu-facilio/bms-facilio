@@ -1100,6 +1100,8 @@
 		</action>
 		<action name="fields" class="com.facilio.bmsconsole.actions.FormAction" method="formFieldList">
 		</action>
+		<action name="executeFormActionRules" class="com.facilio.bmsconsole.actions.FormAction" method="executeFormActionRules">
+		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.FormAction" method="formDetails">
 			<param name="moduleName">{1}</param>
 		</action>
