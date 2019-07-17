@@ -92,10 +92,9 @@ public class FacilioLogAppender extends DailyRollingFileAppender {
     }
 
     public void append(LoggingEvent event) {
-        if(!FacilioLogHandler.isLoggable(event)) {
-            return;
+        if( FacilioLogHandler.isLoggable(event) ) {
+            super.append(FacilioLogHandler.addEventProps(event));
         }
-        super.append(FacilioLogHandler.addEventProps(event));
     }
 
     protected boolean checkEntryConditions() {

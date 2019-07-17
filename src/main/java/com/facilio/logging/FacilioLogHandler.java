@@ -55,7 +55,8 @@ public class FacilioLogHandler extends Handler {
     private static final long FREE_SPACE_THRESHOLD = 10000000000L;
     private static long freeSpace = ROOT_FILE.getFreeSpace();
     private static final String DEFAULT_ORG_USER_ID = "-1";
-    public static boolean isLoggable(LoggingEvent event) {
+
+    static boolean isLoggable(LoggingEvent event) {
         if((lastFreeSpaceCheckedTime + 300_000L) < System.currentTimeMillis()) {
             lastFreeSpaceCheckedTime = System.currentTimeMillis();
             freeSpace = ROOT_FILE.getFreeSpace();
@@ -68,7 +69,7 @@ public class FacilioLogHandler extends Handler {
         }
     }
 
-    public static LoggingEvent addEventProps(LoggingEvent event) {
+    static LoggingEvent addEventProps(LoggingEvent event) {
         Organization org = AccountUtil.getCurrentOrg();
         if(org != null) {
             event.setProperty("orgId", String.valueOf(org.getOrgId()));

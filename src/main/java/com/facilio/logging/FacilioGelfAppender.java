@@ -20,10 +20,9 @@ import java.util.Map;
 public class FacilioGelfAppender extends GelfAppender {
 
     public void append(LoggingEvent event) {
-        if(!FacilioLogHandler.isLoggable(event)) {
-            return;
+        if( FacilioLogHandler.isLoggable(event)) {
+            super.append(FacilioLogHandler.addEventProps(event));
         }
-        super.append(FacilioLogHandler.addEventProps(event));
     }
 
     public FacilioGelfAppender() {
