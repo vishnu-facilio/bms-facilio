@@ -76,9 +76,9 @@ public class GetWorkOrderCommand implements Command {
 					context.put(FacilioConstants.ContextNames.TASK_LIST, tasks);
 				}
 
-				if ((AccountUtil.getCurrentOrg().getId() == 146 || AccountUtil.getCurrentOrg().getId() == 155) && workOrder != null) {
-					LOGGER.info("Workorder subject : "+ workOrder.getSubject()+"\n Description : "+workOrder.getDescription());
-				}
+//				if ((AccountUtil.getCurrentOrg().getId() == 146 || AccountUtil.getCurrentOrg().getId() == 155) && workOrder != null) {
+					LOGGER.debug("Workorder subject : "+ workOrder.getSubject()+"\n Description : "+workOrder.getDescription());
+//				}
 			}
 		}
 		else {

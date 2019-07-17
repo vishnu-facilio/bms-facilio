@@ -60,7 +60,7 @@ public class Account implements Serializable {
 	public void setOrg(Organization org) {
 		this.org = org;
 		if (org != null && org.getLoggerLevel() != -1 ) {
-			System.out.println("########logger Status"+org.getLoggerLevel());
+//			System.out.println("########logger Status"+org.getLoggerLevel());
 			setLoggerLevel(org.getLoggerLevel());
 		}
 	}
@@ -294,17 +294,20 @@ public class Account implements Serializable {
 		redisDeleteTime = 0L;
 	}
 
-	private Level level = Level.INFO;
+	private Level level = null;
     public Level getLevel() {
+    	if (level == null) {
+    		return Level.INFO;
+		}
 		return level;
     }
 	public void setLevel(Level level) {
-    	if (level.toInt() < this.level.toInt()) { //Setting only if incoming level is greater. Useful when we enable logger level org/ user wise and all
+    	if (this.level == null || level.toInt() < this.level.toInt()) { //Setting only if incoming level is greater. Useful when we enable logger level org/ user wise and all
 			this.level = level;
 		}
 	}
 	public void setLoggerLevel(int loggerLevel) {
-		Level level = Level.INFO;
+		Level level = null;
 		switch (loggerLevel) {
 			case 0:
 				level = Level.ALL;
@@ -333,7 +336,9 @@ public class Account implements Serializable {
 			default:
 				break;
 		}
-		setLevel(level);
+		if (level != null) {
+			setLevel(level);
+		}
 	}
 }
 
