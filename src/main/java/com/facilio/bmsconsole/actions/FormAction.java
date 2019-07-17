@@ -78,9 +78,7 @@ public class FormAction extends FacilioAction {
 		Chain c = TransactionChainFactory.getExecuteFormActionRules();
 		c.execute(context);
 		
-		FacilioForm form = (FacilioForm) context.get(FacilioConstants.ContextNames.FORM);
-		this.setForms(Collections.singletonList(form));
-		
+		setResult(FormRuleAPI.FORM_RULE_RESULT_JSON, context.get(FormRuleAPI.FORM_RULE_RESULT_JSON));
 		return SUCCESS;
 	}
 	
