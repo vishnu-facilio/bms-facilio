@@ -47,6 +47,7 @@ public class DownloadCertFile
     public static String downloadCertificate( String policyName, String type) {
         LOGGER.info(" wattsense policy name "+policyName);
         String certFileId = FacilioAgent.getCertFileId(type);
+        LOGGER.info(" certFileId "+certFileId);
         long orgId = AccountUtil.getCurrentOrg().getOrgId();
         String url=null;
         try {
@@ -60,6 +61,7 @@ public class DownloadCertFile
             LOGGER.info( "Exception in downloading certificate while getting orginfo details for " + certFileId, e);
         }
         if (url == null) {
+            LOGGER.info(" url not present ");
             String orgName = AccountUtil.getCurrentAccount().getOrg().getDomain();
             CreateKeysAndCertificateResult certificateResult = AwsUtil.signUpIotToKinesis(orgName,policyName,type );
             AwsUtil.getIotKinesisTopic(orgName);

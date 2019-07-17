@@ -183,30 +183,24 @@ public class WattsenseUtil
 
     private static boolean createCertificateStoreId(Wattsense wattsense){
         String certificateStoreId = null;
-
-        /*Map<String ,File> files =  getCertAndKeyFiles(); // get both files as map with the spicified key.
-        if(files == null){
-            LOGGER.info("Exception in downloading certificate and key");
-            return false;
-        }
-        //get files --
-        File certificateFile = files.get(AgentIntegrationKeys.CERTIFICATE);
-        File keyFile = files.get(AgentIntegrationKeys.CERTIFICATE_KEY);*/
         MultipartHttpPost multipart = null;
         try {
             multipart = new MultipartHttpPost(AgentIntegrationUtil.getWattsenseCertificateStoreApi(),"UTF-8",wattsense.getAuthStringEncoded());
             Map<String ,InputStream> inputStreamMap = new HashMap<>();
             String policyName = AccountUtil.getCurrentOrg().getDomain()+"_"+AgentIntegrationKeys.WATTSENSE_IOT_POLICY;
+            /*if(DownloadCertFile.checkForCertificates(AgentType.Wattsense.getLabel())) {
+                if (!AwsUtil.addAwsIotClient(policyName, wattsense.getClientId())) {
+                    LOGGER.info("Exception occured while adding IotClient ");
+                    return false;
+                }
+            }*/
+
             String url = DownloadCertFile.downloadCertificate( policyName,AgentType.Wattsense.getLabel() );
             LOGGER.info("wattsense file download url "+url);
             //DownloadCertFile.getCertAndKeyFileAsInputStream(policyName , AgentType.Wattsense.getLabel());
             inputStreamMap = DownloadCertFile.getCertKeyFileInputStreamsFromFileStore(AgentType.Wattsense.getLabel());
             if(inputStreamMap.isEmpty()){
                 LOGGER.info(" Exception occurred certfileInputstream map is empty ");
-                return false;
-            }
-            if( ! AwsUtil.addAwsIotClient(policyName, wattsense.getClientId()) ){
-                LOGGER.info("Exception occured while adding IotClient ");
                 return false;
             }
 
