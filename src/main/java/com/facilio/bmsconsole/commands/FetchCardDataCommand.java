@@ -122,6 +122,10 @@ public class FetchCardDataCommand implements Command {
 							isNewWorkflowCard = true;
 						}
 					}
+					else if(widgetStaticContext.getWidgetVsWorkflowContexts().get(0).getWorkflow() != null && widgetStaticContext.getWidgetVsWorkflowContexts().get(0).getWorkflow().isV2Script()) {
+						isNewWorkflowCard = true;
+						card.setWorkflow(widgetStaticContext.getWidgetVsWorkflowContexts().get(0).getWorkflow().getWorkflowV2String());
+					}
 				}
 				
 				if(widgetStaticContext.getStaticKey().equals(CardType.FAHU_STATUS_CARD_NEW.getName())) {
