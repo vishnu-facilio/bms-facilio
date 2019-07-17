@@ -97,14 +97,27 @@ public class TriggerAlarmForMLCommand implements Command {
     	LOGGER.info("Inside check and Generate Event "+parentID+". actual value "+actualValue+" , upperBound "+adjustedUpperBound);
     	if(actualValue > adjustedUpperBound)
     	{
-//    		return generateAnomalyEvent(actualValue,adjustedUpperBound,parentID,mlContext.getMLVariable().get(0).getFieldID(),mlContext.getPredictionTime(),Long.parseLong(mlContext.getMLModelVariable("energyfieldid")),Long.parseLong(mlContext.getMLModelVariable("adjustedupperboundfieldid")));
-    		return generateAnomalyEvent(actualValue,adjustedUpperBound,parentID,mlContext.getMLVariable().get(0).getFieldID(),mlContext.getPredictionTime(),0l,0l);    	
+    		String upperAnomalyFieldName=getAnomalyFieldName(mlContext,parentID);
+    		return generateAnomalyEvent(actualValue,adjustedUpperBound,parentID,mlContext.getMLVariable().get(0).getFieldID(),mlContext.getPredictionTime(),Long.parseLong(mlContext.getMLModelVariable("energyfieldid")),Long.parseLong(mlContext.getMLModelVariable(upperAnomalyFieldName)));
     	}
     	else
     	{
     		generateClearEvent(parentID,mlContext.getMLVariable().get(0).getFieldID(),mlContext.getPredictionTime());
     	}
     	return -1;
+	}
+	
+	private String getAnomalyFieldName(MLContext mlcontext,long parentID) throws JSONException
+	{
+		String mlArray = (String) new JSONObject(mlcontext.getResult()).get("OutputMetrics");
+		if(mlArray.contains(parentID+"_upperAnomaly"))
+		{
+			return "upperAnomaly_"+parentID;	
+		}
+		else
+		{
+			return "adjustedupperboundfieldid";
+		}
 	}
 	
 	private void generateClearEvent(long assetID,long fieldID,long ttime)
