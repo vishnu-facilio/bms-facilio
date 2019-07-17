@@ -12,6 +12,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ContractsContext.ContractType;
 import com.facilio.bmsconsole.context.ContractsContext.Status;
 import com.facilio.bmsconsole.util.ContractsAPI;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.bmsconsole.context.ContractAssociatedTermsContext;
 import com.facilio.bmsconsole.context.LabourContext;
@@ -69,6 +70,8 @@ public class AddOrUpdateLabourContractCommand implements Command{
 				addLabourRecords(labourContractContext.getLineItems(),labourModule,labourFields);
 				ContractsAPI.addRecord(false,labourContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 				context.put(FacilioConstants.ContextNames.RECORD, labourContractContext);
+				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
+				
 				
 
 			}
@@ -91,6 +94,8 @@ public class AddOrUpdateLabourContractCommand implements Command{
 				else {
 					throw new IllegalArgumentException("Only Approved contracts can be revised");
 				}
+				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
+				
 			}
 			else {
 				
@@ -104,6 +109,7 @@ public class AddOrUpdateLabourContractCommand implements Command{
 				addLabourRecords(labourContractContext.getLineItems(),labourModule,labourFields);
 				ContractsAPI.addRecord(false,labourContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 				context.put(FacilioConstants.ContextNames.RECORD, labourContractContext);
+				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 				
 
 

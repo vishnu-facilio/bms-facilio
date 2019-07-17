@@ -2703,8 +2703,11 @@ public class TransactionChainFactory {
 			Chain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForLabourContract());
 			chain.addCommand(new AddOrUpdateLabourContractCommand());
+			chain.addCommand(new UpdateRecordRuleJobOnRecordUpdationCommand());
+			
 			//rollup to update the cost per hour in the actual labour module
 			chain.addCommand(new UpdateLabourCostRollUpCommand());
+			
 		    //rollup might be needed to update purchase contract total cost -- need to be discussed
 			return chain;
 		}
@@ -2713,6 +2716,8 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForLabourContract());
 			c.addCommand(new DeleteLabourContractCommand());
+			c.addCommand(new DeleteRecordRuleJobOnRecordDeletionCommand());
+			
 			return c;
 		}
 
@@ -2734,12 +2739,16 @@ public class TransactionChainFactory {
 			Chain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForPurchaseContract());
 			chain.addCommand(new UpdateBulkPurchaseContractStatusCommand());
+			chain.addCommand(new UpdateRecordRuleJobOnRecordUpdationCommand());
+			
 			return chain;
 		}
 		public static Chain getUpdateLabourContractStatusChain() {
 			Chain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForLabourContract());
 			chain.addCommand(new UpdateBulkLabourContractStatusCommand());
+			chain.addCommand(new UpdateRecordRuleJobOnRecordUpdationCommand());
+			
 			return chain;
 		}
 
@@ -2965,6 +2974,7 @@ public class TransactionChainFactory {
 			Chain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForWarrantyContract());
 			chain.addCommand(new UpdateBulkWarrantyContractCommand());
+			chain.addCommand(new UpdateRecordRuleJobOnRecordUpdationCommand());
 			return chain;
 		}
 		
@@ -2972,6 +2982,7 @@ public class TransactionChainFactory {
 			Chain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForWarrantyContract());
 			chain.addCommand(new AddOrUpdateWarrantyContractCommand());
+			chain.addCommand(new UpdateRecordRuleJobOnRecordUpdationCommand());
 			chain.addCommand(getWarrantContractTotalCostChain());
 			return chain;
 		}
@@ -2980,6 +2991,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForWarrantyContract());
 			c.addCommand(new DeleteWarrantyContractCommand());
+			c.addCommand(new DeleteRecordRuleJobOnRecordDeletionCommand());
 			return c;
 		}
 		public static Chain getPMPlannerSettingsChain() {
@@ -3392,6 +3404,7 @@ public class TransactionChainFactory {
 			Chain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForRentalLeaseContract());
 			chain.addCommand(new UpdateBulkRentalLeaseContractStatusCommand());
+			chain.addCommand(new UpdateRecordRuleJobOnRecordUpdationCommand());
 			return chain;
 		}
 
@@ -3399,7 +3412,8 @@ public class TransactionChainFactory {
 			Chain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForRentalLeaseContract());
 			chain.addCommand(new AddOrUpdateRentalLeaseContractCommand());
-		    chain.addCommand(getRentalLeaseTotalCostChain()); //roll up for calculating total cost
+			chain.addCommand(new UpdateRecordRuleJobOnRecordUpdationCommand());
+			chain.addCommand(getRentalLeaseTotalCostChain()); //roll up for calculating total cost
 			return chain;
 		}
 
@@ -3579,6 +3593,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForRentalLeaseContractLineItem());
 			c.addCommand(new GenericDeleteModuleDataCommand());
+			c.addCommand(new DeleteRecordRuleJobOnRecordDeletionCommand());
 			return c;
 		}
 

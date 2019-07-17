@@ -28,7 +28,7 @@ public class UpdateRecordRuleJobOnRecordUpdationCommand implements Command{
 				recordIds = Collections.singletonList(recordId);
 			}
 		}
-		if(CollectionUtils.isNotEmpty(recordIds)) {
+		if(CollectionUtils.isNotEmpty(recordIds) && changeSet != null && !changeSet.isEmpty()) {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);

@@ -25,6 +25,7 @@ import com.facilio.bmsconsole.context.WarrantyContractContext;
 import com.facilio.bmsconsole.util.ContractsAPI;
 import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.bmsconsole.util.ToolsApi;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -75,8 +76,8 @@ public class AddOrUpdateRentalLeaseContractCommand implements Command{
 				updateLineItems(rentalLeaseContractContext);
 				ContractsAPI.addRecord(false,rentalLeaseContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 				context.put(FacilioConstants.ContextNames.RECORD, rentalLeaseContractContext);
-
-			
+				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
+							
 			} 
 			else if (isContractRevised && rentalLeaseContractContext.getId() > 0) {
 				if(rentalLeaseContractContext.getStatusEnum() == Status.APPROVED) {
@@ -97,6 +98,8 @@ public class AddOrUpdateRentalLeaseContractCommand implements Command{
 				else {
 					throw new IllegalArgumentException("Only Approved contracts can be revised");
 				}
+				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
+				
 			}
 			else {
 				rentalLeaseContractContext.setStatus(WarrantyContractContext.Status.WAITING_FOR_APPROVAL);
@@ -108,7 +111,8 @@ public class AddOrUpdateRentalLeaseContractCommand implements Command{
 				ContractsAPI.addRecord(false,rentalLeaseContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 				context.put(FacilioConstants.ContextNames.RECORD, rentalLeaseContractContext);
 
-			
+				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
+				
 			}
 		}
 		return false;

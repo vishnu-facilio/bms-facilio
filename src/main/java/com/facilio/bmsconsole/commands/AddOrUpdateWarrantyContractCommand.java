@@ -17,6 +17,7 @@ import com.facilio.bmsconsole.context.ServiceContext;
 import com.facilio.bmsconsole.context.WarrantyContractContext;
 import com.facilio.bmsconsole.context.WarrantyContractLineItemContext;
 import com.facilio.bmsconsole.util.ContractsAPI;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -79,6 +80,8 @@ public class AddOrUpdateWarrantyContractCommand implements Command{
 				//also add service vendor association
 				ContractsAPI.addRecord(false,warrantyContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 				context.put(FacilioConstants.ContextNames.RECORD, warrantyContractContext);
+				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
+				
 				
 				
 			} 
@@ -99,12 +102,12 @@ public class AddOrUpdateWarrantyContractCommand implements Command{
 					ContractsAPI.addRecord(false,revisedContract.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 					context.put(FacilioConstants.ContextNames.REVISED_RECORD, revisedContract);
 					context.put(FacilioConstants.ContextNames.RECORD, revisedContract);
-					
-					
 				}
 				else {
 					throw new IllegalArgumentException("Only Approved contracts can be revised");
 				}
+				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
+				
 			}
 			else {
 				
@@ -119,6 +122,7 @@ public class AddOrUpdateWarrantyContractCommand implements Command{
 				//also add service vendor association
 				ContractsAPI.addRecord(false,warrantyContractContext.getLineItems(), lineModule, modBean.getAllFields(lineModule.getName()));
 				context.put(FacilioConstants.ContextNames.RECORD, warrantyContractContext);
+				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 				
 	
 			}
