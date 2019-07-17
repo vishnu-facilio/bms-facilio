@@ -5,7 +5,6 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.FacilioAgent;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.kinesis.KinesisProcessor;
@@ -17,6 +16,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -27,11 +27,12 @@ public class DownloadCertFile
     private static final Logger LOGGER = LogManager.getLogger(DownloadCertFile.class.getName());
 
 
-    public static InputStream getCertKeyZipInputStream(){
-        long orgId = AccountUtil.getCurrentOrg().getOrgId();
+    public static InputStream getCertKeyZipInputStream(String type){
+        long orgId = Objects.requireNonNull(AccountUtil.getCurrentOrg()).getOrgId();
         Map<String, Object> orgInfo = null;
         try {
-            orgInfo = CommonCommandUtil.getOrgInfo(orgId, FacilioConstants.ContextNames.FEDGE_CERT_FILE_ID);
+            String certFileId = FacilioAgent.getCertFileId(type);
+            orgInfo = CommonCommandUtil.getOrgInfo(orgId,certFileId);
             if (orgInfo != null) {
                 long fileId = Long.parseLong((String) orgInfo.get("value"));
                 FileStore fs = FileStoreFactory.getInstance().getFileStore();
@@ -61,7 +62,6 @@ public class DownloadCertFile
         if (url == null) {
             String orgName = AccountUtil.getCurrentAccount().getOrg().getDomain();
             CreateKeysAndCertificateResult certificateResult = AwsUtil.signUpIotToKinesis(orgName,policyName,type );
-            LOGGER.info(" certificate result "+certificateResult.getCertificatePem());
             AwsUtil.getIotKinesisTopic(orgName);
             String directoryName = "facilio/";
             String outFileName = FacilioAgent.getCertFileName(type);
@@ -188,9 +188,9 @@ public class DownloadCertFile
         LOGGER.info(" Exception while downloading cert and key file, returning empty map");
         return new HashMap();
     }
-    public static Map<String,InputStream> getCertKeyFileInputStreamsFromFileStore() {
+    public static Map<String,InputStream> getCertKeyFileInputStreamsFromFileStore(String type) {
         String directoryName = "facilio/";
-        InputStream fis =   getCertKeyZipInputStream();
+        InputStream fis =   getCertKeyZipInputStream(type);
         Map<String,InputStream> filesMap = new HashMap<>();
         if(fis == null){
             LOGGER.info(" Inputstream emty ");

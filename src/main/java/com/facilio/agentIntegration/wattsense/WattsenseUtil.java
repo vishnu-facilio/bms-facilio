@@ -198,8 +198,9 @@ public class WattsenseUtil
             Map<String ,InputStream> inputStreamMap = new HashMap<>();
             String policyName = AccountUtil.getCurrentOrg().getDomain()+"_"+AgentIntegrationKeys.WATTSENSE_IOT_POLICY;
             String url = DownloadCertFile.downloadCertificate( policyName,AgentType.Wattsense.getLabel() );
+            LOGGER.info("wattsense file download url "+url);
             //DownloadCertFile.getCertAndKeyFileAsInputStream(policyName , AgentType.Wattsense.getLabel());
-            inputStreamMap = DownloadCertFile.getCertKeyFileInputStreamsFromFileStore();
+            inputStreamMap = DownloadCertFile.getCertKeyFileInputStreamsFromFileStore(AgentType.Wattsense.getLabel());
             if(inputStreamMap.isEmpty()){
                 LOGGER.info(" Exception occurred certfileInputstream map is empty ");
                 return false;
