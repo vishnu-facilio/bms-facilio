@@ -1,5 +1,7 @@
 package com.facilio.report.context;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -265,14 +267,18 @@ public class ReportFactoryFields {
 	}
 	
 	public static JSONObject getAlarmReportFields() throws Exception{
+		String moduleName = new String("alarm");
+		if(AccountUtil.isFeatureEnabled(FeatureLicense.NEW_ALARMS)) {
+			moduleName = new String("alarmoccurrence");
+		}
 		ModuleBean bean = (ModuleBean)BeanFactory.lookup("ModuleBean");
-		Map<String, FacilioField> fields = FieldFactory.getAsMap(bean.getAllFields("alarm"));
+		Map<String, FacilioField> fields = FieldFactory.getAsMap(bean.getAllFields(moduleName));
 		
 		List<FacilioField> selectedFields = new ArrayList<FacilioField>();
 		
 		Map<String, FacilioField> customFields = new HashMap<String, FacilioField>();
-		if(bean.getAllCustomFields("alarm") != null) {
-			customFields = FieldFactory.getAsMap(bean.getAllCustomFields("alarm"));
+		if(bean.getAllCustomFields(moduleName) != null) {
+			customFields = FieldFactory.getAsMap(bean.getAllCustomFields(moduleName));
 		}
 		
 		selectedFields.add(fields.get("createdTime"));
@@ -290,10 +296,10 @@ public class ReportFactoryFields {
 		}
 		
 		// loading additional module fields
-				JSONObject rearrangedFields = rearrangeFields(selectedFields, "alarm");
-				HashMap<String , Map<String, FacilioField>> additionalModuleFields = getAdditionalModuleFields("alarm", bean);
+				JSONObject rearrangedFields = rearrangeFields(selectedFields, moduleName);
+				HashMap<String , Map<String, FacilioField>> additionalModuleFields = getAdditionalModuleFields(moduleName, bean);
 				
-				setAdditionalModulemap(rearrangedFields, "alarm", bean);
+				setAdditionalModulemap(rearrangedFields, moduleName, bean);
 				
 				List<FacilioField> assetFields = new ArrayList<FacilioField>();
 				assetFields.add(additionalModuleFields.get(FacilioConstants.ContextNames.ASSET).get("name"));
@@ -317,7 +323,7 @@ public class ReportFactoryFields {
 				
 				ArrayList<String> dimensionListOrder = new ArrayList<String>();
 				dimensionListOrder.add("time");
-				dimensionListOrder.add("alarm");
+				dimensionListOrder.add(moduleName);
 				dimensionListOrder.add("asset");
 				
 				rearrangedFields.put("dimensionListOrder", dimensionListOrder);
@@ -336,7 +342,8 @@ public class ReportFactoryFields {
 			fields =  getassetReportFields();
 			break;
 		}
-		case "alarm":{
+		case "alarm":
+		case "alarmoccurrence":{
 			fields = getAlarmReportFields();
 			break;
 		}
@@ -429,9 +436,14 @@ public class ReportFactoryFields {
 			
 			
 		}
-		else if(module.equals("alarm")) {
+		else if(module.equals("alarm") || module.equals("alarmoccurrence")) {
 			metricFields.add(ReportFactory.getReportField(Alarm.FIRST_RESPONSE_TIME_COL));
 			metricFields.add(ReportFactory.getReportField(Alarm.ALARM_DURATION_COL));
+			
+			if(module.equals("alarmoccurrence")) {
+				List<FacilioField> dimensionFields = dimensionFieldMap.get(module);
+				dimensionFields.add(ReportFactory.getReportField(Alarm.WO_ID));
+			}
 		}
 		
 		fieldsObject.put("metrics", metricFields);
@@ -477,6 +489,7 @@ public class ReportFactoryFields {
 				break;
 
 			case "alarm":
+			case "alarmoccurrence":
 				moduleNames.add(FacilioConstants.ContextNames.ASSET);
 				moduleNames.add(FacilioConstants.ContextNames.SPACE);
 				break;

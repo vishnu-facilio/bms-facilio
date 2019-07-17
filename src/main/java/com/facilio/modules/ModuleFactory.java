@@ -705,6 +705,14 @@ public class ModuleFactory {
 		alarmModule.setExtendModule(getTicketsModule());
 		return alarmModule;
 	}
+	
+	public static FacilioModule getAlarmOccurenceModule() {
+		FacilioModule alarmModule = new FacilioModule();
+		alarmModule.setName(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
+		alarmModule.setDisplayName("Alarm Occurrences");
+		alarmModule.setTableName("AlarmOccurrence");
+		return alarmModule;
+	}
 
 	public static FacilioModule getAlarmSeverityModule() {
 		FacilioModule alarmSeverityModule = new FacilioModule();

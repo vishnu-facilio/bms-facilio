@@ -4,6 +4,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.FieldOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
@@ -32,6 +33,7 @@ public class ReportFactory {
 		String FIRST_RESPONSE_TIME_COL = "firstresponsetime";
 		String ESTIMATED_DURATION_COL = "estimatedduration";
 		
+		
 		int OPENVSCLOSE = 1;
 		int OVERDUE_OPEN = 2;
 		int OVERDUE_CLOSED = 3;
@@ -44,9 +46,11 @@ public class ReportFactory {
 	public interface Alarm {
 		String FIRST_RESPONSE_TIME_COL = "al_firstresponsetime";
 		String ALARM_DURATION_COL = "al_duration";
+		String WO_ID = "al_wo_id";
 		
-		int FIRST_RESPONSE_TIME = 6;
+		int FIRST_RESPONSE_TIME = 8;
 		int ALARM_DURATION = 7;
+		int WORK_ORDER_ID = 9;
 	}
 
 	public static List<FacilioField> reportFields = new ArrayList<>();
@@ -85,6 +89,10 @@ public class ReportFactory {
 			reportFields.add(getField(Alarm.FIRST_RESPONSE_TIME_COL, "Response Time", ModuleFactory.getAlarmsModule(), " (Alarms.ACKNOWLEDGED_TIME - Alarms.CREATED_TIME) ", FieldType.NUMBER, Alarm.FIRST_RESPONSE_TIME));
 			reportFields.add(getField(Alarm.ALARM_DURATION_COL, "Alarm Duration", ModuleFactory.getAlarmsModule(), "(CASE WHEN Alarms.CLEARED_TIME IS NOT NULL THEN Alarms.CLEARED_TIME - Alarms.CREATED_TIME ELSE ? - Alarms.CREATED_TIME END) ", FieldType.NUMBER, Alarm.ALARM_DURATION));
 			
+			ReportFacilioField wo_id = (ReportFacilioField) getField(Alarm.WO_ID, "Is Workorder created", ModuleFactory.getAlarmOccurenceModule(), "CASE WHEN AlarmOccurrence.WOID IS NULL THEN 'False' ELSE 'True' END", FieldType.STRING, Alarm.WORK_ORDER_ID);
+			wo_id.addGenericCondition("False", CriteriaAPI.getCondition("WOID", "woid", null, CommonOperators.IS_EMPTY));
+			wo_id.addGenericCondition("True", CriteriaAPI.getCondition("WOID", "woid", null, CommonOperators.IS_NOT_EMPTY));
+			reportFields.add(wo_id);
 			
 			fieldMap = FieldFactory.getAsMap(reportFields);
 		} catch (Exception e) {
