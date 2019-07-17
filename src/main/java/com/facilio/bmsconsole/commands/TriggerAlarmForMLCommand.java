@@ -73,7 +73,7 @@ public class TriggerAlarmForMLCommand implements Command {
 	private void generateEvent(MLContext mlContext,long assetID,long parentAlarmID) throws Exception
 	{
 		LOGGER.info("Inside Generate Event "+parentAlarmID);
-		if(parentAlarmID==-1)
+		if(parentAlarmID!=-1)
 		{
 			checkAndGenerateRCAEvent(mlContext,assetID,parentAlarmID);
 		}
