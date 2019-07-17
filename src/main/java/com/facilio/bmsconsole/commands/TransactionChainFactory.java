@@ -3700,6 +3700,13 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+		public static Chain getExecuteFormActionRules() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ValidateAndFillFromRuleParamsCommand());
+			c.addCommand(new ExecuteFormActionRulesCommand());
+			return c;
+		}
+
 }
 
 

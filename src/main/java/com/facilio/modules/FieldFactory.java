@@ -205,6 +205,33 @@ public class FieldFactory {
 		
 		return fields;
 	}
+	
+	public static List<FacilioField> getFormRuleFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getFormRuleModule();
+		
+		fields.add(getIdField(module));
+		fields.add(getField("ruleType", "RULE_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("triggerType", "TRIGGER_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("formId", "FORM_ID", module, FieldType.LOOKUP));
+		fields.add(getField("fieldId", "FORM_FIELD_ID", module, FieldType.LOOKUP));
+		fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.LOOKUP));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getFormRuleActionFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getFormRuleActionModule();
+		
+		fields.add(getIdField(module));
+		fields.add(getField("formRuleId", "FORM_RULE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("actionType", "ACTION_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("formFieldId", "FORM_FIELD_ID", module, FieldType.LOOKUP));
+		fields.add(getField("actionMeta", "ACTION_META_JSON", module, FieldType.STRING));
+		
+		return fields;
+	}
 
 	private static FacilioField getDisplay_NameField(FacilioModule module) {
 		/*FacilioField displayName = new FacilioField();

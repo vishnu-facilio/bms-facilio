@@ -16,7 +16,9 @@ import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
 import com.facilio.bmsconsole.forms.FormFactory;
 import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.forms.FormRuleContext;
 import com.facilio.bmsconsole.forms.FormSection;
+import com.facilio.bmsconsole.util.FormRuleAPI;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -65,6 +67,23 @@ public class FormAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String executeFormActionRules() throws Exception {
+		Context context = new FacilioContext();
+		
+		context.put(FacilioConstants.ContextNames.FORM_ID, this.getFormId());
+		context.put(FacilioConstants.ContextNames.FORM_FIELD_ID, this.getFormFieldId());
+		context.put(FormRuleAPI.FORM_RULE_TRIGGER_TYPE,FormRuleContext.TriggerType.getAllTriggerType().get(triggerType));
+		context.put(FormRuleAPI.FORM_DATA,formData);
+		
+		Chain c = TransactionChainFactory.getExecuteFormActionRules();
+		c.execute(context);
+		
+		FacilioForm form = (FacilioForm) context.get(FacilioConstants.ContextNames.FORM);
+		this.setForms(Collections.singletonList(form));
+		
+		return SUCCESS;
+	}
+	
 	public String v2fetchFormMeta() throws Exception {
 		fetchFormMeta();
 		setResult(FacilioConstants.ContextNames.FORMS, forms);
@@ -82,7 +101,35 @@ public class FormAction extends FacilioAction {
 	}
 	
     private long formId;
+    private long formFieldId;
+    private int triggerType;
+    
+    Map<String,Object> formData;
 	
+	public int getTriggerType() {
+		return triggerType;
+	}
+
+	public void setTriggerType(int triggerType) {
+		this.triggerType = triggerType;
+	}
+
+	public Map<String, Object> getFormData() {
+		return formData;
+	}
+
+	public void setFormData(Map<String, Object> formData) {
+		this.formData = formData;
+	}
+
+	public long getFormFieldId() {
+		return formFieldId;
+	}
+
+	public void setFormFieldId(long formFieldId) {
+		this.formFieldId = formFieldId;
+	}
+
 	private List<FormField> fields;
 	
 	public void setFields(List<FormField> fields) {
