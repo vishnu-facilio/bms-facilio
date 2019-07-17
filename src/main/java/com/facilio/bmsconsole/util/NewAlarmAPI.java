@@ -112,6 +112,10 @@ public class NewAlarmAPI {
 		switch (type) {
 		case READING_ALARM:
 			return "newreadingalarm";
+		case ML_ANOMALY_ALARM:
+			return "mlanomalyalarm";
+		case RCA_ALARM:
+			return "rcaalarm";
 
 		default:
 			throw new IllegalArgumentException("Invalid alarm type");
