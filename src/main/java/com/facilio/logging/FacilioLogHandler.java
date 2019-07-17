@@ -61,12 +61,14 @@ public class FacilioLogHandler extends Handler {
             lastFreeSpaceCheckedTime = System.currentTimeMillis();
             freeSpace = ROOT_FILE.getFreeSpace();
         }
+        boolean isLoggable = true;
         if (AccountUtil.getCurrentAccount() != null) {
-            return event.getLevel().toInt() >= AccountUtil.getCurrentAccount().getLevel().toInt();
+            isLoggable = event.getLevel().toInt() >= AccountUtil.getCurrentAccount().getLevel().toInt();
         }
         else {
-            return event.getLevel().toInt() >= org.apache.log4j.Level.INFO_INT;
+            isLoggable = event.getLevel().toInt() >= org.apache.log4j.Level.INFO_INT;
         }
+        return isLoggable && freeSpace > FREE_SPACE_THRESHOLD;
     }
 
     static LoggingEvent addEventProps(LoggingEvent event) {
