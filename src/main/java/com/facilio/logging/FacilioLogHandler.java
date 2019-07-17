@@ -1,5 +1,6 @@
 package com.facilio.logging;
 
+import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
@@ -59,13 +60,12 @@ public class FacilioLogHandler extends Handler {
             lastFreeSpaceCheckedTime = System.currentTimeMillis();
             freeSpace = ROOT_FILE.getFreeSpace();
         }
-
-        return (
-                (   (event.getLevel().toInt() >= org.apache.log4j.Level.INFO_INT)
-                        && (AccountUtil.getCurrentAccount() == null || (event.getLevel().toInt() >= AccountUtil.getCurrentAccount().getLevel().toInt()))
-                )
-                        && (freeSpace > FREE_SPACE_THRESHOLD)
-        );
+        if (AccountUtil.getCurrentAccount() != null) {
+            return event.getLevel().toInt() >= AccountUtil.getCurrentAccount().getLevel().toInt();
+        }
+        else {
+            return event.getLevel().toInt() >= org.apache.log4j.Level.INFO_INT;
+        }
     }
 
     public static LoggingEvent addEventProps(LoggingEvent event) {
