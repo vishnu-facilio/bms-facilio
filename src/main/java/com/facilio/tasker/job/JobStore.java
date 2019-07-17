@@ -358,6 +358,10 @@ public class JobStore {
 		if(rs.getObject("EXECUTION_ERROR_COUNT") != null) {
 			jc.setJobExecutionCount(rs.getInt("EXECUTION_ERROR_COUNT"));
 		}
+
+		if (rs.getObject("LOGGER_LEVEL") != null) {
+			jc.setLoggerLevel(rs.getInt("LOGGER_LEVEL"));
+		}
 		
 		return jc;
 	}

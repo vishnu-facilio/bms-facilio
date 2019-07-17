@@ -1,5 +1,6 @@
 package com.facilio.tasker.job;
 
+import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.jobs.JobLogger;
@@ -47,11 +48,14 @@ public abstract class FacilioJob implements Runnable {
 			if(orgId != -1) {
 				AccountUtil.setCurrentAccount(orgId);
 				AccountUtil.setReqUri(jc.getJobName());
+				if (jc.getLoggerLevel() != -1) {
+					AccountUtil.getCurrentAccount().setLoggerLevel(jc.getLoggerLevel());
+				}
 			}
 			if (StringUtils.isNotEmpty(jc.getTimezone())) {
 				AccountUtil.setTimeZone(jc.getTimezone());
 			}
-			
+
 			FacilioContext context = new FacilioContext();
 			context.put(JobConstants.JOB_CONTEXT, jc);
 			context.put(JobConstants.FACILIO_JOB, this);

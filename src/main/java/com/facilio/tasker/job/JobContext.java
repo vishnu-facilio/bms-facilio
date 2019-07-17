@@ -194,6 +194,14 @@ public class JobContext {
 		this.jobExecutionCount = jobExecutionCount;
 	}
 
+	private int loggerLevel = -1;
+	public int getLoggerLevel() {
+		return loggerLevel;
+	}
+	public void setLoggerLevel(int loggerLevel) {
+		this.loggerLevel = loggerLevel;
+	}
+
 	public String getJobKey() {
 		return new StringBuilder()
 				.append(jobId)
