@@ -16,23 +16,31 @@ public class ProtocolUtil {
 		switch(controllerType) {
 			case BACNET_IP:
 			case BACNET_MSTP:
-				setBacnetPointData(command, instance, point, modBean);
+				point.put("instanceType", instance.get("instanceType"));
+				point.put("objectInstanceNumber", instance.get("objectInstanceNumber"));
+				point.put("instance", instance.get("instance"));
 				break;
+				
 			case NIAGARA:
-				setNiagaraPoint(command, instance, point);
+				point.put("pointPath", instance.get("pointPath"));
+				break;
+				
+			default:
+				point.put("instance", instance.get("instance"));
 				break;
 		}
-	}
-
-	public static void setBacnetPointData(IotCommandType command, Map<String, Object> instance, Map<String, Object> point, ModuleBean modBean) throws Exception {
-		point.put("instanceType", instance.get("instanceType"));
-		point.put("objectInstanceNumber", instance.get("objectInstanceNumber"));
 		
+		setCommandData(command, controllerType, instance, point, modBean);
+		
+	}
+	
+	private static void setCommandData(IotCommandType command, ControllerType controllerType, Map<String, Object> instance, Map<String, Object> point, ModuleBean modBean) throws Exception {
 		switch(command) {
 			case CONFIGURE:
-				point.put("instance", instance.get("instance"));
-				point.put("device", instance.get("device"));
-				point.put("instanceDescription", instance.get("instanceDescription"));
+				if (controllerType == ControllerType.BACNET_IP || controllerType == ControllerType.BACNET_MSTP) {
+					point.put("device", instance.get("device"));
+					point.put("instanceDescription", instance.get("instanceDescription"));
+				}
 				break;
 			case SUBSCRIBE:
 				if (instance.containsKey("thresholdJson")) {
@@ -66,14 +74,6 @@ public class ProtocolUtil {
 			type = "string";
 		}
 		return type;
-	}
-
-	public static void setNiagaraPoint(IotCommandType command, Map<String, Object> instance, Map<String, Object> point) throws Exception {
-		switch(command) {
-			case CONFIGURE:
-				point.put("pointPath", instance.get("pointPath"));
-				break;
-		}
 	}
 
 }
