@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Command;
@@ -78,7 +79,7 @@ public class ParseDataForReadingLogsCommand implements Command {
 				ImportRowContext rowContext = new ImportRowContext();
 				rowContext.setSheetNumber(i);
 				rowContext.setRowNumber(row_no);
-				LOGGER.severe("row_no -- "+row_no);
+				LOGGER.log(Level.FINE, "row_no -- "+row_no);
 				Row row = rowItr.next();
 				
 				if(row.getPhysicalNumberOfCells() <= 0) {
@@ -189,7 +190,7 @@ public class ParseDataForReadingLogsCommand implements Command {
 				
 				
 				rowContext.setColVal(colVal);
-				LOGGER.severe("row -- "+row_no+" colVal --- "+colVal);
+				LOGGER.log(Level.FINE, "row -- "+row_no+" colVal --- "+colVal);
 				
 				JSONObject meta = importTemplateContext.getModuleJSON();
 				Long parentId =null;
