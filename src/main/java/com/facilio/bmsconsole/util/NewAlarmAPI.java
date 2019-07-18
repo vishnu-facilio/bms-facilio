@@ -53,8 +53,6 @@ public class NewAlarmAPI {
 				.beanClass(BaseAlarmContext.class).select(modBean.getAllFields(module.getName()))
 				.andCondition(CriteriaAPI.getIdCondition(ids, module));
 		List<BaseAlarmContext> list = builder.get();
-		LOGGER.log(Level.SEVERE, "select query: " + builder.toString());
-		LOGGER.log(Level.SEVERE, "Result set: " + list);
 		return getExtendedAlarms(list);
 	}
 
@@ -74,7 +72,6 @@ public class NewAlarmAPI {
 			}
 			alarmIds.add((Long) map.getId());
 		}
-		LOGGER.log(Level.SEVERE, "AlarmId map: " + alarmMap);
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		for (Entry<Type, List<Long>> entry : alarmMap.entrySet()) {
@@ -85,8 +82,6 @@ public class NewAlarmAPI {
 					.select(modBean.getAllFields(getAlarmModuleName(type)))
 					.andCondition(CriteriaAPI.getIdCondition(entry.getValue(), module));
 			List<BaseAlarmContext> alarmList = selectBuilder.get();
-			LOGGER.log(Level.SEVERE, "Result set: " + alarmList);
-			LOGGER.log(Level.SEVERE, "Result set: " + selectBuilder.toString());
 			baseAlarms.addAll(alarmList);
 		}
 
@@ -164,14 +159,10 @@ public class NewAlarmAPI {
 		List<AlarmOccurrenceContext> list = builder.get();
 
 		List<Long> alarmIds = new ArrayList<>();
-		LOGGER.log(Level.SEVERE, "select query: " + builder.toString());
-		LOGGER.log(Level.SEVERE, "result set: " + list);
 		for (AlarmOccurrenceContext alarmOccurrence : list) {
 			alarmIds.add(alarmOccurrence.getAlarm().getId());
 		}
-		LOGGER.log(Level.SEVERE, "Alarm id in getlatestalarmoccurrence: " + alarmIds);
 		Map<Long, BaseAlarmContext> alarmMap = FieldUtil.getAsMap(getAlarms(alarmIds));
-		LOGGER.log(Level.SEVERE, "Alarm map in getlatestalarmoccurrence: " + alarmMap);
 		for (AlarmOccurrenceContext alarmOccurrence : list) {
 			alarmOccurrence.setAlarm(alarmMap.get(alarmOccurrence.getAlarm().getId()));
 		}
