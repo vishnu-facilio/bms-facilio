@@ -234,7 +234,12 @@ public class TaskAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.SKIP_LAST_READING_CHECK, true);
 		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
 		Map<Long, Map<String, String>> errorMap = new HashMap<>();
-		Chain updateTask = TransactionChainFactory.getUpdateTaskChain();
+		Chain updateTask;
+		if (task.isPreRequest()) {
+			updateTask = TransactionChainFactory.getUpdatePreRequestChain();
+		} else {
+			updateTask = TransactionChainFactory.getUpdateTaskChain();
+		}
 		try {
 			updateTask.execute(context);
 		} catch (ReadingValidationException ex) {
@@ -247,6 +252,9 @@ public class TaskAction extends FacilioAction {
 		Integer count = (Integer) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 		if (count != null) {
 			rowsUpdated = count;
+		}
+		if (context.get(FacilioConstants.ContextNames.PRE_REQUEST_STATUS) != null) {
+			preRequestStatus = (Integer) context.get(FacilioConstants.ContextNames.PRE_REQUEST_STATUS);
 		}
 		}
 		catch (Exception e) {
