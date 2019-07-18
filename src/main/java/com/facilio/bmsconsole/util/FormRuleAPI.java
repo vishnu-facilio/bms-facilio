@@ -8,11 +8,16 @@ import java.util.regex.Pattern;
 
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.KPICategoryContext;
 import com.facilio.bmsconsole.forms.FormActionType;
 import com.facilio.bmsconsole.forms.FormRuleActionContext;
 import com.facilio.bmsconsole.forms.FormRuleContext;
 import com.facilio.bmsconsole.forms.FormRuleContext.TriggerType;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FieldFactory;
@@ -39,7 +44,64 @@ public class FormRuleAPI {
 	
 	
 	private static final String FIELD_NAME_PLACE_HOLDER = "\\$\\{(.+?)\\}";
+	
+	
+	public static void addFormRuleContext(FormRuleContext formRuleContext) throws Exception {
+		
+		formRuleContext.setOrgId(AccountUtil.getCurrentOrg().getId());
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getFormRuleModule().getTableName())
+				.fields(FieldFactory.getFormRuleFields());
+		
+		Map<String, Object> props = FieldUtil.getAsProperties(formRuleContext);
+		insertBuilder.addRecord(props);
+		insertBuilder.save();
+		
+		formRuleContext.setId((Long) props.get("id"));
+	}
+	
+	public static void addFormRuleActionContext(FormRuleActionContext formRuleActionContext) throws Exception {
 
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getFormRuleActionModule().getTableName())
+				.fields(FieldFactory.getFormRuleActionFields());
+
+		formRuleActionContext.setOrgId(AccountUtil.getCurrentOrg().getId());
+		Map<String, Object> props = FieldUtil.getAsProperties(formRuleActionContext);
+		insertBuilder.addRecord(props);
+		insertBuilder.save();
+
+		formRuleActionContext.setId((Long) props.get("id"));
+	}
+	
+	public static void updateFormRuleContext(FormRuleContext formRuleContext) throws Exception {
+		
+		
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(ModuleFactory.getFormRuleModule().getTableName())
+				.fields(FieldFactory.getFormRuleFields())
+				.andCondition(CriteriaAPI.getIdCondition(formRuleContext.getId(), ModuleFactory.getFormRuleModule()));
+
+		Map<String, Object> props = FieldUtil.getAsProperties(formRuleContext);
+		updateBuilder.update(props);
+		
+	}
+	
+	public static void deleteFormRuleContext(FormRuleContext formRuleContext) {
+		
+		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		
+		deleteRecordBuilder.table(ModuleFactory.getFormRuleModule().getTableName())
+		.andCondition(CriteriaAPI.getIdCondition(formRuleContext.getId(), ModuleFactory.getFormRuleModule()));
+	}
+	
+	public static void deleteFormRuleActionContext(FormRuleActionContext formRuleActionContext) {
+		
+		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
+		
+		deleteRecordBuilder.table(ModuleFactory.getFormRuleActionModule().getTableName())
+		.andCondition(CriteriaAPI.getIdCondition(formRuleActionContext.getId(), ModuleFactory.getFormRuleActionModule()));
+	}
 	
 	public static FormRuleContext getFormRuleContext(long formRuleId) throws Exception {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()

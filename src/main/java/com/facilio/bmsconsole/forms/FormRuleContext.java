@@ -20,6 +20,7 @@ public class FormRuleContext {
 	long formId = -1;
 	long fieldId = -1;
 	long criteriaId = -1;
+	Criteria criteria;
 	
 	TriggerType triggerType;
 	RuleType ruleType;
@@ -36,13 +37,21 @@ public class FormRuleContext {
 
 	public boolean evaluateCriteria (Map<String, Object> record,FacilioContext context) throws Exception {
 		boolean criteriaFlag = true;
-		Criteria criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getId(), criteriaId);
+		criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getId(), criteriaId);
 		if(criteria != null && record != null) {
 			criteriaFlag = criteria.computePredicate(record).evaluate(record);
 		}
 		return criteriaFlag;
 	}
 	
+	public Criteria getCriteria() {
+		return criteria;
+	}
+
+	public void setCriteria(Criteria criteria) {
+		this.criteria = criteria;
+	}
+
 	public void executeAction(FacilioContext context) throws Exception {
 
 		if(actions == null) {

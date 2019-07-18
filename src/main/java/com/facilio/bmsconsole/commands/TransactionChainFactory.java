@@ -3710,6 +3710,25 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+		public static Chain getAddFormRuleChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddFormRuleCommand());
+			c.addCommand(new AddFormRuleActionCommand());
+			return c;
+		}
+		public static Chain getUpdateFormRuleChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateFormRuleCommand());
+			c.addCommand(new DeleteFormRuleActionCommand());
+			c.addCommand(new AddFormRuleActionCommand());
+			return c;
+		}
+		public static Chain getDeleteFormRuleChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new DeleteFormRuleActionCommand());
+			c.addCommand(new DeleteFormRuleCommand());
+			return c;
+		}
 }
 
 
