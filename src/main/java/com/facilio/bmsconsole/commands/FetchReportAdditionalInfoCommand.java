@@ -20,9 +20,14 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
+import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -80,8 +85,6 @@ public class FetchReportAdditionalInfoCommand implements Command {
 						}
 					}
 
-					Map<Long, ReadingAlarmContext> alarmMap = showAlarms ? new HashMap<>() : null;
-					List<ReadingAlarmContext> allAlarms = showAlarms ? new ArrayList<>() : null;
 					for (ReportDataPointContext dp : report.getDataPoints()) {
 						if (!validateFetchingOfAdditionalInfo(dp)) {
 							return false; // All datapoints should be valid to fetch alarms
@@ -90,43 +93,15 @@ public class FetchReportAdditionalInfoCommand implements Command {
 						if (showSafeLimit) {
 							reportAggrData.put(dp.getAliases().get("actual")+".safeLimit", getSafeLimit(dp));
 						}
-
-						if (showAlarms && !fetchEventBar) {
-							List<Long> parentIds = getParentIds(dp);
-
-//							if (AccountUtil.getCurrentOrg().getId() == 75) {
-//								LOGGER.info("Parent IDs of alarms to be fetched : "+parentIds);
-//							}
-
-							if (parentIds != null) {
-								List<ReadingAlarmContext> alarms = null;
-								if (alarmId == null || alarmId == -1) {
-									alarms = AlarmAPI.getReadingAlarms(parentIds, -1l, dp.getyAxis().getFieldId(), report.getDateRange().getStartTime(), report.getDateRange().getEndTime(), false);
-								}
-								else if (currentAlarm != null && currentAlarm.getReadingFieldId() == dp.getyAxis().getFieldId() && parentIds.contains(currentAlarm.getResource().getId())) {
-									alarms = AlarmAPI.getReadingAlarms(currentAlarm.getEntityId(), report.getDateRange().getStartTime(), report.getDateRange().getEndTime(), false);
-								}
-
-//								if (AccountUtil.getCurrentOrg().getId() == 75) {
-//									LOGGER.info("Fetched Alarms : "+alarms);
-//								}
-
-								if (alarms != null && !alarms.isEmpty()) {
-									for (ReadingAlarmContext alarm : alarms) {
-										alarm.addAdditionInfo("dataPoint", dp.getName());
-										allAlarms.add(alarm);
-									}
-								}
-							}
-						}
 					}
 
 					if (showAlarms && !fetchEventBar) {
-						reportAggrData.put("alarms", splitAlarms(allAlarms, report.getDateRange(), alarmMap));
-						reportAggrData.put("alarmInfo", alarmMap);
-
-						String sortAlias = (String) context.get(FacilioConstants.ContextNames.REPORT_SORT_ALIAS);
-						getRecordWiseAlarms(report, csvData, allAlarms, alarmMap, sortAlias);
+						if (AccountUtil.isFeatureEnabled(FeatureLicense.NEW_ALARMS)) {
+							newAlarm(report, showAlarms, fetchEventBar, alarmId, currentAlarm, reportAggrData, context, csvData);
+						}
+						else {
+							oldAlarm(report, showAlarms, fetchEventBar, alarmId, currentAlarm, reportAggrData, context, csvData);
+						}
 					}
 					
 					if(fetchEventBar) {
@@ -159,6 +134,63 @@ public class FetchReportAdditionalInfoCommand implements Command {
 		return false;
 	}
 	
+	private void newAlarm(ReportContext report, boolean showAlarms, boolean fetchEventBar, Long alarmId, ReadingAlarmContext currentAlarm, 
+			Map<String, Object> reportAggrData, Context context, Collection<Map<String, Object>> csvData) throws Exception {
+		Map<Long, AlarmOccurrenceContext> alarmMap = new HashMap<>();
+		List<AlarmOccurrenceContext> allAlarms = new ArrayList<>();
+		
+		for (ReportDataPointContext dp : report.getDataPoints()) {
+			List<Long> parentIds = getParentIds(dp);
+			
+			if (parentIds != null) {
+				List<AlarmOccurrenceContext> occurrences = null;
+				occurrences = NewAlarmAPI.getReadingAlarmOccurrences(1, report.getDateRange().getStartTime(), report.getDateRange().getEndTime());
+				
+				if (CollectionUtils.isNotEmpty(occurrences)) {
+					for (AlarmOccurrenceContext occurrence: occurrences) {
+						allAlarms.add(occurrence);
+					}
+				}
+			}
+		}
+		
+		reportAggrData.put("alarms",  allAlarms); //splitAlarms(allAlarms, report.getDateRange(), alarmMap));
+		reportAggrData.put("alarmInfo", alarmMap);
+	}
+	
+	private void oldAlarm(ReportContext report, boolean showAlarms, boolean fetchEventBar, Long alarmId, ReadingAlarmContext currentAlarm, 
+			Map<String, Object> reportAggrData, Context context, Collection<Map<String, Object>> csvData) throws Exception {
+		Map<Long, ReadingAlarmContext> alarmMap = new HashMap<>();
+		List<ReadingAlarmContext> allAlarms = new ArrayList<>();
+		
+		for (ReportDataPointContext dp : report.getDataPoints()) {
+			List<Long> parentIds = getParentIds(dp);
+
+			if (parentIds != null) {
+				List<ReadingAlarmContext> alarms = null;
+				if (alarmId == null || alarmId == -1) {
+					alarms = AlarmAPI.getReadingAlarms(parentIds, -1l, dp.getyAxis().getFieldId(), report.getDateRange().getStartTime(), report.getDateRange().getEndTime(), false);
+				}
+				else if (currentAlarm != null && currentAlarm.getReadingFieldId() == dp.getyAxis().getFieldId() && parentIds.contains(currentAlarm.getResource().getId())) {
+					alarms = AlarmAPI.getReadingAlarms(currentAlarm.getEntityId(), report.getDateRange().getStartTime(), report.getDateRange().getEndTime(), false);
+				}
+
+				if (alarms != null && !alarms.isEmpty()) {
+					for (ReadingAlarmContext alarm : alarms) {
+						alarm.addAdditionInfo("dataPoint", dp.getName());
+						allAlarms.add(alarm);
+					}
+				}
+			}
+		}
+
+		reportAggrData.put("alarms", splitAlarms(allAlarms, report.getDateRange(), alarmMap));
+		reportAggrData.put("alarmInfo", alarmMap);
+
+		String sortAlias = (String) context.get(FacilioConstants.ContextNames.REPORT_SORT_ALIAS);
+		getRecordWiseAlarms(report, csvData, allAlarms, alarmMap, sortAlias);
+	}
+
 	private boolean validateFetchingOfAdditionalInfo (ReportDataPointContext dp) {
 		return dp.getxAxis().getDataTypeEnum() == FieldType.DATE_TIME || dp.getxAxis().getDataTypeEnum() == FieldType.DATE;
 	}

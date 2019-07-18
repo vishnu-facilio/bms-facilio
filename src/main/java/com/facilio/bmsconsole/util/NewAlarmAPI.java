@@ -16,18 +16,24 @@ import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.AlarmSeverityContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
+import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.BaseEventContext;
 import com.facilio.bmsconsole.context.MLAnomalyAlarm;
 import com.facilio.bmsconsole.context.RCAAlarm;
 import com.facilio.bmsconsole.context.ReadingAlarm;
+import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
@@ -283,5 +289,38 @@ public class NewAlarmAPI {
 			}
 		}
 		return alarmOccurrenceContext;
+	}
+	
+	public static List<AlarmOccurrenceContext> getReadingAlarmOccurrences (long entityId, long startTime, long endTime) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		SelectRecordsBuilder<AlarmOccurrenceContext> selectBuilder = getAlarmBuilder(startTime, endTime, fields, fieldMap)
+																	.andCondition(CriteriaAPI.getCondition(fieldMap.get("alarm"), String.valueOf(entityId), NumberOperators.EQUALS))
+																	;
+		
+		return selectBuilder.get();
+	}
+	
+	private static SelectRecordsBuilder<AlarmOccurrenceContext> getAlarmBuilder(long startTime, long endTime, 
+			List<FacilioField> fields, Map<String, FacilioField> fieldMap) {
+		SelectRecordsBuilder<AlarmOccurrenceContext> selectBuilder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
+				.select(fields)
+				.moduleName(FacilioConstants.ContextNames.ALARM_OCCURRENCE)
+				.beanClass(AlarmOccurrenceContext.class)
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), String.valueOf(endTime), NumberOperators.LESS_THAN_EQUAL))
+				.orderBy("CREATED_TIME")
+				;
+
+		Condition condition1 = CriteriaAPI.getCondition(fieldMap.get("clearedTime"), String.valueOf(startTime), NumberOperators.GREATER_THAN_EQUAL);
+		Condition condition2 = CriteriaAPI.getCondition(fieldMap.get("clearedTime"), CommonOperators.IS_EMPTY);
+		
+		Criteria criteria = new Criteria();
+		
+		criteria.addOrCondition(condition1);
+		criteria.addOrCondition(condition2);
+		
+		selectBuilder.andCriteria(criteria);
+		return selectBuilder;
 	}
 }
