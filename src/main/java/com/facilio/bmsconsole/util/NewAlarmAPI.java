@@ -17,6 +17,8 @@ import com.facilio.bmsconsole.context.AlarmSeverityContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.bmsconsole.context.BaseEventContext;
+import com.facilio.bmsconsole.context.MLAnomalyAlarm;
+import com.facilio.bmsconsole.context.RCAAlarm;
 import com.facilio.bmsconsole.context.ReadingAlarm;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.constants.FacilioConstants;
@@ -98,6 +100,10 @@ public class NewAlarmAPI {
 		switch (type) {
 		case READING_ALARM:
 			return ReadingAlarm.class;
+		case ML_ANOMALY_ALARM:
+			return MLAnomalyAlarm.class;
+		case RCA_ALARM:
+			return RCAAlarm.class;
 
 		default:
 			throw new IllegalArgumentException("Invalid alarm type");
