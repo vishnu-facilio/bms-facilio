@@ -65,7 +65,10 @@ public class FetchCardDataCommand implements Command {
 		WidgetStaticContext widgetStaticContext = null;
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
+		// param after save
 		Long widgetId = (Long) context.get(FacilioConstants.ContextNames.WIDGET_ID);
+		
+		// param before save
 		String staticKey = (String) context.get(FacilioConstants.ContextNames.WIDGET_STATIC_KEY);
 		Long baseSpaceId = (Long) context.get(FacilioConstants.ContextNames.WIDGET_BASESPACE_ID);
 		WorkflowContext workflow = (WorkflowContext) context.get(FacilioConstants.ContextNames.WIDGET_WORKFLOW);
@@ -75,13 +78,6 @@ public class FetchCardDataCommand implements Command {
 		if(widgetId != null) {
 			DashboardWidgetContext dashboardWidgetContext =  DashboardUtil.getWidget(widgetId);
 			widgetStaticContext = (WidgetStaticContext) dashboardWidgetContext;
-			if(widgetStaticContext.getWidgetVsWorkflowContexts() != null && !widgetStaticContext.getWidgetVsWorkflowContexts().isEmpty()) {
-				
-				String s = "widgetStaticContext.getWidgetVsWorkflowContexts() size -- "+widgetStaticContext.getWidgetVsWorkflowContexts() +"\n";
-				s = s + "widgetStaticContext.getWidgetVsWorkflowContexts() size -- "+widgetStaticContext.getWidgetVsWorkflowContexts().get(0).getId() +"\n";
-				s = s + "widgetStaticContext.getWidgetVsWorkflowContexts() size -- "+widgetStaticContext.getWidgetVsWorkflowContexts().get(0).getWorkflowString() +"\n";
-				LOGGER.log(Level.SEVERE, s);
-			}
 		}
 		else {
 			widgetStaticContext = new WidgetStaticContext();
@@ -121,29 +117,25 @@ public class FetchCardDataCommand implements Command {
 				
 				boolean isNewWorkflowCard = false;
 				
-				if(widgetStaticContext.getId() == 7849 ||widgetStaticContext.getId() == 7848 ||widgetStaticContext.getId() ==7847 ||widgetStaticContext.getId() ==7846) {
-					
-					LOGGER.log(Level.SEVERE, "1.widgetStaticContext.getId() -- "+widgetStaticContext.getId()+" workflow == " +card.getWorkflow());
-				}
-				
+				String workflowString = card.getWorkflow();
 				if(card.isDynamicWfGeneratingCard()) {
-					card.setWorkflow(widgetStaticContext.getWidgetVsWorkflowContexts().get(0).getWorkflowString());
+					workflowString = widgetStaticContext.getWidgetVsWorkflowContexts().get(0).getWorkflowString();
 					if(widgetStaticContext.getWidgetVsWorkflowContexts().get(0).getWorkflowId() != null) {
 						WorkflowContext workflowTemp = WorkflowUtil.getWorkflowContext(widgetStaticContext.getWidgetVsWorkflowContexts().get(0).getWorkflowId());
 						if(workflowTemp.isV2Script()) {
-							card.setWorkflow(workflowTemp.getWorkflowV2String());
+							workflowString = workflowTemp.getWorkflowV2String();
 							isNewWorkflowCard = true;
 						}
 					}
 					else if(widgetStaticContext.getWidgetVsWorkflowContexts().get(0).getWorkflow() != null && widgetStaticContext.getWidgetVsWorkflowContexts().get(0).getWorkflow().isV2Script()) {
 						isNewWorkflowCard = true;
-						card.setWorkflow(widgetStaticContext.getWidgetVsWorkflowContexts().get(0).getWorkflow().getWorkflowV2String());
+						workflowString = widgetStaticContext.getWidgetVsWorkflowContexts().get(0).getWorkflow().getWorkflowV2String();
 					}
 				}
 				
 				if(widgetStaticContext.getId() == 7849 ||widgetStaticContext.getId() == 7848 ||widgetStaticContext.getId() ==7847 ||widgetStaticContext.getId() ==7846) {
 					
-					LOGGER.log(Level.SEVERE, "2.widgetStaticContext.getId() -- "+widgetStaticContext.getId()+" workflow == " +card.getWorkflow());
+					LOGGER.log(Level.SEVERE, "2.widgetStaticContext.getId() -- "+widgetStaticContext.getId()+" workflow == " +workflowString);
 				}
 				
 				if(widgetStaticContext.getStaticKey().equals(CardType.FAHU_STATUS_CARD_NEW.getName())) {
@@ -154,10 +146,10 @@ public class FetchCardDataCommand implements Command {
 					
 					Object wfResult = null;
 					if(isNewWorkflowCard) {
-						wfResult = WorkflowUtil.getWorkflowExpressionResult(card.getWorkflow(), widgetStaticContext.getParamsJson(),true);
+						wfResult = WorkflowUtil.getWorkflowExpressionResult(workflowString, widgetStaticContext.getParamsJson(),true);
 					}
 					else {
-						wfResult = WorkflowUtil.getWorkflowExpressionResult(card.getWorkflow(), widgetStaticContext.getParamsJson(),criteria);
+						wfResult = WorkflowUtil.getWorkflowExpressionResult(workflowString, widgetStaticContext.getParamsJson(),criteria);
 					}
 					
 					wfResult = CardUtil.getWorkflowResultForClient(wfResult, widgetStaticContext); // parsing data suitable for client
@@ -172,11 +164,11 @@ public class FetchCardDataCommand implements Command {
 					}
 				}
 				else {
-					Map<String, Object> expResult = WorkflowUtil.getExpressionResultMap(card.getWorkflow(), widgetStaticContext.getParamsJson(),criteria);
+					Map<String, Object> expResult = WorkflowUtil.getExpressionResultMap(workflowString, widgetStaticContext.getParamsJson(),criteria);
 					
 					if(widgetStaticContext.getId() == 7849 ||widgetStaticContext.getId() == 7848 ||widgetStaticContext.getId() ==7847 ||widgetStaticContext.getId() ==7846) {
 						
-						LOGGER.log(Level.SEVERE, "3.widgetStaticContext.getId() -- "+widgetStaticContext.getId()+" workflow == " +card.getWorkflow()+"  res -- "+expResult + " params -- "+widgetStaticContext.getParamsJson());
+						LOGGER.log(Level.SEVERE, "3.widgetStaticContext.getId() -- "+widgetStaticContext.getId()+" workflow == " +workflowString+"  res -- "+expResult + " params -- "+widgetStaticContext.getParamsJson());
 					}
 					
 					expResult = (Map<String, Object>) CardUtil.getWorkflowResultForClient(expResult, widgetStaticContext); // parsing data suitable for client

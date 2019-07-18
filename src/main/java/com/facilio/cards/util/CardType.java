@@ -467,20 +467,11 @@ public enum CardType {
 	public Integer getValue() {
 		return value;
 	}
-	public void setValue(Integer value) {
-		this.value = value;
-	}
 	public String getName() {
 		return name;
 	}
-	public void setName(String name) {
-		this.name = name;
-	}
 	public String getWorkflow() {
 		return workflow;
-	}
-	public void setWorkflow(String workflow) {
-		this.workflow = workflow;
 	}
 	
 	CardType(Integer value,String name,String workflow,boolean isSingleResultWorkFlow) {
