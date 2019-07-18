@@ -90,6 +90,7 @@ import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
+import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
@@ -193,7 +194,8 @@ public class DashboardUtil {
 		if (widgetVsWorkflowContext != null) {
 			
 			if((widgetVsWorkflowContext.getWorkflowId() == null || widgetVsWorkflowContext.getWorkflowId() <= 0) && widgetVsWorkflowContext.getWorkflowString() != null) {
-				Long workflowId = WorkflowUtil.addWorkflow(widgetVsWorkflowContext.getWorkflowString());
+				WorkflowContext workflow = widgetVsWorkflowContext.getWorkflow();
+				Long workflowId = WorkflowUtil.addWorkflow(workflow);
 				widgetVsWorkflowContext.setWorkflowId(workflowId);
 			}
 			
