@@ -574,6 +574,16 @@ public class TaskAction extends FacilioAction {
 		this.taskMap = taskMap;
 	}
 
+	private Map<Long, Map<String, Object>> prerequisiteMap;
+
+	public Map<Long, Map<String, Object>> getPrerequisiteMap() {
+		return prerequisiteMap;
+	}
+
+	public void setPrerequisiteMap(Map<Long, Map<String, Object>> prerequisiteMap) {
+		this.prerequisiteMap = prerequisiteMap;
+	}
+
 	public String getModuleLinkName()
 	{
 		return FacilioConstants.ContextNames.TASK;
@@ -676,6 +686,10 @@ public class TaskAction extends FacilioAction {
 
 		setTaskMap((Map<Long, Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP));
 		setResult(FacilioConstants.ContextNames.TASK_LIST, getTaskMap());
+		
+		setPrerequisiteMap((Map<Long, Map<String, Object>>) context.get(FacilioConstants.ContextNames.PRE_REQUEST_MAP));
+		setResult(FacilioConstants.ContextNames.PRE_REQUEST_LIST, getPrerequisiteMap());
+		
 		}
 		catch (Exception e) {
 			JSONObject inComingDetails = new JSONObject();

@@ -52,6 +52,17 @@ public class GetMultipleRelatedTasksCommand implements Command {
 		
 		CommonCommandUtil.loadTaskLookups(tasks);
 		
+		Map<Long, Map<String, Object>> prerequisiteMap = new HashMap<>();
+		recordIds.forEach(id -> {
+			Map<String, Object> value = new HashMap<>();
+			value.put("sections", null);
+			value.put("tasks", null);
+			prerequisiteMap.put(id, value);
+		});
+		List<TaskContext> prerequisites = alltasks.stream().filter(t -> t.isPreRequest()).collect(Collectors.toList());
+		context.put(FacilioConstants.ContextNames.PRE_REQUEST_LIST, prerequisites);
+		groupTaskBySection(prerequisites, prerequisiteMap);
+		context.put(FacilioConstants.ContextNames.PRE_REQUEST_MAP, prerequisiteMap);
 		return false;
 	}
 	
