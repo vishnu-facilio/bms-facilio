@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.util.FormRuleAPI;
 import com.facilio.chain.FacilioContext;
@@ -65,7 +66,20 @@ public enum FormActionType {
 	SET_FIELD_VALUE(5,"set") {
 		@Override
 		public void performAction(FacilioContext facilioContext) throws Exception {
-			// TODO Auto-generated method stub
+			FormRuleActionContext formRuleActionContext = (FormRuleActionContext) facilioContext.get(FormRuleAPI.FORM_RULE_ACTION_CONTEXT);
+			
+			Map<String,Object> fromData = (Map<String,Object>) facilioContext.get(FormRuleAPI.FORM_DATA);
+			
+			JSONArray resultJson = (JSONArray) facilioContext.get(FormRuleAPI.FORM_RULE_RESULT_JSON);
+			String meta = formRuleActionContext.getActionMeta();
+			JSONObject metaJson =  (JSONObject) new JSONParser().parse(meta);
+			
+			Object value = metaJson.get("setValue");
+			if(value instanceof String && FormRuleAPI.containsPlaceHolders((String)value)) {
+				value = FormRuleAPI.replacePlaceHoldersAndGetResult(fromData, (String)value);
+			}
+			JSONObject json = FormRuleAPI.getActionJson(formRuleActionContext.getFormFieldId(), FormActionType.SET_FIELD_VALUE, value);
+			resultJson.add(json);
 		}
 	},
 	;

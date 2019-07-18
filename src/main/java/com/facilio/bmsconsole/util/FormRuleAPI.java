@@ -1,7 +1,10 @@
 package com.facilio.bmsconsole.util;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.json.simple.JSONObject;
 
@@ -16,6 +19,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public class FormRuleAPI {
 	
@@ -32,6 +36,9 @@ public class FormRuleAPI {
 	public static final String JSON_RESULT_ACTION_STRING = "action";
 	public static final String JSON_RESULT_ACTION_NAME_STRING = "actionName";
 	public static final String JSON_RESULT_VALUE_STRING = "value";
+	
+	
+	private static final String FIELD_NAME_PLACE_HOLDER = "\\$\\{(.+?)\\}";
 
 	
 	public static FormRuleContext getFormRuleContext(long formRuleId) throws Exception {
@@ -91,7 +98,7 @@ public class FormRuleAPI {
 		}
 		return null;
 	}
-	public static JSONObject getActionJson(Long fieldId,FormActionType actionType,String value) {
+	public static JSONObject getActionJson(Long fieldId,FormActionType actionType,Object value) {
 		JSONObject jsonObject = new JSONObject();
 		
 		jsonObject.put(JSON_RESULT_FIELDID_STRING,fieldId);
@@ -101,5 +108,37 @@ public class FormRuleAPI {
 		jsonObject.put(JSON_RESULT_ACTION_STRING, jsonObject1);
 		
 		return jsonObject;
+	}
+	
+	public static String replacePlaceHoldersAndGetResult(Map<String,Object> fromData,String value) {
+		
+		List<String> allMatch = new ArrayList<String>();
+		
+		Pattern pattern = Pattern.compile(FIELD_NAME_PLACE_HOLDER);
+		Matcher matcher = pattern.matcher(value);
+
+		while (matcher.find())
+		{
+			allMatch.add(matcher.group());
+		}
+		for(String match :allMatch) {
+			String field = match.substring(2, match.length()-1);
+			Object val = fromData.get(field);
+			
+			String replaceValue = "";
+			if(val != null) {
+				replaceValue = val.toString();
+			}
+			
+			value = value.replaceFirst(Pattern.quote(match), replaceValue);
+		}
+		return value;
+	}
+
+	public static boolean containsPlaceHolders(String value) {
+		
+		Pattern pattern = Pattern.compile(FIELD_NAME_PLACE_HOLDER);
+		Matcher matcher = pattern.matcher(value);
+		return matcher.find();
 	}
 }
