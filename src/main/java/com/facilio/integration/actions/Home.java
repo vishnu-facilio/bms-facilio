@@ -28,6 +28,7 @@ import com.facilio.db.builder.DBUtil;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.auth.CognitoUtil;
+import com.iam.accounts.util.AuthUtill;
 import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -232,7 +233,7 @@ private static Logger log = LogManager.getLogger(Home.class.getName());
 				String userAgent = request.getHeader("User-Agent");
 				userAgent = userAgent != null ? userAgent : "";
 				String userType = (AccountUtil.getCurrentAccount().isFromMobile() ? "mobile" : "web");
-				AccountUtil.getUserBean().startUserSession(uid, username, jwt, request.getRemoteAddr(), userAgent, userType);
+				AuthUtill.getUserBean().startUserSessionv2(uid, username, jwt, request.getRemoteAddr(), userAgent, userType);
 			} catch (Exception e) {
 				log.info("Exception occurred ", e);
 				setJsonresponse("message", "Error while validating user name and password");

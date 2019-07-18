@@ -618,11 +618,11 @@ public class AccountConstants {
 		}
 	}
 
-	public static FacilioModule getUserModule() {
+	public static FacilioModule getAppUserModule() {
 		FacilioModule userModule = new FacilioModule();
-		userModule.setName("user");
-		userModule.setDisplayName("Users");
-		userModule.setTableName("Users");
+		userModule.setName("app_user");
+		userModule.setDisplayName("App Users");
+		userModule.setTableName("App_Users");
 
 		return userModule;
 	}
@@ -664,11 +664,11 @@ public class AccountConstants {
 		return orgModule;
 	}
 
-	public static FacilioModule getOrgUserModule() {
+	public static FacilioModule getAppOrgUserModule() {
 		FacilioModule orgModule = new FacilioModule();
-		orgModule.setName("orguser");
-		orgModule.setDisplayName("Org Users");
-		orgModule.setTableName("ORG_Users");
+		orgModule.setName("app_orguser");
+		orgModule.setDisplayName("App Org Users");
+		orgModule.setTableName("App_ORG_Users");
 
 		return orgModule;
 	}
@@ -945,19 +945,19 @@ public class AccountConstants {
 		password.setName("password");
 		password.setDataType(FieldType.STRING);
 		password.setColumnName("PASSWORD");
-		password.setModule(getUserModule());
+		password.setModule(getAppUserModule());
 		return password;
 	}
 	
 	
 
-	public static List<FacilioField> getUserFields() {
-		FacilioModule module = getUserModule();
+	public static List<FacilioField> getAppUserFields() {
+		FacilioModule module = getAppUserModule();
 		List<FacilioField> fields = new ArrayList<>();
 
 		FacilioField uid = new FacilioField();
 		uid.setName("uid");
-		uid.setDataType(FieldType.ID);
+		uid.setDataType(FieldType.NUMBER);
 		uid.setColumnName("USERID");
 		uid.setModule(module);
 		fields.add(uid);
@@ -968,13 +968,6 @@ public class AccountConstants {
 		name.setColumnName("NAME");
 		name.setModule(module);
 		fields.add(name);
-
-	/*	FacilioField cognitoId = new FacilioField();
-		cognitoId.setName("cognitoId");
-		cognitoId.setDataType(FieldType.STRING);
-		cognitoId.setColumnName("COGNITO_ID");
-		cognitoId.setModule(module);
-		fields.add(cognitoId);*/
 
 		FacilioField userVerified = new FacilioField();
 		userVerified.setName("userVerified");
@@ -1025,41 +1018,7 @@ public class AccountConstants {
 		mobile.setModule(module);
 		fields.add(mobile);		
 
-		FacilioField street = new FacilioField();
-		street.setName("street");
-		street.setDataType(FieldType.STRING);
-		street.setColumnName("STREET");
-		street.setModule(module);
-		fields.add(street);
-
-		FacilioField city = new FacilioField();
-		city.setName("city");
-		city.setDataType(FieldType.STRING);
-		city.setColumnName("CITY");
-		city.setModule(module);
-		fields.add(city);
-
-		FacilioField state = new FacilioField();
-		state.setName("state");
-		state.setDataType(FieldType.STRING);
-		state.setColumnName("STATE");
-		state.setModule(module);
-		fields.add(state);
-
-		FacilioField zip = new FacilioField();
-		zip.setName("zip");
-		zip.setDataType(FieldType.STRING);
-		zip.setColumnName("ZIP");
-		zip.setModule(module);
-		fields.add(zip);
-
-		FacilioField country = new FacilioField();
-		country.setName("country");
-		country.setDataType(FieldType.STRING);
-		country.setColumnName("COUNTRY");
-		country.setModule(module);
-		fields.add(country);
-
+		
 		return fields;
 	}
 
@@ -1154,14 +1113,14 @@ public class AccountConstants {
 	}
 
 
-	public static List<FacilioField> getOrgUserFields() {
-		FacilioModule module = getOrgUserModule();
+	public static List<FacilioField> getAppOrgUserFields() {
+		FacilioModule module = getAppOrgUserModule();
 		module.setExtendModule(ModuleFactory.getResourceModule());
 		List<FacilioField> fields = new ArrayList<>();
 
 		FacilioField ouid = new FacilioField();
 		ouid.setName("ouid");
-		ouid.setDataType(FieldType.ID);
+		ouid.setDataType(FieldType.NUMBER);
 		ouid.setColumnName("ORG_USERID");
 		ouid.setModule(module);
 		fields.add(ouid);
@@ -1436,7 +1395,7 @@ public class AccountConstants {
 		deletedTime.setName("deletedTime");
 		deletedTime.setDataType(FieldType.NUMBER);
 		deletedTime.setColumnName("DELETED_TIME");
-		deletedTime.setModule(getOrgUserModule());
+		deletedTime.setModule(getAppOrgUserModule());
 		return deletedTime;
 	}
 	
@@ -1662,86 +1621,6 @@ public class AccountConstants {
 	}
 	
 
-	public static FacilioModule getAppUserModule() {
-		FacilioModule userModule = new FacilioModule();
-		userModule.setName("App user");
-		userModule.setDisplayName("Users");
-		userModule.setTableName("Users");
-
-		return userModule;
-	}
-	
-	public static FacilioModule getAppOrgUserModule() {
-		FacilioModule userModule = new FacilioModule();
-		userModule.setName("App Org user");
-		userModule.setDisplayName("App Org Users");
-		userModule.setTableName("ORG_Users");
-
-		return userModule;
-	}
-	
-	public static List<FacilioField> getAppUserFields() {
-		FacilioModule module = getUserModule();
-		List<FacilioField> fields = new ArrayList<>();
-
-		FacilioField uid = new FacilioField();
-		uid.setName("uid");
-		uid.setDataType(FieldType.ID);
-		uid.setColumnName("USERID");
-		uid.setModule(module);
-		fields.add(uid);
-
-		FacilioField name = new FacilioField();
-		name.setName("name");
-		name.setDataType(FieldType.STRING);
-		name.setColumnName("NAME");
-		name.setModule(module);
-		fields.add(name);
-
-		FacilioField email = new FacilioField();
-		email.setName("email");
-		email.setDataType(FieldType.STRING);
-		email.setColumnName("EMAIL");
-		email.setModule(module);
-		fields.add(email);
-
-		FacilioField photoId = new FacilioField();
-		photoId.setName("photoId");
-		photoId.setDataType(FieldType.NUMBER);
-		photoId.setColumnName("PHOTO_ID");
-		photoId.setModule(module);
-		fields.add(photoId);
-
-		FacilioField timezone = new FacilioField();
-		timezone.setName("timezone");
-		timezone.setDataType(FieldType.STRING);
-		timezone.setColumnName("TIMEZONE");
-		timezone.setModule(module);
-		fields.add(timezone);
-
-		FacilioField language = new FacilioField();
-		language.setName("language");
-		language.setDataType(FieldType.STRING);
-		language.setColumnName("LANGUAGE");
-		language.setModule(module);
-		fields.add(language);
-
-		FacilioField phone = new FacilioField();
-		phone.setName("phone");
-		phone.setDataType(FieldType.STRING);
-		phone.setColumnName("PHONE");
-		phone.setModule(module);
-		fields.add(phone);
-
-		FacilioField mobile = new FacilioField();
-		mobile.setName("mobile");
-		mobile.setDataType(FieldType.STRING);
-		mobile.setColumnName("MOBILE");
-		mobile.setModule(module);
-		fields.add(mobile);		
-
-		return fields;
-	}
 	
 
 }

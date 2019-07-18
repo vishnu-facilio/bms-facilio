@@ -80,6 +80,7 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.screen.util.ScreenUtil;
 import com.facilio.wms.util.WmsApi;
+import com.iam.accounts.util.AuthUtill;
 import com.opensymphony.xwork2.ActionContext;
 
 public class LoginAction extends FacilioAction {
@@ -167,12 +168,13 @@ public class LoginAction extends FacilioAction {
 			if (facilioToken != null) {
 				User currentUser = AccountUtil.getCurrentUser();
 				if (currentUser != null) {
-					AccountUtil.getUserBean().endUserSession(currentUser.getUid(), currentUser.getEmail(),
+					AuthUtill.logOut(currentUser.getUid(), currentUser.getEmail(),
 							facilioToken);
 				}
 			}
 		} catch (Exception e) {
 			log.info("Exception occurred ", e);
+			return ERROR;
 		}
 
 		HttpSession session = request.getSession();

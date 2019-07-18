@@ -27,6 +27,7 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
 import com.facilio.accounts.exception.AccountException;
+import com.facilio.accounts.impl.SampleGenericSelectBuilder;
 import com.facilio.accounts.util.AccountConstants.GroupMemberRole;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
@@ -126,7 +127,7 @@ public class UserBeanImplv2 implements UserBeanv2 {
 	}
 	
 	private long addUserEntryv2(User user) throws Exception {
-		return addUserEntryv2(user, true, false);
+		return addUserEntryv2(user, false, false);
 	}
 
 	private long addUserEntryv2(User user, boolean emailVerificationRequired, boolean isPortalUser) throws Exception {
@@ -249,26 +250,17 @@ public class UserBeanImplv2 implements UserBeanv2 {
 			}
 		}
 
-		long uid = getUid(user.getEmail());
-
-		if (uid == -1) {
-			uid = addUserEntryv2(user, false, false);
+		else {
+			long uid = addUserEntryv2(user, false, false);
 			user.setUid(uid);
-		//	addFacilioUser(user);
 			user.setDefaultOrg(true);
 		}
-		user.setUid(uid);
 		user.setOrgId(orgId);
 		user.setInviteAcceptStatus(false);
 		user.setInvitedTime(System.currentTimeMillis());
 		user.setUserStatus(true);
 		user.setUserType(AccountConstants.UserType.USER.getValue());
 		long ouid = addToORGUsersv2(user);
-
-		user.setOuid(ouid);
-		if(sendInvitation) {
-			sendInvitationv2(ouid, user);
-		}
 		return ouid;
 	}
 
@@ -480,11 +472,14 @@ public class UserBeanImplv2 implements UserBeanv2 {
 	}
 
 	@Override
-	public boolean acceptInvitev2(String token, String password) throws Exception {
+	public User acceptInvitev2(String token, String password) throws Exception {
 		User user = getUserFromToken(token);
 		user.setPassword(password);
 		long orgId=(user.getOrgId());
-		return AuthUtill.getTransactionalUserBean(orgId).acceptUserv2(user);
+		if(AuthUtill.getTransactionalUserBean(orgId).acceptUserv2(user)) {
+			return user;
+		}
+		return null;
 	}
 
 	public boolean acceptUserv2(User user) throws Exception {
@@ -1639,7 +1634,6 @@ public class UserBeanImplv2 implements UserBeanv2 {
 			user.setAvatarUrl(fs.getPrivateUrl(user.getPhotoId(), isPortalRequest));
 			user.setOriginalUrl(fs.orginalFileUrl(user.getPhotoId()));
 		}
-		AccountUtil.setCurrentAccount(user.getOrgId());
 		
 		return user;
 	}
@@ -1731,22 +1725,18 @@ public class UserBeanImplv2 implements UserBeanv2 {
 		User orgUser = getFacilioUserv2(orgId, user.getEmail());
 		if (orgUser != null) {
 			if (orgUser.getUserType() == AccountConstants.UserType.REQUESTER.getValue()) {
-//				orgUser.setUserType(AccountConstants.UserType.USER.getValue());
-//				updateUserv2(orgUser.getId(), orgUser);
+				orgUser.setUserType(AccountConstants.UserType.USER.getValue());
+				updateUserv2(orgUser.getId(), orgUser);
 			}
 			else {
 				throw new Exception("user_already_exists");
 			}
 		}
-		
-		long uid = getUid(user.getEmail());
-		if (uid == -1) {
-			uid = addUserEntryv2(user);
+		else {
+			long uid = addUserEntryv2(user);
 			user.setUid(uid);
-		//	addFacilioUserv2(user);
 			user.setDefaultOrg(true);
 		}
-		user.setUid(uid);
 		user.setOrgId(orgId);
 		user.setUserType(AccountConstants.UserType.USER.getValue());
 		user.setUserStatus(true);
@@ -1767,7 +1757,7 @@ public class UserBeanImplv2 implements UserBeanv2 {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, props.get("id"));
-		
+		user.setOuid((Long)props.get("id"));
 		return (Long)props.get("id");
 	}
 	
@@ -1821,15 +1811,6 @@ public class UserBeanImplv2 implements UserBeanv2 {
 		fields.addAll(AccountConstants.getOrgUserV2Fields());
 		fields.add(AccountConstants.getOrgIdField());
 
-//		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-//				.select(fields)
-//				.table("Account_Users")
-//				.innerJoin("Account_faciliousers")
-//				.on("Account_Users.USERID = Account_faciliousers.USERID")
-//				.innerJoin("Account_ORG_Users")
-//				.on("Account_Users.USERID = Account_ORG_Users.USERID")
-//				.andCustomWhere("(Account_faciliousers.email = ? or Account_faciliousers.username = ?) AND USER_STATUS = 1 AND DELETED_TIME = -1 and ISDEFAULT = ?", email, email, true);
-
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Users")
@@ -1845,8 +1826,8 @@ public class UserBeanImplv2 implements UserBeanv2 {
 		
 		return null;
 	}
-	
-	private User getFacilioUserv2(long orgId, String email) throws Exception {
+	@Override
+	public User getFacilioUserv2(long orgId, String email) throws Exception {
 
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getUserV2Fields());

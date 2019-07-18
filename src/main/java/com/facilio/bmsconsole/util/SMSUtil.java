@@ -64,13 +64,13 @@ public class SMSUtil {
 		SMSUtil otpsystem = new SMSUtil();
 		String otp = String.valueOf(((int)(Math.random()*(10000-1000)))+ 1000);
 		
-		String user = AccountConstants.getUserModule().getTableName();
+		String user = AccountConstants.getAppUserModule().getTableName();
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(AccountConstants.getOrgUserFields())
-				.table(AccountConstants.getOrgUserModule().getTableName())
+				.select(AccountConstants.getAppOrgUserFields())
+				.table(AccountConstants.getAppOrgUserModule().getTableName())
 				.innerJoin(user)
-				.on(AccountConstants.getOrgUserModule().getTableName()+".USERID = "+user+".USERID")
+				.on(AccountConstants.getAppOrgUserModule().getTableName()+".USERID = "+user+".USERID")
 				.andCustomWhere(user+".MOBILE = ? AND DELETED_TIME = -1", phonenumber);
 		
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -80,8 +80,8 @@ public class SMSUtil {
 		LOGGER.info("###############3The Org-User id is "+ouid);
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(AccountConstants.getOrgUserModule().getTableName())
-				.fields(AccountConstants.getOrgUserFields())
+				.table(AccountConstants.getAppOrgUserModule().getTableName())
+				.fields(AccountConstants.getAppOrgUserFields())
 				.andCustomWhere("ORG_USERID = ?", ouid);
 		prop.put("otp", otp);
 		prop.put("otpTime", System.currentTimeMillis());
@@ -129,12 +129,12 @@ public class SMSUtil {
 			return "invalid Phonenumber and OTP Code";
 		}
 		
-		String user = AccountConstants.getUserModule().getTableName();
+		String user = AccountConstants.getAppUserModule().getTableName();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(AccountConstants.getOrgUserFields())
-				.table(AccountConstants.getOrgUserModule().getTableName())
+				.select(AccountConstants.getAppOrgUserFields())
+				.table(AccountConstants.getAppOrgUserModule().getTableName())
 				.innerJoin(user)
-				.on(AccountConstants.getOrgUserModule().getTableName()+".USERID = "+user+".USERID")
+				.on(AccountConstants.getAppOrgUserModule().getTableName()+".USERID = "+user+".USERID")
 				.andCustomWhere(user+".MOBILE = ? AND DELETED_TIME = -1", phonenumber);
 		
 		
@@ -152,8 +152,8 @@ public class SMSUtil {
 			}
 				
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-					.table(AccountConstants.getOrgUserModule().getTableName())
-					.fields(AccountConstants.getOrgUserFields())
+					.table(AccountConstants.getAppOrgUserModule().getTableName())
+					.fields(AccountConstants.getAppOrgUserFields())
 					.andCustomWhere("ORG_USERID = ?", ouid);
 
 			prop.put("otpTime", 0L);

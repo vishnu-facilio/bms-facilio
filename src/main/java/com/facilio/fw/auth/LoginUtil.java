@@ -36,7 +36,7 @@ public class LoginUtil {
 		}
 
 		if (user == null) {
-			user = AuthUtill.getUserBean().getFacilioUserv2(cognitoUser.getEmail());
+			user = AccountUtil.getUserBean().getFacilioUser(cognitoUser.getEmail());
 		}
 		
 		Organization org = null;

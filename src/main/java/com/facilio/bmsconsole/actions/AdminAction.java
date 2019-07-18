@@ -33,6 +33,7 @@ import com.facilio.tasker.FacilioTimer;
 import com.facilio.wms.message.Message;
 import com.facilio.wms.message.MessageType;
 import com.facilio.wms.util.WmsApi;
+import com.iam.accounts.util.AuthUtill;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.util.ValueStack;
@@ -427,8 +428,7 @@ public class AdminAction extends ActionSupport
 		String email =getEmail();
 		
 		long uid = getUserId();
-		 //System.out.println("session id :"+email+" "+uid);
-		 AccountUtil.getUserBean().clearAllUserSessions(uid, email);
+		 AuthUtill.getUserBean().clearAllUserSessionsv2(uid, email);
 		
 		 return SUCCESS;
 		

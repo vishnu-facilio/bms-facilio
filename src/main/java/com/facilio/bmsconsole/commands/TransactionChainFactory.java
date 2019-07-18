@@ -706,11 +706,10 @@ public class TransactionChainFactory {
 			c.addCommand(new AddDefaultUnitsCommand());
 			c.addCommand(new AddDefaultGraphicsCommand());
 			c.addCommand(new AddEventModuleCommand());
-			c.addCommand(new AddOrgInfoCommand());
 			//add command to insert into product tables
-			c.addCommand(new AddAppUserCommand());
+			c.addCommand(new AddOrgInfoCommand());
+			c.addCommand(new CreateAppSuperAdminCommand());
 			
-			//add failiouser table
 			return c;
 		}
 

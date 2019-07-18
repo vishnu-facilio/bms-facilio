@@ -105,7 +105,8 @@ public class UserAction extends FacilioAction {
 	}
 
 	public String userVerify() throws Exception{
-		CommonCommandUtil.verifiedUser(getUserId()); 
+	//	CommonCommandUtil.verifiedUser(getUserId());
+		UserUtil.verifyUser(getUserId());
 		return SUCCESS;
 	}
 	public String userList() throws Exception {
@@ -208,17 +209,17 @@ public class UserAction extends FacilioAction {
 	}
 
 	public String deleteUser() throws Exception {
-		System.out.println("### Delete user :"+user.getEmail());
 		
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.USER, user);
-		Map params = ActionContext.getContext().getParameters();
+	    if(UserUtil.deleteUser(user,  AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail())) {
+	    	FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.USER, user);
+			Map params = ActionContext.getContext().getParameters();
+			Command deleteUser = FacilioChainFactory.getDeleteUserCommand();
+			deleteUser.execute(context);
+	    	return SUCCESS;
+	    }
 		
-		System.out.println("User object is "+params+"\n"+ user);
-		Command deleteUser = FacilioChainFactory.getDeleteUserCommand();
-		deleteUser.execute(context);
-		
-		return SUCCESS;
+		return ERROR;
 	}
 	
 	private Map<Long, String> roles;
@@ -280,6 +281,7 @@ public class UserAction extends FacilioAction {
 	}
 	
 	public String addUser() throws Exception {
+
 		boolean isEmailEmpty = (user.getEmail() == null ||  user.getEmail().isEmpty());
 		boolean isMobileEmpty = (user.getMobile() == null || user.getMobile().isEmpty());
 		if(isEmailEmpty && isMobileEmpty) {
@@ -302,33 +304,35 @@ public class UserAction extends FacilioAction {
 		user.setFacilioAuth("facilio".equals(value));
 
 
-//		Integer availableLicensedUsers = AccountUtil.getUserBean().getAvailableUserLicense(AccountUtil.getCurrentOrg().getOrgId());
-//		if (availableLicensedUsers < 1)
-//		{
-//			addFieldError("License", " Users license exceeded in your organization.");
-//			return ERROR;
-//		}
-//		Integer availableLicensedRoles = AccountUtil.getUserBean().getAvailableRoleLicense(AccountUtil.getCurrentOrg().getOrgId(), user.getRoleId());
-//		if (availableLicensedRoles < 1)
-//		{
-//			addFieldError("License", "This Role license exceeded in your organization.");
-//			return ERROR;	
-//		}
 		FacilioContext context = new FacilioContext();
+		//v2 authentication
+		if( (AccountUtil.getCurrentOrg() != null) && (user.getTimezone() == null) ) {
+			user.setTimezone(AccountUtil.getCurrentAccount().getTimeZone());
+		}
+		if( (AccountUtil.getCurrentUser() != null) && (user.getLanguage() == null) ) {
+			user.setLanguage(AccountUtil.getCurrentUser().getLanguage());
+		}
 		context.put(FacilioConstants.ContextNames.USER, user);
 		context.put(FacilioConstants.ContextNames.ACCESSIBLE_SPACE, accessibleSpace);
 		
 		try {
-			Chain addUser = FacilioChainFactory.getAddUserCommand();
+			long userId = UserUtil.addUser(user, AccountUtil.getCurrentOrg().getId(),AccountUtil.getCurrentUser().getEmail());
+			if(userId > 0) {
+				setUserId(userId);
+				context.put(FacilioConstants.ContextNames.USER, user);
+				Chain addUser = FacilioChainFactory.getAddUserCommand();
+				addUser.execute(context);
+			}
 			
-			addUser.execute(context);
-			setUserId(user.getId());
 		}
 		catch (Exception e) {
 			if (e instanceof AccountException) {
 				AccountException ae = (AccountException) e;
 				if (ae.getErrorCode().equals(AccountException.ErrorCode.EMAIL_ALREADY_EXISTS)) {
 					addFieldError("error", "This user already exists in your organization.");
+				}
+				if (ae.getErrorCode().equals(AccountException.ErrorCode.NOT_PERMITTED)) {
+					addFieldError("error", "Not Permitted to do this operation");
 				}
 			} else {
 				log.info("Exception occurred ", e);
@@ -386,13 +390,11 @@ public class UserAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.ACCESSIBLE_SPACE, accessibleSpace);
 		
 		try {
-			//Chain addUser = FacilioChainFactory.getAddUserCommand();
-			//Chain addUser = AuthenticationTransactionFactory.getAddUserChain();
+			setUserId(UserUtil.addUser(user, AccountUtil.getCurrentOrg().getId(), AccountUtil.getCurrentUser().getEmail()));
+			context.put(FacilioConstants.ContextNames.USER, user);
+			Chain addUser = FacilioChainFactory.getAddUserCommand();
+			addUser.execute(context);
 			
-			//addUser.execute(context);
-			
-			//setUserId(user.getId());
-			setUserId(UserUtil.addUser(user, AccountUtil.getCurrentOrg().getId()));
 		}
 		catch (Exception e) {
 			if (e instanceof AccountException) {
@@ -567,14 +569,17 @@ public class UserAction extends FacilioAction {
 	}
 	
 	public String updateUser() throws Exception {
-		
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.USER, user);
+		boolean updated = UserUtil.updateUser(user, AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail());
+		if(updated) {
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.USER, user);
 
-		Command addUser = FacilioChainFactory.getUpdateUserCommand();
-		addUser.execute(context);
+			Command addUser = FacilioChainFactory.getUpdateUserCommand();
+			addUser.execute(context);
+			return SUCCESS;
+		}
 				
-		return SUCCESS;
+		return ERROR;
 	}
 	
 	private UserMobileSetting userMobileSetting;
@@ -622,6 +627,7 @@ public class UserAction extends FacilioAction {
 		Map params = ActionContext.getContext().getParameters();
 		
 		System.out.println("User object is "+params+"\n"+ user);
+		
 		Command addUser = FacilioChainFactory.getChangeUserStatusCommand();
 		addUser.execute(context);
 		

@@ -181,8 +181,8 @@ public class OrgBeanImplv2 implements OrgBeanv2 {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(portalId);
 		fields.addAll(AccountConstants.getPortalUserFields());
-		fields.addAll(AccountConstants.getOrgUserFields());
-		fields.addAll(AccountConstants.getUserFields());
+		fields.addAll(AccountConstants.getAppOrgUserFields());
+		fields.addAll(AccountConstants.getAppUserFields());
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(portalUsersModule.getTableName())
@@ -211,8 +211,8 @@ public class OrgBeanImplv2 implements OrgBeanv2 {
 	public List<User> getAllOrgUsersv2(long orgId) throws Exception {
 		
 		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(AccountConstants.getUserFields());
-		fields.addAll(AccountConstants.getOrgUserFields());
+		fields.addAll(AccountConstants.getAppUserFields());
+		fields.addAll(AccountConstants.getAppOrgUserFields());
 		fields.add(AccountConstants.getOrgIdField());
 		//		fields.addAll(FieldFactory.getShiftUserRelModuleFields());
 		
@@ -244,7 +244,7 @@ public class OrgBeanImplv2 implements OrgBeanv2 {
 	
 	@Override
 	public List<User> getOrgUsersv2(long orgId, boolean status) throws Exception {
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(AccountConstants.getOrgUserFields());
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(AccountConstants.getAppOrgUserFields());
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("userStatus"), String.valueOf(status), NumberOperators.EQUALS));
 		return getOrgUsersv2(orgId, criteria);
@@ -279,8 +279,8 @@ public class OrgBeanImplv2 implements OrgBeanv2 {
 	
 	private List<Map<String, Object>> fetchOrgUserProps (long orgId, Criteria criteria) throws Exception {
 		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(AccountConstants.getUserFields());
-		fields.addAll(AccountConstants.getOrgUserFields());
+		fields.addAll(AccountConstants.getAppUserFields());
+		fields.addAll(AccountConstants.getAppOrgUserFields());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
@@ -297,8 +297,8 @@ public class OrgBeanImplv2 implements OrgBeanv2 {
 	public List<User> getActiveOrgUsersv2(long orgId) throws Exception {
 
 		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(AccountConstants.getUserFields());
-		fields.addAll(AccountConstants.getOrgUserFields());
+		fields.addAll(AccountConstants.getAppUserFields());
+		fields.addAll(AccountConstants.getAppOrgUserFields());
 
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
@@ -321,8 +321,8 @@ public class OrgBeanImplv2 implements OrgBeanv2 {
 	public List<User> getRequestersv2(long orgId) throws Exception {
 		
 		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(AccountConstants.getUserFields());
-		fields.addAll(AccountConstants.getOrgUserFields());
+		fields.addAll(AccountConstants.getAppUserFields());
+		fields.addAll(AccountConstants.getAppOrgUserFields());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)

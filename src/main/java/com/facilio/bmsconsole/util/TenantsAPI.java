@@ -541,7 +541,7 @@ public class TenantsAPI {
 		}
 		FacilioModule module = ModuleFactory.getTenantsuserModule();
 		FacilioModule portalUsersModule = AccountConstants.getPortalUserModule();
-		FacilioModule orgUserModule = AccountConstants.getOrgUserModule();
+		FacilioModule orgUserModule = AccountConstants.getAppOrgUserModule();
 			
 		List<FacilioField> fields = FieldFactory.getTenantsUserFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);

@@ -16,6 +16,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.constants.FacilioConstants;
+import com.iam.accounts.util.AuthUtill;
 import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.JWKSet;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
@@ -102,7 +103,7 @@ public class CognitoUtil {
 				faciliouser.setPortaluser(decodedjwt.getClaim("portaluser").asBoolean());
 
 				if (!isPortalUser) {
-					if (overrideSessionCheck || AccountUtil.getUserBean().verifyUserSession(faciliouser.getEmail(), idToken)) {
+					if (overrideSessionCheck || AuthUtill.getUserBean().verifyUserSessionv2(faciliouser.getEmail(), idToken)) {
 						return faciliouser;
 					} else {
 						// invalid session

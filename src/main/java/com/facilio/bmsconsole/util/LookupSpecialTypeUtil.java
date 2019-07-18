@@ -58,7 +58,7 @@ public class LookupSpecialTypeUtil {
 	public static FacilioField getIdField (String specialType) {
 		if(FacilioConstants.ContextNames.USERS.equals(specialType) || 
 			FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
-			return FieldFactory.getAsMap(AccountConstants.getOrgUserFields()).get("ouid");
+			return FieldFactory.getAsMap(AccountConstants.getAppOrgUserFields()).get("ouid");
 		}
 		else if (FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
 			return FieldFactory.getAsMap(AccountConstants.getGroupFields()).get("groupId"); 
@@ -450,7 +450,7 @@ public class LookupSpecialTypeUtil {
 	
 	public static FacilioModule getModule(String specialType) {
 		if(FacilioConstants.ContextNames.USERS.equals(specialType) || FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
-			FacilioModule module = AccountConstants.getOrgUserModule();
+			FacilioModule module = ccountConstants.getAppOrgUserModule();
 			module.setName(specialType);
 			return module;
 		}
@@ -495,8 +495,8 @@ public class LookupSpecialTypeUtil {
 	
 	public static List<FacilioField> getAllFields(String specialType) {
 		if(FacilioConstants.ContextNames.USERS.equals(specialType) || FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
-			List<FacilioField> fields = AccountConstants.getUserFields();
-			fields.addAll(AccountConstants.getOrgUserFields());
+			List<FacilioField> fields = AccountConstants.getAppUserFields();
+			fields.addAll(AccountConstants.getAppOrgUserFields());
 			return fields;
 		}
 		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {

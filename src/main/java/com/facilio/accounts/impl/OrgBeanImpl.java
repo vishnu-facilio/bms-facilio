@@ -216,17 +216,17 @@ public class OrgBeanImpl implements OrgBean {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(portalId);
 		fields.addAll(AccountConstants.getPortalUserFields());
-		fields.addAll(AccountConstants.getOrgUserFields());
-		fields.addAll(AccountConstants.getUserFields());
+		fields.addAll(AccountConstants.getAppOrgUserFields());
+		fields.addAll(AccountConstants.getAppUserFields());
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(portalUsersModule.getTableName())
 				.innerJoin(portalInfoModule.getTableName())
 				.on(portalUsersModule.getTableName()+".PORTALID = PortalInfo.PORTALID")
-				.innerJoin("Users")
+				.innerJoin("App_Users")
 				.on(portalUsersModule.getTableName()+".USERID = Users.USERID")
-				.innerJoin("ORG_Users")
-				.on("Users.USERID = ORG_Users.USERID AND ORG_Users.USER_TYPE=2")
+				.innerJoin("App_ORG_Users")
+				.on("App_Users.USERID = App_ORG_Users.USERID AND App_ORG_Users.USER_TYPE=2")
 				.andCustomWhere("PortalInfo.ORGID="+ orgId);
 
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -246,19 +246,19 @@ public class OrgBeanImpl implements OrgBean {
 	public List<User> getAllOrgUsers(long orgId) throws Exception {
 		
 		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(AccountConstants.getUserFields());
-		fields.addAll(AccountConstants.getOrgUserFields());
-		fields.add(AccountConstants.getOrgIdField());
+		fields.addAll(AccountConstants.getAppUserFields());
+		fields.addAll(AccountConstants.getAppOrgUserFields());
+//		fields.add(AccountConstants.getOrgIdField());
 		//		fields.addAll(FieldFactory.getShiftUserRelModuleFields());
 		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+		GenericSelectRecordBuilder selectBuilder = new SampleGenericSelectBuilder()
 				.select(fields)
-				.table("Users")
-				.innerJoin("ORG_Users")
-				.on("Users.USERID = ORG_Users.USERID")
+				.table("App_Users")
+				.innerJoin("App_ORG_Users")
+				.on("App_Users.USERID = App_ORG_Users.USERID")
 //				.leftJoin("Shift_User_Rel")
 //				.on("ORG_Users.ORG_USERID = Shift_User_Rel.ORG_USERID")
-				.andCustomWhere("ORG_Users.ORGID = ? AND USER_TYPE = ? AND DELETED_TIME = -1", orgId, AccountConstants.UserType.USER.getValue());
+				.andCustomWhere("App_ORG_Users.ORGID = ? AND USER_TYPE = ? AND DELETED_TIME = -1", orgId, AccountConstants.UserType.USER.getValue());
 		
 		User currentUser = AccountUtil.getCurrentAccount().getUser();
 		if(currentUser == null){
@@ -316,7 +316,7 @@ public class OrgBeanImpl implements OrgBean {
 	
 	@Override
 	public List<User> getOrgUsers(long orgId, boolean status) throws Exception {
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(AccountConstants.getOrgUserFields());
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(AccountConstants.getAppOrgUserFields());
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("userStatus"), String.valueOf(status), NumberOperators.EQUALS));
 		return getOrgUsers(orgId, criteria);
@@ -351,14 +351,14 @@ public class OrgBeanImpl implements OrgBean {
 	
 	private List<Map<String, Object>> fetchOrgUserProps (long orgId, Criteria criteria) throws Exception {
 		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(AccountConstants.getUserFields());
-		fields.addAll(AccountConstants.getOrgUserFields());
+		fields.addAll(AccountConstants.getAppUserFields());
+		fields.addAll(AccountConstants.getAppOrgUserFields());
 		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+		GenericSelectRecordBuilder selectBuilder = new SampleGenericSelectBuilder()
 				.select(fields)
-				.table("Users")
-				.innerJoin("ORG_Users")
-				.on("Users.USERID = ORG_Users.USERID")
+				.table("App_Users")
+				.innerJoin("App_ORG_Users")
+				.on("App_Users.USERID = App_ORG_Users.USERID")
 				.andCustomWhere("ORGID = ? AND USER_TYPE = ? AND DELETED_TIME = -1", orgId, AccountConstants.UserType.USER.getValue())
 				.andCriteria(criteria);
 				;
@@ -369,14 +369,14 @@ public class OrgBeanImpl implements OrgBean {
 	public List<User> getActiveOrgUsers(long orgId) throws Exception {
 
 		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(AccountConstants.getUserFields());
-		fields.addAll(AccountConstants.getOrgUserFields());
+		fields.addAll(AccountConstants.getAppUserFields());
+		fields.addAll(AccountConstants.getAppOrgUserFields());
 
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
-				.table("Users")
-				.innerJoin("ORG_Users")
-				.on("Users.USERID = ORG_Users.USERID")
+				.table("App_Users")
+				.innerJoin("App_ORG_Users")
+				.on("App_Users.USERID = App_ORG_Users.USERID")
 				.andCustomWhere("ORGID = ? AND USER_STATUS = 1 AND INVITATION_ACCEPT_STATUS = 1 AND USER_VERIFIED = 1 AND USER_TYPE = ? AND DELETED_TIME = -1", orgId, AccountConstants.UserType.USER.getValue());
 
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -393,14 +393,14 @@ public class OrgBeanImpl implements OrgBean {
 	public List<User> getRequesters(long orgId) throws Exception {
 		
 		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(AccountConstants.getUserFields());
-		fields.addAll(AccountConstants.getOrgUserFields());
+		fields.addAll(AccountConstants.getAppUserFields());
+		fields.addAll(AccountConstants.getAppOrgUserFields());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
-				.table("Users")
-				.innerJoin("ORG_Users")
-				.on("Users.USERID = ORG_Users.USERID")
+				.table("App_Users")
+				.innerJoin("App_ORG_Users")
+				.on("App_Users.USERID = App_ORG_Users.USERID")
 				.andCustomWhere("ORGID = ? AND DELETED_TIME = -1", orgId);
 		
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -424,18 +424,18 @@ public class OrgBeanImpl implements OrgBean {
 		}
 		
 		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(AccountConstants.getUserFields());
-		fields.addAll(AccountConstants.getOrgUserFields());
-		fields.add(AccountConstants.getOrgIdField(AccountConstants.getOrgUserModule()));
+		fields.addAll(AccountConstants.getAppUserFields());
+		fields.addAll(AccountConstants.getAppOrgUserFields());
+		fields.add(AccountConstants.getOrgIdField(AccountConstants.getAppOrgUserModule()));
 		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+		GenericSelectRecordBuilder selectBuilder = new SampleGenericSelectBuilder()
 				.select(fields)
-				.table("Users")
-				.innerJoin("ORG_Users")
-				.on("Users.USERID = ORG_Users.USERID")
+				.table("App_Users")
+				.innerJoin("App_ORG_Users")
+				.on("App_Users.USERID = App_ORG_Users.USERID")
 				.innerJoin("Role")
-				.on("ORG_Users.ROLE_ID = Role.ROLE_ID")
-				.andCustomWhere("ORG_Users.ORGID = ? AND ORG_Users.ROLE_ID = ? AND DELETED_TIME = -1", orgId, superAdminRole.getRoleId());
+				.on("App_ORG_Users.ROLE_ID = Role.ROLE_ID")
+				.andCustomWhere("App_ORG_Users.ORGID = ? AND App_ORG_Users.ROLE_ID = ? AND DELETED_TIME = -1", orgId, superAdminRole.getRoleId());
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {

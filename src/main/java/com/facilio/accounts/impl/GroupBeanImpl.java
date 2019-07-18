@@ -185,8 +185,8 @@ public class GroupBeanImpl implements GroupBean {
 	public List<GroupMember> getGroupMembers(long groupId) throws Exception {
 		
 		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(AccountConstants.getUserFields());
-		fields.addAll(AccountConstants.getOrgUserFields());
+		fields.addAll(AccountConstants.getAppUserFields());
+		fields.addAll(AccountConstants.getAppOrgUserFields());
 		fields.addAll(AccountConstants.getGroupMemberFields());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()

@@ -530,7 +530,7 @@ public static Map<Long,Object> getTechnicianCountBySite() throws Exception{
 	FacilioModule groupsModule = AccountConstants.getGroupModule();
 	FacilioModule groupMembersModule = AccountConstants.getGroupMemberModule();
 	FacilioModule rolesModule = AccountConstants.getRoleModule();
-	FacilioModule orgUserModule = AccountConstants.getOrgUserModule();
+	FacilioModule orgUserModule = AccountConstants.getAppOrgUserModule();
 	
 	List<FacilioField> fields = new ArrayList<FacilioField>();
 	
@@ -1140,9 +1140,9 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 	    FacilioModule groupsModule = AccountConstants.getGroupModule();
 		FacilioModule groupMembersModule = AccountConstants.getGroupMemberModule();
 		FacilioModule rolesModule = AccountConstants.getRoleModule();
-		FacilioModule orgUserModule = AccountConstants.getOrgUserModule();
+		FacilioModule orgUserModule = AccountConstants.getAppOrgUserModule();
 		
-		List<FacilioField> orgUserFields = AccountConstants.getOrgUserFields();
+		List<FacilioField> orgUserFields = AccountConstants.getAppOrgUserFields();
 		Map<String,FacilioField> orgUserFieldsMap = FieldFactory.getAsMap(orgUserFields);
 		
 		List<FacilioField> fields = new ArrayList<FacilioField>();
@@ -1562,8 +1562,8 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 		  ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule workOrderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
 			FacilioModule ticketModule = modBean.getModule(FacilioConstants.ContextNames.TICKET);
-			FacilioModule orgUserModule = AccountConstants.getOrgUserModule();
-			FacilioModule userModule = AccountConstants.getUserModule();
+			FacilioModule orgUserModule = AccountConstants.getAppOrgUserModule();
+			FacilioModule userModule = AccountConstants.getAppUserModule();
 			FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
 
 
@@ -1587,7 +1587,7 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 
 			FacilioField userIdField = AccountConstants.getUserIdField(orgUserModule);
 
-			List<FacilioField> userFields = AccountConstants.getUserFields();
+			List<FacilioField> userFields = AccountConstants.getAppUserFields();
 			Map<String,FacilioField> userFieldMap = FieldFactory.getAsMap(userFields);
 
 			FacilioField userNameField = userFieldMap.get("name");

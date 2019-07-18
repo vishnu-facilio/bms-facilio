@@ -19,8 +19,7 @@ public class ChangeUserStatusCommand extends FacilioCommand {
 		User user = (User) context.get(FacilioConstants.ContextNames.USER);
 		
 		if (user != null) {
-			FieldFactory.getOrgUserFields();
-			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder().table("ORG_Users").fields(AccountConstants.getOrgUserFields())
+			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder().table("App_ORG_Users").fields(AccountConstants.getAppOrgUserFields())
 					.andCustomWhere("ORG_USERID = ? AND USERID = ?", user.getOuid(), user.getUid());
 			Map<String, Object> props = FieldUtil.getAsProperties(user);
 			updateBuilder.update(props);

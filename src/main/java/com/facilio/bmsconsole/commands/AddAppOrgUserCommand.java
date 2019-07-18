@@ -12,22 +12,22 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 
-public class AddAppUserCommand implements Command {
+public class AddAppOrgUserCommand implements Command{
 
 	@Override
 	public boolean execute(Context context) throws Exception {
 		// TODO Auto-generated method stub
+		
 		AppUser user = (AppUser)context.get("user");
-		List<FacilioField> fields = AccountConstants.getAppUserFields();
+		List<FacilioField> fields = AccountConstants.getAppOrgUserFields();
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-				.table(AccountConstants.getAppUserModule().getTableName())
+				.table(AccountConstants.getAppOrgUserModule().getTableName())
 				.fields(fields);
 
 		Map<String, Object> props = FieldUtil.getAsProperties(user);
 
 		insertBuilder.addRecord(props);
 		insertBuilder.save();
-		
 		return false;
 	}
 

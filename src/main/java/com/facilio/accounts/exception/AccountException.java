@@ -29,6 +29,7 @@ public class AccountException extends Exception {
 	public static enum ErrorCode {
 		ORG_DOMAIN_ALREADY_EXISTS,
 		EMAIL_ALREADY_EXISTS,
-		ROLE_ID_IS_NULL;
+		ROLE_ID_IS_NULL,
+		NOT_PERMITTED;
 	}
 }

@@ -25,7 +25,7 @@ public class AddRequesterCommand extends FacilioCommand {
 		if (requester != null && requester.getEmail() != null && !"".equals(requester.getEmail())) {
 			long orgid = AccountUtil.getCurrentOrg().getOrgId();
 			Criteria criteria = new Criteria();
-			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(AccountConstants.getUserFields());
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(AccountConstants.getAppUserFields());
 			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("email"), requester.getEmail(), StringOperators.IS));
 			List<User> user = AccountUtil.getOrgBean().getOrgUsers(orgid, criteria);
 			if (user != null && !user.isEmpty()) {

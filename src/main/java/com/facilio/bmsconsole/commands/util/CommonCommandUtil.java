@@ -455,8 +455,8 @@ public class CommonCommandUtil {
     //	System.out.println("ID" + userID);
     	
     	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(AccountConstants.getOrgUserFields())
-				.table(AccountConstants.getOrgUserModule().getTableName())
+				.select(AccountConstants.getAppOrgUserFields())
+				.table(AccountConstants.getAppOrgUserModule().getTableName())
 				.andCustomWhere("ORG_USERID = ?", userID);
     	
     	List<Map<String, Object>> props = selectBuilder.get();
@@ -467,8 +467,8 @@ public class CommonCommandUtil {
 		}
     	
     	GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-		.table(AccountConstants.getUserModule().getTableName())
-		.fields(AccountConstants.getUserFields())
+		.table(AccountConstants.getAppUserModule().getTableName())
+		.fields(AccountConstants.getAppUserFields())
 		.andCustomWhere("USERID = ?", ouid );
     	Map<String, Object> prop = new HashMap<>();
 	    prop.put("userVerified", true);

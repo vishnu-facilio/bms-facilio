@@ -27,7 +27,7 @@ public interface UserBeanv2 {
 
 	public boolean resendInvitev2(long ouid) throws Exception;
 	
-	public boolean acceptInvitev2(String token, String password) throws Exception;
+	public User acceptInvitev2(String token, String password) throws Exception;
 	
 	public boolean updateUserv2(long ouid, User user) throws Exception;
 	
@@ -77,6 +77,8 @@ public interface UserBeanv2 {
     public User getFacilioUserv2(String email) throws Exception;
     
     public User getFacilioUserv2(String email, String orgDomain) throws Exception;
+    
+    public User getFacilioUserv2(long orgId, String email) throws Exception;
 
     public User getPortalUser(String email, long portalId) throws Exception;
     

@@ -14,8 +14,7 @@ public class AddUserCommand extends FacilioCommand {
 		
 		User user = (User) context.get(FacilioConstants.ContextNames.USER);
 		if ( (user != null) && (AccountUtil.getCurrentOrg() != null)) {
-			long userId = AccountUtil.getTransactionalUserBean().inviteUser(AccountUtil.getCurrentOrg().getOrgId(), user);
-			context.put(FacilioConstants.ContextNames.USER_ID, userId);
+			AccountUtil.getUserBean().createUser(AccountUtil.getCurrentOrg().getOrgId(), user);
 		}
 		else {
 			throw new IllegalArgumentException("User Object cannot be null");

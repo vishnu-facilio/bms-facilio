@@ -13,17 +13,13 @@ import com.facilio.db.criteria.Criteria;
 
 public interface UserBean {
 	
-	public long createUser(long orgId, User user) throws Exception;
-	
-	public long inviteUser(long orgId, User user) throws Exception;
+	public void createUser(long orgId, User user) throws Exception;
 	
 	public long inviteAdminConsoleUser(long orgId, User user) throws Exception;
 	
 	public long inviteRequester(long orgId, User user) throws Exception;
 
 	User verifyEmail(String token);
-
-	User resetPassword(String token, String password);
 
 	User validateUserInvite(String token);
 
@@ -34,8 +30,6 @@ public interface UserBean {
 	public boolean updateUser(long ouid, User user) throws Exception;
 	
 	public boolean updateUser(User user) throws Exception;
-	
-	public boolean sendResetPasswordLink(User user) throws Exception;
 	
 	public void addUserMobileSetting(UserMobileSetting userMobileSetting) throws Exception;
 	
@@ -90,18 +84,6 @@ public interface UserBean {
     public User getPortalUsers(String email, long portalId) throws Exception;
     
     public User getPortalUser(long uid) throws Exception;
-    
-    public long startUserSession(long uid, String email, String token, String ipAddress, String userAgent, String userType) throws Exception;
-    
-    public boolean endUserSession(long uid, String email, String token) throws Exception;
-    
-    public List<Map<String, Object>> getUserSessions(long uid, Boolean isActive) throws Exception;
-    
-    public void clearUserSession(long uid, String email, String token) throws Exception;
-    
-    public void clearAllUserSessions(long uid, String email) throws Exception;
-    
-    public boolean verifyUserSession(String email, String token) throws Exception;
     
     public String generatePermalinkForURL(String url, User user) throws Exception;
     

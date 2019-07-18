@@ -1,4 +1,4 @@
-package com.iam.accounts.util;
+package com.iam.accounts.commands;
 
 import java.util.Calendar;
 import java.util.Locale;
@@ -6,29 +6,36 @@ import java.util.TimeZone;
 
 import javax.security.auth.login.AccountException;
 
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.iam.accounts.util.AuthUtill;
+import com.iam.accounts.util.UserUtil;
 
-public class OrgUtil {
+public class OrgSignUpCommand implements Command{
 
-    public static Account signUpOrg(org.json.simple.JSONObject jObj, Locale locale) throws Exception {
-    	try {
-	    	Organization org = addOrg(jObj, locale);
-	    	//remove
-	    	AccountUtil.setCurrentAccount(org.getOrgId());
-	    	if(org.getOrgId() > 0) {
-	    		User user = UserUtil.addSuperAdmin(jObj, org.getOrgId());
-	    		return AuthUtill.getCurrentAccount(org, user);
-	    	}
-    	} finally {
-    		AccountUtil.cleanCurrentAccount();
+	@Override
+	public boolean execute(Context context) throws Exception {
+		// TODO Auto-generated method stub
+		JSONObject jObj = (JSONObject)context.get("signUpObj");
+		Locale locale = (Locale)context.get("locale");
+		
+		Organization org = addOrg(jObj, locale);
+    	//to be removed
+    	AccountUtil.setCurrentAccount(org.getOrgId());
+       if(org.getOrgId() > 0) {
+    		User user = UserUtil.addSuperAdmin(jObj, org.getOrgId());
+    		Account acc = AuthUtill.getCurrentAccount(org, user);
     	}
-    	return null;
-    	
-    }
-    private static Organization addOrg(org.json.simple.JSONObject signupInfo, Locale locale) throws Exception{
+    	return false;
+	}
+	
+	private static Organization addOrg(org.json.simple.JSONObject signupInfo, Locale locale) throws Exception{
     	String companyName = (String) signupInfo.get("companyname");
 		String orgDomain = (String) signupInfo.get("domainname");
 		 
