@@ -60,14 +60,14 @@ public class AssetCategoryContext extends ModuleBaseWithCustomFields {
 	public void setAssetModuleID(long assetModuleID) {
 		this.assetModuleID = assetModuleID;
 	}
-	public String getAssetModuleName() throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(assetModuleID);
-		if (module != null) {
-			return module.getName();
-		}
-		return null;
-	}
+//	public String getAssetModuleName() throws Exception {
+//		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+//		FacilioModule module = modBean.getModule(assetModuleID);
+//		if (module != null) {
+//			return module.getName();
+//		}
+//		return null;
+//	}
 	
 	private String displayName;
 	public String getDisplayName() {
