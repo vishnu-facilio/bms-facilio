@@ -1,8 +1,13 @@
 package com.facilio.bmsconsole.util;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import com.facilio.bmsconsole.context.PMPlannerSettingsContext;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -11,11 +16,6 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import com.facilio.bmsconsole.context.PMPlannerSettingsContext;
 
 public class PMPlannerAPI {
 	
@@ -27,6 +27,30 @@ public class PMPlannerAPI {
 	private static final String GRID_LINES="gridLines";
 	private static final String GROUPING="grouping";
 	private static final String DISPLAY_TYPE="displayType";
+
+	// Do not change this name as it is used for db fetch also
+	public static final String CATEGORY_NAME = "categoryName";
+	public static final String RESOURCE_NAME = "resourceName";
+	public static final String FREQUENCY = "frequency";
+	public static final String TIME_METRIC = "timeMetric";
+	
+	public static final String PLANNED = "planned";
+	private static final String ACTUAL = "actual";
+	private static final String DUE = "due";
+	private static final String RESOLVED = "resolved";
+	
+	private static Map<String, String> metricFieldMap;
+	static {
+		metricFieldMap = new HashMap<>();
+		metricFieldMap.put(PLANNED, "createdTime");
+		metricFieldMap.put(ACTUAL, "actualWorkStart");
+		metricFieldMap.put(DUE, "dueDate");
+		metricFieldMap.put(RESOLVED, "actualWorkEnd");
+	}
+	
+	public static Map<String, String> getMetricFieldMap() {
+		return metricFieldMap;
+	}
 	
 			
 	public static PMPlannerSettingsContext getPMPlannerSettings() throws Exception
@@ -117,9 +141,26 @@ public class PMPlannerAPI {
 	{	
 		JSONArray columnSettings=new JSONArray();
 		
+		JSONObject categoryName=new JSONObject();
+		categoryName.put("name", CATEGORY_NAME);
+		categoryName.put("enabled", false);
+		columnSettings.add(categoryName);
+		
 		JSONObject resourceName=new JSONObject();
-		resourceName.put("name","resourceName");
+		resourceName.put("name", RESOURCE_NAME);
+		resourceName.put("mandatory", true);
+		resourceName.put("enabled", true);
 		columnSettings.add(resourceName);
+		
+		JSONObject frequency=new JSONObject();
+		frequency.put("name", FREQUENCY);
+		frequency.put("enabled", false);
+		columnSettings.add(frequency);
+		
+		JSONObject timeMetric=new JSONObject();
+		timeMetric.put("name", TIME_METRIC);
+		timeMetric.put("enabled", false);
+		columnSettings.add(timeMetric);
 		
 		
 		return columnSettings;
@@ -129,13 +170,29 @@ public class PMPlannerAPI {
 	{
 		JSONArray timeMetricSettings=new JSONArray();
 		
+		JSONObject planned=new JSONObject();
+		planned.put("name", PLANNED);
+		planned.put("displayName","Planned");
+		planned.put("enabled", true);
+		timeMetricSettings.add(planned);
+		
 		JSONObject actual=new JSONObject();
-		actual.put("name","Actual");
+		actual.put("name", ACTUAL);
+		actual.put("displayName","Work Start");
+		actual.put("enabled", false);
 		timeMetricSettings.add(actual);
 		
-		JSONObject planned=new JSONObject();
-		planned.put("name","Planned");
-		timeMetricSettings.add(planned);
+		JSONObject due=new JSONObject();
+		due.put("name", DUE);
+		due.put("displayName","Due");
+		due.put("enabled", false);
+		timeMetricSettings.add(due);
+		
+		JSONObject resolved=new JSONObject();
+		resolved.put("name", RESOLVED);
+		resolved.put("displayName","Resolved");
+		resolved.put("enabled", false);
+		timeMetricSettings.add(resolved);
 		
 		return timeMetricSettings;
 		

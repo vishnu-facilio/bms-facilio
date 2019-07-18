@@ -5,20 +5,23 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.PMPlannerSettingsContext;
 import com.facilio.bmsconsole.util.FacilioFrequency;
+import com.facilio.bmsconsole.util.PMPlannerAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BuildingOperator;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -34,39 +37,39 @@ import com.facilio.time.DateRange;
 
 public class GetPMCalendarResouceJobsCommand implements Command {
 	
-	private static final String CATEGORY_NAME = "categoryName";
-	private static final String RESOURCE_NAME = "resourceName";
-	private static final String FREQUENCY = "frequency";
-	private static final String TIME_METRIC = "timeMetric";
-	private static final String PLANNED = "Planned";
-	private static final String ACTUAL = "Actual";
+	private Map<String, String> metricFieldMap = null;
 	
-	private static final String PLANNED_FIELD = "createdTime";
-	private static final String ACTUAL_FIELD = "actualWorkEnd";
-	
+	private List<String> selectedMetrics;
+	private Map<String, String> metricFieldNameMap;
 	
 	Map<Long, String> assetIdVsName;
 	
-	// TODO get from planner settings
-	boolean showAssetCategory = true;
-	boolean showFrequency = true;
-	boolean showTimeMetric = true;
+	boolean showAssetCategory = false;
+	boolean showFrequency = false;
+	boolean showTimeMetric = false;
 	
 	int rowDefaultSpan;
-
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean execute(Context context) throws Exception {
 		
-		List<List<Map<String, Object>>> titles = new ArrayList<>();
+		metricFieldMap = PMPlannerAPI.getMetricFieldMap();
+		
+		handleSettings(context);
+		
+		List<Map<String, Object>> titles = new ArrayList<>();
 		List<List<Map<String, Object>>> datas = new ArrayList<>();
 		
 		// header name should be fieldName
 		List<Map<String, Object>> headers = getHeaders();
 		
-		rowDefaultSpan = showTimeMetric ? 2 : 1;
+		rowDefaultSpan = showTimeMetric ? selectedMetrics.size() : 1;
 
 		long siteId = (long) context.get(ContextNames.SITE_ID);
+		long buildingId = (long) context.get(ContextNames.BUILDING_ID);
+		long categoryId = (long) context.get(ContextNames.CATEGORY_ID);
+		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
 		
 		DateOperators operator = DateOperators.CURRENT_YEAR;
 		DateRange dateRange = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE);
@@ -101,13 +104,13 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 		Map<String, FacilioField> resourceFieldMap = FieldFactory.getAsMap(resourceFields);
 		String resourceTable = resourceModule.getTableName();
 		FacilioField resourceNameField = resourceFieldMap.get("name").clone();
-		resourceNameField.setName(RESOURCE_NAME);
+		resourceNameField.setName(PMPlannerAPI.RESOURCE_NAME);
 
 		FacilioModule assetCategoryModule = modBean.getModule(ContextNames.ASSET_CATEGORY);
 		List<FacilioField> assetCategoryFields = modBean.getAllFields(assetCategoryModule.getName());
 		Map<String, FacilioField> assetCategoryFieldMap = FieldFactory.getAsMap(assetCategoryFields);
 		FacilioField categoryNameField = assetCategoryFieldMap.get("name").clone();
-		categoryNameField.setName(CATEGORY_NAME);
+		categoryNameField.setName(PMPlannerAPI.CATEGORY_NAME);
 		
 		String assetCategoryTable = assetCategoryModule.getTableName();
 
@@ -115,6 +118,7 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 		List<FacilioField> pmTriggerFields = FieldFactory.getPMTriggerFields();
 		Map<String, FacilioField> pmTriggerFieldMap = FieldFactory.getAsMap(pmTriggerFields);
 		String pmTriggerTable = pmTriggerModule.getTableName();
+		FacilioField frequencyField = pmTriggerFieldMap.get("frequency");
 
 		FacilioField countField = FieldFactory.getCountField(woModule).get(0);
 		
@@ -136,6 +140,9 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 		if (showFrequency) {
 			commonBuilder.innerJoin(pmTriggerTable).on(triggerField.getCompleteColumnName() + "=" + pmTriggerTable + ".ID");
 		}
+		if (filterCriteria != null) {
+			commonBuilder.andCriteria(filterCriteria);
+		}
 		
 		
 		List<FacilioField> selectFields = new ArrayList<>();
@@ -146,7 +153,7 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 			selectFields.add(categoryNameField);
 		}
 		if (showFrequency) {
-			selectFields.add(pmTriggerFieldMap.get("frequency"));
+			selectFields.add(frequencyField);
 		}
 		
 		StringBuilder orderBy = new StringBuilder();
@@ -155,13 +162,13 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 		}
 		orderBy.append(resourceNameField.getCompleteColumnName());
 		if (showFrequency) {
-			orderBy.append(",").append(pmTriggerFieldMap.get("frequency").getCompleteColumnName());
+			orderBy.append(",").append(frequencyField.getCompleteColumnName());
 		}
 
 		StringBuilder groupBy = new StringBuilder();
 		groupBy.append(assetIdField.getCompleteColumnName());
 		if (showFrequency) {
-			groupBy.append(",").append(pmTriggerFieldMap.get("frequency").getColumnName());
+			groupBy.append(",").append(frequencyField.getColumnName());
 		}
 		
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> groupBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>(commonBuilder)
@@ -174,6 +181,12 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 		
 		if (showAssetCategory) {
 			groupBuilder.innerJoin(assetCategoryTable).on(assetFieldMap.get("category").getCompleteColumnName() + "=" + assetCategoryTable + ".ID");
+		}
+		if (buildingId > 0) {
+			groupBuilder.andCondition(CriteriaAPI.getCondition(resourceFieldMap.get("space"), String.valueOf(buildingId), BuildingOperator.BUILDING_IS));
+		}
+		if (categoryId > 0) {
+			groupBuilder.andCondition(CriteriaAPI.getCondition(assetFieldMap.get("category"), String.valueOf(categoryId), NumberOperators.EQUALS));
 		}
 		
 		List<Map<String, Object>> props = groupBuilder.getAsProps();
@@ -206,15 +219,20 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 			selectFields.add(resourceField);
 			selectFields.add(FieldFactory.getIdField(woModule));
 			if (showTimeMetric) {
-				if (!ACTUAL_FIELD.equals("createdTime")) {
+				for(String metric: selectedMetrics) {
+					if (!metric.equals("createdTime")) {
+						selectFields.add(woFieldMap.get(metricFieldMap.get(metric)));
+					}
+				}
+				/*if (!ACTUAL_FIELD.equals("createdTime")) {
 					selectFields.add(woFieldMap.get(ACTUAL_FIELD));
 				}
 				if (!PLANNED_FIELD.equals("createdTime")) {
 					selectFields.add(woFieldMap.get(PLANNED_FIELD));
-				}
+				}*/
 			}
 			if (showFrequency) {
-				selectFields.add(pmTriggerFieldMap.get("frequency"));
+				selectFields.add(frequencyField);
 			}
 			
 			
@@ -222,7 +240,7 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 					.append(StringUtils.join(assetIds, ",")).append(")");
 			
 			if (showFrequency) {
-				orderBy.append(",").append(pmTriggerFieldMap.get("frequency").getCompleteColumnName());
+				orderBy.append(",").append(frequencyField.getCompleteColumnName());
 //				orderBy.append(",").append("FIELD(").append(triggerField.getColumnName()).append(",")
 //				.append(StringUtils.join(triggerIds, ",")).append(")");
 			}
@@ -242,28 +260,36 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 					row = new ArrayList<>();
 					datas.add(row);
 					
-					List<Map<String, Object>> title = titles.get(i);
-					Map<String, Object> leafNode = title.get(title.size() - 1);
+					Map<String, Object> titleData = titles.get(i);
+					List<Map<String, Object>> titleRow = (List<Map<String, Object>>) titleData.get("data");
+					Map<String, Object> leafNode = titleRow.get(titleRow.size() - 1);
 					int count = (int) (long) leafNode.get("count");
 					
-					List<Map<String, Object>> filteredList = IntStream.range(totalCount, totalCount+count)
+					/*List<Map<String, Object>> filteredList = IntStream.range(totalCount, totalCount+count)
 						             .mapToObj(props::get)
-						             .collect(Collectors.toList());
+						             .collect(Collectors.toList());*/
+					
+					List<Map<String, Object>> filteredList = props.subList(totalCount, totalCount+count);
 					
 					if (showTimeMetric) {
-						addData(row, filteredList, PLANNED_FIELD, count, totalCount, false);
-						sort(row);
-						
-						row = new ArrayList<>();
-						datas.add(row);
-						sort(row);
-						
-						addData(row, new ArrayList<>(filteredList), ACTUAL_FIELD, count, totalCount, true);
-						sort(row);
-						i++;
+						for(int j = 0; j < selectedMetrics.size(); j++) {
+							String metric = selectedMetrics.get(j);
+							
+							if (j != 0) {
+								row = new ArrayList<>();
+								datas.add(row);
+								sort(row);
+								
+								i++;
+							}
+							
+							addData(row, new ArrayList<>(filteredList), metricFieldMap.get(metric), metric, count, totalCount, j != 0);
+							sort(row);
+							
+						}
 					}
 					else {
-						addData(row, props, "createdTime", count, totalCount, false);
+						addData(row, props, metricFieldMap.get(PMPlannerAPI.PLANNED), null, count, totalCount, false);
 						sort(row);
 					}
 					
@@ -282,8 +308,13 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 		return false;
 	}
 	
-	private void addTitles(List<List<Map<String, Object>>> titles, List<Map<String, Object>> headers, Map<String, Object> prop, List<Map<String, Object>> prevHeaderValues, FacilioField countField) {
-		List<Map<String, Object>> row = new ArrayList<>();
+	private void addTitles(List<Map<String, Object>> titles, List<Map<String, Object>> headers, Map<String, Object> prop, List<Map<String, Object>> prevHeaderValues, FacilioField countField) {
+		Map<String, Object> row = new HashMap<>();
+		List<Map<String, Object>> rowData = new ArrayList<>();
+		row.put("data", rowData);
+		if (showAssetCategory) {
+			row.put("resourceGroup", prop.get(PMPlannerAPI.CATEGORY_NAME));
+		}
 		titles.add(row);
 		
 		boolean parentValueChanged = false;
@@ -293,74 +324,76 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 			
 			String name = (String) header.get("name");
 			String value;
-			if (name.equals(FREQUENCY)) {
+			if (name.equals(PMPlannerAPI.FREQUENCY)) {
 				FacilioFrequency frequency = FacilioFrequency.valueOf((int) prop.get(name));
 				value = frequency.getName();
 			}
 			else {
 				value = String.valueOf(prop.get(name));
 			}
-			if (name.equals(TIME_METRIC)) {
-				
-				Map<String, Object> plannedObj = new HashMap<>();
-				plannedObj.put("name", PLANNED);
-				plannedObj.put("rowSpan", 1);
-				plannedObj.put("count", prop.get(countField.getName()));
-				row.add(plannedObj);
-				
-				List<Map<String, Object>> actualRow = new ArrayList<>();
-				Map<String, Object> actualObj = new HashMap<>();
-				actualObj.put("name", ACTUAL);
-				actualObj.put("rowSpan", 1);
-				actualObj.put("count", prop.get(countField.getName()));
-				actualRow.add(actualObj);
-				titles.add(actualRow);
-				continue;
-			}
-			
-			
-			Map<String, Object> prevHeader;
-			if (prevHeaderValues.size() < (i+1) ) {
-				prevHeader = new HashMap<>();
-				prevHeaderValues.add(prevHeader);
-			}
-			else {
-				prevHeader = prevHeaderValues.get(i);
-			}
-			
-			String prevValue = (String) prevHeader.getOrDefault("name", "");
-			if (!prevValue.equals(value) || parentValueChanged) {
-				prevHeader = new HashMap<>();
-				prevHeader.put("name", value);
-				prevHeader.put("rowSpan", rowDefaultSpan);
-				row.add(prevHeader);
-				prevHeaderValues.add(i,  prevHeader);
-				parentValueChanged = true;
+			if (name.equals(PMPlannerAPI.TIME_METRIC)) {
+				for(int j = 0; j < selectedMetrics.size(); j++) {
+					String metric = selectedMetrics.get(j);
+					
+					Map<String, Object> metricObj = new HashMap<>();
+					metricObj.put("name", metricFieldNameMap.get(metric));
+					metricObj.put("rowSpan", 1);
+					metricObj.put("count", prop.get(countField.getName()));
+					
+					if (j == 0) {
+						rowData.add(metricObj);
+					}
+					else {
+						List<Map<String, Object>> newRowData = new ArrayList<>();
+						newRowData.add(metricObj);
+						row = new HashMap<>();
+						row.put("data", newRowData);
+						if (showAssetCategory) {
+							row.put("resourceGroup", prop.get(PMPlannerAPI.CATEGORY_NAME));
+						}
+						titles.add(row);
+					}
+				}
 			}
 			else {
-				int rowSpan = (int) prevHeader.get("rowSpan");
-				prevHeader.put("rowSpan", rowSpan + rowDefaultSpan);
-			}
-			if (i + 1 == size) {
-				prevHeader.put("count", prop.get(countField.getName()));
+				Map<String, Object> prevHeader;
+				if (prevHeaderValues.size() < (i+1) ) {
+					prevHeader = new HashMap<>();
+					prevHeaderValues.add(prevHeader);
+				}
+				else {
+					prevHeader = prevHeaderValues.get(i);
+				}
+				
+				String prevValue = (String) prevHeader.getOrDefault("name", "");
+				if (!prevValue.equals(value) || parentValueChanged) {
+					prevHeader = new HashMap<>();
+					prevHeader.put("name", value);
+					prevHeader.put("rowSpan", rowDefaultSpan);
+					rowData.add(prevHeader);
+					prevHeaderValues.add(i,  prevHeader);
+					parentValueChanged = true;
+				}
+				else {
+					int rowSpan = (int) prevHeader.get("rowSpan");
+					prevHeader.put("rowSpan", rowSpan + rowDefaultSpan);
+				}
+				if (i + 1 == size) {
+					prevHeader.put("count", prop.get(countField.getName()));
+				}
 			}
 		}
 	}
 	
-	private void addData(List<Map<String, Object>> row, List<Map<String, Object>> props, String field, long count, int totalCount, boolean isClone) {
+	private void addData(List<Map<String, Object>> row, List<Map<String, Object>> props, String field, String metricField, long count, int totalCount, boolean isClone) {
 		for(int j = 0; j < props.size(); j++) {
 			Map<String, Object> prop = props.get(j);
 			if (!isClone) {
 				Map<String, Object> resource = (Map<String, Object>) prop.get("resource");
 				prop.put("asset", assetIdVsName.get(resource.get("id")));
 			}
-			if (showTimeMetric) {
-				if (field.equals(PLANNED_FIELD)) {
-					prop.put("time", PLANNED);
-				}
-				if (field.equals(ACTUAL_FIELD)) {
-					prop.put("time", ACTUAL);
-				}
+			if (metricField != null) {
+				prop.put("time", metricField);
 			}
 			
 			prop = new HashMap<>(prop);
@@ -375,17 +408,60 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 	
 	private List<Map<String, Object>> getHeaders() {
 		List<Map<String, Object>> headers = new ArrayList<>();
-		if (showAssetCategory) {
-			headers.add(Collections.singletonMap("name", CATEGORY_NAME));
-		}
-		headers.add(Collections.singletonMap("name", RESOURCE_NAME));
+		headers.add(Collections.singletonMap("name", PMPlannerAPI.RESOURCE_NAME));
 		if (showFrequency) {
-			headers.add(Collections.singletonMap("name", FREQUENCY));
+			headers.add(Collections.singletonMap("name", PMPlannerAPI.FREQUENCY));
 		}
 		if (showTimeMetric) {
-			headers.add(Collections.singletonMap("name", TIME_METRIC));
+			headers.add(Collections.singletonMap("name", PMPlannerAPI.TIME_METRIC));
 		}
 		return headers;
+	}
+	
+	private void handleSettings(Context context) {
+		PMPlannerSettingsContext plannerSettings = (PMPlannerSettingsContext) context.get(ContextNames.PM_PLANNER_SETTINGS);
+		
+		JSONArray columnSettings = plannerSettings.getColumnSettings();
+		for(int i=0; i < columnSettings.size(); i++) {
+			JSONObject columnObj = (JSONObject) columnSettings.get(i);
+			boolean enabled = (boolean) columnObj.get("enabled");
+			if (!enabled) {
+				continue;
+			}
+			
+			String name = (String) columnObj.get("name");
+			switch (name) {
+				case PMPlannerAPI.CATEGORY_NAME:
+					showAssetCategory = true;
+					break;
+					
+				case PMPlannerAPI.FREQUENCY:
+					showFrequency = true;
+					break;
+					
+				case PMPlannerAPI.TIME_METRIC:
+					showTimeMetric = true;
+					break;
+			}
+		}
+		
+		if (showTimeMetric) {
+			selectedMetrics = new ArrayList<>();
+			metricFieldNameMap = new HashMap<>();
+			JSONArray metricSettings = plannerSettings.getTimeMetricSettings();
+			for(int i=0; i < metricSettings.size(); i++) {
+				JSONObject metricObj = (JSONObject) metricSettings.get(i);
+				boolean enabled = (boolean) metricObj.get("enabled");
+				if (!enabled) {
+					continue;
+				}
+				
+				String name = (String) metricObj.get("name");
+				String displayName = (String) metricObj.get("displayName");
+				selectedMetrics.add(name);
+				metricFieldNameMap.put(name, displayName);
+			}
+		}
 	}
 	
 	private void sort(List<Map<String, Object>> props) {

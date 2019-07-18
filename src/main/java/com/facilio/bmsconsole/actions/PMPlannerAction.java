@@ -1,5 +1,9 @@
 package com.facilio.bmsconsole.actions;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.PMPlannerSettingsContext;
@@ -7,8 +11,6 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.time.DateRange;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
 public class PMPlannerAction extends FacilioAction{
 	private static final Logger log = LogManager.getLogger(PMPlannerAction.class.getName());
@@ -61,6 +63,12 @@ public class PMPlannerAction extends FacilioAction{
 	public String getPMCalendarJobs() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(ContextNames.SITE_ID, siteId);
+		context.put(ContextNames.BUILDING_ID, buildingId);
+		context.put(ContextNames.CATEGORY_ID, categoryId);
+		if (filterJson != null) {
+			context.put(FacilioConstants.ContextNames.FILTERS, filterJson);
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, ContextNames.WORK_ORDER);
+		}
 		context.put(FacilioConstants.ContextNames.DATE_RANGE, dateRange);
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateOperatorValue);
@@ -77,6 +85,30 @@ public class PMPlannerAction extends FacilioAction{
 	}
 	public void setSiteId(long siteId) {
 		this.siteId = siteId;
+	}
+	
+	private long buildingId = -1;
+	public long getBuildingId() {
+		return buildingId;
+	}
+	public void setBuildingId(long buildingId) {
+		this.buildingId = buildingId;
+	}
+	
+	private long categoryId = -1;
+	public long getCategoryId() {
+		return categoryId;
+	}
+	public void setCategoryId(long categoryId) {
+		this.categoryId = categoryId;
+	}
+	
+	private JSONObject filterJson;
+	public JSONObject getFilterJson() {
+		return filterJson;
+	}
+	public void setFilterJson(JSONObject filterJson) {
+		this.filterJson = filterJson;
 	}
 
 	private int dateOperator = -1;
