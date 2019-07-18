@@ -3835,4 +3835,15 @@
 			class="com.facilio.bmsconsole.actions.PreferenceAction" method="getAllEnabledPreferences" />
 	</package>
 	
+	<package name="photosV2Api" namespace="/api/v2/photos" extends="v2Api">
+		<action name="upload" class="com.facilio.bmsconsole.actions.PhotosAction"
+			method="uploadPhotos">
+		</action>
+		
+		<action name="*" class="com.facilio.bmsconsole.actions.PhotosAction"
+			method="getPhotosList">
+			<param name="module">{1}</param>
+		</action>
+	</package>
+	
 </struts>

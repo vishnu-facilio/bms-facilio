@@ -1,26 +1,22 @@
 package com.facilio.bmsconsole.actions;
 
+import java.io.File;
+import java.util.List;
+
+import org.apache.commons.chain.Chain;
+import org.apache.log4j.LogManager;
+
 import com.amazonaws.services.rekognition.model.TextDetection;
-import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.PhotosContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.opensymphony.xwork2.ActionSupport;
-import org.apache.commons.chain.Chain;
-import org.apache.log4j.LogManager;
-import org.json.simple.JSONObject;
+import com.facilio.constants.FacilioConstants.ContextNames;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-public class PhotosAction extends ActionSupport {
+public class PhotosAction extends FacilioAction {
 
 	/**
 	 * 
@@ -69,6 +65,12 @@ public class PhotosAction extends ActionSupport {
 	
 	public String getPhotosList() throws Exception {
 		return getPhotos(module);
+	}
+	
+	public String v2getPhotosList() throws Exception {
+		getPhotos(module);
+		setResult(ContextNames.PHOTOS, getPhotos());
+		return SUCCESS;
 	}
 	
 	private String getPhotos(String moduleName) throws Exception {
@@ -122,6 +124,12 @@ public class PhotosAction extends ActionSupport {
 	
 	public String uploadPhotos() throws Exception {
 		return uploadPhotos(module);
+	}
+	
+	public String v2uploadPhotos() throws Exception {
+		uploadPhotos(module);
+		setResult(ContextNames.PHOTOS, getPhotos());
+		return SUCCESS;
 	}
 	
 	public String justUploadPhotos() throws Exception {
