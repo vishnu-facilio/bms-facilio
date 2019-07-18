@@ -3709,6 +3709,12 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteFormActionRulesCommand());
 			return c;
 		}
+		
+		public static Chain getAddHistoricalVMCalculationChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddHistoricalVMCalculationCommand());
+			return c;
+		}
 
 		public static Chain getAddFormRuleChain() {
 			Chain c = getDefaultChain();

@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.actions;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -50,8 +51,15 @@ public class EnergyAction extends ActionSupport {
 	}
 	
 	public String insertVirtualMeterReadings() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.STARTTIME, startTime);
+		context.put(FacilioConstants.ContextNames.ENDTIME, endTime);
+		context.put(FacilioConstants.ContextNames.INTERVAL, interval);
+		context.put(FacilioConstants.ContextNames.VM_LIST, vmList);
 		
-		DeviceAPI.addVirtualMeterReadingsJob(startTime, endTime, interval, vmList, runParentMeter);
+		Chain insertVMChain = TransactionChainFactory.getAddHistoricalVMCalculationChain();
+		insertVMChain.execute(context);
+		
 		return SUCCESS;
 	}
 	

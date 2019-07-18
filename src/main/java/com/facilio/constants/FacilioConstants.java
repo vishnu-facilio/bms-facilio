@@ -473,6 +473,12 @@ public class FacilioConstants {
 		public static final String ASSET_DOWNTIME_STATUS = "assetDowntimeStatus";
 		public static final String ASSET_DOWNTIME_ID = "assetDowntimeId";
 		
+		public static final String STARTTIME = "startTime";
+		public static final String ENDTIME = "endTime";
+		public static final String INTERVAL = "interval";
+		public static final String VM_LIST = "vmList";
+		public static final String RUN_PARENT_METER = "runParentMeter";
+		
 		public static final String ASSET_BD_SOURCE_DETAILS = "assetbreakdownSourceDetails";
 		public static final String LAST_ASSET_BD_SOURCE_DETAILS_ID = "lastAssetBDSourceDetailId";
 
