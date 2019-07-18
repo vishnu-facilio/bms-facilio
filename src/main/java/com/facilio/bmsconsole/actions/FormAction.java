@@ -67,21 +67,6 @@ public class FormAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	public String executeFormActionRules() throws Exception {
-		Context context = new FacilioContext();
-		
-		context.put(FacilioConstants.ContextNames.FORM_ID, this.getFormId());
-		context.put(FacilioConstants.ContextNames.FORM_FIELD_ID, this.getFormFieldId());
-		context.put(FormRuleAPI.FORM_RULE_TRIGGER_TYPE,FormRuleContext.TriggerType.getAllTriggerType().get(triggerType));
-		context.put(FormRuleAPI.FORM_DATA,formData);
-		
-		Chain c = TransactionChainFactory.getExecuteFormActionRules();
-		c.execute(context);
-		
-		setResult(FormRuleAPI.FORM_RULE_RESULT_JSON, context.get(FormRuleAPI.FORM_RULE_RESULT_JSON));
-		return SUCCESS;
-	}
-	
 	public String v2fetchFormMeta() throws Exception {
 		fetchFormMeta();
 		setResult(FacilioConstants.ContextNames.FORMS, forms);
@@ -100,26 +85,8 @@ public class FormAction extends FacilioAction {
 	
     private long formId;
     private long formFieldId;
-    private int triggerType;
     
-    Map<String,Object> formData;
 	
-	public int getTriggerType() {
-		return triggerType;
-	}
-
-	public void setTriggerType(int triggerType) {
-		this.triggerType = triggerType;
-	}
-
-	public Map<String, Object> getFormData() {
-		return formData;
-	}
-
-	public void setFormData(Map<String, Object> formData) {
-		this.formData = formData;
-	}
-
 	public long getFormFieldId() {
 		return formFieldId;
 	}

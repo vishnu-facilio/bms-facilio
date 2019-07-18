@@ -20,9 +20,14 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
+import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -80,8 +85,6 @@ public class FetchReportAdditionalInfoCommand implements Command {
 						}
 					}
 
-					Map<Long, ReadingAlarmContext> alarmMap = showAlarms ? new HashMap<>() : null;
-					List<ReadingAlarmContext> allAlarms = showAlarms ? new ArrayList<>() : null;
 					for (ReportDataPointContext dp : report.getDataPoints()) {
 						if (!validateFetchingOfAdditionalInfo(dp)) {
 							return false; // All datapoints should be valid to fetch alarms
@@ -90,43 +93,15 @@ public class FetchReportAdditionalInfoCommand implements Command {
 						if (showSafeLimit) {
 							reportAggrData.put(dp.getAliases().get("actual")+".safeLimit", getSafeLimit(dp));
 						}
-
-						if (showAlarms && !fetchEventBar) {
-							List<Long> parentIds = getParentIds(dp);
-
-//							if (AccountUtil.getCurrentOrg().getId() == 75) {
-//								LOGGER.info("Parent IDs of alarms to be fetched : "+parentIds);
-//							}
-
-							if (parentIds != null) {
-								List<ReadingAlarmContext> alarms = null;
-								if (alarmId == null || alarmId == -1) {
-									alarms = AlarmAPI.getReadingAlarms(parentIds, -1l, dp.getyAxis().getFieldId(), report.getDateRange().getStartTime(), report.getDateRange().getEndTime(), false);
-								}
-								else if (currentAlarm != null && currentAlarm.getReadingFieldId() == dp.getyAxis().getFieldId() && parentIds.contains(currentAlarm.getResource().getId())) {
-									alarms = AlarmAPI.getReadingAlarms(currentAlarm.getEntityId(), report.getDateRange().getStartTime(), report.getDateRange().getEndTime(), false);
-								}
-
-//								if (AccountUtil.getCurrentOrg().getId() == 75) {
-//									LOGGER.info("Fetched Alarms : "+alarms);
-//								}
-
-								if (alarms != null && !alarms.isEmpty()) {
-									for (ReadingAlarmContext alarm : alarms) {
-										alarm.addAdditionInfo("dataPoint", dp.getName());
-										allAlarms.add(alarm);
-									}
-								}
-							}
-						}
 					}
 
 					if (showAlarms && !fetchEventBar) {
-						reportAggrData.put("alarms", splitAlarms(allAlarms, report.getDateRange(), alarmMap));
-						reportAggrData.put("alarmInfo", alarmMap);
-
-						String sortAlias = (String) context.get(FacilioConstants.ContextNames.REPORT_SORT_ALIAS);
-						getRecordWiseAlarms(report, csvData, allAlarms, alarmMap, sortAlias);
+						if (AccountUtil.isFeatureEnabled(FeatureLicense.NEW_ALARMS)) {
+							newAlarm(report, showAlarms, fetchEventBar, alarmId, currentAlarm, reportAggrData, context, csvData);
+						}
+						else {
+							oldAlarm(report, showAlarms, fetchEventBar, alarmId, currentAlarm, reportAggrData, context, csvData);
+						}
 					}
 					
 					if(fetchEventBar) {
@@ -159,6 +134,63 @@ public class FetchReportAdditionalInfoCommand implements Command {
 		return false;
 	}
 	
+	private void newAlarm(ReportContext report, boolean showAlarms, boolean fetchEventBar, Long alarmId, ReadingAlarmContext currentAlarm, 
+			Map<String, Object> reportAggrData, Context context, Collection<Map<String, Object>> csvData) throws Exception {
+		Map<Long, AlarmOccurrenceContext> alarmMap = new HashMap<>();
+		List<AlarmOccurrenceContext> allAlarms = new ArrayList<>();
+		
+		for (ReportDataPointContext dp : report.getDataPoints()) {
+			List<Long> parentIds = getParentIds(dp);
+			
+			if (parentIds != null) {
+				List<AlarmOccurrenceContext> occurrences = null;
+				occurrences = NewAlarmAPI.getReadingAlarmOccurrences(1, report.getDateRange().getStartTime(), report.getDateRange().getEndTime());
+				
+				if (CollectionUtils.isNotEmpty(occurrences)) {
+					for (AlarmOccurrenceContext occurrence: occurrences) {
+						allAlarms.add(occurrence);
+					}
+				}
+			}
+		}
+		
+		reportAggrData.put("alarms",  splitAlarmOccurrence(allAlarms, report.getDateRange(), alarmMap));
+		reportAggrData.put("alarmInfo", alarmMap);
+	}
+	
+	private void oldAlarm(ReportContext report, boolean showAlarms, boolean fetchEventBar, Long alarmId, ReadingAlarmContext currentAlarm, 
+			Map<String, Object> reportAggrData, Context context, Collection<Map<String, Object>> csvData) throws Exception {
+		Map<Long, ReadingAlarmContext> alarmMap = new HashMap<>();
+		List<ReadingAlarmContext> allAlarms = new ArrayList<>();
+		
+		for (ReportDataPointContext dp : report.getDataPoints()) {
+			List<Long> parentIds = getParentIds(dp);
+
+			if (parentIds != null) {
+				List<ReadingAlarmContext> alarms = null;
+				if (alarmId == null || alarmId == -1) {
+					alarms = AlarmAPI.getReadingAlarms(parentIds, -1l, dp.getyAxis().getFieldId(), report.getDateRange().getStartTime(), report.getDateRange().getEndTime(), false);
+				}
+				else if (currentAlarm != null && currentAlarm.getReadingFieldId() == dp.getyAxis().getFieldId() && parentIds.contains(currentAlarm.getResource().getId())) {
+					alarms = AlarmAPI.getReadingAlarms(currentAlarm.getEntityId(), report.getDateRange().getStartTime(), report.getDateRange().getEndTime(), false);
+				}
+
+				if (alarms != null && !alarms.isEmpty()) {
+					for (ReadingAlarmContext alarm : alarms) {
+						alarm.addAdditionInfo("dataPoint", dp.getName());
+						allAlarms.add(alarm);
+					}
+				}
+			}
+		}
+
+		reportAggrData.put("alarms", splitAlarms(allAlarms, report.getDateRange(), alarmMap));
+		reportAggrData.put("alarmInfo", alarmMap);
+
+		String sortAlias = (String) context.get(FacilioConstants.ContextNames.REPORT_SORT_ALIAS);
+		getRecordWiseAlarms(report, csvData, allAlarms, alarmMap, sortAlias);
+	}
+
 	private boolean validateFetchingOfAdditionalInfo (ReportDataPointContext dp) {
 		return dp.getxAxis().getDataTypeEnum() == FieldType.DATE_TIME || dp.getxAxis().getDataTypeEnum() == FieldType.DATE;
 	}
@@ -272,6 +304,42 @@ public class FetchReportAdditionalInfoCommand implements Command {
 		return alarmMetaList;
 	}
 	
+	static JSONArray splitAlarmOccurrence (List<AlarmOccurrenceContext> alarmOccurrences, DateRange range, Map<Long, AlarmOccurrenceContext> alarmMap) {
+		
+		if (CollectionUtils.isEmpty(alarmOccurrences)) {
+			return null;
+		}
+		
+		Set<Long> times = new TreeSet<>(); //To get sorted set
+		long currentTime = System.currentTimeMillis();
+		for (AlarmOccurrenceContext alarm : alarmOccurrences) {
+			if (alarm.getCreatedTime() < range.getStartTime()) {
+				times.add(range.getStartTime());
+			}
+			else {
+				times.add(alarm.getCreatedTime());
+			}
+			
+			if (alarm.getClearedTime() == -1 || alarm.getCreatedTime() > range.getEndTime()) {
+				times.add(range.getEndTime() > currentTime ? currentTime : range.getEndTime());
+			}
+			else {
+				times.add(alarm.getClearedTime());
+			}
+		}
+		
+		JSONArray alarmMetaList = new JSONArray();
+		List<Long> timesList = new ArrayList<>(times);
+		for (int i = 0; i < timesList.size() - 1; i++) {
+			long startTime = timesList.get(i);
+			long endTime = timesList.get(i+1);
+			alarmMetaList.add(getAlarmOccurrenceMeta(startTime, endTime, alarmOccurrences, alarmMap));
+		}
+		alarmMetaList.add(getAlarmOccurrenceMeta(timesList.get(timesList.size() - 1), -1, null, alarmMap));
+		
+		return alarmMetaList;
+	}
+	
 	static JSONArray splitEvents (DateRange range, Map<Long, EventContext> eventCreatedTimeMap,List<EventContext> allEvents) {
 		
 		if (allEvents.isEmpty()) {
@@ -304,6 +372,33 @@ public class FetchReportAdditionalInfoCommand implements Command {
 		}
 		
 		return eventMetaList;
+	}
+	
+	private static JSONObject getAlarmOccurrenceMeta (long startTime, long endTime, List<AlarmOccurrenceContext> alarmOccurrences, Map<Long, AlarmOccurrenceContext> occurrenceMap) {
+		JSONObject json = new JSONObject();
+		json.put("time", startTime);
+		
+		if (alarmOccurrences != null && !alarmOccurrences.isEmpty()) { 
+			
+			List<AlarmOccurrenceContext> currentOccurrences = alarmOccurrences.stream()
+														.filter(a -> a.getCreatedTime() < endTime && (a.getClearedTime() == -1 || a.getClearedTime() > startTime))
+														.collect(Collectors.toList());
+			
+			if (!currentOccurrences.isEmpty()) {
+				List<Long> occurrenceIds = new ArrayList<>();
+				for (int i = 0; i < currentOccurrences.size(); i++) {
+					AlarmOccurrenceContext alarmOccurrence = currentOccurrences.get(i);
+					occurrenceIds.add(alarmOccurrence.getId());
+					
+					if (i < MAX_ALARM_INFO_PER_WINDOW) {
+						occurrenceMap.put(alarmOccurrence.getId(), alarmOccurrence);
+					}
+				}
+				json.put("occurrences", occurrenceIds);
+			}
+		}
+		
+		return json;
 	}
 
 	private static JSONObject getAlarmMeta (long startTime, long endTime, List<ReadingAlarmContext> allAlarms, Map<Long, ReadingAlarmContext> alarmMap) {
