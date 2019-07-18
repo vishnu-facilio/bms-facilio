@@ -180,16 +180,8 @@ public class MVProjectContext extends ModuleBaseWithCustomFields {
 			return intVal;
 		}
 
-		public void setIntVal(int intVal) {
-			this.intVal = intVal;
-		}
-
 		public String getName() {
 			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
 		}
 
 		private EMC_Options(int intVal, String name) {

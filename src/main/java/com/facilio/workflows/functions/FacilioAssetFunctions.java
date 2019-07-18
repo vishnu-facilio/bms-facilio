@@ -67,9 +67,6 @@ public enum FacilioAssetFunctions implements FacilioWorkflowFunctionInterface {
 	public String getParams() {
 		return params;
 	}
-	public void setParams(String params) {
-		this.params = params;
-	}
 	FacilioAssetFunctions(Integer value,String functionName) {
 		this.value = value;
 		this.functionName = functionName;
