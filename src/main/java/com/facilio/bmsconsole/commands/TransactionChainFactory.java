@@ -704,6 +704,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddDefaultModulesCommand());
 			c.addCommand(new AddDefaultReportCommand());
 			c.addCommand(new AddDefaultUnitsCommand());
+			c.addCommand(new AddDefaultGraphicsCommand());
 			c.addCommand(new AddEventModuleCommand());
 			c.addCommand(new AddOrgInfoCommand());
 			c.addCommand(new CreateSuperAdminCommand());

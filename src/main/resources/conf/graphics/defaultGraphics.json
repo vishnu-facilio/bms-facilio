@@ -1,0 +1,11 @@
+[
+	{
+		"name": "FAHU Graphics",
+		"description": "Fresh Air Handling Unit",
+		"assetCategory": "FAHU",
+		"variables": null,
+		"canvasJSON": "FAHU-1.json",
+		"parentFolder": "AHU",
+		"publish": false
+	}
+]
