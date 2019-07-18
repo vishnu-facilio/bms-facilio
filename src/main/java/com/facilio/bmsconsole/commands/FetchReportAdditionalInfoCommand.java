@@ -154,7 +154,7 @@ public class FetchReportAdditionalInfoCommand implements Command {
 			}
 		}
 		
-		reportAggrData.put("alarms",  allAlarms); //splitAlarms(allAlarms, report.getDateRange(), alarmMap));
+		reportAggrData.put("alarms",  splitAlarmOccurrence(allAlarms, report.getDateRange(), alarmMap));
 		reportAggrData.put("alarmInfo", alarmMap);
 	}
 	
@@ -304,6 +304,42 @@ public class FetchReportAdditionalInfoCommand implements Command {
 		return alarmMetaList;
 	}
 	
+	static JSONArray splitAlarmOccurrence (List<AlarmOccurrenceContext> alarmOccurrences, DateRange range, Map<Long, AlarmOccurrenceContext> alarmMap) {
+		
+		if (CollectionUtils.isEmpty(alarmOccurrences)) {
+			return null;
+		}
+		
+		Set<Long> times = new TreeSet<>(); //To get sorted set
+		long currentTime = System.currentTimeMillis();
+		for (AlarmOccurrenceContext alarm : alarmOccurrences) {
+			if (alarm.getCreatedTime() < range.getStartTime()) {
+				times.add(range.getStartTime());
+			}
+			else {
+				times.add(alarm.getCreatedTime());
+			}
+			
+			if (alarm.getClearedTime() == -1 || alarm.getCreatedTime() > range.getEndTime()) {
+				times.add(range.getEndTime() > currentTime ? currentTime : range.getEndTime());
+			}
+			else {
+				times.add(alarm.getClearedTime());
+			}
+		}
+		
+		JSONArray alarmMetaList = new JSONArray();
+		List<Long> timesList = new ArrayList<>(times);
+		for (int i = 0; i < timesList.size() - 1; i++) {
+			long startTime = timesList.get(i);
+			long endTime = timesList.get(i+1);
+			alarmMetaList.add(getAlarmOccurrenceMeta(startTime, endTime, alarmOccurrences, alarmMap));
+		}
+		alarmMetaList.add(getAlarmOccurrenceMeta(timesList.get(timesList.size() - 1), -1, null, alarmMap));
+		
+		return alarmMetaList;
+	}
+	
 	static JSONArray splitEvents (DateRange range, Map<Long, EventContext> eventCreatedTimeMap,List<EventContext> allEvents) {
 		
 		if (allEvents.isEmpty()) {
@@ -336,6 +372,33 @@ public class FetchReportAdditionalInfoCommand implements Command {
 		}
 		
 		return eventMetaList;
+	}
+	
+	private static JSONObject getAlarmOccurrenceMeta (long startTime, long endTime, List<AlarmOccurrenceContext> alarmOccurrences, Map<Long, AlarmOccurrenceContext> occurrenceMap) {
+		JSONObject json = new JSONObject();
+		json.put("time", startTime);
+		
+		if (alarmOccurrences != null && !alarmOccurrences.isEmpty()) { 
+			
+			List<AlarmOccurrenceContext> currentOccurrences = alarmOccurrences.stream()
+														.filter(a -> a.getCreatedTime() < endTime && (a.getClearedTime() == -1 || a.getClearedTime() > startTime))
+														.collect(Collectors.toList());
+			
+			if (!currentOccurrences.isEmpty()) {
+				List<Long> occurrenceIds = new ArrayList<>();
+				for (int i = 0; i < currentOccurrences.size(); i++) {
+					AlarmOccurrenceContext alarmOccurrence = currentOccurrences.get(i);
+					occurrenceIds.add(alarmOccurrence.getId());
+					
+					if (i < MAX_ALARM_INFO_PER_WINDOW) {
+						occurrenceMap.put(alarmOccurrence.getId(), alarmOccurrence);
+					}
+				}
+				json.put("occurrences", occurrenceIds);
+			}
+		}
+		
+		return json;
 	}
 
 	private static JSONObject getAlarmMeta (long startTime, long endTime, List<ReadingAlarmContext> allAlarms, Map<Long, ReadingAlarmContext> alarmMap) {
