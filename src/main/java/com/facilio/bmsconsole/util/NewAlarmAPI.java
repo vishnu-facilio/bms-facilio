@@ -53,6 +53,8 @@ public class NewAlarmAPI {
 				.beanClass(BaseAlarmContext.class).select(modBean.getAllFields(module.getName()))
 				.andCondition(CriteriaAPI.getIdCondition(ids, module));
 		List<BaseAlarmContext> list = builder.get();
+		LOGGER.log(Level.SEVERE, "select query: " + builder.toString());
+		LOGGER.log(Level.SEVERE, "Result set: " + list);
 		return getExtendedAlarms(list);
 	}
 
@@ -72,6 +74,7 @@ public class NewAlarmAPI {
 			}
 			alarmIds.add((Long) map.getId());
 		}
+		LOGGER.log(Level.SEVERE, "AlarmId map: " + alarmMap);
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		for (Entry<Type, List<Long>> entry : alarmMap.entrySet()) {
@@ -81,7 +84,10 @@ public class NewAlarmAPI {
 					.moduleName(getAlarmModuleName(type)).beanClass(getAlarmClass(type))
 					.select(modBean.getAllFields(getAlarmModuleName(type)))
 					.andCondition(CriteriaAPI.getIdCondition(entry.getValue(), module));
-			baseAlarms.addAll(selectBuilder.get());
+			List<BaseAlarmContext> alarmList = selectBuilder.get();
+			LOGGER.log(Level.SEVERE, "Result set: " + alarmList);
+			LOGGER.log(Level.SEVERE, "Result set: " + selectBuilder.toString());
+			baseAlarms.addAll(alarmList);
 		}
 
 		return baseAlarms;
