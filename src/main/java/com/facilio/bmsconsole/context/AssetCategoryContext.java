@@ -1,5 +1,8 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 import java.util.Collections;
@@ -18,7 +21,7 @@ public class AssetCategoryContext extends ModuleBaseWithCustomFields {
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	private AssetCategoryType type;
 	public int getType() {
 		if(type != null) {
@@ -57,6 +60,15 @@ public class AssetCategoryContext extends ModuleBaseWithCustomFields {
 	public void setAssetModuleID(long assetModuleID) {
 		this.assetModuleID = assetModuleID;
 	}
+	public String getAssetModuleName() throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(assetModuleID);
+		if (module != null) {
+			return module.getName();
+		}
+		return null;
+	}
+	
 	private String displayName;
 	public String getDisplayName() {
 		if(displayName != null && !displayName.isEmpty()) {
