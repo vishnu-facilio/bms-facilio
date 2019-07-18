@@ -17,7 +17,6 @@ import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
@@ -192,7 +191,6 @@ public class GetWorkOrderListCommand implements Command {
 		}
 		else {
 			TicketAPI.loadWorkOrderLookups(workOrders);
-			WorkOrderAPI.setPrerequisiteApprover(workOrders);
 			context.put(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
 		}		
 		return false;
