@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.context;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
@@ -10,7 +12,12 @@ public class MLAnomalyEvent extends BaseEventContext{
 	@Override
 	public String getMessageKey() 
 	{
-		setMessageKey( "Anomaly_" + getResource().getId());	
+		String key = super.getMessageKey();
+		if (StringUtils.isEmpty(key)) {
+			if (getResource() != null) {
+				setMessageKey("Anomaly_" + getResource().getId());	
+			}
+		}
 		return super.getMessageKey();
 	}
 

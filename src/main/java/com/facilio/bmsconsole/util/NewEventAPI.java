@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.util;
 
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
+import com.facilio.bmsconsole.context.MLAnomalyEvent;
 import com.facilio.bmsconsole.context.ReadingEventContext;
 
 public class NewEventAPI {
@@ -13,6 +14,9 @@ public class NewEventAPI {
 		switch (type) {
 		case READING_ALARM:
 			return ReadingEventContext.class;
+			
+		case ML_ANOMALY_ALARM:
+			return MLAnomalyEvent.class;
 
 		default:
 			throw new IllegalArgumentException("Invalid alarm type");
@@ -27,6 +31,9 @@ public class NewEventAPI {
 		switch (type) {
 		case READING_ALARM:
 			return "readingevent";
+			
+		case ML_ANOMALY_ALARM:
+			return "mlanomalyevent";
 
 		default:
 			throw new IllegalArgumentException("Invalid alarm type");

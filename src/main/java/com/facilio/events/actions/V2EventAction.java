@@ -9,6 +9,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.MLAnomalyEvent;
 import com.facilio.bmsconsole.context.ReadingEventContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.events.constants.EventConstants;
@@ -31,11 +32,19 @@ public class V2EventAction extends FacilioAction {
 	public void setEvents(List<ReadingEventContext> events) {
 		this.events = events;
 	}
+	
+	private List<MLAnomalyEvent> mlEvents;
+	public List<MLAnomalyEvent> getMlEvents() {
+		return mlEvents;
+	}
+	public void setMlEvents(List<MLAnomalyEvent> mlEvents) {
+		this.mlEvents = mlEvents;
+	}
 
 	public String addEvent() throws Exception {
 		FacilioContext context = new FacilioContext();
 //		context.put(EventConstants.EventContextNames.EVENT_PAYLOAD, payload);
-		context.put(EventConstants.EventContextNames.EVENT_LIST, events);
+		context.put(EventConstants.EventContextNames.EVENT_LIST, mlEvents);
 		
 		Chain chain = TransactionChainFactory.getV2AddEventChain();
 		chain.execute(context);
