@@ -264,7 +264,7 @@ public class WorkOrderAction extends FacilioAction {
 		if(preRequestsString != null) {
 			setPreRequestSectioncontext(preRequestsString);
 		}
-		if(workorder.getAllowNegativePreRequisiteEnum().equals(AllowNegativePreRequisite.YES_WITH_APPROVAL) && prerequisiteApproverString != null) {
+		if(prerequisiteApproverString != null && workorder.getAllowNegativePreRequisiteEnum().equals(AllowNegativePreRequisite.YES_WITH_APPROVAL)) {
 			setPreRequisiteApproverContext(prerequisiteApproverString);
 		}
 		if(reminderString != null) {
@@ -516,7 +516,7 @@ public class WorkOrderAction extends FacilioAction {
 		if (preRequestsString != null) {
 			setPreRequestSectioncontext(preRequestsString);
 		}
-		if(workorder.getAllowNegativePreRequisiteEnum().equals(AllowNegativePreRequisite.YES_WITH_APPROVAL) && prerequisiteApproverString != null) {
+		if( prerequisiteApproverString != null && workorder.getAllowNegativePreRequisiteEnum().equals(AllowNegativePreRequisite.YES_WITH_APPROVAL)) {
 			setPreRequisiteApproverContext(prerequisiteApproverString);
 		}
 		if(reminderString != null) {
