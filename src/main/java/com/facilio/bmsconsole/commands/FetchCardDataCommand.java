@@ -121,6 +121,11 @@ public class FetchCardDataCommand implements Command {
 				
 				boolean isNewWorkflowCard = false;
 				
+				if(widgetStaticContext.getId() == 7849 ||widgetStaticContext.getId() == 7848 ||widgetStaticContext.getId() ==7847 ||widgetStaticContext.getId() ==7846) {
+					
+					LOGGER.log(Level.SEVERE, "1.widgetStaticContext.getId() -- "+widgetStaticContext.getId()+" workflow == " +card.getWorkflow());
+				}
+				
 				if(card.isDynamicWfGeneratingCard()) {
 					card.setWorkflow(widgetStaticContext.getWidgetVsWorkflowContexts().get(0).getWorkflowString());
 					if(widgetStaticContext.getWidgetVsWorkflowContexts().get(0).getWorkflowId() != null) {
@@ -134,6 +139,11 @@ public class FetchCardDataCommand implements Command {
 						isNewWorkflowCard = true;
 						card.setWorkflow(widgetStaticContext.getWidgetVsWorkflowContexts().get(0).getWorkflow().getWorkflowV2String());
 					}
+				}
+				
+				if(widgetStaticContext.getId() == 7849 ||widgetStaticContext.getId() == 7848 ||widgetStaticContext.getId() ==7847 ||widgetStaticContext.getId() ==7846) {
+					
+					LOGGER.log(Level.SEVERE, "2.widgetStaticContext.getId() -- "+widgetStaticContext.getId()+" workflow == " +card.getWorkflow());
 				}
 				
 				if(widgetStaticContext.getStaticKey().equals(CardType.FAHU_STATUS_CARD_NEW.getName())) {
@@ -166,7 +176,7 @@ public class FetchCardDataCommand implements Command {
 					
 					if(widgetStaticContext.getId() == 7849 ||widgetStaticContext.getId() == 7848 ||widgetStaticContext.getId() ==7847 ||widgetStaticContext.getId() ==7846) {
 						
-						LOGGER.log(Level.SEVERE, "workflow == " +card.getWorkflow()+"  res -- "+expResult);
+						LOGGER.log(Level.SEVERE, "3.widgetStaticContext.getId() -- "+widgetStaticContext.getId()+" workflow == " +card.getWorkflow()+"  res -- "+expResult + " params -- "+widgetStaticContext.getParamsJson());
 					}
 					
 					expResult = (Map<String, Object>) CardUtil.getWorkflowResultForClient(expResult, widgetStaticContext); // parsing data suitable for client
