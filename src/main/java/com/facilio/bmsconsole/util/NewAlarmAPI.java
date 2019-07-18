@@ -158,9 +158,12 @@ public class NewAlarmAPI {
 		List<AlarmOccurrenceContext> list = builder.get();
 
 		List<Long> alarmIds = new ArrayList<>();
+		LOGGER.log(Level.SEVERE, "select query: " + builder.toString());
+		LOGGER.log(Level.SEVERE, "result set: " + list);
 		for (AlarmOccurrenceContext alarmOccurrence : list) {
 			alarmIds.add(alarmOccurrence.getAlarm().getId());
 		}
+		LOGGER.log(Level.SEVERE, "Alarm id in getlatestalarmoccurrence: " + alarmIds);
 		Map<Long, BaseAlarmContext> alarmMap = FieldUtil.getAsMap(getAlarms(alarmIds));
 		LOGGER.log(Level.SEVERE, "Alarm map in getlatestalarmoccurrence: " + alarmMap);
 		for (AlarmOccurrenceContext alarmOccurrence : list) {
