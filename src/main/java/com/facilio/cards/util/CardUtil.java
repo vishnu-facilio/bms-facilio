@@ -136,6 +136,10 @@ public class CardUtil {
 					Double value =  (Double) obj;
 					expResult.put(key, FacilioUtil.DECIMAL_FORMAT.format(value));
 				}
+				else if(obj instanceof String && FacilioUtil.isNumeric(obj.toString())) {
+					Double value =  Double.parseDouble(obj.toString());
+					expResult.put(key, FacilioUtil.DECIMAL_FORMAT.format(value));
+				}
 			}
 			return expResult;
 		}
