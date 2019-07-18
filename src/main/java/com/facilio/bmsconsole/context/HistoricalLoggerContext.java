@@ -86,7 +86,7 @@ public class HistoricalLoggerContext {
 	public void setCreatedTime(long createdTime) {
 		this.createdTime = createdTime;
 	}
-	public static int getType() {
+	public int getType() {
 		if (type != null) {
 			return type.getIntVal();
 		}
