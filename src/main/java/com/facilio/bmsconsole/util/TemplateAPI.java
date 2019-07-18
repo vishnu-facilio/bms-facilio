@@ -829,8 +829,8 @@ public class TemplateAPI {
 		return tasks;
 	}
 
-	public static List<SingleSharingContext> getPrerequisiteApproversFromWOTemplate(WorkorderTemplate woTemplate) throws Exception {
-		List<SingleSharingContext> approverList = new ArrayList<>();
+	public static SharingContext<SingleSharingContext> getPrerequisiteApproversFromWOTemplate(WorkorderTemplate woTemplate) throws Exception {
+		SharingContext<SingleSharingContext> approverList = new SharingContext();
 		if (woTemplate.getPrerequisiteApproverTemplates() != null) {
 			woTemplate.getPrerequisiteApproverTemplates().forEach(tem -> {
 				if (tem.getPrerequisiteApprover() != null) {

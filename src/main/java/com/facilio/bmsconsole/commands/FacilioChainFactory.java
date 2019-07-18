@@ -1508,6 +1508,7 @@ public class FacilioChainFactory {
 		c.addCommand(new AddPhotosCommand());
 		c.addCommand(new AddPrerequisitePhotoActivityCommand());
 		c.addCommand(new AddActivitiesCommand());
+		c.addCommand(new UpdatePrerequisiteStatusCommand());
 		return c;
 	}
 	

@@ -221,9 +221,6 @@ public class PhotosAction extends ActionSupport {
 		
 		setPhotos((List<PhotosContext>) context.get(FacilioConstants.ContextNames.PHOTOS));
 		
-		if(FacilioConstants.ContextNames.PREREQUISITE_PHOTOS.equalsIgnoreCase(moduleName)){
-			WorkOrderAPI.updatePreRequisiteStatus(parentId);
-		}
 		if (FacilioConstants.ContextNames.BASE_SPACE_PHOTOS.equalsIgnoreCase(moduleName)) {
 			try {
 				BaseSpaceContext bscontext = SpaceAPI.getBaseSpace(parentId);

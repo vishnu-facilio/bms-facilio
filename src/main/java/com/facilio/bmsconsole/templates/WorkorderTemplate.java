@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.templates;
 
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -335,13 +336,13 @@ public class WorkorderTemplate extends Template {
 	}
 
 	@JsonIgnore
-	private List<SingleSharingContext> prerequisiteApprovers;
+	private SharingContext<SingleSharingContext> prerequisiteApprovers;
 
-	public List<SingleSharingContext> getPrerequisiteApprovers() {
+	public SharingContext<SingleSharingContext> getPrerequisiteApprovers() {
 		return prerequisiteApprovers;
 	}
 
-	public void setPrerequisiteApprovers(List<SingleSharingContext> singleSharingContext) {
+	public void setPrerequisiteApprovers(SharingContext<SingleSharingContext> singleSharingContext) {
 		this.prerequisiteApprovers = singleSharingContext;
 	}
 	@JsonIgnore

@@ -85,69 +85,14 @@ public class WorkOrderAPI {
 		return (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
 	}
 	
-	private static boolean isMatching (SingleSharingContext permission, User user, Object object) throws Exception {
-		switch (permission.getTypeEnum()) {
-			case USER:
-				if (permission.getUserId() == user.getOuid()) {
-					return true;
-				}
-				break;
-			case ROLE:
-				if (permission.getRoleId() == user.getRoleId()) {
-					return true;
-				}
-			case GROUP:
-				if (permission.getGroupMembers() == null) {
-					GroupBean groupBean = (GroupBean) BeanFactory.lookup("GroupBean");
-					List<GroupMember> members = groupBean.getGroupMembers(permission.getGroupId());
-					permission.setGroupMembers(members);
-				}
-				if (permission.getGroupMembers() != null && !permission.getGroupMembers().isEmpty()) {
-					for (GroupMember member : permission.getGroupMembers()) {
-						if (member.getOuid() == user.getOuid()) {
-							return true;
-						}
-					}
-				}
-				break;
-		}
-		return false;
-	}
-	
 	public static void setPrerequisiteApprover(List<WorkOrderContext> wos) throws Exception {
-		for(WorkOrderContext wo:wos){
-			
-		if (wo.getId() > 0) {
-			FacilioModule module = ModuleFactory.getPrerequisiteApproversModule();
-			List<FacilioField> fields = FieldFactory.getSharingFields(module);
-			for (FacilioField field : fields) {
-				if ("fieldId".equalsIgnoreCase(field.getName())) {
-					fields.remove(field);
+		for (WorkOrderContext wo : wos) {
+			if (wo.getId() > 0) {
+				SharingContext<SingleSharingContext> sharing = SharingAPI.getSharing(wo.getId(),ModuleFactory.getPrerequisiteApproversModule(), SingleSharingContext.class);
+				if(sharing !=null){
+					wo.setPrerequisiteApprover(sharing.isAllowed());
 				}
 			}
-			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-			List<SingleSharingContext> prerequisiteApprovers = new ArrayList<>();
-			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields)
-					.table(module.getTableName()).andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"),String.valueOf(wo.getId()), NumberOperators.EQUALS));
-			
-			List<Map<String, Object>> props = selectBuilder.get();
-			if (props != null && !props.isEmpty()) {
-				for (Map<String, Object> prop : props) {
-					SingleSharingContext approver = FieldUtil.getAsBeanFromMap(prop, SingleSharingContext.class);
-					prerequisiteApprovers.add(approver);
-				}
-			}
-           
-			if (prerequisiteApprovers.isEmpty()) {
-				wo.setPrerequisiteApprover(true);
-			} else {
-				for (SingleSharingContext permission : prerequisiteApprovers) {
-					if (isMatching(permission, AccountUtil.getCurrentUser(), AccountUtil.getCurrentUser())) {
-						wo.setPrerequisiteApprover(true);
-					}
-				}
-			}
-		}
 		}
 	}
 	public static WorkOrderContext getWorkOrder(long ticketId) throws Exception {
@@ -2081,10 +2026,4 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 		return finalResult;
 
 	}
-    public static void addPrerequisiteApprovers(long parentId, List<SingleSharingContext> sharing) throws Exception {
-		if (CollectionUtils.isNotEmpty(sharing) && parentId > 0) {
-			SharingAPI.addSharing((SharingContext<? extends SingleSharingContext>) sharing, parentId, ModuleFactory.getApproversModule());
-		}
-	}
-	
  }
