@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Command;
@@ -74,6 +75,13 @@ public class FetchCardDataCommand implements Command {
 		if(widgetId != null) {
 			DashboardWidgetContext dashboardWidgetContext =  DashboardUtil.getWidget(widgetId);
 			widgetStaticContext = (WidgetStaticContext) dashboardWidgetContext;
+			if(widgetStaticContext.getWidgetVsWorkflowContexts() != null && !widgetStaticContext.getWidgetVsWorkflowContexts().isEmpty()) {
+				
+				String s = "widgetStaticContext.getWidgetVsWorkflowContexts() size -- "+widgetStaticContext.getWidgetVsWorkflowContexts() +"\n";
+				s = s + "widgetStaticContext.getWidgetVsWorkflowContexts() size -- "+widgetStaticContext.getWidgetVsWorkflowContexts().get(0).getId() +"\n";
+				s = s + "widgetStaticContext.getWidgetVsWorkflowContexts() size -- "+widgetStaticContext.getWidgetVsWorkflowContexts().get(0).getWorkflowString() +"\n";
+				LOGGER.log(Level.SEVERE, s);
+			}
 		}
 		else {
 			widgetStaticContext = new WidgetStaticContext();
@@ -155,6 +163,11 @@ public class FetchCardDataCommand implements Command {
 				}
 				else {
 					Map<String, Object> expResult = WorkflowUtil.getExpressionResultMap(card.getWorkflow(), widgetStaticContext.getParamsJson(),criteria);
+					
+					if(widgetStaticContext.getId() == 7849 ||widgetStaticContext.getId() == 7848 ||widgetStaticContext.getId() ==7847 ||widgetStaticContext.getId() ==7846) {
+						
+						LOGGER.log(Level.SEVERE, "workflow == " +card.getWorkflow()+"  res -- "+expResult);
+					}
 					
 					expResult = (Map<String, Object>) CardUtil.getWorkflowResultForClient(expResult, widgetStaticContext); // parsing data suitable for client
 					
