@@ -3856,11 +3856,11 @@
 	
 	<package name="photosV2Api" namespace="/api/v2/photos" extends="v2Api">
 		<action name="upload" class="com.facilio.bmsconsole.actions.PhotosAction"
-			method="uploadPhotos">
+			method="v2uploadPhotos">
 		</action>
 		
 		<action name="*" class="com.facilio.bmsconsole.actions.PhotosAction"
-			method="getPhotosList">
+			method="v2getPhotosList">
 			<param name="module">{1}</param>
 		</action>
 	</package>
