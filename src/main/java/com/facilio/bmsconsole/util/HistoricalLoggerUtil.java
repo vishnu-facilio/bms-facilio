@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.util;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -10,28 +11,50 @@ import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.FacilioField;
 
 public class HistoricalLoggerUtil {
 	
+	
+	public static void addHistoricalLogger(List<HistoricalLoggerContext> historicalLoggerList) throws Exception {
+		
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+				.table(ModuleFactory.getHistoricalLoggerModule().getTableName())
+				.fields(FieldFactory.getHistoricalLoggerFields());
+		
+		for(HistoricalLoggerContext historicalLogger:historicalLoggerList)
+		{
+		Map<String, Object> props = FieldUtil.getAsProperties(historicalLogger);
+		insertBuilder.addRecord(props);
+		}
+		insertBuilder.save();
+		
+//		for(HistoricalLoggerContext historicalLogger:historicalLoggerList) {
+//		historicalLogger.setId((Long) props.get("id"));
+//		}
+	}
 	
 	public static void addHistoricalLogger(HistoricalLoggerContext historicalLogger) throws Exception {
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getHistoricalLoggerModule().getTableName())
 				.fields(FieldFactory.getHistoricalLoggerFields());
-		
+	
 		Map<String, Object> props = FieldUtil.getAsProperties(historicalLogger);
 		insertBuilder.addRecord(props);
 		insertBuilder.save();
 		
 		historicalLogger.setId((Long) props.get("id"));
+		
 	}
-
+	
 	
 	public static HistoricalLoggerContext getHistoricalLogger(long parentassetId) throws Exception {
 		
@@ -46,6 +69,23 @@ public class HistoricalLoggerUtil {
 			return historicalLogger;
 		}
 		return null;
+	}
+	
+	public static List<HistoricalLoggerContext> getActiveHistoricalLogger(List<Long> dependentIds) throws Exception {
+		
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getHistoricalLoggerFields())
+				.table(ModuleFactory.getHistoricalLoggerModule().getTableName())
+				.andCondition(CriteriaAPI.getConditionFromList("DEPENDENT_ID", "dependentId", dependentIds, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("STATUS", "status", ""+ HistoricalLoggerContext.Status.IN_PROGRESS.getIntVal(), NumberOperators.EQUALS));
+				
+				List<Map<String, Object>> props = selectBuilder.get();
+				if (props != null && !props.isEmpty()) {
+					List<HistoricalLoggerContext> historicalLoggers = FieldUtil.getAsBeanListFromMapList(props, HistoricalLoggerContext.class);
+					return historicalLoggers;
+				}
+				return null;
 	}
 	
 

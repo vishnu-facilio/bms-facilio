@@ -3274,6 +3274,7 @@ public class FieldFactory {
 		fields.add(getField("parentId", "PARENT_ID", module, FieldType.NUMBER));
 		fields.add(getField("type", "TYPE", module, FieldType.NUMBER));
 		fields.add(getField("dependentId", "DEPENDENT_ID", module, FieldType.NUMBER));
+		fields.add(getField("baseMeterId", "BASE_METER_ID", module, FieldType.NUMBER));
 		fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
 		fields.add(getField("startTime", "START_TIME", module, FieldType.NUMBER));
 		fields.add(getField("endTime", "END_TIME", module, FieldType.NUMBER));

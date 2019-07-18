@@ -30,6 +30,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.commons.math3.stat.StatUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 
 import java.time.ZonedDateTime;
 import java.util.*;
@@ -468,10 +469,7 @@ public class DeviceAPI
 	
 	public static void addHistoricalVMCalculationJob(long meterId, long startTime, long endTime, int interval,boolean updateReading, boolean runParentMeter) throws Exception {
 		
-		GenericInsertRecordBuilder historyVMBuilder = new GenericInsertRecordBuilder()
-				.fields(FieldFactory.getHistoricalVMCalculationFields())
-				.table(ModuleFactory.getHistoricalVMModule().getTableName());
-		Map<String, Object> jobProp = new HashMap<>();
+		JSONObject jobProp = new JSONObject();
 		jobProp.put("orgId", AccountUtil.getCurrentOrg().getOrgId());
 		jobProp.put("meterId",meterId);
 		jobProp.put("startTime", startTime);
@@ -479,8 +477,8 @@ public class DeviceAPI
 		jobProp.put("intervalValue", interval);
 		jobProp.put("updateReading", updateReading);
 		jobProp.put("runParentMeter", runParentMeter);
-		long jobId= historyVMBuilder.insert(jobProp);
-		FacilioTimer.scheduleOneTimeJob(jobId, "HistoricalVMCalculation", 30, "facilio");
+		BmsJobUtil.deleteJobWithProps(meterId,"HistoricalVMCalculation" );
+		BmsJobUtil.scheduleOneTimeJobWithProps(meterId,  "HistoricalVMCalculation", 30, "facilio", jobProp);
 	}
 	
 	
@@ -496,17 +494,66 @@ public class DeviceAPI
 		addVMReadingsJob(getVirtualMeters(vmList), startTime,endTime, minutesInterval, runParentMeter);
 	}
 	
-	
 	private static void addVMReadingsJob(List<EnergyMeterContext> virtualMeters, long startTime, long endTime,
 			int minutesInterval, boolean runParentMeter) throws Exception {
-
+		
+		Map<Long,HistoricalLoggerContext> historicalLoggerMap = new HashMap<Long,HistoricalLoggerContext>();
+		
 		for(EnergyMeterContext meter : virtualMeters) {
-
+			
 			addHistoricalVMCalculationJob(meter.getId(), startTime, endTime, minutesInterval,false, runParentMeter);
+			
+			Long baseMeterId = meter.getId();
+			HistoricalLoggerContext historicalLoggerContext = gethistoricalLogger(meter.getId(), startTime, endTime, true, baseMeterId);
+			HistoricalLoggerUtil.addHistoricalLogger(historicalLoggerContext);
+			historicalLoggerMap.put(meter.getId(), historicalLoggerContext);
+			checkParent (meter, startTime, endTime, baseMeterId, historicalLoggerMap);	
+		}	
+	}
+	
+	private static void checkParent(EnergyMeterContext currentMeter, long startTime,long endTime, 
+			Long baseMeterId, Map<Long,HistoricalLoggerContext> historicalLoggerMap) throws Exception {
+		
+		List<Long> parentMeterIds = getParentMeters(currentMeter);
+		if(parentMeterIds==null) {
+			return;
+		}
+		for(Long parentmeterid : parentMeterIds)
+		{
+			HistoricalLoggerContext historicalLoggerContext = gethistoricalLogger(parentmeterid, startTime, endTime, false, baseMeterId);
+			if(!historicalLoggerMap.containsKey(parentmeterid)) {
+				HistoricalLoggerContext parentHistoricalLoggerContext = historicalLoggerMap.get(currentMeter.getId());
+				
+				historicalLoggerContext.setDependentId(parentHistoricalLoggerContext.getId());
+				HistoricalLoggerUtil.addHistoricalLogger(historicalLoggerContext);
+				historicalLoggerMap.put(parentmeterid, historicalLoggerContext);
+					
+				List<EnergyMeterContext> vm = DeviceAPI.getVirtualMeters(Collections.singletonList(parentmeterid));
+				checkParent (vm.get(0), startTime, endTime, baseMeterId, historicalLoggerMap);	
+			}
+			
 		}
 	}
 
-	
+	private static HistoricalLoggerContext gethistoricalLogger(long meterId,long startTime,long endTime,boolean isRootMeter,
+			Long baseMeterId)
+	{
+		HistoricalLoggerContext historicalLogger = new HistoricalLoggerContext();
+		historicalLogger.setParentId(meterId);
+		historicalLogger.setType(HistoricalLoggerContext.Type.VM_CALCULATION.getIntVal());
+		historicalLogger.setStatus(HistoricalLoggerContext.Status.IN_PROGRESS.getIntVal());
+		if(!isRootMeter)
+		{
+			historicalLogger.setBaseMeterId(baseMeterId);
+		}
+		historicalLogger.setStartTime(startTime);
+		historicalLogger.setEndTime(endTime);
+		historicalLogger.setCreatedBy(AccountUtil.getCurrentUser().getId());
+		historicalLogger.setCreatedTime(DateTimeUtil.getCurrenTime());
+		historicalLogger.setCalculationStartTime(DateTimeUtil.getCurrenTime());
+		return historicalLogger;
+		
+	}
 
 	public static List<ReadingContext> insertVirtualMeterReadings(EnergyMeterContext meter, List<Long> childMeterIds,  long startTime, long endTime, int minutesInterval, boolean updateReading, boolean isHistorical) throws Exception {
 

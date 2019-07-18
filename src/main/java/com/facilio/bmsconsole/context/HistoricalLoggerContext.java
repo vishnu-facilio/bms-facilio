@@ -1,13 +1,18 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 public class HistoricalLoggerContext {
 	
 	private long id = -1;
 	private long orgId;
 	private long parentId;
-	private int type;
-	private long dependentId;
-	private int status;
+	private Type type;
+	private Long dependentId;
+	private Long baseMeterId;
+	private Status status;
 	private long startTime;
 	private long endTime;
 	private long calculationStartTime;
@@ -33,23 +38,17 @@ public class HistoricalLoggerContext {
 	public void setParentId(long parentId) {
 		this.parentId = parentId;
 	}
-	public int getType() {
-		return type;
-	}
-	public void setType(int type) {
-		this.type = type;
-	}
-	public long getDependentId() {
+	public Long getDependentId() {
 		return dependentId;
 	}
-	public void setDependentId(long dependentId) {
+	public void setDependentId(Long dependentId) {
 		this.dependentId = dependentId;
 	}
-	public int getStatus() {
-		return status;
+	public Long getBaseMeterId() {
+		return baseMeterId;
 	}
-	public void setStatus(int status) {
-		this.status = status;
+	public void setBaseMeterId(Long baseMeterId) {
+		this.baseMeterId = baseMeterId;
 	}
 	public long getStartTime() {
 		return startTime;
@@ -87,4 +86,87 @@ public class HistoricalLoggerContext {
 	public void setCreatedTime(long createdTime) {
 		this.createdTime = createdTime;
 	}
+	public static int getType() {
+		if (type != null) {
+			return type.getIntVal();
+		}
+		return -1;
+	}
+
+	public void setType(int typeint) {
+		this.type = Type.getAllOptions().get(new Integer(typeint));
+	}
+	public int getStatus() {
+		if (status != null) {
+			return status.getIntVal();
+		}
+		return -1;
+	}
+
+	public void setStatus(int statusint) {
+		this.status = Status.getAllOptions().get(new Integer(statusint));
+	}
+	
+	public enum Type {
+			
+			VM_CALCULATION(1),
+			ENPI(2),
+			FORMULA_FIELD(3),
+			;
+	
+			int intVal;
+			private Type(int intVal) {
+				this.intVal = intVal;
+			}
+			
+			public int getIntVal() {
+				return intVal;
+			}
+	
+			private static final Map<Integer, Type> optionMap = Collections.unmodifiableMap(initTypeMap());
+			private static Map<Integer, Type> initTypeMap() {
+				Map<Integer, Type> typeMap = new HashMap<>();
+	
+				for (Type type : values()) {
+					typeMap.put(type.getIntVal(), type);
+				}
+				return typeMap;
+			}
+	
+			public static Map<Integer, Type> getAllOptions() {
+				return optionMap;
+			}
+		}
+	
+		public enum Status {
+			
+			IN_PROGRESS(1),
+			RESOLVED(2),
+			FAILED(3),
+			;
+	
+			int intVal;
+			private Status(int intVal) {
+				this.intVal = intVal;
+			}
+			
+			public int getIntVal() {
+				return intVal;
+			}
+	
+			private static final Map<Integer, Status> optionMap = Collections.unmodifiableMap(initTypeMap());
+			private static Map<Integer, Status> initTypeMap() {
+				Map<Integer, Status> typeMap = new HashMap<>();
+	
+				for (Status status : values()) {
+					typeMap.put(status.getIntVal(), status);
+				}
+				return typeMap;
+			}
+	
+			public static Map<Integer, Status> getAllOptions() {
+				return optionMap;
+			}
+		}
+
 }
