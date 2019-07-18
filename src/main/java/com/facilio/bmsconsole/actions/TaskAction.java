@@ -486,7 +486,7 @@ public class TaskAction extends FacilioAction {
 
 				Chain getRelatedTasksChain = FacilioChainFactory.getRelatedTasksChain();
 				getRelatedTasksChain.execute(context);
-
+				
 				setTasks((Map<Long, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP));
 				setPreRequests((Map<Long, List<TaskContext>>) context.get(FacilioConstants.ContextNames.PRE_REQUEST_MAP));
 				setSections((Map<Long, TaskSectionContext>) context.get(FacilioConstants.ContextNames.TASK_SECTIONS));
@@ -662,6 +662,8 @@ public class TaskAction extends FacilioAction {
 		taskList();
 		setResult(FacilioConstants.ContextNames.TASK_LIST, tasks);
 		setResult("sections", getSections());
+		setResult("prerequisites", getPreRequests());
+		setResult("prerequisiteSections", getPreRequestSections());
 		return SUCCESS;
 	}
 	
