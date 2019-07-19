@@ -36,7 +36,7 @@ public class PMPlannerAPI {
 	
 	public static final String PLANNED = "planned";
 	private static final String ACTUAL = "actual";
-	private static final String DUE = "due";
+	public static final String DUE = "due";
 	private static final String RESOLVED = "resolved";
 	
 	private static Map<String, String> metricFieldMap;

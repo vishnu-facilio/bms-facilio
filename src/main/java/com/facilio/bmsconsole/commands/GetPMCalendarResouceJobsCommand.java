@@ -330,7 +330,12 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 					metricObj.put("rowSpan", 1);
 					metricObj.put("count", prop.get(countField.getName()));
 					
+					boolean enabled = metric.equals(PMPlannerAPI.PLANNED) || metric.equals(PMPlannerAPI.DUE);
+					
 					if (j == 0) {
+						if (enabled) {
+							row.put("editable", true);
+						}
 						rowData.add(metricObj);
 					}
 					else {
@@ -339,6 +344,9 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 						row = new HashMap<>();
 						row.put("data", newRowData);
 						row.put("id", assetId);
+						if (enabled) {
+							row.put("editable", true);
+						}
 						if (showAssetCategory) {
 							row.put("resourceGroup", prop.get(PMPlannerAPI.CATEGORY_NAME));
 						}
@@ -372,6 +380,7 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 				if (i + 1 == size) {
 					prevHeader.put("count", prop.get(countField.getName()));
 				}
+				row.put("editable", true);
 			}
 		}
 	}
