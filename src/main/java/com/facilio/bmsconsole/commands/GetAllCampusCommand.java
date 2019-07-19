@@ -2,8 +2,10 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.bmsconsole.context.BusinessHoursContext;
+import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.BusinessHoursAPI;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.FieldFactory;
@@ -58,6 +60,16 @@ public class GetAllCampusCommand implements Command {
 					e.setBusinessHour(businessHourList.stream().filter(bh -> spaceBhIdsMap.get(e.getId()).equals(bh.getId())).findFirst().get());
 				}
 			});
+		}
+		
+		for (SiteContext site : campuses) {
+			List<PhotosContext> photos = SpaceAPI.getBaseSpacePhotos(site.getId());
+			if (photos != null && !photos.isEmpty()) {
+				PhotosContext photo = photos.get(0);
+				if (photo != null) {
+					site.setPhotoId(photo.getPhotoId());
+				}
+			}
 		}
 		context.put(FacilioConstants.ContextNames.SITE_LIST, campuses);
 

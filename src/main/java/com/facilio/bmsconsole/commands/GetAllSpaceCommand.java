@@ -1,7 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.PermissionUtil;
+import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.context.SpaceContext;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.SelectRecordsBuilder;
@@ -73,6 +76,15 @@ public class GetAllSpaceCommand implements Command{
 		}
 
 		List<SpaceContext> spaces = builder.get();
+		for (SpaceContext space : spaces) {
+			List<PhotosContext> photos = SpaceAPI.getBaseSpacePhotos(space.getId());
+			if (photos != null && !photos.isEmpty()) {
+				PhotosContext photo = photos.get(0);
+				if (photo != null) {
+					space.setPhotoId(photo.getPhotoId());
+				}
+			}
+		}
 		context.put(FacilioConstants.ContextNames.SPACE_LIST, spaces);
 		
 		return false;
