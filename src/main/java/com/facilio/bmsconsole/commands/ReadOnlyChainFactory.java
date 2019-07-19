@@ -1,15 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Chain;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.bmsconsole.actions.GetToolTransactionsListCommand;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.mv.command.FetchMVWidgetResultCommand;
 import com.facilio.workflows.command.GetAllNameSpaceWithFunctionCommand;
 import com.facilio.workflows.command.GetAllScheduledWorkflowCommand;
-import org.apache.commons.chain.Chain;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
 public class ReadOnlyChainFactory {
 	private static Logger LOGGER = LogManager.getLogger(ReadOnlyChainFactory.class.getName());
@@ -160,6 +160,8 @@ public class ReadOnlyChainFactory {
 	
 	public static Chain getCalendarResourceJobChain() {
 		Chain c = getDefaultChain();
+		c.addCommand(new LoadPMPlannerSettingCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GetPMCalendarResouceJobsCommand());
 		return c;
 

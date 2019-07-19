@@ -664,6 +664,7 @@ public class TaskAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
 		setResult(FacilioConstants.ContextNames.TASK, task);
 		setResult(FacilioConstants.ContextNames.MODIFIED_TIME, task.getModifiedTime());
+		setResult(FacilioConstants.ContextNames.PRE_REQUEST_STATUS, preRequestStatus);
 		setResult("error", getError());
 		return SUCCESS;
 	}
