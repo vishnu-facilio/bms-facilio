@@ -33,9 +33,6 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
 public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implements SelectBuilderIfc<E> {
 	
@@ -81,7 +78,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		if (selectBuilder.where != null) {
 			this.where = new WhereBuilder(selectBuilder.where);
 		}
-		this.joinBuilder = selectBuilder.joinBuilder;
+		this.joinBuilder = new StringBuilder(selectBuilder.joinBuilder);
 	}
 	
 	public SelectRecordsBuilder (int level) {
