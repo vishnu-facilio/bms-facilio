@@ -137,9 +137,6 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 		else {
 			commonBuilder.andCondition(CriteriaAPI.getCondition(woFieldMap.get("createdTime"), operator));
 		}
-		if (showFrequency) {
-			commonBuilder.innerJoin(pmTriggerTable).on(triggerField.getCompleteColumnName() + "=" + pmTriggerTable + ".ID");
-		}
 		if (filterCriteria != null) {
 			commonBuilder.andCriteria(filterCriteria);
 		}
@@ -182,6 +179,9 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 		if (showAssetCategory) {
 			groupBuilder.innerJoin(assetCategoryTable).on(assetFieldMap.get("category").getCompleteColumnName() + "=" + assetCategoryTable + ".ID");
 		}
+		if (showFrequency) {
+			groupBuilder.innerJoin(pmTriggerTable).on(triggerField.getCompleteColumnName() + "=" + pmTriggerTable + ".ID");
+		}
 		if (buildingId > 0) {
 			groupBuilder.andCondition(CriteriaAPI.getCondition(resourceFieldMap.get("space"), String.valueOf(buildingId), BuildingOperator.BUILDING_IS));
 		}
@@ -204,7 +204,7 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 				assetIds.add(assetId);
 				assetIdVsName.put(assetId, (String) prop.get(resourceNameField.getName()));
 				
-				addTitles(titles, headers, prop, prevHeaderValues, countField);
+				addTitles(titles, assetId, headers, prop, prevHeaderValues, countField);
 			}
 			
 			
@@ -217,6 +217,7 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 			selectFields.add(woFieldMap.get("category"));
 			selectFields.add(woFieldMap.get("type"));
 			selectFields.add(resourceField);
+			selectFields.add(frequencyField);
 			selectFields.add(FieldFactory.getIdField(woModule));
 			if (showTimeMetric) {
 				for(String metric: selectedMetrics) {
@@ -224,15 +225,6 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 						selectFields.add(woFieldMap.get(metricFieldMap.get(metric)));
 					}
 				}
-				/*if (!ACTUAL_FIELD.equals("createdTime")) {
-					selectFields.add(woFieldMap.get(ACTUAL_FIELD));
-				}
-				if (!PLANNED_FIELD.equals("createdTime")) {
-					selectFields.add(woFieldMap.get(PLANNED_FIELD));
-				}*/
-			}
-			if (showFrequency) {
-				selectFields.add(frequencyField);
 			}
 			
 			
@@ -247,6 +239,7 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 			
 			SelectRecordsBuilder<ModuleBaseWithCustomFields> dataBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>(commonBuilder)
 					.select(selectFields)
+					.innerJoin(pmTriggerTable).on(triggerField.getCompleteColumnName() + "=" + pmTriggerTable + ".ID")
 					.orderBy(orderBy.toString())
 					;
 			
@@ -264,10 +257,6 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 					List<Map<String, Object>> titleRow = (List<Map<String, Object>>) titleData.get("data");
 					Map<String, Object> leafNode = titleRow.get(titleRow.size() - 1);
 					int count = (int) (long) leafNode.get("count");
-					
-					/*List<Map<String, Object>> filteredList = IntStream.range(totalCount, totalCount+count)
-						             .mapToObj(props::get)
-						             .collect(Collectors.toList());*/
 					
 					List<Map<String, Object>> filteredList = props.subList(totalCount, totalCount+count);
 					
@@ -308,10 +297,11 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 		return false;
 	}
 	
-	private void addTitles(List<Map<String, Object>> titles, List<Map<String, Object>> headers, Map<String, Object> prop, List<Map<String, Object>> prevHeaderValues, FacilioField countField) {
+	private void addTitles(List<Map<String, Object>> titles, long assetId, List<Map<String, Object>> headers, Map<String, Object> prop, List<Map<String, Object>> prevHeaderValues, FacilioField countField) {
 		Map<String, Object> row = new HashMap<>();
 		List<Map<String, Object>> rowData = new ArrayList<>();
 		row.put("data", rowData);
+		row.put("id", assetId);
 		if (showAssetCategory) {
 			row.put("resourceGroup", prop.get(PMPlannerAPI.CATEGORY_NAME));
 		}
@@ -348,6 +338,7 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 						newRowData.add(metricObj);
 						row = new HashMap<>();
 						row.put("data", newRowData);
+						row.put("id", assetId);
 						if (showAssetCategory) {
 							row.put("resourceGroup", prop.get(PMPlannerAPI.CATEGORY_NAME));
 						}
