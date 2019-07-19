@@ -155,9 +155,10 @@ public class TenantsAPI {
 														.andCustomWhere("Tenant_Users.ORGID = ? ", orgId);
 		
 		List<Map<String, Object>> props = selectBuilder.get();
+		List<ResourceContext> longArray = new ArrayList<>();
+		if (props != null && !props.isEmpty()) {
 		Map<String, Object> values = props.get(0);
 		long value = (long) values.get("tenantId");
-		System.out.println("*********************" +value);
 		
 		
 		FacilioModule modulo = ModuleFactory.getTenantsUtilityMappingModule();
@@ -168,7 +169,6 @@ public class TenantsAPI {
 														.andCustomWhere("Tenants_Utility_Mapping.TENANT_ID = ?", value)
 														.andCustomWhere("Tenants_Utility_Mapping.SHOW_IN_PORTAL = ?", true);
 		List<Map<String, Object>> prop = selectBuilde.get();
-		System.out.println("&&&&&&&&&&&&&&&&&&&" +prop);
 		
 		
 		long Id;
@@ -177,14 +177,12 @@ public class TenantsAPI {
 		for (Map<String, Object> pro : prop) {
 			Id =  (long) pro.get("assetId");
 			Ids.add(Id);
-			System.out.println("!!!!!!!!!!!!!!!" +Id);
 		}
-		System.out.println("!!!!!!!!!!!!!!!" +Ids);
-		List<ResourceContext> longArray = ResourceAPI.getExtendedResources(Ids,false);
-		System.out.println("$$$$$$$$$$$$$$$$$$$$$" +longArray);
+		longArray = ResourceAPI.getExtendedResources(Ids,false);
 		
-		
+		}
 		return longArray;
+		
 }
 	
 	
