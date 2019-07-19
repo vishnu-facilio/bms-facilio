@@ -231,6 +231,7 @@ public class FieldFactory {
 		fields.add(getField("actionType", "ACTION_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("formFieldId", "FORM_FIELD_ID", module, FieldType.LOOKUP));
 		fields.add(getField("actionMeta", "ACTION_META_JSON", module, FieldType.STRING));
+		fields.add(getField("criteriaId", "CRITERIA_ID", module, FieldType.LOOKUP));
 		
 		return fields;
 	}

@@ -66,26 +66,49 @@ public class FormRuleAction extends FacilioAction {
 	
 	public String addRule() throws Exception {
 		
+		Context context = new FacilioContext();
 		
-		return null;
+		context.put(FormRuleAPI.FORM_RULE_CONTEXT,formRuleContext);
+		
+		Chain c = TransactionChainFactory.getAddFormRuleChain();
+		c.execute(context);
+		
+		setResult(FormRuleAPI.FORM_RULE_RESULT_JSON, formRuleContext);
+		return SUCCESS;
 	}
 	
 	public String updateRule() throws Exception {
 		
+		Context context = new FacilioContext();
 		
-		return null;
+		context.put(FormRuleAPI.FORM_RULE_CONTEXT,formRuleContext);
+		
+		Chain c = TransactionChainFactory.getUpdateFormRuleChain();
+		c.execute(context);
+		
+		setResult(FormRuleAPI.FORM_RULE_RESULT_JSON, formRuleContext);
+		return SUCCESS;
 	}
 	
 	public String deleteRule() throws Exception {
 		
+		Context context = new FacilioContext();
 		
-		return null;
+		context.put(FormRuleAPI.FORM_RULE_CONTEXT,formRuleContext);
+		
+		Chain c = TransactionChainFactory.getDeleteFormRuleChain();
+		c.execute(context);
+		
+		setResult(FormRuleAPI.FORM_RULE_RESULT_JSON, formRuleContext);
+		
+		return SUCCESS;
 	}
 	
 	public String getRule() throws Exception {
 		
-		
-		return null;
+		formRuleContext = FormRuleAPI.getFormRuleContext(formRuleContext.getId());
+		setResult(FormRuleAPI.FORM_RULE_RESULT_JSON, formRuleContext);
+		return SUCCESS;
 	}
 
 	public String executeFormActionRules() throws Exception {

@@ -8,8 +8,11 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.FormRuleAPI;
 import com.facilio.chain.FacilioContext;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
 
 public enum FormActionType {
 
@@ -79,6 +82,25 @@ public enum FormActionType {
 				value = FormRuleAPI.replacePlaceHoldersAndGetResult(fromData, (String)value);
 			}
 			JSONObject json = FormRuleAPI.getActionJson(formRuleActionContext.getFormFieldId(), FormActionType.SET_FIELD_VALUE, value);
+			resultJson.add(json);
+		}
+	},
+	APPLY_FILTER(6,"filter") {
+		@Override
+		public void performAction(FacilioContext facilioContext) throws Exception {
+			FormRuleActionContext formRuleActionContext = (FormRuleActionContext) facilioContext.get(FormRuleAPI.FORM_RULE_ACTION_CONTEXT);
+			
+			if(formRuleActionContext.getCriteriaId() < 0 && formRuleActionContext.getCriteria() == null) {
+				throw new IllegalArgumentException("No Filter Found");
+			}
+			Criteria criteria = formRuleActionContext.getCriteria();
+			if(criteria == null) {
+				criteria = CriteriaAPI.getCriteria(AccountUtil.getCurrentOrg().getId(), formRuleActionContext.getCriteriaId());
+			}
+			
+			JSONObject json = FormRuleAPI.getActionJson(formRuleActionContext.getFormFieldId(), FormActionType.APPLY_FILTER, criteria);
+			
+			JSONArray resultJson = (JSONArray) facilioContext.get(FormRuleAPI.FORM_RULE_RESULT_JSON);
 			resultJson.add(json);
 		}
 	},

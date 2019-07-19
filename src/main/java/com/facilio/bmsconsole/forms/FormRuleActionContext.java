@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.forms;
 
 import com.facilio.bmsconsole.util.FormRuleAPI;
 import com.facilio.chain.FacilioContext;
+import com.facilio.db.criteria.Criteria;
 
 public class FormRuleActionContext {
 	long id = -1;
@@ -10,11 +11,29 @@ public class FormRuleActionContext {
 	long formFieldId = -1;
 	String actionMeta;
 	FormActionType actionType;
+	long criteriaId = -1;
+	Criteria criteria;
 	
 	
 	public void executeAction(FacilioContext facilioContext) throws Exception {
 		facilioContext.put(FormRuleAPI.FORM_RULE_ACTION_CONTEXT, this);
 		actionType.performAction(facilioContext);
+	}
+	
+	public long getCriteriaId() {
+		return criteriaId;
+	}
+
+	public void setCriteriaId(long criteriaId) {
+		this.criteriaId = criteriaId;
+	}
+
+	public Criteria getCriteria() {
+		return criteria;
+	}
+
+	public void setCriteria(Criteria criteria) {
+		this.criteria = criteria;
 	}
 	
 	public long getId() {

@@ -1094,19 +1094,19 @@
 	<package name="formRuleApiv2" namespace="/api/v2/form/rule"
 		extends="v2Api">
 		<action name="add"
-			class="com.facilio.bmsconsole.actions.FormAction" method="addRule">
+			class="com.facilio.bmsconsole.actions.FormRuleAction" method="addRule">
 			<param name="permission">CREATE</param>
 		</action>
 		<action name="update"
-			class="com.facilio.bmsconsole.actions.FormAction" method="updateRule">
+			class="com.facilio.bmsconsole.actions.FormRuleAction" method="updateRule">
 		</action>
 		<action name="delete"
-			class="com.facilio.bmsconsole.actions.FormAction" method="deleteRule">
+			class="com.facilio.bmsconsole.actions.FormRuleAction" method="deleteRule">
 		</action>
 		<action name="get"
-			class="com.facilio.bmsconsole.actions.FormAction" method="getRule">
+			class="com.facilio.bmsconsole.actions.FormRuleAction" method="getRule">
 		</action>
-		<action name="executeFormActionRules" class="com.facilio.bmsconsole.actions.FormAction" method="executeFormActionRules">
+		<action name="executeFormActionRules" class="com.facilio.bmsconsole.actions.FormRuleAction" method="executeFormActionRules">
 		</action>
 	</package>
 
