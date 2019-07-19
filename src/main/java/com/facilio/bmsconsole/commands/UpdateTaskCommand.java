@@ -73,7 +73,7 @@ public class UpdateTaskCommand implements Command {
 			List<TaskContext> oldTasks = getTasks(recordIds);
 			TicketAPI.setTasksInputData(oldTasks);
 			Map<Long, TaskContext> taskMap = oldTasks.stream().collect(Collectors.toMap(TaskContext::getId, Function.identity()));
-		
+		   long parentId = oldTasks.get(0).getParentTicketId();
 				if(task.getInputValue() != null) {
 					long newTaskId = recordIds.get(0);
 					TaskContext oldTask = taskMap.get(newTaskId);
@@ -95,9 +95,9 @@ public class UpdateTaskCommand implements Command {
 					JSONObject newinfo = new JSONObject();
 					newinfo.put("taskupdate", info);
 					if(task.isPreRequest()){
-						CommonCommandUtil.addActivityToContext(oldTasks.get(0).getParentTicketId(), -1, WorkOrderActivityType.UPDATE_PREREQUISITE, newinfo, (FacilioContext) context);
+						CommonCommandUtil.addActivityToContext(parentId, -1, WorkOrderActivityType.UPDATE_PREREQUISITE, newinfo, (FacilioContext) context);
 					}else{
-						CommonCommandUtil.addActivityToContext(oldTasks.get(0).getParentTicketId(), -1, WorkOrderActivityType.UPDATE_TASK, newinfo, (FacilioContext) context);
+						CommonCommandUtil.addActivityToContext(parentId, -1, WorkOrderActivityType.UPDATE_TASK, newinfo, (FacilioContext) context);
 					}
 				}
 			
@@ -132,9 +132,9 @@ public class UpdateTaskCommand implements Command {
 						String filteredName = (String) context.get(FacilioConstants.ContextNames.FILTERED_NAME);
 						if (filteredName != null) {
 							newinfo.put(FacilioConstants.ContextNames.FILTERED_NAME,filteredName);
-							CommonCommandUtil.addActivityToContext(oldTasks.get(0).getParentTicketId(), -1,WorkOrderActivityType.CLOSE_FILTERED_TASK, newinfo, (FacilioContext) context);
+							CommonCommandUtil.addActivityToContext(parentId, -1,WorkOrderActivityType.CLOSE_FILTERED_TASK, newinfo, (FacilioContext) context);
 						} else {
-							CommonCommandUtil.addActivityToContext(oldTasks.get(0).getParentTicketId(), -1,WorkOrderActivityType.CLOSE_ALL_TASK, newinfo, (FacilioContext) context);
+							CommonCommandUtil.addActivityToContext(parentId, -1,WorkOrderActivityType.CLOSE_ALL_TASK, newinfo, (FacilioContext) context);
 						}
 					}
 				} else {
@@ -185,11 +185,10 @@ public class UpdateTaskCommand implements Command {
 			context.put(FacilioConstants.TicketActivity.OLD_TICKETS, oldTasks);
 			int prerequestStatus;
 			if (task.isPreRequest()) {
-				long woid = oldTasks.stream().filter(x->x.getId() == task.getId()).findFirst().get().getParentTicketId();
-				PreRequisiteStatus preReqStatus = WorkOrderAPI.updatePreRequisiteStatus(woid);
+				PreRequisiteStatus preReqStatus = WorkOrderAPI.updatePreRequisiteStatus(parentId);
 				prerequestStatus = preReqStatus.getValue();
 			} else {
-				prerequestStatus = WorkOrderAPI.getWorkOrder(oldTasks.get(0).getParentTicketId()).getPreRequestStatus();
+				prerequestStatus = WorkOrderAPI.getWorkOrder(parentId).getPreRequestStatus();
 			}
 			context.put(FacilioConstants.ContextNames.PRE_REQUEST_STATUS, prerequestStatus);
 		}
