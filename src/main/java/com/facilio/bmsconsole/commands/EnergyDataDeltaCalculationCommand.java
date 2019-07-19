@@ -223,16 +223,18 @@ public class EnergyDataDeltaCalculationCommand implements Command {
 			if(delta>DELATA_HIGH_VAL_BAND && delta>lastDelta) {
 				//Not sure how to handle, if there is an erratic meter reading.. 
 				// for now assuming that the delta is too high than 10K
+				sendEmail(getHighValString(resourceId), getEmailBody(lastReading,currentReading,null));
+				/*commenting the below code as data correction is not needed..
+				 * 
 				double estimatedDelta= getEstimatedDelta(lastDelta, dataGapCount);
 				if(delta > estimatedDelta*DELTA_MF ) {
-					/*commenting this as data correction is not needed..
-					 * 
+					
 					type=MarkType.TOO_HIGH_VALUE;//data correction done here	
 					markedList.add(MarkingUtil.getMarkedReading(reading,energyFieldId,moduleId,type,currentReading,lastReading));
 					markedList.add(MarkingUtil.getMarkedReading(reading,deltaFieldId,moduleId,type,currentReading,lastReading));
 					currentReading=lastReading;
 					delta=0.0;
-					*/
+					
 					String subject=getHighValString(resourceId);
 					sendEmail(subject, getEmailBody(lastReading,currentReading,null));
 					
@@ -241,6 +243,8 @@ public class EnergyDataDeltaCalculationCommand implements Command {
 					//send email alone with no data correction..
 					sendEmail(getHighValString(resourceId), getEmailBody(lastReading,currentReading,null));
 				}
+				*/
+				
 			}
 			
 			reading.addReading(deltaFieldName, ReportsUtil.roundOff(delta,4));			

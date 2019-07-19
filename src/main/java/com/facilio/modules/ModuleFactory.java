@@ -1801,7 +1801,56 @@ public class ModuleFactory {
 		syncModule.setTableName("Points");
 		return syncModule;
 	}
-
+	
+	
+	public static FacilioModule getPointModule() {
+		FacilioModule pointModule = new FacilioModule();
+		pointModule.setName("point");
+		pointModule.setDisplayName("Point");
+		pointModule.setTableName("Point");
+		return pointModule;
+	}
+	
+	public static FacilioModule getNiagaraPointModule() {
+		FacilioModule niagaraPointModule = new FacilioModule();
+		niagaraPointModule.setName("niagaraPoint");
+		niagaraPointModule.setDisplayName("NiagaraPoint");
+		niagaraPointModule.setTableName("Niagara_Point");
+		return niagaraPointModule;
+	}
+	
+	public static FacilioModule getBACnetIPPointModule() {
+		FacilioModule bacnetIpPointModule = new FacilioModule();
+		bacnetIpPointModule.setName("bacnetIpPoint");
+		bacnetIpPointModule.setDisplayName("BACnetIPPoint");
+		bacnetIpPointModule.setTableName("BACnet_IP_Point");
+		return bacnetIpPointModule;
+	}
+	
+	public static FacilioModule getModbusPointModule() {
+		FacilioModule modbusPointModule = new FacilioModule();
+		modbusPointModule.setName("modbusPoint");
+		modbusPointModule.setDisplayName("ModbusPoint");
+		modbusPointModule.setTableName("Modbus_Point");
+		return modbusPointModule;
+	}
+	
+	public static FacilioModule getOPCUAPointModule() {
+		FacilioModule opcUAPointModule = new FacilioModule();
+		opcUAPointModule.setName("opcUAPoint");
+		opcUAPointModule.setDisplayName("OPCUAPoint");
+		opcUAPointModule.setTableName("OPC_UA_Point");
+		return opcUAPointModule;
+	}
+	
+	public static FacilioModule getOPCXmlDAPointModule() {
+		FacilioModule opcXmlDAPointModule = new FacilioModule();
+		opcXmlDAPointModule.setName("opcXmlDAPoint");
+		opcXmlDAPointModule.setDisplayName("OPCXMLDAPoint");
+		opcXmlDAPointModule.setTableName("OPC_XML_DA_Point");
+		return opcXmlDAPointModule;
+	}
+	
 	public static FacilioModule getUnmodeledDataModule() {
 		FacilioModule syncModule = new FacilioModule();
 		syncModule.setName("unmodeledData");

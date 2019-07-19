@@ -5002,7 +5002,77 @@ public class FieldFactory {
         fields.add(getField("unit", "UNIT", module, FieldType.NUMBER));
 		return fields;
 	}
+	
+	public static List<FacilioField>  getPointFields() {
+		FacilioModule module = ModuleFactory.getPointModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getIdField(module));
+        fields.add(getField("name", "NAME", module, FieldType.STRING));
+        fields.add(getField("displayName", "DISPLAY_NAME", module, FieldType.STRING));
+        fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
+        fields.add(getField("dataType", "DATA_TYPE", module, FieldType.NUMBER));
+        fields.add(getField("pointType", "POINT_TYPE", module, FieldType.NUMBER));
+		fields.add(getDeviceField(module));
+        fields.add(getField("controllerId", "CONTROLLER_ID", module, FieldType.NUMBER));
+		fields.add(getField("categoryId", "ASSET_CATEGORY_ID", module, FieldType.NUMBER));
+		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.NUMBER));
+		fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
+        fields.add(getField("writable", "WRITABLE", module, FieldType.BOOLEAN));
+        fields.add(getField("inUse", "IN_USE", module, FieldType.BOOLEAN));
+        fields.add(getField("subscribed", "SUBSCRIBED", module, FieldType.BOOLEAN));
+        fields.add(getField("thresholdJson", "THRESHOLD_JSON", module, FieldType.STRING));
+        fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("mappedTime", "MAPPED_TIME", module, FieldType.NUMBER));
+        fields.add(getField("unit", "UNIT", module, FieldType.NUMBER));        
+		return fields;
+	}
+	
+	public static List<FacilioField>  getNiagaraPointFields() {
+		FacilioModule module = ModuleFactory.getPointModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getIdField(module));
+        fields.add(getField("path", "PATH", module, FieldType.STRING));
+		return fields;
+	}
 
+	public static List<FacilioField>  getOPCXmlDAPointFields() {
+		FacilioModule module = ModuleFactory.getPointModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getIdField(module));
+        fields.add(getField("path", "PATH", module, FieldType.STRING));
+		return fields;
+	}
+	
+	
+	public static List<FacilioField>  getOPCUAPointFields() {
+		FacilioModule module = ModuleFactory.getPointModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getIdField(module));
+        fields.add(getField("nameSpace", "NAME_SPACE", module, FieldType.NUMBER));
+        fields.add(getField("identifier", "IDENTIFIER", module, FieldType.STRING));
+		return fields;
+	}
+	
+	public static List<FacilioField>  getModbusPointFields() {
+		FacilioModule module = ModuleFactory.getPointModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getIdField(module));
+        fields.add(getField("registerNumber", "REGISTER_NUMBER", module, FieldType.NUMBER));
+        fields.add(getField("functionCode", "FUNCTION_CODE", module, FieldType.NUMBER));
+        fields.add(getField("modbusDataType", "MODBUS_DATA_TYPE", module, FieldType.NUMBER));
+
+		return fields;
+	}
+	
+	public static List<FacilioField>  getBACnetIPPointFields() {
+		FacilioModule module = ModuleFactory.getPointModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getIdField(module));
+        fields.add(getField("instanceNumber", "INSTANCE_NUMBER", module, FieldType.NUMBER));
+        fields.add(getField("instanceType", "INSTANCE_TYPE", module, FieldType.NUMBER));
+		return fields;
+	}
+	
 	public static FacilioField getInstanceField(FacilioModule module ) {
 		
 		return getField("instance", "INSTANCE_NAME", module, FieldType.STRING);
