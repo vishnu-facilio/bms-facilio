@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -17,13 +18,28 @@ import com.facilio.modules.fields.FacilioField;
 
 public class ReportTemplateContext {
 
+	private Boolean show;
 	private Long categoryId;
 	private Long siteId;
 	private Long buildingId;
 	private Long defaultValue;
-	private List<String> chooseValues;
+	private List<Object> chooseValues;
 	private Long parentId;
 	
+	private Criteria criteria;
+	
+	public Criteria getCriteria() {
+		return criteria;
+	}
+	public void setCriteria(Criteria criteria) {
+		this.criteria = criteria;
+	}
+	public Boolean getShow() {
+		return show;
+	}
+	public void setShow(Boolean show) {
+		this.show = show;
+	}
 	public Long getCategoryId() {
 		return categoryId;
 	}
@@ -36,10 +52,11 @@ public class ReportTemplateContext {
 	public void setDefaultValue(Long defaultValue) {
 		this.defaultValue = defaultValue;
 	}
-	public List<String> getChooseValues() {
+	
+	public List<Object> getChooseValues() {
 		return chooseValues;
 	}
-	public void setChooseValues(List<String> chooseValues) {
+	public void setChooseValues(List<Object> chooseValues) {
 		this.chooseValues = chooseValues;
 	}
 	public Long getParentId() {
@@ -67,6 +84,10 @@ public class ReportTemplateContext {
 		FacilioModule facilioModule = report.getModule();
 		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
+		// Assumption that x Axis module has parentId
+		if(facilioModule == null) {
+			facilioModule = report.getDataPoints().get(0).getxAxis().getModule();
+		}
 		FacilioField parentField = null;
 		
 		List<FacilioField> fields = bean.getAllFields(facilioModule.getName());

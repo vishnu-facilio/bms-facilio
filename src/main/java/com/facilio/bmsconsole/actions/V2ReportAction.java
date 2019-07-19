@@ -568,6 +568,10 @@ public class V2ReportAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		setReadingsDataContext(context);
 		
+		if(template != null) {
+			context.put(FacilioConstants.ContextNames.REPORT_TEMPLATE, template);
+		}
+		
 		Chain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReadingReportChain() : ReadOnlyChainFactory.fetchReadingReportChain();
 		fetchReadingDataChain.execute(context);
 		

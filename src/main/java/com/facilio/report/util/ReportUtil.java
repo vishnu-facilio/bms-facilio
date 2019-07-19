@@ -56,6 +56,7 @@ import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportFilterContext;
 import com.facilio.report.context.ReportFolderContext;
 import com.facilio.report.context.ReportGroupByField;
+import com.facilio.report.context.ReportTemplateContext;
 import com.facilio.report.context.ReportUserFilterContext;
 import com.facilio.report.context.ReportYAxisContext;
 import com.facilio.time.DateRange;
@@ -117,9 +118,17 @@ public class ReportUtil {
 		}
 		
 		if(context.get(FacilioConstants.ContextNames.REPORT_TEMPLATE) != null) {
-			String reportTemplate = (String)context.get(FacilioConstants.ContextNames.REPORT_TEMPLATE);
+			Object reportTemplate = context.get(FacilioConstants.ContextNames.REPORT_TEMPLATE);
 			if(report.getTemplate() == null) {
-				report.setTemplate(reportTemplate);
+				if(reportTemplate instanceof ReportTemplateContext) {
+					report.setReportTemplate((ReportTemplateContext)reportTemplate);
+				}
+				else {
+					String template = (String) reportTemplate;
+					if(report.getTemplate() == null) {
+						report.setTemplate(template);
+					}
+				}
 			}
 		}
 		
