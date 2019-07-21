@@ -240,6 +240,7 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 			SelectRecordsBuilder<ModuleBaseWithCustomFields> dataBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>(commonBuilder)
 					.select(selectFields)
 					.innerJoin(pmTriggerTable).on(triggerField.getCompleteColumnName() + "=" + pmTriggerTable + ".ID")
+					.andCondition(CriteriaAPI.getCondition(resourceField, assetIds, NumberOperators.EQUALS))
 					.orderBy(orderBy.toString())
 					;
 			
