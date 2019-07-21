@@ -424,8 +424,12 @@ public abstract class FileStore {
 		ResizedFileInfo fileInfo = new ResizedFileInfo();
 		fileInfo.setOrgId(rs.getLong("ORGID"));
 		fileInfo.setFileId(rs.getLong("FILE_ID"));
-		fileInfo.setFileName(rs.getString("FILE_NAME"));
-		fileInfo.setFilePath(rs.getString("FILE_PATH"));
+		if (rs.getString("FILE_NAME") != null) {
+			fileInfo.setFileName(rs.getString("FILE_NAME").trim());
+		}
+		if (rs.getString("FILE_PATH") != null) {
+			fileInfo.setFilePath(rs.getString("FILE_PATH").trim());
+		}
 		fileInfo.setFileSize(rs.getLong("FILE_SIZE"));
 		fileInfo.setContentType(rs.getString("CONTENT_TYPE"));
 		fileInfo.setUploadedBy(rs.getLong("UPLOADED_BY"));
