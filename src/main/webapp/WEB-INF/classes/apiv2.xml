@@ -3858,7 +3858,9 @@
 		<action name="upload" class="com.facilio.bmsconsole.actions.PhotosAction"
 			method="v2uploadPhotos">
 		</action>
-		
+		<action name="delete" class="com.facilio.bmsconsole.actions.PhotosAction"
+			method="v2deletePhotos">
+		</action>
 		<action name="*" class="com.facilio.bmsconsole.actions.PhotosAction"
 			method="v2getPhotosList">
 			<param name="module">{1}</param>

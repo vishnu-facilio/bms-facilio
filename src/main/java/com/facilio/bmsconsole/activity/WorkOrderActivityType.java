@@ -136,6 +136,13 @@ public enum WorkOrderActivityType implements ActivityType {
 			// TODO Auto-generated method stub
 			return " approved Prerequisite";
 		}	
+	},
+	REMOVE_PREERQUISITE_PHOTO(38){
+		@Override
+		public String constructMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return " removed Prerequisite Photo";
+		}	
 	};
 	private int value;
 

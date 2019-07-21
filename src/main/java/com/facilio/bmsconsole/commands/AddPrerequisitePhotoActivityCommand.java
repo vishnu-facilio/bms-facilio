@@ -23,7 +23,7 @@ public class AddPrerequisitePhotoActivityCommand implements Command {
 		long parentId = (long) context.get(FacilioConstants.ContextNames.PARENT_ID);
 		List<String> fileFileName = (List<String>) context.get(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME);
 		List<String> fileContentType = (List<String>) context.get(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE);
-
+		WorkOrderActivityType woActivity = (WorkOrderActivityType) context.get(FacilioConstants.ContextNames.CURRENT_WO_ACTIVITY);
 		if (FacilioConstants.ContextNames.PREREQUISITE_PHOTOS.equalsIgnoreCase(moduleName)) {
 			WorkOrderContext wo = WorkOrderAPI.getWorkOrder(parentId);
 			long parentAttachmentId = wo.getId();
@@ -35,10 +35,9 @@ public class AddPrerequisitePhotoActivityCommand implements Command {
 			info.put("type", fileContentType);
 			attachmentActivity.add(info);
 			attach.put("taskattachment", attachmentActivity);
-			CommonCommandUtil.addActivityToContext(parentAttachmentId, -1, WorkOrderActivityType.ADD_PREERQUISITE_PHOTO,
+			CommonCommandUtil.addActivityToContext(parentAttachmentId, -1, woActivity,
 					attach, (FacilioContext) context);
-			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY,
-					FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
+			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY,FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
 		}
 		return false;
 	}

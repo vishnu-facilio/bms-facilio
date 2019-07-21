@@ -1512,6 +1512,16 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static Chain getDeletePhtotosChain() {
+		Chain c = FacilioChain.getTransactionChain();
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new DeletePhotosCommand());
+		c.addCommand(new AddPrerequisitePhotoActivityCommand());
+		c.addCommand(new AddActivitiesCommand());
+		c.addCommand(new UpdatePrerequisiteStatusCommand());
+		return c;
+	}
+	
 	public static Chain justUploadPhotosChain() {
 		Chain c = FacilioChain.getTransactionChain();
 		c.addCommand(new UploadPhotosCommand());

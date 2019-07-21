@@ -1,12 +1,14 @@
 package com.facilio.bmsconsole.actions;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 
 import com.amazonaws.services.rekognition.model.TextDetection;
+import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.PhotosContext;
@@ -15,6 +17,9 @@ import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.fs.FileInfo;
+import com.facilio.fs.FileStore;
+import com.facilio.fs.FileStoreFactory;
 
 public class PhotosAction extends FacilioAction {
 
@@ -131,6 +136,11 @@ public class PhotosAction extends FacilioAction {
 		setResult(ContextNames.PHOTOS, getPhotos());
 		return SUCCESS;
 	}
+	public String v2deletePhotos() throws Exception {
+		deletePhotos(id,module);
+		setResult(ContextNames.ID, id);
+		return SUCCESS;
+	}
 	
 	public String justUploadPhotos() throws Exception {
 		FacilioContext context = new FacilioContext();
@@ -214,7 +224,21 @@ public class PhotosAction extends FacilioAction {
 	public void setDetectedTexts(List<TextDetection> detectedTexts) {
 		this.detectedTexts = detectedTexts;
 	}
-
+	private String deletePhotos(long id,String moduleName) throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.ID, id);
+		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
+		context.put(FacilioConstants.ContextNames.CURRENT_WO_ACTIVITY ,WorkOrderActivityType.REMOVE_PREERQUISITE_PHOTO);
+		FileStore fs = FileStoreFactory.getInstance().getFileStore();
+		FileInfo file = fs.getFileInfo(photoId);
+		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, Collections.singletonList(file.getFileName()));
+		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, Collections.singletonList(file.getContentType()));
+		Chain addPhotosChain = FacilioChainFactory.getDeletePhtotosChain();
+		addPhotosChain.execute(context);
+		return SUCCESS;
+	}
+	
 	private String uploadPhotos(String moduleName) throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
@@ -223,6 +247,7 @@ public class PhotosAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, this.file);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, this.fileFileName);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.fileContentType);
+ 		context.put(FacilioConstants.ContextNames.CURRENT_WO_ACTIVITY ,WorkOrderActivityType.ADD_PREERQUISITE_PHOTO);
  		
 		Chain addPhotosChain = FacilioChainFactory.getUploadPhotosChain();
 		addPhotosChain.execute(context);
@@ -257,6 +282,15 @@ public class PhotosAction extends FacilioAction {
 
 	public void setModule(String module) {
 		this.module = module;
+	}
+    private long photoId = -1;
+
+	public long getPhotoId() {
+		return photoId;
+	}
+
+	public void setPhotoId(long photoId) {
+		this.photoId = photoId;
 	}
 
 	private long parentId = -1;
