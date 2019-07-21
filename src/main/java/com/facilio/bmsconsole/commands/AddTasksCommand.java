@@ -120,7 +120,7 @@ public class AddTasksCommand implements Command, PostTransactionCommand {
 					if (workOrder != null) {
 						task.setParentTicketId(workOrder.getId());
 					}
-					task.setInputValue(task.getDefaultValue());
+					task.setInputValue(null);
 					if (StringUtils.isNotEmpty(task.getFailureValue())
 							&& task.getFailureValue().equals(task.getInputValue())) {
 						task.setFailed(true);
