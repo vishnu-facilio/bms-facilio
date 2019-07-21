@@ -9,6 +9,7 @@ import java.util.Map;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -64,6 +65,7 @@ import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class ReportUtil {
+	private static final org.apache.log4j.Logger LOGGER = LogManager.getLogger(ReportUtil.class.getName());
 	
 	public static ReportContext constructReport(FacilioContext context, long startTime, long endTime) throws Exception {
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
@@ -237,10 +239,17 @@ public class ReportUtil {
 		List<Map<String, Object>> props = select.get();
 		List<ReportContext> reports = new ArrayList<>();
 		if(props != null && !props.isEmpty()) {
+			int i = 0;
 			for(Map<String, Object> prop :props) {
-				
-				ReportContext report = getReportContextFromProps(prop);
-				reports.add(report);
+				try {
+					ReportContext report = getReportContextFromProps(prop);
+					reports.add(report);
+				}
+				catch (Exception e) {
+					LOGGER.info("Error in report conversion, folderId:" + folderId +", index: " + i, e);
+					throw e;
+				}
+				i++;
 			}
 		}
 		return reports;
