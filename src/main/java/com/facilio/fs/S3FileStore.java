@@ -158,7 +158,7 @@ public class S3FileStore extends FileStore {
 				if (fileInfo == null) {
 			return null;
 		}
-		log.debug("filePath: " + fileInfo.getFilePath());
+		log.debug("filePath: " + getBucketName() + "" + fileInfo.getFilePath());
 		S3Object so = AwsUtil.getAmazonS3Client().getObject(getBucketName(), fileInfo.getFilePath());
 		return so.getObjectContent();
 	}

@@ -36,7 +36,7 @@ public class PhotosContext extends ModuleBaseWithCustomFields {
 //			url = fs.getPrivateUrl(this.parentId);
 //		}
 		if (this.photoId > 0) {
-			return FileStoreFactory.getInstance().getFileStore().getPrivateUrl(photoId);
+			return FileStoreFactory.getInstance().getFileStore().orginalFileUrl(this.photoId);
 		}
 		return null;
 	}
