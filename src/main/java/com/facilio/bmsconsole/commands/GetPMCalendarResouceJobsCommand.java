@@ -182,6 +182,9 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 		if (showFrequency) {
 			groupBuilder.innerJoin(pmTriggerTable).on(triggerField.getCompleteColumnName() + "=" + pmTriggerTable + ".ID");
 		}
+		else {
+			groupBuilder.andCondition(CriteriaAPI.getCondition(triggerField, CommonOperators.IS_NOT_EMPTY));
+		}
 		if (buildingId > 0) {
 			groupBuilder.andCondition(CriteriaAPI.getCondition(resourceFieldMap.get("space"), String.valueOf(buildingId), BuildingOperator.BUILDING_IS));
 		}
