@@ -22,6 +22,8 @@ import org.apache.log4j.LogManager;
 
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.context.AnovaResultContext;
 import com.facilio.bmsconsole.context.RegressionContext;
 import com.facilio.bmsconsole.context.RegressionContext.DataConditions;
@@ -46,6 +48,9 @@ public class AddRegressionPointsCommand implements Command{
 		JSONObject reportData = (JSONObject) context.get(FacilioConstants.ContextNames.REPORT_DATA);
 		ReportContext reportContext = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
 		
+		if(!AwsUtil.isProduction() && AccountUtil.getCurrentOrg().getId() == 75l) {
+			LOGGER.severe("data --- "+reportData);
+		}
 		Boolean isMultiple;
 				
 		Collection<Map<String, Object>> data = (Collection<Map<String, Object>>) reportData.get(FacilioConstants.ContextNames.DATA_KEY);

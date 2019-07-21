@@ -1,21 +1,36 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.constants.FacilioConstants;
-import com.facilio.report.context.ReportContext;
-import com.facilio.report.context.ReportDataPointContext;
-import com.facilio.report.context.ReportGroupByField;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-import java.util.*;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.report.context.ReportContext;
+import com.facilio.report.context.ReportDataPointContext;
+import com.facilio.report.context.ReportGroupByField;
 
 public class HandleGroupByDataCommand implements Command {
+	
+	
+	private static final Logger LOGGER = Logger.getLogger(HandleGroupByDataCommand.class.getName());
 
 	@Override
 	public boolean execute(Context context) throws Exception {
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
 		JSONObject data = (JSONObject) context.get(FacilioConstants.ContextNames.REPORT_DATA);
+		
+		if(!AwsUtil.isProduction() && AccountUtil.getCurrentOrg().getId() == 75l) {
+			LOGGER.severe("data --- "+data);
+		}
 		
 		List<Map<String, Object>> dataFormatted = new ArrayList<>();
 		

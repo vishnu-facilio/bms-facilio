@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
@@ -27,8 +28,16 @@ public class CalculateAggregationCommand implements Command {
 			return false;
 		}
 		
+		if(!AwsUtil.isProduction() && AccountUtil.getCurrentOrg().getId() == 75l) {
+			LOGGER.error("data --- "+reportData);
+		}
+		
 		long startTime = System.currentTimeMillis();
 		JSONObject reportData = (JSONObject) context.get(FacilioConstants.ContextNames.REPORT_DATA);
+		
+		if(!AwsUtil.isProduction() && AccountUtil.getCurrentOrg().getId() == 75l) {
+			LOGGER.error("data --- "+reportData);
+		}
 		String sortAlias = (String) context.get(FacilioConstants.ContextNames.REPORT_SORT_ALIAS);
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
 		if (reportData != null && !reportData.isEmpty()) {
