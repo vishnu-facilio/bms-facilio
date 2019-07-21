@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
@@ -263,8 +264,13 @@ public class FetchReportDataCommand implements Command {
 		
 		List<Map<String, Object>> props = newSelectBuilder.getAsProps();
 		
+		
 		 LOGGER.severe("SELECT BUILDER --- "+ newSelectBuilder);
-//		LOGGER.info("DATE FROM QUERY : "+props);
+		
+		
+		 if(!AwsUtil.isProduction() && AccountUtil.getCurrentOrg().getId() == 75l) {
+			 LOGGER.info("DATE FROM QUERY : "+props);
+		}
 		return props;
 	}
 	

@@ -11,8 +11,6 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
@@ -27,10 +25,6 @@ public class HandleGroupByDataCommand implements Command {
 	public boolean execute(Context context) throws Exception {
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
 		JSONObject data = (JSONObject) context.get(FacilioConstants.ContextNames.REPORT_DATA);
-		
-		if(!AwsUtil.isProduction() && AccountUtil.getCurrentOrg().getId() == 75l) {
-			LOGGER.severe("data --- "+data);
-		}
 		
 		List<Map<String, Object>> dataFormatted = new ArrayList<>();
 		

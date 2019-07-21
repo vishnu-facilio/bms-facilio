@@ -7,7 +7,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -18,12 +19,8 @@ import org.apache.commons.math3.linear.RealMatrix;
 import org.apache.commons.math3.linear.SingularValueDecomposition;
 import org.apache.commons.math3.stat.regression.OLSMultipleLinearRegression;
 import org.apache.commons.math3.util.FastMath;
-import org.apache.log4j.LogManager;
-
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.context.AnovaResultContext;
 import com.facilio.bmsconsole.context.RegressionContext;
 import com.facilio.bmsconsole.context.RegressionContext.DataConditions;
@@ -48,9 +45,6 @@ public class AddRegressionPointsCommand implements Command{
 		JSONObject reportData = (JSONObject) context.get(FacilioConstants.ContextNames.REPORT_DATA);
 		ReportContext reportContext = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
 		
-		if(!AwsUtil.isProduction() && AccountUtil.getCurrentOrg().getId() == 75l) {
-			LOGGER.severe("data --- "+reportData);
-		}
 		Boolean isMultiple;
 				
 		Collection<Map<String, Object>> data = (Collection<Map<String, Object>>) reportData.get(FacilioConstants.ContextNames.DATA_KEY);
