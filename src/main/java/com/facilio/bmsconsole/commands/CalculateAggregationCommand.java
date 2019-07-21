@@ -28,12 +28,13 @@ public class CalculateAggregationCommand implements Command {
 			return false;
 		}
 		
+		JSONObject reportData = (JSONObject) context.get(FacilioConstants.ContextNames.REPORT_DATA);
+		
 		if(!AwsUtil.isProduction() && AccountUtil.getCurrentOrg().getId() == 75l) {
 			LOGGER.error("data --- "+reportData);
 		}
 		
 		long startTime = System.currentTimeMillis();
-		JSONObject reportData = (JSONObject) context.get(FacilioConstants.ContextNames.REPORT_DATA);
 		
 		if(!AwsUtil.isProduction() && AccountUtil.getCurrentOrg().getId() == 75l) {
 			LOGGER.error("data --- "+reportData);
