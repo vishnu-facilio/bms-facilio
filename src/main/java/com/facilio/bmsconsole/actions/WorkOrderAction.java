@@ -62,6 +62,7 @@ import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderContext.AllowNegativePreRequisite;
 import com.facilio.bmsconsole.templates.PrerequisiteApproversTemplate;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
+import com.facilio.bmsconsole.templates.TaskTemplate;
 import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.AssetsAPI;
@@ -82,6 +83,7 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.ScheduleInfo;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -788,6 +790,27 @@ public class WorkOrderAction extends FacilioAction {
  		List<AttachmentContext> oldAttachments = workorder.getAttachments();
  		if(oldAttachments != null && !oldAttachments.isEmpty()) {
  			context.put(FacilioConstants.ContextNames.EXISTING_ATTACHMENT_LIST, oldAttachments); 			
+ 		}
+ 		for(TaskSectionTemplate sec:sectionTemplates){
+ 			if(sec.isPreRequestSection()){
+ 				for(TaskTemplate task:sec.getTaskTemplates()){
+ 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+ 					if(task.getReadingFieldId() > 0){
+	 					BooleanField field =(BooleanField) modBean.getField(task.getReadingFieldId());
+	 					
+	 					String truevalue = (String)task.getAdditionInfo().get("truevalue");
+	 					String falsevalue = (String)task.getAdditionInfo().get("falsevalue");
+	 					
+	 					if((!field.getTrueVal().equals(truevalue)) || (!field.getFalseVal().equals(falsevalue))){
+	 						task.setReadingFieldId(-1);
+		 					List<String> options = new ArrayList<>();
+		 					options.add(truevalue);
+		 					options.add(falsevalue);
+		 					task.setOptions(options);
+	 					}
+ 					}
+ 				}
+ 			}
  		}
 
  		Chain updatePM = FacilioChainFactory.getUpdateNewPreventiveMaintenanceChain();
