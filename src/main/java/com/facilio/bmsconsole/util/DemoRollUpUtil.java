@@ -19,7 +19,7 @@ public class DemoRollUpUtil {
 		tablesContainsDateField.put("System_Jobs" , Arrays.asList("LAST_EXECUTION_TIME"));
 		tablesContainsDateField.put("Groups" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("Shift_Readings" , Arrays.asList("ACTUAL_TTIME"));//day,month
-		tablesContainsDateField.put("SingleDayBusinessHours" , Arrays.asList("START_TIME","END_TIME"));
+//		tablesContainsDateField.put("SingleDayBusinessHours" , Arrays.asList("START_TIME","END_TIME"));
 		tablesContainsDateField.put("ResizedFile" , Arrays.asList("GENERATED_TIME","EXPIRY_TIME"));
 		tablesContainsDateField.put("Workflow_Log" , Arrays.asList("EXECUTION_TIME"));
 		tablesContainsDateField.put("Current_Occupancy_Reading" , Arrays.asList("ACTUAL_TTIME"));//day
