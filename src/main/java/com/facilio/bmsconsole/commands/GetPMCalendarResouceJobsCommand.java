@@ -198,7 +198,7 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 		
 		List<Map<String, Object>> props = groupBuilder.getAsProps();
 		
-		LOGGER.debug("Group by Data: " + props.toString());
+		LOGGER.debug("Group by builder: " + groupBuilder.toString());
 		
 		List<Long> assetIds = null;
 		if (CollectionUtils.isNotEmpty(props)) {
@@ -216,6 +216,7 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 				addTitles(titles, assetId, headers, prop, prevHeaderValues, countField);
 			}
 			
+			LOGGER.debug("titles: " + titles.toString());
 			
 			selectFields = new ArrayList<>();
 			selectFields.add(woFieldMap.get("subject"));
@@ -255,7 +256,7 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 			
 			props = dataBuilder.getAsProps();
 			
-			LOGGER.debug("Jobs Data: " + props.toString());
+			LOGGER.debug("Data builder: " + dataBuilder.toString());
 			
 			if (CollectionUtils.isNotEmpty(props)) {
 				List<Map<String, Object>> row;
