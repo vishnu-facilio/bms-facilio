@@ -9,6 +9,7 @@ import com.facilio.events.context.EventContext.EventInternalState;
 import com.facilio.events.context.EventContext.EventState;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.time.DateTimeUtil;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 public abstract class BaseEventContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
@@ -53,11 +54,15 @@ public abstract class BaseEventContext extends ModuleBaseWithCustomFields {
 	
 	private String messageKey;
 	public String getMessageKey() {
+		if (StringUtils.isEmpty(messageKey)) {
+			messageKey = constructMessageKey();
+		}
 		return messageKey;
 	}
 	public void setMessageKey(String messageKey) {
 		this.messageKey = messageKey;
 	};
+	public abstract String constructMessageKey();
 	
 	private EventState eventState;
 	public int getEventState() {
@@ -141,13 +146,15 @@ public abstract class BaseEventContext extends ModuleBaseWithCustomFields {
 		this.comment = comment;
 	}
 	
-	private Type alarmType;
-	public Type getAlarmType() {
-		return alarmType;
+	@JsonInclude
+	public final int getEventType() {
+		Type type = getEventTypeEnum();
+		if (type != null) {
+			return type.getIndex();
+		}
+		return -1;
 	}
-	public void setAlarmType(Type alarmType) {
-		this.alarmType = alarmType;
-	}
+	public abstract Type getEventTypeEnum();
 	
 	private Boolean autoClear;
 	public Boolean getAutoClear() {
@@ -259,7 +266,6 @@ public abstract class BaseEventContext extends ModuleBaseWithCustomFields {
 		baseEvent.setCreatedTime(createdTime);
 		baseEvent.setSeverity(alarmSeverity);
 		baseEvent.setSeverityString(alarmSeverity.getSeverity());
-		baseEvent.setAlarmType(typeEnum);
 		baseEvent.setEventMessage(message);
 		baseEvent.setMessageKey(messageKey);
 		baseEvent.setComment("Automated event");

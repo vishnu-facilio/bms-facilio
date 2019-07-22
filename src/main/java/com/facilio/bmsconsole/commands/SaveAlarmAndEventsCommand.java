@@ -106,10 +106,10 @@ public class SaveAlarmAndEventsCommand implements Command, PostTransactionComman
 		
 		Map<Type, List<BaseEventContext>>  eventsMap = new HashMap<>();
 		for (BaseEventContext baseEvent : eventList) {
-			List<BaseEventContext> list = eventsMap.get(baseEvent.getAlarmType());
+			List<BaseEventContext> list = eventsMap.get(baseEvent.getEventTypeEnum());
 			if (list == null) {
 				list = new ArrayList<>();
-				eventsMap.put(baseEvent.getAlarmType(), list);
+				eventsMap.put(baseEvent.getEventTypeEnum(), list);
 			}
 			list.add(baseEvent);
 		}

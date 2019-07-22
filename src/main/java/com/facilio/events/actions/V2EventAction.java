@@ -1,52 +1,29 @@
 package com.facilio.events.actions;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.commons.chain.Chain;
-import org.apache.commons.collections4.CollectionUtils;
-import org.json.simple.JSONObject;
+import org.json.simple.JSONArray;
 
 import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.MLAnomalyEvent;
-import com.facilio.bmsconsole.context.ReadingEventContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.events.constants.EventConstants;
 
 public class V2EventAction extends FacilioAction {
 	private static final long serialVersionUID = 1L;
 	
-	private JSONObject payload;
-	public JSONObject getPayload() {
+	private JSONArray payload;
+	public JSONArray getPayload() {
 		return payload;
 	}
-	public void setPayload(JSONObject payload) {
+	public void setPayload(JSONArray payload) {
 		this.payload = payload;
 	}
 	
-	private List<ReadingEventContext> events;
-	public List<ReadingEventContext> getEvents() {
-		return events;
-	}
-	public void setEvents(List<ReadingEventContext> events) {
-		this.events = events;
-	}
-	
-	private List<MLAnomalyEvent> mlEvents;
-	public List<MLAnomalyEvent> getMlEvents() {
-		return mlEvents;
-	}
-	public void setMlEvents(List<MLAnomalyEvent> mlEvents) {
-		this.mlEvents = mlEvents;
-	}
-
 	public String addEvent() throws Exception {
 		FacilioContext context = new FacilioContext();
-//		context.put(EventConstants.EventContextNames.EVENT_PAYLOAD, payload);
-		context.put(EventConstants.EventContextNames.EVENT_LIST, mlEvents);
+		context.put(EventConstants.EventContextNames.EVENT_PAYLOAD, payload);
 		
-		Chain chain = TransactionChainFactory.getV2AddEventChain();
+		Chain chain = TransactionChainFactory.getV2AddEventPayloadChain();
 		chain.execute(context);
 		return SUCCESS;
 	}

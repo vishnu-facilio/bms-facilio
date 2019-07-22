@@ -1,52 +1,18 @@
 package com.facilio.bmsconsole.context;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.apache.commons.lang3.StringUtils;
-
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 public class ReadingEventContext extends BaseEventContext {
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public String getMessageKey() {
-		String key = super.getMessageKey();
-		if (StringUtils.isEmpty(key)) {
-			if (getResource() != null) {
-				setMessageKey(ruleId + "_" + getResource().getId());	
-			}
-			else {
-				setMessageKey(ruleId + "_sampleresource");
-			}
+	public String constructMessageKey() {
+		if (getResource() != null) {
+			return ruleId + "_" + getResource().getId();	
 		}
-		return super.getMessageKey();
+		return null;
 	}
-	
-//	@Override
-//	public BaseAlarmContext createAlarm() {
-//		ReadingAlarm readingAlarm = new ReadingAlarm();
-//		updateAlarmContext(readingAlarm, true);
-//		return readingAlarm;
-//	}
-//	
-//	@Override
-//	public void updateAlarm(BaseAlarmContext baseAlarm) {
-//		updateAlarmContext(baseAlarm, false);
-//	}
-//	
-//	@Override
-//	public void updateAlarmOccurrence(AlarmOccurrenceContext alarmOccurrence) {
-//		updateAlarmOccurrenceContext(alarmOccurrence, false);
-//	}
-//	
-//	@Override
-//	public AlarmOccurrenceContext createAlarmOccurrence() {
-//		AlarmOccurrenceContext alarmOccurrence = new AlarmOccurrenceContext();
-//		
-//		updateAlarmOccurrenceContext(alarmOccurrence, true);
-//		
-//		return alarmOccurrence;
-//	}
 	
 	@Override
 	public BaseAlarmContext updateAlarmContext(BaseAlarmContext baseAlarm, boolean add) {
@@ -94,7 +60,7 @@ public class ReadingEventContext extends BaseEventContext {
 
 	@Override
 	@JsonSerialize
-	public Type getAlarmType() {
+	public Type getEventTypeEnum() {
 		return Type.READING_ALARM;
 	}
 }

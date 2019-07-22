@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -196,7 +195,7 @@ public class NewAlarmAPI {
 		updateAlarmSystemFields(baseAlarm, alarmOccurrence);
 
 		baseAlarm.setSeverity(alarmOccurrence.getSeverity());
-		baseAlarm.setType(baseEvent.getAlarmType());
+		baseAlarm.setType(baseEvent.getEventTypeEnum());
 
 		alarmOccurrence.setAlarm(baseAlarm);
 

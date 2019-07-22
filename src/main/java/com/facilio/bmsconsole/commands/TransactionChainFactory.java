@@ -3334,6 +3334,14 @@ public class TransactionChainFactory {
 			c.addCommand(new AddOrUpdateFacilioStatusCommand());
 			return c;
 		}
+		
+		public static Chain getV2AddEventPayloadChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new JsonToV2EventCommand());
+			c.addCommand(getV2AddEventChain());
+			return c;
+		}
+		
 		public static Chain getV2AddEventChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new InsertNewEventsCommand());

@@ -34,7 +34,7 @@ public class RCAEvent extends MLAnomalyEvent
 	
 	@Override
 	@JsonSerialize
-	public Type getAlarmType() {
+	public Type getEventTypeEnum() {
 		return Type.RCA_ALARM;
 	}
 

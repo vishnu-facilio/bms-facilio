@@ -164,7 +164,7 @@ public class NewEventsToAlarmsConversionCommand implements Command {
 
 	private void updateEvent(BaseEventContext baseEvent) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(NewEventAPI.getEventModuleName(baseEvent.getAlarmType()));
+		FacilioModule module = modBean.getModule(NewEventAPI.getEventModuleName(baseEvent.getEventTypeEnum()));
 		UpdateRecordBuilder<BaseEventContext> builder = new UpdateRecordBuilder<BaseEventContext>()
 				.moduleName(module.getName())
 				.fields(modBean.getAllFields(module.getName()))
