@@ -1426,6 +1426,7 @@ public class TransactionChainFactory {
 		
 		public static Chain getUpdateTaskChain() {
 			Chain c = getDefaultChain();
+			c.addCommand(new ValidatePrerequisiteStatusForTaskUpdateCommnad());
 			c.addCommand(new ValidateAndCreateValuesForInputTaskCommand());
 			c.addCommand(ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain());
 			c.addCommand(SetTableNamesCommand.getForTask());

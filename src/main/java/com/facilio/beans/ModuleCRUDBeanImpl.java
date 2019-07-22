@@ -214,11 +214,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				int preRequisiteCount= workorderTemplate.getPreRequestSectionTemplates().size();
 				wo.setPrerequisiteEnabled(preRequisiteCount != 0);
 				if (wo.getPrerequisiteEnabled()) {
-					if (AllowNegativePreRequisite.YES_WITH_WARNING.equals(wo.getAllowNegativePreRequisiteEnum())) {
-						wo.setPreRequestStatus(PreRequisiteStatus.COMPLETED_WITH_NEGATIVE);
-					} else {
-						wo.setPreRequestStatus(PreRequisiteStatus.PENDING.getValue());
-					}
+					wo.setPreRequestStatus(PreRequisiteStatus.PENDING.getValue());
 				} else {
 					wo.setPreRequestStatus(PreRequisiteStatus.COMPLETED.getValue());
 				}
