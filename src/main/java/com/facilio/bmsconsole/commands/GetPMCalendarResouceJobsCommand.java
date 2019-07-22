@@ -284,13 +284,13 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 								i++;
 							}
 							
-							addData(row, new ArrayList<>(filteredList), metricFieldMap.get(metric), metric, count, totalCount, j != 0);
+							addData(row, new ArrayList<>(filteredList), metric, count, totalCount, j != 0);
 							sort(row);
 							
 						}
 					}
 					else {
-						addData(row, filteredList, metricFieldMap.get(PMPlannerAPI.PLANNED), null, count, totalCount, false);
+						addData(row, filteredList, PMPlannerAPI.PLANNED, count, totalCount, false);
 						sort(row);
 					}
 					
@@ -397,19 +397,17 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 		}
 	}
 	
-	private void addData(List<Map<String, Object>> row, List<Map<String, Object>> props, String field, String metricField, long count, int totalCount, boolean isClone) {
+	private void addData(List<Map<String, Object>> row, List<Map<String, Object>> props, String metricField, long count, int totalCount, boolean isClone) {
 		for(int j = 0; j < props.size(); j++) {
 			Map<String, Object> prop = props.get(j);
 			if (!isClone) {
 				Map<String, Object> resource = (Map<String, Object>) prop.get("resource");
 				prop.put("asset", assetIdVsName.get(resource.get("id")));
 			}
-			if (metricField != null) {
-				prop.put("time", metricField);
-			}
+			prop.put("time", metricField);
 			
 			prop = new HashMap<>(prop);
-			Long date = (Long) prop.get(field);
+			Long date = (Long) prop.get(metricFieldMap.get(metricField));
 			if (date != null && date != -1) {
 				prop.put("start", date);
 				row.add(prop);
