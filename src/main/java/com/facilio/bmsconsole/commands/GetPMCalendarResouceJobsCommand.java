@@ -10,6 +10,8 @@ import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -36,6 +38,8 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
 
 public class GetPMCalendarResouceJobsCommand implements Command {
+	
+	private static final Logger LOGGER = LogManager.getLogger(GetPMCalendarResouceJobsCommand.class.getName());
 	
 	private Map<String, String> metricFieldMap = null;
 	
@@ -194,6 +198,8 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 		
 		List<Map<String, Object>> props = groupBuilder.getAsProps();
 		
+		LOGGER.debug("Group by Data: " + props.toString());
+		
 		List<Long> assetIds = null;
 		if (CollectionUtils.isNotEmpty(props)) {
 			assetIds = new ArrayList<>();
@@ -248,6 +254,8 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 					;
 			
 			props = dataBuilder.getAsProps();
+			
+			LOGGER.debug("Jobs Data: " + props.toString());
 			
 			if (CollectionUtils.isNotEmpty(props)) {
 				List<Map<String, Object>> row;
