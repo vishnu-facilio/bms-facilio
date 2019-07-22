@@ -13,7 +13,7 @@ public class UpdateUserCommand extends FacilioCommand {
 		
 		User user = (User) context.get(FacilioConstants.ContextNames.USER);
 		if (user != null) {
-			AccountUtil.getUserBean().updateUser(user.getOuid(), user);
+			AccountUtil.getUserBean().updateUser(user);
 		}
 		else {
 			throw new IllegalArgumentException("User Object cannot be null");

@@ -331,14 +331,9 @@ public class UserAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.ACCESSIBLE_SPACE, accessibleSpace);
 		
 		try {
-			long userId = UserUtil.addUser(user, AccountUtil.getCurrentOrg().getId(),AccountUtil.getCurrentUser().getEmail());
-			if(userId > 0) {
-				setUserId(userId);
 				context.put(FacilioConstants.ContextNames.USER, user);
 				Chain addUser = FacilioChainFactory.getAddUserCommand();
 				addUser.execute(context);
-			}
-			
 		}
 		catch (Exception e) {
 			if (e instanceof AccountException) {
@@ -507,22 +502,15 @@ public class UserAction extends FacilioAction {
 	
 	public String updateMyProfile() throws Exception{
 		subscriptionInfo();
-		AccountUtil.getUserBean().updateUser(AccountUtil.getCurrentUser().getId(), user);
+		AccountUtil.getUserBean().updateUser(user);
 		
 		return SUCCESS;
 	}
 	
 	public String updateUser() throws Exception {
-		boolean updated = UserUtil.updateUser(user, AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail());
-		if(updated) {
-			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.USER, user);
-
-			Command addUser = FacilioChainFactory.getUpdateUserCommand();
-			addUser.execute(context);
+		if(AccountUtil.getUserBean().updateUser(user)) {
 			return SUCCESS;
 		}
-				
 		return ERROR;
 	}
 	
@@ -568,16 +556,18 @@ public class UserAction extends FacilioAction {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.USER, user);
-		Map params = ActionContext.getContext().getParameters();
-		if(UserUtil.changeUserStatus(user, AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail())) {
-			Command addUser = FacilioChainFactory.getChangeUserStatusCommand();
-			addUser.execute(context);
-			return SUCCESS;
+		if(user.getUserStatus()) {
+			if(AccountUtil.getUserBean().enableUser(user.getOuid())) {
+				return SUCCESS;
+			}
+		}
+		else {
+			if(AccountUtil.getUserBean().disableUser(user.getOuid())) {
+				return SUCCESS;
+			}
 		}
 		return ERROR;
 	}
-	
-
 
 	private File avatar;
 	

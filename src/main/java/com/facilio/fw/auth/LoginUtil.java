@@ -32,7 +32,7 @@ public class LoginUtil {
 		}
 		
 		if (currentOrgDomain != null) {
-			user = AccountUtil.getUserBean().getFacilioUser(cognitoUser.getEmail(), currentOrgDomain);
+			user = AccountUtil.getUserBean().getFacilioUser(cognitoUser.getEmail(), currentOrgDomain, null);
 		}
 
 		if (user == null) {

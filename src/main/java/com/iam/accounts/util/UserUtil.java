@@ -26,7 +26,7 @@ public class UserUtil {
 	private static final Logger LOGGER = Logger.getLogger(UserUtil.class.getName());
 
 	public static void inviteUser(long orgId, User user) throws Exception {
-		AuthUtill.getTransactionalUserBean().inviteUserv2(orgId, user);
+		AuthUtill.getTransactionalUserBean().addUserv2(orgId, user);
 	}
 
 	public static User addSuperAdmin(org.json.simple.JSONObject signupInfo, Long orgId) throws Exception {
@@ -39,7 +39,7 @@ public class UserUtil {
 		String timezone = (String) signupInfo.get("timezone");
 		Locale locale = (Locale) signupInfo.get("locale");
 
-		User userObj = AuthUtill.getUserBean().getFacilioUserv3(email, "app");
+		User userObj = AuthUtill.getUserBean().getFacilioUserv3(email, orgId);
 		if (userObj != null) {
 			throw new AccountException(AccountException.ErrorCode.EMAIL_ALREADY_EXISTS,
 					"This user is not permitted to do this action.");
@@ -71,9 +71,9 @@ public class UserUtil {
 	}
 
 	public static long addUser(User user, long orgId, String currentUserEmail) throws Exception {
-		if ((user != null) && (AccountUtil.getCurrentOrg() != null)) {
-			if (AuthUtill.getUserBean().getFacilioUserv3(currentUserEmail, user.getCity()) != null) {
-				return AuthUtill.getTransactionalUserBean().inviteUserv2(orgId, user);
+		if ((user != null) && orgId > 0) {
+			if (AuthUtill.getUserBean().getFacilioUserv3(currentUserEmail, orgId) != null) {
+				return AuthUtill.getTransactionalUserBean().addUserv2(orgId, user);
 			} else {
 				throw new AccountException(AccountException.ErrorCode.NOT_PERMITTED,
 						"This user is not permitted to do this action.");
@@ -88,9 +88,9 @@ public class UserUtil {
 
 	}
 
-	public static boolean changePassword(String password, String userEmail, String newPassword, String domain) throws Exception {
-		User user = AuthUtill.getUserBean().getFacilioUserv3(userEmail, domain);
-		Boolean verifyOldPassword = AuthUtill.verifyPasswordv2(userEmail, password, domain);
+	public static boolean changePassword(String password, String newPassword, long uId, long orgId) throws Exception {
+		User user = AuthUtill.getUserBean().getUserv2(orgId, uId);
+		Boolean verifyOldPassword = AuthUtill.verifyPasswordv2(user.getEmail(), user.getCity(), password);
 		if (verifyOldPassword != null && verifyOldPassword) {
 			user.setPassword(newPassword);
 			AuthUtill.getUserBean().updateUserv2(user);
@@ -100,7 +100,7 @@ public class UserUtil {
 		}
 	}
 
-	public static boolean acceptInvite(String inviteToken, String password) throws Exception {
+	public static User acceptInvite(String inviteToken, String password) throws Exception {
 		return AuthUtill.getTransactionalUserBean().acceptInvitev2(inviteToken, password);
 	}
 
@@ -114,7 +114,7 @@ public class UserUtil {
 	}
 
 	public static boolean updateUser(User user, long orgId, String currentUserEmail) throws Exception {
-		if (AuthUtill.getUserBean().getFacilioUserv3(currentUserEmail, user.getCity()) != null) {
+		if (AuthUtill.getUserBean().getFacilioUserv3(currentUserEmail, orgId) != null) {
 			return AuthUtill.getUserBean().updateUserv2(user);
 		} else {
 			throw new AccountException(AccountException.ErrorCode.NOT_PERMITTED,
@@ -124,7 +124,7 @@ public class UserUtil {
 	}
 
 	public static boolean deleteUser(User user, long orgId, String currentUserEmail) throws Exception {
-		if (AuthUtill.getUserBean().getFacilioUserv3(currentUserEmail, user.getCity()) != null) {
+		if (AuthUtill.getUserBean().getFacilioUserv3(currentUserEmail, orgId) != null) {
 			return AuthUtill.getUserBean().deleteUserv2(user.getOuid());
 		} else {
 			throw new AccountException(AccountException.ErrorCode.NOT_PERMITTED,
@@ -158,15 +158,6 @@ public class UserUtil {
 		}
 	}
 	
-	public static boolean changeUserStatus(User user, long orgId, String currentUserEmail) throws Exception {
-		if (AuthUtill.getUserBean().getFacilioUserv3( currentUserEmail, user.getCity()) != null) {
-			return AuthUtill.getUserBean().updateUserv2(user);
-		} else {
-			throw new AccountException(AccountException.ErrorCode.NOT_PERMITTED,
-					"This user is not permitted to do this action.");
-		}
-	}
-	
 	public static User validateUserInviteToken(String token) throws Exception {
 		return AuthUtill.getUserBean().validateUserInvitev2(token);
 	}
@@ -180,15 +171,24 @@ public class UserUtil {
 	}
 	
 	public static boolean disableUser(User user) throws Exception {
-		return AuthUtill.getUserBean().disableUserv2(user.getUid(), user.getOrgId());
+		return AuthUtill.getUserBean().disableUserv2(user.getOrgId(), user.getUid());
 	}
 	
 	public static boolean enableUser(User user) throws Exception {
-		return AuthUtill.getUserBean().enableUserv2(user.getUid(), user.getOrgId());
+		return AuthUtill.getUserBean().enableUserv2(user.getOrgId(), user.getUid());
 	}
 	
 	public static boolean updateUserPhoto(long uid, long fileId) throws Exception {
 		return AuthUtill.getUserBean().updateUserPhoto(uid, fileId);
+	}
+	
+	public static boolean updateUserStatus(User user) throws Exception {
+		if(user.getUserStatus()) {
+			return AuthUtill.getUserBean().enableUserv2(user.getOrgId(), user.getUid());
+		}
+		else {
+			return AuthUtill.getUserBean().disableUserv2(user.getOrgId(), user.getUid());
+		}
 	}
 	
 }

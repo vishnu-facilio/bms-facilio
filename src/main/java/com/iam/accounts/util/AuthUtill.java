@@ -10,6 +10,7 @@ import java.util.Map;
 
 import javax.security.auth.login.AccountException;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 
 import com.auth0.jwt.JWT;
@@ -177,6 +178,10 @@ public class AuthUtill {
 		PreparedStatement pstmt = null;
 		ResultSet rs = null;
 		try {
+			if (StringUtils.isEmpty(domain)) {
+				domain = "app";
+			}
+			
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			pstmt = conn.prepareStatement(
 					"SELECT Account_Users.password,Account_Users.EMAIL FROM Account_Users WHERE Account_Users.EMAIL = ? and Account_Users.city = ? and USER_VERIFIED=1");
@@ -210,7 +215,7 @@ public class AuthUtill {
 
 		if (verifyPasswordv2(emailaddress, domain, password)) {
 
-			User user = AuthUtill.getUserBean().getFacilioUserv3(emailaddress, domain);
+			User user = AuthUtill.getUserBean().getFacilioUserv3(emailaddress);
 			if (user != null) {
 				long uid = user.getUid();
 				String jwt = CognitoUtil.createJWT("id", "auth0", emailaddress,

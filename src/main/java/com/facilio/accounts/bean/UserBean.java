@@ -27,8 +27,6 @@ public interface UserBean {
 	
 	public boolean acceptInvite(String token, String password) throws Exception;
 	
-	public boolean updateUser(long ouid, User user) throws Exception;
-	
 	public boolean updateUser(User user) throws Exception;
 	
 	public void addUserMobileSetting(UserMobileSetting userMobileSetting) throws Exception;
@@ -77,7 +75,7 @@ public interface UserBean {
 
     public User getFacilioUser(String email) throws Exception;
     
-    public User getFacilioUser(String email, String orgDomain) throws Exception;
+    public User getFacilioUser(String email, String orgDomain, String portalDomain) throws Exception;
 
 //    public User getPortalUser(String email, long portalId) throws Exception;
     
@@ -101,8 +99,8 @@ public interface UserBean {
 	public User getUser(long orgId, long userId) throws Exception;
 	
 	public boolean verifyUser(long userId) throws Exception;
-	
-	
 
+	public void createUserEntry(long orgId, User user) throws Exception;
+	
 
 }

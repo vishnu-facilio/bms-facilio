@@ -28,7 +28,7 @@ public class CreateAppSuperAdminCommand implements Command {
 		if(AwsUtil.isDevelopment()) {
 			user.setUserVerified(true);
 		}
-		AccountUtil.getUserBean().createUser(orgId, user);
+		AccountUtil.getUserBean().createUserEntry(orgId, user);
 		
 		
 		return false;

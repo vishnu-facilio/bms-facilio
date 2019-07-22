@@ -288,7 +288,7 @@ public class FacilioAuthAction extends FacilioAction {
 				String[] domainNameArray = serverName.split("\\.");
 				
 				String domainName = "app";
-				if (domainNameArray.length > 0) {
+				if (domainNameArray.length > 2) {
 					domainName = domainNameArray[0];
 				}
 				
@@ -410,6 +410,13 @@ public class FacilioAuthAction extends FacilioAction {
 
 		JSONObject invitation = new JSONObject();
 		User user = AccountUtil.getUserBean().validateUserInvite(getInviteToken());
+		if(user != null) {
+			User us = AccountUtil.getUserBean().getUser(user.getOrgId(), user.getUid());
+			Organization org = AccountUtil.getOrgBean().getOrg(user.getOrgId());
+			AccountUtil.cleanCurrentAccount();
+			AccountUtil.setCurrentAccount(new Account(org, us));
+		}
+		
 		if (AccountUtil.getCurrentOrg().getId() == 75) {
 			LOGGER.info("validate user link email invitation" + user.getEmail());
 			LOGGER.info("validate user link username  invitation" + user.getName());
@@ -605,7 +612,7 @@ public class FacilioAuthAction extends FacilioAction {
 	public String changePassword(){
 		try {
 			User user = AccountUtil.getCurrentUser();
-			Boolean changePassword = UserUtil.changePassword(getPassword(), user.getEmail(), getNewPassword(), user.getCity());
+			Boolean changePassword = UserUtil.changePassword(getPassword(), getNewPassword(), user.getUid(), AccountUtil.getCurrentOrg().getOrgId());
 			if (changePassword != null && changePassword) {
 				setJsonresponse("message", "Password changed successfully");
 				setJsonresponse("status", "success");
@@ -623,7 +630,7 @@ public class FacilioAuthAction extends FacilioAction {
 	}
 
 	public String acceptUserInvite() throws Exception {
-		if (UserUtil.acceptInvite(getInviteToken(), getNewPassword())) {
+		if (UserUtil.acceptInvite(getInviteToken(), getNewPassword()) != null) {
 			return SUCCESS;
 		}
 		return ERROR;

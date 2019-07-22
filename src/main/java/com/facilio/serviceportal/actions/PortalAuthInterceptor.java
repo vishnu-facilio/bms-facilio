@@ -111,6 +111,7 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 						Organization org = null;
 						//org = AccountUtil.getOrgBean().getOrg(AccountUtil.getCurrentOrg().getDomain());
 						org = AccountUtil.getOrgBean().getOrg(subDomain);
+						//need to remove
 						AccountUtil.setCurrentAccount(org.getOrgId());
 						PortalInfoContext portalInfo = AccountUtil.getOrgBean().getPortalInfo(org.getOrgId(), false);
 						org.setPortalId(portalInfo.getPortalId());
@@ -119,7 +120,7 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 							logger.fine("Portal Domain ......"+portalId);
 							User user = null;
 							if (cognitoUser != null) {
-								user = AccountUtil.getUserBean().getFacilioUser(cognitoUser.getEmail(), subDomain);
+								user = AccountUtil.getUserBean().getFacilioUser(cognitoUser.getEmail(), subDomain, subDomain);
 								if (user == null) {
 									throw new AccountException("No such user present");
 								}

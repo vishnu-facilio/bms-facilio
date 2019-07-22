@@ -12,7 +12,7 @@ public interface UserBeanv2 {
 	
 	public long createUserv2(long orgId, User user) throws Exception;
 	
-	public long inviteUserv2(long orgId, User user) throws Exception;
+	public long addUserv2(long orgId, User user) throws Exception;
 	
 //	public long inviteAdminConsoleUserv2(long orgId, User user) throws Exception;
 	
@@ -24,7 +24,7 @@ public interface UserBeanv2 {
 
 	public boolean resendInvitev2(long orgId, long userId) throws Exception;
 	
-	public boolean acceptInvitev2(String token, String password) throws Exception;
+	public User acceptInvitev2(String token, String password) throws Exception;
 	
 	public boolean updateUserv2(long ouid, User user) throws Exception;
 	
@@ -40,14 +40,6 @@ public interface UserBeanv2 {
 	
 	public User getUserv2(long ouid) throws Exception;
 	
-	public User getUserFromEmailv2(String email) throws Exception;
-	
-	public User getUserFromPhonev2(String phone) throws Exception;
-	
-	public List<User> getUsersv2(Criteria criteria, Collection<Long>... ouids) throws Exception;
-	
-	public Map<Long, User> getUsersAsMapv2(Criteria criteria, Collection<Long>... ouids) throws Exception;
-
 	public User getUserv2(long orgId, String email) throws Exception;
 	
 	public List<Organization> getOrgsv2(long uid) throws Exception;
@@ -56,7 +48,7 @@ public interface UserBeanv2 {
 	
 	public boolean updateUserPhoto(long uid, long fileId) throws Exception;
 
-    public User getFacilioUserv3(String email, String userDomain) throws Exception;
+    public User getFacilioUserv3(String email, long orgId) throws Exception;
     
     public User getFacilioUserv3(String email) throws Exception;
     
@@ -81,5 +73,8 @@ public interface UserBeanv2 {
 	public String getEncodedTokenv2(User user) throws Exception;
 	
 	public User getUserv2(long orgId, long userId) throws Exception;
-
+	
+	public User getUserv2(String email, String portalDomain) throws Exception;
+	
+	
 }
