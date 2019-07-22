@@ -133,6 +133,9 @@ public class FetchReportDataCommand implements Command {
 		Map<String, List<Map<String, Object>>> props = new HashMap<>();
 		List<Map<String, Object>> dataProps = noMatch ? Collections.EMPTY_LIST : fetchReportData(report, dp, selectBuilder, null, xAggrField, xValues);
 		props.put(FacilioConstants.Reports.ACTUAL_DATA, dataProps);
+		if (AccountUtil.getCurrentOrg().getId() == 75) {
+			LOGGER.info("Date Props : "+dataProps);
+		}
 		if (dp.getLimit() != -1 && xValues == null) {
 			data.setxValues(getXValues(dataProps, dp.getxAxis().getFieldName()));
 			if (data.getxValues() == null || data.getxValues().isEmpty()) {
