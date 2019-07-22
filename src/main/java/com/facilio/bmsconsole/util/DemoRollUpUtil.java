@@ -83,7 +83,7 @@ public class DemoRollUpUtil {
 		tablesContainsDateField.put("Asset_Attachments" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("Asset_Notes" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("Tenants" , Arrays.asList("CREATED_TIME","MODIFIED_TIME","IN_TIME","OUT_TIME"));//
-		tablesContainsDateField.put("Tickets" , Arrays.asList("CREATED_BY","DUE_DATE"));
+		tablesContainsDateField.put("Tickets" , Arrays.asList("DUE_DATE"));
 		tablesContainsDateField.put("Ticket_Attachments" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("Ticket_Notes" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("WorkOrderRequests" , Arrays.asList("DATETIME_CF1","DATETIME_CF2","DATETIME_CF3","DATETIME_CF4"));
