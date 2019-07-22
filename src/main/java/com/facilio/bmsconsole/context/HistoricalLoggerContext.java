@@ -11,7 +11,7 @@ public class HistoricalLoggerContext {
 	private long parentId;
 	private Type type;
 	private Long dependentId;
-	private Long baseMeterId;
+	private Long loggerGroupId;
 	private Status status;
 	private long startTime;
 	private long endTime;
@@ -44,11 +44,11 @@ public class HistoricalLoggerContext {
 	public void setDependentId(Long dependentId) {
 		this.dependentId = dependentId;
 	}
-	public Long getBaseMeterId() {
-		return baseMeterId;
+	public Long getloggerGroupId() {
+		return loggerGroupId;
 	}
-	public void setBaseMeterId(Long baseMeterId) {
-		this.baseMeterId = baseMeterId;
+	public void setloggerGroupId(Long loggerGroupId) {
+		this.loggerGroupId = loggerGroupId;
 	}
 	public long getStartTime() {
 		return startTime;

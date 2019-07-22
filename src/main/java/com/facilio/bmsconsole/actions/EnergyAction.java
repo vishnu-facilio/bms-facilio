@@ -5,22 +5,29 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
+import com.facilio.bmsconsole.context.HistoricalLoggerContext;
+import com.facilio.bmsconsole.context.HistoricalLoggersWrapper;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.util.DeviceAPI;
+import com.facilio.bmsconsole.util.HistoricalLoggerUtil;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.opensymphony.xwork2.ActionSupport;
+
+import nl.basjes.shaded.org.springframework.util.StringUtils;
+
 import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class EnergyAction extends ActionSupport {
+public class EnergyAction extends FacilioAction {
 	
 	/**
 	 * 
@@ -62,6 +69,60 @@ public class EnergyAction extends ActionSupport {
 		
 		return SUCCESS;
 	}
+
+	public String getvmHistoricalLogger() throws Exception {
+		
+		List<HistoricalLoggerContext> allHistoricalLoggers = HistoricalLoggerUtil.getAllHistoricalLogger();
+		
+		Map<Long,List<HistoricalLoggerContext>> wrapper = new HashMap<Long, List<HistoricalLoggerContext>>();
+		Map<Long,HistoricalLoggerContext> historicalLoggerParentIdMap = new HashMap<Long, HistoricalLoggerContext>();
+		
+		List<HistoricalLoggersWrapper> resolvedWrapperList = new ArrayList<HistoricalLoggersWrapper>();
+		List<HistoricalLoggersWrapper> wrapperList = new ArrayList<HistoricalLoggersWrapper>();
+		
+		if(allHistoricalLoggers != null && !allHistoricalLoggers.isEmpty())
+		{
+			for(HistoricalLoggerContext historicalLogger: allHistoricalLoggers)
+			{
+				if(historicalLogger.getloggerGroupId() == null && historicalLogger.getDependentId() == null)
+				{
+					wrapper.put(historicalLogger.getId(), new ArrayList<HistoricalLoggerContext>()) ;
+					historicalLoggerParentIdMap.put(historicalLogger.getId(), historicalLogger);
+				}
+				else if(historicalLogger.getloggerGroupId() > 0) {
+					
+					List<HistoricalLoggerContext> childHistoricalLoggerContexts = wrapper.get(historicalLogger.getloggerGroupId());
+					childHistoricalLoggerContexts = childHistoricalLoggerContexts == null 
+							? new ArrayList<HistoricalLoggerContext>() : childHistoricalLoggerContexts;
+							
+					childHistoricalLoggerContexts.add(historicalLogger);
+					wrapper.put(historicalLogger.getloggerGroupId(), childHistoricalLoggerContexts) ;
+				}
+			}	
+			
+			for(Long parentId : historicalLoggerParentIdMap.keySet()) {
+				HistoricalLoggersWrapper logWrapper = new HistoricalLoggersWrapper();
+				if(historicalLoggerParentIdMap.get(parentId).getStatus() == 1)
+				{
+					logWrapper.setHistoricalLoggerParentMeter(historicalLoggerParentIdMap.get(parentId));
+					logWrapper.setHistoricalLoggerChildMeters(wrapper.get(parentId));
+					wrapperList.add(logWrapper);
+				}
+				else
+				{
+					logWrapper.setHistoricalLoggerParentMeter(historicalLoggerParentIdMap.get(parentId));
+					logWrapper.setHistoricalLoggerChildMeters(wrapper.get(parentId));
+					resolvedWrapperList.add(logWrapper);
+				}
+			}	
+			
+			wrapperList.addAll(resolvedWrapperList);
+			
+		}
+		setResult("wrapperList", wrapperList);
+		return SUCCESS;		
+	}
+
 	
 	public String addEnergyMeterPurpose() throws Exception {
 		FacilioContext context = new FacilioContext();

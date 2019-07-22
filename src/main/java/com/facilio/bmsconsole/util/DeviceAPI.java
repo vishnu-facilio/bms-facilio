@@ -502,16 +502,16 @@ public class DeviceAPI
 			
 			addHistoricalVMCalculationJob(meter.getId(), startTime, endTime, minutesInterval,false);
 			
-			Long baseMeterId = meter.getId();
-			HistoricalLoggerContext historicalLoggerContext = gethistoricalLogger(meter.getId(), startTime, endTime, true, baseMeterId);
+			HistoricalLoggerContext historicalLoggerContext = gethistoricalLogger(meter.getId(), startTime, endTime, true, (long) -1);
 			HistoricalLoggerUtil.addHistoricalLogger(historicalLoggerContext);
+			Long loggerGroupId = historicalLoggerContext.getId();
 			historicalLoggerMap.put(meter.getId(), historicalLoggerContext);
-			checkParent (meter, startTime, endTime, baseMeterId, historicalLoggerMap);	
+			checkParent (meter, startTime, endTime, loggerGroupId, historicalLoggerMap);	
 		}	
 	}
 	
 	private static void checkParent(EnergyMeterContext currentMeter, long startTime,long endTime, 
-			Long baseMeterId, Map<Long,HistoricalLoggerContext> historicalLoggerMap) throws Exception {
+			Long loggerGroupId, Map<Long,HistoricalLoggerContext> historicalLoggerMap) throws Exception {
 		
 		List<Long> parentMeterIds = getParentMeters(currentMeter);
 		if(parentMeterIds==null) {
@@ -519,7 +519,7 @@ public class DeviceAPI
 		}
 		for(Long parentmeterid : parentMeterIds)
 		{
-			HistoricalLoggerContext historicalLoggerContext = gethistoricalLogger(parentmeterid, startTime, endTime, false, baseMeterId);
+			HistoricalLoggerContext historicalLoggerContext = gethistoricalLogger(parentmeterid, startTime, endTime, false,loggerGroupId);
 			if(!historicalLoggerMap.containsKey(parentmeterid)) {
 				HistoricalLoggerContext parentHistoricalLoggerContext = historicalLoggerMap.get(currentMeter.getId());
 				
@@ -528,14 +528,14 @@ public class DeviceAPI
 				historicalLoggerMap.put(parentmeterid, historicalLoggerContext);
 					
 				List<EnergyMeterContext> vm = DeviceAPI.getVirtualMeters(Collections.singletonList(parentmeterid));
-				checkParent (vm.get(0), startTime, endTime, baseMeterId, historicalLoggerMap);	
+				checkParent (vm.get(0), startTime, endTime, loggerGroupId, historicalLoggerMap);	
 			}
 			
 		}
 	}
 
 	private static HistoricalLoggerContext gethistoricalLogger(long meterId,long startTime,long endTime,boolean isRootMeter,
-			Long baseMeterId)
+			Long loggerGroupId)
 	{
 		HistoricalLoggerContext historicalLogger = new HistoricalLoggerContext();
 		historicalLogger.setParentId(meterId);
@@ -543,7 +543,7 @@ public class DeviceAPI
 		historicalLogger.setStatus(HistoricalLoggerContext.Status.IN_PROGRESS.getIntVal());
 		if(!isRootMeter)
 		{
-			historicalLogger.setBaseMeterId(baseMeterId);
+			historicalLogger.setloggerGroupId(loggerGroupId);
 		}
 		historicalLogger.setStartTime(startTime);
 		historicalLogger.setEndTime(endTime);

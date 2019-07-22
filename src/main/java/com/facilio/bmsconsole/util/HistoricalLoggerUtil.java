@@ -87,7 +87,20 @@ public class HistoricalLoggerUtil {
 				}
 				return null;
 	}
-	
+		
+	public static List<HistoricalLoggerContext> getAllHistoricalLogger() throws Exception {
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getHistoricalLoggerFields())
+				.table(ModuleFactory.getHistoricalLoggerModule().getTableName());
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			List<HistoricalLoggerContext> historicalLoggers = FieldUtil.getAsBeanListFromMapList(props, HistoricalLoggerContext.class);
+			return historicalLoggers;
+		}
+		return null;
+	}
 
 	public static void updateHistoricalLogger(HistoricalLoggerContext historicalLogger) throws Exception {
 		

@@ -1253,6 +1253,16 @@
 			<param name="id">{1}</param>
 		</action>
 	</package>
+	
+	<package name="historicalLoggerApiv2"
+		namespace="/api/v2/historicalLogger"
+		extends="v2Api">
+		<action name="vm"
+			class="com.facilio.bmsconsole.actions.EnergyAction"
+			method="getvmHistoricalLogger">
+		</action>
+	</package>
+	
 	<package name="assetLatestDataApiv2"
 		namespace="/api/v2/reading/latestdata" extends="v2Api">
 		<action name="getReadingsForSpaces"
