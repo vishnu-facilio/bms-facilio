@@ -67,7 +67,7 @@ public class DemoRollUpCommand implements Command {
 						LOGGER.info("###DemoRoleUp"+" "+count+" "+"of rows updated in"+key+"successfully");
 					}
 					catch(Exception e) {
-						LOGGER.info("Exception occurred### in  DemoRollUpJob ", e);
+						LOGGER.info("Exception occurred### in  DemoRollUpJob... TableName is.. "+ key+ e);
 						throw e;
 					}
 				}
