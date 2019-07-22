@@ -132,12 +132,6 @@
 		<action name="forms"
 			class="com.facilio.bmsconsole.actions.FormAction" method="formList">
 		</action>
-
-		<action name="errors"
-			class="com.facilio.bmsconsole.actions.ClientErrorAction"
-			method="logClientError">
-		</action>
-
 	</package>
 
 	<package name="internalV2" namespace="/v2/exception"
@@ -156,6 +150,23 @@
 		</action>
 	</package>
 	
+	<package name="errorsV2" namespace="/api/v2/errors" extends="v2Api">
+		<action name="web"
+			class="com.facilio.bmsconsole.actions.ClientErrorAction"
+			method="logClientError">
+		</action>
+
+		<action name="ios"
+			class="com.facilio.bmsconsole.actions.IosLogger"
+			method="logError">
+		</action>
+
+		<action name="android"
+			class="com.facilio.bmsconsole.actions.AndroidLogger"
+			method="logError">
+		</action>
+	</package>
+
 	<package name="event" namespace="/api/v2/event" extends="v2Api">
 		<action name="add"
 			class="com.facilio.events.actions.V2EventAction" method="addEvent" />
