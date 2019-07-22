@@ -24,6 +24,10 @@ public class IotPolicy
     public boolean isToModify() { return toModify; }
     public void setToModify(boolean toModify) { this.toModify = toModify; }
 
+    private String streamName;
+    public String getStreamName() { return streamName; }
+    public void setStreamName(String streamName) { this.streamName = streamName; }
+
     private String[] subscribeTopics;
     public String[] getSubscribeTopics() { return subscribeTopics; }
     public void setSubscribeTopics(String[] subscribeTopics) { this.subscribeTopics = subscribeTopics; }

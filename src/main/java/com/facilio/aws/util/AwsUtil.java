@@ -850,12 +850,12 @@ public class AwsUtil
 	}
 
 	private static void createKinesisStream(AmazonKinesis kinesisClient, String streamName) {
-	    LOGGER.info(" creating kenisis stream ");
+	    LOGGER.info(" creating kenisis stream "+streamName);
     	try {
 			CreateStreamResult streamResult = kinesisClient.createStream(streamName, 1);
 			LOGGER.info("Stream created : " + streamName + " with status " + streamResult.getSdkHttpMetadata().getHttpStatusCode());
 		} catch (ResourceInUseException resourceInUse){
-    		LOGGER.info("Stream exists for name : " + streamName);
+    		LOGGER.info(" Exception Stream exists for name : " + streamName);
 		}
 	}
 
@@ -867,7 +867,7 @@ public class AwsUtil
             LOGGER.info(" pubtype map "+publishTypeMap);
             for(String topic : policy.getPublishtopics()){
 				try {
-					KinesisAction kinesisAction = new KinesisAction().withStreamName(topic)
+					KinesisAction kinesisAction = new KinesisAction().withStreamName(policy.getStreamName())
 							.withPartitionKey(KINESIS_PARTITION_KEY)
 							.withRoleArn(IAM_ARN_PREFIX + getUserId() + KINESIS_PUT_ROLE_SUFFIX);
 					Action action = new Action().withKinesis(kinesisAction);
@@ -930,6 +930,7 @@ public class AwsUtil
     	CreateKeysAndCertificateResult certificateResult = createCertificate(iotClient);
     	attachPolicy(iotClient, certificateResult, policyName);
     	createKinesisStream(getKinesisClient(), name);
+    	policy.setStreamName(name);
     	createIotTopicRule(policy,iotClient,type);
     	return certificateResult;
 	}
