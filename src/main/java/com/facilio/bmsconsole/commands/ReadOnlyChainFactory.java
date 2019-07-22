@@ -99,6 +99,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GenerateCriteriaFromFilterCommand());
 		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
+		c.addCommand(new SpecialHandlingToGetModuleDataListCommand());
 		return c;
 	}
 	

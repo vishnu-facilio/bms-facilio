@@ -69,6 +69,17 @@ public class AssetCategoryContext extends ModuleBaseWithCustomFields {
 //		return null;
 //	}
 	
+	private String moduleName;
+	
+	
+
+	public String getModuleName() {
+		return moduleName;
+	}
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
+
 	private String displayName;
 	public String getDisplayName() {
 		if(displayName != null && !displayName.isEmpty()) {
