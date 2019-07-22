@@ -61,7 +61,7 @@
 				</result>
         </action>
   
-    <action name="login" class="com.facilio.auth.actions.FacilioAuthAction" method="validateLogin">
+    <action name="login" class="com.facilio.auth.actions.FacilioAuthAction" method="validateLoginv2">
 		<result name="samllogin">/service/samllogin.jsp</result>
 		                <result name="success" type="json">
                         <param name="includeProperties">jsonresponse.*</param>

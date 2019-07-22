@@ -15,7 +15,7 @@ private String tableName;
 	
 	@Override
 	public void handleInsertOrgFields() {
-		if (tableName.equalsIgnoreCase("App_Users")) {
+		if (tableName.equalsIgnoreCase("Account_Users") || tableName.equalsIgnoreCase("Account_ORG_Users")) {
 			return;
 		}
 		super.handleInsertOrgFields();

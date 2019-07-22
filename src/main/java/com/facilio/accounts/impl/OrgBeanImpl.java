@@ -12,235 +12,196 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.bean.OrgBean;
 import com.facilio.accounts.bean.UserBean;
+import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
-import com.facilio.accounts.exception.AccountException;
 import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.util.AccountConstants.UserType;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
+import com.iam.accounts.util.AuthUtill;
 
 public class OrgBeanImpl implements OrgBean {
 
 	@Override
-	public long createOrg(Organization org) throws Exception {
-		
-		Organization existingOrg = getOrg(org.getDomain());
-		if (existingOrg != null) {
-			throw new AccountException(AccountException.ErrorCode.ORG_DOMAIN_ALREADY_EXISTS, "The given domain already registered.");
-		}
-		
-		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-				.table(AccountConstants.getOrgModule().getTableName())
-				.fields(AccountConstants.getOrgFields());
-		
-		Map<String, Object> props = FieldUtil.getAsProperties(org);
-		insertBuilder.addRecord(props);
-		insertBuilder.save();
-		
-		long orgId = (Long) props.get("id");
-		
-		AccountUtil.getRoleBean(orgId).createSuperdminRoles(orgId);
-		
-		return orgId;
-	}
-
-	@Override
 	public boolean updateOrg(long orgId, Organization org) throws Exception {
-		
-		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(AccountConstants.getOrgModule().getTableName())
-				.fields(AccountConstants.getOrgFields())
-				.andCustomWhere("ORGID = ? AND DELETED_TIME = -1", orgId);
-		
-		Map<String, Object> props = FieldUtil.getAsProperties(org);
-		int updatedRows = updateBuilder.update(props);
-		if (updatedRows > 0) {
-			return true;
-		}
-		return false;
+		return AuthUtill.getOrgBean(orgId).updateOrgv2(orgId, org);
 	}
 
 	@Override
 	public boolean deleteOrg(long orgId) throws Exception {
-		
-		FacilioField deletedTime = new FacilioField();
-		deletedTime.setName("deletedTime");
-		deletedTime.setDataType(FieldType.NUMBER);
-		deletedTime.setColumnName("DELETED_TIME");
-		deletedTime.setModule(AccountConstants.getOrgModule());
-		
-		List<FacilioField> fields = new ArrayList<>();
-		fields.add(deletedTime);
-		
-		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(AccountConstants.getOrgModule().getTableName())
-				.fields(fields)
-				.andCustomWhere("ORGID = ? AND DELETED_TIME = -1", orgId);
-		
-		Map<String, Object> props = new HashMap<>();
-		props.put("deletedTime", System.currentTimeMillis());
-		
-		int updatedRows = updateBuilder.update(props);
-		if (updatedRows > 0) {
-			return true;
-		}
-		return false;
+		return AuthUtill.getOrgBean(orgId).deleteOrgv2(orgId);
 	}
 
 	@Override
 	public Organization getOrg(long orgId) throws Exception {
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(AccountConstants.getOrgFields())
-				.table(AccountConstants.getOrgModule().getTableName())
-				.andCustomWhere("ORGID = ? AND DELETED_TIME = -1", orgId);
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			return createOrgFromProps(props.get(0), false);
-		}
-		return null;
+		return AuthUtill.getOrgBean(orgId).getOrgv2(orgId);
 	}
 
 	@Override
 	public Organization getOrg(String orgDomain) throws Exception {
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(AccountConstants.getOrgFields())
-				.table(AccountConstants.getOrgModule().getTableName())
-				.andCustomWhere("FACILIODOMAINNAME = ? AND DELETED_TIME = -1", orgDomain);
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			return createOrgFromProps(props.get(0), false);
-		}
-		return null;
+		return AuthUtill.getOrgBean().getOrgv2(orgDomain);
 	}
-
+	
 	@Override
-	public Organization getPortalOrg(Long portalId) throws Exception {
-		Organization org = null;
+	public Organization getPortalOrg(long portalId) throws Exception {
+		PortalInfoContext portalInfo = getPortalInfo(portalId, true);
+		if (portalInfo == null) {
+			throw new IllegalArgumentException("Portal not found");
+		}
+		Organization org = getOrg(portalInfo.getOrgId());
+		if (org == null) {
+			throw new IllegalArgumentException("Organization not found");
+		}
+		org.setPortalId(portalId);
+		return org;
+	}
+	
+	@Override
+	public PortalInfoContext getPortalInfo(long id, boolean isPortalId) throws Exception {
 		FacilioModule portalInfoModule = AccountConstants.getPortalInfoModule();
 		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(AccountConstants.getOrgFields());
 		fields.addAll(AccountConstants.getPortalCustomDomainFields());
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
-				.table(AccountConstants.getOrgModule().getTableName())
-				.innerJoin(portalInfoModule.getTableName())
-				.on(AccountConstants.getOrgModule().getTableName()+".ORGID = PortalInfo.ORGID")
-				.andCustomWhere("PORTALID = ? AND DELETED_TIME = -1", portalId);
-
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			Map<String, Object> result = props.get(0); 
-			org = createOrgFromProps(result, true);
-			if(result.get("customDomain") != null) {
-				org.setDomain((String)result.get("customDomain"));
-			} else {
-				org.setDomain(result.get("domain") + "." + AwsUtil.getConfig("portal.domain"));
-			}
-			
+				.table(portalInfoModule.getTableName());
+		if (isPortalId) {
+			selectBuilder.andCustomWhere("PORTALID = ? ", id);
+		} else {
+			selectBuilder.andCustomWhere("ORGID = ? ", id);
 		}
-		return org;
+		Map<String, Object> portalMap = selectBuilder.fetchFirst();
+		return FieldUtil.getAsBeanFromMap(portalMap, PortalInfoContext.class);
 	}
 	
-	@Override
-	public Organization getPortalOrg(String orgDomain) throws Exception {
-		Organization org = null;
-		FacilioModule portalInfoModule = AccountConstants.getPortalInfoModule();
-		FacilioField portalId = new FacilioField();
-		portalId.setName("portalId");
-		portalId.setDataType(FieldType.NUMBER);
-		portalId.setColumnName("PORTALID");
-		portalId.setModule(portalInfoModule);
+//	@Override
+//	public PortalInfoContext getPortalInfo(String portalDomain) throws Exception {
+//		FacilioModule portalInfoModule = AccountConstants.getPortalInfoModule();
+//		List<FacilioField> fields = new ArrayList<>();
+//		fields.addAll(AccountConstants.getPortalCustomDomainFields());
+//		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+//				.select(fields)
+//				.table(portalInfoModule.getTableName())
+//				.andCustomWhere("PORTALID = ? ", portalDomain);
+//		Map<String, Object> portalMap = selectBuilder.fetchFirst();
+//		return FieldUtil.getAsBeanFromMap(portalMap, PortalInfoContext.class);
+//	}
 
-		List<FacilioField> fields = new ArrayList<>();
-		fields.add(portalId);
-		fields.addAll(AccountConstants.getOrgFields());
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(fields)
-				.table(AccountConstants.getOrgModule().getTableName())
-				.innerJoin(portalInfoModule.getTableName())
-				.on(AccountConstants.getOrgModule().getTableName()+".ORGID = PortalInfo.ORGID")
-				.andCustomWhere("FACILIODOMAINNAME = ? AND DELETED_TIME = -1", orgDomain);
-
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			org = createOrgFromProps(props.get(0), true);
-		}
-		return org;
-	}
+//	@Override
+//	public Organization getPortalOrg(Long portalId) throws Exception {
+//		FacilioModule portalInfoModule = AccountConstants.getPortalInfoModule();
+//		Organization org = null;
+//		List<FacilioField> fields = new ArrayList<>();
+//		fields.addAll(AccountConstants.getPortalCustomDomainFields());
+//		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+//				.select(fields)
+//				.table(portalInfoModule.getTableName())
+//				.andCustomWhere("PORTALID = ? ", portalId);
+//
+//		List<Map<String, Object>> props = selectBuilder.get();
+//		if (props != null && !props.isEmpty()) {
+//			Map<String, Object> result = props.get(0); 
+//			org = AuthUtill.getOrgBean((long)result.get("orgId")).getOrgv2((long)result.get("orgId"));
+//			if(result.get("customDomain") != null) {
+//				org.setDomain((String)result.get("customDomain"));
+//			} else {
+//				org.setDomain(result.get("domain") + "." + AwsUtil.getConfig("portal.domain"));
+//			}
+//			org.setPortalId(portalId);
+//			
+//		}
+//		return org;
+//	}
 	
-	private Organization createOrgFromProps(Map<String, Object> prop, boolean isPortalRequest) throws Exception {
-		Organization org = FieldUtil.getAsBeanFromMap(prop, Organization.class);
-		if (org.getLogoId() > 0) {
-			FileStore fs = FileStoreFactory.getInstance().getFileStoreFromOrg(org.getId());
-			org.setLogoUrl(fs.getPrivateUrl(org.getLogoId(), isPortalRequest));
-			org.setOriginalUrl(fs.orginalFileUrl(org.getLogoId()));
-		}
-		return org;
-	}
+//	@Override
+//	public Organization getPortalOrg(String orgDomain) throws Exception {
+//		Organization org = null;
+//		org= AuthUtill.getOrgBean().getOrgv2(orgDomain);
+//		
+//		if(AccountUtil.getCurrentAccount() == null) {
+//			AccountUtil.setCurrentAccount(new Account(org, null));
+//		}
+//		FacilioModule portalInfoModule = AccountConstants.getPortalInfoModule();
+//		FacilioField portalId = new FacilioField();
+//		portalId.setName("portalId");
+//		portalId.setDataType(FieldType.NUMBER);
+//		portalId.setColumnName("PORTALID");
+//		portalId.setModule(portalInfoModule);
+//
+//		List<FacilioField> fields = new ArrayList<>();
+//		fields.add(portalId);
+//		fields.addAll(AccountConstants.getPortalCustomDomainFields());
+//		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+//				.select(fields)
+//				.table(portalInfoModule.getTableName())
+//				.andCustomWhere("ORGID = ?", org.getOrgId());
+//
+//		List<Map<String, Object>> props = selectBuilder.get();
+//		if (props != null && !props.isEmpty()) {
+//			Map<String, Object> result = props.get(0);
+//			org.setPortalId((long)result.get("portalId"));
+////			if(result.get("customDomain") != null) {
+////				org.setDomain((String)result.get("customDomain"));
+////			} else {
+////				org.setDomain(org.getDomain() + "." + AwsUtil.getConfig("portal.domain"));
+////			}
+//		}
+//		return org;
+//	}
 	
-    @Override
-    public List<User> getOrgPortalUsers(long orgId) throws Exception {
-		FacilioModule portalUsersModule = AccountConstants.getPortalUserModule();
-		FacilioModule portalInfoModule = AccountConstants.getPortalInfoModule();
-		FacilioField portalId = new FacilioField();
-		portalId.setName("portalId");
-		portalId.setDataType(FieldType.NUMBER);
-		portalId.setColumnName("PORTALID");
-		portalId.setModule(portalInfoModule);
-
-		List<FacilioField> fields = new ArrayList<>();
-		fields.add(portalId);
-		fields.addAll(AccountConstants.getPortalUserFields());
-		fields.addAll(AccountConstants.getAppOrgUserFields());
-		fields.addAll(AccountConstants.getAppUserFields());
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(fields)
-				.table(portalUsersModule.getTableName())
-				.innerJoin(portalInfoModule.getTableName())
-				.on(portalUsersModule.getTableName()+".PORTALID = PortalInfo.PORTALID")
-				.innerJoin("App_Users")
-				.on(portalUsersModule.getTableName()+".USERID = Users.USERID")
-				.innerJoin("App_ORG_Users")
-				.on("App_Users.USERID = App_ORG_Users.USERID AND App_ORG_Users.USER_TYPE=2")
-				.andCustomWhere("PortalInfo.ORGID="+ orgId);
-
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			List<User> users = new ArrayList<>();
-			for(Map<String, Object> prop : props) {
-				User user = UserBeanImpl.createUserFromProps(prop, true, true, true);
-				user.setFacilioAuth(true);
-				users.add(user);
-			}
-			return users;
-		}
-        return null;
-    }
+//	@Override
+//    public List<User> getOrgPortalUsers(long orgId) throws Exception {
+//		FacilioModule portalInfoModule = AccountConstants.getPortalInfoModule();
+//		FacilioField portalId = new FacilioField();
+//		portalId.setName("portalId");
+//		portalId.setDataType(FieldType.NUMBER);
+//		portalId.setColumnName("PORTALID");
+//		portalId.setModule(portalInfoModule);
+//
+//		List<FacilioField> fields = new ArrayList<>();
+//		fields.add(portalId);
+//		fields.addAll(AccountConstants.getAppOrgUserFields());
+//		fields.addAll(AccountConstants.getAppUserFields());
+//		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+//				.select(fields)
+//				.table("Users")
+//				.innerJoin("ORG_Users")
+//				.on("Users.USERID = ORG_Users.USERID AND ORG_Users.USER_TYPE=2")
+//				.innerJoin(portalInfoModule.getTableName())
+//				.on("ORG_Users.ORGID = Users.USERID")
+//				.andCustomWhere("PortalInfo.ORGID="+ orgId);
+//
+//		List<Map<String, Object>> props = selectBuilder.get();
+//		if (props != null && !props.isEmpty()) {
+//			List<User> users = new ArrayList<>();
+//			for(Map<String, Object> prop : props) {
+//				User user = UserBeanImpl.createUserFromProps(prop, true, true, true);
+//				user.setFacilioAuth(true);
+//				users.add(user);
+//			}
+//			return users;
+//		}
+//        return null;
+//    }
 
     @Override
 	public List<User> getAllOrgUsers(long orgId) throws Exception {
@@ -248,17 +209,15 @@ public class OrgBeanImpl implements OrgBean {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getAppUserFields());
 		fields.addAll(AccountConstants.getAppOrgUserFields());
-//		fields.add(AccountConstants.getOrgIdField());
-		//		fields.addAll(FieldFactory.getShiftUserRelModuleFields());
 		
 		GenericSelectRecordBuilder selectBuilder = new SampleGenericSelectBuilder()
 				.select(fields)
-				.table("App_Users")
-				.innerJoin("App_ORG_Users")
-				.on("App_Users.USERID = App_ORG_Users.USERID")
+				.table("Users")
+				.innerJoin("ORG_Users")
+				.on("Users.USERID = ORG_Users.USERID")
 //				.leftJoin("Shift_User_Rel")
 //				.on("ORG_Users.ORG_USERID = Shift_User_Rel.ORG_USERID")
-				.andCustomWhere("App_ORG_Users.ORGID = ? AND USER_TYPE = ? AND DELETED_TIME = -1", orgId, AccountConstants.UserType.USER.getValue());
+				.andCustomWhere("ORG_Users.ORGID = ? AND USER_TYPE = ? AND DELETED_TIME = -1", orgId, AccountConstants.UserType.USER.getValue());
 		
 		User currentUser = AccountUtil.getCurrentAccount().getUser();
 		if(currentUser == null){
@@ -356,9 +315,9 @@ public class OrgBeanImpl implements OrgBean {
 		
 		GenericSelectRecordBuilder selectBuilder = new SampleGenericSelectBuilder()
 				.select(fields)
-				.table("App_Users")
-				.innerJoin("App_ORG_Users")
-				.on("App_Users.USERID = App_ORG_Users.USERID")
+				.table("Users")
+				.innerJoin("ORG_Users")
+				.on("Users.USERID = ORG_Users.USERID")
 				.andCustomWhere("ORGID = ? AND USER_TYPE = ? AND DELETED_TIME = -1", orgId, AccountConstants.UserType.USER.getValue())
 				.andCriteria(criteria);
 				;
@@ -374,9 +333,9 @@ public class OrgBeanImpl implements OrgBean {
 
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
-				.table("App_Users")
-				.innerJoin("App_ORG_Users")
-				.on("App_Users.USERID = App_ORG_Users.USERID")
+				.table("Users")
+				.innerJoin("ORG_Users")
+				.on("Users.USERID = ORG_Users.USERID")
 				.andCustomWhere("ORGID = ? AND USER_STATUS = 1 AND INVITATION_ACCEPT_STATUS = 1 AND USER_VERIFIED = 1 AND USER_TYPE = ? AND DELETED_TIME = -1", orgId, AccountConstants.UserType.USER.getValue());
 
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -398,10 +357,10 @@ public class OrgBeanImpl implements OrgBean {
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
-				.table("App_Users")
-				.innerJoin("App_ORG_Users")
-				.on("App_Users.USERID = App_ORG_Users.USERID")
-				.andCustomWhere("ORGID = ? AND DELETED_TIME = -1", orgId);
+				.table("Users")
+				.innerJoin("ORG_Users")
+				.on("Users.USERID = ORG_Users.USERID")
+				.andCustomWhere("ORGID = ? AND DELETED_TIME = -1 AND USER_TYPE = ?", orgId,UserType.REQUESTER.getValue());
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -430,12 +389,12 @@ public class OrgBeanImpl implements OrgBean {
 		
 		GenericSelectRecordBuilder selectBuilder = new SampleGenericSelectBuilder()
 				.select(fields)
-				.table("App_Users")
-				.innerJoin("App_ORG_Users")
-				.on("App_Users.USERID = App_ORG_Users.USERID")
+				.table("Users")
+				.innerJoin("ORG_Users")
+				.on("Users.USERID = ORG_Users.USERID")
 				.innerJoin("Role")
-				.on("App_ORG_Users.ROLE_ID = Role.ROLE_ID")
-				.andCustomWhere("App_ORG_Users.ORGID = ? AND App_ORG_Users.ROLE_ID = ? AND DELETED_TIME = -1", orgId, superAdminRole.getRoleId());
+				.on("ORG_Users.ROLE_ID = Role.ROLE_ID")
+				.andCustomWhere("ORG_Users.ORGID = ? AND ORG_Users.ROLE_ID = ? AND DELETED_TIME = -1", orgId, superAdminRole.getRoleId());
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -444,16 +403,16 @@ public class OrgBeanImpl implements OrgBean {
 		return null;
 	}
 	
-	public long getPortalId( ) throws Exception {
-		Organization org = AccountUtil.getCurrentOrg();
-		if(org.getPortalId() > 0) {
-			return org.getPortalId();
-		}
-		Organization portalOrg = AccountUtil.getOrgBean().getPortalOrg(org.getDomain());
-		long portalId = portalOrg.getPortalId();
-		org.setPortalId(portalId);
-		return portalId;
-	}
+//	public long getPortalId( ) throws Exception {
+//		Organization org = AccountUtil.getCurrentOrg();
+//		if(org.getPortalId() > 0) {
+//			return org.getPortalId();
+//		}
+//		Organization portalOrg = AccountUtil.getOrgBean().getPortalOrg(org.getDomain());
+//		long portalId = portalOrg.getPortalId();
+//		org.setPortalId(portalId);
+//		return portalId;
+//	}
 	
 	
 	
@@ -513,71 +472,5 @@ public class OrgBeanImpl implements OrgBean {
 		}
 			
 		return result;
-	}
-	
-	public void testTransaction(String prefix) throws Exception
-	{
-		Organization org = new Organization();
-	//	String prefix = "abi";
-		org.setDomain(prefix+1);
-		createOrg(org);
-		org = new Organization();
-		org.setDomain(prefix+2);
-		createOrg(org);
-		org = new Organization();
-		org.setDomain(prefix+3);
-		createOrg(org);
-		org = new Organization();
-		org.setDomain(prefix+4);
-		createOrg(org);
-		if(false)
-		{
-		throw new Exception();
-		}
-		org = new Organization();
-		org.setDomain(prefix+5);
-		createOrg(org);
-		org = new Organization();
-		org.setDomain(prefix+6);
-		createOrg(org);
-		
-		return;
-	}
-
-	@Override
-	public void updateLoggerLevel(int level,long orgId) throws Exception {
-		// TODO Auto-generated method stub
-		List<FacilioField> fields = AccountConstants.getOrgFields();
-
-		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(AccountConstants.getOrgModule().getTableName())
-				.fields(fields)
-				.andCondition(CriteriaAPI.getOrgIdCondition(orgId, AccountConstants.getOrgModule()));
-		
-		
-		
-		Map<String, Object> props = new HashMap<>();
-		props.put("loggerLevel",level);
-		 updateBuilder.update(props);
-	}
-	
-	public long createOrgv2(Organization org) throws Exception {
-		// TODO Auto-generated method stub
-		Organization existingOrg = getOrg(org.getDomain());
-		if (existingOrg != null) {
-			throw new AccountException(AccountException.ErrorCode.ORG_DOMAIN_ALREADY_EXISTS, "The given domain already registered.");
-		}
-		
-		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-				.table(AccountConstants.getOrgModule().getTableName())
-				.fields(AccountConstants.getOrgFields());
-		
-		Map<String, Object> props = FieldUtil.getAsProperties(org);
-		insertBuilder.addRecord(props);
-		insertBuilder.save();
-		
-		long orgId = (Long) props.get("id");
-		
-		return orgId;
 	}
 }

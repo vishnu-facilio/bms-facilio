@@ -19,9 +19,9 @@ public interface UserBean {
 	
 	public long inviteRequester(long orgId, User user) throws Exception;
 
-	User verifyEmail(String token);
+	User verifyEmail(String token) throws Exception;
 
-	User validateUserInvite(String token);
+	User validateUserInvite(String token) throws Exception;
 
 	public boolean resendInvite(long ouid) throws Exception;
 	
@@ -79,7 +79,7 @@ public interface UserBean {
     
     public User getFacilioUser(String email, String orgDomain) throws Exception;
 
-    public User getPortalUser(String email, long portalId) throws Exception;
+//    public User getPortalUser(String email, long portalId) throws Exception;
     
     public User getPortalUsers(String email, long portalId) throws Exception;
     
@@ -95,6 +95,14 @@ public interface UserBean {
 	public boolean acceptUser(User user) throws Exception;
 
 	public HashMap<Long, Set<Long>> getUserSites(List<Long> users) throws Exception;
+	
+	public boolean sendResetPasswordLinkv2(User user) throws Exception;
+
+	public User getUser(long orgId, long userId) throws Exception;
+	
+	public boolean verifyUser(long userId) throws Exception;
+	
+	
 
 
 }

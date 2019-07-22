@@ -10,5 +10,10 @@ public class AuthenticationTransactionFactory {
 		return FacilioChain.getTransactionChain();
 	}
 	
+	public static Chain getOrgSignupChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new OrgSignUpCommand());
+		return c;
+	}
 
 }

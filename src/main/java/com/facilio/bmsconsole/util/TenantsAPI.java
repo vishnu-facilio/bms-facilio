@@ -540,7 +540,6 @@ public class TenantsAPI {
 			return null;
 		}
 		FacilioModule module = ModuleFactory.getTenantsuserModule();
-		FacilioModule portalUsersModule = AccountConstants.getPortalUserModule();
 		FacilioModule orgUserModule = AccountConstants.getAppOrgUserModule();
 			
 		List<FacilioField> fields = FieldFactory.getTenantsUserFields();
@@ -552,9 +551,6 @@ public class TenantsAPI {
 													.select(fields)
 													.innerJoin(orgUserModule.getTableName())
 													.on(orgUserModule.getTableName()+".ORG_USERID = "+module.getTableName()+".ORG_USERID")
-													.innerJoin(portalUsersModule.getTableName())
-													.on(portalUsersModule.getTableName()+".USERID = "+orgUserModule.getTableName()+".USERID")
-//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCondition(CriteriaAPI.getCondition(tenantId, ids, PickListOperators.IS))
 																					;
 		List<Map<String,Object>> props = selectBuilder.get();

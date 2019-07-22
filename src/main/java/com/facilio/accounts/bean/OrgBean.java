@@ -1,5 +1,10 @@
 package com.facilio.accounts.bean;
 
+import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.dto.User;
+import com.facilio.bmsconsole.context.PortalInfoContext;
+import com.facilio.db.criteria.Criteria;
+
 import java.util.List;
 import java.util.Map;
 
@@ -11,10 +16,6 @@ import com.facilio.db.criteria.Criteria;
 
 public interface OrgBean {
 
-	public long createOrg(Organization org) throws Exception;
-	
-	public long createOrgv2(Organization org) throws Exception;
-	
 	public boolean updateOrg(long orgId, Organization org) throws Exception;
 	
 	public boolean deleteOrg(long orgId) throws Exception;
@@ -22,10 +23,16 @@ public interface OrgBean {
 	public Organization getOrg(long orgId) throws Exception;
 	
 	public Organization getOrg(String orgDomain) throws Exception;
+	
+	public Organization getPortalOrg(long portalId) throws Exception;
+	
+	public PortalInfoContext getPortalInfo(long id, boolean isPortalID) throws Exception;
+	
+//	public PortalInfoContext getPortalInfo(long o) throws Exception;
 
-    Organization getPortalOrg(String orgDomain) throws Exception;
+//    Organization getPortalOrg(String orgDomain) throws Exception;
 
-	public List<User> getOrgPortalUsers(long orgId) throws Exception;
+//	public List<User> getOrgPortalUsers(long orgId) throws Exception;
 
 	public List<User> getAllOrgUsers(long orgId) throws Exception;
 	
@@ -39,11 +46,9 @@ public interface OrgBean {
 
 	public List<User> getRequesters(long orgId) throws Exception;
 	
-	public long getPortalId() throws Exception ;
+//	public long getPortalId() throws Exception ;
 	
 	public User getSuperAdmin(long orgId) throws Exception;
-	
-	public void testTransaction(String prefix) throws Exception;
 	
 	public List getEnergyMeterList() throws Exception ;
 
@@ -52,8 +57,6 @@ public interface OrgBean {
 	public long addLicence(long summodule) throws Exception;
 	
 	public JSONObject orgInfo() throws Exception;
-	
-	Organization getPortalOrg(Long portalId) throws Exception;
 	
 	public void updateLoggerLevel (int level, long orgId) throws Exception;
 }

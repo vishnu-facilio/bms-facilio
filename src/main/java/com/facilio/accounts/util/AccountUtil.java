@@ -34,6 +34,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.iam.accounts.util.AuthUtill;
 
 public class AccountUtil {
 
@@ -46,7 +47,7 @@ public class AccountUtil {
 	}
 	
 	public static void setCurrentAccount(long orgId) throws Exception {
-		Organization org = AccountUtil.getOrgBean().getOrg(orgId);
+		Organization org = AuthUtill.getOrgBean().getOrgv2(orgId);
 		
 		if (org != null) {
 

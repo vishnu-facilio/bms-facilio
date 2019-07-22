@@ -32,7 +32,7 @@ public class LoginUtil {
 		}
 		
 		if (currentOrgDomain != null) {
-			user = AuthUtill.getUserBean().getFacilioUserv2(cognitoUser.getEmail(), currentOrgDomain);
+			user = AccountUtil.getUserBean().getFacilioUser(cognitoUser.getEmail(), currentOrgDomain);
 		}
 
 		if (user == null) {
@@ -74,8 +74,7 @@ public class LoginUtil {
 	}
 
 	public static Account getPortalAccount(CognitoUser cognitoUser, long portalId) throws Exception {
-
-		User user = AccountUtil.getUserBean().getPortalUser(cognitoUser.getEmail(), portalId);
+		User user = AccountUtil.getUserBean().getPortalUsers(cognitoUser.getEmail(), portalId);
 		Organization org = null;
 		if (user == null) {
 			throw new Exception("user not found");

@@ -168,8 +168,8 @@ public class LoginAction extends FacilioAction {
 			if (facilioToken != null) {
 				User currentUser = AccountUtil.getCurrentUser();
 				if (currentUser != null) {
-					AuthUtill.logOut(currentUser.getUid(), currentUser.getEmail(),
-							facilioToken);
+					AuthUtill.logOut(currentUser.getUid(), facilioToken, currentUser.getEmail()
+							);
 				}
 			}
 		} catch (Exception e) {

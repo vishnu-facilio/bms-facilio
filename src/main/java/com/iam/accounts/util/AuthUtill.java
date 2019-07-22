@@ -5,20 +5,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-import java.util.TimeZone;
 
 import javax.security.auth.login.AccountException;
-import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.LogManager;
-import org.apache.struts2.ServletActionContext;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
@@ -30,9 +22,6 @@ import com.facilio.accounts.bean.RoleBean;
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.auth.cookie.FacilioCookie;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
@@ -174,16 +163,15 @@ public class AuthUtill {
 		}
 	}
 
-	public static String generateAuthToken(String emailaddress, String password) throws Exception {
-		return verifyPasswordv2(emailaddress, password, null, null, null, false, false);
+	public static String generateAuthToken(String emailaddress, String password, String domain) throws Exception {
+		return validateLoginv2(emailaddress, password, null, null, null, domain, false, false);
 	}
 
-	public static String generateportalAuthToken(String emailaddress, String password) throws Exception {
-		return verifyPasswordv2(emailaddress, password, null, null, null, false, true);
+	public static String generateportalAuthToken(String emailaddress, String password, String domain) throws Exception {
+		return validateLoginv2(emailaddress, password, null, null, null, domain, false, true);
 	}
 
-	public static String verifyPasswordv2(String emailaddress, String password, String userAgent, String userType,
-			String ipAddress, boolean startUserSession, boolean isPortalUser) throws Exception {
+	public static boolean verifyPasswordv2(String emailAddress, String domain, String password) throws Exception {
 		boolean passwordValid = false;
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -191,8 +179,10 @@ public class AuthUtill {
 		try {
 			conn = FacilioConnectionPool.INSTANCE.getConnection();
 			pstmt = conn.prepareStatement(
-					"SELECT Users.password,Users.EMAIL FROM Users WHERE Users.EMAIL = ? and USER_VERIFIED=1");
-			pstmt.setString(1, emailaddress);
+					"SELECT Account_Users.password,Account_Users.EMAIL FROM Account_Users WHERE Account_Users.EMAIL = ? and Account_Users.city = ? and USER_VERIFIED=1");
+			pstmt.setString(1, emailAddress);
+			pstmt.setString(2, domain);
+
 			rs = pstmt.executeQuery();
 			if (rs.next()) {
 				String storedPass = rs.getString("password");
@@ -203,7 +193,7 @@ public class AuthUtill {
 					passwordValid = true;
 				}
 			} else {
-				logger.info("No records found for  " + emailaddress);
+				logger.info("No records found for  " + emailAddress);
 				throw new AccountException("User doesn't exists");
 			}
 
@@ -212,10 +202,15 @@ public class AuthUtill {
 		} finally {
 			DBUtil.closeAll(conn, pstmt, rs);
 		}
+		return passwordValid;
+	}
 
-		if (passwordValid) {
+	public static String validateLoginv2(String emailaddress, String password, String userAgent, String userType,
+			String ipAddress, String domain, boolean startUserSession, boolean isPortalUser) throws Exception {
 
-			User user = AuthUtill.getUserBean().getFacilioUserv2(emailaddress);
+		if (verifyPasswordv2(emailaddress, domain, password)) {
+
+			User user = AuthUtill.getUserBean().getFacilioUserv3(emailaddress, domain);
 			if (user != null) {
 				long uid = user.getUid();
 				String jwt = CognitoUtil.createJWT("id", "auth0", emailaddress,
@@ -290,11 +285,7 @@ public class AuthUtill {
 		// end user session
 		try {
 			if (facilioToken != null) {
-				User currentUser = AccountUtil.getCurrentUser();
-				if (currentUser != null) {
-					return AuthUtill.getUserBean().endUserSessionv2(uId, userEmail,
-							facilioToken);
-				}
+				return AuthUtill.getUserBean().endUserSessionv2(uId, userEmail, facilioToken);
 			}
 		} catch (Exception e) {
 			logger.info("Exception occurred ", e);
@@ -302,4 +293,7 @@ public class AuthUtill {
 		return false;
 	}
 
+	public static String getResetPasswordToken(User user) throws Exception {
+		return getUserBean().getEncodedTokenv2(user);
+	}
 }

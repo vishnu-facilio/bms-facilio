@@ -31,7 +31,9 @@ public class OrgSignUpCommand implements Command{
        if(org.getOrgId() > 0) {
     		User user = UserUtil.addSuperAdmin(jObj, org.getOrgId());
     		Account acc = AuthUtill.getCurrentAccount(org, user);
+    		context.put("account", acc);
     	}
+       
     	return false;
 	}
 	
