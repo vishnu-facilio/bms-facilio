@@ -117,7 +117,6 @@ public class DemoRollUpUtil {
 		tablesContainsDateField.put("Unmodeled_Instance" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("Points" , Arrays.asList("CREATED_TIME","MAPPED_TIME"));
 		tablesContainsDateField.put("Unmodeled_Data" , Arrays.asList("TTIME"));
-		tablesContainsDateField.put("Historical_VM_Calculation" , Arrays.asList("START_TIME","END_TIME"));
 		tablesContainsDateField.put("Instance_To_Asset_Mapping" , Arrays.asList("MAPPED_TIME"));
 //		tablesContainsDateField.put("License" , Arrays.asList("EXPIRY_DATE"));
 		tablesContainsDateField.put("Reading_Alarms" , Arrays.asList("START_TIME","END_TIME"));
