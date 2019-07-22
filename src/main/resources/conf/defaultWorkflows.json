@@ -52,77 +52,95 @@
 								  if (variables == null) {
 									  return resultMap;
 								  }
-								  recordMap = {}
+								  recordMap = {};
 								  for each index, variableObj in variables {
-									  if (variableObj.fetchType == \"field\") {
-									  	  recordKey = variableObj.module + \"_\" + variableObj.parentId;
+								  	  variableParentId = variableObj.parentId;
+								  	  if (variableObj.fetchType == \"field\") {
+									  	  recordKey = variableObj.module + \"_\" + variableParentId;
 									  	  recordObj = {};
 									  	  if (recordMap.get(recordKey) != null) {
 									  	  	  recordObj = recordMap.get(recordKey);
 									  	  }
 									  	  else {
 									  	      fetchModule = Module(variableObj.module);
-									  	      recordObj = fetchModule.fetch([id == (variableObj.parentId)]);
+									  	      recordObj = fetchModule.fetch([id == (variableParentId)]);
 									  	      recordMap[recordKey] = recordObj;
 									  	  }
+									  	  
+									  	  valueStr = null;
 									  	  if (recordObj != null && recordObj.size() > 0) {
 									  	  	  rec = recordObj[0];
-									  	  	  
-									  	  	  valueMap = {};
-											  valueMap[\"value\"] = rec.get(variableObj.select);
-									  	  	  resultMap[variableObj.key] = valueMap;
+									  	  	  valueStr = rec.get(variableObj.select);
 									  	  }
+									  	  	  
+								  	  	  valueMap = {};
+										  valueMap[\"value\"] = valueStr;
+                                          
+                                          resultMap[variableObj.key] = valueMap;
 									  }
 									  else if (variableObj.fetchType == \"liveValue\") {
 									  	  fieldObj = NameSpace(\"module\").getField(variableObj.select, variableObj.module);
-									  	  fieldid = fieldObj.id();
-									  	  fieldMapInfo = fieldObj.asMap();
-									  	  
-									  	  lastVal = Reading(fieldid, variableObj.parentId).getLastValue();
-									  	  enumMap = Reading(fieldid, variableObj.parentId).getEnumMap();
-										  
-										  valueMap = {};
-										  valueMap[\"value\"] = lastVal;
-										  if (enumMap != null) {
-										      valueMap[\"enumMap\"] = enumMap;
-										  }
-										  if (fieldMapInfo != null) {
-										  	valueMap[\"unit\"] = fieldMapInfo.get(\"unit\");
-                                            valueMap[\"dataType\"] = fieldMapInfo.get(\"dataTypeEnum\");
-										  }
-										  
-										  resultMap[variableObj.key] = valueMap;
+									  	  if (fieldObj != null) {
+										  	  fieldid = fieldObj.id();
+										  	  fieldMapInfo = fieldObj.asMap();
+										  	  
+										  	  lastVal = Reading(fieldid, variableParentId).getLastValue();
+										  	  enumMap = Reading(fieldid, variableParentId).getEnumMap();
+											  
+											  valueMap = {};
+											  valueMap[\"value\"] = lastVal;
+											  valueMap[\"fieldid\"] = fieldid;
+											  if (enumMap != null) {
+											      valueMap[\"enumMap\"] = enumMap;
+											  }
+											  if (fieldMapInfo != null) {
+											  	valueMap[\"unit\"] = fieldMapInfo.get(\"unit\");
+											  }
+											  
+											  resultMap[variableObj.key] = valueMap;
+									     }
+									     else {
+									     	  valueMap = {};
+											  valueMap[\"value\"] = null;
+									          resultMap[variableObj.key] = valueMap;
+									     }
 									  }
 									  else if (variableObj.fetchType == \"aggrValue\") {
-									  	  fieldObj = NameSpace(\"module\").getField(variableObj.select, variableObj.module);
-									  	  fieldMapInfo = fieldObj.asMap();
-									  	  
-										  fetchModule = Module(variableObj.module);
+									  	fieldObj = NameSpace(\"module\").getField(variableObj.select, variableObj.module);
+									  	if (fieldObj != null) {
+									  	  fetchModule = Module(variableObj.module);
 										  
 										  date = NameSpace(\"date\");
-										month = date.getDateRange(variableObj.dateRange);
-										db = {
-											criteria : [parentId == (variableObj.parentId) && ttime == month],
+										  month = date.getDateRange(variableObj.dateRange);
+										  db = {
+											criteria : [parentId == (variableParentId) && ttime == month],
 											field : variableObj.select,
 											aggregation : variableObj.aggr
-										};
+										  };
 										
-										res = fetchModule.fetch(db);
+										  res = fetchModule.fetch(db);
 										
-										valueMap = {};
-										valueMap[\"value\"] = res;
+										  valueMap = {};
+										  valueMap[\"value\"] = res;
 										
-										enumMap = Reading(fieldid, variableObj.parentId).getEnumMap();
+										  fieldid = fieldObj.id();
+										  enumMap = Reading(fieldid, variableParentId).getEnumMap();
                                         
-                                        if (enumMap != null) {
-                                          valueMap[\"enumMap\"] = enumMap;
-                                        }
-                                        if (fieldMapInfo != null) {
-                                          valueMap[\"unit\"] = fieldMapInfo.get(\"unit\");
-                                          valueMap[\"dataType\"] = fieldMapInfo.get(\"dataTypeEnum\");
-                                        }
-										
-										resultMap[variableObj.key] = valueMap;
+                                          valueMap[\"fieldid\"] = fieldid;
+                                          if (enumMap != null) {
+                                            valueMap[\"enumMap\"] = enumMap;
+                                          }
+                                        
+                                         fieldMapInfo = fieldObj.asMap();
+                                         valueMap[\"unit\"] = fieldMapInfo.get(\"unit\");
+                                         
+                                         resultMap[variableObj.key] = valueMap;
+                                       }
+                                       else {
+								     	  valueMap = {};
+										  valueMap[\"value\"] = null;
+								          resultMap[variableObj.key] = valueMap;
+								        }
 									  }
 								  }
 									  

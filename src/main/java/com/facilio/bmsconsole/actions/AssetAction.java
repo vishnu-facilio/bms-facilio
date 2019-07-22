@@ -202,6 +202,7 @@ public class AssetAction extends FacilioAction {
  		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, categoryId);
  		context.put(FacilioConstants.ContextNames.INPUT_TYPE, getInputType());
  		context.put(FacilioConstants.ContextNames.WITH_READINGS, this.getWithReadings());
+ 		context.put(FacilioConstants.ContextNames.WITH_WRITABLE_READINGS, this.getWithWritableReadings());
  		Chain assetList = FacilioChainFactory.getAssetListChain();
  		assetList.execute(context);
  		if (getCount()) {
@@ -483,6 +484,19 @@ public class AssetAction extends FacilioAction {
 
 	public void setWithReadings(Boolean withReadings) {
 		this.withReadings = withReadings;
+	}
+	
+	private Boolean withWritableReadings;
+	
+	public Boolean getWithWritableReadings() {
+		if (withWritableReadings == null) {
+			return false;
+		}
+		return withWritableReadings;
+	}
+
+	public void setWithWritableReadings(Boolean withWritableReadings) {
+		this.withWritableReadings = withWritableReadings;
 	}
 	
 	JSONObject assetsReadings;
