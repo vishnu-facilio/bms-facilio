@@ -5334,7 +5334,7 @@ public class DashboardAction extends FacilioAction {
 		 						}
 		 					}
 		 				}
-		 				if (violatedReadings != null && violatedReadings.containsKey(thisMap.get("label").toString())) {
+		 				if (violatedReadings != null && thisMap.get("label") != null &&violatedReadings.containsKey(thisMap.get("label").toString())) {
 		 					Double violatedValue = violatedReadings.get(thisMap.get("label").toString());
 		 					Double d = (Double) thisMap.get("value");
 		 					if (d != null) {
@@ -5585,7 +5585,9 @@ public class DashboardAction extends FacilioAction {
 			List<Map<String, Object>> markedReadings = TimeSeriesAPI.getMarkedReadings(TimeSeriesAPI.getCriteria(timeRange, deviceList, moduleList, fieldList, markType), label, value);
 			if (markedReadings != null && !markedReadings.isEmpty()) {
 				for (Map<String, Object> reading : markedReadings) {
-					violatedReadings.put(reading.get("label").toString(), (Double) reading.get("value"));
+					if(reading.get("label") != null) {
+						violatedReadings.put(reading.get("label").toString(), (Double) reading.get("value"));
+					}
 				}
 			}
 		}
