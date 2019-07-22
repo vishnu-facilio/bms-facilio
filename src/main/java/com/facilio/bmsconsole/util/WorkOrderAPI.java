@@ -1107,12 +1107,8 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 		WorkOrderContext workorder = getWorkOrder(woId);
 		if (workorder.getPrerequisiteEnabled()) {
 			preRequisiteStatus = getPreRequestStatus(woId);
-			if (AllowNegativePreRequisite.YES_WITH_WARNING.equals(workorder.getAllowNegativePreRequisiteEnum())) {
-				if (preRequisiteStatus.equals(PreRequisiteStatus.PENDING)) {
-					preRequisiteStatus = PreRequisiteStatus.COMPLETED_WITH_NEGATIVE;
-				}
-			} else if (AllowNegativePreRequisite.YES_WITH_APPROVAL.equals(workorder.getAllowNegativePreRequisiteEnum())) {
-				if (preRequisiteStatus.equals(PreRequisiteStatus.PENDING) && (workorder.getPreRequisiteApproved() != null && workorder.getPreRequisiteApproved())) {
+			 if (AllowNegativePreRequisite.YES_WITH_APPROVAL.equals(workorder.getAllowNegativePreRequisiteEnum())) {
+				if (preRequisiteStatus.equals(PreRequisiteStatus.COMPLETED_WITH_NEGATIVE) && (workorder.getPreRequisiteApproved() != null && workorder.getPreRequisiteApproved())) {
 					preRequisiteStatus = PreRequisiteStatus.COMPLETED;
 				}
 			}
@@ -1899,19 +1895,32 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 		countField.setDataType(FieldType.NUMBER);
 		Condition condition = CriteriaAPI.getCondition(fieldMap.get("parentTicketId"), Collections.singletonList(woId),NumberOperators.EQUALS);
 		Condition preRequestCondition = CriteriaAPI.getCondition(fieldMap.get("preRequest"), "1",NumberOperators.EQUALS);
-		Condition inputValueCondition = CriteriaAPI.getCondition(fieldMap.get("inputValue"), "1",StringOperators.ISN_T);
+		Condition inputValueCondition = CriteriaAPI.getCondition(fieldMap.get("inputValue"), "NULL",CommonOperators.IS_EMPTY);
 		GenericSelectRecordBuilder select = new GenericSelectRecordBuilder().table(module.getTableName())
 				.select(Collections.singletonList(countField))
 				.groupBy(fieldMap.get("parentTicketId").getCompleteColumnName()).andCondition(condition)
 				.andCondition(preRequestCondition).andCondition(inputValueCondition);
 		Map<String, Object> props = select.fetchFirst();
-		int count = 0;
+		int nullcount = 0;
 		if (props != null) {
-			count = ((Number) props.get("count")).intValue();
+			nullcount = ((Number) props.get("count")).intValue();
+		}
+		 inputValueCondition = CriteriaAPI.getCondition(fieldMap.get("inputValue"), "0",StringOperators.IS);
+		 select = new GenericSelectRecordBuilder().table(module.getTableName())
+				.select(Collections.singletonList(countField))
+				.groupBy(fieldMap.get("parentTicketId").getCompleteColumnName()).andCondition(condition)
+				.andCondition(preRequestCondition).andCondition(inputValueCondition);
+		 props = select.fetchFirst();
+		int negativecount = 0;
+		if (props != null) {
+			negativecount = ((Number) props.get("count")).intValue();
 		}
 		PreRequisiteStatus preRequestStatus = PreRequisiteStatus.PENDING;
-		if (count == 0 && isPhotosAddedIfMandatory(woId)) {
+		boolean photoValidation = isPhotosAddedIfMandatory(woId);
+		if(nullcount == 0 && negativecount == 0 && photoValidation){
 			preRequestStatus = PreRequisiteStatus.COMPLETED;
+		}else if(nullcount == 0 && negativecount > 0 && photoValidation){
+			preRequestStatus = PreRequisiteStatus.COMPLETED_WITH_NEGATIVE;
 		}
 		return preRequestStatus;
 	}
