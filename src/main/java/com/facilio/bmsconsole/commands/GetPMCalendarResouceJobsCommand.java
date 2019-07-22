@@ -290,7 +290,7 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 						}
 					}
 					else {
-						addData(row, props, metricFieldMap.get(PMPlannerAPI.PLANNED), null, count, totalCount, false);
+						addData(row, filteredList, metricFieldMap.get(PMPlannerAPI.PLANNED), null, count, totalCount, false);
 						sort(row);
 					}
 					
