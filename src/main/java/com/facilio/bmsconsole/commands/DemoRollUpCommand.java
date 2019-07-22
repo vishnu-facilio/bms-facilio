@@ -7,6 +7,8 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.transaction.FacilioConnectionPool;
+import com.facilio.db.transaction.FacilioTransactionManager;
+
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
@@ -81,7 +83,15 @@ public class DemoRollUpCommand implements Command {
 			LOGGER.info("####DemoRoleUp Job completed time  is####" + (System.currentTimeMillis()-startTime));
 		}
 		catch(Exception e) {
-			CommonCommandUtil.emailException("DemoRoleUp", "DemoRoleUp Failed - orgid -- "+AccountUtil.getCurrentOrg().getId(), e);
+			
+			try {
+				System.out.println("Exception occurred### in  DemoRollUpJob is RollBack...: "+e);
+				LOGGER.info("Exception occurred### in  DemoRollUpJob is RollBack...:   ", e);
+				CommonCommandUtil.emailException("DemoRoleUp", "DemoRoleUp Failed - orgid -- "+AccountUtil.getCurrentOrg().getId(), e);
+				FacilioTransactionManager.INSTANCE.getTransactionManager().setRollbackOnly();
+			}catch(Exception transactionException) {
+				LOGGER.info(transactionException.toString());
+			}
 		}
 		return false;
 	}
