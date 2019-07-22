@@ -174,10 +174,18 @@ public class Processor implements IRecordProcessor {
                     if( agent != null) {
                         agentUtil.addAgentMetrics(data.length(), agent.getId(), publishType.getKey());
                         String agentType = agent.getAgentType();
-                        //LOGGER.info(recordId+" Agent Type -- "+agentType);
-                        if(AgentType.Wattsense.getLabel().equalsIgnoreCase(agentType)){
-                            LOGGER.info(" wattsense agent found with payload "+payLoad);
-                            payLoad = WattsenseUtil.reFormatPayload(payLoad,dataType);
+                        try {
+                            if (orgId == 152L) {
+                                LOGGER.info(recordId + " Agent Type -- " + agentType);
+                            }
+                            if (AgentType.Wattsense.getLabel().equalsIgnoreCase(agentType)) {
+                                LOGGER.info(" wattsense agent found with payload " + payLoad);
+                                payLoad = WattsenseUtil.reFormatPayload(payLoad, dataType);
+                                LOGGER.info(" return wattsense payload "+payLoad);
+                            }
+                        }catch (Exception e){
+                            LOGGER.info(" Exception occurred while getting agent Type",e);
+                            continue;
                         }
                     }
 
