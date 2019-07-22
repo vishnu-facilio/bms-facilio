@@ -536,7 +536,12 @@
 			method="updatePMPlannerSettings">
 		</action>
 	</package>
-
+	<package name="pmplannerjobs" namespace="/api/v2/pmplanner/jobs" extends="v2Api">
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.PMPlannerAction"
+			method="updatePMJob">
+		</action>
+	</package>
 
 	<package name="approvalListApiV2"
 		namespace="/api/v2/approvals/view" extends="v2Api">

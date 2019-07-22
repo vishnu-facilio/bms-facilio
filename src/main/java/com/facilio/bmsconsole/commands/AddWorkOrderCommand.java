@@ -60,7 +60,7 @@ public class AddWorkOrderCommand implements Command {
 
 			workOrder.setModifiedTime(workOrder.getCreatedTime());
 			workOrder.setScheduledStart(workOrder.getCreatedTime());
-			workOrder.setEstimatedStart(workOrder.getCreatedTime());
+			workOrder.setEstimatedStart(workOrder.getCreatedTime());	// TODO remove
 			workOrder.setApprovalState(ApprovalState.YET_TO_BE_REQUESTED);
 			
 			if (workOrder.getPriority() == null || workOrder.getPriority().getId() == -1) {

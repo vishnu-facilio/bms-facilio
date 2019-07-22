@@ -1,12 +1,17 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.List;
+
+import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.PMPlannerSettingsContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -135,5 +140,31 @@ public class PMPlannerAction extends FacilioAction{
 		this.dateRange = dateRange;
 	}
 	
+	private List<Long> ids;
+	public List<Long> getIds() {
+		return ids;
+	}
+	public void setIds(List<Long> ids) {
+		this.ids = ids;
+	}
 	
+	private WorkOrderContext workorder;
+	public WorkOrderContext getWorkorder() {
+		return workorder;
+	}
+	public void setWorkorder(WorkOrderContext workorder) {
+		this.workorder = workorder;
+	}
+	public String updatePMJob() throws Exception {
+
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
+		context.put(FacilioConstants.ContextNames.IS_NEW_EVENT, true);	// temp
+
+		Chain updatePM = FacilioChainFactory.getUpdateNewPreventiveMaintenanceJobChain();
+		updatePM.execute(context);
+
+		setResult(ContextNames.RESULT, "success");
+		return SUCCESS;
+	}
 }

@@ -1253,4 +1253,10 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new FetchMVWidgetResultCommand());
 		return c;
 	}
+	
+	public static Chain getUpdateNewPreventiveMaintenanceJobChain() {
+		Chain c = FacilioChain.getTransactionChain();
+		c.addCommand(new UpdateNewPreventiveMaintenanceJobCommand());
+		return c;
+	}
 }

@@ -330,6 +330,14 @@
 			<param name="permission">READ</param>
 		</action>
 	</package>
+	<package name="assetListServiceApiv2" namespace="/api/service/v2/assets/view" extends="newServicePortalApiV2">
+		<action name="*" class="com.facilio.bmsconsole.actions.AssetAction" method="assetList">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
+	
 	<package name="newWorkflowServiceApiv2" namespace="/api/service/v2/workflow"
 		extends="v2Api">
 		<action name="execute" class="com.facilio.bmsconsole.actions.CommonAction"

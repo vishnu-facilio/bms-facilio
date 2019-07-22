@@ -769,15 +769,6 @@
 				<param name="includeProperties">rowsUpdated</param>
 			</result>
 		</action>
-
-		<action name="updatePreventiveMaintenanceJob" class="com.facilio.bmsconsole.actions.WorkOrderAction"
-			method="updatePreventiveMaintenanceJob">
-			<param name="moduleName">planned</param>
-			<param name="permission">UPDATE,UPDATE_TEAM,UPDATE_OWN</param>
-			<result name="success" type="json">
-				<param name="includeProperties">^pmJob.*</param>
-			</result>
-		</action>
 		
 		<action name="executePreventiveMaintenance" class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="executePM">
