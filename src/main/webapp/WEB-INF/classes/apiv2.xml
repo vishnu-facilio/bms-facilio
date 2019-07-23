@@ -1262,9 +1262,13 @@
 	<package name="historicalLoggerApiv2"
 		namespace="/api/v2/historicalLogger"
 		extends="v2Api">
-		<action name="vm"
+		<action name="vmParentMeters"
 			class="com.facilio.bmsconsole.actions.EnergyAction"
-			method="getvmHistoricalLogger">
+			method="getvmParentHistoricalLogger">
+		</action>
+		<action name="vmChildMeters"
+			class="com.facilio.bmsconsole.actions.EnergyAction"
+			method="getvmChildHistoricalLogger">
 		</action>
 	</package>
 	
