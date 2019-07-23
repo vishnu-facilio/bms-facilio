@@ -378,7 +378,7 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 				}
 				
 				String prevValue = (String) prevHeader.getOrDefault("name", "");
-				if (!prevValue.equals(value) || parentValueChanged) {
+				if (!prevValue.equals(value) || parentValueChanged || i == 0) {	// If Asset column or previous column value changed
 					prevHeader = new HashMap<>();
 					prevHeader.put("name", value);
 					prevHeader.put("rowSpan", rowDefaultSpan);
