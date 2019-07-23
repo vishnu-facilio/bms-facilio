@@ -133,7 +133,7 @@ public class FetchReportAdditionalInfoCommand implements Command {
 		return false;
 	}
 	
-	private void newAlarm(ReportContext report, boolean showAlarms, boolean fetchEventBar, Long alarmId, ReadingAlarmContext currentAlarm, 
+	private void newAlarm(ReportContext report, boolean showAlarms, boolean fetchEventBar, Long occurrenceId, ReadingAlarmContext currentAlarm, 
 			Map<String, Object> reportAggrData, Context context, Collection<Map<String, Object>> csvData) throws Exception {
 		Map<Long, AlarmOccurrenceContext> alarmMap = new HashMap<>();
 		List<AlarmOccurrenceContext> allAlarms = new ArrayList<>();
@@ -143,7 +143,7 @@ public class FetchReportAdditionalInfoCommand implements Command {
 			
 			if (parentIds != null) {
 				List<AlarmOccurrenceContext> occurrences = null;
-				occurrences = NewAlarmAPI.getReadingAlarmOccurrences(1, report.getDateRange().getStartTime(), report.getDateRange().getEndTime());
+				occurrences = NewAlarmAPI.getReadingAlarmOccurrences(occurrenceId, report.getDateRange().getStartTime(), report.getDateRange().getEndTime());
 				
 				if (CollectionUtils.isNotEmpty(occurrences)) {
 					for (AlarmOccurrenceContext occurrence: occurrences) {
