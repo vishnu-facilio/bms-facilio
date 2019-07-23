@@ -242,8 +242,15 @@ public class ReportFactory {
 					break;
 				}
 				case Alarm.ALARM_DURATION:
+				{
 					String arguments = String.valueOf(System.currentTimeMillis());
 					setColumnName(getGenericColumnName().replace("?", arguments));
+				}
+				
+				default: 
+				{
+					setColumnName(getGenericColumnName());
+				}
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
