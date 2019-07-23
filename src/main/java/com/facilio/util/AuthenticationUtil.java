@@ -2,13 +2,15 @@ package com.facilio.util;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.facilio.accounts.dto.Account;
+import com.facilio.accounts.exception.AccountException;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.iam.accounts.util.AuthUtill;
 
 
 public class AuthenticationUtil {
 	
-    public static String validateToken(HttpServletRequest request,boolean isPortaluser) throws Exception {
+    public static Account validateToken(HttpServletRequest request, boolean isPortaluser) {
         String facilioToken = null;
         if(isPortaluser) {
         	facilioToken = FacilioCookie.getUserCookie(request, "fc.idToken.facilioportal");
@@ -28,6 +30,11 @@ public class AuthenticationUtil {
                     facilioToken = request.getHeader("Authorization").replace("Bearer ", "");
                 }
             }
+            
+    		String currentOrgDomain = FacilioCookie.getUserCookie(request, "fc.currentOrg");
+    		if (currentOrgDomain == null) {
+    			currentOrgDomain = request.getHeader("X-Current-Org"); 
+    		}
 
             String overrideSessionCookie = FacilioCookie.getUserCookie(request, "fc.overrideSession");
             boolean overrideSessionCheck = false;
@@ -36,10 +43,13 @@ public class AuthenticationUtil {
                     overrideSessionCheck = true;
                 }
             }
-           // CognitoUtil.CognitoUser cognitoUser =  CognitoUtil.verifiyFacilioToken(facilioToken, isPortaluser, overrideSessionCheck);
-            String email =  AuthUtill.verifiyFacilioToken(facilioToken, isPortaluser, overrideSessionCheck);
-            
-            return email;
+            try {
+            	Account account = AuthUtill.verifiyFacilioToken(facilioToken, isPortaluser, overrideSessionCheck, currentOrgDomain);
+            	return account;
+            } 
+            catch (AccountException e) {
+            	
+			}
         }
         return  null;
     }

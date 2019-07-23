@@ -838,7 +838,12 @@ public class UserBeanImpl implements UserBean {
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getCondition("USER_STATUS", "userStatus", "1", NumberOperators.EQUALS));
 		criteria.addAndCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", String.valueOf(-1), NumberOperators.EQUALS));
-		criteria.addAndCondition(CriteriaAPI.getCondition("ISDEFAULT", "isDefault", "1", NumberOperators.EQUALS));
+		
+		Organization currentOrg = AccountUtil.getCurrentOrg();
+		if (currentOrg == null) {
+			throw new IllegalArgumentException("Organization cannot be empty");
+		}
+		criteria.addAndCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(currentOrg.getOrgId()), NumberOperators.EQUALS));
 		
 		selectBuilder.andCriteria(criteria);
 		

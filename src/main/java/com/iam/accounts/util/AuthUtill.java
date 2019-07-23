@@ -8,8 +8,6 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
-import javax.security.auth.login.AccountException;
-
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 
@@ -25,6 +23,8 @@ import com.facilio.accounts.bean.RoleBean;
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
+import com.facilio.accounts.exception.AccountException;
+import com.facilio.accounts.exception.AccountException.ErrorCode;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
@@ -114,27 +114,32 @@ public class AuthUtill {
 		return null;
 	}
 
-	public static String verifiyFacilioToken(String idToken, boolean isPortalUser, boolean overrideSessionCheck) {
+	public static Account verifiyFacilioToken(String idToken, boolean isPortalUser, boolean overrideSessionCheck, String orgDomain)
+			throws AccountException {
 		System.out.println("verifiyFacilioToken() :idToken :"+idToken);
 		try {
-			String email = null;
 			DecodedJWT decodedjwt = validateJWT(idToken, "auth0");
 			if(decodedjwt != null) {
+				String email = null;
 				if (decodedjwt.getSubject().contains(JWT_DELIMITER)) {
 					email = decodedjwt.getSubject().split(JWT_DELIMITER)[0];
 				}
 				else {
 					email = decodedjwt.getSubject().split("_")[0];
 				}
-				if (overrideSessionCheck || AuthUtill.getUserBean().verifyUserSessionv2(email, idToken)) {
-					return email;
+				Account account = AuthUtill.getUserBean().verifyUserSessionv2(email, idToken, orgDomain);
+				if (overrideSessionCheck || account != null) {
+					return account;
 				} else {
-					// invalid session
 					return null;
 				}
 			}
-			return email;
-		} catch (Exception e) {
+			return null;
+		}
+		catch (AccountException e) {
+			throw e;
+		}
+		catch (Exception e) {
 			logger.info("Exception occurred ", e);
 			return null;
 		}
@@ -211,7 +216,7 @@ public class AuthUtill {
 				}
 			} else {
 				logger.info("No records found for  " + emailAddress);
-				throw new AccountException("User doesn't exists");
+				throw new AccountException(ErrorCode.EMAIL_ALREADY_EXISTS, "User doesn't exists");
 			}
 
 		} catch (SQLException | RuntimeException e) {
@@ -237,10 +242,10 @@ public class AuthUtill {
 				}
 				return jwt;
 			}
-			throw new AccountException("User is deactivated, Please contact admin to activate.");
+			throw new AccountException(ErrorCode.EMAIL_ALREADY_EXISTS, "User is deactivated, Please contact admin to activate.");
 
 		}
-		throw new AccountException("Invalid Password");
+		throw new AccountException(ErrorCode.EMAIL_ALREADY_EXISTS, "Invalid Password");
 	}
 
 	public static void appendModuleNameInKey(String moduleName, String prefix, Map<String, Object> beanMap,

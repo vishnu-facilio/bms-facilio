@@ -86,7 +86,7 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 		Account currentAccount = null;
 		try {
 			AccountUtil.cleanCurrentAccount();
-			email = AuthenticationUtil.validateToken(request,true);
+//			email = AuthenticationUtil.validateToken(request,true);
 			String domainName = request.getServerName();
 			String orgdomain = null;
 			logger.info("Getting portal auth info : " +domainName);

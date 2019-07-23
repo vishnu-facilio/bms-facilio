@@ -15,9 +15,12 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import com.amazonaws.util.StringUtils;
+import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.exception.AccountException;
+import com.facilio.accounts.exception.AccountException.ErrorCode;
 import com.facilio.accounts.impl.SampleGenericInsertRecordBuilder;
 import com.facilio.accounts.impl.SampleGenericSelectBuilder;
 import com.facilio.accounts.impl.SampleGenericUpdateRecordBuilder;
@@ -710,14 +713,15 @@ public class UserBeanImplv2 implements UserBeanv2 {
 	
 	}
 	@Override
-	public boolean verifyUserSessionv2(String email, String token) throws Exception {
+	public Account verifyUserSessionv2(String email, String token, String orgDomain) throws Exception {		
 		List sessions = (List) LRUCache.getUserSessionCache().get(email);
 		if (sessions == null) {
 			sessions = new ArrayList<>();
 		}
 		if (sessions.contains(token)) {
-			return true;
+			return getAccount(email, orgDomain);
 		}
+		
 		GenericSelectRecordBuilder selectBuilder = new SampleGenericSelectBuilder()
 				.select(AccountConstants.getUserSessionFields())
 				.table("Account_Users")
@@ -729,9 +733,19 @@ public class UserBeanImplv2 implements UserBeanv2 {
 		if (props != null && !props.isEmpty()) {
 			sessions.add(token);
 			LRUCache.getUserSessionCache().put(email, sessions);
-			return true;
+			return getAccount(email, orgDomain);
 		}
-		return false;
+		return null;
+	}
+	
+	private Account getAccount(String email, String orgDomain) throws Exception {
+		User user = getFacilioUserv3(email, orgDomain);
+		if (user == null) {
+			throw new AccountException(ErrorCode.EMAIL_ALREADY_EXISTS, "User doesn't exists in the current Org");
+		}
+		Organization org = AuthUtill.getOrgBean().getOrgv2(user.getOrgId());
+		Account account = new Account(org, user);
+		return account;
 	}
 
 	@Override
@@ -921,36 +935,60 @@ public class UserBeanImplv2 implements UserBeanv2 {
 		// TODO Auto-generated method stub
 		return false;
 	}
-
-	@Override
-	public User getFacilioUserv3(String email, long orgId) throws Exception {
+	
+	private GenericSelectRecordBuilder getFacilioUserBuilder(String email) {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getAccountsUserFields());
+		fields.addAll(AccountConstants.getAccountsOrgUserFields());
+		fields.add(AccountConstants.getOrgIdField(AccountConstants.getOrgModule()));
 		
 		GenericSelectRecordBuilder selectBuilder = new SampleGenericSelectBuilder()
 				.select(fields)
-				.table("Account_Users");
+				.table("Account_Users")
+				.innerJoin("Account_ORG_Users")
+					.on("Account_Users.USERID = Account_ORG_Users.USERID")
+				.innerJoin("Organizations")
+					.on("Account_ORG_Users.ORGID=Organizations.ORGID");
 		
 		Criteria userEmailCriteria = new Criteria();
 		userEmailCriteria.addAndCondition(CriteriaAPI.getCondition("Account_Users.EMAIL", "email", email, StringOperators.IS));
 		userEmailCriteria.addOrCondition(CriteriaAPI.getCondition("Account_Users.MOBILE", "mobile", email, StringOperators.IS));
 		selectBuilder.andCriteria(userEmailCriteria);
 		
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "orgDeletedTime", "-1", NumberOperators.EQUALS));
+		
+		return selectBuilder;
+	}
+	
+	@Override
+	public User getFacilioUserv3(String email, String orgDomain) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = getFacilioUserBuilder(email);
+		
+		if (!StringUtils.isNullOrEmpty(orgDomain)) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.FACILIODOMAINNAME", "facilioDomainName", orgDomain, StringOperators.IS));
+		} 
+		else {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ISDEFAULT", "isDefault", "1", NumberOperators.EQUALS));
+		}
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			User user =  createUserFromProps(props.get(0), true, true, false);
+			return user;
+		}
+		return null;
+	}
+
+	@Override
+	public User getFacilioUserv3(String email, long orgId) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = getFacilioUserBuilder(email);
 		
 		if (orgId > 0) {
-			fields.addAll(AccountConstants.getAccountsOrgUserFields());
-			fields.add(AccountConstants.getOrgIdField(AccountConstants.getOrgModule()));
-
-			selectBuilder.innerJoin("Account_ORG_Users")
-					.on("Account_Users.USERID = Account_ORG_Users.USERID")
-				.innerJoin("Organizations")
-					.on("Account_ORG_Users.ORGID=Organizations.ORGID");
-				
-					
-			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
-			selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "orgDeletedTime", "-1", NumberOperators.EQUALS));
-	
 			selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+		} 
+		else {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ISDEFAULT", "isDefault", "1", NumberOperators.EQUALS));
 		}
 		
 		List<Map<String, Object>> props = selectBuilder.get();

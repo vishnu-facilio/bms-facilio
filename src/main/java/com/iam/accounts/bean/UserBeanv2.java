@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.db.criteria.Criteria;
@@ -48,6 +49,8 @@ public interface UserBeanv2 {
 	
 	public boolean updateUserPhoto(long uid, long fileId) throws Exception;
 
+	public User getFacilioUserv3(String email, String orgDomain) throws Exception;
+	
     public User getFacilioUserv3(String email, long orgId) throws Exception;
     
     public User getFacilioUserv3(String email) throws Exception;
@@ -62,7 +65,7 @@ public interface UserBeanv2 {
     
     public void clearAllUserSessionsv2(long uid, String email) throws Exception;
     
-    public boolean verifyUserSessionv2(String email, String token) throws Exception;
+    public Account verifyUserSessionv2(String email, String token, String orgDomain) throws Exception;
     
     public String generatePermalinkForURLv2(String url, User user) throws Exception;
     

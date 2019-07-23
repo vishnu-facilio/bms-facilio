@@ -110,10 +110,10 @@ public class AuthInterceptor extends AbstractInterceptor {
 					currentOrgDomain = request.getHeader("X-Current-Org"); 
 				}
 			
-				String email = AuthenticationUtil.validateToken(request, false);
+				Account currentAccount = AuthenticationUtil.validateToken(request, false);
+				AccountUtil.setCurrentAccount(currentAccount);
 				
-				Account currentAccount = null;
-				currentAccount = LoginUtil.getAccount(email, false);
+				LoginUtil.updateAccount(currentAccount, false);
 				
 				if (currentAccount != null) {
 					AccountUtil.cleanCurrentAccount();

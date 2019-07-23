@@ -1,41 +1,42 @@
 package com.facilio.fw.auth;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.apache.struts2.ServletActionContext;
-
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.auth.cookie.FacilioCookie;
 
 public class LoginUtil {
 
 	public static final String IDTOKEN_COOKIE_NAME = "fc.idToken";
 	
-	public static Account getAccount(String email, boolean addUserEntryIfNotExists) throws Exception {
-		if(email==null) {
-			return null;
+	public static void updateAccount(Account account, boolean addUserEntryIfNotExists) throws Exception {
+		if(account == null) {
+			return;
 		}
+		
+		if (account.getUser() == null || account.getOrg() == null) {
+			return;
+		}
+		
+		String email = account.getUser().getEmail();
 		
 		User user = null;
 		
-		HttpServletRequest request = ServletActionContext.getRequest();
-		String currentOrgDomain = FacilioCookie.getUserCookie(request, "fc.currentOrg");
-		if (currentOrgDomain == null) {
-			currentOrgDomain = request.getHeader("X-Current-Org"); 
-		}
+//		HttpServletRequest request = ServletActionContext.getRequest();
+//		String currentOrgDomain = FacilioCookie.getUserCookie(request, "fc.currentOrg");
+//		if (currentOrgDomain == null) {
+//			currentOrgDomain = request.getHeader("X-Current-Org"); 
+//		}
 		
-		if (currentOrgDomain != null) {
-			user = AccountUtil.getUserBean().getFacilioUser(email, currentOrgDomain, null);
-		}
+//		if (currentOrgDomain != null) {
+//			user = AccountUtil.getUserBean().getFacilioUser(email, currentOrgDomain, null);
+//		}
 
-		if (user == null) {
+//		if (user == null) {
 			user = AccountUtil.getUserBean().getFacilioUser(email);
-		}
+//		}
 		
-		Organization org = null;
+//		Organization org = null;
 		
 		/*if (user == null) {
 			org = AccountUtil.getCurrentOrg();
@@ -59,11 +60,12 @@ public class LoginUtil {
 				
 			}
 		} else { */
-			org = AccountUtil.getOrgBean().getOrg(user.getOrgId());
+//			org = AccountUtil.getOrgBean().getOrg(user.getOrgId());
 		//}
-		Account account = new Account(org, user);
+//		Account account = new Account(org, user);
+		account.setUser(user);
 		
-		return account;
+//		return account;
 	}
 
 	public static Account getPortalAccount(String email, long portalId) throws Exception {
