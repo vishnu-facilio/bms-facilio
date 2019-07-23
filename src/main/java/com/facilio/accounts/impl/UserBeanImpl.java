@@ -23,7 +23,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.amazonaws.util.StringUtils;
 import com.facilio.accounts.bean.RoleBean;
 import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Organization;

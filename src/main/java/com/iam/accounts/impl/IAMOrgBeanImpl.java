@@ -22,9 +22,9 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
-import com.iam.accounts.bean.OrgBeanv2;
+import com.iam.accounts.bean.IAMOrgBean;
 
-public class OrgBeanImplv2 implements OrgBeanv2 {
+public class IAMOrgBeanImpl implements IAMOrgBean {
 
 	@Override
 	public boolean updateOrgv2(long orgId, Organization org) throws Exception {
@@ -138,7 +138,7 @@ public class OrgBeanImplv2 implements OrgBeanv2 {
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
-				User user = UserBeanImplv2.createUserFromProps(prop, true, true, false);
+				User user = IAMUserBeanImpl.createUserFromProps(prop, true, true, false);
 				users.add(user);
 			}
 			return users;
@@ -160,7 +160,7 @@ public class OrgBeanImplv2 implements OrgBeanv2 {
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
-				users.add(UserBeanImplv2.createUserFromProps(prop, true, false, false));
+				users.add(IAMUserBeanImpl.createUserFromProps(prop, true, false, false));
 			}
 			return users;
 		}
@@ -173,7 +173,7 @@ public class OrgBeanImplv2 implements OrgBeanv2 {
 		if (props != null && !props.isEmpty()) {
 			Map<Long, User> users = new HashMap<>();
 			for(Map<String, Object> prop : props) {
-				User user = UserBeanImplv2.createUserFromProps(prop, true, false, false);
+				User user = IAMUserBeanImpl.createUserFromProps(prop, true, false, false);
 				users.put(user.getId(), user);
 			}
 			return users;
@@ -215,7 +215,7 @@ public class OrgBeanImplv2 implements OrgBeanv2 {
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
-				users.add(UserBeanImplv2.createUserFromProps(prop, true, false, false));
+				users.add(IAMUserBeanImpl.createUserFromProps(prop, true, false, false));
 			}
 			return users;
 		}

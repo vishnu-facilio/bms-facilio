@@ -1,13 +1,12 @@
 package com.iam.accounts.util;
 
 import java.io.UnsupportedEncodingException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 
@@ -25,12 +24,14 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.exception.AccountException;
 import com.facilio.accounts.exception.AccountException.ErrorCode;
+import com.facilio.accounts.impl.SampleGenericSelectBuilder;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
-import com.facilio.db.builder.DBUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.transaction.FacilioConnectionPool;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.TransactionBeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -40,44 +41,44 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import com.iam.accounts.bean.OrgBeanv2;
-import com.iam.accounts.bean.UserBeanv2;
+import com.iam.accounts.bean.IAMOrgBean;
+import com.iam.accounts.bean.IAMUserBean;
 
 public class AuthUtill {
 	private static org.apache.log4j.Logger logger = LogManager.getLogger(AuthUtill.class.getName());
 	public static final String JWT_DELIMITER = "#";
 
-	public static UserBeanv2 getUserBean() throws Exception {
-		UserBeanv2 userBean = (UserBeanv2) BeanFactory.lookup("UserBeanv2");
+	public static IAMUserBean getUserBean() throws Exception {
+		IAMUserBean userBean = (IAMUserBean) BeanFactory.lookup("UserBeanv2");
 		return userBean;
 	}
 
-	public static UserBeanv2 getUserBean(long orgId) throws Exception {
-		UserBeanv2 userBean = (UserBeanv2) BeanFactory.lookup("UserBeanv2", orgId);
+	public static IAMUserBean getUserBean(long orgId) throws Exception {
+		IAMUserBean userBean = (IAMUserBean) BeanFactory.lookup("UserBeanv2", orgId);
 		return userBean;
 	}
 
-	public static UserBeanv2 getTransactionalUserBean() throws Exception {
-		return (UserBeanv2) TransactionBeanFactory.lookup("UserBeanv2");
+	public static IAMUserBean getTransactionalUserBean() throws Exception {
+		return (IAMUserBean) TransactionBeanFactory.lookup("UserBeanv2");
 	}
 
-	public static UserBeanv2 getTransactionalUserBean(long orgId) throws Exception {
-		return (UserBeanv2) TransactionBeanFactory.lookup("UserBeanv2", orgId);
+	public static IAMUserBean getTransactionalUserBean(long orgId) throws Exception {
+		return (IAMUserBean) TransactionBeanFactory.lookup("UserBeanv2", orgId);
 	}
 
-	public static OrgBeanv2 getOrgBean() throws Exception {
+	public static IAMOrgBean getOrgBean() throws Exception {
 		Object ob = BeanFactory.lookup("OrgBeanv2");
-		OrgBeanv2 orgBean = (OrgBeanv2) ob;
+		IAMOrgBean orgBean = (IAMOrgBean) ob;
 		return orgBean;
 	}
 
-	public static OrgBeanv2 getOrgBean(long orgId) throws Exception {
-		OrgBeanv2 orgBean = (OrgBeanv2) BeanFactory.lookup("OrgBeanv2", orgId);
+	public static IAMOrgBean getOrgBean(long orgId) throws Exception {
+		IAMOrgBean orgBean = (IAMOrgBean) BeanFactory.lookup("OrgBeanv2", orgId);
 		return orgBean;
 	}
 
-	public static OrgBeanv2 getTransactionalOrgBean(long orgId) throws Exception {
-		OrgBeanv2 orgBean = (OrgBeanv2) TransactionBeanFactory.lookup("OrgBeanv2", orgId);
+	public static IAMOrgBean getTransactionalOrgBean(long orgId) throws Exception {
+		IAMOrgBean orgBean = (IAMOrgBean) TransactionBeanFactory.lookup("OrgBeanv2", orgId);
 		return orgBean;
 	}
 
@@ -191,26 +192,26 @@ public class AuthUtill {
 
 	public static boolean verifyPasswordv2(String emailAddress, String domain, String password) throws Exception {
 		boolean passwordValid = false;
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
 		try {
 			if (StringUtils.isEmpty(domain)) {
 				domain = "app";
 			}
 			
-			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			pstmt = conn.prepareStatement(
-					"SELECT Account_Users.password,Account_Users.EMAIL FROM Account_Users WHERE Account_Users.EMAIL = ? and Account_Users.city = ? and USER_VERIFIED=1");
-			pstmt.setString(1, emailAddress);
-			pstmt.setString(2, domain);
+			List<FacilioField> fields = new ArrayList<>();
+			fields.addAll(AccountConstants.getAccountsUserFields());
+			
+			GenericSelectRecordBuilder selectBuilder = new SampleGenericSelectBuilder()
+					.select(fields)
+					.table("Account_Users");
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.EMAIL", "email", emailAddress, StringOperators.IS));
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.CITY", "city", domain, StringOperators.IS));
+			selectBuilder.andCondition(CriteriaAPI.getCondition("USER_VERIFIED", "userVerified", "1", NumberOperators.EQUALS));
+			
+			List<Map<String, Object>> props = selectBuilder.get();
 
-			rs = pstmt.executeQuery();
-			if (rs.next()) {
-				String storedPass = rs.getString("password");
-				String emailindb = rs.getString(2);
-				logger.info("Stored : " + storedPass);
-				logger.info("UserGiv: " + password);
+			if (CollectionUtils.isNotEmpty(props)) {
+				Map<String, Object> result = props.get(0);
+				String storedPass = (String)result.get("password");
 				if (storedPass.equals(password)) {
 					passwordValid = true;
 				}
@@ -221,9 +222,7 @@ public class AuthUtill {
 
 		} catch (SQLException | RuntimeException e) {
 			logger.info("Exception while verifying password, ", e);
-		} finally {
-			DBUtil.closeAll(conn, pstmt, rs);
-		}
+		} 
 		return passwordValid;
 	}
 

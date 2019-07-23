@@ -7,7 +7,7 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.db.criteria.Criteria;
 
-public interface OrgBeanv2 {
+public interface IAMOrgBean {
 
 	public Organization createOrgv2(Organization org) throws Exception;
 	

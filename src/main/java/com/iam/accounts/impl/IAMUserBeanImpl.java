@@ -45,17 +45,17 @@ import com.facilio.fw.LRUCache;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
-import com.iam.accounts.bean.UserBeanv2;
+import com.iam.accounts.bean.IAMUserBean;
 import com.iam.accounts.util.AccountConstants;
 import com.iam.accounts.util.AuthUtill;
 
 ;
 
-public class UserBeanImplv2 implements UserBeanv2 {
+public class IAMUserBeanImpl implements IAMUserBean {
 
 	private static final long INVITE_LINK_EXPIRE_TIME = (7 * 24 * 60 * 60 * 1000L);
 	private static final String USER_TOKEN_REGEX = "#";
-	private static Logger log = LogManager.getLogger(UserBeanImplv2.class.getName());
+	private static Logger log = LogManager.getLogger(IAMUserBeanImpl.class.getName());
 
 	
 	private long addUserEntryv2(User user) throws Exception {
@@ -93,10 +93,10 @@ public class UserBeanImplv2 implements UserBeanv2 {
 		fields.add(AccountConstants.getUserPasswordField());
 		GenericUpdateRecordBuilder updateBuilder = new SampleGenericUpdateRecordBuilder()
 				.table(AccountConstants.getAccountsUserModule().getTableName())
-				.fields(fields)
-				.andCustomWhere("USERID = ?", user.getUid());
+				.fields(fields);
 		
-
+		updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(user.getUid()), NumberOperators.EQUALS));
+		
 		Map<String, Object> props = FieldUtil.getAsProperties(user);
 		int updatedRows = updateBuilder.update(props);
 		
@@ -162,7 +162,7 @@ public class UserBeanImplv2 implements UserBeanv2 {
 
 	public static void main(String []args)
 	{
-		UserBeanImplv2 us = new UserBeanImplv2();
+		IAMUserBeanImpl us = new IAMUserBeanImpl();
 		User s = us.getUserFromToken("xSb_ezHQ_udcFU8l5P67wq_z809tlkMMIZxMbHAV0hbs9TKfyRniDoVCfmvVGF3wl4nuHLJ53Ho=");
 		System.out.println(s.getEmail());
 		System.out.println(s.getUid());
@@ -246,9 +246,11 @@ public class UserBeanImplv2 implements UserBeanv2 {
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(AccountConstants.getAccountsOrgUserModule().getTableName())
-				.fields(fields)
-				.andCustomWhere("ORGID = ? AND USERID = ?", orgId, userId);
-
+				.fields(fields);
+		
+		updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(userId), NumberOperators.EQUALS));
+		updateBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+		
 		Map<String, Object> props = new HashMap<>();
 		props.put("invitedTime", System.currentTimeMillis());
 		
@@ -297,9 +299,10 @@ public class UserBeanImplv2 implements UserBeanv2 {
 
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 					.table(AccountConstants.getAccountsOrgUserModule().getTableName())
-					.fields(fields)
-					.andCustomWhere("ORG_USERID = ?", user.getOuid());
-
+					.fields(fields);
+			
+			updateBuilder.andCondition(CriteriaAPI.getCondition("ORG_USERID", "orgUserId", String.valueOf(user.getOuid()), NumberOperators.EQUALS));
+		
 			Map<String, Object> props = new HashMap<>();
 			props.put("inviteAcceptStatus", true);
 			props.put("isDefaultOrg", true);
@@ -332,9 +335,11 @@ public class UserBeanImplv2 implements UserBeanv2 {
 				.select(fields)
 				.table("Account_Users")
 				.innerJoin("Account_ORG_Users")
-				.on("Account_Users.USERID = Account_ORG_Users.USERID")
-				.andCustomWhere("ORG_USERID = ? AND DELETED_TIME = -1", ouid);
-
+				.on("Account_Users.USERID = Account_ORG_Users.USERID");
+		
+		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_USERID", "orgUserId", String.valueOf(ouid), NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
+		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			User user =  createUserFromProps(props.get(0), true, true, false); //Giving as false because user cannot accept invite via portal APIs
@@ -358,8 +363,10 @@ public class UserBeanImplv2 implements UserBeanv2 {
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(AccountConstants.getAccountsOrgUserModule().getTableName())
-				.fields(fields)
-				.andCustomWhere("ORG_USERID = ? AND DELETED_TIME = -1", ouid);
+				.fields(fields);
+		
+		updateBuilder.andCondition(CriteriaAPI.getCondition("ORG_USERID", "orgUserId", String.valueOf(ouid), NumberOperators.EQUALS));
+		updateBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
 		
 		Map<String, Object> props = new HashMap<>();
 		props.put("deletedTime", System.currentTimeMillis());
@@ -385,9 +392,12 @@ public class UserBeanImplv2 implements UserBeanv2 {
 		
 		GenericUpdateRecordBuilder updateBuilder = new SampleGenericUpdateRecordBuilder()
 				.table(AccountConstants.getAccountsOrgUserModule().getTableName())
-				.fields(fields)
-				.andCustomWhere("ORGID = ? AND USERID = ? AND DELETED_TIME = -1", orgId, uId);
-				
+				.fields(fields);
+		
+		updateBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+		updateBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
+		updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(uId), NumberOperators.EQUALS));
+		
 		Map<String, Object> props = new HashMap<>();
 		props.put("userStatus", false);
 		
@@ -412,8 +422,11 @@ public class UserBeanImplv2 implements UserBeanv2 {
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(AccountConstants.getAccountsOrgUserModule().getTableName())
-				.fields(fields)
-				.andCustomWhere("ORGID = ? AND USERID = ? AND DELETED_TIME = -1", orgId, uid);
+				.fields(fields);
+		updateBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+		updateBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
+		updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
+	
 		
 		Map<String, Object> props = new HashMap<>();
 		props.put("userStatus", true);
@@ -439,8 +452,10 @@ public class UserBeanImplv2 implements UserBeanv2 {
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(AccountConstants.getAccountsOrgUserModule().getTableName())
-				.fields(fields)
-				.andCustomWhere("USERID = ? AND DELETED_TIME = -1", uid);
+				.fields(fields);
+		
+		updateBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
+		updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
 		
 		Map<String, Object> props = new HashMap<>();
 		props.put("isDefaultOrg", false);
@@ -450,8 +465,12 @@ public class UserBeanImplv2 implements UserBeanv2 {
 		GenericUpdateRecordBuilder updateBuilder1 = new GenericUpdateRecordBuilder()
 				.table(AccountConstants.getAccountsOrgUserModule().getTableName())
 				.fields(fields)
-				.andCustomWhere("ORGID =? AND ORG_USERID = ? AND DELETED_TIME = -1", orgId, uid);
+				;
 		
+		updateBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+		updateBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
+		updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
+	
 		Map<String, Object> props1 = new HashMap<>();
 		props1.put("isDefaultOrg", true);
 		
@@ -470,8 +489,12 @@ public class UserBeanImplv2 implements UserBeanv2 {
 				.select(fields)
 				.table("Account_Users")
 				.innerJoin("Account_ORG_Users")
-				.on("Account_Users.USERID = Account_ORG_Users.USERID")
-				.andCustomWhere("ORGID = ? AND ORG_USERID = ? AND DELETED_TIME = -1", AccountUtil.getCurrentOrg().getId(), ouid);
+				.on("Account_Users.USERID = Account_ORG_Users.USERID");
+		
+		selectBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(AccountUtil.getCurrentOrg().getId()), NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_USERID", "userId", String.valueOf(ouid), NumberOperators.EQUALS));
+	
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -492,8 +515,11 @@ public class UserBeanImplv2 implements UserBeanv2 {
 				.select(fields)
 				.table("Account_Users")
 				.innerJoin("Account_ORG_Users")
-				.on("Account_Users.USERID = Account_ORG_Users.USERID")
-				.andCustomWhere("ORGID = ? AND Account_ORG_Users.USERID = ? AND DELETED_TIME = -1", orgId, userId);
+				.on("Account_Users.USERID = Account_ORG_Users.USERID");
+		
+		selectBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(AccountUtil.getCurrentOrg().getId()), NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USERID", "userId", String.valueOf(userId), NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -515,9 +541,11 @@ public class UserBeanImplv2 implements UserBeanv2 {
 				.select(fields)
 				.table("Account_Users")
 				.innerJoin("Account_ORG_Users")
-				.on("Account_Users.USERID = Account_ORG_Users.USERID")
-				.andCustomWhere("ORG_USERID = ? AND DELETED_TIME = -1", ouid);
-
+				.on("Account_Users.USERID = Account_ORG_Users.USERID");
+		
+		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_USERID", "orgId", String.valueOf(ouid), NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
+		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			User user =  createUserFromProps(props.get(0), true, true, false);
@@ -539,8 +567,12 @@ public class UserBeanImplv2 implements UserBeanv2 {
 				.select(fields)
 				.table("Account_Users")
 				.innerJoin("Account_ORG_Users")
-				.on("Account_Users.USERID = Account_ORG_Users.USERID")
-				.andCustomWhere("ORGID = ? AND EMAIL = ? AND DELETED_TIME = -1", orgId, email);
+				.on("Account_Users.USERID = Account_ORG_Users.USERID");
+		
+		selectBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("EMAIL", "email", email, StringOperators.IS));
+		
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -557,8 +589,11 @@ public class UserBeanImplv2 implements UserBeanv2 {
 				.select(AccountConstants.getOrgFields())
 				.table("Organizations")
 				.innerJoin("Account_ORG_Users")
-				.on("Organizations.ORGID = Account_ORG_Users.ORGID")
-				.andCustomWhere("Account_ORG_Users.USERID = ? AND Organizations.DELETED_TIME=-1 AND Account_ORG_Users.DELETED_TIME=-1", uid);
+				.on("Organizations.ORGID = Account_ORG_Users.ORGID");
+		
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "orgDeletedTime", "-1", NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -578,8 +613,12 @@ public class UserBeanImplv2 implements UserBeanv2 {
 				.select(AccountConstants.getOrgFields())
 				.table("Organizations")
 				.innerJoin("Account_ORG_Users")
-				.on("Organizations.ORGID = Account_ORG_Users.ORGID")
-				.andCustomWhere("Account_ORG_Users.USERID = ? AND Account_ORG_Users.ISDEFAULT = ? AND Organizations.DELETED_TIME=-1", uid, true);
+				.on("Organizations.ORGID = Account_ORG_Users.ORGID");
+		
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "orgDeletedTime", "-1", NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ISDEFAULT", "isDefault", "1", NumberOperators.EQUALS));
+		
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -603,9 +642,10 @@ public class UserBeanImplv2 implements UserBeanv2 {
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(AccountConstants.getAccountsUserModule().getTableName())
-				.fields(fields)
-				.andCustomWhere("USERID = ?", uid);
-
+				.fields(fields);
+		
+		updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
+	
 		Map<String, Object> props = new HashMap<>();
 		props.put("photoId", fileId);
 		
@@ -670,8 +710,11 @@ public class UserBeanImplv2 implements UserBeanv2 {
 
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 					.table(AccountConstants.getUserSessionModule().getTableName())
-					.fields(fields)
-					.andCustomWhere("USERID = ? AND TOKEN = ?", uid, token);
+					.fields(fields);
+			
+			updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
+			updateBuilder.andCondition(CriteriaAPI.getCondition("TOKEN", "token", token, StringOperators.IS));
+		
 
 			Map<String, Object> props = new HashMap<>();
 			props.put("endTime", System.currentTimeMillis());
@@ -699,11 +742,12 @@ public class UserBeanImplv2 implements UserBeanv2 {
 				.select(AccountConstants.getUserSessionFields())
 				.table("Account_Users")
 				.innerJoin("UserSessions")
-				.on("Account_Users.USERID =UserSessions.USERID")
-				.andCustomWhere("Users.USERID = ?", uid);
+				.on("Account_Users.USERID =UserSessions.USERID");
+		
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Users.USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
 		
 		if (isActive != null) {
-			selectBuilder.andCustomWhere("UserSessions.IS_ACTIVE = ?", isActive);
+			selectBuilder.andCondition(CriteriaAPI.getCondition("UserSessions.IS_ACTIVE", "isActive", isActive ? "1" : "0", NumberOperators.EQUALS));
 		}
 		
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -730,9 +774,13 @@ public class UserBeanImplv2 implements UserBeanv2 {
 				.select(AccountConstants.getUserSessionFields())
 				.table("Account_Users")
 				.innerJoin("UserSessions")
-				.on("Account_Users.USERID = UserSessions.USERID")
-				.andCustomWhere("(Account_Users.EMAIL = ? ) AND UserSessions.TOKEN = ? AND UserSessions.IS_ACTIVE = ?", email, token, true);
-
+				.on("Account_Users.USERID = UserSessions.USERID");
+		
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.EMAIL", "email", email, StringOperators.IS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("UserSessions.TOKEN", "token", token, StringOperators.IS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("UserSessions.IS_ACTIVE", "isActive", "1", NumberOperators.EQUALS));
+		
+	
 		Map<String, Object> props = selectBuilder.fetchFirst();
 		if (MapUtils.isNotEmpty(props)) {
 			sessions.add(props);
@@ -756,9 +804,11 @@ public class UserBeanImplv2 implements UserBeanv2 {
 	public void clearUserSessionv2(long uid, String email, String token) throws Exception {
 
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-				.table(AccountConstants.getUserSessionModule().getTableName())
-				.andCustomWhere("USERID = ? AND TOKEN = ?", uid, token);
-
+				.table(AccountConstants.getUserSessionModule().getTableName());
+		
+		builder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
+		builder.andCondition(CriteriaAPI.getCondition("TOKEN", "token", token, StringOperators.IS));
+		
 		builder.delete();
 		
 		LRUCache.getUserSessionCache().remove(email);
@@ -768,9 +818,8 @@ public class UserBeanImplv2 implements UserBeanv2 {
 	public void clearAllUserSessionsv2(long uid, String email) throws Exception {
 
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-				.table(AccountConstants.getUserSessionModule().getTableName())
-				.andCustomWhere("USERID = ?", uid);
-
+				.table(AccountConstants.getUserSessionModule().getTableName());
+		builder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
 		builder.delete();
 		
 		LRUCache.getUserSessionCache().remove(email);
@@ -827,8 +876,10 @@ public class UserBeanImplv2 implements UserBeanv2 {
     	
     	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(AccountConstants.getUserSessionFields())
-				.table("UserSessions")
-				.andCustomWhere("UserSessions.TOKEN = ? AND UserSessions.IS_ACTIVE = ?", token, true);
+				.table("UserSessions");
+    	
+    	selectBuilder.andCondition(CriteriaAPI.getCondition("UserSessions.TOKEN", "token", token, StringOperators.IS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("IS_ACTIVE", "email", "1", NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -915,9 +966,10 @@ public class UserBeanImplv2 implements UserBeanv2 {
 		if (userUpdateStatus) {
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 					.table(AccountConstants.getAccountsOrgUserModule().getTableName())
-					.fields(AccountConstants.getAccountsOrgUserFields())
-					.andCustomWhere("ORG_USERID = ?", ouid);
-
+					.fields(AccountConstants.getAccountsOrgUserFields());
+			
+			updateBuilder.andCondition(CriteriaAPI.getCondition("ORG_USERID", "orgUserId", String.valueOf(ouid), NumberOperators.EQUALS));
+			
 		    Map<String, Object> props = FieldUtil.getAsProperties(user);
 			
 			int updatedRows = updateBuilder.update(props);

@@ -9,7 +9,7 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.db.criteria.Criteria;
 
-public interface UserBeanv2 {
+public interface IAMUserBean {
 	
 	public long createUserv2(long orgId, User user) throws Exception;
 	
