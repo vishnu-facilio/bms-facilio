@@ -78,6 +78,63 @@ public class EnergyAction extends FacilioAction {
 		return SUCCESS;		
 	}
 	
+	private Long parentId;
+
+	public Long getParentId() {
+	return parentId;
+	}
+
+	public void setParentId(Long parentId) {
+	this.parentId = parentId;
+	}
+
+	public String getvmChildHistoricalLogger() throws Exception {
+
+		List<HistoricalLoggerContext> childHistoricalLoggers = HistoricalLoggerUtil.getGroupedHistoricalLogger(getParentId());	
+	
+		Map<Long,HistoricalLoggerContext> childIdMap = new HashMap<Long, HistoricalLoggerContext>();
+		Map<Integer,List<HistoricalLoggerContext>> hierarchyChildMap = new HashMap<Integer, List<HistoricalLoggerContext>>();
+	
+		if(childHistoricalLoggers != null && !childHistoricalLoggers.isEmpty())
+		{
+			for(HistoricalLoggerContext historicalLogger: childHistoricalLoggers)
+			{
+				childIdMap.put(historicalLogger.getId(), historicalLogger);
+			}
+			
+			for(HistoricalLoggerContext historicalLogger: childHistoricalLoggers)
+			{
+				Integer hierarchy = getHierarchy(historicalLogger, 0, childIdMap);
+				if(hierarchyChildMap.containsKey(hierarchy))
+				{
+					List<HistoricalLoggerContext> groupedChildList = hierarchyChildMap.get(hierarchy);
+					groupedChildList.add(historicalLogger);
+				}
+				else
+				{
+					List<HistoricalLoggerContext> groupedChildList = new ArrayList<HistoricalLoggerContext>();
+					groupedChildList.add(historicalLogger);
+					hierarchyChildMap.put(hierarchy, groupedChildList);
+				}
+			}
+		}
+	
+		setResult("childMeters", hierarchyChildMap);
+		return SUCCESS;
+
+	}
+	
+	public Integer getHierarchy(HistoricalLoggerContext historicalLogger, Integer hierarchy, Map<Long,HistoricalLoggerContext> childIdMap) throws Exception {
+		
+		hierarchy++;
+		if(historicalLogger.getDependentId() == parentId)
+		{
+			return hierarchy;
+		}
+
+		return getHierarchy(childIdMap.get(historicalLogger.getDependentId()), hierarchy, childIdMap);
+	}
+	
 	
 	public String addEnergyMeterPurpose() throws Exception {
 		FacilioContext context = new FacilioContext();

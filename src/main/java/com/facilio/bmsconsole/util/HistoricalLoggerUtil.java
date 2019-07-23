@@ -112,12 +112,24 @@ public class HistoricalLoggerUtil {
 			.andCondition(CriteriaAPI.getCondition("LOGGER_GROUP_ID", "loggerGroupId", ""+loggerGroupId, NumberOperators.EQUALS));
 
 			List<Map<String, Object>> props = selectBuilder.get();
+			List<HistoricalLoggerContext> historicalLoggers = new ArrayList<HistoricalLoggerContext>();
+			
+			List<Long> resourceIds = new ArrayList<Long>();
+			
 			if (props != null && !props.isEmpty()) {
-				List<HistoricalLoggerContext> historicalLoggers = FieldUtil.getAsBeanListFromMapList(props, HistoricalLoggerContext.class);
-				return historicalLoggers;
+				for(Map<String, Object> prop : props ) {
+					HistoricalLoggerContext historicalLogger = FieldUtil.getAsBeanFromMap(prop, HistoricalLoggerContext.class);
+					historicalLoggers.add(historicalLogger);
+					resourceIds.add(historicalLogger.getParentId());
+				}
 			}
-	
-			return null;
+
+			Map<Long, ResourceContext> resourcesMap = ResourceAPI.getResourceAsMapFromIds(resourceIds);
+			
+			for(HistoricalLoggerContext historicalLogger :historicalLoggers) {
+				historicalLogger.setParentResourceContext(resourcesMap.get(historicalLogger.getParentId()));
+			}
+			return historicalLoggers;
 
 	}
 	
