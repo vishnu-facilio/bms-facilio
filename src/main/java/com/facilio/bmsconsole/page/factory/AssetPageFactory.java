@@ -115,7 +115,7 @@ public class AssetPageFactory extends PageFactory {
 		addAvgTtrWidget(tab4Sec1, breakdownCriteria);
 		
 		// if (AccountUtil.isFeatureEnabled(FeatureLicense.GRAPHICS)) {
-		if (AccountUtil.getCurrentOrg().getOrgId() == 75 && module.getName().equals("fahu")) {
+		if ((AccountUtil.getCurrentOrg().getOrgId() == 210 && asset.isConnected() ) || (AccountUtil.getCurrentOrg().getOrgId() == 75 && module.getName().equals("fahu"))) {
 			
 			Tab tab6 = page.new Tab("graphics", "graphics");
 			page.addTab(tab6);
