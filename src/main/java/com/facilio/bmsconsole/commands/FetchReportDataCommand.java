@@ -46,16 +46,6 @@ public class FetchReportDataCommand implements Command {
 
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
 		
-		if (AwsUtil.isProduction() && AccountUtil.getCurrentOrg().getOrgId() == 210l) {
-			DateRange dateRange = report.getDateRange();
-			if (dateRange != null) {
-				long currentTimeMillis = System.currentTimeMillis();
-				if (currentTimeMillis > dateRange.getEndTime()) {
-					dateRange.setEndTime(currentTimeMillis);
-				}
-			}
-		}
-		
 		if (report.getDataPoints() == null || report.getDataPoints().isEmpty()) {
 			return false;
 		}
@@ -66,6 +56,17 @@ public class FetchReportDataCommand implements Command {
 		}
 		
 		calculateBaseLineRange(report);
+
+		if (AwsUtil.isProduction() && AccountUtil.getCurrentOrg().getOrgId() == 210l) {
+			DateRange dateRange = report.getDateRange();
+			if (dateRange != null) {
+				long currentTimeMillis = System.currentTimeMillis();
+				if (currentTimeMillis > dateRange.getEndTime()) {
+					dateRange.setEndTime(currentTimeMillis);
+				}
+			}
+		}
+
 		List<ReportDataContext> reportData = new ArrayList<>();
 		List<ReportDataPointContext> dataPoints = new ArrayList<>(report.getDataPoints());
 		ReportDataPointContext sortPoint = getSortPoint(dataPoints);
