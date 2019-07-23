@@ -16,9 +16,7 @@ import org.apache.log4j.Logger;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.PostTransactionCommand;
 import com.facilio.bmsconsole.db.ResponseCacheUtil;
-import com.facilio.cache.CacheUtil;
 import com.facilio.db.transaction.FacilioTransactionManager;
-import com.facilio.fw.LRUCache;
 
 public class FacilioChain extends ChainBase {
 	private static final ThreadLocal<FacilioChain> rootChain = new ThreadLocal<>();
@@ -48,38 +46,6 @@ public class FacilioChain extends ChainBase {
 	}
 	
     private static final Logger LOGGER = LogManager.getLogger(FacilioChain.class.getName());
-
-//	public Chain getPostTransactionChain() {
-//		return postTransactionChain;
-//	}
-//
-//	public void setPostTransactionChain(Chain postTransaction) {
-//		this.postTransactionChain = postTransaction;
-//	}
-	
-//	public static void addPostTrasanction(Object key, Object value) {
-//		FacilioContext facilioContext = getPostTransactionContext();
-//		facilioContext.put(key, value);
-//	}
-//	
-//	public static void addPostTransactionListObject(Object key, Object value) {
-//		FacilioContext facilioContext = getPostTransactionContext();
-//		List list = (List) facilioContext.get(key);
-//		if (list == null) {
-//			list = new ArrayList();
-//			facilioContext.put(key, list);
-//		}
-//		list.add(value);
-//	}
-
-//	private static FacilioContext getPostTransactionContext() {
-//		FacilioContext facilioContext = postTransactionContext.get();
-//		if (facilioContext == null) {
-//			facilioContext = new FacilioContext();
-//			postTransactionContext.set(facilioContext);
-//		}
-//		return facilioContext;
-//	}
     
     @Override
     public void addCommand(Command command) {

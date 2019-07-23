@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
@@ -340,40 +341,21 @@ public class ModuleAction extends FacilioAction {
 	}
 	
 	public String getModuleDataList() throws Exception {
-		FacilioContext context = new FacilioContext();
- 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
- 		if(getFilters() != null)
- 		{	
-	 		JSONParser parser = new JSONParser();
-	 		JSONObject json = (JSONObject) parser.parse(getFilters());
-	 		context.put(FacilioConstants.ContextNames.FILTERS, json);
- 		}
- 		if (getSearch() != null) {
- 			JSONObject searchObj = new JSONObject();
- 			if (getSearchFields() == null) {
- 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
- 				FacilioField primaryField = modBean.getPrimaryField(moduleName);
- 				setSearchFields(moduleName+"."+primaryField.getName());
- 			}
- 			searchObj.put("fields", getSearchFields());
- 			searchObj.put("query", getSearch());
-	 		context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
- 		}
- 		
- 		JSONObject pagination = new JSONObject();
- 		pagination.put("page", getPage());
- 		pagination.put("perPage", getPerPage());
- 		if (getPerPage() < 0) {
- 			pagination.put("perPage", 500);
- 		}
- 		context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+		FacilioContext context = constructListContext();
  		
  		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
  		Chain dataList = ReadOnlyChainFactory.fetchModuleDataListChain();
  		dataList.execute(context);
  		
  		moduleDatas = (List<ModuleBaseWithCustomFields>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
- 		setResult(FacilioConstants.ContextNames.MODULE_DATA_LIST, moduleDatas);
+ 		
+ 		if (isFetchCount()) {
+			setResult(ContextNames.COUNT, context.get(ContextNames.RECORD_COUNT));
+		}
+		else {
+			setResult(FacilioConstants.ContextNames.MODULE_DATA_LIST, moduleDatas);
+		}
+ 		
 		return SUCCESS;
 	}
 	
