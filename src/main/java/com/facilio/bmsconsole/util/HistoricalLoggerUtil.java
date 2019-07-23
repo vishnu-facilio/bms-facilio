@@ -13,6 +13,7 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
@@ -71,8 +72,24 @@ public class HistoricalLoggerUtil {
 		return null;
 	}
 	
-	public static List<HistoricalLoggerContext> getActiveHistoricalLogger(List<Long> dependentIds) throws Exception {
+	public static List<HistoricalLoggerContext> getParentHistoricalLogger() throws Exception {
 		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getHistoricalLoggerFields())
+				.table(ModuleFactory.getHistoricalLoggerModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("LOGGER_GROUP_ID", "loggerGroupId", "", CommonOperators.IS_EMPTY))
+				.andCondition(CriteriaAPI.getCondition("DEPENDENT_ID", "dependentId", "", CommonOperators.IS_EMPTY))
+				.orderBy("STATUS");
+		
+				List<Map<String, Object>> props = selectBuilder.get();
+				if (props != null && !props.isEmpty()) {
+					List<HistoricalLoggerContext> historicalLoggers = FieldUtil.getAsBeanListFromMapList(props, HistoricalLoggerContext.class);
+					return historicalLoggers;
+				}
+				return null;
+	}
+	
+	public static List<HistoricalLoggerContext> getActiveHistoricalLogger(List<Long> dependentIds) throws Exception {
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getHistoricalLoggerFields())
@@ -87,7 +104,7 @@ public class HistoricalLoggerUtil {
 				}
 				return null;
 	}
-		
+	
 	public static List<HistoricalLoggerContext> getAllHistoricalLogger() throws Exception {
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
