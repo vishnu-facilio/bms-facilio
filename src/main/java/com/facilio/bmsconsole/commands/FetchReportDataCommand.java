@@ -57,11 +57,11 @@ public class FetchReportDataCommand implements Command {
 		
 		calculateBaseLineRange(report);
 
-		if (AwsUtil.isProduction() && AccountUtil.getCurrentOrg().getOrgId() == 210l) {
+		if (AwsUtil.isProduction() && AccountUtil.getCurrentOrg().getOrgId() == 210) {
 			DateRange dateRange = report.getDateRange();
 			if (dateRange != null) {
 				long currentTimeMillis = System.currentTimeMillis();
-				if (currentTimeMillis > dateRange.getEndTime()) {
+				if (currentTimeMillis < dateRange.getEndTime()) {
 					dateRange.setEndTime(currentTimeMillis);
 				}
 			}
