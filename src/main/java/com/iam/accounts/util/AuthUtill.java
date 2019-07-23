@@ -19,7 +19,6 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.facilio.accounts.bean.GroupBean;
 import com.facilio.accounts.bean.RoleBean;
-import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.exception.AccountException;
@@ -43,6 +42,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.iam.accounts.bean.IAMOrgBean;
 import com.iam.accounts.bean.IAMUserBean;
+import com.iam.accounts.dto.Account;
 
 public class AuthUtill {
 	private static org.apache.log4j.Logger logger = LogManager.getLogger(AuthUtill.class.getName());

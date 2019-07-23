@@ -1,13 +1,11 @@
 package com.iam.accounts.bean;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
-import com.facilio.db.criteria.Criteria;
+import com.iam.accounts.dto.Account;
 
 public interface IAMUserBean {
 	

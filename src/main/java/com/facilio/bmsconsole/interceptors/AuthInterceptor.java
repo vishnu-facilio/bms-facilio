@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
@@ -18,7 +19,6 @@ import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.auth.cookie.FacilioCookie;
@@ -30,6 +30,7 @@ import com.facilio.fw.auth.LoginUtil;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.screen.util.ScreenUtil;
 import com.facilio.util.AuthenticationUtil;
+import com.iam.accounts.dto.Account;
 import com.iam.accounts.util.AuthUtill;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
@@ -53,6 +54,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 	public String intercept(ActionInvocation arg0) throws Exception {
 
 		HttpServletRequest request = ServletActionContext.getRequest();
+		HttpServletResponse response = ServletActionContext.getResponse();
 		try {
 
 			if (getPermalinkToken(request) != null) {
@@ -111,6 +113,10 @@ public class AuthInterceptor extends AbstractInterceptor {
 				}
 			
 				Account currentAccount = AuthenticationUtil.validateToken(request, false);
+				if(currentAccount == null) {
+					FacilioCookie.eraseUserCookie(request, response, "fc.currentOrg", null);
+					return Action.LOGIN;
+				}
 				AccountUtil.setCurrentAccount(currentAccount);
 				
 				LoginUtil.updateAccount(currentAccount, false);

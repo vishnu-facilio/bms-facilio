@@ -4,20 +4,17 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.security.auth.login.AccountException;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.log4j.LogManager;
 import org.apache.struts2.ServletActionContext;
 
-import com.facilio.accounts.dto.Account;
-import com.facilio.accounts.dto.Organization;
-import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.fw.auth.LoginUtil;
 import com.facilio.util.AuthenticationUtil;
+import com.iam.accounts.dto.Account;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;

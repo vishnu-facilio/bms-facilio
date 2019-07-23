@@ -2,9 +2,9 @@ package com.facilio.util;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.exception.AccountException;
 import com.facilio.auth.cookie.FacilioCookie;
+import com.iam.accounts.dto.Account;
 import com.iam.accounts.util.AuthUtill;
 
 
@@ -48,7 +48,7 @@ public class AuthenticationUtil {
             	return account;
             } 
             catch (AccountException e) {
-            	
+            	return null;
 			}
         }
         return  null;

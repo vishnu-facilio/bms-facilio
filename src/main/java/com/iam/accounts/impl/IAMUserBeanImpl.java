@@ -18,7 +18,6 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.amazonaws.util.StringUtils;
-import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.exception.AccountException;
@@ -46,6 +45,7 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.iam.accounts.bean.IAMUserBean;
+import com.iam.accounts.dto.Account;
 import com.iam.accounts.util.AccountConstants;
 import com.iam.accounts.util.AuthUtill;
 
@@ -788,6 +788,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			return getAccount((long) props.get("uid"), orgDomain);
 		}
 		return null;
+		
 	}
 	
 	private Account getAccount(long userId, String orgDomain) throws Exception {

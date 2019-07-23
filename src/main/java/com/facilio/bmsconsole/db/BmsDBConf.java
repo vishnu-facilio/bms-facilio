@@ -16,7 +16,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
@@ -32,6 +31,7 @@ import com.facilio.modules.fields.FileField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
+import com.iam.accounts.dto.Account;
 
 public class BmsDBConf extends DBConf {
     private static final Logger LOGGER = LogManager.getLogger(BmsDBConf.class.getName());

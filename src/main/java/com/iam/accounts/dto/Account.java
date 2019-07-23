@@ -1,4 +1,4 @@
-package com.facilio.accounts.dto;
+package com.iam.accounts.dto;
 
 import java.io.Serializable;
 
@@ -8,6 +8,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.struts2.ServletActionContext;
 
+import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.dto.User;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.opensymphony.xwork2.ActionContext;
 

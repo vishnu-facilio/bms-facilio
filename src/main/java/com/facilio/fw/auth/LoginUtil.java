@@ -1,9 +1,9 @@
 package com.facilio.fw.auth;
 
-import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
+import com.iam.accounts.dto.Account;
 
 public class LoginUtil {
 
