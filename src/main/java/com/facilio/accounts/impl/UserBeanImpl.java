@@ -227,15 +227,15 @@ public class UserBeanImpl implements UserBean {
 		
 	}
 
-	@Override
-	public long inviteAdminConsoleUser(long orgId, User user) throws Exception {
-//		long userId = inviteUser(user, false);
-//		if (userId > 0) {
-//			acceptUser(user);
-//		}
-//		return userId;
-		return -1;
-	}
+//	@Override
+//	public long inviteAdminConsoleUser(long orgId, User user) throws Exception {
+////		long userId = inviteUser(user, false);
+////		if (userId > 0) {
+////			acceptUser(user);
+////		}
+////		return userId;
+//		return -1;
+//	}
 
 	public void addUserDetail(User user) throws Exception {
 		if (user.getRoleId() == 0) {
@@ -728,10 +728,10 @@ public class UserBeanImpl implements UserBean {
 		return null;
 	}
 
-	@Override
-	public User getUserInternal(long ouid) throws Exception {
-		return getUserInternal(ouid, true);
-	}
+//	@Override
+//	public User getUserInternal(long ouid) throws Exception {
+//		return getUserInternal(ouid, true);
+//	}
 
 	@Override
 	public User getUserInternal(long ouid, boolean withRole) throws Exception {
@@ -763,31 +763,31 @@ public class UserBeanImpl implements UserBean {
 		return null;
 	}
 
-	@Override
-	public User getUserFromEmail(String email) throws Exception {
-
-		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(AccountConstants.getAppUserFields());
-		fields.addAll(AccountConstants.getAppOrgUserFields());
-		fields.add(AccountConstants.getOrgIdField());
-
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields).table("Users")
-				.innerJoin("ORG_Users").on("Users.USERID = ORG_Users.USERID");
-			
-		Criteria criteria = new Criteria();
-		criteria.addAndCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(AccountUtil.getCurrentOrg().getId()), NumberOperators.EQUALS));
-		criteria.addAndCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", String.valueOf(-1), NumberOperators.EQUALS));
-		criteria.addAndCondition(CriteriaAPI.getCondition("EMAIL", "email", email, StringOperators.IS));
-		criteria.addAndCondition(CriteriaAPI.getCondition("ISDEFAULT", "isDefault", "1", NumberOperators.EQUALS));
-				
-		selectBuilder.andCriteria(criteria);
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			User user = createUserFromProps(props.get(0), true, true, false);
-			return user;
-		}
-		return null;
-	}
+//	@Override
+//	public User getUserFromEmail(String email) throws Exception {
+//
+//		List<FacilioField> fields = new ArrayList<>();
+//		fields.addAll(AccountConstants.getAppUserFields());
+//		fields.addAll(AccountConstants.getAppOrgUserFields());
+//		fields.add(AccountConstants.getOrgIdField());
+//
+//		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields).table("Users")
+//				.innerJoin("ORG_Users").on("Users.USERID = ORG_Users.USERID");
+//			
+//		Criteria criteria = new Criteria();
+//		criteria.addAndCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(AccountUtil.getCurrentOrg().getId()), NumberOperators.EQUALS));
+//		criteria.addAndCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", String.valueOf(-1), NumberOperators.EQUALS));
+//		criteria.addAndCondition(CriteriaAPI.getCondition("EMAIL", "email", email, StringOperators.IS));
+//		criteria.addAndCondition(CriteriaAPI.getCondition("ISDEFAULT", "isDefault", "1", NumberOperators.EQUALS));
+//				
+//		selectBuilder.andCriteria(criteria);
+//		List<Map<String, Object>> props = selectBuilder.get();
+//		if (props != null && !props.isEmpty()) {
+//			User user = createUserFromProps(props.get(0), true, true, false);
+//			return user;
+//		}
+//		return null;
+//	}
 
 	@Override
 	public User getUserFromPhone(String phone) throws Exception {
@@ -820,7 +820,7 @@ public class UserBeanImpl implements UserBean {
 	}
 
 	@Override
-	public User getFacilioUser(String email) throws Exception {
+	public User getFacilioUser(String emailOrPhone) throws Exception {
 
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getAppUserFields());
@@ -830,11 +830,15 @@ public class UserBeanImpl implements UserBean {
 		GenericSelectRecordBuilder selectBuilder = new SampleGenericSelectBuilder().select(fields).table("Users")
 				.innerJoin("ORG_Users").on("Users.USERID = ORG_Users.USERID");
 			
+		Criteria userEmailCriteria = new Criteria();
+		userEmailCriteria.addAndCondition(CriteriaAPI.getCondition("Users.EMAIL", "email", emailOrPhone, StringOperators.IS));
+		userEmailCriteria.addOrCondition(CriteriaAPI.getCondition("Users.MOBILE", "mobile", emailOrPhone, StringOperators.IS));
+		selectBuilder.andCriteria(userEmailCriteria);
+		
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getCondition("USER_STATUS", "userStatus", "1", NumberOperators.EQUALS));
 		criteria.addAndCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", String.valueOf(-1), NumberOperators.EQUALS));
 		criteria.addAndCondition(CriteriaAPI.getCondition("ISDEFAULT", "isDefault", "1", NumberOperators.EQUALS));
-		criteria.addAndCondition(CriteriaAPI.getCondition("Users.EMAIL", "email", email, StringOperators.IS));
 		
 		selectBuilder.andCriteria(criteria);
 		

@@ -155,7 +155,7 @@ public class UserAction extends FacilioAction {
 		List<FacilioField> fields = modBean.getAllFields(tenantModule.getName());
 		
 		
-		User requestorToBeDeleted = AccountUtil.getUserBean().getUserFromEmail(email);
+		User requestorToBeDeleted = AccountUtil.getUserBean().getFacilioUser(email);
 		
 		SelectRecordsBuilder<TenantContext> selectBuilder = new SelectRecordsBuilder<TenantContext>()
 												.table(tenantModule.getTableName())

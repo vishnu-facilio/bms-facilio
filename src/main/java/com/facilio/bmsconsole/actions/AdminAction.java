@@ -92,7 +92,8 @@ public class AdminAction extends ActionSupport
 		newUser.setUserVerified(true);
 		newUser.setUserStatus(true);
 		try {
-			AccountUtil.getTransactionalUserBean(orgId).inviteAdminConsoleUser(orgId, newUser);
+//			AccountUtil.getTransactionalUserBean(orgId).inviteAdminConsoleUser(orgId, newUser);
+			throw new IllegalArgumentException("Cannot add users from admin tool");
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

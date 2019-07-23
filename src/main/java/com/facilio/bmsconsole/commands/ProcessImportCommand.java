@@ -584,10 +584,7 @@ public class ProcessImportCommand extends FacilioCommand {
 				return prop2;
 			}
 			case "users": {
-				if (value == null) {
-					return null;
-				}
-				User user = AccountUtil.getUserBean().getUserFromEmail(value.toString());
+				User user = AccountUtil.getUserBean().getFacilioUser(value.toString());
 				if(user == null) {
 					user = new User();
 					user.setEmail(value.toString());

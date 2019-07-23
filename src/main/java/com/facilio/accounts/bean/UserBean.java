@@ -15,7 +15,7 @@ public interface UserBean {
 	
 	public void createUser(long orgId, User user) throws Exception;
 	
-	public long inviteAdminConsoleUser(long orgId, User user) throws Exception;
+//	public long inviteAdminConsoleUser(long orgId, User user) throws Exception;
 	
 	public long inviteRequester(long orgId, User user) throws Exception;
 
@@ -43,11 +43,13 @@ public interface UserBean {
 	
 	public User getUser(long ouid) throws Exception;
 	
-	public User getUserInternal(long ouid) throws Exception;
+	public User getUser(long orgId, long userId) throws Exception;
+
+//	public User getUserInternal(long ouid) throws Exception;
 	
 	public User getUserInternal(long ouid, boolean withRole) throws Exception;
 	
-	public User getUserFromEmail(String email) throws Exception;
+//	public User getUserFromEmailOrPhone(String email) throws Exception;
 	
 	public User getUserFromPhone(String phone) throws Exception;
 	
@@ -95,8 +97,6 @@ public interface UserBean {
 	public HashMap<Long, Set<Long>> getUserSites(List<Long> users) throws Exception;
 	
 	public boolean sendResetPasswordLinkv2(User user) throws Exception;
-
-	public User getUser(long orgId, long userId) throws Exception;
 	
 	public boolean verifyUser(long userId) throws Exception;
 
