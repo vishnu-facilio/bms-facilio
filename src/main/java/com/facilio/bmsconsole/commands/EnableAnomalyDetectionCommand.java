@@ -42,7 +42,7 @@ public class EnableAnomalyDetectionCommand implements Command
 	{
 		
 		//Get All Energy Meters
-		List<EnergyMeterContext>  emContextList = DeviceAPI.getAllEnergyMeters();
+		List<EnergyMeterContext>  emContextList = new ArrayList<EnergyMeterContext>(10);
 		
 		String[] energyMeterID = context.get("TreeHierachy").toString().split(",");
 		for(String ID:energyMeterID)
