@@ -1,0 +1,1 @@
+Hi ${user.name}, Please click the below link to verify your email address. ${invitelink}"
