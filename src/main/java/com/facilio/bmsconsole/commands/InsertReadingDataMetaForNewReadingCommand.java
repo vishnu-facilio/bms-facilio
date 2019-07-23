@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.commands;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -21,11 +20,11 @@ import com.facilio.modules.fields.FacilioField;
 
 ;
 
-public class InsertReadingDataMetaForNewReadingCommand implements Command {
+public class InsertReadingDataMetaForNewReadingCommand extends FacilioCommand {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		List<Long> parentIds = getParentIds(context);
 		List<FacilioModule> modules = CommonCommandUtil.getModulesWithFields(context);

@@ -1,5 +1,9 @@
 package com.facilio.bmsconsole.util;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.DerivationContext;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -13,10 +17,6 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.workflows.util.WorkflowUtil;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 ;
 

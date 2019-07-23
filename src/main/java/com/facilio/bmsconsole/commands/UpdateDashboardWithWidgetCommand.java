@@ -1,11 +1,19 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.WidgetVsWorkflowContext;
 import com.facilio.bmsconsole.util.DashboardUtil;
-import com.facilio.cards.util.CardUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -14,20 +22,11 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-public class UpdateDashboardWithWidgetCommand implements Command {
+public class UpdateDashboardWithWidgetCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		DashboardContext dashboard = (DashboardContext) context.get(FacilioConstants.ContextNames.DASHBOARD);
 		if(dashboard != null) {

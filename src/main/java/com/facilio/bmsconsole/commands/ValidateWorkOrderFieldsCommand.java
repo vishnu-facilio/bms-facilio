@@ -1,17 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Calendar;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.Calendar;
-
-public class ValidateWorkOrderFieldsCommand implements Command {
+public class ValidateWorkOrderFieldsCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		WorkOrderContext woContext = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
 		if (woContext != null) {

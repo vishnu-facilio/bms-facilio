@@ -2,19 +2,19 @@ package com.facilio.mv.command;
 
 import java.util.List;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.mv.context.MVAdjustment;
 import com.facilio.mv.context.MVBaseline;
 import com.facilio.mv.context.MVProjectContext;
 import com.facilio.mv.context.MVProjectWrapper;
 import com.facilio.mv.util.MVUtil;
 
-public class ValidateMVProjectCommand implements Command {
+public class ValidateMVProjectCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 
 		MVProjectWrapper mvProjectWrapper = (MVProjectWrapper) context.get(MVUtil.MV_PROJECT_WRAPPER);
 		

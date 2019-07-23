@@ -1,25 +1,19 @@
 package com.facilio.agentIntegration.wattsense;
 
-import com.amazonaws.services.iot.model.CreateKeysAndCertificateResult;
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.agent.*;
-import com.facilio.agentIntegration.AgentIntegrationKeys;
-import com.facilio.agentIntegration.AgentIntegrationUtil;
-import com.facilio.agentIntegration.DownloadCertFile;
-import com.facilio.agentIntegration.MultipartHttpPost;
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.beans.ModuleCRUDBean;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.Criteria;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.events.tasker.tasks.EventUtil;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.fields.FacilioField;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
 import org.apache.commons.chain.Chain;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
@@ -39,10 +33,30 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
+import com.amazonaws.services.iot.model.CreateKeysAndCertificateResult;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agent.AgentKeys;
+import com.facilio.agent.AgentType;
+import com.facilio.agent.AgentUtil;
+import com.facilio.agent.FacilioAgent;
+import com.facilio.agent.PublishType;
+import com.facilio.agentIntegration.AgentIntegrationKeys;
+import com.facilio.agentIntegration.AgentIntegrationUtil;
+import com.facilio.agentIntegration.DownloadCertFile;
+import com.facilio.agentIntegration.MultipartHttpPost;
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.beans.ModuleCRUDBean;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.events.tasker.tasks.EventUtil;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.fields.FacilioField;
 
 
 public class WattsenseUtil

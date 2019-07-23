@@ -1,8 +1,14 @@
 package com.facilio.bmsconsole.jobs;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.apache.commons.chain.Chain;
+import org.apache.log4j.LogManager;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportAssetMandatoryFieldsException;
@@ -11,12 +17,6 @@ import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.job.InstantJob;
-import org.apache.commons.chain.Chain;
-import org.apache.log4j.LogManager;
-import org.json.simple.JSONObject;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class GenericImportDataLogJob extends InstantJob{
 

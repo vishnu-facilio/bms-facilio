@@ -1,12 +1,13 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.logging.Logger;
+
+import org.apache.log4j.LogManager;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.agent.AgentType;
 import com.facilio.agentIntegration.DownloadCertFile;
 import com.opensymphony.xwork2.ActionSupport;
-import org.apache.log4j.LogManager;
-
-import java.util.logging.Logger;
 
 public class DeviceAction extends ActionSupport
 {

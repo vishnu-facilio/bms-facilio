@@ -1,5 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
@@ -7,18 +14,11 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
-import java.util.List;
-import java.util.Map;
-
-public class GetSummaryReportCommand implements Command {
+public class GetSummaryReportCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context ctxt) throws Exception {
+	public boolean executeCommand(Context ctxt) throws Exception {
 		// TODO Auto-generated method stub
 		FacilioReportContext context = (FacilioReportContext) ctxt;
 		String moduleName = context.getModuleName();

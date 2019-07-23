@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
 import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.AssetContext;
@@ -9,10 +8,10 @@ import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.constants.FacilioConstants;
 
-public class AddRotatingItemToolCommand implements Command {
+public class AddRotatingItemToolCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		AssetContext asset = (AssetContext) context.get(FacilioConstants.ContextNames.RECORD);
 		context.put(FacilioConstants.ContextNames.PURCHASED_TOOL, null);
 

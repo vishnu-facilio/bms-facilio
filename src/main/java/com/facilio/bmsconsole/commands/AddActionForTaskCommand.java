@@ -1,5 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
+
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.ActionAPI;
@@ -7,20 +16,11 @@ import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-public class AddActionForTaskCommand implements Command {
+public class AddActionForTaskCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		Map<String, List<TaskContext>> taskMap = (Map<String, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
 		if (taskMap != null && !taskMap.isEmpty()) {

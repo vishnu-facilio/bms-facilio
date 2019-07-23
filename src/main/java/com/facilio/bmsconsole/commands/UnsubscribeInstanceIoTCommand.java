@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -16,12 +15,12 @@ import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.timeseries.TimeSeriesAPI;
 
-public class UnsubscribeInstanceIoTCommand implements Command {
+public class UnsubscribeInstanceIoTCommand extends FacilioCommand {
 	
 	private static final Logger LOGGER = LogManager.getLogger(SubscribeInstanceIoTCommand.class.getName());
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		List<Long> ids = (List<Long>) context.get(FacilioConstants.ContextNames.UNSUBSCRIBE_IDS);
 		if (ids != null) {

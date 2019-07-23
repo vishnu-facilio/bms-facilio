@@ -1,19 +1,19 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.context.InventoryRequestLineItemContext;
 import com.facilio.bmsconsole.context.WorkorderItemContext;
 import com.facilio.bmsconsole.util.InventoryRequestAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.List;
-
-public class RequestedLineItemQuantityRollUpCommand implements Command {
+public class RequestedLineItemQuantityRollUpCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
         List<Long> recordIds = (List<Long>)context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);

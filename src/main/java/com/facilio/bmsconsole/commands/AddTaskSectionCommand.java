@@ -1,20 +1,20 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.Map;
-
-public class AddTaskSectionCommand implements Command {
+public class AddTaskSectionCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		TaskSectionContext section = (TaskSectionContext) context.get(FacilioConstants.ContextNames.TASK_SECTION);
 		if(section != null) {

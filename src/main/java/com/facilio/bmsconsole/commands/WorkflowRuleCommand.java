@@ -1,9 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-public class WorkflowRuleCommand implements Command {
+public class WorkflowRuleCommand extends FacilioCommand {
 	
 	private String module;
 	private String action;
@@ -14,7 +13,7 @@ public class WorkflowRuleCommand implements Command {
 	}
 	
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
 		context.get("ticketId");

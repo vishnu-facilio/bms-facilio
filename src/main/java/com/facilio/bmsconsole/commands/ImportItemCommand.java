@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -23,10 +22,10 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 
-public class ImportItemCommand implements Command {
+public class ImportItemCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		List<PurchasedItemContext> purchasedItemList = (List<PurchasedItemContext>) context
 				.get(FacilioConstants.ContextNames.RECORD_LIST);
 		long storeRoomId = (long) context.get(FacilioConstants.ContextNames.STORE_ROOM);

@@ -1,5 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ToolContext;
@@ -10,19 +16,17 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-public class ToolTypeQuantityRollupCommand implements Command {
+public class ToolTypeQuantityRollupCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<Long> toolTypesIds = (List<Long>) context.get(FacilioConstants.ContextNames.TOOL_TYPES_IDS);
 		if (toolTypesIds != null && !toolTypesIds.isEmpty()) {

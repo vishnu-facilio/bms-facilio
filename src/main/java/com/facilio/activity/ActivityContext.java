@@ -1,11 +1,12 @@
 package com.facilio.activity;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
+
 import com.facilio.accounts.dto.User;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.util.FacilioUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.ParseException;
 
 public class ActivityContext extends ModuleBaseWithCustomFields {
 

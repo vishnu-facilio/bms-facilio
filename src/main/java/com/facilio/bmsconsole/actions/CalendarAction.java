@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.actions;
 
-import com.opensymphony.xwork2.ActionSupport;
-
 import java.util.logging.Logger;
+
+import com.opensymphony.xwork2.ActionSupport;
 
 public class CalendarAction extends ActionSupport
 {

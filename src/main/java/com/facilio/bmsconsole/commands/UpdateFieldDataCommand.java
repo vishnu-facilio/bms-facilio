@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
@@ -18,10 +17,10 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
-public class UpdateFieldDataCommand implements Command {
+public class UpdateFieldDataCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		ModuleBaseWithCustomFields moduleData = (ModuleBaseWithCustomFields) context.get(FacilioConstants.ContextNames.RECORD);
 		Map<String, Object> data = (Map<String, Object>) context.get(FacilioConstants.ContextNames.DATA_KEY);

@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.commands;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -13,10 +12,10 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 
-public class DeleteRecordRuleJobOnRecordDeletionCommand implements Command{
+public class DeleteRecordRuleJobOnRecordDeletionCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		if(CollectionUtils.isEmpty(recordIds)) {

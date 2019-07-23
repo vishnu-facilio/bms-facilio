@@ -1,17 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-public class GetTemplateCommand implements Command {
+public class GetTemplateCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		long id = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 		if (id != -1) {

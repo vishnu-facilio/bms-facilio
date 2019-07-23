@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -21,12 +20,12 @@ import com.facilio.tasker.job.JobContext;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 
-public class FetchScheduledRuleMatchingRecordsCommand implements Command {
+public class FetchScheduledRuleMatchingRecordsCommand extends FacilioCommand {
 	
 	private static final Logger LOGGER = LogManager.getLogger(FetchScheduledRuleMatchingRecordsCommand.class.getName());
 	
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		WorkflowRuleContext rule = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
 		List<? extends ModuleBaseWithCustomFields> records = getRecords(rule, (JobContext) context.get(FacilioConstants.Job.JOB_CONTEXT));

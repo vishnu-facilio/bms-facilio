@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.JSONArray;
 
@@ -34,11 +33,11 @@ import com.facilio.tasker.ScheduleInfo;
 import com.facilio.tasker.ScheduleInfo.FrequencyType;
 
 
-public class EnableAnomalyDetectionCommand implements Command
+public class EnableAnomalyDetectionCommand extends FacilioCommand
 {
 
 	@Override
-	public boolean execute(Context context) throws Exception 
+	public boolean executeCommand(Context context) throws Exception 
 	{
 		
 		//Get All Energy Meters

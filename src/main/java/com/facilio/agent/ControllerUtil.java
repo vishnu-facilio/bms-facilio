@@ -1,18 +1,19 @@
 package com.facilio.agent;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 public class ControllerUtil {
     private static final Logger LOGGER = LogManager.getLogger(ConfigureControllerCommand.class.getName());

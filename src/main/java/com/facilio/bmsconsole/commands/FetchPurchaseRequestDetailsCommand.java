@@ -1,5 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PurchaseRequestContext;
 import com.facilio.bmsconsole.context.PurchaseRequestLineItemContext;
@@ -11,19 +17,13 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 ;
 
-public class FetchPurchaseRequestDetailsCommand implements Command {
+public class FetchPurchaseRequestDetailsCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		PurchaseRequestContext purchaseRequestContext = (PurchaseRequestContext) context.get(FacilioConstants.ContextNames.RECORD);
 		if (purchaseRequestContext != null) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

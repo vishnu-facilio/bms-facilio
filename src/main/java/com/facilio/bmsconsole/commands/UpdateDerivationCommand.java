@@ -1,16 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.context.DerivationContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.util.DerivationAPI;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-public class UpdateDerivationCommand implements Command {
+public class UpdateDerivationCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		DerivationContext derivationContext = (DerivationContext) context.get(FacilioConstants.ContextNames.DERIVATION);
 		FormulaFieldContext formula = (FormulaFieldContext) context.get(FacilioConstants.ContextNames.FORMULA_FIELD);
 		if (formula != null) {

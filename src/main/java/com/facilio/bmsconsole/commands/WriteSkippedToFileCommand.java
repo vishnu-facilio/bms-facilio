@@ -1,18 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.actions.ImportProcessContext;
-import com.facilio.bmsconsole.actions.ImportTemplateContext;
-import com.facilio.bmsconsole.context.ImportRowContext;
-import com.facilio.bmsconsole.util.ImportAPI;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
-import com.facilio.modules.FieldUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.json.simple.JSONObject;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
@@ -20,11 +7,31 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class WriteSkippedToFileCommand implements Command {
+import org.apache.commons.chain.Context;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.CreationHelper;
+import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.json.simple.JSONObject;
+
+import com.facilio.bmsconsole.actions.ImportProcessContext;
+import com.facilio.bmsconsole.actions.ImportTemplateContext;
+import com.facilio.bmsconsole.context.ImportRowContext;
+import com.facilio.bmsconsole.util.ImportAPI;
+import com.facilio.fs.FileStore;
+import com.facilio.fs.FileStoreFactory;
+import com.facilio.modules.FieldUtil;
+
+public class WriteSkippedToFileCommand extends FacilioCommand {
 
 	Workbook workbook = new XSSFWorkbook();
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 
 		ImportProcessContext importProcessContext = (ImportProcessContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);

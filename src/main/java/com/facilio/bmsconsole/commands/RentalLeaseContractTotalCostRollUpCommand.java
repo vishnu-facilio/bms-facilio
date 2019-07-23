@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -21,10 +20,10 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 
-public class RentalLeaseContractTotalCostRollUpCommand implements Command{
+public class RentalLeaseContractTotalCostRollUpCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		RentalLeaseContractContext rentalLeaseContract = (RentalLeaseContractContext) context.get(FacilioConstants.ContextNames.RECORD);
 		if(rentalLeaseContract!=null) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

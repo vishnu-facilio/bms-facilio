@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -56,11 +55,11 @@ import com.facilio.unitconversion.Unit;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
-public class FetchCardDataCommand implements Command {
+public class FetchCardDataCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = Logger.getLogger(FetchCardDataCommand.class.getName());
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		WidgetStaticContext widgetStaticContext = null;
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

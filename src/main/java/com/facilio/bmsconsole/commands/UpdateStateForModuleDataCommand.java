@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.commands;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -17,10 +16,10 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
-public class UpdateStateForModuleDataCommand implements Command {
+public class UpdateStateForModuleDataCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		Map<String, List> recordMap = (Map<String, List>) CommonCommandUtil.getRecordMap((FacilioContext) context);
 		Long currentTransitionId = (Long) context.get(FacilioConstants.ContextNames.TRANSITION_ID);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);

@@ -1,22 +1,22 @@
  package com.facilio.bmsconsole.commands;
 
- import com.facilio.accounts.util.AccountUtil;
- import com.facilio.bmsconsole.context.EmailSettingContext;
- import com.facilio.constants.FacilioConstants;
- import com.facilio.db.builder.GenericSelectRecordBuilder;
- import com.facilio.modules.FieldFactory;
- import com.facilio.modules.FieldUtil;
- import com.facilio.modules.fields.FacilioField;
- import org.apache.commons.chain.Command;
- import org.apache.commons.chain.Context;
-
  import java.util.List;
- import java.util.Map;
+import java.util.Map;
 
-public class LoadEmailSettingCommand implements Command {
+import org.apache.commons.chain.Context;
+
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.EmailSettingContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.fields.FacilioField;
+
+public class LoadEmailSettingCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<FacilioField> fields = FieldFactory.getEmailSettingFields();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()

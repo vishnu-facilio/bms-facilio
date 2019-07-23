@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -16,10 +15,10 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 
-public class AssociateFieldIdToStoreRuleTypeCommand implements Command{
+public class AssociateFieldIdToStoreRuleTypeCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		WorkflowRuleContext rule = (WorkflowRuleContext)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

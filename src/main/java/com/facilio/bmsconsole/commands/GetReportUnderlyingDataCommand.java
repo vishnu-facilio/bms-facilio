@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
@@ -30,11 +29,11 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 
-public class GetReportUnderlyingDataCommand implements Command {
+public class GetReportUnderlyingDataCommand extends FacilioCommand {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		ReportContext reportContext = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT_CONTEXT);
 		if (reportContext.getReportChartType() == ReportContext.ReportChartType.TABULAR) {

@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.commands;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -18,9 +17,9 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 
-public class GetLastBreakDownFromCurrentSourceCommand implements Command {
+public class GetLastBreakDownFromCurrentSourceCommand extends FacilioCommand {
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		AssetBDSourceDetailsContext assetBDSourceDetails = (AssetBDSourceDetailsContext) context.get(FacilioConstants.ContextNames.ASSET_BD_SOURCE_DETAILS);
 		Boolean assetBreakdownStatus = (Boolean) context.get(FacilioConstants.ContextNames.ASSET_DOWNTIME_STATUS);
        if(assetBreakdownStatus){

@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -22,13 +21,13 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 
-public class FetchAssetDowntimeMetricsCommand implements Command {
+public class FetchAssetDowntimeMetricsCommand extends FacilioCommand {
 
 	FacilioModule module;
 	long assetId;
 	
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		assetId = (long) context.get(ContextNames.ASSET_ID);
 		module = modBean.getModule(ContextNames.ASSET_BREAKDOWN);

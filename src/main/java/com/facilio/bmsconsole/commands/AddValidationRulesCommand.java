@@ -1,20 +1,20 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.List;
-
-public class AddValidationRulesCommand implements Command {
+public class AddValidationRulesCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		List<List<ReadingRuleContext>> readingRules = (List<List<ReadingRuleContext>>) context.get(FacilioConstants.ContextNames.READING_RULES_LIST);
 		List<List<List<ActionContext>>> actionsList = (List<List<List<ActionContext>>>) context.get(FacilioConstants.ContextNames.ACTIONS_LIST);
 		Long resourceID = (Long) context.get(FacilioConstants.ContextNames.PARENT_ID);

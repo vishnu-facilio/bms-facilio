@@ -1,14 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.util.TemplateAPI;
-import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-public class DeleteTemplateCommand implements Command {
+import com.facilio.bmsconsole.util.TemplateAPI;
+import com.facilio.constants.FacilioConstants;
+
+public class DeleteTemplateCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		long id = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 		if (id != -1) {

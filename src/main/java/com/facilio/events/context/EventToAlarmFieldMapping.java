@@ -1,9 +1,10 @@
 package com.facilio.events.context;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class EventToAlarmFieldMapping {
 	private long eventToAlarmFieldMappingId = -1;

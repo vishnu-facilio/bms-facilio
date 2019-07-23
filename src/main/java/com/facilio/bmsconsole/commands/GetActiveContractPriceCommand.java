@@ -1,5 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ContractsContext;
@@ -12,18 +19,11 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-public class GetActiveContractPriceCommand implements Command{
+public class GetActiveContractPriceCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		int inventoryType = (Integer)context.get(FacilioConstants.ContextNames.INVENTORY_CATEGORY);
 		Condition condition = new Condition();

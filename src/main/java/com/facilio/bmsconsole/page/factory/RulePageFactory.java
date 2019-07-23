@@ -1,9 +1,9 @@
 package com.facilio.bmsconsole.page.factory;
 
 import com.facilio.bmsconsole.page.Page;
-import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.Page.Tab;
+import com.facilio.bmsconsole.page.PageWidget;
 import com.facilio.bmsconsole.page.PageWidget.CardType;
 import com.facilio.bmsconsole.page.PageWidget.WidgetType;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;

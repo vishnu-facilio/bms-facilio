@@ -1,18 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.List;
-
-public class UpdateTicketCommand implements Command {
+public class UpdateTicketCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
 		TicketContext ticket = (TicketContext) context.get(FacilioConstants.ContextNames.TICKET);

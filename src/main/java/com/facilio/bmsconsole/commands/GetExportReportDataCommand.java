@@ -1,5 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.reports.ReportsUtil;
@@ -16,16 +29,8 @@ import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.time.DateTimeUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
-import java.util.*;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-public class GetExportReportDataCommand implements Command {
+public class GetExportReportDataCommand extends FacilioCommand {
 	
 	private static final String SERIES_X_HEADER = "Data Point";
 	private static final String ACTUAL_HEADER = "Actual";
@@ -34,7 +39,7 @@ public class GetExportReportDataCommand implements Command {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		Boolean isS3Url = (Boolean) context.get("isS3Url");
 		if (isS3Url == null) {

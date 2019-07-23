@@ -1,19 +1,19 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.util.ReadingsAPI;
-import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class HistoricalReadingsCommand implements Command {
+import org.apache.commons.chain.Context;
+
+import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.constants.FacilioConstants;
+
+public class HistoricalReadingsCommand extends FacilioCommand {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		List<String> deviceList =(List<String>) context.get(FacilioConstants.ContextNames.DEVICE_LIST);
 		List<Map<String, Object>> unmodeledData= ReadingsAPI.getUnmodeledData(deviceList);

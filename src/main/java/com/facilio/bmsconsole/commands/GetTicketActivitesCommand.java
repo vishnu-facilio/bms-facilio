@@ -1,5 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -7,28 +15,19 @@ import com.facilio.bmsconsole.workflow.rule.TicketActivity;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
-import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 ;
 
-public class GetTicketActivitesCommand implements Command {
+public class GetTicketActivitesCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		long ticketId = (long) context.get(FacilioConstants.ContextNames.TICKET_ID);
 		context.get(FacilioConstants.ContextNames.MODULE_NAME);

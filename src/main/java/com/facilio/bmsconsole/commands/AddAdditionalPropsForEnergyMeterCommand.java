@@ -1,17 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.ModuleFactory;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-public class AddAdditionalPropsForEnergyMeterCommand implements Command {
+public class AddAdditionalPropsForEnergyMeterCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		EnergyMeterContext energyMeter = (EnergyMeterContext) context.get(FacilioConstants.ContextNames.RECORD);
 		if(energyMeter != null) {

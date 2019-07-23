@@ -1,26 +1,27 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.accounts.dto.Organization;
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
+import java.util.Calendar;
+import java.util.Locale;
+import java.util.TimeZone;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
-import javax.servlet.http.HttpServletRequest;
-import java.util.Calendar;
-import java.util.Locale;
-import java.util.TimeZone;
+import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.constants.FacilioConstants;
 
-public class CreateOrgCommand implements Command {
+public class CreateOrgCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = LogManager.getLogger(CreateOrgCommand.class.getName());
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		JSONObject signupInfo = (JSONObject) context.get(FacilioConstants.ContextNames.SIGNUP_INFO);
 		LOGGER.debug("This is the sign up map :- "+signupInfo);

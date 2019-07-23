@@ -1,25 +1,25 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
+
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.ControllerType;
 import com.facilio.bmsconsole.util.ControllerAPI;
 import com.facilio.bmsconsole.util.IoTMessageAPI;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
 
-import java.util.Collections;
-
-public class PublishControllerPropertyToIoTCommand implements Command {
+public class PublishControllerPropertyToIoTCommand extends FacilioCommand {
 	
 	private static final Logger LOGGER = LogManager.getLogger(PublishControllerPropertyToIoTCommand.class.getName());
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		ControllerContext controller = (ControllerContext) context.get(FacilioConstants.ContextNames.CONTROLLER_SETTINGS);
 		ControllerContext oldController = (ControllerContext) context.get(FacilioConstants.ContextNames.CONTROLLER);
 		if (controller.getDataInterval() != -1 && controller.getDataInterval() != oldController.getDataInterval() && controller.getControllerTypeEnum() == ControllerType.BACNET_IP) {

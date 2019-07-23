@@ -1,15 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Context;
+
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.modules.ModuleFactory;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-public class DeleteSitesForStoreRoomCommad implements Command{
+public class DeleteSitesForStoreRoomCommad extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		long storeRoomId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 		if (storeRoomId > 0){
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()

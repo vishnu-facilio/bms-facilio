@@ -1,5 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
@@ -8,15 +12,11 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.List;
-
-public class GetBaseSpaceChildrenCommand implements Command{
+public class GetBaseSpaceChildrenCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		Long spaceId = (Long) context.get(FacilioConstants.ContextNames.SPACE_ID);
 		String spaceType = (String) context.get(FacilioConstants.ContextNames.SPACE_TYPE);

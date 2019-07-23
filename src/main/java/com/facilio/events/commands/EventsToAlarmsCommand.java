@@ -1,8 +1,19 @@
 package com.facilio.events.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.beans.ModuleCRUDBean;
+import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
@@ -19,23 +30,17 @@ import com.facilio.events.context.EventContext.EventState;
 import com.facilio.events.context.EventToAlarmFieldMapping;
 import com.facilio.events.util.EventRulesAPI;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.google.common.base.Strings;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 ;
 
-public class EventsToAlarmsCommand implements Command {
+public class EventsToAlarmsCommand extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(EventsToAlarmsCommand.class.getName());
 	private long getAlarmId (EventContext event) throws Exception {
 		if (event.getAlarmId() == -1) {
@@ -80,7 +85,7 @@ public class EventsToAlarmsCommand implements Command {
 	}
 	
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<EventContext> events = (List<EventContext>) context.get(EventConstants.EventContextNames.EVENT_LIST);
 

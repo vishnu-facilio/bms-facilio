@@ -1,5 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
@@ -17,16 +26,11 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-public class GetExportValueField implements Command{
+public class GetExportValueField extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		int type= (int) context.get(EventConstants.EventContextNames.TYPE);
 		List<EventContext> events = (List<EventContext>) context.get(EventConstants.EventContextNames.EVENT_LIST);

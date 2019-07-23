@@ -1,5 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -12,19 +19,12 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.unitconversion.UnitsUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
-import java.util.List;
-import java.util.Map;
-
-public class ReadingUnitConversionToDisplayUnit implements Command {
+public class ReadingUnitConversionToDisplayUnit extends FacilioCommand {
 
 	private static final Logger LOGGER = LogManager.getLogger(ReadingUnitConversionToDisplayUnit.class.getName());
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		long startTime = System.currentTimeMillis();
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);

@@ -1,5 +1,10 @@
 package com.facilio.bmsconsole.jobs;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.json.simple.JSONObject;
+
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.util.BmsJobUtil;
@@ -9,10 +14,6 @@ import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
-import org.json.simple.JSONObject;
-
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class HistoricalFormulaFieldCalculatorJob extends FacilioJob {
 	private static final Logger logger = Logger.getLogger(HistoricalFormulaFieldCalculatorJob.class.getName());

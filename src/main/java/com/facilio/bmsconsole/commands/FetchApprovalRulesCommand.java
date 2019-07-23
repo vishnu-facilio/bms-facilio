@@ -1,5 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
@@ -19,18 +30,11 @@ import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-public class FetchApprovalRulesCommand implements Command {
+public class FetchApprovalRulesCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<WorkOrderContext> workOrders = (List<WorkOrderContext>) context.get(FacilioConstants.ContextNames.WORK_ORDER_LIST);
 		if (workOrders == null) {

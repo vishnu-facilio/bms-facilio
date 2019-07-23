@@ -1,5 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
+import java.io.File;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -10,22 +18,14 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.BaseLineContext;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-public class AddDefaultReportCommand implements Command {
+public class AddDefaultReportCommand extends FacilioCommand {
 
 	private static org.apache.log4j.Logger log = LogManager.getLogger(AddDefaultReportCommand.class.getName());
 
 	private static final File INSERT_REPORTS_SQL = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/db/" + DBConf.getInstance().getDBName() + "/defaultReports.sql").getFile());
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		long orgId = (long) context.get("orgId");
 		

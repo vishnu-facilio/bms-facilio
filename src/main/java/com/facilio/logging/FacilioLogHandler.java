@@ -1,20 +1,20 @@
 package com.facilio.logging;
 
-import com.facilio.accounts.dto.Account;
-import com.facilio.accounts.dto.Organization;
-import com.facilio.accounts.dto.User;
-import com.facilio.accounts.util.AccountUtil;
+import java.io.File;
+import java.util.HashMap;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.spi.ThrowableInformation;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.logging.Handler;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
+import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 
 public class FacilioLogHandler extends Handler {
 

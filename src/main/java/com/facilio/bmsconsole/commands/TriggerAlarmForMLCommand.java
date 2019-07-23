@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.SortedMap;
 
 import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -17,11 +16,11 @@ import org.json.JSONObject;
 
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.bmsconsole.context.BaseEventContext;
 import com.facilio.bmsconsole.context.MLAnomalyEvent;
 import com.facilio.bmsconsole.context.MLContext;
 import com.facilio.bmsconsole.context.RCAEvent;
-import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
@@ -30,12 +29,12 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 
-public class TriggerAlarmForMLCommand implements Command {
+public class TriggerAlarmForMLCommand extends FacilioCommand {
 	
 	private static final Logger LOGGER = Logger.getLogger(TriggerAlarmForMLCommand.class.getName());
 
 	@Override
-	public boolean execute(Context context) throws Exception 
+	public boolean executeCommand(Context context) throws Exception 
 	{
 		LOGGER.info("Inside execute");
 		MLContext mlContext = (MLContext) context.get(FacilioConstants.ContextNames.ML);

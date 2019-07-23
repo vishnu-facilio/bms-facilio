@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.commands;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -21,10 +20,10 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.ScheduleInfo;
 
-public class AddDigestConfigActionCommand implements Command{
+public class AddDigestConfigActionCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
       	ScheduledActionContext scheduledAction = new ScheduledActionContext();
 		List<ActionContext> actions = (List<ActionContext>) context.get(FacilioConstants.ContextNames.ACTIONS_LIST);

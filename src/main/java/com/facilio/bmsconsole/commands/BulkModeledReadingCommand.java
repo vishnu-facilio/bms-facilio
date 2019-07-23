@@ -1,20 +1,24 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.*;
-
-public class BulkModeledReadingCommand implements Command {
+public class BulkModeledReadingCommand extends FacilioCommand {
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		
 		Map<String,Map<Long,Map<String, String>>> historicalDataMap = (Map<String,Map<Long,Map<String, String>>>) 

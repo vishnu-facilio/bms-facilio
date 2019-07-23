@@ -1,11 +1,15 @@
 package com.facilio.accounts.bean;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
 import com.facilio.db.criteria.Criteria;
-
-import java.util.*;
 
 public interface UserBean {
 	

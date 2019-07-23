@@ -1,5 +1,8 @@
 package com.facilio.events.commands;
 
+import org.apache.commons.chain.Context;
+
+import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
@@ -9,13 +12,11 @@ import com.facilio.events.context.EventRule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-public class EventCoRelationCommand implements Command {
+public class EventCoRelationCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		EventRule rule = (EventRule) context.get(EventConstants.EventContextNames.EVENT_RULE);
 		if(rule != null) {

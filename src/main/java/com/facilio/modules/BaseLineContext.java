@@ -1,17 +1,5 @@
 package com.facilio.modules;
 
-import com.facilio.db.criteria.Condition;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.mv.context.MVProjectContext.EMC_Options;
-import com.facilio.time.DateRange;
-import com.facilio.time.DateTimeUtil;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.time.temporal.TemporalAdjusters;
@@ -19,6 +7,18 @@ import java.time.temporal.WeekFields;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import com.facilio.db.criteria.Condition;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.time.DateRange;
+import com.facilio.time.DateTimeUtil;
 
 public class BaseLineContext {
 	private static final Logger LOGGER = LogManager.getLogger(BaseLineContext.class.getName());

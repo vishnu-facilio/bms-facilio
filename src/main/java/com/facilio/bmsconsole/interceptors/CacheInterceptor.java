@@ -1,13 +1,14 @@
 package com.facilio.bmsconsole.interceptors;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.struts2.ServletActionContext;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.db.ResponseCacheUtil;
 import com.facilio.filters.MultiReadServletRequest;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
-import org.apache.struts2.ServletActionContext;
-
-import javax.servlet.http.HttpServletRequest;
 
 public class CacheInterceptor extends AbstractInterceptor {
 

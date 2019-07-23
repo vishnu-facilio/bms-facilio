@@ -1,5 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
@@ -22,18 +31,9 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONObject;
-
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 
-public class AddNotesCommand implements Command, PostTransactionCommand {
+public class AddNotesCommand extends FacilioCommand implements PostTransactionCommand {
 
 	private Set<Long> idsToUpdateCount;
 	private String ticketModuleName;
@@ -41,7 +41,7 @@ public class AddNotesCommand implements Command, PostTransactionCommand {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
 		List<NoteContext> notes = (List<NoteContext>) context.get(FacilioConstants.ContextNames.NOTE_LIST);

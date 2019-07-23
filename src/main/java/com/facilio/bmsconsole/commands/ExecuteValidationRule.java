@@ -1,5 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -21,15 +30,11 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.*;
-
-public class ExecuteValidationRule implements Command {
+public class ExecuteValidationRule extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		Boolean doValidation = (Boolean) context.get(FacilioConstants.ContextNames.DO_VALIDTION);
 		if (doValidation == null || !doValidation) {
 			return false;

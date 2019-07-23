@@ -1,5 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
@@ -7,13 +12,8 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.List;
-import java.util.Map;
-
-public class ReportSpecialHandlingCommand implements Command {
+public class ReportSpecialHandlingCommand extends FacilioCommand {
 	
 	private boolean before;
 	
@@ -22,7 +22,7 @@ public class ReportSpecialHandlingCommand implements Command {
 	}
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		ReportContext reportContext = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
 		if (reportContext != null && reportContext.getDataPoints() != null) {
 			long moduleId = reportContext.getModuleId();

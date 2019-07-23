@@ -1,23 +1,22 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.List;
-import java.util.Map;
-
-public class getRelatedEvents implements Command {
+public class getRelatedEvents extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		if(context.get(FacilioConstants.ContextNames.RECORD_LIST) != null) {
 			FacilioModule eventModule = EventConstants.EventModuleFactory.getEventModule();

@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -30,10 +29,10 @@ import com.facilio.modules.fields.FacilioField;
 
 
 
-public class ValidateAndCreateValuesForInputTaskCommand implements Command {
+public class ValidateAndCreateValuesForInputTaskCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 //		if(ActivityType.ADD_TASK_INPUT == context.get(FacilioConstants.ContextNames.ACTIVITY_TYPE)) {
 		TaskContext task = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);

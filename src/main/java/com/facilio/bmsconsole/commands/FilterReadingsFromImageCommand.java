@@ -1,21 +1,21 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Iterator;
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+
 import com.amazonaws.services.rekognition.model.TextDetection;
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.image.ImageRecognitionUtil;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.Iterator;
-import java.util.List;
-
-public class FilterReadingsFromImageCommand implements Command {
+public class FilterReadingsFromImageCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		Boolean filter = (Boolean) context.get(FacilioConstants.ContextNames.FILTERS);
 		if (filter != null && !filter) {

@@ -1,23 +1,23 @@
 package com.facilio.bmsconsole.commands;
 
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 //import java.sql.Connection;
 
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FieldFactory;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-public class AddAlarmFollowersCommand implements Command {
+public class AddAlarmFollowersCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		AlarmContext alarm = (AlarmContext) context.get(FacilioConstants.ContextNames.ALARM);
 		if(alarm != null) {

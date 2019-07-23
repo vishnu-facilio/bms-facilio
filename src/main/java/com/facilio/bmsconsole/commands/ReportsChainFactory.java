@@ -1,7 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.chain.FacilioChain;
 import org.apache.commons.chain.Chain;
+
+import com.facilio.chain.FacilioChain;
 
 public class ReportsChainFactory {
 	

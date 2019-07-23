@@ -1,10 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
-import com.facilio.bmsconsole.context.AssetBDSourceDetailsContext;
-import com.facilio.bmsconsole.context.AssetBDSourceDetailsContext.SourceType;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -13,20 +19,11 @@ import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.wms.message.WmsEvent;
 import com.facilio.wms.util.WmsApi;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-public class AddAlarmCommand implements Command {
+public class AddAlarmCommand extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(AddAlarmCommand.class.getName());
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		AlarmContext alarm = (AlarmContext) context.get(FacilioConstants.ContextNames.ALARM);
 		if(alarm != null) {

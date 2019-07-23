@@ -6,12 +6,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
@@ -33,10 +31,10 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
 
-public class FetchAlarmInsightCommand implements Command {
+public class FetchAlarmInsightCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		long assetId = (long) context.get(ContextNames.ASSET_ID);
 		long readingRuleId = (long) context.get(ContextNames.READING_RULE_ID);
 		DateOperators operator = DateOperators.CURRENT_WEEK;

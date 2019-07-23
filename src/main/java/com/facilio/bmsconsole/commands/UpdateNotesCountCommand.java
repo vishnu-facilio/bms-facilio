@@ -1,5 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -13,21 +26,13 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
-import java.util.*;
-
-public class UpdateNotesCountCommand implements Command {
+public class UpdateNotesCountCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = LogManager.getLogger(UpdateNotesCountCommand.class.getName());
 	
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		String ticketModule = (String) context.get("ticketmodule");
 		String moduleString = (String) context.get("moduleName");

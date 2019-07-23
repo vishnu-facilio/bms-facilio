@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -37,7 +36,7 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
 
-public class GetPMCalendarResouceJobsCommand implements Command {
+public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 	
 	private static final Logger LOGGER = LogManager.getLogger(GetPMCalendarResouceJobsCommand.class.getName());
 	
@@ -56,7 +55,7 @@ public class GetPMCalendarResouceJobsCommand implements Command {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		metricFieldMap = PMPlannerAPI.getMetricFieldMap();
 		

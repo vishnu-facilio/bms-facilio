@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountConstants;
@@ -12,10 +11,10 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 
-public class SetOrgIdConditionCommand implements Command{
+public class SetOrgIdConditionCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		FacilioReportContext repContext = (FacilioReportContext)context;
 		String moduleName = repContext.getModuleName();

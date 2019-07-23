@@ -1,16 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericDeleteRecordBuilder;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import java.util.List;
 
-public class DeleteWorkOrderCommand implements Command {
+import org.apache.commons.chain.Context;
+
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
+
+public class DeleteWorkOrderCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		if(recordIds != null && !recordIds.isEmpty()) {

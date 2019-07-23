@@ -1,5 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
@@ -12,15 +16,11 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.SelectRecordsBuilder;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.List;
-
-public class GetWOForPMReminderCommand implements Command {
+public class GetWOForPMReminderCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		PMReminder pmReminder = (PMReminder) context.get(FacilioConstants.ContextNames.PM_REMINDER);
 		PreventiveMaintenance pm = (PreventiveMaintenance) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);

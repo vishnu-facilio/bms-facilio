@@ -1,5 +1,22 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.Stack;
+import java.util.StringJoiner;
+import java.util.logging.Logger;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
@@ -9,39 +26,49 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.*;
+import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.criteria.operators.EnumOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.AggregateOperator.CommonAggregateOperator;
 import com.facilio.modules.AggregateOperator.DateAggregateOperator;
 import com.facilio.modules.AggregateOperator.NumberAggregateOperator;
 import com.facilio.modules.AggregateOperator.SpaceAggregateOperator;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import com.facilio.report.context.*;
+import com.facilio.report.context.ReportBaseLineContext;
+import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportContext.ReportType;
+import com.facilio.report.context.ReportDataContext;
+import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportDataPointContext.DataPointType;
 import com.facilio.report.context.ReportDataPointContext.OrderByFunction;
+import com.facilio.report.context.ReportFieldContext;
+import com.facilio.report.context.ReportFilterContext;
+import com.facilio.report.context.ReportGroupByField;
+import com.facilio.report.context.ReportUserFilterContext;
 import com.facilio.report.util.ReportUtil;
 import com.facilio.time.DateRange;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.*;
-import java.util.logging.Logger;
 
 ;
 
-public class FetchReportDataCommand implements Command {
+public class FetchReportDataCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = Logger.getLogger(FetchReportDataCommand.class.getName());
 	private FacilioModule baseModule;
 	private ModuleBean modBean;
 	
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);

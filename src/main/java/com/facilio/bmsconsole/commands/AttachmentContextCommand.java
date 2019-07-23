@@ -1,21 +1,21 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.context.AttachmentContext;
-import com.facilio.bmsconsole.context.AttachmentContext.AttachmentType;
-import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-public class AttachmentContextCommand implements Command {
+import org.apache.commons.chain.Context;
+
+import com.facilio.bmsconsole.context.AttachmentContext;
+import com.facilio.bmsconsole.context.AttachmentContext.AttachmentType;
+import com.facilio.constants.FacilioConstants;
+
+public class AttachmentContextCommand extends FacilioCommand {
 	
 	private static Logger LOGGER = Logger.getLogger(AttachmentContextCommand.class.getName());
 	
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		List<Long> attachmentIdList = (List<Long>) context.get(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST);
 		if(attachmentIdList != null) {

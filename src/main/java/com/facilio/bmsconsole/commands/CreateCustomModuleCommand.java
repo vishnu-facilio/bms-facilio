@@ -1,14 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.FacilioModule;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-public class CreateCustomModuleCommand implements Command {
+import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FacilioModule;
+
+public class CreateCustomModuleCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		

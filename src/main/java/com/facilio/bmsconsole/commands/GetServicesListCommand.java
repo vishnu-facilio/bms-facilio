@@ -3,11 +3,9 @@ package com.facilio.bmsconsole.commands;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ServiceContext;
@@ -21,10 +19,10 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 
-public class GetServicesListCommand implements Command{
+public class GetServicesListCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -26,11 +25,11 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 
-public class GetAssetListCommand implements Command {
+public class GetAssetListCommand extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(GetAssetListCommand.class.getName());
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		long startTime = System.currentTimeMillis();
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);

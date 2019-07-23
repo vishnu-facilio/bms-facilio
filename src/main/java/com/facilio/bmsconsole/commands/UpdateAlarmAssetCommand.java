@@ -1,5 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.constants.FacilioConstants;
@@ -8,15 +12,11 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.List;
-
-public class UpdateAlarmAssetCommand implements Command {
+public class UpdateAlarmAssetCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		AlarmContext alarm = (AlarmContext) context.get(FacilioConstants.ContextNames.ALARM);
 		String source = (String) context.get(EventConstants.EventContextNames.SOURCE);

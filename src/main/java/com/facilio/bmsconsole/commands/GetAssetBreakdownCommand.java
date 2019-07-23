@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.commands;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -17,9 +16,9 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 
-public class GetAssetBreakdownCommand implements Command {
+public class GetAssetBreakdownCommand extends FacilioCommand {
        @Override
-       public boolean execute(Context context) throws Exception {
+       public boolean executeCommand(Context context) throws Exception {
                AssetBreakdownContext assetBreakdown = (AssetBreakdownContext) context
                                .get(FacilioConstants.ContextNames.ASSET_BREAKDOWN);
                if (assetBreakdown.getId() != -1) {

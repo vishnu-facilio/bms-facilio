@@ -1,5 +1,13 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.commons.chain.Chain;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -8,13 +16,6 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Chain;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class InventoryAction extends FacilioAction {
 	private static final long serialVersionUID = 1L;

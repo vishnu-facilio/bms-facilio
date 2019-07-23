@@ -14,9 +14,12 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.PostTransactionCommand;
 import com.facilio.bmsconsole.db.ResponseCacheUtil;
 import com.facilio.db.transaction.FacilioTransactionManager;
+import com.facilio.util.FacilioUtil;
 
 public class FacilioChain extends ChainBase {
 	private static final ThreadLocal<FacilioChain> rootChain = new ThreadLocal<>();
@@ -49,6 +52,14 @@ public class FacilioChain extends ChainBase {
     
     @Override
     public void addCommand(Command command) {
+    	if (!AwsUtil.isProduction()) {
+	    	if (command instanceof Command) {
+	    		if (!(command instanceof FacilioCommand)) {
+	    			throw new IllegalArgumentException("Only FacilioCommand is accepted");
+	    		}
+	    	}
+    	}
+    	
     	if (command instanceof PostTransactionCommand) {
     		addPostTransaction((PostTransactionCommand) command);
     	} else if (command instanceof FacilioChain) {

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
 
@@ -15,10 +14,10 @@ import com.facilio.bmsconsole.util.NewEventAPI;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.modules.FieldUtil;
 
-public class JsonToV2EventCommand implements Command {
+public class JsonToV2EventCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		JSONArray jsonArray = (JSONArray) context.get(EventConstants.EventContextNames.EVENT_PAYLOAD);
 		if (jsonArray != null) {
 			List<BaseEventContext> eventList = new ArrayList<>();

@@ -1,19 +1,19 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.util.LocationAPI;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.Collections;
-import java.util.Map;
-
-public class GetVendorDetailsCommand implements Command {
+public class GetVendorDetailsCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		if (context.get(FacilioConstants.ContextNames.ID) != null) {
 			VendorContext vendor = (VendorContext) context.get(FacilioConstants.ContextNames.RECORD);

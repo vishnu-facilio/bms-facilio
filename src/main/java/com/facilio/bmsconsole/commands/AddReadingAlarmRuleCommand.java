@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.util.ActionAPI;
@@ -15,12 +14,12 @@ import com.facilio.bmsconsole.workflow.rule.ReadingAlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
 
-public class AddReadingAlarmRuleCommand implements Command {
+public class AddReadingAlarmRuleCommand extends FacilioCommand {
 
 	
 	
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		Map<String,Long> readingAlarmRuleNameVsIdMap = new HashMap<>();
 		

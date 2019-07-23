@@ -13,7 +13,6 @@ import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.ScheduleInfo;
-import com.facilio.workflows.context.ParameterContext;
 
 public class DigestMailConfigurationAction extends FacilioAction{
 

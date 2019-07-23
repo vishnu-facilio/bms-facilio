@@ -1,16 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.ShiftRotationContext;
 import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.constants.FacilioConstants;
 
-public class GetShiftRotationDetailCommand implements Command{
+public class GetShiftRotationDetailCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		long recordId = (long) context.get(FacilioConstants.ContextNames.ID);
 		ShiftRotationContext shiftRotation = ShiftAPI.getShiftRotation(recordId);
 		context.put(FacilioConstants.ContextNames.SHIFT_ROTATION, shiftRotation);

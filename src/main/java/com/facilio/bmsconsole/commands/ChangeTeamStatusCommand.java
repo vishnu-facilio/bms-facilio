@@ -1,15 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-public class ChangeTeamStatusCommand implements Command {
+public class ChangeTeamStatusCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		Group group = (Group) context.get(FacilioConstants.ContextNames.GROUP);
 		if (group != null) {
 			AccountUtil.getGroupBean().changeGroupStatus(group.getGroupId(), group);

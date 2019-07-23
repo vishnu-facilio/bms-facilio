@@ -10,11 +10,9 @@ import org.json.simple.parser.JSONParser;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AttendanceContext;
-import com.facilio.bmsconsole.context.AttendanceTransactionContext;
 import com.facilio.bmsconsole.context.AttendanceStateContext;
-import com.facilio.bmsconsole.context.ItemContext;
+import com.facilio.bmsconsole.context.AttendanceTransactionContext;
 import com.facilio.bmsconsole.context.ShiftContext;
-import com.facilio.bmsconsole.context.ShipmentContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 

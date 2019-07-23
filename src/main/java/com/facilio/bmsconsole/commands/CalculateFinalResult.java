@@ -1,13 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.util.TenantsAPI;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-public class CalculateFinalResult implements Command {
+import com.facilio.bmsconsole.util.TenantsAPI;
+
+public class CalculateFinalResult extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		
 		double formulaValue = (double) context.get(TenantsAPI.FORMULA_SUM_VALUE);

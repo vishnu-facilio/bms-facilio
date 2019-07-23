@@ -1,5 +1,13 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.commons.chain.Chain;
+import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.InventoryType;
@@ -7,13 +15,6 @@ import com.facilio.bmsconsole.context.PurchaseOrderContext;
 import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.collections4.CollectionUtils;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
-import java.util.Collections;
-import java.util.List;
 
 public class PurchaseOrderAction extends FacilioAction {
 

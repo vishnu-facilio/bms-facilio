@@ -7,16 +7,13 @@ import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
 import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.MutablePair;
 
 import java.util.Collections;
 import java.util.List;
@@ -24,14 +21,14 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 
-public class AddTasksCommand implements Command, PostTransactionCommand {
+public class AddTasksCommand extends FacilioCommand implements PostTransactionCommand {
 	
 	private static final Logger LOGGER = Logger.getLogger(AddTasksCommand.class.getName());
 	private List<Long> idsToUpdateTaskCount;
 	private String moduleName;
 	
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		Map<String, List<TaskContext>> taskMap = (Map<String, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
 		Map<String, List<TaskContext>> preRequestMap = (Map<String, List<TaskContext>>) context.get(FacilioConstants.ContextNames.PRE_REQUEST_MAP);

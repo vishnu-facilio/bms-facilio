@@ -1,5 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.TenantsAPI;
@@ -11,15 +16,10 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
-import java.util.List;
 
 
 
-public class GetTenantListCommand implements Command{
+public class GetTenantListCommand extends FacilioCommand{
 
 	/**
 	 * 
@@ -28,7 +28,7 @@ public class GetTenantListCommand implements Command{
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		

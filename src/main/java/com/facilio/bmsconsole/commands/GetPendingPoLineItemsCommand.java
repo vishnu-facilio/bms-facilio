@@ -1,5 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
 import com.facilio.constants.FacilioConstants;
@@ -10,19 +16,13 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
 
 ;
 
-public class GetPendingPoLineItemsCommand implements Command{
+public class GetPendingPoLineItemsCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		Long poId = (Long) context.get(FacilioConstants.ContextNames.PO_ID);
 		

@@ -10,7 +10,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.RegressionContext;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.Operator;

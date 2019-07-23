@@ -1,5 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -10,23 +19,14 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-public class GetReadingDataMetaCommand implements Command {
+public class GetReadingDataMetaCommand extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(GetReadingDataMetaCommand.class.getName());
 	private static final int BATCH_SIZE = 100;
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
 		
 		if (readingMap != null && !readingMap.isEmpty()) {

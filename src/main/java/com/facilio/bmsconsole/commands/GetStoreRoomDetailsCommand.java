@@ -1,5 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.util.LocationAPI;
@@ -7,18 +14,11 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-public class GetStoreRoomDetailsCommand implements Command{
+public class GetStoreRoomDetailsCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		if (context.get(FacilioConstants.ContextNames.ID) != null) {
 			StoreRoomContext storeRoom = (StoreRoomContext) context.get(FacilioConstants.ContextNames.RECORD);

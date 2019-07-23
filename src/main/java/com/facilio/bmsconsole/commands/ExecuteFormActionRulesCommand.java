@@ -2,19 +2,17 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.forms.FormRuleContext;
 import com.facilio.bmsconsole.util.FormRuleAPI;
 import com.facilio.chain.FacilioContext;
 
-public class ExecuteFormActionRulesCommand implements Command {
+public class ExecuteFormActionRulesCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		FormRuleContext formRuleContext = (FormRuleContext)context.get(FormRuleAPI.FORM_RULE_CONTEXT);
 		

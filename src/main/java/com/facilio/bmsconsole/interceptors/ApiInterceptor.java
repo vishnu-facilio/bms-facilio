@@ -1,5 +1,8 @@
 package com.facilio.bmsconsole.interceptors;
 
+import java.math.BigInteger;
+import java.util.HashMap;
+
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
@@ -7,9 +10,6 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.db.builder.DBUtil;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
-
-import java.math.BigInteger;
-import java.util.HashMap;
 
 public class ApiInterceptor  extends AbstractInterceptor {
 

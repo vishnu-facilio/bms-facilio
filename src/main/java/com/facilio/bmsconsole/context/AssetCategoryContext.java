@@ -1,13 +1,10 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.beans.ModuleBean;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class AssetCategoryContext extends ModuleBaseWithCustomFields {
 	/**

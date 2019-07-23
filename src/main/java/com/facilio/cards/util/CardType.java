@@ -1,10 +1,10 @@
 package com.facilio.cards.util;
 
-import com.facilio.modules.FacilioStatus;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.facilio.modules.FacilioStatus;
 
 public enum CardType {
 	

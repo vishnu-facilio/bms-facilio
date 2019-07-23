@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -18,10 +17,10 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
 
-public class ConstructAddAssetActivityCommand implements Command{
+public class ConstructAddAssetActivityCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 
 		long assetId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 		Map<Long, List<UpdateChangeSet>> changeSet = (Map<Long, List<UpdateChangeSet>>) context.get(ContextNames.CHANGE_SET);

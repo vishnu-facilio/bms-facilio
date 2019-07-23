@@ -1,15 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Context;
+
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.BaseLineContext;
 import com.facilio.time.DateTimeUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-public class ValidateBaseLineCommand implements Command {
+public class ValidateBaseLineCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		BaseLineContext baseLine = (BaseLineContext) context.get(FacilioConstants.ContextNames.BASE_LINE);
 		if (baseLine != null) {

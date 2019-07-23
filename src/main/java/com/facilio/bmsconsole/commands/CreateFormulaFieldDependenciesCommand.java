@@ -1,5 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
@@ -13,19 +19,13 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 ;
 
-public class CreateFormulaFieldDependenciesCommand implements Command {
+public class CreateFormulaFieldDependenciesCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		FormulaFieldContext formulaField = (FormulaFieldContext) context.get(FacilioConstants.ContextNames.FORMULA_FIELD);
 		String formulaUnit = (String) context.get(FacilioConstants.ContextNames.FORMULA_UNIT_STRING);

@@ -1,6 +1,16 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.TaskTemplate;
@@ -22,20 +32,11 @@ import com.facilio.report.context.ReportContext.ReportType;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportYAxisContext;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-public class ConstructReportDataForPM implements Command {
+public class ConstructReportDataForPM extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
 		long pmId = (long) context.get("pmId");

@@ -1,5 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
@@ -10,19 +18,11 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.timeseries.TimeSeriesAPI;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-public class DeleteControllerCommand implements Command {
+public class DeleteControllerCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		long id = (long) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
 		boolean deleteReadings = (boolean) context.get(FacilioConstants.ContextNames.DEL_READING_RULE);

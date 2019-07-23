@@ -1,22 +1,23 @@
 package com.facilio.agent.commands;
 
-import com.facilio.agent.AgentKeys;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericInsertRecordBuilder;
-import com.facilio.modules.FieldFactory;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-public class AgentCreate implements Command
+import com.facilio.agent.AgentKeys;
+import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.modules.FieldFactory;
+
+public class AgentCreate extends FacilioCommand
 {
     private static final Logger LOGGER = LogManager.getLogger(AgentCreate.class.getName());
 
     private long agentId;
     @Override
-    public boolean execute(Context context) throws Exception {
+    public boolean executeCommand(Context context) throws Exception {
         if( !context.containsKey(FacilioConstants.ContextNames.PAY_LOAD )){
             return false;
         }

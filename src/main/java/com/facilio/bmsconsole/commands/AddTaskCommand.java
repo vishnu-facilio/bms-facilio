@@ -10,7 +10,6 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -18,13 +17,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class AddTaskCommand implements Command, PostTransactionCommand {
+public class AddTaskCommand extends FacilioCommand implements PostTransactionCommand {
 	
 	private List<Long> idsToUpdateTaskCount;
 	private String moduleName;
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		TaskContext task = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
 //		List<TaskContext> tasks = (List<TaskContext>) context.get(FacilioConstants.ContextNames.TASK_LIST);

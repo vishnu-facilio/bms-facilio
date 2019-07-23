@@ -1,20 +1,20 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class GetSiteSpecificReadingsCommand implements Command{
+import org.apache.commons.chain.Context;
+
+import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.FacilioField;
+
+public class GetSiteSpecificReadingsCommand extends FacilioCommand{
 
 	private static final Logger LOGGER = Logger.getLogger(GetSiteSpecificReadingsCommand.class.getName());
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
 		LOGGER.log(Level.SEVERE, "startTime -- "+System.currentTimeMillis());

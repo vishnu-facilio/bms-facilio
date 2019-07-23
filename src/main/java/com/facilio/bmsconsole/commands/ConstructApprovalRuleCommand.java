@@ -1,5 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext.ApprovalOrder;
@@ -7,17 +13,11 @@ import com.facilio.bmsconsole.workflow.rule.ApproverContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
-public class ConstructApprovalRuleCommand implements Command {
+public class ConstructApprovalRuleCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		ApprovalRuleContext rule = (ApprovalRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
 		if (rule.getApprovers() == null || rule.getApprovers().isEmpty()) {

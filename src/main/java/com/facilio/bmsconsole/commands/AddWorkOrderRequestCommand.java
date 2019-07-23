@@ -1,5 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
@@ -7,16 +12,11 @@ import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.Collections;
-import java.util.List;
-
-public class AddWorkOrderRequestCommand implements Command {
+public class AddWorkOrderRequestCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		WorkOrderRequestContext workOrderRequest = (WorkOrderRequestContext) context.get(FacilioConstants.ContextNames.WORK_ORDER_REQUEST);
 		if(workOrderRequest != null) {

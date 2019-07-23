@@ -14,14 +14,13 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.google.common.collect.ArrayListMultimap;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InsertReadingDataMetaForNewResourceCommand implements Command,Serializable {
+public class InsertReadingDataMetaForNewResourceCommand extends FacilioCommand implements Serializable {
 
 	/**
 	 * 
@@ -30,7 +29,7 @@ public class InsertReadingDataMetaForNewResourceCommand implements Command,Seria
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		if(context.get(FacilioConstants.ContextNames.RECORD_LIST) instanceof  ArrayListMultimap) {
 			ArrayListMultimap<String, Long>recordsList= (ArrayListMultimap<String, Long>)context.get(FacilioConstants.ContextNames.RECORD_LIST);

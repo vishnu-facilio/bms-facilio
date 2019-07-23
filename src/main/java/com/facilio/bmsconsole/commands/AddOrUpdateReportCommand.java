@@ -1,5 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
@@ -11,16 +16,11 @@ import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportFilterContext;
 import com.facilio.report.util.ReportUtil;
 import com.facilio.workflows.util.WorkflowUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.HashSet;
-import java.util.Set;
-
-public class AddOrUpdateReportCommand implements Command {
+public class AddOrUpdateReportCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
 		

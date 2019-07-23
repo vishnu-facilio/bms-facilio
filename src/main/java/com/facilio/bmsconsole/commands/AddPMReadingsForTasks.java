@@ -1,5 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
@@ -19,19 +32,10 @@ import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 ;
 
-public class AddPMReadingsForTasks implements Command {
+public class AddPMReadingsForTasks extends FacilioCommand {
 
 	private static final int MAX_FIELDS_PER_TYPE_PER_MODULE = 5;
 	private static final int MAX_LENGTH_OF_FIELD_NAME = 97;
@@ -39,7 +43,7 @@ public class AddPMReadingsForTasks implements Command {
 	private static final Logger LOGGER = LogManager.getLogger(AddPMReadingsForTasks.class.getName());
 	
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		List<TaskContext> tasks = null;
 		Map<TaskContext,TaskTemplate> taskvsTemplateMap= null;

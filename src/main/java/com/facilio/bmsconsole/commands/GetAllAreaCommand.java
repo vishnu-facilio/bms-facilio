@@ -1,18 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
 
-import com.facilio.bmsconsole.util.SpaceAPI;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.Criteria;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-public class GetAllAreaCommand implements Command{
+import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
+
+public class GetAllAreaCommand extends FacilioCommand{
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
 	//	Connection conn = ((FacilioContext) context).getConnectionWithoutTransaction();

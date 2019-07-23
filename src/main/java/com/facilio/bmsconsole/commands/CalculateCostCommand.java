@@ -1,26 +1,34 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.context.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import com.facilio.bmsconsole.context.AdditionalCostContext;
 import com.facilio.bmsconsole.context.AdditionalCostContext.CostType;
+import com.facilio.bmsconsole.context.CostAssetsContext;
+import com.facilio.bmsconsole.context.CostContext;
+import com.facilio.bmsconsole.context.CostSlabContext;
+import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.util.CostAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
-import java.util.*;
-
-public class CalculateCostCommand implements Command {
+public class CalculateCostCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = LogManager.getLogger(CalculateCostCommand.class.getName());
 	
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		CostContext cost = (CostContext) context.get(FacilioConstants.ContextNames.COST);
 		CostAssetsContext asset = (CostAssetsContext) context.get(FacilioConstants.ContextNames.COST_ASSET);

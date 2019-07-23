@@ -1,6 +1,9 @@
 package com.facilio.kinesis;
 
-import com.facilio.aws.util.AwsUtil;
+import java.util.Properties;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -8,9 +11,7 @@ import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import java.util.Properties;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import com.facilio.aws.util.AwsUtil;
 
 public class ErrorDataProducer {
 

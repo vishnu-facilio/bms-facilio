@@ -1,20 +1,20 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.context.NoteContext;
-import com.facilio.bmsconsole.util.NotesAPI;
-import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GetNotesCommand implements Command {
+import org.apache.commons.chain.Context;
+
+import com.facilio.bmsconsole.context.NoteContext;
+import com.facilio.bmsconsole.util.NotesAPI;
+import com.facilio.constants.FacilioConstants;
+
+public class GetNotesCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		if(moduleName != null && !moduleName.isEmpty()) {

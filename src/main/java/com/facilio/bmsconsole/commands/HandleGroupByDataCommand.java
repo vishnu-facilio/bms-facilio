@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -16,13 +15,13 @@ import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportGroupByField;
 
-public class HandleGroupByDataCommand implements Command {
+public class HandleGroupByDataCommand extends FacilioCommand {
 	
 	
 	private static final Logger LOGGER = Logger.getLogger(HandleGroupByDataCommand.class.getName());
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
 		JSONObject data = (JSONObject) context.get(FacilioConstants.ContextNames.REPORT_DATA);
 		

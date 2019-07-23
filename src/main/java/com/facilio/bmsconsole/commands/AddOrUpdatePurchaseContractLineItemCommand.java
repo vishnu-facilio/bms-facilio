@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -16,10 +15,10 @@ import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 
-public class AddOrUpdatePurchaseContractLineItemCommand implements Command{
+public class AddOrUpdatePurchaseContractLineItemCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		List<PurchaseContractLineItemContext> lineItemContexts = (List<PurchaseContractLineItemContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		if (CollectionUtils.isNotEmpty(lineItemContexts)) {

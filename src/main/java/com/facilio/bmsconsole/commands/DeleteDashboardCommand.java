@@ -1,20 +1,20 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.List;
-import java.util.Map;
-
-public class DeleteDashboardCommand implements Command {
+public class DeleteDashboardCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		Long dashboardId = (Long) context.get(FacilioConstants.ContextNames.DASHBOARD_ID);
 		if(dashboardId != null) {
 			

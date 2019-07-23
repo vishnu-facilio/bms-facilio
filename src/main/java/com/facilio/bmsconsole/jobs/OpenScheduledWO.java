@@ -1,6 +1,17 @@
 package com.facilio.bmsconsole.jobs;
 
-import com.facilio.accounts.util.AccountUtil;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Chain;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
 import com.facilio.activity.AddActivitiesCommand;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
@@ -16,16 +27,16 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioStatus;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.UpdateChangeSet;
+import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
-import org.apache.commons.chain.Chain;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
-import java.util.*;
 
 public class OpenScheduledWO extends FacilioJob {
     private static final Logger LOGGER = LogManager.getLogger(OpenScheduledWO.class.getName());

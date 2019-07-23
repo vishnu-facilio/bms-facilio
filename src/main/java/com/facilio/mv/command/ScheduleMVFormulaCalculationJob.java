@@ -1,17 +1,17 @@
 package com.facilio.mv.command;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.mv.context.MVProjectContext;
 import com.facilio.mv.context.MVProjectWrapper;
 import com.facilio.mv.util.MVUtil;
 
-public class ScheduleMVFormulaCalculationJob implements Command {
+public class ScheduleMVFormulaCalculationJob extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		MVProjectWrapper mvProjectWrapper = (MVProjectWrapper) context.get(MVUtil.MV_PROJECT_WRAPPER);
 		

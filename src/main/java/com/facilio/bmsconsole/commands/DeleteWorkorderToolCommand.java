@@ -1,5 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ToolContext;
@@ -14,19 +20,13 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 ;
 
-public class DeleteWorkorderToolCommand implements Command {
+public class DeleteWorkorderToolCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		List<WorkorderToolsContext> deletedWorkorderTools = (List<WorkorderToolsContext>) context
 				.get(FacilioConstants.ContextNames.RECORD_LIST);
 

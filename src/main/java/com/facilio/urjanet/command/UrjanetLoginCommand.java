@@ -1,19 +1,20 @@
 package com.facilio.urjanet.command;
 
 
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
+import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.urjanet.UrjanetConnection;
 import com.facilio.urjanet.contants.UrjanetConstants;
 import com.facilio.urjanet.context.UtilityProviderCredentials;
 import com.facilio.urjanet.entity.Credential;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
 
 
-public class UrjanetLoginCommand  implements Command 
+public class UrjanetLoginCommand  extends FacilioCommand
 {
 		@Override
-		public boolean execute(Context context) throws Exception {
+		public boolean executeCommand(Context context) throws Exception {
 			UtilityProviderCredentials  credentials = (UtilityProviderCredentials)context.get(UrjanetConstants.ContextNames.CREDENTIAL);
 			UrjanetConnection connection = new UrjanetConnection();
 			JSONObject createJSON = new JSONObject();

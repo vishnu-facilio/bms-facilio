@@ -1,21 +1,5 @@
 package com.facilio.billing.command;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.billing.context.BillContext;
-import com.facilio.billing.context.ExcelTemplate;
-import com.facilio.billing.util.TenantBillingAPI;
-import com.facilio.bmsconsole.util.TemplateAPI;
-import com.facilio.fs.FileInfo;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
-import com.facilio.time.DateTimeUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -23,10 +7,27 @@ import java.time.Month;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GenerateUsageRecordCommand implements Command {
+import org.apache.commons.chain.Context;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.billing.context.BillContext;
+import com.facilio.billing.context.ExcelTemplate;
+import com.facilio.billing.util.TenantBillingAPI;
+import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.bmsconsole.util.TemplateAPI;
+import com.facilio.fs.FileInfo;
+import com.facilio.fs.FileStore;
+import com.facilio.fs.FileStoreFactory;
+import com.facilio.time.DateTimeUtil;
+
+public class GenerateUsageRecordCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		FileStoreFactory.getInstance().getFileStore();
 		long startTime = (long)context.get(BillContext.ContextNames.STARTTIME);
 		long endTime = (long)context.get(BillContext.ContextNames.ENDTIME);

@@ -1,28 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.BusinessHourContext;
-import com.facilio.bmsconsole.context.BusinessHoursList;
-import com.facilio.bmsconsole.context.ShiftContext;
-import com.facilio.bmsconsole.util.BusinessHoursAPI;
-import com.facilio.bmsconsole.util.ShiftAPI;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericUpdateRecordBuilder;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-import java.util.Map;
-import java.util.stream.Collectors;
+import com.facilio.bmsconsole.context.ShiftContext;
+import com.facilio.bmsconsole.util.ShiftAPI;
+import com.facilio.constants.FacilioConstants;
 
-public class UpdateShiftCommand implements Command {
+public class UpdateShiftCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		ShiftContext shift = (ShiftContext) context.get(FacilioConstants.ContextNames.SHIFT);
 //		long oldId = shift.getBusinessHoursId();
 		

@@ -1,24 +1,25 @@
 package com.facilio.leed.commands;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
+import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.leed.context.ArcContext;
 import com.facilio.leed.context.ConsumptionInfoContext;
 import com.facilio.leed.util.LeedAPI;
 import com.facilio.leed.util.LeedIntegrator;
 import com.facilio.time.DateTimeUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
-public class AddConsumptionForLeed implements Command {
+public class AddConsumptionForLeed extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		long leedId = (long) context.get(FacilioConstants.ContextNames.LEEDID);
 		long deviceId = (long) context.get(FacilioConstants.ContextNames.DEVICEID);

@@ -5,14 +5,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.accounts.dto.GroupMember;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.ShiftContext;
 import com.facilio.bmsconsole.context.ShiftRotationApplicableForContext;
 import com.facilio.bmsconsole.context.ShiftRotationApplicableForContext.ApplicableFor;
 import com.facilio.bmsconsole.context.ShiftRotationContext;
@@ -21,10 +19,10 @@ import com.facilio.bmsconsole.context.ShiftUserRelContext;
 import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.constants.FacilioConstants;
 
-public class ExecuteShiftRotationCommand implements Command {
+public class ExecuteShiftRotationCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		long shiftRotationId = (long) context.get(FacilioConstants.ContextNames.SHIFT_ROTATION);
 		if (shiftRotationId > 0) {
 			ShiftRotationContext shiftRotation = ShiftAPI.getShiftRotation(shiftRotationId);

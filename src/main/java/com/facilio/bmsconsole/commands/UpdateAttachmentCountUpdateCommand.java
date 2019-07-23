@@ -1,5 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -12,16 +21,11 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
 
-import java.util.*;
-
-public class UpdateAttachmentCountUpdateCommand implements Command {
+public class UpdateAttachmentCountUpdateCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		Collection<Long> list = (List<Long>) context.get(FacilioConstants.ContextNames.IDS_TO_UPDATE_COUNT);
 		String attachmentModuleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 

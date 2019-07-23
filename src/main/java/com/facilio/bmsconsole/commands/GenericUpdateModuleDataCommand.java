@@ -1,29 +1,22 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.activity.AssetActivityType;
-import com.facilio.bmsconsole.activity.ItemActivityType;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
 
-import java.util.*;
-
-public class GenericUpdateModuleDataCommand implements Command {
+public class GenericUpdateModuleDataCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		ModuleBaseWithCustomFields record = (ModuleBaseWithCustomFields) context.get(FacilioConstants.ContextNames.RECORD);
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);

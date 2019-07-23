@@ -1,11 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
+import java.io.File;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
-import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -13,17 +18,11 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.io.File;
-import java.util.List;
-import java.util.Map;
-
-public class HandlePortalSSOCommand implements Command{
+public class HandlePortalSSOCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		File publicKeyFile = (File)context.get(FacilioConstants.ContextNames.PUBLICKEYFILE);
 		PortalInfoContext servicePortal  = (PortalInfoContext) context.get(FacilioConstants.ContextNames.PORTALINFO);
 		String fileName = (String)context.get(FacilioConstants.ContextNames.PUBLICKEYFILENAME);

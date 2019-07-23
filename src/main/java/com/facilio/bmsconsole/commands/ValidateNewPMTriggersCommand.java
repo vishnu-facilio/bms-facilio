@@ -1,5 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
@@ -16,15 +20,11 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.List;
-
-public class ValidateNewPMTriggersCommand implements Command {
+public class ValidateNewPMTriggersCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		PreventiveMaintenance oldPm = null;
 		if(context.containsKey(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST) && context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST) != null) {

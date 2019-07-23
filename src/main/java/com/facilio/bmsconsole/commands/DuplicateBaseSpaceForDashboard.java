@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -18,9 +17,9 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 
-public class DuplicateBaseSpaceForDashboard implements Command {
+public class DuplicateBaseSpaceForDashboard extends FacilioCommand {
 
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		List<DashboardContext> dashboards = (List<DashboardContext>)context.get(FacilioConstants.ContextNames.DASHBOARDS);
 			

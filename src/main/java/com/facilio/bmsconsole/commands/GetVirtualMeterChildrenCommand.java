@@ -1,17 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.SelectRecordsBuilder;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-public class GetVirtualMeterChildrenCommand implements Command{
+public class GetVirtualMeterChildrenCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		long id = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 		if(id != -1) {

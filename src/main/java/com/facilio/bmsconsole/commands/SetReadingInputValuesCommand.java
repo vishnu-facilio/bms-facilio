@@ -1,5 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -10,16 +15,11 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.List;
-import java.util.Map;
-
-public class SetReadingInputValuesCommand implements Command {
+public class SetReadingInputValuesCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		long rdmId = (long) context.get(FacilioConstants.ContextNames.READING_DATA_META_ID);
 		List<Map<String, Object>> props = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		

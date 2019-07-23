@@ -1,5 +1,19 @@
 package com.facilio.bmsconsole.commands;
 
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -17,20 +31,11 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.time.SecondsChronoUnit;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
-import java.time.ZonedDateTime;
-import java.util.*;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-
-public class CalculatePostFormulaCommand implements Command {
+public class CalculatePostFormulaCommand extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(CalculatePostFormulaCommand.class.getName());
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		Map<String, ReadingDataMeta> readingDataMeta = (Map<String, ReadingDataMeta>) context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);

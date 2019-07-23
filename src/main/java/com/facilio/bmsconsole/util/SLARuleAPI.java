@@ -1,12 +1,12 @@
 package com.facilio.bmsconsole.util;
 
+import java.util.Map;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.workflow.rule.SLARuleContext;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
-
-import java.util.Map;
 
 public class SLARuleAPI extends WorkflowRuleAPI {
 	public static SLARuleContext updateSLARuleWithChildren(SLARuleContext rule) throws Exception {

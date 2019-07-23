@@ -1,22 +1,23 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.InventoryContext;
 import com.facilio.bmsconsole.context.InventoryVendorContext;
 import com.facilio.bmsconsole.util.InventoryApi;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Context;
-
-import java.util.Collections;
-import java.util.Map;
 
 public class GetInventoryDetailsCommand extends GenericGetModuleDataDetailCommand{
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		if (context.get(FacilioConstants.ContextNames.ID) != null) {
-			super.execute(context);
+			super.executeCommand(context);
 			InventoryContext inventoryContext = (InventoryContext) context.get(FacilioConstants.ContextNames.RECORD);
 			if (inventoryContext != null && inventoryContext.getId() > 0) {
 				if (inventoryContext.getSpaceId() != -1) {

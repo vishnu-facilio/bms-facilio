@@ -1,16 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.io.Serializable;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.logging.Logger;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -21,10 +10,18 @@ import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.google.common.collect.ArrayListMultimap;
-
 import nl.basjes.shaded.org.springframework.util.StringUtils;
+import org.apache.commons.chain.Context;
 
-public class UpdateBaseAndResourceCommand implements Command,Serializable {
+import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.logging.Logger;
+
+public class UpdateBaseAndResourceCommand extends FacilioCommand implements Serializable {
 	/**
 	 * 
 	 */
@@ -32,7 +29,7 @@ public class UpdateBaseAndResourceCommand implements Command,Serializable {
 	private static Logger LOGGER = Logger.getLogger(UpdateBaseAndResourceCommand.class.getName());
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		try(Connection con = FacilioConnectionPool.INSTANCE.getConnection();) {
 				//ConnectionPool does not return the same connection (Caution)	
 			ArrayListMultimap<String, Long> recordsList = (ArrayListMultimap<String, Long>) context.get(FacilioConstants.ContextNames.RECORD_LIST);

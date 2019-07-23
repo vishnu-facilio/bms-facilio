@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -29,12 +28,12 @@ import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
 
-public class AddWorkOrderCommand implements Command {
+public class AddWorkOrderCommand extends FacilioCommand {
 	
 	private static final Logger LOGGER = Logger.getLogger(AddWorkOrderCommand.class.getName());
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

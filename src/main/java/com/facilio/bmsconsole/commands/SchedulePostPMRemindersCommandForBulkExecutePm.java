@@ -1,28 +1,31 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.context.PMReminder.ReminderType;
-import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class SchedulePostPMRemindersCommandForBulkExecutePm implements Command {
+import org.apache.commons.chain.Context;
+
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.PMReminder;
+import com.facilio.bmsconsole.context.PMReminder.ReminderType;
+import com.facilio.bmsconsole.context.PMResourcePlannerContext;
+import com.facilio.bmsconsole.context.PMResourcePlannerReminderContext;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
+
+public class SchedulePostPMRemindersCommandForBulkExecutePm extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<PreventiveMaintenance> pms = CommonCommandUtil.getList((FacilioContext) context, FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST);
 		

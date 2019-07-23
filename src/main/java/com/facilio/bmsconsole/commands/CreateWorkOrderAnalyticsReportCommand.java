@@ -1,5 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.chain.FacilioContext;
@@ -9,21 +16,19 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import com.facilio.report.context.*;
+import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportContext.ReportType;
+import com.facilio.report.context.ReportDataPointContext;
+import com.facilio.report.context.ReportFieldContext;
+import com.facilio.report.context.ReportGroupByField;
+import com.facilio.report.context.ReportYAxisContext;
+import com.facilio.report.context.WorkorderAnalysisContext;
 import com.facilio.report.util.ReportUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-public class CreateWorkOrderAnalyticsReportCommand implements Command {
+public class CreateWorkOrderAnalyticsReportCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<WorkorderAnalysisContext> metrics = (List<WorkorderAnalysisContext>) context.get(FacilioConstants.ContextNames.REPORT_FIELDS);
 		long startTime = (long) context.get(FacilioConstants.ContextNames.START_TIME);

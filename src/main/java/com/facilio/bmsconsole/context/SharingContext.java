@@ -1,5 +1,10 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 import com.facilio.accounts.bean.GroupBean;
 import com.facilio.accounts.dto.GroupMember;
 import com.facilio.accounts.dto.User;
@@ -8,11 +13,6 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
-
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
 
 public class SharingContext<E extends SingleSharingContext> extends ArrayList<E> {
 	

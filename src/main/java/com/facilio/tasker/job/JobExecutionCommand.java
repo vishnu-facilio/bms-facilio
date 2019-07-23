@@ -1,12 +1,13 @@
 package com.facilio.tasker.job;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-public class JobExecutionCommand implements Command {
+import com.facilio.bmsconsole.commands.FacilioCommand;
+
+public class JobExecutionCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		FacilioJob job = (FacilioJob) context.get(JobConstants.FACILIO_JOB);
 		JobContext jc = (JobContext) context.get(JobConstants.JOB_CONTEXT);

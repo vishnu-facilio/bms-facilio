@@ -1,7 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.PermissionUtil;
-import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
@@ -9,16 +13,11 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
 
-import java.util.List;
-
-public class GetAllSpaceCommand implements Command{
+public class GetAllSpaceCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);

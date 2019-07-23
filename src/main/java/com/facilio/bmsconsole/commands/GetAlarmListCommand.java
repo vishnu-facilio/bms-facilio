@@ -1,5 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
@@ -12,17 +18,11 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
 
-import java.util.Collections;
-import java.util.List;
-
-public class GetAlarmListCommand implements Command {
+public class GetAlarmListCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);

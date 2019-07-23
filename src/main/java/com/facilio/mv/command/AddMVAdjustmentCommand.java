@@ -4,11 +4,11 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -16,17 +16,13 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.mv.context.MVAdjustment;
-import com.facilio.mv.context.MVBaseline;
-import com.facilio.mv.context.MVProjectContext;
 import com.facilio.mv.context.MVProjectWrapper;
 import com.facilio.mv.util.MVUtil;
-import com.facilio.time.DateRange;
-import com.facilio.workflowv2.util.WorkflowV2Util;
 
-public class AddMVAdjustmentCommand implements Command {
+public class AddMVAdjustmentCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		List<MVAdjustment> adjustments = null;
 		

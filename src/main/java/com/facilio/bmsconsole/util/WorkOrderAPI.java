@@ -1,21 +1,19 @@
 package com.facilio.bmsconsole.util;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections4.CollectionUtils;
-import com.amazonaws.services.dynamodbv2.xspec.NULL;
 
 import com.chargebee.internal.StringJoiner;
-import com.facilio.accounts.bean.GroupBean;
 import com.facilio.accounts.dto.Group;
-import com.facilio.accounts.dto.GroupMember;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
@@ -25,7 +23,6 @@ import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
-import com.facilio.bmsconsole.context.SingleSharingContext.SharingType;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.TicketTypeContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -52,19 +49,11 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
-import com.mysql.fabric.xmlrpc.base.Array;
-import org.apache.commons.chain.Command;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.tuple.MutablePair;
-
-import java.util.*;
-import java.util.logging.Logger;
 
 public class WorkOrderAPI {
 	

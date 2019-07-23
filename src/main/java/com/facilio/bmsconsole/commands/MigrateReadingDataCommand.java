@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -24,10 +23,10 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 
-public class MigrateReadingDataCommand implements Command {
+public class MigrateReadingDataCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		Map<String, Object> oldData = (Map<String, Object>) context.get(FacilioConstants.ContextNames.RECORD);
 		long oldFieldId = (long) oldData.get(FacilioConstants.ContextNames.FIELD_ID);

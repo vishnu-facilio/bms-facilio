@@ -1,5 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.MarkedReadingContext;
@@ -18,24 +27,15 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 ;
 
-public class EnergyDataDeltaCalculationCommand implements Command {
+public class EnergyDataDeltaCalculationCommand extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(EnergyDataDeltaCalculationCommand.class.getName());
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		Boolean historyReading = (Boolean) context.get(FacilioConstants.ContextNames.HISTORY_READINGS);
 		if (historyReading != null && historyReading==true) {
 			return false;

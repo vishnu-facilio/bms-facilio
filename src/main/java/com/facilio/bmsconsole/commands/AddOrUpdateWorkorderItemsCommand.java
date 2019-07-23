@@ -1,10 +1,26 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONObject;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.ItemActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.InventoryRequestLineItemContext;
+import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemContext.CostType;
+import com.facilio.bmsconsole.context.ItemTypesContext;
+import com.facilio.bmsconsole.context.PurchasedItemContext;
+import com.facilio.bmsconsole.context.StoreRoomContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.context.WorkorderItemContext;
 import com.facilio.bmsconsole.util.InventoryRequestAPI;
 import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.bmsconsole.util.TransactionState;
@@ -15,24 +31,19 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.InsertRecordBuilder;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-public class AddOrUpdateWorkorderItemsCommand implements Command {
+public class AddOrUpdateWorkorderItemsCommand extends FacilioCommand {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule workorderItemsModule = modBean.getModule(FacilioConstants.ContextNames.WORKORDER_ITEMS);

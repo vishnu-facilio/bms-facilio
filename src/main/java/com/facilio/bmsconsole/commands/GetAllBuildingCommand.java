@@ -1,10 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.PhotosContext;
-import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
@@ -13,16 +17,11 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.List;
-import java.util.Map;
-
-public class GetAllBuildingCommand implements Command{
+public class GetAllBuildingCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);

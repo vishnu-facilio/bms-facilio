@@ -1,5 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -7,17 +13,11 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-
-public class LoadSelectFieldsCommand implements Command{
+public class LoadSelectFieldsCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 
 		FacilioReportContext repContext = (FacilioReportContext)context;

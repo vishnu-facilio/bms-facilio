@@ -1,5 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.context.MLContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
@@ -7,18 +14,11 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.Operator;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedMap;
-
-public class ApplyCriteriaForMLCommand implements Command {
+public class ApplyCriteriaForMLCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception 
+	public boolean executeCommand(Context context) throws Exception 
 	{
 		MLContext mlContext = (MLContext) context.get(FacilioConstants.ContextNames.ML);
 		if(mlContext.getMLCriteriaVariables()!=null && mlContext.getMLCriteriaVariables().size()>0)

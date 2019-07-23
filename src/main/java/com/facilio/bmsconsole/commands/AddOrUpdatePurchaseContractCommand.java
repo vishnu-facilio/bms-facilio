@@ -3,19 +3,14 @@ package com.facilio.bmsconsole.commands;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ContractsContext.ContractType;
 import com.facilio.bmsconsole.context.ContractsContext.Status;
-import com.facilio.bmsconsole.context.ContractAssociatedAssetsContext;
-import com.facilio.bmsconsole.context.ContractAssociatedTermsContext;
-import com.facilio.bmsconsole.context.ContractsContext;
 import com.facilio.bmsconsole.context.PurchaseContractContext;
 import com.facilio.bmsconsole.context.PurchaseContractLineItemContext;
-import com.facilio.bmsconsole.context.WarrantyContractContext;
 import com.facilio.bmsconsole.util.ContractsAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
@@ -25,15 +20,12 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.DeleteRecordBuilder;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.InsertRecordBuilder;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 
-public class AddOrUpdatePurchaseContractCommand implements Command {
+public class AddOrUpdatePurchaseContractCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		PurchaseContractContext purchaseContractContext = (PurchaseContractContext) context.get(FacilioConstants.ContextNames.RECORD);
 		purchaseContractContext.computeNextPaymentDate();

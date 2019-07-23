@@ -1,5 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
@@ -18,21 +27,12 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.pdf.PdfUtil;
 import com.facilio.workflows.util.WorkflowUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-public class SendReportMailCommand implements Command {
+public class SendReportMailCommand extends FacilioCommand {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
 		Map<String,Object> table;

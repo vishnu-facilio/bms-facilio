@@ -1,12 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.chain.FacilioContext;
-import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -14,11 +11,14 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 
-public class SpaceBudIntegrationCommand implements Command {
+public class SpaceBudIntegrationCommand extends FacilioCommand {
 	
 	private static final Logger logger = LogManager.getLogger(SpaceBudIntegrationCommand.class.getName());
 
@@ -39,7 +39,7 @@ public class SpaceBudIntegrationCommand implements Command {
 	}
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		if (AccountUtil.getCurrentOrg().getOrgId() == 78) {
 			

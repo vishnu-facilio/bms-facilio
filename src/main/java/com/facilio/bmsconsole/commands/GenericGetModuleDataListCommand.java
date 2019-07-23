@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
@@ -24,11 +23,11 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
-public class GenericGetModuleDataListCommand implements Command {
+public class GenericGetModuleDataListCommand extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(GenericGetModuleDataListCommand.class.getName());
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);

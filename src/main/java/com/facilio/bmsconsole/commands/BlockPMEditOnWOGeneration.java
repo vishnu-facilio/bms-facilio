@@ -1,6 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.accounts.util.AccountUtil;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -10,16 +17,8 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
-public class BlockPMEditOnWOGeneration implements Command {
+public class BlockPMEditOnWOGeneration extends FacilioCommand {
 
     private boolean isStatusChange;
 
@@ -32,7 +31,7 @@ public class BlockPMEditOnWOGeneration implements Command {
     BlockPMEditOnWOGeneration() {}
 
     @Override
-    public boolean execute(Context context) throws Exception {
+    public boolean executeCommand(Context context) throws Exception {
         List<PreventiveMaintenance> pms =  (List<PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST);
         PreventiveMaintenance pm = (PreventiveMaintenance)  context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
         List<Long> pmIds = new ArrayList<>();

@@ -6,7 +6,6 @@ import java.util.Map;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.InventoryCategoryContext;
-import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;

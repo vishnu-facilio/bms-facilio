@@ -1,5 +1,10 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Command;
+
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -8,10 +13,6 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
-import org.apache.commons.chain.Command;
-
-import java.util.List;
-import java.util.Map;
 
 public class GroupAction extends ActionSupport {
 	

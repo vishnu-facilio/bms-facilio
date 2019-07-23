@@ -1,12 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -19,16 +17,12 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
-import com.facilio.db.builder.GenericUpdateRecordBuilder;
-import com.facilio.db.builder.mysql.SelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.AggregateOperator;
-import com.facilio.modules.AggregateOperator.CommonAggregateOperator;
 import com.facilio.modules.AggregateOperator.NumberAggregateOperator;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -37,14 +31,14 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 
-public class AdminRemoveDuplicationCommand implements Command {
+public class AdminRemoveDuplicationCommand extends FacilioCommand {
 	
 	
 	private static final Logger LOGGER = LogManager.getLogger(AdminRemoveDuplicationCommand.class.getName());
 
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
 		Boolean historyReading = (Boolean) context.get(FacilioConstants.ContextNames.HISTORY_READINGS);

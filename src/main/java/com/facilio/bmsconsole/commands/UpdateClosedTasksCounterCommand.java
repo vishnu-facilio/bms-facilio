@@ -1,5 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.TaskContext;
@@ -10,20 +18,12 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-public class UpdateClosedTasksCounterCommand implements Command {
+public class UpdateClosedTasksCounterCommand extends FacilioCommand {
 
     private static Logger log = LogManager.getLogger(UpdateClosedTasksCounterCommand.class.getName());
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		TaskContext task = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
 		if(task != null) {

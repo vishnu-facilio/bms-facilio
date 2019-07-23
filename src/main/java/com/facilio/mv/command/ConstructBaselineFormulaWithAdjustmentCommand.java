@@ -4,11 +4,11 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
@@ -19,12 +19,11 @@ import com.facilio.mv.context.MVBaseline;
 import com.facilio.mv.context.MVProjectWrapper;
 import com.facilio.mv.util.MVUtil;
 import com.facilio.workflows.context.WorkflowContext;
-import com.facilio.workflows.context.WorkflowContext.WorkflowUIMode;
 
-public class ConstructBaselineFormulaWithAdjustmentCommand implements Command {
+public class ConstructBaselineFormulaWithAdjustmentCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 
 		
 		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");

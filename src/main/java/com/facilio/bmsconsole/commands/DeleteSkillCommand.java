@@ -1,15 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.context.SkillContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-public class DeleteSkillCommand implements Command {
+public class DeleteSkillCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
 		SkillContext skill = (SkillContext) context.get(FacilioConstants.ContextNames.SKILL);

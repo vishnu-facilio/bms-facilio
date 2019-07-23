@@ -1,5 +1,9 @@
 package com.facilio.leed.commands;
 
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
+import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.leed.constants.LeedConstants;
@@ -7,14 +11,11 @@ import com.facilio.leed.context.ArcContext;
 import com.facilio.leed.context.FuelContext;
 import com.facilio.leed.util.LeedAPI;
 import com.facilio.leed.util.LeedIntegrator;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
 
-public class AddEnergyMeterCommand implements Command {
+public class AddEnergyMeterCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		context.get(LeedConstants.ContextNames.BUILDINGID);
 		long leedId = (long) context.get(LeedConstants.ContextNames.LEEDID);

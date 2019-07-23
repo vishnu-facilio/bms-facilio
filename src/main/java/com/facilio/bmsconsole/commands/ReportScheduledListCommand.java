@@ -1,5 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReportContext;
 import com.facilio.bmsconsole.context.ReportInfo;
@@ -17,21 +25,13 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.job.JobContext;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 ;
 
-public class ReportScheduledListCommand implements Command {
+public class ReportScheduledListCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

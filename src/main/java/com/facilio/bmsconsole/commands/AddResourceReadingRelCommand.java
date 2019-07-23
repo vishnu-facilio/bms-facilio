@@ -1,22 +1,22 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericInsertRecordBuilder;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleFactory;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AddResourceReadingRelCommand implements Command {
+import org.apache.commons.chain.Context;
+
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
+
+public class AddResourceReadingRelCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<FacilioModule> moduleList = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
 		if (moduleList == null) {

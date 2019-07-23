@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.commands;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -11,11 +10,10 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AttendanceContext;
-import com.facilio.bmsconsole.context.AttendanceStateContext;
 import com.facilio.bmsconsole.context.AttendanceContext.Status;
 import com.facilio.bmsconsole.context.AttendanceTransactionContext;
-import com.facilio.bmsconsole.context.BreakContext;
 import com.facilio.bmsconsole.context.AttendanceTransactionContext.TransactionType;
+import com.facilio.bmsconsole.context.BreakContext;
 import com.facilio.bmsconsole.context.BreakContext.BreakMode;
 import com.facilio.bmsconsole.context.BreakContext.BreakType;
 import com.facilio.bmsconsole.context.ShiftContext;
@@ -34,10 +32,10 @@ import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 
-public class AddAttendanceCommand implements Command {
+public class AddAttendanceCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		AttendanceTransactionContext attendanceTransaction = (AttendanceTransactionContext) context
 				.get(FacilioConstants.ContextNames.RECORD);
 		if (attendanceTransaction != null) {

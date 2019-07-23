@@ -1,20 +1,19 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
-import com.facilio.mv.util.MVUtil;
 import com.facilio.time.DateRange;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
 
-public class AddFormulaFieldCommand implements Command {
+public class AddFormulaFieldCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		FormulaFieldContext formula = (FormulaFieldContext) context.get(FacilioConstants.ContextNames.FORMULA_FIELD);
 		if (formula == null) {

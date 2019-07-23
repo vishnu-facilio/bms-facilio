@@ -1,17 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.List;
-
-public class CustomizeViewCommand implements Command{
+public class CustomizeViewCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		List<FacilioView> views = (List<FacilioView>)context.get(FacilioConstants.ContextNames.VIEW_LIST);
 		if(views != null) {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);

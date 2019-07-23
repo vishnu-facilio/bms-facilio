@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -20,11 +19,11 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 
-public class GetGraphicsForAssetCategoryCommand implements Command {
+public class GetGraphicsForAssetCategoryCommand extends FacilioCommand {
 
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		long assetCategoryId = (long) context.get(FacilioConstants.ContextNames.ASSET_CATEGORY);
 		Long assetId = (Long) context.get(FacilioConstants.ContextNames.ASSET_ID);

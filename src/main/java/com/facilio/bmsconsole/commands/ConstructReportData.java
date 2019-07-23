@@ -1,5 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
@@ -8,36 +19,35 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.AggregateOperator.CommonAggregateOperator;
 import com.facilio.modules.AggregateOperator.DateAggregateOperator;
 import com.facilio.modules.AggregateOperator.SpaceAggregateOperator;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FacilioStatus.StatusType;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import com.facilio.report.context.*;
+import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportContext.ReportType;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.facilio.report.context.ReportDataPointContext;
+import com.facilio.report.context.ReportFactory;
+import com.facilio.report.context.ReportFieldContext;
+import com.facilio.report.context.ReportGroupByField;
+import com.facilio.report.context.ReportUserFilterContext;
+import com.facilio.report.context.ReportYAxisContext;
 
 ;
 
-public class ConstructReportData implements Command {
+public class ConstructReportData extends FacilioCommand {
 
 	private int moduleType = -1;
 	private FacilioModule module;
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		ReportContext reportContext = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		

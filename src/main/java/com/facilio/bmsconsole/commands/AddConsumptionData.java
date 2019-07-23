@@ -1,13 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-public class AddConsumptionData implements Command {
+public class AddConsumptionData extends FacilioCommand {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
 		return false;

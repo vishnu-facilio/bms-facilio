@@ -10,7 +10,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.facilio.bmsconsole.context.ContractsContext.ContractType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.tasker.ScheduleInfo;
 import com.fasterxml.jackson.core.JsonParseException;

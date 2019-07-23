@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -24,7 +23,6 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
-import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.UpdateRecordBuilder;
@@ -32,10 +30,10 @@ import com.facilio.modules.fields.FacilioField;
 
 ;
 
-public class AddOrUpdateItemQuantityCommand implements Command {
+public class AddOrUpdateItemQuantityCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule purchaseItemsModule = modBean.getModule(FacilioConstants.ContextNames.PURCHASED_ITEM);

@@ -1,18 +1,17 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Chain;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Chain;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class NoteAction extends FacilioAction {
 

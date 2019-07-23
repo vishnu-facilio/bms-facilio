@@ -1,11 +1,12 @@
 package com.facilio.bmsconsole.commands.data;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.db.transaction.FacilioConnectionPool;
+import java.sql.PreparedStatement;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import java.sql.PreparedStatement;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.db.transaction.FacilioConnectionPool;
 
 public class EventInfo {
 

@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.List;
 
 import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;

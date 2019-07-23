@@ -1,14 +1,15 @@
 package com.facilio.events.constants;
 
-import com.facilio.constants.FacilioConstants;
-import com.facilio.events.util.EventRulesAPI;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-public class GetNewEventRuleCommand implements Command {
+import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.events.util.EventRulesAPI;
+
+public class GetNewEventRuleCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		long id = (long) context.get(FacilioConstants.ContextNames.ID);
 		if (id > 0) {

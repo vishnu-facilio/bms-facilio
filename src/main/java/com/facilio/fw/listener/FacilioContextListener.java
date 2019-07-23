@@ -1,5 +1,37 @@
 package com.facilio.fw.listener;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.URL;
+import java.net.UnknownHostException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Properties;
+import java.util.Timer;
+
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
+import javax.sql.DataSource;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.flywaydb.core.Flyway;
+import org.json.simple.JSONObject;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
 import com.facilio.activity.ActivityType;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
@@ -22,35 +54,6 @@ import com.facilio.queue.FacilioExceptionProcessor;
 import com.facilio.serviceportal.actions.PortalAuthInterceptor;
 import com.facilio.tasker.FacilioScheduler;
 import com.facilio.tasker.executor.InstantJobExecutor;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.flywaydb.core.Flyway;
-import org.json.simple.JSONObject;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-import javax.sql.DataSource;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.InetAddress;
-import java.net.URL;
-import java.net.UnknownHostException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.*;
-import java.util.concurrent.ExecutorService;
 
 public class FacilioContextListener implements ServletContextListener {
 

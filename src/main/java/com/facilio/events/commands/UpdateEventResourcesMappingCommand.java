@@ -1,17 +1,18 @@
 package com.facilio.events.commands;
 
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.modules.FieldUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-public class UpdateEventResourcesMappingCommand implements Command {
+public class UpdateEventResourcesMappingCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		String source = (String) context.get(EventConstants.EventContextNames.SOURCE);
 		long resourceId = (long) context.get(EventConstants.EventContextNames.RESOURCE_ID);

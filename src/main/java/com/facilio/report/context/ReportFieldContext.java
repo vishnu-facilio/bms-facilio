@@ -1,5 +1,9 @@
 package com.facilio.report.context;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.FieldType;
@@ -11,10 +15,6 @@ import com.facilio.modules.fields.NumberField;
 import com.facilio.unitconversion.Metric;
 import com.facilio.unitconversion.Unit;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 
 public class ReportFieldContext {
 

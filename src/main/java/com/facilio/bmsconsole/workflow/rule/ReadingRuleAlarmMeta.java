@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.workflow.rule;
 
-import com.facilio.bmsconsole.context.ResourceContext;
-
 import java.io.Serializable;
+
+import com.facilio.bmsconsole.context.ResourceContext;
 
 public class ReadingRuleAlarmMeta implements Serializable {
 	/**

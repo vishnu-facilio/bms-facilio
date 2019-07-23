@@ -1,21 +1,27 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-public class ProcessAlarmCommand implements Command {
+public class ProcessAlarmCommand extends FacilioCommand {
 	
 	private static final Logger LOGGER = LogManager.getLogger(ProcessAlarmCommand.class.getName());
 	
@@ -29,7 +35,7 @@ public class ProcessAlarmCommand implements Command {
 	}
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		JSONObject alarmInfo = (JSONObject) context.get(FacilioConstants.ContextNames.ALARM);
 		AlarmContext alarm = null;

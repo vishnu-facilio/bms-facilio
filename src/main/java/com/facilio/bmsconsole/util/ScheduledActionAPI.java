@@ -9,7 +9,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import com.facilio.bmsconsole.context.ScheduledActionContext;
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;

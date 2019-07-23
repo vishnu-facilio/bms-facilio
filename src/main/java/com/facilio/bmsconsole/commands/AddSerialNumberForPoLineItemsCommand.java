@@ -1,8 +1,24 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.InventoryType;
+import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemContext.CostType;
+import com.facilio.bmsconsole.context.ItemTypesContext;
+import com.facilio.bmsconsole.context.PoLineItemsSerialNumberContext;
+import com.facilio.bmsconsole.context.PurchaseOrderContext;
+import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
+import com.facilio.bmsconsole.context.StoreRoomContext;
+import com.facilio.bmsconsole.context.ToolContext;
+import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.bmsconsole.util.StoreroomApi;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -13,18 +29,11 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-public class AddSerialNumberForPoLineItemsCommand implements Command {
+public class AddSerialNumberForPoLineItemsCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		List<AssetContext> assets = (List<AssetContext>) context.get(FacilioConstants.ContextNames.ASSETS);
 		if (assets != null) {
 			PoLineItemsSerialNumberContext polineitemSerialNumber = (PoLineItemsSerialNumberContext) context

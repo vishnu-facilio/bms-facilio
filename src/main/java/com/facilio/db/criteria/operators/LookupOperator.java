@@ -1,18 +1,19 @@
 package com.facilio.db.criteria.operators;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.FacilioModulePredicate;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.LookupField;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public enum LookupOperator implements Operator<Criteria> {
 

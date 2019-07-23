@@ -1,18 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
@@ -29,20 +16,20 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.events.commands.NewEventsToAlarmsConversionCommand.PointedList;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.InsertRecordBuilder;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.UpdateRecordBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 
-public class SaveAlarmAndEventsCommand implements Command, PostTransactionCommand {
+import java.util.*;
+
+public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTransactionCommand {
 
 	private Map<String, PointedList<AlarmOccurrenceContext>> alarmOccurrenceMap;
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		List<BaseEventContext> eventList = (List<BaseEventContext>) context.get(EventConstants.EventContextNames.EVENT_LIST);
 		Map<String, BaseAlarmContext> alarmMap = (Map<String, BaseAlarmContext>) context.get("alarmMap");
 		alarmOccurrenceMap = (Map<String, PointedList<AlarmOccurrenceContext>>) context.get("alarmOccurrenceMap");

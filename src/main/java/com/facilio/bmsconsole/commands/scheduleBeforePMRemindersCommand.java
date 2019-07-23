@@ -1,16 +1,25 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.context.PMReminder.ReminderType;
-import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
-import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.chain.Context;
 
-import java.util.*;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.PMJobsContext;
+import com.facilio.bmsconsole.context.PMReminder;
+import com.facilio.bmsconsole.context.PMReminder.ReminderType;
+import com.facilio.bmsconsole.context.PMResourcePlannerContext;
+import com.facilio.bmsconsole.context.PMResourcePlannerReminderContext;
+import com.facilio.bmsconsole.context.PMTriggerContext;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
+import com.facilio.constants.FacilioConstants;
 
-public class scheduleBeforePMRemindersCommand implements Command {
+public class scheduleBeforePMRemindersCommand extends FacilioCommand {
 	
 	private boolean isBulkUpdate = false;
 	
@@ -21,7 +30,7 @@ public class scheduleBeforePMRemindersCommand implements Command {
 	}
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		List<PreventiveMaintenance> pms;
 		if (isBulkUpdate) {
 			pms = (List<PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST);

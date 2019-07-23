@@ -1,5 +1,11 @@
 package com.facilio.bmsconsole.jobs;
 
+import java.util.Map;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
@@ -7,11 +13,6 @@ import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.time.DateRange;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
-import java.util.Map;
 
 public class SingleResourceHistoricalFormulaCalculatorJob extends FacilioJob {
 	private static final Logger LOGGER = LogManager.getLogger(SingleResourceHistoricalFormulaCalculatorJob.class.getName());

@@ -1,13 +1,33 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
+import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.TaskTemplate;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
-import com.facilio.bmsconsole.util.*;
+import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
+import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -19,20 +39,14 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 ;
 
-public class ValidateNewTasksCommand implements Command {
+public class ValidateNewTasksCommand extends FacilioCommand {
 
 	private static final java.util.logging.Logger LOGGER = Logger.getLogger(ValidateNewTasksCommand.class.getName());
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		int maxUniqueId = 0;
 		List<TaskContext> tasks = null;

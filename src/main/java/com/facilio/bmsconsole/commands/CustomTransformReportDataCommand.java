@@ -1,18 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.constants.FacilioConstants;
-import com.facilio.report.context.ReportContext;
-import com.facilio.report.context.TransformReportDataIfc;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import java.util.Map;
 import java.util.Set;
 
-public class CustomTransformReportDataCommand implements Command {
+import org.apache.commons.chain.Context;
+
+import com.facilio.constants.FacilioConstants;
+import com.facilio.report.context.ReportContext;
+import com.facilio.report.context.TransformReportDataIfc;
+
+public class CustomTransformReportDataCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
 		if (report != null) {

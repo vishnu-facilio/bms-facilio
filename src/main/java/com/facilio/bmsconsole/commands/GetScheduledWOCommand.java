@@ -1,5 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
@@ -10,21 +22,13 @@ import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.*;
-import java.util.function.Function;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
-
-public class GetScheduledWOCommand implements Command {
+public class GetScheduledWOCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = Logger.getLogger(GetScheduledWOCommand.class.getName());
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
 		LOGGER.log(Level.SEVERE, "startTime -- "+System.currentTimeMillis());

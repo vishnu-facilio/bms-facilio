@@ -1,5 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
@@ -12,22 +23,11 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
-public class ChangeTransitionExecutionOrderCommand implements Command {
+public class ChangeTransitionExecutionOrderCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		List<StateFlowRuleContext> stateFlows = (List<StateFlowRuleContext>) context.get(FacilioConstants.ContextNames.STATE_FLOW_LIST);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		if (CollectionUtils.isNotEmpty(stateFlows) && StringUtils.isNotEmpty(moduleName)) {

@@ -1,16 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.context.FileContext;
-import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import java.util.logging.Logger;
 
-public class FileContextCommand implements Command {
+import org.apache.commons.chain.Context;
+
+import com.facilio.bmsconsole.context.FileContext;
+import com.facilio.constants.FacilioConstants;
+
+public class FileContextCommand extends FacilioCommand {
 	private static Logger LOGGER = Logger.getLogger(AttachmentContextCommand.class.getName());
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub			
 			Long fileId = (Long) context.get(FacilioConstants.ContextNames.FILE_ID);
 			if(fileId != null) {

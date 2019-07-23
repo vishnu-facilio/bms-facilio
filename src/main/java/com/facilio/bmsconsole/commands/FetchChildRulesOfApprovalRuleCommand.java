@@ -1,21 +1,21 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ApproverContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-public class FetchChildRulesOfApprovalRuleCommand implements Command {
+public class FetchChildRulesOfApprovalRuleCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		ApprovalRuleContext approvalRule = (ApprovalRuleContext) context.remove(FacilioConstants.ContextNames.WORKFLOW_RULE);
 		if (approvalRule != null) {

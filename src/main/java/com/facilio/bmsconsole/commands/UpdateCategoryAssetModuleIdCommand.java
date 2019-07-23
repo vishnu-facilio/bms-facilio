@@ -1,5 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.constants.FacilioConstants;
@@ -10,19 +16,13 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 ;
 
-public class UpdateCategoryAssetModuleIdCommand implements Command {
+public class UpdateCategoryAssetModuleIdCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		AssetCategoryContext assetCategory = (AssetCategoryContext) context.get(FacilioConstants.ContextNames.RECORD);
 		FacilioModule module = (FacilioModule) ((List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST)).get(0);
 		assetCategory.setAssetModuleID(module.getModuleId());

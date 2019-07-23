@@ -1,5 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.LabourContractLineItemContext;
 import com.facilio.constants.FacilioConstants;
@@ -9,16 +14,11 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.List;
-
-public class AddOrUpdateLabourContractLineItemCommand implements Command{
+public class AddOrUpdateLabourContractLineItemCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		List<LabourContractLineItemContext> lineItemContexts = (List<LabourContractLineItemContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		if (CollectionUtils.isNotEmpty(lineItemContexts)) {

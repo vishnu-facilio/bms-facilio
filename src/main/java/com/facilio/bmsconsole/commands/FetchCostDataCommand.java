@@ -1,5 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.CostAssetsContext;
 import com.facilio.bmsconsole.context.CostContext;
@@ -13,21 +21,13 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-public class FetchCostDataCommand implements Command {
+public class FetchCostDataCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = LogManager.getLogger(FetchCostDataCommand.class.getName());
 	
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		CostContext cost = (CostContext) context.get(FacilioConstants.ContextNames.COST);
 		CostAssetsContext asset = (CostAssetsContext) context.get(FacilioConstants.ContextNames.COST_ASSET);

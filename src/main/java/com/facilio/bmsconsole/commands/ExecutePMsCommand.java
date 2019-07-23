@@ -1,27 +1,27 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.PMIncludeExcludeResourceContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-public class ExecutePMsCommand implements Command {
+public class ExecutePMsCommand extends FacilioCommand {
 
 	private static Logger log = LogManager.getLogger(ExecutePMsCommand.class.getName());
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<PMIncludeExcludeResourceContext> pmIncludeExcludeResourceContexts = (List<PMIncludeExcludeResourceContext>) context.get(FacilioConstants.ContextNames.PM_INCLUDE_EXCLUDE_LIST);
 		List<PreventiveMaintenance> pms = (List<PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST);

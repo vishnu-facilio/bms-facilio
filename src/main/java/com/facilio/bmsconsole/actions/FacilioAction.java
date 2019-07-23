@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.exception.ExceptionUtils;
-import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
@@ -16,12 +15,10 @@ import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
-import com.facilio.chain.FacilioContext;
 import com.facilio.bmsconsole.db.ResponseCacheUtil;
-import com.facilio.cache.CacheUtil;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.filters.MultiReadServletRequest;
-import com.facilio.fw.LRUCache;
 import com.opensymphony.xwork2.ActionSupport;
 
 public class FacilioAction extends ActionSupport {

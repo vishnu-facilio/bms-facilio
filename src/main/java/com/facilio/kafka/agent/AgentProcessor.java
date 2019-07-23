@@ -1,5 +1,14 @@
 package com.facilio.kafka.agent;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.agent.AgentKeys;
 import com.facilio.agent.AgentUtil;
@@ -27,14 +36,6 @@ import com.facilio.procon.message.FacilioRecord;
 import com.facilio.procon.processor.FacilioProcessor;
 import com.facilio.server.ServerInfo;
 import com.facilio.util.AckUtil;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * AgentProcessor is a dedicated processor for processing payloads with PUBLISH_TYPE set to 'agent', 'devicepoints' and 'ack'.

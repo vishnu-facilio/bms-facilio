@@ -1,17 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.context.InventoryContext;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Context;
 
 public class AddInventoryCommand extends GenericAddModuleDataCommand{
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		if (context.get(FacilioConstants.ContextNames.RECORD) != null) {
 			InventoryContext inventoryContext = (InventoryContext) context.get(FacilioConstants.ContextNames.RECORD);
 			inventoryContext.setModifiedTime(System.currentTimeMillis());
-			super.execute(context);
+			super.executeCommand(context);
 			context.put(FacilioConstants.ContextNames.INVENTORY, inventoryContext);
 		}
 		return false;

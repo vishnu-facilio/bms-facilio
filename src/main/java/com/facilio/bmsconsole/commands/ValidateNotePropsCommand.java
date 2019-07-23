@@ -1,14 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.context.NoteContext;
-import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-public class ValidateNotePropsCommand implements Command {
+import com.facilio.bmsconsole.context.NoteContext;
+import com.facilio.constants.FacilioConstants;
+
+public class ValidateNotePropsCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
 		NoteContext noteContext = (NoteContext) context.get(FacilioConstants.ContextNames.NOTE);

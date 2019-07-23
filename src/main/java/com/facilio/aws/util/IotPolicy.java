@@ -1,10 +1,10 @@
 package com.facilio.aws.util;
 
-import com.facilio.agent.AgentType;
-import com.facilio.events.tasker.tasks.EventUtil;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import com.facilio.agent.AgentType;
+import com.facilio.events.tasker.tasks.EventUtil;
 
 public class IotPolicy
 {

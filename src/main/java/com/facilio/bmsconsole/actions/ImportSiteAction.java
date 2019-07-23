@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.List;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.SiteContext;
@@ -12,8 +14,6 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
-
-import java.util.List;
 
 public class ImportSiteAction {
 	

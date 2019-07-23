@@ -1,5 +1,14 @@
 package com.facilio.events.util;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.bmsconsole.util.TemplateAPI;
@@ -18,10 +27,6 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
-import java.util.*;
 
 public class EventRulesAPI {
 	

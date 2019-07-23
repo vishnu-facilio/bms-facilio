@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -16,10 +15,10 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 
-public class GetServicePriceForVendorCommand implements Command{
+public class GetServicePriceForVendorCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		Long serviceId = (Long)context.get(FacilioConstants.ContextNames.SERVICE);
 		Long vendorId = (Long)context.get(FacilioConstants.ContextNames.VENDOR_ID);

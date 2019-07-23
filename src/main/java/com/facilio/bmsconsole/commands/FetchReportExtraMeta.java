@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Level;
@@ -32,7 +31,7 @@ import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 
-public class FetchReportExtraMeta implements Command {
+public class FetchReportExtraMeta extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(FetchReportExtraMeta.class.getName());
 	private List<Long> getLongList (List list) {
 		if (list != null) {
@@ -42,7 +41,7 @@ public class FetchReportExtraMeta implements Command {
 	}
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
 		if ((report.getType() == ReportType.TEMPLATE_REPORT.getValue() || report.getType() == ReportType.REGRESSION_REPORT.getValue() || report.getTypeEnum() == ReportType.READING_REPORT) && report.getFilters() == null) { //Temp fix

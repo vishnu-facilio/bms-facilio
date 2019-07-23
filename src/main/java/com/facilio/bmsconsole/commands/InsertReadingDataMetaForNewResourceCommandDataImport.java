@@ -1,5 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
@@ -13,18 +18,13 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import java.util.ArrayList;
-import java.util.List;
 
 ;
 
-public class InsertReadingDataMetaForNewResourceCommandDataImport implements Command {
+public class InsertReadingDataMetaForNewResourceCommandDataImport extends FacilioCommand {
 
 	@Override
-public boolean execute(Context context) throws Exception {
+public boolean executeCommand(Context context) throws Exception {
 		
 		ImportProcessContext importProcessContext = (ImportProcessContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
 		if(importProcessContext.getImportSetting() == ImportProcessContext.ImportSetting.INSERT.getValue() 

@@ -1,24 +1,29 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
-import java.util.*;
-
-public class CreateReadingModulesCommand implements Command {
+public class CreateReadingModulesCommand extends FacilioCommand {
 	private static final int MAX_FIELDS_PER_TYPE_PER_MODULE = 5;
 	private static final Logger LOGGER = LogManager.getLogger(CreateReadingModulesCommand.class.getName());
 	
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		String readingName = (String) context.get(FacilioConstants.ContextNames.READING_NAME);
 		Boolean overRideSplit = (Boolean) context.get(FacilioConstants.ContextNames.OVER_RIDE_READING_SPLIT);

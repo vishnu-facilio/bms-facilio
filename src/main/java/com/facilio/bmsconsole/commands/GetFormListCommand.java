@@ -5,7 +5,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -15,10 +14,10 @@ import com.facilio.bmsconsole.forms.FormFactory;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.constants.FacilioConstants;
 
-public class GetFormListCommand implements Command {
+public class GetFormListCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		Map<String, FacilioForm> forms = new LinkedHashMap<>(FormFactory.getForms((String)context.get(FacilioConstants.ContextNames.MODULE_NAME), (FormType) (context.get(FacilioConstants.ContextNames.FORM_TYPE))));
 		Map<String, FacilioForm> dbForms=FormsAPI.getFormsAsMap((String)context.get(FacilioConstants.ContextNames.MODULE_NAME),(FormType) (context.get(FacilioConstants.ContextNames.FORM_TYPE)));

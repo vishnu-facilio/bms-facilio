@@ -1,22 +1,23 @@
 package com.facilio.activity;
 
-import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FacilioModule.ModuleType;
-import com.facilio.modules.InsertRecordBuilder;
-import org.apache.commons.chain.Command;
+import java.util.List;
+
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import java.util.List;
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioModule.ModuleType;
+import com.facilio.modules.InsertRecordBuilder;
 
-public class AddActivitiesCommand implements Command {
+public class AddActivitiesCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = LogManager.getLogger(AddActivitiesCommand.class.getName());
 	
@@ -33,7 +34,7 @@ public class AddActivitiesCommand implements Command {
 	}
 	
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		try {
 			List<ActivityContext> activities = (List<ActivityContext>) context.get(FacilioConstants.ContextNames.ACTIVITY_LIST);

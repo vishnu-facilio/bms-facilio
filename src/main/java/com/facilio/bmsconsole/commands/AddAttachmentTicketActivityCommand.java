@@ -1,5 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
+import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -9,19 +17,11 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
-import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
-import java.util.List;
-
-public class AddAttachmentTicketActivityCommand implements Command {
+public class AddAttachmentTicketActivityCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		if(FacilioConstants.ContextNames.TICKET_ATTACHMENTS.equals(moduleName)) {

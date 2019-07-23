@@ -1,5 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.TaskContext;
@@ -11,20 +20,11 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-public class AddTaskDefaultValueReadingsCommand implements Command {
+public class AddTaskDefaultValueReadingsCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		Map<String, List<TaskContext>> taskMap = (Map<String, List<TaskContext>>) context.get(FacilioConstants.ContextNames.TASK_MAP);
 		if (taskMap != null && !taskMap.isEmpty()) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

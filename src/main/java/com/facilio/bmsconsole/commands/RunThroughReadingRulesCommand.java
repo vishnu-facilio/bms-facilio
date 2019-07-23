@@ -1,5 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
@@ -7,16 +11,12 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
 import com.facilio.time.DateRange;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
-public class RunThroughReadingRulesCommand implements Command {
+public class RunThroughReadingRulesCommand extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(RunThroughReadingRulesCommand.class.getName());
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		long id = (long) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
 		DateRange range = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE);

@@ -1,5 +1,23 @@
 package com.facilio.bmsconsole.commands;
 
+import java.io.InputStream;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.logging.Logger;
+
+import org.apache.commons.chain.Context;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.context.ImportRowContext;
@@ -11,22 +29,13 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
-import org.apache.poi.ss.usermodel.*;
 
-import java.io.InputStream;
-import java.time.Instant;
-import java.util.*;
-import java.util.logging.Logger;
-
-public class GenericParseDataForImportCommand implements Command {
+public class GenericParseDataForImportCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = Logger.getLogger(GenericParseDataForImportCommand.class.getName());
 	
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
 		ImportProcessContext importProcessContext = (ImportProcessContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);

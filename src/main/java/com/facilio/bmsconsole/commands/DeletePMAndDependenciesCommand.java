@@ -1,28 +1,42 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.util.*;
+import com.facilio.bmsconsole.context.PMReminder;
+import com.facilio.bmsconsole.context.PMReminderAction;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.util.ActionAPI;
+import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.DeleteRecordBuilder;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioStatus;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.*;
-import java.util.stream.Collectors;
 
 
-public class DeletePMAndDependenciesCommand implements Command{
+public class DeletePMAndDependenciesCommand extends FacilioCommand{
 	
 	private boolean isPMDelete;
 	private boolean isStatusUpdate = false;
@@ -34,7 +48,7 @@ public class DeletePMAndDependenciesCommand implements Command{
 	}
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		List<Long> ruleIds = new ArrayList<>();
 		List<Long> pmIds = new ArrayList<>();

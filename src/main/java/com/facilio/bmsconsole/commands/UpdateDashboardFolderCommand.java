@@ -1,17 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.context.DashboardFolderContext;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.List;
-
-public class UpdateDashboardFolderCommand implements Command {
+public class UpdateDashboardFolderCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<DashboardFolderContext> folders = (List<DashboardFolderContext>) context.get(FacilioConstants.ContextNames.DASHBOARD_FOLDERS);
 		if(folders != null) {

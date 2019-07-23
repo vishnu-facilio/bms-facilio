@@ -1,5 +1,11 @@
 package com.facilio.db.criteria;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
@@ -9,12 +15,6 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class FacilioConditionParser {
 	public String moduleName;

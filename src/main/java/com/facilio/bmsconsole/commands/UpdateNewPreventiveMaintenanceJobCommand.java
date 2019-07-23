@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -25,11 +24,11 @@ import com.facilio.modules.fields.FacilioField;
 
 ;
 
-public class UpdateNewPreventiveMaintenanceJobCommand implements Command {
+public class UpdateNewPreventiveMaintenanceJobCommand extends FacilioCommand {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
 		boolean isNew = (boolean) context.getOrDefault(FacilioConstants.ContextNames.IS_NEW_EVENT, false);

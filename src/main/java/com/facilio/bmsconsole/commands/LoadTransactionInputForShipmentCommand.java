@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.InventoryType;
@@ -14,10 +13,10 @@ import com.facilio.bmsconsole.context.ToolTransactionContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
 
-public class LoadTransactionInputForShipmentCommand implements Command{
+public class LoadTransactionInputForShipmentCommand extends FacilioCommand{
 
 	@Override 
-    public boolean execute(Context context) throws Exception { 
+    public boolean executeCommand(Context context) throws Exception { 
         // TODO Auto-generated method stub 
         ShipmentContext shipment = (ShipmentContext)context.get(FacilioConstants.ContextNames.RECORD); 
         if((shipment.isShipmentTrackingEnabled() && shipment.getStatusEnum() == ShipmentContext.Status.STAGED) || !shipment.isShipmentTrackingEnabled() ) { 

@@ -1,21 +1,25 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.util.WorkOrderAPI;
-import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class GetRoleWoCountBySiteCommand implements Command{
+import org.apache.commons.chain.Context;
+
+import com.facilio.bmsconsole.util.WorkOrderAPI;
+import com.facilio.constants.FacilioConstants;
+
+public class GetRoleWoCountBySiteCommand extends FacilioCommand{
 	
 	private static final Logger LOGGER = Logger.getLogger(GetRoleWoCountBySiteCommand.class.getName());
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 
 		LOGGER.log(Level.SEVERE, "startTime -- " + System.currentTimeMillis());

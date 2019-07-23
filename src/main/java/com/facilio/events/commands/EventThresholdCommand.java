@@ -1,6 +1,11 @@
 package com.facilio.events.commands;
 
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.events.constants.EventConstants;
@@ -9,15 +14,11 @@ import com.facilio.events.context.EventContext.EventInternalState;
 import com.facilio.events.context.EventContext.EventState;
 import com.facilio.events.context.EventRule;
 import com.facilio.modules.FieldUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.Map;
-
-public class EventThresholdCommand implements Command {
+public class EventThresholdCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		EventRule rule = (EventRule) context.get(EventConstants.EventContextNames.EVENT_RULE);
 		if(rule != null) {

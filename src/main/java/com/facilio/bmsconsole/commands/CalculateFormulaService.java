@@ -1,21 +1,21 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.tenant.RateCardContext;
-import com.facilio.bmsconsole.tenant.RateCardServiceContext;
-import com.facilio.bmsconsole.util.TenantsAPI;
-import com.facilio.workflows.util.WorkflowUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class CalculateFormulaService implements Command {
+import org.apache.commons.chain.Context;
+
+import com.facilio.bmsconsole.tenant.RateCardContext;
+import com.facilio.bmsconsole.tenant.RateCardServiceContext;
+import com.facilio.bmsconsole.util.TenantsAPI;
+import com.facilio.workflows.util.WorkflowUtil;
+
+public class CalculateFormulaService extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 
 		context.get(TenantsAPI.TENANT_CONTEXT);
 		RateCardContext rateCard = (RateCardContext) context.get(TenantsAPI.RATECARD_CONTEXT);

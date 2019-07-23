@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
@@ -50,13 +49,13 @@ import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 
-public class UpdateWorkOrderCommand implements Command {
+public class UpdateWorkOrderCommand extends FacilioCommand {
 	
 	private static org.apache.log4j.Logger log = LogManager.getLogger(UpdateWorkOrderCommand.class.getName());
 	private static final List<EventType> TYPES = Arrays.asList(EventType.EDIT, EventType.ASSIGN_TICKET, EventType.CLOSE_WORK_ORDER,  EventType.SOLVE_WORK_ORDER, EventType.HOLD_WORK_ORDER, EventType.STATE_TRANSITION);
 	
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER); //WorkOrders to be updated in bulk
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST); //All IDs (bulk and individual) of WOs to be updated

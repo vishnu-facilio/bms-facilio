@@ -1,5 +1,11 @@
 package com.facilio.logging;
 
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Map;
+
 import org.apache.log4j.Layout;
 import org.apache.log4j.Priority;
 import org.apache.log4j.spi.ErrorHandler;
@@ -10,12 +16,6 @@ import org.graylog2.GelfSender;
 import org.graylog2.GelfTCPSender;
 import org.graylog2.GelfUDPSender;
 import org.graylog2.log.GelfAppender;
-
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.util.Map;
 
 public class FacilioGelfAppender extends GelfAppender {
 

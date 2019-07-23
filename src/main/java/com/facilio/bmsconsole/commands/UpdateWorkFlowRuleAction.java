@@ -1,16 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-public class UpdateWorkFlowRuleAction implements Command {
+public class UpdateWorkFlowRuleAction extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		ActionContext action = (ActionContext) context.get(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST);
 		
 		if (action != null) {

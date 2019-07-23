@@ -4,12 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetBDSourceDetailsContext;
-import com.facilio.bmsconsole.context.AssetBreakdownContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -21,9 +19,9 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 
-public class GetAssetDownTimeDetailsCommand implements Command {
+public class GetAssetDownTimeDetailsCommand extends FacilioCommand {
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		AssetBDSourceDetailsContext assetBDSourceDetails = (AssetBDSourceDetailsContext) context
 				.get(FacilioConstants.ContextNames.ASSET_BD_SOURCE_DETAILS);
 		if (assetBDSourceDetails.getAssetid() != -1) {

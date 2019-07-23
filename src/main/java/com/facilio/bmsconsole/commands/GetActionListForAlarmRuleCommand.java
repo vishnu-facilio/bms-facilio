@@ -1,18 +1,22 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.util.ActionAPI;
-import com.facilio.bmsconsole.workflow.rule.*;
-import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import java.util.List;
 
-public class GetActionListForAlarmRuleCommand implements Command {
+import org.apache.commons.chain.Context;
+
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.util.ActionAPI;
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
+import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
+import com.facilio.bmsconsole.workflow.rule.ReadingAlarmRuleContext;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.constants.FacilioConstants;
+
+public class GetActionListForAlarmRuleCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		AlarmRuleContext alarmRule = (AlarmRuleContext) context.get(FacilioConstants.ContextNames.ALARM_RULE);
 		
 		ReadingRuleContext alarmTriggerRule = alarmRule.getAlarmTriggerRule();

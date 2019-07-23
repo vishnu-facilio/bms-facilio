@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
 import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.constants.FacilioConstants;
@@ -9,10 +8,10 @@ import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.mv.context.MVProjectWrapper;
 import com.facilio.mv.util.MVUtil;
 
-public class PageRecordHandlingCommand implements Command {
+public class PageRecordHandlingCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		long recordId = (long) context.get(FacilioConstants.ContextNames.ID);

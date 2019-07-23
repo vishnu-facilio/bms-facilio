@@ -2,21 +2,19 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.Preference;
 import com.facilio.bmsconsole.modules.PreferenceFactory;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 
-public class EnablePreferenceCommand implements Command {
+public class EnablePreferenceCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		Map<String, Object> map = (Map<String, Object>) context.get(FacilioConstants.ContextNames.PREFERENCE_VALUE_LIST);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		long recordId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);

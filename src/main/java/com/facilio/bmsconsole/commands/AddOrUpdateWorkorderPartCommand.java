@@ -1,5 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.InventoryContext;
 import com.facilio.bmsconsole.context.WorkorderPartsContext;
@@ -11,16 +16,11 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class AddOrUpdateWorkorderPartCommand implements Command {
+public class AddOrUpdateWorkorderPartCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule workorderPartsModule = modBean.getModule(FacilioConstants.ContextNames.WORKORDER_PARTS);

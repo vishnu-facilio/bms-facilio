@@ -1,5 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -13,19 +24,12 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
-import java.util.*;
-
-public class UpdateEventCountCommand implements Command {
+public class UpdateEventCountCommand extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(UpdateEventCountCommand.class.getName());
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		List alarmIds = (List) context.get(FacilioConstants.ContextNames.ALARM_ID);
 		if (CollectionUtils.isNotEmpty(alarmIds)) {
 			String moduleName = "alarm";

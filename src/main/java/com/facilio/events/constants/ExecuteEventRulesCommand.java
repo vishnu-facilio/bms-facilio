@@ -1,6 +1,17 @@
 package com.facilio.events.constants;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.events.context.EventContext;
 import com.facilio.events.context.EventContext.EventState;
@@ -8,23 +19,13 @@ import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.util.EventAPI;
 import com.facilio.modules.FieldUtil;
 import com.facilio.workflows.util.WorkflowUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-public class ExecuteEventRulesCommand implements Command {
+public class ExecuteEventRulesCommand extends FacilioCommand {
 
 	private static final boolean IS_CASCADING = false;
 	private static final Logger logger = LogManager.getLogger(ExecuteEventRulesCommand.class.getName());
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<EventContext> events = (List<EventContext>) context.get(EventConstants.EventContextNames.EVENT_LIST);
 		List<EventRuleContext> eventRules = (List<EventRuleContext>) context.get(EventConstants.EventContextNames.EVENT_RULE_LIST);

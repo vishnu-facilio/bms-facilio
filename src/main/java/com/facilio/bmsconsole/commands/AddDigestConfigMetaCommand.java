@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.commands;
 import java.util.Collections;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.DigestConfigContext;
@@ -17,10 +16,10 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 
-public class AddDigestConfigMetaCommand implements Command{
+public class AddDigestConfigMetaCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		ScheduledActionContext schAction = (ScheduledActionContext)context.get(FacilioConstants.ContextNames.SCHEDULED_ACTION);
 		DigestConfigContext config = (DigestConfigContext)context.get(FacilioConstants.ContextNames.CONFIG);

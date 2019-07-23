@@ -1,5 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.context.JobPlanContext;
 import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.util.TemplateAPI;
@@ -10,15 +14,11 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.Map;
-
-public class UpdateJobPlanCommand implements Command {
+public class UpdateJobPlanCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		JobPlanContext jobPlan = (JobPlanContext) context.get(ContextNames.JOB_PLAN);
 		FacilioModule module = ModuleFactory.getJobPlanModule();

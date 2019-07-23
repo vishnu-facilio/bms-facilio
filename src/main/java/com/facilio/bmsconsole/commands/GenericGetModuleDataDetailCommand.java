@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -17,13 +16,13 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
-public class GenericGetModuleDataDetailCommand implements Command {
+public class GenericGetModuleDataDetailCommand extends FacilioCommand {
 
 	protected Class beanClassName;
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		long recordId = (long) context.get(FacilioConstants.ContextNames.ID);
 		

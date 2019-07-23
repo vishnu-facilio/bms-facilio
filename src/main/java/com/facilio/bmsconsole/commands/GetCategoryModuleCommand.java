@@ -1,27 +1,36 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.util.*;
 
 ;
 
-public class GetCategoryModuleCommand implements Command {
+public class GetCategoryModuleCommand extends FacilioCommand {
 	private static final int MAX_FIELDS_PER_TYPE_PER_MODULE = 5;
 	private static final Logger LOGGER = LogManager.getLogger(CreateReadingModulesCommand.class.getName());
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		FacilioModule categoryReadingRelModule = (FacilioModule) context.get(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE);
 		if (categoryReadingRelModule != null && categoryReadingRelModule.equals(ModuleFactory.getAssetCategoryReadingRelModule())) {
 			long categoryId = (long) context.get(FacilioConstants.ContextNames.PARENT_CATEGORY_ID);

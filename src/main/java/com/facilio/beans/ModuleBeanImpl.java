@@ -17,8 +17,6 @@ import java.util.Map;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import com.facilio.modules.*;
-import com.facilio.modules.fields.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -40,7 +38,21 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.db.util.DBConf;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioEnum;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.fields.BooleanField;
+import com.facilio.modules.fields.EnumField;
+import com.facilio.modules.fields.EnumFieldValue;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.FileField;
+import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.NumberField;
+import com.facilio.modules.fields.SystemEnumField;
 
 ;
 

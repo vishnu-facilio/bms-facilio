@@ -1,15 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
-import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-public class AddOrUpdateStateTransitionCommand implements Command {
+import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
+import com.facilio.constants.FacilioConstants;
+
+public class AddOrUpdateStateTransitionCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		StateflowTransitionContext stateFlowRuleContext = (StateflowTransitionContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
 		if (stateFlowRuleContext != null) {
 			Chain chain;

@@ -1,13 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
-import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import java.util.Arrays;
 
-public class ResetContext implements Command {
+import org.apache.commons.chain.Context;
+
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.constants.FacilioConstants;
+
+public class ResetContext extends FacilioCommand {
 
     private long pmId;
     ResetContext () {}
@@ -16,7 +16,7 @@ public class ResetContext implements Command {
         this.pmId = id;
     }
     @Override
-    public boolean execute(Context context) throws Exception {
+    public boolean executeCommand(Context context) throws Exception {
         PreventiveMaintenance pm = new PreventiveMaintenance();
         pm.setStatus(true);
 

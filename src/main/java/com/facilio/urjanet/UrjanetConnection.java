@@ -1,6 +1,10 @@
 package com.facilio.urjanet;
 
-import com.facilio.urjanet.entity.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Base64;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -13,10 +17,13 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Base64;
+import com.facilio.urjanet.entity.Account;
+import com.facilio.urjanet.entity.Attribute;
+import com.facilio.urjanet.entity.ChangeLog;
+import com.facilio.urjanet.entity.Credential;
+import com.facilio.urjanet.entity.Meter;
+import com.facilio.urjanet.entity.Provider;
+import com.facilio.urjanet.entity.Template;
 
 public class UrjanetConnection {
 	

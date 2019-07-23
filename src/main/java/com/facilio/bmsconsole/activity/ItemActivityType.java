@@ -1,7 +1,8 @@
 package com.facilio.bmsconsole.activity;
 
-import com.facilio.activity.ActivityType;
 import org.json.simple.JSONObject;
+
+import com.facilio.activity.ActivityType;
 
 public enum ItemActivityType implements ActivityType {
 	ADD_ITEM(13) {

@@ -1,6 +1,22 @@
 
 package com.facilio.bmsconsole.interceptors;
 
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHeaders;
+import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.dispatcher.Parameter;
+
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.util.AccountUtil;
@@ -20,18 +36,6 @@ import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpHeaders;
-import org.apache.struts2.ServletActionContext;
-import org.apache.struts2.dispatcher.Parameter;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletResponse;
-import java.net.URL;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class AuthInterceptor extends AbstractInterceptor {
 

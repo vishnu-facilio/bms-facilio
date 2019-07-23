@@ -1,18 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.workflow.rule.EventType;
-import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class UpdateEventListForStateFlowCommand implements Command {
+import org.apache.commons.chain.Context;
+
+import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.constants.FacilioConstants;
+
+public class UpdateEventListForStateFlowCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
 		if (workOrder != null) {
 			addEventType(EventType.STATE_TRANSITION, context);

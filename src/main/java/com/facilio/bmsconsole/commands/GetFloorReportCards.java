@@ -1,16 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.util.SpaceAPI;
-import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-public class GetFloorReportCards implements Command {
+import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.constants.FacilioConstants;
+
+public class GetFloorReportCards extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 
 		long floorId = (long) context.get(FacilioConstants.ContextNames.ID);

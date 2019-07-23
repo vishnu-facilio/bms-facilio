@@ -1,21 +1,21 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericInsertRecordBuilder;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleFactory;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AddSitesForStoreRoomCommand implements Command {
+import org.apache.commons.chain.Context;
+
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
+
+public class AddSitesForStoreRoomCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		List<Long> sites = (List<Long>) context.get(FacilioConstants.ContextNames.SITES_FOR_STORE_ROOM);
 		long storeRoomId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 		if (storeRoomId > 0 && sites != null && !sites.isEmpty()) {

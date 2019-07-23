@@ -1,25 +1,25 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GetPickListCommand implements Command {
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+
+import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.FacilioField;
+
+public class GetPickListCommand extends FacilioCommand {
 
 	private static org.apache.log4j.Logger log = LogManager.getLogger(GetPickListCommand.class.getName());
 
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);

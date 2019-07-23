@@ -1,23 +1,24 @@
 package com.facilio.agent.commands;
 
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
-import java.util.Map;
-
-public class AckUpdateCommand implements Command {
+public class AckUpdateCommand extends FacilioCommand {
     private static final Logger LOGGER = LogManager.getLogger(AckUpdateCommand.class.getName());
 
     @Override
-    public boolean execute(Context context) throws Exception {
+    public boolean executeCommand(Context context) throws Exception {
         FacilioModule module = ModuleFactory.getPublishMessageModule();
         if( !context.containsKey(FacilioConstants.ContextNames.TO_UPDATE_MAP) && !context.containsKey(FacilioConstants.ContextNames.ID))
         {

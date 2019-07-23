@@ -1,5 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.FloorContext;
@@ -8,16 +12,12 @@ import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.List;
-
-public class AddSpaceCommand implements Command {
+public class AddSpaceCommand extends FacilioCommand {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
 		SpaceContext space = (SpaceContext) context.get(FacilioConstants.ContextNames.SPACE);

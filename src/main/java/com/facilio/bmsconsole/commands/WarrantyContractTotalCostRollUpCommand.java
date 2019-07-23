@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -21,10 +20,10 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 
-public class WarrantyContractTotalCostRollUpCommand implements Command{
+public class WarrantyContractTotalCostRollUpCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		WarrantyContractContext warrantyContract = (WarrantyContractContext) context.get(FacilioConstants.ContextNames.RECORD);
 		if(warrantyContract!=null) {

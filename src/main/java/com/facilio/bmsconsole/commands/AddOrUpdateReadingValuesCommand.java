@@ -8,7 +8,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -34,13 +33,13 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.time.SecondsChronoUnit;
 
-public class AddOrUpdateReadingValuesCommand implements Command {
+public class AddOrUpdateReadingValuesCommand extends FacilioCommand {
 	
 	private static final Logger LOGGER = LogManager.getLogger(AddOrUpdateReadingValuesCommand.class.getName());
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		long startTime = System.currentTimeMillis();
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);

@@ -1,8 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import com.facilio.db.builder.DBUtil;
-import com.facilio.db.transaction.FacilioConnectionPool;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,6 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import com.facilio.db.builder.DBUtil;
+import com.facilio.db.transaction.FacilioConnectionPool;
 
 public class AdminAPI 
 {

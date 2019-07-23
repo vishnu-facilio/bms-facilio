@@ -1,20 +1,21 @@
 package com.facilio.events.commands;
 
-import com.facilio.events.constants.EventConstants;
-import com.facilio.events.context.EventContext;
-import com.facilio.events.util.EventAPI;
-import org.apache.commons.chain.Command;
+import java.util.Collections;
+import java.util.List;
+
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
-import java.util.Collections;
-import java.util.List;
+import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.events.constants.EventConstants;
+import com.facilio.events.context.EventContext;
+import com.facilio.events.util.EventAPI;
 
-public class InsertEventsCommand implements Command {
+public class InsertEventsCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		long timeStamp = (long) context.get(EventConstants.EventContextNames.EVENT_TIMESTAMP);
 

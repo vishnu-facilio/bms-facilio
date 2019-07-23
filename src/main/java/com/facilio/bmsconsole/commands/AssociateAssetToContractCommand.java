@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.ContractAssociatedAssetsContext;
@@ -10,10 +9,10 @@ import com.facilio.bmsconsole.context.ContractsContext;
 import com.facilio.bmsconsole.util.ContractsAPI;
 import com.facilio.constants.FacilioConstants;
 
-public class AssociateAssetToContractCommand implements Command{
+public class AssociateAssetToContractCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		Long recordId = (Long)context.get(FacilioConstants.ContextNames.RECORD_ID);
 		ContractsContext contractContext = ContractsAPI.getContractDetails(recordId);

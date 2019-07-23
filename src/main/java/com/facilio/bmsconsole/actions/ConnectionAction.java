@@ -1,13 +1,14 @@
 package com.facilio.bmsconsole.actions;
 
+import org.apache.commons.chain.Chain;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ConnectionContext;
 import com.facilio.bmsconsole.util.ConnectionUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Chain;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
 public class ConnectionAction extends FacilioAction {
 

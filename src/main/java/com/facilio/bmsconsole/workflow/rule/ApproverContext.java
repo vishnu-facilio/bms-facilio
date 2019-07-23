@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.workflow.rule;
 
-import com.facilio.bmsconsole.context.SingleSharingContext;
-
 import java.util.List;
+
+import com.facilio.bmsconsole.context.SingleSharingContext;
 
 public class ApproverContext extends SingleSharingContext {
 	private List<ActionContext> actions;

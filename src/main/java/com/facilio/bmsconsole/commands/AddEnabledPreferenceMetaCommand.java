@@ -3,18 +3,12 @@ package com.facilio.bmsconsole.commands;
 import java.util.Collections;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.DigestConfigContext;
 import com.facilio.bmsconsole.context.PreferenceMetaContext;
-import com.facilio.bmsconsole.context.ScheduledActionContext;
-import com.facilio.bmsconsole.util.DigestConfigAPI;
 import com.facilio.bmsconsole.util.PreferenceAPI;
-import com.facilio.bmsconsole.util.ScheduledActionAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.fw.BeanFactory;
@@ -23,10 +17,10 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 
-public class AddEnabledPreferenceMetaCommand implements Command{
+public class AddEnabledPreferenceMetaCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 			FacilioModule prefModule = ModuleFactory.getPreferenceMetaModule();
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

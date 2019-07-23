@@ -1,8 +1,8 @@
 package com.facilio.serializable;
 
-import org.apache.commons.chain.Command;
-
 import java.io.Serializable;
+
+import org.apache.commons.chain.Command;
 
 public interface SerializableCommand extends Command, Serializable {
 

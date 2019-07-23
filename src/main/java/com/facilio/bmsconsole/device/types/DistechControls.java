@@ -1,6 +1,14 @@
 package com.facilio.bmsconsole.device.types;
 
-import com.facilio.aws.util.AwsUtil;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.methods.HttpGet;
@@ -13,10 +21,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.io.IOException;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.facilio.aws.util.AwsUtil;
 
 public class DistechControls 
 {

@@ -1,15 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-public class GetStateFlowCommand implements Command {
+public class GetStateFlowCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		Long stateFlowId = (Long) context.get(FacilioConstants.ContextNames.ID);
 		if (stateFlowId != null && stateFlowId > 0) {
 			StateFlowRuleContext stateFlowRuleContext = (StateFlowRuleContext) WorkflowRuleAPI.getWorkflowRule(stateFlowId);

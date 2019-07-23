@@ -8,7 +8,6 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PreferenceMetaContext;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;

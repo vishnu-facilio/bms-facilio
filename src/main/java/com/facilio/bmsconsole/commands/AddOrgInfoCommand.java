@@ -1,19 +1,19 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.accounts.util.AccountConstants;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericInsertRecordBuilder;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
 import java.util.HashMap;
 import java.util.Map;
 
-public class AddOrgInfoCommand implements Command {
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
+import com.facilio.accounts.util.AccountConstants;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+
+public class AddOrgInfoCommand extends FacilioCommand {
 
         @Override
-        public boolean execute(Context context) throws Exception {
+        public boolean executeCommand(Context context) throws Exception {
             JSONObject signupInfo = (JSONObject) context.get(FacilioConstants.ContextNames.SIGNUP_INFO);
 			boolean facilioAuth = (Boolean) signupInfo.get("isFacilioAuth");
             GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder()

@@ -1,18 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.tenant.TenantContext;
-import com.facilio.bmsconsole.util.TenantsAPI;
-import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class UpdateTenantCommand implements Command {
+import org.apache.commons.chain.Context;
+
+import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsole.util.TenantsAPI;
+import com.facilio.constants.FacilioConstants;
+
+public class UpdateTenantCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		TenantContext tenant = (TenantContext) context.get(TenantsAPI.TENANT_CONTEXT);
 		List<Long> spaceIds = (ArrayList<Long>)context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		

@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -22,10 +21,10 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 
-public class AddOrUpdateToolVendorCommand implements Command{
+public class AddOrUpdateToolVendorCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<ToolTypeVendorContext> toolTypeVendorsList = (List<ToolTypeVendorContext>) context.get(FacilioConstants.ContextNames.TOOL_VENDORS_LIST);
 		if(toolTypeVendorsList!=null){

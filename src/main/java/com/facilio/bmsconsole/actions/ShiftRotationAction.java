@@ -1,21 +1,16 @@
 package com.facilio.bmsconsole.actions;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.ItemContext;
-import com.facilio.bmsconsole.context.ShiftContext;
 import com.facilio.bmsconsole.context.ShiftRotationContext;
 import com.facilio.bmsconsole.context.ShiftRotationDetailsContext;
-import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 

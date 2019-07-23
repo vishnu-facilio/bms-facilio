@@ -9,9 +9,7 @@ import org.apache.struts2.json.JSONResult;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.db.ResponseCacheUtil;
-import com.facilio.cache.CacheUtil;
 import com.facilio.filters.MultiReadServletRequest;
-import com.facilio.fw.LRUCache;
 import com.opensymphony.xwork2.ActionInvocation;
 
 public class CacheResult extends JSONResult {

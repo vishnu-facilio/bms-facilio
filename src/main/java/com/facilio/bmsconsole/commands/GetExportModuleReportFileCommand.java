@@ -1,5 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.reports.ReportsUtil;
@@ -12,16 +22,14 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.pdf.PdfUtil;
-import com.facilio.report.context.*;
+import com.facilio.report.context.ReportContext;
+import com.facilio.report.context.ReportDataPointContext;
+import com.facilio.report.context.ReportFieldContext;
+import com.facilio.report.context.ReportGroupByField;
+import com.facilio.report.context.ReportYAxisContext;
 import com.facilio.time.DateTimeUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections.CollectionUtils;
-import org.json.simple.JSONObject;
 
-import java.util.*;
-
-public class GetExportModuleReportFileCommand implements Command {
+public class GetExportModuleReportFileCommand extends FacilioCommand {
 
 private static final String ALIAS = "alias";
 	
@@ -31,7 +39,7 @@ private static final String ALIAS = "alias";
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		Boolean isS3Url = (Boolean) context.get("isS3Url");
 		if (isS3Url == null) {
 			isS3Url = false;

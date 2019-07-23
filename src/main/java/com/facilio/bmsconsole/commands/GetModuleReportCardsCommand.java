@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.commands;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -18,10 +17,10 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
-public class GetModuleReportCardsCommand implements Command {
+public class GetModuleReportCardsCommand extends FacilioCommand {
 	
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		List<Map<String, Object>> cards = (List<Map<String, Object>>) context.get(FacilioConstants.ContextNames.REPORT_CARDS);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);

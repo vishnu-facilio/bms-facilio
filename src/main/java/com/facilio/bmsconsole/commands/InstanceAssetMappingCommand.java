@@ -5,17 +5,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.timeseries.TimeSeriesAPI;
 
-public class InstanceAssetMappingCommand implements Command {
+public class InstanceAssetMappingCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		Long controllerId = (Long) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
 //		Integer unit= (Integer) context.get(FacilioConstants.ContextNames.UNIT_POINTS);

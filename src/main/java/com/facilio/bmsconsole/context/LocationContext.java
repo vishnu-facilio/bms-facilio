@@ -1,8 +1,9 @@
 package com.facilio.bmsconsole.context;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.facilio.accounts.dto.User;
 import com.facilio.modules.ModuleBaseWithCustomFields;
-import org.apache.commons.lang3.StringUtils;
 
 public class LocationContext extends ModuleBaseWithCustomFields {
 	

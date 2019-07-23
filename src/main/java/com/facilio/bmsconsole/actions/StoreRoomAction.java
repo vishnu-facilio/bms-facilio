@@ -16,7 +16,6 @@ import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 

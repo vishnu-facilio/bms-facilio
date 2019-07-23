@@ -1,21 +1,21 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.db.builder.DBUtil;
-import com.facilio.db.util.DBConf;
-import com.facilio.db.util.SQLScriptRunner;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AddEventModuleCommand implements Command {
+import org.apache.commons.chain.Context;
+
+import com.facilio.db.builder.DBUtil;
+import com.facilio.db.util.DBConf;
+import com.facilio.db.util.SQLScriptRunner;
+
+public class AddEventModuleCommand extends FacilioCommand {
 	
 	private static final File EVENT_MODULE_SQL = new File(SQLScriptRunner.class.getClassLoader().getResource("conf/db/" + DBConf.getInstance().getDBName() + "/eventModule.sql").getFile());
 	
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		long orgId = (long) context.get("orgId");
 		

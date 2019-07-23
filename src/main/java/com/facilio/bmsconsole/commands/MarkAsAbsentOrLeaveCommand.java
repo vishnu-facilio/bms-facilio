@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.dto.User;
@@ -24,10 +23,10 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 
-public class MarkAsAbsentOrLeaveCommand implements Command {
+public class MarkAsAbsentOrLeaveCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 
 		List<Long> userIds = (List<Long>) context.get(FacilioConstants.ContextNames.USERS);
 		if (userIds != null && !userIds.isEmpty()) {

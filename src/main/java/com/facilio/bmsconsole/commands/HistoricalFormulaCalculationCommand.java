@@ -1,16 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.time.DateRange;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-public class HistoricalFormulaCalculationCommand implements Command {
+public class HistoricalFormulaCalculationCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		long formulaId = (long) context.get(FacilioConstants.ContextNames.FORMULA_FIELD);
 		DateRange range = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE);

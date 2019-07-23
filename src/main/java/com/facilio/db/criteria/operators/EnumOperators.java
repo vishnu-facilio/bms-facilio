@@ -1,15 +1,21 @@
 package com.facilio.db.criteria.operators;
 
-import com.facilio.beans.ModuleBean;
-import com.facilio.db.criteria.FacilioModulePredicate;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.fields.EnumField;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.StringJoiner;
+
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.collections.PredicateUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import java.util.*;
+import com.facilio.beans.ModuleBean;
+import com.facilio.db.criteria.FacilioModulePredicate;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.fields.EnumField;
 
 public enum EnumOperators implements Operator<String> {
 	VALUE_IS(52, "value is") {

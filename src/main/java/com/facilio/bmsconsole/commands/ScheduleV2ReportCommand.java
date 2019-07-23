@@ -1,5 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReportInfo;
@@ -17,17 +23,11 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.ScheduleInfo;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-public class ScheduleV2ReportCommand implements Command {
+public class ScheduleV2ReportCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		ReportInfo reportInfo = (ReportInfo) context.get(FacilioConstants.ContextNames.SCHEDULE_INFO);
 		
 		

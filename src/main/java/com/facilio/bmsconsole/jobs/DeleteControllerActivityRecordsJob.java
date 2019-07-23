@@ -1,5 +1,12 @@
 package com.facilio.bmsconsole.jobs;
 
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -12,12 +19,6 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.time.DateTimeUtil;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 public class DeleteControllerActivityRecordsJob extends FacilioJob {
 

@@ -1,7 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.InventoryType;
+import com.facilio.bmsconsole.context.ItemTypesContext;
+import com.facilio.bmsconsole.context.PoLineItemsSerialNumberContext;
+import com.facilio.bmsconsole.context.ReceiptContext;
+import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -11,20 +22,13 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.List;
-import java.util.Map;
 
 ;
 
-public class GetReceiptsListCommand implements Command {
+public class GetReceiptsListCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		long receivableId = (long) context.get(FacilioConstants.ContextNames.PARENT_ID);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		if (StringUtils.isNotEmpty(moduleName) && receivableId > 0) {

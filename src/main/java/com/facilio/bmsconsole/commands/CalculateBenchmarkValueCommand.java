@@ -1,7 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.BenchmarkContext;
+import com.facilio.bmsconsole.context.BenchmarkUnit;
+import com.facilio.bmsconsole.context.BuildingContext;
+import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.BenchmarkAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
@@ -9,16 +18,11 @@ import com.facilio.modules.AggregateOperator.DateAggregateOperator;
 import com.facilio.unitconversion.Metric;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class CalculateBenchmarkValueCommand implements Command {
+public class CalculateBenchmarkValueCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		long id = (long) context.get(FacilioConstants.ContextNames.ID);
 		if (id == -1) {

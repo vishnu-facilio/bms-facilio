@@ -1,5 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
@@ -10,16 +15,11 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.List;
-import java.util.Map;
-
-public class AddRequesterCommand implements Command {
+public class AddRequesterCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 
 		User requester = (User) context.get(FacilioConstants.ContextNames.REQUESTER);
 		if (requester != null && requester.getEmail() != null && !"".equals(requester.getEmail())) {

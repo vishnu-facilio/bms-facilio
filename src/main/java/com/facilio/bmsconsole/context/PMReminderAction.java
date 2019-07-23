@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.bmsconsole.workflow.rule.ActionContext;
-
 import java.io.Serializable;
+
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
 
 public class PMReminderAction implements Serializable {
 

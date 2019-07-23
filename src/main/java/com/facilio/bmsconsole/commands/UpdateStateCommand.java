@@ -1,5 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
@@ -10,15 +14,11 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.ModuleBaseWithCustomFields;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.Map;
-
-public class UpdateStateCommand implements Command {
+public class UpdateStateCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		ModuleBaseWithCustomFields moduleData = (ModuleBaseWithCustomFields) context.get(FacilioConstants.ContextNames.RECORD);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		Long currentTransitionId = (Long) context.get(FacilioConstants.ContextNames.TRANSITION_ID);

@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -28,10 +27,10 @@ import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.tasker.ScheduleInfo.FrequencyType;
 
-public class AddEnergyPredictionCommand implements Command {
+public class AddEnergyPredictionCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context jc) throws Exception {
+	public boolean executeCommand(Context jc) throws Exception {
 		
 		long energyMeterID=(long) jc.get("energyMeterID");
 		

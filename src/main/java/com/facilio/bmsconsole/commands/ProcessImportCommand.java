@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
@@ -50,7 +49,6 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
@@ -66,7 +64,7 @@ import com.facilio.modules.fields.LookupField;
 import com.facilio.time.DateTimeUtil;
 import com.google.common.collect.ArrayListMultimap;
 
-public class ProcessImportCommand implements Command {
+public class ProcessImportCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = Logger.getLogger(ProcessImportCommand.class.getName());
 	private static org.apache.log4j.Logger log = LogManager.getLogger(ProcessXLS.class.getName());
@@ -74,7 +72,7 @@ public class ProcessImportCommand implements Command {
 	private static ArrayListMultimap<String, Long> recordsList = ArrayListMultimap.create();
 	
 	@Override
-	public boolean execute(Context c) throws Exception,ImportFieldValueMissingException {
+	public boolean executeCommand(Context c) throws Exception,ImportFieldValueMissingException {
 
 		HashMap<String, List<ReadingContext>> groupedContext = new HashMap<String, List<ReadingContext>>();
 		

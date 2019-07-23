@@ -1,27 +1,20 @@
 package com.facilio.bmsconsole.jobs;
 
-import com.facilio.bmsconsole.context.EnergyMeterContext;
-import com.facilio.bmsconsole.context.HistoricalLoggerContext;
-import com.facilio.bmsconsole.util.BmsJobUtil;
-import com.facilio.bmsconsole.util.DeviceAPI;
-import com.facilio.bmsconsole.util.HistoricalLoggerUtil;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.tasker.job.FacilioJob;
-import com.facilio.tasker.job.JobContext;
-import com.facilio.time.DateTimeUtil;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import com.facilio.bmsconsole.context.EnergyMeterContext;
+import com.facilio.bmsconsole.context.HistoricalLoggerContext;
+import com.facilio.bmsconsole.util.BmsJobUtil;
+import com.facilio.bmsconsole.util.DeviceAPI;
+import com.facilio.bmsconsole.util.HistoricalLoggerUtil;
+import com.facilio.tasker.job.FacilioJob;
+import com.facilio.tasker.job.JobContext;
+import com.facilio.time.DateTimeUtil;
 
 public class HistoricalVMEnergyDataCalculatorJob extends FacilioJob {
 	private static final Logger LOGGER = LogManager.getLogger(HistoricalVMEnergyDataCalculatorJob.class.getName());

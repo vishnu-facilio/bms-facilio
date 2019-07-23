@@ -10,20 +10,19 @@ import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.SelectRecordsBuilder;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class DeleteAttachmentCommand implements Command, PostTransactionCommand {
+public class DeleteAttachmentCommand extends FacilioCommand implements PostTransactionCommand {
 
 	private Set<Long> idsToUpdateCount;
 	private String moduleName;
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
 		List<Long> attachmentIdList = (List<Long>) context.get(FacilioConstants.ContextNames.ATTACHMENT_ID_LIST);

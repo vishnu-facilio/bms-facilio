@@ -1,17 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-public class DuplicateDashboardForBuildingCommand implements Command {
+public class DuplicateDashboardForBuildingCommand extends FacilioCommand {
 	
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		Long buildingId= (Long) context.get(FacilioConstants.ContextNames.BUILDING_ID);
 		
 		DashboardContext db = (DashboardContext) context.get(FacilioConstants.ContextNames.DASHBOARD);

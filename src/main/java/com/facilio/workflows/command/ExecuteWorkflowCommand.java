@@ -3,19 +3,18 @@ package com.facilio.workflows.command;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.workflows.context.WorkflowContext;
-import com.facilio.workflows.context.WorkflowContext.WorkflowUIMode;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 
-public class ExecuteWorkflowCommand implements Command {
+public class ExecuteWorkflowCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
 		WorkflowContext workflowContext = (WorkflowContext) context.get(WorkflowV2Util.WORKFLOW_CONTEXT);

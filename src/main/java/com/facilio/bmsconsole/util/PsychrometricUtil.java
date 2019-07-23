@@ -1,10 +1,10 @@
 package com.facilio.bmsconsole.util;
 
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
 
 public class PsychrometricUtil {
 	

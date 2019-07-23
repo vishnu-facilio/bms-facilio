@@ -4,20 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
-import com.facilio.accounts.dto.User;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AttendanceContext;
+import com.facilio.bmsconsole.context.AttendanceStateContext;
 import com.facilio.bmsconsole.context.AttendanceTransactionContext.TransactionType;
 import com.facilio.bmsconsole.context.BreakContext;
 import com.facilio.bmsconsole.context.BreakTransactionContext;
 import com.facilio.bmsconsole.context.ShiftContext;
 import com.facilio.bmsconsole.context.ShiftUserRelContext;
 import com.facilio.bmsconsole.util.ShiftAPI;
-import com.facilio.bmsconsole.context.AttendanceStateContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
@@ -29,10 +27,10 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 
-public class ShowStateForAttendanceCommand implements Command {
+public class ShowStateForAttendanceCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		long userId = (long) context.get(FacilioConstants.ContextNames.USER_ID);
 		long time = (long) context.get(FacilioConstants.ContextNames.TIMESTAMP);
 		if (userId > 0 && time > 0) {

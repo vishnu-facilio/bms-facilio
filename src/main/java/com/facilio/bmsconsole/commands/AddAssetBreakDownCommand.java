@@ -1,14 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 
-import javax.sound.midi.Soundbank;
-
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -16,9 +12,8 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AssetBDSourceDetailsContext;
-import com.facilio.bmsconsole.context.AssetBreakdownContext;
-import com.facilio.bmsconsole.context.BusinessHoursContext;
 import com.facilio.bmsconsole.context.AssetBDSourceDetailsContext.SourceType;
+import com.facilio.bmsconsole.context.AssetBreakdownContext;
 import com.facilio.bmsconsole.util.AssetBreakdownAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -37,10 +32,10 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 
-public class AddAssetBreakDownCommand implements Command {
+public class AddAssetBreakDownCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		AssetBreakdownContext assetBreakdown;
 		Boolean assetBreakdownStatus = (Boolean) context.get(FacilioConstants.ContextNames.ASSET_DOWNTIME_STATUS);
 		AssetBDSourceDetailsContext assetBDSourceDetails = (AssetBDSourceDetailsContext) context.get(FacilioConstants.ContextNames.ASSET_BD_SOURCE_DETAILS);

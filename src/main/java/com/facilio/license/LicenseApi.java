@@ -1,19 +1,18 @@
 package com.facilio.license;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
-import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.license.LicenseContext.FacilioLicense;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class LicenseApi {
 	

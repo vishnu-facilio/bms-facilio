@@ -1,12 +1,13 @@
 package com.facilio.bmsconsole.context;
 
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
 public class ReportDateFilterContext {
 

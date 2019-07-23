@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -18,10 +17,10 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.fields.FacilioField;
 
 // TODO to be removed once supported by every client
-public class BackwardCompatibleStateFlowUpdateCommand implements Command {
+public class BackwardCompatibleStateFlowUpdateCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
 		List<WorkOrderContext> oldWos = (List<WorkOrderContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);

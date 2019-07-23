@@ -6,7 +6,6 @@ import com.facilio.accounts.dto.User;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 public class BaseAlarmContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;

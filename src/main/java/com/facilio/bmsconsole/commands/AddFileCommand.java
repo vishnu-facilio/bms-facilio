@@ -1,17 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
+import java.io.File;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.io.File;
-
-public class AddFileCommand implements Command {
+public class AddFileCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		File newFile = (File) context.get(FacilioConstants.ContextNames.FILE);
 		String newFileName = (String) context.get(FacilioConstants.ContextNames.FILE_NAME);

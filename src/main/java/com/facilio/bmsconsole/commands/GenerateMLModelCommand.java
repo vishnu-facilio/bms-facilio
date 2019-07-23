@@ -1,5 +1,21 @@
 package com.facilio.bmsconsole.commands;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.TimeZone;
+
+import org.apache.commons.chain.Context;
+import org.apache.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
@@ -10,22 +26,12 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.Logger;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.time.Instant;
-import java.time.LocalDate;
-import java.util.*;
-
-public class GenerateMLModelCommand implements Command {
+public class GenerateMLModelCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = Logger.getLogger(GenerateMLModelCommand.class.getName());
 	@Override
-	public boolean execute(Context context) throws Exception 
+	public boolean executeCommand(Context context) throws Exception 
 	{
 		MLContext mlContext = (MLContext) context.get(FacilioConstants.ContextNames.ML);
 		JSONObject postObj = new JSONObject();

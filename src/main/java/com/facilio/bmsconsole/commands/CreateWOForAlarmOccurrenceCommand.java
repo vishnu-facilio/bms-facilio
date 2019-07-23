@@ -3,14 +3,13 @@ package com.facilio.bmsconsole.commands;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
@@ -20,10 +19,10 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
-public class CreateWOForAlarmOccurrenceCommand implements Command {
+public class CreateWOForAlarmOccurrenceCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		long recordId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 		if (recordId > 0) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

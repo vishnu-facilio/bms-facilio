@@ -1,20 +1,20 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.List;
-import java.util.Map;
-
-public class GetTasksOfTicketCommand implements Command {
+public class GetTasksOfTicketCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
 		long ticketId = (long) context.get(FacilioConstants.ContextNames.ID);

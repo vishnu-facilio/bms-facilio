@@ -1,19 +1,27 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.PMReminder;
+import com.facilio.bmsconsole.context.PMResourcePlannerContext;
+import com.facilio.bmsconsole.context.PMResourcePlannerReminderContext;
+import com.facilio.bmsconsole.context.PMTriggerContext;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.*;
-
-public class AddPMRelFieldsCommand implements Command {
+public class AddPMRelFieldsCommand extends FacilioCommand {
 	
 	private boolean isBulkUpdate = false;
 	
@@ -24,7 +32,7 @@ public class AddPMRelFieldsCommand implements Command {
 	}
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		
 		List<PreventiveMaintenance> pms;

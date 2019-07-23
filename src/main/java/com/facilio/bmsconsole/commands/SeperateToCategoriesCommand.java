@@ -6,21 +6,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.map.HashedMap;
 
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.util.ImportAPI;
-import com.mysql.fabric.xmlrpc.base.Array;
 
-public class SeperateToCategoriesCommand implements Command{
+public class SeperateToCategoriesCommand extends FacilioCommand{
 	
 	private static Logger LOGGER = Logger.getLogger(SeperateToCategoriesCommand.class.getName());
 	@Override
-	public boolean execute(Context context) throws Exception{
+	public boolean executeCommand(Context context) throws Exception{
 		
 		// List<ReadingContext> readingsList = (List<ReadingContext>) context.get(ImportAPI.ImportProcessConstants.READINGS_LIST);
 		ImportProcessContext importProcessContext = (ImportProcessContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);

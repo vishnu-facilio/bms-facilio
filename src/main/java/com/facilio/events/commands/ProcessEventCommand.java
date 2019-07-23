@@ -1,25 +1,26 @@
 package com.facilio.events.commands;
 
-import com.facilio.chain.FacilioContext;
-import com.facilio.events.constants.EventConstants;
-import com.facilio.events.context.EventRuleContext;
-import com.facilio.events.util.EventAPI;
-import com.facilio.events.util.EventRulesAPI;
-import org.apache.commons.chain.Command;
+import java.util.HashMap;
+import java.util.List;
+
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import java.util.HashMap;
-import java.util.List;
+import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.chain.FacilioContext;
+import com.facilio.events.constants.EventConstants;
+import com.facilio.events.context.EventRuleContext;
+import com.facilio.events.util.EventAPI;
+import com.facilio.events.util.EventRulesAPI;
 
-public class ProcessEventCommand implements Command {
+public class ProcessEventCommand extends FacilioCommand {
 
 	private static Logger log = LogManager.getLogger(ProcessEventCommand.class.getName());
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		JSONObject payload = (JSONObject) context.get(EventConstants.EventContextNames.EVENT_PAYLOAD);
 		if(payload != null) {
 			List<EventRuleContext> ruleList = EventRulesAPI.getActiveEventRules();

@@ -1,5 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.templates.EMailTemplate;
@@ -7,14 +10,11 @@ import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
 
-public class AddOrUpdateAlarmEMailTemplateCommand implements Command {
+public class AddOrUpdateAlarmEMailTemplateCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		String email = (String) context.get(FacilioConstants.Workflow.NOTIFICATION_EMAIL);
 		

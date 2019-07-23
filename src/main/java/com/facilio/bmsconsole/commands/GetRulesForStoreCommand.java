@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -22,10 +21,10 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 
-public class GetRulesForStoreCommand implements Command{
+public class GetRulesForStoreCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		FacilioModule module = ModuleFactory.getStoreNotificationConfigModule();
 		List<FacilioField> fields = FieldFactory.getStoreNotificationModuleFields();

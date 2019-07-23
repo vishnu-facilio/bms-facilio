@@ -1,22 +1,22 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-public class DeleteUserCommand implements Command {
+public class DeleteUserCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		User user = (User) context.get(FacilioConstants.ContextNames.USER);
 		

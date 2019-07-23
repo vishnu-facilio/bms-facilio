@@ -4,18 +4,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.util.DigestConfigAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.tasker.job.JobContext;
 import com.facilio.tasker.job.JobStore;
 
-public class ActivateDeactivateDigestConfigCommand implements Command{
+public class ActivateDeactivateDigestConfigCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		Long configId = (Long)context.get(FacilioConstants.ContextNames.DIGEST_CONFIG_ID);
 		Map<String, Object> config = DigestConfigAPI.getDigestConfig(configId);

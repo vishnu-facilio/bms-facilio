@@ -1,16 +1,22 @@
 package com.facilio.wms.endpoints;
 
-import com.facilio.wms.message.Message;
-import com.facilio.wms.message.MessageDecoder;
-import com.facilio.wms.message.MessageEncoder;
-
-import javax.websocket.*;
-import javax.websocket.server.PathParam;
-import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.logging.Logger;
+
+import javax.websocket.EncodeException;
+import javax.websocket.OnClose;
+import javax.websocket.OnError;
+import javax.websocket.OnMessage;
+import javax.websocket.OnOpen;
+import javax.websocket.Session;
+import javax.websocket.server.PathParam;
+import javax.websocket.server.ServerEndpoint;
+
+import com.facilio.wms.message.Message;
+import com.facilio.wms.message.MessageDecoder;
+import com.facilio.wms.message.MessageEncoder;
 
 /**
  *

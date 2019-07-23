@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.forms.FormRuleContext;
@@ -10,10 +9,10 @@ import com.facilio.bmsconsole.forms.FormRuleContext.TriggerType;
 import com.facilio.bmsconsole.util.FormRuleAPI;
 import com.facilio.constants.FacilioConstants;
 
-public class ValidateAndFillFromRuleParamsCommand implements Command {
+public class ValidateAndFillFromRuleParamsCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		TriggerType triggerType = (TriggerType) context.get(FormRuleAPI.FORM_RULE_TRIGGER_TYPE);
 		Long fromId = (Long) context.get(FacilioConstants.ContextNames.FORM_ID);

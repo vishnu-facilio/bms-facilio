@@ -1,5 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.constants.FacilioConstants;
@@ -7,15 +11,11 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.UpdateRecordBuilder;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.Collections;
-
-public class UpdateBaseSpaceCommand implements Command {
+public class UpdateBaseSpaceCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		BaseSpaceContext baseSpace = (BaseSpaceContext) context.get(FacilioConstants.ContextNames.BASE_SPACE);
 		if(baseSpace != null) 

@@ -1,9 +1,28 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.bmsconsole.context.InventoryType;
+import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ItemContext.CostType;
+import com.facilio.bmsconsole.context.ItemTypesContext;
+import com.facilio.bmsconsole.context.ItemTypesVendorsContext;
+import com.facilio.bmsconsole.context.PoLineItemsSerialNumberContext;
+import com.facilio.bmsconsole.context.PurchaseOrderContext;
 import com.facilio.bmsconsole.context.PurchaseOrderContext.Status;
+import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
+import com.facilio.bmsconsole.context.PurchasedItemContext;
+import com.facilio.bmsconsole.context.PurchasedToolContext;
+import com.facilio.bmsconsole.context.ToolContext;
+import com.facilio.bmsconsole.context.ToolTypeVendorContext;
+import com.facilio.bmsconsole.context.ToolTypesContext;
 import com.facilio.bmsconsole.util.ItemsApi;
 import com.facilio.bmsconsole.util.ToolsApi;
 import com.facilio.constants.FacilioConstants;
@@ -15,18 +34,11 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-public class PurchaseOrderCompleteCommand implements Command {
+public class PurchaseOrderCompleteCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		List<Long> purchaseOrdersIds = (List<Long>) context.get(FacilioConstants.ContextNames.PURCHASE_ORDERS);
 		if (purchaseOrdersIds != null && !purchaseOrdersIds.isEmpty()) {
 			List<PurchaseOrderLineItemContext> lineItems = (List<PurchaseOrderLineItemContext>) context

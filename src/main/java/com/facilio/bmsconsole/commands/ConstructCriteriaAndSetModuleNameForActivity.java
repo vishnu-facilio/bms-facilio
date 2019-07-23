@@ -1,5 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
@@ -13,21 +21,13 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
-import java.util.List;
-
-public class ConstructCriteriaAndSetModuleNameForActivity implements Command {
+public class ConstructCriteriaAndSetModuleNameForActivity extends FacilioCommand {
 
 	private static final Logger LOGGER = LogManager.getLogger(ConstructCriteriaAndSetModuleNameForActivity.class.getName());
 	
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		Long parentId = (Long) context.get(FacilioConstants.ContextNames.PARENT_ID);
 		if (parentId != null && parentId != -1) {

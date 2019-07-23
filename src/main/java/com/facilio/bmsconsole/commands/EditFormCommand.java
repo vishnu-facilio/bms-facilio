@@ -1,5 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -8,15 +12,11 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.Map;
-
-public class EditFormCommand implements Command {
+public class EditFormCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		FacilioForm editedForm = (FacilioForm) context.get(FacilioConstants.ContextNames.FORM);
 		Map<String, Object> props = FieldUtil.getAsProperties(editedForm);
 		FacilioModule formModule = ModuleFactory.getFormModule();

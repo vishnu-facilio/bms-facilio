@@ -1,11 +1,12 @@
 package com.facilio.workflowv2.contexts;
 
-import com.facilio.db.criteria.Criteria;
-import com.facilio.modules.AggregateOperator;
-import org.apache.commons.lang3.tuple.Pair;
-
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.lang3.tuple.Pair;
+
+import com.facilio.db.criteria.Criteria;
+import com.facilio.modules.AggregateOperator;
 
 public class DBParamContext {
 	

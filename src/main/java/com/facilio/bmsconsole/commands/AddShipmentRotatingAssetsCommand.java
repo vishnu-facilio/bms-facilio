@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -28,10 +27,10 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 
-public class AddShipmentRotatingAssetsCommand implements Command{
+public class AddShipmentRotatingAssetsCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		ShipmentContext shipment = (ShipmentContext)context.get(FacilioConstants.ContextNames.SHIPMENT);
 		List<ShipmentLineItemContext> lineItems = (List<ShipmentLineItemContext>)context.get(FacilioConstants.ContextNames.SHIPMENT_LINE_ITEM);

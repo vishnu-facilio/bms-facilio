@@ -1,6 +1,22 @@
 package com.facilio.events.util;
 
 
+import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Chain;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.templates.JSONTemplate;
@@ -21,15 +37,6 @@ import com.facilio.events.context.EventRuleContext;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
-import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
-import java.util.*;
 
 public class EventAPI {
 //	 public static long processEvents(long timestamp, JSONObject object, List<EventRule> eventRules, Map<String, Integer> eventCountMap, long lastEventTime) throws Exception {

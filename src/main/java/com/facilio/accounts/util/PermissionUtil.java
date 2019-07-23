@@ -1,5 +1,12 @@
 package com.facilio.accounts.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.Permissions;
 import com.facilio.accounts.dto.Role;
@@ -13,12 +20,6 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.BuildingOperator;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class PermissionUtil {
 	private static final Logger log = LogManager.getLogger(PermissionUtil.class.getName());

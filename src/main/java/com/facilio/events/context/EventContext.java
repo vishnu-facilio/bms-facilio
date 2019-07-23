@@ -1,13 +1,14 @@
 package com.facilio.events.context;
 
-import com.facilio.bmsconsole.context.ResourceContext;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
+import java.util.StringJoiner;
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.util.StringJoiner;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 
 public class EventContext {
 	private long id = -1;

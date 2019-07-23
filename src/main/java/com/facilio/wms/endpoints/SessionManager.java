@@ -1,12 +1,17 @@
 package com.facilio.wms.endpoints;
 
-import com.facilio.wms.message.Message;
-import com.facilio.wms.message.MessageType;
-
-import javax.websocket.Session;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import javax.websocket.Session;
+
+import com.facilio.wms.message.Message;
+import com.facilio.wms.message.MessageType;
 
 public class SessionManager {
 	

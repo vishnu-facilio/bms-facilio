@@ -1,24 +1,24 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.TaskContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
-import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class PMSettingsCommand implements Command {
+import org.apache.commons.chain.Context;
+
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
+import com.facilio.constants.FacilioConstants;
+
+public class PMSettingsCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = Logger.getLogger(PreventiveMaintenanceAPI.class.getName());
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		WorkOrderContext wo = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
 		if (wo == null || wo.getPm() == null) {
 			return false;

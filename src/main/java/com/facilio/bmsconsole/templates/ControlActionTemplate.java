@@ -1,7 +1,8 @@
 package com.facilio.bmsconsole.templates;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import org.json.simple.JSONObject;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 public class ControlActionTemplate extends Template {
     /**

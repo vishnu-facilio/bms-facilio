@@ -3,10 +3,7 @@ package com.facilio.workflowv2.util;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.db.builder.GenericDeleteRecordBuilder;
-import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;

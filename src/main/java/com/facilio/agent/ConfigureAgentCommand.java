@@ -1,14 +1,15 @@
 package com.facilio.agent;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-public class ConfigureAgentCommand implements Command
+import com.facilio.bmsconsole.commands.FacilioCommand;
+
+public class ConfigureAgentCommand extends FacilioCommand
 {
 
     @Override
-    public boolean execute(Context context) throws Exception {
+    public boolean executeCommand(Context context) throws Exception {
             JSONObject agentContext = (JSONObject) context.get(PublishType.agent.getValue());
             return  AgentUtil.agentEdit(agentContext);
     }

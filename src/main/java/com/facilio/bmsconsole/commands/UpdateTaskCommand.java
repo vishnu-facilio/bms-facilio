@@ -1,14 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -23,7 +21,6 @@ import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderContext.PreRequisiteStatus;
-import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -44,12 +41,12 @@ import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
-public class UpdateTaskCommand implements Command {
+public class UpdateTaskCommand extends FacilioCommand {
 	
 	private static org.apache.log4j.Logger log = LogManager.getLogger(UpdateTaskCommand.class.getName());
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		TaskContext task = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);

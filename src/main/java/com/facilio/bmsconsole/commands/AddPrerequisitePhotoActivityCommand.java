@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -14,10 +13,10 @@ import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
-public class AddPrerequisitePhotoActivityCommand implements Command {
+public class AddPrerequisitePhotoActivityCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		long parentId = (long) context.get(FacilioConstants.ContextNames.PARENT_ID);

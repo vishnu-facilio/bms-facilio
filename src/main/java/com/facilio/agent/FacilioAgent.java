@@ -1,14 +1,15 @@
 package com.facilio.agent;
 
+import java.util.HashSet;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.agentIntegration.AgentIntegrationKeys;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.IotPolicy;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.constants.FacilioConstants;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.util.HashSet;
 
 public class FacilioAgent
 {

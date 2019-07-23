@@ -1,20 +1,20 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.Collections;
-
-public class AddAssetCategoryModule implements Command {
+public class AddAssetCategoryModule extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		AssetCategoryContext assetCategory = (AssetCategoryContext) context.get(FacilioConstants.ContextNames.RECORD);
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

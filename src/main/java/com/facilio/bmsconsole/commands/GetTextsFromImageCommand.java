@@ -1,16 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.constants.FacilioConstants;
-import com.facilio.image.ImageRecognitionUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import java.io.File;
 
-public class GetTextsFromImageCommand implements Command {
+import org.apache.commons.chain.Context;
+
+import com.facilio.constants.FacilioConstants;
+import com.facilio.image.ImageRecognitionUtil;
+
+public class GetTextsFromImageCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		Long photoId = (Long) context.get(FacilioConstants.ContextNames.PHOTO_ID);
 		if (photoId != null && photoId != -1) {

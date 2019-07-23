@@ -1,5 +1,18 @@
 package com.facilio.timeseries;
 
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.v2.IRecordProcessor;
 import com.amazonaws.services.kinesis.clientlibrary.types.InitializationInput;
 import com.amazonaws.services.kinesis.clientlibrary.types.ProcessRecordsInput;
@@ -22,18 +35,6 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class TimeSeriesProcessor implements IRecordProcessor {
 	

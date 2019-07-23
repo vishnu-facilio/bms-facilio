@@ -1,5 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.templates.SMSTemplate;
@@ -7,14 +10,11 @@ import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
 
-public class AddOrUpdateAlarmSMSTemplateCommand implements Command {
+public class AddOrUpdateAlarmSMSTemplateCommand extends FacilioCommand {
 	
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		String sms = (String) context.get(FacilioConstants.Workflow.NOTIFICATION_SMS);
 		

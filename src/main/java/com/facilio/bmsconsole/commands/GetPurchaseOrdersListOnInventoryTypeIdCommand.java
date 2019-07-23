@@ -1,5 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.InventoryType;
 import com.facilio.bmsconsole.context.PurchaseOrderContext;
@@ -10,15 +14,11 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.List;
-
-public class GetPurchaseOrdersListOnInventoryTypeIdCommand  implements Command{
+public class GetPurchaseOrdersListOnInventoryTypeIdCommand  extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		int inventoryType = (Integer) context.get(FacilioConstants.ContextNames.INVENTORY_CATEGORY);
 		long id = (Long) context.get(FacilioConstants.ContextNames.ID);

@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
@@ -37,11 +36,11 @@ import com.facilio.modules.fields.LookupField;
 import com.google.common.base.Functions;
 import com.google.common.collect.Lists;
 
-public class LoadViewCommand implements Command {
+public class LoadViewCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = LogManager.getLogger(LoadViewCommand.class.getName());
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		long startTime = System.currentTimeMillis();
 		String viewName = (String) context.get(FacilioConstants.ContextNames.CV_NAME);

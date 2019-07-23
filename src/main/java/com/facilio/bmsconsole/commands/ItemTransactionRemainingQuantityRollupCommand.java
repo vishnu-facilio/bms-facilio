@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -22,10 +21,10 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 
-public class ItemTransactionRemainingQuantityRollupCommand implements Command {
+public class ItemTransactionRemainingQuantityRollupCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		TransactionState transactionState = (TransactionState) context
 				.get(FacilioConstants.ContextNames.TRANSACTION_STATE);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

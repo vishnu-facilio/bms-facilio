@@ -1,18 +1,19 @@
 package com.facilio.events.constants;
 
+import org.apache.commons.chain.Context;
+
+import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.util.EventRulesAPI;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-public class UpdateNewEventRuleCommand implements Command {
+public class UpdateNewEventRuleCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		EventRuleContext eventRule = (EventRuleContext) context.get(EventConstants.EventContextNames.EVENT_RULE);
 		if(eventRule != null && eventRule.getId() != -1) {

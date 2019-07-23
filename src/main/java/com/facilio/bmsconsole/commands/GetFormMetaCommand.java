@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -26,10 +25,10 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
-public class GetFormMetaCommand implements Command {
+public class GetFormMetaCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		String formName = (String) context.get(FacilioConstants.ContextNames.FORM_NAME);
 		Long formId = (Long) context.get(FacilioConstants.ContextNames.FORM_ID);
 		FacilioForm form = null;

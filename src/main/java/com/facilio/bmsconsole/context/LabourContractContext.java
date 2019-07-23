@@ -2,8 +2,6 @@ package com.facilio.bmsconsole.context;
 
 import java.util.List;
 
-import com.facilio.bmsconsole.context.ContractsContext.Status;
-
 public class LabourContractContext extends ContractsContext{
 
 	/**

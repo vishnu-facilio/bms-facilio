@@ -1,5 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ResourceContext;
@@ -14,21 +23,20 @@ import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.AggregateOperator;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FacilioStatus.StatusType;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.*;
 
 ;
 
-public class FetchExtraMetaForAlarmRuleCommand implements Command {
+public class FetchExtraMetaForAlarmRuleCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		Boolean isSummary = (Boolean) context.get(FacilioConstants.ContextNames.IS_SUMMARY);
 		if (isSummary != null && isSummary ) {
 		AlarmRuleContext alarmRule = (AlarmRuleContext) context.get(FacilioConstants.ContextNames.ALARM_RULE);

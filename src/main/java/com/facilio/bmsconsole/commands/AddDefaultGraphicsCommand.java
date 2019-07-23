@@ -1,5 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.GraphicsContext;
 import com.facilio.bmsconsole.context.GraphicsFolderContext;
@@ -12,21 +22,10 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.util.List;
-import java.util.Map;
-
-public class AddDefaultGraphicsCommand implements Command {
+public class AddDefaultGraphicsCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		long orgId = (long) context.get("orgId");
 		

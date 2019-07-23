@@ -1,5 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Context;
+import org.apache.log4j.Logger;
+
 import com.facilio.bmsconsole.context.MLContext;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
@@ -8,16 +11,13 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.util.FacilioUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.Logger;
 
-public class ApplyRuleForMLCommand implements Command {
+public class ApplyRuleForMLCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = Logger.getLogger(ApplyRuleForMLCommand.class.getName());
 	
 	@Override
-	public boolean execute(Context context) throws Exception 
+	public boolean executeCommand(Context context) throws Exception 
 	{
 		
 		MLContext mlContext = (MLContext) context.get(FacilioConstants.ContextNames.ML);

@@ -1,33 +1,27 @@
 package com.facilio.workflows.command;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.fields.FacilioField;
 import com.facilio.workflows.context.ScheduledWorkflowContext;
 import com.facilio.workflows.context.WorkflowContext;
-import com.facilio.workflows.context.WorkflowUserFunctionContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 
-public class GetAllScheduledWorkflowCommand implements Command {
+public class GetAllScheduledWorkflowCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(FieldFactory.getScheduledWorkflowFields())

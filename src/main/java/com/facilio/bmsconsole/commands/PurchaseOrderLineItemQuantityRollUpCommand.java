@@ -1,5 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
@@ -13,17 +21,13 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import java.util.*;
 
 ;
 
-public class PurchaseOrderLineItemQuantityRollUpCommand implements Command{
+public class PurchaseOrderLineItemQuantityRollUpCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		Set<Long> lineItemIds = (Set<Long>) context.get(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS_ID);
 		// TODO Auto-generated method stub
 		if (lineItemIds != null) {

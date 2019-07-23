@@ -1,11 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.constants.FacilioConstants;
 
-public class SetTableNamesCommand implements Command {
+public class SetTableNamesCommand extends FacilioCommand {
 
 	private String moduleName, tableName;
 	
@@ -18,7 +17,7 @@ public class SetTableNamesCommand implements Command {
 	}
 	
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		if (moduleName == null && context.containsKey(FacilioConstants.ContextNames.MODULE_NAME)) {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);

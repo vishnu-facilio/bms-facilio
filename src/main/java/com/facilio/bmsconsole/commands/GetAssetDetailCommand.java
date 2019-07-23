@@ -28,10 +28,10 @@ public class GetAssetDetailCommand extends GenericGetModuleDataDetailCommand {
 	private static final Logger LOGGER = LogManager.getLogger(GetAssetDetailCommand.class.getName());
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		if (context.get(FacilioConstants.ContextNames.ID) != null) {
-			super.execute(context);
+			super.executeCommand(context);
 			
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			AssetContext assetContext = (AssetContext) context.get(FacilioConstants.ContextNames.RECORD);

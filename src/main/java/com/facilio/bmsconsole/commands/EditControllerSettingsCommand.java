@@ -1,5 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.logging.log4j.util.Strings;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.ControllerContext;
@@ -15,17 +21,11 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.logging.log4j.util.Strings;
 
-import java.util.List;
-import java.util.Map;
-
-public class EditControllerSettingsCommand implements Command {
+public class EditControllerSettingsCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		ControllerContext controller = (ControllerContext) context.get(FacilioConstants.ContextNames.CONTROLLER_SETTINGS);
 		
 		if (controller == null) {

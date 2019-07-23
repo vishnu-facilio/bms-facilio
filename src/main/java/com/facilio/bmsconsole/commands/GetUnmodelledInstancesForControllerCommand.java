@@ -5,17 +5,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import com.facilio.constants.FacilioConstants;
 import com.facilio.timeseries.TimeSeriesAPI;
 
-public class GetUnmodelledInstancesForControllerCommand implements Command {
+public class GetUnmodelledInstancesForControllerCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		long controllerId = (long) context.get(FacilioConstants.ContextNames.CONTROLLER_ID);
 		Boolean configured = (Boolean) context.get(FacilioConstants.ContextNames.CONFIGURE);
 		Boolean fetchMapped = (Boolean) context.get(FacilioConstants.ContextNames.FETCH_MAPPED);

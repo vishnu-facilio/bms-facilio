@@ -1,11 +1,12 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
 
 
 public class SetupLayout<T> {

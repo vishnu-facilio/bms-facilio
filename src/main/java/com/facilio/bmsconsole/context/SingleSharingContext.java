@@ -1,9 +1,9 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.accounts.dto.GroupMember;
-
 import java.io.Serializable;
 import java.util.List;
+
+import com.facilio.accounts.dto.GroupMember;
 
 public class SingleSharingContext implements Serializable {
 	

@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.GraphicsFolderContext;
@@ -13,10 +12,10 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 
-public class UpdateGraphicsFolderCommand implements Command {
+public class UpdateGraphicsFolderCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
 		GraphicsFolderContext graphicsFolderContext = (GraphicsFolderContext) context.get(FacilioConstants.ContextNames.GRAPHICS_FOLDER);

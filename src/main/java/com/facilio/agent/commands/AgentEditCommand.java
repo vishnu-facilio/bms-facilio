@@ -1,21 +1,22 @@
 package com.facilio.agent.commands;
 
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
 import com.facilio.agent.AgentKeys;
+import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
 
-public class AgentEditCommand implements Command
+public class AgentEditCommand extends FacilioCommand
 {
 
     @Override
-    public boolean execute(Context context) throws Exception {
+    public boolean executeCommand(Context context) throws Exception {
         if(!context.containsKey(FacilioConstants.ContextNames.PAY_LOAD)){
             return false;
         }

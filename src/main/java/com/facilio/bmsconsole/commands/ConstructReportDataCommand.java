@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.StringJoiner;
 import java.util.TreeSet;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
@@ -39,7 +38,7 @@ import com.facilio.report.context.ReportFieldContext;
 import com.facilio.report.context.ReportGroupByField;
 import com.facilio.report.util.ReportUtil;
 
-public class ConstructReportDataCommand implements Command {
+public class ConstructReportDataCommand extends FacilioCommand {
 
 	private Collection<Map<String, Object>> initList(String sortAlias, boolean isTimeSeries) { //In case we wanna implement a sorted list
 	    if (isTimeSeries) {
@@ -66,7 +65,7 @@ public class ConstructReportDataCommand implements Command {
     }
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<ReportDataContext> reportData = (List<ReportDataContext>) context.get(FacilioConstants.ContextNames.REPORT_DATA);
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);

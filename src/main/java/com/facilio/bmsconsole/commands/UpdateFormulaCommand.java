@@ -1,5 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext.TriggerType;
@@ -15,25 +23,15 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
-import com.facilio.mv.util.MVUtil;
 import com.facilio.time.DateRange;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowFieldContext;
 import com.facilio.workflows.util.WorkflowUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-public class UpdateFormulaCommand implements Command {
+public class UpdateFormulaCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		FormulaFieldContext newFormula = (FormulaFieldContext) context.get(FacilioConstants.ContextNames.FORMULA_FIELD);
 		String formulaFieldUnit = (String) context.get(FacilioConstants.ContextNames.FORMULA_UNIT_STRING);

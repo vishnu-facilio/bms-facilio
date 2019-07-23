@@ -1,13 +1,14 @@
 package com.facilio.agent;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-public class DeleteAgentCommand implements Command
+import com.facilio.bmsconsole.commands.FacilioCommand;
+
+public class DeleteAgentCommand extends FacilioCommand
 {
     @Override
-    public boolean execute(Context context) throws Exception {
+    public boolean executeCommand(Context context) throws Exception {
         JSONObject payload = new JSONObject();
         if(context.containsKey(AgentKeys.ID)) {
             return AgentUtil.agentDelete(String.valueOf(context.get(AgentKeys.ID)));

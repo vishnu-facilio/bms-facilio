@@ -1,5 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.constants.FacilioConstants;
@@ -7,20 +14,13 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.time.DateTimeUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-public class AddVirtualMeterRelCommand implements Command {
+public class AddVirtualMeterRelCommand extends FacilioCommand {
 	
 	public static final Pattern NUMBERS = Pattern.compile("\\d+");
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		EnergyMeterContext meter = (EnergyMeterContext) context.get(FacilioConstants.ContextNames.RECORD);
 		if(meter != null && meter.getChildMeterExpression() != null) {

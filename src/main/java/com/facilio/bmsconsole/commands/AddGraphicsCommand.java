@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -13,10 +12,10 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 
-public class AddGraphicsCommand implements Command {
+public class AddGraphicsCommand extends FacilioCommand {
 
 	@Override
-public boolean execute(Context context) throws Exception {
+public boolean executeCommand(Context context) throws Exception {
 		
 		GraphicsContext graphicsContext = (GraphicsContext)context.get(FacilioConstants.ContextNames.GRAPHICS);
 		

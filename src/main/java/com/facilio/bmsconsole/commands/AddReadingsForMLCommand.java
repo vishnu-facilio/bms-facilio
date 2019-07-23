@@ -1,5 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.StringJoiner;
+
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Context;
+import org.apache.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.MLContext;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -13,21 +25,13 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.Logger;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
-import java.util.*;
-
-public class AddReadingsForMLCommand implements Command {
+public class AddReadingsForMLCommand extends FacilioCommand {
 	
 	private static final Logger LOGGER = Logger.getLogger(AddReadingsForMLCommand.class.getName());
 
 	@Override
-	public boolean execute(Context context) throws Exception 
+	public boolean executeCommand(Context context) throws Exception 
 	{
 		MLContext mlContext = (MLContext) context.get(FacilioConstants.ContextNames.ML);
 		try

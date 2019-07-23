@@ -1,11 +1,11 @@
 package com.facilio.bmsconsole.util;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class HVACPressurePredictorUtil 
 {

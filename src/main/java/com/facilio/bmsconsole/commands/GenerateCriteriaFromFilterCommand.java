@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -23,12 +22,12 @@ import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
 
-public class GenerateCriteriaFromFilterCommand implements Command {
+public class GenerateCriteriaFromFilterCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = LogManager.getLogger(GenerateCriteriaFromFilterCommand.class.getName());
 	
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		long startTime = System.currentTimeMillis();
 		JSONObject filters = (JSONObject) context.get(FacilioConstants.ContextNames.FILTERS);
 		if(filters != null && !filters.isEmpty()) {

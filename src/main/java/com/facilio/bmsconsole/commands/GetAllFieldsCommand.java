@@ -1,5 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
@@ -7,21 +14,18 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.AggregateOperator;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class GetAllFieldsCommand implements Command {
+public class GetAllFieldsCommand extends FacilioCommand {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		List<FacilioField> allFields = new ArrayList();
 		List<FacilioField> fields = new ArrayList();
 		String resourceType = (String) context.get(FacilioConstants.ContextNames.RESOURCE_TYPE);

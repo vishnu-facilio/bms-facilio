@@ -1,20 +1,20 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.context.PhotosContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UploadPhotosCommand implements Command {
+import org.apache.commons.chain.Context;
+
+import com.facilio.bmsconsole.context.PhotosContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fs.FileStore;
+import com.facilio.fs.FileStoreFactory;
+
+public class UploadPhotosCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		long parentId = -1;
 		if(context.get(FacilioConstants.ContextNames.PARENT_ID) != null) {

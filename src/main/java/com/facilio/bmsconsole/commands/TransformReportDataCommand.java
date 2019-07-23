@@ -1,5 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
+import java.text.DecimalFormat;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
+
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.constants.FacilioConstants;
@@ -7,21 +20,18 @@ import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.AggregateOperator.DateAggregateOperator;
 import com.facilio.modules.AggregateOperator.SpaceAggregateOperator;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.report.context.*;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import com.facilio.report.context.ReportBaseLineContext;
+import com.facilio.report.context.ReportContext;
+import com.facilio.report.context.ReportDataContext;
+import com.facilio.report.context.ReportDataPointContext;
+import com.facilio.report.context.ReportFieldContext;
 
-import java.text.DecimalFormat;
-import java.util.*;
-
-public class TransformReportDataCommand implements Command {
+public class TransformReportDataCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = LogManager.getLogger(TransformReportDataCommand.class.getName());
 	
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<ReportDataContext> reportData = (List<ReportDataContext>) context.get(FacilioConstants.ContextNames.REPORT_DATA);
 		String reportCallingFrom = (String) context.get(FacilioConstants.ContextNames.REPORT_CALLING_FROM);

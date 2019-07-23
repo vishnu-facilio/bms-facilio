@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONArray;
@@ -17,7 +16,6 @@ import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.util.ActionAPI;
-import com.facilio.bmsconsole.util.DigestConfigAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ActionType;
@@ -28,10 +26,10 @@ import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.workflows.util.WorkflowUtil;
 
-public class AddActionToDigestConfigCommand implements Command{
+public class AddActionToDigestConfigCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
 			DigestConfigContext config =  (DigestConfigContext)context.get(FacilioConstants.ContextNames.CONFIG);

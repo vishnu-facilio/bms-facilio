@@ -1,5 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -8,19 +16,11 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.modules.FieldUtil;
 import com.facilio.workflows.util.WorkflowUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
-import java.util.HashMap;
-import java.util.Map;
-
-public class SendReadingReportMailCommand implements Command {
+public class SendReadingReportMailCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		Map<String, String> files = new HashMap<>();
 		String fileUrl = (String) context.get(FacilioConstants.ContextNames.FILE_URL);

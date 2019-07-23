@@ -12,7 +12,6 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ContractAssociatedAssetsContext;
 import com.facilio.bmsconsole.context.RentalLeaseContractContext;
 import com.facilio.bmsconsole.context.RentalLeaseContractLineItemsContext;
-import com.facilio.bmsconsole.context.WarrantyContractLineItemContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 

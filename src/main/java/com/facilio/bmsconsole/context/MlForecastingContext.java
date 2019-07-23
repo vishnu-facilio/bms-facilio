@@ -1,11 +1,12 @@
 package com.facilio.bmsconsole.context;
 
+import java.util.List;
+
+import org.json.JSONArray;
+
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.json.JSONArray;
-
-import java.util.List;
 
 public class MlForecastingContext extends ModuleBaseWithCustomFields 
 {

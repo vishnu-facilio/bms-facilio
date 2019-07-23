@@ -2,10 +2,10 @@ package com.facilio.workflows.command;
 
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -16,10 +16,10 @@ import com.facilio.workflows.context.ScheduledWorkflowContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 
-public class AddScheduledWorkflowCommand implements Command {
+public class AddScheduledWorkflowCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		ScheduledWorkflowContext scheduledWorkflowContext = (ScheduledWorkflowContext)context.get(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT);
 		

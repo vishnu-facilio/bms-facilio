@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
@@ -20,12 +19,12 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
 
-public class CalculateAggregationCommand implements Command {
+public class CalculateAggregationCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = LogManager.getLogger(CalculateAggregationCommand.class.getName());
 	
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
 		Boolean isCalculate = (Boolean) context.get(FacilioConstants.ContextNames.CALCULATE_REPORT_AGGR_DATA);

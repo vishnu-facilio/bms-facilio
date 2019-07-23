@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -7,13 +9,11 @@ import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-public class RestrictUneditablePropsInFieldCommand implements Command {
+public class RestrictUneditablePropsInFieldCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		FacilioField field = (FacilioField) context.get(FacilioConstants.ContextNames.MODULE_FIELD);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioField oldField = modBean.getField(field.getFieldId());

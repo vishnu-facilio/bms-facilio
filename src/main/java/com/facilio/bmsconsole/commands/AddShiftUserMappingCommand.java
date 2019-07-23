@@ -1,16 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.ShiftContext;
 import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.constants.FacilioConstants;
 
-public class AddShiftUserMappingCommand implements Command {
+public class AddShiftUserMappingCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		long orgUserId = (long) context.get(FacilioConstants.ContextNames.ORG_USER_ID);
 		long startTime = (long) context.get(FacilioConstants.ContextNames.START_TIME);
 		long endTime = (long) context.get(FacilioConstants.ContextNames.END_TIME);

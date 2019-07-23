@@ -1,8 +1,15 @@
 package com.facilio.urjanet;
 
-import com.facilio.urjanet.entity.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+
+import com.facilio.urjanet.entity.Account;
+import com.facilio.urjanet.entity.Attribute;
+import com.facilio.urjanet.entity.ChangeLog;
+import com.facilio.urjanet.entity.Credential;
+import com.facilio.urjanet.entity.Meter;
+import com.facilio.urjanet.entity.Provider;
+import com.facilio.urjanet.entity.Template;
 
 public class ExampleCall {
 	

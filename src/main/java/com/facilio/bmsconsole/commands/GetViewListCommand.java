@@ -1,6 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.accounts.util.AccountUtil;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.ViewAPI;
@@ -10,16 +20,11 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
-public class GetViewListCommand implements Command {
+public class GetViewListCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
  		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule moduleObj = null;

@@ -1,18 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.context.SkillContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.List;
-
-public class UpdateSkillCommand implements Command {
+public class UpdateSkillCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 				SkillContext skill = (SkillContext) context.get(FacilioConstants.ContextNames.SKILL);
 		
 		if(skill != null) 

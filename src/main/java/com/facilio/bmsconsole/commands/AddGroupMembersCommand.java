@@ -1,19 +1,19 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.bean.GroupBean;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class AddGroupMembersCommand implements Command {
+public class AddGroupMembersCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		Long groupId = (Long) context.get(FacilioConstants.ContextNames.GROUP_ID);
 		Long[] memberIds = (Long[]) context.get(FacilioConstants.ContextNames.GROUP_MEMBER_IDS);

@@ -1,5 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.context.ConnectedAppContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -8,16 +13,11 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.List;
-import java.util.Map;
-
-public class GetConnectedAppDetailsCommand implements Command{
+public class GetConnectedAppDetailsCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		long connectedAppId = (long) context.get(FacilioConstants.ContextNames.ID);
 		String connectedAppLinkName = (String) context.get(FacilioConstants.ContextNames.LINK_NAME);

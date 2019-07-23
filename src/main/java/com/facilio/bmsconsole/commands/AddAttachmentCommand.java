@@ -1,19 +1,19 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AddAttachmentCommand implements Command {
+import org.apache.commons.chain.Context;
+
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fs.FileStore;
+import com.facilio.fs.FileStoreFactory;
+
+public class AddAttachmentCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
 		List<File> attachmentList = (List<File>) context.get(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST);

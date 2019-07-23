@@ -1,23 +1,23 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-
-public class GenerateSearchConditionCommand implements Command {
+public class GenerateSearchConditionCommand extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(GenerateSearchConditionCommand.class.getName());
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		long startTime = System.currentTimeMillis();
 		JSONObject searchObj = (JSONObject) context.get(FacilioConstants.ContextNames.SEARCH);

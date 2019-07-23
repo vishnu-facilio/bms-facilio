@@ -19,10 +19,6 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-
 public class PurchaseOrderAPI {
 
 	private static int getSerialNumberCount (long lineItemId) throws Exception {

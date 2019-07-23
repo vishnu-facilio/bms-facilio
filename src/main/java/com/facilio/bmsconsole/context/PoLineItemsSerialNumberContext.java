@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.modules.ModuleBaseWithCustomFields;
-
 import java.util.List;
+
+import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class PoLineItemsSerialNumberContext extends ModuleBaseWithCustomFields {
 

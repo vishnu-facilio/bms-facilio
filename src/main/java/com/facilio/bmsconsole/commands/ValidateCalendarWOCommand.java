@@ -1,18 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.AggregateOperator.DateAggregateOperator;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
 
-public class ValidateCalendarWOCommand implements Command {
+public class ValidateCalendarWOCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		String dateFieldName = (String) context.get(FacilioConstants.ContextNames.DATE_FIELD);
 		if (StringUtils.isEmpty(dateFieldName)) {

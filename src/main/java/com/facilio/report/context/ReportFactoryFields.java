@@ -1,5 +1,12 @@
 package com.facilio.report.context;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
@@ -14,12 +21,6 @@ import com.facilio.modules.fields.NumberField;
 import com.facilio.report.context.ReportFactory.Alarm;
 import com.facilio.report.context.ReportFactory.ModuleType;
 import com.facilio.report.context.ReportFactory.WorkOrder;
-import org.json.simple.JSONObject;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class ReportFactoryFields {
 	

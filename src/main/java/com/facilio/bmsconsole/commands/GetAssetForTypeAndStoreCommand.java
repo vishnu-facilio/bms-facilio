@@ -1,14 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-public class GetAssetForTypeAndStoreCommand implements Command{
+import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.constants.FacilioConstants;
+
+public class GetAssetForTypeAndStoreCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		Integer inventoryType = (Integer)context.get(FacilioConstants.ContextNames.INVENTORY_CATEGORY);
 		Long storeId = (Long)context.get(FacilioConstants.ContextNames.STORE_ROOM_ID);

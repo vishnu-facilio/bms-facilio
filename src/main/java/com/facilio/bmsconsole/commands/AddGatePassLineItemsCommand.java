@@ -1,5 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.GatePassContext;
 import com.facilio.bmsconsole.context.GatePassLineItemsContext;
@@ -8,15 +12,11 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.List;
-
-public class AddGatePassLineItemsCommand implements Command{
+public class AddGatePassLineItemsCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		List<GatePassLineItemsContext> lineItems = (List<GatePassLineItemsContext>) context.get(FacilioConstants.ContextNames.GATE_PASS_LINE_ITEMS);
 		if(lineItems!=null && !lineItems.isEmpty()) {
 			GatePassContext gatePass = (GatePassContext) context.get(FacilioConstants.ContextNames.GATE_PASS);

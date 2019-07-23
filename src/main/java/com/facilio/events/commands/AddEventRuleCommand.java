@@ -1,20 +1,21 @@
 package com.facilio.events.commands;
 
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventRule;
 import com.facilio.events.util.EventRulesAPI;
 import com.facilio.modules.FieldUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.Map;
-
-public class AddEventRuleCommand implements Command {
+public class AddEventRuleCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
 		EventRule eventRule = (EventRule) context.get(EventConstants.EventContextNames.EVENT_RULE);

@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.util;
 
+import java.util.Map;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -9,8 +11,6 @@ import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
-
-import java.util.Map;
 
 public class TimerLogUtil {
 

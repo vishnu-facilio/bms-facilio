@@ -1,22 +1,22 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.workflow.rule.ActionContext;
-import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class SetValidationRulesContextCommand implements Command {
+import org.apache.commons.chain.Context;
+
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.FacilioField;
+
+public class SetValidationRulesContextCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		List<List<ReadingRuleContext>> readingRules = (List<List<ReadingRuleContext>>) context.get(FacilioConstants.ContextNames.VALIDATION_RULES);
 		List<FacilioModule> modules =  (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
 

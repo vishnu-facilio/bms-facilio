@@ -9,7 +9,6 @@ import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -17,7 +16,7 @@ import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class SendEmailCommand implements Command,Serializable{
+public class SendEmailCommand extends FacilioCommand implements Serializable{
 	
 	/**
 	 * 
@@ -26,7 +25,7 @@ public class SendEmailCommand implements Command,Serializable{
 	private static final Logger LOGGER = Logger.getLogger(SendEmailCommand.class.getName());
 	
 	@Override
-	public boolean execute(Context c) throws Exception{
+	public boolean executeCommand(Context c) throws Exception{
 		try {
 			ImportProcessContext importProcessContext = (ImportProcessContext) c.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
 			ImportProcessContext updatedContext = ImportAPI.getImportProcessContext(importProcessContext.getId());

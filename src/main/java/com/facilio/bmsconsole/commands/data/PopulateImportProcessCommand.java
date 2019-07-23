@@ -8,12 +8,12 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
+import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
@@ -38,12 +38,12 @@ import com.google.common.collect.ArrayListMultimap;
 
 ;
 
-public class PopulateImportProcessCommand implements Command {
+public class PopulateImportProcessCommand extends FacilioCommand {
 	
 	private static Logger LOGGER = Logger.getLogger(PopulateImportProcessCommand.class.getName());
 	
 	@Override
-	public boolean execute(Context c) throws Exception{
+	public boolean executeCommand(Context c) throws Exception{
 		
 		ImportProcessContext importProcessContext = (ImportProcessContext) c.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
 		c.get(ImportAPI.ImportProcessConstants.FIELDS_MAPPING);

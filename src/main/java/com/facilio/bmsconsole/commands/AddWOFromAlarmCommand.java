@@ -1,18 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
 
-public class AddWOFromAlarmCommand implements Command {
+public class AddWOFromAlarmCommand extends FacilioCommand {
 	
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		AlarmContext oldAlarm = (AlarmContext) context.get(FacilioConstants.ContextNames.ALARM);
 		if (oldAlarm == null || oldAlarm.getId() == -1) {
 			Long alarmId = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);

@@ -1,21 +1,26 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.constants.FacilioConstants;
-import com.facilio.util.FacilioUtil;
-import org.apache.commons.chain.Command;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import java.util.*;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.util.FacilioUtil;
 
-public class CalculateVarianceCommand implements Command {
+public class CalculateVarianceCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = LogManager.getLogger(CalculateVarianceCommand.class.getName());
 	
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		Map<String, Map<String, Map<Object, Object>>> reportData = (Map<String, Map<String, Map<Object, Object>>>) context.get(FacilioConstants.ContextNames.REPORT_DATA);
 		
 		Map<String, Map<String, JSONObject>> varianceData = new HashMap<>();

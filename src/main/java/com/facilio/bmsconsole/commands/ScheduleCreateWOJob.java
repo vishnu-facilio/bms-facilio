@@ -1,17 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.FacilioTimer;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class ScheduleCreateWOJob implements Command {
+public class ScheduleCreateWOJob extends FacilioCommand {
     private boolean isStatusChange;
     private boolean isBulkUpdate;
 
@@ -23,7 +23,7 @@ public class ScheduleCreateWOJob implements Command {
     public  ScheduleCreateWOJob() {}
 
     @Override
-    public boolean execute(Context context) throws Exception {
+    public boolean executeCommand(Context context) throws Exception {
         List<PreventiveMaintenance> pms =  (List<PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST);
         PreventiveMaintenance pm = (PreventiveMaintenance)  context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
         List<Long> pmIds = new ArrayList<>();

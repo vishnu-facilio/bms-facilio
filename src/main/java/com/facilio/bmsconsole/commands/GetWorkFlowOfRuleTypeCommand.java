@@ -1,5 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
@@ -15,19 +22,12 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-
-public class GetWorkFlowOfRuleTypeCommand implements Command {
+public class GetWorkFlowOfRuleTypeCommand extends FacilioCommand {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		String count = (String)context.get(FacilioConstants.ContextNames.RULE_COUNT);
 		RuleType ruleType = (RuleType) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_TYPE);

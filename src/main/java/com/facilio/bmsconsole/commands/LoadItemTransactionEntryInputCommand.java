@@ -1,18 +1,22 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.workflow.rule.EventType;
-import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class LoadItemTransactionEntryInputCommand implements Command{
+import org.apache.commons.chain.Context;
+
+import com.facilio.bmsconsole.context.InventoryRequestContext;
+import com.facilio.bmsconsole.context.InventoryRequestLineItemContext;
+import com.facilio.bmsconsole.context.InventoryType;
+import com.facilio.bmsconsole.context.ItemTransactionsContext;
+import com.facilio.bmsconsole.context.ToolTransactionContext;
+import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.constants.FacilioConstants;
+
+public class LoadItemTransactionEntryInputCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		InventoryRequestContext request = (InventoryRequestContext)context.get(FacilioConstants.ContextNames.RECORD);
 		if(request.getStatusEnum() == InventoryRequestContext.Status.ISSUED ) {

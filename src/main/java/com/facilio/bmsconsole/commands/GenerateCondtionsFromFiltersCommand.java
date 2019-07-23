@@ -1,5 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
@@ -7,19 +15,11 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-public class GenerateCondtionsFromFiltersCommand implements Command {
+public class GenerateCondtionsFromFiltersCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		JSONObject filters = (JSONObject) context.get(FacilioConstants.ContextNames.FILTERS);
 		if(filters != null && !filters.isEmpty()) {

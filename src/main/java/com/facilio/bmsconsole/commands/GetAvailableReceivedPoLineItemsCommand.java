@@ -2,17 +2,16 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
 import com.facilio.bmsconsole.util.PurchaseOrderAPI;
 import com.facilio.constants.FacilioConstants;
 
-public class GetAvailableReceivedPoLineItemsCommand implements Command{
+public class GetAvailableReceivedPoLineItemsCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
 		int inventoryType = (Integer)context.get(FacilioConstants.ContextNames.INVENTORY_CATEGORY);

@@ -1,5 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Arrays;
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.ViewAPI;
@@ -9,17 +15,11 @@ import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
 
-import java.util.Arrays;
-import java.util.List;
-
-public class SaveSortFieldsCommand implements Command {
+public class SaveSortFieldsCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		JSONObject sortObj = (JSONObject) context.get(FacilioConstants.ContextNames.SORTING);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);

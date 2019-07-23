@@ -1,8 +1,19 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
+import com.facilio.bmsconsole.context.WidgetChartContext;
+import com.facilio.bmsconsole.context.WidgetGraphicsContext;
+import com.facilio.bmsconsole.context.WidgetListViewContext;
+import com.facilio.bmsconsole.context.WidgetStaticContext;
+import com.facilio.bmsconsole.context.WidgetVsWorkflowContext;
+import com.facilio.bmsconsole.context.WidgetWebContext;
 import com.facilio.bmsconsole.util.BaseLineAPI;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.cards.util.CardUtil;
@@ -15,16 +26,11 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.workflows.util.WorkflowUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.List;
-import java.util.Map;
-
-public class AddWidgetCommand implements Command {
+public class AddWidgetCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		DashboardWidgetContext widget = (DashboardWidgetContext) context.get(FacilioConstants.ContextNames.WIDGET);
 		if(widget != null) {

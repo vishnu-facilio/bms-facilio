@@ -1,5 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.MLAlarmContext;
@@ -7,17 +11,13 @@ import com.facilio.bmsconsole.context.MLAlarmOccurrenceContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.InsertRecordBuilder;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
-public class AddMLOccurrenceCommand implements Command {
+public class AddMLOccurrenceCommand extends FacilioCommand {
 	
 	private static final Logger LOGGER = LogManager.getLogger(AddMLOccurrenceCommand.class.getName());
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
 		AlarmContext alarm = (AlarmContext) context.get(FacilioConstants.ContextNames.RECORD);

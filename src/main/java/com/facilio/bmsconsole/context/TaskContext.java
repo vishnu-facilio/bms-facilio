@@ -1,5 +1,11 @@
 package com.facilio.bmsconsole.context;
 
+import java.text.ParseException;
+import java.util.List;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
@@ -8,11 +14,6 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.text.ParseException;
-import java.util.List;
 
 public class TaskContext extends ModuleBaseWithCustomFields {
 	/**

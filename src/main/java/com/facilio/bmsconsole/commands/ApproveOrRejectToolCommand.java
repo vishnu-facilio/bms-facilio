@@ -1,7 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.GatePassContext;
+import com.facilio.bmsconsole.context.GatePassLineItemsContext;
+import com.facilio.bmsconsole.context.InventoryType;
+import com.facilio.bmsconsole.context.ToolTransactionContext;
 import com.facilio.bmsconsole.util.TransactionType;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
@@ -13,19 +23,13 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 ;
 
-public class ApproveOrRejectToolCommand implements Command {
+public class ApproveOrRejectToolCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		if (recordIds != null && !recordIds.isEmpty()) {

@@ -1,9 +1,9 @@
 package com.facilio.accounts.dto;
 
-import org.apache.struts2.json.annotations.JSON;
-
 import java.io.Serializable;
 import java.util.List;
+
+import org.apache.struts2.json.annotations.JSON;
 
 public class Group implements Serializable {
 	

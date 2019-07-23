@@ -6,7 +6,6 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.KPICategoryContext;
 import com.facilio.bmsconsole.util.KPIUtil;
 import com.facilio.chain.FacilioContext;
-import com.facilio.mv.util.MVUtil;
 
 public class KPIAction extends FacilioAction {
 

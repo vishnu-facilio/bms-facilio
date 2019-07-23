@@ -12,7 +12,6 @@ import org.json.simple.parser.JSONParser;
 import com.amazonaws.HttpMethod;
 import com.facilio.bmsconsole.context.ConnectionContext;
 import com.facilio.bmsconsole.util.ConnectionUtil;
-import com.facilio.modules.fields.FacilioField;
 import com.facilio.workflows.exceptions.FunctionParamException;
 
 public enum FacilioConnectionFunctions implements FacilioWorkflowFunctionInterface {

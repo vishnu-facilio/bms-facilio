@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -45,12 +44,12 @@ import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.time.DateRange;
 import com.facilio.util.FacilioUtil;
 
-public class FetchReportAdditionalInfoCommand implements Command {
+public class FetchReportAdditionalInfoCommand extends FacilioCommand {
 	
 	private static final Logger LOGGER = LogManager.getLogger(FetchReportAdditionalInfoCommand.class.getName());
 	
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);

@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.commands;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -15,10 +14,10 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 
-public class AddOrUpdatePurchaseOrderLineItemCommand implements Command {
+public class AddOrUpdatePurchaseOrderLineItemCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		List<PurchaseOrderLineItemContext> lineItems = (List<PurchaseOrderLineItemContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		if (CollectionUtils.isNotEmpty(lineItems)) {

@@ -1,5 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.constants.FacilioConstants;
@@ -7,20 +14,13 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
-import java.util.List;
-import java.util.Map;
-
-public class UpdateSupportEmailCommand implements Command {
+public class UpdateSupportEmailCommand extends FacilioCommand {
 
 	private static Logger log = LogManager.getLogger(UpdateSupportEmailCommand.class.getName());
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		SupportEmailContext supportEmail = (SupportEmailContext) context.get(FacilioConstants.ContextNames.SUPPORT_EMAIL);
 			if(supportEmail != null) {

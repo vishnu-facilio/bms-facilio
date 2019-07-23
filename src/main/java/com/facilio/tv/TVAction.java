@@ -1,15 +1,17 @@
 package com.facilio.tv;
 
-import com.facilio.bmsconsole.actions.FacilioAction;
-import com.facilio.fw.auth.CognitoUtil;
-import com.facilio.screen.util.ScreenUtil;
-import org.apache.struts2.ServletActionContext;
-import org.json.simple.JSONObject;
+import java.util.Map;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Map;
+
+import org.apache.struts2.ServletActionContext;
+import org.json.simple.JSONObject;
+
+import com.facilio.bmsconsole.actions.FacilioAction;
+import com.facilio.fw.auth.CognitoUtil;
+import com.facilio.screen.util.ScreenUtil;
 
 public class TVAction extends FacilioAction {
 	

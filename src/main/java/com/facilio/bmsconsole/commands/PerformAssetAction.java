@@ -1,12 +1,31 @@
 package com.facilio.bmsconsole.commands;
 
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
+
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.WorkOrderAction;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TicketCategoryContext;
+import com.facilio.bmsconsole.context.TicketPriorityContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
@@ -24,25 +43,12 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.time.DateTimeUtil;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.log4j.Priority;
 
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-public class PerformAssetAction implements Command {
+public class PerformAssetAction extends FacilioCommand {
 
 	private static final Logger LOGGER = LogManager.getLogger(PerformAssetAction.class.getName());
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
 		List<WorkflowRuleContext> workflowRules = (List<WorkflowRuleContext>) context.get("workflowRules");

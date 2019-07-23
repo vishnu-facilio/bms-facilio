@@ -1,20 +1,20 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.DBUtil;
-import com.facilio.db.transaction.FacilioConnectionPool;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
 
-public class AssignTicketCommand implements Command {
+import org.apache.commons.chain.Context;
+
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.DBUtil;
+import com.facilio.db.transaction.FacilioConnectionPool;
+
+public class AssignTicketCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
 		Long ticketId = (Long) context.get(FacilioConstants.ContextNames.TICKET_ID);

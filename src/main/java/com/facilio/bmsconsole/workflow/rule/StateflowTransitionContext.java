@@ -1,5 +1,14 @@
 package com.facilio.bmsconsole.workflow.rule;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.SharingContext;
 import com.facilio.bmsconsole.context.SingleSharingContext;
@@ -17,14 +26,6 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
 public class StateflowTransitionContext extends WorkflowRuleContext {
 	private static final long serialVersionUID = 1L;

@@ -1,21 +1,21 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.constants.FacilioConstants;
-import com.facilio.report.context.ReportContext;
-import com.facilio.workflows.util.WorkflowUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class NewTransformReportDataCommand implements Command {
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
+import com.facilio.constants.FacilioConstants;
+import com.facilio.report.context.ReportContext;
+import com.facilio.workflows.util.WorkflowUtil;
+
+public class NewTransformReportDataCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		JSONObject reportData = (JSONObject) context.get(FacilioConstants.ContextNames.REPORT_DATA);
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);

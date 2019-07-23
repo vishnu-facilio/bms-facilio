@@ -5,17 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.util.ControllerAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.timeseries.TimeSeriesAPI;
 
-public class MarkUnmodeledInstanceCommand implements Command {
+public class MarkUnmodeledInstanceCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		List<Long> ids = (List<Long>)context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		Map<String, String> deviceNames = (Map<String, String>)context.get(FacilioConstants.ContextNames.DEVICE_DATA);
 		boolean inUse = (boolean)context.get(FacilioConstants.ContextNames.CONFIGURE);

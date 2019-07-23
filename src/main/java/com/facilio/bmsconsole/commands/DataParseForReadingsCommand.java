@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.Cell;
@@ -44,7 +43,7 @@ import com.facilio.time.DateTimeUtil;
 ;
 
 
-public class DataParseForReadingsCommand implements Command {
+public class DataParseForReadingsCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = Logger.getLogger(DataParseForReadingsCommand.class.getName());
 	
@@ -52,7 +51,7 @@ public class DataParseForReadingsCommand implements Command {
 	private Map<String, List<String>> groupedFields = new HashMap<String, List<String>>();
 	
 	@Override
-	public boolean execute(Context context) throws Exception,ImportParseException {
+	public boolean executeCommand(Context context) throws Exception,ImportParseException {
 		
 		Map<String, List<ReadingContext>> groupedContext = new HashMap<>();
 		ImportProcessContext importProcessContext = (ImportProcessContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);

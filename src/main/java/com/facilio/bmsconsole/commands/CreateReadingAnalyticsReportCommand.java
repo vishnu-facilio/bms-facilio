@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
@@ -48,10 +47,10 @@ import com.facilio.report.context.ReportYAxisContext;
 import com.facilio.report.util.ReportUtil;
 import com.facilio.time.DateTimeUtil;
 
-public class CreateReadingAnalyticsReportCommand implements Command {
+public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 	
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<ReadingAnalysisContext> metrics = (List<ReadingAnalysisContext>) context.get(FacilioConstants.ContextNames.REPORT_Y_FIELDS);
 		long startTime = (long) context.get(FacilioConstants.ContextNames.START_TIME);

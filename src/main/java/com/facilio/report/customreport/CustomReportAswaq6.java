@@ -1,5 +1,10 @@
 package com.facilio.report.customreport;
 
+import java.util.List;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.ReportContext;
@@ -13,10 +18,6 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.time.DateTimeUtil;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import java.util.List;
 
 public class CustomReportAswaq6 implements CustomReport {
 

@@ -1,21 +1,21 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+
 import com.chargebee.internal.StringJoiner;
 import com.facilio.bmsconsole.context.InventoryRequestLineItemContext;
 import com.facilio.bmsconsole.context.InventoryType;
 import com.facilio.bmsconsole.context.WorkorderItemContext;
 import com.facilio.bmsconsole.context.WorkorderToolsContext;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class UseInventoryRequestLineItemsCommand implements Command{
+public class UseInventoryRequestLineItemsCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<InventoryRequestLineItemContext> lineItems = (List<InventoryRequestLineItemContext>) context.get(FacilioConstants.ContextNames.INVENTORY_REQUEST_LINE_ITEMS);
 		Integer inventoryType = (Integer) context.get(FacilioConstants.ContextNames.INVENTORY_CATEGORY);

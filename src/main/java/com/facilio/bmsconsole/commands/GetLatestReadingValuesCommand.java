@@ -1,5 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.util.ReadingsAPI;
@@ -10,16 +19,11 @@ import com.facilio.modules.fields.NumberField;
 import com.facilio.unitconversion.Metric;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.*;
-
-public class GetLatestReadingValuesCommand implements Command {
+public class GetLatestReadingValuesCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<FacilioModule> modules = (List<FacilioModule>) context.get(FacilioConstants.ContextNames.MODULE_LIST);
 		long parentId = (long) context.get(FacilioConstants.ContextNames.PARENT_ID);

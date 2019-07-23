@@ -1,5 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.DemoRollUpUtil;
@@ -9,23 +18,13 @@ import com.facilio.db.builder.DBUtil;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.db.transaction.FacilioTransactionManager;
 
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.util.List;
-import java.util.Map;
-
-public class DemoRollUpCommand implements Command {
+public class DemoRollUpCommand extends FacilioCommand {
 
 	private static final Logger LOGGER = LogManager.getLogger(DemoRollUpCommand.class.getName());
 
 	@SuppressWarnings("resource")
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 
 		try {

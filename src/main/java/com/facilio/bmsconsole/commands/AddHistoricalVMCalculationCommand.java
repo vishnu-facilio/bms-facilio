@@ -2,16 +2,15 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.constants.FacilioConstants;
 
-public class AddHistoricalVMCalculationCommand implements Command {
+public class AddHistoricalVMCalculationCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute (Context context) throws Exception {
+	public boolean executeCommand (Context context) throws Exception {
 		
 		long startTime =  (long) context.get(FacilioConstants.ContextNames.STARTTIME);
 		long endTime =  (long) context.get(FacilioConstants.ContextNames.ENDTIME);

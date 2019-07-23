@@ -1,14 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
-public class DeleteRoleCommand implements Command {
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.constants.FacilioConstants;
+
+public class DeleteRoleCommand extends FacilioCommand {
 	
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 
 		Long roleId = (Long) context.get(FacilioConstants.ContextNames.ROLE_ID);
 		

@@ -1,21 +1,21 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.db.builder.GenericInsertRecordBuilder;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.unitconversion.Metric;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class AddDefaultUnitsCommand implements Command {
+import org.apache.commons.chain.Context;
+
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.unitconversion.Metric;
+
+public class AddDefaultUnitsCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 
 		long orgId = (long) context.get("orgId");
 		List<Map<String, Object>> props = new ArrayList<>();

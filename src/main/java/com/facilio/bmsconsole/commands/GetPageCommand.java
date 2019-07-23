@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -9,12 +8,11 @@ import com.facilio.bmsconsole.page.factory.PageFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.ModuleBaseWithCustomFields;
 
-public class GetPageCommand implements Command {
+public class GetPageCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		Object record = (Object) context.get(FacilioConstants.ContextNames.RECORD);
 		Page page = PageFactory.getPage(moduleName, record);

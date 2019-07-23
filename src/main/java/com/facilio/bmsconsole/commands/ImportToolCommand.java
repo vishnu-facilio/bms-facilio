@@ -1,5 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.InventoryCategoryContext;
 import com.facilio.bmsconsole.context.PurchasedToolContext;
@@ -13,19 +21,11 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-public class ImportToolCommand implements Command {
+public class ImportToolCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		List<PurchasedToolContext> purchasedToolList = (List<PurchasedToolContext>) context
 				.get(FacilioConstants.ContextNames.RECORD_LIST);
 		long storeRoomId = (long) context.get(FacilioConstants.ContextNames.STORE_ROOM);

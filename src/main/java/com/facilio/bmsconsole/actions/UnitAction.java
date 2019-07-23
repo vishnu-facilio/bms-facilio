@@ -1,5 +1,13 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.OrgUnitsContext;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -16,13 +24,6 @@ import com.facilio.unitconversion.Metric;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 import com.opensymphony.xwork2.ActionSupport;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
 
 public class UnitAction extends ActionSupport {
 

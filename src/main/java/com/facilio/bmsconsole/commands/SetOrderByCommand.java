@@ -1,19 +1,19 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
+import java.util.ArrayList;
+
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.fields.FacilioField;
 
-public class SetOrderByCommand implements Command {
+public class SetOrderByCommand extends FacilioCommand {
 	
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		FacilioReportContext repContext = (FacilioReportContext)context;
 		JSONArray orderByCols = repContext.getOrderByCols();

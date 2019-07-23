@@ -1,43 +1,31 @@
 package com.facilio.events.commands;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.PostTransactionCommand;
+import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.BaseEventContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.bmsconsole.util.NewEventAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.events.commands.NewEventsToAlarmsConversionCommand.PointedList;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext.EventInternalState;
 import com.facilio.events.context.EventContext.EventState;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
-import com.facilio.modules.fields.FacilioField;
 
-public class NewEventsToAlarmsConversionCommand implements Command {
+public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 
 	private Map<String, List<BaseEventContext>> eventsMap = new HashMap<>();
 	private Map<String, PointedList<AlarmOccurrenceContext>> alarmOccurrenceMap = new HashMap<>();
@@ -45,7 +33,7 @@ public class NewEventsToAlarmsConversionCommand implements Command {
 	private List<BaseEventContext> baseEvents;
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		baseEvents = (List<BaseEventContext>) context.get(EventConstants.EventContextNames.EVENT_LIST);
 		if (CollectionUtils.isNotEmpty(baseEvents)) {
 			for (BaseEventContext baseEvent : baseEvents) {

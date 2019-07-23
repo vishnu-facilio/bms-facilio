@@ -1,12 +1,12 @@
 package com.facilio.workflows.util;
 
-import com.facilio.modules.FieldType;
-import com.facilio.modules.fields.FacilioField;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.facilio.modules.FieldType;
+import com.facilio.modules.fields.FacilioField;
 
 // delete this file on cleanup
 

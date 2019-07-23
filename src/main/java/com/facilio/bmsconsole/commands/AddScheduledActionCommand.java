@@ -1,5 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ScheduledActionContext;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
@@ -11,16 +16,11 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.ScheduleInfo;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.List;
-import java.util.Map;
-
-public class AddScheduledActionCommand implements Command {
+public class AddScheduledActionCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		ScheduledActionContext scheduledAction = (ScheduledActionContext) context.get(FacilioConstants.ContextNames.SCHEDULE_INFO);
 		List<ActionContext> actions = (List<ActionContext>) context.get(FacilioConstants.ContextNames.ACTIONS_LIST);

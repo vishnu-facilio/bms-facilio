@@ -1,5 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.tuple.MutablePair;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -12,19 +24,12 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.tuple.MutablePair;
 
-import java.util.*;
-import java.util.logging.Logger;
-
-public class UpdateTaskCountCommand implements Command {
+public class UpdateTaskCountCommand extends FacilioCommand {
 	private static final Logger LOGGER = Logger.getLogger(UpdateTaskCountCommand.class.getName());
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		Collection<Long> parentIds = (Collection<Long>) context.get(FacilioConstants.ContextNames.IDS_TO_UPDATE_TASK_COUNT);
 		if (CollectionUtils.isNotEmpty(parentIds)) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

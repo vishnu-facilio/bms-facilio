@@ -1,12 +1,12 @@
 package com.facilio.report.context;
 
-import com.facilio.db.criteria.Criteria;
-import com.facilio.workflows.context.WorkflowContext;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.facilio.db.criteria.Criteria;
+import com.facilio.workflows.context.WorkflowContext;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class ReportDataPointContext {
 

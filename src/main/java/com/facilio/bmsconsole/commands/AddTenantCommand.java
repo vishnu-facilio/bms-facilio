@@ -1,20 +1,21 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.util.TenantsAPI;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Context;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class AddTenantCommand extends GenericAddModuleDataCommand {
 
 //	@SuppressWarnings("unchecked")
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		if (context.get(FacilioConstants.ContextNames.RECORD) != null) {
 		
@@ -31,7 +32,7 @@ public class AddTenantCommand extends GenericAddModuleDataCommand {
 		long userId = AccountUtil.getUserBean().inviteRequester(orgid, user);
 	    tenant.getContact().setId(userId);
     	TenantsAPI.addTenantLogo(tenant);
-		super.execute(context);
+		super.executeCommand(context);
 		tenant.setId((Long)context.get(FacilioConstants.ContextNames.RECORD_ID));
 		TenantsAPI.addUtilityMapping(tenant,spaceIds);
 		context.put(FacilioConstants.ContextNames.TENANT, tenant);

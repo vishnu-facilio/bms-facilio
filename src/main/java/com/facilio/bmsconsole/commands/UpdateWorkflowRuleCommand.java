@@ -1,18 +1,22 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.util.ApprovalRulesAPI;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.SLARuleAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
-import com.facilio.bmsconsole.workflow.rule.*;
+import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.SLARuleContext;
+import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-public class UpdateWorkflowRuleCommand implements Command {
+public class UpdateWorkflowRuleCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		WorkflowRuleContext rule = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
 		if (rule.getRuleTypeEnum() != null && rule.getRuleTypeEnum().versionSupported()) {

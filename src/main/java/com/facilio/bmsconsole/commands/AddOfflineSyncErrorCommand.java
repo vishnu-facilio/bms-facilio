@@ -1,20 +1,20 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.HashMap;
-import java.util.Map;
-
-public class AddOfflineSyncErrorCommand implements Command {
+public class AddOfflineSyncErrorCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		Long lastSyncTime = (Long) context.get(FacilioConstants.ContextNames.LAST_SYNC_TIME);

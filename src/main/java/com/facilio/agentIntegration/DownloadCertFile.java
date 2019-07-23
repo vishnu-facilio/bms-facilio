@@ -1,17 +1,14 @@
 package com.facilio.agentIntegration;
 
-import com.amazonaws.services.iot.model.CreateKeysAndCertificateResult;
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.agent.FacilioAgent;
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
-import com.facilio.kinesis.KinesisProcessor;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -20,6 +17,18 @@ import java.util.Objects;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import com.amazonaws.services.iot.model.CreateKeysAndCertificateResult;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agent.FacilioAgent;
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.fs.FileStore;
+import com.facilio.fs.FileStoreFactory;
+import com.facilio.kinesis.KinesisProcessor;
 
 public class DownloadCertFile
 {

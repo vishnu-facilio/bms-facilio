@@ -13,7 +13,6 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
-import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;

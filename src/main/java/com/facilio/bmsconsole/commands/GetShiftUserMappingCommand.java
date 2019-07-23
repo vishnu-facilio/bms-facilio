@@ -2,19 +2,16 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
 
-import com.facilio.bmsconsole.context.ShiftContext;
 import com.facilio.bmsconsole.context.ShiftUserRelContext;
 import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.constants.FacilioConstants;
 
-public class GetShiftUserMappingCommand implements Command {
+public class GetShiftUserMappingCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		long startTime = (long) context.get(FacilioConstants.ContextNames.START_TIME);
 		long endTime = (long) context.get(FacilioConstants.ContextNames.END_TIME);
 		if (startTime == -1 || endTime == -1) {

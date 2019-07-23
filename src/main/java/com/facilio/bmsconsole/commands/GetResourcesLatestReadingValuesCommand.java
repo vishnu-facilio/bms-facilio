@@ -1,23 +1,23 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.tuple.Pair;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-public class GetResourcesLatestReadingValuesCommand implements Command{
+public class GetResourcesLatestReadingValuesCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		String fieldName = (String) context.get(FacilioConstants.ContextNames.MODULE_FIELD_NAME);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);

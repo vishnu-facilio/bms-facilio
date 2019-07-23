@@ -1,6 +1,16 @@
 package com.facilio.events.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.view.FacilioView;
@@ -11,23 +21,14 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.modules.FieldUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-public class GetEventListCommand implements Command {
+public class GetEventListCommand extends FacilioCommand {
 
 	private static Logger log = LogManager.getLogger(GetEventListCommand.class.getName());
 
 	@SuppressWarnings({ "unchecked", "deprecation" })
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
 		String cvName = (String) context.get(FacilioConstants.ContextNames.CV_NAME);

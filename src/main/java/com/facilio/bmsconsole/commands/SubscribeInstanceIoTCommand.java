@@ -1,24 +1,28 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.ControllerAPI;
 import com.facilio.bmsconsole.util.IoTMessageAPI;
 import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.timeseries.TimeSeriesAPI;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
 
-import java.util.*;
-
-public class SubscribeInstanceIoTCommand implements Command {
+public class SubscribeInstanceIoTCommand extends FacilioCommand {
 	
 	private static final Logger LOGGER = LogManager.getLogger(SubscribeInstanceIoTCommand.class.getName());
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		List<Map<String, Object>> instances = (List<Map<String, Object>>)context.get(FacilioConstants.ContextNames.INSTANCE_INFO);
 		List<Long> ids = new ArrayList<>();

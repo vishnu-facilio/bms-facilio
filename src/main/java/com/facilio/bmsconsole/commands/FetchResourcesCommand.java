@@ -1,24 +1,24 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.util.ResourceAPI;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.report.context.ReportContext;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-public class FetchResourcesCommand implements Command {
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.report.context.ReportContext;
+
+public class FetchResourcesCommand extends FacilioCommand {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		JSONObject reportData = (JSONObject) context.get(FacilioConstants.ContextNames.REPORT_DATA);
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);

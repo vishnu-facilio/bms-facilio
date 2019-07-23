@@ -4,36 +4,31 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ContractsContext.ContractType;
 import com.facilio.bmsconsole.context.ContractsContext.Status;
-import com.facilio.bmsconsole.util.ContractsAPI;
-import com.facilio.bmsconsole.workflow.rule.EventType;
-import com.facilio.chain.FacilioContext;
-import com.facilio.bmsconsole.context.ContractAssociatedTermsContext;
 import com.facilio.bmsconsole.context.LabourContext;
 import com.facilio.bmsconsole.context.LabourContractContext;
 import com.facilio.bmsconsole.context.LabourContractLineItemContext;
 import com.facilio.bmsconsole.context.LocationContext;
+import com.facilio.bmsconsole.util.ContractsAPI;
+import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.DeleteRecordBuilder;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.InsertRecordBuilder;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 
-public class AddOrUpdateLabourContractCommand implements Command{
+public class AddOrUpdateLabourContractCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		LabourContractContext labourContractContext = (LabourContractContext) context.get(FacilioConstants.ContextNames.RECORD);
 		labourContractContext.computeNextPaymentDate();

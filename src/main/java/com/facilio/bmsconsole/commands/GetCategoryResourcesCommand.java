@@ -1,21 +1,21 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleFactory;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-public class GetCategoryResourcesCommand implements Command {
+public class GetCategoryResourcesCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
 		FacilioModule categoryReadingRelModule = (FacilioModule) context.get(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE);

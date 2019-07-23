@@ -1,22 +1,22 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.context.ReportColumnContext;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.db.transaction.FacilioConnectionPool;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.apache.log4j.LogManager;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 
-public class UpdateReportColumnSequence implements Command {
+import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
+
+import com.facilio.bmsconsole.context.ReportColumnContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.transaction.FacilioConnectionPool;
+
+public class UpdateReportColumnSequence extends FacilioCommand {
 	private static org.apache.log4j.Logger log = LogManager.getLogger(UpdateReportColumnSequence.class.getName());
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<ReportColumnContext> columns = (List<ReportColumnContext>) context.get(FacilioConstants.ContextNames.REPORT_COLUMN_LIST);
 		if (columns != null && !columns.isEmpty()) {

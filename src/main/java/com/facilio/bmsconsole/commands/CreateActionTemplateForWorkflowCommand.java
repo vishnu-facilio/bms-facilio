@@ -1,19 +1,23 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.templates.*;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.FieldUtil;
-import com.facilio.workflows.context.WorkflowContext;
-import org.apache.commons.chain.Command;
+import java.util.Map;
+
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
-import java.util.Map;
+import com.facilio.bmsconsole.templates.EMailTemplate;
+import com.facilio.bmsconsole.templates.PushNotificationTemplate;
+import com.facilio.bmsconsole.templates.SMSTemplate;
+import com.facilio.bmsconsole.templates.Template;
+import com.facilio.bmsconsole.templates.WebNotificationTemplate;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FieldUtil;
+import com.facilio.workflows.context.WorkflowContext;
 
-public class CreateActionTemplateForWorkflowCommand implements Command {
+public class CreateActionTemplateForWorkflowCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		JSONObject templateContent = (JSONObject) context.get(FacilioConstants.Workflow.ACTION_TEMPLATE);
 		

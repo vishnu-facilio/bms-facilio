@@ -1,14 +1,15 @@
 package com.facilio.tasker.job;
 
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-
 import java.time.Instant;
 
-public class CalculateNextExecutionTimeCommand implements Command {
+import org.apache.commons.chain.Context;
+
+import com.facilio.bmsconsole.commands.FacilioCommand;
+
+public class CalculateNextExecutionTimeCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		JobContext jc = (JobContext) context.get(JobConstants.JOB_CONTEXT);
 		long nextExecutionTime = getNextExecutionTime(jc);

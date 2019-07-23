@@ -1,23 +1,23 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.beans.ModuleBean;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.facilio.beans.ModuleBean;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.fields.FacilioField;
 
-public class LoadAssetFields implements Command {
+public class LoadAssetFields extends FacilioCommand {
 
 	private static final Logger LOGGER = LogManager.getLogger(LoadAssetFields.class.getName());
 	
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		long startTime = System.currentTimeMillis();
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);

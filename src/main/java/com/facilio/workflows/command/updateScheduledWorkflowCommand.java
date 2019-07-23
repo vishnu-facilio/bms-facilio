@@ -2,9 +2,9 @@ package com.facilio.workflows.command;
 
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.FieldFactory;
@@ -12,13 +12,12 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.workflows.context.ScheduledWorkflowContext;
-import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 
-public class updateScheduledWorkflowCommand implements Command {
+public class updateScheduledWorkflowCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		
 		ScheduledWorkflowContext scheduledWorkflowContext = (ScheduledWorkflowContext)context.get(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT);
 		

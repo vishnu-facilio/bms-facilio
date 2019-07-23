@@ -1,20 +1,20 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.util.RuleTemplateAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
 
-public class ConvertToRulesCommand implements Command {
+public class ConvertToRulesCommand extends FacilioCommand {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		long templateId = (long) context.get(FacilioConstants.ContextNames.TEMPLATE_ID);
 		JSONObject placeholder = (JSONObject) context.get(FacilioConstants.ContextNames.PLACE_HOLDER);

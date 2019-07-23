@@ -1,13 +1,14 @@
 package com.facilio.agentIntegration;
 
-import com.facilio.aws.util.AwsUtil;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import com.facilio.aws.util.AwsUtil;
 
 public class AgentIntegrationUtil {
     private static final Logger LOGGER = LogManager.getLogger(AgentIntegrationUtil.class.getName());

@@ -1,21 +1,22 @@
 package com.facilio.events.commands;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.modules.FieldUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.List;
-import java.util.Map;
-
-public class GetEventDetailCommand implements Command {
+public class GetEventDetailCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		long eventId = (long) context.get(EventConstants.EventContextNames.EVENT_ID);
 		if(eventId != -1) {

@@ -12,18 +12,17 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import java.util.*;
 
-public class DeleteTaskCommand implements Command, PostTransactionCommand {
+public class DeleteTaskCommand extends FacilioCommand implements PostTransactionCommand {
 
 	private Set<Long> idsToUpdateTaskCount;
 	private String moduleName;
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);

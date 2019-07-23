@@ -1,5 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Map;
+
+import org.apache.commons.beanutils.PropertyUtils;
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.dto.User;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.WorkOrderContext.WOUrgency;
@@ -13,17 +19,11 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField.FieldDisplayType;
 import com.facilio.modules.fields.LookupField;
-import org.apache.commons.beanutils.PropertyUtils;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.Map;
-
-public class ValidateFormCommand implements Command {
+public class ValidateFormCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		FacilioForm form = (FacilioForm) context.get(FacilioConstants.ContextNames.FORM);
 		if (form == null) {
 			return false;

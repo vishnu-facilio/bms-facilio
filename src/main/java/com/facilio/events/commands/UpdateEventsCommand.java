@@ -2,6 +2,7 @@ package com.facilio.events.commands;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.PostTransactionCommand;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -17,7 +18,6 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
@@ -25,14 +25,14 @@ import org.apache.log4j.Logger;
 
 import java.util.*;
 
-public class UpdateEventsCommand implements Command, PostTransactionCommand {
+public class UpdateEventsCommand extends FacilioCommand implements PostTransactionCommand {
 	
 	private static final Logger LOGGER = LogManager.getLogger(UpdateEventsCommand.class);
 	
 	private List<Long> alarmIds = new ArrayList<>();
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 
 		List<EventContext> events = (List<EventContext>) context.get(EventConstants.EventContextNames.EVENT_LIST);
 

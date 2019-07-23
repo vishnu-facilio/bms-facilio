@@ -1,13 +1,14 @@
 package com.facilio.bmsconsole.actions;
 
-import com.facilio.bmsconsole.actions.ImportProcessContext.ImportType;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import com.facilio.bmsconsole.actions.ImportProcessContext.ImportType;
 
 
 public class ImportTemplateContext{

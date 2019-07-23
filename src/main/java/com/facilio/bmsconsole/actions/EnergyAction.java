@@ -1,5 +1,13 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Chain;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -7,24 +15,12 @@ import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.HistoricalLoggerContext;
 import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.HistoricalLoggerUtil;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.opensymphony.xwork2.ActionSupport;
-
-import nl.basjes.shaded.org.springframework.util.StringUtils;
-
-import org.apache.commons.chain.Chain;
-import org.json.simple.JSONObject;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class EnergyAction extends FacilioAction {
 	

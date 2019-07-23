@@ -1,5 +1,14 @@
 package com.facilio.report.context;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.struts2.json.annotations.JSON;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.db.criteria.Condition;
@@ -8,20 +17,15 @@ import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.FieldOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FacilioStatus.StatusType;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.Module;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.struts2.json.annotations.JSON;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 public class ReportFactory {
 	

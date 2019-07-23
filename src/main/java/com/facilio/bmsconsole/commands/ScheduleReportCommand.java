@@ -1,5 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -13,17 +19,11 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.ScheduleInfo;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-public class ScheduleReportCommand implements Command {
+public class ScheduleReportCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		long reportId = (long) context.get(FacilioConstants.ContextNames.REPORT_ID);
 		if (reportId > 0) {
 			// JSONArray dateFilter = (JSONArray)context.get(FacilioConstants.ContextNames.DATE_FILTER);

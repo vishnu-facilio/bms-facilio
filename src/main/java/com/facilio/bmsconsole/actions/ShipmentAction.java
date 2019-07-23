@@ -9,8 +9,6 @@ import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.PurchaseContractContext;
-import com.facilio.bmsconsole.context.PurchaseContractLineItemContext;
 import com.facilio.bmsconsole.context.ShipmentContext;
 import com.facilio.bmsconsole.context.ShipmentLineItemContext;
 import com.facilio.chain.FacilioContext;

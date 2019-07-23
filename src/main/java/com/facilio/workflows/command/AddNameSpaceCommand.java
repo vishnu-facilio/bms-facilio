@@ -2,9 +2,9 @@ package com.facilio.workflows.command;
 
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -13,10 +13,10 @@ import com.facilio.workflowv2.contexts.WorkflowNamespaceContext;
 import com.facilio.workflowv2.util.UserFunctionAPI;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 
-public class AddNameSpaceCommand implements Command {
+public class AddNameSpaceCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
 		WorkflowNamespaceContext workflowNamespaceContext = (WorkflowNamespaceContext) context.get(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT);

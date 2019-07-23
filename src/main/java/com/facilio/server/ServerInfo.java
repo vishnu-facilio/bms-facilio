@@ -1,13 +1,5 @@
 package com.facilio.server;
 
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.db.builder.DBUtil;
-import com.facilio.db.transaction.FTransactionManager;
-import com.facilio.db.transaction.FacilioConnectionPool;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import javax.transaction.*;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.sql.Connection;
@@ -15,6 +7,20 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.TimerTask;
+
+import javax.transaction.HeuristicMixedException;
+import javax.transaction.HeuristicRollbackException;
+import javax.transaction.NotSupportedException;
+import javax.transaction.RollbackException;
+import javax.transaction.SystemException;
+
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.db.builder.DBUtil;
+import com.facilio.db.transaction.FTransactionManager;
+import com.facilio.db.transaction.FacilioConnectionPool;
 
 public class ServerInfo extends TimerTask {
 

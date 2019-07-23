@@ -1,5 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PMReminder;
@@ -12,16 +17,11 @@ import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 
-import java.util.HashMap;
-import java.util.Map;
-
-public class ExecutePMReminderCommand implements Command {
+public class ExecutePMReminderCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		WorkOrderContext wo = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
 		PMReminder pmReminder = (PMReminder) context.get(FacilioConstants.ContextNames.PM_REMINDER);

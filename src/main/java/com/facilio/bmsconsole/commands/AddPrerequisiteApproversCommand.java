@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.SharingContext;
@@ -11,10 +10,10 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.ModuleFactory;
 
 
-public class AddPrerequisiteApproversCommand implements Command {
+public class AddPrerequisiteApproversCommand extends FacilioCommand {
 	
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		SharingContext<SingleSharingContext> prerequisiteApproversList = (SharingContext<SingleSharingContext>) context.get(FacilioConstants.ContextNames.PREREQUISITE_APPROVERS_LIST);
 		WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);

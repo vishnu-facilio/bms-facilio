@@ -1,19 +1,15 @@
 package com.facilio.report.context;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 
 public class ReportTemplateContext {

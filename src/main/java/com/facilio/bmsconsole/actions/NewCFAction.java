@@ -1,10 +1,10 @@
 package com.facilio.bmsconsole.actions;
 
-import com.facilio.modules.FieldType;
-import com.opensymphony.xwork2.ActionSupport;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import com.facilio.modules.FieldType;
+import com.opensymphony.xwork2.ActionSupport;
 
 public class NewCFAction extends ActionSupport {
 	/**

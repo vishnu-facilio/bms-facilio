@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -17,10 +16,10 @@ import com.facilio.modules.fields.FacilioField;
 
 ;
 
-public class GenericDeleteModuleDataCommand implements Command {
+public class GenericDeleteModuleDataCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		Boolean markAsDelete = (Boolean)context.get(FacilioConstants.ContextNames.IS_MARK_AS_DELETE);

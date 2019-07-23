@@ -2,13 +2,13 @@ package com.facilio.mv.command;
 
 import java.util.regex.Pattern;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.V2ReportAction;
+import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.AggregateOperator;
@@ -25,10 +25,10 @@ import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 
-public class FetchMVWidgetResultCommand implements Command {
+public class FetchMVWidgetResultCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
 		Integer widgetID = (Integer)context.get(MVUtil.MV_PROJECTS_WIDGET_ID);
