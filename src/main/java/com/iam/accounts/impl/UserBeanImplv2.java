@@ -5,10 +5,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
+import org.apache.commons.collections4.MapUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -57,13 +59,12 @@ public class UserBeanImplv2 implements UserBeanv2 {
 
 	
 	private long addUserEntryv2(User user) throws Exception {
-		return addUserEntryv2(user, false, false);
-	}
 
-	private long addUserEntryv2(User user, boolean emailVerificationRequired, boolean isPortalUser) throws Exception {
-
-		String portalDomain = isPortalUser ? "candy" : "app";
-		User existingUser = getUserv2(user.getEmail(),portalDomain);
+		if (StringUtils.isNullOrEmpty(user.getCity())) {
+			user.setCity("app");
+		}
+		
+		User existingUser = getUserv2(user.getEmail(), user.getCity());
 		if(existingUser == null) {
 			List<FacilioField> fields = AccountConstants.getAccountsUserFields();
 			fields.add(AccountConstants.getUserPasswordField());
@@ -114,12 +115,12 @@ public class UserBeanImplv2 implements UserBeanv2 {
 
 	private long addUserv2(long orgId, User user, boolean sendInvitation) throws Exception {
 
-		User orgUser = getFacilioUserv3(user.getEmail(), orgId);
+		User orgUser = getFacilioUserv3(user.getEmail(), orgId, null);
 		if (orgUser != null) {
 			throw new AccountException(AccountException.ErrorCode.EMAIL_ALREADY_EXISTS, "This user already exists in your organization.");
 		}
 		else {
-			long uid = addUserEntryv2(user, false, false);
+			long uid = addUserEntryv2(user);
 			user.setUid(uid);
 			user.setDefaultOrg(true);
 		}
@@ -714,12 +715,15 @@ public class UserBeanImplv2 implements UserBeanv2 {
 	}
 	@Override
 	public Account verifyUserSessionv2(String email, String token, String orgDomain) throws Exception {		
-		List sessions = (List) LRUCache.getUserSessionCache().get(email);
+		List<Map<String, Object>> sessions = (List<Map<String, Object>>) LRUCache.getUserSessionCache().get(email);
 		if (sessions == null) {
 			sessions = new ArrayList<>();
 		}
-		if (sessions.contains(token)) {
-			return getAccount(email, orgDomain);
+		for (Map<String, Object> session : sessions) {
+			String sessionToken = (String) session.get("token");
+			if (Objects.equals(sessionToken, token)) {
+				return getAccount((long) session.get("uid"), orgDomain);
+			}
 		}
 		
 		GenericSelectRecordBuilder selectBuilder = new SampleGenericSelectBuilder()
@@ -729,17 +733,17 @@ public class UserBeanImplv2 implements UserBeanv2 {
 				.on("Account_Users.USERID = UserSessions.USERID")
 				.andCustomWhere("(Account_Users.EMAIL = ? ) AND UserSessions.TOKEN = ? AND UserSessions.IS_ACTIVE = ?", email, token, true);
 
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			sessions.add(token);
+		Map<String, Object> props = selectBuilder.fetchFirst();
+		if (MapUtils.isNotEmpty(props)) {
+			sessions.add(props);
 			LRUCache.getUserSessionCache().put(email, sessions);
-			return getAccount(email, orgDomain);
+			return getAccount((long) props.get("uid"), orgDomain);
 		}
 		return null;
 	}
 	
-	private Account getAccount(String email, String orgDomain) throws Exception {
-		User user = getFacilioUserv3(email, orgDomain);
+	private Account getAccount(long userId, String orgDomain) throws Exception {
+		User user = getFacilioUserv3(userId, orgDomain);
 		if (user == null) {
 			throw new AccountException(ErrorCode.EMAIL_ALREADY_EXISTS, "User doesn't exists in the current Org");
 		}
@@ -866,7 +870,7 @@ public class UserBeanImplv2 implements UserBeanv2 {
 	@Override
 	public long createUserv2(long orgId, User user) throws Exception {
 		// TODO Auto-generated method stub
-		User orgUser = getFacilioUserv3(user.getEmail(), orgId);
+		User orgUser = getFacilioUserv3(user.getEmail(), orgId, null);
 		if (orgUser != null) {
 			throw new Exception("user_already_exists");
 		}
@@ -882,7 +886,7 @@ public class UserBeanImplv2 implements UserBeanv2 {
 	}
 	
 	private long addToORGUsersv2(User user) throws Exception {
-		
+				
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(AccountConstants.getAccountsOrgUserModule().getTableName())
 				.fields(AccountConstants.getAccountsOrgUserFields());
@@ -936,7 +940,7 @@ public class UserBeanImplv2 implements UserBeanv2 {
 		return false;
 	}
 	
-	private GenericSelectRecordBuilder getFacilioUserBuilder(String email) {
+	private GenericSelectRecordBuilder getFacilioUserBuilder(String portalDomain, boolean includePortal) {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getAccountsUserFields());
 		fields.addAll(AccountConstants.getAccountsOrgUserFields());
@@ -949,21 +953,49 @@ public class UserBeanImplv2 implements UserBeanv2 {
 					.on("Account_Users.USERID = Account_ORG_Users.USERID")
 				.innerJoin("Organizations")
 					.on("Account_ORG_Users.ORGID=Organizations.ORGID");
-		
-		Criteria userEmailCriteria = new Criteria();
-		userEmailCriteria.addAndCondition(CriteriaAPI.getCondition("Account_Users.EMAIL", "email", email, StringOperators.IS));
-		userEmailCriteria.addOrCondition(CriteriaAPI.getCondition("Account_Users.MOBILE", "mobile", email, StringOperators.IS));
-		selectBuilder.andCriteria(userEmailCriteria);
+
 		
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "orgDeletedTime", "-1", NumberOperators.EQUALS));
 		
+		if (includePortal) {
+			if (StringUtils.isNullOrEmpty(portalDomain)) {
+				portalDomain = "app";
+			}
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.CITY", "portalDomain", portalDomain, StringOperators.IS));
+		}
+		
 		return selectBuilder;
 	}
 	
+	public User getFacilioUserv3(long userId, String orgDomain) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = getFacilioUserBuilder(null, false);
+		Criteria userEmailCriteria = new Criteria();
+		userEmailCriteria.addAndCondition(CriteriaAPI.getCondition("Account_Users.USERID", "userId", String.valueOf(userId), NumberOperators.EQUALS));
+		selectBuilder.andCriteria(userEmailCriteria);
+		
+		if (!StringUtils.isNullOrEmpty(orgDomain)) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.FACILIODOMAINNAME", "facilioDomainName", orgDomain, StringOperators.IS));
+		} 
+		else {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ISDEFAULT", "isDefault", "1", NumberOperators.EQUALS));
+		}
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			User user =  createUserFromProps(props.get(0), true, true, false);
+			return user;
+		}
+		return null;
+	}
+	
 	@Override
-	public User getFacilioUserv3(String email, String orgDomain) throws Exception {
-		GenericSelectRecordBuilder selectBuilder = getFacilioUserBuilder(email);
+	public User getFacilioUserv3(String email, String orgDomain, String portalDomain) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = getFacilioUserBuilder(portalDomain, true);
+		Criteria userEmailCriteria = new Criteria();
+		userEmailCriteria.addAndCondition(CriteriaAPI.getCondition("Account_Users.EMAIL", "email", email, StringOperators.IS));
+		userEmailCriteria.addOrCondition(CriteriaAPI.getCondition("Account_Users.MOBILE", "mobile", email, StringOperators.IS));
+		selectBuilder.andCriteria(userEmailCriteria);
 		
 		if (!StringUtils.isNullOrEmpty(orgDomain)) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.FACILIODOMAINNAME", "facilioDomainName", orgDomain, StringOperators.IS));
@@ -981,8 +1013,12 @@ public class UserBeanImplv2 implements UserBeanv2 {
 	}
 
 	@Override
-	public User getFacilioUserv3(String email, long orgId) throws Exception {
-		GenericSelectRecordBuilder selectBuilder = getFacilioUserBuilder(email);
+	public User getFacilioUserv3(String email, long orgId, String portalDomain) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = getFacilioUserBuilder(portalDomain, true);
+		Criteria userEmailCriteria = new Criteria();
+		userEmailCriteria.addAndCondition(CriteriaAPI.getCondition("Account_Users.EMAIL", "email", email, StringOperators.IS));
+		userEmailCriteria.addOrCondition(CriteriaAPI.getCondition("Account_Users.MOBILE", "mobile", email, StringOperators.IS));
+		selectBuilder.andCriteria(userEmailCriteria);
 		
 		if (orgId > 0) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
@@ -1002,7 +1038,7 @@ public class UserBeanImplv2 implements UserBeanv2 {
 	@Override
 	public User getFacilioUserv3(String email) throws Exception {
 		// TODO Auto-generated method stub
-		return getFacilioUserv3(email, -1);
+		return getFacilioUserv3(email, -1, null);
 	}
 
 	@Override

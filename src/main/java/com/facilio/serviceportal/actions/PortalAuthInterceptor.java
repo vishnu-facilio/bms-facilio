@@ -16,6 +16,7 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.PortalInfoContext;
+import com.facilio.fw.auth.LoginUtil;
 import com.facilio.util.AuthenticationUtil;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionInvocation;
@@ -82,11 +83,10 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 
 	private void intercept0() {
         HttpServletRequest request = ServletActionContext.getRequest();
-		String email = null;
 		Account currentAccount = null;
 		try {
 			AccountUtil.cleanCurrentAccount();
-//			email = AuthenticationUtil.validateToken(request,true);
+			currentAccount = AuthenticationUtil.validateToken(request,true);
 			String domainName = request.getServerName();
 			String orgdomain = null;
 			logger.info("Getting portal auth info : " +domainName);
@@ -101,29 +101,12 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 			if(domainName != null) {
 				String[] domainArray = domainName.split("\\.");
 				if (domainArray.length > 2) {
-					String subDomain = domainArray[0];
-
-					Organization org = null;
-					//org = AccountUtil.getOrgBean().getOrg(AccountUtil.getCurrentOrg().getDomain());
-					org = AccountUtil.getOrgBean().getOrg(subDomain);
-					//need to remove
-					AccountUtil.setCurrentAccount(org.getOrgId());
-					PortalInfoContext portalInfo = AccountUtil.getOrgBean().getPortalInfo(org.getOrgId(), false);
-					org.setPortalId(portalInfo.getPortalId());
-					if (org != null) {
-						long portalId = org.getPortalId();
-						logger.fine("Portal Domain ......"+portalId);
-						User user = null;
-						if (email != null) {
-							user = AccountUtil.getUserBean().getFacilioUser(email, subDomain, subDomain);
-							if (user == null) {
-								throw new AccountException("No such user present");
-							}
-						}
-						currentAccount = new Account(org, user);
-						AccountUtil.cleanCurrentAccount();
-						AccountUtil.setCurrentAccount(currentAccount);
-					}
+					AccountUtil.setCurrentAccount(currentAccount);
+					PortalInfoContext portalInfo = AccountUtil.getOrgBean().getPortalInfo(AccountUtil.getCurrentOrg().getOrgId(), false);
+					AccountUtil.getCurrentOrg().setPortalId(portalInfo.getPortalId());
+					LoginUtil.updateAccount(currentAccount, false);
+					AccountUtil.cleanCurrentAccount();
+					AccountUtil.setCurrentAccount(currentAccount);
 				} else {
 					System.out.println("Match failed ......");
 				}

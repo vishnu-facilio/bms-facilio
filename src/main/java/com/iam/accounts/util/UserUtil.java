@@ -1,33 +1,20 @@
 package com.iam.accounts.util;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.exception.AccountException;
-import com.facilio.accounts.util.AccountConstants;
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
-import com.facilio.db.builder.DBUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
-import com.facilio.db.transaction.FacilioConnectionPool;
 
 public class UserUtil {
 
 	private static final Logger LOGGER = Logger.getLogger(UserUtil.class.getName());
-
-	public static void inviteUser(long orgId, User user) throws Exception {
-		AuthUtill.getTransactionalUserBean().addUserv2(orgId, user);
-	}
 
 	public static User addSuperAdmin(org.json.simple.JSONObject signupInfo, Long orgId) throws Exception {
 
@@ -39,7 +26,7 @@ public class UserUtil {
 		String timezone = (String) signupInfo.get("timezone");
 		Locale locale = (Locale) signupInfo.get("locale");
 
-		User userObj = AuthUtill.getUserBean().getFacilioUserv3(email, orgId);
+		User userObj = AuthUtill.getUserBean().getFacilioUserv3(email, orgId, null);
 		if (userObj != null) {
 			throw new AccountException(AccountException.ErrorCode.EMAIL_ALREADY_EXISTS,
 					"This user is not permitted to do this action.");
@@ -72,7 +59,7 @@ public class UserUtil {
 
 	public static long addUser(User user, long orgId, String currentUserEmail) throws Exception {
 		if ((user != null) && orgId > 0) {
-			if (AuthUtill.getUserBean().getFacilioUserv3(currentUserEmail, orgId) != null) {
+			if (AuthUtill.getUserBean().getFacilioUserv3(currentUserEmail, orgId, null) != null) {
 				return AuthUtill.getTransactionalUserBean().addUserv2(orgId, user);
 			} else {
 				throw new AccountException(AccountException.ErrorCode.NOT_PERMITTED,
@@ -114,7 +101,7 @@ public class UserUtil {
 	}
 
 	public static boolean updateUser(User user, long orgId, String currentUserEmail) throws Exception {
-		if (AuthUtill.getUserBean().getFacilioUserv3(currentUserEmail, orgId) != null) {
+		if (AuthUtill.getUserBean().getFacilioUserv3(currentUserEmail, orgId, null) != null) {
 			return AuthUtill.getUserBean().updateUserv2(user);
 		} else {
 			throw new AccountException(AccountException.ErrorCode.NOT_PERMITTED,
@@ -124,7 +111,7 @@ public class UserUtil {
 	}
 
 	public static boolean deleteUser(User user, long orgId, String currentUserEmail) throws Exception {
-		if (AuthUtill.getUserBean().getFacilioUserv3(currentUserEmail, orgId) != null) {
+		if (AuthUtill.getUserBean().getFacilioUserv3(currentUserEmail, orgId, null) != null) {
 			return AuthUtill.getUserBean().deleteUserv2(user.getOuid());
 		} else {
 			throw new AccountException(AccountException.ErrorCode.NOT_PERMITTED,

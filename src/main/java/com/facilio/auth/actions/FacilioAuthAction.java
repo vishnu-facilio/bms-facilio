@@ -744,10 +744,7 @@ public class FacilioAuthAction extends FacilioAction {
 		}
 		if (anydomain_allowedforsignup || opensignup || whitelisteddomain) {
 			try {
-				AuthUtill.getUserBean().createUserv2(AccountUtil.getCurrentOrg().getId(), user);
-				if (user.getOuid() > 0) {
-					AccountUtil.getTransactionalUserBean().createRequestor(AccountUtil.getCurrentOrg().getId(), user);
-				}
+				AccountUtil.getTransactionalUserBean().addRequester(AccountUtil.getCurrentOrg().getId(), user);
 				LOGGER.info("user signup done " + user);
 				try {
 					(new UserBeanImpl()).sendInvitation(user.getOuid(), user, true);

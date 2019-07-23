@@ -857,48 +857,6 @@ public class UserBeanImpl implements UserBean {
 	}
 
 	@Override
-	public User getFacilioUser(String email, String orgDomain, String portalDomain) throws Exception {
-
-		if (StringUtils.isNullOrEmpty(orgDomain)) {
-			return getFacilioUser(email);
-		}
-		
-		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(AccountConstants.getAppUserFields());
-		fields.addAll(AccountConstants.getAppOrgUserFields());
-		fields.add(AccountConstants.getOrgIdField(AccountConstants.getOrgModule()));
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields).table("Users")
-				.innerJoin("ORG_Users")
-				.on("Users.USERID = ORG_Users.USERID")
-				.innerJoin("Organizations")
-					.on("ORG_Users.ORGID = Organizations.ORGID")
-				;
-		
-		Criteria userEmailCriteria = new Criteria();
-		userEmailCriteria.addAndCondition(CriteriaAPI.getCondition("Users.EMAIL", "email", email, StringOperators.IS));
-		userEmailCriteria.addOrCondition(CriteriaAPI.getCondition("Users.MOBILE", "mobile", email, StringOperators.IS));
-		selectBuilder.andCriteria(userEmailCriteria);
-		
-		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
-		
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.FACILIODOMAINNAME", "domainName", orgDomain, StringOperators.IS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "orgDeletedTime", "-1", NumberOperators.EQUALS));
-		
-		if (!StringUtils.isNullOrEmpty(portalDomain)) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition("Users.CITY", "portalName", portalDomain, StringOperators.IS));
-		}
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			User user = createUserFromProps(props.get(0), true, true, false);
-			return user;
-		}
-		return null;
-	}
-
-	
-	@Override
 	public User getPortalUsers(String email, long portalId) throws Exception {
 		FacilioModule portalInfoModule = AccountConstants.getPortalInfoModule();
 
@@ -1152,36 +1110,29 @@ public class UserBeanImpl implements UserBean {
 		return 0L;
 	}
 
-	public long addRequester(long orgId, User user) throws Exception {
-		return addRequester(orgId, user, true, true);
-	}
-
 	@Override
-	public long createRequestor(long orgId, User user) throws Exception {
+	public long addRequester(long orgId, User user) throws Exception {
 		// TODO Auto-generated method stub
 		return addRequester(orgId, user, false, false);
 	}
 
 	private long addRequester(long orgId, User user, boolean emailVerification, boolean updateifexist)
 			throws Exception {
-		User portalUser = getFacilioUser(user.getEmail(), user.getCity(), user.getCity());
+		User portalUser = AuthUtill.getUserBean().getFacilioUserv3(user.getEmail(), user.getCity(), user.getCity());
 		if (portalUser != null) {
 			log.info("Requester email already exists in the portal for org: " + orgId + ", ouid: "
 					+ portalUser.getOuid());
 			return portalUser.getOuid();
 		}
-
-		//long uid = getPortalUid(user.getPortalId(), user.getEmail());
-//		long uid;
-		//if (uid == -1) {
+		if(AuthUtill.getUserBean().createUserv2(AccountUtil.getCurrentOrg().getId(), user) > 0) {
 			addUserEntry(user, true);
 			user.setDefaultOrg(true);
-		//}
-//		user.setUid(uid);
-		user.setOrgId(orgId);
-		user.setUserType(AccountConstants.UserType.REQUESTER.getValue());
-		user.setUserStatus(true);
-		addToORGUsers(user);
+			user.setOrgId(orgId);
+			user.setUserType(AccountConstants.UserType.REQUESTER.getValue());
+			user.setUserStatus(true);
+			addToORGUsers(user);
+		
+		}
 		return -1;
 	}
 

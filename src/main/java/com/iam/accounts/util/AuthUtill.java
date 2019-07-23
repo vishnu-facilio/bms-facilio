@@ -232,7 +232,7 @@ public class AuthUtill {
 
 		if (verifyPasswordv2(emailaddress, domain, password)) {
 
-			User user = AuthUtill.getUserBean().getFacilioUserv3(emailaddress);
+			User user = AuthUtill.getUserBean().getFacilioUserv3(emailaddress, -1, domain);
 			if (user != null) {
 				long uid = user.getUid();
 				String jwt = AuthUtill.createJWT("id", "auth0", emailaddress,

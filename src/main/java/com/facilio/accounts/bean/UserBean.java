@@ -71,15 +71,9 @@ public interface UserBean {
 	
 	public long addRequester(long orgId, User user) throws Exception;
 	
-	public long createRequestor(long orgId, User user) throws Exception;
-	
 	public boolean updateUserPhoto(long uid, long fileId) throws Exception;
 
     public User getFacilioUser(String email) throws Exception;
-    
-    public User getFacilioUser(String email, String orgDomain, String portalDomain) throws Exception;
-
-//    public User getPortalUser(String email, long portalId) throws Exception;
     
     public User getPortalUsers(String email, long portalId) throws Exception;
     
@@ -101,6 +95,7 @@ public interface UserBean {
 	public boolean verifyUser(long userId) throws Exception;
 
 	public void createUserEntry(long orgId, User user) throws Exception;
+
 	
 
 }
