@@ -195,6 +195,11 @@ public class TemplateAPI {
 		return DEFAULT_TEMPLATES.get(DefaultTemplateType.RULE).get(getLang()).values();
 	}
 	
+	
+	public static Collection<DefaultTemplate> getAllAccountsTemplate () {
+		return DEFAULT_TEMPLATES.get(DefaultTemplateType.ACCOUNTS).get(getLang()).values();
+	}
+	
 	public static long addTemplate(Template template) throws Exception {
 		long id = -1;
 		if(template instanceof EMailTemplate) {

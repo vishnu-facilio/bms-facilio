@@ -1,8 +1,9 @@
 package com.facilio.accounts.util;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
+import com.facilio.bmsconsole.templates.Template;
+import com.facilio.bmsconsole.util.TemplateAPI;
 
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.log4j.LogManager;
@@ -11,6 +12,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import com.facilio.aws.util.AwsUtil;
 
 public enum AccountEmailTemplate {
@@ -113,7 +117,14 @@ public enum AccountEmailTemplate {
 				json.put("sender", SUPPORTEMAIL);
 				json.put("to", "${user.email}");
 				json.put("subject", "Welcome! And confirm your email");
-				json.put("message", "Hi ${user.name}, Please click the below link to verify your email address. ${invitelink}");
+
+				Template template = TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACCOUNTS, templateVal);
+				try {
+					json.put("message", (String) template.getOriginalTemplate().get("message"));
+				}
+				catch(Exception e) {
+					json.put("message", "Hi ${user.name}, Please click the below link to verify your email address. ${invitelink}");
+				}
 				break;
 			case 4:
 				json.put("sender", SUPPORTEMAIL);

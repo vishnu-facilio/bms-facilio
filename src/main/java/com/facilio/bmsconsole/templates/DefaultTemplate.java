@@ -43,7 +43,8 @@ public class DefaultTemplate extends Template {
 	
 	public enum DefaultTemplateType {
 		ACTION("Action"),
-		RULE("Rule")
+		RULE("Rule"),
+		ACCOUNTS("Accounts")
 		;
 		
 		String name;
