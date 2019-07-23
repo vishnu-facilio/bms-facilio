@@ -1,29 +1,23 @@
-package com.facilio.bmsconsole.jobs;
+package com.facilio.bmsconsole.commands;
 
-import java.sql.SQLException;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.chain.Chain;
-import org.json.JSONArray;
-import org.json.simple.JSONObject;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.MLAssetVariableContext;
 import com.facilio.bmsconsole.context.MLContext;
 import com.facilio.bmsconsole.context.MLModelVariableContext;
 import com.facilio.bmsconsole.context.MLVariableContext;
-import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
-import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -33,16 +27,13 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.ScheduleInfo;
 import com.facilio.tasker.ScheduleInfo.FrequencyType;
-import com.facilio.tasker.job.FacilioJob;
-import com.facilio.tasker.job.JobContext;
 
-public class AddEnergyPredictionJob extends FacilioJob {
+public class AddEnergyPredictionCommand implements Command {
 
 	@Override
-	public void execute(JobContext jc) throws Exception {
+	public boolean execute(Context jc) throws Exception {
 		
-		JSONObject props=BmsJobUtil.getJobProps(jc.getJobId(), jc.getJobName());
-		long energyMeterID=(long) props.get("energyMeterId");
+		long energyMeterID=(long) jc.get("energyMeterID");
 		
 		EnergyMeterContext emContext2 = DeviceAPI.getEnergyMeter(energyMeterID);
 		
@@ -51,6 +42,7 @@ public class AddEnergyPredictionJob extends FacilioJob {
 		
 		
 		checkGamModel(energyMeterID,emContext2);
+		return false;
 	}
 	
 	private void checkGamModel(long ratioCheckMLID, EnergyMeterContext context) throws Exception
@@ -182,4 +174,6 @@ public class AddEnergyPredictionJob extends FacilioJob {
 	{
 		FacilioTimer.scheduleCalendarJob(mlID, "DefaultMLJob", System.currentTimeMillis(), info, "ml");
 	}
+
+	
 }

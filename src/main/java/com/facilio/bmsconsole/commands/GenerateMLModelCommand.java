@@ -17,6 +17,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -30,7 +31,7 @@ public class GenerateMLModelCommand implements Command {
 		JSONObject postObj = new JSONObject();
 		postObj.put("ml_id",mlContext.getId());
 		postObj.put("orgid", mlContext.getOrgId());
-		postObj.put("date", LocalDate.now(TimeZone.getTimeZone(AccountUtil.getCurrentAccount().getTimeZone()).toZoneId()));
+		postObj.put("date", getCurrentDate(mlContext));
 		
 		JSONObject modelVariables = new JSONObject();
 		if(mlContext.getMLModelVariable()!=null)
@@ -94,6 +95,15 @@ public class GenerateMLModelCommand implements Command {
 		return false;
 	}
 	
+	private LocalDate getCurrentDate(MLContext mlContext) {
+		if(mlContext.isHistoric()) {
+			return Instant.ofEpochMilli(mlContext.getExecutionEndTime()).atZone(TimeZone.getTimeZone(AccountUtil.getCurrentAccount().getTimeZone()).toZoneId()).toLocalDate();
+		}
+		else {
+			return LocalDate.now(TimeZone.getTimeZone(AccountUtil.getCurrentAccount().getTimeZone()).toZoneId());
+		}
+	}
+
 	private JSONArray constructJSONArray(Hashtable<Long, Hashtable<String, SortedMap<Long, Object>>> assetDataMap) throws JSONException
 	{
 		JSONArray dataObject = new JSONArray();
