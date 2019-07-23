@@ -80,7 +80,17 @@ public class GraphicsContext {
 		this.isDefault = isDefault;
 	}
 
+
+	public String getApplyTo() {
+		return applyTo;
+	}
+	public void setApplyTo(String applyTo) {
+		this.applyTo = applyTo;
+	}
+
 	private boolean isDefault;
+	
+	private String applyTo;
 
 	
 }

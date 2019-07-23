@@ -6265,6 +6265,7 @@ public class FieldFactory {
 		fields.add(getField("assetCategoryId", "ASSET_CATEGORY_ID", module, FieldType.NUMBER));
 		fields.add(getField("parentFolderId", "PARENT_FOLDER_ID", module, FieldType.NUMBER));
 		fields.add(getField("isDefault", "IS_DEFAULT", module, FieldType.BOOLEAN));
+		fields.add(getField("applyTo", "APPLY_TO", module, FieldType.STRING));
 
 		return fields;
 	}
