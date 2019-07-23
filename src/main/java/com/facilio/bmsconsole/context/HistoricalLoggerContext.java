@@ -8,6 +8,7 @@ public class HistoricalLoggerContext {
 	
 	private long id = -1;
 	private long orgId;
+	private ResourceContext parentResourceContext;
 	private long parentId;
 	private Type type;
 	private Long dependentId;
@@ -19,6 +20,13 @@ public class HistoricalLoggerContext {
 	private long calculationEndTime;
 	private long createdBy;
 	private long createdTime;
+	
+	public ResourceContext getParentResourceContext() {
+		return parentResourceContext;
+	}
+	public void setParentResourceContext(ResourceContext parentResourceContext) {
+		this.parentResourceContext = parentResourceContext;
+	}
 	
 	public long getId() {
 		return id;

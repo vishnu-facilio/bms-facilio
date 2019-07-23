@@ -1,12 +1,14 @@
 package com.facilio.bmsconsole.util;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.HistoricalLoggerContext;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -82,11 +84,41 @@ public class HistoricalLoggerUtil {
 				.orderBy("STATUS");
 		
 				List<Map<String, Object>> props = selectBuilder.get();
+				
+				List<HistoricalLoggerContext> historicalLoggers = new ArrayList<HistoricalLoggerContext>();
+				
+				List<Long> resourceIds = new ArrayList<Long>();
 				if (props != null && !props.isEmpty()) {
-					List<HistoricalLoggerContext> historicalLoggers = FieldUtil.getAsBeanListFromMapList(props, HistoricalLoggerContext.class);
-					return historicalLoggers;
+					for(Map<String, Object> prop : props ) {
+						HistoricalLoggerContext historicalLogger = FieldUtil.getAsBeanFromMap(prop, HistoricalLoggerContext.class);
+						historicalLoggers.add(historicalLogger);
+						resourceIds.add(historicalLogger.getParentId());
+					}
 				}
-				return null;
+				
+				Map<Long, ResourceContext> resourcesMap = ResourceAPI.getResourceAsMapFromIds(resourceIds);
+				
+				for(HistoricalLoggerContext historicalLogger :historicalLoggers) {
+					historicalLogger.setParentResourceContext(resourcesMap.get(historicalLogger.getParentId()));
+				}
+				return historicalLoggers;
+	}
+	
+	public static List<HistoricalLoggerContext> getGroupedHistoricalLogger(Long loggerGroupId) throws Exception {
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+			.select(FieldFactory.getHistoricalLoggerFields())
+			.table(ModuleFactory.getHistoricalLoggerModule().getTableName())
+			.andCondition(CriteriaAPI.getCondition("LOGGER_GROUP_ID", "loggerGroupId", ""+loggerGroupId, NumberOperators.EQUALS));
+
+			List<Map<String, Object>> props = selectBuilder.get();
+			if (props != null && !props.isEmpty()) {
+				List<HistoricalLoggerContext> historicalLoggers = FieldUtil.getAsBeanListFromMapList(props, HistoricalLoggerContext.class);
+				return historicalLoggers;
+			}
+	
+			return null;
+
 	}
 	
 	public static List<HistoricalLoggerContext> getActiveHistoricalLogger(List<Long> dependentIds) throws Exception {
