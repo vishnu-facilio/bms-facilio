@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -59,6 +60,7 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.time.SecondsChronoUnit;
 import com.facilio.timeseries.TimeSeriesAPI;
 import com.facilio.unitconversion.Metric;
@@ -399,6 +401,9 @@ public class ReadingsAPI {
 		ReadingDataMeta meta = FieldUtil.getAsBeanFromMap(prop, ReadingDataMeta.class);
 		Object value = meta.getValue();
 		meta.setActualValue((String) value);
+		/*if (meta.isCustom() && meta.getActualValue().equals("-1")) {
+			meta.setActualValue(null);
+		}*/
 		FacilioField field;
 		if (fieldMap != null) {
 			 field = fieldMap.get(meta.getFieldId());
@@ -411,6 +416,17 @@ public class ReadingsAPI {
 			if (value != null && value instanceof String) {
 				value = Integer.valueOf((String) value);
 			}
+		}
+		try {
+			if (AccountUtil.getCurrentOrg().getId() == 210l && meta.getTtime() > System.currentTimeMillis()) {
+				int interval = getDataInterval(meta.getResourceId(), field);
+				ZonedDateTime zdt = DateTimeUtil.getDateTime();
+				zdt = zdt.truncatedTo(new SecondsChronoUnit(interval * 60));
+				meta.setTtime(DateTimeUtil.getMillis(zdt, true));
+			}
+		}
+		catch(Exception e) {
+			LOGGER.info("Error on future rdm date change", e);
 		}
 		meta.setValue(FieldUtil.castOrParseValueAsPerType(field, value));
 		meta.setField(field);
