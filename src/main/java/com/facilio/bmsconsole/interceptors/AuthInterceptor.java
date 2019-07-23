@@ -26,12 +26,11 @@ import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
-import com.facilio.fw.auth.CognitoUtil;
-import com.facilio.fw.auth.CognitoUtil.CognitoUser;
 import com.facilio.fw.auth.LoginUtil;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.screen.util.ScreenUtil;
 import com.facilio.util.AuthenticationUtil;
+import com.iam.accounts.util.AuthUtill;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
@@ -71,11 +70,11 @@ public class AuthInterceptor extends AbstractInterceptor {
 				}
 				
 				if (AccountUtil.getUserBean().verifyPermalinkForURL(token, urlsToValidate)) {
-					DecodedJWT decodedjwt = CognitoUtil.validateJWT(token, "auth0");
+					DecodedJWT decodedjwt = AuthUtill.validateJWT(token, "auth0");
 
 					String[] tokens = null;
-					if (decodedjwt.getSubject().contains(CognitoUtil.JWT_DELIMITER)) {
-						tokens = decodedjwt.getSubject().split(CognitoUtil.JWT_DELIMITER)[0].split("-");
+					if (decodedjwt.getSubject().contains(AuthUtill.JWT_DELIMITER)) {
+						tokens = decodedjwt.getSubject().split(AuthUtill.JWT_DELIMITER)[0].split("-");
 					}
 					else {
 						tokens = decodedjwt.getSubject().split("_")[0].split("-");
@@ -111,18 +110,12 @@ public class AuthInterceptor extends AbstractInterceptor {
 					currentOrgDomain = request.getHeader("X-Current-Org"); 
 				}
 			
-				CognitoUser cognitoUser = AuthenticationUtil.getCognitoUser(request, false);
+				String email = AuthenticationUtil.validateToken(request, false);
 				
 				Account currentAccount = null;
-				if ( ! AuthenticationUtil.checkIfSameUser(currentAccount, cognitoUser)) {
-					try {
-						currentAccount = LoginUtil.getAccount(cognitoUser, false);
-					} catch (Exception e) {
-						LOGGER.log(Level.SEVERE, "Invalid users", e);
-						currentAccount = null;
-					}
-				}
-				if (AuthenticationUtil.checkIfSameUser(currentAccount, cognitoUser)) {
+				currentAccount = LoginUtil.getAccount(email, false);
+				
+				if (currentAccount != null) {
 					AccountUtil.cleanCurrentAccount();
 					AccountUtil.setCurrentAccount(currentAccount);
 
@@ -298,7 +291,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 			
 			String deviceToken = FacilioCookie.getUserCookie(request, "fc.deviceToken");
 			if (deviceToken != null && !"".equals(deviceToken)) {
-				long connectedScreenId = Long.parseLong(CognitoUtil.validateJWT(deviceToken, "auth0").getSubject().split(CognitoUtil.JWT_DELIMITER)[0]);
+				long connectedScreenId = Long.parseLong(AuthUtill.validateJWT(deviceToken, "auth0").getSubject().split(AuthUtill.JWT_DELIMITER)[0]);
 				RemoteScreenContext remoteScreen = ScreenUtil.getRemoteScreen(connectedScreenId);
 				if (remoteScreen != null) {
 					Account currentAccount = new Account(AccountUtil.getOrgBean().getOrg(remoteScreen.getOrgId()), AccountUtil.getOrgBean().getSuperAdmin(remoteScreen.getOrgId()));

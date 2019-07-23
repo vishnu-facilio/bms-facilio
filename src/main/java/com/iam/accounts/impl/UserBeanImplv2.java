@@ -2,7 +2,6 @@ package com.iam.accounts.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,8 +37,6 @@ import com.facilio.db.transaction.FacilioTransactionManager;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.LRUCache;
-import com.facilio.fw.auth.CognitoUtil;
-import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
@@ -782,7 +779,7 @@ public class UserBeanImplv2 implements UserBeanv2 {
 		long ouid = user.getId();
 		
 		String tokenKey = orgId + "-" + ouid;
-		String jwt = CognitoUtil.createJWT("id", "auth0", tokenKey, System.currentTimeMillis() + 24 * 60 * 60000, false);
+		String jwt = AuthUtill.createJWT("id", "auth0", tokenKey, System.currentTimeMillis() + 24 * 60 * 60000, false);
 		
 		JSONObject sessionInfo = new JSONObject();
 		sessionInfo.put("allowUrls", url);

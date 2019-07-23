@@ -26,7 +26,6 @@ import org.json.simple.parser.ParseException;
 import com.amazonaws.util.StringUtils;
 import com.facilio.accounts.bean.RoleBean;
 import com.facilio.accounts.bean.UserBean;
-import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
@@ -48,7 +47,6 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.ResourceContext.ResourceType;
 import com.facilio.bmsconsole.context.ShiftContext;
 import com.facilio.bmsconsole.context.ShiftUserRelContext;
-import com.facilio.bmsconsole.util.EncryptionUtil;
 import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.chain.FacilioContext;
@@ -67,7 +65,6 @@ import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
@@ -1126,7 +1123,6 @@ public class UserBeanImpl implements UserBean {
 
 	@Override
 	public Organization getDefaultOrg(long uid) throws Exception {
-
 		return AuthUtill.getUserBean().getDefaultOrgv2(uid);
 	}
 
@@ -1349,7 +1345,7 @@ public class UserBeanImpl implements UserBean {
 		long ouid = user.getId();
 
 		String tokenKey = orgId + "-" + ouid;
-		String jwt = CognitoUtil.createJWT("id", "auth0", tokenKey, System.currentTimeMillis() + 24 * 60 * 60000,
+		String jwt = AuthUtill.createJWT("id", "auth0", tokenKey, System.currentTimeMillis() + 24 * 60 * 60000,
 				false);
 
 		JSONObject sessionInfo = new JSONObject();

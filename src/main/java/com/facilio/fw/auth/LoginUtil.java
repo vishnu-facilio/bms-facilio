@@ -1,7 +1,5 @@
 package com.facilio.fw.auth;
 
-import java.util.Locale;
-
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.struts2.ServletActionContext;
@@ -11,15 +9,13 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.cookie.FacilioCookie;
-import com.facilio.fw.auth.CognitoUtil.CognitoUser;
-import com.iam.accounts.util.AuthUtill;
 
 public class LoginUtil {
 
 	public static final String IDTOKEN_COOKIE_NAME = "fc.idToken";
 	
-	public static Account getAccount(CognitoUser cognitoUser, boolean addUserEntryIfNotExists) throws Exception {
-		if(cognitoUser==null) {
+	public static Account getAccount(String email, boolean addUserEntryIfNotExists) throws Exception {
+		if(email==null) {
 			return null;
 		}
 		
@@ -32,16 +28,16 @@ public class LoginUtil {
 		}
 		
 		if (currentOrgDomain != null) {
-			user = AccountUtil.getUserBean().getFacilioUser(cognitoUser.getEmail(), currentOrgDomain, null);
+			user = AccountUtil.getUserBean().getFacilioUser(email, currentOrgDomain, null);
 		}
 
 		if (user == null) {
-			user = AccountUtil.getUserBean().getFacilioUser(cognitoUser.getEmail());
+			user = AccountUtil.getUserBean().getFacilioUser(email);
 		}
 		
 		Organization org = null;
 		
-		if (user == null) {
+		/*if (user == null) {
 			org = AccountUtil.getCurrentOrg();
 			if (org != null) {
 				Locale locale = request.getLocale();
@@ -61,20 +57,17 @@ public class LoginUtil {
 				createUser.setUserStatus(true);
 				createUser.setInvitedTime(System.currentTimeMillis());
 				
-				// long ouid = AccountUtil.getUserBean().createUser(org.getOrgId(), createUser);
-				
-				// user = AccountUtil.getUserBean().getUser(ouid);
 			}
-		} else {
+		} else { */
 			org = AccountUtil.getOrgBean().getOrg(user.getOrgId());
-		}
+		//}
 		Account account = new Account(org, user);
 		
 		return account;
 	}
 
-	public static Account getPortalAccount(CognitoUser cognitoUser, long portalId) throws Exception {
-		User user = AccountUtil.getUserBean().getPortalUsers(cognitoUser.getEmail(), portalId);
+	public static Account getPortalAccount(String email, long portalId) throws Exception {
+		User user = AccountUtil.getUserBean().getPortalUsers(email, portalId);
 		Organization org = null;
 		if (user == null) {
 			throw new Exception("user not found");

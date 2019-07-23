@@ -630,7 +630,7 @@ public class FacilioAuthAction extends FacilioAction {
 	}
 
 	public String acceptUserInvite() throws Exception {
-		if (UserUtil.acceptInvite(getInviteToken(), getNewPassword()) != null) {
+		if(AccountUtil.getUserBean().acceptInvite(inviteToken, newPassword)) {
 			return SUCCESS;
 		}
 		return ERROR;

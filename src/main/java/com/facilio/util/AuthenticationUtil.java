@@ -2,15 +2,13 @@ package com.facilio.util;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.facilio.accounts.dto.Account;
 import com.facilio.auth.cookie.FacilioCookie;
-import com.facilio.fw.auth.CognitoUtil;
 import com.iam.accounts.util.AuthUtill;
 
 
 public class AuthenticationUtil {
 	
-    public static CognitoUtil.CognitoUser getCognitoUser(HttpServletRequest request,boolean isPortaluser) throws Exception {
+    public static String validateToken(HttpServletRequest request,boolean isPortaluser) throws Exception {
         String facilioToken = null;
         if(isPortaluser) {
         	facilioToken = FacilioCookie.getUserCookie(request, "fc.idToken.facilioportal");
@@ -39,20 +37,11 @@ public class AuthenticationUtil {
                 }
             }
            // CognitoUtil.CognitoUser cognitoUser =  CognitoUtil.verifiyFacilioToken(facilioToken, isPortaluser, overrideSessionCheck);
-            CognitoUtil.CognitoUser cognitoUser =  AuthUtill.verifiyFacilioToken(facilioToken, isPortaluser, overrideSessionCheck);
+            String email =  AuthUtill.verifiyFacilioToken(facilioToken, isPortaluser, overrideSessionCheck);
             
-            return cognitoUser;
+            return email;
         }
         return  null;
     }
-
-    public static boolean checkIfSameUser(Account currentAccount, CognitoUtil.CognitoUser cognitoUser){
-    	if( currentAccount != null && cognitoUser != null && currentAccount.getUser() != null) {
-    		System.out.println(currentAccount.getUser().getEmail() + " mobile "+ currentAccount.getUser().getMobile() + " cognito "+ cognitoUser.getEmail());
-    		//return (currentAccount.getUser().getEmail().equalsIgnoreCase(cognitoUser.getEmail()));
-    		return true;
-    	}
-    	return false;
-    }
-
+    
 }

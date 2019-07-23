@@ -14,10 +14,8 @@ import org.apache.struts2.ServletActionContext;
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
-import com.facilio.accounts.util.AccountConstants.UserType;
-import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.fw.auth.CognitoUtil;
+import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.util.AuthenticationUtil;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionInvocation;
@@ -84,54 +82,50 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
 
 	private void intercept0() {
         HttpServletRequest request = ServletActionContext.getRequest();
-		CognitoUtil.CognitoUser cognitoUser = null;
+		String email = null;
 		Account currentAccount = null;
 		try {
 			AccountUtil.cleanCurrentAccount();
-			cognitoUser = AuthenticationUtil.getCognitoUser(request,true);
-			if (AuthenticationUtil.checkIfSameUser(currentAccount, cognitoUser)) {
-				AccountUtil.setCurrentAccount(currentAccount);
-			} else {
-				String domainName = request.getServerName();
-				String orgdomain = null;
-				logger.info("Getting portal auth info : " +domainName);
-				if(customdomains != null) {
-					logger.info("Matching...  "+ domainName );
-					orgdomain = (String)customdomains.get(domainName);
-					if(orgdomain != null) {
-						domainName = orgdomain+"."+ portalDomain;
-					}
-					logger.info("Found a valid domain for custom domain for "+ domainName);
+			email = AuthenticationUtil.validateToken(request,true);
+			String domainName = request.getServerName();
+			String orgdomain = null;
+			logger.info("Getting portal auth info : " +domainName);
+			if(customdomains != null) {
+				logger.info("Matching...  "+ domainName );
+				orgdomain = (String)customdomains.get(domainName);
+				if(orgdomain != null) {
+					domainName = orgdomain+"."+ portalDomain;
 				}
-				if(domainName != null) {
-					String[] domainArray = domainName.split("\\.");
-					if (domainArray.length > 2) {
-						String subDomain = domainArray[0];
+				logger.info("Found a valid domain for custom domain for "+ domainName);
+			}
+			if(domainName != null) {
+				String[] domainArray = domainName.split("\\.");
+				if (domainArray.length > 2) {
+					String subDomain = domainArray[0];
 
-						Organization org = null;
-						//org = AccountUtil.getOrgBean().getOrg(AccountUtil.getCurrentOrg().getDomain());
-						org = AccountUtil.getOrgBean().getOrg(subDomain);
-						//need to remove
-						AccountUtil.setCurrentAccount(org.getOrgId());
-						PortalInfoContext portalInfo = AccountUtil.getOrgBean().getPortalInfo(org.getOrgId(), false);
-						org.setPortalId(portalInfo.getPortalId());
-						if (org != null) {
-							long portalId = org.getPortalId();
-							logger.fine("Portal Domain ......"+portalId);
-							User user = null;
-							if (cognitoUser != null) {
-								user = AccountUtil.getUserBean().getFacilioUser(cognitoUser.getEmail(), subDomain, subDomain);
-								if (user == null) {
-									throw new AccountException("No such user present");
-								}
+					Organization org = null;
+					//org = AccountUtil.getOrgBean().getOrg(AccountUtil.getCurrentOrg().getDomain());
+					org = AccountUtil.getOrgBean().getOrg(subDomain);
+					//need to remove
+					AccountUtil.setCurrentAccount(org.getOrgId());
+					PortalInfoContext portalInfo = AccountUtil.getOrgBean().getPortalInfo(org.getOrgId(), false);
+					org.setPortalId(portalInfo.getPortalId());
+					if (org != null) {
+						long portalId = org.getPortalId();
+						logger.fine("Portal Domain ......"+portalId);
+						User user = null;
+						if (email != null) {
+							user = AccountUtil.getUserBean().getFacilioUser(email, subDomain, subDomain);
+							if (user == null) {
+								throw new AccountException("No such user present");
 							}
-							currentAccount = new Account(org, user);
-							AccountUtil.cleanCurrentAccount();
-							AccountUtil.setCurrentAccount(currentAccount);
 						}
-					} else {
-						System.out.println("Match failed ......");
+						currentAccount = new Account(org, user);
+						AccountUtil.cleanCurrentAccount();
+						AccountUtil.setCurrentAccount(currentAccount);
 					}
+				} else {
+					System.out.println("Match failed ......");
 				}
 			}
 		} catch (Exception e){

@@ -73,7 +73,6 @@ import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.fw.auth.SAMLAttribute;
 import com.facilio.fw.auth.SAMLUtil;
 import com.facilio.modules.FacilioStatus;
@@ -754,7 +753,7 @@ public class LoginAction extends FacilioAction {
 		
 		if (AccountUtil.getUserBean().verifyPermalinkForURL(getPermalink(), null)) {
 			
-			DecodedJWT decodedjwt = CognitoUtil.validateJWT(getPermalink(), "auth0");
+			DecodedJWT decodedjwt = AuthUtill.validateJWT(getPermalink(), "auth0");
 			
 			if (decodedjwt != null) {
 				long orgId = -1;

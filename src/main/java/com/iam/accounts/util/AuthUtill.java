@@ -14,8 +14,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTCreator;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.facilio.accounts.bean.GroupBean;
@@ -31,8 +33,6 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.TransactionBeanFactory;
-import com.facilio.fw.auth.CognitoUtil;
-import com.facilio.fw.auth.CognitoUtil.CognitoUser;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
@@ -114,36 +114,48 @@ public class AuthUtill {
 		return null;
 	}
 
-	public static CognitoUser verifiyFacilioToken(String idToken, boolean isPortalUser, boolean overrideSessionCheck) {
-		System.out.println("verifiyFacilioToken() :idToken :" + idToken);
+	public static String verifiyFacilioToken(String idToken, boolean isPortalUser, boolean overrideSessionCheck) {
+		System.out.println("verifiyFacilioToken() :idToken :"+idToken);
 		try {
+			String email = null;
 			DecodedJWT decodedjwt = validateJWT(idToken, "auth0");
-			CognitoUser faciliouser = new CognitoUser();
-			if (decodedjwt != null) {
-				String email = null;
+			if(decodedjwt != null) {
 				if (decodedjwt.getSubject().contains(JWT_DELIMITER)) {
 					email = decodedjwt.getSubject().split(JWT_DELIMITER)[0];
-				} else {
+				}
+				else {
 					email = decodedjwt.getSubject().split("_")[0];
 				}
-				faciliouser.setEmail(email);
-				faciliouser.setFacilioauth(true);
-				faciliouser.setPortaluser(decodedjwt.getClaim("portaluser").asBoolean());
-
-				if (!isPortalUser) {
-					if (overrideSessionCheck || getUserBean().verifyUserSessionv2(faciliouser.getEmail(), idToken)) {
-						return faciliouser;
-					} else {
-						// invalid session
-						return null;
-					}
+				if (overrideSessionCheck || AuthUtill.getUserBean().verifyUserSessionv2(email, idToken)) {
+					return email;
+				} else {
+					// invalid session
+					return null;
 				}
 			}
-			return faciliouser;
+			return email;
 		} catch (Exception e) {
 			logger.info("Exception occurred ", e);
 			return null;
 		}
+	}
+	
+	public static String createJWT(String id, String issuer, String subject, long ttlMillis,boolean isPortalUser) {
+		 
+		try {
+		    Algorithm algorithm = Algorithm.HMAC256("secret");
+		    
+		    String key = subject + JWT_DELIMITER + System.currentTimeMillis();
+		    JWTCreator.Builder builder = JWT.create().withSubject(key)
+	        .withIssuer(issuer);
+		    builder = builder.withClaim("portaluser", isPortalUser);
+		    
+		    return builder.sign(algorithm);
+		} catch (UnsupportedEncodingException | JWTCreationException exception){
+			logger.info("exception occurred while creating JWT ", exception);
+		    //UTF-8 encoding not supported
+		}
+		return null;
 	}
 
 	public static DecodedJWT validateJWT(String token, String issuer) {
@@ -218,7 +230,7 @@ public class AuthUtill {
 			User user = AuthUtill.getUserBean().getFacilioUserv3(emailaddress);
 			if (user != null) {
 				long uid = user.getUid();
-				String jwt = CognitoUtil.createJWT("id", "auth0", emailaddress,
+				String jwt = AuthUtill.createJWT("id", "auth0", emailaddress,
 						System.currentTimeMillis() + 24 * 60 * 60000, isPortalUser);
 				if (startUserSession) {
 					AuthUtill.getUserBean().startUserSessionv2(uid, emailaddress, jwt, ipAddress, userAgent, userType);
