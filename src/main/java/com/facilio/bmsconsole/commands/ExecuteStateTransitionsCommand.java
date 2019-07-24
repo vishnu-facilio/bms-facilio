@@ -15,6 +15,6 @@ public class ExecuteStateTransitionsCommand extends ExecuteAllWorkflowsCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		context.put(FacilioConstants.ContextNames.STATE_TRANSITION_ONLY_CONDITIONED_CHECK, true);
-		return super.execute(context);
+		return super.executeCommand(context);
 	}
 }
