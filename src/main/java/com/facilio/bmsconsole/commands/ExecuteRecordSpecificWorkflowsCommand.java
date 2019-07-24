@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -31,9 +32,8 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.serializable.SerializableCommand;
 
-public class ExecuteRecordSpecificWorkflowsCommand implements SerializableCommand {
+public class ExecuteRecordSpecificWorkflowsCommand extends FacilioCommand implements Serializable {
 	/**
 	 * 
 	 */
@@ -44,7 +44,7 @@ public class ExecuteRecordSpecificWorkflowsCommand implements SerializableComman
 	private boolean propagateError = true;
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		Map<String, List> recordMap = null;
 		try {
 			long startTime = System.currentTimeMillis();

@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,9 +19,8 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.modules.FacilioStatus;
-import com.facilio.serializable.SerializableCommand;
 
-public class ClearAlarmOnWOCloseCommand implements SerializableCommand {
+public class ClearAlarmOnWOCloseCommand extends FacilioCommand implements Serializable {
 
 	/**
 	 * 
@@ -30,7 +30,7 @@ public class ClearAlarmOnWOCloseCommand implements SerializableCommand {
 	private static final Logger LOGGER = LogManager.getLogger(ClearAlarmOnWOCloseCommand.class.getName());
 	
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
 		List<WorkOrderContext> workOrders = (List<WorkOrderContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);

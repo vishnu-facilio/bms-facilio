@@ -1,15 +1,16 @@
 package com.facilio.chain;
 
 import org.apache.commons.chain.Context;
-import org.apache.commons.chain.Filter;
 import org.apache.log4j.LogManager;
 
-public class FacilioChainExceptionHandler implements Filter{
+import com.facilio.bmsconsole.commands.FacilioCommand;
+
+public class FacilioChainExceptionHandler extends FacilioCommand {
 
 	private static org.apache.log4j.Logger log = LogManager.getLogger(FacilioChainExceptionHandler.class.getName());
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		return false;
 	}

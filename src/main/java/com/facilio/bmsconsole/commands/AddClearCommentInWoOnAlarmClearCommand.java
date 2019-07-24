@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.io.Serializable;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
@@ -12,9 +13,8 @@ import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.serializable.SerializableCommand;
 
-public class AddClearCommentInWoOnAlarmClearCommand implements SerializableCommand {
+public class AddClearCommentInWoOnAlarmClearCommand extends FacilioCommand implements Serializable {
 
 	/**
 	 * 
@@ -22,7 +22,7 @@ public class AddClearCommentInWoOnAlarmClearCommand implements SerializableComma
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = LogManager.getLogger(AddClearCommentInWoOnAlarmClearCommand.class.getName());
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<EventType> eventTypes = (List<EventType>) context.get(FacilioConstants.ContextNames.EVENT_TYPE_LIST);
 //		LOGGER.info("Event types in Add clear comment : "+eventTypes);

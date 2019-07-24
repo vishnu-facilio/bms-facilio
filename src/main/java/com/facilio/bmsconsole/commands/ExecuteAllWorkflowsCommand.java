@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -34,10 +35,9 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.serializable.SerializableCommand;
 import com.google.common.collect.Lists;
 
-public class ExecuteAllWorkflowsCommand implements SerializableCommand
+public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serializable
 {
 	/**
 	 * 
@@ -66,7 +66,7 @@ public class ExecuteAllWorkflowsCommand implements SerializableCommand
 	}
 	
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		Map<String, List> recordMap = null;
 		try {
 			long startTime = System.currentTimeMillis();

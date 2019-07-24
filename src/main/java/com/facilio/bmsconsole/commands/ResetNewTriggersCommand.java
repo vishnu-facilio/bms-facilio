@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.io.Serializable;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.Arrays;
@@ -34,13 +35,12 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.serializable.SerializableCommand;
 import com.facilio.tasker.ScheduleInfo.FrequencyType;
 import com.facilio.time.DateTimeUtil;
 
 ;
 
-public class ResetNewTriggersCommand implements SerializableCommand {
+public class ResetNewTriggersCommand extends FacilioCommand implements Serializable {
 
 	/**
 	 * 
@@ -48,7 +48,7 @@ public class ResetNewTriggersCommand implements SerializableCommand {
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		List<PreventiveMaintenance> pms = CommonCommandUtil.getList((FacilioContext) context, FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST);
 		if(pms != null && !pms.isEmpty()) {

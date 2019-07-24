@@ -15,10 +15,10 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 
-public class UpdateStateFlowDiagramCommand implements Command {
+public class UpdateStateFlowDiagramCommand extends FacilioCommand {
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		long id = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 		JSONObject stateFlowDiagram = (JSONObject) context.get(FacilioConstants.ContextNames.STATEFLOW_DIAGRAM);
 		if (id > 0 && stateFlowDiagram != null) {

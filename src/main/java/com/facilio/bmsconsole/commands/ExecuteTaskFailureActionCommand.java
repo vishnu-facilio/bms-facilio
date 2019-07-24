@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -16,14 +17,13 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.modules.FieldUtil;
-import com.facilio.serializable.SerializableCommand;
 
-public class ExecuteTaskFailureActionCommand implements SerializableCommand {
+public class ExecuteTaskFailureActionCommand extends FacilioCommand implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		EventType eventType = (EventType)context.get(FacilioConstants.ContextNames.EVENT_TYPE);
