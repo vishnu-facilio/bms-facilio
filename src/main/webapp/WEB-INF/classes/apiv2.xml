@@ -215,6 +215,9 @@
 		<action name="addOrUpdate"
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
 			method="addOrUpdateStateFlow" />
+		<action name="updateDiagram"
+			class="com.facilio.bmsconsole.actions.StateFlowAction"
+			method="updateStateflowDiagram" />
 
 		<action name="rearrange"
 			class="com.facilio.bmsconsole.actions.StateFlowAction"

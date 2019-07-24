@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import org.apache.commons.chain.Chain;
+import org.json.simple.JSONObject;
 
 import java.util.List;
 import java.util.Map;
@@ -162,6 +163,25 @@ public class StateFlowAction extends FacilioAction {
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.STATE_FLOW, stateFlow);
+		return SUCCESS;
+	}
+	
+	private JSONObject stateFlowDiagram;
+	public JSONObject getStateFlowDiagram() {
+		return stateFlowDiagram;
+	}
+	public void setStateFlowDiagram(JSONObject stateFlowDiagram) {
+		this.stateFlowDiagram = stateFlowDiagram;
+	}
+	
+	public String updateStateflowDiagram() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID, getId());
+		context.put(FacilioConstants.ContextNames.STATEFLOW_DIAGRAM, getStateFlowDiagram());
+		
+		Chain c = TransactionChainFactory.getUpdateStateFlowDiagramChain();
+		c.execute(context);
+		
 		return SUCCESS;
 	}
 	

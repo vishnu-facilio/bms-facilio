@@ -11,6 +11,8 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
+import org.apache.struts2.json.annotations.JSON;
+import org.json.simple.JSONObject;
 
 import java.util.Map;
 
@@ -49,6 +51,14 @@ public class StateFlowRuleContext extends WorkflowRuleContext {
 		this.moduleName = moduleName;
 	}
 	
+	private String diagramJson;
+	public String getDiagramJson() {
+		return diagramJson;
+	}
+	public void setDiagramJson(String diagramJson) {
+		this.diagramJson = diagramJson;
+	}
+	
 	@Override
 	public void executeTrueActions(Object record, Context context, Map<String, Object> placeHolders) throws Exception {
 		if (!(record instanceof ModuleBaseWithCustomFields)) {
@@ -75,23 +85,4 @@ public class StateFlowRuleContext extends WorkflowRuleContext {
 		
 		super.executeTrueActions(record, context, placeHolders);
 	}
-	
-//	@JsonIgnore
-//	@JSON(serialize = false)
-//	public StateFlowRuleContext constructRule() {
-//		StateFlowRuleContext stateFlowRuleContext = new StateFlowRuleContext();
-//		stateFlowRuleContext.setName(getName() + " _Rule");
-//		stateFlowRuleContext.setDescription(getDescription());
-//		stateFlowRuleContext.setCriteria(criteria);
-//		
-//		WorkflowEventContext event = new WorkflowEventContext();
-//		event.setActivityType(EventType.CREATE);
-//		event.setModuleId(moduleId);
-//		stateFlowRuleContext.setEvent(event);
-//		
-//		stateFlowRuleContext.setRuleType(RuleType.STATE_FLOW);
-//		
-//		stateFlowRuleContext.setId(getId());
-//		return stateFlowRuleContext;
-//	}
 }
