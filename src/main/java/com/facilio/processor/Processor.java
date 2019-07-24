@@ -276,7 +276,11 @@ public class Processor implements IRecordProcessor {
         return agent;
     }
 
-    private void processLog(JSONObject payLoad,Long agentId){
+    private void processLog(JSONObject object,Long agentId){
+        JSONObject payLoad = (JSONObject) object.clone();
+        if(orgId==169L){
+            LOGGER.info("payload "+payLoad);
+        }
         if((payLoad.containsKey(AgentKeys.COMMAND_STATUS) || payLoad.containsKey(AgentKeys.CONTENT))){
             int connectionCount = -1;
             //checks for key status in payload and if it 'agent'-publishype
@@ -323,6 +327,7 @@ public class Processor implements IRecordProcessor {
             }
             // ack type - so content is always msgid.
             else {
+                LOGGER.info(" ackLog processing ");
                 payLoad.put(AgentKeys.CONTENT, payLoad.get(AgentKeys.MESSAGE_ID));
             }
             AgentUtil.putLog(payLoad,orgId,agentId,false);

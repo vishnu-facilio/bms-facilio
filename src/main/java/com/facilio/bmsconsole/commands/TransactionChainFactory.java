@@ -3744,6 +3744,12 @@ public class TransactionChainFactory {
 			c.addCommand(new DeleteFormRuleCommand());
 			return c;
 		}
+
+		public static Chain getUpdateStateFlowDiagramChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateStateFlowDiagramCommand());
+			return c;
+		}
 }
 
 

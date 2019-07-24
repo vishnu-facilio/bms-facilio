@@ -58,7 +58,13 @@ public class EnergyMeterContext extends AssetContext {
 		}
 		return false;
 	}
-	
+	private Boolean isHistoricalRunning;
+	public Boolean getIsHistoricalRunning() {
+		return isHistoricalRunning;
+	}
+	public void setIsHistoricalRunning(Boolean isHistoricalRunning) {
+		this.isHistoricalRunning = isHistoricalRunning;
+	}
 	private String childMeterExpression;
 	public String getChildMeterExpression() {
 		return childMeterExpression;

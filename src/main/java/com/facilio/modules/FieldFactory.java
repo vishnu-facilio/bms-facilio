@@ -6167,6 +6167,7 @@ public class FieldFactory {
 		list.add(getField("moduleId", "MODULEID", stateFlowModule, FieldType.NUMBER));
 		list.add(getField("defaultStateId", "DEFAULT_STATE_ID", stateFlowModule, FieldType.NUMBER));
 		list.add(getField("defaltStateFlow", "DEFAULT_STATE_FLOW", stateFlowModule, FieldType.BOOLEAN));
+		list.add(getField("diagramJson", "DIAGRAM_JSON", stateFlowModule, FieldType.STRING));
 		return list;
 	}
 	

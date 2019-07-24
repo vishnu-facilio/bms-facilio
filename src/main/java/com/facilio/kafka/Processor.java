@@ -235,7 +235,8 @@ public class Processor extends FacilioProcessor {
         }
     }
 
-    private void processLog(JSONObject payLoad,Long agentId,String recordId){
+    private void processLog(JSONObject object,Long agentId,String recordId){
+        JSONObject payLoad = (JSONObject) object.clone();
         if((payLoad.containsKey(AgentKeys.COMMAND_STATUS) || payLoad.containsKey(AgentKeys.CONTENT))){
             int connectionCount = -1;
             //checks for key status in payload and if it is of 'agent'-publishype

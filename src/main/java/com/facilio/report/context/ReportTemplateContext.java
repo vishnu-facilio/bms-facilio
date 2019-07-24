@@ -24,6 +24,13 @@ public class ReportTemplateContext {
 	private Long buildingId;
 	private Long defaultValue;
 	private List<Object> chooseValues;
+	private Boolean isVisibleInDashBoard;
+	public Boolean getIsVisibleInDashBoard() {
+		return isVisibleInDashBoard;
+	}
+	public void setIsVisibleInDashBoard(Boolean isVisibleInDashBoard) {
+		this.isVisibleInDashBoard = isVisibleInDashBoard;
+	}
 	private Long parentId;
 	
 	private Criteria criteria;

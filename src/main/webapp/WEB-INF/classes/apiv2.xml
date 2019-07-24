@@ -215,6 +215,9 @@
 		<action name="addOrUpdate"
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
 			method="addOrUpdateStateFlow" />
+		<action name="updateDiagram"
+			class="com.facilio.bmsconsole.actions.StateFlowAction"
+			method="updateStateflowDiagram" />
 
 		<action name="rearrange"
 			class="com.facilio.bmsconsole.actions.StateFlowAction"
@@ -1271,7 +1274,14 @@
 			method="getvmChildHistoricalLogger">
 		</action>
 	</package>
-	
+	<package name="virtualMeters"
+		namespace="/api/v2/virtualMeter"
+		extends="v2Api">
+		<action name="getvmList"
+			class="com.facilio.bmsconsole.actions.EnergyAction"
+			method="getVirtualMeterList">
+		</action>
+	</package>
 	<package name="assetLatestDataApiv2"
 		namespace="/api/v2/reading/latestdata" extends="v2Api">
 		<action name="getReadingsForSpaces"

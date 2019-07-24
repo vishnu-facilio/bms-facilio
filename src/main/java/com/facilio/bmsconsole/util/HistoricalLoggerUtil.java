@@ -149,6 +149,21 @@ public class HistoricalLoggerUtil {
 				return null;
 	}
 	
+	public static List<HistoricalLoggerContext> getInProgressHistoricalLogger() throws Exception {
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getHistoricalLoggerFields())
+				.table(ModuleFactory.getHistoricalLoggerModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("STATUS", "status", ""+ HistoricalLoggerContext.Status.IN_PROGRESS.getIntVal(), NumberOperators.EQUALS));
+				
+				List<Map<String, Object>> props = selectBuilder.get();
+				if (props != null && !props.isEmpty()) {
+					List<HistoricalLoggerContext> historicalLoggers = FieldUtil.getAsBeanListFromMapList(props, HistoricalLoggerContext.class);
+					return historicalLoggers;
+				}
+				return null;
+	}
+	
 	public static List<HistoricalLoggerContext> getAllHistoricalLogger() throws Exception {
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()

@@ -18,24 +18,24 @@ public class DemoRollUpUtil {
 		tablesContainsDateField.put("Site" , Arrays.asList("DATE_CF1","DATE_CF2","DATE_CF3","DATE_CF4","DATE_CF5","DATETIME_CF1","DATETIME_CF2","DATETIME_CF3","DATETIME_CF4","DATETIME_CF5"));
 		tablesContainsDateField.put("System_Jobs" , Arrays.asList("LAST_EXECUTION_TIME"));
 		tablesContainsDateField.put("Groups" , Arrays.asList("CREATED_TIME"));
-		tablesContainsDateField.put("Shift_Readings" , Arrays.asList("ACTUAL_TTIME"));//day,month
+		tablesContainsDateField.put("Shift_Readings" , Arrays.asList("ACTUAL_TTIME","TTIME"));//day,month
 //		tablesContainsDateField.put("SingleDayBusinessHours" , Arrays.asList("START_TIME","END_TIME"));
 		tablesContainsDateField.put("ResizedFile" , Arrays.asList("GENERATED_TIME","EXPIRY_TIME"));
 		tablesContainsDateField.put("Workflow_Log" , Arrays.asList("EXECUTION_TIME"));
-		tablesContainsDateField.put("Current_Occupancy_Reading" , Arrays.asList("ACTUAL_TTIME"));//day
-		tablesContainsDateField.put("Assigned_Occupancy_Reading" , Arrays.asList("ACTUAL_TTIME"));
-		tablesContainsDateField.put("Temperature_Reading" , Arrays.asList("ACTUAL_TTIME"));
-		tablesContainsDateField.put("Humidity_Reading" , Arrays.asList("ACTUAL_TTIME"));
-		tablesContainsDateField.put("CO2_Reading" , Arrays.asList("ACTUAL_TTIME"));
-		tablesContainsDateField.put("Set_Point_Reading" , Arrays.asList("ACTUAL_TTIME"));
-		tablesContainsDateField.put("Weather_Reading" , Arrays.asList("ACTUAL_TTIME"));
-		tablesContainsDateField.put("Weather_Reading_Daily" , Arrays.asList("ACTUAL_TTIME"));
-		tablesContainsDateField.put("Weather_Reading_Hourly_Forecast" , Arrays.asList("ACTUAL_TTIME"));
-		tablesContainsDateField.put("Weather_Reading_Daily_Forecast" , Arrays.asList("ACTUAL_TTIME"));
+		tablesContainsDateField.put("Current_Occupancy_Reading" , Arrays.asList("ACTUAL_TTIME","TTIME"));//day
+		tablesContainsDateField.put("Assigned_Occupancy_Reading" , Arrays.asList("ACTUAL_TTIME","TTIME"));
+		tablesContainsDateField.put("Temperature_Reading" , Arrays.asList("ACTUAL_TTIME","TTIME"));
+		tablesContainsDateField.put("Humidity_Reading" , Arrays.asList("ACTUAL_TTIME","TTIME"));
+		tablesContainsDateField.put("CO2_Reading" , Arrays.asList("ACTUAL_TTIME","TTIME"));
+		tablesContainsDateField.put("Set_Point_Reading" , Arrays.asList("ACTUAL_TTIME","TTIME"));
+		tablesContainsDateField.put("Weather_Reading" , Arrays.asList("ACTUAL_TTIME","TTIME"));
+		tablesContainsDateField.put("Weather_Reading_Daily" , Arrays.asList("ACTUAL_TTIME","TTIME"));
+		tablesContainsDateField.put("Weather_Reading_Hourly_Forecast" , Arrays.asList("ACTUAL_TTIME","TTIME"));
+		tablesContainsDateField.put("Weather_Reading_Daily_Forecast" , Arrays.asList("ACTUAL_TTIME","TTIME"));
 		tablesContainsDateField.put("Psychrometric_Reading" , Arrays.asList("ACTUAL_TTIME"));
-		tablesContainsDateField.put("CDD_Reading" , Arrays.asList("ACTUAL_TTIME"));
-		tablesContainsDateField.put("HDD_Reading" , Arrays.asList("ACTUAL_TTIME"));
-		tablesContainsDateField.put("WDD_Reading" , Arrays.asList("ACTUAL_TTIME"));
+		tablesContainsDateField.put("CDD_Reading" , Arrays.asList("ACTUAL_TTIME","TTIME"));
+		tablesContainsDateField.put("HDD_Reading" , Arrays.asList("ACTUAL_TTIME","TTIME"));
+		tablesContainsDateField.put("WDD_Reading" , Arrays.asList("ACTUAL_TTIME","TTIME"));
 		tablesContainsDateField.put("BaseSpace_Photos" , Arrays.asList("TTIME"));
 		tablesContainsDateField.put("Resources" , Arrays.asList("SYS_DELETED_TIME"));
 		tablesContainsDateField.put("BaseSpace_Attachments" , Arrays.asList("CREATED_TIME"));
@@ -83,7 +83,7 @@ public class DemoRollUpUtil {
 		tablesContainsDateField.put("Asset_Attachments" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("Asset_Notes" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("Tenants" , Arrays.asList("CREATED_TIME","MODIFIED_TIME","IN_TIME","OUT_TIME"));//
-		tablesContainsDateField.put("Tickets" , Arrays.asList("DUE_DATE"));
+		tablesContainsDateField.put("Tickets" , Arrays.asList("DUE_DATE","SCHEDULED_START","ESTIMATED_START","ACTUAL_WORK_START","ACTUAL_WORK_END"));
 		tablesContainsDateField.put("Ticket_Attachments" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("Ticket_Notes" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("WorkOrderRequests" , Arrays.asList("DATETIME_CF1","DATETIME_CF2","DATETIME_CF3","DATETIME_CF4"));
@@ -180,9 +180,10 @@ public class DemoRollUpUtil {
 		tablesContainsDateField.put("StateFlowTransition" , Arrays.asList("SCHEDULE_TIME"));
 		tablesContainsDateField.put("ConnectedApps" , Arrays.asList("SYS_CREATED_TIME","SYS_MODIFIED_TIME"));
 		tablesContainsDateField.put("Connection" , Arrays.asList("EXPIRY_TIME"));
-		tablesContainsDateField.put("ML_Readings" , Arrays.asList("ACTUAL_TTIME"));
-		tablesContainsDateField.put("ML_Log_Readings" , Arrays.asList("ACTUAL_TTIME"));
-
+		tablesContainsDateField.put("ML_Readings" , Arrays.asList("ACTUAL_TTIME","TTIME"));
+		tablesContainsDateField.put("ML_Log_Readings" , Arrays.asList("ACTUAL_TTIME","TTIME"));
+		tablesContainsDateField.put("FAHU_Readings" , Arrays.asList("ACTUAL_TTIME","TTIME"));
+		tablesContainsDateField.put("Chiller_Readings2" , Arrays.asList("ACTUAL_TTIME","TTIME"));
 		return tablesContainsDateField;
 		
 	}
