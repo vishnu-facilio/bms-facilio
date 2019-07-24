@@ -113,16 +113,10 @@ public class AuthInterceptor extends AbstractInterceptor {
 				}
 			
 				Account currentAccount = AuthenticationUtil.validateToken(request, false);
-				if(currentAccount == null) {
-					FacilioCookie.eraseUserCookie(request, response, "fc.currentOrg", null);
-					return Action.LOGIN;
-				}
-				AccountUtil.setCurrentAccount(currentAccount);
-				
-				LoginUtil.updateAccount(currentAccount, false);
 				
 				if (currentAccount != null) {
-					AccountUtil.cleanCurrentAccount();
+					AccountUtil.setCurrentAccount(currentAccount);
+					LoginUtil.updateAccount(currentAccount, false);
 					AccountUtil.setCurrentAccount(currentAccount);
 
 					List<Long> accessibleSpace = null;

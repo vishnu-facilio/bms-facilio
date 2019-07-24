@@ -9,6 +9,6 @@
 	<bean name="RoleBean" class="com.facilio.accounts.impl.RoleBeanImpl"></bean>
 	
 	<!-- v2 authentication -->
-	<bean name="UserBeanv2" class="com.iam.accounts.impl.UserBeanImplv2"></bean>
-	<bean name="OrgBeanv2" class="com.iam.accounts.impl.OrgBeanImplv2"></bean>
+	<bean name="IAMUserBean" class="com.iam.accounts.impl.IAMUserBeanImpl"></bean>
+	<bean name="IAMOrgBean" class="com.iam.accounts.impl.IAMOrgBeanImpl"></bean>
 </beans>

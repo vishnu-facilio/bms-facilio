@@ -782,22 +782,52 @@ public class FacilioAuthAction extends FacilioAction {
 
 	public String apiLogout() throws Exception {
 
+//		HttpServletRequest request = ServletActionContext.getRequest();
+//		HttpServletResponse response = ServletActionContext.getResponse();
+//		HttpSession session = request.getSession();
+//
+//		session.invalidate();
+//
+//		String parentdomain = request.getServerName().replaceAll("app.", ""); 
+//        
+//        if(portalId() > 0) { 
+//            FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilioportal", parentdomain); 
+//        } else { 
+//            FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilio", parentdomain); 
+//        } 
+//        
+//        FacilioCookie.eraseUserCookie(request, response, "fc.authtype", null); 
+//		return SUCCESS;
+		
 		HttpServletRequest request = ServletActionContext.getRequest();
 		HttpServletResponse response = ServletActionContext.getResponse();
-		HttpSession session = request.getSession();
 
-		session.invalidate();
-
-		String parentdomain = request.getServerName().replaceAll("app.", "");
-
-		if (portalId() > 0) {
-			FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilioportal", parentdomain);
-		} else {
-			FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilio", parentdomain);
+		// end user session
+		try {
+			
+			String facilioToken = null;
+			if(portalId() > 0) {
+				facilioToken = FacilioCookie.getUserCookie(request, "fc.idToken.facilioportal");
+			}else {
+				facilioToken = FacilioCookie.getUserCookie(request, "fc.idToken.facilio");
+			}
+			if (facilioToken != null) {
+				User currentUser = AccountUtil.getCurrentUser();
+				if (currentUser != null) {
+					AuthUtill.logOut(currentUser.getUid(), facilioToken, currentUser.getEmail()
+							);
+				}
+			}
+		} catch (Exception e) {
+			return ERROR;
 		}
 
+		HttpSession session = request.getSession();
+		session.invalidate();
+		String parentdomain = request.getServerName().replaceAll("app.", "");
+		FacilioCookie.eraseUserCookie(request, response, portalId() > 0 ? "fc.idToken.facilioportal" : "fc.idToken.facilio", parentdomain);
 		FacilioCookie.eraseUserCookie(request, response, "fc.authtype", null);
-
+		FacilioCookie.eraseUserCookie(request, response, "fc.currentSite", null);
 		return SUCCESS;
 	}
 

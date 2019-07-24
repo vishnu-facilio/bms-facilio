@@ -1121,7 +1121,7 @@ public class UserBeanImpl implements UserBean {
 		if (portalUser != null) {
 			log.info("Requester email already exists in the portal for org: " + orgId + ", ouid: "
 					+ portalUser.getOuid());
-			return portalUser.getOuid();
+			return getFacilioUser(portalUser.getEmail()).getOuid();
 		}
 		if(AuthUtill.getUserBean().createUserv2(AccountUtil.getCurrentOrg().getId(), user) > 0) {
 			addUserEntry(user, true);

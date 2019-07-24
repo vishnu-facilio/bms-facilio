@@ -182,6 +182,7 @@ public class GetWorkOrderListCommand extends FacilioCommand {
 			}
 		}
 		 workOrders = selectBuilder.get();
+		 System.out.println("hi");
 	}
 
 		if (count != null) {

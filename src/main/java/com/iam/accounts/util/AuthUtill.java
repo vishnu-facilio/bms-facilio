@@ -49,53 +49,39 @@ public class AuthUtill {
 	public static final String JWT_DELIMITER = "#";
 
 	public static IAMUserBean getUserBean() throws Exception {
-		IAMUserBean userBean = (IAMUserBean) BeanFactory.lookup("UserBeanv2");
+		IAMUserBean userBean = (IAMUserBean) BeanFactory.lookup("IAMUserBean");
 		return userBean;
 	}
 
 	public static IAMUserBean getUserBean(long orgId) throws Exception {
-		IAMUserBean userBean = (IAMUserBean) BeanFactory.lookup("UserBeanv2", orgId);
+		IAMUserBean userBean = (IAMUserBean) BeanFactory.lookup("IAMUserBean", orgId);
 		return userBean;
 	}
 
 	public static IAMUserBean getTransactionalUserBean() throws Exception {
-		return (IAMUserBean) TransactionBeanFactory.lookup("UserBeanv2");
+		return (IAMUserBean) TransactionBeanFactory.lookup("IAMUserBean");
 	}
 
 	public static IAMUserBean getTransactionalUserBean(long orgId) throws Exception {
-		return (IAMUserBean) TransactionBeanFactory.lookup("UserBeanv2", orgId);
+		return (IAMUserBean) TransactionBeanFactory.lookup("IAMUserBean", orgId);
 	}
 
 	public static IAMOrgBean getOrgBean() throws Exception {
-		Object ob = BeanFactory.lookup("OrgBeanv2");
+		Object ob = BeanFactory.lookup("IAMOrgBean");
 		IAMOrgBean orgBean = (IAMOrgBean) ob;
 		return orgBean;
 	}
 
 	public static IAMOrgBean getOrgBean(long orgId) throws Exception {
-		IAMOrgBean orgBean = (IAMOrgBean) BeanFactory.lookup("OrgBeanv2", orgId);
+		IAMOrgBean orgBean = (IAMOrgBean) BeanFactory.lookup("IAMOrgBean", orgId);
 		return orgBean;
 	}
 
 	public static IAMOrgBean getTransactionalOrgBean(long orgId) throws Exception {
-		IAMOrgBean orgBean = (IAMOrgBean) TransactionBeanFactory.lookup("OrgBeanv2", orgId);
+		IAMOrgBean orgBean = (IAMOrgBean) TransactionBeanFactory.lookup("IAMOrgBean", orgId);
 		return orgBean;
 	}
 
-	public static GroupBean getGroupBean() throws Exception {
-		GroupBean groupBean = (GroupBean) BeanFactory.lookup("GroupBean");
-		return groupBean;
-	}
-
-	public static RoleBean getRoleBean() throws Exception {
-		RoleBean roleBean = (RoleBean) BeanFactory.lookup("RoleBean");
-		return roleBean;
-	}
-
-	public static RoleBean getRoleBean(long orgId) throws Exception {
-		RoleBean roleBean = (RoleBean) BeanFactory.lookup("RoleBean", orgId);
-		return roleBean;
-	}
 
 	public static PortalInfoContext getPortalInfo() throws Exception {
 		FacilioModule module = ModuleFactory.getServicePortalModule();
@@ -199,6 +185,7 @@ public class AuthUtill {
 			
 			List<FacilioField> fields = new ArrayList<>();
 			fields.addAll(AccountConstants.getAccountsUserFields());
+			fields.add(AccountConstants.getUserPasswordField());
 			
 			GenericSelectRecordBuilder selectBuilder = new SampleGenericSelectBuilder()
 					.select(fields)
