@@ -101,9 +101,18 @@ public class GraphicsAction extends FacilioAction{
 		this.assetCategoryId = assetCategoryId;
 	}
 	
+	private long assetId = -1;
+	public long getAssetId() {
+		return assetId;
+	}
+	public void setAssetId(long assetId) {
+		this.assetId = assetId;
+	}
+	
 	public String getGraphicsForAssetCategory() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ASSET_CATEGORY, assetCategoryId);
+		context.put(FacilioConstants.ContextNames.ASSET_ID, assetId);
 		
 		Chain chain = ReadOnlyChainFactory.getGraphicsForAssetCategoryChain();
 		chain.execute(context);
