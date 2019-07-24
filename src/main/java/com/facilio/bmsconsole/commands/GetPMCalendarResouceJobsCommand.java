@@ -134,12 +134,18 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 				.andCondition(CriteriaAPI.getCondition(woFieldMap.get("pm"), CommonOperators.IS_NOT_EMPTY))
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(woModule), String.valueOf(siteId) , NumberOperators.EQUALS))
 				;
-		if (dateRange != null) {
-			commonBuilder.andCondition(CriteriaAPI.getCondition(woFieldMap.get("createdTime"), dateRange.toString(), DateOperators.BETWEEN));
+		Criteria criteria = new Criteria();
+		for(String metric: selectedMetrics) {
+			FacilioField field = woFieldMap.get(metricFieldMap.get(metric));
+			if (dateRange != null) {
+				criteria.addOrCondition(CriteriaAPI.getCondition(field, dateRange.toString(), DateOperators.BETWEEN));
+			}
+			else {
+				criteria.addOrCondition(CriteriaAPI.getCondition(field, operator));
+			}
 		}
-		else {
-			commonBuilder.andCondition(CriteriaAPI.getCondition(woFieldMap.get("createdTime"), operator));
-		}
+		commonBuilder.andCriteria(criteria);
+		
 		if (filterCriteria != null) {
 			commonBuilder.andCriteria(filterCriteria);
 		}
@@ -219,7 +225,6 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 			
 			selectFields = new ArrayList<>();
 			selectFields.add(woFieldMap.get("subject"));
-			selectFields.add(woFieldMap.get("createdTime"));
 			selectFields.add(woFieldMap.get("assignedTo"));
 			selectFields.add(woFieldMap.get("assignmentGroup"));
 			selectFields.add(woFieldMap.get("priority"));
@@ -228,12 +233,8 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 			selectFields.add(resourceField);
 			selectFields.add(frequencyField);
 			selectFields.add(FieldFactory.getIdField(woModule));
-			if (showTimeMetric) {
-				for(String metric: selectedMetrics) {
-					if (!metric.equals("createdTime")) {
-						selectFields.add(woFieldMap.get(metricFieldMap.get(metric)));
-					}
-				}
+			for(String metric: selectedMetrics) {
+				selectFields.add(woFieldMap.get(metricFieldMap.get(metric)));
 			}
 			
 			
@@ -290,7 +291,8 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 						}
 					}
 					else {
-						addData(row, filteredList, PMPlannerAPI.PLANNED, count, totalCount, false);
+						// Assuming only 1 metric will be selected when no calendar column is selected
+						addData(row, filteredList, selectedMetrics.get(0), count, totalCount, false);
 						sort(row);
 					}
 					
@@ -455,22 +457,20 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 			}
 		}
 		
-		if (showTimeMetric) {
-			selectedMetrics = new ArrayList<>();
-			metricFieldNameMap = new HashMap<>();
-			JSONArray metricSettings = plannerSettings.getTimeMetricSettings();
-			for(int i=0; i < metricSettings.size(); i++) {
-				JSONObject metricObj = (JSONObject) metricSettings.get(i);
-				boolean enabled = (boolean) metricObj.get("enabled");
-				if (!enabled) {
-					continue;
-				}
-				
-				String name = (String) metricObj.get("name");
-				String displayName = (String) metricObj.get("displayName");
-				selectedMetrics.add(name);
-				metricFieldNameMap.put(name, displayName);
+		selectedMetrics = new ArrayList<>();
+		metricFieldNameMap = new HashMap<>();
+		JSONArray metricSettings = plannerSettings.getTimeMetricSettings();
+		for(int i=0; i < metricSettings.size(); i++) {
+			JSONObject metricObj = (JSONObject) metricSettings.get(i);
+			boolean enabled = (boolean) metricObj.get("enabled");
+			if (!enabled) {
+				continue;
 			}
+			
+			String name = (String) metricObj.get("name");
+			String displayName = (String) metricObj.get("displayName");
+			selectedMetrics.add(name);
+			metricFieldNameMap.put(name, displayName);
 		}
 	}
 	

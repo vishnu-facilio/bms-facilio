@@ -1438,7 +1438,7 @@ public class WorkOrderAction extends FacilioAction {
 		// TODO Auto-generated method stub
 		String errorTrace = null;
 		StringBuilder body = new StringBuilder("\n\nDetails: \n");
-		if (e != null) {
+		if (e != null && AwsUtil.isProduction() ) {
 			if (e instanceof IllegalArgumentException && AccountUtil.getCurrentOrg().getOrgId() != 155) {
 				if (e.getMessage().equals("Please close all tasks before closing/resolving the workorder") || e.getMessage().equals("Tasks should be completed before resolve")) {
 					return;

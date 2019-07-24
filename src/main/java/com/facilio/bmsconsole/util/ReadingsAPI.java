@@ -401,9 +401,11 @@ public class ReadingsAPI {
 		ReadingDataMeta meta = FieldUtil.getAsBeanFromMap(prop, ReadingDataMeta.class);
 		Object value = meta.getValue();
 		meta.setActualValue((String) value);
-		/*if (meta.isCustom() && meta.getActualValue().equals("-1")) {
+		if (meta.isCustom() && meta.getActualValue().equals("-1")) {
 			meta.setActualValue(null);
-		}*/
+			meta.setValue(null);
+			meta.setTtime(-1);
+		}
 		FacilioField field;
 		if (fieldMap != null) {
 			 field = fieldMap.get(meta.getFieldId());

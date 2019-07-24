@@ -12,10 +12,12 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
 
 public class GetLatestReadingDataCommand extends FacilioCommand {
@@ -68,7 +70,13 @@ public class GetLatestReadingDataCommand extends FacilioCommand {
 				return false;
 			}
 			
-			Map<Long, FacilioField> fieldMap = (Map<Long, FacilioField>) context.get(FacilioConstants.ContextNames.MODULE_FIELD_MAP);
+			Map<Long, FacilioField> fieldMap = null;
+			long fieldId = (long) context.getOrDefault(FacilioConstants.ContextNames.FIELD_ID, -1);
+			if (fieldId > 0) {
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioField field = modBean.getField(fieldId);
+				fieldMap = Collections.singletonMap(fieldId, field);
+			}
 			
 			List<ReadingDataMeta> rdmList = ReadingsAPI.getReadingDataMetaList(parentIds, fieldMap, excludeEmptyFields, pagination, search, types);
 			
