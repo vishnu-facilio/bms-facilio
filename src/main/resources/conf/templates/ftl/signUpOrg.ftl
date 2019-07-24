@@ -20,7 +20,7 @@
                                           <div style="font-size: 22px; font-weight: 600; font-style: normal; font-stretch: normal; line-height: 1.36; letter-spacing: 0.3px; color: #19191c;text-align: left;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;padding-top: 30px;padding-bottom: 30px;">
                                           <img src="https://facilio.com/assets/images/logo.png" alt="" title="" width="80"/>
                                           </div>      
-                                        <div style="font-size: 16px; font-weight: 600; font-style: normal; font-stretch: normal; line-height: 1.53; letter-spacing: 0.4px; color: #324056;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;max-width: 530px;width: 530px;padding-bottom: 10px;">Hello ${user.name},</div>
+                                        <div style="font-size: 16px; font-weight: 600; font-style: normal; font-stretch: normal; line-height: 1.53; letter-spacing: 0.4px; color: #324056;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;max-width: 530px;width: 530px;padding-bottom: 10px;">Hi!</div>
                                         <div style="font-size: 16px; font-weight: 600; font-style: normal; font-stretch: normal; line-height: 1.53; letter-spacing: 0.4px; color: #324056;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;">
                                           Welcome to Facilio!
                                         </div>
