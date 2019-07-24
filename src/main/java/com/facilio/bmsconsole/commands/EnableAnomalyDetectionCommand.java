@@ -44,7 +44,7 @@ public class EnableAnomalyDetectionCommand implements Command
 		//Get All Energy Meters
 		List<EnergyMeterContext>  emContextList = new ArrayList<EnergyMeterContext>(10);
 		
-		String[] energyMeterID = context.get("TreeHierachy").toString().split(",");
+		String[] energyMeterID = context.get("TreeHeirarchy").toString().split(",");
 		for(String ID:energyMeterID)
 		{
 			EnergyMeterContext emContext = DeviceAPI.getEnergyMeter(Long.parseLong(ID));
@@ -57,7 +57,7 @@ public class EnableAnomalyDetectionCommand implements Command
 		addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContextList.get(0).getCategory().getId(),"AnomalyDetectionMLLogReadings",FieldFactory.getMLLogCheckGamFields(),ModuleFactory.getMLLogReadingModule().getTableName());
 		addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContextList.get(0).getCategory().getId(),"AnomalyDetectionMLReadings",FieldFactory.getMLCheckGamFields(),ModuleFactory.getMLReadingModule().getTableName());
 		
-		long ratioCheckMLid = addRatioCheckModel(emContextList,(String)context.get("TreeHierachy"));
+		long ratioCheckMLid = addRatioCheckModel(emContextList,(String)context.get("TreeHeirarchy"));
 		checkGamModel(ratioCheckMLid,emContextList);
 		
 		return false;
@@ -96,6 +96,7 @@ public class EnableAnomalyDetectionCommand implements Command
 			addMLModelVariables(mlID,"adjustmentPercentage","10");
 			addMLModelVariables(mlID,"orderRange","2");
 			addMLModelVariables(mlID,"meterInterval","10");
+			addMLModelVariables(mlID,"modelname","Gam");
 			ScheduleInfo info = new ScheduleInfo();
 			info.setFrequencyType(FrequencyType.DAILY);
 			
@@ -129,7 +130,7 @@ public class EnableAnomalyDetectionCommand implements Command
         updateBuilder.update(prop);
 	}
 	
-	private long addRatioCheckModel(List<EnergyMeterContext> emContextList, String treeHierachy) throws Exception
+	private long addRatioCheckModel(List<EnergyMeterContext> emContextList, String treeHeirarchy) throws Exception
 	{
 		addReading(FacilioConstants.ContextNames.ENERGY_METER,emContextList.get(0).getCategory().getId(),"checkRatioMLLogReadings",FieldFactory.getMLLogCheckRatioFields(),ModuleFactory.getMLLogReadingModule().getTableName());
 		addReading(FacilioConstants.ContextNames.ENERGY_METER,emContextList.get(0).getCategory().getId(),"checkRatioMLReadings",FieldFactory.getMLCheckRatioFields(),ModuleFactory.getMLReadingModule().getTableName());
@@ -242,7 +243,7 @@ public class EnableAnomalyDetectionCommand implements Command
 			addMLVariables(mlID,upperGAMField.getModuleId(),upperGAMField.getFieldId(),parentField.getFieldId(),emContext.getId(),3600000);
 		}
 		
-		addMLModelVariables(mlID,"TreeHierachy",treeHierachy);
+		addMLModelVariables(mlID,"TreeHeirarchy",treeHeirarchy);
 		FacilioField energyField = modBean.getField("totalEnergyConsumptionDelta", FacilioConstants.ContextNames.ENERGY_DATA_READING);
 		addMLModelVariables(mlID,"energyfieldid",""+energyField.getId());
 		
@@ -283,6 +284,7 @@ public class EnableAnomalyDetectionCommand implements Command
 			addMLModelVariables(mlID,"adjustmentPercentage","10");
 			addMLModelVariables(mlID,"orderRange","2");
 			addMLModelVariables(mlID,"meterInterval","10");
+			addMLModelVariables(mlID,"modelname","Gam");
 			ScheduleInfo info = new ScheduleInfo();
 			info.setFrequencyType(FrequencyType.DAILY);
 			addJobs(mlID,info);

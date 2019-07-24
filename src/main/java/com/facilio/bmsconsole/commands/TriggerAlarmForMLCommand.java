@@ -102,6 +102,7 @@ public class TriggerAlarmForMLCommand implements Command {
     	else
     	{
     		generateClearEvent(parentID,mlContext.getMLVariable().get(0).getFieldID(),mlContext.getPredictionTime());
+    		generateClearEvent(parentID,mlContext.getMLVariable().get(0).getFieldID(),mlContext.getPredictionTime(),parentID);
     	}
     	return -1;
 	}
@@ -189,7 +190,7 @@ public class TriggerAlarmForMLCommand implements Command {
     	}
     	else
     	{
-    		generateClearEvent(parentID,mlContext.getMLVariable().get(0).getFieldID(),mlContext.getPredictionTime());
+    		generateClearEvent(parentID,mlContext.getMLVariable().get(0).getFieldID(),mlContext.getPredictionTime(),parentID);
     	}
     	return false;
 	}
@@ -211,6 +212,35 @@ public class TriggerAlarmForMLCommand implements Command {
         
         addEvent(event);
 	
+	}
+	
+	private void generateClearEvent(long assetID,long fieldID,long ttime,long parentID)
+	{
+		try
+		{
+			AlarmOccurrenceContext alarmOccuranceContext = NewAlarmAPI.getActiveAlarmOccurance("Anomaly_RCA_" + ResourceAPI.getResource(assetID).getId(),Type.RCA_ALARM);
+			if(alarmOccuranceContext!=null)
+			{
+				String message = "Anomaly Cleared";
+				RCAEvent event = new RCAEvent();
+				event.setEventMessage(message);
+		        event.setResource(ResourceAPI.getResource(assetID));
+		        event.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
+		        event.setReadingTime(ttime);
+		        
+		        List<BaseEventContext> eventList = new ArrayList<BaseEventContext>();
+		        eventList.add(event);
+		        
+		        FacilioContext context = new FacilioContext();
+				context.put(EventConstants.EventContextNames.EVENT_LIST,eventList);
+				Chain chain = TransactionChainFactory.getV2AddEventChain();
+				chain.execute(context);
+			}
+		}
+		catch(Exception e)
+		{
+			LOGGER.fatal("Error while generating event ",e);
+		}
 	}
 	
 	public static void main(String arg[])

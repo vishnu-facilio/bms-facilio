@@ -19,6 +19,14 @@ public class RCAEvent extends MLAnomalyEvent
 	}
 	
 	@Override
+	public String constructMessageKey() {
+		if (getResource() != null) {
+			return "Anomaly_RCA_" + getResource().getId();	
+		}
+		return null;
+	}
+	
+	@Override
 	public BaseAlarmContext updateAlarmContext(BaseAlarmContext baseAlarm, boolean add) {
 		if (add && baseAlarm == null) 
 		{
