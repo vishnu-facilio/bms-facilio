@@ -114,11 +114,13 @@ public enum AccountEmailTemplate {
 				json.put("subject", "[" + BRAND +"] ${inviter.name} has invited you to join the ${org.name} organization");
 				try {
 					template = TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACCOUNTS, templateVal);
-					json.put("message", AccountUtil.getCurrentOrg().getOrgId() == 155l ? template.getOriginalTemplate().get("message") : "Hi ${user.name}, ${inviter.name} has invited you to join the ${org.name} organization. Please click the below link to join the organization. ${invitelink}");
+					json.put("message", template.getOriginalTemplate().get("message"));
 					json.put("mailType", "html");
 				}
 				catch(Exception e) {
 					json.put("message", "Hi ${user.name}, ${inviter.name} has invited you to join the ${org.name} organization. Please click the below link to join the organization. ${invitelink}");
+					json.put("mailType", "text");
+					
 				}
 				break;
 			case 3:
@@ -127,12 +129,14 @@ public enum AccountEmailTemplate {
 				json.put("subject", "Welcome! And confirm your email");
 				try {
 					template = TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACCOUNTS, templateVal);
-					json.put("message",AccountUtil.getCurrentOrg().getOrgId() == 155l ? template.getOriginalTemplate().get("message") : "Hi ${user.name}, Please click the below link to verify your email address. ${invitelink}");
+					json.put("message", template.getOriginalTemplate().get("message"));
 					json.put("mailType", "html");
 					
 				}
 				catch(Exception e) {
 					json.put("message", "Hi ${user.name}, Please click the below link to verify your email address. ${invitelink}");
+					json.put("mailType", "text");
+					
 				}
 				break;
 			case 4:
@@ -141,12 +145,14 @@ public enum AccountEmailTemplate {
 				json.put("subject", "Reset your "+BRAND+" password");
 				try {
 					template = TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACCOUNTS, templateVal);
-					json.put("message",AccountUtil.getCurrentOrg().getOrgId() == 155l ? template.getOriginalTemplate().get("message") : "Hi ${user.name}, Please click the below link to reset your password. ${invitelink}");
+					json.put("message",template.getOriginalTemplate().get("message"));
 					json.put("mailType", "html");
 					
 				}
 				catch(Exception e) {
 					json.put("message", "Hi ${user.name}, Please click the below link to reset your password. ${invitelink}");
+					json.put("mailType", "text");
+					
 				}
 				break;
 			case 5:
