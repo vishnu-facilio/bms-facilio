@@ -29,7 +29,7 @@
                                            browser window.
                                           </div>
                                           <div style="padding-top: 20px;padding-bottom: 20px;">
-                                          <a href="" style="padding-left: 5px;font-size: 14px; font-weight: 500; font-style: normal; font-stretch: normal; line-height: 20px; letter-spacing: 0.4px; color: #396dc2;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;">
+                                          <a href="${invitelink}" style="padding-left: 5px;font-size: 14px; font-weight: 500; font-style: normal; font-stretch: normal; line-height: 20px; letter-spacing: 0.4px; color: #396dc2;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;">
                                           ${invitelink}
                                           </a>
                                           </div>
@@ -44,7 +44,7 @@
             </div>
             <div style="text-align: center;margin-top: 20px;">
             
-            <div style="font-size: 11px; font-weight: normal; font-style: normal; font-stretch: normal; line-height: normal; letter-spacing: 0.28px; text-align: center; color: #8e8c97;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;">© 2019 <a href="" style="padding-left: 5px;font-size: 11px; font-weight: 500; font-style: normal; font-stretch: normal; line-height: 20px; letter-spacing: 0.5px; color: #396dc2;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;text-decoration: none;">www.facilio.com</a> | ALL RIGHTS RESERVED</div>
+            <div style="font-size: 11px; font-weight: normal; font-style: normal; font-stretch: normal; line-height: normal; letter-spacing: 0.28px; text-align: center; color: #8e8c97;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;">&copy; 2019 <a href="www.facilio.com" style="padding-left: 5px;font-size: 11px; font-weight: 500; font-style: normal; font-stretch: normal; line-height: 20px; letter-spacing: 0.5px; color: #396dc2;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;text-decoration: none;">www.facilio.com</a> | ALL RIGHTS RESERVED</div>
             </div>
       </div>
 </body>
