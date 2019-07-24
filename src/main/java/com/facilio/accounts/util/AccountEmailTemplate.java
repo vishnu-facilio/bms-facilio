@@ -115,6 +115,7 @@ public enum AccountEmailTemplate {
 				try {
 					template = TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACCOUNTS, templateVal);
 					json.put("message", AccountUtil.getCurrentOrg().getOrgId() == 155l ? template.getOriginalTemplate().get("message") : "Hi ${user.name}, ${inviter.name} has invited you to join the ${org.name} organization. Please click the below link to join the organization. ${invitelink}");
+					json.put("mailType", "html");
 				}
 				catch(Exception e) {
 					json.put("message", "Hi ${user.name}, ${inviter.name} has invited you to join the ${org.name} organization. Please click the below link to join the organization. ${invitelink}");
@@ -127,6 +128,8 @@ public enum AccountEmailTemplate {
 				try {
 					template = TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACCOUNTS, templateVal);
 					json.put("message",AccountUtil.getCurrentOrg().getOrgId() == 155l ? template.getOriginalTemplate().get("message") : "Hi ${user.name}, Please click the below link to verify your email address. ${invitelink}");
+					json.put("mailType", "html");
+					
 				}
 				catch(Exception e) {
 					json.put("message", "Hi ${user.name}, Please click the below link to verify your email address. ${invitelink}");
@@ -139,6 +142,8 @@ public enum AccountEmailTemplate {
 				try {
 					template = TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACCOUNTS, templateVal);
 					json.put("message",AccountUtil.getCurrentOrg().getOrgId() == 155l ? template.getOriginalTemplate().get("message") : "Hi ${user.name}, Please click the below link to reset your password. ${invitelink}");
+					json.put("mailType", "html");
+					
 				}
 				catch(Exception e) {
 					json.put("message", "Hi ${user.name}, Please click the below link to reset your password. ${invitelink}");
