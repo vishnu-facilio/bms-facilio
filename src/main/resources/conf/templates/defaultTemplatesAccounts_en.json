@@ -1,7 +1,15 @@
 {
+	"2": {
+		"name": "INVITE_EMAIL",
+		"message_ftl": "inviteUser"
+	},
 	"3": {
 		"name": "SIGNUP_EMAIL",
 		"message_ftl": "signUpOrg"
+	},
+	"4": {
+		"name": "RESET_PASSWORD",
+		"message_ftl": "resetPwd"
 	}
 	
 }

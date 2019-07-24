@@ -100,6 +100,7 @@ public enum AccountEmailTemplate {
 		}
 		
 		JSONObject json = new JSONObject();
+		Template template = null;
 		switch(templateVal) {
 			case 1:
 				json.put("sender", SUPPORTEMAIL);
@@ -111,16 +112,21 @@ public enum AccountEmailTemplate {
 				json.put("sender", SUPPORTEMAIL);
 				json.put("to", "${user.email}");
 				json.put("subject", "[" + BRAND +"] ${inviter.name} has invited you to join the ${org.name} organization");
-				json.put("message", "Hi ${user.name}, ${inviter.name} has invited you to join the ${org.name} organization. Please click the below link to join the organization. ${invitelink}");
+				try {
+					template = TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACCOUNTS, templateVal);
+					json.put("message", template.getOriginalTemplate().get("message"));
+				}
+				catch(Exception e) {
+					json.put("message", "Hi ${user.name}, ${inviter.name} has invited you to join the ${org.name} organization. Please click the below link to join the organization. ${invitelink}");
+				}
 				break;
 			case 3:
 				json.put("sender", SUPPORTEMAIL);
 				json.put("to", "${user.email}");
 				json.put("subject", "Welcome! And confirm your email");
-
-				Template template = TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACCOUNTS, templateVal);
 				try {
-					json.put("message", (String) template.getOriginalTemplate().get("message"));
+					template = TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACCOUNTS, templateVal);
+					json.put("message", template.getOriginalTemplate().get("message"));
 				}
 				catch(Exception e) {
 					json.put("message", "Hi ${user.name}, Please click the below link to verify your email address. ${invitelink}");
@@ -130,7 +136,13 @@ public enum AccountEmailTemplate {
 				json.put("sender", SUPPORTEMAIL);
 				json.put("to", "${user.email}");
 				json.put("subject", "Reset your "+BRAND+" password");
-				json.put("message", "Hi ${user.name}, Please click the below link to reset your password. ${invitelink}");
+				try {
+					template = TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACCOUNTS, templateVal);
+					json.put("message", template.getOriginalTemplate().get("message"));
+				}
+				catch(Exception e) {
+					json.put("message", "Hi ${user.name}, Please click the below link to reset your password. ${invitelink}");
+				}
 				break;
 			case 5:
 				json.put("sender", SUPPORTEMAIL);
