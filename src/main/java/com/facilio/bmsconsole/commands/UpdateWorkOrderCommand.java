@@ -170,6 +170,10 @@ public class UpdateWorkOrderCommand extends FacilioCommand {
 		else if (workOrder.getTenant()!= null && workOrder.getTenant().getId() != -1) {
 			transferToAnotherTenant(workOrder, oldWos);
 		}
+		// TODO verify
+		if (workOrder.getDueDate() > 0) {
+			workOrder.setEstimatedEnd(workOrder.getDueDate());
+		}
 		
 		if (workOrder.getSiteId() == -1) {
 			TicketAPI.validateSiteSpecificData(workOrder, oldWos);
