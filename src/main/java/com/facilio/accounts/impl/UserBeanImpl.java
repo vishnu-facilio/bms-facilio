@@ -173,7 +173,12 @@ public class UserBeanImpl implements UserBean {
 
 	@Override
 	public void createUser(long orgId, User user) throws Exception {
-		
+		User userExisting = getUser(orgId, user.getEmail());
+		if (userExisting != null && user.getUserType() == AccountConstants.UserType.REQUESTER.getValue()) { 
+            user.setUserType(AccountConstants.UserType.USER.getValue()); 
+            updateUser(user);
+            return;
+        }
 		if(UserUtil.addUser(user, orgId, AccountUtil.getCurrentUser().getEmail()) > 0) {
 			createUserEntry(orgId, user);
 		}
@@ -1107,12 +1112,6 @@ public class UserBeanImpl implements UserBean {
 			return user.getOuid();
 		}
 		return 0L;
-	}
-
-	@Override
-	public long addRequester(long orgId, User user) throws Exception {
-		// TODO Auto-generated method stub
-		return addRequester(orgId, user, false, false);
 	}
 
 	private long addRequester(long orgId, User user, boolean emailVerification, boolean updateifexist)

@@ -401,7 +401,7 @@ Pragma: no-cache
 			user.setEmail(emailaddress);
 			   
 			UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
-			userBean.addRequester(AccountUtil.getCurrentOrg().getId(), user);
+			userBean.inviteRequester(AccountUtil.getCurrentOrg().getId(), user);
 			
 		} catch (MySQLIntegrityConstraintViolationException e){
 			setJsonresponse("message", "Username exists for this portal");

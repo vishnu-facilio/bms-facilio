@@ -251,25 +251,14 @@ public class UserAction extends FacilioAction {
 
 		user.setUserType(UserType.REQUESTER.getValue());
 		
+		
 		try {
-			//long userid = AccountUtil.getTransactionalUserBean().inviteRequester(user.getOrgId(), user);
-			long userid = UserUtil.addUser(user, AccountUtil.getCurrentOrg().getId(),AccountUtil.getCurrentUser().getEmail());
-			
-			if(userid>0)
-			{
-				setUserId(userId);
-				FacilioContext context = new FacilioContext();
-				context.put(FacilioConstants.ContextNames.USER, user);
-				Chain addUser = FacilioChainFactory.getAddUserCommand();
-				addUser.execute(context);
-				if (user.getPortal_verified()) {
-				// send invite
-				(new UserBeanImpl()).sendInvitation(user.getOuid(), user);
-				}
-
+			if(AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user) > 0) {
+				setUserId(user.getId());
 			}
-			setUserId(user.getId());
-			
+			else {
+				return ERROR;
+			}
 		}
 		catch (Exception e) {
 			if (e instanceof AccountException) {

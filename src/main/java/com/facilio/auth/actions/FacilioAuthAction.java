@@ -293,9 +293,8 @@ public class FacilioAuthAction extends FacilioAction {
 				}
 				
 				ipAddress = (ipAddress == null || "".equals(ipAddress.trim())) ? request.getRemoteAddr() : ipAddress;
-//                String userType = (AccountUtil.getCurrentAccount().isFromMobile() ? "mobile" : "web");
+                String userType = "web";
 				String deviceType = request.getHeader("X-Device-Type");
-				String userType = "web";
 				if (StringUtils.isNullOrEmpty(deviceType)
 						&& ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType))) {
 					userType = "mobile";
@@ -744,7 +743,7 @@ public class FacilioAuthAction extends FacilioAction {
 		}
 		if (anydomain_allowedforsignup || opensignup || whitelisteddomain) {
 			try {
-				AccountUtil.getTransactionalUserBean().addRequester(AccountUtil.getCurrentOrg().getId(), user);
+				AccountUtil.getTransactionalUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user);
 				LOGGER.info("user signup done " + user);
 				try {
 					(new UserBeanImpl()).sendInvitation(user.getOuid(), user, true);
