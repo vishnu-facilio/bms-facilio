@@ -248,7 +248,7 @@ public class FacilioAction extends ActionSupport {
  			setPage(1);
  		}
  		if (getPerPage() == -1) {
- 			setPerPage(50);
+ 			setPerPage(5000);
  		}
  		context.put(FacilioConstants.ContextNames.PAGINATION, getPagination());
  		
