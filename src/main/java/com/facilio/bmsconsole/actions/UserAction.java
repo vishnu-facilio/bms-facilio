@@ -1,9 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
 import java.io.File;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +28,6 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
-import com.facilio.accounts.exception.AccountException;
 import com.facilio.accounts.impl.UserBeanImpl;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountConstants.UserType;
@@ -46,16 +42,15 @@ import com.facilio.bmsconsole.context.SetupLayout;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.DBUtil;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.iam.accounts.exceptions.AccountException;
 import com.iam.accounts.util.UserUtil;
 import com.opensymphony.xwork2.ActionContext;
 

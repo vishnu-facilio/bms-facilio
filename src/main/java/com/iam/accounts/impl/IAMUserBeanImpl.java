@@ -20,8 +20,6 @@ import org.json.simple.parser.ParseException;
 import com.amazonaws.util.StringUtils;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
-import com.facilio.accounts.exception.AccountException;
-import com.facilio.accounts.exception.AccountException.ErrorCode;
 import com.facilio.accounts.impl.SampleGenericInsertRecordBuilder;
 import com.facilio.accounts.impl.SampleGenericSelectBuilder;
 import com.facilio.accounts.impl.SampleGenericUpdateRecordBuilder;
@@ -46,6 +44,8 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.iam.accounts.bean.IAMUserBean;
 import com.iam.accounts.dto.Account;
+import com.iam.accounts.exceptions.AccountException;
+import com.iam.accounts.exceptions.AccountException.ErrorCode;
 import com.iam.accounts.util.AccountConstants;
 import com.iam.accounts.util.AuthUtill;
 
@@ -794,7 +794,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	private Account getAccount(long userId, String orgDomain) throws Exception {
 		User user = getFacilioUserv3(userId, orgDomain);
 		if (user == null) {
-			throw new AccountException(ErrorCode.EMAIL_ALREADY_EXISTS, "User doesn't exists in the current Org");
+			throw new AccountException(ErrorCode.USER_DOESNT_EXIST_IN_ORG, "User doesn't exists in the current Org");
 		}
 		Organization org = AuthUtill.getOrgBean().getOrgv2(user.getOrgId());
 		Account account = new Account(org, user);

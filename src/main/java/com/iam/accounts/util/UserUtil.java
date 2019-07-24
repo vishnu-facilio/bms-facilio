@@ -7,10 +7,10 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import com.facilio.accounts.dto.User;
-import com.facilio.accounts.exception.AccountException;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.iam.accounts.exceptions.AccountException;
 
 public class UserUtil {
 
@@ -62,7 +62,7 @@ public class UserUtil {
 			if (AuthUtill.getUserBean().getFacilioUserv3(currentUserEmail, orgId, null) != null) {
 				return AuthUtill.getTransactionalUserBean().addUserv2(orgId, user);
 			} else {
-				throw new AccountException(AccountException.ErrorCode.NOT_PERMITTED,
+				throw new AccountException(AccountException.ErrorCode.USER_DOESNT_EXIST_IN_ORG,
 						"This user is not permitted to do this action.");
 			}
 		} else {
@@ -104,7 +104,7 @@ public class UserUtil {
 		if (AuthUtill.getUserBean().getFacilioUserv3(currentUserEmail, orgId, null) != null) {
 			return AuthUtill.getUserBean().updateUserv2(user);
 		} else {
-			throw new AccountException(AccountException.ErrorCode.NOT_PERMITTED,
+			throw new AccountException(AccountException.ErrorCode.USER_DOESNT_EXIST_IN_ORG,
 					"This user is not permitted to do this action.");
 		}
 
@@ -114,7 +114,7 @@ public class UserUtil {
 		if (AuthUtill.getUserBean().getFacilioUserv3(currentUserEmail, orgId, null) != null) {
 			return AuthUtill.getUserBean().deleteUserv2(user.getOuid());
 		} else {
-			throw new AccountException(AccountException.ErrorCode.NOT_PERMITTED,
+			throw new AccountException(AccountException.ErrorCode.USER_DOESNT_EXIST_IN_ORG,
 					"This user is not permitted to do this action.");
 		}
 

@@ -7,7 +7,6 @@ import java.util.Map;
 
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
-import com.facilio.accounts.exception.AccountException;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -23,6 +22,7 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.iam.accounts.bean.IAMOrgBean;
+import com.iam.accounts.exceptions.AccountException;
 
 public class IAMOrgBeanImpl implements IAMOrgBean {
 

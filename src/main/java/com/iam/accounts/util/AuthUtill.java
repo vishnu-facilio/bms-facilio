@@ -17,12 +17,8 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.facilio.accounts.bean.GroupBean;
-import com.facilio.accounts.bean.RoleBean;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
-import com.facilio.accounts.exception.AccountException;
-import com.facilio.accounts.exception.AccountException.ErrorCode;
 import com.facilio.accounts.impl.SampleGenericSelectBuilder;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.PortalInfoContext;
@@ -43,6 +39,8 @@ import com.facilio.modules.fields.LookupField;
 import com.iam.accounts.bean.IAMOrgBean;
 import com.iam.accounts.bean.IAMUserBean;
 import com.iam.accounts.dto.Account;
+import com.iam.accounts.exceptions.AccountException;
+import com.iam.accounts.exceptions.AccountException.ErrorCode;
 
 public class AuthUtill {
 	private static org.apache.log4j.Logger logger = LogManager.getLogger(AuthUtill.class.getName());
@@ -204,7 +202,7 @@ public class AuthUtill {
 				}
 			} else {
 				logger.info("No records found for  " + emailAddress);
-				throw new AccountException(ErrorCode.EMAIL_ALREADY_EXISTS, "User doesn't exists");
+				throw new AccountException(ErrorCode.USER_DOESNT_EXIST_IN_ORG, "User doesn't exists");
 			}
 
 		} catch (SQLException | RuntimeException e) {
