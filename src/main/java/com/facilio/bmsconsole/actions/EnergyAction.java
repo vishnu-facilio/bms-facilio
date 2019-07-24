@@ -6,7 +6,6 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.HistoricalLoggerContext;
-import com.facilio.bmsconsole.context.HistoricalLoggersWrapper;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.HistoricalLoggerUtil;
@@ -69,6 +68,33 @@ public class EnergyAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
+	
+	public String getVirtualMeterList() throws Exception{
+		
+		List<EnergyMeterContext> virtualMeters = DeviceAPI.getVirtualMeters(null, null);
+		List<HistoricalLoggerContext> activeVirtualMeters = HistoricalLoggerUtil.getInProgressHistoricalLogger();
+		
+		Map<Long, HistoricalLoggerContext> activevirtualMetersIdMap = new HashMap<Long, HistoricalLoggerContext>();
+		for(HistoricalLoggerContext activevm: activeVirtualMeters)
+		{
+			activevirtualMetersIdMap.put(activevm.getParentId(), activevm);
+		}
+		
+		for(EnergyMeterContext virtualMeter: virtualMeters)
+		{
+			if(activevirtualMetersIdMap.containsKey(virtualMeter.getId()))
+			{
+				virtualMeter.setIsHistoricalRunning(true);
+			}
+			else
+			{
+				virtualMeter.setIsHistoricalRunning(false);
+			}	
+		}
+		
+		setResult("virtualMeters", virtualMeters);
+		return SUCCESS;
+	}
 
 	public String getvmParentHistoricalLogger() throws Exception {
 		
@@ -90,7 +116,8 @@ public class EnergyAction extends FacilioAction {
 
 	public String getvmChildHistoricalLogger() throws Exception {
 
-		List<HistoricalLoggerContext> childHistoricalLoggers = HistoricalLoggerUtil.getGroupedHistoricalLogger(getParentId());	
+		HistoricalLoggerContext parentHistoricalLogger = HistoricalLoggerUtil.getHistoricalLogger(getParentId());
+		List<HistoricalLoggerContext> childHistoricalLoggers = HistoricalLoggerUtil.getGroupedHistoricalLogger(parentHistoricalLogger.getId());	
 	
 		Map<Long,HistoricalLoggerContext> childIdMap = new HashMap<Long, HistoricalLoggerContext>();
 		Map<Integer,List<HistoricalLoggerContext>> hierarchyChildMap = new HashMap<Integer, List<HistoricalLoggerContext>>();
@@ -104,7 +131,7 @@ public class EnergyAction extends FacilioAction {
 			
 			for(HistoricalLoggerContext historicalLogger: childHistoricalLoggers)
 			{
-				Integer hierarchy = getHierarchy(historicalLogger, 0, childIdMap);
+				Integer hierarchy = getHierarchy(historicalLogger, 0, childIdMap, parentHistoricalLogger);
 				if(hierarchyChildMap.containsKey(hierarchy))
 				{
 					List<HistoricalLoggerContext> groupedChildList = hierarchyChildMap.get(hierarchy);
@@ -124,15 +151,16 @@ public class EnergyAction extends FacilioAction {
 
 	}
 	
-	public Integer getHierarchy(HistoricalLoggerContext historicalLogger, Integer hierarchy, Map<Long,HistoricalLoggerContext> childIdMap) throws Exception {
+	public Integer getHierarchy(HistoricalLoggerContext historicalLogger, Integer hierarchy, 
+			Map<Long,HistoricalLoggerContext> childIdMap, HistoricalLoggerContext parentHistoricalLogger) throws Exception {
 		
 		hierarchy++;
-		if(historicalLogger.getDependentId() == parentId)
+		if(historicalLogger.getDependentId() == parentHistoricalLogger.getId())
 		{
 			return hierarchy;
 		}
 
-		return getHierarchy(childIdMap.get(historicalLogger.getDependentId()), hierarchy, childIdMap);
+		return getHierarchy(childIdMap.get(historicalLogger.getDependentId()), hierarchy, childIdMap, parentHistoricalLogger);
 	}
 	
 	
