@@ -64,11 +64,13 @@ public class UpdateDashboardWithWidgetCommand implements Command {
 
 			List<Long> removedWidgets = new ArrayList<Long>();
 			for (int i = 0; i < existingWidgets.size(); i++) {
-				if (!widgetMapping.containsKey(existingWidgets.get(i).getId())) {
+				if (!widgetMapping.containsKey(existingWidgets.get(i)
+						.getId())) {
 					removedWidgets.add(existingWidgets.get(i).getId());
 				}
 			}
 			GenericUpdateRecordBuilder updateBuilder = null;
+			GenericUpdateRecordBuilder updateWidgetChart = null;
 			List<DashboardWidgetContext> updatedWidgets = dashboard.getDashboardWidgets();
 			if (updatedWidgets != null && updatedWidgets.size() > 0)  {
 				for (int i = 0; i < updatedWidgets.size(); i++) {
@@ -80,7 +82,19 @@ public class UpdateDashboardWithWidgetCommand implements Command {
 							.fields(FieldFactory.getWidgetFields())
 							.andCustomWhere(ModuleFactory.getWidgetModule().getTableName()+".DASHBOARD_ID = ? AND " + ModuleFactory.getWidgetModule().getTableName()+".ID = ?", dashboard.getId(), updatewidget.getId());
 
+					Long widgetId = updatewidget.getId();
+					
 					updatewidget.setOrgId(AccountUtil.getCurrentOrg().getId());
+					if(updatewidget.getType() == DashboardWidgetContext.WidgetType.CHART.getValue()) {
+						updateWidgetChart = new GenericUpdateRecordBuilder()
+								.table(ModuleFactory.getWidgetChartModule().getTableName())
+								.fields(FieldFactory.getWidgetChartFields())
+								.andCustomWhere(ModuleFactory.getWidgetChartModule().getTableName()+".ID= ?", widgetId);
+						Map<String,Object> props = FieldUtil.getAsProperties(updatewidget);
+						updateWidgetChart.update(props);
+					}
+					
+					
 					Map<String, Object> props1 = FieldUtil.getAsProperties(updatewidget);
 					
 					updateBuilder.update(props1);
