@@ -758,6 +758,34 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+		public static Chain getTempAddPreOpenedWorkOrderChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new BulkPMSettingsCommand());
+			c.addCommand(SetTableNamesCommand.getForWorkOrder());
+			c.addCommand(new LoadAllFieldsCommand());
+			c.addCommand(new BulkAddWorkOrderCommand());
+			c.addCommand(new BulkAddAttachmentRelationshipCommand());
+			c.addCommand(getTempAddTaskChain());
+			return c;
+		}
+
+		public static Chain getTempAddTaskChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForTask());
+			c.addCommand(new LoadAllFieldsCommand());
+			c.addCommand(new BulkTaskUniqueIdCommand());
+			c.addCommand(new BulkTaskReadingFieldCommand());
+			c.addCommand(new BulkAddTaskSectionsCommand());
+			c.addCommand(new BulkAddActionForTaskCommand());
+			c.addCommand(new BulkAddTasksCommand());
+			c.addCommand(new BulkAddTaskOptionsCommand());
+			c.addCommand(new UpdateReadingDataMetaCommand());
+			c.addCommand(new BulkAddTaskDefaultValueReadingsCommand());
+			c.addCommand(ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain());
+			c.addCommand(new BulkUpdateTaskReadingInfoCommand());
+			return c;
+		}
+
 		public static Chain getAddPreOpenedWorkOrderChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new PMSettingsCommand());

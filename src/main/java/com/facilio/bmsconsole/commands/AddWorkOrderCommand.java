@@ -95,10 +95,6 @@ public class AddWorkOrderCommand extends FacilioCommand {
 			long workOrderId = builder.insert(workOrder);
 			workOrder.setId(workOrderId);
 			
-			if (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 151 || AccountUtil.getCurrentOrg().getId() == 92) {
-				LOGGER.info("Added WO with id : "+workOrderId);
-			}
-			
 			if(context.get(FacilioConstants.ContextNames.EVENT_TYPE) == null) {
 				List<EventType> activities = new ArrayList<>();
 				activities.add(EventType.CREATE);

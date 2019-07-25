@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -58,8 +59,6 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
-
-;
 
 
 public class TenantsAPI {
@@ -1187,61 +1186,114 @@ public class TenantsAPI {
 		return rs;
 	}
 
-	public static TenantContext getTenantForSpace(long spaceId) throws Exception{
-		if(spaceId != -1) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule zoneRelModule = ModuleFactory.getZoneRelModule();
-			FacilioModule tenantModule = modBean.getModule("tenant");
-			FacilioModule zoneModule = ModuleFactory.getZoneModule();
-			
-			List<FacilioField> tenantFields = modBean.getAllFields(tenantModule.getName());
-			SelectRecordsBuilder<TenantContext> builder = new SelectRecordsBuilder<TenantContext>()
-															.module(tenantModule)
-															.beanClass(TenantContext.class)
-															.select(tenantFields)
-															.innerJoin(zoneModule.getTableName())
-															.on(tenantModule.getTableName()+".ZONE_ID = "+zoneModule.getTableName()+".ID")
-														    .innerJoin(zoneRelModule.getTableName())
-															.on(zoneRelModule.getTableName()+".ZONE_ID = "+zoneModule.getTableName()+".ID")
-														    .andCondition(CriteriaAPI.getCondition(zoneRelModule.getTableName()+".BASE_SPACE_ID","baseSpaceId",""+spaceId,NumberOperators.EQUALS))
-														    .andCustomWhere(tenantModule.getTableName()+".STATUS = ?", 1)
-														    ;
-			List<TenantContext> tenantList = builder.get();
-			if(!CollectionUtils.isEmpty(tenantList)) {
-				return tenantList.get(0);
-			}
+
+	public static Map<Long, TenantContext> getSpaceTenant(Collection<Long> spaceIds) throws Exception {
+		List<Long> filteredSpaces = spaceIds.stream().filter(i -> i > 0).collect(Collectors.toList());
+		Map<Long, TenantContext> empty = new HashMap<>();
+		TenantContext emptyTenant = new TenantContext();
+		emptyTenant.setId(-99);
+		empty.put(-1L, emptyTenant);
+
+		if (filteredSpaces.isEmpty()) {
+			return empty;
 		}
-		TenantContext tenant = new TenantContext();
-		tenant.setId(-99);
-		return tenant;
-		
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule zoneRelModule = ModuleFactory.getZoneRelModule();
+		FacilioModule tenantModule = modBean.getModule("tenant");
+		FacilioModule zoneModule = ModuleFactory.getZoneModule();
+		Map<String, FacilioField> zoneRelMap = FieldFactory.getAsMap(FieldFactory.getZoneRelFields());
+
+		List<FacilioField> tenantFields = modBean.getAllFields(tenantModule.getName());
+		List<FacilioField> selectFields = new ArrayList<>(tenantFields);
+		selectFields.add(zoneRelMap.get("baseSpaceId"));
+
+		SelectRecordsBuilder<TenantContext> builder = new SelectRecordsBuilder<TenantContext>()
+				.module(tenantModule)
+				.beanClass(TenantContext.class)
+				.select(selectFields)
+				.innerJoin(zoneModule.getTableName())
+				.on(tenantModule.getTableName()+".ZONE_ID = "+zoneModule.getTableName()+".ID")
+				.innerJoin(zoneRelModule.getTableName())
+				.on(zoneRelModule.getTableName()+".ZONE_ID = "+zoneModule.getTableName()+".ID")
+				.andCondition(CriteriaAPI.getCondition(zoneRelMap.get("baseSpaceId"), spaceIds, NumberOperators.EQUALS))
+				.andCustomWhere(tenantModule.getTableName()+".STATUS = ?", 1);
+
+		List<Map<String, Object>> props = builder.getAsProps();
+		if(CollectionUtils.isEmpty(props)) {
+			return empty;
+		}
+
+		Map<Long, TenantContext> result = new HashMap<>();
+
+		for (Map<String, Object> prop: props) {
+			TenantContext tenant = FieldUtil.getAsBeanFromMap(prop, TenantContext.class);
+			long baseSpaceId = (long) prop.get("baseSpaceId");
+
+			result.put(baseSpaceId, tenant);
+		}
+
+		return result;
 	}
-	
-	public static TenantContext getTenantForAsset(long assetId) throws Exception{
-		if(assetId != -1) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule tenantUtilityModule = ModuleFactory.getTenantsUtilityMappingModule();
-			FacilioModule tenantModule = modBean.getModule("tenant");
-			
-			List<FacilioField> tenantFields = modBean.getAllFields(tenantModule.getName());
-			SelectRecordsBuilder<TenantContext> builder = new SelectRecordsBuilder<TenantContext>()
-															.module(tenantModule)
-															.beanClass(TenantContext.class)
-															.select(tenantFields)
-															.innerJoin(tenantUtilityModule.getTableName())
-															.on(tenantUtilityModule.getTableName()+".TENANT_ID = "+tenantModule.getTableName()+".ID")
-														    .andCondition(CriteriaAPI.getCondition(tenantUtilityModule.getTableName()+".ASSET_ID","assetId",""+assetId,NumberOperators.EQUALS))
-														    .andCustomWhere(tenantModule.getTableName()+".STATUS = ?", 1)
-															;
-			List<TenantContext> tenantList = builder.get();
-			if(!CollectionUtils.isEmpty(tenantList)) {
-				return tenantList.get(0);
-			}
+
+	public static TenantContext getTenantForSpace(long spaceId) throws Exception{
+		Map<Long, TenantContext> spaceTenantsMap = getSpaceTenant(Collections.singletonList(spaceId));
+		Collection<TenantContext> values = spaceTenantsMap.values();
+		TenantContext[] tenants = values.toArray(new TenantContext[values.size()]);
+		return tenants[0];
+	}
+
+	public static TenantContext getTenantForAsset(long assetId) throws Exception {
+		Map<Long, TenantContext> assetTenantsMap = getAssetTenant(Collections.singletonList(assetId));
+		Collection<TenantContext> values = assetTenantsMap.values();
+		TenantContext[] tenants = values.toArray(new TenantContext[values.size()]);
+		return tenants[0];
+	}
+
+	public static Map<Long, TenantContext> getAssetTenant(Collection<Long> assetIds) throws Exception{
+		List<Long> filteredAssets = assetIds.stream().filter(i -> i > 0).collect(Collectors.toList());
+		Map<Long, TenantContext> empty = new HashMap<>();
+		TenantContext emptyTenant = new TenantContext();
+		emptyTenant.setId(-99);
+		empty.put(-1L, emptyTenant);
+
+		if (filteredAssets.isEmpty()) {
+			return empty;
 		}
-		TenantContext tenant = new TenantContext();
-		tenant.setId(-99);
-		return tenant;
-		
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule tenantUtilityModule = ModuleFactory.getTenantsUtilityMappingModule();
+		List<FacilioField> tenantUtilityMappingFields = FieldFactory.getTenantsUtilityMappingFields();
+		Map<String, FacilioField> tenantUtilityFields = FieldFactory.getAsMap(tenantUtilityMappingFields);
+		FacilioModule tenantModule = modBean.getModule("tenant");
+
+		List<FacilioField> tenantFields = modBean.getAllFields(tenantModule.getName());
+		List<FacilioField> selectFields = new ArrayList<>(tenantFields);
+		selectFields.add(tenantUtilityFields.get("assetId"));
+
+		SelectRecordsBuilder<TenantContext> builder = new SelectRecordsBuilder<TenantContext>()
+														.module(tenantModule)
+														.beanClass(TenantContext.class)
+														.select(selectFields)
+														.innerJoin(tenantUtilityModule.getTableName())
+														.on(tenantUtilityModule.getTableName()+".TENANT_ID = "+tenantModule.getTableName()+".ID")
+														.andCondition(CriteriaAPI.getCondition(tenantUtilityFields.get("assetId"), filteredAssets, NumberOperators.EQUALS))
+														.andCustomWhere(tenantModule.getTableName()+".STATUS = ?", 1);
+
+		List<Map<String, Object>> props = builder.getAsProps();
+		if(CollectionUtils.isEmpty(props)) {
+			return empty;
+		}
+
+		Map<Long, TenantContext> result = new HashMap<>();
+		for (Map<String, Object> prop: props) {
+			TenantContext tenant = FieldUtil.getAsBeanFromMap(prop, TenantContext.class);
+			long assetId = (long) prop.get("assetId");
+
+			result.put(assetId, tenant);
+		}
+
+		return result;
 	}
     public static List<Map<String,Object>> getPmCount(long tenantId) throws Exception {
 		

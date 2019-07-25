@@ -40,7 +40,6 @@ import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
 
-;
 
 public class ValidateNewTasksCommand extends FacilioCommand {
 

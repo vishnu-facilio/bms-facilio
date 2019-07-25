@@ -56,7 +56,6 @@ public class BeanInvocationHandler implements InvocationHandler {
 			Account oldAccount = AccountUtil.getCurrentAccount();
 
 			if (orgid != 0) {
-				System.out.println("the orgid is"+orgid);
 				if (oldAccount == null || orgid != oldAccount.getOrg().getOrgId()) {
 					AccountUtil.setCurrentAccount(orgid);
 				}

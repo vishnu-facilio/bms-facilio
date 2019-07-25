@@ -20,7 +20,6 @@ public class AddOrUpdateReadingsCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		
 		Chain addOrUpdateChain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
 		addOrUpdateChain.execute(context);
 		
@@ -36,7 +35,7 @@ public class AddOrUpdateReadingsCommand extends FacilioCommand {
 		}
 		
 		publishReadingChangeMessage(context);
-		
+
 		return false;
 	}
 	

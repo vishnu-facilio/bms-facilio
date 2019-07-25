@@ -710,7 +710,24 @@ public class TicketAPI {
 			ticket.setAssignedBy(AccountUtil.getCurrentUser());
 		}
 	}
-	
+
+	public static void updateTicketAssignedBy(List<? extends TicketContext> ticketContexts) {
+		if (ticketContexts == null || ticketContexts.isEmpty()) {
+			return;
+		}
+
+		for (int i = 0; i < ticketContexts.size(); i++) {
+			TicketContext ticketContext = ticketContexts.get(i);
+			if ((ticketContext.getAssignedTo() == null || ticketContext.getAssignedTo().getId() == -1)
+					&& (ticketContext.getAssignmentGroup() == null || ticketContext.getAssignmentGroup().getId() != -1)) {
+				continue;
+			}
+
+			ticketContext.setAssignedBy(AccountUtil.getCurrentUser());
+		}
+	}
+
+
 	public static void updateTicketStatus(TicketContext ticket) throws Exception {
 		updateTicketStatus(null, ticket, null, false);
 	}
@@ -1407,6 +1424,38 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 			}
 			else if(resource.getResourceTypeEnum() ==  ResourceType.SPACE) {
 				ticket.setTenant(TenantsAPI.getTenantForSpace(ticket.getResource().getId()));
+			}
+		}
+	}
+
+	public static void associateTenant(List<? extends TicketContext> tickets) throws Exception {
+		if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
+			return;
+		}
+
+		List<Long> resourceIds = tickets.stream().filter(i -> i.getResource() != null && i.getResource().getId() != -1).map(i -> i.getResource().getId()).collect(Collectors.toList());
+
+		List<ResourceContext> resources = ResourceAPI.getResources(resourceIds, false);
+
+		List<Long> assetIds = resources.stream().filter(i -> i.getResourceTypeEnum() == ResourceType.ASSET).map(i -> i.getId()).collect(Collectors.toList());
+
+		Map<Long, TenantContext>  assetTenants = TenantsAPI.getAssetTenant(assetIds);
+
+		List<Long> spaceIds = resources.stream().filter(i -> i.getResourceTypeEnum() == ResourceType.SPACE).map(i -> i.getId()).collect(Collectors.toList());
+
+		Map<Long, TenantContext> spaceTenants = TenantsAPI.getSpaceTenant(spaceIds);
+
+		for (int i = 0; i < tickets.size(); i++) {
+			TicketContext ticketContext = tickets.get(i);
+			ResourceContext resource = ticketContext.getResource();
+			if (resource == null || resource.getId() == -1) {
+				continue;
+			}
+
+			if (resource.getResourceTypeEnum() == ResourceType.ASSET) {
+				ticketContext.setTenant(assetTenants.get(resource.getId()));
+			} else if (resource.getResourceTypeEnum() == ResourceType.SPACE) {
+				ticketContext.setTenant(spaceTenants.get(resource.getId()));
 			}
 		}
 	}

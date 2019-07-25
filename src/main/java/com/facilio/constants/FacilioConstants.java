@@ -163,6 +163,7 @@ public class FacilioConstants {
 		
 		public static final String WORK_ORDER = "workorder";
 		public static final String WORK_ORDER_LIST = "workorders";
+		public static final String BULK_WORK_ORDER_CONTEXT = "bulkworkorders";
 		public static final String WORK_ORDER_COUNT = "workorderscount";
 		public static final String WORK_ORDER_STATUS_PERCENTAGE = "workOrderStatusCount";
 		public static final String WORK_ORDER_STATUS_PERCENTAGE_RESPONSE = "workOrderStatusResponse";
@@ -957,8 +958,10 @@ public class FacilioConstants {
 		public static final String RECEIVABLE_ID = "receivableId";
 		public static final String PURCHASE_ORDER_LINE_ITEMS_ID = "purchaseorderlineitemsId";
         public static final String VALIDATION_RULES = "validationRules";
+        public static final String RESOURCE_MAP = "resourceMap";
+		public static final String STATUS_MAP = "statusMap";
 
-        private static final String RECEIPT_LINE_ITEMS = "receiptlineitems";
+		private static final String RECEIPT_LINE_ITEMS = "receiptlineitems";
 		public static final String ITEM_VENDORS_LIST = "itemTypesVendorsList";
 		
 		public static final String ML ="ml";

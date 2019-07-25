@@ -1,17 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.apache.commons.chain.Context;
-
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.BulkWorkOrderContext;
 import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMResourcePlannerContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
@@ -27,6 +17,17 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.serializable.SerializableCommand;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Context;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 //Move to jobs package after migrations are completed and remove SerializableCommand interface
 public class ScheduleNewPMCommand extends FacilioJob implements SerializableCommand {
@@ -92,15 +93,16 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
         return false;
     }
     private void schedulePM(PreventiveMaintenance pm, Context context) throws Exception {
-        LOGGER.log(Level.SEVERE, "Generating work orders for PM: " + pm.getId());
+        LOGGER.log(Level.FINE, "Generating work orders for PM: " + pm.getId());
         Map<Long, List<Long>> nextExecutionTimes = new HashMap<>();
         List<WorkOrderContext> wos = new ArrayList<>();
+        List<BulkWorkOrderContext> bulkWorkOrderContexts = new ArrayList<>();
+        long templateId = pm.getTemplateId();
+        WorkorderTemplate workorderTemplate = (WorkorderTemplate) TemplateAPI.getTemplate(templateId);
 
         if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE) {
             switch (pm.getTriggerTypeEnum()) {
                 case ONLY_SCHEDULE_TRIGGER:
-                    long templateId = pm.getTemplateId();
-                    WorkorderTemplate workorderTemplate = (WorkorderTemplate) TemplateAPI.getTemplate(templateId);
                     if (workorderTemplate != null) {
                         Long baseSpaceId = pm.getBaseSpaceId();
                         if (baseSpaceId == null || baseSpaceId < 0) {
@@ -153,19 +155,9 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
 
                                     switch (pm.getTriggerTypeEnum()) {
                                         case ONLY_SCHEDULE_TRIGGER:
-                                            List<WorkOrderContext> workOrderContexts = PreventiveMaintenanceAPI.createWOContextsFromPM(context, pm, trigger, startTime, workorderTemplate);
-                                            if (workOrderContexts != null && !workOrderContexts.isEmpty()) {
-                                                wos.addAll(workOrderContexts);
-                                                List<Long> times = nextExecutionTimes.get(trigger.getId());
-                                                if (times == null) {
-                                                    times = new ArrayList<>();
-                                                }
-                                                for (WorkOrderContext wo: workOrderContexts) {
-
-                                                    times.add(wo.getCreatedTime());
-                                                }
-                                                nextExecutionTimes.put(trigger.getId(), times);
-                                            }
+                                            BulkWorkOrderContext bulkWoContextsFromPM = PreventiveMaintenanceAPI.createBulkWoContextsFromPM(context, pm, trigger, startTime, workorderTemplate);
+                                            bulkWorkOrderContexts.add(bulkWoContextsFromPM);
+                                            nextExecutionTimes.put(trigger.getId(), bulkWoContextsFromPM.getNextExecutionTimes());
                                             break;
                                         case FIXED:
                                         case FLOATING:
@@ -185,9 +177,7 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
             }
         }
         else {
-            long templateId = pm.getTemplateId();
             if (templateId > 0) {
-                WorkorderTemplate workorderTemplate = (WorkorderTemplate) TemplateAPI.getTemplate(templateId);
                 ResourceContext resource = ResourceAPI.getResource(workorderTemplate.getResourceIdVal());
                 workorderTemplate.setResource(resource);
                 for (PMTriggerContext trigger : pm.getTriggers()) {
@@ -196,18 +186,9 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
                         // PMJobsContext pmJob = null;
                         switch (pm.getTriggerTypeEnum()) {
                             case ONLY_SCHEDULE_TRIGGER:
-                                List<WorkOrderContext> workOrderContexts = PreventiveMaintenanceAPI.createWOContextsFromPM(context, pm, trigger, startTime, workorderTemplate);
-                                if (workOrderContexts != null && !workOrderContexts.isEmpty()) {
-                                    wos.addAll(workOrderContexts);
-                                    List<Long> times = nextExecutionTimes.get(trigger.getId());
-                                    if (times == null) {
-                                        times = new ArrayList<>();
-                                    }
-                                    for (WorkOrderContext wo: workOrderContexts) {
-                                        times.add(wo.getCreatedTime());
-                                    }
-                                    nextExecutionTimes.put(trigger.getId(), times);
-                                }
+                                BulkWorkOrderContext bulkWoContextsFromPM = PreventiveMaintenanceAPI.createBulkWoContextsFromPM(context, pm, trigger, startTime, workorderTemplate);
+                                bulkWorkOrderContexts.add(bulkWoContextsFromPM);
+                                nextExecutionTimes.put(trigger.getId(), bulkWoContextsFromPM.getNextExecutionTimes());
                                 break;
                             case FIXED:
                             case FLOATING:
@@ -219,10 +200,25 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
                 }
             }
         }
+
+        if (!bulkWorkOrderContexts.isEmpty()) {
+            BulkWorkOrderContext bulkWorkOrderContext = new BulkWorkOrderContext(bulkWorkOrderContexts);
+            LOGGER.log (Level.FINE,"No  of work orders to save " + bulkWorkOrderContext.getWorkOrderContexts().size());
+            context.put(FacilioConstants.ContextNames.BULK_WORK_ORDER_CONTEXT, bulkWorkOrderContext);
+            context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
+
+            Chain addWOChain = TransactionChainFactory.getTempAddPreOpenedWorkOrderChain();
+            addWOChain.execute(context);
+            if (bulkWorkOrderContext.getWorkOrderContexts() != null && !bulkWorkOrderContext.getWorkOrderContexts().isEmpty()) {
+                wos.addAll(bulkWorkOrderContext.getWorkOrderContexts());
+            }
+        }
+
         List<WorkOrderContext> ws = (List<WorkOrderContext>) context.get(FacilioConstants.ContextNames.WO_CONTEXTS);
         if (ws == null) {
             ws = new ArrayList<>();
         }
+
         ws.addAll(wos);
         context.put(FacilioConstants.ContextNames.WO_CONTEXTS, ws);
         context.put(FacilioConstants.ContextNames.NEXT_EXECUTION_TIMES, nextExecutionTimes);

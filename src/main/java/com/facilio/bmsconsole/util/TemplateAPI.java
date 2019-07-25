@@ -303,6 +303,29 @@ public class TemplateAPI {
 				return null;
 		}
 	}
+
+	public static List<Template> getTemplates(List<Long> ids) throws Exception {
+		FacilioModule module = ModuleFactory.getTemplatesModule();
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getTemplateFields())
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getIdCondition(ids, module));
+
+		List<Map<String, Object>> templates = selectBuilder.get();
+
+		if (templates == null || templates.isEmpty()) {
+			return null;
+		}
+
+		List<Template> result = new ArrayList<>();
+
+		// TODO optimize later
+		for (Map<String, Object> template: templates) {
+			result.add(getExtendedTemplate(template));
+		}
+
+		return result;
+	}
 	
 	public static Template getTemplate(long id) throws Exception {
 		FacilioModule module = ModuleFactory.getTemplatesModule();

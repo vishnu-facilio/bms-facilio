@@ -16,7 +16,6 @@ public class LoadAllFieldsCommand extends FacilioCommand{
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		context.put(FacilioConstants.ContextNames.WORKORDER_ACTIVITY, moduleName);
 		
