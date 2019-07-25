@@ -1359,6 +1359,14 @@ public class ModuleFactory {
 		return readingDataMeta;
 	}
 
+	public static FacilioModule getResetCounterMetaModule() {
+		FacilioModule resetcountermeta = new FacilioModule();
+		resetcountermeta.setName("resetcountermeta");
+		resetcountermeta.setDisplayName("Reset Counter Meta");
+		resetcountermeta.setTableName("Reset_Counter_Meta");
+		return resetcountermeta;
+	}
+	
 	public static FacilioModule getWorkOrderTemplateModule() {
 		FacilioModule workOrderTemplate = new FacilioModule();
 		workOrderTemplate.setName("workordertemplate");

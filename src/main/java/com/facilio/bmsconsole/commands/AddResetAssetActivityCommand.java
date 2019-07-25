@@ -1,0 +1,43 @@
+package com.facilio.bmsconsole.commands;
+
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.actions.AssetAction;
+import com.facilio.bmsconsole.activity.AssetActivityType;
+import com.facilio.bmsconsole.activity.WorkOrderActivityType;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.ResetCounterMetaContext;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+
+public class AddResetAssetActivityCommand extends FacilioCommand {
+
+	@Override
+	public boolean executeCommand(Context context) throws Exception {
+		// TODO Auto-generated method stub
+		List<ResetCounterMetaContext> resetCounterMetaList = (List<ResetCounterMetaContext>) context.get(FacilioConstants.ContextNames.RESET_COUNTER_META_LIST);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY,FacilioConstants.ContextNames.ASSET_ACTIVITY);
+		for(ResetCounterMetaContext resetCounter:resetCounterMetaList){
+			
+			if(resetCounter.getEndvalue() != null && !resetCounter.getEndvalue().equals("")){
+				JSONObject info = new JSONObject();
+				info.put("Fieldname", modBean.getField(resetCounter.getFieldId()).getDisplayName());
+				info.put("Endvalue", resetCounter.getEndvalue());
+				if(resetCounter.getStartvalue() != null && !resetCounter.getStartvalue().equals("")){
+					info.put("Startvalue", resetCounter.getStartvalue());
+				}
+				CommonCommandUtil.addActivityToContext(resetCounter.getResourceId(), -1, AssetActivityType.RESET_READING, info, (FacilioContext) context);
+				
+			}
+		}
+		
+		return false;
+	}
+
+}

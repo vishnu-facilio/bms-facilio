@@ -1127,6 +1127,16 @@ public class ReadingsAPI {
 			}
 		}
 	}
+
+	public static boolean isCounterField(FacilioField field, String modulename) {
+		boolean fieldValidation;
+		if (modulename.equalsIgnoreCase(FacilioConstants.ContextNames.ENERGY_DATA_READING)) {
+			fieldValidation = field.getName().equals("totalEnergyConsumption") || field.getName().equals("phaseEnergyR") || field.getName().equals("phaseEnergyY") || field.getName().equals("phaseEnergyB");
+		} else {
+			fieldValidation = (field.getDataTypeEnum() == FieldType.NUMBER || field.getDataTypeEnum() == FieldType.DECIMAL) && ((NumberField) field).isCounterField();
+		}
+		return fieldValidation;
+	}
 	
 	public static void updateDeltaForCurrentAndNextRecords(FacilioModule module,List<FacilioField> fields,ReadingContext reading,boolean currentReadingUpdate,Long curReadingTime,boolean isEnergyModule,Map<String, ReadingDataMeta> rdmMap)throws Exception{
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -1167,7 +1177,7 @@ public class ReadingsAPI {
 		}
 	}
 	
-	private static void updateReading(FacilioModule module, List<FacilioField> fields, ReadingContext reading)throws Exception {
+	public static void updateReading(FacilioModule module, List<FacilioField> fields, ReadingContext reading)throws Exception {
         UpdateRecordBuilder<ReadingContext> updateBuilder = new UpdateRecordBuilder<ReadingContext>().module(module)
 				.fields(fields).andCondition(CriteriaAPI.getIdCondition(reading.getId(), module));
 		updateBuilder.update(reading);
@@ -1196,7 +1206,7 @@ public class ReadingsAPI {
 		}
 	}
 	
-	private static void addDeltaValue(ReadingContext reading,String fieldName,Object value){
+	public static void addDeltaValue(ReadingContext reading,String fieldName,Object value){
 		 boolean isDeltaKeyPresent= reading.getReadings().entrySet().stream().filter(rd->rd.getKey().equalsIgnoreCase(fieldName+"Delta")).findFirst().isPresent();
 			if (isDeltaKeyPresent) {
 				reading.getReadings().entrySet().stream().filter(rd -> rd.getKey().equalsIgnoreCase(fieldName + "Delta")).findFirst().get().setValue(value);

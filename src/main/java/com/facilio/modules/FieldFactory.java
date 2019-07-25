@@ -4745,6 +4745,19 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static List<FacilioField> getResetCounterMetaFields() {
+		FacilioModule module = ModuleFactory.getResetCounterMetaModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getIdField(module));
+		fields.add(getField("readingDataId", "READING_DATA_ID", module, FieldType.NUMBER));
+		fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
+		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.NUMBER));
+		fields.add(getField("ttime", "TTIME", module, FieldType.NUMBER));
+		fields.add(getField("startvalue", "START_VALUE", module, FieldType.STRING));
+		fields.add(getField("endvalue", "END_VALUE", module, FieldType.STRING));
+		return fields;
+	}
+	
 	public static List<FacilioField> getReadingInputValuesFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getReadingInputValuesModule();

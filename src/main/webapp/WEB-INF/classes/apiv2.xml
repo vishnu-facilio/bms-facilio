@@ -1337,6 +1337,10 @@
 			class="com.facilio.bmsconsole.actions.ReadingAction"
 			method="setReadingInputValues">
 		</action>
+		<action name="reset"
+			class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="resetReading">
+		</action>
 	</package>
 	<package name="readingsApiv2" namespace="/api/v2/readings/asset" extends="v2Api">
 		<action name="add" class="com.facilio.bmsconsole.actions.ReadingAction" method="addReadingData">

@@ -1504,6 +1504,8 @@ public class TransactionChainFactory {
 			c.addCommand(new CalculatePreFormulaCommand());
 			c.addCommand(new ExecuteValidationRule());
 			c.addCommand(new AddOrUpdateReadingValuesCommand());
+			c.addCommand(new ValidateAndSetResetCounterMetaCommand());
+			c.addCommand(new AddResetCounterMetaCommand());
 			c.addCommand(new AddMarkedReadingValuesCommand());
 			c.addCommand(new SpaceBudIntegrationCommand());	//For RMZ-SpaceBud com.facilio.agentIntegration
 			c.addCommand(new ReadingUnitConversionToDisplayUnit());
@@ -1643,6 +1645,17 @@ public class TransactionChainFactory {
 		public static Chain getSetReadingInputValuesChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new SetReadingInputValuesCommand());
+			return c;
+		}
+		
+		public static Chain getResetReadingsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateResetCounterMetaCommand());
+			c.addCommand(new GetResetCounterMetaCommand());
+			c.addCommand(new CalculateDeltaInReadingResetCommand());
+			c.addCommand(new UpdateDeltaInRDMInReadingResetCommand());
+            c.addCommand(new AddResetAssetActivityCommand());
+            c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
 		

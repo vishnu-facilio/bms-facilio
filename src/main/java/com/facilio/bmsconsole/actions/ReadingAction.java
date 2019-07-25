@@ -27,6 +27,7 @@ import com.facilio.bmsconsole.context.PublishData;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.context.ResetCounterMetaContext;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLoggerContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
@@ -1236,6 +1237,23 @@ public class ReadingAction extends FacilioAction {
 	}
 	public void setFetchCount(boolean fetchCount) {
 		this.fetchCount = fetchCount;
+	}
+
+	public String resetReading() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RESET_COUNTER_META_LIST, resetCounterMetaList);
+		Chain chain = TransactionChainFactory.getResetReadingsChain();
+		chain.execute(context);
+		return SUCCESS;
+	}
+	List<ResetCounterMetaContext> resetCounterMetaList;
+
+	public List<ResetCounterMetaContext> getResetCounterMetaList() {
+		return resetCounterMetaList;
+	}
+
+	public void setResetCounterMetaList(List<ResetCounterMetaContext> resetCounterMetaList) {
+		this.resetCounterMetaList = resetCounterMetaList;
 	}
 
 }

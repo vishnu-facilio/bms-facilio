@@ -1,0 +1,86 @@
+package com.facilio.bmsconsole.commands;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.tuple.Pair;
+
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.context.ResetCounterMetaContext;
+import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.NumberField;
+
+public class ValidateAndSetResetCounterMetaCommand extends FacilioCommand {
+
+	@Override
+	public boolean executeCommand(Context context) throws Exception {
+		// TODO Auto-generated method stub
+		Map<String, ReadingDataMeta> metaMap = (Map<String, ReadingDataMeta>) context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
+		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
+		if (metaMap == null || metaMap.isEmpty() || readingMap == null && readingMap.isEmpty()) {
+			return false;
+		}else{
+			
+			List<ResetCounterMetaContext> resetCounterMetaList = new ArrayList<>();
+			ResetCounterMetaContext resetCounterMeta;
+			
+			for (Map.Entry<String, List<ReadingContext>> entry : readingMap.entrySet()) {
+				
+				String moduleName = entry.getKey();
+				List<ReadingContext> readings = entry.getValue();
+				ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				List<FacilioField> allFields = bean.getAllFields(moduleName);
+				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
+				
+				for (ReadingContext reading : readings) {
+					
+					for (Map.Entry<String, Object> readingEntry : reading.getReadings().entrySet()) {
+						
+						String fieldName = readingEntry.getKey();
+						FacilioField field = fieldMap.get(fieldName);
+						boolean isCounterField = ReadingsAPI.isCounterField(field, moduleName);
+						ReadingDataMeta rdm = metaMap.get(ReadingsAPI.getRDMKey(reading.getParentId(), field));
+						boolean resetvalidation;
+						
+						if (field.getDataTypeEnum() == FieldType.DECIMAL) {
+							Double readingVal = (Double) FieldUtil.castOrParseValueAsPerType(field, readingEntry.getValue());
+							resetvalidation = (Double)rdm.getValue() > readingVal;
+						}else{
+							Long readingVal = (Long) FieldUtil.castOrParseValueAsPerType(field, readingEntry.getValue());
+							resetvalidation = (Long)rdm.getValue() > readingVal;
+						}
+						
+						if (isCounterField && resetvalidation) {
+							resetCounterMeta = new ResetCounterMetaContext();
+							resetCounterMeta.setFieldId(field.getId());
+							resetCounterMeta.setReadingDataId(reading.getId());//
+							resetCounterMeta.setResourceId(reading.getParentId());
+							resetCounterMeta.setTtime(reading.getTtime());
+							resetCounterMetaList.add(resetCounterMeta);
+						}
+						
+					}
+				}
+			}
+			context.put(FacilioConstants.ContextNames.RESET_COUNTER_META_LIST, resetCounterMetaList);
+		}
+		return false;
+	}
+	
+	
+
+}
