@@ -71,7 +71,7 @@ public class GetLatestReadingDataCommand extends FacilioCommand {
 			}
 			
 			Map<Long, FacilioField> fieldMap = null;
-			long fieldId = (long) context.getOrDefault(FacilioConstants.ContextNames.FIELD_ID, -1);
+			long fieldId = (long) context.getOrDefault(FacilioConstants.ContextNames.FIELD_ID, -1l);
 			if (fieldId > 0) {
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioField field = modBean.getField(fieldId);
