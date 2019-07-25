@@ -104,13 +104,13 @@ public enum AccountEmailTemplate {
 		switch(templateVal) {
 			case 1:
 				json.put("sender", SUPPORTEMAIL);
-				json.put("to", "${user.email}");
+				json.put("to", "${toUser.email}");
 				json.put("subject", "Welcome to "+ BRAND+"!");
-				json.put("message", "Hi ${user.name}, Thanks for signing up for "+BRAND+".");
+				json.put("message", "Hi ${toUser.name}, Thanks for signing up for "+BRAND+".");
 				break;
 			case 2:
 				json.put("sender", SUPPORTEMAIL);
-				json.put("to", "${user.email}");
+				json.put("to", "${toUser.email}");
 				json.put("subject", "[" + BRAND +"] ${inviter.name} has invited you to join the ${org.name} organization");
 				try {
 					template = TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACCOUNTS, templateVal);
@@ -118,14 +118,14 @@ public enum AccountEmailTemplate {
 					json.put("mailType", "html");
 				}
 				catch(Exception e) {
-					json.put("message", "Hi ${user.name}, ${inviter.name} has invited you to join the ${org.name} organization. Please click the below link to join the organization. ${invitelink}");
+					json.put("message", "Hi ${toUser.name}, ${inviter.name} has invited you to join the ${org.name} organization. Please click the below link to join the organization. ${invitelink}");
 					json.put("mailType", "text");
 					
 				}
 				break;
 			case 3:
 				json.put("sender", SUPPORTEMAIL);
-				json.put("to", "${user.email}");
+				json.put("to", "${toUser.email}");
 				json.put("subject", "Welcome! And confirm your email");
 				try {
 					template = TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACCOUNTS, templateVal);
@@ -134,14 +134,14 @@ public enum AccountEmailTemplate {
 					
 				}
 				catch(Exception e) {
-					json.put("message", "Hi ${user.name}, Please click the below link to verify your email address. ${invitelink}");
+					json.put("message", "Hi ${toUser.name}, Please click the below link to verify your email address. ${invitelink}");
 					json.put("mailType", "text");
 					
 				}
 				break;
 			case 4:
 				json.put("sender", SUPPORTEMAIL);
-				json.put("to", "${user.email}");
+				json.put("to", "${toUser.email}");
 				json.put("subject", "Reset your "+BRAND+" password");
 				try {
 					template = TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACCOUNTS, templateVal);
@@ -150,7 +150,7 @@ public enum AccountEmailTemplate {
 					
 				}
 				catch(Exception e) {
-					json.put("message", "Hi ${user.name}, Please click the below link to reset your password. ${invitelink}");
+					json.put("message", "Hi ${toUser.name}, Please click the below link to reset your password. ${invitelink}");
 					json.put("mailType", "text");
 					
 				}
@@ -158,15 +158,15 @@ public enum AccountEmailTemplate {
 			case 5:
 				json.put("sender", SUPPORTEMAIL);
 				json.put("to", ALERTEMAIL);
-				json.put("subject","${user.name} with a mailId  ${user.email} has signedUp in ["+BRAND+ "]");
-				json.put("message", "Hi ${user.name}, Please click the below link to verify your email address. ${invitelink}\n" 
-						+ "Name:" + "${user.name}\n" + "Email:" + "${user.email}" + "Timezone:" + "${user.timezone}" );
+				json.put("subject","${toUser.name} with a mailId  ${toUser.email} has signedUp in ["+BRAND+ "]");
+				json.put("message", "Hi ${toUser.name}, Please click the below link to verify your email address. ${invitelink}\n" 
+						+ "Name:" + "${toUser.name}\n" + "Email:" + "${toUser.email}" + "Timezone:" + "${toUser.timezone}" );
 				break;
 			case 6:
 				json.put("sender", SUPPORTEMAIL);
-				json.put("to", "${user.email}");
+				json.put("to", "${toUser.email}");
 				json.put("subject","[${org.name}] Welcome and confirm your email" );
-				json.put("message", "Hi ${user.name}, Please click the below link to verify your email address. ${invitelink}" );
+				json.put("message", "Hi ${toUser.name}, Please click the below link to verify your email address. ${invitelink}" );
 				break;				
 		}
 		return json;

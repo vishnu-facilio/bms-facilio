@@ -483,7 +483,7 @@ public class UserBeanImpl implements UserBean {
 	public void sendInvitation(long ouid, User user,boolean registration) throws Exception {
 		user.setOuid(ouid);
 		Map<String, Object> placeholders = new HashMap<>();
-		CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(user), placeholders);
+		CommonCommandUtil.appendModuleNameInKey(null, "toUser", FieldUtil.getAsProperties(user), placeholders);
 		CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeholders);
 		CommonCommandUtil.appendModuleNameInKey(null, "inviter", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeholders);
 		
@@ -510,7 +510,7 @@ public class UserBeanImpl implements UserBean {
 
 		String inviteLink = getUserLink(user, "/fconfirm_reset_password/");
 		Map<String, Object> placeholders = new HashMap<>();
-		CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(user), placeholders);
+		CommonCommandUtil.appendModuleNameInKey(null, "toUser", FieldUtil.getAsProperties(user), placeholders);
 		placeholders.put("invitelink", inviteLink);
 		
 		AccountEmailTemplate.RESET_PASSWORD.send(placeholders);
@@ -521,7 +521,7 @@ public class UserBeanImpl implements UserBean {
 		
 		String inviteLink = getUserLink(user, "/emailregistration/");
 		Map<String, Object> placeholders = new HashMap<>();
-		CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(user), placeholders);
+		CommonCommandUtil.appendModuleNameInKey(null, "toUser", FieldUtil.getAsProperties(user), placeholders);
 		placeholders.put("invitelink", inviteLink);
 		if (user.getEmail().contains("@facilio.com") || AwsUtil.disableCSP()) {
 			 AccountEmailTemplate.EMAIL_VERIFICATION.send(placeholders);
