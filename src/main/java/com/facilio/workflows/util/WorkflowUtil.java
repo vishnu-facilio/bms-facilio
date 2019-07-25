@@ -644,6 +644,123 @@ public class WorkflowUtil {
 		return null;
 	}
 	
+	public static String getExpressionOldToNew(ExpressionContext exp,String code) {
+		
+		String name = exp.getName();
+		
+		if(exp.isCustomFunctionResultEvaluator()) {
+			code = code + name +" = NameSpace("+exp.getDefaultFunctionContext().getNameSpace()+")."+exp.getDefaultFunctionContext().getFunctionName()+exp.getDefaultFunctionContext().getParams()+";\n";
+		}
+		if(exp.getConstant() != null) {
+			code = code + name +" = "+exp.getConstant()+";\n";
+		}
+		if(exp.getExpr() != null) {
+			code = code + name +" = "+exp.getExpr()+";\n";
+		}
+		if(exp.getPrintStatement() != null) {
+			
+			code = code + "log "+exp.getPrintStatement()+";\n";
+		}
+		
+		return code;
+	}
+	
+	public static String test() throws Exception {
+		// TODO Auto-generated method stub
+		
+		WorkflowContext workflow = WorkflowUtil.getWorkflowContext(10l, true);
+		
+		List<ParameterContext> params = workflow.getParameters();
+		String paramString = "";
+		
+		for(ParameterContext param :params) {
+			paramString = paramString + param.getTypeString() +" "+param.getName()+",";
+		}
+		if(paramString .length() > 0) {
+			paramString = paramString.substring(0, paramString.length()-1);
+		}
+		
+		String code = "void test("+paramString+") {";
+		
+		for(WorkflowExpression expression : workflow.getExpressions()) {
+			if(expression instanceof ExpressionContext) {
+				ExpressionContext exp = (ExpressionContext) expression;
+				
+				code = getExpressionOldToNew(exp, code);
+				
+			 }
+			 else if(expression instanceof IteratorContext) {
+				 
+				 IteratorContext iteratorContext = (IteratorContext)  expression;
+				 
+				 code = code + "for each "+iteratorContext.getLoopVariableIndexName()+","+iteratorContext.getLoopVariableValueName()+" in "+iteratorContext.getIteratableVariable()+"{ \n";
+				
+				 for(WorkflowExpression itrWorkflowExpression : iteratorContext.getExpressions()) {
+					 
+					 ExpressionContext exp = (ExpressionContext) itrWorkflowExpression;
+					 
+					 getExpressionOldToNew(exp, code);
+				 }
+				 code = code +"}\n";
+			 }
+			 
+			 else if(expression instanceof ConditionContext) {
+				 
+				 ConditionContext conditionContext = (ConditionContext) expression;
+				 
+				 IfContext IfContext = conditionContext.getIfContext();
+				 
+				 code = code + "if( "+IfContext.getCriteria()+") { \n";
+				 
+				 if(IfContext.getExpressions() != null) {
+					 for(WorkflowExpression itrWorkflowExpression : IfContext.getExpressions()) {
+						 
+						 ExpressionContext exp = (ExpressionContext) itrWorkflowExpression;
+						 
+						 getExpressionOldToNew(exp, code);
+					 }
+				 }
+				 code = code +"}\n";
+				
+				 if(conditionContext.getElseIfContexts() != null) {
+					 for(ElseIfContext elseIfContext : conditionContext.getElseIfContexts()) {
+						 code = code + "else if( "+elseIfContext.getCriteria()+") { \n";
+						 if(elseIfContext.getExpressions() != null) {
+							 for(WorkflowExpression itrWorkflowExpression : elseIfContext.getExpressions()) {
+								 
+								 ExpressionContext exp = (ExpressionContext) itrWorkflowExpression;
+								 
+								 getExpressionOldToNew(exp, code);
+							 }
+						 }
+						 code = code +"}\n";
+					 }
+				 }
+				 if(conditionContext.getElseContext() != null) {
+					 code = code + "else { \n";
+					 if(conditionContext.getElseContext().getExpressions() != null) {
+						 for(WorkflowExpression itrWorkflowExpression : conditionContext.getElseContext().getExpressions()) {
+							 
+							 ExpressionContext exp = (ExpressionContext) itrWorkflowExpression;
+							 
+							 getExpressionOldToNew(exp, code);
+						 }
+					 }
+					 code = code +"}\n";
+				 }
+			 }
+		}
+		
+		if(workflow.getResultEvaluator() != null) {
+			code = code + "return "+workflow.getResultEvaluator()+";\n";
+		}
+		
+		code = code + "}";
+		
+		
+		return code;
+	}
+	
 	public static WorkflowContext getWorkflowContext(Long workflowId) throws Exception  {
 		return getWorkflowContext(workflowId,false);
 	}

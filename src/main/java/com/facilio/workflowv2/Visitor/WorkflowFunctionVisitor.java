@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.RuleNode;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.facilio.beans.ModuleBean;
@@ -586,6 +587,9 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     		else if(operatorValue.asObject() instanceof DateRange) {
     			operator = DateOperators.BETWEEN;
     		}
+    		else if (operatorValue.asObject() instanceof List) {
+    			operator = StringOperators.IS;
+    		}
     		else {
     			operator = NumberOperators.EQUALS;
     		}
@@ -595,6 +599,9 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     			operator = CommonOperators.IS_NOT_EMPTY;
     		}
     		else if(operatorValue.asObject() instanceof String) {
+    			operator = StringOperators.ISN_T;
+    		}
+    		else if (operatorValue.asObject() instanceof List) {
     			operator = StringOperators.ISN_T;
     		}
     		else {
@@ -608,6 +615,10 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     	condition.setOperator(operator);
     	
     	String value = operatorValue.asString();
+    	
+    	if (operatorValue.asObject() instanceof List) {
+    		value = StringUtils.join(operatorValue.asList(), ",");
+		}
     	
     	condition.setValue(value);
     	
