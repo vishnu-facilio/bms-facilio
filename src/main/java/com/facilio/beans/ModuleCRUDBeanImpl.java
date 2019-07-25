@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
@@ -49,6 +50,7 @@ import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
@@ -983,6 +985,67 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 
 		Chain removeDuplicatesChain = TransactionChainFactory.removeDuplicates();
 		removeDuplicatesChain.execute(context);
+	}
+
+	@Override
+	public void updatePMJob(List<WorkOrderContext> workorders) throws Exception {
+		Map<Long, WorkOrderContext> oldWorkorders = WorkOrderAPI.getWorkOrdersAsMap(workorders.stream().map(WorkOrderContext::getId).collect(Collectors.toList()));
+		List<WorkOrderContext> preopenWorkorders = new ArrayList<>();
+		List<WorkOrderContext> executedWorkorders = new ArrayList<>();
+		for(WorkOrderContext wo: workorders) {
+			WorkOrderContext oldWo = oldWorkorders.get(wo.getId());
+			if (oldWo.getModuleState() == null) {	// Pre open state
+				preopenWorkorders.add(wo);
+			}
+			else {
+				WorkOrderContext newWo = new WorkOrderContext();
+				if (wo.getDueDate() > 0) {
+					newWo.setDueDate(wo.getDueDate());
+				}
+				if (wo.getAssignedTo() != null && wo.getAssignedTo().getId() > 0) {
+					newWo.setAssignedTo(wo.getAssignedTo());
+					newWo.setAssignedBy(AccountUtil.getCurrentUser());
+				}
+				if (wo.getAssignmentGroup() != null && wo.getAssignmentGroup().getId() > 0) {
+					newWo.setAssignmentGroup(wo.getAssignmentGroup());
+					newWo.setAssignedBy(AccountUtil.getCurrentUser());
+				}
+				executedWorkorders.add(newWo);	
+			}
+		}
+		FacilioContext context = new FacilioContext();
+		if (!preopenWorkorders.isEmpty()) {
+			for(WorkOrderContext wo: preopenWorkorders) {
+				context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
+				context.put(FacilioConstants.ContextNames.IS_NEW_EVENT, true);	// temp
+
+				Chain updatePM = FacilioChainFactory.getUpdateNewPreventiveMaintenanceJobChain();
+				updatePM.execute(context);
+				
+				context.clear();
+			}
+		}
+		if (!executedWorkorders.isEmpty()) {
+			for(WorkOrderContext wo: preopenWorkorders) {
+				
+				EventType activityType = EventType.EDIT;
+				// Temp
+				if((wo.getAssignedTo() != null && wo.getAssignedTo().getId() > 0) || (wo.getAssignmentGroup() != null && wo.getAssignmentGroup().getId() > 0)) {
+					activityType = EventType.ASSIGN_TICKET;
+				}
+				
+				context.put(FacilioConstants.ContextNames.EVENT_TYPE, activityType);
+				
+				context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
+				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(wo.getId()));
+				context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
+				
+				Chain updateWorkOrder = TransactionChainFactory.getUpdateWorkOrderChain();
+				updateWorkOrder.execute(context);
+
+				context.clear();
+			}
+		}
 	}
 
 }

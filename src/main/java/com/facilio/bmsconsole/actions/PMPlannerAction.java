@@ -1,13 +1,13 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.PMPlannerSettingsContext;
@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.fw.TransactionBeanFactory;
 import com.facilio.time.DateRange;
 
 public class PMPlannerAction extends FacilioAction{
@@ -155,14 +156,23 @@ public class PMPlannerAction extends FacilioAction{
 	public void setWorkorder(WorkOrderContext workorder) {
 		this.workorder = workorder;
 	}
+	
+	private List<WorkOrderContext> workorders;
+	public List<WorkOrderContext> getWorkorders() {
+		return workorders;
+	}
+	public void setWorkorders(List<WorkOrderContext> workorders) {
+		this.workorders = workorders;
+	}
+	
 	public String updatePMJob() throws Exception {
-
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
-		context.put(FacilioConstants.ContextNames.IS_NEW_EVENT, true);	// temp
-
-		Chain updatePM = FacilioChainFactory.getUpdateNewPreventiveMaintenanceJobChain();
-		updatePM.execute(context);
+		
+		ModuleCRUDBean crudBean = (ModuleCRUDBean) TransactionBeanFactory.lookup("ModuleCRUD");
+		if (workorders == null) {
+			workorders = new ArrayList<WorkOrderContext>();
+			workorders.add(workorder);
+		}
+		crudBean.updatePMJob(workorders);
 
 		setResult(ContextNames.RESULT, "success");
 		return SUCCESS;

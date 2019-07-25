@@ -7,7 +7,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections4.CollectionUtils;
@@ -85,6 +87,14 @@ public class WorkOrderAPI {
 		}
 	}
 	public static WorkOrderContext getWorkOrder(long ticketId) throws Exception {
+		List<WorkOrderContext> workorders = getWorkOrders(Collections.singletonList(ticketId));
+		if (CollectionUtils.isNotEmpty(workorders)) {
+			return workorders.get(0);
+		}
+		return null;
+	}
+	
+	public static List<WorkOrderContext> getWorkOrders(List<Long> ticketIds) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
@@ -92,15 +102,21 @@ public class WorkOrderAPI {
 														.module(module)
 														.beanClass(WorkOrderContext.class)
 														.select(modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER))
-														.andCondition(CriteriaAPI.getIdCondition(ticketId, module))
+														.andCondition(CriteriaAPI.getIdCondition(ticketIds, module))
 														;
 		
 		List<WorkOrderContext> workOrders = builder.get();
-		if(workOrders != null && !workOrders.isEmpty()) {
-			return workOrders.get(0);
+		return workOrders;
+	}
+	
+	public static Map<Long, WorkOrderContext> getWorkOrdersAsMap(List<Long> workorderIds) throws Exception {
+		List<WorkOrderContext> workorders = getWorkOrders(workorderIds);
+		if (CollectionUtils.isNotEmpty(workorders)) {
+			return workorders.stream().collect(Collectors.toMap(WorkOrderContext::getId, Function.identity()));
 		}
 		return null;
 	}
+	
 	public static List<WorkOrderContext> getWorkOrderFromPMId(long pmid) throws Exception {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
