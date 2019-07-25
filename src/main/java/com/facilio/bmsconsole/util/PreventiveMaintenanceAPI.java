@@ -2294,9 +2294,9 @@ public class PreventiveMaintenanceAPI {
 	}
 
 	public static void logIf(long orgId, String message) {
-		if (AccountUtil.getCurrentOrg().getOrgId() == orgId) {
-			LOGGER.log(Level.SEVERE, message);
-		}
+		//if (AccountUtil.getCurrentOrg().getOrgId() == orgId) {
+		//	LOGGER.log(Level.SEVERE, message);
+		//}
 	}
 
 }
