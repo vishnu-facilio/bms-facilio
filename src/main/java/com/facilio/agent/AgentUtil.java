@@ -1,16 +1,5 @@
 package com.facilio.agent;
 
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Chain;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -34,6 +23,16 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
+import org.apache.commons.chain.Chain;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * This class writes agent's payload data to a table in DB.
@@ -439,7 +438,12 @@ public  class AgentUtil
                 toUpdate.put(AgentKeys.COMMAND, ControllerCommand.valueOf(payLoad.get(AgentKeys.COMMAND).toString()).getValue());
             }
             toUpdate.put(AgentKeys.AGENT_ID, agentId);
-            toUpdate.put(AgentKeys.TIMESTAMP, System.currentTimeMillis());
+            if(payLoad.containsKey(AgentKeys.TIMESTAMP)){
+                toUpdate.put(AgentKeys.TIMESTAMP,payLoad.get(AgentKeys.TIMESTAMP));
+            }
+            else {
+                toUpdate.put(AgentKeys.TIMESTAMP, System.currentTimeMillis());
+            }
             if (payLoad.containsKey(AgentKeys.DEVICE_ID)) {
                 toUpdate.put(AgentKeys.DEVICE_ID, payLoad.get(AgentKeys.DEVICE_ID).toString());
             }
