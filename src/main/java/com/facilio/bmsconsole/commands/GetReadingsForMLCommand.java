@@ -67,6 +67,10 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 																			startTime, currentTime,variables.getParentID());
 			
 			List<Map<String, Object>> props = selectBuilder.getAsProps();
+			if(mlContext.isEmptyDataMap() && props.size()>0)
+			{
+				mlContext.setEmptyDataMap(false);
+			}
 			for(Map<String,Object> prop : props)
 			{
 				data.put((long)prop.get(ttimeField.getName()), prop.get(variableField.getName()));

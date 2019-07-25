@@ -35,6 +35,8 @@ public class MLContext extends ModuleBaseWithCustomFields
 	
 	private long executionEndTime;
 	private boolean isHistoric=false;
+	private boolean isEmptyDataMap=true;
+	
 	
 	private String result;
 		
@@ -190,6 +192,18 @@ public class MLContext extends ModuleBaseWithCustomFields
 			criteriaVariables = new ArrayList<MLVariableContext>(10);
 		}
 		criteriaVariables.add(context);
+	}
+	
+	@JSON(serialize=false)
+	public boolean isEmptyDataMap() 
+	{
+		return isEmptyDataMap;
+	}
+	
+	@JSON(serialize=false)
+	public void setEmptyDataMap(boolean setValue) 
+	{
+		this.isEmptyDataMap = setValue;
 	}
 	
 	@JSON(serialize=false)
