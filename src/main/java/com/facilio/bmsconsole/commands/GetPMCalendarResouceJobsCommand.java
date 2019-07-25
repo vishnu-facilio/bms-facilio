@@ -212,13 +212,16 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 			
 			List<Map<String, Object>> prevHeaderValues = new ArrayList<>();
 			
+			long prevAssetId = -1;
 			for(Map<String, Object> prop: props) {
 				
 				long assetId = (Long) prop.get(assetIdField.getName());
 				assetIds.add(assetId);
 				assetIdVsName.put(assetId, (String) prop.get(resourceNameField.getName()));
 				
-				addTitles(titles, assetId, headers, prop, prevHeaderValues, countField);
+				addTitles(titles, assetId, prevAssetId, headers, prop, prevHeaderValues, countField);
+				
+				prevAssetId = assetId;
 			}
 			
 			LOGGER.debug("titles: " + titles.toString());
@@ -311,7 +314,7 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 		return false;
 	}
 	
-	private void addTitles(List<Map<String, Object>> titles, long assetId, List<Map<String, Object>> headers, Map<String, Object> prop, List<Map<String, Object>> prevHeaderValues, FacilioField countField) {
+	private void addTitles(List<Map<String, Object>> titles, long assetId, long prevAssetId, List<Map<String, Object>> headers, Map<String, Object> prop, List<Map<String, Object>> prevHeaderValues, FacilioField countField) {
 		Map<String, Object> row = new HashMap<>();
 		List<Map<String, Object>> rowData = new ArrayList<>();
 		row.put("data", rowData);
@@ -379,7 +382,8 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 				}
 				
 				String prevValue = (String) prevHeader.getOrDefault("name", "");
-				if (!prevValue.equals(value) || parentValueChanged || i == 0) {	// If Asset column or previous column value changed
+				// If Asset column or previous column value changed
+				if (!prevValue.equals(value) || parentValueChanged || (i == 0 && prevAssetId != assetId) ) {
 					prevHeader = new HashMap<>();
 					prevHeader.put("name", value);
 					prevHeader.put("rowSpan", rowDefaultSpan);
