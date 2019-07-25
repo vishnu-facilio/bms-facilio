@@ -131,6 +131,12 @@ public class EnergyDataDeltaCalculationCommand extends FacilioCommand {
 		deltaRdmPairs.add(Pair.of(resourceId, deltaField));
 	}
 	
+	private static final int INTERVAL_COUNT=4;
+
+	private static final long DELATA_HIGH_VAL_BAND=1000000;//1 million
+
+	private static final long RESET_BAND_MF=50;
+	
 	private void setDelta(Map<String,FacilioField>  fieldMap, String fieldName,FacilioModule module, ReadingContext reading,Map<String, 
 			ReadingDataMeta> metaMap,List<MarkedReadingContext> markedList, Boolean skipLastReadingCheck ) {
 			
@@ -223,7 +229,13 @@ public class EnergyDataDeltaCalculationCommand extends FacilioCommand {
 			if(delta>DELATA_HIGH_VAL_BAND && delta>lastDelta) {
 				//Not sure how to handle, if there is an erratic meter reading.. 
 				// for now assuming that the delta is too high than 10K
-				sendEmail(getHighValString(resourceId), getEmailBody(lastReading,currentReading,null));
+				if(dataGapCount<2)
+				{
+					// assuming delta should not be more than or equal to 1 million.. 
+					// so resetting the delta to zero here..
+					delta=0.0;
+					sendEmail(getDeltaResetString(resourceId), getEmailBody(lastReading,currentReading,null));
+				}
 				/*commenting the below code as data correction is not needed..
 				 * 
 				double estimatedDelta= getEstimatedDelta(lastDelta, dataGapCount);
@@ -260,15 +272,8 @@ public class EnergyDataDeltaCalculationCommand extends FacilioCommand {
 			
 	}
 
-	private static final int INTERVAL_COUNT=4;
 	
-	private static final long DELATA_HIGH_VAL_BAND=10000;
-	
-	private static final long DELTA_MF=1000;
-	
-	private static final long RESET_BAND_MF=50;
-	
-	
+  /*	
 	private Double getEstimatedDelta(Double lastDelta, float dataGapCount) {
 		
 		//int gapMultiplier= (dataGapCount==0)?1:dataGapCount;//if there is no gap.. we can consider it as 1 for calculation ease..
@@ -277,6 +282,7 @@ public class EnergyDataDeltaCalculationCommand extends FacilioCommand {
 		return estimatedDelta;
 		
 	}
+	*/
 	
 	private long getQueryTime(long resourceId, FacilioField field, FacilioModule module, int intervals) {
 		
@@ -326,8 +332,8 @@ public class EnergyDataDeltaCalculationCommand extends FacilioCommand {
 		return "Consecutive Decremental values detected for meter: "+resourceId;
 	}
 	
-	private String getHighValString(long resourceId) {
-		return "Too High value received for meter: "+resourceId;
+	private String getDeltaResetString(long resourceId) {
+		return "Delta reset to zero, as too High value received for meter: "+resourceId;
 	}
 	
 	private String getEmailBody(Double lastReading,Double currentReading,List<Double> actualValues) {
