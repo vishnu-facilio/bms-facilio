@@ -33,7 +33,7 @@ public class UpdateDashboardWithWidgetCommand extends FacilioCommand {
 			
 			DashboardUtil.updateDashboard(dashboard);
 			
-			List<DashboardWidgetContext> existingWidgets = DashboardUtil.getDashboardWidgetsFormDashboardId(dashboard.getId());
+			List<DashboardWidgetContext> existingWidgets = DashboardUtil.getDashboardWidgetsFormDashboardIdOrTabId(dashboard.getId(),null);
 			
 			JSONObject widgetMapping = new JSONObject();
 			

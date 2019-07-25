@@ -645,7 +645,7 @@ public class DashboardUtil {
 		}
 		return res;
 	}
-	public static List<DashboardWidgetContext> getDashboardWidgetsFormDashboardId(Long dashboardId) throws Exception {
+	public static List<DashboardWidgetContext> getDashboardWidgetsFormDashboardIdOrTabId(Long dashboardId,Long dashboardTabId) throws Exception {
 		
 		List<FacilioField> fields = FieldFactory.getWidgetFields();
 		fields.addAll(FieldFactory.getWidgetChartFields());
@@ -667,7 +667,18 @@ public class DashboardUtil {
 				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetWebModule().getTableName()+".ID")
 				.leftJoin(ModuleFactory.getWidgetGraphicsModule().getTableName())		
 				.on(ModuleFactory.getWidgetModule().getTableName()+".ID="+ModuleFactory.getWidgetGraphicsModule().getTableName()+".ID")
-				.andCustomWhere(ModuleFactory.getWidgetModule().getTableName()+".DASHBOARD_ID = ?", dashboardId);
+				;
+				
+		if(dashboardId != null) {
+			selectBuilder.andCustomWhere(ModuleFactory.getWidgetModule().getTableName()+".DASHBOARD_ID = ?", dashboardId);
+		}
+		else if (dashboardTabId != null) {
+			selectBuilder.andCustomWhere(ModuleFactory.getWidgetModule().getTableName()+".DASHBOARD_TAB_ID = ?", dashboardTabId);
+		}
+		else {
+			throw new IllegalArgumentException("No Dashboard or Tab Specified");
+		}
+				
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		List<DashboardWidgetContext> dashboardWidgetContexts = new ArrayList<>();
@@ -830,6 +841,24 @@ public class DashboardUtil {
 		 }
 		return result;
 	}
+	
+	
+	public static JSONArray getDashboardTabResponseJson(List<DashboardTabContext> dashboards) {
+		
+		JSONArray result = new JSONArray();
+		
+		 for(DashboardTabContext dashboardTab:dashboards) {
+
+			 Collection<DashboardWidgetContext> dashboardWidgetContexts = dashboardTab.getDashboardWidgets();
+			JSONArray childrenArray = new JSONArray();
+			for(DashboardWidgetContext dashboardWidgetContext:dashboardWidgetContexts) {
+				childrenArray.add(dashboardWidgetContext.widgetJsonObject());
+			}
+			dashboardTab.setClientWidgetJson(childrenArray);
+		 }
+		return result;
+	}
+	
 	public static JSONArray getReportResponseJson(List<ReportFolderContext> reportFolders) {
 		
 		JSONArray result = new JSONArray();
@@ -873,7 +902,7 @@ public class DashboardUtil {
 		
 		if (props != null && !props.isEmpty()) {
 			DashboardContext dashboard = FieldUtil.getAsBeanFromMap(props.get(0), DashboardContext.class);
-			List<DashboardWidgetContext> dashbaordWidgets = DashboardUtil.getDashboardWidgetsFormDashboardId(dashboard.getId());
+			List<DashboardWidgetContext> dashbaordWidgets = DashboardUtil.getDashboardWidgetsFormDashboardIdOrTabId(dashboard.getId(),null);
 			dashboard.setDashboardWidgets(dashbaordWidgets);
 			return dashboard;
 		}
@@ -956,11 +985,31 @@ public class DashboardUtil {
 		if (props != null && !props.isEmpty()) {
 			DashboardContext dashboard = FieldUtil.getAsBeanFromMap(props.get(0), DashboardContext.class);
 			
-			List<DashboardWidgetContext> dashbaordWidgets = DashboardUtil.getDashboardWidgetsFormDashboardId(dashboard.getId());
+			List<DashboardWidgetContext> dashbaordWidgets = DashboardUtil.getDashboardWidgetsFormDashboardIdOrTabId(dashboard.getId(),null);
 			dashboard.setDashboardWidgets(dashbaordWidgets);
 			dashboard.setReportSpaceFilterContext(getDashboardSpaceFilter(dashboard.getId()));
 			dashboard.setDashboardSharingContext(getDashboardSharing(dashboard.getId()));
 			return dashboard;
+		}
+		return null;
+	}
+	
+	public static DashboardTabContext getDashboardTabWithWidgets(long dashboardTabId) throws Exception {
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getDashboardTabFields())
+				.table(ModuleFactory.getDashboardTabModule().getTableName())
+				.andCondition(CriteriaAPI.getIdCondition(dashboardTabId, ModuleFactory.getDashboardTabModule()));
+		
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		if (props != null && !props.isEmpty()) {
+			DashboardTabContext tab = FieldUtil.getAsBeanFromMap(props.get(0), DashboardTabContext.class);
+			
+			List<DashboardWidgetContext> dashbaordWidgets = DashboardUtil.getDashboardWidgetsFormDashboardIdOrTabId(null,tab.getId());
+			tab.setDashboardWidgets(dashbaordWidgets);
+			return tab;
 		}
 		return null;
 	}

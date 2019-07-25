@@ -21,7 +21,7 @@ public class DeleteDashboardWidgetCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		DashboardContext dashboard = (DashboardContext) context.get(FacilioConstants.ContextNames.DASHBOARD);
 		if(dashboard != null) {			
-			List<DashboardWidgetContext> removableWidgets = DashboardUtil.getDashboardWidgetsFormDashboardId(dashboard.getId());
+			List<DashboardWidgetContext> removableWidgets = DashboardUtil.getDashboardWidgetsFormDashboardIdOrTabId(dashboard.getId(),null);
 			
 			List<Long> removedWidgetIds = new ArrayList<Long>();
 			

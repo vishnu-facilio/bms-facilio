@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.context;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.simple.JSONArray;
+
 public class DashboardTabContext {
 
 	long id = -1;
@@ -70,5 +72,13 @@ public class DashboardTabContext {
 			this.dashboardWidgets = new ArrayList<>();
 		}
 		dashboardWidgets.add(dashboardWidgetContext);
+	}
+	JSONArray clientWidgetJson;
+
+	public JSONArray getClientWidgetJson() {
+		return clientWidgetJson;
+	}
+	public void setClientWidgetJson(JSONArray clientWidgetJson) {
+		this.clientWidgetJson = clientWidgetJson;
 	}
 }

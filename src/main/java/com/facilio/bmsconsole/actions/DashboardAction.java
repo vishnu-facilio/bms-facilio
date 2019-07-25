@@ -20,6 +20,7 @@ import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.tiles.request.collection.CollectionUtil;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -44,6 +45,7 @@ import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardFolderContext;
 import com.facilio.bmsconsole.context.DashboardSharingContext;
+import com.facilio.bmsconsole.context.DashboardTabContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.DerivationContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
@@ -146,6 +148,8 @@ import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+
+import freemarker.core.CollectionAndSequence;
 
 //import com.facilio.workflows.context.WorkflowExpression;
 
@@ -6849,6 +6853,30 @@ public class DashboardAction extends FacilioAction {
 		}
 		dashboard = DashboardUtil.getDashboardWithWidgets(linkName, moduleName);
 		setDashboardJson(DashboardUtil.getDashboardResponseJson(dashboard));
+		return SUCCESS;
+	}
+	
+	long dashboardTabId;
+	
+	public long getDashboardTabId() {
+		return dashboardTabId;
+	}
+	public void setDashboardTabId(long dashboardTabId) {
+		this.dashboardTabId = dashboardTabId;
+	}
+	
+	DashboardTabContext dashboardTabContext;
+	
+	public DashboardTabContext getDashboardTabContext() {
+		return dashboardTabContext;
+	}
+	public void setDashboardTabContext(DashboardTabContext dashboardTabContext) {
+		this.dashboardTabContext = dashboardTabContext;
+	}
+	public String viewDashboardTab() throws Exception {
+
+		dashboardTabContext = DashboardUtil.getDashboardTabWithWidgets(dashboardTabId);
+		DashboardUtil.getDashboardTabResponseJson(Collections.singletonList(dashboardTabContext));
 		return SUCCESS;
 	}
 	

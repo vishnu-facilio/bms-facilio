@@ -27,7 +27,7 @@ public class EnableMobileDashboardCommand  extends FacilioCommand {
 			
 			Long dashboardId = dashboard.getId();
 			
-			List<DashboardWidgetContext> widgets = DashboardUtil.getDashboardWidgetsFormDashboardId(dashboardId);
+			List<DashboardWidgetContext> widgets = DashboardUtil.getDashboardWidgetsFormDashboardIdOrTabId(dashboardId,null);
 			if (widgets != null && widgets.size() > 0) {
 				
 				int mLayoutPosition = 1;

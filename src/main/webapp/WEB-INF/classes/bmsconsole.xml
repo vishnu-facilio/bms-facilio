@@ -3707,6 +3707,11 @@
 				<param name="includeProperties">^dashboardJson.*</param>
 			</result>
 		</action>
+		<action name="getTabWidgets" class="com.facilio.bmsconsole.actions.DashboardAction" method="viewDashboardTab">
+			<result name="success" type="json">
+				<param name="includeProperties">^dashboardTabContext.*</param>
+			</result>
+		</action>
 	</package>
 	<package name="dashboardsharing" namespace="/api/dashboardsharing" extends="homeApi">
 		<!-- <action name="apply" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboards">
