@@ -282,6 +282,13 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain getV2AlarmListChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(fetchModuleDataListChain());
+		c.addCommand(new HandleV2AlarmListLookupCommand());
+		return c;
+	}
+	
 	public static Chain getV2AlarmDetailsChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new GetV2AlarmsCommand());

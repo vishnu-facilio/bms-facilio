@@ -76,7 +76,7 @@ public class V2AlarmAction extends FacilioAction {
  		FacilioContext context = constructListContext();
  		context.put(ContextNames.MODULE_NAME, alarmModule);
  		
- 		Chain alarmListChain = ReadOnlyChainFactory.fetchModuleDataListChain();
+ 		Chain alarmListChain = ReadOnlyChainFactory.getV2AlarmListChain();
 		alarmListChain.execute(context);
 		
 		if (isFetchCount()) {

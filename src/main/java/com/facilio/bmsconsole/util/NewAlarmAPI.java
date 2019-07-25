@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -144,6 +145,29 @@ public class NewAlarmAPI {
 						String.valueOf(baseAlarm.getId()), NumberOperators.EQUALS))
 				.orderBy("CREATED_TIME DESC, ID DESC").limit(1);
 		return builder.fetchFirst();
+	}
+	
+	public static Map<Long, AlarmOccurrenceContext> getLatestAlarmOccuranceMap(List<BaseAlarmContext> baseAlarms) throws Exception {
+		if (baseAlarms == null) {
+			return null;
+		}
+		
+		List<Long> ids = baseAlarms.stream().map(alarm -> alarm.getId()).collect(Collectors.toList());
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
+		SelectRecordsBuilder<AlarmOccurrenceContext> builder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
+				.beanClass(AlarmOccurrenceContext.class).moduleName(FacilioConstants.ContextNames.ALARM_OCCURRENCE)
+				.select(fields)
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("alarm"), ids, NumberOperators.EQUALS))
+				.orderBy("CREATED_TIME DESC, ID DESC");
+		List<AlarmOccurrenceContext> occurences = builder.get();
+		if (CollectionUtils.isNotEmpty(occurences)) {
+			return occurences.stream().collect(Collectors.toMap(AlarmOccurrenceContext::getId, Function.identity()));
+		}
+		return null;
 	}
 
 	public static List<AlarmOccurrenceContext> getLatestAlarmOccurance(List<String> messageKeys) throws Exception {
