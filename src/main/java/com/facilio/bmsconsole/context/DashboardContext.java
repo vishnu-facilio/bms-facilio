@@ -35,6 +35,16 @@ public class DashboardContext extends ModuleBaseWithCustomFields implements Clon
 		this.dashboardFolderId = dashboardFolderId;
 	}
 	
+	List<DashboardTabContext> dashboardTabContexts;
+	
+	public List<DashboardTabContext> getDashboardTabContexts() {
+		return dashboardTabContexts;
+	}
+
+	public void setDashboardTabContexts(List<DashboardTabContext> dashboardTabContexts) {
+		this.dashboardTabContexts = dashboardTabContexts;
+	}
+
 	public List<SpaceFilteredDashboardSettings> spaceFilteredDashboardSettings;
 	
 	public List<SpaceFilteredDashboardSettings> getSpaceFilteredDashboardSettings() {
@@ -119,6 +129,23 @@ public class DashboardContext extends ModuleBaseWithCustomFields implements Clon
 	
 	public Boolean mobileEnabled;
 	
+	public Boolean tabEnabled;
+	
+	public Boolean getTabEnabled() {
+		return tabEnabled;
+	}
+	
+	public boolean isTabEnabled() {
+		if(tabEnabled == null) {
+			return false;
+		}
+		return tabEnabled;
+	}
+
+	public void setTabEnabled(Boolean tabEnabled) {
+		this.tabEnabled = tabEnabled;
+	}
+
 	public Boolean isMobileEnabled() {
 		if(mobileEnabled != null) {
 			return mobileEnabled;

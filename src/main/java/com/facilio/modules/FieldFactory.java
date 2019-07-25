@@ -3383,10 +3383,24 @@ public class FieldFactory {
 		
 		fields.add(getField("dateOperator", "DATE_OPERATOR", module, FieldType.NUMBER));
 		fields.add(getField("dateValue", "DATE_VALUE", module, FieldType.STRING));
+		fields.add(getField("tabEnabled", "IS_TAB_ENABLED", module, FieldType.BOOLEAN));
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getDashboardTabFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getDashboardTabModule();
 
+		fields.add(getIdField(module));
+		
+		fields.add(getField("dashboardId", "DASHBOARD_ID", module, FieldType.LOOKUP));
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
+		fields.add(getField("dashboardTabId", "DASHBOARD_TAB_ID", module, FieldType.LOOKUP));
+		fields.add(getField("sequence", "SEQUENCE", module, FieldType.NUMBER));
+
+		return fields;
+	}
 
 	public static List<FacilioField> getWidgetFields() {
 		List<FacilioField> fields = new ArrayList<>();
@@ -3399,6 +3413,8 @@ public class FieldFactory {
 		fields.add(getField("metaJSONString", "META_JSON", module, FieldType.STRING));
 		
 		fields.add(getField("dashboardId", "DASHBOARD_ID", module, FieldType.NUMBER));
+		
+		fields.add(getField("dashboardTabId", "DASHBOARD_TAB_ID", module, FieldType.NUMBER));
 
 		FacilioField dashboardWidgetName = new FacilioField();
 		dashboardWidgetName.setName("widgetName");

@@ -26,7 +26,7 @@ public class MVProjectContext extends ModuleBaseWithCustomFields {
 	boolean isAutoGenVmMeter;
 	AssetContext meter;
 	User owner;
-	int saveGoal;
+	int saveGoal = -1;
 	FormulaFieldContext saveGoalFormulaField;
 	long reportingPeriodStartTime;
 	long reportingPeriodEndTime;

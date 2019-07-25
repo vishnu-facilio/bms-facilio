@@ -30,6 +30,7 @@ import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardFolderContext;
 import com.facilio.bmsconsole.context.DashboardSharingContext;
+import com.facilio.bmsconsole.context.DashboardTabContext;
 import com.facilio.bmsconsole.context.DashboardSharingContext.SharingType;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
@@ -1005,6 +1006,48 @@ public class DashboardUtil {
 		return null;
 	}
 	
+	public static List<DashboardTabContext> getDashboardTabs(long dashboardId) throws Exception {
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getDashboardTabFields());
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getDashboardTabFields())
+				.table(ModuleFactory.getDashboardTabModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("dashboardId"), dashboardId+"", NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		
+		if(props != null && !props.isEmpty()) {
+			
+			List<DashboardTabContext> dashboardTabContexts =  FieldUtil.getAsBeanListFromMapList(props, DashboardTabContext.class);
+			dashboardTabContexts = getOrderedTabs(dashboardTabContexts);
+			
+			return dashboardTabContexts;
+		}
+		return null;
+	}
+	
+	public static List<DashboardTabContext> getOrderedTabs(List<DashboardTabContext> dashboardTabContexts) {
+		
+		List<DashboardTabContext> parentTabs = new ArrayList<>();
+		Map<Long,List<DashboardTabContext>> parentVsChildMap = new HashMap<>();
+		for(DashboardTabContext dashboardTabContext :dashboardTabContexts) {
+			if(dashboardTabContext.getDashboardTabId() > 0) {
+				List<DashboardTabContext> childList = parentVsChildMap.get(dashboardTabContext.getDashboardTabId()) != null ? parentVsChildMap.get(dashboardTabContext.getDashboardTabId()) : new ArrayList<>();
+				childList.add(dashboardTabContext);
+				parentVsChildMap.put(dashboardTabContext.getDashboardTabId(), childList);
+ 			}
+		}
+		
+		for(DashboardTabContext dashboardTabContext :dashboardTabContexts) {
+			dashboardTabContext.setChildTabs(parentVsChildMap.get(dashboardTabContext.getId()));
+			if(dashboardTabContext.getDashboardTabId() < 0) {
+				parentTabs.add(dashboardTabContext);
+			}
+		}
+		
+		return parentTabs;
+	}
 	
 	public static List<DashboardFolderContext> getDashboardListWithFolder(String moduleName,boolean getOnlyMobileDashboard) throws Exception {
 		
@@ -1038,9 +1081,12 @@ public class DashboardUtil {
 			for (Map<String, Object> prop : props) {
 				DashboardContext dashboard = FieldUtil.getAsBeanFromMap(prop, DashboardContext.class);
 				dashboard.setDashboardSharingContext(getDashboardSharing(dashboard.getId()));
-//				dashboard.setSpaceFilteredDashboardSettings(getSpaceFilteredDashboardSettings(dashboard.getId()));	// check
-//				dashboard.setReportSpaceFilterContext(getDashboardSpaceFilter(dashboard.getId()));					// check
 				dashboard.setModuleName(modBean.getModule(dashboard.getModuleId()).getName());
+				
+				if(dashboard.isTabEnabled()) {
+					dashboard.setDashboardTabContexts(getDashboardTabs(dashboard.getId()));
+				}
+				
 				dashboardMap.put(dashboard.getId(), dashboard);
 			}
 			List<DashboardContext> dashboards = getFilteredDashboards(dashboardMap);
@@ -1048,7 +1094,6 @@ public class DashboardUtil {
 			if(AccountUtil.isFeatureEnabled(FeatureLicense.NEW_LAYOUT))  {
 				getAllBuildingsForDashboard(dashboards);
 				
-//				getAllSitesForDashboard(dashboards,baseSpaceIds); site Dashboard not supported for new flow
 			}
 			if(getOnlyMobileDashboard) {
 				splitBuildingDashboardForMobile(dashboards);

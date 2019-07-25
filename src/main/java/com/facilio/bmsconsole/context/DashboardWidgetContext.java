@@ -21,6 +21,7 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 	private String widgetName;
 	private Integer type;
 	private Long dashboardId;
+	private Long dashboardTabId;
 	
 	private int layoutWidth = -1;
 	private int layoutHeight= -1;
@@ -227,6 +228,13 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 	}
 	
 	public abstract JSONObject widgetJsonObject();
+	
+	public Long getDashboardTabId() {
+		return dashboardTabId;
+	}
+	public void setDashboardTabId(Long dashboardTabId) {
+		this.dashboardTabId = dashboardTabId;
+	}
 	
 	public Long getDashboardId() {
 		return dashboardId;
