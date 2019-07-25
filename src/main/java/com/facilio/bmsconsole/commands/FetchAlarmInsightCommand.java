@@ -18,11 +18,13 @@ import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
+import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -36,6 +38,7 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		long assetId = (long) context.get(ContextNames.ASSET_ID);
+		Boolean isRca = (Boolean) context.get(FacilioConstants.ContextNames.IS_RCA);
 		long readingRuleId = (long) context.get(ContextNames.READING_RULE_ID);
 		DateOperators operator = DateOperators.CURRENT_WEEK;
 		DateRange dateRange = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE);
@@ -84,27 +87,40 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 			.andCondition(CriteriaAPI.getCondition(fieldMap.get("sourceType"), String.valueOf(SourceType.ANOMALY_ALARM.getIntVal()), NumberOperators.NOT_EQUALS))
 			.groupBy(ruleField.getCompleteColumnName());
 		} 
+		List<Map<String, Object>> rcaProps = new ArrayList<Map<String, Object>>();
+
 		if (readingRuleId > 0) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("ruleId"), String.valueOf(readingRuleId), NumberOperators.EQUALS))
-			.andCondition(CriteriaAPI.getCondition(fieldMap.get("sourceType"), String.valueOf(SourceType.ANOMALY_ALARM.getIntVal()), NumberOperators.NOT_EQUALS))
-			.groupBy(resourceFieldColumn.getCompleteColumnName());
+			if (!isRca) {
+				selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("ruleId"), String.valueOf(readingRuleId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("sourceType"), String.valueOf(SourceType.ANOMALY_ALARM.getIntVal()), NumberOperators.NOT_EQUALS))
+				.groupBy(resourceFieldColumn.getCompleteColumnName());
+			} else {
+				 List<FacilioField> eventFields = EventConstants.EventFieldFactory.getEventFields();
+				Map<String, FacilioField> eventFieldsMap = FieldFactory.getAsMap(eventFields);
+				FacilioModule eventModule = EventConstants.EventModuleFactory.getEventModule();
+				List<FacilioField> selectedEventFields = new ArrayList<>();
+				selectedEventFields.add(eventFieldsMap.get("subRuleId"));
+				selectedEventFields.add(eventFieldsMap.get("resourceId"));
+				selectedEventFields.addAll(FieldFactory.getCountField(eventModule));			
+				GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder()
+						.table(eventModule.getTableName())
+						.select(selectedEventFields)
+						.andCondition(CriteriaAPI.getCondition("SUB_RULE_ID", "subRuleId", String.valueOf(readingRuleId), NumberOperators.EQUALS))
+						.groupBy(eventFieldsMap.get("resourceId").getCompleteColumnName());
+		    rcaProps = genericSelectRecordBuilder.get();
+			}
 		}
-		selectBuilder.andCondition(CriteriaAPI.getCondition(ruleField, CommonOperators.IS_NOT_EMPTY))
-				.orderBy(durationField.getName() + " desc");
-				;
-		
-		if (dateRange != null) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), dateRange.toString(), DateOperators.BETWEEN));
+		if (!isRca) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(ruleField, CommonOperators.IS_NOT_EMPTY))
+					.orderBy(durationField.getName() + " desc");
+					;
+			if (dateRange != null) {
+				selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), dateRange.toString(), DateOperators.BETWEEN));
+			}
+			else {
+				selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), operator));
+			}
 		}
-		else {
-			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), operator));
-		}
-		
-		/*StringBuilder orderBy = new StringBuilder()
-				.append("CASE WHEN ").append(clearedTimeFieldColumn).append(" IS NOT NULL THEN ").append(durationColumn).append(" END desc")
-				.append(",").append(createdTimeFieldColumn);*/
-		
-		
 		List<Map<String, Object>> props = selectBuilder.getAsProps();
 		if (assetId > 0) {
 			if (CollectionUtils.isNotEmpty(props)) {
@@ -117,7 +133,19 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 			}
 		} 
 		if (readingRuleId > 0) {
-			if (CollectionUtils.isNotEmpty(props)) {
+			if (isRca) {
+				if (CollectionUtils.isNotEmpty(rcaProps)) {
+					List<Long> resourceIds = rcaProps.stream().map(prop -> (long) prop.get("resourceId")).collect(Collectors.toList());
+					for (Map<String, Object> prop : rcaProps) {
+						long resourceId = (long) prop.get("resourceId");
+						prop.put("subject", prop.get("source"));
+					}
+					context.put(ContextNames.ALARM_LIST, rcaProps);
+					System.out.println("resourcesId" + resourceIds.size());
+					return false;
+				}
+			}
+			else if (CollectionUtils.isNotEmpty(props)) {
 				List<Long> resourcesId = props.stream().map(prop -> { 
 					HashMap<Object,Object> hsp = (HashMap<Object, Object>) prop.get("resource");
 					return (long) hsp.get("id");

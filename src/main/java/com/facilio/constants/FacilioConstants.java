@@ -213,6 +213,7 @@ public class FacilioConstants {
 		public static final String ALARM_SEVERITY = "alarmseverity";
 		public static final String ALARM = "alarm";
 		public static final String READING_ALARM = "readingalarm";
+		public static final String IS_RCA ="isRca";
 		public static final String ML_ALARM = "mlalarm";
 		public static final String ML_ALARM_OCCURRENCE = "mlalarmoccurrence";
 		public static final String ALARM_LIST = "alarms";

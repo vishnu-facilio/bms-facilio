@@ -321,7 +321,17 @@ public class AlarmAction extends FacilioAction {
 	public void setIncludeParentFilter(boolean includeParentFilter) {
 		this.includeParentFilter = includeParentFilter;
 	}
+	private Boolean isRca;
 	
+	public Boolean getIsRca() {
+		if(isRca != null) {
+			return isRca.booleanValue();
+		}
+		return false;
+		}
+	public void setIsRca(Boolean isRca) {
+		this.isRca = isRca;
+	}
 	String orderBy;
 	public void setOrderBy(String orderBy) {
 		this.orderBy = orderBy;
@@ -611,6 +621,7 @@ public class AlarmAction extends FacilioAction {
 	
 	public String fetchAlarmInsightsForResource() throws Exception{
 		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.IS_RCA, getIsRca());
 		context.put(FacilioConstants.ContextNames.ASSET_ID, assetId);
 		context.put(FacilioConstants.ContextNames.READING_RULE_ID, ruleId);
 		context.put(FacilioConstants.ContextNames.DATE_RANGE, dateRange);

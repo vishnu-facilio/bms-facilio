@@ -359,51 +359,73 @@
           "103" : {
         	"description" : "ruleWoDetails",
         	"usage" : "rulesSummary",
-        	"workflow": "Map ruleWoDetails(Number ruleId)
-            	date = NameSpace(\"date\");
-            	ranges = date.getDateRange(\"Current Week\");
-                monthRanges = date.getDateRange(\"Current Month\");
-		    	alarmsCurrWeekCri = {
-              		criteria : [ruleId == ruleId && createdTime == ranges ]
-            	};
-		        readingAlarmModule = Module(\"readingalarm\");
-                workOrderModule = Module(\"ticket\");
-                 woThisWeek = {
-					criteria : [ruleId == ruleId && createdTime == ranges && woId != null]
-				};
-                
-               currWeekWo = readingAlarmModule.fetch(woThisWeek); 
-             	currentWeekWo =0     
-             	currentWeekWoId = []
-                  if (currWeekWo != null) {
-                    currentWeekWo = currWeekWo.size();
-                     for each index,value in currWeekWo {
-		                        if (value != null) {
-                                    currentWeekWoId.add(value.get(\"id\"));  
-		                        }                                
-		                }
+        	"workflow": "Map ruleWoDetails(Number ruleId) {
+    date = NameSpace(\"date\");
+        ranges = date.getDateRange(\"Current Week\");
+          monthRanges = date.getDateRange(\"Current Month\");
+            alarmsCurrWeekCri = {
+              criteria: [ruleId == ruleId && createdTime == ranges]
+            }; readingAlarmModule = Module(\"readingalarm\");
+              workOrderModule = Module(\"workorder\");
+                woThisWeek = {
+                  criteria: [ruleId == ruleId && createdTime == ranges && woId != null]
+                };
+
+                currWeekWo = readingAlarmModule.fetch(woThisWeek); currentWeekWo = 0 currentWeekWoId = []
+                if (currWeekWo != null) {
+                  currentWeekWo = currWeekWo.size();
+                  for each index, value in currWeekWo {
+                    if (value != null) {
+                      currentWeekWoId.add(value.get(\"woId\"));
+                     }
                   }
-                  woThisMonth = {
-					criteria : [ruleId == ruleId && createdTime == monthRanges && woId != null]
-				};
-                 monthWO = readingAlarmModule.fetch(woThisMonth);
-                  currentMonthWo = 0;
-                  currentMonthWoID = [];
-                  if (monthWO != null ) {
-                    currentMonthWo = monthWO.size();
-                    for each index,value in monthWO {
-		                        if (value != null) {
-                                    currentMonthWoID.add(value.get(\"id\"));  
-		                        }                                
-		                }
-                  }
-                  resultMap = {};
-                  resultMap[\"currentMonthWo\"] = currentMonthWo;
-                  resultMap[\"currentWeekWo\"] = currentWeekWo;
-                  resultMap[\"currentWeekWoId\"] = currentWeekWoId;
-                  resultMap[\"currentMonthWoID\"] = currentMonthWoID;
-                  return resultMap;
-		    }"
+                }
+               woThisMonth = {
+                 criteria: [ruleId == ruleId && createdTime == monthRanges && woId != null]
+               };
+                      monthWO = readingAlarmModule.fetch(woThisMonth);
+                      currentMonthWo = 0;
+                      currentMonthWoID = [];
+                      if (monthWO != null) {
+                        currentMonthWo = monthWO.size();
+                        for each index, value in monthWO {
+                            if (value != null) {
+                              currentMonthWoID.add(value.get(\"woId\"));
+                                }
+                              }
+                            }
+                            ticketContext = {
+                              criteria: [id == currentMonthWoID]
+                            };
+                            // log currentMonthWoID;
+                            tickets = workOrderModule.fetch(ticketContext);
+                            previousMonthresponseTime = 0;
+                            previousMonthresolutionTime = 0;
+                            if (tickets != null) {
+                              b = tickets.size();
+                              for each index, value in tickets {
+                                  if (value != null && value.get(\"actualWorkStart\") != null) {
+                                      // log value;
+                                      wd = (value.actualWorkStart - value.createdTime); previousMonthresponseTime = (previousMonthresponseTime + wd);
+                                      if (value != null && value.get(\"actualWorkStart\") != null && value.get(\"actualWorkEnd\") != null) {
+                                          pd = (value.actualWorkStart - value.actualWorkEnd); previousMonthresolutionTime = (previousMonthresolutionTime + pd);
+                                        }
+
+                                      }
+                                    }
+                                    // log  b;
+                                    previousMonthresponseTime = previousMonthresponseTime / b;
+                                  }
+                                  resultMap = {};
+                                  resultMap[\"currentMonthWo\"] = currentMonthWo;
+                                  resultMap[\"currentWeekWo\"] = currentWeekWo;
+                                  resultMap[\"currentWeekWoId\"] = currentWeekWoId;
+                                  resultMap[\"currentMonthWoID\"] = currentMonthWoID;
+                                  resultMap[\"previousMonthresponseTime\"] = previousMonthresponseTime;
+                                  resultMap[\"previousMonthresolutionTime\"] = previousMonthresolutionTime;
+                                  log resultMap;
+                                  return resultMap;
+			}"
         }
         
 }
