@@ -196,12 +196,12 @@ public class UserBeanImpl implements UserBean {
 		user.setUserStatus(true);
 		UserBean userBean = (UserBean) BeanFactory.lookup("UserBean", user.getOrgId());
 		user.setAccessibleSpace(userBean.getAccessibleSpaceList(user.getOuid()));
-		addToORGUsers(user);
+		addToAppORGUsers(user);
 		addUserDetail(user);
 	}
 	
 
-	private void addToORGUsers(User user) throws Exception {
+	private void addToAppORGUsers(User user) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
 		InsertRecordBuilder<ResourceContext> insertRecordBuilder = new InsertRecordBuilder<ResourceContext>()
@@ -549,7 +549,12 @@ public class UserBeanImpl implements UserBean {
 			deletedTime.setDataType(FieldType.NUMBER);
 			deletedTime.setColumnName("DELETED_TIME");
 			deletedTime.setModule(AccountConstants.getAppOrgUserModule());
-	
+			
+			User anyOtherOrgUser = getFacilioUser(user.getEmail());
+			if(anyOtherOrgUser.getOrgId() == user.getOrgId()) {
+				updateDefaultOrgForUser(user.getUid());
+			}
+			
 			List<FacilioField> fields = new ArrayList<>();
 			fields.add(deletedTime);
 	
@@ -572,6 +577,45 @@ public class UserBeanImpl implements UserBean {
 		return false;
 	}
 
+	
+	private List<User> getUserFromUserId(long uId) throws Exception {
+		
+		List<FacilioField> fields = new ArrayList<>();
+		fields.addAll(AccountConstants.getAppUserFields());
+		fields.addAll(AccountConstants.getAppOrgUserFields());
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields).table("Users")
+				.innerJoin("ORG_Users").on("Users.USERID = ORG_Users.USERID");
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(AccountUtil.getCurrentOrg().getId()), NumberOperators.EQUALS));
+		criteria.addAndCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", String.valueOf(-1), NumberOperators.EQUALS));
+		criteria.addAndCondition(CriteriaAPI.getCondition("ISDEFAULT", "isDefault", "1", NumberOperators.EQUALS));
+		
+		Criteria criteria2 = new Criteria();
+		criteria2.addAndCondition(CriteriaAPI.getCondition("ORG_Users.USERID", "userId", String.valueOf(uId), NumberOperators.EQUALS));
+		
+		selectBuilder.andCriteria(criteria);
+		selectBuilder.andCriteria(criteria2);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		List<User> userList = new ArrayList<User>();
+		if (props != null && !props.isEmpty()) {
+			for(Map<String, Object> user : props) {
+				userList.add(createUserFromProps(user, true, true, false));
+			}
+		return userList;	
+	}
+		return null;
+	}
+	private void updateDefaultOrgForUser(long uId) throws Exception {
+		List<User> orgUsers = getUserFromUserId(uId);
+		if(CollectionUtils.isNotEmpty(orgUsers)) {
+			setDefaultOrg(orgUsers.get(0).getUid(), orgUsers.get(0).getOrgId());
+		}
+	}
+	
+	
 	@Override
 	public boolean disableUser(long ouid) throws Exception {
 		User user = getUser(ouid);
@@ -849,6 +893,7 @@ public class UserBeanImpl implements UserBean {
 			throw new IllegalArgumentException("Organization cannot be empty");
 		}
 		criteria.addAndCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(currentOrg.getOrgId()), NumberOperators.EQUALS));
+		criteria.addAndCondition(CriteriaAPI.getCondition("ISDEFAULT", "isDefault", "1", NumberOperators.EQUALS));
 		
 		selectBuilder.andCriteria(criteria);
 		
@@ -1125,11 +1170,10 @@ public class UserBeanImpl implements UserBean {
 		}
 		if(AuthUtill.getUserBean().addUserv2(AccountUtil.getCurrentOrg().getId(), user) > 0) {
 			addUserEntry(user, true);
-			user.setDefaultOrg(true);
 			user.setOrgId(orgId);
 			user.setUserType(AccountConstants.UserType.REQUESTER.getValue());
 			user.setUserStatus(true);
-			addToORGUsers(user);
+			addToAppORGUsers(user);
 		
 		}
 		return -1;

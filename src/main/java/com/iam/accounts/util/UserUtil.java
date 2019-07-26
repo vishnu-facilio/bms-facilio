@@ -113,7 +113,7 @@ public class UserUtil {
 
 	public static boolean deleteUser(User user, long orgId, String currentUserEmail) throws Exception {
 		if (AuthUtill.getUserBean().getFacilioUserv3(currentUserEmail, orgId, null) != null) {
-			return AuthUtill.getUserBean().deleteUserv2(user.getOuid());
+			return AuthUtill.getUserBean().deleteUserv2(user);
 		} else {
 			throw new AccountException(AccountException.ErrorCode.USER_DOESNT_EXIST_IN_ORG,
 					"This user is not permitted to do this action.");

@@ -10,6 +10,7 @@ import java.util.Objects;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -121,9 +122,15 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			throw new AccountException(AccountException.ErrorCode.EMAIL_ALREADY_EXISTS, "This user already exists in your organization.");
 		}
 		else {
+			User userExistsForAnyOrg = getFacilioUserv3(user.getEmail());
+			if(userExistsForAnyOrg != null) {
+				user.setDefaultOrg(false);
+			}
+			else {
+				user.setDefaultOrg(true);
+			}
 			long uid = addUserEntryv2(user);
 			user.setUid(uid);
-			user.setDefaultOrg(true);
 		}
 		user.setOrgId(orgId);
 		user.setInviteAcceptStatus(false);
@@ -351,13 +358,18 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 	
 	@Override
-	public boolean deleteUserv2(long ouid) throws Exception {
+	public boolean deleteUserv2(User user) throws Exception {
 		
 		FacilioField deletedTime = new FacilioField();
 		deletedTime.setName("deletedTime");
 		deletedTime.setDataType(FieldType.NUMBER);
 		deletedTime.setColumnName("DELETED_TIME");
 		deletedTime.setModule(AccountConstants.getAccountsOrgUserModule());
+		
+		User anyOtherOrgUser = getFacilioUserv3(user.getEmail());
+		if(anyOtherOrgUser.getOrgId() == user.getOrgId()) {
+			updateDefaultOrgForUser(user.getUid());
+		}
 		
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(deletedTime);
@@ -366,7 +378,8 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				.table(AccountConstants.getAccountsOrgUserModule().getTableName())
 				.fields(fields);
 		
-		updateBuilder.andCondition(CriteriaAPI.getCondition("ORG_USERID", "orgUserId", String.valueOf(ouid), NumberOperators.EQUALS));
+		updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(user.getUid()), NumberOperators.EQUALS));
+		updateBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(user.getOrgId()), NumberOperators.EQUALS));
 		updateBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
 		
 		Map<String, Object> props = new HashMap<>();
@@ -379,6 +392,13 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return false;
 	}
 
+	private void updateDefaultOrgForUser(long uId) throws Exception {
+		List<User> orgUsers = getFacilioUserv3(uId);
+		if(CollectionUtils.isNotEmpty(orgUsers)) {
+			setDefaultOrgv2(orgUsers.get(0).getUid(), orgUsers.get(0).getOrgId());
+		}
+		
+	}
 	@Override
 	public boolean disableUserv2(long orgId, long uId) throws Exception {
 		
@@ -1005,6 +1025,24 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		if (props != null && !props.isEmpty()) {
 			User user =  createUserFromProps(props.get(0), true, true, false);
 			return user;
+		}
+		return null;
+	}
+	
+	
+	private List<User> getFacilioUserv3(long userId) throws Exception {
+		GenericSelectRecordBuilder selectBuilder = getFacilioUserBuilder(null, false);
+		Criteria userEmailCriteria = new Criteria();
+		userEmailCriteria.addAndCondition(CriteriaAPI.getCondition("Account_Users.USERID", "userId", String.valueOf(userId), NumberOperators.EQUALS));
+		selectBuilder.andCriteria(userEmailCriteria);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		List<User> userList = new ArrayList<User>();
+		if (props != null && !props.isEmpty()) {
+			for(Map<String, Object> user : props) {
+				userList.add(createUserFromProps(user, true, true, false));
+			}
+		return userList;	
 		}
 		return null;
 	}

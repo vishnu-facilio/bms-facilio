@@ -27,7 +27,7 @@ public interface IAMUserBean {
 	
 	public boolean updateUserv2(User user) throws Exception;
 	
-	public boolean deleteUserv2(long ouid) throws Exception;
+	public boolean deleteUserv2(User user) throws Exception;
 
 	public boolean disableUserv2(long orgId, long uid) throws Exception;
 	
