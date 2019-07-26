@@ -434,19 +434,7 @@
          "104" : {
         	"description" : "ruleRank",
         	"usage" : "ruleRank",
-        	"workflow": "Map rankWorkflow (){
-				  date = NameSpace("date");
-				   monthRanges = date.getDateRange(\"Current Year\");
-				  db = {
-						criteria : [createdTime == monthRanges],
-					    field : \"id\",
-				    	aggregation : \"count\",
-				    	groupBy: \"ruleID\"
-					};
-				    readingAlarmModule = Module(\"readingalarm\");
-				    activeRecord = readingAlarmModule.fetch(db);
-				   	return activeRecord;
-				}"
+        	"workflow": ""
         }
         
 }
