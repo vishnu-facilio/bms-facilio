@@ -22,7 +22,6 @@ import com.facilio.tasker.job.JobContext;
 public class ImportDataJob extends FacilioJob {
 
 	private static final Logger LOGGER = Logger.getLogger(ImportDataJob.class.getName());
-	private org.apache.log4j.Logger log = LogManager.getLogger(ImportDataJob.class.getName());
 
 	@Override
 	public void execute(JobContext jc) {
@@ -74,15 +73,20 @@ public class ImportDataJob extends FacilioJob {
 			ImportAPI.updateImportProcess(importProcessContext);
 			LOGGER.severe("IMPORT DATA JOB COMPLETED -- " +jobId);
 		} catch(Exception e) {
-			String message;
-			if(e instanceof ImportParseException) {
-				ImportParseException importParseException = (ImportParseException) e;
-				message = importParseException.getClientMessage();
-			}
-			else {
-				message = e.getMessage();
-			}
+			
 			try {
+				
+				CommonCommandUtil.emailException("Import Failed", "Import failed - orgid -- "+AccountUtil.getCurrentOrg().getId(), e);
+				LOGGER.log(Level.SEVERE, e.getMessage(), e);
+				
+				String message;
+				if(e instanceof ImportParseException) {
+					ImportParseException importParseException = (ImportParseException) e;
+					message = importParseException.getClientMessage();
+				}
+				else {
+					message = e.getMessage();
+				}
 				if(importProcessContext != null) {
 					JSONObject meta = importProcessContext.getImportJobMetaJson();
 					if(meta != null && !meta.isEmpty()) {
@@ -96,16 +100,17 @@ public class ImportDataJob extends FacilioJob {
 					importProcessContext.setStatus(ImportProcessContext.ImportStatus.FAILED.getValue());
 					ImportAPI.updateImportProcess(importProcessContext);
 					LOGGER.severe("Import failed: " + message);
-					}
-			} catch(Exception a) {
-				System.out.println(a);
+				}
 			}
-			CommonCommandUtil.emailException("Import Failed", "Import failed - orgid -- "+AccountUtil.getCurrentOrg().getId(), e);
-			log.info("Exception occurred ", e);
-			LOGGER.log(Level.SEVERE, e.getMessage(), e);
+			catch(Exception e1) {
+				CommonCommandUtil.emailException("Import Exception Handling failed", "Import Exception Handling failed - orgid -- "+AccountUtil.getCurrentOrg().getId(), e1);
+				LOGGER.log(Level.SEVERE, e1.getMessage(), e1);
+			}
+			
 			try {
 				FacilioTransactionManager.INSTANCE.getTransactionManager().setRollbackOnly();
-			}catch(Exception transactionException) {
+			}
+			catch(Exception transactionException) {
 				LOGGER.severe(transactionException.toString());
 			}
 			
