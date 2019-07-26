@@ -9,8 +9,6 @@ import com.iam.accounts.dto.Account;
 
 public interface IAMUserBean {
 	
-	public long createUserv2(long orgId, User user) throws Exception;
-	
 	public long addUserv2(long orgId, User user) throws Exception;
 	
 //	public long inviteAdminConsoleUserv2(long orgId, User user) throws Exception;

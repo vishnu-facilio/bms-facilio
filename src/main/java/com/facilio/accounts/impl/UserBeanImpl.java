@@ -1123,7 +1123,7 @@ public class UserBeanImpl implements UserBean {
 					+ portalUser.getOuid());
 			return getFacilioUser(portalUser.getEmail()).getOuid();
 		}
-		if(AuthUtill.getUserBean().createUserv2(AccountUtil.getCurrentOrg().getId(), user) > 0) {
+		if(AuthUtill.getUserBean().addUserv2(AccountUtil.getCurrentOrg().getId(), user) > 0) {
 			addUserEntry(user, true);
 			user.setDefaultOrg(true);
 			user.setOrgId(orgId);
@@ -1150,9 +1150,9 @@ public class UserBeanImpl implements UserBean {
 			fields.add(photoId);
 	
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-					.table(AccountConstants.getAppUserModule().getTableName()).fields(fields)
-					.andCustomWhere("USERID = ?", uid);
-	
+					.table(AccountConstants.getAppUserModule().getTableName()).fields(fields);
+			updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
+		
 			Map<String, Object> props = new HashMap<>();
 			props.put("photoId", fileId);
 	

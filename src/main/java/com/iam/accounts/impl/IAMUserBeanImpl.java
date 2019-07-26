@@ -916,24 +916,6 @@ public class IAMUserBeanImpl implements IAMUserBean {
     }
 
 	
-	@Override
-	public long createUserv2(long orgId, User user) throws Exception {
-		// TODO Auto-generated method stub
-		User orgUser = getFacilioUserv3(user.getEmail(), orgId, null);
-		if (orgUser != null) {
-			throw new Exception("user_already_exists");
-		}
-		else {
-			long uid = addUserEntryv2(user);
-			user.setUid(uid);
-			user.setDefaultOrg(true);
-		}
-		user.setOrgId(orgId);
-		user.setUserStatus(true);
-		//AccountUtil.setCurrentAccount(orgId);
-		return addToORGUsersv2(user);
-	}
-	
 	private long addToORGUsersv2(User user) throws Exception {
 				
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()

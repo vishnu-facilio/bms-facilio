@@ -54,7 +54,7 @@ public class UserUtil {
 		if (AwsUtil.isDevelopment()) {
 			user.setUserVerified(true);
 		}
-		AuthUtill.getUserBean().createUserv2(orgId, user);
+		AuthUtill.getUserBean().addUserv2(orgId, user);
 		return user;
 	}
 
