@@ -360,29 +360,29 @@
         	"description" : "ruleWoDetails",
         	"usage" : "rulesSummary",
         	"workflow": "Map ruleWoDetails(Number ruleId) {
-    date = NameSpace(\"date\");
-        ranges = date.getDateRange(\"Current Week\");
-          monthRanges = date.getDateRange(\"Current Month\");
-            alarmsCurrWeekCri = {
-              criteria: [ruleId == ruleId && createdTime == ranges]
-            }; readingAlarmModule = Module(\"readingalarm\");
-              workOrderModule = Module(\"workorder\");
-                woThisWeek = {
-                  criteria: [ruleId == ruleId && createdTime == ranges && woId != null]
-                };
-
-                currWeekWo = readingAlarmModule.fetch(woThisWeek); currentWeekWo = 0 currentWeekWoId = []
-                if (currWeekWo != null) {
-                  currentWeekWo = currWeekWo.size();
-                  for each index, value in currWeekWo {
-                    if (value != null) {
-                      currentWeekWoId.add(value.get(\"woId\"));
-                     }
-                  }
-                }
-               woThisMonth = {
-                 criteria: [ruleId == ruleId && createdTime == monthRanges && woId != null]
-               };
+		    date = NameSpace(\"date\");
+		        ranges = date.getDateRange(\"Current Week\");
+		          monthRanges = date.getDateRange(\"Current Month\");
+		            alarmsCurrWeekCri = {
+		              criteria: [ruleId == ruleId && createdTime == ranges]
+		            }; readingAlarmModule = Module(\"readingalarm\");
+		              workOrderModule = Module(\"workorder\");
+		                woThisWeek = {
+		                  criteria: [ruleId == ruleId && createdTime == ranges && woId != null]
+		                };
+		
+		                currWeekWo = readingAlarmModule.fetch(woThisWeek); currentWeekWo = 0 currentWeekWoId = []
+		                if (currWeekWo != null) {
+		                  currentWeekWo = currWeekWo.size();
+		                  for each index, value in currWeekWo {
+		                    if (value != null) {
+		                      currentWeekWoId.add(value.get(\"woId\"));
+		                     }
+		                  }
+		                }
+		               woThisMonth = {
+		                 criteria: [ruleId == ruleId && createdTime == monthRanges && woId != null]
+		               };
                       monthWO = readingAlarmModule.fetch(woThisMonth);
                       currentMonthWo = 0;
                       currentMonthWoID = [];
@@ -394,27 +394,31 @@
                                 }
                               }
                             }
-                            ticketContext = {
-                              criteria: [id == currentMonthWoID]
+                            ticketContextRespondTime = {
+                              criteria: [id == currentMonthWoID && actualWorkStart > 0 ]
                             };
-                            // log currentMonthWoID;
-                            tickets = workOrderModule.fetch(ticketContext);
+                            ticketContextResolutionTime = {
+                              criteria: [id == currentMonthWoID && actualWorkDuration > 0 ]
+                            };
+                            ticketsResponse = workOrderModule.fetch(ticketContextRespondTime);
+                            ticketsResolution = workOrderModule.fetch(ticketContextResolutionTime);
                             previousMonthresponseTime = 0;
                             previousMonthresolutionTime = 0;
-                            if (tickets != null) {
-                              b = tickets.size();
-                              for each index, value in tickets {
-                                  if (value != null && value.get(\"actualWorkStart\") != null) {
-                                      // log value;
+                            if (ticketsResponse != null) {
+                              b = ticketsResponse.size();
+                              for each index, value in ticketsResponse {
                                       wd = (value.actualWorkStart - value.createdTime); previousMonthresponseTime = (previousMonthresponseTime + wd);
-                                      if (value != null && value.get(\"actualWorkStart\") != null && value.get(\"actualWorkEnd\") != null) {
-                                          pd = (value.actualWorkStart - value.actualWorkEnd); previousMonthresolutionTime = (previousMonthresolutionTime + pd);
-                                        }
-
-                                      }
                                     }
-                                    // log  b;
                                     previousMonthresponseTime = previousMonthresponseTime / b;
+                                  }
+                                   if (ticketsResolution != null) {
+                             		 c = ticketsResolution.size();
+                             	    for each index, value in ticketsResolution {
+                             	        pd = value.actualWorkDuration;
+                                        previousMonthresolutionTime = (previousMonthresolutionTime + pd);
+
+                                    }
+                                    previousMonthresolutionTime = previousMonthresolutionTime / c;
                                   }
                                   resultMap = {};
                                   resultMap[\"currentMonthWo\"] = currentMonthWo;
@@ -426,6 +430,23 @@
                                   log resultMap;
                                   return resultMap;
 			}"
+        },
+         "104" : {
+        	"description" : "ruleRank",
+        	"usage" : "ruleRank",
+        	"workflow": "Map rankWorkflow (){
+				  date = NameSpace("date");
+				   monthRanges = date.getDateRange(\"Current Year\");
+				  db = {
+						criteria : [createdTime == monthRanges],
+					    field : \"id\",
+				    	aggregation : \"count\",
+				    	groupBy: \"ruleID\"
+					};
+				    readingAlarmModule = Module(\"readingalarm\");
+				    activeRecord = readingAlarmModule.fetch(db);
+				   	return activeRecord;
+				}"
         }
         
 }
