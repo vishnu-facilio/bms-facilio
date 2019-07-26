@@ -61,6 +61,16 @@ public class UserAction extends FacilioAction {
 	 */
 	private static final long serialVersionUID = 1L;
 	private static Logger log = LogManager.getLogger(UserAction.class.getName());
+	private boolean emailVerificationNeeded;
+	
+	public boolean isEmailVerificationNeeded() {
+		return emailVerificationNeeded;
+	}
+
+	public void setEmailVerificationNeeded(boolean emailVerificationNeeded) {
+		this.emailVerificationNeeded = emailVerificationNeeded;
+	}
+
 	private SetupLayout setup;
 	public SetupLayout getSetup() {
 		return this.setup;
@@ -300,6 +310,13 @@ public class UserAction extends FacilioAction {
 		String value = FacilioCookie.getUserCookie(request, "fc.authtype");
 		user.setFacilioAuth("facilio".equals(value));
 		user.setCity("app");
+		
+		if(emailVerificationNeeded) {
+			user.setUserVerified(false);
+		}
+		else {
+			user.setUserVerified(true);
+		}
 
 
 		FacilioContext context = new FacilioContext();

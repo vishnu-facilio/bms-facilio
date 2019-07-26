@@ -88,7 +88,7 @@ public class UserBeanImpl implements UserBean {
 	}
 
 	private long addUserEntry(User user, boolean emailVerificationRequired) throws Exception {
-		User existingUser = getUserv2(user.getEmail(),"app");
+		User existingUser = getUserv2(user.getEmail(), user.getCity());
 		if(existingUser == null) {
 			
 			List<FacilioField> fields = AccountConstants.getAppUserFields();
@@ -99,7 +99,7 @@ public class UserBeanImpl implements UserBean {
 	
 			insertBuilder.addRecord(props);
 			insertBuilder.save();
-			if (emailVerificationRequired) {
+			if (emailVerificationRequired && !user.isUserVerified()) {
 				sendEmailRegistration(user);
 			}
 			return user.getUid();
