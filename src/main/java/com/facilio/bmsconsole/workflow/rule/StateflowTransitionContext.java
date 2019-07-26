@@ -198,9 +198,16 @@ public class StateflowTransitionContext extends WorkflowRuleContext {
 			return false;
 		}
 
-		if (moduleRecord.getModuleState() != null && moduleRecord.getStateFlowId() > 0 && moduleRecord.getStateFlowId() == getStateFlowId() &&
-				getFromStateId() != moduleRecord.getModuleState().getId()) {
-			return false;
+		if (moduleRecord.getModuleState() != null && moduleRecord.getStateFlowId() > 0) {
+			// don't execute if it different stateflow
+			if (moduleRecord.getStateFlowId() != getStateFlowId()) {
+				return false;
+			}
+			
+			// don't execute if fromStateId is different from record module state
+			if (getFromStateId() != moduleRecord.getModuleState().getId()) {
+				return false;
+			}
 		}
 		
 		if (CollectionUtils.isNotEmpty(approvers)) {
