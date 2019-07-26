@@ -28,6 +28,19 @@ public class DashboardContext extends ModuleBaseWithCustomFields implements Clon
 		return super.clone(); 
 	}
 	
+	DashboardTabPlacement dashboardTabPlacement;
+	
+	public int getDashboardTabPlacement() {
+		
+		if (dashboardTabPlacement != null) {
+			return dashboardTabPlacement.getIntVal();
+		}
+		return -1;
+	}
+	public void setDashboardTabPlacement(int dashboardTabPlacement) {
+		this.dashboardTabPlacement = DashboardTabPlacement.getType(dashboardTabPlacement);
+	}
+	
 	public Long getDashboardFolderId() {
 		return dashboardFolderId;
 	}
@@ -230,6 +243,39 @@ public class DashboardContext extends ModuleBaseWithCustomFields implements Clon
 		REJECTED,
 		PUBLISHED
 	}
+	
+	public static enum DashboardTabPlacement {
+		TOP(1),
+		LEFT(2),
+		;
+		
+		private int intVal;
+		
+		private DashboardTabPlacement(int intVal) {
+			this.intVal = intVal;
+		}
+		
+		public int getIntVal() {
+			return intVal;
+		}
+		public static DashboardTabPlacement getType(int val) {
+			return typeMap.get(val);
+		}
+		
+		private static final Map<Integer, DashboardTabPlacement> typeMap = Collections.unmodifiableMap(initTypeMap());
+		private static Map<Integer, DashboardTabPlacement> initTypeMap() {
+			Map<Integer, DashboardTabPlacement> typeMap = new HashMap<>();
+			
+			for(DashboardTabPlacement type : values()) {
+				typeMap.put(type.getIntVal(), type);
+			}
+			return typeMap;
+		}
+		public Map<Integer, DashboardTabPlacement> getAllTypes() {
+			return typeMap;
+		}
+	}
+	
 	public static enum DashboardType {
 		SITE_PORTFOLIO(1,"Site Portfolio"),
 		BUILDING_PORTFOLIO(2,"Building Portfolio"),
@@ -268,14 +314,4 @@ public class DashboardContext extends ModuleBaseWithCustomFields implements Clon
 			return typeMap;
 		}
 	}
-	//	@Override
-	//	public int compareTo(DashboardContext o) {
-	//		if(this.getId() < o.getId()) {
-	//			return -1;
-	//		}
-	//		else if(this.getId() > o.getId()) {
-	//			return 1;
-	//		}
-	//		return 0;
-	//	}
 }
