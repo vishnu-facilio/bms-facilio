@@ -34,7 +34,6 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 		FacilioModule module = modBean.getModule(moduleName);
 
 		boolean fetchCount = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_COUNT, false);
-//		boolean fetchCount = (boolean) context.get(FacilioConstants.ContextNames.FETCH_COUNT);
 
 		List<FacilioField> fields;
 		if (fetchCount) { 
