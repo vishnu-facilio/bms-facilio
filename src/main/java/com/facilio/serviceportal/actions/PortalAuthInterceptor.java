@@ -11,9 +11,7 @@ import org.apache.log4j.LogManager;
 import org.apache.struts2.ServletActionContext;
 
 import com.facilio.accounts.dto.Organization;
-import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.fw.auth.LoginUtil;
 import com.facilio.util.AuthenticationUtil;
 import com.iam.accounts.dto.Account;
 import com.opensymphony.xwork2.Action;
@@ -124,7 +122,7 @@ public class PortalAuthInterceptor extends AbstractInterceptor {
                             long portalId = AccountUtil.getOrgBean().getPortalInfo(org.getOrgId(), false).getPortalId(); 
                             logger.fine("Portal Domain ......"+portalId); 
                             org.setPortalId(portalId);
-                            LoginUtil.updateAccount(currentAccount, false);
+                            AccountUtil.updateAccount(currentAccount, false);
                         } 
                     } else { 
                         System.out.println("Match failed ......"); 

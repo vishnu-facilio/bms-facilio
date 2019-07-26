@@ -50,7 +50,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.Role;
@@ -73,7 +72,6 @@ import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.auth.LoginUtil;
 import com.facilio.fw.auth.SAMLAttribute;
 import com.facilio.fw.auth.SAMLUtil;
 import com.facilio.modules.FacilioStatus;
@@ -754,7 +752,7 @@ public class LoginAction extends FacilioAction {
 	public String validatePermalink() throws Exception {
 		Account permalinkAccount = AccountUtil.getUserBean().getPermalinkAccount(getPermalink(), null);
 		if(permalinkAccount != null) {
-			LoginUtil.updateAccount(permalinkAccount, false);
+			AccountUtil.updateAccount(permalinkAccount, false);
 			account = new HashMap<>();
 			account.put("org", permalinkAccount.getOrg());
 			account.put("user", permalinkAccount.getUser());

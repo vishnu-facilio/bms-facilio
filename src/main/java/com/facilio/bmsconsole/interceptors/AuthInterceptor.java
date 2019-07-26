@@ -18,7 +18,6 @@ import org.apache.http.HttpHeaders;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.auth.cookie.FacilioCookie;
@@ -26,7 +25,6 @@ import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
-import com.facilio.fw.auth.LoginUtil;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.screen.util.ScreenUtil;
 import com.facilio.util.AuthenticationUtil;
@@ -78,7 +76,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 					}
 					AccountUtil.cleanCurrentAccount();
 					AccountUtil.setCurrentAccount(currentAccount);
-					LoginUtil.updateAccount(currentAccount, false);
+					AccountUtil.updateAccount(currentAccount, false);
 					request.setAttribute("ORGID", currentAccount.getOrg().getOrgId());
 					request.setAttribute("USERID", currentAccount.getUser().getOuid());
 					
@@ -107,7 +105,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 				
 				if (currentAccount != null) {
 					AccountUtil.setCurrentAccount(currentAccount);
-					LoginUtil.updateAccount(currentAccount, false);
+					AccountUtil.updateAccount(currentAccount, false);
 					AccountUtil.setCurrentAccount(currentAccount);
 
 					List<Long> accessibleSpace = null;
