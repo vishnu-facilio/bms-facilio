@@ -49,6 +49,10 @@ public class ConnectionUtil {
 	public static final String GRANT_TYPE_STRING = "grant_type";
 	public static final String ACCESS_TYPE_STRING = "access_type";
 	
+	public static final String SCOPE_TYPE_STRING = "scope";
+	
+	public static final String RESPONSE_TYPE_STRING = "response_type";
+	
 	public static final String ACCESS_TYPE_OFFLINE = "offline";
 		
 	

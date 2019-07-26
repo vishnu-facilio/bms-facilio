@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.util.ConnectionUtil;
 
 public class ConnectionContext {
 	long id = -1l;
@@ -282,6 +283,7 @@ public class ConnectionContext {
 	public void setServiceName(String serviceName) {
 		this.serviceName = serviceName;
 	}
+	
 	public String getCallBackURL() {
 		if(id > 0) {
 			String protocol = "";
@@ -297,6 +299,32 @@ public class ConnectionContext {
 		}
 		return null;
 	}
+	
+	public String getAuthenticationURL() {
+		StringBuilder builder = new StringBuilder();
+		if(authorizeUrl != null && clientId != null && getCallBackURL() != null && scope != null) {
+			builder.append(authorizeUrl);
+			builder.append(ConnectionUtil.QUERY_STRING_SEPERATOR);
+			builder.append(ConnectionUtil.CLIENT_ID_STRING+ConnectionUtil.EQUALS+clientId);
+			builder.append(ConnectionUtil.PARAM_SEPERATOR);
+			
+			builder.append(ConnectionUtil.REDIRECT_URI_STRING+ConnectionUtil.EQUALS+getCallBackURL());
+			builder.append(ConnectionUtil.PARAM_SEPERATOR);
+			
+			builder.append(ConnectionUtil.SCOPE_TYPE_STRING+ConnectionUtil.EQUALS+scope);
+			builder.append(ConnectionUtil.PARAM_SEPERATOR);
+			
+			builder.append(ConnectionUtil.ACCESS_TYPE_STRING+ConnectionUtil.EQUALS+ConnectionUtil.ACCESS_TYPE_OFFLINE);
+			builder.append(ConnectionUtil.PARAM_SEPERATOR);
+			
+			builder.append(ConnectionUtil.RESPONSE_TYPE_STRING+ConnectionUtil.EQUALS+ConnectionUtil.CODE_STRING);
+			
+		}
+		
+		return builder.toString();
+	}
+	
+	
 	@Override
 	public String toString() {
 		return "ConnectionContext [id=" + id + ", orgId=" + orgId + ", authType=" + authType + ", state=" + state
