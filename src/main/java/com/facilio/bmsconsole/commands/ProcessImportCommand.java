@@ -699,7 +699,7 @@ public class ProcessImportCommand extends FacilioCommand {
 			 }
 			 if(siteMap.containsKey(siteName.trim().toLowerCase()))
 			 {
-				siteId = siteMeta.getSiteId(siteName);
+				siteId = siteMap.get(siteName.trim().toLowerCase());
 			 }
 			 else
 			 {
@@ -724,7 +724,7 @@ public class ProcessImportCommand extends FacilioCommand {
 				 }
 				 if(buildingMap.containsKey(buildingName.trim().toLowerCase()))
 				 {
-					 buildingId = buildingMeta.getBuildingId(buildingName);
+					 buildingId = buildingMap.get(buildingName.trim().toLowerCase());
 				 }
 			 }
 			 if(buildingId == null)
@@ -749,9 +749,9 @@ public class ProcessImportCommand extends FacilioCommand {
 				 {
 					 floorMap.put(floorContext.getName().trim().toLowerCase(), floorContext.getId());
 				 }
-				 if(floorMap.containsKey(floorName.trim()))
+				 if(floorMap.containsKey(floorName.trim().toLowerCase()))
 				 {
-					 floorId = floorMeta.getFloorId(floorName);
+					 floorId = floorMap.get(floorName.trim().toLowerCase());
 				 }
 			}
 		    if(floorId == null)
