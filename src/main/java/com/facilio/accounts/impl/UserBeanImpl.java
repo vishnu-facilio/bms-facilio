@@ -70,6 +70,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.iam.accounts.dto.Account;
 import com.iam.accounts.exceptions.AccountException;
 import com.iam.accounts.util.AuthUtill;
 import com.iam.accounts.util.UserUtil;
@@ -1293,83 +1294,6 @@ public class UserBeanImpl implements UserBean {
 		return user;
 	}
 
-	public String generatePermalinkForURL(String url, User user) throws Exception {
-
-		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-		if (user == null) {
-			user = AccountUtil.getCurrentUser();
-		}
-		long uid = user.getUid();
-		long ouid = user.getId();
-
-		String tokenKey = orgId + "-" + ouid;
-		String jwt = AuthUtill.createJWT("id", "auth0", tokenKey, System.currentTimeMillis() + 24 * 60 * 60000,
-				false);
-
-		JSONObject sessionInfo = new JSONObject();
-		sessionInfo.put("allowUrls", url);
-
-		List<FacilioField> fields = AccountConstants.getUserSessionFields();
-
-		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-				.table(AccountConstants.getUserSessionModule().getTableName()).fields(fields);
-
-		Map<String, Object> props = new HashMap<>();
-		props.put("uid", uid);
-		props.put("sessionType", AccountConstants.SessionType.PERMALINK_SESSION.getValue());
-		props.put("token", jwt);
-		props.put("startTime", System.currentTimeMillis());
-		props.put("isActive", true);
-		props.put("sessionInfo", sessionInfo.toJSONString());
-
-		insertBuilder.addRecord(props);
-		insertBuilder.save();
-		long sessionId = (Long) props.get("id");
-
-		return jwt;
-	}
-
-	public boolean verifyPermalinkForURL(String token, List<String> urls) throws Exception {
-
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(AccountConstants.getUserSessionFields()).table("UserSessions")
-				.andCustomWhere("UserSessions.TOKEN = ? AND UserSessions.IS_ACTIVE = ?", token, true);
-
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			Map<String, Object> session = props.get(0);
-			Long startTime = (Long) session.get("startTime");
-			String sessionInfo = (String) session.get("sessionInfo");
-
-			if ((startTime + 2678400000l) < System.currentTimeMillis()) { // one month
-				// expired
-				return false;
-			}
-
-			if (urls != null) {
-				JSONParser parser = new JSONParser();
-				try {
-					JSONObject sessionInfoObj = (JSONObject) parser.parse(sessionInfo);
-					String allowUrls = (String) sessionInfoObj.get("allowUrls");
-					List<String> allowedUrlList = Arrays.asList(allowUrls.split(","));
-
-					for (String url : urls) {
-						if (allowedUrlList.contains(url)) {
-							// url valid
-							return true;
-						}
-					}
-				} catch (ParseException e) {
-					log.info("Exception occurred ", e);
-				}
-			} else {
-				// token valid
-				return true;
-			}
-		}
-		return false;
-	}
-
 	@Override
 	public HashMap<Long, Set<Long>> getUserSites(List<Long> users) throws Exception {
 		List<FacilioField> accessibleSpaceFields = AccountConstants.getAccessbileSpaceFields();
@@ -1538,6 +1462,24 @@ public class UserBeanImpl implements UserBean {
 			return user;
 		}
 		return null;
+	}
+
+	@Override
+	public String generatePermalinkForURL(String url, User user) throws Exception {
+		String token = UserUtil.generatePermalinkForUrl(url, user.getUid(), AccountUtil.getCurrentOrg().getOrgId());
+		return token;
+	}
+
+	@Override
+	public boolean verifyPermalinkForURL(String token, List<String> urls) throws Exception {
+		return UserUtil.verifyPermalinkForUrl(token, urls);
+		
+	}
+
+	@Override
+	public Account getPermalinkAccount(String token, List<String> urls) throws Exception {
+		// TODO Auto-generated method stub
+      return UserUtil.getPermalinkAccount(token, urls);
 	}
 
 	

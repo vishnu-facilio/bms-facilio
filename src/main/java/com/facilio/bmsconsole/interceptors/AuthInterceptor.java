@@ -70,24 +70,15 @@ public class AuthInterceptor extends AbstractInterceptor {
 					URL url = new URL(referrer);
 					urlsToValidate.add(url.getPath());
 				}
-				
-				if (AccountUtil.getUserBean().verifyPermalinkForURL(token, urlsToValidate)) {
-					DecodedJWT decodedjwt = AuthUtill.validateJWT(token, "auth0");
-
-					String[] tokens = null;
-					if (decodedjwt.getSubject().contains(AuthUtill.JWT_DELIMITER)) {
-						tokens = decodedjwt.getSubject().split(AuthUtill.JWT_DELIMITER)[0].split("-");
-					}
-					else {
-						tokens = decodedjwt.getSubject().split("_")[0].split("-");
-					}
-					long orgId = Long.parseLong(tokens[0]);
-					long ouid = Long.parseLong(tokens[1]);
+				Account currentAccount = AccountUtil.getUserBean().getPermalinkAccount(token, urlsToValidate);
+				if (currentAccount != null) {
 					
-					Account currentAccount = new Account(AccountUtil.getOrgBean().getOrg(orgId), AccountUtil.getUserBean().getUserInternal(ouid, false));
-					
+					if(currentAccount == null) {
+						return Action.ERROR;
+					}
 					AccountUtil.cleanCurrentAccount();
 					AccountUtil.setCurrentAccount(currentAccount);
+					LoginUtil.updateAccount(currentAccount, false);
 					request.setAttribute("ORGID", currentAccount.getOrg().getOrgId());
 					request.setAttribute("USERID", currentAccount.getUser().getOuid());
 					

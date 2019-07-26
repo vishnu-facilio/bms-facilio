@@ -73,12 +73,14 @@ import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.auth.LoginUtil;
 import com.facilio.fw.auth.SAMLAttribute;
 import com.facilio.fw.auth.SAMLUtil;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.screen.util.ScreenUtil;
 import com.facilio.wms.util.WmsApi;
+import com.iam.accounts.dto.Account;
 import com.iam.accounts.util.AuthUtill;
 import com.opensymphony.xwork2.ActionContext;
 
@@ -750,31 +752,14 @@ public class LoginAction extends FacilioAction {
 	}
 	
 	public String validatePermalink() throws Exception {
-		
-		if (AccountUtil.getUserBean().verifyPermalinkForURL(getPermalink(), null)) {
-			
-			DecodedJWT decodedjwt = AuthUtill.validateJWT(getPermalink(), "auth0");
-			
-			if (decodedjwt != null) {
-				long orgId = -1;
-				long ouid = -1;
-				if (decodedjwt.getSubject().split("_").length > 1) {
-					orgId = Long.parseLong(decodedjwt.getSubject().split("_")[0].split("-")[0]);
-					ouid = Long.parseLong(decodedjwt.getSubject().split("_")[0].split("-")[1]);
-				}
-				else {
-					orgId = Long.parseLong(decodedjwt.getSubject().split("#")[0].split("-")[0]);
-					ouid = Long.parseLong(decodedjwt.getSubject().split("#")[0].split("-")[1]);
-				}
-
-				account = new HashMap<>();
-				account.put("org", AccountUtil.getOrgBean().getOrg(orgId));
-				account.put("user", AccountUtil.getUserBean().getUserInternal(ouid, false));
-				
-				return SUCCESS;
-			}
+		Account permalinkAccount = AccountUtil.getUserBean().getPermalinkAccount(getPermalink(), null);
+		if(permalinkAccount != null) {
+			LoginUtil.updateAccount(permalinkAccount, false);
+			account = new HashMap<>();
+			account.put("org", permalinkAccount.getOrg());
+			account.put("user", permalinkAccount.getUser());
+			return SUCCESS;
 		}
-		
 		account = null;
 		return ERROR;
 	}

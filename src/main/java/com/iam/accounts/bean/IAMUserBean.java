@@ -65,17 +65,19 @@ public interface IAMUserBean {
     
     public Account verifyUserSessionv2(String email, String token, String orgDomain) throws Exception;
     
-    public String generatePermalinkForURLv2(String url, User user) throws Exception;
-    
-    public boolean verifyPermalinkForURLv2(String token, List<String> url) throws Exception;
-
-	public boolean acceptUserv2(User user) throws Exception;
+ 	public boolean acceptUserv2(User user) throws Exception;
 	
 	public String getEncodedTokenv2(User user) throws Exception;
 	
 	public User getUserv2(long orgId, long userId) throws Exception;
 	
 	public User getUserv2(String email, String portalDomain) throws Exception;
+	
+	public String generatePermalinkForURL(String url, long uid, long orgId) throws Exception;
+	    
+	public boolean verifyPermalinkForURL(String token, List<String> url) throws Exception;
+
+	public Account getPermalinkAccount(String token, List<String> url) throws Exception ;
 	
 	
 }

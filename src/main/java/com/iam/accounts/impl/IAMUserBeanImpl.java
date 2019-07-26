@@ -18,6 +18,7 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.amazonaws.util.StringUtils;
+import com.auth0.jwt.interfaces.DecodedJWT;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.impl.SampleGenericInsertRecordBuilder;
@@ -836,17 +837,12 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return user;
 	}
 	
-	public String generatePermalinkForURL(String url, User user) throws Exception {
+	@Override
+	public String generatePermalinkForURL(String url, long uid, long orgId) throws Exception {
 		
-		long orgId = AccountUtil.getCurrentOrg().getOrgId();
-		if(user == null)
-		{
-		//	user = AccountUtil.getCurrentUser();
-		}
-		long uid = user.getUid();
-		long ouid = user.getId();
-		
-		String tokenKey = orgId + "-" + ouid;
+		Organization org = AuthUtill.getOrgBean().getOrgv2(orgId);
+		User user = getFacilioUserv3(uid, org.getDomain());
+		String tokenKey = orgId + "-" + user.getOuid();
 		String jwt = AuthUtill.createJWT("id", "auth0", tokenKey, System.currentTimeMillis() + 24 * 60 * 60000, false);
 		
 		JSONObject sessionInfo = new JSONObject();
@@ -873,6 +869,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return jwt;
 	}
     
+	@Override
     public boolean verifyPermalinkForURL(String token, List<String> urls) throws Exception {
     	
     	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -981,18 +978,6 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return false;
 	}
 
-	@Override
-	public String generatePermalinkForURLv2(String url, User user) throws Exception {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean verifyPermalinkForURLv2(String token, List<String> url) throws Exception {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	
 	private GenericSelectRecordBuilder getFacilioUserBuilder(String portalDomain, boolean includePortal) {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getAccountsUserFields());
@@ -1115,6 +1100,29 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		if (props != null && !props.isEmpty()) {
 			User user =  createUserFromProps(props.get(0), true, true, false);
 			return user;
+		}
+		return null;
+	}
+
+
+	@Override
+	public Account getPermalinkAccount(String token, List<String> urls) throws Exception {
+		// TODO Auto-generated method stub
+		if(verifyPermalinkForURL(token, urls)) {
+			DecodedJWT decodedjwt = AuthUtill.validateJWT(token, "auth0");
+	
+			String[] tokens = null;
+			if (decodedjwt.getSubject().contains(AuthUtill.JWT_DELIMITER)) {
+				tokens = decodedjwt.getSubject().split(AuthUtill.JWT_DELIMITER)[0].split("-");
+			}
+			else {
+				tokens = decodedjwt.getSubject().split("_")[0].split("-");
+			}
+			long orgId = Long.parseLong(tokens[0]);
+			long ouid = Long.parseLong(tokens[1]);
+			
+			Account currentAccount = new Account(AccountUtil.getOrgBean().getOrg(orgId), AccountUtil.getUserBean().getUserInternal(ouid, false));
+			return currentAccount;
 		}
 		return null;
 	}

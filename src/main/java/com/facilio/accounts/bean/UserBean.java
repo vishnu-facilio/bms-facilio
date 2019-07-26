@@ -10,6 +10,7 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
 import com.facilio.db.criteria.Criteria;
+import com.iam.accounts.dto.Account;
 
 public interface UserBean {
 	
@@ -80,6 +81,8 @@ public interface UserBean {
     public String generatePermalinkForURL(String url, User user) throws Exception;
     
     public boolean verifyPermalinkForURL(String token, List<String> url) throws Exception;
+    
+    public Account getPermalinkAccount(String token, List<String> url) throws Exception ;
 
     List<Long> getAccessibleSpaceList (long uid) throws Exception;
     List<Long> getAccessibleGroupList (long uid) throws Exception;

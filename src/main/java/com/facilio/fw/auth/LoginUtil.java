@@ -21,51 +21,8 @@ public class LoginUtil {
 		String email = account.getUser().getEmail();
 		
 		User user = null;
-		
-//		HttpServletRequest request = ServletActionContext.getRequest();
-//		String currentOrgDomain = FacilioCookie.getUserCookie(request, "fc.currentOrg");
-//		if (currentOrgDomain == null) {
-//			currentOrgDomain = request.getHeader("X-Current-Org"); 
-//		}
-		
-//		if (currentOrgDomain != null) {
-//			user = AccountUtil.getUserBean().getFacilioUser(email, currentOrgDomain, null);
-//		}
-
-//		if (user == null) {
-			user = AccountUtil.getUserBean().getFacilioUser(email);
-//		}
-		
-//		Organization org = null;
-		
-		/*if (user == null) {
-			org = AccountUtil.getCurrentOrg();
-			if (org != null) {
-				Locale locale = request.getLocale();
-				if (locale == null) {
-					locale = Locale.US;
-				}
-				User createUser = new User();
-				createUser.setName(cognitoUser.getName());
-				createUser.setEmail(cognitoUser.getEmail());
-				createUser.setUserVerified(false);
-				createUser.setTimezone(AccountUtil.getCurrentAccount().getTimeZone());
-				createUser.setLanguage(locale.getLanguage());
-				createUser.setCountry(locale.getCountry());
-				createUser.setPhone(cognitoUser.getPhoneNumber());
-				createUser.setInviteAcceptStatus(true);
-				createUser.setDefaultOrg(true);
-				createUser.setUserStatus(true);
-				createUser.setInvitedTime(System.currentTimeMillis());
-				
-			}
-		} else { */
-//			org = AccountUtil.getOrgBean().getOrg(user.getOrgId());
-		//}
-//		Account account = new Account(org, user);
+		user = AccountUtil.getUserBean().getFacilioUser(email);
 		account.setUser(user);
-		
-//		return account;
 	}
 
 	public static Account getPortalAccount(String email, long portalId) throws Exception {

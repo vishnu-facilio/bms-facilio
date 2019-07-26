@@ -10,6 +10,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.iam.accounts.dto.Account;
 import com.iam.accounts.exceptions.AccountException;
 
 public class UserUtil {
@@ -176,6 +177,18 @@ public class UserUtil {
 		else {
 			return AuthUtill.getUserBean().disableUserv2(user.getOrgId(), user.getUid());
 		}
+	}
+	
+	public static String generatePermalinkForUrl(String url, long uId, long orgId) throws Exception {
+		return AuthUtill.getUserBean().generatePermalinkForURL(url, uId, orgId);
+	}
+	
+	public static boolean verifyPermalinkForUrl(String token, List<String> urls) throws Exception {
+		return AuthUtill.getUserBean().verifyPermalinkForURL(token, urls);
+	}
+	
+	public static Account getPermalinkAccount(String token, List<String> urls) throws Exception {
+		return AuthUtill.getUserBean().getPermalinkAccount(token, urls);
 	}
 	
 }
