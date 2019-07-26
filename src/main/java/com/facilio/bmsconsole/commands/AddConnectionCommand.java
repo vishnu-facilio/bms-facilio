@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Map;
+
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -23,12 +25,16 @@ public class AddConnectionCommand extends FacilioCommand {
 		
 		fillDefaultfields(connectionContext);
 		
+		Map<String, Object> prop = FieldUtil.getAsProperties(connectionContext);
+		
 		GenericInsertRecordBuilder insert = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getConnectionModule().getTableName())
 				.fields(FieldFactory.getConnectionFields())
-				.addRecord(FieldUtil.getAsProperties(connectionContext));
+				.addRecord(prop);
 		
 		insert.save();
+		
+		connectionContext.setId((Long) prop.get("id"));
 		
 		if(connectionContext.getConnectionParams() != null && !connectionContext.getConnectionParams().isEmpty()) {
 			
