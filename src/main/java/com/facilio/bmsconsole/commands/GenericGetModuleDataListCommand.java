@@ -34,9 +34,10 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 		FacilioModule module = modBean.getModule(moduleName);
 
 		boolean fetchCount = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_COUNT, false);
+//		boolean fetchCount = (boolean) context.get(FacilioConstants.ContextNames.FETCH_COUNT);
 
 		List<FacilioField> fields;
-		if (fetchCount) {
+		if (fetchCount) { 
 			fields = FieldFactory.getCountField(module);
 		}
 		else {
@@ -102,7 +103,7 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 		}
 		
 		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
-		if (pagination != null) {
+		if (pagination != null && !fetchCount) {
 			int page = (int) pagination.get("page");
 			int perPage = (int) pagination.get("perPage");
 			

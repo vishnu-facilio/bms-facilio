@@ -48,6 +48,7 @@ public class ModuleAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+
 	private boolean stateFlow = false;
 	public boolean isStateFlow() {
 		return stateFlow;
