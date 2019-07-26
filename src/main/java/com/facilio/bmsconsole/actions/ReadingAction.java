@@ -1246,6 +1246,16 @@ public class ReadingAction extends FacilioAction {
 		chain.execute(context);
 		return SUCCESS;
 	}
+	
+	public String getResetReadings() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RESOURCE_ID, resourceId);
+		Chain chain = ReadOnlyChainFactory.getResetCounterMetaChain();
+		chain.execute(context);
+		resetCounterMetaList = (List<ResetCounterMetaContext>)context.get(FacilioConstants.ContextNames.RESET_COUNTER_META_LIST);
+		setResult("resetCounterMetaList", resetCounterMetaList);
+		return SUCCESS;
+	}
 	List<ResetCounterMetaContext> resetCounterMetaList;
 
 	public List<ResetCounterMetaContext> getResetCounterMetaList() {

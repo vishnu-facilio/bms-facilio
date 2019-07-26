@@ -1650,6 +1650,7 @@ public class TransactionChainFactory {
 		
 		public static Chain getResetReadingsChain() {
 			Chain c = getDefaultChain();
+			c.addCommand(new ValidateResetReadingsCommand());
 			c.addCommand(new UpdateResetCounterMetaCommand());
 			c.addCommand(new GetResetCounterMetaCommand());
 			c.addCommand(new CalculateDeltaInReadingResetCommand());

@@ -1,12 +1,25 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.fields.FacilioField;
 
-public class ResetCounterMetaContext extends ModuleBaseWithCustomFields{ 
+public class ResetCounterMetaContext{ 
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+    private Object value;
+    
+	public Object getValue() {
+		return value;
+	}
+
+	public void setValue(Object value) {
+		this.value = value;
+	}
+	
+	public void setValue(String value) {
+		this.value = value;
+	}
+
 	
 	private long id;
 	public long getId() {
@@ -31,7 +44,17 @@ public class ResetCounterMetaContext extends ModuleBaseWithCustomFields{
 	public void setFieldId(long fieldId) {
 		this.fieldId = fieldId;
 	}
-	
+    
+	FacilioField field;
+
+	public FacilioField getField() {
+		return field;
+	}
+
+	public void setField(FacilioField field) {
+		this.field = field;
+	}
+
 	private long ttime = -1;
 	public long getTtime() {
 		return ttime;
@@ -48,24 +71,34 @@ public class ResetCounterMetaContext extends ModuleBaseWithCustomFields{
 		this.readingDataId = readingDataId;
 	}
 
-	String startvalue;
+	long startvalue = -1;
 
-	public String getStartvalue() {
+	public long getStartvalue() {
 		return startvalue;
 	}
 
-	public void setStartvalue(String startvalue) {
+	public void setStartvalue(long startvalue) {
 		this.startvalue = startvalue;
 	}
+	
+	long endvalue = -1;
 
-	String endvalue;
-
-	public String getEndvalue() {
+	public long getEndvalue() {
 		return endvalue;
 	}
 
-	public void setEndvalue(String endvalue) {
+	public void setEndvalue(long endvalue) {
 		this.endvalue = endvalue;
+	}
+	
+	ReadingContext reading;
+
+	public ReadingContext getReading() {
+		return reading;
+	}
+
+	public void setReading(ReadingContext reading) {
+		this.reading = reading;
 	}
 
 }

@@ -25,11 +25,11 @@ public class AddResetAssetActivityCommand extends FacilioCommand {
 		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY,FacilioConstants.ContextNames.ASSET_ACTIVITY);
 		for(ResetCounterMetaContext resetCounter:resetCounterMetaList){
 			
-			if(resetCounter.getEndvalue() != null && !resetCounter.getEndvalue().equals("")){
+			if(resetCounter.getEndvalue() > 0){
 				JSONObject info = new JSONObject();
-				info.put("Fieldname", modBean.getField(resetCounter.getFieldId()).getDisplayName());
+				info.put("Fieldname",resetCounter.getField().getDisplayName());
 				info.put("Endvalue", resetCounter.getEndvalue());
-				if(resetCounter.getStartvalue() != null && !resetCounter.getStartvalue().equals("")){
+				if(resetCounter.getStartvalue() > 0){
 					info.put("Startvalue", resetCounter.getStartvalue());
 				}
 				CommonCommandUtil.addActivityToContext(resetCounter.getResourceId(), -1, AssetActivityType.RESET_READING, info, (FacilioContext) context);

@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.commands;
 import java.util.List;
 import java.util.Map.Entry;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -26,26 +25,25 @@ public class UpdateDeltaInRDMInReadingResetCommand extends FacilioCommand {
 		
 		for(ResetCounterMetaContext resetCounter:resetCounterMetaList){
 			
-			if(resetCounter.getEndvalue() != null && !resetCounter.getEndvalue().equals("")){
+			if(resetCounter.getEndvalue() > 0){
 				
-				FacilioField field = modBean.getField(resetCounter.getFieldId());
+				FacilioField field = resetCounter.getField();
 				String moduleName = field.getModule().getName();
 				FacilioModule module = modBean.getModule(moduleName);
 				List<FacilioField> fields = modBean.getAllFields(moduleName);
 				ReadingContext reading = ReadingsAPI.getReading(module, fields, resetCounter.getReadingDataId());
-				
-				ReadingDataMeta rdm = new ReadingDataMeta();
-				rdm.setTtime(reading.getTtime());
-				long deltaFieldId = modBean.getField(field.getName()+"Delta", moduleName).getId();
-				for(Entry<String, Object> entry : reading.getReadings().entrySet()){
-					if(entry.getKey().equalsIgnoreCase(field.getName()+"Delta")){
-						rdm.setValue(entry.getValue());
-						rdm.setReadingDataId(reading.getId());
-						rdm.setResourceId(reading.getParentId());
-						rdm.setFieldId(deltaFieldId);
-						ReadingsAPI.updateReadingDataMeta(rdm);
+
+				FacilioField deltaField = modBean.getField(field.getName()+"Delta", moduleName);
+				ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(reading.getParentId(),deltaField);
+				if(rdm != null && rdm.getReadingDataId() == reading.getId()){
+					for(Entry<String, Object> entry : reading.getReadings().entrySet()){
+						if(entry.getKey().equalsIgnoreCase(field.getName()+"Delta")){
+							rdm.setValue(entry.getValue());
+							ReadingsAPI.updateReadingDataMeta(rdm);
+						}
 					}
 				}
+				
 				
 			}
 		}

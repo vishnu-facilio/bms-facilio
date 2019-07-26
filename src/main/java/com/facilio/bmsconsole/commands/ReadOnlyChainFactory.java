@@ -31,6 +31,11 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain getResetCounterMetaChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetResetCounterMetaCommand());
+		return c;
+	}
 	public static Chain getLastAssetBreakDownChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new GetAssetDownTimeDetailsCommand());

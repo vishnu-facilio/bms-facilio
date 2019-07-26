@@ -31,12 +31,12 @@ public class CalculateDeltaInReadingResetCommand extends FacilioCommand {
 		
 		for(ResetCounterMetaContext resetCounter:resetCounterMetaList){
 			
-			if(resetCounter.getEndvalue() != null && !resetCounter.getEndvalue().equals("")){
-				FacilioField field = modBean.getField(resetCounter.getFieldId());
+			if(resetCounter.getEndvalue() > 0){
+				FacilioField field = resetCounter.getField();
 				String moduleName = field.getModule().getName();
 				FacilioModule module = modBean.getModule(moduleName);
 				List<FacilioField> fields = modBean.getAllFields(moduleName);
-				ReadingContext reading = ReadingsAPI.getReading(module, fields, resetCounter.getReadingDataId());
+				ReadingContext reading = resetCounter.getReading();
 				
 				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 				Condition condition = CriteriaAPI.getCondition(fieldMap.get("ttime"), String.valueOf(reading.getTtime()), NumberOperators.LESS_THAN);
@@ -49,14 +49,14 @@ public class CalculateDeltaInReadingResetCommand extends FacilioCommand {
 				if(prevReadingValue != null && curReadingValue != null){
 					Object deltaValue;
 					if(field.getDataTypeEnum().equals(FieldType.DECIMAL)){
-						deltaValue = (Double.parseDouble(resetCounter.getEndvalue()) - (Double) prevReadingValue) + (Double) curReadingValue;
-						if (resetCounter.getStartvalue() != null && !resetCounter.getStartvalue().equals("")) {
-							deltaValue = (Double) deltaValue - Double.parseDouble(resetCounter.getStartvalue());
+						deltaValue = (resetCounter.getEndvalue() - (Double) prevReadingValue) + (Double) curReadingValue;
+						if (resetCounter.getStartvalue() > 0) {
+							deltaValue = (Double) deltaValue - resetCounter.getStartvalue();
 						}
 					}else{
-						deltaValue = (Long.parseLong(resetCounter.getEndvalue()) - (Long) prevReadingValue) + (Long) curReadingValue;
-						if (resetCounter.getStartvalue() != null && !resetCounter.getStartvalue().equals("")) {
-							deltaValue = (Long) deltaValue - Long.parseLong(resetCounter.getStartvalue());
+						deltaValue = (resetCounter.getEndvalue() - (Long) prevReadingValue) + (Long) curReadingValue;
+						if (resetCounter.getStartvalue() > 0) {
+							deltaValue = (Long) deltaValue - resetCounter.getStartvalue();
 						}
 					}
 					ReadingsAPI.addDeltaValue(reading, field.getName(),deltaValue);

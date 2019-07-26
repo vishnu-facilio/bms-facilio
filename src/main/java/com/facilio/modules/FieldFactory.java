@@ -4753,8 +4753,8 @@ public class FieldFactory {
 		fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
 		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.NUMBER));
 		fields.add(getField("ttime", "TTIME", module, FieldType.NUMBER));
-		fields.add(getField("startvalue", "START_VALUE", module, FieldType.STRING));
-		fields.add(getField("endvalue", "END_VALUE", module, FieldType.STRING));
+		fields.add(getField("startvalue", "START_VALUE", module, FieldType.NUMBER));
+		fields.add(getField("endvalue", "END_VALUE", module, FieldType.NUMBER));
 		return fields;
 	}
 	
