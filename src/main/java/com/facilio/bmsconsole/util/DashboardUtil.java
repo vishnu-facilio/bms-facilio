@@ -835,6 +835,7 @@ public class DashboardUtil {
 			dashboardJson.put("dashboardFolderId", dashboard.getDashboardFolderId());
 			dashboardJson.put("linkName", dashboard.getLinkName());
 			dashboardJson.put("children", childrenArray);
+			dashboardJson.put("tabs", dashboard.getDashboardTabContexts());
 			dashboardJson.put("mobileEnabled", dashboard.isMobileEnabled());
 			dashboardJson.put("dashboardSharingContext", dashboard.getDashboardSharingContext());
 			result.add(dashboardJson);
@@ -984,6 +985,10 @@ public class DashboardUtil {
 		
 		if (props != null && !props.isEmpty()) {
 			DashboardContext dashboard = FieldUtil.getAsBeanFromMap(props.get(0), DashboardContext.class);
+			
+			if(dashboard.isTabEnabled()) {
+				dashboard.setDashboardTabContexts(getDashboardTabs(dashboard.getId()));
+			}
 			
 			List<DashboardWidgetContext> dashbaordWidgets = DashboardUtil.getDashboardWidgetsFormDashboardIdOrTabId(dashboard.getId(),null);
 			dashboard.setDashboardWidgets(dashbaordWidgets);
