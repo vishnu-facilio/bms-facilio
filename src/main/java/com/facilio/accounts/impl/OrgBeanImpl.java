@@ -16,6 +16,7 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.util.AccountConstants.UserType;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
@@ -365,4 +366,37 @@ public class OrgBeanImpl implements OrgBean {
 			
 		return result;
 	}
+
+	@Override 
+    public List<User> getOrgPortalUsers(long orgId) throws Exception { 
+       
+        List<FacilioField> fields = new ArrayList<>(); 
+        FacilioModule orgUserModule = AccountConstants.getAppOrgUserModule();
+        FacilioModule userModule = AccountConstants.getAppUserModule();
+        
+        fields.addAll(AccountConstants.getAppOrgUserFields()); 
+        fields.addAll(AccountConstants.getAppUserFields()); 
+        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder() 
+                .select(fields) 
+                .table(userModule.getTableName()) 
+                .innerJoin(orgUserModule.getTableName()) 
+                .on("Users.USERID = ORG_Users.USERID") ;
+        
+    	selectBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+    	selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.USER_TYPE", "userType", String.valueOf(UserType.REQUESTER), NumberOperators.EQUALS));
+    
+        List<Map<String, Object>> props = selectBuilder.get(); 
+        if (props != null && !props.isEmpty()) { 
+            List<User> users = new ArrayList<>(); 
+            for(Map<String, Object> prop : props) { 
+                User user = UserBeanImpl.createUserFromProps(prop, true, true, true); 
+                user.setFacilioAuth(true); 
+                users.add(user); 
+            } 
+            return users; 
+        } 
+        return null; 
+    } 
+	
+	
 }

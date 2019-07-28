@@ -21,7 +21,7 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 
-public class AccountConstants {
+public class IAMAccountConstants {
 
 			
 		

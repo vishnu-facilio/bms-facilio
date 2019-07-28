@@ -25,7 +25,6 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.impl.SampleGenericInsertRecordBuilder;
 import com.facilio.accounts.impl.SampleGenericSelectBuilder;
 import com.facilio.accounts.impl.SampleGenericUpdateRecordBuilder;
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.util.EncryptionUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -48,8 +47,8 @@ import com.iam.accounts.bean.IAMUserBean;
 import com.iam.accounts.dto.Account;
 import com.iam.accounts.exceptions.AccountException;
 import com.iam.accounts.exceptions.AccountException.ErrorCode;
-import com.iam.accounts.util.AccountConstants;
 import com.iam.accounts.util.AuthUtill;
+import com.iam.accounts.util.IAMAccountConstants;
 
 ;
 
@@ -68,10 +67,10 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		
 		User existingUser = getUserv2(user.getEmail(), user.getCity());
 		if(existingUser == null) {
-			List<FacilioField> fields = AccountConstants.getAccountsUserFields();
-			fields.add(AccountConstants.getUserPasswordField());
+			List<FacilioField> fields = IAMAccountConstants.getAccountsUserFields();
+			fields.add(IAMAccountConstants.getUserPasswordField());
 			GenericInsertRecordBuilder insertBuilder = new SampleGenericInsertRecordBuilder()
-					.table(AccountConstants.getAccountsUserModule().getTableName())
+					.table(IAMAccountConstants.getAccountsUserModule().getTableName())
 					.fields(fields);
 	
 			Map<String, Object> props = FieldUtil.getAsProperties(user);
@@ -91,10 +90,10 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	private boolean updateUserEntryv2(User user) throws Exception {
-		List<FacilioField> fields = AccountConstants.getAccountsUserFields();
-		fields.add(AccountConstants.getUserPasswordField());
+		List<FacilioField> fields = IAMAccountConstants.getAccountsUserFields();
+		fields.add(IAMAccountConstants.getUserPasswordField());
 		GenericUpdateRecordBuilder updateBuilder = new SampleGenericUpdateRecordBuilder()
-				.table(AccountConstants.getAccountsUserModule().getTableName())
+				.table(IAMAccountConstants.getAccountsUserModule().getTableName())
 				.fields(fields);
 		
 		updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(user.getUid()), NumberOperators.EQUALS));
@@ -247,13 +246,13 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		invitedTime.setName("invitedTime");
 		invitedTime.setDataType(FieldType.NUMBER);
 		invitedTime.setColumnName("INVITEDTIME");
-		invitedTime.setModule(AccountConstants.getAccountsOrgUserModule());
+		invitedTime.setModule(IAMAccountConstants.getAccountsOrgUserModule());
 		
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(invitedTime);
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(AccountConstants.getAccountsOrgUserModule().getTableName())
+				.table(IAMAccountConstants.getAccountsOrgUserModule().getTableName())
 				.fields(fields);
 		
 		updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(userId), NumberOperators.EQUALS));
@@ -286,19 +285,19 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			inviteAcceptStatus.setName("inviteAcceptStatus");
 			inviteAcceptStatus.setDataType(FieldType.BOOLEAN);
 			inviteAcceptStatus.setColumnName("INVITATION_ACCEPT_STATUS");
-			inviteAcceptStatus.setModule(AccountConstants.getAccountsOrgUserModule());
+			inviteAcceptStatus.setModule(IAMAccountConstants.getAccountsOrgUserModule());
 
 			FacilioField isDefaultOrg = new FacilioField();
 			isDefaultOrg.setName("isDefaultOrg");
 			isDefaultOrg.setDataType(FieldType.BOOLEAN);
 			isDefaultOrg.setColumnName("ISDEFAULT");
-			isDefaultOrg.setModule(AccountConstants.getAccountsOrgUserModule());
+			isDefaultOrg.setModule(IAMAccountConstants.getAccountsOrgUserModule());
 
 			FacilioField userStatus = new FacilioField();
 			userStatus.setName("userStatus");
 			userStatus.setDataType(FieldType.BOOLEAN);
 			userStatus.setColumnName("USER_STATUS");
-			userStatus.setModule(AccountConstants.getAccountsOrgUserModule());
+			userStatus.setModule(IAMAccountConstants.getAccountsOrgUserModule());
 
 			List<FacilioField> fields = new ArrayList<>();
 			fields.add(inviteAcceptStatus);
@@ -306,7 +305,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			fields.add(isDefaultOrg);
 
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-					.table(AccountConstants.getAccountsOrgUserModule().getTableName())
+					.table(IAMAccountConstants.getAccountsOrgUserModule().getTableName())
 					.fields(fields);
 			
 			updateBuilder.andCondition(CriteriaAPI.getCondition("ORG_USERID", "orgUserId", String.valueOf(user.getOuid()), NumberOperators.EQUALS));
@@ -335,9 +334,9 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	private User getInvitedUser(long ouid) throws Exception {
 
 		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(AccountConstants.getAccountsUserFields());
-		fields.addAll(AccountConstants.getAccountsOrgUserFields());
-		fields.add(AccountConstants.getOrgIdField());
+		fields.addAll(IAMAccountConstants.getAccountsUserFields());
+		fields.addAll(IAMAccountConstants.getAccountsOrgUserFields());
+		fields.add(IAMAccountConstants.getOrgIdField());
 
 		GenericSelectRecordBuilder selectBuilder = new SampleGenericSelectBuilder()
 				.select(fields)
@@ -364,7 +363,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		deletedTime.setName("deletedTime");
 		deletedTime.setDataType(FieldType.NUMBER);
 		deletedTime.setColumnName("DELETED_TIME");
-		deletedTime.setModule(AccountConstants.getAccountsOrgUserModule());
+		deletedTime.setModule(IAMAccountConstants.getAccountsOrgUserModule());
 		
 		User anyOtherOrgUser = getFacilioUserv3(user.getEmail());
 		if(anyOtherOrgUser.getOrgId() == user.getOrgId()) {
@@ -375,7 +374,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		fields.add(deletedTime);
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(AccountConstants.getAccountsOrgUserModule().getTableName())
+				.table(IAMAccountConstants.getAccountsOrgUserModule().getTableName())
 				.fields(fields);
 		
 		updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(user.getUid()), NumberOperators.EQUALS));
@@ -406,13 +405,13 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		userStatus.setName("userStatus");
 		userStatus.setDataType(FieldType.BOOLEAN);
 		userStatus.setColumnName("USER_STATUS");
-		userStatus.setModule(AccountConstants.getAccountsOrgUserModule());
+		userStatus.setModule(IAMAccountConstants.getAccountsOrgUserModule());
 		
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(userStatus);
 		
 		GenericUpdateRecordBuilder updateBuilder = new SampleGenericUpdateRecordBuilder()
-				.table(AccountConstants.getAccountsOrgUserModule().getTableName())
+				.table(IAMAccountConstants.getAccountsOrgUserModule().getTableName())
 				.fields(fields);
 		
 		updateBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
@@ -436,13 +435,13 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		userStatus.setName("userStatus");
 		userStatus.setDataType(FieldType.BOOLEAN);
 		userStatus.setColumnName("USER_STATUS");
-		userStatus.setModule(AccountConstants.getAccountsOrgUserModule());
+		userStatus.setModule(IAMAccountConstants.getAccountsOrgUserModule());
 		
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(userStatus);
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(AccountConstants.getAccountsOrgUserModule().getTableName())
+				.table(IAMAccountConstants.getAccountsOrgUserModule().getTableName())
 				.fields(fields);
 		updateBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
 		updateBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
@@ -466,13 +465,13 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		isDefaultOrg.setName("isDefaultOrg");
 		isDefaultOrg.setDataType(FieldType.BOOLEAN);
 		isDefaultOrg.setColumnName("ISDEFAULT");
-		isDefaultOrg.setModule(AccountConstants.getAccountsOrgUserModule());
+		isDefaultOrg.setModule(IAMAccountConstants.getAccountsOrgUserModule());
 		
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(isDefaultOrg);
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(AccountConstants.getAccountsOrgUserModule().getTableName())
+				.table(IAMAccountConstants.getAccountsOrgUserModule().getTableName())
 				.fields(fields);
 		
 		updateBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
@@ -484,7 +483,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		updateBuilder.update(props);
 		
 		GenericUpdateRecordBuilder updateBuilder1 = new GenericUpdateRecordBuilder()
-				.table(AccountConstants.getAccountsOrgUserModule().getTableName())
+				.table(IAMAccountConstants.getAccountsOrgUserModule().getTableName())
 				.fields(fields)
 				;
 		
@@ -503,16 +502,15 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	public User getUserv2(long ouid) throws Exception {
 		
 		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(AccountConstants.getAccountsUserFields());
-		fields.addAll(AccountConstants.getAccountsOrgUserFields());
-		fields.add(AccountConstants.getOrgIdField());
+		fields.addAll(IAMAccountConstants.getAccountsUserFields());
+		fields.addAll(IAMAccountConstants.getAccountsOrgUserFields());
+		fields.add(IAMAccountConstants.getOrgIdField());
 		GenericSelectRecordBuilder selectBuilder = new SampleGenericSelectBuilder()
 				.select(fields)
 				.table("Account_Users")
 				.innerJoin("Account_ORG_Users")
 				.on("Account_Users.USERID = Account_ORG_Users.USERID");
 		
-		selectBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(AccountUtil.getCurrentOrg().getId()), NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_USERID", "userId", String.valueOf(ouid), NumberOperators.EQUALS));
 	
@@ -529,16 +527,16 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	public User getUserv2(long orgId, long userId) throws Exception {
 		
 		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(AccountConstants.getAccountsUserFields());
-		fields.addAll(AccountConstants.getAccountsOrgUserFields());
-		fields.add(AccountConstants.getOrgIdField());
+		fields.addAll(IAMAccountConstants.getAccountsUserFields());
+		fields.addAll(IAMAccountConstants.getAccountsOrgUserFields());
+		fields.add(IAMAccountConstants.getOrgIdField());
 		GenericSelectRecordBuilder selectBuilder = new SampleGenericSelectBuilder()
 				.select(fields)
 				.table("Account_Users")
 				.innerJoin("Account_ORG_Users")
 				.on("Account_Users.USERID = Account_ORG_Users.USERID");
 		
-		selectBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(AccountUtil.getCurrentOrg().getId()), NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USERID", "userId", String.valueOf(userId), NumberOperators.EQUALS));
 		
@@ -553,10 +551,10 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	private User getUserWithPassword(long ouid) throws Exception {
 
 		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(AccountConstants.getAccountsUserFields());
-		fields.addAll(AccountConstants.getAccountsOrgUserFields());
-		fields.add(AccountConstants.getUserPasswordField());
-		fields.add(AccountConstants.getOrgIdField());
+		fields.addAll(IAMAccountConstants.getAccountsUserFields());
+		fields.addAll(IAMAccountConstants.getAccountsOrgUserFields());
+		fields.add(IAMAccountConstants.getUserPasswordField());
+		fields.add(IAMAccountConstants.getOrgIdField());
 
 		GenericSelectRecordBuilder selectBuilder = new SampleGenericSelectBuilder()
 				.select(fields)
@@ -580,9 +578,9 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	public User getUserv2(long orgId, String email) throws Exception {
 		
 		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(AccountConstants.getAccountsUserFields());
-		fields.addAll(AccountConstants.getAccountsOrgUserFields());
-		fields.add(AccountConstants.getOrgIdField());
+		fields.addAll(IAMAccountConstants.getAccountsUserFields());
+		fields.addAll(IAMAccountConstants.getAccountsOrgUserFields());
+		fields.add(IAMAccountConstants.getOrgIdField());
 		
 		GenericSelectRecordBuilder selectBuilder = new SampleGenericSelectBuilder()
 				.select(fields)
@@ -607,7 +605,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	public List<Organization> getOrgsv2(long uid) throws Exception {
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(AccountConstants.getOrgFields())
+				.select(IAMAccountConstants.getOrgFields())
 				.table("Organizations")
 				.innerJoin("Account_ORG_Users")
 				.on("Organizations.ORGID = Account_ORG_Users.ORGID");
@@ -631,7 +629,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	public Organization getDefaultOrgv2(long uid) throws Exception {
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(AccountConstants.getOrgFields())
+				.select(IAMAccountConstants.getOrgFields())
 				.table("Organizations")
 				.innerJoin("Account_ORG_Users")
 				.on("Organizations.ORGID = Account_ORG_Users.ORGID");
@@ -655,14 +653,14 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		photoId.setName("photoId");
 		photoId.setDataType(FieldType.NUMBER);
 		photoId.setColumnName("PHOTO_ID");
-		photoId.setModule(AccountConstants.getAccountsUserModule());
+		photoId.setModule(IAMAccountConstants.getAccountsUserModule());
 		
 		List<FacilioField> fields = new ArrayList<FacilioField>();
 		fields.add(photoId);
 		
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(AccountConstants.getAccountsUserModule().getTableName())
+				.table(IAMAccountConstants.getAccountsUserModule().getTableName())
 				.fields(fields);
 		
 		updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
@@ -687,15 +685,15 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			if (transaction == null) {
 				transactionManager.begin();
 			}
-			List<FacilioField> fields = AccountConstants.getUserSessionFields();
+			List<FacilioField> fields = IAMAccountConstants.getUserSessionFields();
 
 			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-					.table(AccountConstants.getUserSessionModule().getTableName())
+					.table(IAMAccountConstants.getUserSessionModule().getTableName())
 					.fields(fields);
 
 			Map<String, Object> props = new HashMap<>();
 			props.put("uid", uid);
-			props.put("sessionType", AccountConstants.SessionType.USER_LOGIN_SESSION.getValue());
+			props.put("sessionType", IAMAccountConstants.SessionType.USER_LOGIN_SESSION.getValue());
 			props.put("token", token);
 			props.put("startTime", System.currentTimeMillis());
 			props.put("isActive", true);
@@ -727,10 +725,10 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			if (transaction == null) {
 				transactionManager.begin();
 			}
-			List<FacilioField> fields = AccountConstants.getUserSessionFields();
+			List<FacilioField> fields = IAMAccountConstants.getUserSessionFields();
 
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-					.table(AccountConstants.getUserSessionModule().getTableName())
+					.table(IAMAccountConstants.getUserSessionModule().getTableName())
 					.fields(fields);
 			
 			updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
@@ -760,7 +758,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	public List<Map<String, Object>> getUserSessionsv2(long uid, Boolean isActive) throws Exception
 	{
 		GenericSelectRecordBuilder selectBuilder = new SampleGenericSelectBuilder()
-				.select(AccountConstants.getUserSessionFields())
+				.select(IAMAccountConstants.getUserSessionFields())
 				.table("Account_Users")
 				.innerJoin("UserSessions")
 				.on("Account_Users.USERID =UserSessions.USERID");
@@ -792,7 +790,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		}
 		
 		GenericSelectRecordBuilder selectBuilder = new SampleGenericSelectBuilder()
-				.select(AccountConstants.getUserSessionFields())
+				.select(IAMAccountConstants.getUserSessionFields())
 				.table("Account_Users")
 				.innerJoin("UserSessions")
 				.on("Account_Users.USERID = UserSessions.USERID");
@@ -826,7 +824,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	public void clearUserSessionv2(long uid, String email, String token) throws Exception {
 
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-				.table(AccountConstants.getUserSessionModule().getTableName());
+				.table(IAMAccountConstants.getUserSessionModule().getTableName());
 		
 		builder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
 		builder.andCondition(CriteriaAPI.getCondition("TOKEN", "token", token, StringOperators.IS));
@@ -840,7 +838,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	public void clearAllUserSessionsv2(long uid, String email) throws Exception {
 
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-				.table(AccountConstants.getUserSessionModule().getTableName());
+				.table(IAMAccountConstants.getUserSessionModule().getTableName());
 		builder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
 		builder.delete();
 		
@@ -868,15 +866,15 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		JSONObject sessionInfo = new JSONObject();
 		sessionInfo.put("allowUrls", url);
 		
-		List<FacilioField> fields = AccountConstants.getUserSessionFields();
+		List<FacilioField> fields = IAMAccountConstants.getUserSessionFields();
 
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-				.table(AccountConstants.getUserSessionModule().getTableName())
+				.table(IAMAccountConstants.getUserSessionModule().getTableName())
 				.fields(fields);
 
 		Map<String, Object> props = new HashMap<>();
 		props.put("uid", uid);
-		props.put("sessionType", AccountConstants.SessionType.PERMALINK_SESSION.getValue());
+		props.put("sessionType", IAMAccountConstants.SessionType.PERMALINK_SESSION.getValue());
 		props.put("token", jwt);
 		props.put("startTime", System.currentTimeMillis());
 		props.put("isActive", true);
@@ -893,7 +891,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
     public boolean verifyPermalinkForURL(String token, List<String> urls) throws Exception {
     	
     	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(AccountConstants.getUserSessionFields())
+				.select(IAMAccountConstants.getUserSessionFields())
 				.table("UserSessions");
     	
     	selectBuilder.andCondition(CriteriaAPI.getCondition("UserSessions.TOKEN", "token", token, StringOperators.IS));
@@ -939,8 +937,8 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	private long addToORGUsersv2(User user) throws Exception {
 				
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-				.table(AccountConstants.getAccountsOrgUserModule().getTableName())
-				.fields(AccountConstants.getAccountsOrgUserFields());
+				.table(IAMAccountConstants.getAccountsOrgUserModule().getTableName())
+				.fields(IAMAccountConstants.getAccountsOrgUserFields());
 		
 		Map<String, Object> props = FieldUtil.getAsProperties(user);
 		insertBuilder.addRecord(props);
@@ -965,8 +963,8 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		boolean userUpdateStatus = updateUserEntryv2(user);
 		if (userUpdateStatus) {
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-					.table(AccountConstants.getAccountsOrgUserModule().getTableName())
-					.fields(AccountConstants.getAccountsOrgUserFields());
+					.table(IAMAccountConstants.getAccountsOrgUserModule().getTableName())
+					.fields(IAMAccountConstants.getAccountsOrgUserFields());
 			
 			updateBuilder.andCondition(CriteriaAPI.getCondition("ORG_USERID", "orgUserId", String.valueOf(ouid), NumberOperators.EQUALS));
 			
@@ -982,9 +980,9 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 	private GenericSelectRecordBuilder getFacilioUserBuilder(String portalDomain, boolean includePortal) {
 		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(AccountConstants.getAccountsUserFields());
-		fields.addAll(AccountConstants.getAccountsOrgUserFields());
-		fields.add(AccountConstants.getOrgIdField(AccountConstants.getOrgModule()));
+		fields.addAll(IAMAccountConstants.getAccountsUserFields());
+		fields.addAll(IAMAccountConstants.getAccountsOrgUserFields());
+		fields.add(IAMAccountConstants.getOrgIdField(IAMAccountConstants.getOrgModule()));
 		
 		GenericSelectRecordBuilder selectBuilder = new SampleGenericSelectBuilder()
 				.select(fields)
@@ -1102,7 +1100,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	@Override
 	public User getUserv2(String email, String portalDomain) throws Exception {
 		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(AccountConstants.getAccountsUserFields());
+		fields.addAll(IAMAccountConstants.getAccountsUserFields());
 		
 		GenericSelectRecordBuilder selectBuilder = new SampleGenericSelectBuilder()
 				.select(fields)
@@ -1141,7 +1139,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			long orgId = Long.parseLong(tokens[0]);
 			long ouid = Long.parseLong(tokens[1]);
 			
-			Account currentAccount = new Account(AccountUtil.getOrgBean().getOrg(orgId), AccountUtil.getUserBean().getUserInternal(ouid, false));
+			Account currentAccount = new Account(AuthUtill.getOrgBean().getOrgv2(orgId), getUserv2(ouid));
 			return currentAccount;
 		}
 		return null;

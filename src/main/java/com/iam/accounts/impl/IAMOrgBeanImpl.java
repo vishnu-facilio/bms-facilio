@@ -8,13 +8,13 @@ import java.util.Map;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.modules.FieldFactory;
@@ -31,8 +31,10 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(AccountConstants.getOrgModule().getTableName())
-				.fields(AccountConstants.getOrgFields())
-				.andCustomWhere("ORGID = ? AND DELETED_TIME = -1", orgId);
+				.fields(AccountConstants.getOrgFields());
+
+		updateBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+		updateBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
 		
 		Map<String, Object> props = FieldUtil.getAsProperties(org);
 		int updatedRows = updateBuilder.update(props);
@@ -56,9 +58,10 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(AccountConstants.getOrgModule().getTableName())
-				.fields(fields)
-				.andCustomWhere("ORGID = ? AND DELETED_TIME = -1", orgId);
+				.fields(fields);
 		
+		updateBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+		updateBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
 		Map<String, Object> props = new HashMap<>();
 		props.put("deletedTime", System.currentTimeMillis());
 		
@@ -74,8 +77,10 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(AccountConstants.getOrgFields())
-				.table(AccountConstants.getOrgModule().getTableName())
-				.andCustomWhere("ORGID = ? AND DELETED_TIME = -1", orgId);
+				.table(AccountConstants.getOrgModule().getTableName());
+		
+		selectBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -89,8 +94,9 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(AccountConstants.getOrgFields())
-				.table(AccountConstants.getOrgModule().getTableName())
-				.andCustomWhere("FACILIODOMAINNAME = ? AND DELETED_TIME = -1", orgDomain);
+				.table(AccountConstants.getOrgModule().getTableName());
+		
+		selectBuilder.andCondition(CriteriaAPI.getCondition("FACILIODOMAINNAME", "domainName", orgDomain, StringOperators.IS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -114,24 +120,19 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
     @Override
 	public List<User> getAllOrgUsersv2(long orgId) throws Exception {
 		
-		List<FacilioField> fields = new ArrayList<>();
+    	List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getAppUserFields());
 		fields.addAll(AccountConstants.getAppOrgUserFields());
 		fields.add(AccountConstants.getOrgIdField());
-		//		fields.addAll(FieldFactory.getShiftUserRelModuleFields());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Account_Users")
 				.innerJoin("Account_ORG_Users")
-				.on("Account_Users.USERID = Account_ORG_Users.USERID")
-//				.leftJoin("Shift_User_Rel")
-//				.on("ORG_Users.ORG_USERID = Shift_User_Rel.ORG_USERID")
-				.andCustomWhere("Account_ORG_Users.ORGID = ? AND USER_TYPE = ? AND DELETED_TIME = -1", orgId, AccountConstants.UserType.USER.getValue());
+				.on("Account_Users.USERID = Account_ORG_Users.USERID");
 		
-		if(AccountUtil.getCurrentAccount().getUser() == null){
-			return null;
-		}
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
 		
 		
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -190,11 +191,11 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 				.select(fields)
 				.table("Account_Users")
 				.innerJoin("Account_ORG_Users")
-				.on("account_Users.USERID = Account_ORG_Users.USERID")
-				.andCustomWhere("ORGID = ? AND USER_TYPE = ? AND DELETED_TIME = -1", orgId, AccountConstants.UserType.USER.getValue())
-				.andCriteria(criteria);
-				;
+				.on("account_Users.USERID = Account_ORG_Users.USERID");
 		
+		selectBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
+	
 		return selectBuilder.get();
 	}
 
@@ -208,9 +209,14 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 				.select(fields)
 				.table("Account_Users")
 				.innerJoin("Account_ORG_Users")
-				.on("Account_Users.USERID = Account_ORG_Users.USERID")
-				.andCustomWhere("ORGID = ? AND USER_STATUS = 1 AND INVITATION_ACCEPT_STATUS = 1 AND USER_VERIFIED = 1 AND USER_TYPE = ? AND DELETED_TIME = -1", orgId, AccountConstants.UserType.USER.getValue());
-
+				.on("Account_Users.USERID = Account_ORG_Users.USERID");
+		
+		selectBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("USER_STATUS", "userStatus", "1", NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("INVITATION_ACCEPT_STATUS", "invitationAcceptStatus", "1", NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("USER_VERIFIED", "userVerified", "1", NumberOperators.EQUALS));
+		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();

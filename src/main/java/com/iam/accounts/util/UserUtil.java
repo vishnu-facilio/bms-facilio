@@ -123,8 +123,8 @@ public class UserUtil {
 
 	public static boolean verifyUser(long userId) throws Exception {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(com.iam.accounts.util.AccountConstants.getAccountsOrgUserFields())
-				.table(com.iam.accounts.util.AccountConstants.getAccountsOrgUserModule().getTableName()).andCustomWhere("ORG_USERID = ?", userId);
+				.select(com.iam.accounts.util.IAMAccountConstants.getAccountsOrgUserFields())
+				.table(com.iam.accounts.util.IAMAccountConstants.getAccountsOrgUserModule().getTableName()).andCustomWhere("ORG_USERID = ?", userId);
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		Long ouid = null;
@@ -134,7 +134,7 @@ public class UserUtil {
 		}
 
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(com.iam.accounts.util.AccountConstants.getAccountsUserModule().getTableName()).fields(com.iam.accounts.util.AccountConstants.getAccountsUserFields())
+				.table(com.iam.accounts.util.IAMAccountConstants.getAccountsUserModule().getTableName()).fields(com.iam.accounts.util.IAMAccountConstants.getAccountsUserFields())
 				.andCustomWhere("USERID = ?", ouid);
 		Map<String, Object> prop = new HashMap<>();
 		prop.put("userVerified", true);

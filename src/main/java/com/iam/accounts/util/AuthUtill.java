@@ -182,8 +182,8 @@ public class AuthUtill {
 			}
 			
 			List<FacilioField> fields = new ArrayList<>();
-			fields.addAll(AccountConstants.getAccountsUserFields());
-			fields.add(AccountConstants.getUserPasswordField());
+			fields.addAll(IAMAccountConstants.getAccountsUserFields());
+			fields.add(IAMAccountConstants.getUserPasswordField());
 			
 			GenericSelectRecordBuilder selectBuilder = new SampleGenericSelectBuilder()
 					.select(fields)
