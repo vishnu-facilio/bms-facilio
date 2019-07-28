@@ -130,27 +130,17 @@ public class UserAction extends FacilioAction {
 	
 
 	public String deletePortalUser() throws Exception {
-//		System.out.println("### Delete portal user :"+user.getEmail());
-//		Connection conn = null;
-//		Statement statement = null;
-//		try	{
-//			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
-//			  checkforTenantPrimaryContact(user.getEmail());
-//			}
-//			Organization org = AccountUtil.getOrgBean().getPortalOrg(AccountUtil.getCurrentOrg().getDomain());
-//			conn = FacilioConnectionPool.INSTANCE.getConnection();
-//			statement = conn.createStatement();
-//			String sql = "delete from faciliorequestors where PORTALID="+org.getPortalId() +" and  email = '"+ user.getEmail()+"';";
-//			System.out.println(sql);
-//			statement.execute(sql);
-//		} catch (SQLException | RuntimeException e) {
-//			log.info("Exception occurred ", e);
-//			error = e.getMessage();
-//			return ERROR;
-//		} finally {
-//			DBUtil.closeAll(conn, statement);
-//		}
-//		portalUserList();
+		System.out.println("### Delete portal user :"+user.getEmail());
+		try	{
+			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
+			  checkforTenantPrimaryContact(user.getEmail());
+			}
+			AccountUtil.getUserBean().deleteUser(user.getOuid());
+		
+		} catch (Exception e) {
+			return ERROR;
+		}
+		portalUserList();
 		return SUCCESS;
 	}
 	
