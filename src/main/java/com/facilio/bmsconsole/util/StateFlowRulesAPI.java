@@ -339,7 +339,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		List<Map<String, Long>> ids = Collections.singletonList(stateIds);
 		
 		List<WorkflowRuleContext> stateFlows = getStateTransitions(ids, types);
-//		evaluateStateFlowAndExecuteActions(stateFlows, moduleName, record, context);
+		evaluateStateFlowAndExecuteActions(stateFlows, moduleName, record, context);
 		
 		return stateFlows;
 	}
