@@ -31,6 +31,7 @@ public class CreateReadingModulesCommand extends FacilioCommand {
 		Boolean overRideSplit = (Boolean) context.get(FacilioConstants.ContextNames.OVER_RIDE_READING_SPLIT);
 		long parentId = (long) context.get(FacilioConstants.ContextNames.PARENT_CATEGORY_ID);
 		AssetCategoryContext assetParentId = AssetsAPI.getCategory(FacilioConstants.ContextNames.CONTROLLER_ASSET);
+		LOGGER.info("parentID:"+parentId+" assetParentID: "+assetParentId.getId());
 		if(parentId == assetParentId.getId()) {
 			 maxFields = 10;
 		}else {
