@@ -5988,8 +5988,8 @@ public class FieldFactory {
 	{
  		List<FacilioField> fields = new ArrayList<>();
  		FacilioModule module = ModuleFactory.getMLLogReadingModule();
- 		fields.add(getField("actualValue","DECIMAL_CF1",module,FieldType.NUMBER));
- 		fields.add(getField("adjustedLowerBound","DECIMAL_CF2",module,FieldType.NUMBER));
+ 		fields.add(getField("daywiseenergy","DECIMAL_CF1",module,FieldType.DECIMAL));
+ 		fields.add(getField("endofmonthenergy","DECIMAL_CF2",module,FieldType.DECIMAL));
   		fields.add(getField("predictedTime","PREDICTED_TIME",module,FieldType.NUMBER));
 
  		return fields;
@@ -5999,8 +5999,8 @@ public class FieldFactory {
 	{
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getMLReadingModule();
-		fields.add(getField("actualValue","DECIMAL_CF1",module,FieldType.NUMBER));
-		fields.add(getField("adjustedLowerBound","DECIMAL_CF2",module,FieldType.NUMBER));
+		fields.add(getField("daywiseenergy","DECIMAL_CF1",module,FieldType.DECIMAL));
+		fields.add(getField("endofmonthenergy","DECIMAL_CF2",module,FieldType.DECIMAL));
 
 		return fields;
 	}

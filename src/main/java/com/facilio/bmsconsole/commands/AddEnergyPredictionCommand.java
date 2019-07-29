@@ -60,10 +60,10 @@ public class AddEnergyPredictionCommand extends FacilioCommand {
 		FacilioField temperatureField = modBean.getField("temperature", FacilioConstants.ContextNames.WEATHER_READING);
 		FacilioField temperatureParentField = modBean.getField("parentId", FacilioConstants.ContextNames.WEATHER_READING);
 	
-		long mlID = addMLModel("predictEnergyWithCelery",logReadingModule.getModuleId(),readingModule.getModuleId());
-		addMLVariables(mlID,energyField.getModuleId(),energyField.getFieldId(),energyParentField.getFieldId(),context.getId(),31536000000l,0);
-		addMLVariables(mlID,markedField.getModuleId(),markedField.getFieldId(),energyParentField.getFieldId(),context.getId(),31536000000l,0);
-		addMLVariables(mlID,temperatureField.getModuleId(),temperatureField.getFieldId(),temperatureParentField.getFieldId(),context.getSiteId(),31536000000l,172800000l);
+		long mlID = addMLModel("predictEnergyWithRQ",logReadingModule.getModuleId(),readingModule.getModuleId());
+		addMLVariables(mlID,energyField.getModuleId(),energyField.getFieldId(),energyParentField.getFieldId(),context.getId(),31536000000l,0,true);
+		addMLVariables(mlID,markedField.getModuleId(),markedField.getFieldId(),energyParentField.getFieldId(),context.getId(),31536000000l,0,false);
+		addMLVariables(mlID,temperatureField.getModuleId(),temperatureField.getFieldId(),temperatureParentField.getFieldId(),context.getSiteId(),31536000000l,172800000l,false);
 		
 		addMLAssetVariables(mlID,context.getId(),"TYPE","Energy Meter");
 		addMLAssetVariables(mlID,context.getSiteId(),"TYPE","Site");
@@ -135,7 +135,7 @@ public class AddEnergyPredictionCommand extends FacilioCommand {
 		builder.insert(FieldUtil.getAsProperties(context));
 	}
 	
-	private void addMLVariables(long mlID,long moduleid,long fieldid,long parentFieldid,long parentid,long maxSamplingPeriod,long futureSamplingPeriod) throws Exception
+	private void addMLVariables(long mlID,long moduleid,long fieldid,long parentFieldid,long parentid,long maxSamplingPeriod,long futureSamplingPeriod,boolean isSource) throws Exception
 	{
 		MLVariableContext variableContext = new MLVariableContext();
 		variableContext.setMlID(mlID);
@@ -145,6 +145,7 @@ public class AddEnergyPredictionCommand extends FacilioCommand {
 		variableContext.setParentID(parentid);
 		variableContext.setMaxSamplingPeriod(maxSamplingPeriod);
 		variableContext.setFutureSamplingPeriod(futureSamplingPeriod);
+		variableContext.setIsSource(isSource);
 		
 		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
 											.table(ModuleFactory.getMLVariablesModule().getTableName())
