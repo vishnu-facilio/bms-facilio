@@ -1182,6 +1182,9 @@ public class WorkOrderAction extends FacilioAction {
 
 	public String closeWorkOrder() throws Exception {
 		FacilioContext context = new FacilioContext();
+		if (StringUtils.isNotEmpty(workOrderString) && workorder == null) {
+			setWorkordercontex(workOrderString);
+		}
 		workorder = new WorkOrderContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CLOSE_WORK_ORDER);
 		context.put(FacilioConstants.ContextNames.ACTUAL_TIMINGS, actualTimings);
@@ -1237,6 +1240,9 @@ public class WorkOrderAction extends FacilioAction {
 
 	public String updateWorkOrder() throws Exception {
 		FacilioContext context = new FacilioContext();
+		if (StringUtils.isNotEmpty(workOrderString) && workorder == null) {
+			setWorkordercontex(workOrderString);
+		}
 		setUpdateWorkorderContext(context);
 		return updateWorkOrder(context);
 	}
