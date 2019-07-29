@@ -24,7 +24,7 @@ fi
 
 if [ "$DEPLOYMENT_GROUP_NAME" = "production_deployment" ]; then
     echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/ubuntu/deployment.log
-    cp $UBUNTU_HOME/deployment-files/context-production.xml $META_INF_DIR/context.xml
+    rm $META_INF_DIR/context.xml
     cp $UBUNTU_HOME/deployment-files/log4j-user.properties $CLASSES_DIR/log4j.properties
     cp $UBUNTU_HOME/setenv.sh $APP_HOME/bin/setenv.sh
     cp $UBUNTU_HOME/deployment-files/awsprops-user.properties $CONF_DIR/awsprops.properties
@@ -34,7 +34,7 @@ fi
 
 if [ "$DEPLOYMENT_GROUP_NAME" = "production-scheduler" ]; then
     echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/ubuntu/deployment.log
-    cp $UBUNTU_HOME/deployment-files/context-production.xml $META_INF_DIR/context.xml
+    rm $META_INF_DIR/context.xml
     cp $UBUNTU_HOME/deployment-files/log4j-scheduler.properties $CLASSES_DIR/log4j.properties
     cp $UBUNTU_HOME/deployment-files/awsprops-scheduler.properties $CONF_DIR/awsprops.properties
     cp $UBUNTU_HOME/setenv.sh $APP_HOME/bin/setenv.sh
@@ -43,7 +43,7 @@ fi
 
 if [ "$DEPLOYMENT_GROUP_NAME" = "production-kinesis" ]; then
     echo "copying $DEPLOYMENT_GROUP_NAME context file" >> /home/ubuntu/deployment.log
-    cp $UBUNTU_HOME/deployment-files/context-production.xml $META_INF_DIR/context.xml
+    rm $META_INF_DIR/context.xml
     cp $UBUNTU_HOME/deployment-files/log4j-kinesis.properties $CLASSES_DIR/log4j.properties
     cp $UBUNTU_HOME/deployment-files/awsprops-kinesis.properties $CONF_DIR/awsprops.properties
     cp $UBUNTU_HOME/setenv.sh $APP_HOME/bin/setenv.sh
