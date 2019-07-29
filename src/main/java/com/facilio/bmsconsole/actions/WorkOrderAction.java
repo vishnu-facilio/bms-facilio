@@ -1321,8 +1321,8 @@ public class WorkOrderAction extends FacilioAction {
 		getWorkOrderChain.execute(context);
 
 		setWorkorder((WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER));
-		setAvailableStates((List<WorkflowRuleContext>) context.get("availableStates"));
-		setCurrentState((FacilioStatus) context.get("currentState"));
+//		setAvailableStates((List<WorkflowRuleContext>) context.get("availableStates"));
+//		setCurrentState((FacilioStatus) context.get("currentState"));
 	}
 	catch (Exception e) {
 		JSONObject inComingDetails = new JSONObject();
