@@ -442,7 +442,8 @@ public class FieldUtil {
 	}
 
 	public static boolean isBaseEntityRootModule (FacilioModule module) {
-		return module.getTypeEnum() == FacilioModule.ModuleType.BASE_ENTITY && module.getExtendModule() == null;
+		return (module.getTypeEnum() == FacilioModule.ModuleType.BASE_ENTITY && module.getExtendModule() == null)
+				|| (module.getTypeEnum() == ModuleType.CUSTOM);
 	}
 
 	public static FacilioField parseFieldJson(JSONObject fieldJson) throws Exception {
