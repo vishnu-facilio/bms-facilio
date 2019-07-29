@@ -3,12 +3,25 @@ package com.facilio.bmsconsole.commands;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.chain.Filter;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
+import com.facilio.modules.SelectRecordsBuilder;
 
 public abstract class FacilioCommand implements Command, Filter {
 	
+	private static final Logger LOGGER = LogManager.getLogger(SelectRecordsBuilder.class.getName());
+	
 	@Override
 	public final boolean execute(Context context) throws Exception {
-		return executeCommand(context);
+		long currentMillis = System.currentTimeMillis();
+		boolean result = executeCommand(context);
+		long executionTime = System.currentTimeMillis() - currentMillis;
+		// if the execution takes more than 50 millis, log them
+		if (executionTime > 50) {
+			LOGGER.debug("### time taken: " + this.getClass().getSimpleName() + ": " + executionTime);
+		}
+		return result;
 	}
 	
 	@Override
