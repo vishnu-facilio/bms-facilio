@@ -11,6 +11,7 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
@@ -20,6 +21,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
@@ -50,7 +52,12 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 
 		Class beanClassName = FacilioConstants.ContextNames.getClassFromModule(module);
 		if (beanClassName == null) {
-			beanClassName = ModuleBaseWithCustomFields.class;
+			if (module.getTypeEnum() == ModuleType.CUSTOM) {
+				beanClassName = CustomModuleData.class;
+			}
+			else {
+				beanClassName = ModuleBaseWithCustomFields.class;
+			}
 		}
 		SelectRecordsBuilder<? extends ModuleBaseWithCustomFields> builder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 															.module(module)

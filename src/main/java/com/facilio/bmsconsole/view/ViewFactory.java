@@ -3840,6 +3840,7 @@ public class ViewFactory {
 		allView.setName("all");
 		allView.setDisplayName("All " + moduleObj.getDisplayName());
 		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		allView.setDefault(true);
 		
 		return allView;
 	}

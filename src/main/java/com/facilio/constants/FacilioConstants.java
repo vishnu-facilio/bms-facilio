@@ -1097,7 +1097,7 @@ public class FacilioConstants {
 				public static final String JOB = "jobContext";
 		public static final String JOB_NAME = "jobName";
 
-		public static final String SUPPORT_STATEFLOW = "supportStateFlow";
+//		public static final String SUPPORT_STATEFLOW = "supportStateFlow";
 		
 		
 		

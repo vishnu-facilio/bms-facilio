@@ -16,6 +16,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -49,19 +50,19 @@ public class ModuleAction extends FacilioAction {
 	}
 	
 
-	private boolean stateFlow = false;
-	public boolean isStateFlow() {
-		return stateFlow;
-	}
-	public void setStateFlow(boolean stateFlow) {
-		this.stateFlow = stateFlow;
-	}
+//	private boolean stateFlow = false;
+//	public boolean isStateFlow() {
+//		return stateFlow;
+//	}
+//	public void setStateFlow(boolean stateFlow) {
+//		this.stateFlow = stateFlow;
+//	}
 	
 	public String v2AddModule() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
 		context.put(FacilioConstants.ContextNames.MODULE_TYPE, moduleType);
-		context.put(FacilioConstants.ContextNames.SUPPORT_STATEFLOW, stateFlow);
+//		context.put(FacilioConstants.ContextNames.SUPPORT_STATEFLOW, stateFlow);
 		
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
 		
@@ -413,8 +414,8 @@ public class ModuleAction extends FacilioAction {
 		Chain dataDetailsChain = ReadOnlyChainFactory.fetchModuleDataDetailsChain();
 		dataDetailsChain.execute(context);
 		
-		setModuleData((ModuleBaseWithCustomFields) context.get(FacilioConstants.ContextNames.RECORD));
-		setResult(FacilioConstants.ContextNames.MODULE_DATA, moduleData);
+//		setModuleData((ModuleBaseWithCustomFields) context.get(FacilioConstants.ContextNames.RECORD));
+		setResult(FacilioConstants.ContextNames.MODULE_DATA, context.get(FacilioConstants.ContextNames.RECORD));
 		
 		return SUCCESS;
 	}
@@ -508,7 +509,7 @@ public class ModuleAction extends FacilioAction {
 			JSONParser parser = new JSONParser();
 			Map<String, Object> data = (Map<String, Object>) parser.parse(dataString);
 			if (moduleData == null) {
-				moduleData = new ModuleBaseWithCustomFields();
+				moduleData = new CustomModuleData();
 			}
 			if (moduleData.getData() == null) {
 				moduleData.setData(new HashMap<>());
@@ -525,11 +526,11 @@ public class ModuleAction extends FacilioAction {
 		this.moduleDatas = moduleDatas;
 	}
 	
-	private ModuleBaseWithCustomFields moduleData;
-	public ModuleBaseWithCustomFields getModuleData() {
+	private CustomModuleData moduleData;
+	public CustomModuleData getModuleData() {
 		return moduleData;
 	}
-	public void setModuleData(ModuleBaseWithCustomFields moduleData) {
+	public void setModuleData(CustomModuleData moduleData) {
 		this.moduleData = moduleData;
 	}
 	

@@ -40,16 +40,14 @@ public class AddSystemFieldsCommand implements Command {
 			mainField.setDisplayType(FieldDisplayType.TEXTBOX);
 			mainField.setMainField(true);
 			mainField.setRequired(true);
+			mainField.setDefault(true);
 			fields.add(mainField);
 			
-			Boolean supportStateFlow = (Boolean) context.get(FacilioConstants.ContextNames.SUPPORT_STATEFLOW);
-			if (supportStateFlow != null && supportStateFlow) {
-				LookupField moduleStateField = (LookupField) FieldFactory.getField("moduleState", "Status", "MODULE_STATE", module, FieldType.LOOKUP);
-				moduleStateField.setLookupModule(modBean.getModule("ticketstatus"));
-				fields.add(moduleStateField);
-				
-				fields.add(FieldFactory.getField("stateFlowId", "State Flow Id", "STATE_FLOW_ID", module, FieldType.NUMBER));
-			}
+			LookupField moduleStateField = (LookupField) FieldFactory.getField("moduleState", "Status", "MODULE_STATE", module, FieldType.LOOKUP);
+			moduleStateField.setLookupModule(modBean.getModule("ticketstatus"));
+			fields.add(moduleStateField);
+			
+			fields.add(FieldFactory.getField("stateFlowId", "State Flow Id", "STATE_FLOW_ID", module, FieldType.NUMBER));
 		}
 		return false;
 	}

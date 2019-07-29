@@ -663,11 +663,18 @@ public class FieldFactory {
 		fields.add(required);
 		
 		FacilioField mainField = new FacilioField();
-		mainField.setName("isMainField");
+		mainField.setName("mainField");
 		mainField.setDataType(FieldType.BOOLEAN);
 		mainField.setColumnName("IS_MAIN_FIELD");
 		mainField.setModule(module);
 		fields.add(mainField);
+		
+		FacilioField defaultField = new FacilioField();
+		defaultField.setName("default");
+		defaultField.setDataType(FieldType.BOOLEAN);
+		defaultField.setColumnName("IS_DEFAULT");
+		defaultField.setModule(module);
+		fields.add(defaultField);
 
 		return fields;
 	}

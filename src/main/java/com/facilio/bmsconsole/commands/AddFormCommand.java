@@ -1,6 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Stream;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
@@ -8,11 +11,14 @@ import org.apache.commons.collections.CollectionUtils;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FacilioForm.LabelPosition;
+import com.facilio.bmsconsole.forms.FormField.Required;
+import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.FacilioField;
 
 public class AddFormCommand extends FacilioCommand {
 
@@ -47,6 +53,19 @@ public class AddFormCommand extends FacilioCommand {
 				for(FormSection section: form.getSections()) {
 					FormsAPI.setFieldDetails(modBean, section.getFields(), moduleName);
 				}
+			}
+			// for custom modules
+			else {
+				List<FacilioField> allFields = modBean.getAllFields(moduleName);
+				List<FormField> formFields = new ArrayList<>();
+				for (FacilioField field : allFields) {
+					if (field.isDefault()) {
+						FormField formField = new FormField(field.getId(), field.getName(), field.getDisplayType(), field.getDisplayName(), Required.REQUIRED, 0, 1);
+						formFields.add(formField);
+					}
+				}
+				FormSection formSection = new FormSection("Untitled", 0, formFields, true);
+				form.setSections(Collections.singletonList(formSection));
 			}
 		}
 		
