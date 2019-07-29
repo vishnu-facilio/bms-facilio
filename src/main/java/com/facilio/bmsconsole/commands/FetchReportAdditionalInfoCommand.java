@@ -142,11 +142,14 @@ public class FetchReportAdditionalInfoCommand extends FacilioCommand {
 			
 			if (parentIds != null) {
 				List<AlarmOccurrenceContext> occurrences = null;
-				occurrences = NewAlarmAPI.getReadingAlarmOccurrences(occurrenceId, report.getDateRange().getStartTime(), report.getDateRange().getEndTime());
-				
-				if (CollectionUtils.isNotEmpty(occurrences)) {
-					for (AlarmOccurrenceContext occurrence: occurrences) {
-						allAlarms.add(occurrence);
+				AlarmOccurrenceContext alarmOccurrence = NewAlarmAPI.getAlarmOccurrence(occurrenceId);
+				if (alarmOccurrence != null && alarmOccurrence.getAlarm() != null) {
+					occurrences = NewAlarmAPI.getReadingAlarmOccurrences(alarmOccurrence.getAlarm().getId(), report.getDateRange().getStartTime(), report.getDateRange().getEndTime());
+					
+					if (CollectionUtils.isNotEmpty(occurrences)) {
+						for (AlarmOccurrenceContext occurrence: occurrences) {
+							allAlarms.add(occurrence);
+						}
 					}
 				}
 			}
