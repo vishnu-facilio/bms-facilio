@@ -43,6 +43,8 @@ public class GetReadingRuleDetailsCommand extends FacilioCommand {
 		
 		Boolean isFromSummary = (Boolean) context.get(FacilioConstants.ContextNames.IS_FROM_SUMMARY);
 		
+		isFromSummary = isFromSummary != null ? isFromSummary : Boolean.FALSE; 
+		
 		if (alarms != null && !alarms.isEmpty() && isFromSummary) {
 			List<Long> ruleIds = alarms.stream()
 										.filter(a -> a instanceof ReadingAlarmContext && ((ReadingAlarmContext) a).getRuleId() != -1)
