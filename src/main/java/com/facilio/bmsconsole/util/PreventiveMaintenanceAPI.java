@@ -2208,14 +2208,14 @@ public class PreventiveMaintenanceAPI {
 
 				Map<String, FacilioField> triggerFieldMap = FieldFactory.getAsMap(triggerFields);
 
-				Criteria halfYearlyCri = new Criteria();
-				halfYearlyCri.addAndCondition(CriteriaAPI.getCondition(triggerFieldMap.get("frequency"), Arrays.asList(3L, 4L, 5L), NumberOperators.EQUALS));
-				List<Map<String, Object>> halfYearlyTriggers = getPMTriggers(halfYearlyCri);
+				Criteria migrationCriteria = new Criteria();
+				migrationCriteria.addAndCondition(CriteriaAPI.getCondition(triggerFieldMap.get("frequency"), Arrays.asList(3L, 4L, 5L), NumberOperators.EQUALS));
+				List<Map<String, Object>> triggersToBeMigrated = getPMTriggers(migrationCriteria);
 
 				Set<Long> inactivePms = getInactivePMs();
 				long currentTime = System.currentTimeMillis();
 				LOGGER.log(Level.SEVERE, "Verifying orgs");
-				for (Map<String, Object> trigger: halfYearlyTriggers) {
+				for (Map<String, Object> trigger: triggersToBeMigrated) {
 					PMTriggerContext pmt = FieldUtil.getAsBeanFromMap(trigger, PMTriggerContext.class);
 
 					if (inactivePms.contains(pmt.getPmId())) {
