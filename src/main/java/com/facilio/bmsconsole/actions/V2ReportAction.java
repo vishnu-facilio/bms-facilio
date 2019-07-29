@@ -1195,7 +1195,7 @@ public class V2ReportAction extends FacilioAction {
 				}
 			}
 		}
-		else if(readingruleContext.getReadingFieldId() > 0) {
+		else if(readingruleContext.getReadingFieldId() > 0 && (readingruleContext.getWorkflow() != null || readingruleContext.getCriteria() != null )) {
 			JSONObject dataPoint = new JSONObject();
 			
 			dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
