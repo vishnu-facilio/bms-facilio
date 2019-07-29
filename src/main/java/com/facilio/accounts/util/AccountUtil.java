@@ -63,7 +63,7 @@ public class AccountUtil {
 		String email = account.getUser().getEmail();
 		
 		User user = null;
-		user = AccountUtil.getUserBean().getFacilioUser(email);
+		user = AccountUtil.getUserBean().getUser(email);
 		account.setUser(user);
 	}
 

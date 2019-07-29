@@ -46,11 +46,7 @@ public interface UserBean {
 	
 	public User getUser(long orgId, long userId) throws Exception;
 
-//	public User getUserInternal(long ouid) throws Exception;
-	
 	public User getUserInternal(long ouid, boolean withRole) throws Exception;
-	
-//	public User getUserFromEmailOrPhone(String email) throws Exception;
 	
 	public User getUserFromPhone(String phone) throws Exception;
 	
@@ -72,7 +68,7 @@ public interface UserBean {
 	
 	public boolean updateUserPhoto(long uid, long fileId) throws Exception;
 
-    public User getFacilioUser(String email) throws Exception;
+    public User getUser(String email) throws Exception;
     
     public User getPortalUsers(String email, long portalId) throws Exception;
     
@@ -95,7 +91,12 @@ public interface UserBean {
 	
 	public boolean verifyUser(long userId) throws Exception;
 
-	public void createUserEntry(long orgId, User user) throws Exception;
+	public List<Map<String, Object>> getUserSessions(long uid, Boolean isActive) throws Exception;
+
+	public void createUserEntry(long orgId, User user, boolean isEmailVerificationNeeded) throws Exception;
+
+	public void sendInvitation(User user) throws Exception;
+    
 
 	
 

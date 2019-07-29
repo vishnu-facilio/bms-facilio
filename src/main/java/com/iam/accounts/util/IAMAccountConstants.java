@@ -365,12 +365,12 @@ public class IAMAccountConstants {
 
 			fields.add(getUserIdField(module));
 
-			/*FacilioField orgId = new FacilioField();
+			FacilioField orgId = new FacilioField();
 			orgId.setName("orgId");
 			orgId.setDataType(FieldType.NUMBER);
 			orgId.setColumnName("ORGID");
 			orgId.setModule(module);
-			fields.add(orgId);*/
+			fields.add(orgId);
 			
 			FacilioField license = new FacilioField();
 			license.setName("license");

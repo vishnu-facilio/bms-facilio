@@ -73,6 +73,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.iam.accounts.dto.Account;
 import com.iam.accounts.exceptions.AccountException;
 import com.iam.accounts.util.AuthUtill;
+import com.iam.accounts.util.IAMAccountConstants;
 import com.iam.accounts.util.UserUtil;
 
 ;
@@ -84,7 +85,7 @@ public class UserBeanImpl implements UserBean {
 	private static Logger log = LogManager.getLogger(UserBeanImpl.class.getName());
 
 	private long getUid(String email) throws Exception {
-		return getFacilioUser(email).getUid();
+		return getUser(email).getUid();
 	}
 
 	private long addUserEntry(User user, boolean emailVerificationRequired) throws Exception {
@@ -99,11 +100,8 @@ public class UserBeanImpl implements UserBean {
 	
 			insertBuilder.addRecord(props);
 			insertBuilder.save();
-			if (emailVerificationRequired && !user.isUserVerified()) {
-				sendEmailRegistration(user);
-			}
 			return user.getUid();
-			}
+		}
 		return existingUser.getUid();
 	}
 
@@ -180,16 +178,19 @@ public class UserBeanImpl implements UserBean {
             updateUser(user);
             return;
         }
+		user.setInviteAcceptStatus(false);
+		user.setInvitedTime(System.currentTimeMillis());
+		user.setUserStatus(true);
 		if(UserUtil.addUser(user, orgId, AccountUtil.getCurrentUser().getEmail()) > 0) {
-			createUserEntry(orgId, user);
+			createUserEntry(orgId, user, false);
 		}
 		
 	}
 	
 	@Override
-	public void createUserEntry(long orgId, User user) throws Exception {
+	public void createUserEntry(long orgId, User user, boolean isEmailVerificationNeeded) throws Exception {
 
-		long uid = addUserEntry(user, true);
+		long uid = addUserEntry(user, isEmailVerificationNeeded);
 		user.setUid(uid);
 		user.setOrgId(orgId);
 		user.setUserType(AccountConstants.UserType.USER.getValue());
@@ -222,6 +223,7 @@ public class UserBeanImpl implements UserBean {
 		insertBuilder.save();
 
 		user.setOuid((long) props.get("ouid"));
+		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, id);
 		context.put(FacilioConstants.ContextNames.MODULE_LIST,
@@ -286,76 +288,9 @@ public class UserBeanImpl implements UserBean {
 		shiftRelInsertBuilder.save();
 	}
 
-	private String getUserLink(User user, String url) throws Exception {
-		String inviteToken = AuthUtill.getResetPasswordToken(user);
-		String hostname = "";
-		if (user.isPortalUser()) {
-			try {
-				Organization org = AccountUtil.getOrgBean().getPortalOrg(user.getPortalId());
-				hostname = "https://" + org.getDomain() + "/service";
-				inviteToken = inviteToken + "&portalid=" + user.getPortalId();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				log.info("Exception occurred ", e);
-			}
-
-		} else {
-			// hostname="https://app."+user.getServerName();
-			return AwsUtil.getConfig("clientapp.url") + "/app" + url + inviteToken;
-		}
-		return hostname + url + inviteToken;
-	}
-
-	public void sendInvitation(long ouid, User user) throws Exception {
-		this.sendInvitation(ouid, user, false);
-	}
-
-	public void sendInvitation(long ouid, User user, boolean registration) throws Exception {
-		user.setOuid(ouid);
-		Map<String, Object> placeholders = new HashMap<>();
-		CommonCommandUtil.appendModuleNameInKey(null, "toUser", FieldUtil.getAsProperties(user), placeholders);
-		CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()), placeholders);
-		CommonCommandUtil.appendModuleNameInKey(null, "inviter", FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeholders);
-		
-			if(user.isPortalUser()) {
-				String inviteLink = getUserLink(user,"/invitation/");
-				if(registration)
-				{
-					inviteLink = getUserLink(user,"/emailregistration/");
-				}
-				placeholders.put("invitelink", inviteLink);
-				AccountEmailTemplate.PORTAL_SIGNUP.send(placeholders);
-
-		}
-		
-		 else {
-			String inviteLink = getUserLink(user, "/invitation/");
-			placeholders.put("invitelink", inviteLink);
-
-			AccountEmailTemplate.INVITE_USER.send(placeholders);
-		}
-
-		String inviteLink = getUserLink(user, "/fconfirm_reset_password/");
-		Map<String, Object> placeholders = new HashMap<>();
-		CommonCommandUtil.appendModuleNameInKey(null, "toUser", FieldUtil.getAsProperties(user), placeholders);
-		placeholders.put("invitelink", inviteLink);
-		
-		AccountEmailTemplate.RESET_PASSWORD.send(placeholders);
-		return true;
-	}
-
-	private void sendEmailRegistration(User user) throws Exception {
-
-		String inviteLink = getUserLink(user, "/emailregistration/");
-		Map<String, Object> placeholders = new HashMap<>();
-		CommonCommandUtil.appendModuleNameInKey(null, "toUser", FieldUtil.getAsProperties(user), placeholders);
-		placeholders.put("invitelink", inviteLink);
-		if (user.getEmail().contains("@facilio.com") || AwsUtil.disableCSP()) {
-			AccountEmailTemplate.EMAIL_VERIFICATION.send(placeholders);
-		} else {
-			AccountEmailTemplate.ALERT_EMAIL_VERIFICATION.send(placeholders);
-		}
-
+	@Override
+	public void sendInvitation(User user) throws Exception {
+	   	
 	}
 
 	@Override
@@ -386,35 +321,32 @@ public class UserBeanImpl implements UserBean {
 	@Override
 	public boolean resendInvite(long ouid) throws Exception {
 
-		User user = getUser(ouid);
-		if (user.getInviteAcceptStatus()) {
-			// invitation already accepted
-			return false;
-		}
-
-		if(UserUtil.resendInvite(user.getOrgId(), user.getUid())) {
+		User appUser = getUser(ouid);
+		if(UserUtil.resendInvite(appUser.getOrgId(), appUser.getUid())){
 			FacilioField invitedTime = new FacilioField();
 			invitedTime.setName("invitedTime");
 			invitedTime.setDataType(FieldType.NUMBER);
 			invitedTime.setColumnName("INVITEDTIME");
 			invitedTime.setModule(AccountConstants.getAppOrgUserModule());
-	
+			
 			List<FacilioField> fields = new ArrayList<>();
 			fields.add(invitedTime);
-	
-			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-					.table(AccountConstants.getAppOrgUserModule().getTableName()).fields(fields);
 			
-			updateBuilder.andCondition(CriteriaAPI.getCondition("ORG_USERID", "orgUserId", String.valueOf(ouid), NumberOperators.EQUALS));
-		
+			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+					.table(AccountConstants.getAppOrgUserModule().getTableName())
+					.fields(fields);
+			
+			updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(appUser.getUid()), NumberOperators.EQUALS));
+			updateBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(appUser.getOrgId()), NumberOperators.EQUALS));
+			
 			Map<String, Object> props = new HashMap<>();
 			props.put("invitedTime", System.currentTimeMillis());
-	
+			
 			int updatedRows = updateBuilder.update(props);
 			if (updatedRows > 0) {
-				sendInvitation(ouid, user);
 				return true;
 			}
+			return false;
 		}
 		return false;
 	}
@@ -550,7 +482,7 @@ public class UserBeanImpl implements UserBean {
 			deletedTime.setColumnName("DELETED_TIME");
 			deletedTime.setModule(AccountConstants.getAppOrgUserModule());
 			
-			User anyOtherOrgUser = getFacilioUser(user.getEmail());
+			User anyOtherOrgUser = getUser(user.getEmail());
 			if(anyOtherOrgUser.getOrgId() == user.getOrgId()) {
 				updateDefaultOrgForUser(user.getUid());
 			}
@@ -869,7 +801,7 @@ public class UserBeanImpl implements UserBean {
 	}
 
 	@Override
-	public User getFacilioUser(String emailOrPhone) throws Exception {
+	public User getUser(String emailOrPhone) throws Exception {
 
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getAppUserFields());
@@ -1162,11 +1094,11 @@ public class UserBeanImpl implements UserBean {
 
 	private long addRequester(long orgId, User user, boolean emailVerification, boolean updateifexist)
 			throws Exception {
-		User portalUser = AuthUtill.getUserBean().getFacilioUserv3(user.getEmail(), user.getCity(), user.getCity());
+		User portalUser = AuthUtill.getUserBean().getFacilioUser(user.getEmail(), user.getCity(), user.getCity());
 		if (portalUser != null) {
 			log.info("Requester email already exists in the portal for org: " + orgId + ", ouid: "
 					+ portalUser.getOuid());
-			return getFacilioUser(portalUser.getEmail()).getOuid();
+			return getUser(portalUser.getEmail()).getOuid();
 		}
 		if(AuthUtill.getUserBean().addUserv2(AccountUtil.getCurrentOrg().getId(), user) > 0) {
 			addUserEntry(user, true);
@@ -1369,42 +1301,10 @@ public class UserBeanImpl implements UserBean {
 
 	@Override
 	public boolean sendResetPasswordLinkv2(User user) throws Exception {
-
-		String inviteLink = getUserLinkv2(user, "/fconfirm_reset_password/");
-		Map<String, Object> placeholders = new HashMap<>();
-		CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(user), placeholders);
-		placeholders.put("invitelink", inviteLink);
-		
-		AccountEmailTemplate.RESET_PASSWORD.send(placeholders);
-		return true;
+		return UserUtil.sendResetPasswordLink(user);
 	}
 	
-	private String getUserLinkv2(User user, String url) throws Exception {
-		String inviteToken = AuthUtill.getResetPasswordToken(user);
-		String hostname = "";
-		if(user.isPortalUser())
-		{
-			try {
-				PortalInfoContext portalInfo = AccountUtil.getOrgBean().getPortalInfo(user.getPortalId(), true);
-				Organization org = AccountUtil.getOrgBean().getOrg(portalInfo.getOrgId());
-				org.setPortalId(portalInfo.getPortalId());
-				
-				hostname = "https://"+org.getDomain()+"/service";
-				inviteToken = inviteToken +"&portalid="+user.getPortalId();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				log.info("Exception occurred ", e);
-			}
-			
-		}
-		else
-		{
-		//	hostname="https://app."+user.getServerName();
-		 return AwsUtil.getConfig("clientapp.url") +"/app"+ url + inviteToken;
-		}
-		return hostname + url + inviteToken;
-	}
-
+	
 	@Override
 	public boolean acceptUser(User user) throws Exception {
 		// TODO Auto-generated method stub
@@ -1524,6 +1424,12 @@ public class UserBeanImpl implements UserBean {
 	public Account getPermalinkAccount(String token, List<String> urls) throws Exception {
 		// TODO Auto-generated method stub
       return UserUtil.getPermalinkAccount(token, urls);
+	}
+
+	@Override
+	public List<Map<String, Object>> getUserSessions(long uid, Boolean isActive) throws Exception {
+		// TODO Auto-generated method stub
+		return UserUtil.getUserSessions(uid, isActive);
 	}
 
 	

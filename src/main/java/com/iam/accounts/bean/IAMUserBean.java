@@ -35,9 +35,9 @@ public interface IAMUserBean {
 	
 	public boolean setDefaultOrgv2(long uid, long orgId) throws Exception;
 	
-	public User getUserv2(long ouid) throws Exception;
+	public User getFacilioUser(long ouid) throws Exception;
 	
-	public User getUserv2(long orgId, String email) throws Exception;
+	public User getFacilioUser(long orgId, String email) throws Exception;
 	
 	public List<Organization> getOrgsv2(long uid) throws Exception;
 	
@@ -45,11 +45,11 @@ public interface IAMUserBean {
 	
 	public boolean updateUserPhoto(long uid, long fileId) throws Exception;
 
-	public User getFacilioUserv3(String email, String orgDomain, String portalDomain) throws Exception;
+	public User getFacilioUser(String email, String orgDomain, String portalDomain) throws Exception;
 	
-    public User getFacilioUserv3(String email, long orgId, String portalDomain) throws Exception;
+    public User getFacilioUser(String email, long orgId, String portalDomain) throws Exception;
     
-    public User getFacilioUserv3(String email) throws Exception;
+    public User getFacilioUser(String email) throws Exception;
     
     public long startUserSessionv2(long uid, String email, String token, String ipAddress, String userAgent, String userType) throws Exception;
     
@@ -67,15 +67,21 @@ public interface IAMUserBean {
 	
 	public String getEncodedTokenv2(User user) throws Exception;
 	
-	public User getUserv2(long orgId, long userId) throws Exception;
+	public User getFacilioUser(long orgId, long userId) throws Exception;
 	
-	public User getUserv2(String email, String portalDomain) throws Exception;
+	public User getFacilioUser(String email, String portalDomain) throws Exception;
 	
 	public String generatePermalinkForURL(String url, long uid, long orgId) throws Exception;
 	    
 	public boolean verifyPermalinkForURL(String token, List<String> url) throws Exception;
 
 	public Account getPermalinkAccount(String token, List<String> url) throws Exception ;
+
+	public void sendInvitation(long ouid, User user, boolean registration) throws Exception;
+
+	public long signUpSuperAdminUserv2(long orgId, User user) throws Exception;
+
+	public boolean sendResetPasswordLinkv2(User user) throws Exception;
 	
 	
 }

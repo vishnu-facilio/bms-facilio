@@ -26,9 +26,7 @@ public class OrgSignUpCommand implements Command{
 		Locale locale = (Locale)context.get("locale");
 		
 		Organization org = addOrg(jObj, locale);
-    	//to be removed
-    	AccountUtil.setCurrentAccount(org.getOrgId());
-       if(org.getOrgId() > 0) {
+		if(org.getOrgId() > 0) {
     		User user = UserUtil.addSuperAdmin(jObj, org.getOrgId());
     		Account acc = AuthUtill.getCurrentAccount(org, user);
     		context.put("account", acc);

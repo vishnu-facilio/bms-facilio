@@ -80,6 +80,7 @@ import com.facilio.screen.util.ScreenUtil;
 import com.facilio.wms.util.WmsApi;
 import com.iam.accounts.dto.Account;
 import com.iam.accounts.util.AuthUtill;
+import com.iam.accounts.util.UserUtil;
 import com.opensymphony.xwork2.ActionContext;
 
 public class LoginAction extends FacilioAction {
@@ -167,7 +168,7 @@ public class LoginAction extends FacilioAction {
 			if (facilioToken != null) {
 				User currentUser = AccountUtil.getCurrentUser();
 				if (currentUser != null) {
-					AuthUtill.logOut(currentUser.getUid(), facilioToken, currentUser.getEmail()
+					UserUtil.logOut(currentUser.getUid(), facilioToken, currentUser.getEmail()
 							);
 				}
 			}

@@ -561,7 +561,7 @@ public class ProcessImportCommand extends FacilioCommand {
 			
 			switch (moduleName) {
 			case "workorder": {
-				User user = AccountUtil.getUserBean().getFacilioUser(value.toString());
+				User user = AccountUtil.getUserBean().getUser(value.toString());
 				Map<String, Object> prop = FieldUtil.getAsProperties(user);
 				return prop;
 			}
@@ -584,7 +584,7 @@ public class ProcessImportCommand extends FacilioCommand {
 				return prop2;
 			}
 			case "users": {
-				User user = AccountUtil.getUserBean().getFacilioUser(value.toString());
+				User user = AccountUtil.getUserBean().getUser(value.toString());
 				if(user == null) {
 					user = new User();
 					user.setEmail(value.toString());

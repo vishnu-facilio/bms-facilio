@@ -6,6 +6,7 @@ import com.facilio.auth.cookie.FacilioCookie;
 import com.iam.accounts.dto.Account;
 import com.iam.accounts.exceptions.AccountException;
 import com.iam.accounts.util.AuthUtill;
+import com.iam.accounts.util.UserUtil;
 
 
 public class AuthenticationUtil {
@@ -44,7 +45,7 @@ public class AuthenticationUtil {
                 }
             }
             try {
-            	Account account = AuthUtill.verifiyFacilioToken(facilioToken, isPortaluser, overrideSessionCheck, currentOrgDomain);
+            	Account account = UserUtil.verifiyFacilioToken(facilioToken, isPortaluser, overrideSessionCheck, currentOrgDomain);
             	return account;
             } 
             catch (AccountException e) {

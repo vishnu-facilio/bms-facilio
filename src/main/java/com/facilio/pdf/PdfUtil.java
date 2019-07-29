@@ -12,6 +12,7 @@ import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.iam.accounts.util.AuthUtill;
+import com.iam.accounts.util.UserUtil;
 
 public class PdfUtil {
 
@@ -35,7 +36,7 @@ public class PdfUtil {
         }
         if(directoryExits){
             try {
-                String token = AuthUtill.createJWT("id", "auth0", username, System.currentTimeMillis()+60*60000,false);
+                String token = UserUtil.createJWT("id", "auth0", username, System.currentTimeMillis()+60*60000,false);
                 File pdfFile = File.createTempFile("report-", format.getExtention(), pdfDirectory);
                 pdfFileLocation = pdfFile.getAbsolutePath();
                 String serverName = AwsUtil.getAppDomain();
@@ -67,7 +68,7 @@ public class PdfUtil {
           
           if(directoryExits) {
         	  try {
-        		  String token = AuthUtill.createJWT("id", "auth0", userName, System.currentTimeMillis()+60*60000,false);
+        		  String token = UserUtil.createJWT("id", "auth0", userName, System.currentTimeMillis()+60*60000,false);
         		  File pdfFile = File.createTempFile("report-", format.getExtention(), pdfDirectory);
                   pdfFileLocation = pdfFile.getAbsolutePath();
                   String serverName = AwsUtil.getAppDomain();

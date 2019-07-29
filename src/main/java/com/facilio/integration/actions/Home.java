@@ -28,6 +28,7 @@ import com.facilio.db.builder.DBUtil;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.fw.BeanFactory;
 import com.iam.accounts.util.AuthUtill;
+import com.iam.accounts.util.UserUtil;
 import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -200,7 +201,7 @@ private static Logger log = LogManager.getLogger(Home.class.getName());
 					setJsonresponse("errorcode", "1");
 					return ERROR;
 				}
-				String jwt = AuthUtill.createJWT("id", "auth0", username, System.currentTimeMillis() + 24 * 60 * 60000,portaluser);
+				String jwt = UserUtil.createJWT("id", "auth0", username, System.currentTimeMillis() + 24 * 60 * 60000,portaluser);
 				System.out.println("Response token is " + jwt);
 				setJsonresponse("token", jwt);
 				setJsonresponse("username", username);
@@ -228,7 +229,7 @@ private static Logger log = LogManager.getLogger(Home.class.getName());
 				System.out.println("#################### facilio.in::: " + request.getServerName());
 				response.addCookie(authmodel);
 				
-				long uid = AccountUtil.getUserBean().getFacilioUser(username).getUid();
+				long uid = AccountUtil.getUserBean().getUser(username).getUid();
 				String userAgent = request.getHeader("User-Agent");
 				userAgent = userAgent != null ? userAgent : "";
 				String userType = (AccountUtil.getCurrentAccount().isFromMobile() ? "mobile" : "web");
@@ -438,7 +439,7 @@ Pragma: no-cache
 	public String generateAuthToken()
 	{
 		System.out.println("generateAuthToken() : username :"+username);
-		String jwt = AuthUtill.createJWT("id", "auth0", username, System.currentTimeMillis()+24*60*60000,false);
+		String jwt = UserUtil.createJWT("id", "auth0", username, System.currentTimeMillis()+24*60*60000,false);
 		System.out.println("Response token is "+ jwt);
 		setJsonresponse("authtoken",jwt);
 		setJsonresponse("username",username);
@@ -503,7 +504,7 @@ Pragma: no-cache
 		long orgId = 0;
         try{
         	
-        	User userObj = AccountUtil.getUserBean().getFacilioUser(customerEmail);
+        	User userObj = AccountUtil.getUserBean().getUser(customerEmail);
         	orgId = userObj.getOrgId();
 		}
 		catch (Exception e) {

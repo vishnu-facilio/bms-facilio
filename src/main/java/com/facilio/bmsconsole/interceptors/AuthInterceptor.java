@@ -30,6 +30,7 @@ import com.facilio.screen.util.ScreenUtil;
 import com.facilio.util.AuthenticationUtil;
 import com.iam.accounts.dto.Account;
 import com.iam.accounts.util.AuthUtill;
+import com.iam.accounts.util.UserUtil;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
@@ -280,7 +281,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 			
 			String deviceToken = FacilioCookie.getUserCookie(request, "fc.deviceToken");
 			if (deviceToken != null && !"".equals(deviceToken)) {
-				long connectedScreenId = Long.parseLong(AuthUtill.validateJWT(deviceToken, "auth0").getSubject().split(AuthUtill.JWT_DELIMITER)[0]);
+				long connectedScreenId = Long.parseLong(UserUtil.validateJWT(deviceToken, "auth0").getSubject().split(UserUtil.JWT_DELIMITER)[0]);
 				RemoteScreenContext remoteScreen = ScreenUtil.getRemoteScreen(connectedScreenId);
 				if (remoteScreen != null) {
 					Account currentAccount = new Account(AccountUtil.getOrgBean().getOrg(remoteScreen.getOrgId()), AccountUtil.getOrgBean().getSuperAdmin(remoteScreen.getOrgId()));

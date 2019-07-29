@@ -595,7 +595,7 @@ public class FacilioAuthAction extends FacilioAction {
 			if (portalId() > 0) {
 				user = AccountUtil.getUserBean().getPortalUsers(getEmailaddress(), portalId());
 			} else {
-				user = AccountUtil.getUserBean().getFacilioUser(getEmailaddress());
+				user = AccountUtil.getUserBean().getUser(getEmailaddress());
 			}
 			if (user != null) {
 				AccountUtil.getUserBean().sendResetPasswordLinkv2(user);
@@ -655,7 +655,7 @@ public class FacilioAuthAction extends FacilioAction {
 	public String generateAuthToken() {
 		LOGGER.info("generateAuthToken() : username :" + getUsername());
 		try {
-			String token = AuthUtill.generateAuthToken(getUsername(), getPassword(), "app");
+			String token = UserUtil.generateAuthToken(getUsername(), getPassword(), "app");
 			if (token != null) {
 				LOGGER.info("Response token is " + token);
 				setJsonresponse("authtoken", token);
@@ -673,7 +673,7 @@ public class FacilioAuthAction extends FacilioAction {
 	public String generatePortalAuthToken() {
 		LOGGER.info("generatePortalAuthToken() : username :" + getUsername());
 		try {
-			String token = AuthUtill.generateportalAuthToken(getUsername(), getPassword(), "app");
+			String token = UserUtil.generateportalAuthToken(getUsername(), getPassword(), "app");
 			if (token != null) {
 				LOGGER.info("Response token is " + token);
 				setJsonresponse("authtoken", token);
@@ -745,14 +745,6 @@ public class FacilioAuthAction extends FacilioAction {
 			try {
 				AccountUtil.getTransactionalUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user);
 				LOGGER.info("user signup done " + user);
-				try {
-					(new UserBeanImpl()).sendInvitation(user.getOuid(), user, true);
-					LOGGER.info("Email invitation sent " + user);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					LOGGER.log(java.util.logging.Level.SEVERE, "unable to send email", e);
-				}
-
 			} catch (InvocationTargetException ie) {
 				Throwable e = ie.getTargetException();
 				if (e.getMessage() != null && e.getMessage().equals("Email Already Registered")) {
@@ -813,7 +805,7 @@ public class FacilioAuthAction extends FacilioAction {
 			if (facilioToken != null) {
 				User currentUser = AccountUtil.getCurrentUser();
 				if (currentUser != null) {
-					AuthUtill.logOut(currentUser.getUid(), facilioToken, currentUser.getEmail()
+					UserUtil.logOut(currentUser.getUid(), facilioToken, currentUser.getEmail()
 							);
 				}
 			}

@@ -223,9 +223,7 @@ public class TenantsAPI {
 		
 		User user = AccountUtil.getUserBean().getPortalUser(userId);
 		if (user.getPortal_verified() == false) {
-		
-			(new UserBeanImpl()).sendInvitation(user.getOuid(), user);
-			
+			(new UserBeanImpl()).resendInvite(user.getOuid());
 		}
 		
 		FacilioModule module = ModuleFactory.getOrgUserModule();

@@ -150,7 +150,7 @@ public class UserAction extends FacilioAction {
 		List<FacilioField> fields = modBean.getAllFields(tenantModule.getName());
 		
 		
-		User requestorToBeDeleted = AccountUtil.getUserBean().getFacilioUser(email);
+		User requestorToBeDeleted = AccountUtil.getUserBean().getUser(email);
 		
 		SelectRecordsBuilder<TenantContext> selectBuilder = new SelectRecordsBuilder<TenantContext>()
 												.table(tenantModule.getTableName())
@@ -356,7 +356,7 @@ public class UserAction extends FacilioAction {
 			PortalInfoContext portalInfo = AccountUtil.getOrgBean().getPortalInfo(AccountUtil.getCurrentOrg().getOrgId(), false);
 			long portalid = portalInfo.getPortalId();
 			user.setPortalId(portalid);
-			(new UserBeanImpl()).sendInvitation(user.getOuid(), user);
+			(new UserBeanImpl()).resendInvite(user.getOuid());
 		}
 		else
 		{
