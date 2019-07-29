@@ -158,7 +158,7 @@ public class GetWorkOrderListCommand extends FacilioCommand {
 			selectBuilder.orderBy(orderBy);
 		}
 		if (count != null) {
-
+			selectBuilder.setAggregation();
 		}
 		else {
 			JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);

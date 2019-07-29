@@ -21,8 +21,12 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
 
 public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implements DeleteBuilderIfc<E> {
+	private static final int RECORDS_PER_BATCH = 2000;
+
 	private GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder();
 	private SelectRecordsBuilder<E> selectBuilder = new SelectRecordsBuilder<E>();
 	private UpdateRecordBuilder<E> updateBuilder = new UpdateRecordBuilder<E>();
@@ -30,6 +34,7 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	private FacilioModule module;
 	private WhereBuilder where = new WhereBuilder();
 	private int level = 1;
+	private int recordsPerBatch = RECORDS_PER_BATCH;
 	
 	public DeleteRecordBuilder<E> moduleName (String moduleName) {
 		selectBuilder.moduleName(moduleName);
@@ -127,14 +132,19 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		where.orCriteria(criteria);
 		return this;
 	}
-	
+
+	public DeleteRecordBuilder<E> recordsPerBatch (int recordsPerBatch) {
+		this.recordsPerBatch = recordsPerBatch;
+		return this;
+	}
+
 	@Override
 	public int delete() throws Exception {
 		// TODO Auto-generated method stub
 		checkForNull();
 		List<Long> ids = getIds();
 		
-		if (ids != null && !ids.isEmpty()) {
+		if (CollectionUtils.isNotEmpty(ids)) {
 			FacilioModule currentModule = module;
 			FacilioModule extendedModule = module.getExtendModule();
 			int currentLevel = maxLevel();
@@ -146,10 +156,20 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 				currentLevel--;
 			}
 			deleteBuilder.table(currentModule.getTableName());
-//			WhereBuilder orgWhere = getWhereWithOrgIdAndModuleId(currentModule);
-			deleteBuilder//.andCustomWhere(orgWhere.getWhereClause(), orgWhere.getValues())
-							.andCondition(CriteriaAPI.getIdCondition(ids, currentModule));
-			return deleteBuilder.delete();
+			if (ids.size() <= recordsPerBatch) {
+				deleteBuilder.andCondition(CriteriaAPI.getIdCondition(ids, currentModule));
+				return deleteBuilder.delete();
+			}
+			else {
+				int deletedRecords = 0;
+				List<List<Long>> chunks = ListUtils.partition(ids, recordsPerBatch);
+				for (List<Long> idList : chunks) {
+					GenericDeleteRecordBuilder chunkDeleteBuilder = new GenericDeleteRecordBuilder(deleteBuilder);
+					deleteBuilder.andCondition(CriteriaAPI.getIdCondition(ids, currentModule));
+					deletedRecords += deleteBuilder.delete();
+				}
+				return deletedRecords;
+			}
 		}
 		return 0;
 	}
@@ -182,8 +202,11 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	}
 	
 	private List<Long> getIds() throws Exception {
-		selectBuilder.select(Collections.singletonList(FieldFactory.getIdField(module)))
-						.andCustomWhere(where.getWhereClause(),  where.getValues());
+		FacilioField idField = FieldFactory.getIdField(module);
+		selectBuilder.select(Collections.singletonList(idField))
+						.andCustomWhere(where.getWhereClause(),  where.getValues())
+						.orderBy(idField.getCompleteColumnName())
+						;
 		List<Map<String, Object>> ids = selectBuilder.getAsProps();
 		if (ids != null && !ids.isEmpty()) {
 			return ids.stream().map(id -> (Long)id.get("id")).collect(Collectors.toList());
