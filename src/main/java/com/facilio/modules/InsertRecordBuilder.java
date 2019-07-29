@@ -27,6 +27,7 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	private Map<Long, List<UpdateChangeSet>> changeSet;
 	private boolean isWithLocalIdModule;
 	private Connection conn = null;
+	private int recordsPerBatch = -1;
 
 	public InsertRecordBuilder () {
 		// TODO Auto-generated constructor stub
@@ -58,14 +59,18 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		this.fields = fields;
 		return this;
 	}
-	
+
+	@Override
+	public InsertRecordBuilder<E> recordsPerBatch(int recordsPerBatch) {
+		this.recordsPerBatch = recordsPerBatch;
+		return this;
+	}
+
 	public InsertRecordBuilder<E> level(int level) {
 		this.level = level;
 		return this;
 	}
-	
 
-	
 	@Override
 	public InsertRecordBuilder<E> addRecord(E bean) {
 		this.records.add(bean);
@@ -175,6 +180,10 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 				
 				if (conn != null) {
 					insertBuilder.useExternalConnection(conn);
+				}
+
+				if (recordsPerBatch != -1) {
+					insertBuilder.recordsPerBatch(recordsPerBatch);
 				}
 				
 				insertBuilder.save();
