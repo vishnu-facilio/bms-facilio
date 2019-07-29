@@ -178,7 +178,6 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			selectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 					.table(module.getTableName())
 					.module(module)
-//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 					.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
 					.andCriteria(dbParamContext.getCriteria())
 					;
@@ -186,14 +185,6 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			if (FieldUtil.isSiteIdFieldPresent(module) && AccountUtil.getCurrentSiteId() > 0) {
 				selectBuilder.andCondition(CriteriaAPI.getCurrentSiteIdCondition(module));
 			}
-//			if (AccountUtil.getCurrentUser() == null) {															// should have been handled in builder itself
-//				User user = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
-//				AccountUtil.getCurrentAccount().setUser(user);
-//			}
-//			Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(module.getName());
-//			if (scopeCriteria != null) {
-//				selectBuilder.andCriteria(scopeCriteria);
-//			}
 			
 			
 			if(dbParamContext.getFieldName() != null) {
@@ -211,7 +202,15 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 				
 				if(dbParamContext.getAggregateOpperator() != null) {
 					AggregateOperator expAggregateOpp = dbParamContext.getAggregateOpperator();
-					selectBuilder.aggregate(expAggregateOpp, select);
+					
+					FacilioField aggrField = select;
+					if(dbParamContext.getAggregateFieldName() != null) {
+						aggrField = modBean.getField(dbParamContext.getAggregateFieldName(), module.getName());
+						selectFields.add(select);
+					}
+					
+					selectBuilder.aggregate(expAggregateOpp, aggrField);
+					
 					if(expAggregateOpp.equals(AggregateOperator.SpecialAggregateOperator.FIRST_VALUE)) {
 						selectBuilder.limit(1);
 					}
@@ -336,7 +335,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 		
 		if(props != null && !props.isEmpty()) {
 			
-			if(dbParamContext.getFieldName() == null && dbParamContext.getAggregateString() == null) {
+			if((dbParamContext.getFieldName() == null && dbParamContext.getAggregateString() == null) || (dbParamContext.getAggregateString() != null && dbParamContext.getAggregateFieldName() != null && dbParamContext.getGroupBy() != null)) {
 				result = props;
 			}
 			else if(dbParamContext.getAggregateString() == null || dbParamContext.getAggregateString().equals("")) {

@@ -12,6 +12,7 @@ public class DBParamContext {
 	
 	String fieldName;
 	String aggregateString;
+	String aggregateFieldName;
 	Pair<Integer, Integer> range;
 	String sortByFieldName;
 	String sortOrder;
@@ -89,6 +90,13 @@ public class DBParamContext {
 	}
 	public void setSortOrder(String sortOrder) {
 		this.sortOrder = sortOrder;
+	}
+	
+	public String getAggregateFieldName() {
+		return aggregateFieldName;
+	}
+	public void setAggregateFieldName(String aggregateFieldName) {
+		this.aggregateFieldName = aggregateFieldName;
 	}
 
 	@Override

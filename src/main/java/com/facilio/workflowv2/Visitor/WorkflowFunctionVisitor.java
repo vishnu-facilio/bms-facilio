@@ -665,7 +665,19 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
 		if(ctx.db_param_aggr(0) != null) {
 			Value aggrValue = this.visit(ctx.db_param_aggr(0).expr());
 			WorkflowV2Util.checkForNullAndThrowException(aggrValue, ctx.db_param_aggr(0).expr().getText());
-			dbParamContext.setAggregateString(aggrValue.asString());
+			String aggRes = aggrValue.asString();
+			
+			if(aggRes.contains(",")) {
+				String[] aggrValues = aggRes.split(",");
+				String aggrString = aggrValues[0];
+				String aggrFieldName = aggrValues[1];
+				
+				dbParamContext.setAggregateString(aggrString);
+				dbParamContext.setAggregateFieldName(aggrFieldName);
+			}
+			else {
+				dbParamContext.setAggregateString(aggRes);
+			}
 		}
 		if(ctx.db_param_limit(0) != null) {
 			Value limitValue = this.visit(ctx.db_param_limit(0).expr());
