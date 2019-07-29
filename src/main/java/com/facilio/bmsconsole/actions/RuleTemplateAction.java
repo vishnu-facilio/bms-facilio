@@ -47,6 +47,7 @@ public class RuleTemplateAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TEMPLATE_ID, id);
 		context.put(FacilioConstants.ContextNames.PLACE_HOLDER, placeHolder);
+		context.put(FacilioConstants.ContextNames.IS_EDIT_TEMPLATE, false);
 		Chain createRuleChain = TransactionChainFactory.getAddTemplateToRules();
 		createRuleChain.execute(context);
 		setResult("rule", id);

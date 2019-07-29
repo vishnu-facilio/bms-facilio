@@ -41,8 +41,13 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
+import com.facilio.events.constants.EventConstants.EventFieldFactory;
+import com.facilio.events.context.EventContext;
+import com.facilio.events.util.EventAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.BaseLineContext;
 import com.facilio.modules.BaseLineContext.AdjustType;
@@ -72,6 +77,7 @@ public class FetchCardDataCommand extends FacilioCommand {
 		Long baseSpaceId = (Long) context.get(FacilioConstants.ContextNames.WIDGET_BASESPACE_ID);
 		WorkflowContext workflow = (WorkflowContext) context.get(FacilioConstants.ContextNames.WIDGET_WORKFLOW);
 		JSONObject paramsJson = (JSONObject) context.get(FacilioConstants.ContextNames.WIDGET_PARAMJSON);
+		Boolean isRca = (Boolean) context.get(FacilioConstants.ContextNames.IS_RCA);
 		ReportSpaceFilterContext reportSpaceFilterContext = (ReportSpaceFilterContext)  context.get(FacilioConstants.ContextNames.WIDGET_REPORT_SPACE_FILTER_CONTEXT);
 		
 		if(widgetId != null) {
@@ -233,7 +239,7 @@ public class FetchCardDataCommand extends FacilioCommand {
 					Long ruleId = (Long) paramsJson.get("ruleId");
 					
 					DateOperators operator = (DateOperators)Operator.getOperator(dateOperator);
-					result = getResourceAlarmBar(parentId, ruleId, operator.getRange(dateValue));
+					result = getResourceAlarmBar(parentId, ruleId, operator.getRange(dateValue), isRca);
 					context.put(FacilioConstants.ContextNames.RESULT, result);
 					return false;
 				}
@@ -393,17 +399,40 @@ public class FetchCardDataCommand extends FacilioCommand {
 		}
 		return false;
 	}
-	private Map<String,Object> getResourceAlarmBar(Long resourceId,Long ruleId, DateRange dateRange) throws Exception {
+	private Map<String,Object> getResourceAlarmBar(Long resourceId,Long ruleId, DateRange dateRange, Boolean isRCA) throws Exception {
 		
 		Map<String,Object> result = new HashMap<>();
 		List<Long> resourceIds = resourceId != null && resourceId != -1 ? Collections.singletonList(resourceId) : null;
-		List<ReadingAlarmContext> allAlarms = AlarmAPI.getReadingAlarms(resourceIds, ruleId, -1, dateRange.getStartTime(), dateRange.getEndTime(), false);
+		if (!isRCA) {
+			List<ReadingAlarmContext> allAlarms = AlarmAPI.getReadingAlarms(resourceIds, ruleId, -1, dateRange.getStartTime(), dateRange.getEndTime(), false);
+			
+			Map<Long, ReadingAlarmContext> alarmMap = new HashMap<>();
+			
+			JSONArray json = FetchReportAdditionalInfoCommand.splitAlarms(allAlarms, dateRange, alarmMap);
+			result.put("alarms", json);
+			result.put("alarmInfo", alarmMap);
+		} else {
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(EventFieldFactory.getEventFields());
+			
+			Criteria criteria = new Criteria();
+			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("subRuleId"), ruleId.toString(), NumberOperators.EQUALS));
+			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), dateRange.getStartTime() + "," + dateRange.getEndTime(),DateOperators.BETWEEN));
+			
+			List<EventContext> events = EventAPI.getEvent(criteria);
+			
+			if(events != null) {
+				Map<Long,EventContext> eventIdMap = new HashMap<>();
+				Map<Long,EventContext> eventCreationTimeMap = new HashMap<>();
+				
+				for(EventContext event :events) {
+					eventIdMap.put(event.getId(), event);
+					eventCreationTimeMap.put(event.getCreatedTime(), event);
+				}
+				result.put("events", FetchReportAdditionalInfoCommand.splitEvents(dateRange, eventCreationTimeMap,events));
+				result.put("eventInfo", eventIdMap);
+			}
+		}
 		
-		Map<Long, ReadingAlarmContext> alarmMap = new HashMap<>();
-		
-		JSONArray json = FetchReportAdditionalInfoCommand.splitAlarms(allAlarms, dateRange, alarmMap);
-		result.put("alarms", json);
-		result.put("alarmInfo", alarmMap);
 		
 		return result;
 	}

@@ -101,6 +101,7 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 				List<FacilioField> selectedEventFields = new ArrayList<>();
 				selectedEventFields.add(eventFieldsMap.get("subRuleId"));
 				selectedEventFields.add(eventFieldsMap.get("resourceId"));
+				selectedEventFields.add(eventFieldsMap.get("source"));
 				selectedEventFields.addAll(FieldFactory.getCountField(eventModule));			
 				GenericSelectRecordBuilder genericSelectRecordBuilder = new GenericSelectRecordBuilder()
 						.table(eventModule.getTableName())
@@ -151,7 +152,6 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 					return (long) hsp.get("id");
 					}).collect(Collectors.toList());
 				Map<Long, ResourceContext> resources = ResourceAPI.getResourceAsMapFromIds(resourcesId);
-				System.out.println("resourcesId" + resourcesId.size());
 				for (Map<String, Object> prop : props) {
 					HashMap<Object,Object> resourceId =  (HashMap<Object, Object>) prop.get("resource");
 					prop.put("subject", resources.get((long) resourceId.get("id")).getName());

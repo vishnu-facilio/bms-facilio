@@ -6551,6 +6551,17 @@ public class DashboardAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	private Boolean isRca;
+	
+	public Boolean getIsRca() {
+		if(isRca != null) {
+			return isRca.booleanValue();
+		}
+		return false;
+		}
+	public void setIsRca(Boolean isRca) {
+		this.isRca = isRca;
+	}
 	private List<DerivationContext> derivations;
 	public List<DerivationContext> getDerivations() {
 		return derivations;
@@ -6989,7 +7000,7 @@ public class DashboardAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.WIDGET_WORKFLOW, workflow);
 		context.put(FacilioConstants.ContextNames.WIDGET_PARAMJSON, paramsJson);
 		context.put(FacilioConstants.ContextNames.WIDGET_REPORT_SPACE_FILTER_CONTEXT, reportSpaceFilterContext);
-		
+		context.put(FacilioConstants.ContextNames.IS_RCA, getIsRca());
 		fetchCardData.execute(context);
 		
 		setCardResult(context.get(FacilioConstants.ContextNames.RESULT));
