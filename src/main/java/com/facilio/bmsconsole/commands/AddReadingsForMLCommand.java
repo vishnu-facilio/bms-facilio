@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.MLContext;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -99,6 +100,7 @@ public class AddReadingsForMLCommand extends FacilioCommand {
 		catch(Exception e)
 		{
 			LOGGER.fatal("Error while updating Result in DB", e);
+			AwsUtil.sendErrorMail(mlContext.getOrgId(), mlContext.getId(), e.toString());
 			throw e;
 		}
 		return false;

@@ -77,6 +77,10 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 			}
 			mlContext.setMlVariablesDataMap(variables.getParentID(), variableField.getName(), data);
 		}
+		if(mlContext.isEmptyDataMap()==true)
+		{
+			AwsUtil.sendErrorMail(mlContext.getOrgId(), mlContext.getId(), "empty MLVariableDataMAp in GetReadingsFor MLCommand");
+		}
 		
 		List<MLVariableContext> mlCriteriaVariable = mlContext.getMLCriteriaVariables();
 		if(mlCriteriaVariable!=null)

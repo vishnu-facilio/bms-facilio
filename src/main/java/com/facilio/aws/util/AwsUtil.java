@@ -16,6 +16,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -114,6 +115,7 @@ import com.facilio.db.builder.DBUtil;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.db.transaction.FacilioTransactionManager;
 import com.facilio.email.EmailUtil;
+import com.facilio.time.DateTimeUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class AwsUtil 
@@ -984,6 +986,34 @@ public class AwsUtil
     	return orgDomainName;
 	}
 	
+	public static void sendErrorMail(long orgid,long ml_id,String error)
+	{
+		try
+		{
+			JSONObject json = new JSONObject();
+			json.put("sender", "mlerror@facilio.com");
+			json.put("to", "ai@facilio.com");
+			json.put("subject", orgid+" - "+ml_id);
+			
+			StringBuilder body = new StringBuilder()
+									.append(error)
+									.append("\n\nInfo : \n--------\n")
+									.append("\n Org Time : ").append(DateTimeUtil.getDateTime())
+									.append("\n Indian Time : ").append(DateTimeUtil.getDateTime(ZoneId.of("Asia/Kolkata")))
+									.append("\n\nMsg : ")
+									.append(error)
+									.append("\n\nOrg Info : \n--------\n")
+									.append(orgid)
+									;
+			json.put("message", body.toString());
+			
+			sendEmail(json);
+		}
+		catch(Exception e)
+		{
+			LOGGER.error("Error while sending mail ",e);
+		}
+	}
 	
 	private static MimeMessage getEmailMessage(JSONObject mailJson, Map<String,String> files) throws Exception {
 	 	String DefaultCharSet = MimeUtility.getDefaultJavaCharset();

@@ -40,70 +40,77 @@ public class GenerateMLModelCommand extends FacilioCommand {
 		}
 		else
 		{
-			JSONObject postObj = new JSONObject();
-			postObj.put("ml_id",mlContext.getId());
-			postObj.put("orgid", mlContext.getOrgId());
-			postObj.put("date", getCurrentDate(mlContext));
-			
-			JSONObject modelVariables = new JSONObject();
-			if(mlContext.getMLModelVariable()!=null)
-			{
-				for(MLModelVariableContext modelVariableContext : mlContext.getMLModelVariable())
+			try {
+				JSONObject postObj = new JSONObject();
+				postObj.put("ml_id",mlContext.getId());
+				postObj.put("orgid", mlContext.getOrgId());
+				postObj.put("date", getCurrentDate(mlContext));
+				
+				JSONObject modelVariables = new JSONObject();
+				if(mlContext.getMLModelVariable()!=null)
 				{
-					modelVariables.put(modelVariableContext.getVariableKey(), modelVariableContext.getVariableValue());
-				}
-			}
-			postObj.put("modelvariables",modelVariables);
-			
-			JSONArray assetVariables = new JSONArray();
-			
-			if(mlContext.getAssetVariables()!=null)
-			{
-				Set<Long> assetIDList = mlContext.getAssetVariables().keySet();
-				for(long assetID:assetIDList)
-				{
-					JSONObject data = new JSONObject();
-					HashMap<String,String> assetVariablesMap= mlContext.getAssetVariables().get(assetID);
-					Set<String> keySet = assetVariablesMap.keySet();
-					JSONObject variableMap = new JSONObject();
-					for(String key:keySet)
+					for(MLModelVariableContext modelVariableContext : mlContext.getMLModelVariable())
 					{
-						variableMap.put(key, assetVariablesMap.get(key));
+						modelVariables.put(modelVariableContext.getVariableKey(), modelVariableContext.getVariableValue());
 					}
-					data.put(""+assetID, variableMap);
-					assetVariables.put(data);
 				}
-			}
-			postObj.put("assetdetails", assetVariables);
-			
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			JSONArray ip = new JSONArray();
-			for(MLVariableContext variableContext : mlContext.getMLVariable())
-			{
-				FacilioField field =modBean.getField(variableContext.getFieldID());
-				ip.put(field.getName());
-			}
-			postObj.put("inputmetrics",ip);
-			
-			JSONArray op = new JSONArray();
-			FacilioModule module = modBean.getModule(mlContext.getPredictionLogModuleID());
-			if(module!=null)
-			{
-				List<FacilioField> fields = modBean.getAllFields(module.getName());
-				for(FacilioField field:fields)
+				postObj.put("modelvariables",modelVariables);
+				
+				JSONArray assetVariables = new JSONArray();
+				
+				if(mlContext.getAssetVariables()!=null)
 				{
-					op.put(field.getName());
+					Set<Long> assetIDList = mlContext.getAssetVariables().keySet();
+					for(long assetID:assetIDList)
+					{
+						JSONObject data = new JSONObject();
+						HashMap<String,String> assetVariablesMap= mlContext.getAssetVariables().get(assetID);
+						Set<String> keySet = assetVariablesMap.keySet();
+						JSONObject variableMap = new JSONObject();
+						for(String key:keySet)
+						{
+							variableMap.put(key, assetVariablesMap.get(key));
+						}
+						data.put(""+assetID, variableMap);
+						assetVariables.put(data);
+					}
 				}
+				postObj.put("assetdetails", assetVariables);
+				
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				JSONArray ip = new JSONArray();
+				for(MLVariableContext variableContext : mlContext.getMLVariable())
+				{
+					FacilioField field =modBean.getField(variableContext.getFieldID());
+					ip.put(field.getName());
+				}
+				postObj.put("inputmetrics",ip);
+				
+				JSONArray op = new JSONArray();
+				FacilioModule module = modBean.getModule(mlContext.getPredictionLogModuleID());
+				if(module!=null)
+				{
+					List<FacilioField> fields = modBean.getAllFields(module.getName());
+					for(FacilioField field:fields)
+					{
+						op.put(field.getName());
+					}
+				}
+				postObj.put("outputmetrics",op);
+				postObj.put("data", constructJSONArray(mlContext.getMlVariablesDataMap()));
+				
+				String postURL=AwsUtil.getAnomalyPredictAPIURL() + "/"+mlContext.getModelPath();
+				Map<String, String> headers = new HashMap<>();
+				headers.put("Content-Type", "application/json");
+				LOGGER.info(" Sending request to ML Server "+postURL+"::"+mlContext.getId());
+				String result = AwsUtil.doHttpPost(postURL, headers, null, postObj.toString());
+				mlContext.setResult(result);
 			}
-			postObj.put("outputmetrics",op);
-			postObj.put("data", constructJSONArray(mlContext.getMlVariablesDataMap()));
-			
-			String postURL=AwsUtil.getAnomalyPredictAPIURL() + "/"+mlContext.getModelPath();
-			Map<String, String> headers = new HashMap<>();
-			headers.put("Content-Type", "application/json");
-			LOGGER.info(" Sending request to ML Server "+postURL+"::"+mlContext.getId());
-			String result = AwsUtil.doHttpPost(postURL, headers, null, postObj.toString());
-			mlContext.setResult(result);
+			catch(Exception e) {
+				LOGGER.error("error while generateMLModele",e);
+				AwsUtil.sendErrorMail(mlContext.getOrgId(), mlContext.getId(), e.toString());
+				throw e;
+			}
 		}
 		return false;
  	}
