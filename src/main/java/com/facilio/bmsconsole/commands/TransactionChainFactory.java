@@ -821,7 +821,7 @@ public class TransactionChainFactory {
 			return c;
 		}
 		public static Chain getAddWorkOrderChain() {
-			Chain c = getDefaultChain();
+			Chain c = getDefaultChain(); 
 			c.addCommand(new PMSettingsCommand());
 			c.addCommand(new GetFormMetaCommand());
 			c.addCommand(new ValidateFormCommand());
@@ -903,6 +903,9 @@ public class TransactionChainFactory {
 			);
 			c.addCommand(new ConstructTicketNotesCommand());
 			c.addCommand(getAddNotesChain());
+			c.addCommand(new AddAttachmentCommand());
+			c.addCommand(new AttachmentContextCommand());
+			c.addCommand(new AddAttachmentRelationshipCommand());
 			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}
