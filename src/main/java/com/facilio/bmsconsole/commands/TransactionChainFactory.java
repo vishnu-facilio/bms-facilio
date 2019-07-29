@@ -1498,6 +1498,14 @@ public class TransactionChainFactory {
 			c.addCommand(new InstanceAssetMappingCommand());
 			return c;
 		}
+
+		public static Chain updateAutoCommissionCommand() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AutoCommissionCommand());
+			c.addCommand(new updateControllerDataCommand());
+			return c;
+		}
+		
 		
 		public static Chain getMarkUnmodeledInstanceChain() {
 			Chain c = getDefaultChain();

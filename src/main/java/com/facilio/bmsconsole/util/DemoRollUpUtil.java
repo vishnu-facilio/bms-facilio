@@ -14,19 +14,16 @@ public class DemoRollUpUtil {
 		Map<String, List<String>> tablesContainsDateField = new HashMap<String, List<String>>();
 
 		tablesContainsDateField.put("Organizations" , Arrays.asList("CREATED_TIME"));
-//		tablesContainsDateField.put("UserSessions" , Arrays.asList("START_TIME"));
-//		tablesContainsDateField.put("User_Mobile_Setting" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("FacilioFile" ,Arrays.asList("UPLOADED_TIME"));
 		tablesContainsDateField.put("Role" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("ORG_Users" , Arrays.asList("INVITEDTIME"));
 		tablesContainsDateField.put("Site" , Arrays.asList("DATE_CF1","DATE_CF2","DATE_CF3","DATE_CF4","DATE_CF5","DATETIME_CF1","DATETIME_CF2","DATETIME_CF3","DATETIME_CF4","DATETIME_CF5"));
 		tablesContainsDateField.put("System_Jobs" , Arrays.asList("LAST_EXECUTION_TIME"));
 		tablesContainsDateField.put("Groups" , Arrays.asList("CREATED_TIME"));
-		tablesContainsDateField.put("Shift_Readings" , Arrays.asList("ACTUAL_TTIME","TTIME"));//day,month
-//		tablesContainsDateField.put("SingleDayBusinessHours" , Arrays.asList("START_TIME","END_TIME"));
+		tablesContainsDateField.put("Shift_Readings" , Arrays.asList("ACTUAL_TTIME","TTIME"));
 		tablesContainsDateField.put("ResizedFile" , Arrays.asList("GENERATED_TIME","EXPIRY_TIME"));
 		tablesContainsDateField.put("Workflow_Log" , Arrays.asList("EXECUTION_TIME"));
-		tablesContainsDateField.put("Current_Occupancy_Reading" , Arrays.asList("ACTUAL_TTIME","TTIME"));//day
+		tablesContainsDateField.put("Current_Occupancy_Reading" , Arrays.asList("ACTUAL_TTIME","TTIME"));
 		tablesContainsDateField.put("Assigned_Occupancy_Reading" , Arrays.asList("ACTUAL_TTIME","TTIME"));
 		tablesContainsDateField.put("Temperature_Reading" , Arrays.asList("ACTUAL_TTIME","TTIME"));
 		tablesContainsDateField.put("Humidity_Reading" , Arrays.asList("ACTUAL_TTIME","TTIME"));
@@ -86,8 +83,8 @@ public class DemoRollUpUtil {
 		tablesContainsDateField.put("Asset_Photos" , Arrays.asList("TTIME"));
 		tablesContainsDateField.put("Asset_Attachments" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("Asset_Notes" , Arrays.asList("CREATED_TIME"));
-		tablesContainsDateField.put("Tenants" , Arrays.asList("CREATED_TIME","MODIFIED_TIME","IN_TIME","OUT_TIME"));//
-		tablesContainsDateField.put("Tickets" , Arrays.asList("DUE_DATE","SCHEDULED_START","ESTIMATED_START","ACTUAL_WORK_START","ACTUAL_WORK_END"));
+		tablesContainsDateField.put("Tenants" , Arrays.asList("CREATED_TIME","MODIFIED_TIME","IN_TIME","OUT_TIME"));
+		tablesContainsDateField.put("Tickets" , Arrays.asList("DUE_DATE","SCHEDULED_START","ESTIMATED_START","ESTIMATED_END","ACTUAL_WORK_START","ACTUAL_WORK_END","ACTUAL_WORK_DURATION","ESTIMATED_WORK_DURATION"));
 		tablesContainsDateField.put("Ticket_Attachments" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("Ticket_Notes" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("WorkOrderRequests" , Arrays.asList("DATETIME_CF1","DATETIME_CF2","DATETIME_CF3","DATETIME_CF4"));
@@ -122,7 +119,6 @@ public class DemoRollUpUtil {
 		tablesContainsDateField.put("Points" , Arrays.asList("CREATED_TIME","MAPPED_TIME"));
 		tablesContainsDateField.put("Unmodeled_Data" , Arrays.asList("TTIME"));
 		tablesContainsDateField.put("Instance_To_Asset_Mapping" , Arrays.asList("MAPPED_TIME"));
-//		tablesContainsDateField.put("License" , Arrays.asList("EXPIRY_DATE"));
 		tablesContainsDateField.put("Reading_Alarms" , Arrays.asList("START_TIME","END_TIME"));
 		tablesContainsDateField.put("ML_Alarm_Occurrences" , Arrays.asList("TTIME"));
 		tablesContainsDateField.put("Reading_Rule_Flaps" , Arrays.asList("FLAP_TIME"));
@@ -135,10 +131,8 @@ public class DemoRollUpUtil {
 		tablesContainsDateField.put("Tenant_Notes" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("Cost_Assets" , Arrays.asList("FIRST_BILL_TIME"));
 		tablesContainsDateField.put("Cost_Readings" , Arrays.asList("ACTUAL_TTIME"));
-//		tablesContainsDateField.put("server_info" , Arrays.asList("pingtime"));
 		tablesContainsDateField.put("Sync_Errors" , Arrays.asList("CREATED_TIME","LAST_SYNC_TIME"));
 		tablesContainsDateField.put("DeviceDetails" , Arrays.asList("LAST_UPDATED_TIME","LAST_ALERTED_TIME"));
-//		tablesContainsDateField.put("ClientApp" , Arrays.asList("updatedTime"));
 		tablesContainsDateField.put("Workorder_cost" , Arrays.asList("TTIME","MODIFIED_TIME"));
 		tablesContainsDateField.put("Gate_Pass" , Arrays.asList("SYS_CREATED_TIME","SYS_MODIFIED_TIME","SYS_DELETED_TIME"));
 		tablesContainsDateField.put("Store_room_Notes" , Arrays.asList("CREATED_TIME","MODIFIED_TIME"));

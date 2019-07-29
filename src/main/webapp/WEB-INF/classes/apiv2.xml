@@ -3906,5 +3906,15 @@
 			<param name="module">{1}</param>
 		</action>
 	</package>
+
+	<package name="autoCommissiondata"
+	namespace="/api/v2/autocommission" extends="v2Api">
+	<action name="*"
+		class="com.facilio.bmsconsole.actions.AutoCommissionAction"
+		method="autoCommissionData">
+		<param name="controllerId">{1}</param> 
+	</action>
+</package>
+
 	
 </struts>

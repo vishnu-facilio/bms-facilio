@@ -148,6 +148,16 @@ public class ModuleFactory {
 		return agentMetricsModule;
 	}
 
+	public static FacilioModule getControllerReadingsModule() {
+		FacilioModule controllerReadingsModule = new FacilioModule();
+		controllerReadingsModule.setName("controllerReadings");
+		controllerReadingsModule.setDisplayName("controller Readings");
+		controllerReadingsModule.setTableName("Controller_Readings");
+		
+		return controllerReadingsModule;
+	}
+	
+	
 	public static FacilioModule getAgentIntegrationModule() {
 		FacilioModule integrationModule = new FacilioModule();
 		integrationModule.setName(AgentIntegrationKeys.TABLE_NAME);

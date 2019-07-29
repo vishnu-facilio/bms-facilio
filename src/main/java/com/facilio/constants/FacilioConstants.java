@@ -1028,7 +1028,8 @@ public class FacilioConstants {
 		public static final String DEMO_ROLLUP_JOB_ORG="rollup_job_org";
 		public static final String DATA_POINTS="data_points";
 		public static final String POINTS_DATA_RECORD="points_data_record";
-
+		public static final String AUTO_COMMISSION_DATA="autocommissiondata";
+		
 		public static final String START_TTIME = "startTtime";
 		public static final String END_TTIME = "endTtime";
 		public static final String ADMIN_DELTA_ORG = "orgid";
@@ -1111,7 +1112,10 @@ public class FacilioConstants {
 		public static final String MODULE_SPECIFIC = "moduleSpecific";
 		public static final String PREFERENCE_RULES = "preferenceRules";
 		
-
+		public static final String MAX_FIELDS_PER_MODULE ="maxFieldsPerModule";
+		public static final String CONTROLLER_ASSET = "Controller";
+		
+		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();
