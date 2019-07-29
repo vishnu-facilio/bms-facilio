@@ -28,7 +28,7 @@ public class GetAvailableStateCommand extends FacilioCommand {
 				long currentTime = System.currentTimeMillis();
 				List<WorkflowRuleContext> availableState = StateFlowRulesAPI.getAvailableState(moduleData.getStateFlowId(), currentState.getId(), moduleName, moduleData, (FacilioContext) context);
 //				System.out.println("################### time taken: " + (System.currentTimeMillis() - currentTime));
-				LOGGER.debug("### time taken: " + this.getClass().getSimpleName() + ": " + (System.currentTimeMillis() - currentTime));
+				LOGGER.debug("### time taken inside getAvailableState: " + this.getClass().getSimpleName() + ": " + (System.currentTimeMillis() - currentTime));
 				context.put("availableStates", availableState);
 			}
 		} else {
