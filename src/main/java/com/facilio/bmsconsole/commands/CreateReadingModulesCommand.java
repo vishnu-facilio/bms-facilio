@@ -11,8 +11,6 @@ import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.bmsconsole.context.AssetCategoryContext;
-import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
@@ -22,21 +20,12 @@ import com.facilio.modules.fields.FacilioField;
 
 public class CreateReadingModulesCommand extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(CreateReadingModulesCommand.class.getName());
-	
+	private static final int MAX_FIELDS_PER_TYPE_PER_MODULE = 5;
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		int maxFields = -1;
 		String readingName = (String) context.get(FacilioConstants.ContextNames.READING_NAME);
 		Boolean overRideSplit = (Boolean) context.get(FacilioConstants.ContextNames.OVER_RIDE_READING_SPLIT);
-		long parentId = (long) context.get(FacilioConstants.ContextNames.PARENT_CATEGORY_ID);
-		AssetCategoryContext assetParentId = AssetsAPI.getCategory(FacilioConstants.ContextNames.CONTROLLER_ASSET);
-		LOGGER.info("parentID:"+parentId+" assetParentID: "+assetParentId.getId());
-		if(parentId == assetParentId.getId()) {
-			 maxFields = 10;
-		}else {
-			maxFields = 5;
-		}
 		
 		if (overRideSplit == null) {
         	overRideSplit = false;
@@ -55,15 +44,15 @@ public class CreateReadingModulesCommand extends FacilioCommand {
 			
 			if (fields != null && !fields.isEmpty()) {
 				FacilioModule module = createModule(readingName, context);
-				List<FacilioModule> modules = splitFields(module, fields,overRideSplit,maxFields);
+				List<FacilioModule> modules = splitFields(module, fields,overRideSplit);
 				context.put(FacilioConstants.ContextNames.MODULE_LIST, modules);
 			}
 		}
 		return false;
 	}
 	
-	private List<FacilioModule> splitFields(FacilioModule module, List<FacilioField> allFields,boolean overRideSplit, int maxFields) {
-		if (allFields.size() <= maxFields || overRideSplit) {
+	private List<FacilioModule> splitFields(FacilioModule module, List<FacilioField> allFields,boolean overRideSplit) {
+		if (allFields.size() <= MAX_FIELDS_PER_TYPE_PER_MODULE || overRideSplit) {
 			allFields.addAll(FieldFactory.getDefaultReadingFields(module));
 			module.setFields(allFields);
 			return Collections.singletonList(module);
@@ -78,7 +67,7 @@ public class CreateReadingModulesCommand extends FacilioCommand {
 					List<FacilioField> fields = fieldsItr.next();
 					Iterator<FacilioField> itr = fields.iterator();
 					int count = 0;
-					while (itr.hasNext() && count < maxFields) {
+					while (itr.hasNext() && count < MAX_FIELDS_PER_TYPE_PER_MODULE) {
 						fieldList.add(itr.next());
 						count++;
 						itr.remove();
