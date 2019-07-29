@@ -102,6 +102,16 @@ public class BmsDBConf extends DBConf {
     }
 
     @Override
+    public String getDefaultDataSource() {
+        return AwsUtil.getDefaultDataSource();
+    }
+
+    @Override
+    public String getDefaultDB() {
+        return AwsUtil.getDefaultDB();
+    }
+
+    @Override
     public Number convertToDisplayUnit(Object val, NumberField field) throws Exception {
         return UnitsUtil.convertToDisplayUnit(val, field);
     }

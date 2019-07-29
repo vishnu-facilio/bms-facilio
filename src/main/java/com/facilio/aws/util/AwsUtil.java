@@ -179,6 +179,9 @@ public class AwsUtil
 	private static String anomalyPredictAPIURL;
 
 	private static String iotEndPoint;
+	private static String defaultDB;
+	private static String defaultDataSource;
+
 	public static String getIotEndPoint() { return iotEndPoint; }
 
 	private static boolean sysLogEnabled;
@@ -228,6 +231,8 @@ public class AwsUtil
 				sysLogEnabled = "true".equals(PROPERTIES.getProperty("syslog.enabled", "false"));
 				iotEndPoint = (String) PROPERTIES.get("iot.endpoint");
 				messageReprocessInterval = Long.parseLong(PROPERTIES.getProperty(AgentKeys.MESSAGE_REPROCESS_INTERVAL,"300000"));
+				defaultDataSource = PROPERTIES.getProperty("db.default.ds");
+				defaultDB = PROPERTIES.getProperty("db.default.db");
 				PROPERTIES.put("clientapp.url", clientAppUrl);
 				URL resourceDir = AwsUtil.class.getClassLoader().getResource("");
 				if(resourceDir != null) {
@@ -1170,4 +1175,13 @@ public class AwsUtil
     public static HashSet<String> getDBIdentifiers() {
 	    return dbIdentifiers;
     }
+
+    public static String getDefaultDataSource() {
+		return defaultDataSource;
+    }
+
+
+	public static String getDefaultDB() {
+		return defaultDB;
+	}
 }
