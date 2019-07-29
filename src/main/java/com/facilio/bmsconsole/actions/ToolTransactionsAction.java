@@ -51,6 +51,13 @@ public class ToolTransactionsAction extends FacilioAction{
 	public void setTransactionType(int transactionType) {
 		this.transactionType = transactionType;
 	}
+	private long siteId = -1;
+	public long getSiteId() {
+		return siteId;
+	}
+	public void setSiteId(long siteId) {
+		this.siteId = siteId;
+	}
 	
 	public String addOrUpdateToolTransactions() throws Exception {
 		FacilioContext context = new FacilioContext();
@@ -101,6 +108,7 @@ public class ToolTransactionsAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
 		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Tool_transactions.ID desc");
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_SITE_ID, siteId);
 		if (getFilters() != null) {
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(getFilters());

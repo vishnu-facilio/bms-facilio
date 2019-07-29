@@ -9,16 +9,22 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
+import com.chargebee.internal.StringJoiner;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.util.LocationAPI;
+import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.bmsconsole.util.StoreroomApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BuildingOperator;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -48,18 +54,8 @@ public class GetStoreRoomListCommand extends FacilioCommand {
 		}
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
 
-		SelectRecordsBuilder<StoreRoomContext> builder = new SelectRecordsBuilder<StoreRoomContext>().module(module)
-				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName)).select(fields);
-
-		List<Long> accessibleSpaces = AccountUtil.getCurrentUser().getAccessibleSpace();
-		if (accessibleSpaces != null && !accessibleSpaces.isEmpty()) {
-			builder.andCustomWhere("Store_room.SITE_ID IN ( ? )", StringUtils.join(accessibleSpaces, ", "));
-		}
-
 		long siteId = (long) context.get(FacilioConstants.ContextNames.WORK_ORDER_SITE_ID);
-		if (siteId > 0) {
-			builder.andCustomWhere("Store_room.SITE_ID IN ( ? )", siteId);
-		}
+		SelectRecordsBuilder<StoreRoomContext> builder = StoreroomApi.getStoreRoomListBuilder(siteId);
 		if (getCount) {
 			builder.setAggregation();
 		}

@@ -60,6 +60,13 @@ public class ItemTransactionsAction extends FacilioAction {
 		this.transactionType = transactionType;
 	}
 
+	private long siteId = -1;
+	public long getSiteId() {
+		return siteId;
+	}
+	public void setSiteId(long siteId) {
+		this.siteId = siteId;
+	}
 	public String addOrUpdateItemTransactions() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
@@ -120,6 +127,7 @@ public class ItemTransactionsAction extends FacilioAction {
 	public String itemsList() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_SITE_ID, siteId);
 		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Item_Transactions.ID desc");
 		if (getFilters() != null) {
 			JSONParser parser = new JSONParser();

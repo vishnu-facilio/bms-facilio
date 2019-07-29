@@ -6,10 +6,9 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ItemContext;
@@ -22,6 +21,7 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -54,14 +54,10 @@ public class GetItemListCommand extends FacilioCommand {
 		SelectRecordsBuilder<ItemContext> builder = new SelectRecordsBuilder<ItemContext>().module(module)
 				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName)).select(fields);
 
-		List<Long> accessibleSpaces = AccountUtil.getCurrentUser().getAccessibleSpace();
-		builder.innerJoin(ModuleFactory.getStoreRoomModule().getTableName())
-				.on(ModuleFactory.getStoreRoomModule().getTableName() + ".ID = "
-						+ ModuleFactory.getInventryModule().getTableName() + ".STORE_ROOM_ID");
-		if (accessibleSpaces != null && !accessibleSpaces.isEmpty()) {
-			builder.andCustomWhere(
-					"Store_room.SITE_ID IN ( ? )",
-					StringUtils.join(accessibleSpaces, ", "));
+		Long siteId = (Long) context.get(FacilioConstants.ContextNames.WORK_ORDER_SITE_ID);
+		Set<Long> storeIds = StoreroomApi.getStoreRoomList(siteId);
+		if(CollectionUtils.isNotEmpty(storeIds)) {
+			builder.andCondition(CriteriaAPI.getConditionFromList("STORE_ROOM_ID", "storeRoomId", storeIds, NumberOperators.EQUALS));
 		}
 		if (getCount) {
 			builder.setAggregation();

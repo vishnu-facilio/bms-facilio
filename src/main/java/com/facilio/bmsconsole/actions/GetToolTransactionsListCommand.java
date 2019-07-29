@@ -2,9 +2,10 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -53,14 +54,15 @@ public class GetToolTransactionsListCommand extends FacilioCommand {
 				.module(module).beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName))
 				.select(fields);
 
-		List<Long> accessibleSpaces = AccountUtil.getCurrentUser().getAccessibleSpace();
 		builder.innerJoin(ModuleFactory.getToolModule().getTableName())
 				.on(ModuleFactory.getToolModule().getTableName() + ".ID = "
 						+ ModuleFactory.getToolTransactionsModule().getTableName() + ".TOOL");
-		if (accessibleSpaces != null && !accessibleSpaces.isEmpty()) {
-			builder.andCustomWhere("Store_room.SITE_ID IN ( ? )", StringUtils.join(accessibleSpaces, ", "));
+		Long siteId = (Long) context.get(FacilioConstants.ContextNames.WORK_ORDER_SITE_ID);
+		Set<Long> storeIds = StoreroomApi.getStoreRoomList(siteId);
+		if(CollectionUtils.isNotEmpty(storeIds)) {
+			builder.andCondition(CriteriaAPI.getConditionFromList("STORE_ROOM_ID", "storeRoomId", storeIds, NumberOperators.EQUALS));
 		}
-		
+	
 		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
 		if (orderBy != null && !orderBy.isEmpty()) {
 			builder.orderBy(orderBy);

@@ -50,6 +50,14 @@ public class ItemAction extends FacilioAction{
 		this.storeRoom = storeRoomId;
 	}
 	
+	private long siteId = -1;
+	public long getSiteId() {
+		return siteId;
+	}
+	public void setSiteId(long siteId) {
+		this.siteId = siteId;
+	}
+
 	public String addItem() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, item);
@@ -111,6 +119,7 @@ public class ItemAction extends FacilioAction{
 	public String itemList() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_SITE_ID, siteId);
 		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Item.LOCAL_ID desc");
 		if (getFilters() != null) {
 			JSONParser parser = new JSONParser();

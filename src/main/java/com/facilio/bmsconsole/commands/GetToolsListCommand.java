@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -23,10 +23,10 @@ import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 
@@ -57,14 +57,11 @@ public class GetToolsListCommand extends FacilioCommand {
 		SelectRecordsBuilder<ToolContext> builder = new SelectRecordsBuilder<ToolContext>().module(module)
 				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName)).select(fields);
 
-		List<Long> accessibleSpaces = AccountUtil.getCurrentUser().getAccessibleSpace();
-		builder.innerJoin(ModuleFactory.getStoreRoomModule().getTableName())
-				.on(ModuleFactory.getStoreRoomModule().getTableName() + ".ID = "
-						+ ModuleFactory.getToolModule().getTableName() + ".STORE_ROOM_ID");
-		if (accessibleSpaces != null && !accessibleSpaces.isEmpty()) {
-			builder.andCustomWhere("Store_room.SITE_ID IN ( ? )", StringUtils.join(accessibleSpaces, ", "));
+		Long siteId = (Long) context.get(FacilioConstants.ContextNames.WORK_ORDER_SITE_ID);
+		Set<Long> storeIds = StoreroomApi.getStoreRoomList(siteId);
+		if(CollectionUtils.isNotEmpty(storeIds)) {
+			builder.andCondition(CriteriaAPI.getConditionFromList("STORE_ROOM_ID", "storeRoomId", storeIds, NumberOperators.EQUALS));
 		}
-
 		if (getCount) {
 			builder.setAggregation();
 		}

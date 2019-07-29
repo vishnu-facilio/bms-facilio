@@ -57,6 +57,14 @@ public class ToolAction extends FacilioAction {
 	public void setStoreRoom(long storeRoomId) {
 		this.storeRoom = storeRoomId;
 	}
+	private long siteId = -1;
+	public long getSiteId() {
+		return siteId;
+	}
+	public void setSiteId(long siteId) {
+		this.siteId = siteId;
+	}
+
 
 	public String addTool() throws Exception {
 		FacilioContext context = new FacilioContext();
@@ -118,6 +126,8 @@ public class ToolAction extends FacilioAction {
 	public String toolList() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+		context.put(FacilioConstants.ContextNames.WORK_ORDER_SITE_ID, siteId);
+	
 		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Tool.LOCAL_ID desc");
 		if (getFilters() != null) {
 			JSONParser parser = new JSONParser();
