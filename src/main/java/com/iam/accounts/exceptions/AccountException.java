@@ -31,7 +31,8 @@ public class AccountException extends Exception {
 		EMAIL_ALREADY_EXISTS,
 		ROLE_ID_IS_NULL,
 		NOT_PERMITTED,
-		USER_DOESNT_EXIST_IN_ORG
+		USER_DOESNT_EXIST_IN_ORG,
+		USER_ALREADY_EXISTS_IN_ORG
 		;
 	}
 }

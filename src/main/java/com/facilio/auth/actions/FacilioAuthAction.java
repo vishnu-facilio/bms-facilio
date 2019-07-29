@@ -230,14 +230,19 @@ public class FacilioAuthAction extends FacilioAction {
 		this.title = title;
 	}
 
+	private boolean emailVerificationNeeded;
+	
+	public boolean isEmailVerificationNeeded() {
+		return emailVerificationNeeded;
+	}
+
+	public void setEmailVerificationNeeded(boolean emailVerificationNeeded) {
+		this.emailVerificationNeeded = emailVerificationNeeded;
+	}
 	public String signupUser() throws Exception {
 
 		LOGGER.info("signupUser() : username :" + getUsername() + ", password :" + getPassword() + ", email : "
 				+ getEmailaddress());
-		return addFacilioUser();
-	}
-
-	private String addFacilioUser() throws Exception {
 		HttpServletRequest request = ServletActionContext.getRequest();
 		LOGGER.info("### addFacilioUser() :" + emailaddress);
 
@@ -629,7 +634,7 @@ public class FacilioAuthAction extends FacilioAction {
 	}
 
 	public String acceptUserInvite() throws Exception {
-		if(AccountUtil.getUserBean().acceptInvite(inviteToken, newPassword)) {
+		if(AccountUtil.getUserBean().acceptInvite(getInviteToken(), getPassword())) {
 			return SUCCESS;
 		}
 		return ERROR;
@@ -705,6 +710,17 @@ public class FacilioAuthAction extends FacilioAction {
 		user.setPortalId(portalId);
 		user.setPassword(password);
 		user.setCity(AccountUtil.getCurrentOrg().getDomain());
+		
+		if(emailVerificationNeeded) {
+			user.setUserVerified(false);
+			user.setInviteAcceptStatus(false);
+			user.setInvitedTime(System.currentTimeMillis());
+		}
+		else {
+			user.setUserVerified(true);
+			user.setInviteAcceptStatus(true);
+			user.setInvitedTime(System.currentTimeMillis());
+		}
 
 		PortalInfoAction authAction = new PortalInfoAction();
 		authAction.getPortalInfo();

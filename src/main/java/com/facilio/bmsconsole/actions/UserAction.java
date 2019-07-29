@@ -250,7 +250,16 @@ public class UserAction extends FacilioAction {
 		}
 
 		user.setUserType(UserType.REQUESTER.getValue());
-		
+		if(emailVerificationNeeded) {
+			user.setUserVerified(false);
+			user.setInviteAcceptStatus(false);
+			user.setInvitedTime(System.currentTimeMillis());
+		}
+		else {
+			user.setUserVerified(true);
+			user.setInviteAcceptStatus(true);
+			user.setInvitedTime(System.currentTimeMillis());
+		}
 		
 		try {
 			if(AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user) > 0) {
@@ -303,9 +312,14 @@ public class UserAction extends FacilioAction {
 		
 		if(emailVerificationNeeded) {
 			user.setUserVerified(false);
+			user.setInviteAcceptStatus(false);
+			user.setInvitedTime(System.currentTimeMillis());
 		}
 		else {
 			user.setUserVerified(true);
+			user.setInviteAcceptStatus(true);
+			user.setInvitedTime(System.currentTimeMillis());
+
 		}
 
 

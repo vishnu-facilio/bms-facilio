@@ -95,9 +95,5 @@ public interface UserBean {
 
 	public void createUserEntry(long orgId, User user, boolean isEmailVerificationNeeded) throws Exception;
 
-	public void sendInvitation(User user) throws Exception;
-    
-
 	
-
 }

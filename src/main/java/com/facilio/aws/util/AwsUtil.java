@@ -507,7 +507,6 @@ public class AwsUtil
 	
 	public static void sendEmail(JSONObject mailJson) throws Exception  {
 		logEmail(mailJson);
-		System.out.println("---> mail content -->" + mailJson.get("message"));
 		if(AwsUtil.isDevelopment()) {
 //			mailJson.put("subject", "Local - "+mailJson.get("subject"));
 			return;

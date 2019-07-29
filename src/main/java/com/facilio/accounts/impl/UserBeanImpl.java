@@ -5,7 +5,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -19,9 +18,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import com.facilio.accounts.bean.RoleBean;
 import com.facilio.accounts.bean.UserBean;
@@ -31,13 +27,10 @@ import com.facilio.accounts.dto.UserMobileSetting;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountConstants.GroupMemberRole;
 import com.facilio.accounts.util.AccountConstants.UserType;
-import com.facilio.accounts.util.AccountEmailTemplate;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.PortalInfoContext;
@@ -73,15 +66,12 @@ import com.facilio.modules.fields.FacilioField;
 import com.iam.accounts.dto.Account;
 import com.iam.accounts.exceptions.AccountException;
 import com.iam.accounts.util.AuthUtill;
-import com.iam.accounts.util.IAMAccountConstants;
 import com.iam.accounts.util.UserUtil;
 
 ;
 
 public class UserBeanImpl implements UserBean {
 
-	private static final long INVITE_LINK_EXPIRE_TIME = (7 * 24 * 60 * 60 * 1000L);
-	private static final String USER_TOKEN_REGEX = "#";
 	private static Logger log = LogManager.getLogger(UserBeanImpl.class.getName());
 
 	private long getUid(String email) throws Exception {
@@ -178,8 +168,6 @@ public class UserBeanImpl implements UserBean {
             updateUser(user);
             return;
         }
-		user.setInviteAcceptStatus(false);
-		user.setInvitedTime(System.currentTimeMillis());
 		user.setUserStatus(true);
 		if(UserUtil.addUser(user, orgId, AccountUtil.getCurrentUser().getEmail()) > 0) {
 			createUserEntry(orgId, user, false);
@@ -289,24 +277,17 @@ public class UserBeanImpl implements UserBean {
 	}
 
 	@Override
-	public void sendInvitation(User user) throws Exception {
-	   	
-	}
-
-	@Override
 	public User verifyEmail(String token) throws Exception {
 		User user = UserUtil.verifyEmail(token);
 
 		if (user != null) {
-			if ((System.currentTimeMillis() - user.getInvitedTime()) < INVITE_LINK_EXPIRE_TIME) {
-				try {
-					user.setUserVerified(true);
-					updateUserEntry(user);
-				} catch (Exception e) {
-					log.info("Exception occurred ", e);
-				}
-				return user;
+			try {
+				user.setUserVerified(true);
+				updateUserEntry(user);
+			} catch (Exception e) {
+				log.info("Exception occurred ", e);
 			}
+			return user;
 		}
 		return null;
 	}
@@ -697,7 +678,7 @@ public class UserBeanImpl implements UserBean {
 		
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
-		criteria.addAndCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(userId), NumberOperators.EQUALS));
+		criteria.addAndCondition(CriteriaAPI.getCondition("ORG_Users.USERID", "userId", String.valueOf(userId), NumberOperators.EQUALS));
 		criteria.addAndCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", String.valueOf(-1), NumberOperators.EQUALS));
 		selectBuilder.andCriteria(criteria);
 			
