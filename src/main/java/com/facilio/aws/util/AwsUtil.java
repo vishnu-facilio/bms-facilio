@@ -744,7 +744,7 @@ public class AwsUtil
 
 					ExtendedClientConfiguration configuration = new ExtendedClientConfiguration();
 					configuration.setAlwaysThroughS3(false);
-					configuration.setLargePayloadSupportEnabled(getAmazonS3Client(), "sqss3");
+					configuration.setLargePayloadSupportEnabled(getAmazonS3Client(), "fsqss3");
 					awsSQS = new AmazonSQSExtendedClient(awsSQS, configuration);
 				}
 			}
