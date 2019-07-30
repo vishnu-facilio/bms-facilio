@@ -434,7 +434,39 @@
          "104" : {
         	"description" : "ruleRank",
         	"usage" : "ruleRank",
-        	"workflow": ""
+        	"workflow": "Map rankWorkflow (Number ruleId){
+				  date = NameSpace(\"date\");
+				   monthRanges = date.getDateRange(\"Current Year\");
+				  db = {
+						criteria : [createdTime == monthRanges],
+					    field : \"ruleId\",
+				    	aggregation : \"count, ruleId\",
+				    	groupBy: \"ruleId\",
+				    	orderBy : \"ruleId\" desc
+					};
+				    readingAlarmModule = Module(\"readingalarm\");
+				    activeRecord = readingAlarmModule.fetch(db);
+  					let ranking = 0;
+  					if (activeRecord != null ) {
+                       for each index,value in activeRecord { 
+							temp = value.result;
+                         temp = value.result+0;
+                         if(temp == ruleId) {
+        					ranking = index + 1;
+                           log \"test -- \"+index;
+                         }
+                         
+                         
+                       }
+                    }
+  					log activeRecord;
+          			resultMap = {};
+					resultMap[\"ranks\"] = activeRecord;
+  					resultMap[\"ranking\"] = ranking;
+					resultMap[\"outOfRule\"] = activeRecord.size();
+  					log resultMap;
+				   	return resultMap;
+				}"
         }
         
 }
