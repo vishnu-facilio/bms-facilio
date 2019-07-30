@@ -1502,7 +1502,7 @@ public class TransactionChainFactory {
 		public static Chain updateAutoCommissionCommand() {
 			Chain c = getDefaultChain();
 			c.addCommand(new AutoCommissionCommand());
-			c.addCommand(new updateControllerDataCommand());
+//			c.addCommand(new updateControllerDataCommand());
 			return c;
 		}
 		
