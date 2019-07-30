@@ -29,13 +29,13 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 
-public class AutoCommissionCommand implements Command {
+public class AutoCommissionCommand extends FacilioCommand {
 
 
 	private static final Logger LOGGER = LogManager.getLogger(AutoCommissionCommand.class.getName());
 	@SuppressWarnings("unchecked")
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		
 		
@@ -148,5 +148,7 @@ public class AutoCommissionCommand implements Command {
 	public void setModules(List<FacilioModule> modules) {
 		this.modules = modules;
 	}
+
+
 
 }

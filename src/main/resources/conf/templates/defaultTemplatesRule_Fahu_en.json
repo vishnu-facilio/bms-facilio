@@ -55,7 +55,8 @@
 			},
 			"alarmCondition": {
 				"condition": "${{supplyairdampercommand}}==1 && ${{supplyairdamperstatus}}==0",
-				"for": "${interval}",
+				"occurences": "${occurences}",
+				"consecutive": "${consecutive}",
 				"action": "TRIGGER_ALARM",
 				"thresholdType": 5,
 				"threshold_metric": "supplyairdamperstatus",
@@ -116,26 +117,37 @@
 				"condition_statement" : "Damper Command is 1 and Damper Status is 0 for 10 min"
 			},
 			"alarmClear": null,
-			"placeHolder": {
-				"1": {
-                     "label": "Assets",
-                     "uniqueId": "resource",
-                     "default_value": "All Asset Selected",
-                     "selection_criteria": {
-                     	"displayType": "ASSETCHOOSER"
-                    },
-                     "type": "default"
-                 },
-                 "2":{
-                     "label": "Interval",
-                     "uniqueId": "interval",
-                     "default_value": "10",
-                     "selection_criteria": {
-                     	"displayType": "DURATION"
-                    },
-                     "type": "rules"
-                 }
-			}
+			 "placeHolder": {
+				    "1": {
+				      "default_value": "All Asset Selected",
+				      "label": "Assets",
+				      "type": "default",
+				      "selection_criteria": {
+				        "displayType": "ASSETCHOOSER"
+				      },
+				      "uniqueId": "resource"
+				    },
+				   	"2": {
+				      "default_value": 2,
+				      "label": "Occurences",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "NUMBER"
+				      },
+				      "uniqueId": "occurences"
+				    },
+				    "3": {
+				      "default_value": "false",
+				      "label": "Type",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "Radio",
+				        "trueVal": "Consecutive",
+				        "falseVal": "Over Period"
+				     	},
+				      "uniqueId": "consecutive"
+				    }
+				 }
 		}
 	},
 	"303": {
@@ -194,7 +206,8 @@
 			},
 			"alarmCondition": {
 				"condition": "${{supplyairdampercommand}}==1 && ${{supplyairdamperstatus}}==0",
-				"for": "${interval}",
+				"occurences": "${occurences}",
+				"consecutive": "${consecutive}",
 				"action": "TRIGGER_ALARM",
 				"moduleName": "FAHUreading",
 				"thresholdType": 5,
@@ -257,25 +270,36 @@
 			},
 			"alarmClear": null,
 			"placeHolder": {
-				"1": {
-                     "label": "Assets",
-                     "uniqueId": "resource",
-                     "default_value": "All Asset Selected",
-                     "selection_criteria": {
-                     	"displayType": "ASSETCHOOSER"
-                    },
-                     "type": "default"
-                 },
-                 "2":{
-                     "label": "Interval",
-                     "uniqueId": "interval",
-                     "default_value": "10",
-                     "selection_criteria": {
-                     	"displayType": "DURATION"
-                    },
-                     "type": "rules"
-                 }
-			}
+				    "1": {
+				      "default_value": "All Asset Selected",
+				      "label": "Assets",
+				      "type": "default",
+				      "selection_criteria": {
+				        "displayType": "ASSETCHOOSER"
+				      },
+				      "uniqueId": "resource"
+				    },
+				   	"2": {
+				      "default_value": 2,
+				      "label": "Occurences",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "NUMBER"
+				      },
+				      "uniqueId": "occurences"
+				    },
+				    "3": {
+				      "default_value": "false",
+				      "label": "Type",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "Radio",
+				        "trueVal": "Consecutive",
+				        "falseVal": "Over Period"
+				     	},
+				      "uniqueId": "consecutive"
+				    }
+				 }
 		}
 	},
 	"304": {
@@ -334,7 +358,8 @@
 			},
 			"alarmCondition": {
 				"condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
-				"for": "${interval}",
+				"occurences": "${occurences}",
+				"consecutive": "${consecutive}",
 				"action": "TRIGGER_ALARM",
 				"moduleName": "FAHUreading",
 				"thresholdType": 5,
@@ -397,26 +422,37 @@
 			},
 			"alarmClear": null,
 			"placeHolder": {
-				"1": {
-                     "label": "Assets",
-                     "uniqueId": "resource",
-                     "default_value": "All Asset Selected",
-                     "selection_criteria": {
-                     	"displayType": "ASSETCHOOSER"
-                    },
-                     "type": "default"
-                 },
-                 "2":{
-                     "label": "Interval",
-                     "uniqueId": "interval",
-                     "default_value": "10",
-                     "selection_criteria": {
-                     	"displayType": "DURATION"
-                    },
-                     "type": "rules"
-                 }
+				    "1": {
+				      "default_value": "All Asset Selected",
+				      "label": "Assets",
+				      "type": "default",
+				      "selection_criteria": {
+				        "displayType": "ASSETCHOOSER"
+				      },
+				      "uniqueId": "resource"
+				    },
+				   	"2": {
+				      "default_value": 2,
+				      "label": "Occurences",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "NUMBER"
+				      },
+				      "uniqueId": "occurences"
+				    },
+				    "3": {
+				      "default_value": "false",
+				      "label": "Type",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "Radio",
+				        "trueVal": "Consecutive",
+				        "falseVal": "Over Period"
+				     	},
+				      "uniqueId": "consecutive"
+				    }
 			}
-		}
+		 }
 	},
 	"305": {
 		"fdd_rule": {
@@ -474,7 +510,8 @@
 			},
 			"alarmCondition": {
 				"condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
-				"for": "${interval}",
+				"occurences": "${occurences}",
+				"consecutive": "${consecutive}",
 				"action": "TRIGGER_ALARM",
 				"moduleName": "FAHUreading",
 				"thresholdType": 5,
@@ -537,25 +574,36 @@
 			},
 			"alarmClear": null,
 			"placeHolder": {
-				"1": {
-                     "label": "Assets",
-                     "uniqueId": "resource",
-                     "default_value": "All Asset Selected",
-                     "selection_criteria": {
-                     	"displayType": "ASSETCHOOSER"
-                    },
-                     "type": "default"
-                 },
-                 "2":{
-                     "label": "Interval",
-                     "uniqueId": "interval",
-                     "default_value": "10",
-                     "selection_criteria": {
-                     	"displayType": "DURATION"
-                    },
-                     "type": "rules"
-                 }
-			}
+				    "1": {
+				      "default_value": "All Asset Selected",
+				      "label": "Assets",
+				      "type": "default",
+				      "selection_criteria": {
+				        "displayType": "ASSETCHOOSER"
+				      },
+				      "uniqueId": "resource"
+				    },
+				   	"2": {
+				      "default_value": 2,
+				      "label": "Occurences",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "NUMBER"
+				      },
+				      "uniqueId": "occurences"
+				    },
+				    "3": {
+				      "default_value": "false",
+				      "label": "Type",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "Radio",
+				        "trueVal": "Consecutive",
+				        "falseVal": "Over Period"
+				     	},
+				      "uniqueId": "consecutive"
+				    }
+				 }
 		}
 	},
 	"306":  {
@@ -614,7 +662,8 @@
 			},
 			"alarmCondition": {
 				"condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
-				"for": "${interval}",
+				"occurences": "${occurences}",
+				"consecutive": "${consecutive}",
 				"action": "TRIGGER_ALARM",
 				"moduleName": "FAHUreading",
 				"thresholdType": 5,
@@ -653,9 +702,39 @@
 				        "workflowUIMode": 1
 				   	},
 				"condition_statement" : "Pre Filter differential pressure is lesser than threshold limit. (Standard 240)"
+			},
+			"placeHolder": {
+				    "1": {
+				      "default_value": "All Asset Selected",
+				      "label": "Assets",
+				      "type": "default",
+				      "selection_criteria": {
+				        "displayType": "ASSETCHOOSER"
+				      },
+				      "uniqueId": "resource"
+				    },
+				   	"2": {
+				      "default_value": 2,
+				      "label": "Occurences",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "NUMBER"
+				      },
+				      "uniqueId": "occurences"
+				    },
+				    "3": {
+				      "default_value": "false",
+				      "label": "Type",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "Radio",
+				        "trueVal": "Consecutive",
+				        "falseVal": "Over Period"
+				     	},
+				      "uniqueId": "consecutive"
+				    }
+				 }
 			}
-			
-		}
 	},
 	"307":  {
 		"fdd_rule": {
@@ -713,7 +792,8 @@
 			},
 			"alarmCondition": {
 				"condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
-				"for": "${interval}",
+				"occurences": "${occurences}",
+				"consecutive": "${consecutive}",
 				"action": "TRIGGER_ALARM",
 				"moduleName": "FAHUreading",
 				"thresholdType": 5,
@@ -752,9 +832,39 @@
 				        "workflowUIMode": 1
 				   	},
 				"condition_statement" : "Bag Filter differential pressure is lesser than threshold limit. (Standard 120)"
+			},
+			"placeHolder": {
+				    "1": {
+				      "default_value": "All Asset Selected",
+				      "label": "Assets",
+				      "type": "default",
+				      "selection_criteria": {
+				        "displayType": "ASSETCHOOSER"
+				      },
+				      "uniqueId": "resource"
+				    },
+				   	"2": {
+				      "default_value": 2,
+				      "label": "Occurences",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "NUMBER"
+				      },
+				      "uniqueId": "occurences"
+				    },
+				    "3": {
+				      "default_value": "false",
+				      "label": "Type",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "Radio",
+				        "trueVal": "Consecutive",
+				        "falseVal": "Over Period"
+				     	},
+				      "uniqueId": "consecutive"
+				    }
+				 }
 			}
-			
-		}
 	}, 
 	"308" : {
 		"fdd_rule": {
@@ -813,7 +923,8 @@
 			  },
 			  "alarmCondition": {
 			    "condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
-			    "for": "${interval}",
+			    "occurences": "${occurences}",
+				"consecutive": "${consecutive}",
 			    "action": "TRIGGER_ALARM",
 			    "thresholdType": 5,
 			    "workflow": {
@@ -949,7 +1060,38 @@
 			      "resultEvaluator": "(A==B)&&(C-D>=F)&&(G==H)&&(I==J)"
 			    },
 			    "condition_statement": "When Supply Air Fan Status is on and the differnce of Return air temperature and Outside air temperature is less than 2 °C and Enthalpy Heat Wheel Status is On and Enthalpy Heat Wheel Command is On "
-			  }
+			  },
+			  "placeHolder": {
+				    "1": {
+				      "default_value": "All Asset Selected",
+				      "label": "Assets",
+				      "type": "default",
+				      "selection_criteria": {
+				        "displayType": "ASSETCHOOSER"
+				      },
+				      "uniqueId": "resource"
+				    },
+				   	"2": {
+				      "default_value": 2,
+				      "label": "Occurences",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "NUMBER"
+				      },
+				      "uniqueId": "occurences"
+				    },
+				    "3": {
+				      "default_value": "false",
+				      "label": "Type",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "Radio",
+				        "trueVal": "Consecutive",
+				        "falseVal": "Over Period"
+				     	},
+				      "uniqueId": "consecutive"
+				    }
+				 }
 			}
 	},
 	"309": {
@@ -1009,7 +1151,8 @@
 			  },
 			  "alarmCondition": {
 			    "condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
-			    "for": "${interval}",
+			    "occurences": "${occurences}",
+				"consecutive": "${consecutive}",
 			    "action": "TRIGGER_ALARM",
 			    "thresholdType": 5,
 			    "workflow": {
@@ -1145,8 +1288,39 @@
 			      "resultEvaluator": "(A==B)&&(C-D>=F)&&(G==H)&&(I==J)"
 			    },
 			    "condition_statement": "When Supply Air Fan Status is on and the differnce of Return air temperature and Outside air temperature is less than 2 °C and Enthalpy Heat Wheel Status is On and Enthalpy Heat Wheel Command is On "
-			  }
-			}
+			  },
+			  "placeHolder": {
+				    "1": {
+				      "default_value": "All Asset Selected",
+				      "label": "Assets",
+				      "type": "default",
+				      "selection_criteria": {
+				        "displayType": "ASSETCHOOSER"
+				      },
+				      "uniqueId": "resource"
+				    },
+				   	"2": {
+				      "default_value": 2,
+				      "label": "Occurences",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "NUMBER"
+				      },
+				      "uniqueId": "occurences"
+				    },
+				    "3": {
+				      "default_value": "false",
+				      "label": "Type",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "Radio",
+				        "trueVal": "Consecutive",
+				        "falseVal": "Over Period"
+				     	},
+				      "uniqueId": "consecutive"
+				    }
+				 }
+		}
 	},
 	"310" : {
 		"fdd_rule": {
@@ -1205,7 +1379,8 @@
 			  },
 			  "alarmCondition": {
 			    "condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
-			    "for": "${interval}",
+			    "occurences": "${occurences}",
+				"consecutive": "${consecutive}",
 			    "action": "TRIGGER_ALARM",
 			    "thresholdType": 5,
 			    "workflow": {
@@ -1341,7 +1516,38 @@
 			      "resultEvaluator": "(A==B)&&(C-D>=F)&&(G==H)&&(I==J)"
 			    },
 			    "condition_statement": "When Supply Air Fan Status is on and the differnce of Return air temperature and Outside air temperature is less than 2 °C and Sensible Heat Wheel Status is On and Sensible Heat Wheel Command is On "
-			  }
+			  },
+			  "placeHolder": {
+				    "1": {
+				      "default_value": "All Asset Selected",
+				      "label": "Assets",
+				      "type": "default",
+				      "selection_criteria": {
+				        "displayType": "ASSETCHOOSER"
+				      },
+				      "uniqueId": "resource"
+				    },
+				   	"2": {
+				      "default_value": 2,
+				      "label": "Occurences",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "NUMBER"
+				      },
+				      "uniqueId": "occurences"
+				    },
+				    "3": {
+				      "default_value": "false",
+				      "label": "Type",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "Radio",
+				        "trueVal": "Consecutive",
+				        "falseVal": "Over Period"
+				     	},
+				      "uniqueId": "consecutive"
+				    }
+				 }
 			}
 	},
 	"311" : {
@@ -1401,7 +1607,8 @@
 			  },
 			  "alarmCondition": {
 			    "condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
-			    "for": "${interval}",
+			    "occurences": "${occurences}",
+				"consecutive": "${consecutive}",
 			    "action": "TRIGGER_ALARM",
 			    "thresholdType": 5,
 			    "workflow": {
@@ -1537,8 +1744,39 @@
 			      "resultEvaluator": "(A==B)&&(C-D>=F)&&(G==H)&&(I==J)"
 			    },
 			    "condition_statement": "When Supply Air Fan Status is on and the differnce of Return air temperature and Outside air temperature is less than 2 °C and Sensible Heat Wheel Status is On and Sensible Heat Wheel Command is On "
-			  }
-			}
+			  },
+			  "placeHolder": {
+				    "1": {
+				      "default_value": "All Asset Selected",
+				      "label": "Assets",
+				      "type": "default",
+				      "selection_criteria": {
+				        "displayType": "ASSETCHOOSER"
+				      },
+				      "uniqueId": "resource"
+				    },
+				   	"2": {
+				      "default_value": 2,
+				      "label": "Occurences",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "NUMBER"
+				      },
+				      "uniqueId": "occurences"
+				    },
+				    "3": {
+				      "default_value": "false",
+				      "label": "Type",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "Radio",
+				        "trueVal": "Consecutive",
+				        "falseVal": "Over Period"
+				     	},
+				      "uniqueId": "consecutive"
+				    }
+				 }
+		}
 	},
 	"312": {
 		"fdd_rule": {
@@ -1597,7 +1835,8 @@
 			  },
 			  "alarmCondition": {
 			    "condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
-			    "for": "${interval}",
+			    "occurences": "${occurences}",
+				"consecutive": "${consecutive}",
 			    "action": "TRIGGER_ALARM",
 			    "thresholdType": 5,
 			    "workflow": {
@@ -1662,7 +1901,38 @@
 			      "resultEvaluator": "(A==B)&&(C==D)"
 			    },
 			    "condition_statement": " Enthalpy Heat Wheel Status is On and Enthalpy Heat Wheel Command is Off "
-			  }
+			  },
+			  "placeHolder": {
+				    "1": {
+				      "default_value": "All Asset Selected",
+				      "label": "Assets",
+				      "type": "default",
+				      "selection_criteria": {
+				        "displayType": "ASSETCHOOSER"
+				      },
+				      "uniqueId": "resource"
+				    },
+				   	"2": {
+				      "default_value": 2,
+				      "label": "Occurences",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "NUMBER"
+				      },
+				      "uniqueId": "occurences"
+				    },
+				    "3": {
+				      "default_value": "false",
+				      "label": "Type",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "Radio",
+				        "trueVal": "Consecutive",
+				        "falseVal": "Over Period"
+				     	},
+				      "uniqueId": "consecutive"
+				    }
+				 }
 			}
 	},
 	"313": {
@@ -1722,7 +1992,8 @@
 			  },
 			  "alarmCondition": {
 			    "condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
-			    "for": "${interval}",
+			    "occurences": "${occurences}",
+				"consecutive": "${consecutive}",
 			    "action": "TRIGGER_ALARM",
 			    "thresholdType": 5,
 			    "workflow": {
@@ -1787,7 +2058,38 @@
 			      "resultEvaluator": "(A==B)&&(C==D)"
 			    },
 			    "condition_statement": " Sensible Heat Wheel Status is On and Sensible Heat Wheel Command is Off "
-			  }
+			  },
+			  "placeHolder": {
+				    "1": {
+				      "default_value": "All Asset Selected",
+				      "label": "Assets",
+				      "type": "default",
+				      "selection_criteria": {
+				        "displayType": "ASSETCHOOSER"
+				      },
+				      "uniqueId": "resource"
+				    },
+				   	"2": {
+				      "default_value": 2,
+				      "label": "Occurences",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "NUMBER"
+				      },
+				      "uniqueId": "occurences"
+				    },
+				    "3": {
+				      "default_value": "false",
+				      "label": "Type",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "Radio",
+				        "trueVal": "Consecutive",
+				        "falseVal": "Over Period"
+				     	},
+				      "uniqueId": "consecutive"
+				    }
+				 }
 			}
 	},
 	"314" :{
@@ -1847,7 +2149,8 @@
 			  },
 			  "alarmCondition": {
 			    "condition": "Supply Air Temperature  > Supply Air Temperature Set-point && Cooling Coil Valve Command = 0 && Cooling Coil Valve FeedBack =0",
-			    "for": "${interval}",
+			    "occurences": "${occurences}",
+				"consecutive": "${consecutive}",
 			    "action": "TRIGGER_ALARM",
 			    "thresholdType": 5,
 			    "workflow": {
@@ -1930,7 +2233,38 @@
 			      "workflowUIMode": 1
 			    },
 			    "condition_statement": "When cooling coil valve command is On and Supply Air Temperature is greater then Supply air temperature Set-Point "
-			  }
+			  },
+			  "placeHolder": {
+				    "1": {
+				      "default_value": "All Asset Selected",
+				      "label": "Assets",
+				      "type": "default",
+				      "selection_criteria": {
+				        "displayType": "ASSETCHOOSER"
+				      },
+				      "uniqueId": "resource"
+				    },
+				   	"2": {
+				      "default_value": 2,
+				      "label": "Occurences",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "NUMBER"
+				      },
+				      "uniqueId": "occurences"
+				    },
+				    "3": {
+				      "default_value": "false",
+				      "label": "Type",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "Radio",
+				        "trueVal": "Consecutive",
+				        "falseVal": "Over Period"
+				     	},
+				      "uniqueId": "consecutive"
+				    }
+				 }
 			}
 		},
 		"315": {
@@ -1990,7 +2324,8 @@
 			  },
 			  "alarmCondition": {
 			    "condition": "Supply Air Temperature  > Supply Air Temperature Set-point && Cooling Coil Valve Command = 1 && Cooling Coil Valve FeedBack =0",
-			    "for": "${interval}",
+			    "occurences": "${occurences}",
+				"consecutive": "${consecutive}",
 			    "action": "TRIGGER_ALARM",
 			    "thresholdType": 5,
 			    "workflow": {
@@ -2070,7 +2405,38 @@
 			      "resultEvaluator": "(A==B)&&(C>D)"
 			    },
 			    "condition_statement": "When cooling coil valve command is On and Supply Air Temperature is greater then Supply air temperature Set-Point "
-			  }
+			  },
+			  "placeHolder": {
+				    "1": {
+				      "default_value": "All Asset Selected",
+				      "label": "Assets",
+				      "type": "default",
+				      "selection_criteria": {
+				        "displayType": "ASSETCHOOSER"
+				      },
+				      "uniqueId": "resource"
+				    },
+				   	"2": {
+				      "default_value": 2,
+				      "label": "Occurences",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "NUMBER"
+				      },
+				      "uniqueId": "occurences"
+				    },
+				    "3": {
+				      "default_value": "false",
+				      "label": "Type",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "Radio",
+				        "trueVal": "Consecutive",
+				        "falseVal": "Over Period"
+				     	},
+				      "uniqueId": "consecutive"
+				    }
+				 }
 			}
 		},
 		"316": {
@@ -2130,7 +2496,8 @@
 			  },
 			  "alarmCondition": {
 			    "condition": "Cooling Coil Valve Feedback Value > 2%",
-			    "for": "${interval}",
+			    "occurences": "${occurences}",
+				"consecutive": "${consecutive}",
 			    "action": "TRIGGER_ALARM",
 			    "thresholdType": 5,
 			    "workflow": {
@@ -2169,7 +2536,38 @@
 			      ],
 			      "resultEvaluator": "(A > B)"
 			    },
-			    "condition_statement": "When Cooling Coil Valve Feedback Value is greater then 2% "
+			    "condition_statement": "When Cooling Coil Valve Feedback Value is greater then 2% ",
+			    "placeHolder": {
+				    "1": {
+				      "default_value": "All Asset Selected",
+				      "label": "Assets",
+				      "type": "default",
+				      "selection_criteria": {
+				        "displayType": "ASSETCHOOSER"
+				      },
+				      "uniqueId": "resource"
+				    },
+				   	"2": {
+				      "default_value": 2,
+				      "label": "Occurences",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "NUMBER"
+				      },
+				      "uniqueId": "occurences"
+				    },
+				    "3": {
+				      "default_value": "false",
+				      "label": "Type",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "Radio",
+				        "trueVal": "Consecutive",
+				        "falseVal": "Over Period"
+				     	},
+				      "uniqueId": "consecutive"
+				    }
+				 }
 			  }
 			}
 		},
@@ -2230,7 +2628,8 @@
 				  },
 				  "alarmCondition": {
 				    "condition": "AirFlow Coil DP ≥ 1000",
-				    "for": "${interval}",
+				    "occurences": "${occurences}",
+				    "consecutive": "${consecutive}",
 				    "action": "TRIGGER_ALARM",
 				    "thresholdType": 6,
 				    "workflow": {
@@ -2278,7 +2677,38 @@
 				        ],
 				        "resultEvaluator": "b"
 				      },
-				    "condition_statement": "If  AirFlow Coil DP ≥ 1000 continuosly for 1 hour (6 ten min intervals)"
+				    "condition_statement": "If  AirFlow Coil DP ≥ 1000 continuosly for 1 hour (6 ten min intervals)",
+				    "placeHolder": {
+					    "1": {
+					      "default_value": "All Asset Selected",
+					      "label": "Assets",
+					      "type": "default",
+					      "selection_criteria": {
+					        "displayType": "ASSETCHOOSER"
+					      },
+					      "uniqueId": "resource"
+					    },
+					   	"2": {
+					      "default_value": 2,
+					      "label": "Occurences",
+					      "type": "rules",
+					      "selection_criteria": {
+					        "displayType": "NUMBER"
+					      },
+					      "uniqueId": "occurences"
+					    },
+					    "3": {
+					      "default_value": "false",
+					      "label": "Type",
+					      "type": "rules",
+					      "selection_criteria": {
+					        "displayType": "Radio",
+					        "trueVal": "Consecutive",
+					        "falseVal": "Over Period"
+					     	},
+					      "uniqueId": "consecutive"
+					    }
+					 }
 				  }
 				}
 		},
@@ -2338,7 +2768,8 @@
 				  },
 				  "alarmCondition": {
 				    "condition": "Chilled Water flow  DP > 35",
-				    "for": "${interval}",
+				    "occurences": "${occurences}",
+				    "consecutive": "${consecutive}",
 				    "action": "TRIGGER_ALARM",
 				    "thresholdType": 6,
 				    "workflow": {
@@ -2386,7 +2817,38 @@
 				        ],
 				        "resultEvaluator": "b"
 				      },
-				    "condition_statement": "If  AirFlow Coil DP ≥ 1000 continuosly for 1 hour (6 ten min intervals)"
+				    "condition_statement": "If  AirFlow Coil DP ≥ 1000 continuosly for 1 hour (6 ten min intervals)",
+				    "placeHolder": {
+					    "1": {
+					      "default_value": "All Asset Selected",
+					      "label": "Assets",
+					      "type": "default",
+					      "selection_criteria": {
+					        "displayType": "ASSETCHOOSER"
+					      },
+					      "uniqueId": "resource"
+					    },
+					   	"2": {
+					      "default_value": 2,
+					      "label": "Occurences",
+					      "type": "rules",
+					      "selection_criteria": {
+					        "displayType": "NUMBER"
+					      },
+					      "uniqueId": "occurences"
+					    },
+					    "3": {
+					      "default_value": "false",
+					      "label": "Type",
+					      "type": "rules",
+					      "selection_criteria": {
+					        "displayType": "Radio",
+					        "trueVal": "Consecutive",
+					        "falseVal": "Over Period"
+					     	},
+					      "uniqueId": "consecutive"
+					    }
+					 }
 				  }
 				}
 		},
@@ -2410,7 +2872,8 @@
 				  "preRequsite": null,
 				  "alarmCondition": {
 				    "condition": "Chilled Water flow  DP > 35",
-				    "for": "${interval}",
+				    "occurences": "${occurences}",
+				    "consecutive": "${consecutive}",
 				    "action": "TRIGGER_ALARM",
 				    "thresholdType": 6,
 				    "workflow": {
@@ -2471,7 +2934,38 @@
 				      "resultEvaluator": "(A-B)>(C)"
 				    },
 				    "overPeriod": 3600,
-				    "condition_statement": "If  AirFlow Coil DP ≥ 1000 continuosly for 1 hour (6 ten min intervals)"
+				    "condition_statement": "If  AirFlow Coil DP ≥ 1000 continuosly for 1 hour (6 ten min intervals)",
+				    "placeHolder": {
+					    "1": {
+					      "default_value": "All Asset Selected",
+					      "label": "Assets",
+					      "type": "default",
+					      "selection_criteria": {
+					        "displayType": "ASSETCHOOSER"
+					      },
+					      "uniqueId": "resource"
+					    },
+					   	"2": {
+					      "default_value": 2,
+					      "label": "Occurences",
+					      "type": "rules",
+					      "selection_criteria": {
+					        "displayType": "NUMBER"
+					      },
+					      "uniqueId": "occurences"
+					    },
+					    "3": {
+					      "default_value": "false",
+					      "label": "Type",
+					      "type": "rules",
+					      "selection_criteria": {
+					        "displayType": "Radio",
+					        "trueVal": "Consecutive",
+					        "falseVal": "Over Period"
+					     	},
+					      "uniqueId": "consecutive"
+					    }
+					 }
 				  }
 				}
 		},
@@ -2495,7 +2989,8 @@
 				  "preRequsite": null,
 				  "alarmCondition": {
 				    "condition": "Chilled Water flow  DP > 35",
-				    "for": "${interval}",
+				   "occurences": "${occurences}",
+				   "consecutive": "${consecutive}",
 				    "action": "TRIGGER_ALARM",
 				    "thresholdType": 6,
 				    "workflow": {
@@ -2556,7 +3051,38 @@
 				      "resultEvaluator": "(A-B) < (C)"
 				    },
 				    "overPeriod": 3600,
-				    "condition_statement": "If  AirFlow Coil DP ≥ 1000 continuosly for 1 hour (6 ten min intervals)"
+				    "condition_statement": "If  AirFlow Coil DP ≥ 1000 continuosly for 1 hour (6 ten min intervals)",
+				    "placeHolder": {
+					    "1": {
+					      "default_value": "All Asset Selected",
+					      "label": "Assets",
+					      "type": "default",
+					      "selection_criteria": {
+					        "displayType": "ASSETCHOOSER"
+					      },
+					      "uniqueId": "resource"
+					    },
+					   	"2": {
+					      "default_value": 2,
+					      "label": "Occurences",
+					      "type": "rules",
+					      "selection_criteria": {
+					        "displayType": "NUMBER"
+					      },
+					      "uniqueId": "occurences"
+					    },
+					    "3": {
+					      "default_value": "false",
+					      "label": "Type",
+					      "type": "rules",
+					      "selection_criteria": {
+					        "displayType": "Radio",
+					        "trueVal": "Consecutive",
+					        "falseVal": "Over Period"
+					     	},
+					      "uniqueId": "consecutive"
+					    }
+					 }
 				  }
 				}
 		},
@@ -2616,7 +3142,8 @@
 				  },
 				  "alarmCondition": {
 				    "condition": "Cooling Coil Valve Feedback ≥ 95% AND Chilled Water Supply Temp>15 degrees",
-				    "for": "${interval}",
+				    "occurences": "${occurences}",
+				    "consecutive": "${consecutive}",
 				    "action": "TRIGGER_ALARM",
 				    "thresholdType": 5,
 				    "workflow": {
@@ -2681,7 +3208,38 @@
 				      "resultEvaluator": "(A >= B) && (C > D)"
 				    },
 				    "overPeriod": 1800,
-				    "condition_statement": "Cooling Coil Valve Feedback is greater than or equal to 95% AND Chilled Water Supply Temp is greater than 15 degrees"
+				    "condition_statement": "Cooling Coil Valve Feedback is greater than or equal to 95% AND Chilled Water Supply Temp is greater than 15 degrees",
+				    "placeHolder": {
+					    "1": {
+					      "default_value": "All Asset Selected",
+					      "label": "Assets",
+					      "type": "default",
+					      "selection_criteria": {
+					        "displayType": "ASSETCHOOSER"
+					      },
+					      "uniqueId": "resource"
+					    },
+					   	"2": {
+					      "default_value": 2,
+					      "label": "Occurences",
+					      "type": "rules",
+					      "selection_criteria": {
+					        "displayType": "NUMBER"
+					      },
+					      "uniqueId": "occurences"
+					    },
+					    "3": {
+					      "default_value": "false",
+					      "label": "Type",
+					      "type": "rules",
+					      "selection_criteria": {
+					        "displayType": "Radio",
+					        "trueVal": "Consecutive",
+					        "falseVal": "Over Period"
+					     	},
+					      "uniqueId": "consecutive"
+					    }
+					 }
 				  }
 				}
 		
@@ -2742,7 +3300,8 @@
 				  },
 				  "alarmCondition": {
 				    "condition": "Chilled Water flow  DP > 10",
-				    "for": "${interval}",
+				    "occurences": "${occurences}",
+				    "consecutive": "${consecutive}",
 				    "action": "TRIGGER_ALARM",
 				    "thresholdType": 6,
 				    "workflow": {
@@ -2790,7 +3349,38 @@
 				      ],
 				      "resultEvaluator": "b"
 				    },
-				    "condition_statement": "If Chilled Water Strainer Dp ≥ 10 continuosly for 1 hour (6 ten min intervals)"
+				    "condition_statement": "If Chilled Water Strainer Dp ≥ 10 continuosly for 1 hour (6 ten min intervals)",
+				    "placeHolder": {
+					    "1": {
+					      "default_value": "All Asset Selected",
+					      "label": "Assets",
+					      "type": "default",
+					      "selection_criteria": {
+					        "displayType": "ASSETCHOOSER"
+					      },
+					      "uniqueId": "resource"
+					    },
+					   	"2": {
+					      "default_value": 2,
+					      "label": "Occurences",
+					      "type": "rules",
+					      "selection_criteria": {
+					        "displayType": "NUMBER"
+					      },
+					      "uniqueId": "occurences"
+					    },
+					    "3": {
+					      "default_value": "false",
+					      "label": "Type",
+					      "type": "rules",
+					      "selection_criteria": {
+					        "displayType": "Radio",
+					        "trueVal": "Consecutive",
+					        "falseVal": "Over Period"
+					     	},
+					      "uniqueId": "consecutive"
+					    }
+					 }
 				  }
 				}
 		},
@@ -2855,7 +3445,6 @@
 				      ]
 				    },
 				    "condition_statement": "When Supply air temperature set-point  is greater than supply air temperature",
-				    "for": "${interval}",
 				    "occurences": "${occurences}",
 				    "consecutive": "${consecutive}",
 				    "action": "TRIGGER_ALARM",
@@ -2938,15 +3527,6 @@
 				        "falseVal": "Over Period"
 				     	},
 				      "uniqueId": "consecutive"
-				    },
-				     "4": {
-				      "default_value": 3600,
-				      "label": "Interval",
-				      "type": "rules",
-				      "selection_criteria": {
-				        "displayType": "DURATION"
-				      },
-				      "uniqueId": "interval"
 				    }
 				 }
 				}
@@ -3074,16 +3654,27 @@
 				      },
 				      "uniqueId": "resource"
 				    },
-				    "2": {
-				      "default_value": "10",
-				      "label": "Interval",
+				   	"2": {
+				      "default_value": 2,
+				      "label": "Occurences",
 				      "type": "rules",
 				      "selection_criteria": {
-				        "displayType": "DURATION"
+				        "displayType": "NUMBER"
 				      },
-				      "uniqueId": "interval"
+				      "uniqueId": "occurences"
+				    },
+				    "3": {
+				      "default_value": "false",
+				      "label": "Type",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "Radio",
+				        "trueVal": "Consecutive",
+				        "falseVal": "Over Period"
+				     	},
+				      "uniqueId": "consecutive"
 				    }
-				  }
+				 }
 				}
 		},
 		"325": {
@@ -3200,25 +3791,36 @@
 			  "threshold_metric_display": "Supply Humidity",
 			  "category": "FAHU",
 			  "placeHolder": {
-			    "1": {
-			      "default_value": "All Asset Selected",
-			      "label": "Assets",
-			      "type": "default",
-			      "selection_criteria": {
-			        "displayType": "ASSETCHOOSER"
-			      },
-			      "uniqueId": "resource"
-			    },
-			    "2": {
-			      "default_value": "10",
-			      "label": "Interval",
-			      "type": "rules",
-			      "selection_criteria": {
-			        "displayType": "DURATION"
-			      },
-			      "uniqueId": "interval"
-			    }
-			  }
+				    "1": {
+				      "default_value": "All Asset Selected",
+				      "label": "Assets",
+				      "type": "default",
+				      "selection_criteria": {
+				        "displayType": "ASSETCHOOSER"
+				      },
+				      "uniqueId": "resource"
+				    },
+				   	"2": {
+				      "default_value": 2,
+				      "label": "Occurences",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "NUMBER"
+				      },
+				      "uniqueId": "occurences"
+				    },
+				    "3": {
+				      "default_value": "false",
+				      "label": "Type",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "Radio",
+				        "trueVal": "Consecutive",
+				        "falseVal": "Over Period"
+				     	},
+				      "uniqueId": "consecutive"
+				    }
+				 }
 			}
 		}
 	}

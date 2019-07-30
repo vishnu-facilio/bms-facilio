@@ -157,6 +157,12 @@
 			<artifactId>aws-java-sdk-sqs</artifactId>
 			<version>1.11.347</version>
 		</dependency>
+        <dependency>
+            <groupId>com.amazonaws</groupId>
+            <artifactId>amazon-sqs-java-extended-client-lib</artifactId>
+            <version>1.0.2</version>
+            <type>jar</type>
+        </dependency>
 
 		<dependency>
 			<groupId>org.ow2.asm</groupId>
