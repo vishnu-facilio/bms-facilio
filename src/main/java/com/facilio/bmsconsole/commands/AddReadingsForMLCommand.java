@@ -92,6 +92,7 @@ public class AddReadingsForMLCommand extends FacilioCommand {
 					 catch(Exception e)
 					 {
 						 LOGGER.error("Error while updating Predicted Reading", e);
+						 AwsUtil.sendErrorMail(mlContext.getOrgId(), mlContext.getId(), e.toString());
 					 }
 				 }
 				 updateReading(logModule,logReadingList);

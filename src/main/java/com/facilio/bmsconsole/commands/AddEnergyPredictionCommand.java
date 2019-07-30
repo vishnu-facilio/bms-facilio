@@ -41,11 +41,11 @@ public class AddEnergyPredictionCommand extends FacilioCommand {
 		addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContext2.getCategory().getId(),"EnergyPredictionMLReadings",FieldFactory.getMLPredictCheckGamFields(),ModuleFactory.getMLReadingModule().getTableName());
 		
 		
-		checkGamModel(energyMeterID,emContext2,(String) jc.get("weekend"));
+		checkGamModel(energyMeterID,emContext2,(String) jc.get("weekEnd"),(String) jc.get("meterInterval"));
 		return false;
 	}
 	
-	private void checkGamModel(long ratioCheckMLID, EnergyMeterContext context,String weekend) throws Exception
+	private void checkGamModel(long ratioCheckMLID, EnergyMeterContext context,String weekend,String meterInterval) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -71,7 +71,7 @@ public class AddEnergyPredictionCommand extends FacilioCommand {
 		
 		addMLModelVariables(mlID,"timezone",AccountUtil.getCurrentAccount().getTimeZone());
 		addMLModelVariables(mlID,"weekend",weekend);
-		addMLModelVariables(mlID,"meterinterval","10");
+		addMLModelVariables(mlID,"meterinterval",meterInterval);
 		
 		
 		ScheduleInfo info = new ScheduleInfo();
