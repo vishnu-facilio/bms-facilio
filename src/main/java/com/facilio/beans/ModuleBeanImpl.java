@@ -17,6 +17,7 @@ import java.util.Map;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
+import com.facilio.accounts.dto.User;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -85,6 +86,14 @@ public class ModuleBeanImpl implements ModuleBean {
 			currentModule.setType(rs.getInt("MODULE_TYPE"));
 			currentModule.setTrashEnabled(rs.getBoolean("IS_TRASH_ENABLED"));
 			currentModule.setShowAsView(rs.getBoolean("SHOW_AS_VIEW"));
+			currentModule.setDescription(rs.getString("DESCRIPTION"));
+			currentModule.setCreatedTime(rs.getLong("CREATED_TIME"));
+			long createdById = rs.getLong("CREATED_BY");
+			if (createdById > 0) {
+				User user = new User();
+				user.setId(createdById);
+				currentModule.setCreatedBy(user);
+			}
 			if(prevModule != null) {
 				prevModule.setExtendModule(currentModule);
 			}
@@ -137,6 +146,13 @@ public class ModuleBeanImpl implements ModuleBean {
 				.select(FieldFactory.getModuleFields())
 				.andCondition(CriteriaAPI.getCondition("MODULE_TYPE", "moduleType", String.valueOf(moduleType.getValue()), NumberOperators.EQUALS));
 		List<Map<String, Object>> props = builder.get();
+		for (Map<String, Object> prop : props) {
+			if (prop.containsKey("createdBy")) {
+				User user = new User();
+				user.setId((Long) prop.get("createdBy"));
+				prop.put("createdBy", user);
+			}
+		}
 		List<FacilioModule> moduleList = FieldUtil.getAsBeanListFromMapList(props, FacilioModule.class);
 		return moduleList;
 	}
