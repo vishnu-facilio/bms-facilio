@@ -58,7 +58,9 @@ public class GetToolsListCommand extends FacilioCommand {
 				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(moduleName)).select(fields);
 
 		Long siteId = (Long) context.get(FacilioConstants.ContextNames.WORK_ORDER_SITE_ID);
-		Set<Long> storeIds = StoreroomApi.getStoreRoomList(siteId);
+		boolean includeServingSite = (boolean) context.get(FacilioConstants.ContextNames.INCLUDE_SERVING_SITE);
+		
+		Set<Long> storeIds = StoreroomApi.getStoreRoomList(siteId, includeServingSite);
 		if(CollectionUtils.isNotEmpty(storeIds)) {
 			builder.andCondition(CriteriaAPI.getConditionFromList("STORE_ROOM_ID", "storeRoomId", storeIds, NumberOperators.EQUALS));
 		}

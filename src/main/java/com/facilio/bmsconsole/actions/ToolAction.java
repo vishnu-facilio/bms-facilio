@@ -65,6 +65,21 @@ public class ToolAction extends FacilioAction {
 		this.siteId = siteId;
 	}
 
+	private Boolean includeServingSite;
+	
+	public Boolean getIncludeServingSite() {
+		return includeServingSite;
+	}
+	public void setIncludeServingSite(Boolean includeServingSite) {
+		this.includeServingSite = includeServingSite;
+	}
+	
+	public boolean isIncludeServingSite() {
+		if (includeServingSite != null) {
+			return includeServingSite.booleanValue();
+		}
+		return false;
+	}
 
 	public String addTool() throws Exception {
 		FacilioContext context = new FacilioContext();
@@ -127,7 +142,8 @@ public class ToolAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
 		context.put(FacilioConstants.ContextNames.WORK_ORDER_SITE_ID, siteId);
-	
+		context.put(FacilioConstants.ContextNames.INCLUDE_SERVING_SITE, includeServingSite);
+		
 		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Tool.LOCAL_ID desc");
 		if (getFilters() != null) {
 			JSONParser parser = new JSONParser();
@@ -169,6 +185,10 @@ public class ToolAction extends FacilioAction {
 		return SUCCESS;
 	}
 
+	public String woToolList() throws Exception {
+		setIncludeServingSite(true);
+		return toolList();
+	}
 	public String toolCount() throws Exception {
 		toolList();
 		setResult(FacilioConstants.ContextNames.TOOL_COUNT, stockedToolsCount);

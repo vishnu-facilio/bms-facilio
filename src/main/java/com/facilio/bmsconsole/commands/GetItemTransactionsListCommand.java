@@ -55,11 +55,11 @@ public class GetItemTransactionsListCommand extends FacilioCommand {
 		builder.innerJoin(ModuleFactory.getInventryModule().getTableName())
 				.on(ModuleFactory.getInventryModule().getTableName() + ".ID = "
 						+ ModuleFactory.getItemTransactionsModule().getTableName() + ".ITEM_ID");
-		Long siteId = (Long) context.get(FacilioConstants.ContextNames.WORK_ORDER_SITE_ID);
-		Set<Long> storeIds = StoreroomApi.getStoreRoomList(siteId);
-		if(CollectionUtils.isNotEmpty(storeIds)) {
-			builder.andCondition(CriteriaAPI.getConditionFromList("STORE_ROOM_ID", "storeRoomId", storeIds, NumberOperators.EQUALS));
-		}
+//		Long siteId = (Long) context.get(FacilioConstants.ContextNames.WORK_ORDER_SITE_ID);
+//		Set<Long> storeIds = StoreroomApi.getStoreRoomList(siteId, false);
+//		if(CollectionUtils.isNotEmpty(storeIds)) {
+//			builder.andCondition(CriteriaAPI.getConditionFromList("STORE_ROOM_ID", "storeRoomId", storeIds, NumberOperators.EQUALS));
+//		}
 
 		String orderBy = (String) context.get(FacilioConstants.ContextNames.SORTING_QUERY);
 		if (orderBy != null && !orderBy.isEmpty()) {

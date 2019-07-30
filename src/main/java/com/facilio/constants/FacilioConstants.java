@@ -1120,8 +1120,10 @@ public class FacilioConstants {
 		
 		public static final String IMPORT_MODE = "importMode";
 		public static final String IMPORT_PROCESS_CONTEXT = "importProcessContext";
-		
-		
+
+		public static final String INCLUDE_SERVING_SITE = "includeServingSite";
+
+
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();

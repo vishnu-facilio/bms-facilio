@@ -57,7 +57,22 @@ public class ItemAction extends FacilioAction{
 	public void setSiteId(long siteId) {
 		this.siteId = siteId;
 	}
-
+	
+	private Boolean includeServingSite;
+	
+	public Boolean getIncludeServingSite() {
+		return includeServingSite;
+	}
+	public void setIncludeServingSite(Boolean includeServingSite) {
+		this.includeServingSite = includeServingSite;
+	}
+	
+	public boolean isIncludeServingSite() {
+		if (includeServingSite != null) {
+			return includeServingSite.booleanValue();
+		}
+		return false;
+	}
 	public String addItem() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, item);
@@ -121,6 +136,8 @@ public class ItemAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
 		context.put(FacilioConstants.ContextNames.WORK_ORDER_SITE_ID, siteId);
 		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Item.LOCAL_ID desc");
+		context.put(FacilioConstants.ContextNames.INCLUDE_SERVING_SITE, includeServingSite);
+		
 		if (getFilters() != null) {
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(getFilters());
@@ -162,6 +179,11 @@ public class ItemAction extends FacilioAction{
 			setResult(FacilioConstants.ContextNames.ITEMS, items);
 		}
 		return SUCCESS;
+	}
+	
+	public String woItemList() throws Exception {
+		setIncludeServingSite(true);
+		return itemList();
 	}
 	
 	public String itemCount() throws Exception {

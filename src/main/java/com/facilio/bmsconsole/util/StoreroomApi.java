@@ -73,18 +73,24 @@ public class StoreroomApi {
 		updateBuilder.update(storeRoom);
 	}
 	
-	public static SelectRecordsBuilder<StoreRoomContext> getStoreRoomListBuilder(Long siteId) throws Exception {
+	public static SelectRecordsBuilder<StoreRoomContext> getStoreRoomListBuilder(Long siteId, boolean includeServingSite) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.STORE_ROOM);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.STORE_ROOM);
 		SelectRecordsBuilder<StoreRoomContext> builder = new SelectRecordsBuilder<StoreRoomContext>().module(module)
 				.beanClass(FacilioConstants.ContextNames.getClassFromModuleName(module.getName())).select(fields);
-		builder.innerJoin("Storeroom_Sites").on("Storeroom_Sites.STORE_ROOM_ID = "+module.getTableName()+".ID");
-
 		List<Long> accessibleSpaces = AccountUtil.getCurrentUser().getAccessibleSpace();
-		
+
+		if(includeServingSite) {
+			builder.innerJoin("Storeroom_Sites").on("Storeroom_Sites.STORE_ROOM_ID = "+module.getTableName()+".ID");
+		}
 		if (siteId != null && siteId > 0) {
-			builder.andCondition(CriteriaAPI.getCondition("Storeroom_Sites.SITE_ID", "siteId", String.valueOf(siteId), NumberOperators.EQUALS));
+			if(includeServingSite) {
+				builder.andCondition(CriteriaAPI.getCondition("Storeroom_Sites.SITE_ID", "siteId", String.valueOf(siteId), NumberOperators.EQUALS));
+			}
+			else {
+				builder.andCondition(CriteriaAPI.getCondition("Store_room.SITE_ID", "siteId", String.valueOf(siteId), NumberOperators.EQUALS));
+			}
 		}
 		else {
 			if (accessibleSpaces != null && !accessibleSpaces.isEmpty()) {
@@ -93,15 +99,20 @@ public class StoreroomApi {
 					BaseSpaceContext baseSpace = SpaceAPI.getBaseSpace(accessibleSpace);
 					siteIds.add(baseSpace.getSite().getId());
 				}
-				builder.andCondition(CriteriaAPI.getConditionFromList("Storeroom_Sites.SITE_ID", "siteId", siteIds, NumberOperators.EQUALS));
+				if(includeServingSite) {
+					builder.andCondition(CriteriaAPI.getConditionFromList("Storeroom_Sites.SITE_ID", "siteId", siteIds, NumberOperators.EQUALS));
+				}
+				else {
+					builder.andCondition(CriteriaAPI.getConditionFromList("Store_room.SITE_ID", "siteId", siteIds, NumberOperators.EQUALS));
+				}
 			}
 		}
 		return builder;
 
 	}
 	
-	public static Set<Long> getStoreRoomList(Long siteId) throws Exception {
-		SelectRecordsBuilder<StoreRoomContext> builder = getStoreRoomListBuilder(siteId);
+	public static Set<Long> getStoreRoomList(Long siteId, boolean includeServingSite) throws Exception {
+		SelectRecordsBuilder<StoreRoomContext> builder = getStoreRoomListBuilder(siteId, includeServingSite);
 		List<StoreRoomContext> storeRooms = builder.get();
 		Set<Long> storeIds = new HashSet<Long>();
 		if(CollectionUtils.isNotEmpty(storeRooms)) {
