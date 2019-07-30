@@ -13,12 +13,14 @@ public class CreateCustomModuleCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		Integer moduleType = (Integer) context.get(FacilioConstants.ContextNames.MODULE_TYPE);
+		String description = (String) context.get(FacilioConstants.ContextNames.MODULE_DESCRIPTION);
 
 		if(moduleName != null && !moduleName.isEmpty()) {
 			FacilioModule module = new FacilioModule();
 			module.setName(moduleName.toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
 			module.setDisplayName(moduleName);
 			module.setTableName("CustomModuleData");
+			module.setDescription(description);
 			if (moduleType != null) {
 				moduleType = ModuleType.CUSTOM.getValue();
 			}

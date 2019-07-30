@@ -62,7 +62,7 @@ public class ModuleAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
 		context.put(FacilioConstants.ContextNames.MODULE_TYPE, moduleType);
-//		context.put(FacilioConstants.ContextNames.SUPPORT_STATEFLOW, stateFlow);
+		context.put(FacilioConstants.ContextNames.MODULE_DESCRIPTION, description);
 		
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
 		
@@ -98,6 +98,7 @@ public class ModuleAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
 		context.put(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME, moduleDisplayName);
+		context.put(FacilioConstants.ContextNames.MODULE_DESCRIPTION, description);
 		
 		Chain chain = TransactionChainFactory.getUpdateModuleChain();
 		chain.execute(context);
@@ -331,6 +332,14 @@ public class ModuleAction extends FacilioAction {
 	}
 	public void setModuleName(String moduleName) {
 		this.moduleName = moduleName;
+	}
+	
+	private String description;
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
 	}
 	
 	private int moduleType;
