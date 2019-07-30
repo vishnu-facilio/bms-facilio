@@ -7,18 +7,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ImportProcessLogContext;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.ImportAPI;
-import com.facilio.bmsconsole.util.ImportFieldFactory;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -35,12 +36,10 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
-import com.facilio.time.DateTimeUtil;
-import com.opensymphony.xwork2.ActionSupport;
 
 ;
 
-public class ImportDataAction extends ActionSupport {
+public class ImportDataAction extends FacilioAction {
 	
 	/**
 	 * 
@@ -51,59 +50,22 @@ public class ImportDataAction extends ActionSupport {
 	
 	private static org.apache.log4j.Logger log = LogManager.getLogger(ImportDataAction.class.getName());
 	public String upload() throws Exception {
-		FileStore fs = FileStoreFactory.getInstance().getFileStore();
 		
-		long fileId = fs.addFile(fileUploadFileName, fileUpload, fileUploadContentType);
-		LOGGER.severe("FILE_UPLOADED -- "+fileId);
-		importProcessContext = ImportAPI.getColumnHeadings(fileUpload, importProcessContext);
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.FILE_NAME, fileUploadFileName);
+		context.put(FacilioConstants.ContextNames.FILE, fileUpload);
+		context.put(FacilioConstants.ContextNames.FILE_CONTENT_TYPE, fileUploadContentType);
+		context.put(FacilioConstants.ContextNames.IMPORT_PROCESS_CONTEXT, importProcessContext);
+		context.put(FacilioConstants.ContextNames.ASSET_CATEGORY, assetCategory);
+		context.put(FacilioConstants.ContextNames.IMPORT_MODE, importMode);
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+		context.put(FacilioConstants.ContextNames.ASSET_ID, assetId);
 		
-		JSONObject firstRow = ImportAPI.getFirstRow(fileUpload);	
-		importProcessContext.setfirstRow(firstRow);
+		Chain uploadFile = TransactionChainFactory.uploadImportFileChain();
+		uploadFile.execute(context);
 		
-		importProcessContext.setImportMode(getImportMode());
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule facilioModule = modBean.getModule(getModuleName());
-        
-		if(facilioModule ==  null) {
-			return ERROR;
-		}
-        if(facilioModule.getName().equals(FacilioConstants.ContextNames.ASSET) && (assetCategory != -1)) {
-        	Map<String,String> moduleInfo = AssetsAPI.getAssetModuleName(this.assetCategory);
-        	String moduleName = moduleInfo.get(FacilioConstants.ContextNames.MODULE_NAME);
-        	if(!moduleName.equals(FacilioConstants.ContextNames.ASSET)) {
-        		facilioModule = modBean.getModule(moduleName);
-        		importProcessContext.setModuleId(facilioModule.getModuleId());
-        	}
-        	else {
-            	importProcessContext.setModuleId(facilioModule.getModuleId());
-            }
-            
-        }
-        else {
-        	importProcessContext.setModuleId(facilioModule.getModuleId());
-        }
-        importProcessContext.setStatus(ImportProcessContext.ImportStatus.UPLOAD_COMPLETE.getValue());
-        
-        importProcessContext.setFileId(fileId);
-        
-        importProcessContext.setImportTime(DateTimeUtil.getCurrenTime());
-        
-        importProcessContext.setImportType(ImportProcessContext.ImportType.EXCEL.getValue());
-        
-        if(assetId > 0) {
-        	importProcessContext.setAssetId(assetId);
-        }
-        
-        ImportAPI.addImportProcess(importProcessContext);
-		
-        if(getModuleName().equals("purchasedTool") || getModuleName().equals("purchasedItem")) {
-        	importProcessContext.setFacilioFieldMapping(ImportFieldFactory.getFacilioFieldMapping(getModuleName()));
-        	importProcessContext.setFieldMapping(ImportFieldFactory.getFieldMapping(getModuleName()));
-
-        }
-        else {
-        	ImportAPI.getFieldMapping(importProcessContext);
-        }
+		ImportProcessContext imp = (ImportProcessContext) context.get(FacilioConstants.ContextNames.IMPORT_PROCESS_CONTEXT);
+		setResult(FacilioConstants.ContextNames.IMPORT_PROCESS_CONTEXT ,imp);
         
 		return SUCCESS;
 	}

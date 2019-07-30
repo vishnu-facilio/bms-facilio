@@ -3806,6 +3806,11 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateStateFlowDiagramCommand());
 			return c;
 		}
+		public static Chain uploadImportFileChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UploadImportFileCommand());
+			return c;
+		}
 }
 
 

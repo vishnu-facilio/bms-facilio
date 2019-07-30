@@ -1117,6 +1117,9 @@ public class FacilioConstants {
 		public static final String MAX_FIELDS_PER_MODULE ="maxFieldsPerModule";
 		public static final String CONTROLLER_ASSET = "Controller";
 		
+		public static final String IMPORT_MODE = "importMode";
+		public static final String IMPORT_PROCESS_CONTEXT = "importProcessContext";
+		
 		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
