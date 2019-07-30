@@ -237,7 +237,7 @@ public class UserAction extends FacilioAction {
 
 		Organization org = AccountUtil.getCurrentOrg();
 		user.setOrgId(org.getOrgId());
-		user.setCity(org.getDomain());
+		user.setDomainName(org.getDomain());
 		if(isEmailEmpty) {
 			user.setEmail(user.getMobile());
 		}
@@ -301,7 +301,7 @@ public class UserAction extends FacilioAction {
 		HttpServletRequest request = ServletActionContext.getRequest();
 		String value = FacilioCookie.getUserCookie(request, "fc.authtype");
 		user.setFacilioAuth("facilio".equals(value));
-		user.setCity("app");
+		user.setDomainName("app");
 		
 		//if(emailVerificationNeeded) {
 			user.setUserVerified(false);

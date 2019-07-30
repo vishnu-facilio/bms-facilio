@@ -11,7 +11,6 @@ import java.util.logging.Logger;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTCreator;
@@ -21,8 +20,6 @@ import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.facilio.accounts.dto.User;
-import com.facilio.accounts.impl.SampleGenericSelectBuilder;
-import com.facilio.accounts.impl.SampleGenericUpdateRecordBuilder;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -50,7 +47,7 @@ public class UserUtil {
 		String timezone = (String) signupInfo.get("timezone");
 		Locale locale = (Locale) signupInfo.get("locale");
 
-		User userObj = AuthUtill.getUserBean().getFacilioUser(email, orgId, null);
+		User userObj = IAMUtil.getUserBean().getFacilioUser(email, orgId, null);
 		if (userObj != null) {
 			throw new AccountException(AccountException.ErrorCode.EMAIL_ALREADY_EXISTS,
 					"This user is not permitted to do this action.");
@@ -64,7 +61,7 @@ public class UserUtil {
 		user.setLanguage(locale.getLanguage());
 		user.setCountry(locale.getCountry());
 		//setting app domain for super admin
-		user.setCity("app");
+		user.setDomainName("app");
 		if (phone != null) {
 			user.setPhone(phone);
 		}
@@ -77,14 +74,14 @@ public class UserUtil {
 		if (AwsUtil.isDevelopment()) {
 			user.setUserVerified(true);
 		}
-		AuthUtill.getUserBean().signUpSuperAdminUserv2(orgId, user);
+		IAMUtil.getUserBean().signUpSuperAdminUserv2(orgId, user);
 		return user;
 	}
 
 	public static long addUser(User user, long orgId, String currentUserEmail) throws Exception {
 		if ((user != null) && orgId > 0) {
-			if (AuthUtill.getUserBean().getFacilioUser(currentUserEmail, orgId, null) != null) {
-				return AuthUtill.getTransactionalUserBean().addUserv2(orgId, user);
+			if (IAMUtil.getUserBean().getFacilioUser(currentUserEmail, orgId, null) != null) {
+				return IAMUtil.getTransactionalUserBean().addUserv2(orgId, user);
 			} else {
 				throw new AccountException(AccountException.ErrorCode.USER_DOESNT_EXIST_IN_ORG,
 						"This user is not permitted to do this action.");
@@ -95,16 +92,16 @@ public class UserUtil {
 	}
 
 	public static User resetPassword(String invitetoken, String password) throws Exception {
-		return AuthUtill.getUserBean().resetPasswordv2(invitetoken, password);
+		return IAMUtil.getUserBean().resetPasswordv2(invitetoken, password);
 
 	}
 
 	public static boolean changePassword(String password, String newPassword, long uId, long orgId) throws Exception {
-		User user = AuthUtill.getUserBean().getFacilioUser(orgId, uId);
-		Boolean verifyOldPassword = verifyPasswordv2(user.getEmail(), user.getCity(), password);
+		User user = IAMUtil.getUserBean().getFacilioUser(orgId, uId);
+		Boolean verifyOldPassword = verifyPasswordv2(user.getEmail(), user.getDomainName(), password);
 		if (verifyOldPassword != null && verifyOldPassword) {
 			user.setPassword(newPassword);
-			AuthUtill.getUserBean().updateUserv2(user);
+			IAMUtil.getUserBean().updateUserv2(user);
 			return true;
 		} else {
 			return false;
@@ -112,7 +109,7 @@ public class UserUtil {
 	}
 
 	public static User acceptInvite(String inviteToken, String password) throws Exception {
-		return AuthUtill.getTransactionalUserBean().acceptInvitev2(inviteToken, password);
+		return IAMUtil.getTransactionalUserBean().acceptInvitev2(inviteToken, password);
 	}
 
 	public static String verifyLoginPassword(String userName, String password, String userAgent, String userType,
@@ -121,12 +118,12 @@ public class UserUtil {
 	}
 
 	public static User verifyEmail(String invitetoken) throws Exception {
-		return AuthUtill.getUserBean().verifyEmailv2(invitetoken);
+		return IAMUtil.getUserBean().verifyEmailv2(invitetoken);
 	}
 
 	public static boolean updateUser(User user, long orgId, String currentUserEmail) throws Exception {
-		if (AuthUtill.getUserBean().getFacilioUser(currentUserEmail, orgId, null) != null) {
-			return AuthUtill.getUserBean().updateUserv2(user);
+		if (IAMUtil.getUserBean().getFacilioUser(currentUserEmail, orgId, null) != null) {
+			return IAMUtil.getUserBean().updateUserv2(user);
 		} else {
 			throw new AccountException(AccountException.ErrorCode.USER_DOESNT_EXIST_IN_ORG,
 					"This user is not permitted to do this action.");
@@ -135,9 +132,9 @@ public class UserUtil {
 	}
 
 	public static boolean deleteUser(User user, long orgId, String currentUserEmail) throws Exception {
-		if (AuthUtill.getUserBean().getFacilioUser(currentUserEmail, orgId, null) != null) {
+		if (IAMUtil.getUserBean().getFacilioUser(currentUserEmail, orgId, null) != null) {
 			user.setOrgId(orgId);
-			return AuthUtill.getUserBean().deleteUserv2(user);
+			return IAMUtil.getUserBean().deleteUserv2(user);
 		} else {
 			throw new AccountException(AccountException.ErrorCode.USER_DOESNT_EXIST_IN_ORG,
 					"This user is not permitted to do this action.");
@@ -147,7 +144,7 @@ public class UserUtil {
 
 	public static boolean verifyUser(long userId) throws Exception {
 		
-		GenericUpdateRecordBuilder updateBuilder = new SampleGenericUpdateRecordBuilder()
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(com.iam.accounts.util.IAMAccountConstants.getAccountsUserModule().getTableName()).fields(com.iam.accounts.util.IAMAccountConstants.getAccountsUserFields())
 				.andCustomWhere("USERID = ?", userId);
 		Map<String, Object> prop = new HashMap<>();
@@ -161,48 +158,48 @@ public class UserUtil {
 	}
 	
 	public static User validateUserInviteToken(String token) throws Exception {
-		return AuthUtill.getUserBean().validateUserInvitev2(token);
+		return IAMUtil.getUserBean().validateUserInvitev2(token);
 	}
 	
 	public static boolean resendInvite(long orgId, long userId) throws Exception {
-		return AuthUtill.getUserBean().resendInvitev2(orgId, userId);
+		return IAMUtil.getUserBean().resendInvitev2(orgId, userId);
 	}
 	
 	public static boolean acceptUser(User user) throws Exception {
-		return AuthUtill.getUserBean().acceptUserv2(user);
+		return IAMUtil.getUserBean().acceptUserv2(user);
 	}
 	
 	public static boolean disableUser(User user) throws Exception {
-		return AuthUtill.getUserBean().disableUserv2(user.getOrgId(), user.getUid());
+		return IAMUtil.getUserBean().disableUserv2(user.getOrgId(), user.getUid());
 	}
 	
 	public static boolean enableUser(User user) throws Exception {
-		return AuthUtill.getUserBean().enableUserv2(user.getOrgId(), user.getUid());
+		return IAMUtil.getUserBean().enableUserv2(user.getOrgId(), user.getUid());
 	}
 	
 	public static boolean updateUserPhoto(long uid, long fileId) throws Exception {
-		return AuthUtill.getUserBean().updateUserPhoto(uid, fileId);
+		return IAMUtil.getUserBean().updateUserPhoto(uid, fileId);
 	}
 	
 	public static boolean updateUserStatus(User user) throws Exception {
 		if(user.getUserStatus()) {
-			return AuthUtill.getUserBean().enableUserv2(user.getOrgId(), user.getUid());
+			return IAMUtil.getUserBean().enableUserv2(user.getOrgId(), user.getUid());
 		}
 		else {
-			return AuthUtill.getUserBean().disableUserv2(user.getOrgId(), user.getUid());
+			return IAMUtil.getUserBean().disableUserv2(user.getOrgId(), user.getUid());
 		}
 	}
 	
 	public static String generatePermalinkForUrl(String url, long uId, long orgId) throws Exception {
-		return AuthUtill.getUserBean().generatePermalinkForURL(url, uId, orgId);
+		return IAMUtil.getUserBean().generatePermalinkForURL(url, uId, orgId);
 	}
 	
 	public static boolean verifyPermalinkForUrl(String token, List<String> urls) throws Exception {
-		return AuthUtill.getUserBean().verifyPermalinkForURL(token, urls);
+		return IAMUtil.getUserBean().verifyPermalinkForURL(token, urls);
 	}
 	
 	public static Account getPermalinkAccount(String token, List<String> urls) throws Exception {
-		return AuthUtill.getUserBean().getPermalinkAccount(token, urls);
+		return IAMUtil.getUserBean().getPermalinkAccount(token, urls);
 	}
 	
 	public static Account verifiyFacilioToken(String idToken, boolean isPortalUser, boolean overrideSessionCheck, String orgDomain)
@@ -218,7 +215,7 @@ public class UserUtil {
 				else {
 					email = decodedjwt.getSubject().split("_")[0];
 				}
-				Account account = AuthUtill.getUserBean().verifyUserSessionv2(email, idToken, orgDomain);
+				Account account = IAMUtil.getUserBean().verifyUserSessionv2(email, idToken, orgDomain);
 				if (overrideSessionCheck || account != null) {
 					return account;
 				} else {
@@ -291,7 +288,7 @@ public class UserUtil {
 			fields.addAll(IAMAccountConstants.getAccountsUserFields());
 			fields.add(IAMAccountConstants.getUserPasswordField());
 			
-			GenericSelectRecordBuilder selectBuilder = new SampleGenericSelectBuilder()
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 					.select(fields)
 					.table("Account_Users");
 			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.EMAIL", "email", emailAddress, StringOperators.IS));
@@ -322,13 +319,13 @@ public class UserUtil {
 
 		if (verifyPasswordv2(emailaddress, domain, password)) {
 
-			User user = AuthUtill.getUserBean().getFacilioUser(emailaddress, -1, domain);
+			User user = IAMUtil.getUserBean().getFacilioUser(emailaddress, -1, domain);
 			if (user != null) {
 				long uid = user.getUid();
 				String jwt = createJWT("id", "auth0", emailaddress,
 						System.currentTimeMillis() + 24 * 60 * 60000, isPortalUser);
 				if (startUserSession) {
-					AuthUtill.getUserBean().startUserSessionv2(uid, emailaddress, jwt, ipAddress, userAgent, userType);
+					IAMUtil.getUserBean().startUserSessionv2(uid, emailaddress, jwt, ipAddress, userAgent, userType);
 				}
 				return jwt;
 			}
@@ -342,7 +339,7 @@ public class UserUtil {
 		// end user session
 		try {
 			if (facilioToken != null) {
-				return AuthUtill.getUserBean().endUserSessionv2(uId, userEmail, facilioToken);
+				return IAMUtil.getUserBean().endUserSessionv2(uId, userEmail, facilioToken);
 			}
 		} catch (Exception e) {
 			throw e;
@@ -351,19 +348,19 @@ public class UserUtil {
 	}
 
 	public static String getResetPasswordToken(User user) throws Exception {
-		return AuthUtill.getUserBean().getEncodedTokenv2(user);
+		return IAMUtil.getUserBean().getEncodedTokenv2(user);
 	}
 	
 	public static boolean sendResetPasswordLink(User user) throws Exception {
-		return AuthUtill.getUserBean().sendResetPasswordLinkv2(user);
+		return IAMUtil.getUserBean().sendResetPasswordLinkv2(user);
 	}
 
 	public static List<Map<String, Object>> getUserSessions(long uId, Boolean isActive) throws Exception {
-		return AuthUtill.getUserBean().getUserSessionsv2(uId, isActive);
+		return IAMUtil.getUserBean().getUserSessionsv2(uId, isActive);
 	}
 	
 	public static User getUser(long uId, long orgId) throws Exception {
-		return AuthUtill.getUserBean().getFacilioUser(orgId, uId);
+		return IAMUtil.getUserBean().getFacilioUser(orgId, uId);
 	}
 
 }

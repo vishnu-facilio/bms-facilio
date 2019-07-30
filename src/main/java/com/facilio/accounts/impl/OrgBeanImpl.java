@@ -35,28 +35,28 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
-import com.iam.accounts.util.AuthUtill;
+import com.iam.accounts.util.IAMUtil;
 
 public class OrgBeanImpl implements OrgBean {
 
 	@Override
 	public boolean updateOrg(long orgId, Organization org) throws Exception {
-		return AuthUtill.getOrgBean(orgId).updateOrgv2(orgId, org);
+		return IAMUtil.getOrgBean(orgId).updateOrgv2(orgId, org);
 	}
 
 	@Override
 	public boolean deleteOrg(long orgId) throws Exception {
-		return AuthUtill.getOrgBean(orgId).deleteOrgv2(orgId);
+		return IAMUtil.getOrgBean(orgId).deleteOrgv2(orgId);
 	}
 
 	@Override
 	public Organization getOrg(long orgId) throws Exception {
-		return AuthUtill.getOrgBean(orgId).getOrgv2(orgId);
+		return IAMUtil.getOrgBean(orgId).getOrgv2(orgId);
 	}
 
 	@Override
 	public Organization getOrg(String orgDomain) throws Exception {
-		return AuthUtill.getOrgBean().getOrgv2(orgDomain);
+		return IAMUtil.getOrgBean().getOrgv2(orgDomain);
 	}
 	
 	@Override
@@ -97,7 +97,7 @@ public class OrgBeanImpl implements OrgBean {
 		fields.addAll(AccountConstants.getAppUserFields());
 		fields.addAll(AccountConstants.getAppOrgUserFields());
 		
-		GenericSelectRecordBuilder selectBuilder = new SampleGenericSelectBuilder()
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Users")
 				.innerJoin("ORG_Users")
@@ -201,7 +201,7 @@ public class OrgBeanImpl implements OrgBean {
 		fields.addAll(AccountConstants.getAppUserFields());
 		fields.addAll(AccountConstants.getAppOrgUserFields());
 		
-		GenericSelectRecordBuilder selectBuilder = new SampleGenericSelectBuilder()
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Users")
 				.innerJoin("ORG_Users")
@@ -288,7 +288,7 @@ public class OrgBeanImpl implements OrgBean {
 		fields.addAll(AccountConstants.getAppOrgUserFields());
 		fields.add(AccountConstants.getOrgIdField(AccountConstants.getAppOrgUserModule()));
 		
-		GenericSelectRecordBuilder selectBuilder = new SampleGenericSelectBuilder()
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Users")
 				.innerJoin("ORG_Users")

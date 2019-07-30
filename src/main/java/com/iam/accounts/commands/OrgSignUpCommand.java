@@ -14,7 +14,7 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.iam.accounts.dto.Account;
-import com.iam.accounts.util.AuthUtill;
+import com.iam.accounts.util.IAMUtil;
 import com.iam.accounts.util.UserUtil;
 
 public class OrgSignUpCommand implements Command{
@@ -28,7 +28,7 @@ public class OrgSignUpCommand implements Command{
 		Organization org = addOrg(jObj, locale);
 		if(org.getOrgId() > 0) {
     		User user = UserUtil.addSuperAdmin(jObj, org.getOrgId());
-    		Account acc = AuthUtill.getCurrentAccount(org, user);
+    		Account acc = IAMUtil.getCurrentAccount(org, user);
     		context.put("account", acc);
     	}
        
@@ -39,7 +39,7 @@ public class OrgSignUpCommand implements Command{
     	String companyName = (String) signupInfo.get("companyname");
 		String orgDomain = (String) signupInfo.get("domainname");
 		 
-        Organization orgObj = AuthUtill.getOrgBean().getOrgv2(orgDomain);
+        Organization orgObj = IAMUtil.getOrgBean().getOrgv2(orgDomain);
         if(orgObj != null) {
             throw new AccountException("Org Domain Name already exists");
         }
@@ -67,7 +67,7 @@ public class OrgSignUpCommand implements Command{
 		org.setTimezone(timezone);
 		org.setCreatedTime(System.currentTimeMillis());
 		
-		return AuthUtill.getOrgBean().createOrgv2(org);
+		return IAMUtil.getOrgBean().createOrgv2(org);
     }
     
 

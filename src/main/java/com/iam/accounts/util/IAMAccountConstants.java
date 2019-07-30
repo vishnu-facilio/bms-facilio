@@ -251,12 +251,12 @@ public class IAMAccountConstants {
 			name.setModule(module);
 			fields.add(name);
 			
-//			FacilioField domainName = new FacilioField();
-//			name.setName("domainName");
-//			name.setDataType(FieldType.STRING);
-//			name.setColumnName("DOMAIN_NAME");
-//			name.setModule(module);
-//			fields.add(domainName);
+			FacilioField domainName = new FacilioField();
+			domainName.setName("domainName");
+			domainName.setDataType(FieldType.STRING);
+			domainName.setColumnName("DOMAIN_NAME");
+			domainName.setModule(module);
+			fields.add(domainName);
 
 		/*	FacilioField cognitoId = new FacilioField();
 			cognitoId.setName("cognitoId");

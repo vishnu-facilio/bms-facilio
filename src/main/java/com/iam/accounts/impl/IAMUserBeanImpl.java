@@ -22,9 +22,6 @@ import com.amazonaws.util.StringUtils;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
-import com.facilio.accounts.impl.SampleGenericInsertRecordBuilder;
-import com.facilio.accounts.impl.SampleGenericSelectBuilder;
-import com.facilio.accounts.impl.SampleGenericUpdateRecordBuilder;
 import com.facilio.accounts.util.AccountEmailTemplate;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
@@ -51,8 +48,8 @@ import com.iam.accounts.bean.IAMUserBean;
 import com.iam.accounts.dto.Account;
 import com.iam.accounts.exceptions.AccountException;
 import com.iam.accounts.exceptions.AccountException.ErrorCode;
-import com.iam.accounts.util.AuthUtill;
 import com.iam.accounts.util.IAMAccountConstants;
+import com.iam.accounts.util.IAMUtil;
 import com.iam.accounts.util.UserUtil;
 
 ;
@@ -66,15 +63,15 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	
 	private long addUserEntryv2(User user, boolean emailVerificationRequired) throws Exception {
 
-		if (StringUtils.isNullOrEmpty(user.getCity())) {
-			user.setCity("app");
+		if (StringUtils.isNullOrEmpty(user.getDomainName())) {
+			user.setDomainName("app");
 		}
 		
 		User existingUser = getFacilioUser(user.getEmail(), user.getCity());
 		if(existingUser == null) {
 			List<FacilioField> fields = IAMAccountConstants.getAccountsUserFields();
 			fields.add(IAMAccountConstants.getUserPasswordField());
-			GenericInsertRecordBuilder insertBuilder = new SampleGenericInsertRecordBuilder()
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 					.table(IAMAccountConstants.getAccountsUserModule().getTableName())
 					.fields(fields);
 	
@@ -128,7 +125,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	private boolean updateUserEntryv2(User user) throws Exception {
 		List<FacilioField> fields = IAMAccountConstants.getAccountsUserFields();
 		fields.add(IAMAccountConstants.getUserPasswordField());
-		GenericUpdateRecordBuilder updateBuilder = new SampleGenericUpdateRecordBuilder()
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(IAMAccountConstants.getAccountsUserModule().getTableName())
 				.fields(fields);
 		
@@ -248,7 +245,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				try {
 					user.setPassword(password);
 					user.setUserVerified(true);
-					AuthUtill.getTransactionalUserBean(orgId).updateUserv2(user);
+					IAMUtil.getTransactionalUserBean(orgId).updateUserv2(user);
 				} catch (Exception e) {
 					log.info("Exception occurred ", e);
 				}
@@ -313,7 +310,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		User user = getUserFromToken(token);
 		user.setPassword(password);
 		long orgId=(user.getOrgId());
-		if(AuthUtill.getTransactionalUserBean(orgId).acceptUserv2(user)) {
+		if(IAMUtil.getTransactionalUserBean(orgId).acceptUserv2(user)) {
 			return user;
 		}
 		return null;
@@ -377,7 +374,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		fields.addAll(IAMAccountConstants.getAccountsOrgUserFields());
 		fields.add(IAMAccountConstants.getOrgIdField());
 
-		GenericSelectRecordBuilder selectBuilder = new SampleGenericSelectBuilder()
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Account_Users")
 				.innerJoin("Account_ORG_Users")
@@ -655,7 +652,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		fields.add(photoId);
 		
 		
-		GenericUpdateRecordBuilder updateBuilder = new SampleGenericUpdateRecordBuilder()
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(IAMAccountConstants.getAccountsUserModule().getTableName())
 				.fields(fields);
 		
@@ -753,7 +750,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	@Override
 	public List<Map<String, Object>> getUserSessionsv2(long uid, Boolean isActive) throws Exception
 	{
-		GenericSelectRecordBuilder selectBuilder = new SampleGenericSelectBuilder()
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(IAMAccountConstants.getUserSessionFields())
 				.table("Account_Users")
 				.innerJoin("UserSessions")
@@ -785,7 +782,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			}
 		}
 		
-		GenericSelectRecordBuilder selectBuilder = new SampleGenericSelectBuilder()
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(IAMAccountConstants.getUserSessionFields())
 				.table("Account_Users")
 				.innerJoin("UserSessions")
@@ -811,7 +808,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		if (user == null) {
 			throw new AccountException(ErrorCode.USER_DOESNT_EXIST_IN_ORG, "User doesn't exists in the current Org");
 		}
-		Organization org = AuthUtill.getOrgBean().getOrgv2(user.getOrgId());
+		Organization org = IAMUtil.getOrgBean().getOrgv2(user.getOrgId());
 		Account account = new Account(org, user);
 		return account;
 	}
@@ -854,7 +851,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	@Override
 	public String generatePermalinkForURL(String url, long uid, long orgId) throws Exception {
 		
-		Organization org = AuthUtill.getOrgBean().getOrgv2(orgId);
+		Organization org = IAMUtil.getOrgBean().getOrgv2(orgId);
 		User user = getFacilioUserFromUserId(uid, org.getDomain());
 		String tokenKey = orgId + "-" + user.getOuid();
 		String jwt = UserUtil.createJWT("id", "auth0", tokenKey, System.currentTimeMillis() + 24 * 60 * 60000, false);
@@ -936,7 +933,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		if(userExistsInOrg != null) {
 			throw new AccountException(ErrorCode.USER_ALREADY_EXISTS_IN_ORG, "The user already exist in thie organization");
 		}
-		GenericInsertRecordBuilder insertBuilder = new SampleGenericInsertRecordBuilder()
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(IAMAccountConstants.getAccountsOrgUserModule().getTableName())
 				.fields(IAMAccountConstants.getAccountsOrgUserFields());
 		
@@ -987,7 +984,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		fields.addAll(IAMAccountConstants.getAccountsOrgUserFields());
 		fields.add(IAMAccountConstants.getOrgIdField(IAMAccountConstants.getOrgModule()));
 		
-		GenericSelectRecordBuilder selectBuilder = new SampleGenericSelectBuilder()
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Account_Users")
 				.innerJoin("Account_ORG_Users")
@@ -1003,7 +1000,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			if (StringUtils.isNullOrEmpty(portalDomain)) {
 				portalDomain = "app";
 			}
-			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.CITY", "portalDomain", portalDomain, StringOperators.IS));
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.DOMAIN_NAME", "portalDomain", portalDomain, StringOperators.IS));
 			
 		}
 		
@@ -1114,7 +1111,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(IAMAccountConstants.getAccountsUserFields());
 		
-		GenericSelectRecordBuilder selectBuilder = new SampleGenericSelectBuilder()
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Account_Users");
 		Criteria userEmailCriteria = new Criteria();
@@ -1125,7 +1122,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		if (StringUtils.isNullOrEmpty(portalDomain)) {
 			portalDomain = "app";
 		}
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.CITY", "portalDomain", portalDomain, StringOperators.IS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.DOMAIN_NAME", "portalDomain", portalDomain, StringOperators.IS));
 	
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -1152,7 +1149,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			long orgId = Long.parseLong(tokens[0]);
 			long ouid = Long.parseLong(tokens[1]);
 			
-			Account currentAccount = new Account(AuthUtill.getOrgBean().getOrgv2(orgId), getFacilioUser(ouid));
+			Account currentAccount = new Account(IAMUtil.getOrgBean().getOrgv2(orgId), getFacilioUser(ouid));
 			return currentAccount;
 		}
 		return null;

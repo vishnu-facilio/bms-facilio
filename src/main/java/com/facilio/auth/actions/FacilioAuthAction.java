@@ -46,7 +46,7 @@ import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.iam.accounts.dto.Account;
-import com.iam.accounts.util.AuthUtill;
+import com.iam.accounts.util.IAMUtil;
 import com.iam.accounts.util.OrgUtil;
 import com.iam.accounts.util.UserUtil;
 import com.opensymphony.xwork2.ActionContext;
@@ -709,7 +709,7 @@ public class FacilioAuthAction extends FacilioAction {
 		user.setEmail(emailaddress);
 		user.setPortalId(portalId);
 		user.setPassword(password);
-		user.setCity(AccountUtil.getCurrentOrg().getDomain());
+		user.setDomainName(AccountUtil.getCurrentOrg().getDomain());
 		
 		//if(emailVerificationNeeded) {
 			user.setUserVerified(false);

@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.iam.accounts.dto.Account;
 import com.iam.accounts.exceptions.AccountException;
-import com.iam.accounts.util.AuthUtill;
+import com.iam.accounts.util.IAMUtil;
 import com.iam.accounts.util.UserUtil;
 
 

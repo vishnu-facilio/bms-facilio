@@ -1,48 +1,23 @@
 package com.iam.accounts.util;
 
-import java.io.UnsupportedEncodingException;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.LogManager;
-
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTCreator;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTCreationException;
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
-import com.facilio.accounts.impl.SampleGenericSelectBuilder;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.TransactionBeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.iam.accounts.bean.IAMOrgBean;
 import com.iam.accounts.bean.IAMUserBean;
 import com.iam.accounts.dto.Account;
-import com.iam.accounts.exceptions.AccountException;
-import com.iam.accounts.exceptions.AccountException.ErrorCode;
 
-public class AuthUtill {
+public class IAMUtil {
 	
 	public static IAMUserBean getUserBean() throws Exception {
 		IAMUserBean userBean = (IAMUserBean) BeanFactory.lookup("IAMUserBean");

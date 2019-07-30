@@ -871,19 +871,19 @@ public class AccountConstants {
 		name.setModule(module);
 		fields.add(name);
 
-//		FacilioField domainName = new FacilioField();
-//		domainName.setName("domainName");
-//		domainName.setDataType(FieldType.STRING);
-//		domainName.setColumnName("DOMAIN_NAME");
-//		domainName.setModule(module);
-//		fields.add(domainName);
+		FacilioField domainName = new FacilioField();
+		domainName.setName("domainName");
+		domainName.setDataType(FieldType.STRING);
+		domainName.setColumnName("DOMAIN_NAME");
+		domainName.setModule(module);
+		fields.add(domainName);
 
-		FacilioField city = new FacilioField();
-		city.setName("city");
-		city.setDataType(FieldType.STRING);
-		city.setColumnName("CITY");
-		city.setModule(module);
-		fields.add(city);
+//		FacilioField city = new FacilioField();
+//		city.setName("city");
+//		city.setDataType(FieldType.STRING);
+//		city.setColumnName("CITY");
+//		city.setModule(module);
+//		fields.add(city);
 
 		FacilioField userVerified = new FacilioField();
 		userVerified.setName("userVerified");

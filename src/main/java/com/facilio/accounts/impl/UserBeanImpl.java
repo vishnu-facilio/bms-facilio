@@ -65,7 +65,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.iam.accounts.dto.Account;
 import com.iam.accounts.exceptions.AccountException;
-import com.iam.accounts.util.AuthUtill;
+import com.iam.accounts.util.IAMUtil;
 import com.iam.accounts.util.UserUtil;
 
 ;
@@ -79,11 +79,11 @@ public class UserBeanImpl implements UserBean {
 	}
 
 	private long addUserEntry(User user, boolean emailVerificationRequired) throws Exception {
-		User existingUser = getUserv2(user.getEmail(), user.getCity());
+		User existingUser = getUserv2(user.getEmail(), user.getDomainName());
 		if(existingUser == null) {
 			
 			List<FacilioField> fields = AccountConstants.getAppUserFields();
-			GenericInsertRecordBuilder insertBuilder = new SampleGenericInsertRecordBuilder()
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 					.table(AccountConstants.getAppUserModule().getTableName()).fields(fields);
 	
 			Map<String, Object> props = FieldUtil.getAsProperties(user);
@@ -203,7 +203,7 @@ public class UserBeanImpl implements UserBean {
 		long id = insertRecordBuilder.insert(resource);
 		user.setId(id);
 
-		GenericInsertRecordBuilder insertBuilder = new SampleGenericInsertRecordBuilder()
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(AccountConstants.getAppOrgUserModule().getTableName()).fields(AccountConstants.getAppOrgUserFields());
 
 		Map<String, Object> props = FieldUtil.getAsProperties(user);
@@ -647,7 +647,7 @@ public class UserBeanImpl implements UserBean {
 		fields.addAll(AccountConstants.getAppUserFields());
 		fields.addAll(AccountConstants.getAppOrgUserFields());
 		fields.add(AccountConstants.getOrgIdField());
-		GenericSelectRecordBuilder selectBuilder = new SampleGenericSelectBuilder().select(fields).table("Users")
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields).table("Users")
 				.innerJoin("ORG_Users").on("Users.USERID = ORG_Users.USERID");
 	
 		Criteria criteria = new Criteria();
@@ -673,7 +673,7 @@ public class UserBeanImpl implements UserBean {
 		fields.addAll(AccountConstants.getAppUserFields());
 		fields.addAll(AccountConstants.getAppOrgUserFields());
 		fields.add(AccountConstants.getOrgIdField());
-		GenericSelectRecordBuilder selectBuilder = new SampleGenericSelectBuilder().select(fields).table("Users")
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields).table("Users")
 				.innerJoin("ORG_Users").on("Users.USERID = ORG_Users.USERID");
 		
 		Criteria criteria = new Criteria();
@@ -709,7 +709,7 @@ public class UserBeanImpl implements UserBean {
 		orgId.setModule(AccountConstants.getAppOrgUserModule());
 		fields.add(orgId);
 
-		GenericSelectRecordBuilder selectBuilder = new SampleGenericSelectBuilder().select(fields).table("Users")
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields).table("Users")
 				.innerJoin("ORG_Users").on("Users.USERID = ORG_Users.USERID");
 		
 		Criteria criteria = new Criteria();
@@ -789,7 +789,7 @@ public class UserBeanImpl implements UserBean {
 		fields.addAll(AccountConstants.getAppOrgUserFields());
 		fields.add(AccountConstants.getOrgIdField());
 		
-		GenericSelectRecordBuilder selectBuilder = new SampleGenericSelectBuilder().select(fields).table("Users")
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields).table("Users")
 				.innerJoin("ORG_Users").on("Users.USERID = ORG_Users.USERID");
 			
 		Criteria userEmailCriteria = new Criteria();
@@ -1047,12 +1047,12 @@ public class UserBeanImpl implements UserBean {
 
 	@Override
 	public List<Organization> getOrgs(long uid) throws Exception {
-		return AuthUtill.getUserBean().getOrgsv2(uid);
+		return IAMUtil.getUserBean().getOrgsv2(uid);
 	}
 
 	@Override
 	public Organization getDefaultOrg(long uid) throws Exception {
-		return AuthUtill.getUserBean().getDefaultOrgv2(uid);
+		return IAMUtil.getUserBean().getDefaultOrgv2(uid);
 	}
 
 	@Override
@@ -1074,13 +1074,13 @@ public class UserBeanImpl implements UserBean {
 
 	private long addRequester(long orgId, User user, boolean emailVerification, boolean updateifexist)
 			throws Exception {
-		User portalUser = AuthUtill.getUserBean().getFacilioUser(user.getEmail(), user.getCity(), user.getCity());
+		User portalUser = IAMUtil.getUserBean().getFacilioUser(user.getEmail(), user.getDomainName(), user.getDomainName());
 		if (portalUser != null) {
 			log.info("Requester email already exists in the portal for org: " + orgId + ", ouid: "
 					+ portalUser.getOuid());
 			return getUser(portalUser.getEmail()).getOuid();
 		}
-		if(AuthUtill.getUserBean().addUserv2(AccountUtil.getCurrentOrg().getId(), user) > 0) {
+		if(IAMUtil.getUserBean().addUserv2(AccountUtil.getCurrentOrg().getId(), user) > 0) {
 			addUserEntry(user, true);
 			user.setOrgId(orgId);
 			user.setUserType(AccountConstants.UserType.REQUESTER.getValue());
@@ -1358,7 +1358,7 @@ public class UserBeanImpl implements UserBean {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getAppUserFields());
 		
-		GenericSelectRecordBuilder selectBuilder = new SampleGenericSelectBuilder()
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("Users");
 		
@@ -1367,7 +1367,7 @@ public class UserBeanImpl implements UserBean {
 		userEmailCriteria.addOrCondition(CriteriaAPI.getCondition("Users.MOBILE", "mobile", email, StringOperators.IS));
 		
 		selectBuilder.andCriteria(userEmailCriteria);
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Users.CITY", "city", portalDomain, StringOperators.IS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Users.DOMAIN_NAME", "domainName", portalDomain, StringOperators.IS));
 		
 		
 				
