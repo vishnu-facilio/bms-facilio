@@ -1185,9 +1185,6 @@ public class WorkOrderAction extends FacilioAction {
 		if (StringUtils.isNotEmpty(workOrderString) && workorder == null) {
 			setWorkordercontex(workOrderString);
 		}
-		if (recordId != -1) {
-			setId(Collections.singletonList(recordId));
-		}
 		workorder = new WorkOrderContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CLOSE_WORK_ORDER);
 		context.put(FacilioConstants.ContextNames.ACTUAL_TIMINGS, actualTimings);
@@ -1245,9 +1242,6 @@ public class WorkOrderAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		if (StringUtils.isNotEmpty(workOrderString) && workorder == null) {
 			setWorkordercontex(workOrderString);
-		}
-		if (recordId != -1) {
-			setId(Collections.singletonList(recordId));
 		}
 		setUpdateWorkorderContext(context);
 		return updateWorkOrder(context);
@@ -1394,14 +1388,6 @@ public class WorkOrderAction extends FacilioAction {
 
 	public void setWorkOrderId(long workOrderId) {
 		this.workOrderId = workOrderId;
-	}
-
-	private long recordId = -1;
-	public long getRecordId() {
-		return recordId;
-	}
-	public void setRecordId(long recordId) {
-		this.recordId = recordId;
 	}
 	
 	private List<Long> id;
