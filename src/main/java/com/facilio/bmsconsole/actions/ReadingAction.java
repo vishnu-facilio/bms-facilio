@@ -31,6 +31,7 @@ import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.bmsconsole.util.IoTMessageAPI;
 import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
 import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleHistoricalLoggerUtil;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.chain.FacilioContext;
@@ -997,6 +998,11 @@ public class ReadingAction extends FacilioAction {
 		
 		setResult("success", "Rule evaluation for the readings in the given period has been started");
 		
+		return SUCCESS;
+	}
+	
+	public String getWorkflowRuleHistoricalLoggers() throws Exception {
+		setResult("workflowRuleHistoricalLoggers", WorkflowRuleHistoricalLoggerUtil.getAllWorkflowRuleHistoricalLogger());
 		return SUCCESS;
 	}
 	
