@@ -181,23 +181,27 @@ public class BulkAddTasksCommand extends FacilioCommand implements PostTransacti
            preRequestMap.forEach((sectionName, tasks) -> {
                long sectionId = -1;
                if (!sectionName.equals(FacilioConstants.ContextNames.DEFAULT_TASK_SECTION)) {
-                   sectionId = sections.get(sectionName).getId();
+                   if (sections.get(sectionName) != null) {
+                       sectionId = sections.get(sectionName).getId();
+                   }
                }
-               for (TaskContext task : tasks) {
-                   task.setCreatedTime(System.currentTimeMillis());
-                   task.setSectionId(sectionId);
-                   task.setStatusNew(TaskContext.TaskStatus.OPEN);
-                   task.setPreRequest(Boolean.TRUE);
-                   if (workOrder != null) {
-                       task.setParentTicketId(workOrder.getId());
+               if (tasks != null) {
+                   for (TaskContext task : tasks) {
+                       task.setCreatedTime(System.currentTimeMillis());
+                       task.setSectionId(sectionId);
+                       task.setStatusNew(TaskContext.TaskStatus.OPEN);
+                       task.setPreRequest(Boolean.TRUE);
+                       if (workOrder != null) {
+                           task.setParentTicketId(workOrder.getId());
+                       }
+                       task.setInputValue(task.getDefaultValue());
+                       if (StringUtils.isNotEmpty(task.getFailureValue())
+                               && task.getFailureValue().equals(task.getInputValue())) {
+                           task.setFailed(true);
+                       }
+                       task.setCreatedBy(AccountUtil.getCurrentUser());
+                       preReqBuilder.addRecord(task);
                    }
-                   task.setInputValue(task.getDefaultValue());
-                   if (StringUtils.isNotEmpty(task.getFailureValue())
-                           && task.getFailureValue().equals(task.getInputValue())) {
-                       task.setFailed(true);
-                   }
-                   task.setCreatedBy(AccountUtil.getCurrentUser());
-                   preReqBuilder.addRecord(task);
                }
            });
        }
