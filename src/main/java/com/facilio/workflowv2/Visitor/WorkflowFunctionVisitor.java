@@ -30,6 +30,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
+import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.ParameterContext;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.context.WorkflowFieldType;
@@ -514,9 +515,15 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
             case WorkflowV2Parser.GTEQ:
                 return new Value(left.asDouble() >= right.asDouble());
             case WorkflowV2Parser.EQ:
-                return  new Value(left.asDouble().equals(right.asDouble()));
+            	if(left.asObject() != null && right.asObject() != null && FacilioUtil.isNumeric(left.asString()) && FacilioUtil.isNumeric(right.asString()) ) {
+            		return  new Value(left.asDouble().equals(right.asDouble()));
+            	}
+            	return new Value(left.equals(right));
             case WorkflowV2Parser.NEQ:
-                return new Value(!left.asDouble().equals(right.asDouble()));
+            	if(left.asObject() != null && right.asObject() != null && FacilioUtil.isNumeric(left.asString()) && FacilioUtil.isNumeric(right.asString()) ) {
+            		return  new Value(!left.asDouble().equals(right.asDouble()));
+            	}
+            	return new Value(!left.equals(right));
             default:
                 throw new RuntimeException("unknown operator: " + WorkflowV2Parser.tokenNames[ctx.op.getType()]);
         }
