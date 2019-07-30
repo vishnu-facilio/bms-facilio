@@ -1,16 +1,26 @@
 package com.facilio.bmsconsole.commands;
-
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLoggerContext;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.BmsJobUtil;
+import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleHistoricalLoggerUtil;
+import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
 import com.facilio.time.DateRange;
+
+import com.facilio.time.DateTimeUtil;
+
+import java.util.List;
 
 public class RunThroughReadingRulesCommand extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(RunThroughReadingRulesCommand.class.getName());
@@ -32,6 +42,37 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 		
 		BmsJobUtil.deleteJobWithProps(rule.getId(), "HistoricalRunForReadingRule");
 		BmsJobUtil.scheduleOneTimeJobWithProps(rule.getId(), "HistoricalRunForReadingRule", 30, "priority", FieldUtil.getAsJSON(range));
+		
+		AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(id),null);
+		
+		ReadingRuleContext readingRuleContext =  alarmRule.getPreRequsite();
+		
+		List<AssetContext> assets = AssetsAPI.getAssetListOfCategory(readingRuleContext.getAssetCategoryId());
+		WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = getworkflowRuleHistoricalLoggerContext(
+				rule.getId(), range, assets);	
+		WorkflowRuleHistoricalLoggerUtil.addWorkflowRuleHistoricalLogger(workflowRuleHistoricalLoggerContext);
+		
 		return false;
+	}
+	
+	
+	private static WorkflowRuleHistoricalLoggerContext getworkflowRuleHistoricalLoggerContext(
+			long ruleId, DateRange range,List<AssetContext> assets)
+	{		
+		WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = new WorkflowRuleHistoricalLoggerContext();
+		workflowRuleHistoricalLoggerContext.setRuleId(ruleId);
+		workflowRuleHistoricalLoggerContext.setType(WorkflowRuleHistoricalLoggerContext.Type.READING_RULE.getIntVal());
+		for(AssetContext asset:assets)
+		{
+			workflowRuleHistoricalLoggerContext.setResourceId(asset.getId());
+		}
+		workflowRuleHistoricalLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.IN_PROGRESS.getIntVal());
+		workflowRuleHistoricalLoggerContext.setStartTime(range.getStartTime());
+		workflowRuleHistoricalLoggerContext.setEndTime(range.getEndTime());
+		workflowRuleHistoricalLoggerContext.setCreatedBy(AccountUtil.getCurrentUser().getId());
+		workflowRuleHistoricalLoggerContext.setCreatedTime(DateTimeUtil.getCurrenTime());
+		workflowRuleHistoricalLoggerContext.setCalculationStartTime(DateTimeUtil.getCurrenTime());
+		return workflowRuleHistoricalLoggerContext;
+		
 	}
 }
