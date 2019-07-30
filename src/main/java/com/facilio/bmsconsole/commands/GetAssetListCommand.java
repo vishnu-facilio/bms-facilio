@@ -102,6 +102,9 @@ public class GetAssetListCommand extends FacilioCommand {
 				builder.andCriteria(scopeCriteria);
 			}
 		}
+		if (getCount != null && getCount) {
+			builder.setAggregation();
+		}
 		
 		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
 		if (pagination != null) {
