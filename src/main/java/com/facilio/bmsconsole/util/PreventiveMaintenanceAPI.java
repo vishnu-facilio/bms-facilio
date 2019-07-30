@@ -1972,8 +1972,7 @@ public class PreventiveMaintenanceAPI {
 
         List<Map<String, Object>> props = new ArrayList<>();
 
-        boolean isNewFlow = true;
-        if(isNewFlow) {
+        if(sectionTemplates != null) {
             for (int i = 0; i < sectionTemplates.size(); i++) {
                 List<PMTaskSectionTemplateTriggers> pmTaskSectionTemplateTriggers = sectionTemplates.get(i).getPmTaskSectionTemplateTriggers();
                 if (pmTaskSectionTemplateTriggers == null) {
