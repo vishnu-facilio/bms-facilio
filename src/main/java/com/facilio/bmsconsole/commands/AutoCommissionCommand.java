@@ -110,7 +110,7 @@ public class AutoCommissionCommand extends FacilioCommand {
 			context.put(FacilioConstants.ContextNames.CATEGORY_READING_PARENT_MODULE,ModuleFactory.getAssetCategoryReadingRelModule());
 			context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, category.getId());
 			context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME,ModuleFactory.getControllerReadingsModule().getTableName());
-
+			context.put(FacilioConstants.ContextNames.MAX_FIELDS_PER_MODULE, 10);
 			try {
 			Chain addReadingChain = TransactionChainFactory.getAddCategoryReadingChain();
 			addReadingChain.execute(context);

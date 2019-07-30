@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -24,12 +25,19 @@ public class CreateReadingModulesCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
+
+		
 		String readingName = (String) context.get(FacilioConstants.ContextNames.READING_NAME);
 		Boolean overRideSplit = (Boolean) context.get(FacilioConstants.ContextNames.OVER_RIDE_READING_SPLIT);
-		
 		if (overRideSplit == null) {
         	overRideSplit = false;
         }
+		
+		Integer maxFields = (Integer) context.get(FacilioConstants.ContextNames.MAX_FIELDS_PER_MODULE); 
+		if(maxFields == null) {
+			maxFields = MAX_FIELDS_PER_TYPE_PER_MODULE;
+		}
+		
 		
 		if(readingName != null && !readingName.isEmpty()) {
 			List<FacilioField> fields = (List<FacilioField>) context.remove(FacilioConstants.ContextNames.MODULE_FIELD_LIST);
@@ -44,15 +52,15 @@ public class CreateReadingModulesCommand extends FacilioCommand {
 			
 			if (fields != null && !fields.isEmpty()) {
 				FacilioModule module = createModule(readingName, context);
-				List<FacilioModule> modules = splitFields(module, fields,overRideSplit);
+				List<FacilioModule> modules = splitFields(module, fields,overRideSplit,maxFields);
 				context.put(FacilioConstants.ContextNames.MODULE_LIST, modules);
 			}
 		}
 		return false;
 	}
 	
-	private List<FacilioModule> splitFields(FacilioModule module, List<FacilioField> allFields,boolean overRideSplit) {
-		if (allFields.size() <= MAX_FIELDS_PER_TYPE_PER_MODULE || overRideSplit) {
+	private List<FacilioModule> splitFields(FacilioModule module, List<FacilioField> allFields,boolean overRideSplit, int maxFields) {
+		if (allFields.size() <= maxFields || overRideSplit) {
 			allFields.addAll(FieldFactory.getDefaultReadingFields(module));
 			module.setFields(allFields);
 			return Collections.singletonList(module);
@@ -67,7 +75,7 @@ public class CreateReadingModulesCommand extends FacilioCommand {
 					List<FacilioField> fields = fieldsItr.next();
 					Iterator<FacilioField> itr = fields.iterator();
 					int count = 0;
-					while (itr.hasNext() && count < MAX_FIELDS_PER_TYPE_PER_MODULE) {
+					while (itr.hasNext() && count < maxFields) {
 						fieldList.add(itr.next());
 						count++;
 						itr.remove();
