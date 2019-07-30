@@ -55,24 +55,24 @@ public class ValidateAndSetResetCounterMetaCommand extends FacilioCommand {
 						boolean isCounterField = ReadingsAPI.isCounterField(field, moduleName);
 						ReadingDataMeta rdm = metaMap.get(ReadingsAPI.getRDMKey(reading.getParentId(), field));
 						boolean resetvalidation;
-						
-						if (field.getDataTypeEnum() == FieldType.DECIMAL) {
-							Double readingVal = (Double) FieldUtil.castOrParseValueAsPerType(field, readingEntry.getValue());
-							resetvalidation = (Double)rdm.getValue() > readingVal;
-						}else{
-							Long readingVal = (Long) FieldUtil.castOrParseValueAsPerType(field, readingEntry.getValue());
-							resetvalidation = (Long)rdm.getValue() > readingVal;
+						if (isCounterField){
+							if (field.getDataTypeEnum() == FieldType.DECIMAL) {
+								Double readingVal = (Double) FieldUtil.castOrParseValueAsPerType(field,readingEntry.getValue());
+								resetvalidation = (Double) rdm.getValue() > readingVal;
+							} else {
+								Long readingVal = (Long) FieldUtil.castOrParseValueAsPerType(field,readingEntry.getValue());
+								resetvalidation = (Long) rdm.getValue() > readingVal;
+							}
+
+							if (resetvalidation) {
+								resetCounterMeta = new ResetCounterMetaContext();
+								resetCounterMeta.setFieldId(field.getId());
+								resetCounterMeta.setReadingDataId(reading.getId());//
+								resetCounterMeta.setResourceId(reading.getParentId());
+								resetCounterMeta.setTtime(reading.getTtime());
+								resetCounterMetaList.add(resetCounterMeta);
+							}
 						}
-						
-						if (isCounterField && resetvalidation) {
-							resetCounterMeta = new ResetCounterMetaContext();
-							resetCounterMeta.setFieldId(field.getId());
-							resetCounterMeta.setReadingDataId(reading.getId());//
-							resetCounterMeta.setResourceId(reading.getParentId());
-							resetCounterMeta.setTtime(reading.getTtime());
-							resetCounterMetaList.add(resetCounterMeta);
-						}
-						
 					}
 				}
 			}
