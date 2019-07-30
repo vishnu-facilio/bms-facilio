@@ -30,6 +30,7 @@ public class AddNewMLEnergyPredictionJob extends FacilioJob {
 		{
 			Chain c = FacilioChainFactory.addEnergyPredictionchain();
 			context.put("energyMeterID",props.get("energyMeterId"));
+			context.put("weekend", props.get("weekend"));
 			c.execute(context);
 		}
 	}

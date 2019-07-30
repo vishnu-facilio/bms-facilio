@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.MLAssetVariableContext;
@@ -40,11 +41,11 @@ public class AddEnergyPredictionCommand extends FacilioCommand {
 		addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContext2.getCategory().getId(),"EnergyPredictionMLReadings",FieldFactory.getMLPredictCheckGamFields(),ModuleFactory.getMLReadingModule().getTableName());
 		
 		
-		checkGamModel(energyMeterID,emContext2);
+		checkGamModel(energyMeterID,emContext2,(String) jc.get("weekend"));
 		return false;
 	}
 	
-	private void checkGamModel(long ratioCheckMLID, EnergyMeterContext context) throws Exception
+	private void checkGamModel(long ratioCheckMLID, EnergyMeterContext context,String weekend) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -68,8 +69,8 @@ public class AddEnergyPredictionCommand extends FacilioCommand {
 		addMLAssetVariables(mlID,context.getId(),"TYPE","Energy Meter");
 		addMLAssetVariables(mlID,context.getSiteId(),"TYPE","Site");
 		
-		addMLModelVariables(mlID,"timezone","Asia/Muscat");
-		addMLModelVariables(mlID,"weekend","6,7");
+		addMLModelVariables(mlID,"timezone",AccountUtil.getCurrentAccount().getTimeZone());
+		addMLModelVariables(mlID,"weekend",weekend);
 		addMLModelVariables(mlID,"meterinterval","10");
 		
 		

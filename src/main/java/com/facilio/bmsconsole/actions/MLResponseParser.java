@@ -48,7 +48,7 @@ public class MLResponseParser extends ActionSupport
 			}
 			else
 			{
-				AwsUtil.sendErrorMail(orgid,ml_id,error);
+				sendErrorMail();
 			}
 			
 		}
@@ -59,6 +59,35 @@ public class MLResponseParser extends ActionSupport
 		}
 		
 		return SUCCESS;
+	}
+	
+	private void sendErrorMail()
+	{
+		try
+		{
+			JSONObject json = new JSONObject();
+			json.put("sender", "mlerror@facilio.com");
+			json.put("to", "ai@facilio.com");
+			json.put("subject", orgid+" - "+ml_id);
+			
+			StringBuilder body = new StringBuilder()
+									.append(error)
+									.append("\n\nInfo : \n--------\n")
+									.append("\n Org Time : ").append(DateTimeUtil.getDateTime())
+									.append("\n Indian Time : ").append(DateTimeUtil.getDateTime(ZoneId.of("Asia/Kolkata")))
+									.append("\n\nMsg : ")
+									.append(error)
+									.append("\n\nOrg Info : \n--------\n")
+									.append(orgid)
+									;
+			json.put("message", body.toString());
+			
+			AwsUtil.sendEmail(json);
+		}
+		catch(Exception e)
+		{
+			log.fatal("Error while sending mail ",e);
+		}
 	}
 	
 	String result;
