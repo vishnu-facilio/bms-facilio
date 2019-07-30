@@ -238,7 +238,9 @@ public class PageWidget {
 		MV_ENERGY("mvEnergy"),
 		CARBON_EMISSION("carbonEmision"),
 		BASELINE_EQUATION("baselineEquation"),
-		MV_ADJUSTMENTS("mvAdjustments")
+		MV_ADJUSTMENTS("mvAdjustments"),
+		RULE_ASSOCIATED_WO("ruleAssociatedWo"),
+		RULE_WO_DURATION("ruleWoDuration")
  		;
 		private String name;
 		
