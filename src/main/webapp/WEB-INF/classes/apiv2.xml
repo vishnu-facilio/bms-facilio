@@ -3128,6 +3128,7 @@
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ConnectionAction" method="addAuthorizationCode">
 			<param name="connectionId">{1}</param>
+			<result name="success">/jsps/connection.jsp</result>
 		</action>
 	</package>
 	
