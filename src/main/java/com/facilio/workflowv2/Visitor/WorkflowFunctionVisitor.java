@@ -670,6 +670,7 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
 			if(aggRes.contains(",")) {
 				String[] aggrValues = aggRes.split(",");
 				String aggrString = aggrValues[0].trim();
+				String aggrFieldName = aggrValues[1].trim();
 				
 				dbParamContext.setAggregateString(aggrString);
 				dbParamContext.setAggregateFieldName(aggrFieldName);
