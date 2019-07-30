@@ -806,7 +806,6 @@ public class UserBeanImpl implements UserBean {
 			throw new IllegalArgumentException("Organization cannot be empty");
 		}
 		criteria.addAndCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(currentOrg.getOrgId()), NumberOperators.EQUALS));
-		criteria.addAndCondition(CriteriaAPI.getCondition("ISDEFAULT", "isDefault", "1", NumberOperators.EQUALS));
 		
 		selectBuilder.andCriteria(criteria);
 		
@@ -1342,23 +1341,14 @@ public class UserBeanImpl implements UserBean {
 	public boolean verifyUser(long userId) throws Exception {
 		// TODO Auto-generated method stub
 		if(UserUtil.verifyUser(userId)) {
-			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-					.select(AccountConstants.getAppOrgUserFields())
-					.table(AccountConstants.getAppOrgUserModule().getTableName()).andCustomWhere("ORG_USERID = ?", userId);
-
-			List<Map<String, Object>> props = selectBuilder.get();
-			Long ouid = null;
-			if (props != null && !props.isEmpty()) {
-				Map<String, Object> prop = props.get(0);
-				ouid = (Long) prop.get("uid");
-			}
-
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 					.table(AccountConstants.getAppUserModule().getTableName()).fields(AccountConstants.getAppUserFields())
-					.andCustomWhere("USERID = ?", ouid);
+					.andCustomWhere("USERID = ?", userId);
 			Map<String, Object> prop = new HashMap<>();
 			prop.put("userVerified", true);
-			return true;
+			if(updateBuilder.update(prop) > 0) {
+				return true;
+			}
 		}
 		return false;
 	}

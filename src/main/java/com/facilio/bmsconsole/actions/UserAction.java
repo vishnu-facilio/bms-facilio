@@ -51,8 +51,6 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.iam.accounts.exceptions.AccountException;
-import com.iam.accounts.util.UserUtil;
-import com.opensymphony.xwork2.ActionContext;
 
 public class UserAction extends FacilioAction {
 
@@ -112,7 +110,7 @@ public class UserAction extends FacilioAction {
 
 	public String userVerify() throws Exception{
 	//	CommonCommandUtil.verifiedUser(getUserId());
-		UserUtil.verifyUser(getUserId());
+		AccountUtil.getUserBean().verifyUser(getUserId());
 		return SUCCESS;
 	}
 	public String userList() throws Exception {
@@ -206,12 +204,7 @@ public class UserAction extends FacilioAction {
 
 	public String deleteUser() throws Exception {
 		
-	    if(UserUtil.deleteUser(user,  AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail())) {
-	    	FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.USER, user);
-			Map params = ActionContext.getContext().getParameters();
-			Command deleteUser = FacilioChainFactory.getDeleteUserCommand();
-			deleteUser.execute(context);
+	    if(AccountUtil.getUserBean().deleteUser(user.getOuid())) {
 	    	return SUCCESS;
 	    }
 		
@@ -250,16 +243,16 @@ public class UserAction extends FacilioAction {
 		}
 
 		user.setUserType(UserType.REQUESTER.getValue());
-		if(emailVerificationNeeded) {
+		//if(emailVerificationNeeded) {
 			user.setUserVerified(false);
 			user.setInviteAcceptStatus(false);
 			user.setInvitedTime(System.currentTimeMillis());
-		}
-		else {
-			user.setUserVerified(true);
-			user.setInviteAcceptStatus(true);
-			user.setInvitedTime(System.currentTimeMillis());
-		}
+//		}
+//		else {
+//			user.setUserVerified(true);
+//			user.setInviteAcceptStatus(true);
+//			user.setInvitedTime(System.currentTimeMillis());
+//		}
 		
 		try {
 			if(AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user) > 0) {
@@ -310,17 +303,17 @@ public class UserAction extends FacilioAction {
 		user.setFacilioAuth("facilio".equals(value));
 		user.setCity("app");
 		
-		if(emailVerificationNeeded) {
+		//if(emailVerificationNeeded) {
 			user.setUserVerified(false);
 			user.setInviteAcceptStatus(false);
 			user.setInvitedTime(System.currentTimeMillis());
-		}
-		else {
-			user.setUserVerified(true);
-			user.setInviteAcceptStatus(true);
-			user.setInvitedTime(System.currentTimeMillis());
-
-		}
+//		}
+//		else {
+//			user.setUserVerified(true);
+//			user.setInviteAcceptStatus(true);
+//			user.setInvitedTime(System.currentTimeMillis());
+//
+//		}
 
 
 		FacilioContext context = new FacilioContext();

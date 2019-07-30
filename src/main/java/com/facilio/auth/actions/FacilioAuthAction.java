@@ -711,16 +711,16 @@ public class FacilioAuthAction extends FacilioAction {
 		user.setPassword(password);
 		user.setCity(AccountUtil.getCurrentOrg().getDomain());
 		
-		if(emailVerificationNeeded) {
+		//if(emailVerificationNeeded) {
 			user.setUserVerified(false);
 			user.setInviteAcceptStatus(false);
 			user.setInvitedTime(System.currentTimeMillis());
-		}
-		else {
-			user.setUserVerified(true);
-			user.setInviteAcceptStatus(true);
-			user.setInvitedTime(System.currentTimeMillis());
-		}
+//		}
+//		else {
+//			user.setUserVerified(true);
+//			user.setInviteAcceptStatus(true);
+//			user.setInvitedTime(System.currentTimeMillis());
+//		}
 
 		PortalInfoAction authAction = new PortalInfoAction();
 		authAction.getPortalInfo();

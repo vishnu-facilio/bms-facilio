@@ -449,7 +449,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(userStatus);
 		
-		GenericUpdateRecordBuilder updateBuilder = new SampleGenericUpdateRecordBuilder()
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(IAMAccountConstants.getAccountsOrgUserModule().getTableName())
 				.fields(fields);
 		
@@ -655,7 +655,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		fields.add(photoId);
 		
 		
-		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+		GenericUpdateRecordBuilder updateBuilder = new SampleGenericUpdateRecordBuilder()
 				.table(IAMAccountConstants.getAccountsUserModule().getTableName())
 				.fields(fields);
 		

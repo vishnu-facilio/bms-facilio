@@ -22,6 +22,7 @@ import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.impl.SampleGenericSelectBuilder;
+import com.facilio.accounts.impl.SampleGenericUpdateRecordBuilder;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -145,20 +146,10 @@ public class UserUtil {
 	}
 
 	public static boolean verifyUser(long userId) throws Exception {
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(com.iam.accounts.util.IAMAccountConstants.getAccountsOrgUserFields())
-				.table(com.iam.accounts.util.IAMAccountConstants.getAccountsOrgUserModule().getTableName()).andCustomWhere("ORG_USERID = ?", userId);
-
-		List<Map<String, Object>> props = selectBuilder.get();
-		Long ouid = null;
-		if (props != null && !props.isEmpty()) {
-			Map<String, Object> prop = props.get(0);
-			ouid = (Long) prop.get("uid");
-		}
-
-		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+		
+		GenericUpdateRecordBuilder updateBuilder = new SampleGenericUpdateRecordBuilder()
 				.table(com.iam.accounts.util.IAMAccountConstants.getAccountsUserModule().getTableName()).fields(com.iam.accounts.util.IAMAccountConstants.getAccountsUserFields())
-				.andCustomWhere("USERID = ?", ouid);
+				.andCustomWhere("USERID = ?", userId);
 		Map<String, Object> prop = new HashMap<>();
 		prop.put("userVerified", true);
 		if(updateBuilder.update(prop) > 0) {

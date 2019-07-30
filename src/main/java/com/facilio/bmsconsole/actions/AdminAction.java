@@ -90,10 +90,11 @@ public class AdminAction extends ActionSupport
 		newUser.setRoleId(roleId);
 		newUser.setPassword(FacilioAuthAction.cryptWithMD5(password));
 		newUser.setUserVerified(true);
+		newUser.setInviteAcceptStatus(true);
+		newUser.setInvitedTime(System.currentTimeMillis());
 		newUser.setUserStatus(true);
 		try {
-//			AccountUtil.getTransactionalUserBean(orgId).inviteAdminConsoleUser(orgId, newUser);
-			throw new IllegalArgumentException("Cannot add users from admin tool");
+			AccountUtil.getTransactionalUserBean(orgId).createUser(orgId, newUser);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
