@@ -1701,6 +1701,12 @@ public class TransactionChainFactory {
 			c.addCommand(new DeleteDashboardCommand());
 			return c;
 		}
+	    
+	    public static Chain getDeleteDashboardTabChain() {
+			Chain c = FacilioChain.getTransactionChain();
+			c.addCommand(new DeleteDashboardTabCommand());
+			return c;
+		}
 
 	    public static Chain getAddDashboardFolderChain() {
 			Chain c = getDefaultChain();

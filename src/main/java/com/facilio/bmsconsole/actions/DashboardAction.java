@@ -6852,6 +6852,20 @@ public class DashboardAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String deleteDashboardTab() throws Exception {
+		
+		if(dashboardTabId > 0 ) {
+			
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.DASHBOARD_TAB_ID, dashboardTabId);
+			
+			Chain deleteDashboardChain = TransactionChainFactory.getDeleteDashboardTabChain();
+			deleteDashboardChain.execute(context);
+			
+		}
+		return SUCCESS;
+	}
+	
 	public String viewDashboardSharing() throws Exception {						// Using in client should be removed after removed in client
 		setDashboardSharing(DashboardUtil.getDashboardSharing(dashboardId));
 		return SUCCESS;
