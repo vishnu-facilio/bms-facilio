@@ -1216,7 +1216,7 @@ public class TenantsAPI {
 				.on(tenantModule.getTableName()+".ZONE_ID = "+zoneModule.getTableName()+".ID")
 				.innerJoin(zoneRelModule.getTableName())
 				.on(zoneRelModule.getTableName()+".ZONE_ID = "+zoneModule.getTableName()+".ID")
-				.andCondition(CriteriaAPI.getCondition(zoneRelMap.get("baseSpaceId"), spaceIds, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(zoneRelMap.get("basespaceId"), spaceIds, NumberOperators.EQUALS))
 				.andCustomWhere(tenantModule.getTableName()+".STATUS = ?", 1);
 
 		List<Map<String, Object>> props = builder.getAsProps();
