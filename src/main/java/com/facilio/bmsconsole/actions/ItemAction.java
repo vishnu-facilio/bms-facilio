@@ -58,7 +58,7 @@ public class ItemAction extends FacilioAction{
 		this.siteId = siteId;
 	}
 	
-	private Boolean includeServingSite;
+	private Boolean includeServingSite  = false;
 	
 	public Boolean getIncludeServingSite() {
 		return includeServingSite;

@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.collections.CollectionUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -18,6 +19,7 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.mysql.fabric.xmlrpc.base.Array;
 
 public class StoreRoomAction extends FacilioAction{
 	private static final long serialVersionUID = 1L;
@@ -43,6 +45,14 @@ public class StoreRoomAction extends FacilioAction{
 		storeRoom.setTtime(System.currentTimeMillis());
 		storeRoom.setModifiedTime(System.currentTimeMillis());
 		context.put(FacilioConstants.ContextNames.RECORD, storeRoom);
+		//adding located site as one of the serving sites if no serving site is given
+		if(CollectionUtils.isEmpty(storeRoom.getSites())) {
+			List<Long> sites = new ArrayList<Long>();
+			if(storeRoom.getSite() != null) {
+				sites.add(storeRoom.getSite().getId());
+				storeRoom.setSites(sites);
+			}
+		}
 		context.put(FacilioConstants.ContextNames.SITES_FOR_STORE_ROOM, storeRoom.getSites());
 		Chain addStoreRoom = TransactionChainFactory.getAddStoreRoomChain();
 		addStoreRoom.execute(context);
@@ -53,6 +63,13 @@ public class StoreRoomAction extends FacilioAction{
 	
 	public String updateStoreRoom() throws Exception {
 		FacilioContext context = new FacilioContext();
+		if(CollectionUtils.isEmpty(storeRoom.getSites())) {
+			List<Long> sites = new ArrayList<Long>();
+			if(storeRoom.getSite() != null) {
+				sites.add(storeRoom.getSite().getId());
+				storeRoom.setSites(sites);
+			}
+		}
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		context.put(FacilioConstants.ContextNames.RECORD, storeRoom);
 		context.put(FacilioConstants.ContextNames.SITES_FOR_STORE_ROOM, storeRoom.getSites());

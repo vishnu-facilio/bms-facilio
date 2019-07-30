@@ -65,7 +65,7 @@ public class ToolAction extends FacilioAction {
 		this.siteId = siteId;
 	}
 
-	private Boolean includeServingSite;
+	private Boolean includeServingSite = false;
 	
 	public Boolean getIncludeServingSite() {
 		return includeServingSite;
