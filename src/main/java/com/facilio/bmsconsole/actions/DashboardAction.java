@@ -6764,7 +6764,7 @@ public class DashboardAction extends FacilioAction {
 	public String updateDashboardTabWithWidgets() throws Exception {
 		
 		Long dashboardTabId = (Long) dashboardMeta.get("tabId");
-		dashboardTabContext = DashboardUtil.getDashboardTabWithWidgets(dashboardId);
+		dashboardTabContext = DashboardUtil.getDashboardTabWithWidgets(dashboardTabId);
 		
 		dashboardTabContext.setName((String)dashboardMeta.get("dashboardTabName"));
 		
