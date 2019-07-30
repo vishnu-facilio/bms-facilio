@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -15,6 +16,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -35,13 +37,73 @@ public class ModuleAction extends FacilioAction {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
+		context.put(FacilioConstants.ContextNames.MODULE_TYPE, moduleType);
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
 		
 		Chain addModulesChain = TransactionChainFactory.getAddModuleChain();
 		addModulesChain.execute(context);
 		
 		FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
+		setResult("module", module);
 		setModuleId(module.getModuleId());
+		return SUCCESS;
+	}
+	
+
+//	private boolean stateFlow = false;
+//	public boolean isStateFlow() {
+//		return stateFlow;
+//	}
+//	public void setStateFlow(boolean stateFlow) {
+//		this.stateFlow = stateFlow;
+//	}
+	
+	public String v2AddModule() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
+		context.put(FacilioConstants.ContextNames.MODULE_TYPE, moduleType);
+		context.put(FacilioConstants.ContextNames.MODULE_DESCRIPTION, description);
+		
+		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
+		
+		Chain addModulesChain = TransactionChainFactory.getAddModuleChain();
+		addModulesChain.execute(context);
+		
+		FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
+		setResult("module", module);
+		setResult(FacilioConstants.ContextNames.FORM, context.get(FacilioConstants.ContextNames.FORM));
+		return SUCCESS;
+	}
+	
+	public String v2GetModuleList() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_TYPE, moduleType);
+		
+		Chain chain = ReadOnlyChainFactory.getModuleList();
+		chain.execute(context);
+		
+		setResult("moduleList", context.get(FacilioConstants.ContextNames.MODULE_LIST));
+		return SUCCESS;
+	}
+	
+	private String moduleDisplayName;
+	public String getModuleDisplayName() {
+		return moduleDisplayName;
+	}
+	public void setModuleDisplayName(String moduleDisplayName) {
+		this.moduleDisplayName = moduleDisplayName;
+	}
+	
+	public String v2UpdateModule() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
+		context.put(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME, moduleDisplayName);
+		context.put(FacilioConstants.ContextNames.MODULE_DESCRIPTION, description);
+		
+		Chain chain = TransactionChainFactory.getUpdateModuleChain();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.MODULE, context.get(FacilioConstants.ContextNames.MODULE));
 		return SUCCESS;
 	}
 	
@@ -272,12 +334,34 @@ public class ModuleAction extends FacilioAction {
 		this.moduleName = moduleName;
 	}
 	
+	private String description;
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	
+	private int moduleType;
+	public int getModuleType() {
+		return moduleType;
+	}
+	public void setModuleType(int moduleType) {
+		this.moduleType = moduleType;
+	}
+
 	private FacilioField field;
 	public FacilioField getField() {
 		return field;
 	}
 	public void setField(FacilioField field) {
 		this.field = field;
+	}
+
+	private JSONArray fieldJsons;
+	public void setFieldJsons(JSONArray fieldJsons) throws Exception {
+		this.fieldJsons = fieldJsons;
+		setFields(FieldUtil.parseFieldJson(this.fieldJsons));
 	}
 
 	private List<FacilioField> fields;
@@ -339,8 +423,8 @@ public class ModuleAction extends FacilioAction {
 		Chain dataDetailsChain = ReadOnlyChainFactory.fetchModuleDataDetailsChain();
 		dataDetailsChain.execute(context);
 		
-		setModuleData((ModuleBaseWithCustomFields) context.get(FacilioConstants.ContextNames.RECORD));
-		setResult(FacilioConstants.ContextNames.MODULE_DATA, moduleData);
+//		setModuleData((ModuleBaseWithCustomFields) context.get(FacilioConstants.ContextNames.RECORD));
+		setResult(FacilioConstants.ContextNames.MODULE_DATA, context.get(FacilioConstants.ContextNames.RECORD));
 		
 		return SUCCESS;
 	}
@@ -434,7 +518,7 @@ public class ModuleAction extends FacilioAction {
 			JSONParser parser = new JSONParser();
 			Map<String, Object> data = (Map<String, Object>) parser.parse(dataString);
 			if (moduleData == null) {
-				moduleData = new ModuleBaseWithCustomFields();
+				moduleData = new CustomModuleData();
 			}
 			if (moduleData.getData() == null) {
 				moduleData.setData(new HashMap<>());
@@ -451,11 +535,11 @@ public class ModuleAction extends FacilioAction {
 		this.moduleDatas = moduleDatas;
 	}
 	
-	private ModuleBaseWithCustomFields moduleData;
-	public ModuleBaseWithCustomFields getModuleData() {
+	private CustomModuleData moduleData;
+	public CustomModuleData getModuleData() {
 		return moduleData;
 	}
-	public void setModuleData(ModuleBaseWithCustomFields moduleData) {
+	public void setModuleData(CustomModuleData moduleData) {
 		this.moduleData = moduleData;
 	}
 	

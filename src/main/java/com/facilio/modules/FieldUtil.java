@@ -29,6 +29,7 @@ import com.facilio.bmsconsole.view.SortField;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
@@ -433,11 +434,16 @@ public class FieldUtil {
 			);
 
 	public static boolean isSystemFieldsPresent (FacilioModule module) {
+		// custom modules will have system fields by default
+		if (module.getTypeEnum() == ModuleType.CUSTOM) {
+			return true;
+		}
 		return SYSTEM_FIELDS_ALLOWED_MODULES.contains(module.getName());
 	}
 
 	public static boolean isBaseEntityRootModule (FacilioModule module) {
-		return module.getTypeEnum() == FacilioModule.ModuleType.BASE_ENTITY && module.getExtendModule() == null;
+		return (module.getTypeEnum() == FacilioModule.ModuleType.BASE_ENTITY && module.getExtendModule() == null)
+				|| (module.getTypeEnum() == ModuleType.CUSTOM);
 	}
 
 	public static FacilioField parseFieldJson(JSONObject fieldJson) throws Exception {

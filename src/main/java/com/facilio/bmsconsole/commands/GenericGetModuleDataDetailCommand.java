@@ -7,12 +7,14 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 
@@ -39,7 +41,12 @@ public class GenericGetModuleDataDetailCommand extends FacilioCommand {
 			if (beanClassName == null) {
 				beanClassName = FacilioConstants.ContextNames.getClassFromModule(module);
 				if (beanClassName == null) {
-					beanClassName = ModuleBaseWithCustomFields.class;
+					if (module.getTypeEnum() == ModuleType.CUSTOM) {
+						beanClassName = CustomModuleData.class;
+					}
+					else {
+						beanClassName = ModuleBaseWithCustomFields.class;
+					}
 				}
 			}
 			

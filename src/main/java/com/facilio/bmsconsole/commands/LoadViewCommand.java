@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.StringJoiner;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -77,9 +78,23 @@ public class LoadViewCommand extends FacilioCommand {
 				else if (view == null) {
 					ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 					FacilioModule module = bean.getModule(moduleName);
-					String extendedModName = module.getExtendModule().getName();
+					String extendedModName = module.getExtendModule() == null ? StringUtils.EMPTY : module.getExtendModule().getName();
 					if (extendedModName.contains("asset")) {
 						view = ViewFactory.getModuleView(module, extendedModName);
+					}
+				}
+				
+				if (view == null && viewName.equalsIgnoreCase("all")) {
+					// all viewname for custom module will not be found anywhere
+					view = ViewFactory.getCustomModuleAllView(moduleName);
+					List<FacilioField> allFields = modBean.getAllFields(moduleName);
+					List<ViewField> viewFields = new ArrayList<>();
+					view.setFields(viewFields);
+					
+					for (FacilioField field : allFields) {
+						ViewField viewField = new ViewField(field.getName(), field.getDisplayName());
+						viewField.setField(field);
+						viewFields.add(viewField);
 					}
 				}
 				

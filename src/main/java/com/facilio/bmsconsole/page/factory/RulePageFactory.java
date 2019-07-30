@@ -25,7 +25,9 @@ public class RulePageFactory extends PageFactory {
 		addRuleDetailsWidget(tab1Sec1);
 		addAssetsNAlarmDetails(tab1Sec1);
 		addAlarmInsight(tab1Sec1);
+		addAssociatedWOCount(tab1Sec1);
 		addAssociatedWO(tab1Sec1);
+		
 
 		Tab tab2 = page.new Tab("rule_insight");
 		page.addTab(tab2);
@@ -72,12 +74,19 @@ public class RulePageFactory extends PageFactory {
 		section.addWidget(cardWidget);
 	}
 	
-	private static void addAssociatedWO(Section section) {
-		PageWidget cardWidget = new PageWidget(WidgetType.RULE_ASSOCIATED_WO);
-		cardWidget.addToLayoutParams(section, 24, 6);
+	private static void addAssociatedWOCount(Section section) {
+		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
+		cardWidget.addToLayoutParams(section, 12, 5);
+		cardWidget.addToWidgetParams("type", CardType.RULE_ASSOCIATED_WO.getName());
 		section.addWidget(cardWidget);
 	}
 	
+	private static void addAssociatedWO(Section section) {
+		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
+		cardWidget.addToLayoutParams(section, 12, 5);
+		cardWidget.addToWidgetParams("type", CardType.RULE_WO_DURATION.getName());
+		section.addWidget(cardWidget);
+	}
 	
 	private static void addRuleInsight(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);

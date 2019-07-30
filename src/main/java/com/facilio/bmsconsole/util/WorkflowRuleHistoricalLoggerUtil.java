@@ -4,6 +4,7 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.HistoricalLoggerContext;
 import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLoggerContext;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -47,7 +48,20 @@ public class WorkflowRuleHistoricalLoggerUtil {
 		return null;
 	}
 	
-	
+	public static List<WorkflowRuleHistoricalLoggerContext> getAllWorkflowRuleHistoricalLogger() throws Exception {
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getWorkflowRuleHistoricalLoggerFields())
+				.table(ModuleFactory.getWorkflowRuleHistoricalLoggerModule().getTableName())
+				.orderBy("STATUS");
+				
+				List<Map<String, Object>> props = selectBuilder.get();
+				if (props != null && !props.isEmpty()) {
+					List<WorkflowRuleHistoricalLoggerContext> workflowRuleHistoricalLoggerContextList = FieldUtil.getAsBeanListFromMapList(props, WorkflowRuleHistoricalLoggerContext.class);
+					return workflowRuleHistoricalLoggerContextList;
+				}
+				return null;
+	}
 	public static void updateWorkflowRuleHistoricalLogger(WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLogger) throws Exception {
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()

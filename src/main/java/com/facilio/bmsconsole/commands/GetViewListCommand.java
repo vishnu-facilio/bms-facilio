@@ -15,11 +15,14 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.FacilioView;
+import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+
+import org.apache.commons.collections4.MapUtils;
 
 public class GetViewListCommand extends FacilioCommand {
 
@@ -29,6 +32,12 @@ public class GetViewListCommand extends FacilioCommand {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule moduleObj = null;
 		Map<String,FacilioView> viewMap = ViewFactory.getModuleViews(moduleName);
+		
+		if (MapUtils.isEmpty(viewMap)) {
+			// Views of custom field
+			FacilioView allView = ViewFactory.getCustomModuleAllView(moduleName);
+			viewMap.put("all", allView);
+		}
 		// Temporary
 		if (moduleName.equals("approval") && modBean.getField("moduleState", ContextNames.WORK_ORDER) != null) {
 			viewMap = new HashMap<>();
@@ -167,7 +176,7 @@ public class GetViewListCommand extends FacilioCommand {
 					Map<String, Object> mutatedDetail = new HashMap<>(group);
 					if (group.get("views") != null) {
 						List<FacilioView> views;
-						if (((List<?>)group.get("views")).get(0) instanceof FacilioView) {
+						if (!(((List<?>)group.get("views")).isEmpty()) && ((List<?>)group.get("views")).get(0) instanceof FacilioView) {
 							views = (List<FacilioView>) group.get("views");
 						}
 						else {

@@ -129,6 +129,19 @@ public class ModuleBeanImpl implements ModuleBean {
 	}
 	
 	@Override
+	public List<FacilioModule> getModuleList(ModuleType moduleType) throws Exception {
+		FacilioModule moduleModule = ModuleFactory.getModuleModule();
+		
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.table(moduleModule.getTableName())
+				.select(FieldFactory.getModuleFields())
+				.andCondition(CriteriaAPI.getCondition("MODULE_TYPE", "moduleType", String.valueOf(moduleType.getValue()), NumberOperators.EQUALS));
+		List<Map<String, Object>> props = builder.get();
+		List<FacilioModule> moduleList = FieldUtil.getAsBeanListFromMapList(props, FacilioModule.class);
+		return moduleList;
+	}
+	
+	@Override
 	public FacilioModule getModule(String moduleName) throws Exception {
 		
 		if(LookupSpecialTypeUtil.isSpecialType(moduleName)) {
@@ -433,6 +446,10 @@ public class ModuleBeanImpl implements ModuleBean {
 		if (module.getShowAsView() != null) {
 			joiner.add("SHOW_AS_VIEW = ?");
 			params.add(module.getShowAsView());
+		}
+		if (StringUtils.isNotBlank(module.getDescription())) {
+			joiner.add("DESCRIPTION = ?");
+			params.add(module.getDescription());
 		}
 		
 		if (!params.isEmpty()) {
@@ -815,6 +832,25 @@ public class ModuleBeanImpl implements ModuleBean {
 					addExtendedProps(ModuleFactory.getBooleanFieldsModule(), FieldFactory.getBooleanFieldFields(), fieldProps);
 					break;
 				case LOOKUP:
+					if (field instanceof LookupField) {
+						LookupField lookupField = (LookupField) field;
+						if (lookupField.getLookupModuleId() > 0 || lookupField.getLookupModule() != null) {
+							FacilioModule module;
+							if (lookupField.getLookupModuleId() > 0) {
+								module = getMod(lookupField.getLookupModuleId());
+							}
+							else {
+								module = getMod(lookupField.getLookupModule().getModuleId());
+							}
+							if (module == null) {
+								throw new IllegalArgumentException("Invalid lookup Module");
+							}
+							lookupField.setLookupModule(module);
+							fieldProps.put("lookupModuleId", module.getModuleId());
+						} else if (StringUtils.isEmpty(lookupField.getSpecialType())) {
+							throw new IllegalArgumentException("Lookup module is not specified");
+						}
+					}
 					addExtendedProps(ModuleFactory.getLookupFieldsModule(), FieldFactory.getLookupFieldFields(), fieldProps);
 					break;
 				case FILE:
@@ -1056,7 +1092,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			throw new IllegalArgumentException("Module Type cannot be null during addition of modules");
 		}
 		
-		String sql = "INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME, EXTENDS_ID, MODULE_TYPE, DATA_INTERVAL) VALUES (?, ?, ?, ?, ?, ?, ?)";
+		String sql = "INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME, EXTENDS_ID, MODULE_TYPE, DATA_INTERVAL, DESCRIPTION, CREATED_BY, CREATED_TIME) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 		ResultSet rs = null;
 		try (Connection conn = FacilioConnectionPool.INSTANCE.getConnection(); PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 			pstmt.setLong(1, getOrgId());
@@ -1085,6 +1121,27 @@ public class ModuleBeanImpl implements ModuleBean {
 			}
 			else {
 				pstmt.setNull(7, Types.INTEGER);
+			}
+			
+			if (StringUtils.isNotEmpty(module.getDescription())) {
+				pstmt.setString(8, module.getDescription());
+			}
+			else {
+				pstmt.setNull(8, Types.VARCHAR);
+			}
+			
+			if (module.getTypeEnum() == ModuleType.CUSTOM && AccountUtil.getCurrentUser() != null) {
+				pstmt.setLong(9, AccountUtil.getCurrentUser().getId());
+			}
+			else {
+				pstmt.setNull(9, Types.BIGINT);
+			}
+			
+			if (module.getTypeEnum() == ModuleType.CUSTOM) {
+				pstmt.setLong(10, System.currentTimeMillis());
+			}
+			else {
+				pstmt.setNull(10, Types.BIGINT);
 			}
 			
 			if (pstmt.executeUpdate() < 1) {

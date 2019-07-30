@@ -13,13 +13,15 @@ public enum ControllerType {
 
 	NIAGARA(3, "Niagara"),
 
-	MODBUS(4,"Modbus"),
+	MODBUS_IP(4,"Modbus_Ip"),
 
-	OPC_DA (5,"Opc DA"),
+	MODBUS_RTU(5,"Modbus_Rtu"),
 
-	OPC_UA (6,"Opc UA"),
+	OPC_DA (6,"Opc DA"),
+
+	OPC_UA (7,"Opc UA"),
 	
-	LON_WORKS (7,"Lon Works");
+	LON_WORKS (8,"Lon Works");
 
 	private int key;
 	private String label;

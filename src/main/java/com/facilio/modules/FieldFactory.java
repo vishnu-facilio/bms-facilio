@@ -596,6 +596,20 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getModuleFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getModuleModule();
+		
+		fields.add(getField("moduleId", "MODULEID", module, FieldType.ID));
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
+		fields.add(getField("displayName", "DISPLAY_NAME", module, FieldType.STRING));
+		fields.add(getField("tableName", "TABLE_NAME", module, FieldType.STRING));
+		fields.add(getField("type", "MODULE_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("trashEnabled", "IS_TRASH_ENABLED", module, FieldType.BOOLEAN));
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
+		return fields;
+	}
 
 	public static List<FacilioField> getAddFieldFields() {
 		List<FacilioField> fields = new ArrayList<>();
@@ -647,6 +661,20 @@ public class FieldFactory {
 		required.setColumnName("REQUIRED");
 		required.setModule(module);
 		fields.add(required);
+		
+		FacilioField mainField = new FacilioField();
+		mainField.setName("mainField");
+		mainField.setDataType(FieldType.BOOLEAN);
+		mainField.setColumnName("IS_MAIN_FIELD");
+		mainField.setModule(module);
+		fields.add(mainField);
+		
+		FacilioField defaultField = new FacilioField();
+		defaultField.setName("default");
+		defaultField.setDataType(FieldType.BOOLEAN);
+		defaultField.setColumnName("IS_DEFAULT");
+		defaultField.setModule(module);
+		fields.add(defaultField);
 
 		return fields;
 	}

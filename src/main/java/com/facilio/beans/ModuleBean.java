@@ -8,6 +8,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.FacilioField;
 
 public interface ModuleBean extends RootBean {
@@ -16,6 +17,8 @@ public interface ModuleBean extends RootBean {
 	
 	public FacilioModule getModule(String moduleName) throws Exception;
 	
+	public List<FacilioModule> getModuleList(ModuleType moduleType) throws Exception;
+
 	public List<FacilioModule> getAllSubModules(long moduleId) throws Exception;
 	
 	public List<FacilioModule> getAllSubModules(String moduleName) throws Exception;
