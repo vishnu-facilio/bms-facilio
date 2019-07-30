@@ -14,13 +14,15 @@ public class GetPageCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(moduleName);
+		
 		Object record = (Object) context.get(FacilioConstants.ContextNames.RECORD);
-		Page page = PageFactory.getPage(moduleName, record);
+		Page page = PageFactory.getPage(module, record);
 		if (page == null) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule module = modBean.getModule(moduleName);
+			
 			if (module.getExtendModule() != null) {
-				page = PageFactory.getPage(module.getExtendModule().getName(), record);
+				page = PageFactory.getPage(module.getExtendModule(), record);
 			}
 		}
 		context.put(FacilioConstants.ContextNames.PAGE, page);

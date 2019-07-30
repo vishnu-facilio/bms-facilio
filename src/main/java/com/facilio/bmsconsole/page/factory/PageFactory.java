@@ -16,19 +16,25 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.AggregateOperator.DateAggregateOperator;
 import com.facilio.modules.AggregateOperator.NumberAggregateOperator;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioModule.ModuleType;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.mv.context.MVProjectWrapper;
 
 public class PageFactory {
 
 
-	public static Page getPage(String moduleName, Object record) throws Exception {
-		switch(moduleName) {
+	public static Page getPage(FacilioModule module, Object record) throws Exception {
+		switch(module.getName()) {
 			case ContextNames.ASSET:
 				return AssetPageFactory.getAssetPage((AssetContext) record);
 			case ContextNames.READING_RULE_MODULE:
 				return RulePageFactory.getRulePage((AlarmRuleContext) record);
 			case ContextNames.MV_PROJECT_MODULE:
 				return MVProjectPageFactory.getMVProjectPage((MVProjectWrapper) record);
+		}
+		if (module.getTypeEnum() == ModuleType.CUSTOM) {
+			return CustomModulePageFactory.getCustomModulePage((ModuleBaseWithCustomFields) record);
 		}
 		return null;
 	}
