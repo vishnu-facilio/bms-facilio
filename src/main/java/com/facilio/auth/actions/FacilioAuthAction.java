@@ -678,7 +678,7 @@ public class FacilioAuthAction extends FacilioAction {
 	public String generatePortalAuthToken() {
 		LOGGER.info("generatePortalAuthToken() : username :" + getUsername());
 		try {
-			String token = UserUtil.generateportalAuthToken(getUsername(), getPassword(), "app");
+			String token = UserUtil.generateportalAuthToken(getUsername(), getPassword(), getDomainname());
 			if (token != null) {
 				LOGGER.info("Response token is " + token);
 				setJsonresponse("authtoken", token);

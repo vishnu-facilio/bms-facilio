@@ -292,7 +292,7 @@ public class UserUtil {
 					.select(fields)
 					.table("Account_Users");
 			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.EMAIL", "email", emailAddress, StringOperators.IS));
-			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.CITY", "city", domain, StringOperators.IS));
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.DOMAIN_NAME", "domainName", domain, StringOperators.IS));
 			selectBuilder.andCondition(CriteriaAPI.getCondition("USER_VERIFIED", "userVerified", "1", NumberOperators.EQUALS));
 			
 			List<Map<String, Object>> props = selectBuilder.get();

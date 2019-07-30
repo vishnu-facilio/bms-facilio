@@ -1,8 +1,6 @@
 package com.facilio.accounts.impl;
 
 import java.lang.reflect.InvocationTargetException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,7 +50,6 @@ import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
@@ -93,40 +90,6 @@ public class UserBeanImpl implements UserBean {
 			return user.getUid();
 		}
 		return existingUser.getUid();
-	}
-
-	private void addAdminConsoleFacilioUser(User user) {
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		try {
-			conn = FacilioConnectionPool.getInstance().getConnection();
-			pstmt = conn.prepareStatement("INSERT INTO faciliousers(username, email, mobile, USERID) VALUES(?,?,?,?)");
-			pstmt.setString(1, user.getEmail());
-			pstmt.setString(2, user.getEmail());
-			if (user.getMobile() == null || user.getMobile().isEmpty()) {
-				user.setMobile(String.valueOf(user.getUid()));
-			}
-			pstmt.setString(3, user.getMobile());
-			pstmt.setLong(4, user.getUid());
-			pstmt.executeUpdate();
-		} catch (Exception e) {
-			log.info("Exception occurred ", e);
-		} finally {
-			try {
-				if (pstmt != null) {
-					pstmt.close();
-				}
-			} catch (SQLException e) {
-				log.info("Exception occurred ", e);
-			}
-			try {
-				if (conn != null) {
-					conn.close();
-				}
-			} catch (SQLException e) {
-				log.info("Exception occurred ", e);
-			}
-		}
 	}
 
 	@Override
