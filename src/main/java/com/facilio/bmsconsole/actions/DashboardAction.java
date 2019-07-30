@@ -6724,6 +6724,14 @@ public class DashboardAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String addDashboardTab() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.DASHBOARD_TAB, dashboardTabContext);
+		Chain addDashboardChain = TransactionChainFactory.getAddDashboardTabChain();
+		addDashboardChain.execute(context);
+		return SUCCESS;
+	}
+	
 	public String updateDashboardWithWidgets() throws Exception {
 		
 		Long dashboardId = (Long) dashboardMeta.get("id");
@@ -6739,6 +6747,42 @@ public class DashboardAction extends FacilioAction {
 		
 		List dashboardWidgets = (List) dashboardMeta.get("dashboardWidgets");
 		
+		List<DashboardWidgetContext> widgets = getDashboardWidgetsFromWidgetMeta(dashboardWidgets);
+
+		this.dashboard.setDashboardWidgets(widgets);
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
+		
+		context.put(FacilioConstants.ContextNames.BUILDING_ID, buildingId);
+		
+		Chain updateDashboardChain = TransactionChainFactory.getUpdateDashboardChain();
+		updateDashboardChain.execute(context);
+		return SUCCESS;
+	}
+	
+	public String updateDashboardTabWithWidgets() throws Exception {
+		
+		Long dashboardTabId = (Long) dashboardMeta.get("tabId");
+		dashboardTabContext = DashboardUtil.getDashboardTabWithWidgets(dashboardId);
+		
+		dashboardTabContext.setName((String)dashboardMeta.get("dashboardTabName"));
+		
+		List dashboardWidgets = (List) dashboardMeta.get("dashboardWidgets");
+		
+		List<DashboardWidgetContext> widgets = getDashboardWidgetsFromWidgetMeta(dashboardWidgets);
+
+		dashboardTabContext.setDashboardWidgets(widgets);
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.DASHBOARD_TAB, dashboardTabContext);
+		
+		Chain updateDashboardChain = TransactionChainFactory.getUpdateDashboardTabChain();
+		updateDashboardChain.execute(context);
+		return SUCCESS;
+	}
+	
+	private List<DashboardWidgetContext> getDashboardWidgetsFromWidgetMeta(List dashboardWidgets) {
 		List<DashboardWidgetContext> widgets = new ArrayList<>();
 		if (dashboardWidgets != null) {
 			for (int i=0; i < dashboardWidgets.size(); i++) {
@@ -6773,16 +6817,7 @@ public class DashboardAction extends FacilioAction {
 				widgets.add(widgetContext);
 			}
 		}
-		this.dashboard.setDashboardWidgets(widgets);
-		
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.DASHBOARD, dashboard);
-		
-		context.put(FacilioConstants.ContextNames.BUILDING_ID, buildingId);
-		
-		Chain updateDashboardChain = TransactionChainFactory.getUpdateDashboardChain();
-		updateDashboardChain.execute(context);
-		return SUCCESS;
+		return widgets;
 	}
 	
 	public String updateDashboards() throws Exception {
@@ -6956,10 +6991,10 @@ public class DashboardAction extends FacilioAction {
 	// data part starts
 	public String getCardData() throws Exception {
 		
-			if (widgetId == null  && staticKey== null && baseSpaceId == null && workflow == null && paramsJson == null && reportSpaceFilterContext == null ) {
-
-				throw new IllegalArgumentException(" Send Atleast one of widgetId,staticKey,baseSpaceId,workflow,paramsJson,reportSpaceFilterContext Params Should be specified");
-			}
+		if (widgetId == null  && staticKey== null && baseSpaceId == null && workflow == null && paramsJson == null && reportSpaceFilterContext == null ) {
+	
+			throw new IllegalArgumentException(" Send Atleast one of widgetId,staticKey,baseSpaceId,workflow,paramsJson,reportSpaceFilterContext Params Should be specified");
+		}
 		
 		Chain fetchCardData = ReadOnlyChainFactory.fetchCardDataChain();
 		FacilioContext context = new FacilioContext();

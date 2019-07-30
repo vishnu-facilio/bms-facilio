@@ -2659,6 +2659,17 @@ public class DashboardUtil {
 		updateBuilder.update(props);
 	}
 	
+	public static void updateDashboardTab(DashboardTabContext dashboardTabContext) throws Exception {
+		
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(ModuleFactory.getDashboardTabModule().getTableName())
+				.fields(FieldFactory.getDashboardTabFields())
+				.andCondition(CriteriaAPI.getIdCondition(dashboardTabContext.getId(), ModuleFactory.getDashboardTabModule()));
+
+		Map<String, Object> props = FieldUtil.getAsProperties(dashboardTabContext);
+		updateBuilder.update(props);
+	}
+	
 	public static void deleteDashboardFolder(DashboardFolderContext dashboardFolder) throws Exception {
 		
 		DeleteRecordBuilder<ModuleBaseWithCustomFields> delete = new DeleteRecordBuilder<>();

@@ -5,12 +5,13 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.DashboardContext;
+import com.facilio.bmsconsole.context.DashboardTabContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.WidgetVsWorkflowContext;
 import com.facilio.bmsconsole.util.DashboardUtil;
@@ -23,21 +24,22 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 
-public class UpdateDashboardWithWidgetCommand extends FacilioCommand {
+public class UpdateDashboardTabWithWidgetCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
+		
 		// TODO Auto-generated method stub
-		DashboardContext dashboard = (DashboardContext) context.get(FacilioConstants.ContextNames.DASHBOARD);
-		if(dashboard != null) {
+		DashboardTabContext dashboardTabContext = (DashboardTabContext) context.get(FacilioConstants.ContextNames.DASHBOARD_TAB);
+		if(dashboardTabContext != null) {
 			
-			DashboardUtil.updateDashboard(dashboard);
+			DashboardUtil.updateDashboardTab(dashboardTabContext);
 			
-			List<DashboardWidgetContext> existingWidgets = DashboardUtil.getDashboardWidgetsFormDashboardIdOrTabId(dashboard.getId(),null);
+			List<DashboardWidgetContext> existingWidgets = DashboardUtil.getDashboardWidgetsFormDashboardIdOrTabId(null,dashboardTabContext.getId());
 			
 			JSONObject widgetMapping = new JSONObject();
 			
-			List<DashboardWidgetContext> widgets = dashboard.getDashboardWidgets();
+			List<DashboardWidgetContext> widgets = dashboardTabContext.getDashboardWidgets();
 			
 			if (widgets != null && widgets.size() > 0)  {
 				for (int i = 0; i < widgets.size(); i++) {
@@ -50,10 +52,9 @@ public class UpdateDashboardWithWidgetCommand extends FacilioCommand {
 						
 						Chain addWidgetChain = TransactionChainFactory.getAddWidgetChain();
 
-						widget.setDashboardId(dashboard.getId());
+						widget.setDashboardTabId(dashboardTabContext.getId());
 						context.put(FacilioConstants.ContextNames.WIDGET, widget);
 						context.put(FacilioConstants.ContextNames.WIDGET_TYPE, widget.getWidgetType());
-						context.put(FacilioConstants.ContextNames.DASHBOARD_ID, dashboard.getId());
 						addWidgetChain.execute(context);
 						
 						widget = (DashboardWidgetContext) context.get(FacilioConstants.ContextNames.WIDGET);
@@ -61,21 +62,23 @@ public class UpdateDashboardWithWidgetCommand extends FacilioCommand {
 				}
 			}
 			
-			List<DashboardWidgetContext> updatedWidgets = dashboard.getDashboardWidgets();
+			
+			List<DashboardWidgetContext> updatedWidgets = dashboardTabContext.getDashboardWidgets();
 			
 			Chain updateWidgetChain = TransactionChainFactory.getUpdateWidgetsChain();
 			
 			context.put(FacilioConstants.ContextNames.WIDGET_UPDATE_LIST,updatedWidgets);
 
 			updateWidgetChain.execute(context);
+			
 
 			List<Long> removedWidgets = new ArrayList<Long>();
 			for (int i = 0; i < existingWidgets.size(); i++) {
-				if (!widgetMapping.containsKey(existingWidgets.get(i)
-						.getId())) {
+				if (!widgetMapping.containsKey(existingWidgets.get(i).getId())) {
 					removedWidgets.add(existingWidgets.get(i).getId());
 				}
 			}
+			
 			if(removedWidgets.size() > 0) {
 				GenericDeleteRecordBuilder genericDeleteRecordBuilder = new GenericDeleteRecordBuilder();
 				genericDeleteRecordBuilder.table(ModuleFactory.getWidgetModule().getTableName())

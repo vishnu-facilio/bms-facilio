@@ -3500,6 +3500,11 @@
 				<param name="includeProperties">^dashboard.*</param>
 			</result>
 		</action>
+		<action name="addDashboardTab" class="com.facilio.bmsconsole.actions.DashboardAction" method="addDashboardTab">
+			<result name="success" type="json">
+				<param name="includeProperties">^dashboardTabContext.*</param>
+			</result>
+		</action>		
 		<action name="getDashboardFolder" class="com.facilio.bmsconsole.actions.DashboardAction" method="getDashboardFolder">
 			<result name="success" type="json">
 				<param name="includeProperties">dashboardFolders,dashboardFolders\[\d+\],dashboardFolders\[\d+\].*</param>
@@ -3508,6 +3513,12 @@
 		<action name="update" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardWithWidgets">
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboard.*</param>
+			</result>
+		</action>
+		
+		<action name="updateTab" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardTabWithWidgets">
+			<result name="success" type="json">
+				<param name="includeProperties">^dashboardTabContext.*</param>
 			</result>
 		</action>
 		<action name="updateDashboard" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboards">

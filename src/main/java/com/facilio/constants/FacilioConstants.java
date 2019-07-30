@@ -317,6 +317,7 @@ public class FacilioConstants {
 		public static final String ADJUST_READING_TTIME = "adjustReadingTtime";
 		
 		public static final String DASHBOARD = "dashboard";
+		public static final String DASHBOARD_TAB = "dashboardTab";
 		public static final String DASHBOARDS = "dashboards";
 		public static final String DASHBOARD_ID = "dashboardId";
 		public static final String DASHBOARD_ERROR_MESSAGE = "dashboardErrorMessage";
@@ -324,6 +325,7 @@ public class FacilioConstants {
 		public static final String DASHBOARD_FOLDER = "dashboardFolder";
 		public static final String DASHBOARD_PUBLISH_STATUS = "dashboardPublishStatus";
 		public static final String WIDGET = "widget";
+		public static final String WIDGET_UPDATE_LIST = "widgetUpdateList";
 		public static final String WIDGET_STATIC_CONTEXT = "widgetStaticContext";
 		public static final String REPORT_SPACE_FILTER_CONTEXT = "reportSpaceFilterContext";
 		public static final String WIDGET_TYPE = "widgetType";

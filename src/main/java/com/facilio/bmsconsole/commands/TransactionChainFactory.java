@@ -1660,9 +1660,20 @@ public class TransactionChainFactory {
 			c.addCommand(new AddWidgetCommand());
 			return c;
 		}
+	    
+	    public static Chain getUpdateWidgetsChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateWidgetsCommand());
+			return c;
+		}
 	    public static Chain getAddDashboardChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddDashboardCommand());
+			return c;
+		}
+	    public static Chain getAddDashboardTabChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddDashboardTabCommand());
 			return c;
 		}
 	    public static Chain getUpdateDashboardChain() {
@@ -1670,6 +1681,12 @@ public class TransactionChainFactory {
 			c.addCommand(new DuplicateDashboardForBuildingCommand());
 			c.addCommand(new UpdateDashboardWithWidgetCommand());
 			c.addCommand(new EnableMobileDashboardCommand());
+			return c;
+		}
+	    
+	    public static Chain getUpdateDashboardTabChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateDashboardTabWithWidgetCommand());
 			return c;
 		}
 	    public static Chain getUpdateDashboardsChain() {
