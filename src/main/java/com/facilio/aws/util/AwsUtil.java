@@ -39,6 +39,8 @@ import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 import javax.transaction.SystemException;
 
+import com.amazon.sqs.javamessaging.AmazonSQSExtendedClient;
+import com.amazon.sqs.javamessaging.ExtendedClientConfiguration;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
@@ -739,6 +741,11 @@ public class AwsUtil
 					awsSQS = AmazonSQSClientBuilder.standard()
 							.withCredentials(getAWSCredentialsProvider())
 							.withRegion(getRegion()).build();
+
+					ExtendedClientConfiguration configuration = new ExtendedClientConfiguration();
+					configuration.setAlwaysThroughS3(false);
+					configuration.setLargePayloadSupportEnabled(getAmazonS3Client(), "sqss3");
+					awsSQS = new AmazonSQSExtendedClient(awsSQS, configuration);
 				}
 			}
 		}
