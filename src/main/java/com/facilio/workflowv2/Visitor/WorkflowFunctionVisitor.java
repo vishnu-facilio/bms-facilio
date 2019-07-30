@@ -514,9 +514,9 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
             case WorkflowV2Parser.GTEQ:
                 return new Value(left.asDouble() >= right.asDouble());
             case WorkflowV2Parser.EQ:
-                return  new Value(left.equals(right));
+                return  new Value(left.asDouble().equals(right.asDouble()));
             case WorkflowV2Parser.NEQ:
-                return new Value(!left.equals(right));
+                return new Value(!left.asDouble().equals(right.asDouble()));
             default:
                 throw new RuntimeException("unknown operator: " + WorkflowV2Parser.tokenNames[ctx.op.getType()]);
         }
