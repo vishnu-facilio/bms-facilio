@@ -22,7 +22,6 @@ import com.amazonaws.util.StringUtils;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
-import com.facilio.accounts.util.AccountEmailTemplate;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -48,6 +47,7 @@ import com.iam.accounts.bean.IAMUserBean;
 import com.iam.accounts.dto.Account;
 import com.iam.accounts.exceptions.AccountException;
 import com.iam.accounts.exceptions.AccountException.ErrorCode;
+import com.iam.accounts.util.AccountEmailTemplate;
 import com.iam.accounts.util.IAMAccountConstants;
 import com.iam.accounts.util.IAMUtil;
 import com.iam.accounts.util.UserUtil;
@@ -95,7 +95,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	public void sendInvitation(long ouid, User user, boolean registration) throws Exception {
 		user.setOuid(ouid);
 		Map<String, Object> placeholders = new HashMap<>();
-		CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(user), placeholders);
+		CommonCommandUtil.appendModuleNameInKey(null, "toUser", FieldUtil.getAsProperties(user), placeholders);
 		CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()),
 				placeholders);
 		CommonCommandUtil.appendModuleNameInKey(null, "inviter",
@@ -1159,7 +1159,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 		String inviteLink = getUserLink(user, "/emailregistration/");
 		Map<String, Object> placeholders = new HashMap<>();
-		CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(user), placeholders);
+		CommonCommandUtil.appendModuleNameInKey(null, "toUser", FieldUtil.getAsProperties(user), placeholders);
 		placeholders.put("invitelink", inviteLink);
 		if (user.getEmail().contains("@facilio.com") || AwsUtil.disableCSP()) {
 			AccountEmailTemplate.EMAIL_VERIFICATION.send(placeholders);
@@ -1176,7 +1176,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		
 		String inviteLink = getUserLink(user, "/fconfirm_reset_password/");
 		Map<String, Object> placeholders = new HashMap<>();
-		CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(user), placeholders);
+		CommonCommandUtil.appendModuleNameInKey(null, "toUser", FieldUtil.getAsProperties(user), placeholders);
 		placeholders.put("invitelink", inviteLink);
 		
 		AccountEmailTemplate.RESET_PASSWORD.send(placeholders);
