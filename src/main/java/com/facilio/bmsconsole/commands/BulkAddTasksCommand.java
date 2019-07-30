@@ -181,7 +181,7 @@ public class BulkAddTasksCommand extends FacilioCommand implements PostTransacti
            preRequestMap.forEach((sectionName, tasks) -> {
                long sectionId = -1;
                if (!sectionName.equals(FacilioConstants.ContextNames.DEFAULT_TASK_SECTION)) {
-                   if (sections.get(sectionName) != null) {
+                   if (sections != null && sections.get(sectionName) != null) {
                        sectionId = sections.get(sectionName).getId();
                    }
                }
