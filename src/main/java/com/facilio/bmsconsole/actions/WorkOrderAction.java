@@ -1182,6 +1182,9 @@ public class WorkOrderAction extends FacilioAction {
 
 	public String closeWorkOrder() throws Exception {
 		FacilioContext context = new FacilioContext();
+		if (StringUtils.isNotEmpty(workOrderString) && workorder == null) {
+			setWorkordercontex(workOrderString);
+		}
 		workorder = new WorkOrderContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CLOSE_WORK_ORDER);
 		context.put(FacilioConstants.ContextNames.ACTUAL_TIMINGS, actualTimings);
@@ -1237,6 +1240,9 @@ public class WorkOrderAction extends FacilioAction {
 
 	public String updateWorkOrder() throws Exception {
 		FacilioContext context = new FacilioContext();
+		if (StringUtils.isNotEmpty(workOrderString) && workorder == null) {
+			setWorkordercontex(workOrderString);
+		}
 		setUpdateWorkorderContext(context);
 		return updateWorkOrder(context);
 	}
@@ -1273,7 +1279,11 @@ public class WorkOrderAction extends FacilioAction {
 		if (workorder.getModuleState() != null) {
 			workorder.setModuleState(null);
 		}
-		
+		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_LIST, this.attachedFiles);
+ 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, this.attachedFilesFileName);
+ 		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.attachedFilesContentType);
+ 		context.put(FacilioConstants.ContextNames.ATTACHMENT_TYPE, this.attachmentType);
+ 		context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
 		context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, activityType);
 		context.put(FacilioConstants.ContextNames.COMMENT, comment);
@@ -1379,7 +1389,7 @@ public class WorkOrderAction extends FacilioAction {
 	public void setWorkOrderId(long workOrderId) {
 		this.workOrderId = workOrderId;
 	}
-
+	
 	private List<Long> id;
 
 	public List<Long> getId() {

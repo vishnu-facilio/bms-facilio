@@ -19,10 +19,11 @@
 			"preRequsite": null,
 			"alarmCondition": {
 				"condition": "",
-				"for": "${interval}",
+				"occurences": "${occurences}",
+				"consecutive": "${consecutive}",
 				"action": "TRIGGER_ALARM",
 				"moduleName": "fcureading",
-				"thresholdType": "5",
+				"thresholdType": 5,
 				"threshold_metric": "roomTemperature",
 				"workflow": {
 					"expressions": [
@@ -115,25 +116,36 @@
 			},
 			"alarmClear": null,
 			"placeHolder": {
-				"1": {
-					"label": "Assets",
-					"uniqueId": "resource",
-					"default_value": "All Asset Selected",
-					"selection_criteria": {
-						"displayType": "ASSETCHOOSER"
-					},
-					"type": "default"
-				},
-				"2": {
-					"label": "Interval",
-					"uniqueId": "interval",
-					"default_value": "10",
-					"selection_criteria": {
-						"displayType": "DURATION"
-					},
-					"type": "rules"
-				}
-			}
+				    "1": {
+				      "default_value": "All Asset Selected",
+				      "label": "Assets",
+				      "type": "default",
+				      "selection_criteria": {
+				        "displayType": "ASSETCHOOSER"
+				      },
+				      "uniqueId": "resource"
+				    },
+				   	"2": {
+				      "default_value": 2,
+				      "label": "Occurences",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "NUMBER"
+				      },
+				      "uniqueId": "occurences"
+				    },
+				    "3": {
+				      "default_value": "false",
+				      "label": "Type",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "Radio",
+				        "trueVal": "Consecutive",
+				        "falseVal": "Over Period"
+				     	},
+				      "uniqueId": "consecutive"
+				    }
+				 }
 		}
 	},
 	"297": {
@@ -156,10 +168,11 @@
 			"preRequsite": null,
 			"alarmCondition": {
 				"condition": "",
-				"for": "${interval}",
+				"occurences": "${occurences}",
+				"consecutive": "${consecutive}",
 				"action": "TRIGGER_ALARM",
 				"moduleName": "fcureading",
-				"thresholdType": "1",
+				"thresholdType": 1,
 				"threshold_metric": "setPoint",
 				"workflow": {
 					"expressions": [
@@ -192,23 +205,34 @@
 			},
 			"alarmClear": null,
 			"placeHolder": {
-				"1": {
-					"label": "Assets",
-					"uniqueId": "resource",
-					"default_value": "All Asset Selected",
-					"selection_criteria": {
-						"displayType": "ASSETCHOOSER"
-					},
-					"type": "default"
-				},
-				"2": {
-					"label": "Interval",
-					"uniqueId": "interval",
-					"default_value": "10",
-					"selection_criteria": {
-						"displayType": "DURATION"
-					},
-					"type": "rules"
+				    "1": {
+				      "default_value": "All Asset Selected",
+				      "label": "Assets",
+				      "type": "default",
+				      "selection_criteria": {
+				        "displayType": "ASSETCHOOSER"
+				      },
+				      "uniqueId": "resource"
+				    },
+				   	"2": {
+				      "default_value": 2,
+				      "label": "Occurences",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "NUMBER"
+				      },
+				      "uniqueId": "occurences"
+				    },
+				    "3": {
+				      "default_value": "false",
+				      "label": "Type",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "Radio",
+				        "trueVal": "Consecutive",
+				        "falseVal": "Over Period"
+				     	},
+				      "uniqueId": "consecutive"
 				}
 			}
 		}
@@ -233,10 +257,11 @@
 			"preRequsite": null,
 			"alarmCondition": {
 				"condition": "",
-				"for": "${interval}",
+				"occurences": "${occurences}",
+				"consecutive": "${consecutive}",
 				"action": "TRIGGER_ALARM",
 				"moduleName": "fcureading",
-				"thresholdType": "5",
+				"thresholdType": 5,
 				"threshold_metric": "fceValve",
 				"workflow": {
 					"expressions": [
@@ -291,25 +316,36 @@
 			},
 			"alarmClear": null,
 			"placeHolder": {
-				"1": {
-					"label": "Assets",
-					"uniqueId": "resource",
-					"default_value": "All Asset Selected",
-					"selection_criteria": {
-						"displayType": "ASSETCHOOSER"
-					},
-					"type": "default"
-				},
-				"2": {
-					"label": "Interval",
-					"uniqueId": "interval",
-					"default_value": "10",
-					"selection_criteria": {
-						"displayType": "DURATION"
-					},
-					"type": "rules"
-				}
-			}
+				    "1": {
+				      "default_value": "All Asset Selected",
+				      "label": "Assets",
+				      "type": "default",
+				      "selection_criteria": {
+				        "displayType": "ASSETCHOOSER"
+				      },
+				      "uniqueId": "resource"
+				    },
+				   	"2": {
+				      "default_value": 2,
+				      "label": "Occurences",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "NUMBER"
+				      },
+				      "uniqueId": "occurences"
+				    },
+				    "3": {
+				      "default_value": "false",
+				      "label": "Type",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "Radio",
+				        "trueVal": "Consecutive",
+				        "falseVal": "Over Period"
+				     	},
+				      "uniqueId": "consecutive"
+				    }
+				 }
 		}
 	},
 	"299": {
@@ -332,10 +368,11 @@
 			"preRequsite": null,
 			"alarmCondition": {
 				"condition": "",
-				"for": "${interval}",
+				"occurences": "${occurences}",
+				"consecutive": "${consecutive}",
 				"action": "TRIGGER_ALARM",
 				"moduleName": "fcureading",
-				"thresholdType": "5",
+				"thresholdType": 5,
 				"threshold_metric": "fceValve",
 				"workflow": {
 					"expressions": [
@@ -428,25 +465,36 @@
 			},
 			"alarmClear": null,
 			"placeHolder": {
-				"1": {
-					"label": "Assets",
-					"uniqueId": "resource",
-					"default_value": "All Asset Selected",
-					"selection_criteria": {
-						"displayType": "ASSETCHOOSER"
-					},
-					"type": "default"
-				},
-				"2": {
-					"label": "Interval",
-					"uniqueId": "interval",
-					"default_value": "10",
-					"selection_criteria": {
-						"displayType": "DURATION"
-					},
-					"type": "rules"
-				}
-			}
+				    "1": {
+				      "default_value": "All Asset Selected",
+				      "label": "Assets",
+				      "type": "default",
+				      "selection_criteria": {
+				        "displayType": "ASSETCHOOSER"
+				      },
+				      "uniqueId": "resource"
+				    },
+				   	"2": {
+				      "default_value": 2,
+				      "label": "Occurences",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "NUMBER"
+				      },
+				      "uniqueId": "occurences"
+				    },
+				    "3": {
+				      "default_value": "false",
+				      "label": "Type",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "Radio",
+				        "trueVal": "Consecutive",
+				        "falseVal": "Over Period"
+				     	},
+				      "uniqueId": "consecutive"
+				    }
+				 }
 		}
 	},
 	"300": {
@@ -469,10 +517,11 @@
 			"preRequsite": null,
 			"alarmCondition": {
 				"condition": "",
-				"for": "${interval}",
+				"occurences": "${occurences}",
+				"consecutive": "${consecutive}",
 				"action": "TRIGGER_ALARM",
 				"moduleName": "fcureading",
-				"thresholdType": "5",
+				"thresholdType": 5,
 				"threshold_metric": "fceValve",
 				"workflow": {
 					"expressions": [
@@ -565,25 +614,36 @@
 			},
 			"alarmClear": null,
 			"placeHolder": {
-				"1": {
-					"label": "Assets",
-					"uniqueId": "resource",
-					"default_value": "All Asset Selected",
-					"selection_criteria": {
-						"displayType": "ASSETCHOOSER"
-					},
-					"type": "default"
-				},
-				"2": {
-					"label": "Interval",
-					"uniqueId": "interval",
-					"default_value": "10",
-					"selection_criteria": {
-						"displayType": "DURATION"
-					},
-					"type": "rules"
-				}
-			}
+				    "1": {
+				      "default_value": "All Asset Selected",
+				      "label": "Assets",
+				      "type": "default",
+				      "selection_criteria": {
+				        "displayType": "ASSETCHOOSER"
+				      },
+				      "uniqueId": "resource"
+				    },
+				   	"2": {
+				      "default_value": 2,
+				      "label": "Occurences",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "NUMBER"
+				      },
+				      "uniqueId": "occurences"
+				    },
+				    "3": {
+				      "default_value": "false",
+				      "label": "Type",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "Radio",
+				        "trueVal": "Consecutive",
+				        "falseVal": "Over Period"
+				     	},
+				      "uniqueId": "consecutive"
+				    }
+				 },
 		}
 	},
 	"301": {
@@ -606,10 +666,11 @@
 			"preRequsite": null,
 			"alarmCondition": {
 				"condition": "",
-				"for": "${interval}",
+				"occurences": "${occurences}",
+				"consecutive": "${consecutive}",
 				"action": "TRIGGER_ALARM",
 				"moduleName": "fcureading",
-				"thresholdType": "5",
+				"thresholdType": 5,
 				"threshold_metric": "fanMode",
 				"workflow": {
 					"expressions": [
@@ -683,25 +744,36 @@
 			},
 			"alarmClear": null,
 			"placeHolder": {
-				"1": {
-					"label": "Assets",
-					"uniqueId": "resource",
-					"default_value": "All Asset Selected",
-					"selection_criteria": {
-						"displayType": "ASSETCHOOSER"
-					},
-					"type": "default"
-				},
-				"2": {
-					"label": "Interval",
-					"uniqueId": "interval",
-					"default_value": "10",
-					"selection_criteria": {
-						"displayType": "DURATION"
-					},
-					"type": "rules"
-				}
-			}
+				    "1": {
+				      "default_value": "All Asset Selected",
+				      "label": "Assets",
+				      "type": "default",
+				      "selection_criteria": {
+				        "displayType": "ASSETCHOOSER"
+				      },
+				      "uniqueId": "resource"
+				    },
+				   	"2": {
+				      "default_value": 2,
+				      "label": "Occurences",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "NUMBER"
+				      },
+				      "uniqueId": "occurences"
+				    },
+				    "3": {
+				      "default_value": "false",
+				      "label": "Type",
+				      "type": "rules",
+				      "selection_criteria": {
+				        "displayType": "Radio",
+				        "trueVal": "Consecutive",
+				        "falseVal": "Over Period"
+				     	},
+				      "uniqueId": "consecutive"
+				    }
+				 },
 		}
 	}
 }

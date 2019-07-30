@@ -3289,6 +3289,25 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static List<FacilioField> getWorkflowRuleHistoricalLoggerFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getWorkflowRuleHistoricalLoggerModule();
+
+		fields.add(getIdField(module));
+		fields.add(getField("ruleId", "RULE_ID", module, FieldType.NUMBER));
+		fields.add(getField("type", "TYPE", module, FieldType.NUMBER));
+		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.NUMBER));
+		fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
+		fields.add(getField("startTime", "START_TIME", module, FieldType.NUMBER));
+		fields.add(getField("endTime", "END_TIME", module, FieldType.NUMBER));
+		fields.add(getField("calculationStartTime", "CALCULATION_START_TIME", module, FieldType.NUMBER));
+		fields.add(getField("calculationEndTime", "CALCULATION_END_TIME", module, FieldType.NUMBER));
+		fields.add(getField("createdBy", "CREATED_BY", module, FieldType.NUMBER));
+		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
+
+		return fields;
+	}
+	
 	public static List<FacilioField> getDashboardFolderFields() {
 		FacilioModule module = ModuleFactory.getDashboardFolderModule();
 		List<FacilioField> fields = new ArrayList<>();

@@ -358,7 +358,8 @@
 			},
 			"alarmCondition": {
 				"condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
-				"for": "${interval}",
+				"occurences": "${occurences}",
+				"consecutive": "${consecutive}",
 				"action": "TRIGGER_ALARM",
 				"moduleName": "ahureading",
 				"thresholdType": 5,
@@ -509,7 +510,8 @@
 			},
 			"alarmCondition": {
 				"condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
-				"for": "${interval}",
+				"occurences": "${occurences}",
+				"consecutive": "${consecutive}",
 				"action": "TRIGGER_ALARM",
 				"moduleName": "ahureading",
 				"thresholdType": 5,
@@ -660,7 +662,8 @@
 			},
 			"alarmCondition": {
 				"condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
-				"for": "${interval}",
+				"occurences": "${occurences}",
+				"consecutive": "${consecutive}",
 				"action": "TRIGGER_ALARM",
 				"moduleName": "ahureading",
 				"thresholdType": 5,
@@ -789,7 +792,8 @@
 			},
 			"alarmCondition": {
 				"condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
-				"for": "${interval}",
+				"occurences": "${occurences}",
+				"consecutive": "${consecutive}",
 				"action": "TRIGGER_ALARM",
 				"moduleName": "ahureading",
 				"thresholdType": 5,
@@ -889,7 +893,8 @@
 			  },
 			  "alarmCondition": {
 			    "condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
-			    "for": "${interval}",
+			   	"occurences": "${occurences}",
+				"consecutive": "${consecutive}",
 			    "action": "TRIGGER_ALARM",
 			    "thresholdType": 5,
 			    "workflow": {
@@ -1085,7 +1090,8 @@
 			  },
 			  "alarmCondition": {
 			    "condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
-			    "for": "${interval}",
+			    "occurences": "${occurences}",
+				"consecutive": "${consecutive}",
 			    "action": "TRIGGER_ALARM",
 			    "thresholdType": 5,
 			    "workflow": {
@@ -1281,7 +1287,8 @@
 			  },
 			  "alarmCondition": {
 			    "condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
-			    "for": "${interval}",
+			    "occurences": "${occurences}",
+				"consecutive": "${consecutive}",
 			    "action": "TRIGGER_ALARM",
 			    "thresholdType": 5,
 			    "workflow": {
@@ -1477,7 +1484,8 @@
 			  },
 			  "alarmCondition": {
 			    "condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
-			    "for": "${interval}",
+			    "occurences": "${occurences}",
+				"consecutive": "${consecutive}",
 			    "action": "TRIGGER_ALARM",
 			    "thresholdType": 5,
 			    "workflow": {
@@ -1673,7 +1681,8 @@
 			  },
 			  "alarmCondition": {
 			    "condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
-			    "for": "${interval}",
+			    "occurences": "${occurences}",
+				"consecutive": "${consecutive}",
 			    "action": "TRIGGER_ALARM",
 			    "thresholdType": 5,
 			    "workflow": {
@@ -1798,7 +1807,8 @@
 			  },
 			  "alarmCondition": {
 			    "condition": "${{exhaustairdampercommand}}==1 && ${{exhaustairdamperstatus}}==0",
-			    "for": "${interval}",
+			   "occurences": "${occurences}",
+				"consecutive": "${consecutive}",
 			    "action": "TRIGGER_ALARM",
 			    "thresholdType": 5,
 			    "workflow": {
@@ -1923,7 +1933,8 @@
 			  },
 			  "alarmCondition": {
 			    "condition": "Supply Air Temperature  > Supply Air Temperature Set-point && Cooling Coil Valve Command = 0 && Cooling Coil Valve FeedBack =0",
-			    "for": "${interval}",
+			    "occurences": "${occurences}",
+				"consecutive": "${consecutive}",
 			    "action": "TRIGGER_ALARM",
 			    "thresholdType": 5,
 			    "workflow": {
@@ -2066,7 +2077,8 @@
 			  },
 			  "alarmCondition": {
 			    "condition": "Supply Air Temperature  > Supply Air Temperature Set-point && Cooling Coil Valve Command = 1 && Cooling Coil Valve FeedBack =0",
-			    "for": "${interval}",
+			    "occurences": "${occurences}",
+				"consecutive": "${consecutive}",
 			    "action": "TRIGGER_ALARM",
 			    "thresholdType": 5,
 			    "workflow": {
@@ -2206,7 +2218,8 @@
 			  },
 			  "alarmCondition": {
 			    "condition": "Cooling Coil Valve Feedback Value > 2%",
-			    "for": "${interval}",
+			    "occurences": "${occurences}",
+				"consecutive": "${consecutive}",
 			    "action": "TRIGGER_ALARM",
 			    "thresholdType": 5,
 			    "workflow": {
@@ -2306,7 +2319,8 @@
 				  },
 				  "alarmCondition": {
 				    "condition": "AirFlow Coil DP ≥ 1000",
-				    "for": "${interval}",
+				    "occurences": "${occurences}",
+					"consecutive": "${consecutive}",
 				    "action": "TRIGGER_ALARM",
 				    "thresholdType": 6,
 				    "workflow": {
@@ -2414,7 +2428,8 @@
 				  },
 				  "alarmCondition": {
 				    "condition": "Chilled Water flow  DP > 35",
-				    "for": "${interval}",
+				    "occurences": "${occurences}",
+					"consecutive": "${consecutive}",
 				    "action": "TRIGGER_ALARM",
 				    "thresholdType": 6,
 				    "workflow": {
@@ -2486,7 +2501,8 @@
 				  "preRequsite": null,
 				  "alarmCondition": {
 				    "condition": "Chilled Water flow  DP > 35",
-				    "for": "${interval}",
+				   "occurences": "${occurences}",
+					"consecutive": "${consecutive}",
 				    "action": "TRIGGER_ALARM",
 				    "thresholdType": 6,
 				    "workflow": {
@@ -2571,7 +2587,8 @@
 				  "preRequsite": null,
 				  "alarmCondition": {
 				    "condition": "Chilled Water flow  DP > 35",
-				    "for": "${interval}",
+				    "occurences": "${occurences}",
+				    "consecutive": "${consecutive}",
 				    "action": "TRIGGER_ALARM",
 				    "thresholdType": 6,
 				    "workflow": {
@@ -2692,7 +2709,8 @@
 				  },
 				  "alarmCondition": {
 				    "condition": "Cooling Coil Valve Feedback ≥ 95% AND Chilled Water Supply Temp>15 degrees",
-				    "for": "${interval}",
+				    "occurences": "${occurences}",
+				    "consecutive": "${consecutive}",
 				    "action": "TRIGGER_ALARM",
 				    "thresholdType": 5,
 				    "workflow": {
@@ -2818,7 +2836,8 @@
 				  },
 				  "alarmCondition": {
 				    "condition": "Chilled Water flow  DP > 10",
-				    "for": "${interval}",
+				    "occurences": "${occurences}",
+				    "consecutive": "${consecutive}",
 				    "action": "TRIGGER_ALARM",
 				    "thresholdType": 6,
 				    "workflow": {
@@ -2931,7 +2950,6 @@
 				      ]
 				    },
 				    "condition_statement": "When Supply air temperature set-point is greater than supply air temperature",
-				    "for": "${interval}",
 				    "occurences": "${occurences}",
 				    "consecutive": "${consecutive}",
 				    "action": "TRIGGER_ALARM",
@@ -2939,7 +2957,7 @@
 				    "thresholdType": 5
 				  },
 				  "alarmClear": null,
-				  			 "placeHolder": {
+				  "placeHolder": {
 				    "1": {
 				      "default_value": "All Asset Selected",
 				      "label": "Assets",
@@ -2969,7 +2987,7 @@
 				     	},
 				      "uniqueId": "consecutive"
 				    }
-				 }
+				 },
 				  "problem": "Leads to Over cooling of the spaces and also increases the energy consumption ",
 				  "preRequsite": {
 				    "workflow": {

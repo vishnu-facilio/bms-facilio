@@ -17,7 +17,9 @@ public enum ControllerType {
 
 	OPC_DA (5,"Opc DA"),
 
-	OPC_UA (6,"Opc UA");
+	OPC_UA (6,"Opc UA"),
+	
+	LON_WORKS (7,"Lon Works");
 
 	private int key;
 	private String label;
