@@ -51,7 +51,7 @@ public class AdminDeltaCalculationCommand extends FacilioCommand {
 			
 			long TtimeLimit = TimeUnit.DAYS.convert(startTtime - endTtime, TimeUnit.MILLISECONDS);
 
-			if (TtimeLimit > 60) {
+			if (TtimeLimit > 100) {
 				throw new IllegalArgumentException("Number of Days Should not be more than 60 days " + TtimeLimit);
 			}
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean",orgId);
@@ -93,7 +93,7 @@ public class AdminDeltaCalculationCommand extends FacilioCommand {
 	}
 
 	private void updateDeltaCalculation(List<ReadingContext> prop, FacilioModule module, String nameField,
-			FacilioField valField, List<FacilioField> valfields, String detaFieldName, String email) {
+			FacilioField valField, List<FacilioField> valfields, String detaFieldName, String email) throws Exception {
 		// TODO Auto-generated method stub
 		
 
@@ -129,7 +129,7 @@ public class AdminDeltaCalculationCommand extends FacilioCommand {
 			try {
 				int count = updateBuilder.update(rowSecond);
 				if (count > 0) {
-					sendEmail(email);
+					
 					System.out.println("#####DeltaCalculation Updated Successfully" + count + "  " + "rows");
 					LOGGER.info("#####DeltaCalculation Updated Successfully");
 				}
@@ -140,6 +140,7 @@ public class AdminDeltaCalculationCommand extends FacilioCommand {
 			}
 
 		}
+		sendEmail(email);
 	}
 
 	private boolean isCounterValField(FacilioField valField) {
@@ -156,8 +157,8 @@ public class AdminDeltaCalculationCommand extends FacilioCommand {
 		JSONObject json = new JSONObject();
 		json.put("to", email);
 		json.put("sender", "noreply@facilio.com");
-		json.put("subject", "#####DeltaCalculation Removed Successfully");
-		json.put("message", "#####DeltaCalculation Removed Successfully");
+		json.put("subject", "#####DeltaCalculation runs Successfully");
+		json.put("message", "#####DeltaCalculation runs Successfully");
 		
 		AwsUtil.sendEmail(json);
 	}

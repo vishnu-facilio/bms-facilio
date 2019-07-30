@@ -94,7 +94,7 @@ public class AdminRemoveDuplicationCommand extends FacilioCommand {
 				ReadingContext time = prop.get(0);
 				System.out.println("#######reading Value  :"+time.getTtime()+"id "+time.getId());
 				
-				updateDeltaCalculation(prop, module, nameField, valField, fields, detaFieldName,parentField,parentId,email,selectFields,ttimeField);
+				updateDeltaCalculation(prop, module, nameField, valField, fields, detaFieldName,parentField,parentId,email,selectFields,ttimeField,orgId);
 			} else {
 				System.out.println("FieldType is not a CounterField");
 				throw new IllegalArgumentException("FieldType is not a CounterField");
@@ -112,7 +112,7 @@ public class AdminRemoveDuplicationCommand extends FacilioCommand {
 	}
 
 	private void updateDeltaCalculation(List<ReadingContext> prop, FacilioModule module, String nameField,
-			FacilioField valField, List<FacilioField> valfields, String detaFieldName, FacilioField parentField, long parentId, String email, List<FacilioField> selectFields,FacilioField ttimeField) {
+			FacilioField valField, List<FacilioField> valfields, String detaFieldName, FacilioField parentField, long parentId, String email, List<FacilioField> selectFields,FacilioField ttimeField,long orgId) throws Exception {
 		// TODO Auto-generated method stub
 
 		for (int i = 0; i < prop.size(); i++) {
@@ -132,12 +132,14 @@ public class AdminRemoveDuplicationCommand extends FacilioCommand {
 				try {
 					int count = updateBuilder.update(rowFirst);
 					if (count > 0) {
-						sendEmail(email);
 						System.out.println("#####Duplicates Removed Successfully" + count + "  " + "rows");
 						LOGGER.info("#####Duplicates Removed Successfully");
 					}
 
 				} catch (Exception e) {
+					sendEmail(email,orgId);
+					CommonCommandUtil.emailException("Duplicate Removal",
+							"Duplicate Removal is failed to Update - orgid -- " + AccountUtil.getCurrentOrg().getId(), e);
 					LOGGER.info("###Duplicates Removed is failed to Update : " + e);
 					System.out.println("###Duplicates Removed is failed to Update : " + e);
 				}
@@ -146,6 +148,7 @@ public class AdminRemoveDuplicationCommand extends FacilioCommand {
 
 
 		}
+		
 	}
 
 
@@ -159,13 +162,13 @@ public class AdminRemoveDuplicationCommand extends FacilioCommand {
 
 		return false;
 	}
-	private void sendEmail(String email)throws Exception{
+	private void sendEmail(String email, long orgId)throws Exception{
 		JSONObject json = new JSONObject();
 		json.put("to", email);
 		json.put("sender", "noreply@facilio.com");
-		json.put("subject", "#####Duplicates Removal in Readings Table");
-		json.put("message", "#####Duplicates Removed Successfully");
-		
+		json.put("subject", "#####Duplicates Removal failed to update ");
+		json.put("message", "#####Duplicates Removed failed to update");
+		json.put("orgId", orgId);
 		AwsUtil.sendEmail(json);
 	}
 

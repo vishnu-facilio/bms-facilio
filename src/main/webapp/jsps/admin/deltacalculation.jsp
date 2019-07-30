@@ -94,13 +94,6 @@
 	function changeendTTimePage(){
 		var selectedOption = "deltacalculation?orgid=" + $("#orgid").val()+"&"+"email="+$("#email").val()
 		+ "&" + "assetcategory=" + $("#assetcategory").val()+"&"+  "assetId=" + $("#assetId").val()+"&"+"selectfields=" + $("#selectfields").val()+"&"+"fieldId="+$("#fieldId").val()+"&"+"fromTtime="+$("#fromTtime").val()+"&"+"toTtime="+$("#toTtime").val();
-		location.href = selectedOption;
-
-	}
-	function changeRemoveDuplicateePage(){
-		var selectedOption = "removeduplicates?orgid=" + $("#orgid").val()+"&"+"email="+$("#email").val()
-		+ "&" + "assetcategory=" + $("#assetcategory").val()+"&"+  "assetId=" + $("#assetId").val()+"&"+"selectfields=" + $("#selectfields").val()+"&"+"fieldId="+$("#fieldId").val()+"&"+"fromTtime="+$("#fromTtime").val()+"&"+"toTtime="+$("#toTtime").val();
-		location.href = selectedOption;
 
 	}
 </script>
@@ -131,7 +124,7 @@
 				class="input-group col-lg-8 col-md-8 col-sm-8	">
 				<span class="input-group-addon"><i
 					class="glyphicon glyphicon-user"></i></span> <input id="email" type="text"
-					value="<%=request.getParameter("email")== null?" Email":request.getParameter("email") %>" class="form-control" 
+					value="<%=request.getParameter("email")== null?" ":request.getParameter("email") %>" class="form-control" placeholder="OrgId"
 					name="email" onChange="changeEmailPage" />
 			</div>
 			<div style="margin-top: 30px;">
