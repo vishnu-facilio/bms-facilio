@@ -1185,6 +1185,9 @@ public class WorkOrderAction extends FacilioAction {
 		if (StringUtils.isNotEmpty(workOrderString) && workorder == null) {
 			setWorkordercontex(workOrderString);
 		}
+		if (workorder == null) {
+			workorder = new WorkOrderContext();
+		}
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CLOSE_WORK_ORDER);
 		context.put(FacilioConstants.ContextNames.ACTUAL_TIMINGS, actualTimings);
 
