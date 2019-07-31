@@ -31,14 +31,18 @@ public class GetFormMetaCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		String formName = (String) context.get(FacilioConstants.ContextNames.FORM_NAME);
 		Long formId = (Long) context.get(FacilioConstants.ContextNames.FORM_ID);
+		String formModuleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);	// TODO...needs to be mandatory
+		FacilioModule formModule = null;
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		if (formModuleName != null) {
+			formModule = modBean.getModule(formModuleName);
+			if (formId == -1 && formName == null) {
+				formName = FormFactory.getDefaultFormName(formModuleName, FormType.WEB.getStringVal());
+			}
+		}
+		
 		FacilioForm form = null;
 		if (formName != null) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			String formModuleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);	// TODO...needs to be mandatory
-			FacilioModule formModule = null;
-			if (formModuleName != null) {
-				formModule = modBean.getModule(formModuleName);
-			}
 
 			form = FormsAPI.getFormFromDB(formName, formModule);
 			if (form == null) {
