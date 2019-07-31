@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.bmsconsole.view.CustomModuleData;
 import org.json.simple.JSONObject;
 
 import com.facilio.activity.ActivityContext;
@@ -1290,6 +1291,10 @@ public class FacilioConstants {
 			Class moduleClass =  classMap.get(module.getName());
 			if (moduleClass == null && checkParent && module.getExtendModule() != null) {
 				return getClassFromModule(module.getExtendModule(), true);
+			}
+
+			if (moduleClass == null && module.getTypeEnum() == FacilioModule.ModuleType.CUSTOM) {
+				moduleClass = CustomModuleData.class;
 			}
 			return moduleClass;
 		}
