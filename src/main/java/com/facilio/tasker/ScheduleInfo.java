@@ -609,9 +609,9 @@ public class ScheduleInfo implements Serializable {
 								break;
 							}
 						} else if (offsetMonth < monthValue) { // tested
-							zdt = zdt.with(LocalTime.of(0, 0)).withMonth(allowedMonth + (monthValue - 1));
+							zdt = zdt.withDayOfMonth(1).with(LocalTime.of(0, 0)).withMonth(allowedMonth + (monthValue - 1));
 							alignedWeek = zdt.get(ChronoField.ALIGNED_WEEK_OF_MONTH);
-							alignedStartOfWeek = zdt.with(LocalTime.of(0, 0)).with(ChronoField.ALIGNED_WEEK_OF_MONTH, alignedWeek).with(ChronoField.ALIGNED_DAY_OF_WEEK_IN_MONTH, 1);
+							alignedStartOfWeek = zdt.with(LocalTime.of(0, 0)).with(ChronoField.ALIGNED_DAY_OF_WEEK_IN_MONTH, 1).with(ChronoField.ALIGNED_WEEK_OF_MONTH, alignedWeek);
 							alignedStartActualWeekDay = alignedStartOfWeek.getDayOfWeek().getValue();
 							int calculatedFrequency = weekFrequency;
 							if (weekFrequency == LAST_WEEK) {
