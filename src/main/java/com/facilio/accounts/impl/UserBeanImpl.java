@@ -91,7 +91,7 @@ public class UserBeanImpl implements UserBean {
 			insertBuilder.addRecord(props);
 			insertBuilder.save();
 			if(user.getUid() > 0) {
-				if (emailVerificationRequired && !user.getUserVerified()) {
+				if (emailVerificationRequired && !user.isUserVerified()) {
 					sendEmailRegistration(user);
 				}
 			}
@@ -184,7 +184,7 @@ public class UserBeanImpl implements UserBean {
 
 		user.setOuid((long) props.get("ouid"));
 		if((long)props.get("ouid") > 0) {
-			if(!user.getUserVerified() && !user.getInviteAcceptStatus()) {
+			if(!user.isUserVerified() && !user.isInviteAcceptStatus()) {
 				sendInvitation(user, false);
 			}
 		}
@@ -466,16 +466,17 @@ public class UserBeanImpl implements UserBean {
 			deletedTime.setColumnName("DELETED_TIME");
 			deletedTime.setModule(AccountConstants.getAppOrgUserModule());
 			
-			User anyOtherOrgUser = getUser(user.getEmail());
-			if(anyOtherOrgUser.getOrgId() == user.getOrgId()) {
-				updateDefaultOrgForUser(user.getUid());
+			if(user.getIsDefaultOrg()) {
+				updateDefaultOrgForUser(user.getUid(), user.getOrgId());
 			}
 			
 			List<FacilioField> fields = new ArrayList<>();
 			fields.add(deletedTime);
 	
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-					.table(AccountConstants.getAppOrgUserModule().getTableName());
+					.table(AccountConstants.getAppOrgUserModule().getTableName())
+					.fields(fields)
+					;
 			
 			Criteria criteria = new Criteria();
 			criteria.addAndCondition(CriteriaAPI.getCondition("ORG_USERID", "org_UserId", String.valueOf(ouid), NumberOperators.EQUALS));
@@ -524,10 +525,15 @@ public class UserBeanImpl implements UserBean {
 	}
 		return null;
 	}
-	private void updateDefaultOrgForUser(long uId) throws Exception {
+	private void updateDefaultOrgForUser(long uId, long currentOrg) throws Exception {
 		List<User> orgUsers = getUserFromUserId(uId);
 		if(CollectionUtils.isNotEmpty(orgUsers)) {
-			setDefaultOrg(orgUsers.get(0).getUid(), orgUsers.get(0).getOrgId());
+			for(User u : orgUsers) {
+				if(u.getOrgId() != currentOrg) {
+					setDefaultOrg(orgUsers.get(0).getUid(), u.getOrgId());
+					break;
+				}
+			}
 		}
 	}
 	
@@ -834,10 +840,13 @@ public class UserBeanImpl implements UserBean {
 				.select(fields)
 				.table("Users")
 				.innerJoin("ORG_Users")
-				.on("Users.USERID = ORG_Users.USERID AND ORG_Users.USER_TYPE=2")
+				.on("Users.USERID = ORG_Users.USERID")
 				.innerJoin(portalInfoModule.getTableName())
-				.on("ORG_Users.ORGID = Users.USERID")
-				.andCustomWhere("PortalInfo.PORTALID="+ portalId + " and Users.EMAIL = "+email);
+				.on("ORG_Users.ORGID = PortalInfo.ORGID");
+		selectBuilder.andCondition(CriteriaAPI.getCondition("PortalInfo.PORTALID", "portalId", String.valueOf(portalId), NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Users.EMAIL", "email", email, StringOperators.IS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.USER_TYPE", "userType", String.valueOf(UserType.REQUESTER.getValue()), NumberOperators.EQUALS));
+		
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -1084,11 +1093,12 @@ public class UserBeanImpl implements UserBean {
 			return getUser(portalUser.getEmail()).getOuid();
 		}
 		if(UserUtil.addUser(user, orgId) > 0) {
-			addUserEntry(user, true);
+			addUserEntry(user, false);
 			user.setOrgId(orgId);
 			user.setUserType(AccountConstants.UserType.REQUESTER.getValue());
 			user.setUserStatus(true);
 			addToAppORGUsers(user);
+			return user.getOuid();
 		
 		}
 		return -1;
@@ -1297,7 +1307,7 @@ public class UserBeanImpl implements UserBean {
 	@Override
 	public boolean acceptUser(User user) throws Exception {
 		// TODO Auto-generated method stub
-		if(UserUtil.acceptUser(user)) {
+		    User appUser = getUser(user.getOrgId(), user.getUid());
 			FacilioField inviteAcceptStatus = new FacilioField();
 			inviteAcceptStatus.setName("inviteAcceptStatus");
 			inviteAcceptStatus.setDataType(FieldType.BOOLEAN);
@@ -1323,7 +1333,7 @@ public class UserBeanImpl implements UserBean {
 
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 					.table(AccountConstants.getAppOrgUserModule().getTableName()).fields(fields)
-					.andCustomWhere("ORG_USERID = ?", user.getOuid());
+					.andCustomWhere("ORG_USERID = ?", appUser.getOuid());
 
 			Map<String, Object> props = new HashMap<>();
 			props.put("inviteAcceptStatus", true);
@@ -1332,17 +1342,14 @@ public class UserBeanImpl implements UserBean {
 
 			int updatedRows = updateBuilder.update(props);
 			if (updatedRows > 0) {
-				String password = user.getPassword();
-				user = getInvitedUser(user.getOuid());
-				if (user != null) {
-					user.setUserVerified(true);
-					user.setPassword(password);
-					updateUserEntry(user);
+				appUser = getInvitedUser(appUser.getOuid());
+				if (appUser != null) {
+					appUser.setUserVerified(true);
+					updateUserEntry(appUser);
 					// LicenseApi.updateUsedLicense(user.getLicenseEnum());
 					return true;
 				}
 			}
-		}
 		return false;
 	}
 
@@ -1427,11 +1434,11 @@ public class UserBeanImpl implements UserBean {
 	}
 	
 	private String getUserLink(User user, String url) throws Exception {
-		String inviteToken = UserUtil.getResetPasswordToken(user);
+		String inviteToken = UserUtil.getEncodedToken(user);
 		String hostname = "";
 		if (user.isPortalUser()) {
 			try {
-				Organization org = IAMUtil.getOrgBean().getOrgv2(user.getOrgId());
+				Organization org = AccountUtil.getOrgBean().getPortalOrg(user.getPortalId());
 				hostname = "https://" + org.getDomain() + "/service";
 				inviteToken = inviteToken + "&portalid=" + user.getPortalId();
 			} catch (Exception e) {

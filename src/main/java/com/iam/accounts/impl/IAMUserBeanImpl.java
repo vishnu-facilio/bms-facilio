@@ -361,41 +361,51 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	public boolean deleteUserv2(User user) throws Exception {
 		
 		User userData = getFacilioUser(user.getOrgId(), user.getUid());
-		FacilioField deletedTime = new FacilioField();
-		deletedTime.setName("deletedTime");
-		deletedTime.setDataType(FieldType.NUMBER);
-		deletedTime.setColumnName("DELETED_TIME");
-		deletedTime.setModule(IAMAccountConstants.getAccountsOrgUserModule());
-		
-		if(user.isDefaultOrg()) {
-			updateDefaultOrgForUser(user.getUid());
+		if(userData != null) {
+			FacilioField deletedTime = new FacilioField();
+			deletedTime.setName("deletedTime");
+			deletedTime.setDataType(FieldType.NUMBER);
+			deletedTime.setColumnName("DELETED_TIME");
+			deletedTime.setModule(IAMAccountConstants.getAccountsOrgUserModule());
+			
+			if(user.isDefaultOrg()) {
+				updateDefaultOrgForUser(user.getUid(), user.getOrgId());
+			}
+			
+			List<FacilioField> fields = new ArrayList<>();
+			fields.add(deletedTime);
+			
+			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+					.table(IAMAccountConstants.getAccountsOrgUserModule().getTableName())
+					.fields(fields);
+			
+			updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(userData.getUid()), NumberOperators.EQUALS));
+			updateBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(userData.getOrgId()), NumberOperators.EQUALS));
+			updateBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
+			
+			Map<String, Object> props = new HashMap<>();
+			props.put("deletedTime", System.currentTimeMillis());
+			
+			int updatedRows = updateBuilder.update(props);
+			if (updatedRows > 0) {
+				return true;
+			}
+			return false;
 		}
-		
-		List<FacilioField> fields = new ArrayList<>();
-		fields.add(deletedTime);
-		
-		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(IAMAccountConstants.getAccountsOrgUserModule().getTableName())
-				.fields(fields);
-		
-		updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(userData.getUid()), NumberOperators.EQUALS));
-		updateBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(userData.getOrgId()), NumberOperators.EQUALS));
-		updateBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
-		
-		Map<String, Object> props = new HashMap<>();
-		props.put("deletedTime", System.currentTimeMillis());
-		
-		int updatedRows = updateBuilder.update(props);
-		if (updatedRows > 0) {
-			return true;
+		else {
+			throw new AccountException(ErrorCode.USER_ALREADY_DELETED, "User is already deleted");
 		}
-		return false;
 	}
 
-	private void updateDefaultOrgForUser(long uId) throws Exception {
+	private void updateDefaultOrgForUser(long uId, long currentOrg) throws Exception {
 		List<User> orgUsers = getFacilioOrgUserList(uId);
 		if(CollectionUtils.isNotEmpty(orgUsers)) {
-			setDefaultOrgv2(orgUsers.get(0).getUid(), orgUsers.get(0).getOrgId());
+			for(User u : orgUsers) {
+				if(u.getOrgId() != currentOrg) {
+					setDefaultOrgv2(orgUsers.get(0).getUid(), u.getOrgId());
+					break;
+				}
+			}
 		}
 		
 	}
@@ -488,9 +498,9 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				.fields(fields)
 				;
 		
-		updateBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
-		updateBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
-		updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
+		updateBuilder1.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+		updateBuilder1.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
+		updateBuilder1.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(uid), NumberOperators.EQUALS));
 	
 		Map<String, Object> props1 = new HashMap<>();
 		props1.put("isDefaultOrg", true);

@@ -18,6 +18,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountConstants.UserType;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
@@ -30,6 +31,8 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fs.FileStore;
+import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -61,6 +64,7 @@ public class OrgBeanImpl implements OrgBean {
 	
 	@Override
 	public Organization getPortalOrg(long portalId) throws Exception {
+		
 		PortalInfoContext portalInfo = getPortalInfo(portalId, true);
 		if (portalInfo == null) {
 			throw new IllegalArgumentException("Portal not found");
@@ -70,7 +74,16 @@ public class OrgBeanImpl implements OrgBean {
 			throw new IllegalArgumentException("Organization not found");
 		}
 		org.setPortalId(portalId);
-		return org;
+		FileStore fs = FileStoreFactory.getInstance().getFileStoreFromOrg(org.getId());
+		org.setLogoUrl(fs.getPrivateUrl(org.getLogoId(), true));
+		org.setOriginalUrl(fs.orginalFileUrl(org.getLogoId()));
+        if(portalInfo.getCustomDomain() != null) { 
+            org.setDomain(portalInfo.getCustomDomain()); 
+        } else { 
+            org.setDomain(org.getDomain() + "." + AwsUtil.getConfig("portal.domain")); 
+        } 
+	             
+	   return org;
 	}
 	
 	@Override
@@ -383,9 +396,10 @@ public class OrgBeanImpl implements OrgBean {
                 .on("Users.USERID = ORG_Users.USERID") ;
         
     	selectBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
-    	selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.USER_TYPE", "userType", String.valueOf(UserType.REQUESTER), NumberOperators.EQUALS));
-    
-        List<Map<String, Object>> props = selectBuilder.get(); 
+    	selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.USER_TYPE", "userType", String.valueOf(UserType.REQUESTER.getValue()), NumberOperators.EQUALS));
+    	selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
+        
+    	List<Map<String, Object>> props = selectBuilder.get(); 
         if (props != null && !props.isEmpty()) { 
             List<User> users = new ArrayList<>(); 
             for(Map<String, Object> prop : props) { 

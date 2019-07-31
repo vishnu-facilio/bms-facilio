@@ -32,7 +32,8 @@ public class AccountException extends Exception {
 		ROLE_ID_IS_NULL,
 		NOT_PERMITTED,
 		USER_DOESNT_EXIST_IN_ORG,
-		USER_ALREADY_EXISTS_IN_ORG
+		USER_ALREADY_EXISTS_IN_ORG,
+		USER_ALREADY_DELETED
 		;
 	}
 }

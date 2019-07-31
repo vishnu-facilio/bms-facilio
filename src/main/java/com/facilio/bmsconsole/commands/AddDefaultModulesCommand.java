@@ -23,13 +23,13 @@ public class AddDefaultModulesCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		
 		long orgId = (long) context.get("orgId");
+		if(orgId > 0) {
+			Map<String, String> paramValues = new HashMap<>(); 
+			paramValues.put("orgId", String.valueOf(orgId));
 		
-		Map<String, String> paramValues = new HashMap<>(); 
-		paramValues.put("orgId", String.valueOf(orgId));
-	
-		SQLScriptRunner scriptRunner = new SQLScriptRunner(INSERT_MODULES_SQL, true, paramValues, DBUtil.getDBSQLScriptRunnerMode());
-		scriptRunner.runScript();
-		
+			SQLScriptRunner scriptRunner = new SQLScriptRunner(INSERT_MODULES_SQL, true, paramValues, DBUtil.getDBSQLScriptRunnerMode());
+			scriptRunner.runScript();
+		}
 		return false;
 	}
 

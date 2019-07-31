@@ -697,7 +697,6 @@ public class TransactionChainFactory {
 //		return new FacilioChain(true);
 //	}
 
-		
 		public static Chain getOrgSignupChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddDefaultModulesCommand());

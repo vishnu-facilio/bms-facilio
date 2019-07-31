@@ -331,7 +331,7 @@ public class UserUtil {
 		return false;
 	}
 
-	public static String getResetPasswordToken(User user) throws Exception {
+	public static String getEncodedToken(User user) throws Exception {
 		return IAMUtil.getUserBean().getEncodedTokenv2(user);
 	}
 	

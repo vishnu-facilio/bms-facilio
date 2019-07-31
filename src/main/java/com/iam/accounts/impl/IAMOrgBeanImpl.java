@@ -85,7 +85,7 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			return createOrgFromProps(props.get(0), false);
+			return createOrgFromProps(props.get(0));
 		}
 		return null;
 	}
@@ -101,17 +101,17 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			return createOrgFromProps(props.get(0), false);
+			return createOrgFromProps(props.get(0));
 		}
 		return null;
 	}
 
 		
-	private Organization createOrgFromProps(Map<String, Object> prop, boolean isPortalRequest) throws Exception {
+	private Organization createOrgFromProps(Map<String, Object> prop) throws Exception {
 		Organization org = FieldUtil.getAsBeanFromMap(prop, Organization.class);
 		if (org.getLogoId() > 0) {
 			FileStore fs = FileStoreFactory.getInstance().getFileStoreFromOrg(org.getId());
-			org.setLogoUrl(fs.getPrivateUrl(org.getLogoId(), isPortalRequest));
+			org.setLogoUrl(fs.getPrivateUrl(org.getLogoId(), false));
 			org.setOriginalUrl(fs.orginalFileUrl(org.getLogoId()));
 		}
 		return org;
