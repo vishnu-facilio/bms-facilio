@@ -1179,6 +1179,30 @@ public class WorkOrderAction extends FacilioAction {
 		}
 		return updateWorkOrder(context);
 	}
+	
+	private File signature;
+	public File getSignature() {
+		return signature;
+	}
+	public void setSignature(File signature) {
+		this.signature = signature;
+	}
+	
+	private String signatureFileName;
+	public String getSignatureFileName() {
+		return signatureFileName;
+	}
+	public void setSignatureFileName(String signatureFileName) {
+		this.signatureFileName = signatureFileName;
+	}
+	
+	private  String signatureContentType;
+	public String getSignatureContentType() {
+		return signatureContentType;
+	}
+	public void setSignatureContentType(String signatureContentType) {
+		this.signatureContentType = signatureContentType;
+	}
 
 	public String closeWorkOrder() throws Exception {
 		FacilioContext context = new FacilioContext();
@@ -1187,6 +1211,12 @@ public class WorkOrderAction extends FacilioAction {
 		}
 		if (workorder == null) {
 			workorder = new WorkOrderContext();
+		}
+		// For handling signature if workOrderString is send
+		if (signature != null) {
+			workorder.setSignature(signature);
+			workorder.setSignatureFileName(signatureFileName);
+			workorder.setSignatureContentType(signatureContentType);
 		}
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CLOSE_WORK_ORDER);
 		context.put(FacilioConstants.ContextNames.ACTUAL_TIMINGS, actualTimings);
