@@ -1206,7 +1206,7 @@ public class TenantsAPI {
 
 		List<FacilioField> tenantFields = modBean.getAllFields(tenantModule.getName());
 		List<FacilioField> selectFields = new ArrayList<>(tenantFields);
-		selectFields.add(zoneRelMap.get("baseSpaceId"));
+		selectFields.add(zoneRelMap.get("basespaceId"));
 
 		SelectRecordsBuilder<TenantContext> builder = new SelectRecordsBuilder<TenantContext>()
 				.module(tenantModule)
@@ -1216,7 +1216,7 @@ public class TenantsAPI {
 				.on(tenantModule.getTableName()+".ZONE_ID = "+zoneModule.getTableName()+".ID")
 				.innerJoin(zoneRelModule.getTableName())
 				.on(zoneRelModule.getTableName()+".ZONE_ID = "+zoneModule.getTableName()+".ID")
-				.andCondition(CriteriaAPI.getCondition(zoneRelMap.get("basespaceId"), spaceIds, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(zoneRelMap.get("basespaceId"), filteredSpaces, NumberOperators.EQUALS))
 				.andCustomWhere(tenantModule.getTableName()+".STATUS = ?", 1);
 
 		List<Map<String, Object>> props = builder.getAsProps();
@@ -1228,7 +1228,7 @@ public class TenantsAPI {
 
 		for (Map<String, Object> prop: props) {
 			TenantContext tenant = FieldUtil.getAsBeanFromMap(prop, TenantContext.class);
-			long baseSpaceId = (long) prop.get("baseSpaceId");
+			long baseSpaceId = (long) prop.get("basespaceId");
 
 			result.put(baseSpaceId, tenant);
 		}
