@@ -22,8 +22,8 @@ public class GetModuleListCommand extends FacilioCommand {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioModule> moduleList = modBean.getModuleList(ModuleType.valueOf(moduleType));
 
-		boolean fetchDefaultModules = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_DEFAULT_MODULES, false);
-		if (fetchDefaultModules) {
+		Boolean fetchDefaultModules = (Boolean) context.get(FacilioConstants.ContextNames.FETCH_DEFAULT_MODULES);
+		if (fetchDefaultModules != null && fetchDefaultModules) {
 			moduleList.add(modBean.getModule("workorder"));
 			moduleList.add(modBean.getModule("users"));
 			moduleList.add(modBean.getModule("asset"));
