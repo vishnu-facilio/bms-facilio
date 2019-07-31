@@ -115,7 +115,15 @@ public class FormFactory {
 	}
 	
 	public static FacilioForm getDefaultForm(String moduleName, FacilioForm form, Boolean...onlyFields) {
-		return getForm(moduleName, "default_"+moduleName+"_"+form.getFormTypeVal(), onlyFields);
+		return getDefaultForm(moduleName, form.getFormTypeVal(), onlyFields);
+	}
+	
+	public static FacilioForm getDefaultForm(String moduleName, String formTypeVal, Boolean...onlyFields) {
+		return getForm(moduleName, getDefaultFormName(moduleName, formTypeVal) , onlyFields);
+	}
+	
+	public static String getDefaultFormName(String moduleName, String formTypeVal) {
+		return "default_"+moduleName+"_"+formTypeVal;
 	}
 	
 	public static FacilioForm getForm(String moduleName, String formName, Boolean...onlyFields) {
@@ -471,15 +479,25 @@ public class FormFactory {
 		fields.add(new FormField("subject", FieldDisplayType.TEXTBOX, "Subject", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 2, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 3, 1));
-		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "ticketcategory", 4, 2));
-		fields.add(new FormField("type",FieldDisplayType.LOOKUP_SIMPLE,"Maintenance Type", Required.OPTIONAL, "tickettype", 4, 3));
-		fields.add(new FormField("priority", FieldDisplayType.LOOKUP_SIMPLE, "Priority", Required.OPTIONAL, "ticketpriority", 5, 1));
-		fields.add(new FormField("resource", FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", Required.OPTIONAL, 6, 1));
+		fields.addAll(getWoClassifierFields());
+		fields.add(getWoResourceField());
 		fields.add(new FormField("assignment", FieldDisplayType.TEAMSTAFFASSIGNMENT, "Team/Staff", Required.OPTIONAL, 7, 1));
 		fields.add(new FormField("attachedFiles", FieldDisplayType.ATTACHMENT, "Attachments", Required.OPTIONAL, "attachment", 8, 1));
 		fields.add(new FormField("sendForApproval", FieldDisplayType.DECISION_BOX, "Send For Approval", Required.OPTIONAL, 10, 1));
 		fields.add(new FormField("tasks", FieldDisplayType.TASKS, "TASKS", Required.OPTIONAL, 11, 1));
 		return Collections.unmodifiableList(fields);
+	}
+	
+	public static List<FormField> getWoClassifierFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("category", FieldDisplayType.LOOKUP_SIMPLE, "Category", Required.OPTIONAL, "ticketcategory", 4, 2));
+		fields.add(new FormField("type",FieldDisplayType.LOOKUP_SIMPLE,"Maintenance Type", Required.OPTIONAL, "tickettype", 4, 3));
+		fields.add(new FormField("priority", FieldDisplayType.LOOKUP_SIMPLE, "Priority", Required.OPTIONAL, "ticketpriority", 5, 1));
+		return fields;
+	}
+	
+	public static FormField getWoResourceField() {
+		return new FormField("resource", FieldDisplayType.WOASSETSPACECHOOSER, "Space/Asset", Required.OPTIONAL, 6, 1);
 	}
 
 	private static List<FormField> getMobileWorkOrderFormFields() {
