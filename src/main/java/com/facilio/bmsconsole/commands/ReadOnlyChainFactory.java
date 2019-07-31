@@ -1273,4 +1273,10 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new UpdateNewPreventiveMaintenanceJobCommand());
 		return c;
 	}
+
+	public static Chain getModuleDetails() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetModuleDetailCommand());
+		return c;
+	}
 }

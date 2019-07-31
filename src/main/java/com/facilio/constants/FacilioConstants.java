@@ -283,6 +283,7 @@ public class FacilioConstants {
 		public static final String MODULE_ATTACHMENT_TABLE_NAME = "moduleAttachmentTable";
 		public static final String MODULE_TYPE = "moduleType";
 		public static final String FETCH_DEFAULT_MODULES = "fetchDefaultModules";
+		public static final String MODULE_FIELD_COUNT = "moduleFieldCount";
 		public static final String MODULE_DATA_INTERVAL = "moduleDataInterval";
 		public static final String PARENT_MODULE = "parentModule";
 		public static final String READING_NAME = "readingName";

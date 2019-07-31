@@ -1498,6 +1498,11 @@
 		<action name="list" class="com.facilio.bmsconsole.actions.ModuleAction"
 			method="v2GetModuleList">
 		</action>
+		<action name="*"
+				class="com.facilio.bmsconsole.actions.ModuleAction"
+				method="v2GetModule">
+			<param name="moduleName">{1}</param>
+		</action>
 	</package>
 	
 	<package name="moduleDataApiv2" namespace="/api/v2/module/data"
