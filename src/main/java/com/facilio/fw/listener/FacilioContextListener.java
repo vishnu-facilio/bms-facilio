@@ -232,7 +232,7 @@ public class FacilioContextListener implements ServletContextListener {
 			while(rs.next()) {
 				log.info("testing connection : " + rs.getInt(1));
 			}
-		} catch(SQLException e) {
+		} catch(Exception e) {
 			log.info("Exception occurred ", e);
 		}
 		finally {
