@@ -1,21 +1,17 @@
 package com.facilio.bmsconsole.commands;
 
+import org.apache.commons.chain.Context;
+
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
-import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
 
-import java.util.Locale;
-
-public class CreateAppSuperAdminCommand implements Command {
+public class CreateAppSuperAdminCommand extends FacilioCommand{
 
 	@Override
-	public boolean execute(Context context) throws Exception {
+	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		long orgId = (long) context.get("orgId");
 		Role superAdminRole = AccountUtil.getRoleBean(orgId).getRole(orgId, AccountConstants.DefaultRole.SUPER_ADMIN, false);
@@ -29,8 +25,6 @@ public class CreateAppSuperAdminCommand implements Command {
 			user.setUserVerified(true);
 		}
 		AccountUtil.getUserBean().createUserEntry(orgId, user, true);
-		
-		
 		return false;
 	}
 
