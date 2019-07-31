@@ -90,6 +90,7 @@ public class TicketAPI {
 	public static int deleteTickets(FacilioModule module, Collection<Long> recordIds, int level) throws Exception {
 		DeleteRecordBuilder<TicketContext> builder = new DeleteRecordBuilder<TicketContext>()
 															.module(module)
+															.recordsPerBatch(1000)
 															.andCondition(CriteriaAPI.getIdCondition(recordIds, module));
 
 		if (level != -1) {
