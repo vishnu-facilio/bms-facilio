@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.commands;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -69,6 +68,15 @@ public class UpdateWidgetsCommand extends FacilioCommand {
 								DashboardUtil.addWidgetVsWorkflowContext(widgetVsWorkflowContext);
 							}
 						}
+					}
+					
+					if(updatewidget.getType().equals(DashboardWidgetContext.WidgetType.GRAPHICS.getValue())) {
+						GenericUpdateRecordBuilder updateWidgetGraphics = new GenericUpdateRecordBuilder()
+								.table(ModuleFactory.getWidgetGraphicsModule().getTableName())
+								.fields(FieldFactory.getWidgetGraphicsFields())
+								.andCondition(CriteriaAPI.getIdCondition(updatewidget.getId(), ModuleFactory.getWidgetGraphicsModule()));
+						Map<String,Object> props = FieldUtil.getAsProperties(updatewidget);
+						updateWidgetGraphics.update(props);
 					}
 				}
 			}
