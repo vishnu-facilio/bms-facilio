@@ -75,6 +75,27 @@ public class AccessLogFilter implements Filter {
                     " rdel: " + account.getRedisDeleteCount() + " time: " + account.getRedisDeleteTime();
         }
         LoggingEvent event = new LoggingEvent(LOGGER.getName(), LOGGER, Level.INFO, message, null);
+
+        if(AccountUtil.getCurrentAccount() != null) {
+            Account account = AccountUtil.getCurrentAccount();
+            event.setProperty("fselect", String.valueOf(account.getSelectQueries()));
+            event.setProperty("finsert", String.valueOf(account.getInsertQueries()));
+            event.setProperty("fdelete", String.valueOf(account.getDeleteQueries()));
+            event.setProperty("fupdate", String.valueOf(account.getUpdateQueries()));
+            event.setProperty("fstime", String.valueOf(account.getSelectQueriesTime()));
+            event.setProperty("fitime", String.valueOf(account.getInsertQueriesTime()));
+            event.setProperty("fdtime", String.valueOf(account.getDeleteQueriesTime()));
+            event.setProperty("futime", String.valueOf(account.getUpdateQueriesTime()));
+            event.setProperty("frget", String.valueOf(account.getRedisGetCount()));
+            event.setProperty("frput", String.valueOf(account.getRedisPutCount()));
+            event.setProperty("frdel", String.valueOf(account.getRedisDeleteCount()));
+            event.setProperty("frgtime", String.valueOf(account.getRedisGetTime()));
+            event.setProperty("frptime", String.valueOf(account.getRedisPutTime()));
+            event.setProperty("frdtime", String.valueOf(account.getRedisDeleteTime()));
+            event.setProperty("ftqueries", String.valueOf((account.getSelectQueries() + account.getDeleteQueries()+ account.getInsertQueries()+ account.getUpdateQueries())));
+            event.setProperty("ftqtime", String.valueOf(account.getSelectQueriesTime() + account.getDeleteQueriesTime()+ account.getInsertQueriesTime()+ account.getUpdateQueriesTime()));
+        }
+
         String remoteIp = request.getHeader(X_FORWARDED_FOR);
         if(remoteIp == null) {
             remoteIp = request.getRemoteAddr();
