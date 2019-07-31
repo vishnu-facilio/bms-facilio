@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.json.simple.JSONArray;
 
-public class DashboardTabContext {
+public class DashboardTabContext implements Comparable<DashboardTabContext> {
 
 	long id = -1;
 	long orgId = -1;
@@ -81,4 +81,10 @@ public class DashboardTabContext {
 	public void setClientWidgetJson(JSONArray clientWidgetJson) {
 		this.clientWidgetJson = clientWidgetJson;
 	}
+	
+	public int compareTo(DashboardTabContext that) {
+		
+		int compareQuantity = that.getSequence(); 
+		return this.sequence - compareQuantity;
+	}	
 }

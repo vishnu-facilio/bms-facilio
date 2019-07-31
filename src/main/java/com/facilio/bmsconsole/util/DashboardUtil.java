@@ -4,6 +4,7 @@ package com.facilio.bmsconsole.util;
 import java.sql.SQLException;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -1096,12 +1097,17 @@ public class DashboardUtil {
 		}
 		
 		for(DashboardTabContext dashboardTabContext :dashboardTabContexts) {
+			
 			dashboardTabContext.setChildTabs(parentVsChildMap.get(dashboardTabContext.getId()));
+			
 			if(dashboardTabContext.getDashboardTabId() < 0) {
 				parentTabs.add(dashboardTabContext);
+				if(dashboardTabContext.getChildTabs() != null) {
+					Collections.sort(dashboardTabContext.getChildTabs());
+				}
 			}
 		}
-		
+		Collections.sort(parentTabs);
 		return parentTabs;
 	}
 	
