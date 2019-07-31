@@ -33,6 +33,9 @@ public class AddWOFromAlarmCommand extends FacilioCommand {
 			WorkOrderContext wo = FieldUtil.getAsBeanFromJson(woJson, WorkOrderContext.class);
 			wo.setScheduledStart(oldAlarm.getModifiedTime());
 			wo.setId(-1);
+			if (wo.getSubject() == null) {
+				wo.setSubject(oldAlarm.getSubject());
+			}
 			
 			context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 		}
