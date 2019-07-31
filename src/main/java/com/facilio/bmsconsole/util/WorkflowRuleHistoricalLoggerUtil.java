@@ -18,20 +18,18 @@ import com.facilio.modules.ModuleFactory;
 
 public class WorkflowRuleHistoricalLoggerUtil {
 	
-	public static void addWorkflowRuleHistoricalLogger(List<WorkflowRuleHistoricalLoggerContext> workflowRuleHistoricalLoggerContextList) throws Exception {
+	public static void addWorkflowRuleHistoricalLogger(WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext) throws Exception {
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getWorkflowRuleHistoricalLoggerModule().getTableName())
 				.fields(FieldFactory.getWorkflowRuleHistoricalLoggerFields());
-	
-		for(WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext: workflowRuleHistoricalLoggerContextList)
-		{
+		
 		Map<String, Object> props = FieldUtil.getAsProperties(workflowRuleHistoricalLoggerContext);
 		insertBuilder.addRecord(props);
-		}
+		
 		insertBuilder.save();
 		
-	// workflowRuleHistoricalLogger.setId((Long) props.get("id"));
+		workflowRuleHistoricalLoggerContext.setId((Long) props.get("id"));
 		
 	}
 	

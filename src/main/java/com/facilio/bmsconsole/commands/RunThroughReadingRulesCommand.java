@@ -68,33 +68,45 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 			}
 		}
 		
-		List<WorkflowRuleHistoricalLoggerContext> workflowRuleHistoricalLoggerContextList = getworkflowRuleHistoricalLoggerContext(
-				rule.getId(), range, assets);	
-		WorkflowRuleHistoricalLoggerUtil.addWorkflowRuleHistoricalLogger(workflowRuleHistoricalLoggerContextList);
+		long loggerGroupId = -1l;
+		boolean isFirst = true;
+		for(AssetContext asset:assets)
+		{
+			if(isFirst) {
+				WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = getworkflowRuleHistoricalLoggerContext(
+						rule.getId(), range, asset, -1);	
+				WorkflowRuleHistoricalLoggerUtil.addWorkflowRuleHistoricalLogger(workflowRuleHistoricalLoggerContext);
+				
+				loggerGroupId = workflowRuleHistoricalLoggerContext.getId();
+				workflowRuleHistoricalLoggerContext.setLoggerGroupId(loggerGroupId);
+				WorkflowRuleHistoricalLoggerUtil.updateWorkflowRuleHistoricalLogger(workflowRuleHistoricalLoggerContext);
+				isFirst = false;
+			}
+			else {
+				WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLogger = getworkflowRuleHistoricalLoggerContext(
+						rule.getId(), range, asset, loggerGroupId);	
+				WorkflowRuleHistoricalLoggerUtil.addWorkflowRuleHistoricalLogger(workflowRuleHistoricalLogger);
+			}
+		}	
 		
 		return false;
 	}
 	
 	
-	private static List<WorkflowRuleHistoricalLoggerContext> getworkflowRuleHistoricalLoggerContext(
-			long ruleId, DateRange range,List<AssetContext> assets)
-	{	
-		List<WorkflowRuleHistoricalLoggerContext> workflowRuleHistoricalLoggerContextList = new ArrayList<WorkflowRuleHistoricalLoggerContext>();
-		for(AssetContext asset:assets)
-		{
-			WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = new WorkflowRuleHistoricalLoggerContext();
-			workflowRuleHistoricalLoggerContext.setRuleId(ruleId);
-			workflowRuleHistoricalLoggerContext.setType(WorkflowRuleHistoricalLoggerContext.Type.READING_RULE.getIntVal());
-			workflowRuleHistoricalLoggerContext.setResourceId(asset.getId());
-			workflowRuleHistoricalLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.IN_PROGRESS.getIntVal());
-			workflowRuleHistoricalLoggerContext.setStartTime(range.getStartTime());
-			workflowRuleHistoricalLoggerContext.setEndTime(range.getEndTime());
-			workflowRuleHistoricalLoggerContext.setCreatedBy(AccountUtil.getCurrentUser().getId());
-			workflowRuleHistoricalLoggerContext.setCreatedTime(DateTimeUtil.getCurrenTime());
-			workflowRuleHistoricalLoggerContext.setCalculationStartTime(DateTimeUtil.getCurrenTime());
-			workflowRuleHistoricalLoggerContextList.add(workflowRuleHistoricalLoggerContext);
-		}
-		return workflowRuleHistoricalLoggerContextList;
-		
+	private static WorkflowRuleHistoricalLoggerContext getworkflowRuleHistoricalLoggerContext(long ruleId, DateRange range,
+			AssetContext asset, long loggerGroupId)
+	{
+		WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = new WorkflowRuleHistoricalLoggerContext();
+		workflowRuleHistoricalLoggerContext.setRuleId(ruleId);
+		workflowRuleHistoricalLoggerContext.setType(WorkflowRuleHistoricalLoggerContext.Type.READING_RULE.getIntVal());
+		workflowRuleHistoricalLoggerContext.setResourceId(asset.getId());
+		workflowRuleHistoricalLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.IN_PROGRESS.getIntVal());
+		workflowRuleHistoricalLoggerContext.setLoggerGroupId(loggerGroupId);
+		workflowRuleHistoricalLoggerContext.setStartTime(range.getStartTime());
+		workflowRuleHistoricalLoggerContext.setEndTime(range.getEndTime());
+		workflowRuleHistoricalLoggerContext.setCreatedBy(AccountUtil.getCurrentUser().getId());
+		workflowRuleHistoricalLoggerContext.setCreatedTime(DateTimeUtil.getCurrenTime());
+		workflowRuleHistoricalLoggerContext.setCalculationStartTime(DateTimeUtil.getCurrenTime());	
+		return workflowRuleHistoricalLoggerContext;	
 	}
 }

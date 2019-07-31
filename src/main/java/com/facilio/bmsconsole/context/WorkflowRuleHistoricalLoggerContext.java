@@ -14,10 +14,12 @@ public class WorkflowRuleHistoricalLoggerContext {
 	private Type type;
 	private Long resourceId;
 	private Status status;
+	private long loggerGroupId;
 	private long startTime;
 	private long endTime;
 	private long calculationStartTime;
 	private long calculationEndTime;
+	private long createdTime;
 	private long createdBy;
 	public long getId() {
 		return id;
@@ -98,8 +100,14 @@ public class WorkflowRuleHistoricalLoggerContext {
 	public void setCreatedTime(long createdTime) {
 		this.createdTime = createdTime;
 	}
+	
+	public long getLoggerGroupId() {
+		return loggerGroupId;
+	}
 
-	private long createdTime;
+	public void setLoggerGroupId(long loggerGroupId) {
+		this.loggerGroupId = loggerGroupId;
+	}
 	
 	public int getStatus() {
 		if (status != null) {
