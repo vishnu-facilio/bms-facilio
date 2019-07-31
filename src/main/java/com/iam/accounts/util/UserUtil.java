@@ -19,6 +19,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -362,5 +363,20 @@ public class UserUtil {
 	public static User getUser(long uId, long orgId) throws Exception {
 		return IAMUtil.getUserBean().getFacilioUser(orgId, uId);
 	}
-
+	
+	public static User getUser(String email, String orgDomain, String portalDomain) throws Exception {
+		return IAMUtil.getUserBean().getFacilioUser(email, orgDomain, portalDomain);
+	}
+	
+	public static List<Organization> getUserOrgs(long uId) throws Exception {
+		return IAMUtil.getUserBean().getOrgsv2(uId);
+	}
+	
+	public static Organization getDefaultOrg(long uId) throws Exception {
+		return IAMUtil.getUserBean().getDefaultOrgv2(uId);
+	}
+	
+	public static void clearUserSessions(long uid, String email) throws Exception {
+		IAMUtil.getUserBean().clearAllUserSessionsv2(uid, email);
+	}
 }

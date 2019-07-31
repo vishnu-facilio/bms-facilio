@@ -1009,13 +1009,13 @@ public class UserBeanImpl implements UserBean {
 	}
 
 	@Override
-	public List<Organization> getOrgs(long uid) throws Exception {
-		return IAMUtil.getUserBean().getOrgsv2(uid);
+	public List<Organization> getOrgs(long uId) throws Exception {
+		return UserUtil.getUserOrgs(uId);
 	}
 
 	@Override
 	public Organization getDefaultOrg(long uid) throws Exception {
-		return IAMUtil.getUserBean().getDefaultOrgv2(uid);
+		return UserUtil.getDefaultOrg(uid);
 	}
 
 	@Override
@@ -1037,13 +1037,13 @@ public class UserBeanImpl implements UserBean {
 
 	private long addRequester(long orgId, User user, boolean emailVerification, boolean updateifexist)
 			throws Exception {
-		User portalUser = IAMUtil.getUserBean().getFacilioUser(user.getEmail(), user.getDomainName(), user.getDomainName());
+		User portalUser = UserUtil.getUser(user.getEmail(), user.getDomainName(), user.getDomainName());
 		if (portalUser != null) {
 			log.info("Requester email already exists in the portal for org: " + orgId + ", ouid: "
 					+ portalUser.getOuid());
 			return getUser(portalUser.getEmail()).getOuid();
 		}
-		if(IAMUtil.getUserBean().addUserv2(AccountUtil.getCurrentOrg().getId(), user) > 0) {
+		if(UserUtil.addUser(user, orgId, AccountUtil.getCurrentUser().getEmail()) > 0) {
 			addUserEntry(user, true);
 			user.setOrgId(orgId);
 			user.setUserType(AccountConstants.UserType.REQUESTER.getValue());
