@@ -16,6 +16,15 @@ public class WidgetGraphicsContext extends DashboardWidgetContext {
 	public void setGraphicsId(Long graphicsId) {
 		this.graphicsId = graphicsId;
 	}
+	
+	private String graphicsOptions;
+	
+	public String getGraphicsOptions() {
+		return graphicsOptions;
+	}
+	public void setGraphicsOptions(String graphicsOptions) {
+		this.graphicsOptions = graphicsOptions;
+	}
 
 	@Override
 	public JSONObject widgetJsonObject() {
@@ -61,6 +70,9 @@ public class WidgetGraphicsContext extends DashboardWidgetContext {
 		dataOptionsJson.put("name", "dummy");
 		dataOptionsJson.put("graphicsId", getGraphicsId());
 		dataOptionsJson.put("refresh_interval", getDataRefreshIntervel());
+		if (graphicsOptions != null) {
+			dataOptionsJson.put("graphicsOptions", graphicsOptions);
+		}
 		
 		resultJson.put("dataOptions", dataOptionsJson);
 		

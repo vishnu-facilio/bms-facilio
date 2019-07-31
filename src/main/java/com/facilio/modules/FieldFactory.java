@@ -3621,6 +3621,8 @@ public class FieldFactory {
 		graphicsId.setColumnName("GRAPHICS_ID");
 		graphicsId.setModule(module);
 		fields.add(graphicsId);
+		
+		fields.add(getField("graphicsOptions", "GRAPHICS_OPTIONS", module, FieldType.STRING));
 
 		return fields;
 	}
