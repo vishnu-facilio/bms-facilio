@@ -25,10 +25,13 @@ import com.facilio.accounts.dto.UserMobileSetting;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountConstants.GroupMemberRole;
 import com.facilio.accounts.util.AccountConstants.UserType;
+import com.facilio.accounts.util.AccountEmailTemplate;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext.SpaceType;
 import com.facilio.bmsconsole.context.PortalInfoContext;
@@ -87,6 +90,11 @@ public class UserBeanImpl implements UserBean {
 	
 			insertBuilder.addRecord(props);
 			insertBuilder.save();
+			if(user.getUid() > 0) {
+				if (emailVerificationRequired && !user.getUserVerified()) {
+					sendEmailRegistration(user);
+				}
+			}
 			return user.getUid();
 		}
 		return existingUser.getUid();
@@ -94,7 +102,7 @@ public class UserBeanImpl implements UserBean {
 
 	@Override
 	public boolean updateUser(User user) throws Exception {
-		if(UserUtil.updateUser(user, AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail())) {
+		if(UserUtil.updateUser(user, AccountUtil.getCurrentOrg().getOrgId())) {
 			return updateUserEntry(user);
 		}
 		return false;
@@ -132,7 +140,7 @@ public class UserBeanImpl implements UserBean {
             return;
         }
 		user.setUserStatus(true);
-		if(UserUtil.addUser(user, orgId, AccountUtil.getCurrentUser().getEmail()) > 0) {
+		if(UserUtil.addUser(user, orgId) > 0) {
 			createUserEntry(orgId, user, false);
 		}
 		
@@ -150,6 +158,7 @@ public class UserBeanImpl implements UserBean {
 		user.setAccessibleSpace(userBean.getAccessibleSpaceList(user.getOuid()));
 		addToAppORGUsers(user);
 		addUserDetail(user);
+		
 	}
 	
 
@@ -174,7 +183,11 @@ public class UserBeanImpl implements UserBean {
 		insertBuilder.save();
 
 		user.setOuid((long) props.get("ouid"));
-		
+		if((long)props.get("ouid") > 0) {
+			if(!user.getUserVerified() && !user.getInviteAcceptStatus()) {
+				sendInvitation(user, false);
+			}
+		}
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, id);
 		context.put(FacilioConstants.ContextNames.MODULE_LIST,
@@ -184,6 +197,32 @@ public class UserBeanImpl implements UserBean {
 		addRDMChain.execute(context);
 		
 	}
+	
+	private void sendInvitation(User user, boolean registration) throws Exception {
+		Map<String, Object> placeholders = new HashMap<>();
+		CommonCommandUtil.appendModuleNameInKey(null, "toUser", FieldUtil.getAsProperties(user), placeholders);
+		CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()),
+				placeholders);
+		CommonCommandUtil.appendModuleNameInKey(null, "inviter",
+				FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeholders);
+
+		if (user.isPortalUser()) {
+			String inviteLink = getUserLink(user, "/invitation/");
+			if (registration) {
+				inviteLink = getUserLink(user, "/emailregistration/");
+			}
+			placeholders.put("invitelink", inviteLink);
+			AccountEmailTemplate.PORTAL_SIGNUP.send(placeholders);
+
+		} else {
+			String inviteLink = getUserLink(user, "/invitation/");
+			placeholders.put("invitelink", inviteLink);
+
+			AccountEmailTemplate.INVITE_USER.send(placeholders);
+		}
+
+	}
+
 
 //	@Override
 //	public long inviteAdminConsoleUser(long orgId, User user) throws Exception {
@@ -288,6 +327,7 @@ public class UserBeanImpl implements UserBean {
 			
 			int updatedRows = updateBuilder.update(props);
 			if (updatedRows > 0) {
+				sendInvitation(appUser, false);
 				return true;
 			}
 			return false;
@@ -419,7 +459,7 @@ public class UserBeanImpl implements UserBean {
 	public boolean deleteUser(long ouid) throws Exception {
 
 		User user = getUser(ouid);
-		if(UserUtil.deleteUser(user, AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail())) {
+		if(UserUtil.deleteUser(user, AccountUtil.getCurrentOrg().getOrgId())) {
 			FacilioField deletedTime = new FacilioField();
 			deletedTime.setName("deletedTime");
 			deletedTime.setDataType(FieldType.NUMBER);
@@ -1043,7 +1083,7 @@ public class UserBeanImpl implements UserBean {
 					+ portalUser.getOuid());
 			return getUser(portalUser.getEmail()).getOuid();
 		}
-		if(UserUtil.addUser(user, orgId, AccountUtil.getCurrentUser().getEmail()) > 0) {
+		if(UserUtil.addUser(user, orgId) > 0) {
 			addUserEntry(user, true);
 			user.setOrgId(orgId);
 			user.setUserType(AccountConstants.UserType.REQUESTER.getValue());
@@ -1244,7 +1284,13 @@ public class UserBeanImpl implements UserBean {
 
 	@Override
 	public boolean sendResetPasswordLinkv2(User user) throws Exception {
-		return UserUtil.sendResetPasswordLink(user);
+		String inviteLink = getUserLink(user, "/fconfirm_reset_password/");
+		Map<String, Object> placeholders = new HashMap<>();
+		CommonCommandUtil.appendModuleNameInKey(null, "toUser", FieldUtil.getAsProperties(user), placeholders);
+		placeholders.put("invitelink", inviteLink);
+		
+		AccountEmailTemplate.RESET_PASSWORD.send(placeholders);
+		return true;
 	}
 	
 	
@@ -1366,5 +1412,38 @@ public class UserBeanImpl implements UserBean {
 		return UserUtil.getUserSessions(uid, isActive);
 	}
 
+	private void sendEmailRegistration(User user) throws Exception {
+
+		String inviteLink = getUserLink(user, "/emailregistration/");
+		Map<String, Object> placeholders = new HashMap<>();
+		CommonCommandUtil.appendModuleNameInKey(null, "toUser", FieldUtil.getAsProperties(user), placeholders);
+		placeholders.put("invitelink", inviteLink);
+		if (user.getEmail().contains("@facilio.com") || AwsUtil.disableCSP()) {
+			AccountEmailTemplate.EMAIL_VERIFICATION.send(placeholders);
+		} else {
+			AccountEmailTemplate.ALERT_EMAIL_VERIFICATION.send(placeholders);
+		}
+
+	}
+	
+	private String getUserLink(User user, String url) throws Exception {
+		String inviteToken = UserUtil.getResetPasswordToken(user);
+		String hostname = "";
+		if (user.isPortalUser()) {
+			try {
+				Organization org = IAMUtil.getOrgBean().getOrgv2(user.getOrgId());
+				hostname = "https://" + org.getDomain() + "/service";
+				inviteToken = inviteToken + "&portalid=" + user.getPortalId();
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				log.info("Exception occurred ", e);
+			}
+
+		} else {
+			// hostname="https://app."+user.getServerName();
+			return AwsUtil.getConfig("clientapp.url") + "/app" + url + inviteToken;
+		}
+		return hostname + url + inviteToken;
+	}
 	
 }

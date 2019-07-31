@@ -79,14 +79,9 @@ public class UserUtil {
 		return user;
 	}
 
-	public static long addUser(User user, long orgId, String currentUserEmail) throws Exception {
+	public static long addUser(User user, long orgId) throws Exception {
 		if ((user != null) && orgId > 0) {
-			if (IAMUtil.getUserBean().getFacilioUser(currentUserEmail, orgId, null) != null) {
 				return IAMUtil.getTransactionalUserBean().addUserv2(orgId, user);
-			} else {
-				throw new AccountException(AccountException.ErrorCode.USER_DOESNT_EXIST_IN_ORG,
-						"This user is not permitted to do this action.");
-			}
 		} else {
 			throw new IllegalArgumentException("User Object cannot be null");
 		}
@@ -122,25 +117,13 @@ public class UserUtil {
 		return IAMUtil.getUserBean().verifyEmailv2(invitetoken);
 	}
 
-	public static boolean updateUser(User user, long orgId, String currentUserEmail) throws Exception {
-		if (IAMUtil.getUserBean().getFacilioUser(currentUserEmail, orgId, null) != null) {
+	public static boolean updateUser(User user, long orgId) throws Exception {
 			return IAMUtil.getUserBean().updateUserv2(user);
-		} else {
-			throw new AccountException(AccountException.ErrorCode.USER_DOESNT_EXIST_IN_ORG,
-					"This user is not permitted to do this action.");
-		}
-
 	}
 
-	public static boolean deleteUser(User user, long orgId, String currentUserEmail) throws Exception {
-		if (IAMUtil.getUserBean().getFacilioUser(currentUserEmail, orgId, null) != null) {
+	public static boolean deleteUser(User user, long orgId) throws Exception {
 			user.setOrgId(orgId);
 			return IAMUtil.getUserBean().deleteUserv2(user);
-		} else {
-			throw new AccountException(AccountException.ErrorCode.USER_DOESNT_EXIST_IN_ORG,
-					"This user is not permitted to do this action.");
-		}
-
 	}
 
 	public static boolean verifyUser(long userId) throws Exception {
@@ -352,10 +335,6 @@ public class UserUtil {
 		return IAMUtil.getUserBean().getEncodedTokenv2(user);
 	}
 	
-	public static boolean sendResetPasswordLink(User user) throws Exception {
-		return IAMUtil.getUserBean().sendResetPasswordLinkv2(user);
-	}
-
 	public static List<Map<String, Object>> getUserSessions(long uId, Boolean isActive) throws Exception {
 		return IAMUtil.getUserBean().getUserSessionsv2(uId, isActive);
 	}

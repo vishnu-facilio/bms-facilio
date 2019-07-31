@@ -77,11 +77,7 @@ public interface IAMUserBean {
 
 	public Account getPermalinkAccount(String token, List<String> url) throws Exception ;
 
-	public void sendInvitation(long ouid, User user, boolean registration) throws Exception;
-
 	public long signUpSuperAdminUserv2(long orgId, User user) throws Exception;
 
-	public boolean sendResetPasswordLinkv2(User user) throws Exception;
-	
 	
 }

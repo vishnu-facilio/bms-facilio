@@ -22,9 +22,6 @@ import com.amazonaws.util.StringUtils;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.EncryptionUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -47,7 +44,6 @@ import com.iam.accounts.bean.IAMUserBean;
 import com.iam.accounts.dto.Account;
 import com.iam.accounts.exceptions.AccountException;
 import com.iam.accounts.exceptions.AccountException.ErrorCode;
-import com.iam.accounts.util.AccountEmailTemplate;
 import com.iam.accounts.util.IAMAccountConstants;
 import com.iam.accounts.util.IAMUtil;
 import com.iam.accounts.util.UserUtil;
@@ -82,42 +78,12 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			long userId = (Long) props.get("id");
 			user.setUid(userId);
 			
-			if (emailVerificationRequired && !user.getUserVerified()) {
-				sendEmailRegistration(user);
-			}
-			
 			return userId;
 		}
 		return existingUser.getUid();
 	}
 
-	@Override
-	public void sendInvitation(long ouid, User user, boolean registration) throws Exception {
-		user.setOuid(ouid);
-		Map<String, Object> placeholders = new HashMap<>();
-		CommonCommandUtil.appendModuleNameInKey(null, "toUser", FieldUtil.getAsProperties(user), placeholders);
-		CommonCommandUtil.appendModuleNameInKey(null, "org", FieldUtil.getAsProperties(AccountUtil.getCurrentOrg()),
-				placeholders);
-		CommonCommandUtil.appendModuleNameInKey(null, "inviter",
-				FieldUtil.getAsProperties(AccountUtil.getCurrentUser()), placeholders);
-
-		if (user.isPortalUser()) {
-			String inviteLink = getUserLink(user, "/invitation/");
-			if (registration) {
-				inviteLink = getUserLink(user, "/emailregistration/");
-			}
-			placeholders.put("invitelink", inviteLink);
-			AccountEmailTemplate.PORTAL_SIGNUP.send(placeholders);
-
-		} else {
-			String inviteLink = getUserLink(user, "/invitation/");
-			placeholders.put("invitelink", inviteLink);
-
-			AccountEmailTemplate.INVITE_USER.send(placeholders);
-		}
-
-	}
-
+	
 	public boolean updateUserv2(User user) throws Exception {
 		return updateUserEntryv2(user);
 	}
@@ -299,7 +265,6 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		
 		int updatedRows = updateBuilder.update(props);
 		if (updatedRows > 0) {
-			sendInvitation(user.getOuid(), user, false);
 			return true;
 		}
 		return false;
@@ -945,15 +910,13 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, props.get("id"));
 		user.setOuid((Long)props.get("id"));
-		if(!user.getUserVerified() && !user.getInviteAcceptStatus()) {
-			sendInvitation(user.getOuid(), user, false);
-		}
 		return (Long)props.get("id");
 	}
 	
 	@Override
-	public String getEncodedTokenv2(User user) {
-		return EncryptionUtil.encode(user.getOrgId()+ USER_TOKEN_REGEX +user.getOuid() + USER_TOKEN_REGEX + user.getUid()+ USER_TOKEN_REGEX + user.getEmail() + USER_TOKEN_REGEX + System.currentTimeMillis());
+	public String getEncodedTokenv2(User user) throws Exception {
+		User iamUser = getFacilioUser(user.getOrgId(), user.getUid());
+		return EncryptionUtil.encode(iamUser.getOrgId()+ USER_TOKEN_REGEX +iamUser.getOuid() + USER_TOKEN_REGEX + iamUser.getUid()+ USER_TOKEN_REGEX + iamUser.getEmail() + USER_TOKEN_REGEX + System.currentTimeMillis());
 	}
 
 	
@@ -1155,52 +1118,4 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return null;
 	}
 
-	private void sendEmailRegistration(User user) throws Exception {
-
-		String inviteLink = getUserLink(user, "/emailregistration/");
-		Map<String, Object> placeholders = new HashMap<>();
-		CommonCommandUtil.appendModuleNameInKey(null, "toUser", FieldUtil.getAsProperties(user), placeholders);
-		placeholders.put("invitelink", inviteLink);
-		if (user.getEmail().contains("@facilio.com") || AwsUtil.disableCSP()) {
-			AccountEmailTemplate.EMAIL_VERIFICATION.send(placeholders);
-		} else {
-			AccountEmailTemplate.ALERT_EMAIL_VERIFICATION.send(placeholders);
-		}
-
-	}
-	
-	@Override
-	public boolean sendResetPasswordLinkv2(User appUser) throws Exception {
-
-		User user = getFacilioUser(appUser.getOrgId(), appUser.getUid());
-		
-		String inviteLink = getUserLink(user, "/fconfirm_reset_password/");
-		Map<String, Object> placeholders = new HashMap<>();
-		CommonCommandUtil.appendModuleNameInKey(null, "toUser", FieldUtil.getAsProperties(user), placeholders);
-		placeholders.put("invitelink", inviteLink);
-		
-		AccountEmailTemplate.RESET_PASSWORD.send(placeholders);
-		return true;
-	}
-	
-	private String getUserLink(User user, String url) throws Exception {
-		String inviteToken = getEncodedTokenv2(user);
-		String hostname = "";
-		if (user.isPortalUser()) {
-			try {
-				Organization org = AccountUtil.getOrgBean().getPortalOrg(user.getPortalId());
-				hostname = "https://" + org.getDomain() + "/service";
-				inviteToken = inviteToken + "&portalid=" + user.getPortalId();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				log.info("Exception occurred ", e);
-			}
-
-		} else {
-			// hostname="https://app."+user.getServerName();
-			return AwsUtil.getConfig("clientapp.url") + "/app" + url + inviteToken;
-		}
-		return hostname + url + inviteToken;
-	}
-		
 }
