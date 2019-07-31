@@ -74,10 +74,19 @@ public class ModuleAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.FORM, context.get(FacilioConstants.ContextNames.FORM));
 		return SUCCESS;
 	}
-	
+
+	private Boolean defaultModules;
+	public Boolean getDefaultModules() {
+		return defaultModules;
+	}
+	public void setDefaultModules(Boolean defaultModules) {
+		this.defaultModules = defaultModules;
+	}
+
 	public String v2GetModuleList() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_TYPE, moduleType);
+		context.put(FacilioConstants.ContextNames.FETCH_DEFAULT_MODULES, defaultModules);
 		
 		Chain chain = ReadOnlyChainFactory.getModuleList();
 		chain.execute(context);

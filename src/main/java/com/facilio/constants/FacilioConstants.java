@@ -282,6 +282,7 @@ public class FacilioConstants {
 		public static final String MODULE_DATA_LIST = "moduleDatas";
 		public static final String MODULE_ATTACHMENT_TABLE_NAME = "moduleAttachmentTable";
 		public static final String MODULE_TYPE = "moduleType";
+		public static final String FETCH_DEFAULT_MODULES = "fetchDefaultModules";
 		public static final String MODULE_DATA_INTERVAL = "moduleDataInterval";
 		public static final String PARENT_MODULE = "parentModule";
 		public static final String READING_NAME = "readingName";
@@ -965,7 +966,7 @@ public class FacilioConstants {
         public static final String RESOURCE_MAP = "resourceMap";
 		public static final String STATUS_MAP = "statusMap";
 
-		private static final String RECEIPT_LINE_ITEMS = "receiptlineitems";
+        private static final String RECEIPT_LINE_ITEMS = "receiptlineitems";
 		public static final String ITEM_VENDORS_LIST = "itemTypesVendorsList";
 		
 		public static final String ML ="ml";
