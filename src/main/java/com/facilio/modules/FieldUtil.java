@@ -395,6 +395,7 @@ public class FieldUtil {
 	public static JSONObject mergeBean(Object bean1, Object bean2) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
 		JSONObject obj1 = !(bean1 instanceof JSONObject) ? getAsJSON(bean1) : (JSONObject) bean1;
 		JSONObject obj2 = !(bean2 instanceof JSONObject) ? getAsJSON(bean2) : (JSONObject) bean2;
+		obj2.values().removeAll(Collections.singleton(null));
 		obj1.putAll(obj2);
 		return obj1;
 	}

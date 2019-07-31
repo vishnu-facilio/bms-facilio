@@ -450,7 +450,9 @@ public class LookupSpecialTypeUtil {
 	
 	public static FacilioModule getModule(String specialType) {
 		if(FacilioConstants.ContextNames.USERS.equals(specialType) || FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
-			return AccountConstants.getOrgUserModule();
+			FacilioModule module = AccountConstants.getOrgUserModule();
+			module.setName(specialType);
+			return module;
 		}
 		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
 			return AccountConstants.getGroupModule();
