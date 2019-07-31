@@ -48,6 +48,7 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
+import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.workflows.context.WorkflowFieldContext;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -66,8 +67,10 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 			}
 			
 			JSONObject props = BmsJobUtil.getJobProps(jc.getJobId(), jc.getJobName());
-			long startTime = (long) props.get("startTime");
-			long endTime = (long) props.get("endTime");
+		//	DateRange range = (DateRange) props.get("range");
+			Long startTime = (Long) props.get("startTime");
+			Long endTime = (Long) props.get("endTime");
+			List<Long> resourceIds = (List<Long>) props.get("assetIds");
 			
 //			LOGGER.info("Historical execution of rule : "+readingRule.getId()+" for resources : "+readingRule.getMatchedResources().keySet());
 			Map<String, List<ReadingDataMeta>> supportFieldsRDM = null;
@@ -105,8 +108,11 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 			}
 
 			List<ReadingEventContext> events = new ArrayList<>();
-			for (long resourceId : readingRule.getMatchedResources().keySet()) {
-//				LOGGER.info("Gonna fetch data and execute rule for resource : "+resourceId);
+			for (long resourceId : readingRule.getMatchedResources().keySet())
+			{
+				if(resourceIds != null && !resourceIds.contains(resourceId) && !resourceIds.isEmpty()) {
+					continue;
+				}
 				Map<String, List<ReadingDataMeta>> currentFields = supportFieldsRDM;
 				Map<String, List<ReadingDataMeta>> currentRDMList = null;
 				if (fields != null) {
@@ -128,6 +134,11 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 				List<ReadingContext> readings = fetchReadings(readingRule, resourceId, currentStartTime, endTime);
 				executeWorkflows(readingRule, readings, currentFields, fields, events);
 				LOGGER.info("Time taken for Historical Run for Reading Rule : "+jc.getJobId()+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is "+(System.currentTimeMillis() - processStartTime));
+				
+				WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = WorkflowRuleHistoricalLoggerUtil.getActiveWorkflowRuleHistoricalLogger(resourceId,jc.getJobId());
+				workflowRuleHistoricalLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.RESOLVED.getIntVal());
+				workflowRuleHistoricalLoggerContext.setCalculationEndTime(DateTimeUtil.getCurrenTime());
+				WorkflowRuleHistoricalLoggerUtil.updateWorkflowRuleHistoricalLogger(workflowRuleHistoricalLoggerContext);
 			}
 
 			if (!events.isEmpty()) {
@@ -136,13 +147,8 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 				Chain addEvent = TransactionChainFactory.getV2AddEventChain();
 				addEvent.execute(context);
 			}
-
 			long timeTaken = (System.currentTimeMillis() - jobStartTime);
 			LOGGER.info("Total Time taken for Historical Run for Reading Rule : "+jc.getJobId()+" between "+startTime+" and "+endTime+" is "+timeTaken);
-			WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = new WorkflowRuleHistoricalLoggerContext();
-			workflowRuleHistoricalLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.RESOLVED.getIntVal());
-			workflowRuleHistoricalLoggerContext.setCalculationEndTime(DateTimeUtil.getCurrenTime());
-			WorkflowRuleHistoricalLoggerUtil.updateWorkflowRuleHistoricalLogger(workflowRuleHistoricalLoggerContext);
 			
 //			if (AccountUtil.getCurrentOrg().getId() == 135 || AccountUtil.getCurrentOrg().getId() == 134) {
 				JSONObject json = new JSONObject();

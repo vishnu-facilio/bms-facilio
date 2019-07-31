@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.AssetContext;
@@ -20,16 +21,24 @@ import com.facilio.time.DateRange;
 
 import com.facilio.time.DateTimeUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class RunThroughReadingRulesCommand extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(RunThroughReadingRulesCommand.class.getName());
 
+	@SuppressWarnings("null")
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		long id = (long) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
 		DateRange range = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE);
+		List<Long> assetIds = (List<Long>) context.get(FacilioConstants.ContextNames.ASSET_ID);
+		
+		JSONObject jobprop = new JSONObject();
+		jobprop.put("startTime", range.getStartTime());
+		jobprop.put("endTime", range.getEndTime());
+		jobprop.put("assetIds", assetIds);
 		
 		if (id == -1 || range == null || range.getStartTime() == -1 || range.getEndTime() == -1) {
 			throw new IllegalArgumentException("In sufficient params for running Alarm Rules for historical data");
@@ -41,38 +50,51 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 		}
 		
 		BmsJobUtil.deleteJobWithProps(rule.getId(), "HistoricalRunForReadingRule");
-		BmsJobUtil.scheduleOneTimeJobWithProps(rule.getId(), "HistoricalRunForReadingRule", 30, "priority", FieldUtil.getAsJSON(range));
+		BmsJobUtil.scheduleOneTimeJobWithProps(rule.getId(), "HistoricalRunForReadingRule", 30, "priority", jobprop);
 		
-		AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(id),null);
+		List<AssetContext> assets = new ArrayList<AssetContext>();
+		if(assetIds == null || assetIds.isEmpty())
+		{
+			AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(id),null);
+			ReadingRuleContext readingRuleContext =  alarmRule.getPreRequsite();
+			
+			assets = AssetsAPI.getAssetListOfCategory(readingRuleContext.getAssetCategoryId());
+		}
+		else 
+		{
+			for(Long assetId: assetIds)
+			{
+				assets.add(AssetsAPI.getAssetInfo(assetId));
+			}
+		}
 		
-		ReadingRuleContext readingRuleContext =  alarmRule.getPreRequsite();
-		
-		List<AssetContext> assets = AssetsAPI.getAssetListOfCategory(readingRuleContext.getAssetCategoryId());
-		WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = getworkflowRuleHistoricalLoggerContext(
+		List<WorkflowRuleHistoricalLoggerContext> workflowRuleHistoricalLoggerContextList = getworkflowRuleHistoricalLoggerContext(
 				rule.getId(), range, assets);	
-		WorkflowRuleHistoricalLoggerUtil.addWorkflowRuleHistoricalLogger(workflowRuleHistoricalLoggerContext);
+		WorkflowRuleHistoricalLoggerUtil.addWorkflowRuleHistoricalLogger(workflowRuleHistoricalLoggerContextList);
 		
 		return false;
 	}
 	
 	
-	private static WorkflowRuleHistoricalLoggerContext getworkflowRuleHistoricalLoggerContext(
+	private static List<WorkflowRuleHistoricalLoggerContext> getworkflowRuleHistoricalLoggerContext(
 			long ruleId, DateRange range,List<AssetContext> assets)
-	{		
-		WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = new WorkflowRuleHistoricalLoggerContext();
-		workflowRuleHistoricalLoggerContext.setRuleId(ruleId);
-		workflowRuleHistoricalLoggerContext.setType(WorkflowRuleHistoricalLoggerContext.Type.READING_RULE.getIntVal());
+	{	
+		List<WorkflowRuleHistoricalLoggerContext> workflowRuleHistoricalLoggerContextList = new ArrayList<WorkflowRuleHistoricalLoggerContext>();
 		for(AssetContext asset:assets)
 		{
+			WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = new WorkflowRuleHistoricalLoggerContext();
+			workflowRuleHistoricalLoggerContext.setRuleId(ruleId);
+			workflowRuleHistoricalLoggerContext.setType(WorkflowRuleHistoricalLoggerContext.Type.READING_RULE.getIntVal());
 			workflowRuleHistoricalLoggerContext.setResourceId(asset.getId());
+			workflowRuleHistoricalLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.IN_PROGRESS.getIntVal());
+			workflowRuleHistoricalLoggerContext.setStartTime(range.getStartTime());
+			workflowRuleHistoricalLoggerContext.setEndTime(range.getEndTime());
+			workflowRuleHistoricalLoggerContext.setCreatedBy(AccountUtil.getCurrentUser().getId());
+			workflowRuleHistoricalLoggerContext.setCreatedTime(DateTimeUtil.getCurrenTime());
+			workflowRuleHistoricalLoggerContext.setCalculationStartTime(DateTimeUtil.getCurrenTime());
+			workflowRuleHistoricalLoggerContextList.add(workflowRuleHistoricalLoggerContext);
 		}
-		workflowRuleHistoricalLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.IN_PROGRESS.getIntVal());
-		workflowRuleHistoricalLoggerContext.setStartTime(range.getStartTime());
-		workflowRuleHistoricalLoggerContext.setEndTime(range.getEndTime());
-		workflowRuleHistoricalLoggerContext.setCreatedBy(AccountUtil.getCurrentUser().getId());
-		workflowRuleHistoricalLoggerContext.setCreatedTime(DateTimeUtil.getCurrenTime());
-		workflowRuleHistoricalLoggerContext.setCalculationStartTime(DateTimeUtil.getCurrenTime());
-		return workflowRuleHistoricalLoggerContext;
+		return workflowRuleHistoricalLoggerContextList;
 		
 	}
 }

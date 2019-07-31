@@ -18,27 +18,46 @@ import com.facilio.modules.ModuleFactory;
 
 public class WorkflowRuleHistoricalLoggerUtil {
 	
-	public static void addWorkflowRuleHistoricalLogger(WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLogger) throws Exception {
+	public static void addWorkflowRuleHistoricalLogger(List<WorkflowRuleHistoricalLoggerContext> workflowRuleHistoricalLoggerContextList) throws Exception {
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getWorkflowRuleHistoricalLoggerModule().getTableName())
 				.fields(FieldFactory.getWorkflowRuleHistoricalLoggerFields());
 	
-		Map<String, Object> props = FieldUtil.getAsProperties(workflowRuleHistoricalLogger);
+		for(WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext: workflowRuleHistoricalLoggerContextList)
+		{
+		Map<String, Object> props = FieldUtil.getAsProperties(workflowRuleHistoricalLoggerContext);
 		insertBuilder.addRecord(props);
+		}
 		insertBuilder.save();
 		
-		workflowRuleHistoricalLogger.setId((Long) props.get("id"));
+	// workflowRuleHistoricalLogger.setId((Long) props.get("id"));
 		
 	}
 	
-	
-	public static WorkflowRuleHistoricalLoggerContext getWorkflowRuleHistoricalLogger(long parentassetId) throws Exception {
+	public static WorkflowRuleHistoricalLoggerContext getActiveWorkflowRuleHistoricalLogger(Long resourceId, long ruleId) throws Exception {
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getWorkflowRuleHistoricalLoggerFields())
 				.table(ModuleFactory.getWorkflowRuleHistoricalLoggerModule().getTableName())
-				.andCondition(CriteriaAPI.getCondition("PARENT_ID", "parentId", ""+parentassetId, NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resourceId", ""+resourceId, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("RULE_ID", "ruleId", ""+ruleId, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("STATUS", "status", ""+ WorkflowRuleHistoricalLoggerContext.Status.IN_PROGRESS.getIntVal(), NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLogger = FieldUtil.getAsBeanFromMap(props.get(0), WorkflowRuleHistoricalLoggerContext.class);
+			return workflowRuleHistoricalLogger;
+		}
+		return null;
+	}
+	
+	public static WorkflowRuleHistoricalLoggerContext getWorkflowRuleHistoricalLogger(long id) throws Exception {
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getWorkflowRuleHistoricalLoggerFields())
+				.table(ModuleFactory.getWorkflowRuleHistoricalLoggerModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("ID", "id", ""+id, NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -67,7 +86,7 @@ public class WorkflowRuleHistoricalLoggerUtil {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(ModuleFactory.getWorkflowRuleHistoricalLoggerModule().getTableName())
 				.fields(FieldFactory.getWorkflowRuleHistoricalLoggerFields())
-				.andCondition(CriteriaAPI.getCondition("ID", "id", ""+workflowRuleHistoricalLogger.getId(), NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition("ID", "id", ""+workflowRuleHistoricalLogger.getId(), NumberOperators.EQUALS));		
 
 		Map<String, Object> props = FieldUtil.getAsProperties(workflowRuleHistoricalLogger);
 		updateBuilder.update(props);

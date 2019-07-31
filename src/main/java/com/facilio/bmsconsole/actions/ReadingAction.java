@@ -992,6 +992,7 @@ public class ReadingAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, id);
 		context.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
+		context.put(FacilioConstants.ContextNames.ASSET_ID, assetIds);
 		
 		Chain runThroughRuleChain = TransactionChainFactory.runThroughReadingRuleChain();
 		runThroughRuleChain.execute(context);
@@ -1134,6 +1135,14 @@ public class ReadingAction extends FacilioAction {
 		this.assetId = assetId;
 	}
 	
+	List<Long> assetIds;
+	public List<Long> getAssetIds() {
+		return assetIds;
+	}
+	public void setAssetIds(List<Long> assetIds) {
+		this.assetIds = assetIds;
+	}
+
 	long fieldId;
 	public long getFieldId() {
 		return fieldId;
