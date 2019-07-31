@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.processor.ProcessorFactory;
+import com.iam.accounts.util.IAMAccountConstants;
 
 public class KinesisProcessor {
 
@@ -58,7 +59,7 @@ public class KinesisProcessor {
 
 //        PropertyConfigurator.configure(getLoggingProps());
 
-        List<FacilioField> columnList = AccountConstants.getOrgFields();
+        List<FacilioField> columnList = IAMAccountConstants.getOrgFields();
 
         GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().table("Organizations")
                 .select(columnList);

@@ -400,8 +400,8 @@ public class OrgBeanImpl implements OrgBean {
 
 	@Override
 	public void updateLoggerLevel(int level, long orgId) throws Exception {
-		// TODO Auto-generated method stub
-		
+		 // TODO Auto-generated method stub 
+		IAMUtil.getOrgBean(orgId).updateLoggerLevel(level, orgId);
 	} 
 	
 	

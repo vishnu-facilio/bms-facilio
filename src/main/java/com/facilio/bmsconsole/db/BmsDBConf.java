@@ -422,4 +422,5 @@ public class BmsDBConf extends DBConf {
     public boolean logQueries() {
         return super.logQueries();
     }
+	
 }

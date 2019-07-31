@@ -23,6 +23,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.iam.accounts.bean.IAMOrgBean;
 import com.iam.accounts.exceptions.AccountException;
+import com.iam.accounts.util.IAMAccountConstants;
 
 public class IAMOrgBeanImpl implements IAMOrgBean {
 
@@ -30,8 +31,8 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 	public boolean updateOrgv2(long orgId, Organization org) throws Exception {
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(AccountConstants.getOrgModule().getTableName())
-				.fields(AccountConstants.getOrgFields());
+				.table(IAMAccountConstants.getOrgModule().getTableName())
+				.fields(IAMAccountConstants.getOrgFields());
 
 		updateBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
 		updateBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
@@ -51,13 +52,13 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		deletedTime.setName("deletedTime");
 		deletedTime.setDataType(FieldType.NUMBER);
 		deletedTime.setColumnName("DELETED_TIME");
-		deletedTime.setModule(AccountConstants.getOrgModule());
+		deletedTime.setModule(IAMAccountConstants.getOrgModule());
 		
 		List<FacilioField> fields = new ArrayList<>();
 		fields.add(deletedTime);
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(AccountConstants.getOrgModule().getTableName())
+				.table(IAMAccountConstants.getOrgModule().getTableName())
 				.fields(fields);
 		
 		updateBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
@@ -76,8 +77,8 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 	public Organization getOrgv2(long orgId) throws Exception {
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(AccountConstants.getOrgFields())
-				.table(AccountConstants.getOrgModule().getTableName());
+				.select(IAMAccountConstants.getOrgFields())
+				.table(IAMAccountConstants.getOrgModule().getTableName());
 		
 		selectBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
@@ -93,8 +94,8 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 	public Organization getOrgv2(String orgDomain) throws Exception {
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(AccountConstants.getOrgFields())
-				.table(AccountConstants.getOrgModule().getTableName());
+				.select(IAMAccountConstants.getOrgFields())
+				.table(IAMAccountConstants.getOrgModule().getTableName());
 		
 		selectBuilder.andCondition(CriteriaAPI.getCondition("FACILIODOMAINNAME", "domainName", orgDomain, StringOperators.IS));
 		
@@ -238,8 +239,8 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		}
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-				.table(AccountConstants.getOrgModule().getTableName())
-				.fields(AccountConstants.getOrgFields());
+				.table(IAMAccountConstants.getOrgModule().getTableName())
+				.fields(IAMAccountConstants.getOrgFields());
 		
 		Map<String, Object> props = FieldUtil.getAsProperties(org);
 		insertBuilder.addRecord(props);
@@ -250,5 +251,22 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		return org;
 	}
 
+	@Override
+	public void updateLoggerLevel(int level, long orgId) throws Exception {
+		 // TODO Auto-generated method stub 
+        List<FacilioField> fields = IAMAccountConstants.getOrgFields(); 
+ 
+        GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder() 
+                .table(IAMAccountConstants.getOrgModule().getTableName()) 
+                .fields(fields) 
+                .andCondition(CriteriaAPI.getOrgIdCondition(orgId, IAMAccountConstants.getOrgModule())); 
+         
+         
+         
+        Map<String, Object> props = new HashMap<>(); 
+        props.put("loggerLevel",level); 
+         updateBuilder.update(props); 
+	} 
+	
 	
 }

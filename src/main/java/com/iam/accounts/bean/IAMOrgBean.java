@@ -29,5 +29,7 @@ public interface IAMOrgBean {
 
 	public List<User> getActiveOrgUsersv2(long orgId) throws Exception;
 
+	public void updateLoggerLevel(int level, long orgId) throws Exception;
+
 	
 }
