@@ -1277,6 +1277,14 @@
 			class="com.facilio.bmsconsole.actions.EnergyAction"
 			method="getvmChildHistoricalLogger">
 		</action>
+		<action name="workflowRuleParentLoggers"
+			class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="getWorkflowRuleParentLoggers">
+		</action>
+		<action name="workflowRuleChildLoggers"
+			class="com.facilio.bmsconsole.actions.ReadingAction"
+			method="getWorkflowRuleChildLoggers">
+		</action>
 	</package>
 	<package name="virtualMeters"
 		namespace="/api/v2/virtualMeter"

@@ -20,14 +20,17 @@ import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
+import com.facilio.bmsconsole.context.HistoricalLoggerContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
 import com.facilio.bmsconsole.context.PublishData;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.SpaceCategoryContext;
+import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLoggerContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
+import com.facilio.bmsconsole.util.HistoricalLoggerUtil;
 import com.facilio.bmsconsole.util.IoTMessageAPI;
 import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
 import com.facilio.bmsconsole.util.ReadingsAPI;
@@ -988,6 +991,15 @@ public class ReadingAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	private long loggerGroupId;
+	public long getLoggerGroupId() {
+		return loggerGroupId;
+	}
+
+	public void setLoggerGroupId(long loggerGroupId) {
+		this.loggerGroupId = loggerGroupId;
+	}
+
 	public String runThroughRule() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, id);
@@ -1000,6 +1012,28 @@ public class ReadingAction extends FacilioAction {
 		setResult("success", "Rule evaluation for the readings in the given period has been started");
 		
 		return SUCCESS;
+	}
+	
+	public String getWorkflowRuleParentLoggers() throws Exception {
+		
+		List<WorkflowRuleHistoricalLoggerContext> allWorkflowRuleHistoricalLoggerContext = WorkflowRuleHistoricalLoggerUtil.getAllWorkflowRuleHistoricalLogger();
+		List<WorkflowRuleHistoricalLoggerContext> parentWorkflowRuleHistoricalLoggerList = new ArrayList<WorkflowRuleHistoricalLoggerContext>();
+		for(WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext: allWorkflowRuleHistoricalLoggerContext)
+		{
+			if(workflowRuleHistoricalLoggerContext.getLoggerGroupId() == workflowRuleHistoricalLoggerContext.getId())
+			{
+				parentWorkflowRuleHistoricalLoggerList.add(workflowRuleHistoricalLoggerContext);
+			}
+			
+		}
+		setResult("workflowRuleParentHistoricalLoggers", parentWorkflowRuleHistoricalLoggerList);
+		return SUCCESS;		
+	}
+	
+	public String getWorkflowRuleChildLoggers() throws Exception {
+		List<WorkflowRuleHistoricalLoggerContext> childWorkflowRuleHistoricalLoggerList = WorkflowRuleHistoricalLoggerUtil.getGroupedWorkflowRuleHistoricalLogger(getLoggerGroupId());
+		setResult("workflowRuleChildHistoricalLoggers", childWorkflowRuleHistoricalLoggerList);
+		return SUCCESS;	
 	}
 	
 	public String getWorkflowRuleHistoricalLoggers() throws Exception {

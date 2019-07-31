@@ -50,6 +50,21 @@ public class WorkflowRuleHistoricalLoggerUtil {
 		return null;
 	}
 	
+	public static List<WorkflowRuleHistoricalLoggerContext> getGroupedWorkflowRuleHistoricalLogger(long loggerGroupId) throws Exception {
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getWorkflowRuleHistoricalLoggerFields())
+				.table(ModuleFactory.getWorkflowRuleHistoricalLoggerModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("LOGGER_GROUP_ID", "loggerGroupId", ""+loggerGroupId, NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			List<WorkflowRuleHistoricalLoggerContext> workflowRuleHistoricalLoggerContextList = FieldUtil.getAsBeanListFromMapList(props, WorkflowRuleHistoricalLoggerContext.class);
+			return workflowRuleHistoricalLoggerContextList;
+		}
+		return null;
+	}
+	
 	public static WorkflowRuleHistoricalLoggerContext getWorkflowRuleHistoricalLogger(long id) throws Exception {
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -79,6 +94,7 @@ public class WorkflowRuleHistoricalLoggerUtil {
 				}
 				return null;
 	}
+	
 	public static void updateWorkflowRuleHistoricalLogger(WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLogger) throws Exception {
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
