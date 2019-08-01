@@ -491,7 +491,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 								addToLookupIds(lookupField, recordId, lookupIds);
 							}
 							else {
-								Object val = isMap || (lookupField.getDefault() == null && lookupField.getDefault() == false) ? FieldUtil.getEmptyLookedUpProp(recordId) : FieldUtil.getEmptyLookupVal((LookupField) lookupField, recordId);
+								Object val = isMap || !lookupField.isDefault() ? FieldUtil.getEmptyLookedUpProp(recordId) : FieldUtil.getEmptyLookupVal((LookupField) lookupField, recordId);
 								props.put(lookupField.getName(), val);
 							}
 						}

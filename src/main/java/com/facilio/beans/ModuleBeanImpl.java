@@ -820,6 +820,9 @@ public class ModuleBeanImpl implements ModuleBean {
 	public long addField(FacilioField field) throws Exception {
 		if(field != null) {
 			field.setOrgId(getOrgId());
+			if (field.getDefault() == null) {
+				field.setDefault(false);
+			}
 			Map<String, Object> fieldProps = FieldUtil.getAsProperties(field);
 			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 															.table("Fields")

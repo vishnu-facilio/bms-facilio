@@ -2631,7 +2631,9 @@ public class FieldFactory {
 
 		List<FacilioField> fields = new ArrayList<>();
 
-		fields.add(getField("actualTtime", "Actual Timestamp", "ACTUAL_TTIME", module, FieldType.DATE_TIME));
+		FacilioField actualTtime = getField("actualTtime", "Actual Timestamp", "ACTUAL_TTIME", module, FieldType.DATE_TIME);
+		actualTtime.setDefault(true);
+		fields.add(actualTtime);
 
 		FacilioField ttime = new FacilioField();
 		ttime.setName("ttime");
@@ -2639,6 +2641,7 @@ public class FieldFactory {
 		ttime.setDataType(FieldType.DATE_TIME);
 		ttime.setColumnName("TTIME");
 		ttime.setModule(module);
+		ttime.setDefault(true);
 		fields.add(ttime);
 
 		FacilioField ttimeDate = new FacilioField();
@@ -2647,6 +2650,7 @@ public class FieldFactory {
 		ttimeDate.setDataType(FieldType.STRING);
 		ttimeDate.setColumnName("TTIME_DATE");
 		ttimeDate.setModule(module);
+		ttimeDate.setDefault(true);
 		fields.add(ttimeDate);
 
 		FacilioField ttimeMonth = new FacilioField();
@@ -2655,6 +2659,7 @@ public class FieldFactory {
 		ttimeMonth.setDataType(FieldType.NUMBER);
 		ttimeMonth.setColumnName("TTIME_MONTH");
 		ttimeMonth.setModule(module);
+		ttimeMonth.setDefault(true);
 		fields.add(ttimeMonth);
 
 		FacilioField ttimeWeek = new FacilioField();
@@ -2663,6 +2668,7 @@ public class FieldFactory {
 		ttimeWeek.setDataType(FieldType.NUMBER);
 		ttimeWeek.setColumnName("TTIME_WEEK");
 		ttimeWeek.setModule(module);
+		ttimeWeek.setDefault(true);
 		fields.add(ttimeWeek);
 
 		FacilioField ttimeDay = new FacilioField();
@@ -2671,6 +2677,7 @@ public class FieldFactory {
 		ttimeDay.setDataType(FieldType.NUMBER);
 		ttimeDay.setColumnName("TTIME_DAY");
 		ttimeDay.setModule(module);
+		ttimeDay.setDefault(true);
 		fields.add(ttimeDay);
 
 		FacilioField ttimeHour = new FacilioField();
@@ -2679,6 +2686,7 @@ public class FieldFactory {
 		ttimeHour.setDataType(FieldType.NUMBER);
 		ttimeHour.setColumnName("TTIME_HOUR");
 		ttimeHour.setModule(module);
+		ttimeHour.setDefault(true);
 		fields.add(ttimeHour);
 
 		FacilioField parent = new FacilioField();
@@ -2686,8 +2694,8 @@ public class FieldFactory {
 		parent.setDisplayName("Parent");
 		parent.setDataType(FieldType.NUMBER);
 		parent.setColumnName("PARENT_ID");
+		parent.setDefault(true);
 		parent.setModule(module);
-
 		fields.add(parent);
 		
 //		fields.add(getField("sysCreatedTime", "CREATED_TIME", FieldType.DATE_TIME));
