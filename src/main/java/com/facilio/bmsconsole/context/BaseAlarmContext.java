@@ -108,7 +108,6 @@ public class BaseAlarmContext extends ModuleBaseWithCustomFields {
 	}
 	
 	private AlarmOccurrenceContext lastOccurrence;
-	@JSON(serialize = false)
 	@JsonIgnore
 	public AlarmOccurrenceContext getLastOccurrence() {
 		return lastOccurrence;

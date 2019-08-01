@@ -36,7 +36,7 @@ public class FetchAssetDowntimeMetricsCommand extends FacilioCommand {
 		List<FacilioField> fields = modBean.getAllFields(ContextNames.ASSET_BREAKDOWN);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
-		SelectRecordsBuilder<AssetBreakdownContext> builder = getAssetBreakdownBuilder(fieldMap, DateOperators.CURRENT_MONTH)
+		SelectRecordsBuilder<AssetBreakdownContext> builder = getAssetBreakdownBuilder(fieldMap, DateOperators.CURRENT_YEAR)
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("timeBetweenFailure"), CommonOperators.IS_NOT_EMPTY))
 				.aggregate(NumberAggregateOperator.AVERAGE, fieldMap.get("timeBetweenFailure"))
 				;
@@ -51,7 +51,7 @@ public class FetchAssetDowntimeMetricsCommand extends FacilioCommand {
 		props = builder.getAsProps();
 		metrics.put("mtbfTillLastMonth", CollectionUtils.isNotEmpty(props) ? props.get(0).get("timeBetweenFailure") : 0);
 		
-		builder = getAssetBreakdownBuilder(fieldMap, DateOperators.CURRENT_MONTH)
+		builder = getAssetBreakdownBuilder(fieldMap, DateOperators.CURRENT_YEAR)
 				.aggregate(NumberAggregateOperator.AVERAGE, fieldMap.get("duration"))
 				;
 		
@@ -67,7 +67,7 @@ public class FetchAssetDowntimeMetricsCommand extends FacilioCommand {
 		
 		
 		
-		builder = getAssetBreakdownBuilder(fieldMap, DateOperators.CURRENT_MONTH)
+		builder = getAssetBreakdownBuilder(fieldMap, DateOperators.CURRENT_YEAR)
 				.aggregate(NumberAggregateOperator.SUM, fieldMap.get("duration"))
 				;
 		
