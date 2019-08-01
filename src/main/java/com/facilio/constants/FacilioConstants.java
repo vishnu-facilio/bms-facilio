@@ -1042,6 +1042,12 @@ public class FacilioConstants {
 		public static final String START_TTIME = "startTtime";
 		public static final String END_TTIME = "endTtime";
 		public static final String ADMIN_DELTA_ORG = "orgid";
+		public static final String ADMIN_DELTA_JOBID = "deltacalculateJobId";
+		public static final String ADMIN_DUPLICATE_REMOVE_JOBID = "removeDuplicaeJobId";
+		public static final String FIELD_OPTION_TYPE = "fieldOptionType";
+		public static final String READING_TOOLS_CONEXT_JOBID = "readingToolsContextJobId";
+		public static final String ADMIN_DELTA_CALCULATION = "AdminDeltaCalculation";
+		public static final String ADMIN_DUPLICATES_REMOVE = "AdminDuplicatesRemove";
 		
 		public static final String DATE = "date";
 
@@ -1126,6 +1132,8 @@ public class FacilioConstants {
 		
 		public static final String MAX_FIELDS_PER_MODULE ="maxFieldsPerModule";
 		public static final String CONTROLLER_ASSET = "Controller";
+
+		
 		
 		public static final String IMPORT_MODE = "importMode";
 		public static final String IMPORT_PROCESS_CONTEXT = "importProcessContext";

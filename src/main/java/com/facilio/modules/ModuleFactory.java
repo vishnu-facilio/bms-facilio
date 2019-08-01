@@ -115,6 +115,14 @@ public class ModuleFactory {
 		formModule.setTableName("Forms");
 		return formModule;
 	}
+
+	public static FacilioModule getReadingToolsModule() {
+		FacilioModule formModule = new FacilioModule();
+		formModule.setName("readingTools");
+		formModule.setDisplayName("ReadingTools");
+		formModule.setTableName("Reading_Tools");
+		return formModule;
+	}
 	
 	public static FacilioModule getFormRuleModule() {
 		FacilioModule formModule = new FacilioModule();

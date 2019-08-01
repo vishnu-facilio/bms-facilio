@@ -97,9 +97,7 @@ public interface ModuleCRUDBean {
 	
 	public List<FacilioModule> getAssetReadings(long parentCategoryId) throws Exception;
 
-	public  void  updateAdminDeltaCalculation(long orgId, long fieldId, long assetId, long startTtime, long endTtime, String email)throws Exception;
-	
-	public void removeDuplicates(long orgId, long fieldId, long assetId, long startTtime, long endTtime, String email) throws Exception;
+	public  void  readingTools(long orgId, long fieldId, long assetId, long startTtime, long endTtime, String email, long selectfields)throws Exception;
 	
 	public void updatePMJob(List<WorkOrderContext> workorders) throws Exception;
 

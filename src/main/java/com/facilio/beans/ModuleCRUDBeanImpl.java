@@ -922,7 +922,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	}
 
 	@Override
-	public void updateAdminDeltaCalculation(long orgId, long fieldId, long assetId, long startTtime, long endTtime, String email)
+	public void readingTools(long orgId, long fieldId, long assetId, long startTtime, long endTtime, String email, long fieldsOptionType)
 			throws Exception {
 		// TODO Auto-generated method stub
 			FacilioContext context=new FacilioContext();
@@ -932,9 +932,16 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			context.put(ContextNames.START_TTIME,startTtime);
 			context.put(ContextNames.END_TTIME,endTtime);
 			context.put(ContextNames.ADMIN_USER_EMAIL, email);
+			context.put(ContextNames.FIELD_OPTION_TYPE,fieldsOptionType );
 
-			Chain deltaCalculationChain = TransactionChainFactory.deltaCalculationChain();
-			deltaCalculationChain.execute(context);
+			if(fieldsOptionType == 1) {
+				Chain readingToolsChain = TransactionChainFactory.readingToolsDeltaCalculationChain();
+				readingToolsChain.execute(context);
+			}else {
+				Chain readingToolsChain = TransactionChainFactory.readingToolsDuplicateRemoveChain();
+				readingToolsChain.execute(context);
+			}
+			
 	}
 
 	@Override
@@ -971,21 +978,6 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 		return null;
 	}
 
-	@Override
-	public void removeDuplicates(long orgId, long fieldId, long assetId, long startTtime, long endTtime,String email)
-			throws Exception {
-		// TODO Auto-generated method stub
-		FacilioContext context=new FacilioContext();
-		context.put(ContextNames.ADMIN_DELTA_ORG, orgId);
-		context.put(ContextNames.FIELD_ID,fieldId);
-		context.put(ContextNames.ASSET_ID,assetId);
-		context.put(ContextNames.START_TTIME,startTtime);
-		context.put(ContextNames.END_TTIME,endTtime);
-		context.put(ContextNames.ADMIN_USER_EMAIL, email);
-
-		Chain removeDuplicatesChain = TransactionChainFactory.removeDuplicates();
-		removeDuplicatesChain.execute(context);
-	}
 
 	@Override
 	public void updatePMJob(List<WorkOrderContext> workorders) throws Exception {

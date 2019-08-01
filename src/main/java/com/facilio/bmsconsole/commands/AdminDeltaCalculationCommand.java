@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -16,14 +17,17 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
@@ -42,18 +46,15 @@ public class AdminDeltaCalculationCommand extends FacilioCommand {
 		}
 		
 		try {
-			long orgId = (long) context.get(ContextNames.ADMIN_DELTA_ORG);
-			long fieldId = (long) context.get(ContextNames.FIELD_ID);
-			long parentId = (long) context.get(ContextNames.ASSET_ID);
-			long startTtime = (long) context.get(ContextNames.START_TTIME);
+			
+			long orgId = (long)context.get(ContextNames.ADMIN_DELTA_ORG);
+			long fieldId = (long)context.get(ContextNames.FIELD_ID);
+			long parentId = (long)context.get(ContextNames.ASSET_ID);
+			long startTtime = (long)context.get(ContextNames.START_TTIME);
 			long endTtime = (long) context.get(ContextNames.END_TTIME);
 			String email = (String)context.get(ContextNames.ADMIN_USER_EMAIL);
-			
-			long TtimeLimit = TimeUnit.DAYS.convert(startTtime - endTtime, TimeUnit.MILLISECONDS);
 
-			if (TtimeLimit > 100) {
-				throw new IllegalArgumentException("Number of Days Should not be more than 60 days " + TtimeLimit);
-			}
+			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean",orgId);
 			FacilioField valField =modBean.getField(fieldId);
 			String nameField = valField.getName();
@@ -75,9 +76,9 @@ public class AdminDeltaCalculationCommand extends FacilioCommand {
 						.andCondition(CriteriaAPI.getCondition(ttimeField, startTtime + "," + endTtime,DateOperators.BETWEEN))
 						.orderBy("TTIME");
 
-				List<ReadingContext> prop = builder.get();
+				List<ReadingContext> props = builder.get();
 				
-				updateDeltaCalculation(prop, module, nameField, valField, fields, detaFieldName,email);
+				updateDeltaCalculation(props, module, nameField, valField, fields, detaFieldName,email);
 			} else {
 				System.out.println("FieldType is not a CounterField");
 				throw new IllegalArgumentException("FieldType is not a CounterField");
@@ -140,7 +141,6 @@ public class AdminDeltaCalculationCommand extends FacilioCommand {
 			}
 
 		}
-		sendEmail(email);
 	}
 
 	private boolean isCounterValField(FacilioField valField) {
@@ -152,15 +152,6 @@ public class AdminDeltaCalculationCommand extends FacilioCommand {
 		}
 
 		return false;
-	}
-	private void sendEmail(String email)throws Exception{
-		JSONObject json = new JSONObject();
-		json.put("to", email);
-		json.put("sender", "noreply@facilio.com");
-		json.put("subject", "#####DeltaCalculation runs Successfully");
-		json.put("message", "#####DeltaCalculation runs Successfully");
-		
-		AwsUtil.sendEmail(json);
 	}
 
 }

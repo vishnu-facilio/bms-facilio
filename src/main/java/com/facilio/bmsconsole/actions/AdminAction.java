@@ -2,8 +2,12 @@ package com.facilio.bmsconsole.actions;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -266,7 +270,7 @@ public class AdminAction extends ActionSupport
 		
 	}
 
-	public String deltaCalculation() throws Exception {
+	public String adminReadingTools() throws Exception {
 
 		HttpServletRequest request = ServletActionContext.getRequest();
 		long orgId = Long.parseLong(request.getParameter("orgid"));
@@ -274,23 +278,39 @@ public class AdminAction extends ActionSupport
 		long fieldId = Long.parseLong(request.getParameter("fieldId"));
 		long assetId = Long.parseLong(request.getParameter("assetId"));
 		long selectfields = Long.parseLong(request.getParameter("selectfields"));
-		long startTtime = Long.parseLong(request.getParameter("fromTtime"));
-		long endTtime = Long.parseLong(request.getParameter("toTtime"));
+		String fromdateTtime = request.getParameter("fromTtime");
+		fromdateTtime = fromdateTtime.replace('T', ' ');
+		String todateendTtime = request.getParameter("toTtime");
+		todateendTtime = todateendTtime.replace('T', ' ');
 		String email = request.getParameter("email");
 
-		if(selectfields != 0 && selectfields == 1) {
+		long startTtime = convertDatetoTTime(fromdateTtime);
+		long endTtime = convertDatetoTTime(todateendTtime);
+
+		long TtimeLimit = TimeUnit.DAYS.convert(endTtime-startTtime, TimeUnit.MILLISECONDS);
+
+		if (TtimeLimit <61) {
 			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-			bean.updateAdminDeltaCalculation(orgId,fieldId,assetId,startTtime,endTtime,email);
-		}
-		else {
-			ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-			bean.removeDuplicates(orgId,fieldId,assetId,startTtime,endTtime,email);
+			bean.readingTools(orgId,fieldId,assetId,startTtime,endTtime,email,selectfields);
+		}else {
+			throw new IllegalArgumentException("Number of Days Should not be more than 60 days. Your Calculated days : " + TtimeLimit);
 		}
 		
-
 		return SUCCESS;
 	}
 
+	public long convertDatetoTTime(String time) {
+
+		LocalDateTime localDateTime = LocalDateTime.parse(time,
+			    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm") );
+			
+			long millis = localDateTime
+				    .atZone(ZoneId.systemDefault())
+				    .toInstant().toEpochMilli();
+			System.out.println("###ttime"+millis);
+			return millis;
+	}
+	
 	public String statusLog() throws IOException {
 
 		HttpServletRequest request = ServletActionContext.getRequest();

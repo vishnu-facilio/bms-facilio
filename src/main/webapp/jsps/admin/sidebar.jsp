@@ -92,7 +92,7 @@ if (buildinfo == null) {
                </a>
            </li>           
 			<li>
-               <a href="deltacalculation">
+               <a href="adminreadingtools">
                <span class="nav-icon">
               <i class=" sidebar-icon fa fa-info-circle fa-fw "></i> </span>
                <span class="nav-title">Reading Tools</span>

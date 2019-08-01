@@ -5074,6 +5074,23 @@ public class FieldFactory {
         fields.add(getField("unit", "UNIT", module, FieldType.NUMBER));
 		return fields;
 	}
+
+	public static List<FacilioField> getReadingToolsFields() {
+
+		FacilioModule module = ModuleFactory.getReadingToolsModule();
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getIdField(module));
+		fields.add(getField("assetId","ASSET_ID",module,FieldType.NUMBER));
+		fields.add(getField("fieldId","FIELD_ID",module,FieldType.NUMBER));
+		fields.add(getField("fieldOptionType","FIELD_OPTION_TYPE",module,FieldType.NUMBER));
+		fields.add(getField("startTtime","START_TTIME",module,FieldType.NUMBER));
+		fields.add(getField("endTtime","END_TTIME",module,FieldType.NUMBER));
+		fields.add(getField("email","EMAIL",module,FieldType.STRING));
+
+		return fields;
+	}
+	
 	
 	public static List<FacilioField>  getPointFields() {
 		FacilioModule module = ModuleFactory.getPointModule();

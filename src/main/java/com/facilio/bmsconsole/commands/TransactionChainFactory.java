@@ -949,12 +949,23 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+		public static Chain readingToolsDeltaCalculationChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ReadingToolCommand());
+			return c;
+		}
+		
+		public static Chain readingToolsDuplicateRemoveChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ReadingToolsDuplicateRemoveCommand());
+			return c;
+		}
+		
 		public static Chain demoRollUpChain () {
 			Chain c = getDefaultChain();
 			c.addCommand(new DemoRollUpCommand());
 			return c;
 		}
-
 
 		public static Chain deltaCalculationChain () {
 			Chain c = getDefaultChain();
@@ -962,7 +973,7 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
-		public static Chain removeDuplicates () {
+		public static Chain removeDuplicatesChain () {
 			Chain c = getDefaultChain();
 			c.addCommand(new AdminRemoveDuplicationCommand());
 			return c;
