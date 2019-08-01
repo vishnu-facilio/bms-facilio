@@ -266,7 +266,7 @@ public class ConnectionUtil {
 		
 		return conn;
 	}
-
+	
 	private static String getQuery(List<NameValuePair> params) throws UnsupportedEncodingException
 	{
 	    StringBuilder result = new StringBuilder();
@@ -279,9 +279,12 @@ public class ConnectionUtil {
 	        else
 	            result.append("&");
 
+	        String value = pair.getValue();
+	        value = value.replaceAll("<br>", "\n");
+	        
 	        result.append(URLEncoder.encode(pair.getName(), "UTF-8"));
 	        result.append("=");
-	        result.append(URLEncoder.encode(pair.getValue(), "UTF-8"));
+	        result.append(URLEncoder.encode(value, "UTF-8"));
 	    }
 
 	    return result.toString();
