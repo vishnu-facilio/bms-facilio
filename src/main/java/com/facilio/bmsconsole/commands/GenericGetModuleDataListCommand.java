@@ -1,13 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.ResourceAPI;
@@ -17,13 +9,18 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class GenericGetModuleDataListCommand extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(GenericGetModuleDataListCommand.class.getName());
@@ -106,6 +103,16 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 		if(scopeCriteria != null)
 		{
 			builder.andCriteria(scopeCriteria);
+		}
+
+		if (module.getTypeEnum() == ModuleType.CUSTOM) {
+			List<LookupField> lookupFields = new ArrayList<>();
+			for (FacilioField f : fields) {
+				if (f instanceof LookupField) {
+					lookupFields.add((LookupField) f);
+				}
+			}
+			builder.fetchLookups(lookupFields);
 		}
 		
 		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);

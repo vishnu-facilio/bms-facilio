@@ -305,7 +305,7 @@ public class FieldUtil {
 //						}
 					}
 
-					if (isMap) {
+					if (isMap || (field.getDefault() != null && field.getDefault() == false)) {
 						return lookupBeanBuilder.getAsMapProps();
 					}
 					else {

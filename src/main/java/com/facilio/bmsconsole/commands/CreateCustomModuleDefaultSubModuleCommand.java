@@ -14,11 +14,11 @@ public class CreateCustomModuleDefaultSubModuleCommand extends FacilioCommand {
         FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
 
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-        FacilioModule cmdnotes = modBean.getModule("cmdnotes");
-        modBean.addSubModule(module.getModuleId(), cmdnotes.getModuleId());
+        FacilioModule cmdNotes = modBean.getModule("cmdnotes");
+        modBean.addSubModule(module.getModuleId(), cmdNotes.getModuleId());
 
-        FacilioModule cmdattachments = modBean.getModule("cmdattachments");
-        modBean.addSubModule(module.getModuleId(), cmdattachments.getModuleId());
+        FacilioModule cmdAttachments = modBean.getModule("cmdattachments");
+        modBean.addSubModule(module.getModuleId(), cmdAttachments.getModuleId());
 
         return false;
     }

@@ -13,6 +13,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -53,6 +54,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	private WhereBuilder where = new WhereBuilder();
 	private StringBuilder joinBuilder = new StringBuilder();
 	private boolean isAggregation = false;
+	private Map<String, LookupField> lookupFields;
 	//Need where condition builder for custom field
 	
 	public SelectRecordsBuilder() {
@@ -281,6 +283,20 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			
 			long startTime = System.currentTimeMillis();
 			List<E> beans = FieldUtil.getAsBeanListFromMapList(propList, beanClass);
+			if (MapUtils.isNotEmpty(lookupFields) && CollectionUtils.isNotEmpty(beans)) {
+				for (E bean : beans) {
+					Map<String, Object> data = bean.getData();
+					if (MapUtils.isNotEmpty(data)) {
+						for (String lookupName : lookupFields.keySet()) {
+							Map<String, Object> map = (Map<String, Object>) data.get(lookupName);
+							if (map != null) {
+								Class classFromModule = FacilioConstants.ContextNames.getClassFromModule(lookupFields.get(lookupName).getLookupModule());
+								data.put(lookupName, FieldUtil.getAsBeanFromMap(map, classFromModule));
+							}
+						}
+					}
+				}
+			}
 			long timeTaken = System.currentTimeMillis() - startTime;
 			LOGGER.debug("Time Taken to convert to bean list in SelectBuilder : "+timeTaken);
 			return beans;
@@ -462,7 +478,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	
 	private void handleLookup (Collection<FacilioField> selectFields, List<Map<String, Object>> propList, boolean isMap) throws Exception {
 		if(propList != null && propList.size() > 0) {
-			Map<String, LookupField> lookupFields = getLookupFields(selectFields);
+			lookupFields = getLookupFields(selectFields);
 			if(lookupFields.size() > 0) {
 				Map<String, LookupField> lookups = CollectionUtils.isEmpty(fetchLookup) ? Collections.EMPTY_MAP : fetchLookup.stream().collect(Collectors.toMap(LookupField::getName, Function.identity()));
 				lookupFields.putAll(lookups);
@@ -475,7 +491,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 								addToLookupIds(lookupField, recordId, lookupIds);
 							}
 							else {
-								Object val = isMap ? FieldUtil.getEmptyLookedUpProp(recordId) : FieldUtil.getEmptyLookupVal((LookupField) lookupField, recordId);
+								Object val = isMap || (lookupField.getDefault() == null && lookupField.getDefault() == false) ? FieldUtil.getEmptyLookedUpProp(recordId) : FieldUtil.getEmptyLookupVal((LookupField) lookupField, recordId);
 								props.put(lookupField.getName(), val);
 							}
 						}
