@@ -192,6 +192,7 @@ public class PageWidget {
  		RULE_DETIALS_WIGET("ruleDetialsWidget"),
  		RULE_ASSOCIATED_WO("ruleAssociatedWo"),
  		RULE_RCA("ruleRCA"),
+ 		HISTORY_LOG("historyLog"),
  		GRAPHICS("graphics")
  		;
 		
