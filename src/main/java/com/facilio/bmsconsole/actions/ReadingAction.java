@@ -991,6 +991,16 @@ public class ReadingAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	private long ruleId;
+	
+	public long getRuleId() {
+		return ruleId;
+	}
+
+	public void setRuleId(long ruleId) {
+		this.ruleId = ruleId;
+	}
+
 	private long loggerGroupId;
 	public long getLoggerGroupId() {
 		return loggerGroupId;
@@ -1016,7 +1026,7 @@ public class ReadingAction extends FacilioAction {
 	
 	public String getWorkflowRuleParentLoggers() throws Exception {
 		
-		List<WorkflowRuleHistoricalLoggerContext> allWorkflowRuleHistoricalLoggerContext = WorkflowRuleHistoricalLoggerUtil.getAllWorkflowRuleHistoricalLogger();
+		List<WorkflowRuleHistoricalLoggerContext> allWorkflowRuleHistoricalLoggerContext = WorkflowRuleHistoricalLoggerUtil.getAllParentWorkflowRuleHistoricalLogger(getRuleId());
 		List<WorkflowRuleHistoricalLoggerContext> parentWorkflowRuleHistoricalLoggerList = new ArrayList<WorkflowRuleHistoricalLoggerContext>();
 		for(WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext: allWorkflowRuleHistoricalLoggerContext)
 		{

@@ -3,8 +3,6 @@ package com.facilio.bmsconsole.util;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
-
-import com.facilio.bmsconsole.context.HistoricalLoggerContext;
 import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLoggerContext;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -85,6 +83,22 @@ public class WorkflowRuleHistoricalLoggerUtil {
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getWorkflowRuleHistoricalLoggerFields())
 				.table(ModuleFactory.getWorkflowRuleHistoricalLoggerModule().getTableName())
+				.orderBy("STATUS");
+				
+				List<Map<String, Object>> props = selectBuilder.get();
+				if (props != null && !props.isEmpty()) {
+					List<WorkflowRuleHistoricalLoggerContext> workflowRuleHistoricalLoggerContextList = FieldUtil.getAsBeanListFromMapList(props, WorkflowRuleHistoricalLoggerContext.class);
+					return workflowRuleHistoricalLoggerContextList;
+				}
+				return null;
+	}
+	
+	public static List<WorkflowRuleHistoricalLoggerContext> getAllParentWorkflowRuleHistoricalLogger(long ruleId) throws Exception {
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getWorkflowRuleHistoricalLoggerFields())
+				.table(ModuleFactory.getWorkflowRuleHistoricalLoggerModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("RULE_ID", "ruleId", ""+ruleId, NumberOperators.EQUALS))
 				.orderBy("STATUS");
 				
 				List<Map<String, Object>> props = selectBuilder.get();
