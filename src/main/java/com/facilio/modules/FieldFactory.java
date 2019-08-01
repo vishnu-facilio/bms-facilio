@@ -3310,6 +3310,7 @@ public class FieldFactory {
 		fields.add(getField("dependentId", "DEPENDENT_ID", module, FieldType.NUMBER));
 		fields.add(getField("loggerGroupId", "LOGGER_GROUP_ID", module, FieldType.NUMBER));
 		fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
+		fields.add(getField("alarmCount", "ALARM_COUNT", module, FieldType.NUMBER));
 		fields.add(getField("startTime", "START_TIME", module, FieldType.NUMBER));
 		fields.add(getField("endTime", "END_TIME", module, FieldType.NUMBER));
 		fields.add(getField("calculationStartTime", "CALCULATION_START_TIME", module, FieldType.NUMBER));
