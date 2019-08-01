@@ -15,6 +15,7 @@ import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -98,7 +99,7 @@ public class AddFieldsCommand extends FacilioCommand {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 					.table(module.getTableName())
 					.select(fields)
-//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+					.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(field.getModuleId()), NumberOperators.EQUALS))
 					.orderBy(fieldMap.get("fieldId").getColumnName() + " desc")
 					.limit(1);
 		

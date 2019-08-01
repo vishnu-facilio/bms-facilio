@@ -26,6 +26,7 @@ import com.facilio.bmsconsole.forms.FormFactory;
 import com.facilio.bmsconsole.forms.FormField;
 import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.constants.FacilioConstants.Builder;
+import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -482,6 +483,32 @@ public class FormsAPI {
 			
 	}
 	
+	private static void setUnusedSystemFields(FacilioForm form, List<FormField> defaultFields) throws Exception {
+		if (form.getFormTypeEnum() == FormType.WEB) {
+			setUnusedWebSystemFields(form, defaultFields);
+		}
+		else if (form.getFormTypeEnum() == FormType.PORTAL) {
+			setUnusedPortalSystemFields(form, defaultFields);
+		}
+	}
+	
+	private static void setUnusedWebSystemFields(FacilioForm form, List<FormField> defaultFields) throws Exception {
+		switch (form.getModule().getName()) {
+			case ContextNames.WORK_ORDER:
+				defaultFields.addAll(FormFactory.getRequesterFormFields(false));
+				break;
+		}
+	}
+	
+	private static void setUnusedPortalSystemFields(FacilioForm form, List<FormField> defaultFields) {
+		switch (form.getModule().getName()) {
+			case ContextNames.WORK_ORDER:
+				defaultFields.addAll(FormFactory.getWoClassifierFields());
+				defaultFields.add(FormFactory.getWoResourceField());
+				break;
+		}
+	}
+	
 	public static Map<String, List<FormField>> getFormUnusedFields(String moduleName, long formId) throws Exception {
 		FacilioForm form = getFormFromDB(formId);
 		List<FormField> fields = form.getFields();
@@ -506,6 +533,7 @@ public class FormsAPI {
 					defaultFields.add(formField);
 				}
 			}
+			setUnusedSystemFields(defaultForm, defaultFields);
 		}
 		
 		List<FacilioField> customFields = modBean.getAllCustomFields(moduleName);
@@ -530,15 +558,16 @@ public class FormsAPI {
 		form.setFormType(formType);
 		List<FormField> allFields = new ArrayList<>();
 		FacilioForm defaultForm = FormFactory.getDefaultForm(moduleName, form, true);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		if (defaultForm != null) {
 			List<FormField> defaultFields = new ArrayList<>(defaultForm.getFields());
 			if (defaultFields == null) {
 				defaultFields = getFormFieldsFromSections(form.getSections());
 			}
+			setFieldDetails(modBean, defaultFields, moduleName);
 			allFields.addAll(defaultFields);
 		}
 		
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioField> customFields = modBean.getAllCustomFields(moduleName);
 		if (CollectionUtils.isNotEmpty(customFields)) {
 			List<FormField> customFormFields = getFormFieldsFromFacilioFields(customFields, 0);
