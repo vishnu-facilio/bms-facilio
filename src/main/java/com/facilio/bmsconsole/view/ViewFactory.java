@@ -410,6 +410,12 @@ public class ViewFactory {
 		views = new LinkedHashMap<>();
 		views.put("all", getAllServiceView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.SERVICE, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllReadingAlarmViews().setOrder(order++));
+		views.put("all", getMLAnomalyViews().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.ML_ANOMALY_ALARM, views);
 	
 		
 		return viewsMap;
@@ -3844,6 +3850,18 @@ public class ViewFactory {
 		
 		return allView;
 	}
+	private static FacilioView getMLAnomalyViews() {
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("lastOccurredTime");
+		createdTime.setDataType(FieldType.DATE_TIME);
+		createdTime.setColumnName("LAST_OCCURRED_TIME");
+		createdTime.setModule(ModuleFactory.getBaseAlarmModule());
 
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Alarms");
+		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		return allView;
+	}
 
 }

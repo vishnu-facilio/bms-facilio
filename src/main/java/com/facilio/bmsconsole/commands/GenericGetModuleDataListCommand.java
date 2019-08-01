@@ -120,6 +120,8 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 			
 			builder.offset(offset);
 			builder.limit(perPage);
+		} else {
+			builder.setAggregation();
 		}
 		
 		List<? extends ModuleBaseWithCustomFields> records = builder.get();

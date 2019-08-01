@@ -227,7 +227,8 @@ public class FacilioConstants {
 		public static final String NEW_READING_ALARM = "newreadingalarm";
 		public static final String READING_EVENT = "readingevent";
 		
-		
+		public static final String ML_ANOMALY_ALARM = "mlAnomalyAlarm";
+	
 		public static final String EVENT = "event";
 		public static final String IS_NEW_EVENT = "isNewEvent";
 		
