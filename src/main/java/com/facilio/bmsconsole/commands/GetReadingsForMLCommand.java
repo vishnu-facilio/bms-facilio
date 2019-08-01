@@ -79,6 +79,7 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 		}
 		if(mlContext.isEmptyDataMap()==true)
 		{
+			LOGGER.info("Empty MLVariableDataMAP");
 			AwsUtil.sendErrorMail(mlContext.getOrgId(), mlContext.getId(), "empty MLVariableDataMAp in GetReadingsFor MLCommand");
 		}
 		

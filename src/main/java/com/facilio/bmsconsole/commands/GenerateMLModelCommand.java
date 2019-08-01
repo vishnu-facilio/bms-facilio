@@ -36,6 +36,7 @@ public class GenerateMLModelCommand extends FacilioCommand {
 		MLContext mlContext = (MLContext) context.get(FacilioConstants.ContextNames.ML);
 		if(mlContext.isEmptyDataMap())
 		{
+			LOGGER.info("No Data in Map");
 			throw new NullPointerException("No Data In MLVariableDataMap") ;
 		}
 		else
