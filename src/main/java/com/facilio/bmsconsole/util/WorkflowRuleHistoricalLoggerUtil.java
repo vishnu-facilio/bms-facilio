@@ -1,8 +1,13 @@
 package com.facilio.bmsconsole.util;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLoggerContext;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -10,9 +15,13 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.FacilioField;
 
 public class WorkflowRuleHistoricalLoggerUtil {
 	
@@ -93,20 +102,52 @@ public class WorkflowRuleHistoricalLoggerUtil {
 				return null;
 	}
 	
-	public static List<WorkflowRuleHistoricalLoggerContext> getAllParentWorkflowRuleHistoricalLogger(long ruleId) throws Exception {
+	public static Collection<WorkflowRuleHistoricalLoggerContext> getAllParentWorkflowRuleHistoricalLogger(long ruleId) throws Exception {
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getWorkflowRuleHistoricalLoggerFields())
 				.table(ModuleFactory.getWorkflowRuleHistoricalLoggerModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition("RULE_ID", "ruleId", ""+ruleId, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("LOGGER_GROUP_ID", "loggerGroupId", "id", NumberOperators.EQUALS))
 				.orderBy("STATUS");
 				
 				List<Map<String, Object>> props = selectBuilder.get();
+				List<WorkflowRuleHistoricalLoggerContext> workflowRuleParentHistoricalLoggerContextList = new ArrayList<WorkflowRuleHistoricalLoggerContext>();
 				if (props != null && !props.isEmpty()) {
-					List<WorkflowRuleHistoricalLoggerContext> workflowRuleHistoricalLoggerContextList = FieldUtil.getAsBeanListFromMapList(props, WorkflowRuleHistoricalLoggerContext.class);
-					return workflowRuleHistoricalLoggerContextList;
+					workflowRuleParentHistoricalLoggerContextList = FieldUtil.getAsBeanListFromMapList(props, WorkflowRuleHistoricalLoggerContext.class);
 				}
-				return null;
+				
+				Map<Long, WorkflowRuleHistoricalLoggerContext> workflowRuleHistoricalLoggerContextMap = new HashMap <Long, WorkflowRuleHistoricalLoggerContext>();
+				for(WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext :workflowRuleParentHistoricalLoggerContextList)
+				{
+					workflowRuleHistoricalLoggerContextMap.put(workflowRuleHistoricalLoggerContext.getLoggerGroupId(), workflowRuleHistoricalLoggerContext);
+				}
+				
+				
+				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleHistoricalLoggerFields());
+				
+				FacilioField countField = AggregateOperator.CommonAggregateOperator.COUNT.getSelectField(fieldMap.get("loggerGroupId"));
+				countField.setName("count");
+				List<FacilioField> selectFields = new ArrayList<FacilioField>();
+				selectFields.add(countField);
+				selectFields.add(fieldMap.get("loggerGroupId"));
+				
+				selectBuilder = new GenericSelectRecordBuilder()
+						.select(selectFields)
+						.table(ModuleFactory.getWorkflowRuleHistoricalLoggerModule().getTableName())
+						.andCondition(CriteriaAPI.getCondition("RULE_ID", "ruleId", ""+ruleId, NumberOperators.EQUALS))
+						.groupBy("LOGGER_GROUP_ID");
+				
+				
+				List<Map<String, Object>> propsList = selectBuilder.get();
+				
+				for(Map<String, Object> prop :propsList)
+				{
+					WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = workflowRuleHistoricalLoggerContextMap.get((long) prop.get("loggerGroupId"));
+					workflowRuleHistoricalLoggerContext.setResourceLogCount((long) prop.get("count"));
+				}
+				
+				return workflowRuleHistoricalLoggerContextMap.values();
 	}
 	
 	public static void updateWorkflowRuleHistoricalLogger(WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLogger) throws Exception {

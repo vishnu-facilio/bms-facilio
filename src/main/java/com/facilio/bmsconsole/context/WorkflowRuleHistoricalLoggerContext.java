@@ -15,6 +15,7 @@ public class WorkflowRuleHistoricalLoggerContext {
 	private Long resourceId;
 	private Status status;
 	private long loggerGroupId;
+	private long resourceLogCount;
 	private long startTime;
 	private long endTime;
 	private long calculationStartTime;
@@ -107,6 +108,14 @@ public class WorkflowRuleHistoricalLoggerContext {
 
 	public void setLoggerGroupId(long loggerGroupId) {
 		this.loggerGroupId = loggerGroupId;
+	}
+	
+	public long getResourceLogCount() {
+		return resourceLogCount;
+	}
+
+	public void setResourceLogCount(long resourceLogCount) {
+		this.resourceLogCount = resourceLogCount;
 	}
 	
 	public int getStatus() {

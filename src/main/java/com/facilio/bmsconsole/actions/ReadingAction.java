@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -1025,17 +1026,7 @@ public class ReadingAction extends FacilioAction {
 	}
 	
 	public String getWorkflowRuleParentLoggers() throws Exception {
-		
-		List<WorkflowRuleHistoricalLoggerContext> allWorkflowRuleHistoricalLoggerContext = WorkflowRuleHistoricalLoggerUtil.getAllParentWorkflowRuleHistoricalLogger(getRuleId());
-		List<WorkflowRuleHistoricalLoggerContext> parentWorkflowRuleHistoricalLoggerList = new ArrayList<WorkflowRuleHistoricalLoggerContext>();
-		for(WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext: allWorkflowRuleHistoricalLoggerContext)
-		{
-			if(workflowRuleHistoricalLoggerContext.getLoggerGroupId() == workflowRuleHistoricalLoggerContext.getId())
-			{
-				parentWorkflowRuleHistoricalLoggerList.add(workflowRuleHistoricalLoggerContext);
-			}
-			
-		}
+		Collection<WorkflowRuleHistoricalLoggerContext> parentWorkflowRuleHistoricalLoggerList = WorkflowRuleHistoricalLoggerUtil.getAllParentWorkflowRuleHistoricalLogger(getRuleId());
 		setResult("workflowRuleParentHistoricalLoggers", parentWorkflowRuleHistoricalLoggerList);
 		return SUCCESS;		
 	}
