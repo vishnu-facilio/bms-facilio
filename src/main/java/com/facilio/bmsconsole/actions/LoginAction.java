@@ -755,8 +755,16 @@ public class LoginAction extends FacilioAction {
 			DecodedJWT decodedjwt = CognitoUtil.validateJWT(getPermalink(), "auth0");
 			
 			if (decodedjwt != null) {
-				long orgId = Long.parseLong(decodedjwt.getSubject().split("_")[0].split("-")[0]);
-				long ouid = Long.parseLong(decodedjwt.getSubject().split("_")[0].split("-")[1]);
+				long orgId = -1;
+				long ouid = -1;
+				if (decodedjwt.getSubject().split("_").length > 1) {
+					orgId = Long.parseLong(decodedjwt.getSubject().split("_")[0].split("-")[0]);
+					ouid = Long.parseLong(decodedjwt.getSubject().split("_")[0].split("-")[1]);
+				}
+				else {
+					orgId = Long.parseLong(decodedjwt.getSubject().split("#")[0].split("-")[0]);
+					ouid = Long.parseLong(decodedjwt.getSubject().split("#")[0].split("-")[1]);
+				}
 
 				account = new HashMap<>();
 				account.put("org", AccountUtil.getOrgBean().getOrg(orgId));
