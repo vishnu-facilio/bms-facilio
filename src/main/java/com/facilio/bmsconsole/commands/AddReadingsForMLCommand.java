@@ -92,7 +92,7 @@ public class AddReadingsForMLCommand extends FacilioCommand {
 					 catch(Exception e)
 					 {
 						 LOGGER.error("Error while updating Predicted Reading", e);
-						 AwsUtil.sendErrorMail(mlContext.getOrgId(), mlContext.getId(), e.toString());
+//						 AwsUtil.sendErrorMail(mlContext.getOrgId(), mlContext.getId(), e.toString());
 					 }
 				 }
 				 updateReading(logModule,logReadingList);
@@ -101,7 +101,7 @@ public class AddReadingsForMLCommand extends FacilioCommand {
 		catch(Exception e)
 		{
 			LOGGER.fatal("Error while updating Result in DB", e);
-			AwsUtil.sendErrorMail(mlContext.getOrgId(), mlContext.getId(), e.toString());
+//			AwsUtil.sendErrorMail(mlContext.getOrgId(), mlContext.getId(), e.toString());
 			throw e;
 		}
 		return false;

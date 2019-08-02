@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.jobs;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
@@ -25,7 +26,7 @@ import com.facilio.tasker.job.JobContext;
 
 public class DefaultMLHistoricalJob extends FacilioJob
 {
-	private static final Logger LOGGER = Logger.getLogger(GenerateMLModelCommand.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(DefaultMLHistoricalJob.class.getName());
 
 	@Override
 	public void execute(JobContext jc) 
@@ -53,6 +54,7 @@ public class DefaultMLHistoricalJob extends FacilioJob
 			
 			while(startTime < endTime)
 			{
+				LOGGER.info("Executing Job for MLID: "+jc.getJobId()+" and startTime:"+new Date(startTime));
 				executeParent(parentMlList,startTime);
 				if(child != null && !child.isEmpty())
 				{
@@ -60,6 +62,7 @@ public class DefaultMLHistoricalJob extends FacilioJob
 				}
 				startTime = startTime + executionTime;
 			}
+			LOGGER.info("finished HistoricalJob");
 		}
 		catch (Exception e)
 		{
@@ -95,6 +98,7 @@ public class DefaultMLHistoricalJob extends FacilioJob
 	
 	public void executeLoop(List<MLContext> mlContextList, long executionEndTime) throws Exception 
 	{
+		LOGGER.info("inside execute historical Job "+mlContextList.get(0).getId());
 		for(MLContext mlContext:mlContextList)
 		{
 			if(mlContext == null)

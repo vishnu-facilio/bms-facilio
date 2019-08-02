@@ -24,10 +24,11 @@ import com.facilio.modules.fields.FacilioField;
 
 public class GetReadingsForMLCommand extends FacilioCommand {
 
-	private static final Logger LOGGER = Logger.getLogger(GenerateMLModelCommand.class.getName());
+	private static final Logger LOGGER = Logger.getLogger(GetReadingsForMLCommand.class.getName());
 	@Override
 	public boolean executeCommand(Context context) throws Exception 
 	{
+		LOGGER.info("inside getReadingsforML");
 		MLContext mlContext = (MLContext) context.get(FacilioConstants.ContextNames.ML);
 		List<MLVariableContext> mlVariable = mlContext.getMLVariable();
 		
@@ -67,20 +68,11 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 																			startTime, currentTime,variables.getParentID());
 			
 			List<Map<String, Object>> props = selectBuilder.getAsProps();
-			if(mlContext.isEmptyDataMap() && props.size()>0)
-			{
-				mlContext.setEmptyDataMap(false);
-			}
 			for(Map<String,Object> prop : props)
 			{
 				data.put((long)prop.get(ttimeField.getName()), prop.get(variableField.getName()));
 			}
 			mlContext.setMlVariablesDataMap(variables.getParentID(), variableField.getName(), data);
-		}
-		if(mlContext.isEmptyDataMap()==true)
-		{
-			LOGGER.info("Empty MLVariableDataMAP");
-			AwsUtil.sendErrorMail(mlContext.getOrgId(), mlContext.getId(), "empty MLVariableDataMAp in GetReadingsFor MLCommand");
 		}
 		
 		List<MLVariableContext> mlCriteriaVariable = mlContext.getMLCriteriaVariables();
