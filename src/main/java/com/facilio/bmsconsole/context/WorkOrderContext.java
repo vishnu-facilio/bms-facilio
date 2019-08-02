@@ -384,6 +384,13 @@ public class WorkOrderContext extends TicketContext {
 		return -1;
 	}
 
+	public String getPreRequestStatusVal() {
+		if(preRequestStatus != null) {
+			return preRequestStatus.getStringVal();
+		}
+		return null;
+	}
+	
 	public void setPreRequestStatus(PreRequisiteStatus preRequestStatus) {
 		this.preRequestStatus = preRequestStatus;
 	}
@@ -392,15 +399,18 @@ public class WorkOrderContext extends TicketContext {
 		this.preRequestStatus = PreRequisiteStatus.valueOf(preRequestStatus);
 	}
 	public enum PreRequisiteStatus {
-		PENDING(1),
-		COMPLETED_WITH_NEGATIVE(2),
-		COMPLETED(3)
+		PENDING(1,"Pending"),
+		COMPLETED_WITH_NEGATIVE(2,"Completed With Negative values"),
+		COMPLETED(3,"Completed"),
+		NOT_STARTED(4,"Not started")
 		;
 
 		private int value;
-		private PreRequisiteStatus(int value) {
+		private String strVal;
+		private PreRequisiteStatus(int value, String strVal) {
 			// TODO Auto-generated constructor stub
 			this.value = value;
+			this.strVal = strVal;
 		}
 
 		public static PreRequisiteStatus valueOf(int value) {
@@ -412,6 +422,9 @@ public class WorkOrderContext extends TicketContext {
 		public int getValue() {
 			// TODO Auto-generated method stub
 			return value;
+		}
+		public String getStringVal() {
+			return strVal;
 		}
 	}
 

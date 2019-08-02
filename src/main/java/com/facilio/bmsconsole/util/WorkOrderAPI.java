@@ -1920,7 +1920,20 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 		if (props != null) {
 			negativecount = ((Number) props.get("count")).intValue();
 		}
-		PreRequisiteStatus preRequestStatus = PreRequisiteStatus.PENDING;
+		 inputValueCondition = CriteriaAPI.getCondition(fieldMap.get("inputValue"), "1",StringOperators.IS);
+		 select = new GenericSelectRecordBuilder().table(module.getTableName())
+				.select(Collections.singletonList(countField))
+				.groupBy(fieldMap.get("parentTicketId").getCompleteColumnName()).andCondition(condition)
+				.andCondition(preRequestCondition).andCondition(inputValueCondition);
+		 props = select.fetchFirst();
+		int positivecount = 0;
+		if (props != null) {
+			positivecount = ((Number) props.get("count")).intValue();
+		}
+		PreRequisiteStatus preRequestStatus = PreRequisiteStatus.NOT_STARTED;
+	    if(negativecount > 0 || positivecount > 0){
+	    	 preRequestStatus = PreRequisiteStatus.PENDING;
+	    }
 		boolean photoValidation = isPhotosAddedIfMandatory(woId);
 		if(nullcount == 0 && negativecount == 0 && photoValidation){
 			preRequestStatus = PreRequisiteStatus.COMPLETED;
