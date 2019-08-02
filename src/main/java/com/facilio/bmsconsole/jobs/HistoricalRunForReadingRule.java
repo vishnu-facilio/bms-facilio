@@ -113,6 +113,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 				if(resourceIds != null && !resourceIds.contains(resourceId) && !resourceIds.isEmpty()) {
 					continue;
 				}
+				WorkflowRuleHistoricalLoggerUtil.deleteReadingAlarm(readingRule.getId(), startTime, endTime, resourceId);
 				Map<String, List<ReadingDataMeta>> currentFields = supportFieldsRDM;
 				Map<String, List<ReadingDataMeta>> currentRDMList = null;
 				if (fields != null) {

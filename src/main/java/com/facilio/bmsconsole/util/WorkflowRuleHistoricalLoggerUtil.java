@@ -3,24 +3,29 @@ package com.facilio.bmsconsole.util;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLoggerContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.AggregateOperator;
+import com.facilio.modules.DeleteRecordBuilder;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 
 public class WorkflowRuleHistoricalLoggerUtil {
@@ -168,6 +173,35 @@ public class WorkflowRuleHistoricalLoggerUtil {
 		
 		deleteRecordBuilder.table(ModuleFactory.getWorkflowRuleHistoricalLoggerModule().getTableName())
 		.andCondition(CriteriaAPI.getCondition("ID", "id", ""+id, NumberOperators.EQUALS));
+		
+	}
+	
+	public static void deleteReadingAlarm(long ruleId, long startTime, long endTime, long resourceId) throws Exception
+	{
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.READING_ALARM);
+		
+		DeleteRecordBuilder<ReadingAlarmContext> builder = new DeleteRecordBuilder<ReadingAlarmContext>()
+				.module(module)
+				.andCondition(CriteriaAPI.getCondition("RULE_ID", "ruleId", ""+ruleId, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resourceId", ""+resourceId, NumberOperators.EQUALS));
+		
+		
+		Criteria criteria = new Criteria();
+		
+		Criteria subCriteria = new Criteria();
+		subCriteria.addAndCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", ""+endTime, NumberOperators.LESS_THAN));
+		subCriteria.addAndCondition(CriteriaAPI.getCondition("CLEARED_TIME", "clearedTime", ""+startTime, NumberOperators.GREATER_THAN));
+		
+		criteria.addOrCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN));
+		criteria.addOrCondition(CriteriaAPI.getCondition("CLEARED_TIME", "clearedTime", startTime+","+endTime, DateOperators.BETWEEN));
+		criteria.orCriteria(subCriteria);
+		
+		builder.andCriteria(criteria);
+		
+		
+				
+		builder.delete();
 		
 	}
 	
