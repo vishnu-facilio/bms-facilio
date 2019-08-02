@@ -459,12 +459,12 @@
                          
                        }
                     }
-  					log activeRecord;
           			resultMap = {};
-					resultMap[\"ranks\"] = activeRecord;
-  					resultMap[\"ranking\"] = ranking;
-					resultMap[\"outOfRule\"] = activeRecord.size();
-  					log resultMap;
+          			if (activeRecord != null) {
+          				resultMap[\"ranks\"] = activeRecord;
+  						resultMap[\"ranking\"] = ranking;
+						resultMap[\"outOfRule\"] = activeRecord.size();
+          			}
 				   	return resultMap;
 				}"
         }
