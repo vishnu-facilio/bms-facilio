@@ -70,7 +70,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 		//	DateRange range = (DateRange) props.get("range");
 			Long startTime = (Long) props.get("startTime");
 			Long endTime = (Long) props.get("endTime");
-			List<Long> resourceIds = (List<Long>) props.get("assetIds");
+			List<Long> resourceIds = (List<Long>) props.get("resourceIds");
 			
 //			LOGGER.info("Historical execution of rule : "+readingRule.getId()+" for resources : "+readingRule.getMatchedResources().keySet());
 			Map<String, List<ReadingDataMeta>> supportFieldsRDM = null;
@@ -110,7 +110,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 			List<ReadingEventContext> events = new ArrayList<>();
 			for (long resourceId : readingRule.getMatchedResources().keySet())
 			{
-				if(resourceIds != null && !resourceIds.contains(resourceId) && !resourceIds.isEmpty()) {
+				if(resourceIds != null && !resourceIds.isEmpty() && !resourceIds.contains(resourceId)) {
 					continue;
 				}
 				WorkflowRuleHistoricalLoggerUtil.deleteReadingAlarm(readingRule.getId(), startTime, endTime, resourceId);

@@ -135,7 +135,7 @@ public class WorkflowRuleHistoricalLoggerContext {
 	}
 
 	public void setStatus(int statusint) {
-		this.status = Status.getAllOptions().get(new Integer(statusint));
+		this.status = Status.getAllOptions().get(statusint);
 	}
 	
 	public int getType() {

@@ -6,6 +6,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLoggerContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.BmsJobUtil;
@@ -33,12 +34,11 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		long id = (long) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
 		DateRange range = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE);
-		List<Long> assetIds = (List<Long>) context.get(FacilioConstants.ContextNames.ASSET_ID);
+		List<Long> resourceIds = (List<Long>) context.get(FacilioConstants.ContextNames.RESOURCE_LIST);
 		
 		JSONObject jobprop = new JSONObject();
 		jobprop.put("startTime", range.getStartTime());
 		jobprop.put("endTime", range.getEndTime());
-		jobprop.put("assetIds", assetIds);
 		
 		if (id == -1 || range == null || range.getStartTime() == -1 || range.getEndTime() == -1) {
 			throw new IllegalArgumentException("In sufficient params for running Alarm Rules for historical data");
@@ -49,32 +49,29 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 			throw new IllegalArgumentException("Invalid Alarm rule id for running through historical data");
 		}
 		
-		BmsJobUtil.deleteJobWithProps(rule.getId(), "HistoricalRunForReadingRule");
-		BmsJobUtil.scheduleOneTimeJobWithProps(rule.getId(), "HistoricalRunForReadingRule", 30, "priority", jobprop);
-		
-		List<AssetContext> assets = new ArrayList<AssetContext>();
-		if(assetIds == null || assetIds.isEmpty())
+		List<Long> finalResourceIds = new ArrayList<Long>();
+		if(resourceIds == null || resourceIds.isEmpty())
 		{
-			AlarmRuleContext alarmRule = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(id),null);
-			ReadingRuleContext readingRuleContext =  alarmRule.getPreRequsite();
-			
-			assets = AssetsAPI.getAssetListOfCategory(readingRuleContext.getAssetCategoryId());
+			finalResourceIds = getMatchedResourcesIds(rule);
 		}
 		else 
 		{
-			for(Long assetId: assetIds)
+			List<Long> matchedResources = getMatchedResourcesIds(rule);
+			for(Long resourceId: resourceIds)
 			{
-				assets.add(AssetsAPI.getAssetInfo(assetId));
+				if(matchedResources.contains(resourceId)) {
+					finalResourceIds.add(resourceId);
+				}
 			}
 		}
 		
 		long loggerGroupId = -1l;
 		boolean isFirst = true;
-		for(AssetContext asset:assets)
+		
+		for(Long finalResourceId:finalResourceIds)
 		{
 			if(isFirst) {
-				WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = getworkflowRuleHistoricalLoggerContext(
-						rule.getId(), range, asset, -1);	
+				WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = getworkflowRuleHistoricalLoggerContext(rule.getId(), range, finalResourceId, -1);	
 				WorkflowRuleHistoricalLoggerUtil.addWorkflowRuleHistoricalLogger(workflowRuleHistoricalLoggerContext);
 				
 				loggerGroupId = workflowRuleHistoricalLoggerContext.getId();
@@ -83,23 +80,39 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 				isFirst = false;
 			}
 			else {
-				WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLogger = getworkflowRuleHistoricalLoggerContext(
-						rule.getId(), range, asset, loggerGroupId);	
+				WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLogger = getworkflowRuleHistoricalLoggerContext(rule.getId(), range, finalResourceId, loggerGroupId);	
 				WorkflowRuleHistoricalLoggerUtil.addWorkflowRuleHistoricalLogger(workflowRuleHistoricalLogger);
 			}
 		}	
 		
+		if(finalResourceIds != null && !finalResourceIds.isEmpty()) {
+			
+			jobprop.put("resourceIds", finalResourceIds);
+			
+			BmsJobUtil.deleteJobWithProps(rule.getId(), "HistoricalRunForReadingRule");
+			BmsJobUtil.scheduleOneTimeJobWithProps(rule.getId(), "HistoricalRunForReadingRule", 30, "priority", jobprop);
+		}
+		
 		return false;
 	}
 	
+	private static List<Long> getMatchedResourcesIds(WorkflowRuleContext rule) {
+
+		List<Long> matchedResourceIds = new ArrayList<>();
+		ReadingRuleContext readingRuleContext = (ReadingRuleContext)rule;
+		if(readingRuleContext.getMatchedResources() != null) {
+			matchedResourceIds = new ArrayList<>(readingRuleContext.getMatchedResources().keySet());
+		}
+		return matchedResourceIds;
+	}
 	
-	private static WorkflowRuleHistoricalLoggerContext getworkflowRuleHistoricalLoggerContext(long ruleId, DateRange range,
-			AssetContext asset, long loggerGroupId)
+	
+	private static WorkflowRuleHistoricalLoggerContext getworkflowRuleHistoricalLoggerContext(long ruleId, DateRange range,Long resourceId, long loggerGroupId)
 	{
 		WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = new WorkflowRuleHistoricalLoggerContext();
 		workflowRuleHistoricalLoggerContext.setRuleId(ruleId);
 		workflowRuleHistoricalLoggerContext.setType(WorkflowRuleHistoricalLoggerContext.Type.READING_RULE.getIntVal());
-		workflowRuleHistoricalLoggerContext.setResourceId(asset.getId());
+		workflowRuleHistoricalLoggerContext.setResourceId(resourceId);
 		workflowRuleHistoricalLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.IN_PROGRESS.getIntVal());
 		workflowRuleHistoricalLoggerContext.setLoggerGroupId(loggerGroupId);
 		workflowRuleHistoricalLoggerContext.setStartTime(range.getStartTime());
