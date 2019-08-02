@@ -41,34 +41,32 @@ public class AutoCommissionAction extends FacilioAction {
 
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = LogManager.getLogger(AutoCommissionAction.class.getName());
-
+	private static final int MAX_FIELDS=51;
+	
 	@SuppressWarnings("unused")
-	public String  autoCommissionData()throws Exception{
-		List<Map<String,Object>> pointsData = new ArrayList<>();
+	public String autoCommissionData() throws Exception {
+		List<Map<String, Object>> pointsData = new ArrayList<>();
 		FacilioContext context = new FacilioContext();
 		JSONObject jsonObj = null;
 		JSONArray jsonArr = new JSONArray(markedData);
-		for (int i = 0; i < jsonArr.length(); i++)
-		{
+		for (int i = 0; i < jsonArr.length(); i++) {
 			jsonObj = jsonArr.getJSONObject(i);
 
 			System.out.println(jsonObj);
-			Map<String,Object> yearMap = toMap(jsonObj);
-			pointsData.add(yearMap);
+			Map<String, Object> dataValue = toMap(jsonObj);
+			pointsData.add(dataValue);
 		}
-		System.out.println("####Dtaa" + pointsData);
 		context.put(FacilioConstants.ContextNames.CONTROLLER_ID, controllerId);
-		context.put(FacilioConstants.ContextNames.AUTO_COMMISSION_DATA,pointsData );
+		context.put(FacilioConstants.ContextNames.AUTO_COMMISSION_DATA, pointsData);
 		context.put(FacilioConstants.ContextNames.SPACE_ID, spaceId);
-		try {
-			if(markedData != null && controllerId != -1 ) {
+		if (!pointsData.isEmpty() && pointsData.size() < MAX_FIELDS) {
+
+			if (markedData != null && controllerId != -1) {
 				Chain mappingChain = TransactionChainFactory.updateAutoCommissionCommand();
 				mappingChain.execute(context);
 			}
-		}
-		catch(Exception e) {
-			throw new IllegalArgumentException("Parameter should not be null in AutoCommission  :"+e);
-
+		} else {
+			throw new IllegalArgumentException("Number of Points Should not be more than 50 Points data.");
 		}
 
 		setResult("result", "success");
@@ -77,54 +75,52 @@ public class AutoCommissionAction extends FacilioAction {
 	}
 
 	public static Map<String, Object> toMap(JSONObject object) throws JSONException {
-	    Map<String, Object> map = new HashMap<String, Object>();
+		Map<String, Object> map = new HashMap<String, Object>();
 
-	    Iterator<String> keysItr = object.keys();
-	    while(keysItr.hasNext()) {
-	        String key = keysItr.next();
-	        Object value = object.get(key);
+		Iterator<String> keysItr = object.keys();
+		while (keysItr.hasNext()) {
+			String key = keysItr.next();
+			Object value = object.get(key);
 
-	        if(value instanceof JSONArray) {
-	            value = toList((JSONArray) value);
-	        }
+			if (value instanceof JSONArray) {
+				value = toList((JSONArray) value);
+			}
 
-	        else if(value instanceof JSONObject) {
-	            value = toMap((JSONObject) value);
-	        }
-	        map.put(key, value);
-	    }
-	    return map;
+			else if (value instanceof JSONObject) {
+				value = toMap((JSONObject) value);
+			}
+			map.put(key, value);
+		}
+		return map;
 	}
 
 	public static List<Object> toList(JSONArray array) throws JSONException {
-	    List<Object> list = new ArrayList<Object>();
-	    for(int i = 0; i < array.length(); i++) {
-	        Object value = array.get(i);
-	        if(value instanceof JSONArray) {
-	            value = toList((JSONArray) value);
-	        }
+		List<Object> list = new ArrayList<Object>();
+		for (int i = 0; i < array.length(); i++) {
+			Object value = array.get(i);
+			if (value instanceof JSONArray) {
+				value = toList((JSONArray) value);
+			}
 
-	        else if(value instanceof JSONObject) {
-	            value = toMap((JSONObject) value);
-	        }
-	        list.add(value);
-	    }
-	    return list;
-	  }
+			else if (value instanceof JSONObject) {
+				value = toMap((JSONObject) value);
+			}
+			list.add(value);
+		}
+		return list;
+	}
 
 	@SuppressWarnings("unused")
 	public String getControllerAsset() throws Exception {
 		// TODO Auto-generated method stub
 
-		if(isExistingControllerId(controllerId)) {
+		if (isExistingControllerId(controllerId)) {
 			setResult("controllerId", true);
 		}
-
 
 		return SUCCESS;
 	}
 
-	
 	public static boolean isExistingControllerId(long controllerId) throws Exception {
 		// TODO Auto-generated method stub
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -132,53 +128,46 @@ public class AutoCommissionAction extends FacilioAction {
 		FacilioModule assetCategoryModule = modBean.getModule("resource");
 
 		SelectRecordsBuilder<AssetCategoryContext> builder = new SelectRecordsBuilder<AssetCategoryContext>()
-				.module(assetCategoryModule)
-				.beanClass(AssetCategoryContext.class)
+				.module(assetCategoryModule).beanClass(AssetCategoryContext.class)
 				.select(modBean.getAllFields(assetCategoryModule.getName()));
 
-		System.out.println("####Fields is .."+modBean.getAllFields(assetCategoryModule.getName()));
-		List<Map<String, Object>> cist = builder.getAsProps();	
+		System.out.println("####Fields is .." + modBean.getAllFields(assetCategoryModule.getName()));
+		List<Map<String, Object>> cist = builder.getAsProps();
 		for (Map<String, Object> map : cist) {
 			for (Map.Entry<String, Object> entry : map.entrySet()) {
 				String key = entry.getKey();
-				if(key.equalsIgnoreCase("controllerId")) {
+				if (key.equalsIgnoreCase("controllerId")) {
 					long id = (long) entry.getValue();
-					if(id == controllerId) {
-						System.out.println("Id is "+id+"controlerrid id :"+controllerId);
+					if (id == controllerId) {
+						System.out.println("Id is " + id + "controlerrid id :" + controllerId);
 						return true;
 					}
-
 
 				}
 			}
 		}
 
-
 		return false;
 	}
 
-	public static long getAssetId(long controllerId) throws Exception
-	{
+	public static long getAssetId(long controllerId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET);
-		
+
 		SelectRecordsBuilder<ResourceContext> selectBuilder = new SelectRecordsBuilder<ResourceContext>()
-				.moduleName(module.getName())
-				.beanClass(ResourceContext.class)
-				.select(modBean.getAllFields(module.getName()))
-				.table(module.getTableName())
-				.andCustomWhere("CONTROLLER_ID = ?", controllerId)
-				;
+				.moduleName(module.getName()).beanClass(ResourceContext.class)
+				.select(modBean.getAllFields(module.getName())).table(module.getTableName())
+				.andCustomWhere("CONTROLLER_ID = ?", controllerId);
 		List<ResourceContext> assets = selectBuilder.get();
-		if(assets != null && !assets.isEmpty()) {
+		if (assets != null && !assets.isEmpty()) {
 			return assets.get(0).getId();
 		}
 		return -1;
 	}
-	
-	public static void updatePointsData(String deviceName , String instanceName, List<FacilioModule> fieldId, long assetId, long controllerId) throws Exception {
-		
-		
+
+	public static void updatePointsData(String deviceName, String instanceName, List<FacilioModule> fieldId,
+			long assetId, long controllerId) throws Exception {
+
 		List<FacilioModule> modules = fieldId;
 		AssetCategoryContext category = AssetsAPI.getCategory(FacilioConstants.ContextNames.CONTROLLER_ASSET);
 
@@ -186,32 +175,31 @@ public class AutoCommissionAction extends FacilioAction {
 		List<FacilioField> fields = FieldFactory.getPointsFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 
-			Map<String, Object> pointsRecord = new HashMap<String, Object>();
-			pointsRecord.put("resourceId", assetId);
-			pointsRecord.put("categoryId", category.getId());
-			pointsRecord.put("fieldId", modules.get(0).getFields().get(0).getId());
-			pointsRecord.put("mappedTime", System.currentTimeMillis());
+		Map<String, Object> pointsRecord = new HashMap<String, Object>();
+		pointsRecord.put("resourceId", assetId);
+		pointsRecord.put("categoryId", category.getId());
+		pointsRecord.put("fieldId", modules.get(0).getFields().get(0).getId());
+		pointsRecord.put("mappedTime", System.currentTimeMillis());
 
-			GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder().fields(fields)
-					.table(module.getTableName())
-					.andCondition(CriteriaAPI.getCondition(fieldMap.get("device"), deviceName, StringOperators.IS))
-					.andCondition(CriteriaAPI.getCondition(fieldMap.get("instance"), instanceName, StringOperators.IS))
-					.andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"), String.valueOf(controllerId),StringOperators.IS));
+		GenericUpdateRecordBuilder builder = new GenericUpdateRecordBuilder().fields(fields)
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("device"), deviceName, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("instance"), instanceName, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"), String.valueOf(controllerId),
+						StringOperators.IS));
 
-			try {
-				int count = builder.update(pointsRecord);
-				if (count != 0) {
-					LOGGER.info("#######Points updated successfully in autocommission");
-				}
+		try {
+			int count = builder.update(pointsRecord);
+			if (count != 0) {
+				LOGGER.info("#######Points updated successfully in autocommission");
 			}
-			catch(Exception e) {
-				LOGGER.info("AutoCommission is failed to Update :"+e);
-			}
+		} catch (Exception e) {
+			LOGGER.info("AutoCommission is failed to Update :" + e);
+		}
 	}
-	
-	
-	private long spaceId=-1;
-	
+
+	private long spaceId = -1;
+
 	public long getSpaceId() {
 		return spaceId;
 	}
@@ -219,7 +207,9 @@ public class AutoCommissionAction extends FacilioAction {
 	public void setSpaceId(long spaceId) {
 		this.spaceId = spaceId;
 	}
-	private long siteId=-1;
+
+	private long siteId = -1;
+
 	public long getSiteId() {
 		return siteId;
 	}
@@ -227,8 +217,9 @@ public class AutoCommissionAction extends FacilioAction {
 	public void setSiteId(long siteId) {
 		this.siteId = siteId;
 	}
+
 	private String markedData;
-	
+
 	public String getMarkedData() {
 		return markedData;
 	}
@@ -236,7 +227,8 @@ public class AutoCommissionAction extends FacilioAction {
 	public void setMarkedData(String markedData) {
 		this.markedData = markedData;
 	}
-	private long controllerId =-1;
+
+	private long controllerId = -1;
 
 	public long getControllerId() {
 		return controllerId;
