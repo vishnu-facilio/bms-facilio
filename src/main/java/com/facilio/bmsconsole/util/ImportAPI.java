@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.io.File;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
@@ -19,7 +18,6 @@ import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -60,13 +58,13 @@ public class ImportAPI {
 	private static org.apache.log4j.Logger log = LogManager.getLogger(ImportAPI.class.getName());
 	private static Logger LOGGER  = Logger.getLogger(ImportAPI.class.getName());
 
-	public static JSONArray getColumnHeadings(File excelfile) throws Exception
+	public static JSONArray getColumnHeadings(Workbook workbook) throws Exception
 	{
 		HashMap<String,String> headingsInFirstSheet = new HashMap<String, String>();
 		JSONArray columnheadings = new JSONArray();
 		ArrayList<String> missingInSheet;
 		HashMap<Integer, ArrayList<String>> missingColumns = new HashMap<Integer, ArrayList<String>>();
-        Workbook workbook = WorkbookFactory.create(excelfile);
+//        Workbook workbook = WorkbookFactory.create(excelfile);
         if(workbook.getNumberOfSheets() > 1) {
         	for(int i =0; i< workbook.getNumberOfSheets();i++) {
         		Sheet dataSheet =workbook.getSheetAt(i);
@@ -119,12 +117,12 @@ public class ImportAPI {
             	break;
             }
         }
-        workbook.close();
+//        workbook.close();
         return columnheadings;
 	}
 	
-	public static ImportProcessContext getColumnHeadings(File excelFile, ImportProcessContext importProcessContext) throws Exception{
-		JSONArray columnHeadings = getColumnHeadings(excelFile);
+	public static ImportProcessContext getColumnHeadings(Workbook workbook, ImportProcessContext importProcessContext) throws Exception{
+		JSONArray columnHeadings = getColumnHeadings(workbook);
 		if(columnHeadings.size() == 1) {
 			if(columnHeadings.get(0) instanceof java.util.HashMap<?,?>) {
 				HashMap<Integer,ArrayList<String>> missingColumns = (HashMap<Integer, ArrayList<String>>) columnHeadings.get(0);
@@ -312,10 +310,10 @@ public class ImportAPI {
 		}
 		ProcessXLS.populateData(importProcessContext, readingsList);
 	}
-	public static JSONObject getFirstRow (File excelfile)throws Exception {
+	public static JSONObject getFirstRow (Workbook workbook)throws Exception {
 		JSONObject firstRow = new JSONObject();
-		JSONArray columnHeadings = getColumnHeadings(excelfile);
-		Workbook workbook = WorkbookFactory.create(excelfile);
+		JSONArray columnHeadings = getColumnHeadings(workbook);
+//		Workbook workbook = WorkbookFactory.create(excelfile);
 		Sheet datatypeSheet = workbook.getSheetAt(0);
 		Row row = datatypeSheet.getRow(1);
 		int lastCellNum = row.getLastCellNum();
@@ -359,6 +357,7 @@ public class ImportAPI {
 				}
 			}
 		}
+//		workbook.close();
 		return firstRow;
 	}
 	

@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.Map;
 
 import org.apache.commons.chain.Context;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
@@ -32,9 +34,13 @@ public class UploadImportFileCommand extends FacilioCommand {
 		Long assetCategory = (Long) context.get(FacilioConstants.ContextNames.ASSET_CATEGORY);
 		
 		long fileId = fs.addFile(fileUploadFileName, fileUpload, fileUploadContentType);
-		importProcessContext = ImportAPI.getColumnHeadings(fileUpload, importProcessContext);
+				
+		Workbook workbook = WorkbookFactory.create(fileUpload);
+		importProcessContext = ImportAPI.getColumnHeadings(workbook, importProcessContext);
 		
-		JSONObject firstRow = ImportAPI.getFirstRow(fileUpload);	
+		JSONObject firstRow = ImportAPI.getFirstRow(workbook);	
+		workbook.close();
+		
 		importProcessContext.setfirstRow(firstRow);
 		
 		Integer importMode = (Integer) context.get(FacilioConstants.ContextNames.IMPORT_MODE);

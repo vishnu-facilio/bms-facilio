@@ -278,6 +278,7 @@ public class DataParseForReadingsCommand extends FacilioCommand {
 		context.put(ImportAPI.ImportProcessConstants.GROUPED_FIELDS, groupedFields);
 		context.put(ImportAPI.ImportProcessConstants.NULL_UNIQUE_FIELDS, nullUniqueFields);
 		context.put(ImportAPI.ImportProcessConstants.NULL_RESOURCES, nullResources);
+		workbook.close();
 		return false;
 	}
 		

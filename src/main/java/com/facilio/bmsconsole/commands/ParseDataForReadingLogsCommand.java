@@ -254,7 +254,7 @@ public class ParseDataForReadingLogsCommand extends FacilioCommand {
 		LOGGER.severe(groupedContext.toString());
 		context.put(ImportAPI.ImportProcessConstants.GROUPED_ROW_CONTEXT, groupedContext);
 		context.put(ImportAPI.ImportProcessConstants.ROW_COUNT, row_no);
-
+		workbook.close();
 		LOGGER.severe("---DataParseForLogCommand End-----");
 		return false;
 	}

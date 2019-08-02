@@ -271,7 +271,7 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 		
 		context.put(ImportAPI.ImportProcessConstants.GROUPED_ROW_CONTEXT, groupedContext);
 		context.put(ImportAPI.ImportProcessConstants.ROW_COUNT, row_no);
-		
+		workbook.close();
 		LOGGER.severe(groupedContext.toString());
 		LOGGER.severe("Data Parsing for Import " + importProcessContext.getId() + " is complete");
 		
