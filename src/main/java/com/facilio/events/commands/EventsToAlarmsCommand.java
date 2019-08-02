@@ -91,13 +91,13 @@ public class EventsToAlarmsCommand extends FacilioCommand {
 
 		if (CollectionUtils.isNotEmpty(events)) {
 			for (EventContext event : events) {
-				processEventToAlarm(event);
+				processEventToAlarm(event,context);
 			}
 		}
 		return false;
 	}
 
-	private void processEventToAlarm (EventContext event) throws Exception {
+	private void processEventToAlarm (EventContext event,Context context) throws Exception {
 		if(event.getEventStateEnum() != EventState.IGNORED) {
 			doFieldMapping(event);
 			if(event.getSeverity().equals(FacilioConstants.Alarm.INFO_SEVERITY)) {
@@ -135,6 +135,7 @@ public class EventsToAlarmsCommand extends FacilioCommand {
 				}
 				else {
 					addAlarm(entityId, event);
+					context.put(FacilioConstants.ContextNames.IS_ALARM_CREATED, true);
 				}
 			}
 			event.setInternalState(EventInternalState.COMPLETED);

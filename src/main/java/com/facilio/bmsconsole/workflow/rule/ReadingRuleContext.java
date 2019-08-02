@@ -819,7 +819,6 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		long ruleId = getId();
 		List<ActionContext>	actions = ActionAPI.getActiveActionsFromWorkflowRule(ruleId);
 		if(actions != null) {
-			context.put(FacilioConstants.ContextNames.IS_ALARM_CREATED, true);
 			for(ActionContext action : actions) {
 				if(alarmSeverityId != null) {
 					JSONTemplate jsonTemplate = (JSONTemplate) action.getTemplate();

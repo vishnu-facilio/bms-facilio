@@ -273,6 +273,9 @@ public enum ActionType {
 					if (currentRule instanceof ReadingRuleContext) {
 						processAlarmMeta((ReadingRuleContext) currentRule, (long) obj.get("resourceId"), (long) obj.get("timestamp"), event, context);
 					}
+					if(addEventContext.get(FacilioConstants.ContextNames.IS_ALARM_CREATED) != null) {
+						context.put(FacilioConstants.ContextNames.IS_ALARM_CREATED, addEventContext.get(FacilioConstants.ContextNames.IS_ALARM_CREATED));
+					}
 				} catch (Exception e) {
 					LOGGER.error("Exception occurred ", e);
 				}

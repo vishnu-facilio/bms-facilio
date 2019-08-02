@@ -219,6 +219,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 						Boolean isAlarmCreated = (Boolean) context.get(FacilioConstants.ContextNames.IS_ALARM_CREATED);
 						if(isAlarmCreated != null && isAlarmCreated) {
 							alarmCount++;
+							context.put(FacilioConstants.ContextNames.IS_ALARM_CREATED, Boolean.FALSE);
 						}
 
 						List<ReadingEventContext> currentEvent = (List<ReadingEventContext>) context.remove(EventConstants.EventContextNames.EVENT_LIST);
