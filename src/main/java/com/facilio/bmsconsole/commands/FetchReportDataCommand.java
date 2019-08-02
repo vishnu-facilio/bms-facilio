@@ -96,6 +96,19 @@ public class FetchReportDataCommand extends FacilioCommand {
 
 		List<ReportDataContext> reportData = new ArrayList<>();
 		List<ReportDataPointContext> dataPoints = new ArrayList<>(report.getDataPoints());
+		if(report.getReportTemplate() != null ) {
+		Long reportParentId= report.getReportTemplate().getParentId();
+		if(reportParentId != null) {
+		Map<String, Object> metaData = new HashMap<>();
+		List<Long> parentIds = new ArrayList<>();
+		parentIds.add(reportParentId);
+		metaData.put("parentIds",parentIds);
+		for(ReportDataPointContext dataPoint : dataPoints) {
+			dataPoint.setMetaData(metaData);
+			dataPoint.setName(dataPoint.getyAxis().getLabel());
+		}
+		}
+		}
 		ReportDataPointContext sortPoint = getSortPoint(dataPoints);
 		ReportDataContext sortedData = null;
 		if (sortPoint != null) {
@@ -267,24 +280,25 @@ public class FetchReportDataCommand extends FacilioCommand {
 			LOGGER.info("Fetch Data X Values : "+xValues);
 		}
 		
-		if (xValues == null) {
-			if (dp.getAllCriteria() != null) {
-				newSelectBuilder.andCriteria(dp.getAllCriteria());
-			}
-			
-			boolean noMatch = applyFilters(report, dp, newSelectBuilder);
-			if (noMatch) {
-				return Collections.EMPTY_LIST;
-			}
-		}
-		else {
-			newSelectBuilder.andCondition(getEqualsCondition(xAggrField, xValues));
-		}
-		
 		if(report.getReportTemplate() != null ) {
 			Criteria templateCriteria = report.getReportTemplate().getCriteria(report);
 			if(templateCriteria != null) {
 				newSelectBuilder.andCriteria(templateCriteria);
+			}
+		}
+		else {
+			if (xValues == null) {
+				if (dp.getAllCriteria() != null) {
+					newSelectBuilder.andCriteria(dp.getAllCriteria());
+				}
+				
+				boolean noMatch = applyFilters(report, dp, newSelectBuilder);
+				if (noMatch) {
+					return Collections.EMPTY_LIST;
+				}
+			}
+			else {
+				newSelectBuilder.andCondition(getEqualsCondition(xAggrField, xValues));
 			}
 		}
 		
