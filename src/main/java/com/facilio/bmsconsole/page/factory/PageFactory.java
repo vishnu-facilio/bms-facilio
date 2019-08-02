@@ -107,12 +107,16 @@ public class PageFactory {
 	}
 	
 	protected static void addChartParams(PageWidget widget, String xFieldName, String yFieldName, Criteria criteria) {
-		addChartParams(widget, "line", DateAggregateOperator.MONTHANDYEAR, xFieldName, NumberAggregateOperator.AVERAGE, yFieldName, DateOperators.CURRENT_YEAR, null, criteria);
+		addChartParams(widget, "line", DateAggregateOperator.MONTHANDYEAR, xFieldName, NumberAggregateOperator.AVERAGE, yFieldName, null , DateOperators.CURRENT_YEAR, null, criteria);
+	}
+	
+	protected static void addChartParams(PageWidget widget, String xFieldName, String yFieldName,String groupByFieldName, Criteria criteria) {
+		addChartParams(widget, "line", DateAggregateOperator.MONTHANDYEAR, xFieldName, NumberAggregateOperator.AVERAGE, yFieldName, groupByFieldName , DateOperators.CURRENT_YEAR, null, criteria);
 	}
 	
 	@SuppressWarnings("unchecked")
 	protected static void addChartParams(PageWidget widget, String chartType, AggregateOperator xAggr, String xFieldName, AggregateOperator yAggr, 
-			String yFieldName, DateOperators dateOperator, String dateOperatorValue, Criteria criteria) {
+			String yFieldName,String groupByFieldName, DateOperators dateOperator, String dateOperatorValue, Criteria criteria) {
 		JSONObject obj = new JSONObject();
 		obj.put("chartType", chartType);
 		
@@ -125,6 +129,10 @@ public class PageFactory {
 		yField.put("aggr", yAggr.getValue());
 		yField.put("fieldName", yFieldName);
 		obj.put("yField", yField);
+		
+		JSONObject groupBy = new JSONObject();
+		groupBy.put("fieldName", groupByFieldName);
+		obj.put("groupBy", groupBy);
 		
 		obj.put("dateOperator", dateOperator.getOperatorId());
 		obj.put("dateOperatorValue", dateOperatorValue);

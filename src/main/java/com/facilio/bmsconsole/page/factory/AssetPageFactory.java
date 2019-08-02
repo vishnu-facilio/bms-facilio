@@ -114,6 +114,20 @@ public class AssetPageFactory extends PageFactory {
 		addFailureRateWidget(tab4Sec1, breakdownCriteria);
 		addAvgTtrWidget(tab4Sec1, breakdownCriteria);
 		
+		Tab tab7 = page.new Tab("cost");
+		page.addTab(tab7);
+		
+		Section tab7Sec1 = page.new Section();
+		tab7.addSection(tab7Sec1);
+		addMaintenanceCostWidget(tab7Sec1);
+		addPlannedMaintenanceCostWidget(tab7Sec1);
+		addUnplannedMaintenanceCostWidget(tab7Sec1);
+		
+        fieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.WORK_ORDER));
+		Criteria maintenanceCostCriteria = new Criteria();
+		maintenanceCostCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), String.valueOf(asset.getId()), NumberOperators.EQUALS));
+		addMaintenanceCostTrendWidget(tab7Sec1, maintenanceCostCriteria);
+		
 		// if (AccountUtil.isFeatureEnabled(FeatureLicense.GRAPHICS)) {
 		if ((AccountUtil.getCurrentOrg().getOrgId() == 210 && asset.isConnected() ) || (AccountUtil.getCurrentOrg().getOrgId() == 75 && module.getName().equals("fahu"))) {
 			
@@ -244,6 +258,31 @@ public class AssetPageFactory extends PageFactory {
 			LOGGER.error("Error in fetching writable readings", e);
 		}
 		
+	}
+	private static void addMaintenanceCostWidget(Section section) {
+		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
+		cardWidget.addToLayoutParams(section, 24, 4);
+		cardWidget.addToWidgetParams("type", CardType.MAINTENACE_COST.getName());
+		section.addWidget(cardWidget);
+	}
+	private static void addPlannedMaintenanceCostWidget(Section section) {
+		PageWidget cardWidget = new PageWidget(WidgetType.CARD, "plannedMaintenanceCost");
+		cardWidget.addToLayoutParams(section, 12, 9);
+		cardWidget.addToWidgetParams("type", CardType.PLANNED_MAINTENACE_COST.getName());
+		section.addWidget(cardWidget);
+	}
+	private static void addUnplannedMaintenanceCostWidget(Section section) {
+		PageWidget cardWidget = new PageWidget(WidgetType.CARD, "unplannedMaintenanceCost");
+		cardWidget.addToLayoutParams(section, 12, 9);
+		cardWidget.addToWidgetParams("type", CardType.UNPLANNED_MAINTENACE_COST.getName());
+		section.addWidget(cardWidget);
+	}
+	private static void addMaintenanceCostTrendWidget(Section section, Criteria criteria) {
+		PageWidget cardWidget = new PageWidget(WidgetType.CHART, "maintenanceCostTrend");
+		cardWidget.addToLayoutParams(section, 24, 14);
+		cardWidget.addToWidgetParams("type", CardType.MAINTENANCE_COST_TREND.getName());
+		addChartParams(cardWidget, "createdTime", "totalCost","plannedvsunplanned", criteria);
+		section.addWidget(cardWidget);
 	}
 	
 	private static void addAssetLifeWidget(Section section) {

@@ -467,6 +467,147 @@
           			}
 				   	return resultMap;
 				}"
+        },
+    "105": {
+    	"description" : "assetMaintenanceCost",
+        "usage" : "assetSummary",
+        "workflow" : "Map maintenanceCost(Number assetId) 
+        			  	{ 
+        			  		 woModule = Module(\"workorder\"); 
+						     date = NameSpace(\"date\");
+							 ranges = date.getDateRange(\"Current Year\");
+						     res = woModule.fetch([totalCost !=null && resource == assetId && createdTime == ranges]); 
+						    
+						     maintenanceCost = 0;
+						     plannedMaintenanceCost = 0;
+						     unplannedMaintenanceCost = 0;
+						  if(res !=null) {
+						      for each index,value in res{
+						         if(value.sourceType == 5){
+						           plannedMaintenanceCost = plannedMaintenanceCost + value.totalCost;
+						         }
+						         else{
+						           unplannedMaintenanceCost = unplannedMaintenanceCost + value.totalCost;
+						         }
+						     } 
+						  }
+						     resMap = {};
+						     resMap[\"plannedMaintenanceCost\"] = plannedMaintenanceCost;
+						     resMap[\"unplannedMaintenanceCost\"] = unplannedMaintenanceCost;
+						     resMap[\"maintenanceCost\"] = plannedMaintenanceCost + unplannedMaintenanceCost;
+						     return resMap; 
+        			  	}"
+        },
+    "106": {
+    	"description" : "assetPlannedMaintenanceCost",
+        "usage" : "assetSummary",
+        "workflow" : "Map maintenanceCost(Number assetId) 
+        			  	{ 
+        			  		 woModule = Module(\"workorder\"); 
+						     date = NameSpace(\"date\");
+							 ranges = date.getDateRange(\"Current Year\");
+						     res = woModule.fetch([totalCost !=null && resource == assetId && createdTime == ranges]); 
+						     woCostModule = Module(\"workorderCost\"); 
+						   
+						     pmItemsCost = 0;
+						     pmToolCost = 0;
+						     pmLabourCost = 0;
+						     pmCustomCost = 0;
+						     maintenanceCost = 0;
+						     plannedMaintenanceCost = 0;
+						     unplannedMaintenanceCost = 0;
+						  if(res !=null) {
+						      for each index,value in res{
+						       costResult = woCostModule.fetch([cost !=null && parentId == value.id]);
+						         if(value.sourceType == 5){
+						          if(costResult != null){
+						           for each cosIndex,cosValue in costResult{
+						           
+						             if(cosValue.costType == 1){
+						               pmItemsCost = pmItemsCost + cosValue.cost ;
+						             }else if(cosValue.costType == 2){
+						               pmToolCost = pmToolCost + cosValue.cost ;
+						             }else if(cosValue.costType == 3){
+						               pmLabourCost = pmLabourCost + cosValue.cost ;
+						             }else {
+						               pmCustomCost = pmCustomCost + cosValue.cost ;
+						             }
+						            }
+						           }
+						           
+						           plannedMaintenanceCost = plannedMaintenanceCost + value.totalCost;
+						           
+						         }
+						         else{
+						           unplannedMaintenanceCost = unplannedMaintenanceCost + value.totalCost;
+						           
+						         }
+						     } 
+						  }
+						     resMap = {};
+						     resMap[\"pmItemsCost\"] = pmItemsCost;
+						     resMap[\"pmToolCost\"] = pmToolCost;
+						     resMap[\"pmLabourCost\"] = pmLabourCost;
+						     resMap[\"pmCustomCost\"] = pmCustomCost;
+						     resMap[\"maintenanceCost\"] = plannedMaintenanceCost + unplannedMaintenanceCost;
+						     return resMap; 
+        			  	}"
+        },
+    "107": {
+    	"description" : "assetUnplannedMaintenanceCost",
+        "usage" : "assetSummary",
+        "workflow" : "Map maintenanceCost(Number assetId) 
+        			  	{ 
+        			  		 woModule = Module(\"workorder\"); 
+						     date = NameSpace(\"date\");
+							 ranges = date.getDateRange(\"Current Year\");
+						     res = woModule.fetch([totalCost !=null && resource == assetId && createdTime == ranges]); 
+						     woCostModule = Module(\"workorderCost\"); 
+						     
+						     upmItemsCost = 0;
+						     upmToolCost = 0;
+						     upmLabourCost = 0;
+						     upmCustomCost = 0;
+						     maintenanceCost = 0;
+						     plannedMaintenanceCost = 0;
+						     unplannedMaintenanceCost = 0;
+						  if(res !=null) {
+						      for each index,value in res{
+						       costResult = woCostModule.fetch([cost !=null && parentId == value.id]);
+						         if(value.sourceType == 5){
+						          
+						           plannedMaintenanceCost = plannedMaintenanceCost + value.totalCost;
+						           
+						         }
+						         else{
+						         if(costResult != null){
+						           for each cosIndex,cosValue in costResult{
+						            
+						             if(cosValue.costType == 1){
+						               upmItemsCost = upmItemsCost + cosValue.cost ;
+						             }else if(cosValue.costType == 2){
+						               upmToolCost = upmToolCost + cosValue.cost ;
+						             }else if(cosValue.costType == 3){
+						               upmLabourCost = upmLabourCost + cosValue.cost ;
+						             }else {
+						               upmCustomCost = upmCustomCost + cosValue.cost ;
+						             }
+						            
+						           }
+						          } 
+						           unplannedMaintenanceCost = unplannedMaintenanceCost + value.totalCost;
+						           
+						         }
+						     } 
+						  }
+						     resMap = {};
+						     resMap[\"upmItemsCost\"] = upmItemsCost;
+						     resMap[\"upmToolCost\"] = upmToolCost;
+						     resMap[\"upmLabourCost\"] = upmLabourCost;
+						     resMap[\"upmCustomCost\"] = upmCustomCost;
+						     resMap[\"maintenanceCost\"] = plannedMaintenanceCost + unplannedMaintenanceCost;
+						     return resMap; 
+        			  	}"
         }
         
 }

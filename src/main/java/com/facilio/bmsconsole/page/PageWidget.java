@@ -241,7 +241,11 @@ public class PageWidget {
 		BASELINE_EQUATION("baselineEquation"),
 		MV_ADJUSTMENTS("mvAdjustments"),
 		RULE_ASSOCIATED_WO("ruleAssociatedWo"),
-		RULE_WO_DURATION("ruleWoDuration")
+		RULE_WO_DURATION("ruleWoDuration"),
+		MAINTENACE_COST("maintenanceCost"),
+ 		PLANNED_MAINTENACE_COST("plannedMaintenanceCost"),
+ 		UNPLANNED_MAINTENACE_COST("unplannedMaintenanceCost"),
+ 		MAINTENANCE_COST_TREND("maintenanceCostTrend")
  		;
 		private String name;
 		
