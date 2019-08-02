@@ -1957,7 +1957,6 @@
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.PageAction" method="fetchPage">
 			<param name="moduleName">{1}</param>
-			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
 
@@ -1967,7 +1966,6 @@
 			class="com.facilio.bmsconsole.actions.PageAction"
 			method="fetchSpecialModulePage">
 			<param name="moduleName">{1}</param>
-			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 		</action>
 	</package>
 
