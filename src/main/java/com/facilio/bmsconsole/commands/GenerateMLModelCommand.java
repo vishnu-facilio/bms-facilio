@@ -96,7 +96,7 @@ public class GenerateMLModelCommand extends FacilioCommand {
 		Map<String, String> headers = new HashMap<>();
 		headers.put("Content-Type", "application/json");
 		LOGGER.info(" Sending request to ML Server "+postURL+"::"+mlContext.getId());
-		String result = AwsUtil.doHttpPost(postURL, headers, null, postObj.toString());
+		String result = AwsUtil.doHttpPost(postURL, headers, null, postObj.toString(),300);
 		mlContext.setResult(result);
 		return false;
  	}
