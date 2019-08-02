@@ -1,20 +1,19 @@
 package com.facilio.devicepoints;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.util.ControllerAPI;
 import com.facilio.bmsconsole.util.IoTMessageAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.timeseries.TimeSeriesAPI;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * AgentProcessor is a dedicated Processor for processing payloads with PUBLISH_TYPE set to 'DevicePoints'.
@@ -65,7 +64,7 @@ public  class DevicePointsUtil {
 		String deviceId = instanceNumber+"_"+ipAddress+"_"+networkNumber;
 		// if( ! deviceMap.containsKey(deviceId)) {
 		ModuleCRUDBean bean = (ModuleCRUDBean) BeanFactory.lookup("ModuleCRUD", orgId);
-		ControllerContext controller = bean.getController(deviceName, deviceId);
+		ControllerContext controller = bean.getController(deviceName, deviceId,agentId);
 		if(controller == null) {
 			controller = new ControllerContext();
 			controller.setName(deviceName);

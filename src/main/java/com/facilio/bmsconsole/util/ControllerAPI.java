@@ -1,20 +1,5 @@
 package com.facilio.bmsconsole.util;
 
-import java.sql.SQLException;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ControllerActivityWatcherContext;
 import com.facilio.bmsconsole.context.ControllerContext;
@@ -25,11 +10,7 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -38,6 +19,15 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.time.SecondsChronoUnit;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.sql.SQLException;
+import java.time.ZonedDateTime;
+import java.util.*;
+import java.util.stream.Collectors;
 
 ;
 
@@ -88,15 +78,15 @@ public class ControllerAPI {
 	}
 	
 	public static ControllerContext getController (String macAddress) throws Exception {
-		return getController(null, macAddress, false);
+		return getController(null, macAddress, false,null);
 	}
 	
-	public static ControllerContext getController (String deviceName, String macAddress, boolean fetchBuilding) throws Exception {
+	public static ControllerContext getController (String deviceName, String macAddress, boolean fetchBuilding,Long agentId) throws Exception {
 		FacilioModule module = ModuleFactory.getControllerModule();
 		List<FacilioField> fields = FieldFactory.getControllerFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields); 
 		FacilioField macAddrField = fieldMap.get("macAddr");
-		
+		FacilioField agentIdField = fieldMap.get("agentId");
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table(module.getTableName())
@@ -107,8 +97,13 @@ public class ControllerAPI {
 			FacilioField deviceNameField = fieldMap.get("name");
 			ruleBuilder = ruleBuilder.andCondition(CriteriaAPI.getCondition(deviceNameField, deviceName, StringOperators.IS));
 		}
-		
+		if(agentId != null){
+			ruleBuilder = ruleBuilder.andCondition(CriteriaAPI.getCondition(agentIdField, String.valueOf(agentId),NumberOperators.EQUALS));
+		}
 		List<Map<String, Object>> controllerList = ruleBuilder.get();
+		if (agentId != null){
+			LOGGER.info(" query "+ruleBuilder.toString());
+		}
 		List<ControllerContext> controllers = getControllerFromMapList(controllerList, fetchBuilding);
 		if(AccountUtil.getCurrentOrg().getOrgId()==152) {
 			
@@ -452,7 +447,7 @@ public class ControllerAPI {
 		return updateBuilder.update(prop);
 	}
 
-	public static ControllerContext getController(String deviceName, String deviceId) throws Exception {
-		return getController(deviceName, deviceId, false);
+	public static ControllerContext getController(String deviceName, String deviceId,long agentId) throws Exception {
+		return getController(deviceName, deviceId, false,agentId);
 	}
 }
