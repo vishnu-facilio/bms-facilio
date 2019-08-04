@@ -1,5 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.ResourceAPI;
@@ -9,18 +18,14 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.AggregateOperator.CommonAggregateOperator;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class GenericGetModuleDataListCommand extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(GenericGetModuleDataListCommand.class.getName());
@@ -34,11 +39,8 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 
 		boolean fetchCount = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_COUNT, false);
 
-		List<FacilioField> fields;
-		if (fetchCount) { 
-			fields = FieldFactory.getCountField(module);
-		}
-		else {
+		List<FacilioField> fields = null;
+		if (!fetchCount) {
 			fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			if (CollectionUtils.isEmpty(fields)) {
 				fields = modBean.getAllFields(moduleName);
@@ -105,7 +107,7 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 			builder.andCriteria(scopeCriteria);
 		}
 
-		if (module.getTypeEnum() == ModuleType.CUSTOM) {
+		if (!fetchCount && module.getTypeEnum() == ModuleType.CUSTOM) {
 			List<LookupField> lookupFields = new ArrayList<>();
 			for (FacilioField f : fields) {
 				if (f instanceof LookupField) {
@@ -127,15 +129,15 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 			
 			builder.offset(offset);
 			builder.limit(perPage);
-		} else {
-			builder.setAggregation();
+		}
+		else if (fetchCount) {
+			builder.aggregate(CommonAggregateOperator.COUNT, FieldFactory.getIdField(module));
 		}
 		
 		List<? extends ModuleBaseWithCustomFields> records = builder.get();
 		if (fetchCount) {
 			if (CollectionUtils.isNotEmpty(records)) {
-				String countFieldName = fields.get(0).getName();
-				context.put(FacilioConstants.ContextNames.RECORD_COUNT, records.get(0).getData().get(countFieldName));
+				context.put(FacilioConstants.ContextNames.RECORD_COUNT, records.get(0).getId());
 			}
 		}
 		else {

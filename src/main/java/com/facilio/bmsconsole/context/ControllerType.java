@@ -21,7 +21,10 @@ public enum ControllerType {
 
 	OPC_UA (7,"Opc UA"),
 	
-	LON_WORKS (8,"Lon Works");
+	LON_WORKS (8,"Lon Works"),
+	
+	KNX (9, "Knx")
+	;
 
 	private int key;
 	private String label;
