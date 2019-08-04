@@ -1625,6 +1625,36 @@
 		</action>
 
 	</package>
+	
+	<package name="relationshipApiV2" namespace="/api/v2/relationship"
+		extends="v2Api">
+
+		<action name="addOrUpdate"
+			class="com.facilio.bmsconsole.actions.RelationshipAction"
+			method="addOrUpdateRelationShip">
+		</action>
+		<action name="get"
+			class="com.facilio.bmsconsole.actions.RelationshipAction"
+			method="getRelationshipList">
+		</action>
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.RelationshipAction"
+			method="deleteRelationship">
+		</action>
+	</package>
+
+   <package name="relatedAssetsApiV2" namespace="/api/v2/relatedAssets"
+		extends="v2Api">
+
+		<action name="addOrUpdate"
+			class="com.facilio.bmsconsole.actions.RelatedAssetsAction"
+			method="addOrUpdateRelatedAssets">
+		</action>
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.RelatedAssetsAction"
+			method="deleteRelatedAsset">
+		</action>
+	</package>
 
 	<package name="assetListApiv2" namespace="/api/v2/assets/view"
 		extends="v2Api">

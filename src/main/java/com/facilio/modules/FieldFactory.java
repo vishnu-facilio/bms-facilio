@@ -5667,6 +5667,26 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	public static List<FacilioField> getRelationshipFields() {
+		FacilioModule module = ModuleFactory.getRelationshipModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getIdField(module));
+		fields.add(getField("name", "NAME", module, FieldType.STRING));
+		fields.add(getField("relationshipType", "TYPE", module, FieldType.NUMBER));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getRelatedAssetesFields() {
+		FacilioModule module = ModuleFactory.getRelatedAssetsModule();
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(getIdField(module));
+		fields.add(getField("sourceId", "SOURCE_ID", module, FieldType.NUMBER));
+		fields.add(getField("targetId", "TARGET_ID", module, FieldType.NUMBER));
+		fields.add(getField("relationId", "RELATION_ID", module, FieldType.NUMBER));
+		return fields;
+	}
+	
 	public static List<FacilioField> getReport1FolderFields() {
 		FacilioModule module = ModuleFactory.getReportFolderModule();
 		List<FacilioField> fields = new ArrayList<>();

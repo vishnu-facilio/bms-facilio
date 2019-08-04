@@ -739,6 +739,41 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateAttachmentCountUpdateCommand());
 			return c;
 		}
+		public static Chain getAddRelationShipChain(){
+			Chain c = getDefaultChain();
+			c.addCommand(new AddRelationshipCommand());
+			return c;
+		}
+		
+		public static Chain getUpdateRelationShipChain(){
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateRelationshipCommand());
+			return c;
+		}
+		
+		public static Chain getAddRelatedAssetsChain(){
+			Chain c = getDefaultChain();
+			c.addCommand(new AddRelatedAssetsCommand());
+			return c;
+		}
+		
+		public static Chain getUpdateRelatedAssetsChain(){
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateRelatedAssetsCommand());
+			return c;
+		}
+		
+		public static Chain getDeleteRelatedAssetsChain(){
+			Chain c = getDefaultChain();
+			c.addCommand(new DeleteRelatedAssetsCommand());
+			return c;
+		}
+		
+		public static Chain getDeleteRelationshipChain(){
+			Chain c = getDefaultChain();
+			c.addCommand(new DeleteRelationshipCommand());
+			return c;
+		}
 	
 		public static Chain historicalFormulaCalculationChain() {
 			Chain c = getDefaultChain();

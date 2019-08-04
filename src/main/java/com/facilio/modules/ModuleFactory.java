@@ -301,6 +301,20 @@ public class ModuleFactory {
 
 		return fieldModule;
 	}
+	public static FacilioModule getRelationshipModule() {
+		FacilioModule fieldModule = new FacilioModule();
+		fieldModule.setName("relationship");
+		fieldModule.setDisplayName("Relationship");
+		fieldModule.setTableName("Relationship");
+		return fieldModule;
+	}
+	public static FacilioModule getRelatedAssetsModule() {
+		FacilioModule fieldModule = new FacilioModule();
+		fieldModule.setName("relatedAssets");
+		fieldModule.setDisplayName("Related Assets");
+		fieldModule.setTableName("Related_Assets");
+		return fieldModule;
+	}
 
 	public static FacilioModule getAssetCategoryReadingRelModule() {
 		FacilioModule fieldModule = new FacilioModule();

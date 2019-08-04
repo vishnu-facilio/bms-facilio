@@ -699,6 +699,10 @@ public class FacilioConstants {
 		public static final String RELATIONS_COUNT = "relationsCount";
 		public static final String FETCH_HIERARCHY = "fetchHierarchy";
 		
+		public static final String RELATIONSHIP = "relationship";
+		public static final String RELATIONSHIP_LIST = "relationshipList";
+		public static final String RELATED_ASSETS = "relatedAssets";
+		
 		public static final String SPACECATEGORY = "SPACECATEGORY";
 		public static final String SPACECATEGORIESLIST = "SPACECATEGORIESLIST";
 		

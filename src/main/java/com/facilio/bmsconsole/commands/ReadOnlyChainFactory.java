@@ -25,6 +25,12 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 
+	public static Chain getRelationshipChain(){
+		Chain c = getDefaultChain();
+		c.addCommand(new GetRelationshipCommand());
+		return c;
+	}
+	
 	public static Chain getLastAssetBreakDownChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new GetAssetDownTimeDetailsCommand());
