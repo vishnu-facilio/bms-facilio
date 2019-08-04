@@ -49,52 +49,24 @@ public class LoadViewCommand extends FacilioCommand {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			String parentViewName = (String) context.get(FacilioConstants.ContextNames.PARENT_VIEW);	// eg: to get default report columns
 			FacilioView view = null;
-			boolean isCVEnabled = true;
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			if(isCVEnabled) {
-				long moduleId = modBean.getModule(moduleName).getModuleId();
-				if (LookupSpecialTypeUtil.isSpecialType(moduleName)) {
-					view = ViewAPI.getView(viewName, moduleName, AccountUtil.getCurrentOrg().getOrgId());
-				} else {
-					view = ViewAPI.getView(viewName, moduleId, AccountUtil.getCurrentOrg().getOrgId());
-				}
+			FacilioModule module = modBean.getModule(moduleName);
+			long moduleId = module.getModuleId();
+			if (LookupSpecialTypeUtil.isSpecialType(moduleName)) {
+				view = ViewAPI.getView(viewName, moduleName, AccountUtil.getCurrentOrg().getOrgId());
+			} else {
+				view = ViewAPI.getView(viewName, moduleId, AccountUtil.getCurrentOrg().getOrgId());
 			}
 			
 			if(view == null) {
-//				if (modBean.getField("moduleState", ContextNames.WORK_ORDER) != null && (viewName.equals("approval_requested") || moduleName.equals("approval"))) {
-//					view = ViewFactory.getRequestedStateApproval();
-//					if (view != null) {
-//						List<ViewField> columns = ColumnFactory.getColumns(moduleName, viewName);
-//						view.setFields(columns);
-//						view.setDefault(true);
-//					}
-//				}
-//				else {
-					view = ViewFactory.getView(moduleName, viewName);
-//				}
+				view = ViewFactory.getView(module, viewName, modBean);
 				if (view == null && parentViewName != null) {
-					view = ViewFactory.getView(moduleName, parentViewName);
+					view = ViewFactory.getView(module, parentViewName, modBean);
 				}
 				else if (view == null) {
-					ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-					FacilioModule module = bean.getModule(moduleName);
 					String extendedModName = module.getExtendModule() == null ? StringUtils.EMPTY : module.getExtendModule().getName();
 					if (extendedModName.contains("asset")) {
 						view = ViewFactory.getModuleView(module, extendedModName);
-					}
-				}
-				
-				if (view == null && viewName.equalsIgnoreCase("all")) {
-					// all viewname for custom module will not be found anywhere
-					view = ViewFactory.getCustomModuleAllView(moduleName);
-					List<FacilioField> allFields = modBean.getAllFields(moduleName);
-					List<ViewField> viewFields = new ArrayList<>();
-					view.setFields(viewFields);
-					
-					for (FacilioField field : allFields) {
-						ViewField viewField = new ViewField(field.getName(), field.getDisplayName());
-						viewField.setField(field);
-						viewFields.add(viewField);
 					}
 				}
 				

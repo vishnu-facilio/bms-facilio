@@ -4451,6 +4451,13 @@ public class FieldFactory {
 		field.setColumnName("FIELDID");
 		field.setModule(module);
 		fields.add(field);
+		
+		FacilioField fieldName = new FacilioField();
+		fieldName.setName("fieldName");
+		fieldName.setDataType(FieldType.STRING);
+		fieldName.setColumnName("FIELDNAME");
+		fieldName.setModule(module);
+		fields.add(fieldName);
 
 		FacilioField orderType = new FacilioField();
 		orderType.setName("isAscending");

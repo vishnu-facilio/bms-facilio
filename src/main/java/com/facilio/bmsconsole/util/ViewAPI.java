@@ -397,6 +397,9 @@ public class ViewAPI {
 			List<Map<String, Object>> props = new ArrayList<>();
 			
 			for(SortField field: sortfields) {
+				if (field.getFieldId() == -1 && StringUtils.isEmpty(field.getFieldName())) {
+					throw new IllegalArgumentException("Sort field is required");
+				}
 				field.setViewId(viewId);
 				field.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 				Map<String, Object> prop = FieldUtil.getAsProperties(field);
@@ -481,7 +484,13 @@ public class ViewAPI {
 			
 			for (Map<String, Object> prop : props) {
 				SortField sortField = FieldUtil.getAsBeanFromMap(prop, SortField.class);
-				FacilioField field = modBean.getField(sortField.getFieldId());
+				FacilioField field;
+				if (sortField.getFieldId() != -1) {
+					field = modBean.getField(sortField.getFieldId());					
+				}
+				else {
+					field = FieldFactory.getSystemField(sortField.getFieldName(), null);
+				}
 				sortField.setSortField(field);
 				sortFields.add(sortField);
 			}
@@ -495,11 +504,12 @@ public class ViewAPI {
 	public static long checkAndAddView(String viewName, String moduleName, List<ViewField> columns) throws Exception {
 		long viewId = -1;
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		long moduleId = modBean.getModule(moduleName).getModuleId();
+		FacilioModule module= modBean.getModule(moduleName);
+		long moduleId = module.getModuleId();
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		FacilioView view = getView(viewName, moduleId, orgId);
 		if(view == null) {
-			view = ViewFactory.getView(moduleName, viewName);
+			view = ViewFactory.getView(module, viewName, modBean);
 			if(view != null) {
 				if(view.getTypeEnum() == null){
 					view.setType(ViewType.TABLE_LIST);
@@ -517,9 +527,14 @@ public class ViewAPI {
 				List<SortField> sortFields = view.getSortFields();
 				if (sortFields != null && !sortFields.isEmpty()) {
 					for (SortField field : sortFields) {
-						FacilioField sortfield = modBean.getField(field.getSortField().getName(), moduleName);
-						Long fieldID = modBean.getField(sortfield.getName(), moduleName).getFieldId();
-						field.setFieldId(fieldID);
+						String sortFieldName = field.getSortField().getName();
+						FacilioField sortfield = modBean.getField(sortFieldName, moduleName);
+						if (sortfield.getFieldId() != -1) {
+							field.setFieldId(sortfield.getFieldId());							
+						}
+						else {
+							field.setFieldName(sortFieldName);
+						}
 						field.setOrgId(orgId);
 					}
 					customizeViewSortColumns(viewId, sortFields);

@@ -35,10 +35,11 @@ public class AddWoViewScheduleCommand extends FacilioCommand {
 		String viewName = (String) context.get(FacilioConstants.ContextNames.CV_NAME);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		long moduleId = modBean.getModule(moduleName).getModuleId();
+		FacilioModule module = modBean.getModule(moduleName);
+		long moduleId = module.getModuleId();
 		FacilioView view = ViewAPI.getView(viewName, moduleId, AccountUtil.getCurrentOrg().getOrgId());
 		if (view == null) {
-			view = ViewFactory.getView(moduleName, viewName);
+			view = ViewFactory.getView(module, viewName, modBean);
 		}
 		if ((view != null) && (view.getId() == -1)) {
 			viewId = ViewAPI.checkAndAddView(view.getName(), moduleName, null);
@@ -68,7 +69,7 @@ public class AddWoViewScheduleCommand extends FacilioCommand {
 			props.put("templateId", emailTemplate.getId());
 			props.put("moduleID", moduleId);
 			
-			FacilioModule module = ModuleFactory.getViewScheduleInfoModule();
+			FacilioModule viewInfoModule = ModuleFactory.getViewScheduleInfoModule();
 			List<FacilioField> fields = FieldFactory.getViewScheduleInfoFields();
 			
 			EventType type = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
@@ -90,7 +91,7 @@ public class AddWoViewScheduleCommand extends FacilioCommand {
 				GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 						.table(module.getTableName())
 						.fields(fields)
-						.andCondition(CriteriaAPI.getIdCondition(jobId, module));
+						.andCondition(CriteriaAPI.getIdCondition(jobId, viewInfoModule));
 
 				int count = updateBuilder.update(props);
 				

@@ -73,7 +73,7 @@ public class AddCVCommand extends FacilioCommand {
 					{
 						view.setName(view.getDisplayName().toLowerCase().replaceAll("[^a-zA-Z0-9]+",""));
 					}
-					if (ViewFactory.getView(moduleName, view.getName()) != null) {
+					if (ViewFactory.getView(moduleObj, view.getName(), modBean) != null) {
 						throw new IllegalArgumentException("Name already taken");
 					}
 					view.setDefault(false);

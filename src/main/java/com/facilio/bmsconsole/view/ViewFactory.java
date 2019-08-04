@@ -8,6 +8,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.MapUtils;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
@@ -33,6 +35,7 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.modules.FieldFactory;
@@ -51,16 +54,39 @@ public class ViewFactory {
 	private static Map<String, List<Map<String, Object>>> groupVsViews = Collections
 			.unmodifiableMap(initializeGroupVsViews());
 
+	public static FacilioView getView(FacilioModule module, String viewName, ModuleBean modBean) throws Exception {
+		String moduleName;
+		if (viewName.contains("approval_")) {
+			moduleName = FacilioConstants.ContextNames.APPROVAL;
+		} else {
+			moduleName = module.getName();
+		}
+		return getView(moduleName, module, viewName, null);
+	}
+	
 	public static FacilioView getView(String moduleName, String viewName) throws Exception {
+		return getView(moduleName, null, viewName, null);
+	}
+	
+	public static FacilioView getView(String moduleName, FacilioModule module, String viewName, ModuleBean modBean) throws Exception {
 		FacilioView view = null;
 		if (viewName != null) {
-			if (viewName.contains("approval_")) {
-				view = getModuleViews(FacilioConstants.ContextNames.APPROVAL).get(viewName);
-			} else {
-				view = getModuleViews(moduleName).get(viewName);
-			}
+			
+			view = getModuleViews(moduleName, module).get(viewName);
 			if (view != null) {
 				List<ViewField> columns = ColumnFactory.getColumns(moduleName, viewName);
+				if (columns == null && module != null) {
+					columns = new ArrayList<>();
+					if (modBean == null) {
+						modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					}
+					List<FacilioField> allFields = modBean.getAllFields(moduleName);
+					for (FacilioField field : allFields) {
+					    ViewField viewField = new ViewField(field.getName(), field.getDisplayName());
+					    viewField.setField(field);
+					    columns.add(viewField);
+					}
+				}
 				view.setFields(columns);
 				view.setDefault(true);
 			}
@@ -68,12 +94,19 @@ public class ViewFactory {
 		return view;
 	}
 
-	public static Map<String, FacilioView> getModuleViews(String moduleName) {
+	public static Map<String, FacilioView> getModuleViews(String moduleName, FacilioModule module) throws Exception {
 		Map<String, FacilioView> moduleViews = new LinkedHashMap<>();
 		if (views.get(moduleName) != null) {
 			views.get(moduleName).forEach((name, view) -> {
 				moduleViews.put(name, new FacilioView(view));
 			});
+		}
+		if (MapUtils.isEmpty(moduleViews)) {
+			if (module != null && module.getTypeEnum() == ModuleType.CUSTOM) {
+				// Views of custom module
+				FacilioView allView = getCustomModuleAllView(module);
+				moduleViews.put("all", allView);
+			}
 		}
 		return moduleViews;
 	}
@@ -3832,15 +3865,8 @@ public class ViewFactory {
 		return criteria;
 	}
 
-	public static FacilioView getCustomModuleAllView(String moduleName) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule moduleObj = modBean.getModule(moduleName);
-		
-		FacilioField createdTime = new FacilioField();
-		createdTime.setName("createdTime");
-		createdTime.setDataType(FieldType.NUMBER);
-		createdTime.setColumnName("SYS_CREATED_TIME");
-		createdTime.setModule(moduleObj);
+	private static FacilioView getCustomModuleAllView(FacilioModule moduleObj) throws Exception {
+		FacilioField createdTime = FieldFactory.getSystemField("sysCreatedTime", moduleObj);
 		
 		FacilioView allView = new FacilioView();
 		allView.setName("all");

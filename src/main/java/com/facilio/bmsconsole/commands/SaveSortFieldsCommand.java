@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 
 public class SaveSortFieldsCommand extends FacilioCommand {
@@ -26,10 +27,11 @@ public class SaveSortFieldsCommand extends FacilioCommand {
 		String viewName = (String) context.get(FacilioConstants.ContextNames.CV_NAME);
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		long moduleId = modBean.getModule(moduleName).getModuleId();
+		FacilioModule module = modBean.getModule(moduleName);
+		long moduleId = module.getModuleId();
 		FacilioView view = ViewAPI.getView(viewName, moduleId, AccountUtil.getCurrentOrg().getOrgId());
 		if (view == null) {
-			view = ViewFactory.getView(moduleName, viewName);
+			view = ViewFactory.getView(module, viewName, modBean);
 		}
 		List<SortField> sortField = view.getSortFields();
 

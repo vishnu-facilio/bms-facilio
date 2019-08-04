@@ -15,14 +15,10 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.bmsconsole.util.ViewAPI;
 import com.facilio.bmsconsole.view.FacilioView;
-import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
-
-import org.apache.commons.collections4.MapUtils;
 
 public class GetViewListCommand extends FacilioCommand {
 
@@ -31,19 +27,6 @@ public class GetViewListCommand extends FacilioCommand {
  		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule moduleObj = null;
-		Map<String,FacilioView> viewMap = ViewFactory.getModuleViews(moduleName);
-		
-		if (MapUtils.isEmpty(viewMap)) {
-			// Views of custom field
-			FacilioView allView = ViewFactory.getCustomModuleAllView(moduleName);
-			viewMap.put("all", allView);
-		}
-		// Temporary
-		if (moduleName.equals("approval") && modBean.getField("moduleState", ContextNames.WORK_ORDER) != null) {
-			viewMap = new HashMap<>();
-			FacilioView requested = ViewFactory.getRequestedStateApproval();
-			viewMap.put(requested.getName(), requested);
-		}
 		
 		List<FacilioView> dbViews = null;
 		if (LookupSpecialTypeUtil.isSpecialType(moduleName)) {
@@ -54,6 +37,7 @@ public class GetViewListCommand extends FacilioCommand {
 				dbViews = ViewAPI.getAllViews(moduleObj.getModuleId());
 			}
 		}
+		Map<String,FacilioView> viewMap = ViewFactory.getModuleViews(moduleName, moduleObj);
 		
 		if (dbViews != null) {
 			for(FacilioView view: dbViews) {
@@ -73,8 +57,6 @@ public class GetViewListCommand extends FacilioCommand {
 			Optional<FacilioView> myupcomingView = allViews.stream()
 					.filter(view -> view.getIsDefault() != null && view.getIsDefault() && view.getName() != null && view.getName().equals("myupcoming")).findFirst();
 
-			// Temp...Needs to change in web client also
-//			if ((AccountUtil.getCurrentAccount().isFromMobile()) || moduleName.equals("asset")) {
 				List<Map<String, Object>> groupViews = new ArrayList<>(ViewFactory.getGroupVsViews(moduleName));
 				if (!groupViews.isEmpty()) {
 					
@@ -198,18 +180,6 @@ public class GetViewListCommand extends FacilioCommand {
 				}
 				
 				context.put(FacilioConstants.ContextNames.VIEW_LIST, groupViews);
-//			}
-//			 TODO remove
-//			else {
-//				allViews.sort(Comparator.comparing(FacilioView::getSequenceNumber, (s1, s2) -> {
-//					if(s1 == s2){
-//				         return 0;
-//				    }
-//				    return s1 < s2 ? -1 : 1;
-//				}));
-//				context.put(FacilioConstants.ContextNames.VIEW_LIST, allViews);
-//				context.put(FacilioConstants.ContextNames.GROUP_VIEWS, ViewFactory.getGroupViews(moduleName));
-//			}
 		}
 		else {
 			allViews.sort(Comparator.comparing(FacilioView::getSequenceNumber, (s1, s2) -> {
