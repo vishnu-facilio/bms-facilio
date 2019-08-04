@@ -54,7 +54,7 @@ public class ParseDataForReadingLogsCommand extends FacilioCommand {
 		
 		
 		FileStore fs = FileStoreFactory.getInstance().getFileStore();
-		InputStream is = fs.readFile(importProcessContext.getFileId());
+
 		HashMap<String,String> fieldMapping = importTemplateContext.getFieldMapping();
 		HashMap<String,String> uniqueMapping = importTemplateContext.getUniqueMapping();
 
@@ -65,198 +65,182 @@ public class ParseDataForReadingLogsCommand extends FacilioCommand {
 		JSONObject dateFormats = (JSONObject) templateMeta.get(ImportAPI.ImportProcessConstants.DATE_FORMATS);
 		
 		HashMap<Integer, String> headerIndex = new HashMap<Integer, String>();
-		Workbook workbook = WorkbookFactory.create(is);
-		
-		int row_no = 0;
-		
-		for(int i=0;i<workbook.getNumberOfSheets();i++) {
-			Sheet datatypeSheet = workbook.getSheetAt(i);
-			Iterator<Row> rowItr = datatypeSheet.iterator();
-			boolean heading=true;
-			while (rowItr.hasNext()) {
-				row_no++;
-				ImportRowContext rowContext = new ImportRowContext();
-				rowContext.setSheetNumber(i);
-				rowContext.setRowNumber(row_no);
-				LOGGER.log(Level.FINE, "row_no -- "+row_no);
-				Row row = rowItr.next();
-				
-				if(row.getPhysicalNumberOfCells() <= 0) {
-					break;
-				}
-				if (heading) {
-					Iterator<Cell> cellItr = row.cellIterator();
-					int cellIndex = 0;
-					while (cellItr.hasNext()) {
-						Cell cell = cellItr.next();
-						String cellValue = cell.getStringCellValue();
-						if(cellValue.equals("") || cellValue.equals(null)) {
-							continue;
-						}
-						headerIndex.put(cellIndex, cellValue);
-						cellIndex++;
+
+		try (InputStream is = fs.readFile(importProcessContext.getFileId());
+			 Workbook workbook = WorkbookFactory.create(is);) {
+			int row_no = 0;
+
+			for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+				Sheet datatypeSheet = workbook.getSheetAt(i);
+				Iterator<Row> rowItr = datatypeSheet.iterator();
+				boolean heading = true;
+				while (rowItr.hasNext()) {
+					row_no++;
+					ImportRowContext rowContext = new ImportRowContext();
+					rowContext.setSheetNumber(i);
+					rowContext.setRowNumber(row_no);
+					LOGGER.log(Level.FINE, "row_no -- " + row_no);
+					Row row = rowItr.next();
+
+					if (row.getPhysicalNumberOfCells() <= 0) {
+						break;
 					}
-					heading=false;
-					continue;
-				}
-				
-				HashMap<String, Object> colVal = new HashMap<>();
-
-				Iterator<Cell> cellItr = row.cellIterator();
-				while (cellItr.hasNext()) {
-					Cell cell = cellItr.next();
-
-					String cellName = headerIndex.get(cell.getColumnIndex());
-					if (cellName == null) {
+					if (heading) {
+						Iterator<Cell> cellItr = row.cellIterator();
+						int cellIndex = 0;
+						while (cellItr.hasNext()) {
+							Cell cell = cellItr.next();
+							String cellValue = cell.getStringCellValue();
+							if (cellValue.equals("") || cellValue.equals(null)) {
+								continue;
+							}
+							headerIndex.put(cellIndex, cellValue);
+							cellIndex++;
+						}
+						heading = false;
 						continue;
 					}
 
-					Object val = 0.0;
-					
-					try{
-						if(cell.getCellType() == Cell.CELL_TYPE_BLANK) {
-							val = null;
-						}
-						else if (cell.getCellTypeEnum() == CellType.STRING) {
-							if( cell.getStringCellValue().trim().length() == 0) {
-								val = null;
-							}
-							else {
-								val = cell.getStringCellValue().trim();
-							}
-							
-						}
-						else if (cell.getCellTypeEnum() == CellType.NUMERIC || cell.getCellTypeEnum() == CellType.FORMULA) {
-							if(HSSFDateUtil.isCellDateFormatted(cell) && cell.getCellTypeEnum() == CellType.NUMERIC) {
-								Date date = cell.getDateCellValue();
-								Instant date1 = date.toInstant();
-								val = date1.getEpochSecond()*1000;
-							}
-							else if(cell.getCellTypeEnum() == CellType.FORMULA) {
-								val = cell.getNumericCellValue();
-							}
-							else {
-								val = cell.getNumericCellValue();
-							}
-						}
-						else if(cell.getCellTypeEnum() == CellType.BOOLEAN) {
-							val = cell.getBooleanCellValue();
-						}
-						else {
-							val = null;
-						}
-						colVal.put(cellName, val);
-						
-					}catch(Exception e) {
-						throw new ImportParseException(rowContext.getRowNumber(), cellName, e);
-						}
-				}
-				
-				if(colVal.values() == null || colVal.values().isEmpty()) {
-					break;
-				}
-				else {
-					boolean isAllNull = true;
-					for( Object value:colVal.values()) {
-						if(value != null) {
-							isAllNull = false;
-							break;
-						}
-					}
-					if(isAllNull) {
-						break;
-					}
-				}
-				
-				// check for null uniqueMappingField
-				if(uniqueMapping != null) {
-					for(String key: uniqueMapping.keySet()) {
-						String columnName = uniqueMapping.get(key);
-						if(colVal.get(columnName) == null) {
-							rowContext.setError_code(ImportProcessContext.ImportRowErrorCode.NULL_UNIQUE_FIELDS.getValue());
-							break;
-						}
-						else {
+					HashMap<String, Object> colVal = new HashMap<>();
+
+					Iterator<Cell> cellItr = row.cellIterator();
+					while (cellItr.hasNext()) {
+						Cell cell = cellItr.next();
+
+						String cellName = headerIndex.get(cell.getColumnIndex());
+						if (cellName == null) {
 							continue;
 						}
+
+						Object val = 0.0;
+
+						try {
+							if (cell.getCellType() == Cell.CELL_TYPE_BLANK) {
+								val = null;
+							} else if (cell.getCellTypeEnum() == CellType.STRING) {
+								if (cell.getStringCellValue().trim().length() == 0) {
+									val = null;
+								} else {
+									val = cell.getStringCellValue().trim();
+								}
+
+							} else if (cell.getCellTypeEnum() == CellType.NUMERIC || cell.getCellTypeEnum() == CellType.FORMULA) {
+								if (HSSFDateUtil.isCellDateFormatted(cell) && cell.getCellTypeEnum() == CellType.NUMERIC) {
+									Date date = cell.getDateCellValue();
+									Instant date1 = date.toInstant();
+									val = date1.getEpochSecond() * 1000;
+								} else if (cell.getCellTypeEnum() == CellType.FORMULA) {
+									val = cell.getNumericCellValue();
+								} else {
+									val = cell.getNumericCellValue();
+								}
+							} else if (cell.getCellTypeEnum() == CellType.BOOLEAN) {
+								val = cell.getBooleanCellValue();
+							} else {
+								val = null;
+							}
+							colVal.put(cellName, val);
+
+						} catch (Exception e) {
+							throw new ImportParseException(rowContext.getRowNumber(), cellName, e);
+						}
 					}
-				}
-				
+
+					if (colVal.values() == null || colVal.values().isEmpty()) {
+						break;
+					} else {
+						boolean isAllNull = true;
+						for (Object value : colVal.values()) {
+							if (value != null) {
+								isAllNull = false;
+								break;
+							}
+						}
+						if (isAllNull) {
+							break;
+						}
+					}
+
+					// check for null uniqueMappingField
+					if (uniqueMapping != null) {
+						for (String key : uniqueMapping.keySet()) {
+							String columnName = uniqueMapping.get(key);
+							if (colVal.get(columnName) == null) {
+								rowContext.setError_code(ImportProcessContext.ImportRowErrorCode.NULL_UNIQUE_FIELDS.getValue());
+								break;
+							} else {
+								continue;
+							}
+						}
+					}
+
 //				if(rowContext.getError_code() != null && rowContext.getError_code() == ImportProcessContext.ImportRowErrorCode.NULL_UNIQUE_FIELDS.getValue()) {
 //					continue;
 //				}
-				
-				
-				
-				rowContext.setColVal(colVal);
-				LOGGER.log(Level.FINE, "row -- "+row_no+" colVal --- "+colVal);
-				
-				JSONObject meta = importTemplateContext.getModuleJSON();
-				Long parentId =null;
-				if(!meta.isEmpty() && uniqueMapping == null) {
-					parentId = (Long) meta.get(ImportAPI.ImportProcessConstants.PARENT_ID_FIELD);
-				}
-				
-				if(!importTemplateContext.getUniqueMappingJSON().isEmpty())
-				{
-					if(rowContext.getError_code() == null)
-					{
-						parentId = getAssetByUniqueness(colVal, importTemplateContext.getModuleMapping().get("subModule"), uniqueMapping);
+
+
+					rowContext.setColVal(colVal);
+					LOGGER.log(Level.FINE, "row -- " + row_no + " colVal --- " + colVal);
+
+					JSONObject meta = importTemplateContext.getModuleJSON();
+					Long parentId = null;
+					if (!meta.isEmpty() && uniqueMapping == null) {
+						parentId = (Long) meta.get(ImportAPI.ImportProcessConstants.PARENT_ID_FIELD);
 					}
-				}
-				
-				if(parentId == null) {
-					rowContext.setError_code(ImportProcessContext.ImportRowErrorCode.NULL_RESOURCES.getValue());
-					//nullResources.put(row_no, colVal);
+
+					if (!importTemplateContext.getUniqueMappingJSON().isEmpty()) {
+						if (rowContext.getError_code() == null) {
+							parentId = getAssetByUniqueness(colVal, importTemplateContext.getModuleMapping().get("subModule"), uniqueMapping);
+						}
+					}
+
+					if (parentId == null) {
+						rowContext.setError_code(ImportProcessContext.ImportRowErrorCode.NULL_RESOURCES.getValue());
+						//nullResources.put(row_no, colVal);
 //					continue;
-				}
-				else {
-					rowContext.setParentId(parentId);
-					rowContext.setError_code(ImportProcessContext.ImportRowErrorCode.NO_ERRORS.getValue());
-				}
-				
-				long millis;
-				try {
-					if(dateFormats.get(fieldMapping.get("sys__ttime")).equals(ImportAPI.ImportProcessConstants.TIME_STAMP_STRING)) {
-						String ttime = colVal.get(fieldMapping.get("sys__ttime")).toString();
-						millis = Long.parseLong(ttime);
+					} else {
+						rowContext.setParentId(parentId);
+						rowContext.setError_code(ImportProcessContext.ImportRowErrorCode.NO_ERRORS.getValue());
 					}
-					else {
-						String ttime = colVal.get(fieldMapping.get("sys__ttime")).toString();
-						Instant dateInstant = DateTimeUtil.getTimeInstant(dateFormats.get(fieldMapping.get("sys__ttime")).toString(),ttime);
-						millis = dateInstant.toEpochMilli();
-				}
-				}catch(Exception e) {
-					throw new ImportTimeColumnParseException(rowContext.getRowNumber(), fieldMapping.get("sys__ttime"), e);
-				}
-				
-				rowContext.setTtime(millis);
-				StringBuilder uniqueString = new StringBuilder();
-				if(parentId == null || parentId < 0) {
-					uniqueString.append("-1");
-				}
-				else {
-					uniqueString.append(parentId.toString());
-				}
-				uniqueString.append("__");
-				uniqueString.append(String.valueOf(rowContext.getTtime()));
-				if(!groupedContext.containsKey(uniqueString.toString())) {
-					List<ImportRowContext> rowContexts = new ArrayList<ImportRowContext>();
-					rowContexts.add(rowContext);
-					groupedContext.put(uniqueString.toString(), rowContexts);
-				}
-				else
-				{
-					groupedContext.get(uniqueString.toString()).add(rowContext);
+
+					long millis;
+					try {
+						if (dateFormats.get(fieldMapping.get("sys__ttime")).equals(ImportAPI.ImportProcessConstants.TIME_STAMP_STRING)) {
+							String ttime = colVal.get(fieldMapping.get("sys__ttime")).toString();
+							millis = Long.parseLong(ttime);
+						} else {
+							String ttime = colVal.get(fieldMapping.get("sys__ttime")).toString();
+							Instant dateInstant = DateTimeUtil.getTimeInstant(dateFormats.get(fieldMapping.get("sys__ttime")).toString(), ttime);
+							millis = dateInstant.toEpochMilli();
+						}
+					} catch (Exception e) {
+						throw new ImportTimeColumnParseException(rowContext.getRowNumber(), fieldMapping.get("sys__ttime"), e);
+					}
+
+					rowContext.setTtime(millis);
+					StringBuilder uniqueString = new StringBuilder();
+					if (parentId == null || parentId < 0) {
+						uniqueString.append("-1");
+					} else {
+						uniqueString.append(parentId.toString());
+					}
+					uniqueString.append("__");
+					uniqueString.append(String.valueOf(rowContext.getTtime()));
+					if (!groupedContext.containsKey(uniqueString.toString())) {
+						List<ImportRowContext> rowContexts = new ArrayList<ImportRowContext>();
+						rowContexts.add(rowContext);
+						groupedContext.put(uniqueString.toString(), rowContexts);
+					} else {
+						groupedContext.get(uniqueString.toString()).add(rowContext);
+					}
 				}
 			}
+			LOGGER.severe(groupedContext.toString());
+			context.put(ImportAPI.ImportProcessConstants.GROUPED_ROW_CONTEXT, groupedContext);
+			context.put(ImportAPI.ImportProcessConstants.ROW_COUNT, row_no);
+			LOGGER.severe("---DataParseForLogCommand End-----");
+			return false;
 		}
-		LOGGER.severe(groupedContext.toString());
-		context.put(ImportAPI.ImportProcessConstants.GROUPED_ROW_CONTEXT, groupedContext);
-		context.put(ImportAPI.ImportProcessConstants.ROW_COUNT, row_no);
-		workbook.close();
-		LOGGER.severe("---DataParseForLogCommand End-----");
-		return false;
 	}
 	
 //	private static boolean hasDuplicates(HashMap<String, List<ImportRowContext>> groupedContext) {
