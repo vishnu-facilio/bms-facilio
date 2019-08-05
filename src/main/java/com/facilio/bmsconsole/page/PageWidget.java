@@ -193,7 +193,11 @@ public class PageWidget {
  		RULE_ASSOCIATED_WO("ruleAssociatedWo"),
  		RULE_RCA("ruleRCA"),
  		HISTORY_LOG("historyLog"),
- 		GRAPHICS("graphics")
+ 		GRAPHICS("graphics"),
+ 		ANOMALY_DETAILS_WIDGET("anomalyDetailsWidget"),
+ 		ANOMALIES_TREND_WIDGET("anomaliesTrendWidget"),
+ 		ANOMALY_SUB_METER_WIDGET("anomalySubMeterWidget"),
+ 		ANOMALY_RCA("anomalyRca")
  		;
 		
 		private String name;
@@ -245,7 +249,10 @@ public class PageWidget {
 		MAINTENACE_COST("maintenanceCost"),
  		PLANNED_MAINTENACE_COST("plannedMaintenanceCost"),
  		UNPLANNED_MAINTENACE_COST("unplannedMaintenanceCost"),
- 		MAINTENANCE_COST_TREND("maintenanceCostTrend")
+ 		MAINTENANCE_COST_TREND("maintenanceCostTrend"),
+ 		NO_OF_ANOMALIES("noOfAnomalies"),
+ 		ML_ALARM_ENERGY_CDD("mlAlarmEnergyCdd"),
+ 		ENERGY_WASTAGE_DETAILS("energWastageDetails"),
  		;
 		private String name;
 		

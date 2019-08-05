@@ -4,6 +4,7 @@ package com.facilio.bmsconsole.page.factory;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.PageWidget;
@@ -32,6 +33,8 @@ public class PageFactory {
 				return RulePageFactory.getRulePage((AlarmRuleContext) record);
 			case ContextNames.MV_PROJECT_MODULE:
 				return MVProjectPageFactory.getMVProjectPage((MVProjectWrapper) record);
+			case ContextNames.ML_ANOMALY_ALARM:
+				return MLAnomalyPageFactory.getMLAlarmPage((BaseAlarmContext) record);
 		}
 		if (module.getTypeEnum() == ModuleType.CUSTOM) {
 			return CustomModulePageFactory.getCustomModulePage((ModuleBaseWithCustomFields) record);
