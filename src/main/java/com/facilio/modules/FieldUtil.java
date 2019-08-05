@@ -137,6 +137,12 @@ public class FieldUtil {
 							enumVal = val;
 						}
 					}
+					else if (value instanceof Double) {
+						int val = ((Double) value).intValue();
+						if (enumField.getValue(val) != null) {
+							enumVal = val;
+						}
+					}
 					else {
 						int val = enumField.getIndex(value.toString());
 						if (val != -1) {
