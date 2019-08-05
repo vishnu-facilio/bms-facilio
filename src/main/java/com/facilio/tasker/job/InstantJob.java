@@ -23,6 +23,9 @@ public abstract class InstantJob {
     }
 
     public final void _execute(FacilioContext context, int transactionTimeout) {
+        Thread currentThread = Thread.currentThread();
+        String threadName = currentThread.getName();
+        currentThread.setName(threadName + "-" + getReceiptHandle());
     	String jobName = (String) context.remove(InstantJobConf.getJobNameKey());
     	int status = 0;
     	long startTime = System.currentTimeMillis();
@@ -57,6 +60,7 @@ public abstract class InstantJob {
             job.setExecutorName("instant");
             job.setIsPeriodic(false);
             JobLogger.log(job, (System.currentTimeMillis() - startTime), status);
+            currentThread.setName(threadName);
         }
     }
 
