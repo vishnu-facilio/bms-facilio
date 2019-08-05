@@ -1288,9 +1288,11 @@ public class TenantsAPI {
 		Map<Long, TenantContext> result = new HashMap<>();
 		for (Map<String, Object> prop: props) {
 			TenantContext tenant = FieldUtil.getAsBeanFromMap(prop, TenantContext.class);
-			long assetId = (long) prop.get("assetId");
-
-			result.put(assetId, tenant);
+			Map<String, Object> assetMap = (Map<String, Object>) prop.get("assetId");
+			Long assetId = (Long) assetMap.get("id");
+			if (assetId != null) {
+				result.put(assetId, tenant);
+			}
 		}
 
 		return result;
