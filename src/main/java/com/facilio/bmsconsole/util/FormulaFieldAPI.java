@@ -258,8 +258,8 @@ public class FormulaFieldAPI {
 	
 	public static List<ReadingContext> calculateFormulaReadings(long resourceId, String moduleName, String fieldName, List<DateRange> intervals, WorkflowContext workflow, boolean ignoreNullValues, boolean addValue) throws Exception {
 		if (intervals != null && !intervals.isEmpty()) {
-			intervals.get(0).getStartTime();
-			intervals.get(intervals.size() - 1).getEndTime();
+//			intervals.get(0).getStartTime();
+//			intervals.get(intervals.size() - 1).getEndTime();
 			
 			List<ReadingContext> readings = new ArrayList<>();
 			for(DateRange interval : intervals) {
@@ -278,10 +278,11 @@ public class FormulaFieldAPI {
 						workflow.setWorkflowString(WorkflowUtil.getXmlStringFromWorkflow(workflow));
 					}
 					Object workflowResult = WorkflowUtil.getWorkflowExpressionResult(workflow, params, null, ignoreNullValues, false);
+					LOGGER.debug("Result of Formula : "+fieldName+" for resource : "+resourceId+" : "+workflowResult);
 					if(workflowResult != null) {
 						Double resultVal = Double.parseDouble(workflowResult.toString());
 //						if (AccountUtil.getCurrentOrg().getId() == 135) {
-							LOGGER.debug("Result of Formula : "+fieldName+" for resource : "+resourceId+" : "+resultVal);
+
 //						}
 						if (resultVal != null) {
 							ReadingContext reading = new ReadingContext();
