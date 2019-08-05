@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.jobs.JobLogger;
 import com.facilio.chain.FacilioContext;
 import com.facilio.tasker.config.InstantJobConf;
 import com.facilio.tasker.executor.InstantJobExecutor;
+import org.apache.commons.lang3.StringUtils;
 
 public abstract class InstantJob {
 
@@ -25,7 +26,7 @@ public abstract class InstantJob {
     public final void _execute(FacilioContext context, int transactionTimeout) {
         Thread currentThread = Thread.currentThread();
         String threadName = currentThread.getName();
-        currentThread.setName(threadName + "-" + getReceiptHandle());
+        currentThread.setName(threadName + "-" + StringUtils.truncate(getReceiptHandle(), 150));
     	String jobName = (String) context.remove(InstantJobConf.getJobNameKey());
     	int status = 0;
     	long startTime = System.currentTimeMillis();
