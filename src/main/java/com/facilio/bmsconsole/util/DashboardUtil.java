@@ -3178,10 +3178,13 @@ public class DashboardUtil {
 					
 					if(rdm.getFieldId() == fanStatusField.getFieldId()) {
 						resJson.put("fanStatus", rdm.getValue());
-						Double runStatus = Double.valueOf(rdm.getValue().toString());
-						if(runStatus > 0) {
+						if (rdm.getValue() != null && ((Integer)rdm.getValue()).intValue() > 0) {
 							isRunning = true;
 						}
+//						Double runStatus = Double.valueOf(rdm.getValue().toString());
+//						if(runStatus > 0) {
+//							isRunning = true;
+//						}
 					}
 					else if (rdm.getFieldId() == valveFeedbackField.getFieldId()) {
 						resJson.put("valveFeedback", rdm.getValue());
