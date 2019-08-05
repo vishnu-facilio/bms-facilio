@@ -45,9 +45,14 @@ public class ValidateAndSetResetCounterMetaCommand extends FacilioCommand {
 				for (ReadingContext reading : readings) {
 					
 					for (Map.Entry<String, Object> readingEntry : reading.getReadings().entrySet()) {
-						
+
 						String fieldName = readingEntry.getKey();
 						FacilioField field = fieldMap.get(fieldName);
+
+						if (field == null) { //There'll be fields in ReadingObject which will not have a field entry
+							continue;
+						}
+
 						boolean isCounterField = ReadingsAPI.isCounterField(field, moduleName);
 						ReadingDataMeta rdm = metaMap.get(ReadingsAPI.getRDMKey(reading.getParentId(), field));
 						boolean resetvalidation;
