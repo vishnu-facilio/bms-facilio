@@ -113,7 +113,7 @@ public class AssetPageFactory extends PageFactory {
 		
 		addFailureRateWidget(tab4Sec1, breakdownCriteria);
 		addAvgTtrWidget(tab4Sec1, breakdownCriteria);
-		
+		if (AccountUtil.getCurrentOrg().getOrgId() == 155){
 		Tab tab7 = page.new Tab("cost");
 		page.addTab(tab7);
 		
@@ -127,7 +127,7 @@ public class AssetPageFactory extends PageFactory {
 		Criteria maintenanceCostCriteria = new Criteria();
 		maintenanceCostCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), String.valueOf(asset.getId()), NumberOperators.EQUALS));
 		addMaintenanceCostTrendWidget(tab7Sec1, maintenanceCostCriteria);
-		
+		}
 		// if (AccountUtil.isFeatureEnabled(FeatureLicense.GRAPHICS)) {
 		if ((AccountUtil.getCurrentOrg().getOrgId() == 210 && asset.isConnected() ) || (AccountUtil.getCurrentOrg().getOrgId() == 75 && module.getName().equals("fahu"))) {
 			
