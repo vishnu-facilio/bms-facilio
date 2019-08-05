@@ -146,7 +146,11 @@ public class MVUtil {
 				.beanClass(MVProjectContext.class)
 				.andCondition(CriteriaAPI.getIdCondition(id, mvProjectModule));
 		
-		MVProjectContext mvProject = selectProject.get().get(0);
+		List<MVProjectContext> props = selectProject.get();
+		if(props == null || props.isEmpty()) {
+			throw new Exception("MV Project With ID - "+id+" does not exist");
+		}
+		MVProjectContext mvProject = props.get(0);
 		
 		long meterId = mvProject.getMeter().getId();
 		mvProject.setMeter(AssetsAPI.getAssetInfo(meterId, true));
