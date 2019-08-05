@@ -30,6 +30,7 @@ public class AgentKeys
     public static final String CONTROLLER_TABLE = "Controller";
     public static final String DELETED_TIME = "Deleted_Time";
     public static final String UNMODELED_INSTANCE_TABLE = "Unmodeled_Instance";
+    public static final String POINTS_TABLE = "Points";
     public static final String WRITABLE = "writable";
     public static final String SITE_ID = "siteId";
     public static final String DISPLAY_NAME = "displayName";
