@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.tuple.Pair;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -17,12 +15,10 @@ import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.NumberField;
 
 public class ValidateAndSetResetCounterMetaCommand extends FacilioCommand {
 
@@ -31,18 +27,18 @@ public class ValidateAndSetResetCounterMetaCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		Map<String, ReadingDataMeta> metaMap = (Map<String, ReadingDataMeta>) context.get(FacilioConstants.ContextNames.PREVIOUS_READING_DATA_META);
 		Map<String, List<ReadingContext>> readingMap = CommonCommandUtil.getReadingMap((FacilioContext) context);
-		if (metaMap == null || metaMap.isEmpty() || readingMap == null && readingMap.isEmpty()) {
+		if (metaMap == null || metaMap.isEmpty() || readingMap == null || readingMap.isEmpty()) {
 			return false;
 		}else{
 			
 			List<ResetCounterMetaContext> resetCounterMetaList = new ArrayList<>();
 			ResetCounterMetaContext resetCounterMeta;
 			
+			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			for (Map.Entry<String, List<ReadingContext>> entry : readingMap.entrySet()) {
 				
 				String moduleName = entry.getKey();
 				List<ReadingContext> readings = entry.getValue();
-				ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				List<FacilioField> allFields = bean.getAllFields(moduleName);
 				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
 				
