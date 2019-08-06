@@ -202,25 +202,7 @@ public class TimeSeriesAPI {
 		}
 	}
 	
-	public static void insertOrUpdateInstance(String deviceName, long assetId, long categoryId, long controllerId, String instance, long fieldId ,Integer unit) throws Exception {
-		Map<String, Object> modeledData = getMappedInstance(deviceName, instance, controllerId);
-		if (modeledData == null) {
-			insertInstanceAssetMapping(deviceName, assetId, categoryId, controllerId, Collections.singletonMap(instance, fieldId),unit);	
-			
-			// TODO move to insertInstanceAssetMapping
-			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.DEVICE_DATA, deviceName);
-			context.put(FacilioConstants.ContextNames.INSTANCE_INFO, instance);
-			context.put(FacilioConstants.ContextNames.ASSET_ID, assetId);
-			context.put(FacilioConstants.ContextNames.FIELD_ID, fieldId);
-			context.put(FacilioConstants.ContextNames.CONTROLLER_ID, controllerId);
-			
-			FacilioTimer.scheduleInstantJob("ProcessUnmodelledHistoricalData", context);
-		}
-		else {
-			updateInstanceAssetMapping(deviceName, assetId, categoryId, instance, fieldId, modeledData, unit);
-		}
-	}
+	
 	
 	// Temp
 	public static void migrateUnmodelledData(long controllerId, List<Map<String, Object>> instances) throws Exception {
@@ -372,13 +354,6 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 			updatePointsData(deviceName, instanceName,prop );
 
 			int count = builder.update(props);
-		
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD, oldData);
-		context.put(FacilioConstants.ContextNames.FIELD_ID, fieldId);
-		context.put(FacilioConstants.ContextNames.PARENT_ID, assetId);
-		
-		FacilioTimer.scheduleInstantJob("MigrateReadingData", context);
 		
 		return count;
 	}
