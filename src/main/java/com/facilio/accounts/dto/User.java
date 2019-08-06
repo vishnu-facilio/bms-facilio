@@ -24,12 +24,32 @@ public class User extends IAMUser {
 		setState(user.getState());
 		setZip(user.getZip());
 		setCountry(user.getCountry());
-		
 		setDomainName(user.getDomainName());
 		setOrgId(user.getOrgId());
-		setFacilioAuth(user.isFacilioAuth());
 	}
 
+	
+	private Boolean inviteAcceptStatus;
+	public Boolean getInviteAcceptStatus() {
+		return inviteAcceptStatus;
+	}
+	public void setInviteAcceptStatus(Boolean inviteAcceptStatus) {
+		this.inviteAcceptStatus = inviteAcceptStatus;
+	}
+	public boolean isInviteAcceptStatus(){
+		if(inviteAcceptStatus!=null){
+			return inviteAcceptStatus.booleanValue();
+		}
+		return false;
+	}
+	private boolean facilioAuth;
+	public boolean isFacilioAuth() {
+		return facilioAuth;
+	}
+	public void setFacilioAuth(boolean facilioAuth) {
+		this.facilioAuth = facilioAuth;
+	}
+	
 	private long ouid;
 	public long getOuid() {
 		return ouid;
@@ -132,5 +152,13 @@ public class User extends IAMUser {
 	public void setId(long id) {
 		this.ouid = id;
 	}
+
+	public boolean isPortalUser() {
+		if(portalId > 0) {
+			return true;
+		}
+		return false;
+	}
+
 
 }

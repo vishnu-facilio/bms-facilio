@@ -44,7 +44,6 @@ public class IAMUserUtil {
 		String email = (String) signupInfo.get("email");
 		String phone = (String) signupInfo.get("phone");
 		String password = (String) signupInfo.get("password");
-		String serverName = (String) signupInfo.get("servername");
 		String timezone = (String) signupInfo.get("timezone");
 		Locale locale = (Locale) signupInfo.get("locale");
 
@@ -66,12 +65,9 @@ public class IAMUserUtil {
 		if (phone != null) {
 			user.setPhone(phone);
 		}
-		user.setInviteAcceptStatus(true);
 		user.setDefaultOrg(true);
 		user.setUserStatus(true);
-//		user.setInvitedTime(System.currentTimeMillis());
 		user.setPassword(password);
-//		user.setServerName(serverName);
 		if (AwsUtil.isDevelopment()) {
 			user.setUserVerified(true);
 		}
@@ -143,10 +139,6 @@ public class IAMUserUtil {
 	
 	public static IAMUser validateUserInviteToken(String token) throws Exception {
 		return IAMUtil.getUserBean().validateUserInvitev2(token);
-	}
-	
-	public static boolean resendInvite(long orgId, long userId) throws Exception {
-		return IAMUtil.getUserBean().resendInvitev2(orgId, userId);
 	}
 	
 	public static boolean acceptUser(IAMUser user) throws Exception {

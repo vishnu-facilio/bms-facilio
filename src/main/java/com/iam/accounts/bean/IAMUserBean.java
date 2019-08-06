@@ -19,11 +19,7 @@ public interface IAMUserBean {
 
 	IAMUser validateUserInvitev2(String token);
 
-	public boolean resendInvitev2(long orgId, long userId) throws Exception;
-	
 	public IAMUser acceptInvitev2(String token, String password) throws Exception;
-	
-	public boolean updateUserv2(long ouid, IAMUser user) throws Exception;
 	
 	public boolean updateUserv2(IAMUser user) throws Exception;
 	
@@ -34,8 +30,6 @@ public interface IAMUserBean {
 	public boolean enableUserv2(long orgId, long uid) throws Exception;
 	
 	public boolean setDefaultOrgv2(long uid, long orgId) throws Exception;
-	
-	public IAMUser getFacilioUser(long ouid) throws Exception;
 	
 	public IAMUser getFacilioUser(long orgId, String email) throws Exception;
 	

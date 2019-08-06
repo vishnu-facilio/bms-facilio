@@ -9,11 +9,20 @@
 	<package name="servicePortalApiV2" namespace="/api/v2/service" extends="v2BaseApi">
 	
 		<interceptors>
-			<interceptor name="portalinterceptor"
-				class="com.facilio.serviceportal.actions.PortalAuthInterceptor" />
+			<interceptor name="cacheinterceptor"
+						 class="com.facilio.bmsconsole.interceptors.CacheInterceptor" />
+			<interceptor name="scopeinterceptor"
+				class="com.facilio.bmsconsole.interceptors.ScopeInterceptor" />
+			<interceptor name="datasourceinterceptor"
+				class="com.facilio.bmsconsole.interceptors.DataSourceInterceptor" />
+			<interceptor name="authinterceptor"
+				class="com.facilio.bmsconsole.interceptors.AuthInterceptor" />
 			<interceptor-stack name="defaultInterceptor">
 				<interceptor-ref name="defaultStack" />
-				<interceptor-ref name="portalinterceptor" />
+				<interceptor-ref name="authinterceptor" />
+				<interceptor-ref name="datasourceinterceptor" />
+				<interceptor-ref name="scopeinterceptor" />
+				<interceptor-ref name="cacheinterceptor" />
 				<interceptor-ref name="json">
 					<param name="enableSMD">true</param>
 				</interceptor-ref>

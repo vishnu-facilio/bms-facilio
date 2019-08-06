@@ -236,41 +236,6 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public boolean resendInvitev2(long orgId, long userId) throws Exception {
-		
-		IAMUser user = getFacilioUser(orgId, userId);
-		if (user.getInviteAcceptStatus()) {
-			// invitation already accepted
-			return false;
-		}
-		
-		FacilioField invitedTime = new FacilioField();
-		invitedTime.setName("invitedTime");
-		invitedTime.setDataType(FieldType.NUMBER);
-		invitedTime.setColumnName("INVITEDTIME");
-		invitedTime.setModule(IAMAccountConstants.getAccountsOrgUserModule());
-		
-		List<FacilioField> fields = new ArrayList<>();
-		fields.add(invitedTime);
-		
-		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(IAMAccountConstants.getAccountsOrgUserModule().getTableName())
-				.fields(fields);
-		
-		updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(userId), NumberOperators.EQUALS));
-		updateBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
-		
-		Map<String, Object> props = new HashMap<>();
-		props.put("invitedTime", System.currentTimeMillis());
-		
-		int updatedRows = updateBuilder.update(props);
-		if (updatedRows > 0) {
-			return true;
-		}
-		return false;
-	}
-
-	@Override
 	public IAMUser acceptInvitev2(String token, String password) throws Exception {
 		IAMUser user = getUserFromToken(token);
 		user.setPassword(password);
@@ -283,12 +248,6 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 	public boolean acceptUserv2(IAMUser user) throws Exception {
 		if(user != null) {
-			FacilioField inviteAcceptStatus = new FacilioField();
-			inviteAcceptStatus.setName("inviteAcceptStatus");
-			inviteAcceptStatus.setDataType(FieldType.BOOLEAN);
-			inviteAcceptStatus.setColumnName("INVITATION_ACCEPT_STATUS");
-			inviteAcceptStatus.setModule(IAMAccountConstants.getAccountsOrgUserModule());
-
 			FacilioField isDefaultOrg = new FacilioField();
 			isDefaultOrg.setName("isDefaultOrg");
 			isDefaultOrg.setDataType(FieldType.BOOLEAN);
@@ -302,7 +261,6 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			userStatus.setModule(IAMAccountConstants.getAccountsOrgUserModule());
 
 			List<FacilioField> fields = new ArrayList<>();
-			fields.add(inviteAcceptStatus);
 			fields.add(userStatus);
 			fields.add(isDefaultOrg);
 
@@ -310,17 +268,13 @@ public class IAMUserBeanImpl implements IAMUserBean {
 					.table(IAMAccountConstants.getAccountsOrgUserModule().getTableName())
 					.fields(fields);
 			
-//			updateBuilder.andCondition(CriteriaAPI.getCondition("ORG_USERID", "orgUserId", String.valueOf(user.getOuid()), NumberOperators.EQUALS));
-		
 			Map<String, Object> props = new HashMap<>();
-			props.put("inviteAcceptStatus", true);
 			props.put("isDefaultOrg", true);
 			props.put("userStatus", true);
 
 			int updatedRows = updateBuilder.update(props);
 			if (updatedRows > 0) {
 				String password = user.getPassword();
-//				user = getInvitedUser(user.getOuid());
 				if(user != null) {
 					user.setUserVerified(true);
 					user.setPassword(password);
@@ -332,31 +286,6 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return false;
 	}
 
-	private IAMUser getInvitedUser(long ouid) throws Exception {
-
-		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(IAMAccountConstants.getAccountsUserFields());
-		fields.addAll(IAMAccountConstants.getAccountsOrgUserFields());
-		fields.add(IAMAccountConstants.getOrgIdField());
-
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(fields)
-				.table("Account_Users")
-				.innerJoin("Account_ORG_Users")
-				.on("Account_Users.USERID = Account_ORG_Users.USERID");
-		
-		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_USERID", "orgUserId", String.valueOf(ouid), NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			IAMUser user =  createUserFromProps(props.get(0), true, true, false); //Giving as false because user cannot accept invite via portal APIs
-			return user;
-		}
-		return null;
-	}
-
-	
 	@Override
 	public boolean deleteUserv2(IAMUser user) throws Exception {
 		
@@ -510,21 +439,6 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public IAMUser getFacilioUser(long ouid) throws Exception {
-		
-		GenericSelectRecordBuilder selectBuilder = getFacilioUserBuilder(null,false);
-		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_USERID", "userId", String.valueOf(ouid), NumberOperators.EQUALS));
-	
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			IAMUser user =  createUserFromProps(props.get(0), true, true, false);
-			return user;
-		}
-		return null;
-	}
-	
-	@Override
 	public IAMUser getFacilioUser(long orgId, long userId) throws Exception {
 		
 		GenericSelectRecordBuilder selectBuilder = getFacilioUserBuilder(null,false);
@@ -539,20 +453,6 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return null;
 	}
 	
-	private IAMUser getFacilioUserWithPassword(long ouid) throws Exception {
-
-		GenericSelectRecordBuilder selectBuilder = getFacilioUserBuilder(null,false);
-		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_USERID", "orgId", String.valueOf(ouid), NumberOperators.EQUALS));
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			IAMUser user =  createUserFromProps(props.get(0), true, true, false);
-			return user;
-		}
-		log.info(selectBuilder.toString() + " query returned null");
-		return null;
-	}
-
 	@Override
 	public IAMUser getFacilioUser(long orgId, String email) throws Exception {
 		
@@ -930,27 +830,6 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	
-	@Override
-	public boolean updateUserv2(long ouid, IAMUser user) throws Exception {
-		// TODO Auto-generated method stub
-		boolean userUpdateStatus = updateUserEntryv2(user);
-		if (userUpdateStatus) {
-			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-					.table(IAMAccountConstants.getAccountsOrgUserModule().getTableName())
-					.fields(IAMAccountConstants.getAccountsOrgUserFields());
-			
-			updateBuilder.andCondition(CriteriaAPI.getCondition("ORG_USERID", "orgUserId", String.valueOf(ouid), NumberOperators.EQUALS));
-			
-		    Map<String, Object> props = FieldUtil.getAsProperties(user);
-			
-			int updatedRows = updateBuilder.update(props);
-			if (updatedRows > 0) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	private GenericSelectRecordBuilder getFacilioUserBuilder(String portalDomain, boolean includePortal) {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(IAMAccountConstants.getAccountsUserFields());
@@ -1120,9 +999,9 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				tokens = decodedjwt.getSubject().split("_")[0].split("-");
 			}
 			long orgId = Long.parseLong(tokens[0]);
-			long ouid = Long.parseLong(tokens[1]);
+			long uid = Long.parseLong(tokens[1]);
 			
-			IAMAccount currentAccount = new IAMAccount(IAMUtil.getOrgBean().getOrgv2(orgId), getFacilioUser(ouid));
+			IAMAccount currentAccount = new IAMAccount(IAMUtil.getOrgBean().getOrgv2(orgId), getFacilioUser(orgId, uid));
 			return currentAccount;
 		}
 		return null;

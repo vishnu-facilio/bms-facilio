@@ -308,32 +308,29 @@ public class UserBeanImpl implements UserBean {
 	public boolean resendInvite(long ouid) throws Exception {
 
 		User appUser = getUser(ouid);
-		if(IAMUserUtil.resendInvite(appUser.getOrgId(), appUser.getUid())){
-			FacilioField invitedTime = new FacilioField();
-			invitedTime.setName("invitedTime");
-			invitedTime.setDataType(FieldType.NUMBER);
-			invitedTime.setColumnName("INVITEDTIME");
-			invitedTime.setModule(AccountConstants.getAppOrgUserModule());
-			
-			List<FacilioField> fields = new ArrayList<>();
-			fields.add(invitedTime);
-			
-			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-					.table(AccountConstants.getAppOrgUserModule().getTableName())
-					.fields(fields);
-			
-			updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(appUser.getUid()), NumberOperators.EQUALS));
-			updateBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(appUser.getOrgId()), NumberOperators.EQUALS));
-			
-			Map<String, Object> props = new HashMap<>();
-			props.put("invitedTime", System.currentTimeMillis());
-			
-			int updatedRows = updateBuilder.update(props);
-			if (updatedRows > 0) {
-				sendInvitation(appUser, false);
-				return true;
-			}
-			return false;
+		FacilioField invitedTime = new FacilioField();
+		invitedTime.setName("invitedTime");
+		invitedTime.setDataType(FieldType.NUMBER);
+		invitedTime.setColumnName("INVITEDTIME");
+		invitedTime.setModule(AccountConstants.getAppOrgUserModule());
+		
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(invitedTime);
+		
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(AccountConstants.getAppOrgUserModule().getTableName())
+				.fields(fields);
+		
+		updateBuilder.andCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf(appUser.getUid()), NumberOperators.EQUALS));
+		updateBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(appUser.getOrgId()), NumberOperators.EQUALS));
+		
+		Map<String, Object> props = new HashMap<>();
+		props.put("invitedTime", System.currentTimeMillis());
+		
+		int updatedRows = updateBuilder.update(props);
+		if (updatedRows > 0) {
+			sendInvitation(appUser, false);
+			return true;
 		}
 		return false;
 	}

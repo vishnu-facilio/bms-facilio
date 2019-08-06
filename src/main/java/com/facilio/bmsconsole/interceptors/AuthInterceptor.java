@@ -55,7 +55,6 @@ public class AuthInterceptor extends AbstractInterceptor {
 	public String intercept(ActionInvocation arg0) throws Exception {
 
 		HttpServletRequest request = ServletActionContext.getRequest();
-		HttpServletResponse response = ServletActionContext.getResponse();
 		try {
 
 			if (getPermalinkToken(request) != null) {
@@ -71,37 +70,17 @@ public class AuthInterceptor extends AbstractInterceptor {
 					URL url = new URL(referrer);
 					urlsToValidate.add(url.getPath());
 				}
-				Account currentAccount = AccountUtil.getUserBean().getPermalinkAccount(token, urlsToValidate);
-				if (currentAccount != null) {
-					
-					if(currentAccount == null) {
-						return Action.ERROR;
-					}
-					AccountUtil.cleanCurrentAccount();
-					AccountUtil.setCurrentAccount(currentAccount);
-					AccountUtil.updateAccount(currentAccount, false);
-					request.setAttribute("ORGID", currentAccount.getOrg().getOrgId());
-					request.setAttribute("USERID", currentAccount.getUser().getOuid());
-					
-					try {
-						AccountUtil.setReqUri(request.getRequestURI());
-						AccountUtil.setRequestParams(request.getParameterMap());
-						return arg0.invoke();
-					} catch (Exception e) {
-						System.out.println("exception code 154");
-
-						LOGGER.log(Level.SEVERE, "error thrown from action class", e);
-						throw e;
-					}
-				}
-				else {
+				IAMAccount iamAccount = IAMUserUtil.getPermalinkAccount(token, urlsToValidate);
+				if(iamAccount == null) {
 					return Action.ERROR;
+				}
+				if (iamAccount != null) {
+						request.setAttribute("iamAccount", iamAccount);
 				}
 			}
 			else if (!isRemoteScreenMode(request)) {
 				IAMAccount iamAccount = validateToken(request);
 				if (iamAccount != null) {
-//					arg0.getStack().set("iamAccount", iamAccount);
 					request.setAttribute("iamAccount", iamAccount);
 				}
 				else {
@@ -110,24 +89,6 @@ public class AuthInterceptor extends AbstractInterceptor {
 						return Action.LOGIN;
 					}
 				}
-				
-//				String currentOrgDomain = FacilioCookie.getUserCookie(request, "fc.currentOrg");
-//				if (currentOrgDomain == null) {
-//					currentOrgDomain = request.getHeader("X-Current-Org"); 
-//				}
-//			
-//				Account currentAccount = AuthenticationUtil.validateToken(request, false);
-//			
-//				if (currentAccount != null) {
-//					AccountUtil.setCurrentAccount(currentAccount);
-//					AccountUtil.updateAccount(currentAccount, false);
-//					AccountUtil.setCurrentAccount(currentAccount);
-//				} else {
-//					String authRequired = ActionContext.getContext().getParameters().get("auth").getValue();
-//					if (authRequired == null || "".equalsIgnoreCase(authRequired.trim()) || "true".equalsIgnoreCase(authRequired)) {
-//						return Action.LOGIN;
-//					}
-//				}
 			}
 			else {
 				boolean authStatus = handleRemoteScreenAuth(request);
@@ -141,16 +102,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 			return Action.LOGIN;
 		}
 
-		try {
-			AccountUtil.setReqUri(request.getRequestURI());
-            AccountUtil.setRequestParams(request.getParameterMap());
-			return arg0.invoke();
-		} catch (Exception e) {
-			System.out.println("exception code 154");
-
-			LOGGER.log(Level.SEVERE, "error thrown from action class", e);
-			throw e;
-		}
+		return arg0.invoke();
 	}
 	
 	private IAMAccount validateToken(HttpServletRequest request) throws AccountException {

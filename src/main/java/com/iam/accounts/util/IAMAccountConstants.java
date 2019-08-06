@@ -209,6 +209,20 @@ public class IAMAccountConstants {
 			createdTime.setColumnName("CREATED_TIME");
 			createdTime.setModule(module);
 			fields.add(createdTime);
+			
+			FacilioField dataSourceName = new FacilioField();
+			dataSourceName.setName("dataSource");
+			dataSourceName.setDataType(FieldType.STRING);
+			dataSourceName.setColumnName("DATASOURCE");
+			dataSourceName.setModule(module);
+			fields.add(dataSourceName);
+			
+			FacilioField dbName = new FacilioField();
+			dbName.setName("database_name");
+			dbName.setDataType(FieldType.STRING);
+			dbName.setColumnName("DATABASE_NAME");
+			dbName.setModule(module);
+			fields.add(dbName);
 
 			return fields;
 		}
@@ -372,20 +386,6 @@ public class IAMAccountConstants {
 			orgId.setModule(module);
 			fields.add(orgId);
 			
-			FacilioField license = new FacilioField();
-			license.setName("license");
-			license.setDataType(FieldType.NUMBER);
-			license.setColumnName("LICENSE");
-			license.setModule(module);
-			fields.add(license);
-	
-			FacilioField invitedTime = new FacilioField();
-			invitedTime.setName("invitedTime");
-			invitedTime.setDataType(FieldType.NUMBER);
-			invitedTime.setColumnName("INVITEDTIME");
-			invitedTime.setModule(module);
-			fields.add(invitedTime);
-
 			FacilioField isDefaultOrg = new FacilioField();
 			isDefaultOrg.setName("isDefaultOrg");
 			isDefaultOrg.setDataType(FieldType.BOOLEAN);
@@ -400,12 +400,6 @@ public class IAMAccountConstants {
 			userStatus.setModule(module);
 			fields.add(userStatus);
 
-			FacilioField inviteAcceptStatus = new FacilioField();
-			inviteAcceptStatus.setName("inviteAcceptStatus");
-			inviteAcceptStatus.setDataType(FieldType.BOOLEAN);
-			inviteAcceptStatus.setColumnName("INVITATION_ACCEPT_STATUS");
-			inviteAcceptStatus.setModule(module);
-			fields.add(inviteAcceptStatus);
 			return fields;
 		}
 		
