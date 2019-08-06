@@ -123,6 +123,8 @@ public class ModuleBeanImpl implements ModuleBean {
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setLong(1, getOrgId());
 			pstmt.setLong(2, moduleId);
+			pstmt.setLong(3, getOrgId());
+			pstmt.setLong(4, moduleId);
 			
 			rs = pstmt.executeQuery();
 			
@@ -174,7 +176,8 @@ public class ModuleBeanImpl implements ModuleBean {
 			 pstmt = conn.prepareStatement(sql);
 
 			pstmt.setLong(1, getOrgId());
-			pstmt.setString(2, moduleName);
+			pstmt.setLong(2, getOrgId());
+			pstmt.setString(3, moduleName);
 			
 			rs = pstmt.executeQuery();
 			
@@ -204,6 +207,9 @@ public class ModuleBeanImpl implements ModuleBean {
 		try(Connection conn = getConnection();PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setLong(1, getOrgId());
 			pstmt.setLong(2, moduleId);
+			pstmt.setLong(3, getOrgId());
+			pstmt.setLong(4, moduleId);
+			pstmt.setLong(5, getOrgId());
 			rs = pstmt.executeQuery();
 			return getSubModulesFromRS(rs);
 		}
@@ -234,7 +240,9 @@ public class ModuleBeanImpl implements ModuleBean {
 		ResultSet rs = null;
 		try(Connection conn = getConnection();PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setLong(1, getOrgId());
-			pstmt.setString(2, moduleName);
+			pstmt.setLong(2, getOrgId());
+			pstmt.setString(3, moduleName);
+			pstmt.setLong(4, getOrgId());
 			rs = pstmt.executeQuery();
 			return getSubModulesFromRS(rs);
 		}
@@ -272,6 +280,9 @@ public class ModuleBeanImpl implements ModuleBean {
 		try(Connection conn = getConnection();PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setLong(1, getOrgId());
 			pstmt.setLong(2, moduleId);
+			pstmt.setLong(3, getOrgId());
+			pstmt.setLong(4, moduleId);
+			pstmt.setLong(5, getOrgId());
 			rs = pstmt.executeQuery();
 			return getSubModulesFromRS(rs);
 		}
@@ -305,7 +316,9 @@ public class ModuleBeanImpl implements ModuleBean {
 		ResultSet rs = null;
 		try(Connection conn = getConnection();PreparedStatement pstmt = conn.prepareStatement(sql)) {
 			pstmt.setLong(1, getOrgId());
-			pstmt.setString(2, moduleName);
+			pstmt.setLong(2, getOrgId());
+			pstmt.setString(3, moduleName);
+			pstmt.setLong(4, getOrgId());
 			rs = pstmt.executeQuery();
 			return getSubModulesFromRS(rs);
 		}
