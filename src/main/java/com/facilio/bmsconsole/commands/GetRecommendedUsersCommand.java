@@ -4,27 +4,32 @@ import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.actions.RoleAction;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class GetRecommendedUsersCommand extends FacilioCommand {
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
         Long woId = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+        String roleName = (String) context.get(FacilioConstants.ContextNames.ROLE);
+
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
         WorkOrderContext workOrder = null;
@@ -45,7 +50,11 @@ public class GetRecommendedUsersCommand extends FacilioCommand {
 
         int numberOfRecommendedUsers = 3;
 
-        Role role = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), "Super Administrator", false);
+        if (StringUtils.isEmpty(roleName)) {
+            roleName = "Technician";
+        }
+
+        Role role = AccountUtil.getRoleBean().getRole(AccountUtil.getCurrentOrg().getOrgId(), roleName, false);
         List<User> usersWithRole = AccountUtil.getUserBean().getUsersWithRole(role.getRoleId());
 
         List<RecommendedUser> recommendedUsers = new ArrayList<>();
