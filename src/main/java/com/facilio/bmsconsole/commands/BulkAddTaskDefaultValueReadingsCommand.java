@@ -47,6 +47,9 @@ public class BulkAddTaskDefaultValueReadingsCommand extends FacilioCommand {
 			for( Entry<String, List<TaskContext>> entry : taskMap.entrySet()) {
 				for(TaskContext task : entry.getValue()) {
 					if (StringUtils.isNotEmpty(task.getDefaultValue()) && task.getReadingFieldId() != -1) {
+						if (pmId == 1211175L) {
+						    LOGGER.log(Level.SEVERE, "Task Subject " + task.getSubject());
+						}
 						if (task.getReadingField() == null) {
 							task.setReadingField(modBean.getField(task.getReadingFieldId()));
 						}
