@@ -262,10 +262,10 @@ public class ResourceAPI {
 					if (record.getData() != null) {
 						for (FacilioField resourceField : resourceFields) {
 							if (record.getData().containsKey(resourceField.getName())) {
-								Map<String, Object> resource = (Map<String, Object>) record.getData()
+								ModuleBaseWithCustomFields resource = (ModuleBaseWithCustomFields) record.getData()
 										.get(resourceField.getName());
-								if (((long) resource.get("id") != -1)) {
-									resourceIds.add((long) resource.get("id"));
+								if ((resource.getId() != -1)) {
+									resourceIds.add(resource.getId());
 								}
 							}
 						}
@@ -281,11 +281,11 @@ public class ResourceAPI {
 						if (record.getData() != null) {
 							for (FacilioField resourceField : resourceFields) {
 								if (record.getData().containsKey(resourceField.getName())) {
-									Map<String, Object> resource = (Map<String, Object>) record.getData()
+									ModuleBaseWithCustomFields resource = (ModuleBaseWithCustomFields) record.getData()
 											.get(resourceField.getName());
-									if (resource != null && ((long) resource.get("id") != -1)) {
-										Long resourceId = (Long) ((Map<String, Object>) record.getData()
-												.get(resourceField.getName())).get("id");
+									if (resource != null && (resource.getId() != -1)) {
+										long resourceId = ((ModuleBaseWithCustomFields) record.getData()
+												.get(resourceField.getName())).getId();
 										record.getData().put(resourceField.getName(), resources.get(resourceId));
 									}
 								}
