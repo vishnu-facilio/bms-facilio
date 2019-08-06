@@ -345,6 +345,12 @@ public class PreventiveMaintenanceAPI {
 			} else if (frequency == FacilioFrequency.WEEKLY) {
 				return DateTimeUtil.getDayStartTime(26*7, true) - 1;
 			}
+		} else if (AccountUtil.getCurrentOrg().getOrgId() == 176L) {
+			if (frequency == FacilioFrequency.DAILY) {
+				return DateTimeUtil.getDayStartTime(16, true) - 1;
+			} else if (frequency == FacilioFrequency.WEEKLY) {
+				return DateTimeUtil.getDayStartTime(16, true) - 1;
+			}
 		}
 		return DateTimeUtil.getDayStartTime(frequency.getMaxSchedulingDays(), true) - 1;
 	}
