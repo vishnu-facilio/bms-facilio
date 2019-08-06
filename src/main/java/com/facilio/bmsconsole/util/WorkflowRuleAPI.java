@@ -973,12 +973,14 @@ public class WorkflowRuleAPI {
 		
 		boolean result = fieldChangeFlag && miscFlag && criteriaFlag && workflowFlag && siteId ;
 		if (shouldExecute) {
+			currentTime = System.currentTimeMillis();
 			if(result) {
 				workflowRule.executeTrueActions(record, context, rulePlaceHolders);
 			}
 			else {
 				workflowRule.executeFalseActions(record, context, rulePlaceHolders);
 			}
+			LOGGER.debug("Workflow Execute time: " + (System.currentTimeMillis() - currentTime));
 		}
 		return result;
 	}
