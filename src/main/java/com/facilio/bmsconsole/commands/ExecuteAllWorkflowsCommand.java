@@ -130,7 +130,10 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 				FacilioField parentRule = fields.get("parentRuleId");
 				Criteria parentCriteria = new Criteria();
 				parentCriteria.addAndCondition(CriteriaAPI.getCondition(parentRule, CommonOperators.IS_EMPTY));
+				long currentTime = System.currentTimeMillis();
 				List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(module, activities, parentCriteria, ruleTypes);
+				LOGGER.debug("Time taken to fetch workflow: " + (System.currentTimeMillis() - currentTime));
+				currentTime = System.currentTimeMillis();
 				
 				if (AccountUtil.getCurrentOrg().getId() == 186 && "statusupdation".equals(moduleName)) {
 					LOGGER.info("Records : "+entry.getValue());
@@ -150,7 +153,9 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 					LOGGER.error("Matching Rules : "+workflowRules);
 					LOGGER.error("Rule Types : "+Arrays.toString(ruleTypes));
 				}
-				
+
+				LOGGER.debug("Number of entry: " + (entry.getValue() == null ? 0 : entry.getValue().size()));
+
 				if (workflowRules != null && !workflowRules.isEmpty()) {
 					Map<String, Object> placeHolders = WorkflowRuleAPI.getOrgPlaceHolders();
 					List records = new LinkedList<>(entry.getValue());
@@ -162,6 +167,7 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 						WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(workflowRules, module, record, changeSet, it, recordPlaceHolders, context,propagateError, activities);
 					}
 				}
+				LOGGER.debug("Time taken to execute workflow: " + (System.currentTimeMillis() - currentTime));
 			}
 		}
 	}
