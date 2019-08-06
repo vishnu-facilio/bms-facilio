@@ -91,8 +91,8 @@ public class DefaultMLHistoricalJob extends FacilioJob
 	{		
 		while(startTime < endTime)
 		{
-			executeLoop(childMlList,startTime);
 			startTime = startTime + childExecutionTime;
+			executeLoop(childMlList,startTime);
 		}	
 	}
 	

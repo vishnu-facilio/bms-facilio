@@ -24,6 +24,7 @@ public class AddNewMLEnergyPredictionJob extends FacilioJob {
 		{
 			Chain c = FacilioChainFactory.enableAnomalyDetectionChain();
 			context.put("TreeHeirarchy", props.get("TreeHeirarchy"));
+			context.put("meterInterval", props.get("meterInterval"));
 			c.execute(context);
 		}
 		else

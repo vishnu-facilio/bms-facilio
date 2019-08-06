@@ -77,13 +77,6 @@ public class AddEnergyPredictionCommand extends FacilioCommand {
 		ScheduleInfo info = new ScheduleInfo();
 		info.setFrequencyType(FrequencyType.DAILY);
 
-		List<LocalTime> hourlyList = new ArrayList<LocalTime>();
-		hourlyList.add(LocalTime.MIDNIGHT);
-		for(int i=1;i<24;i++)
-		{
-			hourlyList.add(LocalTime.MIDNIGHT.plusHours(i));
-		}
-		info.setTimeObjects(hourlyList);
 		addJobs(mlID,info);
 		
 	}
