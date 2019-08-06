@@ -20,6 +20,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
+import org.apache.commons.collections4.CollectionUtils;
 
 public class BusinessHoursAPI {
 
@@ -106,6 +107,11 @@ public class BusinessHoursAPI {
 	}
 
 	public static List<BusinessHoursContext> getBusinessHours(List<Long> ids) throws Exception {
+		List<BusinessHoursContext> businessHours = new ArrayList<>();
+		if (CollectionUtils.isEmpty(ids)) {
+			return businessHours;
+		}
+
 		FacilioModule module = ModuleFactory.getBusinessHoursModule();
 		String businessHoursTable = ModuleFactory.getBusinessHoursModule().getTableName();
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
@@ -113,7 +119,6 @@ public class BusinessHoursAPI {
 //				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getIdCondition(ids, module)).orderBy("Id");
 		List<Map<String, Object>> props = selectBuilder.get();
-		List<BusinessHoursContext> businessHours = new ArrayList<>();
 		if (props != null && !props.isEmpty()) {
 			List<BusinessHourContext> singleDayBusinessHourList = getSingleDayBusinessHours(ids);
 			for (Map<String, Object> prop : props) {

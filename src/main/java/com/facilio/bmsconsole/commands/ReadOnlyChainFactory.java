@@ -1296,4 +1296,10 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetModuleDetailCommand());
 		return c;
 	}
+
+	public static Chain getRecommendedUsers() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetRecommendedUsersCommand());
+		return c;
+	}
 }

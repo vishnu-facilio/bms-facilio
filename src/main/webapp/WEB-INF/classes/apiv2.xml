@@ -401,6 +401,13 @@
 		</action>
 	</package>
 
+	<package name="recommendationApiV2" namespace="/api/v2/recommended"
+		extends="v2Api">
+		<action name="workorder"
+				class="com.facilio.bmsconsole.actions.WorkOrderAssignmentAction"
+				method="getWorkOrderRecommendedUsers" />
+	</package>
+
 	<package name="workOrderApiV2" namespace="/api/v2/workorders"
 		extends="v2Api">
 
