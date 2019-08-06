@@ -31,6 +31,9 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.amazonaws.util.StringUtils;
+import com.facilio.accounts.dto.Account;
+import com.facilio.accounts.dto.IAMAccount;
+import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
@@ -42,9 +45,8 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.iam.accounts.dto.Account;
-import com.iam.accounts.util.OrgUtil;
-import com.iam.accounts.util.UserUtil;
+import com.iam.accounts.util.IAMOrgUtil;
+import com.iam.accounts.util.IAMUserUtil;
 import com.opensymphony.xwork2.ActionContext;
 
 public class FacilioAuthAction extends FacilioAction {
@@ -257,7 +259,9 @@ public class FacilioAuthAction extends FacilioAction {
 		signupContext.put(FacilioConstants.ContextNames.SIGNUP_INFO, signupInfo);
 		Locale locale = request.getLocale();
 
-		Account account = OrgUtil.signUpOrg(signupInfo, locale);
+		IAMAccount iamAccount = IAMOrgUtil.signUpOrg(signupInfo, locale);
+		Account account = new Account(iamAccount.getOrg(), new User(iamAccount.getUser()));
+		
 		AccountUtil.setCurrentAccount(account);
 		if (account != null && account.getOrg().getOrgId() > 0) {
 			signupContext.put("orgId", account.getOrg().getOrgId());
@@ -302,7 +306,7 @@ public class FacilioAuthAction extends FacilioAction {
 				}
 
 				try {
-					authtoken = UserUtil.verifyLoginPassword(getUsername(), getPassword(), userAgent, userType,
+					authtoken = IAMUserUtil.verifyLoginPassword(getUsername(), getPassword(), userAgent, userType,
 							ipAddress, domainName, portalId() > 0 ? true : false);
 				} catch (AccountException ex) {
 					setJsonresponse("message", ex.getMessage()); // can be removed later
@@ -587,7 +591,8 @@ public class FacilioAuthAction extends FacilioAction {
 	public String resetPassword() throws Exception {
 		JSONObject invitation = new JSONObject();
 		if (getInviteToken() != null) {
-			User user = UserUtil.resetPassword(getInviteToken(), getPassword());
+			IAMUser iamUser = IAMUserUtil.resetPassword(getInviteToken(), getPassword());
+			User user = new User(iamUser);
 			if (user.getUid() > 0) {
 				invitation.put("status", "success");
 			}
@@ -612,7 +617,7 @@ public class FacilioAuthAction extends FacilioAction {
 	public String changePassword(){
 		try {
 			User user = AccountUtil.getCurrentUser();
-			Boolean changePassword = UserUtil.changePassword(getPassword(), getNewPassword(), user.getUid(), AccountUtil.getCurrentOrg().getOrgId());
+			Boolean changePassword = IAMUserUtil.changePassword(getPassword(), getNewPassword(), user.getUid(), AccountUtil.getCurrentOrg().getOrgId());
 			if (changePassword != null && changePassword) {
 				setJsonresponse("message", "Password changed successfully");
 				setJsonresponse("status", "success");
@@ -656,7 +661,7 @@ public class FacilioAuthAction extends FacilioAction {
 	public String generateAuthToken() {
 		LOGGER.info("generateAuthToken() : username :" + getUsername());
 		try {
-			String token = UserUtil.generateAuthToken(getUsername(), getPassword(), "app");
+			String token = IAMUserUtil.generateAuthToken(getUsername(), getPassword(), "app");
 			if (token != null) {
 				LOGGER.info("Response token is " + token);
 				setJsonresponse("authtoken", token);
@@ -674,7 +679,7 @@ public class FacilioAuthAction extends FacilioAction {
 	public String generatePortalAuthToken() {
 		LOGGER.info("generatePortalAuthToken() : username :" + getUsername());
 		try {
-			String token = UserUtil.generateportalAuthToken(getUsername(), getPassword(), getDomainname());
+			String token = IAMUserUtil.generateportalAuthToken(getUsername(), getPassword(), getDomainname());
 			if (token != null) {
 				LOGGER.info("Response token is " + token);
 				setJsonresponse("authtoken", token);
@@ -817,7 +822,7 @@ public class FacilioAuthAction extends FacilioAction {
 			if (facilioToken != null) {
 				User currentUser = AccountUtil.getCurrentUser();
 				if (currentUser != null) {
-					UserUtil.logOut(currentUser.getUid(), facilioToken, currentUser.getEmail()
+					IAMUserUtil.logOut(currentUser.getUid(), facilioToken, currentUser.getEmail()
 							);
 				}
 			}

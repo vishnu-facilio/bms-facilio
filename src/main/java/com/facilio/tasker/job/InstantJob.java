@@ -3,6 +3,7 @@ package com.facilio.tasker.job;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.jobs.JobLogger;
 import com.facilio.chain.FacilioContext;

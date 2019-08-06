@@ -38,28 +38,28 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
-import com.iam.accounts.util.OrgUtil;
+import com.iam.accounts.util.IAMOrgUtil;
 
 public class OrgBeanImpl implements OrgBean {
 
 	@Override
 	public boolean updateOrg(long orgId, Organization org) throws Exception {
-		return OrgUtil.updateOrg(orgId, org);
+		return IAMOrgUtil.updateOrg(orgId, org);
 	}
 
 	@Override
 	public boolean deleteOrg(long orgId) throws Exception {
-		return OrgUtil.deleteOrg(orgId);
+		return IAMOrgUtil.deleteOrg(orgId);
 	}
 
 	@Override
 	public Organization getOrg(long orgId) throws Exception {
-		return OrgUtil.getOrg(orgId);
+		return IAMOrgUtil.getOrg(orgId);
 	}
 
 	@Override
 	public Organization getOrg(String orgDomain) throws Exception {
-		return OrgUtil.getOrg(orgDomain);
+		return IAMOrgUtil.getOrg(orgDomain);
 	}
 	
 	@Override
@@ -415,7 +415,7 @@ public class OrgBeanImpl implements OrgBean {
 	@Override
 	public void updateLoggerLevel(int level, long orgId) throws Exception {
 		 // TODO Auto-generated method stub 
-		OrgUtil.updateLoggerLevel(level, orgId);
+		IAMOrgUtil.updateLoggerLevel(level, orgId);
 	} 
 	
 	

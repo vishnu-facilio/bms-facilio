@@ -12,7 +12,7 @@ import org.json.simple.JSONObject;
 import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.screen.util.ScreenUtil;
 import com.iam.accounts.util.IAMUtil;
-import com.iam.accounts.util.UserUtil;
+import com.iam.accounts.util.IAMUserUtil;
 
 public class TVAction extends FacilioAction {
 	
@@ -65,7 +65,7 @@ public class TVAction extends FacilioAction {
 					setResponseCode(0);
 					setResult("status", "connected");
 					
-					String jwt = UserUtil.createJWT("id", "auth0", connectedScreenId + "", System.currentTimeMillis() + 24 * 60 * 60000, true);
+					String jwt = IAMUserUtil.createJWT("id", "auth0", connectedScreenId + "", System.currentTimeMillis() + 24 * 60 * 60000, true);
 
 	                ServletActionContext.getRequest();
 	                HttpServletResponse response = ServletActionContext.getResponse();

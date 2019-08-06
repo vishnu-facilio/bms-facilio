@@ -13,6 +13,8 @@ import com.facilio.accounts.bean.GroupBean;
 import com.facilio.accounts.bean.OrgBean;
 import com.facilio.accounts.bean.RoleBean;
 import com.facilio.accounts.bean.UserBean;
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.PortalInfoContext;
@@ -26,7 +28,6 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import com.iam.accounts.dto.Account;
 import com.iam.accounts.util.IAMUtil;
 
 public class AccountUtil {

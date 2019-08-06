@@ -34,7 +34,7 @@ import com.facilio.wms.message.Message;
 import com.facilio.wms.message.MessageType;
 import com.facilio.wms.util.WmsApi;
 import com.iam.accounts.util.IAMUtil;
-import com.iam.accounts.util.UserUtil;
+import com.iam.accounts.util.IAMUserUtil;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.util.ValueStack;
@@ -429,7 +429,7 @@ public class AdminAction extends ActionSupport
 	{
 		String email =getEmail();
 		long uid = getUserId();
-		UserUtil.clearUserSessions(uid, email);
+		IAMUserUtil.clearUserSessions(uid, email);
 		return SUCCESS;
 		
 	}

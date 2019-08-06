@@ -3,6 +3,8 @@ package com.iam.accounts.util;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.dto.IAMAccount;
+import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.beans.ModuleBean;
@@ -15,7 +17,6 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.iam.accounts.bean.IAMOrgBean;
 import com.iam.accounts.bean.IAMUserBean;
-import com.iam.accounts.dto.Account;
 
 public class IAMUtil {
 	
@@ -98,14 +99,14 @@ public class IAMUtil {
 		}
 	}
 
-	public static Account getCurrentAccount(Organization org, User user) {
-		Account account = new Account(org, null);
+	public static IAMAccount getCurrentAccount(Organization org, IAMUser user) {
+		IAMAccount account = new IAMAccount(org, null);
 		account.setUser(user);
 		return account;
 
 	}
 
-	public static Account getCurrentAccount(long orgId, User user) throws Exception {
+	public static IAMAccount getCurrentAccount(long orgId, IAMUser user) throws Exception {
 		Organization org = getOrgBean().getOrgv2(orgId);
 		return getCurrentAccount(org, user);
 	}

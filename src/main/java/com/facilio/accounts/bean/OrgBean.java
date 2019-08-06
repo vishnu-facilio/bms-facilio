@@ -1,10 +1,5 @@
 package com.facilio.accounts.bean;
 
-import com.facilio.accounts.dto.Organization;
-import com.facilio.accounts.dto.User;
-import com.facilio.bmsconsole.context.PortalInfoContext;
-import com.facilio.db.criteria.Criteria;
-
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +7,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
+import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.db.criteria.Criteria;
 
 public interface OrgBean {

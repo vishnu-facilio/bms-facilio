@@ -20,8 +20,9 @@ import org.json.simple.parser.ParseException;
 
 import com.amazonaws.util.StringUtils;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.facilio.accounts.dto.IAMAccount;
+import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
-import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.util.EncryptionUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -41,12 +42,11 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.iam.accounts.bean.IAMUserBean;
-import com.iam.accounts.dto.Account;
 import com.iam.accounts.exceptions.AccountException;
 import com.iam.accounts.exceptions.AccountException.ErrorCode;
 import com.iam.accounts.util.IAMAccountConstants;
+import com.iam.accounts.util.IAMUserUtil;
 import com.iam.accounts.util.IAMUtil;
-import com.iam.accounts.util.UserUtil;
 
 ;
 
@@ -57,13 +57,13 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	private static Logger log = LogManager.getLogger(IAMUserBeanImpl.class.getName());
 
 	
-	private long addUserEntryv2(User user, boolean emailVerificationRequired) throws Exception {
+	private long addUserEntryv2(IAMUser user, boolean emailVerificationRequired) throws Exception {
 
 		if (StringUtils.isNullOrEmpty(user.getDomainName())) {
 			user.setDomainName("app");
 		}
 		
-		User existingUser = getFacilioUser(user.getEmail(), user.getCity());
+		IAMUser existingUser = getFacilioUser(user.getEmail(), user.getCity());
 		if(existingUser == null) {
 			List<FacilioField> fields = IAMAccountConstants.getAccountsUserFields();
 			fields.add(IAMAccountConstants.getUserPasswordField());
@@ -84,11 +84,11 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	
-	public boolean updateUserv2(User user) throws Exception {
+	public boolean updateUserv2(IAMUser user) throws Exception {
 		return updateUserEntryv2(user);
 	}
 
-	private boolean updateUserEntryv2(User user) throws Exception {
+	private boolean updateUserEntryv2(IAMUser user) throws Exception {
 		List<FacilioField> fields = IAMAccountConstants.getAccountsUserFields();
 		fields.add(IAMAccountConstants.getUserPasswordField());
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
@@ -104,7 +104,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 	
 //	@Override
-//	public long inviteAdminConsoleUserv2(long orgId, User user) throws Exception {
+//	public long inviteAdminConsoleUserv2(long orgId, IAMUser user) throws Exception {
 //		long userId = inviteUserv2(orgId, user, false);
 //		if(userId > 0) {
 //			acceptUserv2(user);
@@ -113,14 +113,14 @@ public class IAMUserBeanImpl implements IAMUserBean {
 //	}
 
 
-	private long addUserv2(long orgId, User user, boolean emailRegRequired) throws Exception {
+	private long addUserv2(long orgId, IAMUser user, boolean emailRegRequired) throws Exception {
 
-		User orgUser = getFacilioUser(user.getEmail(), orgId, null);
+		IAMUser orgUser = getFacilioUser(user.getEmail(), orgId, null);
 		if (orgUser != null) {
 			throw new AccountException(AccountException.ErrorCode.EMAIL_ALREADY_EXISTS, "This user already exists in your organization.");
 		}
 		else {
-			User userExistsForAnyOrg = getFacilioUser(user.getEmail());
+			IAMUser userExistsForAnyOrg = getFacilioUser(user.getEmail());
 			if(userExistsForAnyOrg != null) {
 				user.setDefaultOrg(false);
 			}
@@ -137,34 +137,34 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public long signUpSuperAdminUserv2(long orgId, User user) throws Exception {
+	public long signUpSuperAdminUserv2(long orgId, IAMUser user) throws Exception {
 		return  addUserv2(orgId, user, true);
 	}
 
 	@Override
-	public long addUserv2(long orgId, User user) throws Exception {
+	public long addUserv2(long orgId, IAMUser user) throws Exception {
 		return  addUserv2(orgId, user, false);
 	}
 
-	public User getUserFromToken(String userToken){
+	public IAMUser getUserFromToken(String userToken){
 		String[] tokenPortal = userToken.split("&");
 		String token = EncryptionUtil.decode(tokenPortal[0]);
 		String[] userObj = token.split(USER_TOKEN_REGEX);
-		User user = null;
+		IAMUser user = null;
 		if(userObj.length == 5) {
-			user = new User();
+			user = new IAMUser();
 			user.setOrgId(Long.parseLong(userObj[0]));
-			user.setOuid(Long.parseLong(userObj[1]));
+//			user.setOuid(Long.parseLong(userObj[1]));
 			user.setUid(Long.parseLong(userObj[2]));
 			user.setEmail(userObj[3]);
-			user.setInvitedTime(Long.parseLong(userObj[4]));
-			if(tokenPortal.length > 1) {
-				String[] portalIdString = tokenPortal[1].split("=");
-				if(portalIdString.length > 1){
-					int portalId = Integer.parseInt(portalIdString[1].trim());
-					user.setPortalId(portalId);
-				}
-			}
+//			user.setInvitedTime(Long.parseLong(userObj[4]));
+//			if(tokenPortal.length > 1) {
+//				String[] portalIdString = tokenPortal[1].split("=");
+//				if(portalIdString.length > 1){
+//					int portalId = Integer.parseInt(portalIdString[1].trim());
+//					user.setPortalId(portalId);
+//				}
+//			}
 		}
 		return user;
 	}
@@ -172,11 +172,11 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	public static void main(String []args)
 	{
 		IAMUserBeanImpl us = new IAMUserBeanImpl();
-		User s = us.getUserFromToken("xSb_ezHQ_udcFU8l5P67wq_z809tlkMMIZxMbHAV0hbs9TKfyRniDoVCfmvVGF3wl4nuHLJ53Ho=");
+		IAMUser s = us.getUserFromToken("xSb_ezHQ_udcFU8l5P67wq_z809tlkMMIZxMbHAV0hbs9TKfyRniDoVCfmvVGF3wl4nuHLJ53Ho=");
 		System.out.println(s.getEmail());
 		System.out.println(s.getUid());
-		System.out.println(s.getOuid());
-		System.out.println(s.getPortalId());
+//		System.out.println(s.getOuid());
+//		System.out.println(s.getPortalId());
 		System.out.println(s.getOrgId());
 
 		
@@ -184,11 +184,11 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	
 	
 	@Override
-	public User verifyEmailv2(String token){
-		User user = getUserFromToken(token);
+	public IAMUser verifyEmailv2(String token){
+		IAMUser user = getUserFromToken(token);
 
 		if(user != null) {
-			if((System.currentTimeMillis() - user.getInvitedTime()) < INVITE_LINK_EXPIRE_TIME) {
+//			if((System.currentTimeMillis() - user.getInvitedTime()) < INVITE_LINK_EXPIRE_TIME) {
 				try {
 					user.setUserVerified(true);
 					updateUserv2(user);
@@ -196,18 +196,18 @@ public class IAMUserBeanImpl implements IAMUserBean {
 					log.info("Exception occurred ", e);
 				}
 				return user;
-			}
+//			}
 		}
 		return null;
 	}
 
 	@Override
-	public User resetPasswordv2(String token, String password){
-		User user = getUserFromToken(token);
+	public IAMUser resetPasswordv2(String token, String password){
+		IAMUser user = getUserFromToken(token);
 
 		if(user != null) {
 			long orgId=user.getOrgId();
-			if ((System.currentTimeMillis() - user.getInvitedTime()) < INVITE_LINK_EXPIRE_TIME) {
+//			if ((System.currentTimeMillis() - user.getInvitedTime()) < INVITE_LINK_EXPIRE_TIME) {
 				try {
 					user.setPassword(password);
 					user.setUserVerified(true);
@@ -216,17 +216,17 @@ public class IAMUserBeanImpl implements IAMUserBean {
 					log.info("Exception occurred ", e);
 				}
 				return user;
-			}
+//			}
 		}
 		return null;
 	}
 
 	@Override
-	public User validateUserInvitev2(String token){
-		User user = getUserFromToken(token);
+	public IAMUser validateUserInvitev2(String token){
+		IAMUser user = getUserFromToken(token);
 		if(user != null){
 			try {
-				user = getFacilioUserWithPassword(user.getOuid());
+//				user = getFacilioUserWithPassword(user.getOuid());
 			} catch (Exception e) {
 				log.info("exception validating user invite "+ user, e);
 				user = null;
@@ -238,7 +238,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	@Override
 	public boolean resendInvitev2(long orgId, long userId) throws Exception {
 		
-		User user = getFacilioUser(orgId, userId);
+		IAMUser user = getFacilioUser(orgId, userId);
 		if (user.getInviteAcceptStatus()) {
 			// invitation already accepted
 			return false;
@@ -271,8 +271,8 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public User acceptInvitev2(String token, String password) throws Exception {
-		User user = getUserFromToken(token);
+	public IAMUser acceptInvitev2(String token, String password) throws Exception {
+		IAMUser user = getUserFromToken(token);
 		user.setPassword(password);
 		long orgId=(user.getOrgId());
 		if(IAMUtil.getTransactionalUserBean(orgId).acceptUserv2(user)) {
@@ -281,7 +281,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return null;
 	}
 
-	public boolean acceptUserv2(User user) throws Exception {
+	public boolean acceptUserv2(IAMUser user) throws Exception {
 		if(user != null) {
 			FacilioField inviteAcceptStatus = new FacilioField();
 			inviteAcceptStatus.setName("inviteAcceptStatus");
@@ -310,7 +310,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 					.table(IAMAccountConstants.getAccountsOrgUserModule().getTableName())
 					.fields(fields);
 			
-			updateBuilder.andCondition(CriteriaAPI.getCondition("ORG_USERID", "orgUserId", String.valueOf(user.getOuid()), NumberOperators.EQUALS));
+//			updateBuilder.andCondition(CriteriaAPI.getCondition("ORG_USERID", "orgUserId", String.valueOf(user.getOuid()), NumberOperators.EQUALS));
 		
 			Map<String, Object> props = new HashMap<>();
 			props.put("inviteAcceptStatus", true);
@@ -320,7 +320,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			int updatedRows = updateBuilder.update(props);
 			if (updatedRows > 0) {
 				String password = user.getPassword();
-				user = getInvitedUser(user.getOuid());
+//				user = getInvitedUser(user.getOuid());
 				if(user != null) {
 					user.setUserVerified(true);
 					user.setPassword(password);
@@ -332,7 +332,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return false;
 	}
 
-	private User getInvitedUser(long ouid) throws Exception {
+	private IAMUser getInvitedUser(long ouid) throws Exception {
 
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(IAMAccountConstants.getAccountsUserFields());
@@ -350,7 +350,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			User user =  createUserFromProps(props.get(0), true, true, false); //Giving as false because user cannot accept invite via portal APIs
+			IAMUser user =  createUserFromProps(props.get(0), true, true, false); //Giving as false because user cannot accept invite via portal APIs
 			return user;
 		}
 		return null;
@@ -358,9 +358,9 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 	
 	@Override
-	public boolean deleteUserv2(User user) throws Exception {
+	public boolean deleteUserv2(IAMUser user) throws Exception {
 		
-		User userData = getFacilioUser(user.getOrgId(), user.getUid());
+		IAMUser userData = getFacilioUser(user.getOrgId(), user.getUid());
 		if(userData != null) {
 			FacilioField deletedTime = new FacilioField();
 			deletedTime.setName("deletedTime");
@@ -393,14 +393,14 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			return false;
 		}
 		else {
-			throw new AccountException(ErrorCode.USER_ALREADY_DELETED, "User is already deleted");
+			throw new AccountException(ErrorCode.USER_ALREADY_DELETED, "IAMUser is already deleted");
 		}
 	}
 
 	private void updateDefaultOrgForUser(long uId, long currentOrg) throws Exception {
-		List<User> orgUsers = getFacilioOrgUserList(uId);
+		List<IAMUser> orgUsers = getFacilioOrgUserList(uId);
 		if(CollectionUtils.isNotEmpty(orgUsers)) {
-			for(User u : orgUsers) {
+			for(IAMUser u : orgUsers) {
 				if(u.getOrgId() != currentOrg) {
 					setDefaultOrgv2(orgUsers.get(0).getUid(), u.getOrgId());
 					break;
@@ -510,7 +510,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public User getFacilioUser(long ouid) throws Exception {
+	public IAMUser getFacilioUser(long ouid) throws Exception {
 		
 		GenericSelectRecordBuilder selectBuilder = getFacilioUserBuilder(null,false);
 		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_USERID", "userId", String.valueOf(ouid), NumberOperators.EQUALS));
@@ -518,14 +518,14 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			User user =  createUserFromProps(props.get(0), true, true, false);
+			IAMUser user =  createUserFromProps(props.get(0), true, true, false);
 			return user;
 		}
 		return null;
 	}
 	
 	@Override
-	public User getFacilioUser(long orgId, long userId) throws Exception {
+	public IAMUser getFacilioUser(long orgId, long userId) throws Exception {
 		
 		GenericSelectRecordBuilder selectBuilder = getFacilioUserBuilder(null,false);
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
@@ -533,20 +533,20 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			User user =  createUserFromProps(props.get(0), true, true, false);
+			IAMUser user =  createUserFromProps(props.get(0), true, true, false);
 			return user;
 		}
 		return null;
 	}
 	
-	private User getFacilioUserWithPassword(long ouid) throws Exception {
+	private IAMUser getFacilioUserWithPassword(long ouid) throws Exception {
 
 		GenericSelectRecordBuilder selectBuilder = getFacilioUserBuilder(null,false);
 		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_USERID", "orgId", String.valueOf(ouid), NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			User user =  createUserFromProps(props.get(0), true, true, false);
+			IAMUser user =  createUserFromProps(props.get(0), true, true, false);
 			return user;
 		}
 		log.info(selectBuilder.toString() + " query returned null");
@@ -554,7 +554,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public User getFacilioUser(long orgId, String email) throws Exception {
+	public IAMUser getFacilioUser(long orgId, String email) throws Exception {
 		
 		GenericSelectRecordBuilder selectBuilder = getFacilioUserBuilder(null,false);
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
@@ -563,7 +563,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			User user =  createUserFromProps(props.get(0), true, true, false);
+			IAMUser user =  createUserFromProps(props.get(0), true, true, false);
 			return user;
 		}
 		return null;
@@ -745,7 +745,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	
 	}
 	@Override
-	public Account verifyUserSessionv2(String email, String token, String orgDomain) throws Exception {		
+	public IAMAccount verifyUserSessionv2(String email, String token, String orgDomain) throws Exception {		
 		List<Map<String, Object>> sessions = (List<Map<String, Object>>) LRUCache.getUserSessionCache().get(email);
 		if (sessions == null) {
 			sessions = new ArrayList<>();
@@ -778,13 +778,13 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		
 	}
 	
-	private Account getAccount(long userId, String orgDomain) throws Exception {
-		User user = getFacilioUserFromUserId(userId, orgDomain);
+	private IAMAccount getAccount(long userId, String orgDomain) throws Exception {
+		IAMUser user = getFacilioUserFromUserId(userId, orgDomain);
 		if (user == null) {
-			throw new AccountException(ErrorCode.USER_DOESNT_EXIST_IN_ORG, "User doesn't exists in the current Org");
+			throw new AccountException(ErrorCode.USER_DOESNT_EXIST_IN_ORG, "IAMUser doesn't exists in the current Org");
 		}
 		Organization org = IAMUtil.getOrgBean().getOrgv2(user.getOrgId());
-		Account account = new Account(org, user);
+		IAMAccount account = new IAMAccount(org, user);
 		return account;
 	}
 
@@ -813,10 +813,10 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		LRUCache.getUserSessionCache().remove(email);
 	}
 	
-	static User createUserFromProps(Map<String, Object> prop, boolean fetchRole, boolean fetchSpace, boolean isPortalRequest) throws Exception {
-		User user = FieldUtil.getAsBeanFromMap(prop, User.class);
+	static IAMUser createUserFromProps(Map<String, Object> prop, boolean fetchRole, boolean fetchSpace, boolean isPortalRequest) throws Exception {
+		IAMUser user = FieldUtil.getAsBeanFromMap(prop, IAMUser.class);
 		if (user.getPhotoId() > 0) {
-			FileStore fs = FileStoreFactory.getInstance().getFileStoreFromOrg(user.getOrgId(), user.getOuid());
+			FileStore fs = FileStoreFactory.getInstance().getFileStoreFromOrg(user.getOrgId(), -1);
 			user.setAvatarUrl(fs.getPrivateUrl(user.getPhotoId(), isPortalRequest));
 			user.setOriginalUrl(fs.orginalFileUrl(user.getPhotoId()));
 		}
@@ -827,9 +827,9 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	public String generatePermalinkForURL(String url, long uid, long orgId) throws Exception {
 		
 		Organization org = IAMUtil.getOrgBean().getOrgv2(orgId);
-		User user = getFacilioUserFromUserId(uid, org.getDomain());
-		String tokenKey = orgId + "-" + user.getOuid();
-		String jwt = UserUtil.createJWT("id", "auth0", tokenKey, System.currentTimeMillis() + 24 * 60 * 60000, false);
+		IAMUser user = getFacilioUserFromUserId(uid, org.getDomain());
+		String tokenKey = orgId + "";
+		String jwt = IAMUserUtil.createJWT("id", "auth0", tokenKey, System.currentTimeMillis() + 24 * 60 * 60000, false);
 		
 		JSONObject sessionInfo = new JSONObject();
 		sessionInfo.put("allowUrls", url);
@@ -902,9 +902,9 @@ public class IAMUserBeanImpl implements IAMUserBean {
     }
 
 	
-	private long addToORGUsersv2(User user) throws Exception {
+	private long addToORGUsersv2(IAMUser user) throws Exception {
 		
-		User userExistsInOrg = getFacilioUser(user.getOrgId(), user.getEmail());
+		IAMUser userExistsInOrg = getFacilioUser(user.getOrgId(), user.getEmail());
 		if(userExistsInOrg != null) {
 			throw new AccountException(ErrorCode.USER_ALREADY_EXISTS_IN_ORG, "The user already exist in thie organization");
 		}
@@ -919,19 +919,19 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, props.get("id"));
-		user.setOuid((Long)props.get("id"));
+//		user.setOuid((Long)props.get("id"));
 		return (Long)props.get("id");
 	}
 	
 	@Override
-	public String getEncodedTokenv2(User user) throws Exception {
-		User iamUser = getFacilioUser(user.getOrgId(), user.getUid());
-		return EncryptionUtil.encode(iamUser.getOrgId()+ USER_TOKEN_REGEX +iamUser.getOuid() + USER_TOKEN_REGEX + iamUser.getUid()+ USER_TOKEN_REGEX + iamUser.getEmail() + USER_TOKEN_REGEX + System.currentTimeMillis());
+	public String getEncodedTokenv2(IAMUser user) throws Exception {
+		IAMUser iamUser = getFacilioUser(user.getOrgId(), user.getUid());
+		return EncryptionUtil.encode(iamUser.getOrgId()+ USER_TOKEN_REGEX + iamUser.getUid()+ USER_TOKEN_REGEX + iamUser.getEmail() + USER_TOKEN_REGEX + System.currentTimeMillis());
 	}
 
 	
 	@Override
-	public boolean updateUserv2(long ouid, User user) throws Exception {
+	public boolean updateUserv2(long ouid, IAMUser user) throws Exception {
 		// TODO Auto-generated method stub
 		boolean userUpdateStatus = updateUserEntryv2(user);
 		if (userUpdateStatus) {
@@ -980,7 +980,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return selectBuilder;
 	}
 	
-	public User getFacilioUserFromUserId(long userId, String orgDomain) throws Exception {
+	public IAMUser getFacilioUserFromUserId(long userId, String orgDomain) throws Exception {
 		GenericSelectRecordBuilder selectBuilder = getFacilioUserBuilder(null, false);
 		Criteria userEmailCriteria = new Criteria();
 		userEmailCriteria.addAndCondition(CriteriaAPI.getCondition("Account_Users.USERID", "userId", String.valueOf(userId), NumberOperators.EQUALS));
@@ -997,21 +997,21 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			User user =  createUserFromProps(props.get(0), true, true, false);
+			IAMUser user =  createUserFromProps(props.get(0), true, true, false);
 			return user;
 		}
 		return null;
 	}
 	
 	
-	private List<User> getFacilioOrgUserList(long userId) throws Exception {
+	private List<IAMUser> getFacilioOrgUserList(long userId) throws Exception {
 		GenericSelectRecordBuilder selectBuilder = getFacilioUserBuilder(null, false);
 		Criteria userEmailCriteria = new Criteria();
 		userEmailCriteria.addAndCondition(CriteriaAPI.getCondition("Account_Users.USERID", "userId", String.valueOf(userId), NumberOperators.EQUALS));
 		selectBuilder.andCriteria(userEmailCriteria);
 		
 		List<Map<String, Object>> props = selectBuilder.get();
-		List<User> userList = new ArrayList<User>();
+		List<IAMUser> userList = new ArrayList<IAMUser>();
 		if (props != null && !props.isEmpty()) {
 			for(Map<String, Object> user : props) {
 				userList.add(createUserFromProps(user, true, true, false));
@@ -1022,7 +1022,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 	
 	@Override
-	public User getFacilioUser(String email, String orgDomain, String portalDomain) throws Exception {
+	public IAMUser getFacilioUser(String email, String orgDomain, String portalDomain) throws Exception {
 		GenericSelectRecordBuilder selectBuilder = getFacilioUserBuilder(portalDomain, true);
 		Criteria userEmailCriteria = new Criteria();
 		userEmailCriteria.addAndCondition(CriteriaAPI.getCondition("Account_Users.EMAIL", "email", email, StringOperators.IS));
@@ -1040,14 +1040,14 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			User user =  createUserFromProps(props.get(0), true, true, false);
+			IAMUser user =  createUserFromProps(props.get(0), true, true, false);
 			return user;
 		}
 		return null;
 	}
 
 	@Override
-	public User getFacilioUser(String email, long orgId, String portalDomain) throws Exception {
+	public IAMUser getFacilioUser(String email, long orgId, String portalDomain) throws Exception {
 		GenericSelectRecordBuilder selectBuilder = getFacilioUserBuilder(portalDomain, true);
 		Criteria userEmailCriteria = new Criteria();
 		userEmailCriteria.addAndCondition(CriteriaAPI.getCondition("Account_Users.EMAIL", "email", email, StringOperators.IS));
@@ -1066,20 +1066,20 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			User user =  createUserFromProps(props.get(0), true, true, false);
+			IAMUser user =  createUserFromProps(props.get(0), true, true, false);
 			return user;
 		}
 		return null;
 	}
 
 	@Override
-	public User getFacilioUser(String email) throws Exception {
+	public IAMUser getFacilioUser(String email) throws Exception {
 		// TODO Auto-generated method stub
 		return getFacilioUser(email, -1, null);
 	}
 
 	@Override
-	public User getFacilioUser(String email, String portalDomain) throws Exception {
+	public IAMUser getFacilioUser(String email, String portalDomain) throws Exception {
 		
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(IAMAccountConstants.getAccountsUserFields());
@@ -1099,7 +1099,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			User user =  createUserFromProps(props.get(0), true, true, false);
+			IAMUser user =  createUserFromProps(props.get(0), true, true, false);
 			return user;
 		}
 		return null;
@@ -1107,14 +1107,14 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 
 	@Override
-	public Account getPermalinkAccount(String token, List<String> urls) throws Exception {
+	public IAMAccount getPermalinkAccount(String token, List<String> urls) throws Exception {
 		// TODO Auto-generated method stub
 		if(verifyPermalinkForURL(token, urls)) {
-			DecodedJWT decodedjwt = UserUtil.validateJWT(token, "auth0");
+			DecodedJWT decodedjwt = IAMUserUtil.validateJWT(token, "auth0");
 	
 			String[] tokens = null;
-			if (decodedjwt.getSubject().contains(UserUtil.JWT_DELIMITER)) {
-				tokens = decodedjwt.getSubject().split(UserUtil.JWT_DELIMITER)[0].split("-");
+			if (decodedjwt.getSubject().contains(IAMUserUtil.JWT_DELIMITER)) {
+				tokens = decodedjwt.getSubject().split(IAMUserUtil.JWT_DELIMITER)[0].split("-");
 			}
 			else {
 				tokens = decodedjwt.getSubject().split("_")[0].split("-");
@@ -1122,7 +1122,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			long orgId = Long.parseLong(tokens[0]);
 			long ouid = Long.parseLong(tokens[1]);
 			
-			Account currentAccount = new Account(IAMUtil.getOrgBean().getOrgv2(orgId), getFacilioUser(ouid));
+			IAMAccount currentAccount = new IAMAccount(IAMUtil.getOrgBean().getOrgv2(orgId), getFacilioUser(ouid));
 			return currentAccount;
 		}
 		return null;

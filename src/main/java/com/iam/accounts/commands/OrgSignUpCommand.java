@@ -6,17 +6,15 @@ import java.util.TimeZone;
 
 import javax.security.auth.login.AccountException;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.dto.IAMAccount;
+import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
-import com.facilio.accounts.dto.User;
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioCommand;
-import com.iam.accounts.dto.Account;
+import com.iam.accounts.util.IAMUserUtil;
 import com.iam.accounts.util.IAMUtil;
-import com.iam.accounts.util.UserUtil;
 
 public class OrgSignUpCommand extends FacilioCommand{
 
@@ -64,9 +62,9 @@ public class OrgSignUpCommand extends FacilioCommand{
 		
 		Organization org = addOrg(jObj, locale);
 		if(org.getOrgId() > 0) {
-    		User user = UserUtil.addSuperAdmin(jObj, org.getOrgId());
-    		Account acc = IAMUtil.getCurrentAccount(org, user);
-    		context.put("account", acc);
+    		IAMUser user = IAMUserUtil.addSuperAdmin(jObj, org.getOrgId());
+    		IAMAccount iamAccount = IAMUtil.getCurrentAccount(org, user);
+    		context.put("account", iamAccount);
     	}
 		return false;
 	}

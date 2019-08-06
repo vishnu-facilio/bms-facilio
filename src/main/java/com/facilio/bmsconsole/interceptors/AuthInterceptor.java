@@ -18,6 +18,8 @@ import org.apache.http.HttpHeaders;
 import org.apache.struts2.ServletActionContext;
 import org.apache.struts2.dispatcher.Parameter;
 
+import com.facilio.accounts.dto.Account;
+import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.auth.cookie.FacilioCookie;
@@ -28,9 +30,9 @@ import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.screen.util.ScreenUtil;
 import com.facilio.util.AuthenticationUtil;
-import com.iam.accounts.dto.Account;
 import com.iam.accounts.util.IAMUtil;
-import com.iam.accounts.util.UserUtil;
+import com.iam.accounts.exceptions.AccountException;
+import com.iam.accounts.util.IAMUserUtil;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
@@ -97,119 +99,35 @@ public class AuthInterceptor extends AbstractInterceptor {
 				}
 			}
 			else if (!isRemoteScreenMode(request)) {
-				String currentOrgDomain = FacilioCookie.getUserCookie(request, "fc.currentOrg");
-				if (currentOrgDomain == null) {
-					currentOrgDomain = request.getHeader("X-Current-Org"); 
+				IAMAccount iamAccount = validateToken(request);
+				if (iamAccount != null) {
+//					arg0.getStack().set("iamAccount", iamAccount);
+					request.setAttribute("iamAccount", iamAccount);
 				}
-			
-				Account currentAccount = AuthenticationUtil.validateToken(request, false);
-				
-				if (currentAccount != null) {
-					AccountUtil.setCurrentAccount(currentAccount);
-					AccountUtil.updateAccount(currentAccount, false);
-					AccountUtil.setCurrentAccount(currentAccount);
-
-					List<Long> accessibleSpace = null;
-					if (currentAccount.getUser() != null) {
-						accessibleSpace = currentAccount.getUser().getAccessibleSpace();
-					}
-					if (currentAccount != null) {
-						List<Long> sites = CommonCommandUtil.getMySiteIds();
-						if (sites != null && sites.size() == 1) {
-							currentAccount.setCurrentSiteId(sites.get(0));
-							if (accessibleSpace == null) {
-								accessibleSpace = new ArrayList<>();
-								accessibleSpace.add(sites.get(0));
-								currentAccount.getUser().setAccessibleSpace(accessibleSpace);
-							}
-						} else {
-							String currentSite = request.getHeader("X-current-site");
-							long currentSiteId = -1;
-							if (currentSite != null && !currentSite.isEmpty()) {
-								try {
-									currentSiteId = Long.valueOf(currentSite);
-								} catch (NumberFormatException ex) {
-									// ignore if header value is wrong
-								}
-								if (currentSiteId != -1 && sites != null && !sites.isEmpty()) {
-									boolean found = false;
-									for (long id: sites) {
-										if (id == currentSiteId) {
-											found = true;
-											break;
-										}
-									}
-									if (!found) {
-										throw new IllegalArgumentException("Invalid Site.");
-									}
-								}
-								currentAccount.setCurrentSiteId(currentSiteId);
-								if (currentSiteId != -1 && accessibleSpace == null) {
-									accessibleSpace = new ArrayList<>();
-									accessibleSpace.add(currentSiteId);
-									currentAccount.getUser().setAccessibleSpace(accessibleSpace);
-								}
-							}
-						}
-					}
-					request.setAttribute("ORGID", currentAccount.getOrg().getOrgId());
-					request.setAttribute("USERID", currentAccount.getUser().getOuid());
-										
-
-					String timezoneVar = null;
-					if (AccountUtil.getCurrentAccount().getCurrentSiteId() > 0)
-					{
-						SiteContext site = SpaceAPI.getSiteSpace(AccountUtil.getCurrentAccount().getCurrentSiteId());
-						if(site != null) {
-							timezoneVar = site.getTimeZone();
-						}
-					}
-					if (StringUtils.isEmpty(timezoneVar))
-					{
-						timezoneVar = AccountUtil.getCurrentOrg().getTimezone();
-					}
-					AccountUtil.setTimeZone(timezoneVar);
-					
-					
-					Parameter action = ActionContext.getContext().getParameters().get("permission");
-					Parameter moduleName = ActionContext.getContext().getParameters().get("moduleName");
-					if (action != null && action.getValue() != null && moduleName != null && moduleName.getValue() != null && !isAuthorizedAccess(moduleName.getValue(), action.getValue())) {
-						return "unauthorized";
-					}
-
-					String lang = currentAccount.getUser().getLanguage();
-					Locale localeObj = null;
-					if (lang == null || lang.trim().isEmpty()) {
-						localeObj = request.getLocale();
-					} else {
-						localeObj = new Locale(lang);
-					}
-
-					String timezone = currentAccount.getUser().getTimezone();
-					TimeZone timezoneObj = null;
-					if (timezone == null || timezone.trim().isEmpty()) {
-						Calendar calendar = Calendar.getInstance(localeObj);
-						timezoneObj = calendar.getTimeZone();
-					} else {
-						timezoneObj = TimeZone.getTimeZone(timezone);
-					}
-					ActionContext.getContext().getSession().put("TIMEZONE", timezoneObj);
-				} else {
+				else {
 					String authRequired = ActionContext.getContext().getParameters().get("auth").getValue();
 					if (authRequired == null || "".equalsIgnoreCase(authRequired.trim()) || "true".equalsIgnoreCase(authRequired)) {
 						return Action.LOGIN;
 					}
 				}
-
-				if (request.getRequestURL().indexOf("/admin") != -1) {
-					if (currentAccount != null) {
-						String useremail = currentAccount.getUser().getEmail();
-						if (! useremail.endsWith(AwsUtil.getConfig("admin.domain"))) {
-							LOGGER.log(Level.SEVERE, "you are not allowed to access this page from");
-							return Action.LOGIN;
-						}
-					}
-				}
+				
+//				String currentOrgDomain = FacilioCookie.getUserCookie(request, "fc.currentOrg");
+//				if (currentOrgDomain == null) {
+//					currentOrgDomain = request.getHeader("X-Current-Org"); 
+//				}
+//			
+//				Account currentAccount = AuthenticationUtil.validateToken(request, false);
+//			
+//				if (currentAccount != null) {
+//					AccountUtil.setCurrentAccount(currentAccount);
+//					AccountUtil.updateAccount(currentAccount, false);
+//					AccountUtil.setCurrentAccount(currentAccount);
+//				} else {
+//					String authRequired = ActionContext.getContext().getParameters().get("auth").getValue();
+//					if (authRequired == null || "".equalsIgnoreCase(authRequired.trim()) || "true".equalsIgnoreCase(authRequired)) {
+//						return Action.LOGIN;
+//					}
+//				}
 			}
 			else {
 				boolean authStatus = handleRemoteScreenAuth(request);
@@ -234,18 +152,39 @@ public class AuthInterceptor extends AbstractInterceptor {
 			throw e;
 		}
 	}
+	
+	private IAMAccount validateToken(HttpServletRequest request) throws AccountException {
+		String facilioToken = FacilioCookie.getUserCookie(request, "fc.idToken.facilio");
+        String headerToken = request.getHeader("Authorization");
 
-	private boolean isAuthorizedAccess(String moduleName, String action) throws Exception {
-		
-		if (action == null || "".equals(action.trim())) {
-			return true;
-		}
+        if (facilioToken != null || headerToken != null) {
 
-		if(AccountUtil.getCurrentUser() == null) {
-		    return false;
+            if (headerToken != null && headerToken.trim().length() > 0) {
+                if (headerToken.startsWith("Bearer facilio ")) {
+                    facilioToken = headerToken.replace("Bearer facilio ", "");
+                } else if(headerToken.startsWith("Bearer Facilio ")) { // added this check for altayer emsol data // Todo remove this later
+                    facilioToken = headerToken.replace("Bearer Facilio ", "");
+                } else {
+                    facilioToken = request.getHeader("Authorization").replace("Bearer ", "");
+                }
+            }
+            
+    		String currentOrgDomain = FacilioCookie.getUserCookie(request, "fc.currentOrg");
+    		if (currentOrgDomain == null) {
+    			currentOrgDomain = request.getHeader("X-Current-Org"); 
+    		}
+
+            String overrideSessionCookie = FacilioCookie.getUserCookie(request, "fc.overrideSession");
+            boolean overrideSessionCheck = false;
+            if(overrideSessionCookie != null) {
+                if("true".equalsIgnoreCase(overrideSessionCookie)) {
+                    overrideSessionCheck = true;
+                }
+            }
+			IAMAccount iamAccount = IAMUserUtil.verifiyFacilioToken(facilioToken, false, overrideSessionCheck, null);
+			return iamAccount;
         }
-
-		return PermissionUtil.currentUserHasPermission(moduleName, action);
+        return null;
 	}
 	
 	private boolean isRemoteScreenMode(HttpServletRequest request) {
@@ -281,10 +220,11 @@ public class AuthInterceptor extends AbstractInterceptor {
 			
 			String deviceToken = FacilioCookie.getUserCookie(request, "fc.deviceToken");
 			if (deviceToken != null && !"".equals(deviceToken)) {
-				long connectedScreenId = Long.parseLong(UserUtil.validateJWT(deviceToken, "auth0").getSubject().split(UserUtil.JWT_DELIMITER)[0]);
+				long connectedScreenId = Long.parseLong(IAMUserUtil.validateJWT(deviceToken, "auth0").getSubject().split(IAMUserUtil.JWT_DELIMITER)[0]);
 				RemoteScreenContext remoteScreen = ScreenUtil.getRemoteScreen(connectedScreenId);
 				if (remoteScreen != null) {
-					Account currentAccount = new Account(AccountUtil.getOrgBean().getOrg(remoteScreen.getOrgId()), AccountUtil.getOrgBean().getSuperAdmin(remoteScreen.getOrgId()));
+					// TODO - check here
+					Account currentAccount = new Account(AccountUtil.getOrgBean().getOrg(remoteScreen.getOrgId()), null /*AccountUtil.getOrgBean().getSuperAdmin(remoteScreen.getOrgId())*/);
 					currentAccount.setRemoteScreen(remoteScreen);
 					
 					AccountUtil.cleanCurrentAccount();

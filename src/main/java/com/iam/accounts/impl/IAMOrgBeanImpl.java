@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
@@ -119,7 +120,7 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 	
     
     @Override
-	public List<User> getAllOrgUsersv2(long orgId) throws Exception {
+	public List<IAMUser> getAllOrgUsersv2(long orgId) throws Exception {
 		
     	List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getAppUserFields());
@@ -138,9 +139,9 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			List<User> users = new ArrayList<>();
+			List<IAMUser> users = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
-				User user = IAMUserBeanImpl.createUserFromProps(prop, true, true, false);
+				IAMUser user = IAMUserBeanImpl.createUserFromProps(prop, true, true, false);
 				users.add(user);
 			}
 			return users;
@@ -149,7 +150,7 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 	}
 	
 	@Override
-	public List<User> getOrgUsersv2(long orgId, boolean status) throws Exception {
+	public List<IAMUser> getOrgUsersv2(long orgId, boolean status) throws Exception {
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(AccountConstants.getAppOrgUserFields());
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("userStatus"), String.valueOf(status), NumberOperators.EQUALS));
@@ -157,10 +158,10 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 	}
 	
 	@Override
-	public List<User> getOrgUsersv2(long orgId, Criteria criteria) throws Exception {
+	public List<IAMUser> getOrgUsersv2(long orgId, Criteria criteria) throws Exception {
 		List<Map<String, Object>> props = fetchOrgUserProps(orgId, criteria);
 		if (props != null && !props.isEmpty()) {
-			List<User> users = new ArrayList<>();
+			List<IAMUser> users = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
 				users.add(IAMUserBeanImpl.createUserFromProps(prop, true, false, false));
 			}
@@ -170,12 +171,12 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 	}
 	
 	@Override
-	public Map<Long, User> getOrgUsersAsMapv2(long orgId, Criteria criteria) throws Exception {
+	public Map<Long, IAMUser> getOrgUsersAsMapv2(long orgId, Criteria criteria) throws Exception {
 		List<Map<String, Object>> props = fetchOrgUserProps(orgId, criteria);
 		if (props != null && !props.isEmpty()) {
-			Map<Long, User> users = new HashMap<>();
+			Map<Long, IAMUser> users = new HashMap<>();
 			for(Map<String, Object> prop : props) {
-				User user = IAMUserBeanImpl.createUserFromProps(prop, true, false, false);
+				IAMUser user = IAMUserBeanImpl.createUserFromProps(prop, true, false, false);
 				users.put(user.getId(), user);
 			}
 			return users;
@@ -200,7 +201,7 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		return selectBuilder.get();
 	}
 
-	public List<User> getActiveOrgUsersv2(long orgId) throws Exception {
+	public List<IAMUser> getActiveOrgUsersv2(long orgId) throws Exception {
 
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getAppUserFields());
@@ -220,7 +221,7 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			List<User> users = new ArrayList<>();
+			List<IAMUser> users = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
 				users.add(IAMUserBeanImpl.createUserFromProps(prop, true, false, false));
 			}

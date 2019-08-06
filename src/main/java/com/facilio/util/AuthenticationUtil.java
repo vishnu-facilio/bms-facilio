@@ -2,11 +2,12 @@ package com.facilio.util;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.dto.Account;
+import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.auth.cookie.FacilioCookie;
-import com.iam.accounts.dto.Account;
 import com.iam.accounts.exceptions.AccountException;
-import com.iam.accounts.util.IAMUtil;
-import com.iam.accounts.util.UserUtil;
+import com.iam.accounts.util.IAMUserUtil;
 
 
 public class AuthenticationUtil {
@@ -45,8 +46,12 @@ public class AuthenticationUtil {
                 }
             }
             try {
-            	Account account = UserUtil.verifiyFacilioToken(facilioToken, isPortaluser, overrideSessionCheck, currentOrgDomain);
-            	return account;
+            	IAMAccount iamAccount = IAMUserUtil.verifiyFacilioToken(facilioToken, isPortaluser, overrideSessionCheck, currentOrgDomain);
+            	if (iamAccount != null) {
+	            	User appUser = new User(iamAccount.getUser());
+	            	Account account = new Account(iamAccount.getOrg(), appUser);
+	            	return account;
+            	}
             } 
             catch (AccountException e) {
             	return null;

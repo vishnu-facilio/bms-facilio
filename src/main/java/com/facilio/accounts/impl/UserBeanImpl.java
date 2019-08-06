@@ -19,6 +19,9 @@ import org.apache.logging.log4j.util.Strings;
 
 import com.facilio.accounts.bean.RoleBean;
 import com.facilio.accounts.bean.UserBean;
+import com.facilio.accounts.dto.Account;
+import com.facilio.accounts.dto.IAMAccount;
+import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
@@ -63,10 +66,9 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import com.iam.accounts.dto.Account;
 import com.iam.accounts.exceptions.AccountException;
 import com.iam.accounts.util.IAMUtil;
-import com.iam.accounts.util.UserUtil;
+import com.iam.accounts.util.IAMUserUtil;
 
 ;
 
@@ -102,7 +104,7 @@ public class UserBeanImpl implements UserBean {
 
 	@Override
 	public boolean updateUser(User user) throws Exception {
-		if(UserUtil.updateUser(user, AccountUtil.getCurrentOrg().getOrgId())) {
+		if(IAMUserUtil.updateUser(user, AccountUtil.getCurrentOrg().getOrgId())) {
 			return updateUserEntry(user);
 		}
 		return false;
@@ -124,9 +126,9 @@ public class UserBeanImpl implements UserBean {
 						.getCondition("ORG_USERID", "userId", String.valueOf(user.getOuid()), NumberOperators.EQUALS));
 		relDeleteBuilder.delete();
 
-		if (user.getShiftId() != null) {
-			insertShiftRel(user.getOuid(), user.getShiftId());
-		}
+//		if (user.getShiftId() != null) {
+//			insertShiftRel(user.getOuid(), user.getShiftId());
+//		}
 
 		return (updatedRows > 0);
 	}
@@ -140,7 +142,7 @@ public class UserBeanImpl implements UserBean {
             return;
         }
 		user.setUserStatus(true);
-		if(UserUtil.addUser(user, orgId) > 0) {
+		if(IAMUserUtil.addUser(user, orgId) > 0) {
 			createUserEntry(orgId, user, false);
 		}
 		
@@ -238,11 +240,11 @@ public class UserBeanImpl implements UserBean {
 		if (user.getRoleId() == 0) {
 			throw new AccountException(AccountException.ErrorCode.ROLE_ID_IS_NULL, "RoleID is Null " + user.getEmail());
 		}
-		Long shiftId = user.getShiftId();
+//		Long shiftId = user.getShiftId();
 
-		if (shiftId != null) {
-			insertShiftRel(user.getOuid(), shiftId);
-		}
+//		if (shiftId != null) {
+//			insertShiftRel(user.getOuid(), shiftId);
+//		}
 
 		if (user.getAccessibleSpace() != null) {
 			addAccessibleSpace(user.getOuid(), user.getAccessibleSpace());
@@ -280,9 +282,10 @@ public class UserBeanImpl implements UserBean {
 
 	@Override
 	public User verifyEmail(String token) throws Exception {
-		User user = UserUtil.verifyEmail(token);
+		IAMUser iamUser = IAMUserUtil.verifyEmail(token);
 
-		if (user != null) {
+		if (iamUser != null) {
+			User user = new User(iamUser);
 			try {
 				user.setUserVerified(true);
 				updateUserEntry(user);
@@ -296,8 +299,8 @@ public class UserBeanImpl implements UserBean {
 
 	@Override
 	public User validateUserInvite(String token) throws Exception {
-		User user = UserUtil.validateUserInviteToken(token);
-		return user;
+		IAMUser iamUser = IAMUserUtil.validateUserInviteToken(token);
+		return new User(iamUser);
 		
 	}
 
@@ -305,7 +308,7 @@ public class UserBeanImpl implements UserBean {
 	public boolean resendInvite(long ouid) throws Exception {
 
 		User appUser = getUser(ouid);
-		if(UserUtil.resendInvite(appUser.getOrgId(), appUser.getUid())){
+		if(IAMUserUtil.resendInvite(appUser.getOrgId(), appUser.getUid())){
 			FacilioField invitedTime = new FacilioField();
 			invitedTime.setName("invitedTime");
 			invitedTime.setDataType(FieldType.NUMBER);
@@ -337,9 +340,9 @@ public class UserBeanImpl implements UserBean {
 
 	@Override
 	public boolean acceptInvite(String token, String password) throws Exception {
-		User user = UserUtil.acceptInvite(token, password);
-		if(user != null) {
-		   return AccountUtil.getTransactionalUserBean().acceptUser(user);	
+		IAMUser iamUser = IAMUserUtil.acceptInvite(token, password);
+		if(iamUser != null) {
+		   return AccountUtil.getTransactionalUserBean().acceptUser(new User(iamUser));	
 		}
 		return false;
 	}
@@ -459,7 +462,7 @@ public class UserBeanImpl implements UserBean {
 	public boolean deleteUser(long ouid) throws Exception {
 
 		User user = getUser(ouid);
-		if(UserUtil.deleteUser(user, AccountUtil.getCurrentOrg().getOrgId())) {
+		if(IAMUserUtil.deleteUser(user, AccountUtil.getCurrentOrg().getOrgId())) {
 			FacilioField deletedTime = new FacilioField();
 			deletedTime.setName("deletedTime");
 			deletedTime.setDataType(FieldType.NUMBER);
@@ -541,7 +544,7 @@ public class UserBeanImpl implements UserBean {
 	@Override
 	public boolean disableUser(long ouid) throws Exception {
 		User user = getUser(ouid);
-		if(UserUtil.disableUser(user)) {
+		if(IAMUserUtil.disableUser(user)) {
 			FacilioField userStatus = new FacilioField();
 			userStatus.setName("userStatus");
 			userStatus.setDataType(FieldType.BOOLEAN);
@@ -574,7 +577,7 @@ public class UserBeanImpl implements UserBean {
 	@Override
 	public boolean enableUser(long ouid) throws Exception {
 		User user = getUser(ouid);
-		if(UserUtil.enableUser(user)) {
+		if(IAMUserUtil.enableUser(user)) {
 			FacilioField userStatus = new FacilioField();
 			userStatus.setName("userStatus");
 			userStatus.setDataType(FieldType.BOOLEAN);
@@ -1059,12 +1062,12 @@ public class UserBeanImpl implements UserBean {
 
 	@Override
 	public List<Organization> getOrgs(long uId) throws Exception {
-		return UserUtil.getUserOrgs(uId);
+		return IAMUserUtil.getUserOrgs(uId);
 	}
 
 	@Override
 	public Organization getDefaultOrg(long uid) throws Exception {
-		return UserUtil.getDefaultOrg(uid);
+		return IAMUserUtil.getDefaultOrg(uid);
 	}
 
 	@Override
@@ -1086,13 +1089,14 @@ public class UserBeanImpl implements UserBean {
 
 	private long addRequester(long orgId, User user, boolean emailVerification, boolean updateifexist)
 			throws Exception {
-		User portalUser = UserUtil.getUser(user.getEmail(), user.getDomainName(), user.getDomainName());
+		IAMUser iamUser = IAMUserUtil.getUser(user.getEmail(), user.getDomainName(), user.getDomainName());
+		User portalUser = new User(iamUser);
 		if (portalUser != null) {
 			log.info("Requester email already exists in the portal for org: " + orgId + ", ouid: "
 					+ portalUser.getOuid());
 			return getUser(portalUser.getEmail()).getOuid();
 		}
-		if(UserUtil.addUser(user, orgId) > 0) {
+		if(IAMUserUtil.addUser(user, orgId) > 0) {
 			addUserEntry(user, false);
 			user.setOrgId(orgId);
 			user.setUserType(AccountConstants.UserType.REQUESTER.getValue());
@@ -1108,7 +1112,7 @@ public class UserBeanImpl implements UserBean {
 	@Override
 	public boolean updateUserPhoto(long uid, long fileId) throws Exception {
 
-		if(UserUtil.updateUserPhoto(uid, fileId)) {
+		if(IAMUserUtil.updateUserPhoto(uid, fileId)) {
 			FacilioField photoId = new FacilioField();
 			photoId.setName("photoId");
 			photoId.setDataType(FieldType.NUMBER);
@@ -1356,7 +1360,7 @@ public class UserBeanImpl implements UserBean {
 	@Override
 	public boolean verifyUser(long userId) throws Exception {
 		// TODO Auto-generated method stub
-		if(UserUtil.verifyUser(userId)) {
+		if(IAMUserUtil.verifyUser(userId)) {
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 					.table(AccountConstants.getAppUserModule().getTableName()).fields(AccountConstants.getAppUserFields())
 					.andCustomWhere("USERID = ?", userId);
@@ -1397,26 +1401,28 @@ public class UserBeanImpl implements UserBean {
 
 	@Override
 	public String generatePermalinkForURL(String url, User user) throws Exception {
-		String token = UserUtil.generatePermalinkForUrl(url, user.getUid(), AccountUtil.getCurrentOrg().getOrgId());
+		String token = IAMUserUtil.generatePermalinkForUrl(url, user.getUid(), AccountUtil.getCurrentOrg().getOrgId());
 		return token;
 	}
 
 	@Override
 	public boolean verifyPermalinkForURL(String token, List<String> urls) throws Exception {
-		return UserUtil.verifyPermalinkForUrl(token, urls);
+		return IAMUserUtil.verifyPermalinkForUrl(token, urls);
 		
 	}
 
 	@Override
 	public Account getPermalinkAccount(String token, List<String> urls) throws Exception {
 		// TODO Auto-generated method stub
-      return UserUtil.getPermalinkAccount(token, urls);
+      IAMAccount iamAccount = IAMUserUtil.getPermalinkAccount(token, urls);
+      Account account = new Account(iamAccount.getOrg(), new User(iamAccount.getUser()));
+      return account;
 	}
 
 	@Override
 	public List<Map<String, Object>> getUserSessions(long uid, Boolean isActive) throws Exception {
 		// TODO Auto-generated method stub
-		return UserUtil.getUserSessions(uid, isActive);
+		return IAMUserUtil.getUserSessions(uid, isActive);
 	}
 
 	private void sendEmailRegistration(User user) throws Exception {
@@ -1434,7 +1440,7 @@ public class UserBeanImpl implements UserBean {
 	}
 	
 	private String getUserLink(User user, String url) throws Exception {
-		String inviteToken = UserUtil.getEncodedToken(user);
+		String inviteToken = IAMUserUtil.getEncodedToken(user);
 		String hostname = "";
 		if (user.isPortalUser()) {
 			try {

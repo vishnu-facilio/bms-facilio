@@ -1,18 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Map;
-
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.dto.User;
-import com.facilio.accounts.util.AccountConstants;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericUpdateRecordBuilder;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import org.apache.commons.chain.Command;
-import org.apache.commons.chain.Context;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.constants.FacilioConstants;
 
 public class ChangeUserStatusCommand extends FacilioCommand {
 

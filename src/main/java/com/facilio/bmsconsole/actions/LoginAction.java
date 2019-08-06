@@ -50,6 +50,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.Role;
@@ -78,9 +79,8 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.screen.util.ScreenUtil;
 import com.facilio.wms.util.WmsApi;
-import com.iam.accounts.dto.Account;
 import com.iam.accounts.util.IAMUtil;
-import com.iam.accounts.util.UserUtil;
+import com.iam.accounts.util.IAMUserUtil;
 import com.opensymphony.xwork2.ActionContext;
 
 public class LoginAction extends FacilioAction {
@@ -168,7 +168,7 @@ public class LoginAction extends FacilioAction {
 			if (facilioToken != null) {
 				User currentUser = AccountUtil.getCurrentUser();
 				if (currentUser != null) {
-					UserUtil.logOut(currentUser.getUid(), facilioToken, currentUser.getEmail()
+					IAMUserUtil.logOut(currentUser.getUid(), facilioToken, currentUser.getEmail()
 							);
 				}
 			}
