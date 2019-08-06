@@ -935,16 +935,26 @@ public class WorkflowRuleAPI {
 	public static boolean evaluateWorkflowAndExecuteActions(WorkflowRuleContext workflowRule, String moduleName, Object record, List<UpdateChangeSet> changeSet, Map<String, Object> recordPlaceHolders, FacilioContext context, boolean shouldExecute) throws Exception {
 		Map<String, Object> rulePlaceHolders = workflowRule.constructPlaceHolders(moduleName, record, recordPlaceHolders, context);
 		boolean fieldChangeFlag = false, miscFlag = false, criteriaFlag = false, workflowFlag = false , siteId = false;
-		
+
+		long currentTime = System.currentTimeMillis();
 		siteId = workflowRule.evaluateSite(moduleName, record, rulePlaceHolders, context);
+		LOGGER.debug("Time taken for site: " + (System.currentTimeMillis() - currentTime));
+		currentTime = System.currentTimeMillis();
 		if (siteId) {
 			fieldChangeFlag = evalFieldChange(workflowRule, changeSet);
+			LOGGER.debug("Time taken for fieldchange: " + (System.currentTimeMillis() - currentTime));
+			currentTime = System.currentTimeMillis();
 			if (fieldChangeFlag) {
 				miscFlag = workflowRule.evaluateMisc(moduleName, record, rulePlaceHolders, context);
+				LOGGER.debug("Time taken for misc: " + (System.currentTimeMillis() - currentTime));
+				currentTime = System.currentTimeMillis();
 				if (miscFlag) {
 					criteriaFlag = workflowRule.evaluateCriteria(moduleName, record, rulePlaceHolders, context);
+					LOGGER.debug("Time taken for criteria: " + (System.currentTimeMillis() - currentTime));
+					currentTime = System.currentTimeMillis();
 					if (criteriaFlag) {
 						workflowFlag = workflowRule.evaluateWorkflowExpression(moduleName, record, rulePlaceHolders, context);
+						LOGGER.debug("Time taken for workflow: " + (System.currentTimeMillis() - currentTime));
 					}
 				}
 			}
