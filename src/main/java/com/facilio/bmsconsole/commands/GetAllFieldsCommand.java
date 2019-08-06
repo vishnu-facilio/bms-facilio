@@ -120,7 +120,10 @@ public class GetAllFieldsCommand extends FacilioCommand {
 					}
 				}
 				else if (moduleName.equals("asset")) {
-					if(FieldFactory.Fields.assetFieldsInclude.contains(fieldObject.getName())) {
+					if(!fieldObject.isDefault()) {
+						fields.add(fieldObject);
+					}
+					else if(FieldFactory.Fields.assetFieldsInclude.contains(fieldObject.getName())) {
 						fields.add(fieldObject);
 					}
 				}else {
