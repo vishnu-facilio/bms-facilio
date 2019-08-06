@@ -51,6 +51,7 @@ public class BulkAddTasksCommand extends FacilioCommand implements PostTransacti
 
         List<WorkOrderContext> workOrderContexts = bulkWorkOrderContext.getWorkOrderContexts();
         Map<Long, Integer> workOrderTaskMap = new HashMap<>();
+        Map<Long, Integer> workOrderPrerequisiteMap = new HashMap<>();
        for (int i = 0; i < workOrderContexts.size(); i++) {
            WorkOrderContext wo = workOrderContexts.get(i);
            Map<String, List<TaskContext>> taskMap = bulkWorkOrderContext.getTaskMaps().get(i);
@@ -107,7 +108,49 @@ public class BulkAddTasksCommand extends FacilioCommand implements PostTransacti
 
                workOrderTaskMap.put(wo.getId(), taskContexts.size());
            }
-       }
+
+			Map<String, List<TaskContext>> prerequisiteMap = bulkWorkOrderContext.getPreRequestMaps().get(i);
+			if (prerequisiteMap == null || prerequisiteMap.isEmpty()) {
+				continue;
+			}
+			Collection<List<TaskContext>> listOfPrerequisites = prerequisiteMap.values();
+			sum = 0;
+			for (List<TaskContext> tasks : listOfPrerequisites) {
+				sum += tasks.size();
+			}
+			PreventiveMaintenanceAPI.logIf(92L, "woid " + wo.getId() + " Prerequisite Map size " + sum);
+
+			sections = bulkWorkOrderContext.getPrerequisiteSectionMap().get(wo.getId());
+
+			if (workOrderPrerequisiteMap.get(wo.getId()) == null) {
+				workOrderPrerequisiteMap.put(wo.getId(), 0);
+			} else {
+				PreventiveMaintenanceAPI.logIf(92L, "Duplicate entry for " + wo.getId());
+			}
+
+			for (Map.Entry<String, List<TaskContext>> entry : prerequisiteMap.entrySet()) {
+				String sectionName = entry.getKey();
+				List<TaskContext> prerequisites = entry.getValue();
+				long sectionId = -1;
+				if (!sectionName.equals(FacilioConstants.ContextNames.DEFAULT_TASK_SECTION)) {
+					sectionId = sections.get(sectionName).getId();
+				}
+
+				for (TaskContext task : prerequisites) {
+					task.setCreatedTime(System.currentTimeMillis());
+					task.setSectionId(sectionId);
+					task.setStatusNew(TaskContext.TaskStatus.OPEN);
+					task.setPreRequest(Boolean.TRUE);
+					task.setParentTicketId(wo.getId());
+					task.setInputValue(task.getDefaultValue());
+					task.setCreatedBy(AccountUtil.getCurrentUser());
+					bulkWorkOrderContext.getPrerequisiteContextList().add(task);
+				}
+				List<TaskContext> prerequisiteContexts = bulkWorkOrderContext.getPrerequisiteContextList().stream().filter(task -> task.getParentTicketId() == wo.getId()).collect(Collectors.toList());
+
+				workOrderPrerequisiteMap.put(wo.getId(), prerequisiteContexts.size());
+			}
+		}
 
        int taskContextSize = bulkWorkOrderContext.getTaskContextList().size();
 
@@ -156,60 +199,46 @@ public class BulkAddTasksCommand extends FacilioCommand implements PostTransacti
        idsToUpdateTaskCount = bulkWorkOrderContext.getWorkOrderContexts().stream().map(WorkOrderContext::getId).collect(Collectors.toList());
        this.moduleName = moduleName;
 
-       if (bulkWorkOrderContext.getPreRequestMaps() == null || bulkWorkOrderContext.getPreRequestMaps().isEmpty()) {
-           PreventiveMaintenanceAPI.logIf(92L,"pre request is not executed");
-           return false;
-       } else {
-           PreventiveMaintenanceAPI.logIf(92L,"pre request is executed");
-       }
+		int prerequisiteContextSize = bulkWorkOrderContext.getPrerequisiteContextList().size();
+		countMap = new HashSet<>();
+		for (TaskContext taskContext : bulkWorkOrderContext.getPrerequisiteContextList()) {
+			String key;
+			if (taskContext.getResource() == null) {
+				key = taskContext.getParentTicketId() + "-" + "null" + "-" + taskContext.getUniqueId();
+			} else {
+				key = taskContext.getParentTicketId() + "-" + taskContext.getResource().getId() + "-"+ taskContext.getUniqueId();
+			}
+			if (!countMap.contains(key)) {
+				countMap.add(key);
+			} else {
+				PreventiveMaintenanceAPI.logIf(92L, "Duplicate " + key);
+			}
+		}
 
+      for (Map.Entry<Long, Integer> entry:workOrderPrerequisiteMap.entrySet()) {
+          PreventiveMaintenanceAPI.logIf(92L,"after-Wo " + entry.getKey() + " size: " +entry.getValue());
+      }
 
+        startIndex = 0;
+        batchSize = 10000;
+       while (prerequisiteContextSize > 0) {
+           InsertRecordBuilder<TaskContext> builder = new InsertRecordBuilder<TaskContext>()
+                   .module(module)
+                   .withLocalId()
+                   .fields(fields);
 
-       Map<String, TaskSectionContext> sections = (Map<String, TaskSectionContext>) context.get(FacilioConstants.ContextNames.PRE_REQUEST_SECTIONS);
-
-       InsertRecordBuilder<TaskContext> preReqBuilder = new InsertRecordBuilder<TaskContext>().module(module)
-                .withLocalId().fields(fields);
-
-       for (int i = 0; i < workOrderContexts.size(); i++) {
-           WorkOrderContext workOrder = workOrderContexts.get(i);
-           Map<String, List<TaskContext>> preRequestMap = bulkWorkOrderContext.getPreRequestMaps().get(i);
-
-           if (preRequestMap == null) {
-               continue;
+           List<TaskContext> records;
+           int upperLimit = startIndex + batchSize;
+           if (batchSize > prerequisiteContextSize) {
+               upperLimit = startIndex + prerequisiteContextSize;
            }
+           records = bulkWorkOrderContext.getPrerequisiteContextList().subList(startIndex, upperLimit);
+           startIndex = upperLimit;
+           prerequisiteContextSize = prerequisiteContextSize - batchSize;
 
-           preRequestMap.forEach((sectionName, tasks) -> {
-               long sectionId = -1;
-               if (!sectionName.equals(FacilioConstants.ContextNames.DEFAULT_TASK_SECTION)) {
-                   if (sections != null && sections.get(sectionName) != null) {
-                       sectionId = sections.get(sectionName).getId();
-                   }
-               }
-               if (tasks != null) {
-                   for (TaskContext task : tasks) {
-                       task.setCreatedTime(System.currentTimeMillis());
-                       task.setSectionId(sectionId);
-                       task.setStatusNew(TaskContext.TaskStatus.OPEN);
-                       task.setPreRequest(Boolean.TRUE);
-                       if (workOrder != null) {
-                           task.setParentTicketId(workOrder.getId());
-                       }
-                       task.setInputValue(task.getDefaultValue());
-                       if (StringUtils.isNotEmpty(task.getFailureValue())
-                               && task.getFailureValue().equals(task.getInputValue())) {
-                           task.setFailed(true);
-                       }
-                       task.setCreatedBy(AccountUtil.getCurrentUser());
-                       preReqBuilder.addRecord(task);
-                   }
-               }
-           });
+           builder.addRecords(records);
+           builder.save();
        }
-
-       preReqBuilder.save();
-
-        PreventiveMaintenanceAPI.logIf(92L,"done BulkAddTasksCommand");
-
        return false;
     }
 

@@ -8,7 +8,9 @@ public class BulkWorkOrderContext {
     private List<List<AttachmentContext>> attachments;
     private List<Map<String, List<TaskContext>>> preRequestMaps;
     private Map<Long, Map<String, TaskSectionContext>> sectionMap;
+    private Map<Long, Map<String, TaskSectionContext>> prerequisiteSectionMap;
     private List<TaskContext> taskContextList;
+    private List<TaskContext> prerequisiteContextList;
     private List<Long> nextExecutionTimes;
 
     public BulkWorkOrderContext(List<BulkWorkOrderContext> bulkWorkOrderContexts) {
@@ -27,7 +29,9 @@ public class BulkWorkOrderContext {
         this.preRequestMaps = new ArrayList<>();
         this.attachments = new ArrayList<>();
         this.sectionMap = new HashMap<>();
+        this.prerequisiteSectionMap = new HashMap<>();
         this.taskContextList = new ArrayList<>();
+        this.prerequisiteContextList = new ArrayList<>();
     }
 
     public void addContexts(WorkOrderContext workOrderContexts, Map<String, List<TaskContext>> taskMap, Map<String, List<TaskContext>> preRequestMap, List<AttachmentContext> attachment) {
@@ -89,7 +93,15 @@ public class BulkWorkOrderContext {
         this.sectionMap = sectionMap;
     }
 
-    public List<TaskContext> getTaskContextList() {
+    public List<TaskContext> getPrerequisiteContextList() {
+		return prerequisiteContextList;
+	}
+
+	public void setPrerequisiteContextList(List<TaskContext> prerequisiteContextList) {
+		this.prerequisiteContextList = prerequisiteContextList;
+	}
+
+	public List<TaskContext> getTaskContextList() {
         return taskContextList;
     }
 
@@ -104,4 +116,13 @@ public class BulkWorkOrderContext {
     public void setNextExecutionTimes(List<Long> nextExecutionTimes) {
         this.nextExecutionTimes = nextExecutionTimes;
     }
+
+	public Map<Long, Map<String, TaskSectionContext>> getPrerequisiteSectionMap() {
+		return prerequisiteSectionMap;
+	}
+
+	public void setPrerequisiteSectionMap(Map<Long, Map<String, TaskSectionContext>> prerequisiteSectionMap) {
+		this.prerequisiteSectionMap = prerequisiteSectionMap;
+	}
+    
 }

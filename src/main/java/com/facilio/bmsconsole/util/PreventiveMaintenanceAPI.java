@@ -38,6 +38,7 @@ import com.facilio.bmsconsole.context.PMTriggerContext.TriggerExectionSource;
 import com.facilio.bmsconsole.context.PMTriggerContext.TriggerType;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
+import com.facilio.bmsconsole.context.WorkOrderContext.PreRequisiteStatus;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.TaskTemplate;
 import com.facilio.bmsconsole.templates.TaskTemplate.AttachmentRequiredEnum;
@@ -434,6 +435,22 @@ public class PreventiveMaintenanceAPI {
 				taskTemplates.add(template);
 				clonedWoTemplate.setTaskTemplates(taskTemplates);
 			}
+			
+			if (workorderTemplate.getPreRequestSectionTemplates() != null) {
+				List<TaskSectionTemplate> sectionTemplates = new ArrayList<>();
+				for (TaskSectionTemplate sectionTemplate: workorderTemplate.getPreRequestSectionTemplates()) {
+					TaskSectionTemplate template = FieldUtil.cloneBean(sectionTemplate, TaskSectionTemplate.class);
+					sectionTemplates.add(template);
+				}
+				clonedWoTemplate.setPreRequestSectionTemplates(sectionTemplates);
+			}
+
+			for (TaskTemplate taskTemplate: workorderTemplate.getPreRequestTemplates()) {
+				List<TaskTemplate> taskTemplates = new ArrayList<>();
+				TaskTemplate template = FieldUtil.cloneBean(taskTemplate, TaskTemplate.class);
+				taskTemplates.add(template);
+				clonedWoTemplate.setPreRequestTemplates(taskTemplates);
+			}
 
 			WorkOrderContext wo = clonedWoTemplate.getWorkorder();
 			wo.setScheduledStart(nextExecutionTime * 1000);
@@ -445,6 +462,13 @@ public class PreventiveMaintenanceAPI {
 					clonedWoTemplate.setResource(resourceContext);
 				}
 			}
+			int preRequisiteCount= clonedWoTemplate.getPreRequestSectionTemplates() != null ? clonedWoTemplate.getPreRequestSectionTemplates().size() : 0;
+			wo.setPrerequisiteEnabled(preRequisiteCount != 0);
+			if (wo.getPrerequisiteEnabled()) {
+				wo.setPreRequestStatus(PreRequisiteStatus.NOT_STARTED.getValue());
+			} else {
+				wo.setPreRequestStatus(PreRequisiteStatus.COMPLETED.getValue());
+			}			
 			wo.setPm(pm);
 			wo.setStatus(status);
 			wo.setTrigger(pmTrigger);

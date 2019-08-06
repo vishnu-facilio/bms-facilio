@@ -632,6 +632,18 @@ public class TicketAPI {
 		}
 		return null;
 	}	
+	
+	public static Map<Long, List<TaskContext>> sortPrerequisiteBySequence(Map<Long, List<TaskContext>> prerequisitesMap) throws Exception {
+		final Map<Long, List<TaskContext>> prerequisitesMap1 = prerequisitesMap;
+		if(prerequisitesMap != null && !prerequisitesMap.isEmpty()) {
+			Map<Long,Integer> secSeqMap = new HashMap<>();
+			secSeqMap = prerequisitesMap.entrySet().stream().filter(en -> !en.getValue().isEmpty()).collect(Collectors.toMap(en -> (Long)en.getKey() ,en -> (int)en.getValue().get(0).getSequence()));
+			prerequisitesMap = secSeqMap.entrySet().stream().collect(Collectors.toMap(en -> (Long)en.getKey() ,en -> (List<TaskContext>) prerequisitesMap1.get(en.getKey()) , (e1, e2) -> e1,HashMap::new));
+		    return prerequisitesMap;
+		}
+		return null;
+	}	
+	
 	public static List<NoteContext> getRelatedNotes(long ticketId) throws Exception 
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

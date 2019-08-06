@@ -42,7 +42,9 @@ public class GetRelatedTasksCommand extends FacilioCommand {
 		List<TaskContext> preRequests=alltasks.stream().filter(t-> t.isPreRequest()).collect(Collectors.toList());
 		context.put(FacilioConstants.ContextNames.PRE_REQUEST_LIST, preRequests);
 		context.put(FacilioConstants.ContextNames.TASK_MAP, TicketAPI.groupTaskBySection(tasks));
-		context.put(FacilioConstants.ContextNames.PRE_REQUEST_MAP, TicketAPI.groupPreRequestBySection(preRequests));
+		Map<Long, List<TaskContext>> prerequisiteMap = TicketAPI.groupPreRequestBySection(preRequests);
+		prerequisiteMap = TicketAPI.sortPrerequisiteBySequence(prerequisiteMap);
+		context.put(FacilioConstants.ContextNames.PRE_REQUEST_MAP,prerequisiteMap);
 		CommonCommandUtil.loadTaskLookups(tasks);
 		
 		return false;

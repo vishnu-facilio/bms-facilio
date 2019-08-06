@@ -101,7 +101,7 @@ public class BulkAddTaskSectionsCommand extends FacilioCommand {
 					section.setName(entry.getKey());
 					section.setSequenceNumber(sequence++);
 					section.setPreRequest(Boolean.TRUE);
-					insertBuilder.addRecord(FieldUtil.getAsProperties(section));
+					preReqInsertBuilder.addRecord(FieldUtil.getAsProperties(section));
 					sections.add(section);
 				}
 			}
@@ -109,6 +109,14 @@ public class BulkAddTaskSectionsCommand extends FacilioCommand {
 
 		if (isRecordPresent) {
 			preReqInsertBuilder.save();
+			List<Map<String, Object>> records = preReqInsertBuilder.getRecords();
+			for (Map<String, Object> record: records) {
+				TaskSectionContext section = FieldUtil.getAsBeanFromMap(record, TaskSectionContext.class);
+				if (bulkWorkOrderContext.getPrerequisiteSectionMap().get(section.getParentTicketId()) == null) {
+					bulkWorkOrderContext.getPrerequisiteSectionMap().put(section.getParentTicketId(), new HashMap<>());
+				}
+				bulkWorkOrderContext.getPrerequisiteSectionMap().get(section.getParentTicketId()).put(section.getName(), section);
+			}
 		}
 
 		PreventiveMaintenanceAPI.logIf(92L, "Done BulkAddTaskSectionsCommand");
