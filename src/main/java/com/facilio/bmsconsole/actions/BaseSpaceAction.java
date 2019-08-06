@@ -7,6 +7,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
@@ -118,6 +119,15 @@ public class BaseSpaceAction extends FacilioAction {
 		this.customFieldNames = customFieldNames;
 	}
 	
+	private BaseSpaceContext basespace;
+
+	public BaseSpaceContext getBasespace() {
+		return basespace;
+	}
+
+	public void setBasespace(BaseSpaceContext basespace) {
+		this.basespace = basespace;
+	}
 	private List<BaseSpaceContext> basespaces;
 	public List<BaseSpaceContext> getBasespaces() 
 	{
@@ -211,4 +221,13 @@ public class BaseSpaceAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String basespaceDetailsWithHierarchy() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.SPACE_ID, spaceId);
+		Chain chain = ReadOnlyChainFactory.getBasespaceWithHierarchy();
+		chain.execute(context);
+		basespace = (BaseSpaceContext) context.get(FacilioConstants.ContextNames.BASE_SPACE);
+		setResult(FacilioConstants.ContextNames.BASE_SPACE, basespace);
+		return SUCCESS;
+	}
 }

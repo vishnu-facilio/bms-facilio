@@ -25,6 +25,12 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 
+	public static Chain getBasespaceWithHierarchy(){
+		Chain c = getDefaultChain();
+		c.addCommand(new GetBasespaceWithHierarchyCommand());
+		return c;
+	}
+	
 	public static Chain getRelationshipChain(){
 		Chain c = getDefaultChain();
 		c.addCommand(new GetRelationshipCommand());

@@ -405,6 +405,41 @@ public class SpaceAPI {
 		}
 		return null;
 	}
+
+	public static BaseSpaceContext getBasespaceDetailsWithHierarchy(long id) throws Exception {
+		BaseSpaceContext baseSpace = getBaseSpace(id);
+		baseSpace = fetchHierarchy(baseSpace);
+		return baseSpace;
+	}
+	
+	public static BaseSpaceContext fetchHierarchy(BaseSpaceContext space) throws Exception {
+		if(space.getSiteId() > 0){
+			space.setSite(getSiteSpace(space.getSiteId()));
+		}
+		if(space.getBuildingId() > 0){
+			space.setBuilding(getBuildingSpace(space.getBuildingId()));
+		}
+		if(space.getFloorId() > 0){
+			space.setFloor(getFloorSpace(space.getFloorId()));
+		}
+		if(space.getSpaceId() > 0){
+			space.setSpace(getSpace(space.getSpaceId()));
+		}
+		if(space.getSpaceId1() > 0){
+			space.setSpace1(getSpace(space.getSpaceId1()));
+		}
+		if(space.getSpaceId2() > 0){
+			space.setSpace2(getSpace(space.getSpaceId2()));
+		}
+		if(space.getSpaceId3() > 0){
+			space.setSpace3(getSpace(space.getSpaceId3()));
+		}
+		if(space.getSpaceId4() > 0){
+			space.setSpace4(getSpace(space.getSpaceId4()));
+		}
+
+		return space;
+	}
 	
 	public static List<BaseSpaceContext> getBaseSpaceWithChildren(long id) throws Exception {
 		List<Long> ids = new ArrayList<>();
