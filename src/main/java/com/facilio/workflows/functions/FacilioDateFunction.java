@@ -531,7 +531,24 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 		public void checkParam(Object... objects) throws Exception {
 
 		}
-	}
+	},
+	GET_DATE_RANGE_WITH_START_AND_END(26, "dateRange") {
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			
+			String startTimeString = objects[0].toString();
+			String endTimeString = objects[1].toString();
+			
+			long startTime = (long) Double.parseDouble(startTimeString);
+			long endTime = (long) Double.parseDouble(endTimeString);
+			
+			DateRange dataRange = new DateRange(startTime, endTime);
+			return dataRange;
+		}
+		public void checkParam(Object... objects) throws Exception {
+
+		}
+	},
 	;
 	private Integer value;
 	private String functionName;
