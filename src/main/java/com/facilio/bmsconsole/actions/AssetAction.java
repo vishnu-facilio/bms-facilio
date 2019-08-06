@@ -24,6 +24,8 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 
@@ -166,6 +168,11 @@ public class AssetAction extends FacilioAction {
 	 		JSONObject json = (JSONObject) parser.parse(getFilters());
 	 		context.put(FacilioConstants.ContextNames.FILTERS, json);
 	 		context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
+ 		} else if(getFilterCriteria() != null) {	
+	 		JSONParser parser = new JSONParser();
+	 		JSONObject json = (JSONObject) parser.parse(getFilterCriteria());
+	 		Criteria criteria = FieldUtil.getAsBeanFromJson(json, Criteria.class);
+	 		context.put(FacilioConstants.ContextNames.FILTER_CRITERIA, criteria);
  		}
  		if (getSearch() != null) {
  			JSONObject searchObj = new JSONObject();
@@ -499,6 +506,9 @@ public class AssetAction extends FacilioAction {
 		this.withWritableReadings = withWritableReadings;
 	}
 	
+	private String filterCriteria;
+	
+
 	JSONObject assetsReadings;
 	public JSONObject getAssetsReadings() {
 		return assetsReadings;
@@ -694,5 +704,13 @@ public class AssetAction extends FacilioAction {
 		ReadOnlyChainFactory.getAssetForTypeChain().execute(context);
 		setResult("assets", context.get(FacilioConstants.ContextNames.ASSETS));
 		return SUCCESS;
+	}
+
+	public String getFilterCriteria() {
+		return filterCriteria;
+	}
+
+	public void setFilterCriteria(String filterCriteria) {
+		this.filterCriteria = filterCriteria;
 	}
 }
