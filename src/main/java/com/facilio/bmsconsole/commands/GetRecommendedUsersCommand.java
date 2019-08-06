@@ -45,7 +45,9 @@ public class GetRecommendedUsersCommand extends FacilioCommand {
 
         long assignedGroupId = -1;
         if (workOrder != null) {
-            assignedGroupId = workOrder.getAssignmentGroup().getId();
+            if (workOrder.getAssignmentGroup() != null) {
+                assignedGroupId = workOrder.getAssignmentGroup().getId();
+            }
         }
 
         int numberOfRecommendedUsers = 3;
