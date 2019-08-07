@@ -609,7 +609,6 @@ public class FacilioAuthAction extends FacilioAction {
 			if (portalId() > 0) {
 				user = AccountUtil.getUserBean().getPortalUsers(getEmailaddress(), portalId());
 			} else if(AccountUtil.getCurrentOrg() != null){
-			
 				user = AccountUtil.getUserBean().getUser(getEmailaddress());
 			}
 			else

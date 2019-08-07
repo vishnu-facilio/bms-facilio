@@ -13,6 +13,7 @@ import java.util.Set;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
@@ -792,6 +793,9 @@ public class UserBeanImpl implements UserBean {
 	@Override
 	public User getUser(String emailOrPhone, String portalDomain) throws Exception {
 
+		if(StringUtils.isAllEmpty(portalDomain)) {
+			portalDomain = "app";
+		}
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getAppUserFields());
 		fields.addAll(AccountConstants.getAppOrgUserFields());

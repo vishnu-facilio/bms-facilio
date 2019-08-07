@@ -440,7 +440,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			IAMUser user =  createUserFromProps(props.get(0), true, true, false);
+			IAMUser user =  createUserFromProps(props.get(0), true, true);
 			return user;
 		}
 		return null;
@@ -456,7 +456,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			IAMUser user =  createUserFromProps(props.get(0), true, true, false);
+			IAMUser user =  createUserFromProps(props.get(0), true, true);
 			return user;
 		}
 		return null;
@@ -708,13 +708,13 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		
 	}
 	
-	static IAMUser createUserFromProps(Map<String, Object> prop, boolean fetchRole, boolean fetchSpace, boolean isPortalRequest) throws Exception {
+	static IAMUser createUserFromProps(Map<String, Object> prop, boolean fetchRole, boolean fetchSpace) throws Exception {
 		IAMUser user = FieldUtil.getAsBeanFromMap(prop, IAMUser.class);
-		if (user.getPhotoId() > 0) {
-			FileStore fs = FileStoreFactory.getInstance().getFileStoreFromOrg(user.getOrgId(), -1);
-			user.setAvatarUrl(fs.getPrivateUrl(user.getPhotoId(), isPortalRequest));
-			user.setOriginalUrl(fs.orginalFileUrl(user.getPhotoId()));
-		}
+//		if (user.getPhotoId() > 0) {
+//			FileStore fs = FileStoreFactory.getInstance().getFileStoreFromOrg(user.getOrgId(), -1);
+//			user.setAvatarUrl(fs.getPrivateUrl(user.getPhotoId(), isPortalRequest));
+//			user.setOriginalUrl(fs.orginalFileUrl(user.getPhotoId()));
+//		}
 		return user;
 	}
 	
@@ -872,7 +872,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			IAMUser user =  createUserFromProps(props.get(0), true, true, false);
+			IAMUser user =  createUserFromProps(props.get(0), true, true);
 			return user;
 		}
 		return null;
@@ -889,7 +889,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		List<IAMUser> userList = new ArrayList<IAMUser>();
 		if (props != null && !props.isEmpty()) {
 			for(Map<String, Object> user : props) {
-				userList.add(createUserFromProps(user, true, true, false));
+				userList.add(createUserFromProps(user, true, true));
 			}
 		return userList;	
 		}
@@ -915,7 +915,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			IAMUser user =  createUserFromProps(props.get(0), true, true, false);
+			IAMUser user =  createUserFromProps(props.get(0), true, true);
 			return user;
 		}
 		return null;
@@ -942,7 +942,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			IAMUser user =  createUserFromProps(props.get(0), true, true, false);
+			IAMUser user =  createUserFromProps(props.get(0), true, true);
 			return user;
 		}
 		return null;
@@ -975,7 +975,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			IAMUser user =  createUserFromProps(props.get(0), true, true, false);
+			IAMUser user =  createUserFromProps(props.get(0), true, true);
 			return user;
 		}
 		return null;
