@@ -1,13 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 
@@ -132,7 +126,7 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 				parentCriteria.addAndCondition(CriteriaAPI.getCondition(parentRule, CommonOperators.IS_EMPTY));
 				long currentTime = System.currentTimeMillis();
 				List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(module, activities, parentCriteria, ruleTypes);
-				LOGGER.debug("Time taken to fetch workflow: " + (System.currentTimeMillis() - currentTime));
+				LOGGER.debug("Time taken to fetch workflow: " + (System.currentTimeMillis() - currentTime) + " : " + getPrintDebug());
 				currentTime = System.currentTimeMillis();
 				
 				if (AccountUtil.getCurrentOrg().getId() == 186 && "statusupdation".equals(moduleName)) {
@@ -154,7 +148,7 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 					LOGGER.error("Rule Types : "+Arrays.toString(ruleTypes));
 				}
 
-				LOGGER.debug("Number of entry: " + (entry.getValue() == null ? 0 : entry.getValue().size()));
+				LOGGER.debug("Number of entry: " + (workflowRules == null ? 0 : workflowRules.size()));
 
 				if (workflowRules != null && !workflowRules.isEmpty()) {
 					Map<String, Object> placeHolders = WorkflowRuleAPI.getOrgPlaceHolders();
@@ -171,7 +165,17 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 			}
 		}
 	}
-	
+
+	private String getPrintDebug() {
+		StringJoiner sb = new StringJoiner(",");
+		if (ruleTypes != null && ruleTypes.length > 0) {
+			for (RuleType r : ruleTypes) {
+				sb.add(r.name());
+			}
+		}
+		return sb.toString();
+	}
+
 	private class ParallalWorkflowExecution extends RecursiveAction {
 
 		/**

@@ -939,19 +939,19 @@ public class WorkflowRuleAPI {
 		long currentTime = System.currentTimeMillis();
 		siteId = workflowRule.evaluateSite(moduleName, record, rulePlaceHolders, context);
 		LOGGER.debug("Time taken for site: " + (System.currentTimeMillis() - currentTime));
-		currentTime = System.currentTimeMillis();
+//		currentTime = System.currentTimeMillis();
 		if (siteId) {
 			fieldChangeFlag = evalFieldChange(workflowRule, changeSet);
 			LOGGER.debug("Time taken for fieldchange: " + (System.currentTimeMillis() - currentTime));
-			currentTime = System.currentTimeMillis();
+//			currentTime = System.currentTimeMillis();
 			if (fieldChangeFlag) {
 				miscFlag = workflowRule.evaluateMisc(moduleName, record, rulePlaceHolders, context);
 				LOGGER.debug("Time taken for misc: " + (System.currentTimeMillis() - currentTime));
-				currentTime = System.currentTimeMillis();
+//				currentTime = System.currentTimeMillis();
 				if (miscFlag) {
 					criteriaFlag = workflowRule.evaluateCriteria(moduleName, record, rulePlaceHolders, context);
 					LOGGER.debug("Time taken for criteria: " + (System.currentTimeMillis() - currentTime));
-					currentTime = System.currentTimeMillis();
+//					currentTime = System.currentTimeMillis();
 					if (criteriaFlag) {
 						workflowFlag = workflowRule.evaluateWorkflowExpression(moduleName, record, rulePlaceHolders, context);
 						LOGGER.debug("Time taken for workflow: " + (System.currentTimeMillis() - currentTime));
@@ -973,7 +973,7 @@ public class WorkflowRuleAPI {
 		
 		boolean result = fieldChangeFlag && miscFlag && criteriaFlag && workflowFlag && siteId ;
 		if (shouldExecute) {
-			currentTime = System.currentTimeMillis();
+//			currentTime = System.currentTimeMillis();
 			if(result) {
 				workflowRule.executeTrueActions(record, context, rulePlaceHolders);
 			}
@@ -990,7 +990,10 @@ public class WorkflowRuleAPI {
 			long workflowStartTime = System.currentTimeMillis();
 			workflowRule.setTerminateExecution(false);
 			boolean result = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(workflowRule, module.getName(), record, changeSet, recordPlaceHolders, context);
-			
+			LOGGER.info("Time take to execute workflow and actions: " + (System.currentTimeMillis() - workflowStartTime));
+
+			LOGGER.info("Result of rule : "+workflowRule.getId()+" for record : "+record+" is "+result);
+
 			if (AccountUtil.getCurrentOrg().getId() == 186 && workflowRule.getId() == 6448) {
 				LOGGER.info("Result of rule : "+workflowRule.getId()+" for record : "+record+" is "+result);
 			}
