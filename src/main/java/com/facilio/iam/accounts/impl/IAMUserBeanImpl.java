@@ -1028,6 +1028,9 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				return getAccount(email, portalDomain);
 			}
 		}
+		if(org.apache.commons.lang3.StringUtils.isEmpty(portalDomain)) {
+			portalDomain = "app";
+		}
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(IAMAccountConstants.getUserSessionFields())

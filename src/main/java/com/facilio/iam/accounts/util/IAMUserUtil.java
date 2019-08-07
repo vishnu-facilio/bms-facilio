@@ -197,7 +197,7 @@ public class IAMUserUtil {
 					account = IAMUtil.getUserBean().verifyUserSessionv2(uId, idToken, orgDomain);
 				}
 				catch(NumberFormatException e) {
-					account = IAMUtil.getUserBean().verifyUserSessionUsingEmail(uId, idToken, orgDomain);
+					account = IAMUtil.getUserBean().verifyUserSessionUsingEmail(uId, idToken, portalDomain);
 				}
 				if (overrideSessionCheck || account != null) {
 					return account;
