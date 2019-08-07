@@ -14,9 +14,8 @@ public class AddHistoricalVMCalculationCommand extends FacilioCommand {
 		
 		long startTime =  (long) context.get(FacilioConstants.ContextNames.STARTTIME);
 		long endTime =  (long) context.get(FacilioConstants.ContextNames.ENDTIME);
-		int interval = (int) context.get(FacilioConstants.ContextNames.INTERVAL);
 		List<Long> vmList =  (List<Long>) context.get(FacilioConstants.ContextNames.VM_LIST);
-		DeviceAPI.addVirtualMeterReadingsJob(startTime, endTime, interval, vmList);
+		DeviceAPI.addVirtualMeterReadingsJob(startTime, endTime, vmList);
 		return false;
 	}
 

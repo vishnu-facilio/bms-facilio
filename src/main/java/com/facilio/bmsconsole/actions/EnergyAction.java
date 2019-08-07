@@ -62,7 +62,6 @@ public class EnergyAction extends FacilioAction {
 		}
 		context.put(FacilioConstants.ContextNames.STARTTIME, startTime);
 		context.put(FacilioConstants.ContextNames.ENDTIME, endTime);
-		context.put(FacilioConstants.ContextNames.INTERVAL, interval);
 		context.put(FacilioConstants.ContextNames.VM_LIST, vmList);
 		
 		Chain insertVMChain = TransactionChainFactory.getAddHistoricalVMCalculationChain();

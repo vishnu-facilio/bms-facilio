@@ -7,11 +7,17 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.HistoricalLoggerContext;
 import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.HistoricalLoggerUtil;
+import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.time.DateTimeUtil;
@@ -29,12 +35,11 @@ public class HistoricalVMEnergyDataCalculatorJob extends FacilioJob {
 			Long meterId=(Long)jobProps.get("meterId");
 			Long startTime = (Long)jobProps.get("startTime");
 			Long endTime = (Long)jobProps.get("endTime");
-			int interval=((Long)jobProps.get("intervalValue")).intValue();
 			
 			Boolean updateReading= (Boolean)jobProps.get("updateReading");
 			long processStartTime = System.currentTimeMillis();
 			
-			HistoricalLoggerContext historicalLogger = HistoricalLoggerUtil.getHistoricalLogger(meterId);
+			HistoricalLoggerContext historicalLogger = HistoricalLoggerUtil.getActiveParentHistoricalLogger(meterId);
 			
 			List<HistoricalLoggerContext> historicalLoggers = new ArrayList<HistoricalLoggerContext>();
 			historicalLoggers.add(historicalLogger);
@@ -50,8 +55,13 @@ public class HistoricalVMEnergyDataCalculatorJob extends FacilioJob {
 					if (childMeterIds == null) {
 						continue;
 					}
-
+					
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					FacilioField energyField=modBean.getField("totalEnergyConsumptionDelta", FacilioConstants.ContextNames.ENERGY_DATA_READING);
+					
+					int interval = ReadingsAPI.getDataInterval(meter.getId(), energyField);
 					DeviceAPI.insertVirtualMeterReadings(meter, childMeterIds, startTime, endTime, interval,updateReading, true);
+					
 					historicalLoggerContext.setStatus(HistoricalLoggerContext.Status.RESOLVED.getIntVal());
 					historicalLoggerContext.setCalculationEndTime(DateTimeUtil.getCurrenTime());
 					HistoricalLoggerUtil.updateHistoricalLogger(historicalLoggerContext);

@@ -89,6 +89,22 @@ public class HistoricalLoggerUtil {
 		return null;
 	}
 	
+	public static HistoricalLoggerContext getActiveParentHistoricalLogger(long parentassetId) throws Exception {
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getHistoricalLoggerFields())
+				.table(ModuleFactory.getHistoricalLoggerModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("PARENT_ID", "parentId", ""+parentassetId, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("STATUS", "status", ""+ HistoricalLoggerContext.Status.IN_PROGRESS.getIntVal(), NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {			
+			HistoricalLoggerContext historicalLogger = FieldUtil.getAsBeanFromMap(props.get(0), HistoricalLoggerContext.class);
+			return historicalLogger;
+		}
+		return null;
+	}
+	
 	public static List<HistoricalLoggerContext> getParentHistoricalLogger() throws Exception {
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()

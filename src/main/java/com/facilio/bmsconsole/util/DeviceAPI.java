@@ -487,34 +487,32 @@ public class DeviceAPI
 		return null;
 	}
 	
-	public static void addHistoricalVMCalculationJob(Long loggerId, long meterId, long startTime, long endTime, int interval,boolean updateReading) throws Exception {
+	public static void addHistoricalVMCalculationJob(Long loggerId, long meterId, long startTime, long endTime,boolean updateReading) throws Exception {
 		
 		JSONObject jobProp = new JSONObject();
 		jobProp.put("orgId", AccountUtil.getCurrentOrg().getOrgId());
 		jobProp.put("meterId",meterId);
 		jobProp.put("startTime", startTime);
 		jobProp.put("endTime",endTime);
-		jobProp.put("intervalValue", interval);
 		jobProp.put("updateReading", updateReading);
 		BmsJobUtil.deleteJobWithProps(loggerId,"HistoricalVMCalculation" );
 		BmsJobUtil.scheduleOneTimeJobWithProps(loggerId,  "HistoricalVMCalculation", 30, "facilio", jobProp);
 	}
 	
 	
-	public static void addVMReadingsJob(long startTime, long endTime, int minutesInterval) throws Exception {
-		addVMReadingsJob(DeviceAPI.getAllVirtualMeters(), startTime,endTime, minutesInterval);
+	public static void addVMReadingsJob(long startTime, long endTime) throws Exception {
+		addVMReadingsJob(DeviceAPI.getAllVirtualMeters(), startTime,endTime);
 	}
 	
-	public static void addVirtualMeterReadingsJob(long startTime, long endTime, int minutesInterval, List<Long> vmList) throws Exception {
+	public static void addVirtualMeterReadingsJob(long startTime, long endTime, List<Long> vmList) throws Exception {
 		if(vmList == null || vmList.isEmpty()) {
-			addVMReadingsJob(startTime,endTime, minutesInterval);
+			addVMReadingsJob(startTime,endTime);
 			return;
 		}
-		addVMReadingsJob(getVirtualMeters(vmList), startTime,endTime, minutesInterval);
+		addVMReadingsJob(getVirtualMeters(vmList), startTime,endTime);
 	}
 	
-	private static void addVMReadingsJob(List<EnergyMeterContext> virtualMeters, long startTime, long endTime,
-			int minutesInterval) throws Exception {
+	private static void addVMReadingsJob(List<EnergyMeterContext> virtualMeters, long startTime, long endTime) throws Exception {
 		
 		Map<Long,HistoricalLoggerContext> historicalLoggerMap = new HashMap<Long,HistoricalLoggerContext>();
 
@@ -529,7 +527,7 @@ public class DeviceAPI
 			HistoricalLoggerContext historicalLoggerContext = gethistoricalLogger(meter.getId(), startTime, endTime, true, (long) -1);
 			HistoricalLoggerUtil.addHistoricalLogger(historicalLoggerContext);
 			Long loggerGroupId = historicalLoggerContext.getId();
-			addHistoricalVMCalculationJob(loggerGroupId, meter.getId(),startTime, endTime, minutesInterval,false);
+			addHistoricalVMCalculationJob(loggerGroupId, meter.getId(),startTime, endTime,false);
 			historicalLoggerMap.put(meter.getId(), historicalLoggerContext);
 			checkParent (meter, startTime, endTime, loggerGroupId, historicalLoggerMap);	
 		}	
