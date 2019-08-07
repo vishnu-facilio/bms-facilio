@@ -594,7 +594,7 @@ public class ImportAPI {
 		try {
 			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule facilioModule =  bean.getModule(module);
-			List<FacilioField> fieldsList= bean.getAllFields(module);
+			List<FacilioField> fieldsList = bean.getAllFields(module);
 			List<FacilioField> customFields = bean.getAllCustomFields(module);
 			
 			if(facilioModule.getName().equals(FacilioConstants.ContextNames.TOOL)
@@ -670,7 +670,6 @@ public class ImportAPI {
 					{
 						if(!ImportAPI.isRemovableFieldOnImport(field.getName()))
 						{
-							LOGGER.severe(field.getName());
 							fields.add(field.getName());
 						}
 					}

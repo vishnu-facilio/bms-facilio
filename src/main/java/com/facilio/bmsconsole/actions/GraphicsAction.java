@@ -30,8 +30,15 @@ public class GraphicsAction extends FacilioAction{
 	public void setGraphics(GraphicsContext graphics) {
 		this.graphics = graphics;
 	}
+	private boolean fetchOnlyMeta;
 
 	
+	public boolean isFetchOnlyMeta() {
+		return fetchOnlyMeta;
+	}
+	public void setFetchOnlyMeta(boolean fetchOnlyMeta) {
+		this.fetchOnlyMeta = fetchOnlyMeta;
+	}
 	public String getGraphicsList() throws Exception {
 		FacilioContext context = new FacilioContext();
  		
@@ -58,6 +65,7 @@ public class GraphicsAction extends FacilioAction{
 	public String getGraphicsDetails() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, recordId);
+		context.put(FacilioConstants.ContextNames.FETCH_ONLY_META,fetchOnlyMeta);
 		
 		Chain chain = ReadOnlyChainFactory.getGraphicsDetailsChain();
 		chain.execute(context);
