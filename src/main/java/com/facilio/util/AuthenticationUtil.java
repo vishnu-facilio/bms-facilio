@@ -2,6 +2,8 @@ package com.facilio.util;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.struts2.ServletActionContext;
+
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.IAMAccount;
@@ -39,7 +41,14 @@ public class AuthenticationUtil {
                     overrideSessionCheck = true;
                 }
             }
-			IAMAccount iamAccount = IAMUserUtil.verifiyFacilioToken(facilioToken, false, overrideSessionCheck, null);
+        	String domainName = request.getServerName();
+			String[] domainArray = domainName.split("\\."); 
+			String subDomain = "";
+             if (domainArray.length > 2) { 
+               subDomain = domainArray[0]; 
+             }
+            
+			IAMAccount iamAccount = IAMUserUtil.verifiyFacilioToken(facilioToken, overrideSessionCheck, null, subDomain);
 			return iamAccount;
         }
         return null;

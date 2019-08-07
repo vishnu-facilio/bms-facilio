@@ -680,6 +680,16 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		IAMAccount account = new IAMAccount(org, user);
 		return account;
 	}
+	
+	private IAMAccount getAccount(String email, String portalDomain) throws Exception {
+		IAMUser user = getFacilioUser(email, portalDomain);
+		if (user == null) {
+			throw new AccountException(ErrorCode.USER_DOESNT_EXIST_IN_ORG, "IAMUser doesn't exists in the current Org");
+		}
+		Organization org = IAMUtil.getOrgBean().getOrgv2(user.getOrgId());
+		IAMAccount account = new IAMAccount(org, user);
+		return account;
+	}
 
 	@Override
 	public void clearUserSessionv2(long uid, String email, String token) throws Exception {
@@ -1000,6 +1010,42 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			
 			IAMAccount currentAccount = new IAMAccount(IAMUtil.getOrgBean().getOrgv2(orgId), getFacilioUser(orgId, uid));
 			return currentAccount;
+		}
+		return null;
+	}
+
+
+	@Override
+	public IAMAccount verifyUserSessionUsingEmail(String email, String token, String portalDomain) throws Exception {
+		String cacheKey = email + "###" + portalDomain;
+		List<Map<String, Object>> sessions = (List<Map<String, Object>>) LRUCache.getUserSessionCache().get(cacheKey);
+		if (sessions == null) {
+			sessions = new ArrayList<>();
+		}
+		for (Map<String, Object> session : sessions) {
+			String sessionToken = (String) session.get("token");
+			if (Objects.equals(sessionToken, token)) {
+				return getAccount(email, portalDomain);
+			}
+		}
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(IAMAccountConstants.getUserSessionFields())
+				.table("Account_Users")
+				.innerJoin("UserSessions")
+				.on("Account_Users.USERID = UserSessions.USERID");
+		
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.EMAIL", "email", email, StringOperators.IS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.DOMAIN_NAME", "domainName", portalDomain, StringOperators.IS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("UserSessions.TOKEN", "token", token, StringOperators.IS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("UserSessions.IS_ACTIVE", "isActive", "1", NumberOperators.EQUALS));
+		
+	
+		Map<String, Object> props = selectBuilder.fetchFirst();
+		if (MapUtils.isNotEmpty(props)) {
+			sessions.add(props);
+			LRUCache.getUserSessionCache().put(cacheKey, sessions);
+			return getAccount(email, portalDomain);
 		}
 		return null;
 	}

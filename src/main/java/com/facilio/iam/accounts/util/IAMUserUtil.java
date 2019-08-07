@@ -178,7 +178,7 @@ public class IAMUserUtil {
 		return IAMUtil.getUserBean().getPermalinkAccount(token, urls);
 	}
 	
-	public static IAMAccount verifiyFacilioToken(String idToken, boolean isPortalUser, boolean overrideSessionCheck, String orgDomain)
+	public static IAMAccount verifiyFacilioToken(String idToken, boolean overrideSessionCheck, String orgDomain, String portalDomain)
 			throws AccountException {
 		System.out.println("verifiyFacilioToken() :idToken :"+idToken);
 		try {
@@ -191,7 +191,14 @@ public class IAMUserUtil {
 				else {
 					uId = decodedjwt.getSubject().split("_")[0];
 				}
-				IAMAccount account = IAMUtil.getUserBean().verifyUserSessionv2(uId, idToken, orgDomain);
+				IAMAccount account = null;
+				try {
+					Long.parseLong(uId);
+					account = IAMUtil.getUserBean().verifyUserSessionv2(uId, idToken, orgDomain);
+				}
+				catch(NumberFormatException e) {
+					account = IAMUtil.getUserBean().verifyUserSessionUsingEmail(uId, idToken, orgDomain);
+				}
 				if (overrideSessionCheck || account != null) {
 					return account;
 				} else {

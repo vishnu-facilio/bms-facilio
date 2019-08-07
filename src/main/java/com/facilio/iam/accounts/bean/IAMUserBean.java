@@ -57,7 +57,10 @@ public interface IAMUserBean {
     
     public IAMAccount verifyUserSessionv2(String uId, String token, String orgDomain) throws Exception;
     
- 	public boolean acceptUserv2(IAMUser user) throws Exception;
+    //for backward compatibility
+    public IAMAccount verifyUserSessionUsingEmail(String email, String token, String portalDomain) throws Exception;
+    
+    public boolean acceptUserv2(IAMUser user) throws Exception;
 	
 	public String getEncodedTokenv2(IAMUser user) throws Exception;
 	
