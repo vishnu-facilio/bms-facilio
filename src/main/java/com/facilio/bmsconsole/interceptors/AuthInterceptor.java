@@ -3,36 +3,23 @@ package com.facilio.bmsconsole.interceptors;
 
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
-import java.util.Locale;
-import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.struts2.ServletActionContext;
-import org.apache.struts2.dispatcher.Parameter;
 
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.auth.cookie.FacilioCookie;
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.SiteContext;
-import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.screen.util.ScreenUtil;
 import com.facilio.util.AuthenticationUtil;
-import com.iam.accounts.exceptions.AccountException;
 import com.iam.accounts.util.IAMUserUtil;
-import com.iam.accounts.util.IAMUtil;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;

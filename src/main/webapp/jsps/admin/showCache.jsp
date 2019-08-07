@@ -8,11 +8,11 @@
 </head>
 <body>
 <br>Module Cache =  <textarea rows="48" cols="150"><%
-	out.println(com.facilio.cache.LRUCache.getModuleFieldsCache());
+	out.println(com.facilio.fw.LRUCache.getModuleFieldsCache());
 %></textarea>
 
 <br>Fields Cache = <textarea  rows="8" cols="150"><%
-	out.println(com.facilio.cache.LRUCache.getFieldsCache());
+	out.println(com.facilio.fw.LRUCache.getFieldsCache());
 %></textarea>
 
 <br><a href="clearcache"> Clear Cache</a>
