@@ -34,11 +34,11 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
+import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
-import com.iam.accounts.util.IAMOrgUtil;
 
 public class OrgBeanImpl implements OrgBean {
 

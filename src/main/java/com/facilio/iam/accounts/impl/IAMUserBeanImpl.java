@@ -1,4 +1,4 @@
-package com.iam.accounts.impl;
+package com.facilio.iam.accounts.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -25,6 +25,12 @@ import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.bmsconsole.util.EncryptionUtil;
 import com.facilio.fw.LRUCache;
+import com.facilio.iam.accounts.bean.IAMUserBean;
+import com.facilio.iam.accounts.exceptions.AccountException;
+import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
+import com.facilio.iam.accounts.util.IAMAccountConstants;
+import com.facilio.iam.accounts.util.IAMUserUtil;
+import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -41,12 +47,6 @@ import com.facilio.fs.FileStoreFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
-import com.iam.accounts.bean.IAMUserBean;
-import com.iam.accounts.exceptions.AccountException;
-import com.iam.accounts.exceptions.AccountException.ErrorCode;
-import com.iam.accounts.util.IAMAccountConstants;
-import com.iam.accounts.util.IAMUserUtil;
-import com.iam.accounts.util.IAMUtil;
 
 ;
 

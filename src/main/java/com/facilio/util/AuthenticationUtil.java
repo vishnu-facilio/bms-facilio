@@ -6,8 +6,8 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.auth.cookie.FacilioCookie;
-import com.iam.accounts.exceptions.AccountException;
-import com.iam.accounts.util.IAMUserUtil;
+import com.facilio.iam.accounts.exceptions.AccountException;
+import com.facilio.iam.accounts.util.IAMUserUtil;
 
 
 public class AuthenticationUtil {

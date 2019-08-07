@@ -19,7 +19,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import com.facilio.db.transaction.FacilioTransactionManager;
-import com.iam.accounts.util.IAMUtil;
+import com.facilio.iam.accounts.util.IAMUtil;
 
 public class BeanFactory {
 

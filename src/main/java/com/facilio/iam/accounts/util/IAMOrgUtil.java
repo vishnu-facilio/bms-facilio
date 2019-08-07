@@ -1,4 +1,4 @@
-package com.iam.accounts.util;
+package com.facilio.iam.accounts.util;
 
 import java.util.Locale;
 
@@ -7,7 +7,7 @@ import org.apache.commons.chain.Chain;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.chain.FacilioContext;
-import com.iam.accounts.commands.AuthenticationTransactionFactory;
+import com.facilio.iam.accounts.commands.AuthenticationTransactionFactory;
 
 public class IAMOrgUtil {
 

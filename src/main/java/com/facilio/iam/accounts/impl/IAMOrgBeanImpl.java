@@ -1,4 +1,4 @@
-package com.iam.accounts.impl;
+package com.facilio.iam.accounts.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,13 +17,13 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
+import com.facilio.iam.accounts.bean.IAMOrgBean;
+import com.facilio.iam.accounts.exceptions.AccountException;
+import com.facilio.iam.accounts.util.IAMAccountConstants;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
-import com.iam.accounts.bean.IAMOrgBean;
-import com.iam.accounts.exceptions.AccountException;
-import com.iam.accounts.util.IAMAccountConstants;
 
 public class IAMOrgBeanImpl implements IAMOrgBean {
 

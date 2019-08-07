@@ -1,4 +1,4 @@
-package com.iam.accounts.commands;
+package com.facilio.iam.accounts.commands;
 
 import java.util.Calendar;
 import java.util.Locale;
@@ -13,8 +13,8 @@ import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.bmsconsole.commands.FacilioCommand;
-import com.iam.accounts.util.IAMUserUtil;
-import com.iam.accounts.util.IAMUtil;
+import com.facilio.iam.accounts.util.IAMUserUtil;
+import com.facilio.iam.accounts.util.IAMUtil;
 
 public class OrgSignUpCommand extends FacilioCommand{
 

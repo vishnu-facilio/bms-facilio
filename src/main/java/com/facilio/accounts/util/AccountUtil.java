@@ -22,12 +22,12 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.TransactionBeanFactory;
+import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
-import com.iam.accounts.util.IAMUtil;
 
 public class AccountUtil {
 

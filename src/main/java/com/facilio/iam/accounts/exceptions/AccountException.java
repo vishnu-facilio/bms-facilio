@@ -1,4 +1,4 @@
-package com.iam.accounts.exceptions;
+package com.facilio.iam.accounts.exceptions;
 
 public class AccountException extends Exception {
 

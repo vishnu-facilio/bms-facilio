@@ -45,8 +45,8 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.iam.accounts.util.IAMOrgUtil;
-import com.iam.accounts.util.IAMUserUtil;
+import com.facilio.iam.accounts.util.IAMOrgUtil;
+import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.opensymphony.xwork2.ActionContext;
 
 public class FacilioAuthAction extends FacilioAction {

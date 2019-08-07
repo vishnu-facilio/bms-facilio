@@ -1,4 +1,4 @@
-package com.iam.accounts.commands;
+package com.facilio.iam.accounts.commands;
 
 import org.apache.commons.chain.Chain;
 

@@ -1,4 +1,4 @@
-package com.iam.accounts.util;
+package com.facilio.iam.accounts.util;
 
 import java.util.List;
 import java.util.Map;
@@ -10,12 +10,12 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.TransactionBeanFactory;
+import com.facilio.iam.accounts.bean.IAMOrgBean;
+import com.facilio.iam.accounts.bean.IAMUserBean;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import com.iam.accounts.bean.IAMOrgBean;
-import com.iam.accounts.bean.IAMUserBean;
 
 public class IAMUtil {
 	

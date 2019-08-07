@@ -9,8 +9,8 @@ import org.apache.log4j.Logger;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.executor.CommandExecutor;
 import com.facilio.fs.FileInfo.FileFormat;
-import com.iam.accounts.util.IAMUserUtil;
-import com.iam.accounts.util.IAMUtil;
+import com.facilio.iam.accounts.util.IAMUserUtil;
+import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 

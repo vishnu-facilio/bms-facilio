@@ -10,9 +10,9 @@ import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.actions.FacilioAction;
+import com.facilio.iam.accounts.util.IAMUserUtil;
+import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.screen.util.ScreenUtil;
-import com.iam.accounts.util.IAMUserUtil;
-import com.iam.accounts.util.IAMUtil;
 
 public class TVAction extends FacilioAction {
 	

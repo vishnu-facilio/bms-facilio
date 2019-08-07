@@ -1,4 +1,4 @@
-package com.iam.accounts.util;
+package com.facilio.iam.accounts.util;
 
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
@@ -28,9 +28,9 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.iam.accounts.exceptions.AccountException;
+import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
 import com.facilio.modules.fields.FacilioField;
-import com.iam.accounts.exceptions.AccountException;
-import com.iam.accounts.exceptions.AccountException.ErrorCode;
 
 public class IAMUserUtil {
 
@@ -125,7 +125,7 @@ public class IAMUserUtil {
 	public static boolean verifyUser(long userId) throws Exception {
 		
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(com.iam.accounts.util.IAMAccountConstants.getAccountsUserModule().getTableName()).fields(com.iam.accounts.util.IAMAccountConstants.getAccountsUserFields())
+				.table(com.facilio.iam.accounts.util.IAMAccountConstants.getAccountsUserModule().getTableName()).fields(com.facilio.iam.accounts.util.IAMAccountConstants.getAccountsUserFields())
 				.andCustomWhere("USERID = ?", userId);
 		Map<String, Object> prop = new HashMap<>();
 		prop.put("userVerified", true);

@@ -13,8 +13,8 @@ import org.apache.struts2.ServletActionContext;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.auth.cookie.FacilioCookie;
-import com.iam.accounts.util.IAMOrgUtil;
-import com.iam.accounts.util.IAMUtil;
+import com.facilio.iam.accounts.util.IAMOrgUtil;
+import com.facilio.iam.accounts.util.IAMUtil;
 import com.opensymphony.xwork2.ActionInvocation;
 import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 

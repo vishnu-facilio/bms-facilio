@@ -75,12 +75,12 @@ import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.auth.SAMLAttribute;
 import com.facilio.fw.auth.SAMLUtil;
+import com.facilio.iam.accounts.util.IAMUserUtil;
+import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.screen.util.ScreenUtil;
 import com.facilio.wms.util.WmsApi;
-import com.iam.accounts.util.IAMUserUtil;
-import com.iam.accounts.util.IAMUtil;
 import com.opensymphony.xwork2.ActionContext;
 
 public class LoginAction extends FacilioAction {

@@ -1,4 +1,4 @@
-package com.iam.accounts.util;
+package com.facilio.iam.accounts.util;
 
 import java.util.ArrayList;
 import java.util.Collections;

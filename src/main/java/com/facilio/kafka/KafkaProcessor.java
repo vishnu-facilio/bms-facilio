@@ -17,9 +17,9 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.iam.accounts.util.IAMAccountConstants;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.procon.processor.FacilioProcessor;
-import com.iam.accounts.util.IAMAccountConstants;
 
 public class KafkaProcessor {
 
