@@ -307,7 +307,7 @@ public class FacilioAuthAction extends FacilioAction {
 
 				try {
 					authtoken = IAMUserUtil.verifyLoginPassword(getUsername(), getPassword(), userAgent, userType,
-							ipAddress, domainName, portalId() > 0 ? true : false);
+							ipAddress, domainName);
 				} catch (AccountException ex) {
 					setJsonresponse("message", ex.getMessage()); // can be removed later
 					setJsonresponse("errorcode", "1");
@@ -679,7 +679,7 @@ public class FacilioAuthAction extends FacilioAction {
 	public String generatePortalAuthToken() {
 		LOGGER.info("generatePortalAuthToken() : username :" + getUsername());
 		try {
-			String token = IAMUserUtil.generateportalAuthToken(getUsername(), getPassword(), getDomainname());
+			String token = IAMUserUtil.generateAuthToken(getUsername(), getPassword(), getDomainname());
 			if (token != null) {
 				LOGGER.info("Response token is " + token);
 				setJsonresponse("authtoken", token);

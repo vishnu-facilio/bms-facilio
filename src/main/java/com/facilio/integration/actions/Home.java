@@ -27,8 +27,8 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.fw.BeanFactory;
-import com.iam.accounts.util.IAMUtil;
 import com.iam.accounts.util.IAMUserUtil;
+import com.iam.accounts.util.IAMUtil;
 import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -201,7 +201,7 @@ private static Logger log = LogManager.getLogger(Home.class.getName());
 					setJsonresponse("errorcode", "1");
 					return ERROR;
 				}
-				String jwt = IAMUserUtil.createJWT("id", "auth0", username, System.currentTimeMillis() + 24 * 60 * 60000,portaluser);
+				String jwt = IAMUserUtil.createJWT("id", "auth0", username, System.currentTimeMillis() + 24 * 60 * 60000);
 				System.out.println("Response token is " + jwt);
 				setJsonresponse("token", jwt);
 				setJsonresponse("username", username);
@@ -439,7 +439,7 @@ Pragma: no-cache
 	public String generateAuthToken()
 	{
 		System.out.println("generateAuthToken() : username :"+username);
-		String jwt = IAMUserUtil.createJWT("id", "auth0", username, System.currentTimeMillis()+24*60*60000,false);
+		String jwt = IAMUserUtil.createJWT("id", "auth0", username, System.currentTimeMillis()+24*60*60000);
 		System.out.println("Response token is "+ jwt);
 		setJsonresponse("authtoken",jwt);
 		setJsonresponse("username",username);

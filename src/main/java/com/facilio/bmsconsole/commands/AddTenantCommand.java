@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.tenant.TenantContext;

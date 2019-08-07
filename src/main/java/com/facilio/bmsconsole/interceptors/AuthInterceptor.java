@@ -30,9 +30,9 @@ import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.screen.util.ScreenUtil;
 import com.facilio.util.AuthenticationUtil;
-import com.iam.accounts.util.IAMUtil;
 import com.iam.accounts.exceptions.AccountException;
 import com.iam.accounts.util.IAMUserUtil;
+import com.iam.accounts.util.IAMUtil;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
@@ -79,7 +79,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 				}
 			}
 			else if (!isRemoteScreenMode(request)) {
-				IAMAccount iamAccount = validateToken(request);
+				IAMAccount iamAccount = AuthenticationUtil.validateToken(request, false);
 				if (iamAccount != null) {
 					request.setAttribute("iamAccount", iamAccount);
 				}
@@ -103,40 +103,6 @@ public class AuthInterceptor extends AbstractInterceptor {
 		}
 
 		return arg0.invoke();
-	}
-	
-	private IAMAccount validateToken(HttpServletRequest request) throws AccountException {
-		String facilioToken = FacilioCookie.getUserCookie(request, "fc.idToken.facilio");
-        String headerToken = request.getHeader("Authorization");
-
-        if (facilioToken != null || headerToken != null) {
-
-            if (headerToken != null && headerToken.trim().length() > 0) {
-                if (headerToken.startsWith("Bearer facilio ")) {
-                    facilioToken = headerToken.replace("Bearer facilio ", "");
-                } else if(headerToken.startsWith("Bearer Facilio ")) { // added this check for altayer emsol data // Todo remove this later
-                    facilioToken = headerToken.replace("Bearer Facilio ", "");
-                } else {
-                    facilioToken = request.getHeader("Authorization").replace("Bearer ", "");
-                }
-            }
-            
-    		String currentOrgDomain = FacilioCookie.getUserCookie(request, "fc.currentOrg");
-    		if (currentOrgDomain == null) {
-    			currentOrgDomain = request.getHeader("X-Current-Org"); 
-    		}
-
-            String overrideSessionCookie = FacilioCookie.getUserCookie(request, "fc.overrideSession");
-            boolean overrideSessionCheck = false;
-            if(overrideSessionCookie != null) {
-                if("true".equalsIgnoreCase(overrideSessionCookie)) {
-                    overrideSessionCheck = true;
-                }
-            }
-			IAMAccount iamAccount = IAMUserUtil.verifiyFacilioToken(facilioToken, false, overrideSessionCheck, null);
-			return iamAccount;
-        }
-        return null;
 	}
 	
 	private boolean isRemoteScreenMode(HttpServletRequest request) {

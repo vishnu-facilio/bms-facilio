@@ -67,7 +67,6 @@ import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.iam.accounts.exceptions.AccountException;
-import com.iam.accounts.util.IAMUtil;
 import com.iam.accounts.util.IAMUserUtil;
 
 ;
@@ -864,12 +863,12 @@ public class UserBeanImpl implements UserBean {
 
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
-				.table("Account_Users")
-				.innerJoin("Account_ORG_Users")
-				.on("Account_Users.USERID = Account_ORG_Users.USERID AND Account_ORG_Users.USER_TYPE=2")
+				.table("Users")
+				.innerJoin("ORG_Users")
+				.on("Users.USERID = ORG_Users.USERID AND ORG_Users.USER_TYPE=2")
 				.innerJoin(portalInfoModule.getTableName())
-				.on("Account_ORG_Users.ORGID = Account_Users.USERID")
-				.andCustomWhere("PortalInfo.PORTALID="+ portalId + " and Account_Users.USERID = "+uid);
+				.on("ORG_Users.ORGID = "+portalInfoModule.getTableName()+".ORGID")
+				.andCustomWhere("PortalInfo.PORTALID="+ portalId + " and Users.USERID = "+uid);
 		
 
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -1073,7 +1072,8 @@ public class UserBeanImpl implements UserBean {
 			Organization org = AccountUtil.getOrgBean().getOrg(AccountUtil.getCurrentOrg().getDomain());
 			PortalInfoContext portalInfo = AccountUtil.getOrgBean().getPortalInfo(org.getId(), false);
 			org.setPortalId(portalInfo.getPortalId());
-			
+			user.setOrgId(org.getOrgId());
+			user.setDomainName(org.getDomain());
 			user.setPortalId(org.getPortalId());
 			user.setId(addRequester(orgId, user, false, true));
 			if (user.getAccessibleSpace() != null) {
@@ -1087,8 +1087,8 @@ public class UserBeanImpl implements UserBean {
 	private long addRequester(long orgId, User user, boolean emailVerification, boolean updateifexist)
 			throws Exception {
 		IAMUser iamUser = IAMUserUtil.getUser(user.getEmail(), user.getDomainName(), user.getDomainName());
-		User portalUser = new User(iamUser);
-		if (portalUser != null) {
+		if (iamUser != null) {
+			User portalUser = new User(iamUser);
 			log.info("Requester email already exists in the portal for org: " + orgId + ", ouid: "
 					+ portalUser.getOuid());
 			return getUser(portalUser.getEmail()).getOuid();

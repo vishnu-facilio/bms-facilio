@@ -34,6 +34,7 @@ import org.xml.sax.SAXException;
 
 import com.facilio.activity.ActivityType;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.interceptors.DataSourceInterceptor;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.cache.RedisManager;
@@ -51,7 +52,6 @@ import com.facilio.logging.SysOutLogger;
 import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.FieldUtil;
 import com.facilio.queue.FacilioExceptionProcessor;
-import com.facilio.serviceportal.actions.PortalAuthInterceptor;
 import com.facilio.tasker.FacilioScheduler;
 import com.facilio.tasker.executor.InstantJobExecutor;
 
@@ -153,8 +153,8 @@ public class FacilioContextListener implements ServletContextListener {
 				log.info("Exception occurred ", e);
 			}
 
-			PortalAuthInterceptor.setPortalDomain(AwsUtil.getConfig("portal.domain"));// event.getServletContext().getInitParameter("SERVICEPORTAL_DOMAIN");
-			log.info("Loading the domain name as ######"+PortalAuthInterceptor.getPortalDomain());
+			DataSourceInterceptor.setPortalDomain(AwsUtil.getConfig("portal.domain"));// event.getServletContext().getInitParameter("SERVICEPORTAL_DOMAIN");
+			log.info("Loading the domain name as ######"+DataSourceInterceptor.getPortalDomain());
 			initLocalHostName();
 			HealthCheckFilter.setStatus(200);
 			

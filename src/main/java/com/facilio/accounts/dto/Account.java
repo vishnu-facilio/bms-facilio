@@ -12,13 +12,14 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.opensymphony.xwork2.ActionContext;
 
-public class Account implements Serializable {
+public class Account implements AccountsInterface<User>, Serializable{
 	
 	/**
 	 * 
+	 * 
 	 */
-	private static final long serialVersionUID = 1L;
 	private Organization org;
+	private static final long serialVersionUID = 1L;
 	private User user;
 	private long siteId = -1; 
 	
@@ -44,7 +45,15 @@ public class Account implements Serializable {
 
 	private RemoteScreenContext remoteScreen;
 	
-
+	@Override
+	public Organization getOrg() {
+		return this.org;
+	}
+	
+	public void setOrg(Organization org) {
+		this.org = org;
+	}
+	
 	public Account(Organization org, User user) {
 		setOrg(org);
 		setUser(user);
@@ -55,20 +64,6 @@ public class Account implements Serializable {
 		}
 	}
 
-	public Organization getOrg() {
-		return this.org;
-	}
-	
-	public void setOrg(Organization org) {
-		this.org = org;
-		if (org != null && org.getLoggerLevel() != -1 ) {
-//			System.out.println("########logger Status"+org.getLoggerLevel());
-			setLoggerLevel(org.getLoggerLevel());
-		}
-	}
-
-	
-	
 	public User getUser() {
 		return this.user;
 	}
@@ -271,8 +266,8 @@ public class Account implements Serializable {
 		this.timeZone = timeZone;	
 	}
 	public String getTimeZone() {
-		if(StringUtils.isEmpty(timeZone) && org != null) {
-			return org.getTimezone();
+		if(StringUtils.isEmpty(timeZone) && getOrg() != null) {
+			return getOrg().getTimezone();
 		}
     	return timeZone;
 	}

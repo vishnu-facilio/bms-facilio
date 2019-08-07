@@ -17,7 +17,9 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.accounts.dto.Account;
+import com.facilio.accounts.dto.AccountsInterface;
 import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -373,7 +375,9 @@ public class BmsDBConf extends DBConf {
         if(AccountUtil.getCurrentAccount() != null) {
             AccountUtil.getCurrentAccount().incrementDeleteQueryTime(duration);
         }
-    }
+    } 
+    
+    
 
     private class SelectQueryCache {
 
@@ -422,5 +426,20 @@ public class BmsDBConf extends DBConf {
     public boolean logQueries() {
         return super.logQueries();
     }
+
+	@Override
+	public AccountsInterface getCurrentAccount() throws Exception {
+		return AccountUtil.getCurrentAccount();
+	}
+
+	@Override
+	public void setNewAccount(long orgId) throws Exception {
+		AccountUtil.setCurrentAccount(orgId);
+	}
+	
+	@Override
+	public void removeOrgCache(long currentOrgId) {
+		ResponseCacheUtil.removeOrgCache(DBConf.getInstance().getCurrentOrgId());		
+	}
 	
 }
