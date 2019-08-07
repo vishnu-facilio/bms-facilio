@@ -54,7 +54,7 @@ public class BeanInvocationHandler implements InvocationHandler {
 		Object result;
 		boolean isTransaction =false;
 		try {
-			AccountsInterface<IAMUser> oldAccount = DBConf.getInstance().getCurrentAccount();
+			AccountsInterface oldAccount = DBConf.getInstance().getCurrentAccount();
 			if (orgid != 0) {
 				if (oldAccount == null || orgid != oldAccount.getOrg().getOrgId()) {
 					DBConf.getInstance().setNewAccount(orgid);

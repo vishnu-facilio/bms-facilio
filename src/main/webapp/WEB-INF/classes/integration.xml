@@ -118,7 +118,7 @@
 
 	<package name="authApi" namespace="/auth/api" extends="integration">
 
-		<action name="login" class="com.facilio.auth.actions.FacilioAuthAction" method="validateLogin">
+		<action name="login" class="com.facilio.auth.actions.FacilioAuthAction" method="validateLoginv2">
 			<param name="auth">false</param>
 			<result name="success" type="json">
 				<param name="includeProperties">jsonresponse.*</param>

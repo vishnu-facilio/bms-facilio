@@ -753,7 +753,8 @@ public class LoginAction extends FacilioAction {
 	public String validatePermalink() throws Exception {
 		Account permalinkAccount = AccountUtil.getUserBean().getPermalinkAccount(getPermalink(), null);
 		if(permalinkAccount != null) {
-			AccountUtil.updateAccount(permalinkAccount, false);
+			
+			AccountUtil.setCurrentAccount(permalinkAccount);
 			account = new HashMap<>();
 			account.put("org", permalinkAccount.getOrg());
 			account.put("user", permalinkAccount.getUser());

@@ -1412,7 +1412,8 @@ public class UserBeanImpl implements UserBean {
 	public Account getPermalinkAccount(String token, List<String> urls) throws Exception {
 		// TODO Auto-generated method stub
       IAMAccount iamAccount = IAMUserUtil.getPermalinkAccount(token, urls);
-      Account account = new Account(iamAccount.getOrg(), new User(iamAccount.getUser()));
+      User user = getUser(iamAccount.getUser().getOrgId(), iamAccount.getUser().getUid());
+      Account account = new Account(iamAccount.getOrg(), user);
       return account;
 	}
 

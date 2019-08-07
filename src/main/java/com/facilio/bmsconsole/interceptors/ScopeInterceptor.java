@@ -58,7 +58,6 @@ public class ScopeInterceptor extends AbstractInterceptor {
 				if (user == null) {
 					throw new AccountException(ErrorCode.USER_DOESNT_EXIST_IN_ORG, "User doesn't exists in org");
 				}
-				
 			}
 			Account account = new Account(iamAccount.getOrg(), user);
 			AccountUtil.cleanCurrentAccount();

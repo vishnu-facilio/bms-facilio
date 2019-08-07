@@ -150,12 +150,12 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		String token = EncryptionUtil.decode(tokenPortal[0]);
 		String[] userObj = token.split(USER_TOKEN_REGEX);
 		IAMUser user = null;
-		if(userObj.length == 5) {
+		if(userObj.length == 4) {
 			user = new IAMUser();
 			user.setOrgId(Long.parseLong(userObj[0]));
 //			user.setOuid(Long.parseLong(userObj[1]));
-			user.setUid(Long.parseLong(userObj[2]));
-			user.setEmail(userObj[3]);
+			user.setUid(Long.parseLong(userObj[1]));
+			user.setEmail(userObj[2]);
 //			user.setInvitedTime(Long.parseLong(userObj[4]));
 //			if(tokenPortal.length > 1) {
 //				String[] portalIdString = tokenPortal[1].split("=");
@@ -258,9 +258,11 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 					.table(IAMAccountConstants.getAccountsOrgUserModule().getTableName())
 					.fields(fields);
+			updateBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USERID", "userId", String.valueOf(user.getUid()), NumberOperators.EQUALS));
+			updateBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ORGID", "orgId", String.valueOf(user.getOrgId()), NumberOperators.EQUALS));
 			
 			Map<String, Object> props = new HashMap<>();
-			props.put("isDefaultOrg", true);
+			//props.put("isDefaultOrg", true);
 			props.put("userStatus", true);
 
 			int updatedRows = updateBuilder.update(props);
@@ -935,6 +937,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		}
 		
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USER_STATUS", "userStatus", "1", NumberOperators.EQUALS));
 		
 		
 		List<Map<String, Object>> props = selectBuilder.get();
