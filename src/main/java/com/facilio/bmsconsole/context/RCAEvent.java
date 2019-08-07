@@ -7,15 +7,15 @@ public class RCAEvent extends MLAnomalyEvent
 {
 
 	private static final long serialVersionUID = 1L;
-	private long parentId;
+	private long parentid;
 	
-	public void setParentId(long parentId)
+	public void setparentid(long parentid)
 	{
-		this.parentId = parentId;
+		this.parentid = parentid;
 	}
-	public long getParentId()
+	public long getparentid()
 	{
-		return parentId;
+		return parentid;
 	}
 	
 	@Override
@@ -35,7 +35,7 @@ public class RCAEvent extends MLAnomalyEvent
 		
 		RCAAlarm rcaAlarm = (RCAAlarm) baseAlarm;
 		super.updateAlarmContext(baseAlarm, add);
-		rcaAlarm.setParentId(parentId);
+		rcaAlarm.setparentid(parentid);
 		
 		return baseAlarm;
 	}

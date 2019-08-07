@@ -4,16 +4,16 @@ public class RCAAlarm extends MLAnomalyAlarm
 {
 	
 	private static final long serialVersionUID = 1L;
-	private long parentId;
+	private long parentid;
 	
-	public void setParentId(long parentId)
+	public void setparentid(long parentid)
 	{
-		this.parentId = parentId;
+		this.parentid = parentid;
 	}
 	
-	public long getParentId()
+	public long getparentid()
 	{
-		return parentId;
+		return parentid;
 	}
 
 }

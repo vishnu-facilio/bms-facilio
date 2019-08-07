@@ -100,25 +100,97 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
     	}
     	else
     	{
-    		generateClearEvent(parentID,mlContext.getMLVariable().get(0).getFieldID(),mlContext.getPredictionTime());
-    		generateClearEvent(parentID,mlContext.getMLVariable().get(0).getFieldID(),mlContext.getPredictionTime(),parentID);
+			generateClearEvent(parentID,mlContext.getMLVariable().get(0).getFieldID(),mlContext.getPredictionTime(),parentID);
     	}
     	return -1;
 	}
 	
-	private void generateClearEvent(long assetID,long fieldID,long ttime)
+	private boolean checkAndGenerateRCAEvent(MLContext mlContext, long assetID,long parentAlarmID) throws Exception
+	{
+		Set<Long> keys =mlContext.getMlVariablesDataMap().keySet();
+		LOGGER.info("Variable Data Map keys are "+keys+":"+assetID+"::"+parentAlarmID);
+		Hashtable<String,SortedMap<Long,Object>> variablesData = mlContext.getMlVariablesDataMap().get(assetID);
+		
+    	SortedMap<Long,Object> actualValueMap = variablesData.get("actualValue");
+    	double actualValue = (double) actualValueMap.get(actualValueMap.firstKey());
+
+    	SortedMap<Long,Object> adjustedUpperBoundMap = variablesData.get("adjustedUpperBound");
+    	double adjustedUpperBound = (double) adjustedUpperBoundMap.get(adjustedUpperBoundMap.firstKey());
+
+    	if(actualValue > adjustedUpperBound)
+    	{
+    		generateRCAAnomalyEvent(actualValue,adjustedUpperBound,assetID,mlContext.getMLVariable().get(0).getFieldID(),mlContext.getPredictionTime(),parentAlarmID,Long.parseLong(mlContext.getMLModelVariable("energyfieldid")),Long.parseLong(mlContext.getMLModelVariable("adjustedupperboundfieldid")));
+    		return true;
+    	}
+    	else
+    	{
+    		generateClearEvent(assetID,mlContext.getMLVariable().get(0).getFieldID(),mlContext.getPredictionTime(),parentAlarmID);
+    	}
+    	return false;
+	}
+	
+	private void generateClearEvent(long assetID,long fieldID,long ttime,long parentid) {
+		try 
+		{
+			if(NewAlarmAPI.getActiveAlarmOccurance("Anomaly_RCA_" + ResourceAPI.getResource(parentid).getId(),Type.RCA_ALARM) != null)
+			{
+				generateClearRCAEvent(assetID,fieldID,ttime,parentid);
+			}
+			else 
+			{
+				generateClearMLAnomalyEvent(parentid,fieldID,ttime);
+			}
+		} 
+		catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private void generateClearMLAnomalyEvent(long assetID,long fieldID,long ttime)
 	{
 		try
 		{
 			AlarmOccurrenceContext alarmOccuranceContext = NewAlarmAPI.getActiveAlarmOccurance("Anomaly_" + ResourceAPI.getResource(assetID).getId(),Type.ML_ANOMALY_ALARM);
 			if(alarmOccuranceContext!=null)
 			{
+				LOGGER.info("Generating clear Event for assetID:"+assetID);
 				String message = "Anomaly Cleared";
 				MLAnomalyEvent event = new MLAnomalyEvent();
 				event.setEventMessage(message);
 		        event.setResource(ResourceAPI.getResource(assetID));
 		        event.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
 		        event.setReadingTime(ttime);
+		        
+		        List<BaseEventContext> eventList = new ArrayList<BaseEventContext>();
+		        eventList.add(event);
+		        
+		        FacilioContext context = new FacilioContext();
+				context.put(EventConstants.EventContextNames.EVENT_LIST,eventList);
+				Chain chain = TransactionChainFactory.getV2AddEventChain();
+				chain.execute(context);
+			}
+		}
+		catch(Exception e)
+		{
+			LOGGER.fatal("Error while generating event ",e);
+		}
+	}
+	
+	private void generateClearRCAEvent(long assetID,long fieldID,long ttime,long parentid)
+	{
+		try
+		{
+			AlarmOccurrenceContext alarmOccuranceContext = NewAlarmAPI.getActiveAlarmOccurance("Anomaly_RCA_" + ResourceAPI.getResource(assetID).getId(),Type.RCA_ALARM);
+			if(alarmOccuranceContext!=null)
+			{
+				LOGGER.info("Generating RCAclear Event for assetID:"+assetID);
+				String message = "Anomaly Cleared";
+				RCAEvent event = new RCAEvent();
+				event.setEventMessage(message);
+		        event.setResource(ResourceAPI.getResource(assetID));
+		        event.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
+		        event.setReadingTime(ttime);
+		        event.setparentid(parentid);
 		        
 		        List<BaseEventContext> eventList = new ArrayList<BaseEventContext>();
 		        eventList.add(event);
@@ -157,45 +229,9 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 	
 	}
 	
-	private long addEvent(BaseEventContext event) throws Exception
-	{
-		List<BaseEventContext> eventList = new ArrayList<BaseEventContext>();
-        eventList.add(event);
-        
-        FacilioContext context = new FacilioContext();
-		context.put(EventConstants.EventContextNames.EVENT_LIST,eventList);
-		Chain chain = TransactionChainFactory.getV2AddEventChain();
-		chain.execute(context);
-		
-		return event.getAlarmOccurrence().getAlarm().getId();
-	}
-	
-	private boolean checkAndGenerateRCAEvent(MLContext mlContext, long assetID,long parentAlarmID) throws Exception
-	{
-		Set<Long> keys =mlContext.getMlVariablesDataMap().keySet();
-		LOGGER.info("Variable Data Map keys are "+keys+":"+assetID+"::"+parentAlarmID);
-		Hashtable<String,SortedMap<Long,Object>> variablesData = mlContext.getMlVariablesDataMap().get(assetID);
-		
-    	SortedMap<Long,Object> actualValueMap = variablesData.get("actualValue");
-    	double actualValue = (double) actualValueMap.get(actualValueMap.firstKey());
-
-    	SortedMap<Long,Object> adjustedUpperBoundMap = variablesData.get("adjustedUpperBound");
-    	double adjustedUpperBound = (double) adjustedUpperBoundMap.get(adjustedUpperBoundMap.firstKey());
-
-    	if(actualValue > adjustedUpperBound)
-    	{
-    		generateAnomalyEvent(actualValue,adjustedUpperBound,assetID,mlContext.getMLVariable().get(0).getFieldID(),mlContext.getPredictionTime(),parentAlarmID,Long.parseLong(mlContext.getMLModelVariable("energyfieldid")),Long.parseLong(mlContext.getMLModelVariable("adjustedupperboundfieldid")));
-    		return true;
-    	}
-    	else
-    	{
-    		generateClearEvent(assetID,mlContext.getMLVariable().get(0).getFieldID(),mlContext.getPredictionTime(),parentAlarmID);
-    	}
-    	return false;
-	}
-	
-	private void generateAnomalyEvent(double actualValue,double adjustedUpperBound,long assetID,long fieldID,long ttime,long parentID,long energyDataFieldid,long upperAnomalyFieldid) throws Exception
+	private void generateRCAAnomalyEvent(double actualValue,double adjustedUpperBound,long assetID,long fieldID,long ttime,long parentid,long energyDataFieldid,long upperAnomalyFieldid) throws Exception
 	{   
+		LOGGER.info("Generating RCAAnomaly Event "+assetID);
 		String message = "Anomaly Detected. Actual Consumption :"+actualValue+", Expected Max Consumption :"+adjustedUpperBound;
 		
 		RCAEvent event = new RCAEvent();
@@ -207,39 +243,23 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
         event.setReadingTime(ttime);
         event.setEnergyDataFieldid(energyDataFieldid);
         event.setUpperAnomalyFieldid(upperAnomalyFieldid);
-        event.setParentId(parentID);
+        event.setparentid(parentid);
         
         addEvent(event);
 	
 	}
 	
-	private void generateClearEvent(long assetID,long fieldID,long ttime,long parentID)
+	private long addEvent(BaseEventContext event) throws Exception
 	{
-		try
-		{
-			AlarmOccurrenceContext alarmOccuranceContext = NewAlarmAPI.getActiveAlarmOccurance("Anomaly_RCA_" + ResourceAPI.getResource(assetID).getId(),Type.RCA_ALARM);
-			if(alarmOccuranceContext!=null)
-			{
-				String message = "Anomaly Cleared";
-				RCAEvent event = new RCAEvent();
-				event.setEventMessage(message);
-		        event.setResource(ResourceAPI.getResource(assetID));
-		        event.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
-		        event.setReadingTime(ttime);
-		        
-		        List<BaseEventContext> eventList = new ArrayList<BaseEventContext>();
-		        eventList.add(event);
-		        
-		        FacilioContext context = new FacilioContext();
-				context.put(EventConstants.EventContextNames.EVENT_LIST,eventList);
-				Chain chain = TransactionChainFactory.getV2AddEventChain();
-				chain.execute(context);
-			}
-		}
-		catch(Exception e)
-		{
-			LOGGER.fatal("Error while generating event ",e);
-		}
+		List<BaseEventContext> eventList = new ArrayList<BaseEventContext>();
+        eventList.add(event);
+        
+        FacilioContext context = new FacilioContext();
+		context.put(EventConstants.EventContextNames.EVENT_LIST,eventList);
+		Chain chain = TransactionChainFactory.getV2AddEventChain();
+		chain.execute(context);
+		
+		return event.getAlarmOccurrence().getAlarm().getId();
 	}
 	
 	public static void main(String arg[])
