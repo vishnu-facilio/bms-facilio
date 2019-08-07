@@ -487,7 +487,7 @@ public class DeviceAPI
 		return null;
 	}
 	
-	public static void addHistoricalVMCalculationJob(long meterId, long startTime, long endTime, int interval,boolean updateReading) throws Exception {
+	public static void addHistoricalVMCalculationJob(Long loggerId, long meterId, long startTime, long endTime, int interval,boolean updateReading) throws Exception {
 		
 		JSONObject jobProp = new JSONObject();
 		jobProp.put("orgId", AccountUtil.getCurrentOrg().getOrgId());
@@ -496,8 +496,8 @@ public class DeviceAPI
 		jobProp.put("endTime",endTime);
 		jobProp.put("intervalValue", interval);
 		jobProp.put("updateReading", updateReading);
-		BmsJobUtil.deleteJobWithProps(meterId,"HistoricalVMCalculation" );
-		BmsJobUtil.scheduleOneTimeJobWithProps(meterId,  "HistoricalVMCalculation", 30, "facilio", jobProp);
+		BmsJobUtil.deleteJobWithProps(loggerId,"HistoricalVMCalculation" );
+		BmsJobUtil.scheduleOneTimeJobWithProps(loggerId,  "HistoricalVMCalculation", 30, "facilio", jobProp);
 	}
 	
 	
@@ -525,11 +525,11 @@ public class DeviceAPI
 			{
 				throw new Exception("Historical already In-Progress for the Current Meter "+ meter.getName());
 			}
-			addHistoricalVMCalculationJob(meter.getId(), startTime, endTime, minutesInterval,false);
 			
 			HistoricalLoggerContext historicalLoggerContext = gethistoricalLogger(meter.getId(), startTime, endTime, true, (long) -1);
 			HistoricalLoggerUtil.addHistoricalLogger(historicalLoggerContext);
 			Long loggerGroupId = historicalLoggerContext.getId();
+			addHistoricalVMCalculationJob(loggerGroupId, meter.getId(),startTime, endTime, minutesInterval,false);
 			historicalLoggerMap.put(meter.getId(), historicalLoggerContext);
 			checkParent (meter, startTime, endTime, loggerGroupId, historicalLoggerMap);	
 		}	

@@ -55,6 +55,11 @@ public class EnergyAction extends FacilioAction {
 	
 	public String insertVirtualMeterReadings() throws Exception {
 		FacilioContext context = new FacilioContext();
+		
+		if(startTime >= endTime)
+		{
+			throw new Exception("Start time should be less than the Endtime");
+		}
 		context.put(FacilioConstants.ContextNames.STARTTIME, startTime);
 		context.put(FacilioConstants.ContextNames.ENDTIME, endTime);
 		context.put(FacilioConstants.ContextNames.INTERVAL, interval);
