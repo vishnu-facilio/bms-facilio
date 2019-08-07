@@ -205,6 +205,67 @@
 							  return resultMap;
 							}"
 		},
+		"99":{
+			"description" : "mlpredictedEnergyWastage",
+			"usage" : "AnomalySummary",
+			"workflow": "Map calculateEnergyWastage(Number resourceId){
+			    resultMap = {};
+			    mlReadings = Module(\"anomalydetectionmllogreadings\");
+			   	date = NameSpace(\"date\");
+			    thisMonthRanges = date.getDateRange(\"Current Month\");
+			    lastMonthRange = date.getDateRange(\"Last Month\");
+			  	lastMonthEnergy = {
+					criteria: [parentId == resourceId && ttime == thisMonthRanges],
+			    };
+			   currentMonthWastage =  mlReadings.fetch(lastMonthEnergy);
+			   energyWastage = 0
+			   if (currentMonthWastage != null) {
+			   	for each index,value in currentMonthWastage {
+			       diffConsu = value.actualValue - value.upperBound;
+			    	if (diffConsu > 0) {
+			       		energyWastage =  energyWastage + diffConsu
+			       }
+			   	}
+			   }
+			   resultMap[\"currentMonthWastage\"] = energyWastage;
+			   log \"energyWastage\" + energyWastage;
+			   return resultMap;
+			}"
+		},
+		"100" : {
+        	"description" : "noOfAnomalies",
+        	"usage" : "AnomalySummary",
+        	"workflow": "Map test(Number alarmId){ 
+			    mlAnomalyAlarmModule = Module(\"mlAnomalyAlarm\");
+			    date = NameSpace(\"date\");
+			   	thisMonthRanges = date.getDateRange(\"Current Month\");
+			    lastMonthRange = date.getDateRange(\"Last Month\");
+			  	anomaliesThisMonth = 0;
+			  	anomaliesLastMonth = 0;
+			    alarmoccurrenceModule = Module(\"alarmoccurrence\");
+			    occurenceThisMonthCrit = {
+					criteria: [alarm == alarmId && createdTime == thisMonthRanges]
+			    };
+			    thismothoccurence =  alarmoccurrenceModule.fetch(occurenceThisMonthCrit);
+				if (thismothoccurence != null ) {
+			      anomaliesThisMonth = thismothoccurence.size();
+			    }
+			    occurenceLastMonthCrit = {
+					criteria: [alarm == alarmId && createdTime == lastMonthRange]
+			    };
+			    lastmothoccurence =  alarmoccurrenceModule.fetch(occurenceLastMonthCrit);  
+			    if (lastmothoccurence != null) {
+			       anomaliesLastMonth = lastmothoccurence.size();
+			    }
+			   	resMap = {};
+			  	resMap[\"anomaliesThisMonth\"] = anomaliesThisMonth;
+			    resMap[\"anomaliesLastMonth\"] = anomaliesLastMonth;
+			
+			  	log resMap
+			    return resMap
+			  
+			}"
+        },
         "101": {
         	"description" : "meanTimeBetweenTriggers",
         	"usage" : "rulesSummary",
