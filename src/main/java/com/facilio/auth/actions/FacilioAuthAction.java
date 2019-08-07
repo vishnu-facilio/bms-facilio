@@ -598,10 +598,23 @@ public class FacilioAuthAction extends FacilioAction {
 			}
 		} else {
 			User user;
+			HttpServletRequest request = ServletActionContext.getRequest();
+			String domainName = request.getServerName();
+			String[] domainArray = domainName.split("\\."); 
+			String subDomain = "";
+             if (domainArray.length > 2) { 
+               subDomain = domainArray[0]; 
+             }
+            
 			if (portalId() > 0) {
 				user = AccountUtil.getUserBean().getPortalUsers(getEmailaddress(), portalId());
-			} else {
+			} else if(AccountUtil.getCurrentOrg() != null){
+			
 				user = AccountUtil.getUserBean().getUser(getEmailaddress());
+			}
+			else
+			{
+				user = AccountUtil.getUserBean().getUser(getEmailaddress(), subDomain);
 			}
 			if (user != null) {
 				AccountUtil.getUserBean().sendResetPasswordLinkv2(user);

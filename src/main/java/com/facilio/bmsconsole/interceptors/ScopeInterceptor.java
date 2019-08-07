@@ -23,6 +23,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.iam.accounts.exceptions.AccountException;
@@ -68,6 +69,10 @@ public class ScopeInterceptor extends AbstractInterceptor {
 		try {
 			Account currentAccount = AccountUtil.getCurrentAccount();
 			if (currentAccount != null) {
+				if(request.getAttribute("isPortal") != null && (Boolean)request.getAttribute("isPortal")) {
+					PortalInfoContext portalInfo = AccountUtil.getOrgBean().getPortalInfo(currentAccount.getOrg().getOrgId(), false);
+					currentAccount.getOrg().setPortalId(portalInfo.getPortalId());
+				}
 				if(currentAccount.getUser() != null) {
 					List<Long> accessibleSpace = null;
 					if (currentAccount.getUser() != null) {

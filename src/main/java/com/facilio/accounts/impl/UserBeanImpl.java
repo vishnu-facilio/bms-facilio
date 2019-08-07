@@ -790,7 +790,7 @@ public class UserBeanImpl implements UserBean {
 	}
 
 	@Override
-	public User getUser(String emailOrPhone) throws Exception {
+	public User getUser(String emailOrPhone, String portalDomain) throws Exception {
 
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getAppUserFields());
@@ -805,15 +805,12 @@ public class UserBeanImpl implements UserBean {
 		userEmailCriteria.addOrCondition(CriteriaAPI.getCondition("Users.MOBILE", "mobile", emailOrPhone, StringOperators.IS));
 		selectBuilder.andCriteria(userEmailCriteria);
 		
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Users.DOMAIN_NAME", "domainName", portalDomain, StringOperators.IS));
+		
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getCondition("USER_STATUS", "userStatus", "1", NumberOperators.EQUALS));
 		criteria.addAndCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", String.valueOf(-1), NumberOperators.EQUALS));
 		
-		Organization currentOrg = AccountUtil.getCurrentOrg();
-		if (currentOrg == null) {
-			throw new IllegalArgumentException("Organization cannot be empty");
-		}
-		criteria.addAndCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(currentOrg.getOrgId()), NumberOperators.EQUALS));
 		
 		selectBuilder.andCriteria(criteria);
 		
@@ -1091,7 +1088,7 @@ public class UserBeanImpl implements UserBean {
 			User portalUser = new User(iamUser);
 			log.info("Requester email already exists in the portal for org: " + orgId + ", ouid: "
 					+ portalUser.getOuid());
-			return getUser(portalUser.getEmail()).getOuid();
+			return getUser(portalUser.getEmail(), iamUser.getDomainName()).getOuid();
 		}
 		if(IAMUserUtil.addUser(user, orgId) > 0) {
 			addUserEntry(user, false);
@@ -1480,6 +1477,42 @@ public class UserBeanImpl implements UserBean {
 		}
 
 		return selectBuilder;
+	}
+
+	@Override
+	public User getUser(String emailOrPhone) throws Exception {
+		// TODO Auto-generated method stub
+		List<FacilioField> fields = new ArrayList<>();
+		fields.addAll(AccountConstants.getAppUserFields());
+		fields.addAll(AccountConstants.getAppOrgUserFields());
+		fields.add(AccountConstants.getOrgIdField());
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields).table("Users")
+				.innerJoin("ORG_Users").on("Users.USERID = ORG_Users.USERID");
+			
+		Criteria userEmailCriteria = new Criteria();
+		userEmailCriteria.addAndCondition(CriteriaAPI.getCondition("Users.EMAIL", "email", emailOrPhone, StringOperators.IS));
+		userEmailCriteria.addOrCondition(CriteriaAPI.getCondition("Users.MOBILE", "mobile", emailOrPhone, StringOperators.IS));
+		selectBuilder.andCriteria(userEmailCriteria);
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition("USER_STATUS", "userStatus", "1", NumberOperators.EQUALS));
+		criteria.addAndCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", String.valueOf(-1), NumberOperators.EQUALS));
+		
+		Organization currentOrg = AccountUtil.getCurrentOrg();
+		if (currentOrg == null) {
+			throw new IllegalArgumentException("Organization cannot be empty");
+		}
+		
+		selectBuilder.andCriteria(criteria);
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			User user = createUserFromProps(props.get(0), true, true, false);
+			return user;
+		}
+
+		return null;
 	}
 
 
