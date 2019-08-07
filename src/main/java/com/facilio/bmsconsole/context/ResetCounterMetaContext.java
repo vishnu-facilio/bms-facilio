@@ -16,11 +16,6 @@ public class ResetCounterMetaContext{
 		this.value = value;
 	}
 	
-	public void setValue(String value) {
-		this.value = value;
-	}
-
-	
 	private long id;
 	public long getId() {
 		return id;
