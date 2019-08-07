@@ -167,11 +167,6 @@
 		</action>
 	</package>
 
-<package name="v2baseSpaceApi" namespace="/api/v2/basespace" extends="v2Api">
-	<action name="basespaceHierarchy" class="com.facilio.bmsconsole.actions.BaseSpaceAction"
-		method="basespaceDetailsWithHierarchy" />
-</package>
-
 	<package name="event" namespace="/api/v2/event" extends="v2Api">
 		<action name="add"
 			class="com.facilio.events.actions.V2EventAction" method="addEvent" />
@@ -3238,8 +3233,15 @@
 			method="v2updateField">
 		</action>
 	</package>
+	
+	<package name="baseSpaceApiV2" namespace="/api/v2/basespaces" extends="v2Api">
+		<action name="*" class="com.facilio.bmsconsole.actions.BaseSpaceAction"
+			method="basespaceDetailsWithHierarchy" >
+			<param name="spaceId">{1}</param>
+		</action>
+	</package>
 
-	<package name="basespaceApiV2"
+	<package name="basespaceChildrenApiV2"
 		namespace="/api/v2/basespaces/children" extends="v2Api">
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.BaseSpaceAction"
