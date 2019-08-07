@@ -1229,7 +1229,7 @@ public class UserBeanImpl implements UserBean {
 
 	}
 
-	static User createUserFromProps(Map<String, Object> prop, boolean fetchRole, boolean fetchSpace,
+	public static User createUserFromProps(Map<String, Object> prop, boolean fetchRole, boolean fetchSpace,
 			boolean isPortalRequest) throws Exception {
 		User user = FieldUtil.getAsBeanFromMap(prop, User.class);
 		if (user.getPhotoId() > 0) {
@@ -1456,5 +1456,32 @@ public class UserBeanImpl implements UserBean {
 		}
 		return hostname + url + inviteToken;
 	}
+	
+	public static GenericSelectRecordBuilder fetchUserSelectBuilder (Criteria criteria, Collection<Long>... ouids) throws Exception {
+		List<FacilioField> fields = new ArrayList<>();
+		fields.addAll(AccountConstants.getAppUserFields());
+		List<FacilioField> orgUserFields = AccountConstants.getAppOrgUserFields();
+		fields.addAll(orgUserFields);
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("ORG_Users")
+				.innerJoin("Users")
+				.on("Users.USERID = ORG_Users.USERID")
+				;
+
+		if (criteria != null && !criteria.isEmpty()) {
+			selectBuilder.andCriteria(criteria);
+		}
+
+		if (ouids != null && ouids.length == 1) {
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(orgUserFields);
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("ouid"), ouids[0], NumberOperators.EQUALS));
+		}
+
+		return selectBuilder;
+	}
+
+
 	
 }
