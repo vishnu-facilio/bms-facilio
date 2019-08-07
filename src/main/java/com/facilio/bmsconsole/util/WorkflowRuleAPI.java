@@ -118,6 +118,7 @@ public class WorkflowRuleAPI {
 				ReadingRuleAPI.addReadingRuleMetrics((ReadingRuleContext) rule);
 				break;
 			case READING_ALARM_RULE:
+			case REPORT_DOWNTIME_RULE:
 				addExtendedProps(ModuleFactory.getReadingAlarmRuleModule(), FieldFactory.getReadingAlarmRuleFields(), ruleProps);
 				break;
 			case SLA_RULE:
@@ -651,6 +652,7 @@ public class WorkflowRuleAPI {
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getSLARuleModule(), FieldFactory.getSLARuleFields(), entry.getValue()));
 					break;
 				case READING_ALARM_RULE:
+				case REPORT_DOWNTIME_RULE:
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getReadingAlarmRuleModule(), FieldFactory.getReadingAlarmRuleFields(), entry.getValue()));
 					break;
 				case APPROVAL_RULE:
@@ -773,6 +775,7 @@ public class WorkflowRuleAPI {
 							rule = ApprovalRulesAPI.constructApprovalRuleFromProps(prop, modBean);
 							break;
 						case READING_ALARM_RULE:
+						case REPORT_DOWNTIME_RULE:
 							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
 							rule = constructReadingAlarmRuleFromProps(prop, modBean);
 							break;
