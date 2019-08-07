@@ -183,14 +183,14 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 			AlarmOccurrenceContext alarmOccuranceContext = NewAlarmAPI.getActiveAlarmOccurance("Anomaly_RCA_" + ResourceAPI.getResource(assetID).getId(),Type.RCA_ALARM);
 			if(alarmOccuranceContext!=null)
 			{
-				LOGGER.info("Generating RCAclear Event for assetID:"+assetID);
+				LOGGER.info("Generating RCAclear Event for assetID:"+assetID+" and PARENTID: "+alarmOccuranceContext.getAlarm().getId()+" Check"+alarmOccuranceContext.getId());
 				String message = "Anomaly Cleared";
 				RCAEvent event = new RCAEvent();
 				event.setEventMessage(message);
 		        event.setResource(ResourceAPI.getResource(assetID));
 		        event.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
 		        event.setReadingTime(ttime);
-		        event.setparentid(parentid);
+		        event.setparentid(alarmOccuranceContext.getAlarm().getId());
 		        
 		        List<BaseEventContext> eventList = new ArrayList<BaseEventContext>();
 		        eventList.add(event);
