@@ -58,8 +58,8 @@ public class EnergyMeterContext extends AssetContext {
 		}
 		return false;
 	}
-	private Boolean isHistoricalRunning;
-	public Boolean getIsHistoricalRunning() {
+	private Boolean isHistoricalRunning;	//Only for validation in client
+	public Boolean getIsHistoricalRunning() {			
 		return isHistoricalRunning;
 	}
 	public void setIsHistoricalRunning(Boolean isHistoricalRunning) {

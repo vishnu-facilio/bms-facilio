@@ -68,26 +68,7 @@ public class EnergyAction extends FacilioAction {
 	
 	public String getVirtualMeterList() throws Exception{
 		
-		List<EnergyMeterContext> virtualMeters = DeviceAPI.getVirtualMeters(null, null);
-		List<HistoricalLoggerContext> activeVirtualMeters = HistoricalLoggerUtil.getInProgressHistoricalLogger();
-		
-		Map<Long, HistoricalLoggerContext> activevirtualMetersIdMap = new HashMap<Long, HistoricalLoggerContext>();
-		for(HistoricalLoggerContext activevm: activeVirtualMeters)
-		{
-			activevirtualMetersIdMap.put(activevm.getParentId(), activevm);
-		}
-		
-		for(EnergyMeterContext virtualMeter: virtualMeters)
-		{
-			if(activevirtualMetersIdMap.containsKey(virtualMeter.getId()))
-			{
-				virtualMeter.setIsHistoricalRunning(true);
-			}
-			else
-			{
-				virtualMeter.setIsHistoricalRunning(false);
-			}	
-		}
+		List<EnergyMeterContext> virtualMeters = HistoricalLoggerUtil.getVirtualMeterStatusInfo();
 		
 		setResult("virtualMeters", virtualMeters);
 		return SUCCESS;

@@ -517,9 +517,14 @@ public class DeviceAPI
 			int minutesInterval) throws Exception {
 		
 		Map<Long,HistoricalLoggerContext> historicalLoggerMap = new HashMap<Long,HistoricalLoggerContext>();
-		
+
 		for(EnergyMeterContext meter : virtualMeters) {
 			
+			List<HistoricalLoggerContext> currentMeterLoggerContextList = HistoricalLoggerUtil.getInProgressHistoricalLogger(meter.getId());
+			if(currentMeterLoggerContextList != null && !currentMeterLoggerContextList.isEmpty())
+			{
+				throw new Exception("Historical already In-Progress for the Current Meter "+ meter.getName());
+			}
 			addHistoricalVMCalculationJob(meter.getId(), startTime, endTime, minutesInterval,false);
 			
 			HistoricalLoggerContext historicalLoggerContext = gethistoricalLogger(meter.getId(), startTime, endTime, true, (long) -1);
@@ -536,9 +541,16 @@ public class DeviceAPI
 		List<Long> parentMeterIds = getParentMeters(currentMeter);
 		if(parentMeterIds==null) {
 			return;
-		}
+		}		
 		for(Long parentmeterid : parentMeterIds)
-		{
+		{	
+			List<HistoricalLoggerContext> currentMeterLoggerContextList = HistoricalLoggerUtil.getInProgressHistoricalLogger(parentmeterid);
+			if(currentMeterLoggerContextList != null && !currentMeterLoggerContextList.isEmpty())
+			{
+				List<EnergyMeterContext> alreadyRunningVM = DeviceAPI.getVirtualMeters(Collections.singletonList(parentmeterid));
+				throw new Exception("Historical already In-Progress for Parent "+ alreadyRunningVM.get(0).getName()+ ". You cannot run historical for the Current Meter "+ currentMeter.getName());				
+			}
+					
 			HistoricalLoggerContext historicalLoggerContext = gethistoricalLogger(parentmeterid, startTime, endTime, false,loggerGroupId);
 			if(!historicalLoggerMap.containsKey(parentmeterid)) {
 				HistoricalLoggerContext parentHistoricalLoggerContext = historicalLoggerMap.get(currentMeter.getId());
