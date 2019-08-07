@@ -23,10 +23,19 @@ public class WorkOrderAssignmentAction extends FacilioAction {
         this.roleName = roleName;
     }
 
+    private int count = -1;
+    public int getCount() {
+        return count;
+    }
+    public void setCount(int count) {
+        this.count = count;
+    }
+
     public String getWorkOrderRecommendedUsers() throws Exception {
         FacilioContext context = new FacilioContext();
         context.put(FacilioConstants.ContextNames.RECORD_ID, getWoId());
         context.put(FacilioConstants.ContextNames.ROLE, getRoleName());
+        context.put(FacilioConstants.ContextNames.RECOMMENDED_COUNT, getCount());
 
         Chain c = ReadOnlyChainFactory.getRecommendedUsers();
         c.execute(context);

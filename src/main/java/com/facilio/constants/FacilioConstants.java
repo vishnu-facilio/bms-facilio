@@ -976,6 +976,7 @@ public class FacilioConstants {
         public static final String RESOURCE_MAP = "resourceMap";
 		public static final String STATUS_MAP = "statusMap";
 		public static final String RECOMMENDED_USERS = "recommendedUsers";
+		public static final String RECOMMENDED_COUNT = "recommendedCount";
 
         private static final String RECEIPT_LINE_ITEMS = "receiptlineitems";
 		public static final String ITEM_VENDORS_LIST = "itemTypesVendorsList";

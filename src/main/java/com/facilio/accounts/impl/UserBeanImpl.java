@@ -1318,29 +1318,33 @@ public class UserBeanImpl implements UserBean {
 	}
 	
 	private List<Map<String, Object>> fetchUserProps (Criteria criteria, Collection<Long>... ouids) throws Exception {
+		GenericSelectRecordBuilder selectRecordBuilder = fetchUserSelectBuilder(criteria, ouids);
+		return selectRecordBuilder.get();
+	}
+
+	public static GenericSelectRecordBuilder fetchUserSelectBuilder (Criteria criteria, Collection<Long>... ouids) throws Exception {
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getUserFields());
 		List<FacilioField> orgUserFields = AccountConstants.getOrgUserFields();
 		fields.addAll(orgUserFields);
-		
+
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
 				.table("ORG_Users")
 				.innerJoin("Users")
 				.on("Users.USERID = ORG_Users.USERID")
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ModuleFactory.getOrgUserModule()))
 				;
-		
+
 		if (criteria != null && !criteria.isEmpty()) {
 			selectBuilder.andCriteria(criteria);
 		}
-				
+
 		if (ouids != null && ouids.length == 1) {
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(orgUserFields);
 			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("ouid"), ouids[0], NumberOperators.EQUALS));
 		}
-		
-		return selectBuilder.get();
+
+		return selectBuilder;
 	}
 
 
@@ -1947,7 +1951,7 @@ public class UserBeanImpl implements UserBean {
 		LRUCache.getUserSessionCache().remove(email);
 	}
 	
-	static User createUserFromProps(Map<String, Object> prop, boolean fetchRole, boolean fetchSpace, boolean isPortalRequest) throws Exception {
+	public static User createUserFromProps(Map<String, Object> prop, boolean fetchRole, boolean fetchSpace, boolean isPortalRequest) throws Exception {
 		User user = FieldUtil.getAsBeanFromMap(prop, User.class);
 		if (user.getPhotoId() > 0) {
 			FileStore fs = FileStoreFactory.getInstance().getFileStoreFromOrg(user.getOrgId(), user.getOuid());
