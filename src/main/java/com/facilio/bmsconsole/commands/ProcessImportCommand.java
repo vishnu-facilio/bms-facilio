@@ -228,11 +228,26 @@ public class ProcessImportCommand extends FacilioCommand {
 						props.put("spaceType",BaseSpaceContext.SpaceType.SITE.getIntVal());
 					
 					}
+					else if (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
+						String siteName = (String) colVal.get(fieldMapping.get(importProcessContext.getModule().getName() + "__site"));
+						
+						if(!(importProcessContext.getImportSetting() == ImportSetting.UPDATE.getValue() || importProcessContext.getImportSetting() == ImportSetting.UPDATE_NOT_NULL.getValue())) {
+							List<SiteContext> sites = SpaceAPI.getAllSites();
+							for (SiteContext site : sites) {
+								if (site.getName().trim().toLowerCase().equals(siteName.trim().toLowerCase())) {
+									props.put("siteId", site.getId());
+									break;
+								}
+							}
+						}
+						colVal.remove(fieldMapping.get(importProcessContext.getModule().getName() + "__site"));
+					}
 					
 						List<FacilioField> fields = new ArrayList<FacilioField>();
 						try {
 							ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-							fields = bean.getAllFields(importProcessContext.getModule().getName());
+							String name = importProcessContext.getModule().getName();
+							fields = bean.getAllFields(name);
 						}catch(Exception e) {
 							LOGGER.severe("Cannot get fields for module" + e.getMessage());
 						}
@@ -327,7 +342,7 @@ public class ProcessImportCommand extends FacilioCommand {
 
 									}
 								} 
-								else if (facilioField.getDisplayType().equals(FacilioField.FieldDisplayType.LOOKUP_POPUP)) {
+								else if (facilioField.getDisplayType().equals(FacilioField.FieldDisplayType.LOOKUP_POPUP) && (fieldMapping.get(facilioField.getModule().getName() + "__" + facilioField.getName()) != null)) {
 									Map<String, Object> specialLookupList = null;
 									try {
 										specialLookupList = getSpecialLookupProps(lookupField,colVal, importProcessContext);
@@ -432,7 +447,7 @@ public class ProcessImportCommand extends FacilioCommand {
 
 				String collumnName = "NAME";
 				String fieldName = "name";
-				if (lookupField.getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
+				if (lookupField.getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER) || lookupField.getModule().getName().equals(FacilioConstants.ContextNames.TICKET)) {
 					if (lookupField.getName().equals("status")) {
 						collumnName = "STATUS";
 						fieldName = "status";
@@ -527,9 +542,9 @@ public class ProcessImportCommand extends FacilioCommand {
 
 		Object value = colVal.get(importProcessContext.getFieldMapping().get(lookupField.getModule().getName()+ "__" + lookupField.getName()));
 		
-		if(value == null) {
-			throw new Exception("Field value missing under column " + importProcessContext.getFieldMapping().get(lookupField.getModule().getName()+ "__" + lookupField.getName()) + ".");
-		}
+//		if(value == null) {
+//			throw new Exception("Field value missing under column " + importProcessContext.getFieldMapping().get(lookupField.getModule().getName()+ "__" + lookupField.getName()) + ".");
+//		}
 		
 		try {
 			String moduleName;
@@ -539,6 +554,11 @@ public class ProcessImportCommand extends FacilioCommand {
 			else {
 				moduleName = lookupField.getLookupModule().getName();
 			}
+			
+			if(value == null && (moduleName.equals("users") == false) && (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER) == false)) {
+				throw new Exception("Field value missing under column " + importProcessContext.getFieldMapping().get(lookupField.getModule().getName()+ "__" + lookupField.getName()) + ".");
+			}
+			
 			switch (moduleName) {
 			case "workorder": {
 				User user = AccountUtil.getUserBean().getFacilioUser(value.toString());
@@ -564,6 +584,9 @@ public class ProcessImportCommand extends FacilioCommand {
 				return prop2;
 			}
 			case "users": {
+				if (value == null) {
+					return null;
+				}
 				User user = AccountUtil.getUserBean().getUserFromEmail(value.toString());
 				if(user == null) {
 					user = new User();

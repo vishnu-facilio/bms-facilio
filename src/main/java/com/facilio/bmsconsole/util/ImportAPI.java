@@ -662,9 +662,9 @@ public class ImportAPI {
 				}
 				else {
 					
-					if(customFields != null && !customFields.isEmpty()) {
-						fieldsList.addAll(customFields);
-					}
+//					if(customFields != null && !customFields.isEmpty()) {
+//						fieldsList.addAll(customFields);
+//					}
 					
 					for(FacilioField field : fieldsList)
 					{
@@ -676,6 +676,9 @@ public class ImportAPI {
 					}
 				}
 		}
+			if (!fields.contains("site") && FieldUtil.isSiteIdFieldPresent(facilioModule) && AccountUtil.getCurrentSiteId() == -1) {
+				fields.add("site");
+			}
 		}
 		
 		catch(Exception e) {

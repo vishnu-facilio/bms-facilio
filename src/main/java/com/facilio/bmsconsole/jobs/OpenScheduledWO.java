@@ -146,7 +146,7 @@ public class OpenScheduledWO extends FacilioJob {
             
             long siteIdBeforeWorkflow = wo.getSiteId();
             
-            Chain c = TransactionChainFactory.getWorkOrderWorkflowsChain();
+            Chain c = TransactionChainFactory.getWorkOrderWorkflowsChain(true);
             c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
             c.execute(context);
             

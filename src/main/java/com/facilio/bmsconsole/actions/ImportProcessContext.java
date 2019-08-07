@@ -296,7 +296,8 @@ public class ImportProcessContext implements Serializable
 				
 				facilioFieldMapping = new HashMap<String, FacilioField>();
 				ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				List<FacilioField> fieldsList= bean.getAllFields(getModule().getName());
+				String moduleName = getModule().getName();
+				List<FacilioField> fieldsList= bean.getAllFields(moduleName);
 				List<String> removeFields = ImportFieldFactory.getFieldsTobeRemoved(getModule().getName());
 				
 				for(FacilioField field : fieldsList)
@@ -307,7 +308,8 @@ public class ImportProcessContext implements Serializable
 								
 								(getModule().getExtendModule() != null && getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET) == false)
 								&& getModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE) == false
-								&&(getModule().getExtendModule() != null && getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE) == false)
+								&&(getModule().getExtendModule() != null && getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE) == false
+								&& getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER) == false)
 								
 								) {
 							LookupField lookupField = (LookupField) field;

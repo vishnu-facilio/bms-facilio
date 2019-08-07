@@ -803,6 +803,13 @@ public class TransactionChainFactory {
 			c.addCommand(getTempAddTaskChain());
 			return c;
 		}
+		
+		public static Chain getBulkWorkOrderImportChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(getTempAddPreOpenedWorkOrderChain());
+			c.addCommand(getWorkOrderWorkflowsChain(false));
+			return c;
+		}
 
 		public static Chain getTempAddTaskChain() {
 			Chain c = getDefaultChain();
@@ -838,7 +845,7 @@ public class TransactionChainFactory {
 			return c;
 		}
 
-		public static Chain getWorkOrderWorkflowsChain() {
+		public static Chain getWorkOrderWorkflowsChain(boolean sendNotification) {
 			Chain c = getDefaultChain();
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.BUSSINESS_LOGIC_WORKORDER_RULE));
@@ -847,11 +854,14 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.SLA_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.APPROVAL_RULE, RuleType.CHILD_APPROVAL_RULE, RuleType.REQUEST_APPROVAL_RULE, RuleType.REQUEST_REJECT_RULE));
 			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
-			if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 218L) {
-				c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE));
-			} else {
-				c.addCommand(new ForkChainToInstantJobCommand()
-						.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE)));
+			
+			if (sendNotification) {
+				if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() == 218L) {
+					c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE));
+				} else {
+					c.addCommand(new ForkChainToInstantJobCommand()
+							.addCommand(new ExecuteAllWorkflowsCommand(RuleType.WORKORDER_AGENT_NOTIFICATION_RULE, RuleType.WORKORDER_REQUESTER_NOTIFICATION_RULE, RuleType.CUSTOM_WORKORDER_NOTIFICATION_RULE)));
+				}
 			}
 			return c;
 		}
@@ -872,7 +882,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddTicketActivityCommand());
 			c.addCommand(getAddTasksChain());
 			c.addCommand(new AddPrerequisiteApproversCommand());
-			c.addCommand(getWorkOrderWorkflowsChain());
+			c.addCommand(getWorkOrderWorkflowsChain(true));
 			c.addCommand(new AddActivitiesCommand());
 			return c;
 		}

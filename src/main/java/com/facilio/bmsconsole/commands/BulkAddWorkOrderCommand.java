@@ -81,9 +81,9 @@ public class BulkAddWorkOrderCommand extends FacilioCommand{
 
         PreventiveMaintenanceAPI.logIf(92L, "Done BulkAddWorkOrderCommand");
 
-//        Map<Long, List<UpdateChangeSet>> changes = builder.getChangeSet();
+        Map<Long, List<UpdateChangeSet>> changes = builder.getChangeSet();
 
-//        handleWorkflowContext(context, workOrders, changes);
+        handleWorkflowContext(context, workOrders, changes);
 
 //        Map<Long, List<UpdateChangeSet>> changeSets = new HashMap<>();
 //        if (builder.getChangeSet() != null) {
@@ -164,14 +164,14 @@ public class BulkAddWorkOrderCommand extends FacilioCommand{
             //TODO remove single ACTIVITY_TYPE once handled in TicketActivity
             context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 
-            String status = workOrders.get(0).getStatus().getStatus();
-            if (status != null && status.equals("Assigned")) {
-                activities.add(EventType.ASSIGN_TICKET);
-            }
+			/*
+			 * String status = workOrders.get(0).getStatus().getStatus(); if (status != null
+			 * && status.equals("Assigned")) { activities.add(EventType.ASSIGN_TICKET); }
+			 */
             context.put(FacilioConstants.ContextNames.EVENT_TYPE_LIST, activities);
         }
 
         context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, Collections.singletonMap(FacilioConstants.ContextNames.WORK_ORDER, changes));
-        context.put(FacilioConstants.ContextNames.RECORD_MAP, Collections.singletonMap(FacilioConstants.ContextNames.WORK_ORDER, workOrders));
+        context.put(FacilioConstants.ContextNames.RECORD_LIST, workOrders);
     }
 }
