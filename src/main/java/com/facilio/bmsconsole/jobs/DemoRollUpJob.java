@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.db.transaction.FacilioTransactionManager;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 
@@ -37,7 +38,8 @@ public class DemoRollUpJob extends FacilioJob{
 		}		
 		catch(Exception e) {
 			LOGGER.info("Exception occurred### in  DemoRollUpJob  ", e);
-			CommonCommandUtil.emailException("DemoRoleUp", "DemoRoleUp Failed - orgid -- "+AccountUtil.getCurrentOrg().getId(), e);
+			CommonCommandUtil.emailException("DemoRolUp", "DemoRoleUp Failed - orgid -- "+AccountUtil.getCurrentOrg().getId(), e);
+			FacilioTransactionManager.INSTANCE.getTransactionManager().setRollbackOnly();
 		}
 	
 	}
