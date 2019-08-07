@@ -163,15 +163,15 @@ public class ScopeInterceptor extends AbstractInterceptor {
 				}
 			}
 
-//			if (request.getRequestURL().indexOf("/admin") != -1) {
-//				if (currentAccount != null) {
-//					String useremail = currentAccount.getUser().getEmail();
-//					if (! useremail.endsWith(AwsUtil.getConfig("admin.domain"))) {
-//						LOGGER.log(Level.FATAL, "you are not allowed to access this page from");
-//						return Action.LOGIN;
-//					}
-//				}
-//			}
+			if (request.getRequestURL().indexOf("/admin") != -1) {
+				if (currentAccount != null) {
+					String useremail = currentAccount.getUser().getEmail();
+					if (! useremail.endsWith(AwsUtil.getConfig("admin.domain"))) {
+						LOGGER.log(Level.FATAL, "you are not allowed to access this page from");
+						return Action.LOGIN;
+					}
+				}
+			}
 		} catch (Exception e) {
 			LOGGER.log(Level.FATAL, "error in auth interceptor", e);
 			return Action.LOGIN;
