@@ -55,10 +55,16 @@ public class DefaultMLHistoricalJob extends FacilioJob
 			while(startTime < endTime)
 			{
 				LOGGER.info("Executing Job for MLID: "+jc.getJobId()+" and startTime:"+new Date(startTime));
+				try {
 				executeParent(parentMlList,startTime);
 				if(child != null && !child.isEmpty())
 				{
 					ChildLoop(childMlList,startTime,(startTime + executionTime),childExecutionTime);
+				}
+				}
+				catch (Exception e)
+				{
+					LOGGER.info("Exception in Loop "+e);
 				}
 				startTime = startTime + executionTime;
 			}
