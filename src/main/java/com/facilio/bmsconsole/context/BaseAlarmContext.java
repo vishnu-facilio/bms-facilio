@@ -133,7 +133,8 @@ public class BaseAlarmContext extends ModuleBaseWithCustomFields {
 	public static enum Type implements FacilioEnum {
 		READING_ALARM,
 		ML_ANOMALY_ALARM,
-		RCA_ALARM
+		RCA_ALARM,
+		READING_RCA_ALARM,
 		;
 		
 		public int getIndex() {
