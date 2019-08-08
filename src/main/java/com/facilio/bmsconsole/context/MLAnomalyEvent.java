@@ -51,6 +51,7 @@ public class MLAnomalyEvent extends BaseEventContext{
 	private double actualValue;
 	private double adjustedUpperBoundValue;
 	private long readingTime;
+	private long mlid;
 	
 	public void setEnergyDataFieldid(long energyDataFieldid)
 	{
@@ -101,6 +102,14 @@ public class MLAnomalyEvent extends BaseEventContext{
 	@JsonSerialize
 	public Type getEventTypeEnum() {
 		return Type.ML_ANOMALY_ALARM;
+	}
+
+	public long getmlid() {
+		return mlid;
+	}
+
+	public void setmlid(long mlid) {
+		this.mlid = mlid;
 	}
 
 }

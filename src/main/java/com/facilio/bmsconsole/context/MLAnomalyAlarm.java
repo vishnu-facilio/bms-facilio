@@ -9,6 +9,7 @@ public class MLAnomalyAlarm extends BaseAlarmContext {
 	private double actualValue;
 	private double adjustedUpperBoundValue;
 	private long readingTime;
+	protected long mlid;
 	
 	public void setEnergyDataFieldid(long energyDataFieldid)
 	{
@@ -52,6 +53,14 @@ public class MLAnomalyAlarm extends BaseAlarmContext {
 
 	public void setReadingTime(long readingTime) {
 		this.readingTime = readingTime;
+	}
+
+	public long getmlid() {
+		return mlid;
+	}
+
+	public void setmlid(long mlid) {
+		this.mlid = mlid;
 	}
 	
 }

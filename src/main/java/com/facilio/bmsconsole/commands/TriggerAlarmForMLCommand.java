@@ -71,7 +71,7 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 	
 	private void generateEvent(MLContext mlContext,long assetID,long parentAlarmID) throws Exception
 	{
-		LOGGER.info("Inside Generate Event "+parentAlarmID+" AssetId:"+assetID);
+		LOGGER.info("Inside Generate Event "+parentAlarmID+" AssetId:"+assetID+" Mlid: "+mlContext.getId());
 		if(parentAlarmID!=-1)
 		{
 			checkAndGenerateRCAEvent(mlContext,assetID,parentAlarmID);
@@ -96,11 +96,11 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
     	LOGGER.info("Inside check and Generate Event "+parentID+". actual value "+actualValue+" , upperBound "+adjustedUpperBound);
     	if(actualValue > adjustedUpperBound)
     	{
-    		return generateAnomalyEvent(actualValue,adjustedUpperBound,parentID,mlContext.getMLVariable().get(0).getFieldID(),mlContext.getPredictionTime(),Long.parseLong(mlContext.getMLModelVariable("energyfieldid")),Long.parseLong(mlContext.getMLModelVariable("adjustedupperboundfieldid")));
+    		return generateAnomalyEvent(actualValue,adjustedUpperBound,parentID,mlContext.getMLVariable().get(0).getFieldID(),mlContext.getPredictionTime(),Long.parseLong(mlContext.getMLModelVariable("energyfieldid")),Long.parseLong(mlContext.getMLModelVariable("adjustedupperboundfieldid")),mlContext.getId());
     	}
     	else
     	{
-			generateClearEvent(parentID,mlContext.getMLVariable().get(0).getFieldID(),mlContext.getPredictionTime(),parentID);
+			generateClearEvent(parentID,mlContext.getMLVariable().get(0).getFieldID(),mlContext.getPredictionTime(),parentID,mlContext.getId());
     	}
     	return -1;
 	}
@@ -119,26 +119,26 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 
     	if(actualValue > adjustedUpperBound)
     	{
-    		generateRCAAnomalyEvent(actualValue,adjustedUpperBound,assetID,mlContext.getMLVariable().get(0).getFieldID(),mlContext.getPredictionTime(),parentAlarmID,Long.parseLong(mlContext.getMLModelVariable("energyfieldid")),Long.parseLong(mlContext.getMLModelVariable("adjustedupperboundfieldid")));
+    		generateRCAAnomalyEvent(actualValue,adjustedUpperBound,assetID,mlContext.getMLVariable().get(0).getFieldID(),mlContext.getPredictionTime(),parentAlarmID,Long.parseLong(mlContext.getMLModelVariable("energyfieldid")),Long.parseLong(mlContext.getMLModelVariable("adjustedupperboundfieldid")),mlContext.getId());
     		return true;
     	}
     	else
     	{
-    		generateClearEvent(assetID,mlContext.getMLVariable().get(0).getFieldID(),mlContext.getPredictionTime(),parentAlarmID);
+    		generateClearEvent(assetID,mlContext.getMLVariable().get(0).getFieldID(),mlContext.getPredictionTime(),parentAlarmID,mlContext.getId());
     	}
     	return false;
 	}
 	
-	private void generateClearEvent(long assetID,long fieldID,long ttime,long parentid) {
+	private void generateClearEvent(long assetID,long fieldID,long ttime,long parentid,long mlid) {
 		try 
 		{
 			if(NewAlarmAPI.getActiveAlarmOccurance("Anomaly_RCA_" + ResourceAPI.getResource(parentid).getId(),Type.RCA_ALARM) != null)
 			{
-				generateClearRCAEvent(assetID,fieldID,ttime,parentid);
+				generateClearRCAEvent(assetID,fieldID,ttime,parentid,mlid);
 			}
 			else 
 			{
-				generateClearMLAnomalyEvent(parentid,fieldID,ttime);
+				generateClearMLAnomalyEvent(parentid,fieldID,ttime,mlid);
 			}
 		} 
 		catch (Exception e) {
@@ -146,7 +146,7 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 		}
 	}
 	
-	private void generateClearMLAnomalyEvent(long assetID,long fieldID,long ttime)
+	private void generateClearMLAnomalyEvent(long assetID,long fieldID,long ttime,long mlid)
 	{
 		try
 		{
@@ -160,6 +160,7 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 		        event.setResource(ResourceAPI.getResource(assetID));
 		        event.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
 		        event.setReadingTime(ttime);
+		        event.setmlid(mlid);
 		        
 		        List<BaseEventContext> eventList = new ArrayList<BaseEventContext>();
 		        eventList.add(event);
@@ -176,7 +177,7 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 		}
 	}
 	
-	private void generateClearRCAEvent(long assetID,long fieldID,long ttime,long parentid)
+	private void generateClearRCAEvent(long assetID,long fieldID,long ttime,long parentid,long mlid)
 	{
 		try
 		{
@@ -191,6 +192,7 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 		        event.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
 		        event.setReadingTime(ttime);
 		        event.setparentid(alarmOccuranceContext.getAlarm().getId());
+		        event.setmlid(mlid);
 		        
 		        List<BaseEventContext> eventList = new ArrayList<BaseEventContext>();
 		        eventList.add(event);
@@ -207,7 +209,7 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 		}
 	}
 	
-	private long generateAnomalyEvent(double actualValue,double adjustedUpperBound,long assetID,long fieldID,long ttime,long energyDataFieldid,long upperAnomalyFieldid) throws Exception
+	private long generateAnomalyEvent(double actualValue,double adjustedUpperBound,long assetID,long fieldID,long ttime,long energyDataFieldid,long upperAnomalyFieldid,long mlid) throws Exception
 	{
 		AssetContext asset = AssetsAPI.getAssetInfo(assetID);
         String assetName = asset.getName();
@@ -224,12 +226,13 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
         event.setReadingTime(ttime);
         event.setEnergyDataFieldid(energyDataFieldid);
         event.setUpperAnomalyFieldid(upperAnomalyFieldid);
+        event.setmlid(mlid);
         
        return addEvent(event); 
 	
 	}
 	
-	private void generateRCAAnomalyEvent(double actualValue,double adjustedUpperBound,long assetID,long fieldID,long ttime,long parentid,long energyDataFieldid,long upperAnomalyFieldid) throws Exception
+	private void generateRCAAnomalyEvent(double actualValue,double adjustedUpperBound,long assetID,long fieldID,long ttime,long parentid,long energyDataFieldid,long upperAnomalyFieldid,long mlid) throws Exception
 	{   
 		LOGGER.info("Generating RCAAnomaly Event "+assetID);
 		String message = "Anomaly Detected. Actual Consumption :"+actualValue+", Expected Max Consumption :"+adjustedUpperBound;
@@ -244,6 +247,8 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
         event.setEnergyDataFieldid(energyDataFieldid);
         event.setUpperAnomalyFieldid(upperAnomalyFieldid);
         event.setparentid(parentid);
+        event.setmlid(mlid);
+        
         
         addEvent(event);
 	
