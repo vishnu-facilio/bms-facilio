@@ -41,6 +41,10 @@ public class MLAnomalyEvent extends BaseEventContext{
 		{
 			anomalyAlarm.setReadingTime(readingTime);
 		}
+		if(mlid!=-1)
+		{
+			anomalyAlarm.setmlid(mlid);
+		}
 		
 		return baseAlarm;
 	}
