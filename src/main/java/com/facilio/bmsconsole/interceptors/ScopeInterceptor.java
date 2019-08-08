@@ -135,13 +135,12 @@ public class ScopeInterceptor extends AbstractInterceptor {
 					}
 					AccountUtil.setTimeZone(timezoneVar);
 					
+					Parameter action = ActionContext.getContext().getParameters().get("permission"); 
+                    Parameter moduleName = ActionContext.getContext().getParameters().get("moduleName"); 
+                    if (action != null && action.getValue() != null && moduleName != null && moduleName.getValue() != null && !isAuthorizedAccess(moduleName.getValue(), action.getValue())) { 
+                        return "unauthorized"; 
+                    } 
 					
-					Parameter permission = ActionContext.getContext().getParameters().get("permission");
-					Parameter moduleName = ActionContext.getContext().getParameters().get("moduleName");
-					if (permission != null && permission.getValue() != null && moduleName != null && moduleName.getValue() != null && !isAuthorizedAccess(moduleName.getValue(), permission.getValue())) {
-						return "unauthorized";
-					}
-	
 					String lang = currentAccount.getUser().getLanguage();
 					Locale localeObj = null;
 					if (lang == null || lang.trim().isEmpty()) {
@@ -194,19 +193,18 @@ public class ScopeInterceptor extends AbstractInterceptor {
 		}
 	}
 
-			
-	private boolean isAuthorizedAccess(String moduleName, String permissions) throws Exception {
-		
-		if (permissions == null || "".equals(permissions.trim())) {
-			return true;
-		}
-
-		if(AccountUtil.getCurrentUser() == null) {
-		    return false;
-        }
-
-		return PermissionUtil.currentUserHasPermission(moduleName, permissions);
-	}
-	 
+	private boolean isAuthorizedAccess(String moduleName, String action) throws Exception { 
+        
+        if (action == null || "".equals(action.trim())) { 
+            return true; 
+        } 
+ 
+        if(AccountUtil.getCurrentUser() == null) { 
+            return false; 
+        } 
+ 
+        return PermissionUtil.currentUserHasPermission(moduleName, action); 
+    } 
+	
 	 
 }
