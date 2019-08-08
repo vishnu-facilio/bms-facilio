@@ -21,10 +21,14 @@ import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.util.*;
 
 public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTransactionCommand {
+
+	private static final Logger LOGGER = LogManager.getLogger(SaveAlarmAndEventsCommand.class.getName());
 
 	private Map<String, PointedList<AlarmOccurrenceContext>> alarmOccurrenceMap;
 
@@ -48,6 +52,7 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 					InsertRecordBuilder<BaseAlarmContext> builder = new InsertRecordBuilder<BaseAlarmContext>()
 							.moduleName(NewAlarmAPI.getAlarmModuleName(baseAlarm.getTypeEnum()))
 							.fields(modBean.getAllFields(NewAlarmAPI.getAlarmModuleName(baseAlarm.getTypeEnum())));
+					LOGGER.debug("Alarm Value: " + FieldUtil.getAsProperties(baseAlarm));
 					builder.insert(baseAlarm);
 				}
 			}
