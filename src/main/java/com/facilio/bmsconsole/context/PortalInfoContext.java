@@ -21,8 +21,8 @@ public class PortalInfoContext  {
 	private String whiteListed_domains;
 	private boolean saml_enabled = true;
 	//private String login_url = "http://orgdomainname."+PortalAuthInterceptor.portaldomain+"/idplogin";
-	private String logout_url = "http://orgdomainname."+DataSourceInterceptor.getPortalDomain() +"/idplogout";
-	private String password_url = "http://orgdomainname."+DataSourceInterceptor.getPortalDomain() +"/idppassword";
+	private String logout_url = "http://orgdomainname."+PortalAuthInterceptor.getPortalDomain() +"/idplogout";
+	private String password_url = "http://orgdomainname."+PortalAuthInterceptor.getPortalDomain() +"/idppassword";
 	private long publicKey = -1;
 	private File publicKeyFile;
 	private String algorithm  = null;
@@ -102,7 +102,7 @@ public class PortalInfoContext  {
 		this.saml_enabled = saml_enabled;
 	}
 	public String getLogin_url() {
-		String login_url = "https://"+AccountUtil.getCurrentOrg().getDomain()+"."+DataSourceInterceptor.getPortalDomain() +"/";
+		String login_url = "https://"+AccountUtil.getCurrentOrg().getDomain()+"."+PortalAuthInterceptor.getPortalDomain() +"/";
 		return login_url;
 	}
 	

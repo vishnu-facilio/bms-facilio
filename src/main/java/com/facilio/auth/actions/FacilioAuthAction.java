@@ -599,13 +599,10 @@ public class FacilioAuthAction extends FacilioAction {
 		} else {
 			User user;
 			HttpServletRequest request = ServletActionContext.getRequest();
-			String domainName = request.getServerName();
-			String[] domainArray = domainName.split("\\."); 
-			String subDomain = "";
-             if (domainArray.length > 2) { 
-               subDomain = domainArray[0]; 
-             }
-            
+			String portalDomain = "app";
+			if(request.getAttribute("portalDomain") != null) {
+				portalDomain = (String)request.getAttribute("portalDomain");
+			}
 			if (portalId() > 0) {
 				user = AccountUtil.getUserBean().getPortalUsers(getEmailaddress(), portalId());
 			} else if(AccountUtil.getCurrentOrg() != null){
@@ -613,7 +610,7 @@ public class FacilioAuthAction extends FacilioAction {
 			}
 			else
 			{
-				user = AccountUtil.getUserBean().getUser(getEmailaddress(), subDomain);
+				user = AccountUtil.getUserBean().getUser(getEmailaddress(), portalDomain);
 			}
 			if (user != null) {
 				AccountUtil.getUserBean().sendResetPasswordLinkv2(user);

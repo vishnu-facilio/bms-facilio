@@ -3,13 +3,15 @@ package com.facilio.bmsconsole.interceptors;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.http.HttpHeaders;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
 
 import com.facilio.accounts.dto.Account;
@@ -66,7 +68,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 				}
 			}
 			else if (!isRemoteScreenMode(request)) {
-				IAMAccount iamAccount = AuthenticationUtil.validateToken(request, false);
+				IAMAccount iamAccount = AuthenticationUtil.validateToken(request, false, "app");
 				if (iamAccount != null) {
 					request.setAttribute("iamAccount", iamAccount);
 				}
@@ -80,12 +82,12 @@ public class AuthInterceptor extends AbstractInterceptor {
 			else {
 				boolean authStatus = handleRemoteScreenAuth(request);
 				if (!authStatus) {
-					LOGGER.log(Level.SEVERE, "you are not allowed to access this page from remote screen.");
+					LOGGER.log(Level.FATAL, "you are not allowed to access this page from remote screen.");
 					return Action.ERROR;
 				}
 			}
 		} catch (Exception e) {
-			LOGGER.log(Level.SEVERE, "error in auth interceptor", e);
+			LOGGER.log(Level.FATAL, "error in auth interceptor", e);
 			return Action.LOGIN;
 		}
 
@@ -141,8 +143,9 @@ public class AuthInterceptor extends AbstractInterceptor {
 				}
 			}
 		} catch (Exception e) {
-			LOGGER.log(Level.SEVERE, "Exception while check authentication from remote-screen.", e);
+			LOGGER.log(Level.FATAL, "Exception while check authentication from remote-screen.", e);
 		}
 		return false;
 	}
+	
 }

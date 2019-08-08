@@ -28,43 +28,34 @@ public class DataSourceInterceptor extends AbstractInterceptor {
 	@Override
 	public void init() {
 		super.init();
-		initHost();
 	}
 
 	@Override
 	public String intercept(ActionInvocation invocation) throws Exception {
 		HttpServletRequest request = ServletActionContext.getRequest();
 		IAMAccount iamAccount = (IAMAccount) request.getAttribute("iamAccount");
+		String portalDomain = "app";
+		if(request.getAttribute("portalDomain") != null) {
+			portalDomain = (String)request.getAttribute("portalDomain");
+		}
 		
 		//portal related changes
 		if(request.getAttribute("isPortal") != null && (boolean)request.getAttribute("isPortal")) {
-			String domainName = request.getServerName();
-			if(customdomains != null) { 
-                String orgdomain = (String)customdomains.get(domainName); 
-                if(orgdomain != null) { 
-                    domainName = orgdomain+"."+ portalDomain; 
-                } 
-                LOGGER.log(Level.ALL, "Found a valid domain for custom domain for "+ domainName); 
-            } 
-            if(domainName != null) { 
-                String[] domainArray = domainName.split("\\."); 
-                if (domainArray.length > 2) { 
-                    String subDomain = domainArray[0]; 
+			if(portalDomain != null) { 
                     String currentAccountSubDomain = ""; 
                     if (iamAccount != null && iamAccount.getOrg() != null) { 
                         currentAccountSubDomain = iamAccount.getOrg().getDomain(); 
                     } 
                     Organization org = null; 
-                    if (subDomain.equalsIgnoreCase(currentAccountSubDomain)) { 
+                    if (portalDomain.equalsIgnoreCase(currentAccountSubDomain)) { 
                         org = iamAccount.getOrg(); 
                     } else { 
-                        org = IAMOrgUtil.getOrg(subDomain); 
+                        org = IAMOrgUtil.getOrg(portalDomain); 
                     } 
                     if (iamAccount == null && org != null) { 
                     	iamAccount = new IAMAccount(org, null);
                     	request.setAttribute("iamAccount", iamAccount);
                     }
-               }
             }
 		} 
 		else {
@@ -83,32 +74,10 @@ public class DataSourceInterceptor extends AbstractInterceptor {
 				}
 				
 				iamAccount.setOrg(organization);
-				
 			}
 		}
 		return invocation.invoke();
 	}
 	
-	private static String portalDomain = null; 
-	 
-    public static void setPortalDomain(String portalDomainName) { 
-        portalDomain = portalDomainName; 
-    } 
- 
-    public static String getPortalDomain(){ 
-        return portalDomain; 
-    } 
- 
-    private void initHost() { 
-        try { 
-            ServletContext context = ServletActionContext.getServletContext(); 
-            if(customdomains == null && context != null) { 
-                customdomains = (HashMap) context.getAttribute("customdomains"); 
-            } 
-        } catch (Exception e) { 
-            LOGGER.debug(e.getMessage());
-        } 
- 
-    }
-
+	
 }
