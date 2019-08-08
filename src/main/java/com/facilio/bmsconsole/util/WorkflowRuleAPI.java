@@ -993,9 +993,9 @@ public class WorkflowRuleAPI {
 			long workflowStartTime = System.currentTimeMillis();
 			workflowRule.setTerminateExecution(false);
 			boolean result = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(workflowRule, module.getName(), record, changeSet, recordPlaceHolders, context);
-			LOGGER.info("Time take to execute workflow and actions: " + (System.currentTimeMillis() - workflowStartTime));
+			LOGGER.debug("Time take to execute workflow and actions: " + (System.currentTimeMillis() - workflowStartTime));
 
-			LOGGER.info("Result of rule : "+workflowRule.getId()+" for record : "+record+" is "+result);
+			LOGGER.debug("Result of rule : "+workflowRule.getId()+" for record : "+record+" is "+result);
 
 			if (AccountUtil.getCurrentOrg().getId() == 186 && workflowRule.getId() == 6448) {
 				LOGGER.info("Result of rule : "+workflowRule.getId()+" for record : "+record+" is "+result);
