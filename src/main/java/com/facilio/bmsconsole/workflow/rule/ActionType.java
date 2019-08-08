@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.accounts.dto.Account;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
@@ -84,7 +85,7 @@ public enum ActionType {
 	EMAIL_NOTIFICATION(1) {
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-				Object currentRecord) {
+								  Object currentRecord) {
 			// TODO Auto-generated method stub
 			if (obj != null) {
 				try {
@@ -107,7 +108,7 @@ public enum ActionType {
 	SMS_NOTIFICATION(2) {
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-				Object currentRecord) {
+								  Object currentRecord) {
 			// TODO Auto-generated method stub
 			if (obj != null && AwsUtil.isProduction()) {
 				try {
@@ -128,10 +129,10 @@ public enum ActionType {
 		}
 	},
 	BULK_EMAIL_NOTIFICATION(3) {
-		
+
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-				Object currentRecord) {
+								  Object currentRecord) {
 			// TODO Auto-generated method stub
 			if (obj != null) {
 				try {
@@ -150,11 +151,11 @@ public enum ActionType {
 							String to = (String) toEmail;
 							if (to != null && !to.isEmpty() && checkIfActiveUserFromEmail(to)) {
 								obj.put("to", to);
-								
+
 								if (AccountUtil.getCurrentOrg().getId() == 104) {
 									LOGGER.info("Gonna Email : "+obj.toJSONString());
 								}
-								
+
 								AwsUtil.sendEmail(obj);
 								emails.add(to);
 							}
@@ -173,7 +174,7 @@ public enum ActionType {
 
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-				Object currentRecord) {
+								  Object currentRecord) {
 			// TODO Auto-generated method stub
 			if (obj != null && AwsUtil.isProduction()) {
 				try {
@@ -210,7 +211,7 @@ public enum ActionType {
 
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-				Object currentRecord) {
+								  Object currentRecord) {
 			// TODO Auto-generated method stub
 			if (obj != null) {
 				try {
@@ -244,44 +245,75 @@ public enum ActionType {
 	ADD_ALARM(6) {
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-				Object currentRecord) {
-			// System.out.println(">>>>>>>>>>>>>>> jsonobject :
-			// "+obj.toJSONString());
-			if (obj != null) {
-				try {
-					if (obj.containsKey("subject")) {
-						String subject = (String) obj.get("subject");
-						obj.put("message", subject);
+								  Object currentRecord) {
+			try {
+				if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
+					ReadingEventContext event = ((ReadingRuleContext) currentRule).constructEvent(obj, (ReadingContext) currentRecord);
+
+					context.put(EventConstants.EventContextNames.EVENT_LIST, Collections.singletonList(event));
+					Boolean isHistorical = (Boolean) context.get(EventConstants.EventContextNames.IS_HISTORICAL_EVENT);
+					if (isHistorical == null) {
+						isHistorical = false;
 					}
 
-					if (currentRule instanceof ReadingRuleContext) {
-						switch (((ReadingRuleContext) currentRule).getReadingRuleTypeEnum()) {
-							case THRESHOLD_RULE:
-								AlarmAPI.addReadingAlarmProps(obj, (ReadingRuleContext) currentRule,(ReadingContext) currentRecord);
-								break;
-							case ML_RULE:
-								AlarmAPI.addMLAlarmProps(obj, (ReadingRuleContext) currentRule, context);
-								break;
+					if (!isHistorical) {
+						Chain addEvent = TransactionChainFactory.getV2AddEventChain();
+						addEvent.execute(context);
+					} else {
+						processNewAlarmMeta((ReadingRuleContext) currentRule, (ResourceContext) ((ReadingContext) currentRecord).getParent(), ((ReadingContext) currentRecord).getTtime(), event, context);
+					}
+				} else {
+					if (obj != null) {
+						if (obj.containsKey("subject")) {
+							String subject = (String) obj.get("subject");
+							obj.put("message", subject);
+						}
+
+						if (currentRule instanceof ReadingRuleContext) {
+							switch (((ReadingRuleContext) currentRule).getReadingRuleTypeEnum()) {
+								case THRESHOLD_RULE:
+									AlarmAPI.addReadingAlarmProps(obj, (ReadingRuleContext) currentRule, (ReadingContext) currentRecord);
+									break;
+								case ML_RULE:
+									AlarmAPI.addMLAlarmProps(obj, (ReadingRuleContext) currentRule, context);
+									break;
+							}
+						}
+
+						FacilioContext addEventContext = new FacilioContext();
+						addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, obj);
+						Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
+						getAddEventChain.execute(addEventContext);
+						EventContext event = ((List<EventContext>) addEventContext.get(EventConstants.EventContextNames.EVENT_LIST)).get(0);
+						if (currentRule instanceof ReadingRuleContext) {
+							processAlarmMeta((ReadingRuleContext) currentRule, (long) obj.get("resourceId"), (long) obj.get("timestamp"), event, context);
+						}
+						if (addEventContext.get(FacilioConstants.ContextNames.IS_ALARM_CREATED) != null) {
+							context.put(FacilioConstants.ContextNames.IS_ALARM_CREATED, addEventContext.get(FacilioConstants.ContextNames.IS_ALARM_CREATED));
 						}
 					}
-
-					FacilioContext addEventContext = new FacilioContext();
-					addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, obj);
-					Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
-					getAddEventChain.execute(addEventContext);
-					EventContext event = ((List<EventContext>) addEventContext.get(EventConstants.EventContextNames.EVENT_LIST)).get(0);
-					if (currentRule instanceof ReadingRuleContext) {
-						processAlarmMeta((ReadingRuleContext) currentRule, (long) obj.get("resourceId"), (long) obj.get("timestamp"), event, context);
-					}
-					if(addEventContext.get(FacilioConstants.ContextNames.IS_ALARM_CREATED) != null) {
-						context.put(FacilioConstants.ContextNames.IS_ALARM_CREATED, addEventContext.get(FacilioConstants.ContextNames.IS_ALARM_CREATED));
-					}
-				} catch (Exception e) {
-					LOGGER.error("Exception occurred ", e);
 				}
+			} catch (Exception e) {
+				LOGGER.error("Exception occurred ", e);
 			}
 		}
-		
+
+
+		//Assuming readings will come in ascending order of time and this is needed only for historical
+		private void processNewAlarmMeta (ReadingRuleContext rule, ResourceContext resource, long time, ReadingEventContext event, Context context) throws Exception {
+			Map<Long, ReadingRuleAlarmMeta> metaMap = (Map<Long, ReadingRuleAlarmMeta>) context.get(FacilioConstants.ContextNames.READING_RULE_ALARM_META);
+			ReadingRuleAlarmMeta alarmMeta = metaMap.get(resource.getId());
+			if (alarmMeta == null) {
+				metaMap.put(resource.getId(), addAlarmMeta(event.getAlarmOccurrence(), resource, rule));
+			} else if (alarmMeta.isClear()) {
+				alarmMeta.setClear(false);
+			}
+		}
+
+		private ReadingRuleAlarmMeta addAlarmMeta (AlarmOccurrenceContext alarmOccurence, ResourceContext resource, ReadingRuleContext rule) throws Exception {
+			return ReadingRuleAPI.constructNewAlarmMeta(-1, resource, rule, false);
+		}
+
 		//Assuming readings will come in ascending order of time
 		private void processAlarmMeta (ReadingRuleContext rule, long resourceId, long time, EventContext event, Context context) throws Exception {
 			if (event.getAlarmId() != -1) {
@@ -327,15 +359,15 @@ public enum ActionType {
 				return ReadingRuleAPI.addAlarmMeta(alarmId, resourceId, rule);
 			}
 		}
-		
-		
+
+
 	},
 	PUSH_NOTIFICATION(7) {
 
 		@SuppressWarnings("unchecked")
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-				Object currentRecord) {
+								  Object currentRecord) {
 			// TODO Auto-generated method stub
 			try {
 				if (obj != null && AwsUtil.isProduction()) {
@@ -351,7 +383,7 @@ public enum ActionType {
 									// content.put("to",
 									// "exA12zxrItk:APA91bFzIR6XWcacYh24RgnTwtsyBDGa5oCs5DVM9h3AyBRk7GoWPmlZ51RLv4DxPt2Dq2J4HDTRxW6_j-RfxwAVl9RT9uf9-d9SzQchMO5DHCbJs7fLauLIuwA5XueDuk7p5P7k9PfV");
 									obj.put("to", mobileInstanceSetting.getLeft());
-									
+
 									Map<String, String> headers = new HashMap<>();
 									headers.put("Content-Type", "application/json");
 									headers.put("Authorization", "key="+ (mobileInstanceSetting.getRight() ? AwsUtil.getPortalPushNotificationKey() : AwsUtil.getPushNotificationKey()));
@@ -416,26 +448,26 @@ public enum ActionType {
 	EXECUTE_PM(8) {
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-				Object currentRecord) {
+								  Object currentRecord) {
 			// TODO Auto-generated method stub
 			try {
 				executePM(currentRule, currentRecord, context);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				StringBuilder builder = new StringBuilder("Error occurred duting PM execution for Rule ")
-										.append(currentRule.getId());
-				
+						.append(currentRule.getId());
+
 				if (currentRecord instanceof ModuleBaseWithCustomFields) {
 					builder.append(" for record : ")
 							.append(((ModuleBaseWithCustomFields) currentRecord).getId());
-					
+
 				}
 				CommonCommandUtil.emailException("ExecutePMAction", builder.toString(), e);
 				LOGGER.error(builder.toString(), e);
 			}
 
 		}
-		
+
 		private void executePM(WorkflowRuleContext currentRule, Object currentRecord, Context context) throws Exception {
 			FacilioModule module = ModuleFactory.getPMTriggersModule();
 			GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
@@ -444,7 +476,7 @@ public enum ActionType {
 					.andCustomWhere("RULE_ID = ?", currentRule.getId());
 			List<Map<String, Object>> pmProps = selectRecordBuilder.get();
 			if (pmProps != null && !pmProps.isEmpty()) {
-				
+
 				PMTriggerContext trigger = FieldUtil.getAsBeanFromMap(pmProps.get(0), PMTriggerContext.class);
 				PreventiveMaintenance pm = PreventiveMaintenanceAPI.getActivePM(trigger.getPmId(), true);
 				if(pm != null) {
@@ -452,17 +484,17 @@ public enum ActionType {
 					pmContext.put(FacilioConstants.ContextNames.PM_CURRENT_TRIGGER, trigger);
 					pmContext.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, Instant.now().getEpochSecond());
 					pmContext.put(FacilioConstants.ContextNames.PM_RESET_TRIGGERS, true);
-					
+
 					if (currentRecord instanceof AlarmContext) {
 						fetchSeverities((AlarmContext) currentRecord);
 						pmContext.put(FacilioConstants.ContextNames.PM_UNCLOSED_WO_COMMENT, getNewAlarmCommentForUnClosedWO((AlarmContext) currentRecord));
 					}
-					
+
 					pmContext.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 					Chain executePm = TransactionChainFactory.getNewExecutePreventiveMaintenanceChain();
 					executePm.execute(pmContext);
 
-					
+
 					WorkOrderContext wo = (WorkOrderContext) pmContext.get(FacilioConstants.ContextNames.WORK_ORDER);
 					if (context != null) {
 						context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
@@ -473,7 +505,7 @@ public enum ActionType {
 				}
 			}
 		}
-		
+
 		@Override
 		public boolean isTemplateNeeded() {
 			return false;
@@ -483,7 +515,7 @@ public enum ActionType {
 
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-				Object currentRecord) {
+								  Object currentRecord) {
 			// TODO Auto-generated method stub
 			long assignedToUserId = -1, assignGroupId = -1;
 
@@ -533,7 +565,7 @@ public enum ActionType {
 	SLA_ACTION(10) {
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-				Object currentRecord) {
+								  Object currentRecord) {
 
 //			long duedate = -1;
 			WorkOrderContext workOrder = (WorkOrderContext) currentRecord;
@@ -552,7 +584,7 @@ public enum ActionType {
 				JSONObject slaPolicy = (JSONObject) iter.next();
 				long priorityId = Long.parseLong(slaPolicy.get("priority").toString());
 				if (priorityId == workorderpriority && slaPolicy.get("duration") != null) {
-						duration = Long.parseLong(slaPolicy.get("duration").toString()) * 1000;
+					duration = Long.parseLong(slaPolicy.get("duration").toString()) * 1000;
 				}
 
 			}
@@ -586,7 +618,7 @@ public enum ActionType {
 
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-				Object currentRecord) {
+								  Object currentRecord) {
 			// TODO Auto-generated method stub
 			try {
 				AlarmContext alarm = (AlarmContext) currentRecord;
@@ -598,14 +630,14 @@ public enum ActionType {
 
 					Chain addWorkOrder = TransactionChainFactory.getAddWoFromAlarmChain();
 					addWorkOrder.execute(woContext);
-					
+
 				} else {
 					fetchSeverities(alarm);
 					NoteContext note = new NoteContext();
 					note.setBody(getNewAlarmCommentForUnClosedWO(alarm));
 					note.setParentId(wo.getId());
 					note.setCreatedTime(alarm.getModifiedTime());
-					
+
 					FacilioContext noteContext = new FacilioContext();
 					noteContext.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TICKET_NOTES);
 					noteContext.put(FacilioConstants.ContextNames.TICKET_MODULE, FacilioConstants.ContextNames.WORK_ORDER);
@@ -613,7 +645,7 @@ public enum ActionType {
 
 					Chain addNote = TransactionChainFactory.getAddNotesChain();
 					addNote.execute(noteContext);
-					
+
 					AlarmAPI.updateWoIdInAlarm(wo.getId(), alarm.getId());
 				}
 			} catch (Exception e) {
@@ -627,7 +659,7 @@ public enum ActionType {
 
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-				Object currentRecord) throws Exception {
+								  Object currentRecord) throws Exception {
 			// TODO Auto-generated method stub
 			try {
 				WorkOrderContext wo = WorkOrderAPI.getWorkOrder(((AlarmContext) currentRecord).getId());
@@ -637,7 +669,7 @@ public enum ActionType {
 
 					WorkOrderContext workorder = new WorkOrderContext();
 					workorder.setStatus(TicketAPI.getStatus("Closed"));
-					
+
 					context.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 					context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(wo.getId()));
 
@@ -649,19 +681,19 @@ public enum ActionType {
 				LOGGER.error("Exception occurred during closing Workorder from Alarm", e);
 			}
 		}
-		
+
 		@Override
 		public boolean isTemplateNeeded() {
 			// TODO Auto-generated method stub
 			return false;
 		}
-		
+
 	},
 	FIELD_CHANGE(13) {
 
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-				Object currentRecord) throws Exception {
+								  Object currentRecord) throws Exception {
 			// TODO Auto-generated method stub
 			if (currentRule.getEvent() == null) {
 				currentRule.setEvent(WorkflowRuleAPI.getWorkflowEvent(currentRule.getEventId()));
@@ -704,26 +736,26 @@ public enum ActionType {
 					}
 				}
 			}
-			
+
 			UpdateRecordBuilder<ModuleBaseWithCustomFields> updateBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
-																				.fields(fields)
-																				.module(event.getModule())
-																				.andCondition(CriteriaAPI.getIdCondition(((ModuleBaseWithCustomFields) currentRecord).getId(), event.getModule()))
-																				;
+					.fields(fields)
+					.module(event.getModule())
+					.andCondition(CriteriaAPI.getIdCondition(((ModuleBaseWithCustomFields) currentRecord).getId(), event.getModule()))
+					;
 			updateBuilder.updateViaMap(obj);
-			
+
 		}
-		
+
 	},
 	CREATE_WORK_ORDER(14) {
 
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-				Object currentRecord) throws Exception {
+								  Object currentRecord) throws Exception {
 			// TODO Auto-generated method stub
-			
+
 			LOGGER.info("Action::Add Workorder::"+obj);
-			
+
 			WorkOrderContext wo = FieldUtil.getAsBeanFromJson(obj, WorkOrderContext.class);
 			wo.setSourceType(SourceType.WORKFLOW_RULE);
 			FacilioContext woContext = new FacilioContext();
@@ -732,9 +764,9 @@ public enum ActionType {
 
 			Chain addWorkOrder = TransactionChainFactory.getAddWorkOrderChain();
 			addWorkOrder.execute(woContext);
-			
+
 		}
-		
+
 	},
 	CLEAR_ALARM(15,false) {
 
@@ -778,18 +810,18 @@ public enum ActionType {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			WorkflowEventContext event = currentRule.getEvent();
 			FacilioModule module = event.getModule();
-			
+
 			if (AccountUtil.getCurrentOrg().getId() == 186) {
 				LOGGER.info("Template JSON in FOrmula Field Change : "+obj.toJSONString());
 			}
-			
+
 			boolean sameRecord = true;
 			String moduleName = (String) obj.get("moduleName");
 			if(StringUtils.isNotEmpty(moduleName)) {
 				module = modBean.getModule(moduleName);
 				sameRecord = false;
 			}
-			
+
 			long id = -1l;
 			Object parentId = obj.get("parentId");
 			if(parentId != null) {
@@ -799,17 +831,17 @@ public enum ActionType {
 			else {
 				id = ((ModuleBaseWithCustomFields) currentRecord).getId();
 			}
-			
+
 			List<FacilioField> fields = new ArrayList<>();
 			Map<String, Object> props = new HashMap<String, Object>();
-			
+
 			Map<String,Object> params = new HashMap<>();
 			Map<String,Object> currentRecordJson = null;
 			currentRecordJson = FieldUtil.getAsProperties(currentRecord);
 			params.put("record", currentRecordJson);
-			
+
 			WorkflowContext workflowContext = WorkflowUtil.getWorkflowContext((Long)obj.get("resultWorkflowId"));
-			
+
 			Map<String,Object> workflowResult = WorkflowUtil.getExpressionResultMap(workflowContext, params);
 			if (AccountUtil.getCurrentOrg().getId() == 186) {
 				LOGGER.info("Workflow result in field change action : "+workflowResult);
@@ -821,7 +853,7 @@ public enum ActionType {
 					fields.add(field);
 					Object val = workflowResult.get(field.getName());
 					props.put(field.getName(), val);
-					
+
 					if (sameRecord) {
 						if (field.isDefault()) {
 							BeanUtils.setProperty(currentRecord, field.getName(), val);
@@ -832,15 +864,15 @@ public enum ActionType {
 					}
 				}
 			}
-			
+
 			UpdateRecordBuilder<ModuleBaseWithCustomFields> updateBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
-																				.fields(fields)
-																				.module(module)
-																				.andCondition(CriteriaAPI.getIdCondition(id, module))
-																				;
+					.fields(fields)
+					.module(module)
+					.andCondition(CriteriaAPI.getIdCondition(id, module))
+					;
 			updateBuilder.updateViaMap(props);
 		}
-		
+
 	},
 	ALARM_IMPACT_ACTION(17) {
 
@@ -854,7 +886,7 @@ public enum ActionType {
 			WorkflowEventContext event = currentRule.getEvent();
 			List<FacilioField> fields = new ArrayList<>();
 			Map<String, Object> props = new HashMap<String, Object>();
-			
+
 			Map<String,Object> currentRecordJson = null;
 			long alarmId = -1l;
 			if(currentRecord instanceof ReadingAlarmContext) {
@@ -864,31 +896,31 @@ public enum ActionType {
 				}
 				alarmId = (Long) currentRecordJson.get("id");
 			}
-			
+
 			WorkflowContext workflowContext = WorkflowUtil.getWorkflowContext((Long)obj.get("resultWorkflowId"));
 			workflowContext.setLogNeeded(true);
 			Object val = WorkflowUtil.getWorkflowExpressionResult(workflowContext, currentRecordJson);
-			
+
 			JSONArray fieldsJsonArray = (JSONArray) obj.get("fields");
 			for (Object key : fieldsJsonArray) {
 				FacilioField field = modBean.getField((String) key, event.getModule().getName());
 				if (field != null) {
-					
+
 					fields.add(field);
-					
+
 					if(field.getName().equals(AlarmAPI.ALARM_COST_FIELD_NAME)) {
-						
+
 						Double currrentValue = null;
 						if(val != null) {
 							currrentValue = Double.parseDouble(val.toString());
 						}
-						
+
 						AlarmContext alarm = AlarmAPI.getAlarm(alarmId);
 						if(alarm != null) {
 							Object previousValue = alarm.getDatum(field.getName());
 							if(previousValue != null && currrentValue != null) {
 								Double previousValueDouble = Double.parseDouble(previousValue.toString());
-								
+
 								currrentValue = previousValueDouble+currrentValue;
 							}
 						}
@@ -905,15 +937,15 @@ public enum ActionType {
 					}
 				}
 			}
-			
+
 			UpdateRecordBuilder<ModuleBaseWithCustomFields> updateBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
-																				.fields(fields)
-																				.module(event.getModule())
-																				.andCondition(CriteriaAPI.getIdCondition(((ModuleBaseWithCustomFields) currentRecord).getId(), event.getModule()))
-																				;
+					.fields(fields)
+					.module(event.getModule())
+					.andCondition(CriteriaAPI.getIdCondition(((ModuleBaseWithCustomFields) currentRecord).getId(), event.getModule()))
+					;
 			updateBuilder.updateViaMap(props);
 		}
-		
+
 	},
 	CONTROL_ACTION (18) {
 		@Override
@@ -928,15 +960,15 @@ public enum ActionType {
 	CHANGE_STATE (19) {
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-				Object currentRecord) throws Exception {
+								  Object currentRecord) throws Exception {
 			ModuleBaseWithCustomFields moduleData = ((ModuleBaseWithCustomFields) currentRecord);
 			Object newState = obj.get("new_state");
 			long newStateId = newState != null ? Long.parseLong(newState.toString()) : -1;
-			
+
 			String moduleName = (String) obj.get("moduleName");
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
-			
+
 			FacilioStatus status = TicketAPI.getStatus(newStateId);
 			if (status == null) {
 				// Invalid status
@@ -952,57 +984,57 @@ public enum ActionType {
 	ML_JOB_ACTION (20) {
 
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception 
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception
 		{
 			FacilioTimer.scheduleOneTimeJob(FacilioUtil.parseLong(context.get("jobid")), "DefaultMLJob", System.currentTimeMillis(), "ml");
 		}
-				
+
 		@Override
-		public boolean isTemplateNeeded() 
+		public boolean isTemplateNeeded()
 		{
 			return false;
 		}
-		
+
 	},
 	WORKFLOW_ACTION (21) {
 
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception 
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception
 		{
-			
+
 			WorkflowContext workflowContext = WorkflowUtil.getWorkflowContext((Long)obj.get("resultWorkflowId"));
 			workflowContext.setLogNeeded(true);
-			
+
 			Map<String, Object> props = FieldUtil.getAsProperties(currentRecord);
-			
+
 			List<Object> currentRecordList = new ArrayList<>();
 			currentRecordList.add(props);
-			
+
 			context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflowContext);
 			context.put(WorkflowV2Util.WORKFLOW_PARAMS, currentRecordList);
-			
+
 			Chain chain = TransactionChainFactory.getExecuteWorkflowChain();
-			
+
 			chain.execute(context);
-			
+
 //			Map<String,Object> currentRecordMap = new HashMap<>();
 //			
 //			currentRecordMap.put("record", currentRecord);
 //			
 //			WorkflowUtil.getWorkflowExpressionResult(workflowContext, currentRecordMap);
 		}
-				
+
 		@Override
-		public boolean isTemplateNeeded() 
+		public boolean isTemplateNeeded()
 		{
 			return false;
 		}
-		
+
 	},
 	REPORT_DOWNTIME_ACTION (22) {
 		@Override
-		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception 
-	{
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception
+		{
 			if (currentRecord != null) {
 				if (currentRecord instanceof ReadingAlarmContext) {
 					ReadingAlarmContext alarm = (ReadingAlarmContext) currentRecord;
@@ -1048,23 +1080,23 @@ public enum ActionType {
 //				rule.setAlarmMetaMap(metaMap);
 //				metaMap.put(resource.getId(), addAlarmMeta(event.getAlarmOccurrence(), resource, rule, isHistorical));
 //			} else {
-				ReadingRuleAlarmMeta alarmMeta = metaMap.get(resource.getId());
-				if (alarmMeta == null) {
+			ReadingRuleAlarmMeta alarmMeta = metaMap.get(resource.getId());
+			if (alarmMeta == null) {
 //					metaMap.put(resource.getId(), addAlarmMeta(event.getAlarmOccurrence(), resource, rule, isHistorical));
-					metaMap.put(resource.getId(), addAlarmMeta(event.getAlarmOccurrence(), resource, rule));
-				} else if (alarmMeta.isClear()) {
-					alarmMeta.setClear(false);
+				metaMap.put(resource.getId(), addAlarmMeta(event.getAlarmOccurrence(), resource, rule));
+			} else if (alarmMeta.isClear()) {
+				alarmMeta.setClear(false);
 //					if (!isHistorical) {
 //						alarmMeta.setAlarmId(event.getAlarmOccurrence().getId());
 //						ReadingRuleAPI.markAlarmMetaAsNotClear(alarmMeta.getId(), event.getAlarmOccurrence().getId());
 //					}
-				}
+			}
 //			}
 		}
 
 		private ReadingRuleAlarmMeta addAlarmMeta (AlarmOccurrenceContext alarmOccurence, ResourceContext resource, ReadingRuleContext rule) throws Exception {
 //			if (isHistorical) {
-				return ReadingRuleAPI.constructNewAlarmMeta(-1, resource, rule, false);
+			return ReadingRuleAPI.constructNewAlarmMeta(-1, resource, rule, false);
 //			}
 //			else {
 //				return ReadingRuleAPI.addAlarmMeta(alarmOccurence.getId(), resource.getId(), rule);
@@ -1078,7 +1110,7 @@ public enum ActionType {
 	private ActionType(int val) {
 		this.val = val;
 	}
-	
+
 	private ActionType(int val,boolean isTemplateNeeded) {
 		this.val = val;
 		this.isTemplateNeeded = isTemplateNeeded;
@@ -1093,7 +1125,7 @@ public enum ActionType {
 	}
 
 	abstract public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
-			Object currentRecord) throws Exception;
+									   Object currentRecord) throws Exception;
 
 	public static ActionType getActionType(int actionTypeVal) {
 		return TYPE_MAP.get(actionTypeVal);
@@ -1119,25 +1151,25 @@ public enum ActionType {
 		json.put("message", "hello world");
 		t.performAction(json, null, null, null);
 	}
-	
+
 	private static boolean checkIfActiveUserFromEmail(String email) throws Exception {
 		UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
 		User user = userBean.getUserFromEmail(email);
 		return user != null && user.getUserStatus();
 	}
-	
+
 	private static boolean checkIfActiveUserFromPhone(String phone) throws Exception {
 		UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
 		User user = userBean.getUserFromPhone(phone);
 		return user != null && user.getUserStatus();
 	}
-	
+
 	private static boolean checkIfActiveUserFromId(long ouid) throws Exception {
 		UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
 		User user = userBean.getUser(ouid);
 		return user != null && user.getUserStatus();
 	}
-	
+
 	private static JSONArray getTo(String to) {
 		if(to != null && !to.isEmpty()) {
 			JSONArray toList = new JSONArray();
@@ -1154,7 +1186,7 @@ public enum ActionType {
 		}
 		return null;
 	}
-	
+
 	private static WorkOrderContext getWorkOrder(AlarmContext alarm) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
@@ -1162,40 +1194,40 @@ public enum ActionType {
 		FacilioField woIdField = modBean.getField("woId", FacilioConstants.ContextNames.ALARM);
 		FacilioField statusField = modBean.getField("status", FacilioConstants.ContextNames.WORK_ORDER);
 		FacilioStatus closeStatus = TicketAPI.getStatus("Closed");
-		
-		
+
+
 		SelectRecordsBuilder<WorkOrderContext> woBuilder = new SelectRecordsBuilder<WorkOrderContext>()
-																.module(module)
-																.select(modBean.getAllFields(module.getName()))
-																.beanClass(WorkOrderContext.class)
-																.andCustomWhere(module.getTableName()+".ID IN (SELECT " + woIdField.getColumnName()  +" FROM Alarms WHERE ORGID = ? AND "+entityIdField.getCompleteColumnName()+" = ?)", AccountUtil.getCurrentOrg().getId(), alarm.getEntityId())
-																.andCondition(CriteriaAPI.getCondition(statusField, String.valueOf(closeStatus.getId()), PickListOperators.ISN_T));
-																;
-		
+				.module(module)
+				.select(modBean.getAllFields(module.getName()))
+				.beanClass(WorkOrderContext.class)
+				.andCustomWhere(module.getTableName()+".ID IN (SELECT " + woIdField.getColumnName()  +" FROM Alarms WHERE ORGID = ? AND "+entityIdField.getCompleteColumnName()+" = ?)", AccountUtil.getCurrentOrg().getId(), alarm.getEntityId())
+				.andCondition(CriteriaAPI.getCondition(statusField, String.valueOf(closeStatus.getId()), PickListOperators.ISN_T));
+		;
+
 		List<WorkOrderContext> wos = woBuilder.get();
 		if (wos != null && !wos.isEmpty()) {
 			return wos.get(0);
 		}
 		return null;
 	}
-	
+
 	private static void fetchSeverities(AlarmContext alarm) throws Exception {
 		List<Long> ids = new ArrayList<>();
-		
+
 		if (alarm.getPreviousSeverity() != null) {
 			ids.add(alarm.getPreviousSeverity().getId());
 		}
-		
+
 		ids.add(alarm.getSeverity().getId());
 		LOGGER.info("Severities : "+ids);
 		Map<Long, AlarmSeverityContext> severityMap = AlarmAPI.getAlarmSeverityMap(ids);
-		
+
 		if (alarm.getPreviousSeverity() != null) {
 			alarm.setPreviousSeverity(severityMap.get(alarm.getPreviousSeverity().getId()));
 		}
 		alarm.setSeverity(severityMap.get(alarm.getSeverity().getId()));
 	}
-	
+
 	private static String getNewAlarmCommentForUnClosedWO (AlarmContext alarm) {
 		if (alarm.getPreviousSeverity() == null) {
 			return "Alarm associated with this work order has been raised to "+alarm.getSeverity().getSeverity()+" at "+alarm.getModifiedTimeString();
