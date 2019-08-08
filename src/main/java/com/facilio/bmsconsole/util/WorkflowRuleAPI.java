@@ -1017,7 +1017,7 @@ public class WorkflowRuleAPI {
 			}
 			
 			LOGGER.debug("Time taken to execute rule : "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for module : "+module.getName()+" is "+(System.currentTimeMillis() - workflowStartTime));
-			if(!stopFurtherExecution) {
+			if(workflowRule.getRuleTypeEnum().isChildSupport() && !stopFurtherExecution) {
 				Criteria currentCriteria = new Criteria();
 				currentCriteria.addAndCondition(CriteriaAPI.getCondition(parentRuleField, String.valueOf(workflowRule.getId()), NumberOperators.EQUALS));
 				currentCriteria.addAndCondition(CriteriaAPI.getCondition(onSuccessField, String.valueOf(result), BooleanOperators.IS));

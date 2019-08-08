@@ -434,7 +434,7 @@ public class WorkflowRuleContext implements Serializable {
 	
 	private static final RuleType[] RULE_TYPES = RuleType.values();
 	public static enum RuleType {
-		READING_RULE,
+		READING_RULE(false, false, false, true), // reading
 		WORKORDER_AGENT_NOTIFICATION_RULE,
 		WORKORDER_REQUESTER_NOTIFICATION_RULE, //3
 		
@@ -456,7 +456,7 @@ public class WorkflowRuleContext implements Serializable {
 		
 		CHILD_APPROVAL_RULE(true),
 		PM_ALARM_RULE,
-		ALARM_TRIGGER_RULE(false,true,true), //18
+		ALARM_TRIGGER_RULE(false,true,true, true), //18
 		
 		ALARM_CLEAR_RULE(false,false,true),
 		WORKORDER_CUSTOM_CHANGE,
@@ -485,25 +485,27 @@ public class WorkflowRuleContext implements Serializable {
 		
 		
 		private boolean stopFurtherExecution = false, versionSupported = false,isChildType = false;
+		private boolean childSupport = false;
 		private RuleType() {
-			// TODO Auto-generated constructor stub
 		}
 		
 		private RuleType(boolean stopFurtherExecution) {
-			// TODO Auto-generated constructor stub
-			this.stopFurtherExecution = stopFurtherExecution;
+			this(stopFurtherExecution, false);
 		}
 		
 		private RuleType(boolean stopFurtherExecution, boolean versionSupported) {
-			// TODO Auto-generated constructor stub
-			this.stopFurtherExecution = stopFurtherExecution;
-			this.versionSupported = versionSupported;
+			this(stopFurtherExecution, versionSupported, false);
 		}
 		
 		private RuleType(boolean stopFurtherExecution, boolean versionSupported,boolean isChildType) {
+			this(stopFurtherExecution, versionSupported, isChildType, false);
+		}
+
+		RuleType(boolean stopFurtherExecution, boolean versionSupported,boolean isChildType, boolean childSupport) {
 			this.stopFurtherExecution = stopFurtherExecution;
 			this.versionSupported = versionSupported;
 			this.isChildType = isChildType;
+			this.childSupport = childSupport;
 		}
 		
 		public boolean isChildType() {
@@ -517,7 +519,10 @@ public class WorkflowRuleContext implements Serializable {
 		public int getIntVal() {
 			return ordinal()+1;
 		}
-		
+
+		public boolean isChildSupport() {
+			return childSupport;
+		}
 		public boolean stopFurtherRuleExecution() {
 			return stopFurtherExecution;
 		}
