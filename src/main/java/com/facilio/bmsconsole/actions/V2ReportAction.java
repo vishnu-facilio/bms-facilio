@@ -30,6 +30,7 @@ import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.MLAlarmContext;
+import com.facilio.bmsconsole.context.MLAnomalyAlarm;
 import com.facilio.bmsconsole.context.ReadingAlarm;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.RegressionContext;
@@ -945,8 +946,11 @@ public class V2ReportAction extends FacilioAction {
 				ruleId = ((ReadingAlarm)alarmOccurrence.getAlarm()).getRuleId();
 			}
 //			else if (alarm instanceof MLAlarmContext) {
-//				ruleId = ((MLAlarmContext)alarm).getRuleId();
-//			}
+//			ruleId = ((MLAlarmContext)alarm).getRuleId();
+//		}
+			else if ( alarmOccurrence.getAlarm() instanceof MLAnomalyAlarm) {
+				 MLAnomalyAlarm mlAnomalyAlarm = (MLAnomalyAlarm) alarmOccurrence.getAlarm();
+			}
 			if(ruleId > 0) {
 				ReadingRuleContext readingruleContext = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(ruleId);
 				readingRules.add(readingruleContext);
@@ -975,6 +979,11 @@ public class V2ReportAction extends FacilioAction {
 				baselineArray.add(baselineJson);
 				baseLines = baselineArray.toJSONString();
 			}
+			
+		} 
+		else if ( alarmOccurrence.getAlarm() instanceof MLAnomalyAlarm) {
+		   MLAnomalyAlarm mlAnomalyAlarm = (MLAnomalyAlarm) alarmOccurrence.getAlarm();
+		   dataPoints.addAll(getDataPointsJSONForMLAnomalyAlarm(mlAnomalyAlarm, resource));
 			
 		}
 		
@@ -1211,6 +1220,38 @@ public class V2ReportAction extends FacilioAction {
 			dataPoints.add(dataPoint);
 		}
 		return dataPoints;
+	}
+	private JSONArray getDataPointsJSONForMLAnomalyAlarm (MLAnomalyAlarm mlAlarm, ResourceContext resource) throws Exception  {
+		JSONArray dataPoints = new JSONArray();
+		JSONObject dataPoint = new JSONObject();
+		
+		dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
+		
+		JSONObject yAxisJson = new JSONObject();
+		yAxisJson.put("fieldId", mlAlarm.getEnergyDataFieldid());
+		yAxisJson.put("aggr", 0);
+		
+		dataPoint.put("yAxis", yAxisJson);
+		
+		dataPoint.put("type", 1);
+		dataPoints.add(dataPoint);
+		
+		dataPoint = new JSONObject();
+		
+		dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
+		
+		yAxisJson = new JSONObject();
+		yAxisJson.put("fieldId", mlAlarm.getUpperAnomalyFieldid());
+		yAxisJson.put("aggr", 0);
+		
+		dataPoint.put("yAxis", yAxisJson);
+		
+		dataPoint.put("type", 1);
+		
+		dataPoints.add(dataPoint);
+		
+		return dataPoints;
+
 	}
 	
 	private JSONArray getDataPointsJSONFromRule(ReadingRuleContext readingruleContext,ResourceContext resource,AlarmContext alarmContext) throws Exception {
