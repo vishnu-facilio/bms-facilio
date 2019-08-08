@@ -258,7 +258,7 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 	{
 		List<BaseEventContext> eventList = new ArrayList<BaseEventContext>();
         eventList.add(event);
-        
+        LOGGER.info(((MLAnomalyEvent) event).getmlid());
         FacilioContext context = new FacilioContext();
 		context.put(EventConstants.EventContextNames.EVENT_LIST,eventList);
 		Chain chain = TransactionChainFactory.getV2AddEventChain();
