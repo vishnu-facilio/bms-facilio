@@ -12,6 +12,8 @@ import com.facilio.accounts.dto.Permissions;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants.ModulePermission;
+import com.facilio.accounts.util.AccountConstants.Permission;
+import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -19,15 +21,25 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.BuildingOperator;
 import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 
 public class PermissionUtil {
 	private static final Logger log = LogManager.getLogger(PermissionUtil.class.getName());
+	
+	private static final List<String> SPECIAL_MODULES = new ArrayList<>();
+	
+	static {
+//		SPECIAL_MODULES.add("planned");
+//		SPECIAL_MODULES.add("setup");
+		// more to be added
+	}
 
     public static Criteria getCurrentUserScopeCriteria (String moduleName, FacilioField...fields) {
         return getUserScopeCriteria(AccountUtil.getCurrentUser(), moduleName, fields);
     }
-
+    
     private static Criteria getUserScopeCriteria(User user, String moduleName, FacilioField...fields) {
 		Criteria criteria = null;
         List<Long> accessibleSpace = user.getAccessibleSpace();
@@ -225,23 +237,36 @@ public class PermissionUtil {
 		}
 		return criteria;
 	}
+	
+	public static boolean isSpecialModule(String moduleName) {
+		return SPECIAL_MODULES.contains(moduleName);
+	}
 
-	public static boolean currentUserHasPermission(String moduleName, String permissionVal) {
+	public static boolean currentUserHasPermission(String moduleName, String action) throws Exception {
 		Role role = AccountUtil.getCurrentUser().getRole();
 
-		// TODO Have to check separately for delete org later. Admin cannot delete org
 		if(role.getName().equals(AccountConstants.DefaultSuperAdmin.SUPER_ADMIN) || role.getName().equals(AccountConstants.DefaultSuperAdmin.ADMINISTRATOR)) {
 			return true;
 		}
+		FacilioModule module = null;
+//		if(!isSpecialModule(moduleName)) {
+//			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+//			module = modBean.getModule(moduleName);
+//		}
 		for (Permissions permission : role.getPermissions()) {
-			if(permission.getModuleName().equals(moduleName)) {
-//				if(AccountConstants.DefaultRole.SUPER_ADMIN.equals(role.getName()) ) { //No idea why we are checking twice
-//					return hasPermission(permission, 0L);
-//				}
+			if(module != null) {
+				if(permission.getModuleId() == module.getModuleId()) {
+					try {
+						return hasPermission(permission, action);
+					} catch (Exception e) {
+						log.info("Exception occurred ", e);
+					}
+				}
+			}
+			else if(permission.getModuleName().equals(moduleName)) {
 				try {
-					return hasPermission(permission, permissionVal);
+					return hasPermission(permission, action);
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
 					log.info("Exception occurred ", e);
 				}
 			}
@@ -260,18 +285,18 @@ public class PermissionUtil {
 		return hasPermission(perm, permission.getModulePermission());
 	}
 
-	private static boolean hasPermission(Permissions perm, String permissionValue) throws Exception {
+	private static boolean hasPermission(Permissions perm, String actions) throws Exception {
 
 		boolean hasAccess = false;
-		String[] permissionArray = permissionValue.split(",");
+		String[] actionArray = actions.split(",");
 
-		for (String permission : permissionArray) {
+		for (String action : actionArray) {
 
-			permission = permission.trim();
+			action = action.trim();
 
 			AccountConstants.ModulePermission permType = null;
 			try {
-				permType = AccountConstants.ModulePermission.valueOf(permission);
+				permType = AccountConstants.ModulePermission.valueOf(action);
 			} catch (Exception e) {
 				e.getMessage();
 			}
@@ -279,7 +304,7 @@ public class PermissionUtil {
 				hasAccess = hasPermission(perm, permType);
 			}
 			else {
-				throw new Exception("Invalid permission type: "+permission);
+				throw new Exception("Invalid permission type: "+action);
 			}
 
 			if (hasAccess) {

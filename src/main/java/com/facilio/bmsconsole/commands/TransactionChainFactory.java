@@ -702,6 +702,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(new CreateOrgCommand());
 			c.addCommand(new AddDefaultModulesCommand());
+//			c.addCommand(new AddDefaultRoleAndPermissionCommand());
 			c.addCommand(new AddDefaultReportCommand());
 			c.addCommand(new AddDefaultUnitsCommand());
 			c.addCommand(new AddDefaultGraphicsCommand());

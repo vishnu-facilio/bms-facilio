@@ -182,9 +182,9 @@ public class AuthInterceptor extends AbstractInterceptor {
 					AccountUtil.setTimeZone(timezoneVar);
 					
 					
-					Parameter permission = ActionContext.getContext().getParameters().get("permission");
+					Parameter action = ActionContext.getContext().getParameters().get("permission");
 					Parameter moduleName = ActionContext.getContext().getParameters().get("moduleName");
-					if (permission != null && permission.getValue() != null && moduleName != null && moduleName.getValue() != null && !isAuthorizedAccess(moduleName.getValue(), permission.getValue())) {
+					if (action != null && action.getValue() != null && moduleName != null && moduleName.getValue() != null && !isAuthorizedAccess(moduleName.getValue(), action.getValue())) {
 						return "unauthorized";
 					}
 
@@ -246,9 +246,9 @@ public class AuthInterceptor extends AbstractInterceptor {
 		}
 	}
 
-	private boolean isAuthorizedAccess(String moduleName, String permissions) throws Exception {
+	private boolean isAuthorizedAccess(String moduleName, String action) throws Exception {
 		
-		if (permissions == null || "".equals(permissions.trim())) {
+		if (action == null || "".equals(action.trim())) {
 			return true;
 		}
 
@@ -256,7 +256,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 		    return false;
         }
 
-		return PermissionUtil.currentUserHasPermission(moduleName, permissions);
+		return PermissionUtil.currentUserHasPermission(moduleName, action);
 	}
 	
 	private boolean isRemoteScreenMode(HttpServletRequest request) {

@@ -1564,6 +1564,8 @@ public class AccountConstants {
 		moduleName.setModule(module);
 		fields.add(moduleName);
 		
+		fields.add(FieldFactory.getField("moduleId", "MODULE_ID", FieldType.LOOKUP));
+		
 		FacilioField permission = new FacilioField();
 		permission.setName("permission");
 		permission.setColumnName("PERMISSION");
