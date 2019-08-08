@@ -44,7 +44,7 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 			{
 				
 	            Set<Long> assetIDList = mlContext.getMlVariablesDataMap().keySet();
-	            String treeHierachy = mlContext.getMLModelVariable("TreeHeirarchy");
+	            String treeHierachy = mlContext.getMLModelVariable("TreeHierarchy");
 	            String[] assetList = treeHierachy.split(",");
 	            long parentID = Long.parseLong(assetList[0]);
 	            
