@@ -77,7 +77,7 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 				else {
 					new ParallalWorkflowExecution(AccountUtil.getCurrentAccount(), recordMap, changeSetMap, (FacilioContext) context).invoke();
 				}
-				LOGGER.debug("Time taken to Execute workflows for modules : "+recordMap.keySet()+" is "+(System.currentTimeMillis() - startTime));
+				LOGGER.debug("Time taken to Execute workflows for modules : "+recordMap.keySet()+" is "+(System.currentTimeMillis() - startTime) + " : " + getPrintDebug());
 			}
 		}
 		catch(Exception e) {
@@ -161,7 +161,7 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 						WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(workflowRules, module, record, changeSet, it, recordPlaceHolders, context,propagateError, activities);
 					}
 				}
-				LOGGER.debug("Time taken to execute workflow: " + (System.currentTimeMillis() - currentTime));
+				LOGGER.debug("Time taken to execute workflow: " + (System.currentTimeMillis() - currentTime) + " : " + getPrintDebug());
 			}
 		}
 	}
