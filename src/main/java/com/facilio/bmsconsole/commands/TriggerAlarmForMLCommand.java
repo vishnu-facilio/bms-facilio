@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
 
+import com.facilio.modules.FieldUtil;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
@@ -259,6 +260,7 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 		List<BaseEventContext> eventList = new ArrayList<BaseEventContext>();
         eventList.add(event);
         LOGGER.info("mlid: "+((MLAnomalyEvent) event).getmlid());
+        LOGGER.info("map: " + FieldUtil.getAsProperties(event));
         FacilioContext context = new FacilioContext();
 		context.put(EventConstants.EventContextNames.EVENT_LIST,eventList);
 		Chain chain = TransactionChainFactory.getV2AddEventChain();
