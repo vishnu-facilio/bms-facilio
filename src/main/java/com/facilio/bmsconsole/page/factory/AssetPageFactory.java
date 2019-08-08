@@ -119,14 +119,24 @@ public class AssetPageFactory extends PageFactory {
 		
 		Section tab7Sec1 = page.new Section();
 		tab7.addSection(tab7Sec1);
-		addMaintenanceCostWidget(tab7Sec1);
-		addPlannedMaintenanceCostWidget(tab7Sec1);
-		addUnplannedMaintenanceCostWidget(tab7Sec1);
+		addAssetCostDetailsWidget(tab7Sec1);
+		
+//		addMaintenanceCostWidget(tab7Sec1);
+//		addPlannedMaintenanceCostWidget(tab7Sec1);
+//		addUnplannedMaintenanceCostWidget(tab7Sec1);
 		
         fieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.WORK_ORDER));
 		Criteria maintenanceCostCriteria = new Criteria();
 		maintenanceCostCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), String.valueOf(asset.getId()), NumberOperators.EQUALS));
+		addCostBreakupWidget(tab7Sec1,maintenanceCostCriteria);
 		addMaintenanceCostTrendWidget(tab7Sec1, maintenanceCostCriteria);
+		
+		addDepreciationScheduleWidget(tab7Sec1);
+		
+		 fieldMap = FieldFactory.getAsMap(modBean.getAllFields(ContextNames.WORK_ORDER));
+			Criteria depreciationCostCriteria = new Criteria();
+			depreciationCostCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), String.valueOf(asset.getId()), NumberOperators.EQUALS));
+			addDepreciationCostTrendWidget(tab7Sec1, depreciationCostCriteria);
 		}
 		// if (AccountUtil.isFeatureEnabled(FeatureLicense.GRAPHICS)) {
 		if ((AccountUtil.getCurrentOrg().getOrgId() == 210 && asset.isConnected() ) || (AccountUtil.getCurrentOrg().getOrgId() == 75 && module.getName().equals("fahu"))) {
@@ -259,28 +269,40 @@ public class AssetPageFactory extends PageFactory {
 		}
 		
 	}
-	private static void addMaintenanceCostWidget(Section section) {
+	
+	private static void addAssetCostDetailsWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
-		cardWidget.addToLayoutParams(section, 24, 4);
-		cardWidget.addToWidgetParams("type", CardType.MAINTENACE_COST.getName());
+		cardWidget.addToLayoutParams(section, 24, 6);
+		cardWidget.addToWidgetParams("type", CardType.ASSET_COST_DETAILS.getName());
 		section.addWidget(cardWidget);
 	}
-	private static void addPlannedMaintenanceCostWidget(Section section) {
-		PageWidget cardWidget = new PageWidget(WidgetType.CARD, "plannedMaintenanceCost");
-		cardWidget.addToLayoutParams(section, 12, 9);
-		cardWidget.addToWidgetParams("type", CardType.PLANNED_MAINTENACE_COST.getName());
+	private static void addCostBreakupWidget(Section section, Criteria criteria) {
+		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
+		cardWidget.addToLayoutParams(section, 24, 14);
+		cardWidget.addToWidgetParams("type", CardType.COST_BREAKUP.getName());
+		addChartParams(cardWidget, "createdTime", "totalCost","plannedvsunplanned", criteria);
 		section.addWidget(cardWidget);
 	}
-	private static void addUnplannedMaintenanceCostWidget(Section section) {
-		PageWidget cardWidget = new PageWidget(WidgetType.CARD, "unplannedMaintenanceCost");
-		cardWidget.addToLayoutParams(section, 12, 9);
-		cardWidget.addToWidgetParams("type", CardType.UNPLANNED_MAINTENACE_COST.getName());
+	
+	private static void addDepreciationScheduleWidget(Section section) {
+		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
+		cardWidget.addToLayoutParams(section, 24, 8);
+		cardWidget.addToWidgetParams("type", CardType.DEPRECIATION_SCHEDULE.getName());
 		section.addWidget(cardWidget);
 	}
+	
 	private static void addMaintenanceCostTrendWidget(Section section, Criteria criteria) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART, "maintenanceCostTrend");
 		cardWidget.addToLayoutParams(section, 24, 14);
 		cardWidget.addToWidgetParams("type", CardType.MAINTENANCE_COST_TREND.getName());
+		addChartParams(cardWidget, "createdTime", "totalCost","plannedvsunplanned", criteria);
+		section.addWidget(cardWidget);
+	}
+	
+	private static void addDepreciationCostTrendWidget(Section section, Criteria criteria) {
+		PageWidget cardWidget = new PageWidget(WidgetType.CHART, "depreciationCostTrend");
+		cardWidget.addToLayoutParams(section, 24, 14);
+		cardWidget.addToWidgetParams("type", CardType.DEPRECIATION_COST_TREND.getName());
 		addChartParams(cardWidget, "createdTime", "totalCost","plannedvsunplanned", criteria);
 		section.addWidget(cardWidget);
 	}
