@@ -605,20 +605,35 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 
 	public static void addStateFlowTransitionChildren(StateflowTransitionContext rule) throws Exception {
 		FacilioForm form = rule.getForm();
-		if (form != null) {
+
+		if (form == null || CollectionUtils.isEmpty(form.getSections())) {
+			if (rule.getFormId() > 0) {
+				FormsAPI.deleteForms(Collections.singletonList(rule.getFormId()));
+			}
+		}
+		else {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			Context context = new FacilioContext();
-			if (StringUtils.isEmpty(form.getName())) {
-				form.setName("Enter Details");
-			}
-			form.setName(form.getName() + "_" + rule.getId());
-			context.put(FacilioConstants.ContextNames.FORM, form);
 
 			FacilioModule module = modBean.getModule(rule.getModuleId());
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
 
-			Chain chain = TransactionChainFactory.getAddFormCommand();
-			chain.execute(context);
+			if (form.getId() > 0) {
+				context.put(FacilioConstants.ContextNames.FORM, form);
+
+				Chain chain = TransactionChainFactory.getUpdateFormChain();
+				chain.execute(context);
+			}
+			else {
+				if (StringUtils.isEmpty(form.getName())) {
+					form.setName("Enter Details");
+				}
+				form.setName(form.getName() + "_" + rule.getId());
+				context.put(FacilioConstants.ContextNames.FORM, form);
+
+				Chain chain = TransactionChainFactory.getAddFormCommand();
+				chain.execute(context);
+			}
 
 			rule.setFormId(form.getId());
 		}
