@@ -213,6 +213,14 @@ public class ModuleFactory {
 		module.setTableName("Modules");
 		return module;
 	}
+	
+	public static FacilioModule getSubModulesRelModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("submodulesrel");
+		module.setDisplayName("Sub Modules Rel");
+		module.setTableName("SubModulesRel");
+		return module;
+	}
 
 	public static FacilioModule getFieldsModule() {
 		FacilioModule fieldModule = new FacilioModule();

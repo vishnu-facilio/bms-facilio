@@ -1358,6 +1358,10 @@
 			<param name="moduleName">asset</param>
 			<param name="permission">ADD_READING</param>
 		</action>
+		<action name="all" class="com.facilio.bmsconsole.actions.ReadingAction" method="v2getAllAssetReadings">
+			<param name="moduleName">setup</param>
+			<param name="permission">ASSET_SETTINGS</param>
+		</action>
 	</package>
 	<package name="dashboardApiv2" namespace="/api/v2/dashboard"
 		extends="v2Api">

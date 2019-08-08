@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import com.facilio.accounts.dto.User;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -25,6 +24,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.data.ServicePortalInfo;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
@@ -503,7 +503,8 @@ public class ModuleBeanImpl implements ModuleBean {
 		}
 	}
 	
-	private List<FacilioField> getFieldFromPropList(List<Map<String, Object>> props, Map<Long, FacilioModule> moduleMap) throws Exception {
+	@Override
+	public List<FacilioField> getFieldFromPropList(List<Map<String, Object>> props, Map<Long, FacilioModule> moduleMap) throws Exception {
 		
 		if(props != null && !props.isEmpty()) {
 			Map<FieldType, List<Long>> extendedIds = new HashMap<>();

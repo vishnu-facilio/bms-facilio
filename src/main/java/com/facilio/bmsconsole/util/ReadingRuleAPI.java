@@ -216,8 +216,14 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 	}
 	
 	public static List<ReadingRuleContext> getReadingRules(Criteria criteria) throws Exception {
-		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
-		fields.addAll(FieldFactory.getReadingRuleFields());
+		return getReadingRules(criteria, null);
+	}
+	
+	public static List<ReadingRuleContext> getReadingRules(Criteria criteria, List<FacilioField> fields) throws Exception {
+		if (fields == null) {
+			fields = FieldFactory.getWorkflowRuleFields();
+			fields.addAll(FieldFactory.getReadingRuleFields());
+		}
 		
 		FacilioModule workflowModule = ModuleFactory.getWorkflowRuleModule();
 		FacilioModule readingRuleModule = ModuleFactory.getReadingRuleModule();

@@ -607,7 +607,6 @@ public class FieldFactory {
 		fields.add(getField("tableName", "TABLE_NAME", module, FieldType.STRING));
 		fields.add(getField("type", "MODULE_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("trashEnabled", "IS_TRASH_ENABLED", module, FieldType.BOOLEAN));
-		fields.add(getField("name", "NAME", module, FieldType.STRING));
 		fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
 		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
 		fields.add(getField("createdBy", "CREATED_BY", module, FieldType.LOOKUP));

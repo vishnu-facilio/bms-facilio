@@ -134,6 +134,12 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain getAllAssetReadingsChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetAllAssetReadingsCommand());
+		return c;
+	}
+	
 	public static Chain fetchScheduledReportsChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(new ScheduledV2ReportListCommand());

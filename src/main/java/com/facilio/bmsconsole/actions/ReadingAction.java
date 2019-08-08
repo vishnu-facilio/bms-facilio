@@ -21,7 +21,6 @@ import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
-import com.facilio.bmsconsole.context.HistoricalLoggerContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
 import com.facilio.bmsconsole.context.PublishData;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -32,7 +31,6 @@ import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLoggerContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
-import com.facilio.bmsconsole.util.HistoricalLoggerUtil;
 import com.facilio.bmsconsole.util.IoTMessageAPI;
 import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
 import com.facilio.bmsconsole.util.ReadingsAPI;
@@ -695,6 +693,33 @@ public class ReadingAction extends FacilioAction {
 
 		return SUCCESS;
 	}
+	
+	public String v2getAllAssetReadings() throws Exception {
+		FacilioContext context = constructListContext();
+		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_IDS, parentCategoryIds);
+		
+		if (getSearch() != null) {
+			context.put(FacilioConstants.ContextNames.SEARCH, getSearch());
+		}
+		
+		if (StringUtils.isNotEmpty(getReadingType())) {
+			context.put(FacilioConstants.ContextNames.FILTER, getReadingType());
+		}
+
+		Chain getCategoryReadingChain = ReadOnlyChainFactory.getAllAssetReadingsChain();
+		getCategoryReadingChain.execute(context);
+		
+		if (isFetchCount()) {
+			setResult(ContextNames.COUNT, context.get(ContextNames.COUNT));
+		}
+		else {
+			setResult("readingFields", context.get(FacilioConstants.ContextNames.READING_FIELDS));
+			setResult("fieldVsRules", context.get(FacilioConstants.ContextNames.VALIDATION_RULES));
+		}
+		
+		return SUCCESS;
+	}
+	
 	
 	private List<Long> parentCategoryIds;
 	public List<Long> getParentCategoryIds() {

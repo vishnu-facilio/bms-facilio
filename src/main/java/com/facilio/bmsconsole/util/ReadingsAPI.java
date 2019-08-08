@@ -12,11 +12,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
@@ -24,6 +26,8 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agent.AgentUtil;
+import com.facilio.agent.FacilioAgent;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -774,12 +778,13 @@ public class ReadingsAPI {
 	}
 	
 	private static final  List<String> DEFAULT_READING_FIELDS = Collections.unmodifiableList(getDefaultReadingFieldNames());
-	private static final List<String> getDefaultReadingFieldNames() {
+	public static final List<String> getDefaultReadingFieldNames() {
 		List<String> fieldNames = new ArrayList<>();
 		List<FacilioField> fields = FieldFactory.getDefaultReadingFields(null);
 		for(FacilioField field : fields) {
 			fieldNames.add(field.getName());
 		}
+		fieldNames.add("sysCreatedTime");
 		return fieldNames;
 	}
 	
@@ -985,9 +990,22 @@ public class ReadingsAPI {
 		}
 		
 		Map<Long, ControllerContext> controllers = null;
+		Set<Long> agentIds = new HashSet<>();
 		if (controllerIds != null && !controllerIds.isEmpty()) {
 			controllers = ControllerAPI.getControllersMap(controllerIds);
+			for(Entry<Long, ControllerContext> entry: controllers.entrySet()){
+				ControllerContext controller = entry.getValue();
+				if (controller.getAgentId() > 0) {
+					agentIds.add(controller.getAgentId());
+				}
+			}
 		}
+		
+		Map<Long, FacilioAgent> agentsMap = null;
+		if (CollectionUtils.isNotEmpty(agentIds)) {
+			agentsMap = AgentUtil.getAgentsMap(agentIds);
+		}
+
 		
 		for (ReadingContext reading : readings) {
 			FacilioModule module = moduleMap != null ? moduleMap.get(reading.getModuleId()) : bean.getModule(reading.getModuleId());
@@ -1000,6 +1018,12 @@ public class ReadingsAPI {
 				ControllerContext controller = controllers.get(controllerId);
 				if (controller.getDataInterval() != -1) {
 					minuteInterval = controller.getDataInterval();
+				}
+				else if (controller.getAgentId() > 0) {
+					FacilioAgent agent = agentsMap.get(controller.getAgentId());
+					if (agent.getDataInterval() != null && agent.getDataInterval() > 0l) {
+						minuteInterval = agent.getDataInterval().intValue();
+					}
 				}
 			}
 			reading.setDatum("interval", minuteInterval);
