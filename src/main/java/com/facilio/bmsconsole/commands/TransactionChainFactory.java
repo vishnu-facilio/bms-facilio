@@ -807,6 +807,7 @@ public class TransactionChainFactory {
 		
 		public static Chain getBulkWorkOrderImportChain() {
 			Chain c = getDefaultChain();
+			c.addCommand(new ProcessWorkOrderImportCommand());
 			c.addCommand(getTempAddPreOpenedWorkOrderChain());
 			c.addCommand(getWorkOrderWorkflowsChain(false));
 			return c;

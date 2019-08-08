@@ -99,51 +99,9 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 		} 
 		else if(facilioModule.getName().equals(FacilioConstants.ContextNames.WORK_ORDER)) {
 			
-			BulkWorkOrderContext bulkWorkOrderContext = new BulkWorkOrderContext();
-			for(ReadingContext readingContext: readingsContext) {
-				Map<String, Object> temp = readingContext.getData();
-				WorkOrderContext tempWo = FieldUtil.getAsBeanFromMap(temp, WorkOrderContext.class);
-				if (tempWo.getSourceType() < 1) {
-					int contextSourceType = readingContext.getSourceType();
-					if (readingContext.getSourceType() > 0) {
-						tempWo.setSourceType(contextSourceType);
-					}
-					else {
-						tempWo.setSourceType(SourceType.WEB_ORDER);
-					}
-				}
-				if (tempWo.getDueDate() == 0) {
-					tempWo.setDueDate(-1);
-				}
-				tempWo.setApprovalRuleId(-1);
-				tempWo.setSiteId(readingContext.getSiteId());
-				bulkWorkOrderContext.addContexts(tempWo, null,null,null);
-			}
-			Integer Setting = importProcessContext.getImportSetting();
-			if(Setting == ImportProcessContext.ImportSetting.INSERT.getValue()) {
-				Integer totalSize = 0;
-				JSONObject meta = new JSONObject();	
-				List<String> keys = new ArrayList(groupedContext.keySet());
-				
-				for(int i=0; i<keys.size(); i++) {
-					totalSize =  totalSize + groupedContext.get(keys.get(i)).size();
-				}
-				if(!importProcessContext.getImportJobMetaJson().isEmpty()) {
-					meta = importProcessContext.getFieldMappingJSON();
-					meta.put("Inserted", totalSize + "");
-				}
-				else {
-					meta.put("Inserted", totalSize + "");
-				}
-				importProcessContext.setImportJobMeta(meta.toJSONString());
-				ImportAPI.updateImportProcess(importProcessContext);
-			}
-
-			context.put(FacilioConstants.ContextNames.BULK_WORK_ORDER_CONTEXT, bulkWorkOrderContext);
-			
+			context.put(ImportAPI.ImportProcessConstants.READINGS_CONTEXT_LIST, readingsContext);
 			
 			Chain c = TransactionChainFactory.getBulkWorkOrderImportChain();
-//			Chain c = TransactionChainFactory.getGenericImportChain();
 			c.execute(context);
 			
 			

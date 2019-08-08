@@ -721,6 +721,7 @@ public class ImportAPI {
 	public static class  ImportProcessConstants{
 		public static final String IMPORT_PROCESS_CONTEXT = "importprocessContext";
 		public static final String READINGS_LIST = "readingsList";
+		public static final String READINGS_CONTEXT_LIST = "readingsContextList";
 		public static final String FIELDS_MAPPING = "fieldMapping";
 		public static final String NO_CATEGORY_DEFINED = "&&none$$";
 		public static final String NAME_FIELD = "name";
