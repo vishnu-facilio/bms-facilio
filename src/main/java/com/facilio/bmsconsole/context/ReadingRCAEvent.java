@@ -27,6 +27,24 @@ public class ReadingRCAEvent extends BaseEventContext {
     }
 
     @Override
+    public BaseAlarmContext updateAlarmContext(BaseAlarmContext baseAlarm, boolean add) {
+        if (add && baseAlarm == null) {
+            baseAlarm = new ReadingRCAAlarm();
+        }
+        super.updateAlarmContext(baseAlarm, add);
+
+        ReadingRCAAlarm rcaAlarm = (ReadingRCAAlarm) baseAlarm;
+        if (ruleId != -1) {
+            rcaAlarm.setRuleId(ruleId);
+        }
+        if (subRuleId != -1) {
+            rcaAlarm.setSubRuleId(subRuleId);
+        }
+
+        return baseAlarm;
+    }
+
+    @Override
     public String constructMessageKey() {
         return "Reading_RCA_" + parentId;
     }
