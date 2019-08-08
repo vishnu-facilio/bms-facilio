@@ -281,7 +281,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 		}
 		
 		if(report.getReportTemplate() != null ) {
-			Criteria templateCriteria = report.getReportTemplate().getCriteria(report);
+			Criteria templateCriteria = report.getReportTemplate().getCriteria(report,dp);
 			if(templateCriteria != null) {
 				newSelectBuilder.andCriteria(templateCriteria);
 			}
