@@ -273,6 +273,10 @@ public class IAMUserUtil {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.DOMAIN_NAME", "domainName", domain, StringOperators.IS));
 			selectBuilder.andCondition(CriteriaAPI.getCondition("USER_VERIFIED", "userVerified", "1", NumberOperators.EQUALS));
 			
+			logger.info("Domain  " + domain);
+			logger.info("Email Address  " + emailAddress);
+			logger.info("PAssword  " + password);
+			
 			List<Map<String, Object>> props = selectBuilder.get();
 
 			if (CollectionUtils.isNotEmpty(props)) {
