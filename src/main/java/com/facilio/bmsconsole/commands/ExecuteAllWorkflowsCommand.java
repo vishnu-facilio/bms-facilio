@@ -102,7 +102,27 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 		}
 		return false;
 	}
-	
+
+	protected List<WorkflowRuleContext> getWorkflowRules(FacilioModule module, List<EventType> activities, List<? extends ModuleBaseWithCustomFields> records) throws Exception {
+		Criteria parentCriteria = getCriteria(records);
+
+		// don't take any record if criteria
+		if (parentCriteria == null) {
+			return null;
+		}
+		List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(module, activities, parentCriteria, ruleTypes);
+		return workflowRules;
+	}
+
+	protected Criteria getCriteria(List<? extends ModuleBaseWithCustomFields> value) {
+		Map<String, FacilioField> fields = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleFields());
+		FacilioField parentRule = fields.get("parentRuleId");
+
+		Criteria parentCriteria = new Criteria();
+		parentCriteria.addAndCondition(CriteriaAPI.getCondition(parentRule, CommonOperators.IS_EMPTY));
+		return parentCriteria;
+	}
+
 	private void fetchAndExecuteRules(Map<String, List> recordMap, Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap, FacilioContext context) throws Exception {
 		for (Map.Entry<String, List> entry : recordMap.entrySet()) {
 			String moduleName = entry.getKey();
@@ -127,12 +147,8 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioModule module = modBean.getModule(moduleName);
 				
-				Map<String, FacilioField> fields = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleFields());
-				FacilioField parentRule = fields.get("parentRuleId");
-				Criteria parentCriteria = new Criteria();
-				parentCriteria.addAndCondition(CriteriaAPI.getCondition(parentRule, CommonOperators.IS_EMPTY));
 				long currentTime = System.currentTimeMillis();
-				List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(module, activities, parentCriteria, ruleTypes);
+				List<WorkflowRuleContext> workflowRules = getWorkflowRules(module, activities, entry.getValue());
 				LOGGER.debug("Time taken to fetch workflow: " + (System.currentTimeMillis() - currentTime) + " : " + getPrintDebug());
 				currentTime = System.currentTimeMillis();
 				
