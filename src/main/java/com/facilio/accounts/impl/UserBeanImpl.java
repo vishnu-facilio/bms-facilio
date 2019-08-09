@@ -90,6 +90,7 @@ public class UserBeanImpl implements UserBean {
 					.table(AccountConstants.getAppUserModule().getTableName()).fields(fields);
 	
 			Map<String, Object> props = FieldUtil.getAsProperties(user);
+			log.fatal("User Object: " + user.getId() + "; props: " + props);
 	
 			insertBuilder.addRecord(props);
 			insertBuilder.save();
