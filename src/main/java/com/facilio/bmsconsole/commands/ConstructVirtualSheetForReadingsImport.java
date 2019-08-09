@@ -125,7 +125,7 @@ public class ConstructVirtualSheetForReadingsImport extends FacilioCommand{
 								isfilled = true;
 								}
 							} catch (Exception e) {
-								
+								LOGGER.severe("Exception Row Number --" + rowContext.getRowNumber() + "Field Mapping ---" + fieldMapping.get(key));
 								LOGGER.severe("exception ---" + e);
 								throw new ImportParseException(rowContext.getRowNumber(), fieldMapping.get(key).toString(), e);
 								}
