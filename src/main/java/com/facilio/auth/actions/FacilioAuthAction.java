@@ -294,7 +294,9 @@ public class FacilioAuthAction extends FacilioAction {
 				
 				String domainName = "app";
 				if (domainNameArray.length > 2) {
-					domainName = domainNameArray[0];
+					if(!domainNameArray[1].equals("facilio") ) {
+						domainName = domainNameArray[0];
+					}
 				}
 				
 				ipAddress = (ipAddress == null || "".equals(ipAddress.trim())) ? request.getRemoteAddr() : ipAddress;
