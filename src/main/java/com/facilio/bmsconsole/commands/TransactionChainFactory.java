@@ -809,7 +809,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(new ProcessWorkOrderImportCommand());
 			c.addCommand(getTempAddPreOpenedWorkOrderChain());
-			c.addCommand(getWorkOrderWorkflowsChain(false));
+//			c.addCommand(getWorkOrderWorkflowsChain(false));
 			return c;
 		}
 

@@ -301,6 +301,7 @@ public class ProcessImportCommand extends FacilioCommand {
 									} catch (Exception e) {
 										
 										e.printStackTrace();
+										LOGGER.severe("Process Import Exception -- Row No --" + row_no + " Fields Mapping --" + fieldMapping.get(key));
 										throw new ImportParseException(row_no, fieldMapping.get(key), e);
 									}
 							}	
@@ -324,6 +325,7 @@ public class ProcessImportCommand extends FacilioCommand {
 									try {
 										lookupPropsList = getLookupProps(lookupField,colVal, fieldMapping.get(key), importProcessContext);
 									}catch(Exception e) {
+										LOGGER.severe("Process Import Lookup Exception -- Row No --" + row_no + " Fields Mapping --" + fieldMapping.get(key));
 										if(colVal.get(key) == null) {
 											throw new ImportFieldValueMissingException(row_no, fieldMapping.get(key), e);
 										}
@@ -348,6 +350,7 @@ public class ProcessImportCommand extends FacilioCommand {
 										specialLookupList = getSpecialLookupProps(lookupField,colVal, importProcessContext);
 									}catch(Exception e) {
 										if(colVal.get(lookupField.getModule().getName() + "__" + fieldMapping.get(lookupField.getName())) == null) {
+											LOGGER.severe("Process Import Special Loookup Exception -- Row No --" + row_no + " Fields Mapping --" + fieldMapping.get(key));
 											throw new ImportFieldValueMissingException(row_no, lookupField.getModule().getName() + "__" + fieldMapping.get(lookupField.getName()), e);
 										}
 										else {

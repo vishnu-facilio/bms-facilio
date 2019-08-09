@@ -11,12 +11,9 @@ import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
-import com.facilio.bmsconsole.context.BulkWorkOrderContext;
 import com.facilio.bmsconsole.context.PurchasedItemContext;
 import com.facilio.bmsconsole.context.PurchasedToolContext;
 import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.context.TicketContext.SourceType;
-import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
