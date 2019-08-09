@@ -14,6 +14,7 @@ import java.util.Set;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
@@ -692,7 +693,7 @@ public class UserBeanImpl implements UserBean {
 		selectBuilder.andCriteria(criteria);
 			
 		List<Map<String, Object>> props = selectBuilder.get();
-		log.debug("Query: " + selectBuilder.toString() + "; props: " + props);
+		log.log(Level.FATAL, "Query: " + selectBuilder.toString() + "; props: " + props);
 		if (props != null && !props.isEmpty()) {
 			User user = createUserFromProps(props.get(0), true, true, false);
 			return user;
