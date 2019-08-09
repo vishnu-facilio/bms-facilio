@@ -62,7 +62,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			user.setDomainName("app");
 		}
 		
-		IAMUser existingUser = getFacilioUser(user.getEmail(), user.getCity());
+		IAMUser existingUser = getFacilioUser(user.getEmail(), user.getDomainName());
 		if(existingUser == null) {
 			List<FacilioField> fields = IAMAccountConstants.getAccountsUserFields();
 			fields.add(IAMAccountConstants.getUserPasswordField());
