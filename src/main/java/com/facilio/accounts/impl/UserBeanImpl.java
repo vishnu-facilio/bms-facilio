@@ -692,6 +692,7 @@ public class UserBeanImpl implements UserBean {
 		selectBuilder.andCriteria(criteria);
 			
 		List<Map<String, Object>> props = selectBuilder.get();
+		log.debug("Query: " + selectBuilder.toString() + "; props: " + props);
 		if (props != null && !props.isEmpty()) {
 			User user = createUserFromProps(props.get(0), true, true, false);
 			return user;
