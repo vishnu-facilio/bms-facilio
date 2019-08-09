@@ -29,6 +29,8 @@ public class EnergyAction extends FacilioAction {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	
 	public String addEnergyMeter() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
@@ -131,11 +133,11 @@ public class EnergyAction extends FacilioAction {
 
 	}
 	
-	public Integer getHierarchy(HistoricalLoggerContext historicalLogger, Integer hierarchy, 
-			Map<Long,HistoricalLoggerContext> childIdMap) throws Exception {
+	public Integer getHierarchy(HistoricalLoggerContext historicalLogger, Integer hierarchy, Map<Long,HistoricalLoggerContext> childIdMap) throws Exception {
 		
 		hierarchy++;
-		if(historicalLogger.getDependentId() == getParentId())
+		
+		if(historicalLogger.getDependentId().equals(getParentId()))
 		{
 			return hierarchy;
 		}
