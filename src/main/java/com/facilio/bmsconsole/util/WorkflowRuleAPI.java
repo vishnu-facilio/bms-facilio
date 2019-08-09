@@ -781,7 +781,8 @@ public class WorkflowRuleAPI {
 							break;
 						case STATE_RULE:
 							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
-							rule = StateFlowRulesAPI.constructStateRuleFromProps(prop, modBean);
+							rule = FieldUtil.getAsBeanFromMap(prop, StateflowTransitionContext.class);
+//							rule = StateFlowRulesAPI.constructStateRuleFromProps(prop, modBean);
 							break;
 						case STATE_FLOW:
 							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
@@ -821,6 +822,8 @@ public class WorkflowRuleAPI {
 				}
 				workflows.add(rule);
 			}
+
+			StateFlowRulesAPI.constructStateRule(workflows);
 			return workflows;
 		}
 		return null;
