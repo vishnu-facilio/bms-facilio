@@ -80,7 +80,7 @@ public class SendReportMailCommand extends FacilioCommand {
 		}
 		
 		if(fileFormat == FileFormat.PDF || fileFormat == FileFormat.IMAGE) {
-			String fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), String.valueOf(AccountUtil.getCurrentUser().getUid()),url, fileFormat);
+			String fileUrl = PdfUtil.exportUrlAsPdf(url, fileFormat);
 			files.put(fileName + fileFormat.getExtention(), fileUrl);
 			if (fileFormat == FileFormat.IMAGE) {
 				String fileUrl2 = ExportUtil.exportData(fileFormat, moduleName, table, true);

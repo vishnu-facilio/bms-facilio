@@ -674,7 +674,8 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		
 	}
 	
-	private IAMAccount getAccount(long userId, String orgDomain) throws Exception {
+	@Override
+	public IAMAccount getAccount(long userId, String orgDomain) throws Exception {
 		IAMUser user = getFacilioUserFromUserId(userId, orgDomain);
 		if (user == null) {
 			throw new AccountException(ErrorCode.USER_DOESNT_EXIST_IN_ORG, "IAMUser doesn't exists in the current Org");

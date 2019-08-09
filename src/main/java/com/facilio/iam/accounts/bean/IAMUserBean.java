@@ -76,5 +76,7 @@ public interface IAMUserBean {
 
 	public long signUpSuperAdminUserv2(long orgId, IAMUser user) throws Exception;
 
+	public IAMAccount getAccount(long userId, String orgDomain) throws Exception;
+
 	
 }

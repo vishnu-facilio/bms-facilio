@@ -40,7 +40,7 @@ public class PdfAction extends FacilioAction {
     }
 
     public String createPdf() throws Exception {
-        String fileName  = PdfUtil.convertUrlToPdfNew(AccountUtil.getCurrentOrg().getOrgId(), String.valueOf(AccountUtil.getCurrentUser().getUid()), getUrl(), FileFormat.PDF);
+        String fileName  = PdfUtil.convertUrlToPdfNew(AccountUtil.getCurrentOrg().getOrgId(), getUrl(), FileFormat.PDF);
         downloadStream = new FileInputStream(new File(fileName));
         setFilename(fileName);
         return SUCCESS;

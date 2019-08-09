@@ -6,6 +6,7 @@ import java.io.IOException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.executor.CommandExecutor;
 import com.facilio.fs.FileInfo.FileFormat;
@@ -54,7 +55,7 @@ public class PdfUtil {
         return pdfFileLocation;
     }
     
-    public static String convertUrlToPdfNew(Long orgId, String userName, String url, FileFormat... formats) {
+    public static String convertUrlToPdfNew(Long orgId, String url, FileFormat... formats) {
     	FileFormat format = FileFormat.PDF;
   		if (formats != null && formats.length > 0) {
   			format = formats[0];
@@ -68,7 +69,7 @@ public class PdfUtil {
           
           if(directoryExits) {
         	  try {
-        		  String token = IAMUserUtil.createJWT("id", "auth0", userName, System.currentTimeMillis()+60*60000);
+        		  String token = IAMUserUtil.createJWT("id", "auth0", String.valueOf(AccountUtil.getCurrentUser().getUid()), System.currentTimeMillis()+60*60000);
         		  File pdfFile = File.createTempFile("report-", format.getExtention(), pdfDirectory);
                   pdfFileLocation = pdfFile.getAbsolutePath();
                   String serverName = AwsUtil.getAppDomain();
@@ -88,16 +89,16 @@ public class PdfUtil {
           
     }
     
-    public static String exportUrlAsPdf(long orgId, String username, String url, FileFormat... formats){
-    		return exportUrlAsPdf(orgId, username, url, false, formats);
+    public static String exportUrlAsPdf(String url, FileFormat... formats){
+    		return exportUrlAsPdf(url, false, formats);
     }
     
-    public static String exportUrlAsPdf(long orgId, String username, String url, boolean isS3Url, FileFormat... formats){
+    public static String exportUrlAsPdf(String url, boolean isS3Url, FileFormat... formats){
         FileFormat format = FileFormat.PDF;
         if (formats != null && formats.length > 0) {
             format = formats[0];
         }
-        String pdfFileLocation = convertUrlToPdfNew(orgId, username, url, format);
+        String pdfFileLocation = convertUrlToPdfNew(AccountUtil.getCurrentOrg().getOrgId(), url, format);
         File pdfFile = new File(pdfFileLocation);
         if(pdfFileLocation != null) {
             FileStore fs = FileStoreFactory.getInstance().getFileStore();

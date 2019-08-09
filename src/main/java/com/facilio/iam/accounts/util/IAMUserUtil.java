@@ -193,17 +193,18 @@ public class IAMUserUtil {
 				}
 				IAMAccount account = null;
 				try {
-					Long.parseLong(uId);
-					account = IAMUtil.getUserBean().verifyUserSessionv2(uId, idToken, orgDomain);
+					long userId = Long.parseLong(uId);
+					if(overrideSessionCheck) {
+						account = IAMUtil.getUserBean().getAccount(userId, orgDomain);
+					}
+					else {
+						account = IAMUtil.getUserBean().verifyUserSessionv2(uId, idToken, orgDomain);
+					}
 				}
 				catch(NumberFormatException e) {
 					account = IAMUtil.getUserBean().verifyUserSessionUsingEmail(uId, idToken, portalDomain);
 				}
-				if (overrideSessionCheck || account != null) {
-					return account;
-				} else {
-					return null;
-				}
+				return account;
 			}
 			return null;
 		}

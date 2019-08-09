@@ -6108,7 +6108,7 @@ public class DashboardAction extends FacilioAction {
 				if(dateFilter != null && dateFilter.size() > 0) {
 					url += "?daterange=" + dateFilter.toJSONString();
 				}
-				fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), String.valueOf(AccountUtil.getCurrentUser().getUid()),url, fileFormat);
+				fileUrl = PdfUtil.exportUrlAsPdf(url, fileFormat);
 			}
 			else {
 				getData();
@@ -6126,7 +6126,7 @@ public class DashboardAction extends FacilioAction {
 		FileFormat fileFormat = FileFormat.getFileFormat(type);
 		if(fileFormat == FileFormat.PDF || fileFormat == FileFormat.IMAGE) {
 			String url = ReportsUtil.getAnalyticsClientUrl(analyticsConfig, fileFormat);
-			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), String.valueOf(AccountUtil.getCurrentUser().getUid()),url, fileFormat);
+			fileUrl = PdfUtil.exportUrlAsPdf(url, fileFormat);
 		}
 		else {
 			analyticsConfig.put("dateFilter", dateFilter);
