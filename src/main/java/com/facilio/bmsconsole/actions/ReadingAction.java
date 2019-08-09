@@ -1038,6 +1038,11 @@ public class ReadingAction extends FacilioAction {
 	}
 
 	public String runThroughRule() throws Exception {
+		
+		if(startTime >= endTime)
+		{
+			throw new Exception("Start time should be less than the Endtime");
+		}
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, id);
 		context.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
