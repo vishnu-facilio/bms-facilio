@@ -18,6 +18,7 @@ import org.apache.struts2.dispatcher.Parameter;
 
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.IAMAccount;
+import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
@@ -58,7 +59,17 @@ public class ScopeInterceptor extends AbstractInterceptor {
 				LOGGER.log(Level.FATAL, "orgid: " + iamAccount.getOrg().getOrgId() + " : " + iamAccount.getUser().getUid());
 				user = AccountUtil.getUserBean().getUser(iamAccount.getOrg().getOrgId(), iamAccount.getUser().getUid());
 				if (user == null) {
-					throw new AccountException(ErrorCode.USER_DOESNT_EXIST_IN_ORG, "User doesn't exists in org");
+					Organization org = AccountUtil.getUserBean().getDefaultOrg(iamAccount.getUser().getUid());
+					if(org != null) {
+						user = AccountUtil.getUserBean().getUser(org.getOrgId(), iamAccount.getUser().getUid());
+						if(user == null) {
+							throw new AccountException(ErrorCode.USER_DOESNT_EXIST_IN_ORG, "User doesn't exists in org");
+						}
+						iamAccount.setOrg(org);
+					}
+					else {
+						throw new AccountException(ErrorCode.USER_DOESNT_EXIST_IN_ORG, "User doesn't exists in org");
+					}
 				}
 			}
 			Account account = new Account(iamAccount.getOrg(), user);
