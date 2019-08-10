@@ -156,6 +156,11 @@ public class FetchReportAdditionalInfoCommand extends FacilioCommand {
 		}
 		
 		reportAggrData.put("alarms",  splitAlarmOccurrence(allAlarms, report.getDateRange(), alarmMap));
+		for(Long key : alarmMap.keySet()) {
+			AlarmOccurrenceContext alarmOccurrenceContext = alarmMap.get(key);
+			alarmOccurrenceContext.setCondition(alarmOccurrenceContext.getAlarm().getSubject());
+//			alarmOccurrenceContext.setEntity("");
+		}
 		reportAggrData.put("alarmInfo", alarmMap);
 	}
 	
@@ -395,7 +400,7 @@ public class FetchReportAdditionalInfoCommand extends FacilioCommand {
 						occurrenceMap.put(alarmOccurrence.getId(), alarmOccurrence);
 					}
 				}
-				json.put("occurrences", occurrenceIds);
+				json.put("alarm", occurrenceIds);		// changing name to 'alarm' to match previous alarm bar response for client 
 			}
 		}
 		
