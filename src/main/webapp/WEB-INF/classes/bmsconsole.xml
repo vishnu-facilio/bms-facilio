@@ -3517,7 +3517,12 @@
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboardTabContext.*</param>
 			</result>
-		</action>		
+		</action>
+		<action name="updateDashboardTabsList" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardTabsList">
+			<result name="success" type="json">
+				<param name="includeProperties">dashboardTabContexts,dashboardTabContexts\[\d+\],dashboardTabContexts\[\d+\].*</param>
+			</result>
+		</action>			
 		<action name="getDashboardFolder" class="com.facilio.bmsconsole.actions.DashboardAction" method="getDashboardFolder">
 			<result name="success" type="json">
 				<param name="includeProperties">dashboardFolders,dashboardFolders\[\d+\],dashboardFolders\[\d+\].*</param>

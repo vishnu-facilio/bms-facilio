@@ -6729,6 +6729,17 @@ public class DashboardAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String updateDashboardTabsList() throws Exception {
+			
+			FacilioContext context = new FacilioContext();
+			if(dashboardTabContexts != null) {
+				context.put(FacilioConstants.ContextNames.DASHBOARD_TABS_LIST, dashboardTabContexts);
+			}
+			Chain chain = TransactionChainFactory.getUpdateDashboardTabsListChain();
+			chain.execute(context);
+			return SUCCESS;
+		}
+	
 	public String updateDashboardWithWidgets() throws Exception {
 		
 		Long dashboardId = (Long) dashboardMeta.get("id");
@@ -6929,6 +6940,13 @@ public class DashboardAction extends FacilioAction {
 	}
 	public void setDashboardTabContext(DashboardTabContext dashboardTabContext) {
 		this.dashboardTabContext = dashboardTabContext;
+	}
+	List<DashboardTabContext> dashboardTabContexts;
+	public List<DashboardTabContext> getDashboardTabContexts() {
+		return dashboardTabContexts;
+	}
+	public void setDashboardTabContexts(List<DashboardTabContext> dashboardTabContexts) {
+		this.dashboardTabContexts = dashboardTabContexts;
 	}
 	public String viewDashboardTab() throws Exception {
 
