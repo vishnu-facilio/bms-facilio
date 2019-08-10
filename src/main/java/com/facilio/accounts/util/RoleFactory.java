@@ -46,7 +46,9 @@ public class RoleFactory {
 		
 		List<PermissionInterface> workOrderPermissions = new ArrayList<PermissionInterface>();
 		
-		workOrderPermissions.add(PermissionFactory.WorkOrder_Permission.READ_ANY);
+		workOrderPermissions.add(PermissionFactory.WorkOrder_Permission.READ);
+		workOrderPermissions.add(PermissionFactory.WorkOrder_Permission.ASSIGN);
+		workOrderPermissions.add(PermissionFactory.WorkOrder_Permission.CREATE);
 		
 		map.put(FacilioConstants.ContextNames.WORK_ORDER, workOrderPermissions);
 		
@@ -58,7 +60,8 @@ public class RoleFactory {
 		
 		List<PermissionInterface> workOrderPermissions = new ArrayList<PermissionInterface>();
 		
-		workOrderPermissions.add(PermissionFactory.WorkOrder_Permission.READ_ANY);
+		workOrderPermissions.add(PermissionFactory.WorkOrder_Permission.READ);
+		workOrderPermissions.add(PermissionFactory.WorkOrder_Permission.CREATE);
 		
 		map.put(FacilioConstants.ContextNames.WORK_ORDER, workOrderPermissions);
 		

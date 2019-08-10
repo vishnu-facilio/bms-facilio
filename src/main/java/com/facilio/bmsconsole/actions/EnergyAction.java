@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
@@ -15,7 +16,6 @@ import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.EnergyMeterPurposeContext;
 import com.facilio.bmsconsole.context.HistoricalLoggerContext;
 import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.HistoricalLoggerUtil;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
@@ -29,6 +29,8 @@ public class EnergyAction extends FacilioAction {
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	private static final Logger LOGGER = Logger.getLogger(EnergyAction.class.getName());
 	
 	
 	public String addEnergyMeter() throws Exception {
@@ -91,7 +93,7 @@ public class EnergyAction extends FacilioAction {
 	private Long parentId;
 
 	public Long getParentId() {
-	return parentId;
+		return parentId;
 	}
 
 	public void setParentId(Long parentId) {
