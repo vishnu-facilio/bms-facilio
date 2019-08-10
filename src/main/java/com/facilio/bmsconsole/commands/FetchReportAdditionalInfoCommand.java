@@ -23,6 +23,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
+import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
@@ -158,8 +159,9 @@ public class FetchReportAdditionalInfoCommand extends FacilioCommand {
 		reportAggrData.put("alarms",  splitAlarmOccurrence(allAlarms, report.getDateRange(), alarmMap));
 		for(Long key : alarmMap.keySet()) {
 			AlarmOccurrenceContext alarmOccurrenceContext = alarmMap.get(key);
+			BaseAlarmContext baseAlarm = NewAlarmAPI.getAlarm(alarmOccurrenceContext.getAlarm().getId());
+			alarmOccurrenceContext.setAlarm(baseAlarm);
 			alarmOccurrenceContext.setCondition(alarmOccurrenceContext.getAlarm().getSubject());
-//			alarmOccurrenceContext.setEntity("");
 		}
 		reportAggrData.put("alarmInfo", alarmMap);
 	}
