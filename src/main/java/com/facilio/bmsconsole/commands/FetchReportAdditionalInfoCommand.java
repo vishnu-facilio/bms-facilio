@@ -161,7 +161,7 @@ public class FetchReportAdditionalInfoCommand extends FacilioCommand {
 			AlarmOccurrenceContext alarmOccurrenceContext = alarmMap.get(key);
 			BaseAlarmContext baseAlarm = NewAlarmAPI.getAlarm(alarmOccurrenceContext.getAlarm().getId());
 			alarmOccurrenceContext.setAlarm(baseAlarm);
-			alarmOccurrenceContext.setCondition(alarmOccurrenceContext.getAlarm().getSubject());
+			alarmOccurrenceContext.setSubject(alarmOccurrenceContext.getAlarm().getSubject());
 		}
 		reportAggrData.put("alarmInfo", alarmMap);
 	}
