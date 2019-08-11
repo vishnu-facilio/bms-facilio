@@ -334,6 +334,10 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	@Override
 	public boolean disableUserv2(long orgId, long uId) throws Exception {
 		
+		IAMUser user = getFacilioUser(orgId, uId);
+		if(user.isDefaultOrg()) {
+			updateDefaultOrgForUser(user.getUid(), user.getOrgId());
+		}
 		FacilioField userStatus = new FacilioField();
 		userStatus.setName("userStatus");
 		userStatus.setDataType(FieldType.BOOLEAN);

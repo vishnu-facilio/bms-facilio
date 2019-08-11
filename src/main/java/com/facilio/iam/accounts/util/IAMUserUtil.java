@@ -357,4 +357,8 @@ public class IAMUserUtil {
 	public static void clearUserSessions(long uid, String email) throws Exception {
 		IAMUtil.getUserBean().clearAllUserSessionsv2(uid, email);
 	}
+	
+	public static boolean setDefaultOrg(long uid, long orgId) throws Exception {
+		return IAMUtil.getUserBean().setDefaultOrgv2(uid, orgId);
+	}
 }

@@ -40,8 +40,6 @@ public interface UserBean {
 	
 	public boolean enableUser(long ouid) throws Exception;
 	
-	public boolean setDefaultOrg(long uid, long orgId) throws Exception;
-	
 	public User getUser(long ouid) throws Exception;
 	
 	public User getUser(long orgId, long userId) throws Exception;
@@ -96,6 +94,8 @@ public interface UserBean {
 	public List<Map<String, Object>> getUserSessions(long uid, Boolean isActive) throws Exception;
 
 	public void createUserEntry(long orgId, User user, boolean isEmailVerificationNeeded) throws Exception;
+
+	public boolean setDefaultOrg(long orgId, long userId) throws Exception;
 
 	
 }

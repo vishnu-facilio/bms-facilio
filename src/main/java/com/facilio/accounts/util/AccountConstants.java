@@ -716,14 +716,14 @@ public class AccountConstants {
 		return uid;
 	}
 
-	public static FacilioField getUserPasswordField() {
-		FacilioField password = new FacilioField();
-		password.setName("password");
-		password.setDataType(FieldType.STRING);
-		password.setColumnName("PASSWORD");
-		password.setModule(getAppUserModule());
-		return password;
-	}
+//	public static FacilioField getUserPasswordField() {
+//		FacilioField password = new FacilioField();
+//		password.setName("password");
+//		password.setDataType(FieldType.STRING);
+//		password.setColumnName("PASSWORD");
+//		password.setModule(getAppUserModule());
+//		return password;
+//	}
 
 	public static List<FacilioField> getAppUserFields() {
 		FacilioModule module = getAppUserModule();
