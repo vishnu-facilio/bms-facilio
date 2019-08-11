@@ -29,6 +29,7 @@ import com.facilio.iam.accounts.bean.IAMUserBean;
 import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
 import com.facilio.iam.accounts.util.IAMAccountConstants;
+import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.chain.FacilioContext;
@@ -484,7 +485,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		if (props != null && !props.isEmpty()) {
 			List<Organization> orgs = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
-				orgs.add(FieldUtil.getAsBeanFromMap(prop, Organization.class));
+				orgs.add(createOrgFromProps(prop));
 			}
 			return orgs;
 		}
@@ -509,7 +510,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			return FieldUtil.getAsBeanFromMap(props.get(0), Organization.class);
+			return createOrgFromProps(props.get(0));
 		}
 		return null;
 	}
@@ -1059,6 +1060,16 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			return getAccount(email, portalDomain);
 		}
 		return null;
+	}
+	
+	private Organization createOrgFromProps(Map<String, Object> prop) throws Exception {
+		Organization org = FieldUtil.getAsBeanFromMap(prop, Organization.class);
+		if (org.getLogoId() > 0) {
+			FileStore fs = FileStoreFactory.getInstance().getFileStoreFromOrg(org.getId());
+			org.setLogoUrl(fs.getPrivateUrl(org.getLogoId(), false));
+			org.setOriginalUrl(fs.orginalFileUrl(org.getLogoId()));
+		}
+		return org;
 	}
 
 }
