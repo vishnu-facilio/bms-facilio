@@ -6,6 +6,14 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
 	
+	private String subject;					// for client,alarm bar handling
+	public String getSubject() {
+		return subject;
+	}
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
+	
 	private AlarmSeverityContext severity;
 	public AlarmSeverityContext getSeverity() {
 		return severity;

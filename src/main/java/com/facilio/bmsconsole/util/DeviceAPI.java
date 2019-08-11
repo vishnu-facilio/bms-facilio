@@ -541,14 +541,7 @@ public class DeviceAPI
 			return;
 		}		
 		for(Long parentmeterid : parentMeterIds)
-		{	
-			List<HistoricalLoggerContext> currentMeterLoggerContextList = HistoricalLoggerUtil.getInProgressHistoricalLogger(parentmeterid);
-			if(currentMeterLoggerContextList != null && !currentMeterLoggerContextList.isEmpty())
-			{
-				List<EnergyMeterContext> alreadyRunningVM = DeviceAPI.getVirtualMeters(Collections.singletonList(parentmeterid));
-				throw new Exception("Historical already In-Progress for Parent "+ alreadyRunningVM.get(0).getName()+ ". You cannot run historical for the Current Meter "+ currentMeter.getName());				
-			}
-					
+		{			
 			HistoricalLoggerContext historicalLoggerContext = gethistoricalLogger(parentmeterid, startTime, endTime, false,loggerGroupId);
 			if(!historicalLoggerMap.containsKey(parentmeterid)) {
 				HistoricalLoggerContext parentHistoricalLoggerContext = historicalLoggerMap.get(currentMeter.getId());

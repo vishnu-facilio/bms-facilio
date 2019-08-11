@@ -1757,6 +1757,11 @@ public class TransactionChainFactory {
 			c.addCommand(new AddDashboardTabCommand());
 			return c;
 		}
+	    public static Chain getUpdateDashboardTabsListChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateDashboardTabListCommand());
+			return c;
+		}
 	    public static Chain getUpdateDashboardChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new DuplicateDashboardForBuildingCommand());
