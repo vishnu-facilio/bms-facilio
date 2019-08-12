@@ -715,21 +715,6 @@ public class LoginAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	public String getOrgInfo() throws Exception {
-		setResult("orgInfo", CommonCommandUtil.getOrgInfo());
-		return SUCCESS;
-	}
-	
-	public String getServiceList() throws Exception {
-		setResult("serviceList", ReportsUtil.getPurposeMapping());
-		return SUCCESS;
-	}
-	
-	public String getAllShifts() throws Exception {
-		setResult("shifts",ShiftAPI.getAllShifts());
-		return SUCCESS;
-	}
-	
 	public String getAllMainEnergyMeters() throws Exception {
 		setResult("energyMeters", DeviceAPI.getAllMainEnergyMeters());
 		return SUCCESS;
