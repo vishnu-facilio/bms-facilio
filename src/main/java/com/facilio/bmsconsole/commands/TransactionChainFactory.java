@@ -1489,6 +1489,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(new CreateFormulaFieldDependenciesCommand());
 			c.addCommand(new GetCategoryModuleCommand());
+			c.addCommand(new SetFormulaReadingsTableNameCommand());
 			c.addCommand(getAddReadingsChain());
 			c.addCommand(new AddResourceReadingRelCommand());
 			c.addCommand(new AddCategoryReadingRelCommand());
