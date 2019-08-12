@@ -91,6 +91,12 @@ public class EventAPI {
 											;
 		for (JSONObject payload : payloads) {
 			EventContext event = EventAPI.processPayload(-1l, payload, orgId);
+			if(AccountUtil.getCurrentOrg().getId() == 78l) {
+				long alarmId = event.getAlarmId();
+				if(alarmId == 3450049 || alarmId == 3455814) {
+					LOGGER.error("EventPayload : "+event.getAlarmId() +" severity "+event.getSeverity());
+				}
+			}
 			events.add(event);
 			Map<String, Object> prop = FieldUtil.getAsProperties(event);
 			builder.addRecord(prop);
