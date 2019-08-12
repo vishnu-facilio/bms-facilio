@@ -46,7 +46,9 @@ public class PickListAction extends FacilioAction {
 		else {
 			Context context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
-			//System.out.println("Context is "+context);
+			if (getSearch() != null) {
+				context.put(FacilioConstants.ContextNames.SEARCH, getSearch());
+			}
 			//FacilioTransactionManager.INSTANCE.getTransactionManager().begin();
 			Chain pickListChain = FacilioChainFactory.getPickListChain();
 			pickListChain.execute(context);
@@ -55,6 +57,17 @@ public class PickListAction extends FacilioAction {
 		}
 		
 		return SUCCESS;
+	}
+	
+	
+	String search;
+
+	public void setSearch(String search) {
+		this.search = search;
+	}
+
+	public String getSearch() {
+		return this.search;
 	}
 	
 	private Map<Long, String> pickList;

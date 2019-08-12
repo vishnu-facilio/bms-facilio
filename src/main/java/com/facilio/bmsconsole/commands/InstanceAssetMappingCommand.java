@@ -72,7 +72,7 @@ public class InstanceAssetMappingCommand extends FacilioCommand implements PostT
 			if (modelledContexts == null) {
 				modelledContexts = new ArrayList<>();
 			}
-			unmodelledHistoricalContexts.add(context);
+			modelledContexts.add(context);
 		}
 	}
 	

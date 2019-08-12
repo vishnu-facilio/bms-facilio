@@ -3,9 +3,12 @@ package com.facilio.chain;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.transaction.Status;
+import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -130,25 +133,12 @@ public class FacilioChain extends ChainBase {
 			if (CollectionUtils.isNotEmpty(postTransactionChains)) {
 				FacilioChain root = rootChain.get();
 				if (this.equals(root)) {
-					try {
-						TransactionManager tm = FacilioTransactionManager.INSTANCE.getTransactionManager();
-						Transaction currenttrans = tm.getTransaction();
-						if (currenttrans == null) {
-							tm.begin();
-						}
-						for (PostTransactionCommand postTransactionCommand : postTransactionChains) {
-							postTransactionCommand.postExecute();
-						}
-
-						FacilioTransactionManager.INSTANCE.getTransactionManager().commit();
-					} catch (Throwable e) {
-						LOGGER.error("Exception occurred ", e);
-						FacilioTransactionManager.INSTANCE.getTransactionManager().rollback();
-					}
+					handlePostTransaction(true);
 					// clear rootChain to set transaction chain as root
 					rootChain.remove();
-				} else {
-					root.addPostTransaction(this.postTransactionChains);
+				}
+				else {
+					root.addPostTransaction(postTransactionChains);
 				}
 			}
 
@@ -161,12 +151,47 @@ public class FacilioChain extends ChainBase {
 					// LOGGER.info("rollback transaction for " + method.getName());
 				}
 			}
+
+			if (CollectionUtils.isNotEmpty(postTransactionChains)) {
+				FacilioChain root = rootChain.get();
+				if (this.equals(root)) {
+					handlePostTransaction(false);
+					// clear rootChain to set transaction chain as root
+					rootChain.remove();
+				}
+			}
 			throw e;
 		} finally {
 			FacilioChain root = rootChain.get();
 			if (this.equals(root)) {
 				rootChain.remove();
 			}
+		}
+	}
+
+	private void handlePostTransaction(boolean onSuccess) throws Exception {
+		try {
+			TransactionManager tm = FacilioTransactionManager.INSTANCE.getTransactionManager();
+			Transaction currenttrans = tm.getTransaction();
+			if (currenttrans == null) {
+				tm.begin();
+			}
+			if (onSuccess) {
+				onSuccess = FacilioTransactionManager.INSTANCE.getTransactionManager().getStatus() != Status.STATUS_MARKED_ROLLBACK;
+			}
+			for (PostTransactionCommand postTransactionCommand : postTransactionChains) {
+				if (onSuccess) {
+					postTransactionCommand.postExecute();
+				}
+				else {
+					postTransactionCommand.onError();
+				}
+			}
+
+			FacilioTransactionManager.INSTANCE.getTransactionManager().commit();
+		} catch (Throwable e) {
+			LOGGER.error("Exception occurred ", e);
+			FacilioTransactionManager.INSTANCE.getTransactionManager().rollback();
 		}
 	}
 

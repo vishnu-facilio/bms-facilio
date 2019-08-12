@@ -80,6 +80,8 @@ public class ReadingsAPI {
 	public static final SecondsChronoUnit DEFAULT_DATA_INTERVAL_UNIT = new SecondsChronoUnit(DEFAULT_DATA_INTERVAL * 60); 
 	private static final int BATCH_SIZE =2000;
 	
+	public static final String FORMULA_FIELD_TABLE_NAME = "Formula_Readings";	
+	
 	public static int getOrgDefaultDataIntervalInMin() throws Exception {
 		Map<String, String> orgInfo = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.DEFAULT_DATA_INTERVAL);
 		String defaultIntervalProp = orgInfo.get(FacilioConstants.OrgInfoKeys.DEFAULT_DATA_INTERVAL);
