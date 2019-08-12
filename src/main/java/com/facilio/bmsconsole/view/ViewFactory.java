@@ -3879,30 +3879,30 @@ public class ViewFactory {
 	private static FacilioView getReadingAlarmUnacknowledged() {
 		Criteria criteria = getReadingAlarmUnacknowledgedCriteria();
 
-		FacilioField modifiedTime = new FacilioField();
-		modifiedTime.setColumnName("lastOccurredTime");
-		modifiedTime.setName("lastOccurredTime");
-		modifiedTime.setDataType(FieldType.DATE_TIME);
-		modifiedTime.setModule(ModuleFactory.getBaseAlarmModule());
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("lastOccurredTime");	
+		createdTime.setDataType(FieldType.DATE_TIME);
+		createdTime.setColumnName("LAST_OCCURRED_TIME");
+		createdTime.setModule(ModuleFactory.getBaseAlarmModule());
 
 		FacilioView typeAlarms = new FacilioView();
 		typeAlarms.setName("unacknowledged");
 		typeAlarms.setDisplayName("Unacknowledged");
 		typeAlarms.setCriteria(criteria);
-		typeAlarms.setSortFields(Arrays.asList(new SortField(modifiedTime, false)));
+		typeAlarms.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 
 		return typeAlarms;
 	}
 	
 	public static Criteria getReadingAlarmUnacknowledgedCriteria() {
 		Condition falseCondition = new Condition();
-		falseCondition.setColumnName("BaseAlarm.ACKNOWLEDGED");
+		falseCondition.setColumnName("ACKNOWLEDGED");
 		falseCondition.setFieldName("acknowledged");
 		falseCondition.setOperator(BooleanOperators.IS);
 		falseCondition.setValue(String.valueOf(false));
 
 		Condition emptyCondition = new Condition();
-		emptyCondition.setColumnName("BaseAlarm.ACKNOWLEDGED");
+		emptyCondition.setColumnName("ACKNOWLEDGED");
 		emptyCondition.setFieldName("acknowledged");
 		emptyCondition.setOperator(CommonOperators.IS_EMPTY);
 
