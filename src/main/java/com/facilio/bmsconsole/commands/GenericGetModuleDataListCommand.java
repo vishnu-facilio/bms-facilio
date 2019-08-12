@@ -87,7 +87,8 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 		}
 		if (filterCriteria != null) {
 			builder.andCriteria(filterCriteria);
-		} else if (( filters == null || includeParentCriteria) && view != null && view.getCriteria() != null && !view.getCriteria().isEmpty()) {
+		} 
+		if (( filters == null || includeParentCriteria) && view != null && view.getCriteria() != null && !view.getCriteria().isEmpty()) {
 			builder.andCriteria(view.getCriteria());
 		}
 		
