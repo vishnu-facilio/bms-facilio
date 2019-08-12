@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
@@ -25,18 +26,20 @@ import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.AggregateOperator.CommonAggregateOperator;
 import com.facilio.modules.AggregateOperator.DateAggregateOperator;
 import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
 import com.facilio.pdf.PdfUtil;
 import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
 import com.facilio.report.context.ReportBaseLineContext;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.report.context.ReportDataPointContext.DataPointType;
+import com.facilio.report.context.ReportTemplateContext;
 import com.facilio.time.DateTimeUtil;
 
 public class GetExportReportFileCommand extends FacilioCommand {
 	
 	private static final String ALIAS = "alias";
-	
+	private static final Logger LOGGER = Logger.getLogger(GetExportReportFileCommand.class.getName());
 	private ReportContext report;
 	private ReportMode mode;
 	private Map<String, Object> dataMap = new HashMap<>();
@@ -89,11 +92,16 @@ public class GetExportReportFileCommand extends FacilioCommand {
 		}
 		else {
 			StringBuilder url = getClientUrl(report.getDataPoints().get(0).getxAxis().getModule().getName(), report.getId(), fileFormat);
+			ReportTemplateContext reportTemplate=report.getReportTemplate();
+			if(reportTemplate != null) {
+			url.append("&template=").append(FieldUtil.getAsJSON(reportTemplate));
+			}
 			String chartType = (String) context.get("chartType");
 			if (chartType != null) {
 				url.append("&charttype=").append(chartType);
 			}
 			
+			LOGGER.severe("pdf url --- "+ url);
 			fileUrl = PdfUtil.exportUrlAsPdf(url.toString(), isS3Url, fileFormat);
 		}
 		
