@@ -78,7 +78,7 @@ public class DeviceAPI
 			List<ControllerContext> controllers = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
 				controllers.add(FieldUtil.getAsBeanFromMap(prop, ControllerContext.class));
-			}
+			}		
 			return controllers;
 		}
 		return null;
@@ -543,18 +543,23 @@ public class DeviceAPI
 		for(Long parentmeterid : parentMeterIds)
 		{	
 					
-			HistoricalLoggerContext historicalLoggerContext = gethistoricalLogger(parentmeterid, startTime, endTime, false,loggerGroupId);
 			if(!historicalLoggerMap.containsKey(parentmeterid)) {
-				HistoricalLoggerContext parentHistoricalLoggerContext = historicalLoggerMap.get(currentMeter.getId());
-				
-				historicalLoggerContext.setDependentId(parentHistoricalLoggerContext.getId());
-				HistoricalLoggerUtil.addHistoricalLogger(historicalLoggerContext);
-				historicalLoggerMap.put(parentmeterid, historicalLoggerContext);
 				
 				List<EnergyMeterContext> vm = DeviceAPI.getVirtualMeters(Collections.singletonList(parentmeterid));
+				
 				if(vm != null && vm.size() > 0) {
+					
+					HistoricalLoggerContext historicalLoggerContext = gethistoricalLogger(parentmeterid, startTime, endTime, false,loggerGroupId);
+					
+					HistoricalLoggerContext parentHistoricalLoggerContext = historicalLoggerMap.get(currentMeter.getId());
+					
+					historicalLoggerContext.setDependentId(parentHistoricalLoggerContext.getId());
+					HistoricalLoggerUtil.addHistoricalLogger(historicalLoggerContext);
+					historicalLoggerMap.put(parentmeterid, historicalLoggerContext);
+					
 					checkParent (vm.get(0), startTime, endTime, loggerGroupId, historicalLoggerMap);
 				}
+				
 			}
 			
 		}
