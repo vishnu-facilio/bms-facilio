@@ -110,13 +110,15 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 		}
 		
 		Map<Type, List<BaseEventContext>>  eventsMap = new HashMap<>();
-		for (BaseEventContext baseEvent : eventList) {
-			List<BaseEventContext> list = eventsMap.get(baseEvent.getEventTypeEnum());
-			if (list == null) {
-				list = new ArrayList<>();
-				eventsMap.put(baseEvent.getEventTypeEnum(), list);
+		if (eventList != null ) {
+			for (BaseEventContext baseEvent : eventList) {
+				List<BaseEventContext> list = eventsMap.get(baseEvent.getEventTypeEnum());
+				if (list == null) {
+					list = new ArrayList<>();
+					eventsMap.put(baseEvent.getEventTypeEnum(), list);
+				}
+				list.add(baseEvent);
 			}
-			list.add(baseEvent);
 		}
 		if (MapUtils.isNotEmpty(eventsMap)) {
 			for (Type type : eventsMap.keySet()) {
