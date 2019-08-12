@@ -8,7 +8,11 @@ import java.util.Map;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.fw.BeanFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
@@ -23,6 +27,7 @@ public class GetPickListCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
+		String search = (String) context.get(FacilioConstants.ContextNames.SEARCH);
 		String dataTableName = (String) context.get(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME);
 		FacilioField defaultField = (FacilioField) context.get(FacilioConstants.ContextNames.DEFAULT_FIELD);
 		//Connection conn = FacilioConnectionPool.INSTANCE.getConnection();
@@ -36,6 +41,14 @@ public class GetPickListCommand extends FacilioCommand {
 																	.moduleName(moduleName)
 																	.select(fields)
 																	.orderBy("ID");
+				
+				
+				if (search != null) {
+					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+					FacilioField primaryField = modBean.getPrimaryField(moduleName);
+					builder.andCondition(CriteriaAPI.getCondition(primaryField, search, StringOperators.CONTAINS));
+
+				}
 				
 				List<Map<String, Object>> records = builder.getAsProps();
 				Map<Long, String> pickList = new HashMap<>();
