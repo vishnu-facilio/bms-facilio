@@ -18,6 +18,7 @@ import com.facilio.workflows.functions.FacilioSystemFunctionNameSpace;
 import com.facilio.workflows.functions.FacilioWorkflowFunctionInterface;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.contexts.WorkflowNamespaceContext;
+import com.facilio.workflowv2.util.UserFunctionAPI;
 import com.facilio.workflowv2.util.WorkflowV2Util;
 
 public class WorkflowAction extends FacilioAction {
@@ -35,6 +36,16 @@ public class WorkflowAction extends FacilioAction {
 	public int nameSpaceValue;
 	List<FacilioWorkflowFunctionInterface> functions;
 	
+	List<Long> ids;
+	
+	public List<Long> getIds() {
+		return ids;
+	}
+
+	public void setIds(List<Long> ids) {
+		this.ids = ids;
+	}
+
 	public List<Object> getParamList() {
 		return paramList;
 	}
@@ -146,7 +157,6 @@ public class WorkflowAction extends FacilioAction {
 
 	public String runWorkflow() throws Exception {
 		try {
-			
 			FacilioContext context = new FacilioContext();
 			context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
 			context.put(WorkflowV2Util.WORKFLOW_PARAMS, paramList);
@@ -257,6 +267,12 @@ public class WorkflowAction extends FacilioAction {
 		Chain getNameSpaceChain =  ReadOnlyChainFactory.getAllWorkflowNameSpaceChain(); 
 		getNameSpaceChain.execute(context);
 		setResult(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT_LIST, context.get(WorkflowV2Util.WORKFLOW_NAMESPACE_CONTEXT_LIST));
+		return SUCCESS;
+	}
+	
+	public String getFunctionMeta() throws Exception {
+		
+		setResult(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXTS, UserFunctionAPI.getWorkflowFunction(ids));
 		return SUCCESS;
 	}
 	
