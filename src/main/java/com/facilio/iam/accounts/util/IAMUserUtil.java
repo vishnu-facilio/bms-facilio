@@ -253,7 +253,7 @@ public class IAMUserUtil {
 	}
 
 	public static String generateAuthToken(String emailaddress, String password, String domain) throws Exception {
-		return validateLoginv2(emailaddress, password, null, null, null, domain, false);
+		return validateLoginv2(emailaddress, password, null, null, null, domain, true);
 	}
 
 	public static boolean verifyPasswordv2(String emailAddress, String domain, String password) throws Exception {
