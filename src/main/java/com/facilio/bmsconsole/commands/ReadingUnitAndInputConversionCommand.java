@@ -8,6 +8,7 @@ import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -71,6 +72,13 @@ public class ReadingUnitAndInputConversionCommand extends FacilioCommand {
 	}
 	
 	private void convertInputValue(ReadingDataMeta readingDataMeta, Map<Long,Map<String, Integer>> rdmValueMap, Map<String, Object> readingData, String fieldName) {
+		try {
+			if (AccountUtil.getCurrentOrg().getOrgId() == 238l && readingDataMeta != null && (readingDataMeta.getFieldId() == 782538 || readingDataMeta.getFieldId() == 766206)) {
+				LOGGER.info("rdmmap " + rdmValueMap + ", " +readingData + ", fieldname: " + fieldName);
+			}
+		}
+		catch (Exception e) {
+		}
 		if (rdmValueMap != null && rdmValueMap.get(readingDataMeta.getId()) != null && readingDataMeta.getInputTypeEnum() == ReadingInputType.CONTROLLER_MAPPED) {
 			Map<String, Integer> valueMap = rdmValueMap.get(readingDataMeta.getId());
 			Object value = readingData.get(fieldName);
