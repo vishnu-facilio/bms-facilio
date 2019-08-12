@@ -3,10 +3,12 @@ package com.facilio.chain;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.transaction.Status;
 import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -131,9 +133,13 @@ public class FacilioChain extends ChainBase {
 			if (CollectionUtils.isNotEmpty(postTransactionChains)) {
 				FacilioChain root = rootChain.get();
 				if (this.equals(root)) {
-					handlePostTransaction(true);
+					boolean shouldCommit = FacilioTransactionManager.INSTANCE.getTransactionManager().getStatus() != Status.STATUS_MARKED_ROLLBACK;
+					handlePostTransaction(shouldCommit);
 					// clear rootChain to set transaction chain as root
 					rootChain.remove();
+				}
+				else {
+					root.addPostTransaction(postTransactionChains);
 				}
 			}
 
