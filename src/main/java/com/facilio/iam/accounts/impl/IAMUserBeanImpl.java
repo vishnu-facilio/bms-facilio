@@ -485,7 +485,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		if (props != null && !props.isEmpty()) {
 			List<Organization> orgs = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
-				orgs.add(createOrgFromProps(prop));
+				orgs.add(IAMOrgUtil.createOrgFromProps(prop));
 			}
 			return orgs;
 		}
@@ -510,7 +510,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			return createOrgFromProps(props.get(0));
+			return IAMOrgUtil.createOrgFromProps(props.get(0));
 		}
 		return null;
 	}
@@ -1062,14 +1062,4 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return null;
 	}
 	
-	private Organization createOrgFromProps(Map<String, Object> prop) throws Exception {
-		Organization org = FieldUtil.getAsBeanFromMap(prop, Organization.class);
-		if (org.getLogoId() > 0) {
-			FileStore fs = FileStoreFactory.getInstance().getFileStoreFromOrg(org.getId());
-			org.setLogoUrl(fs.getPrivateUrl(org.getLogoId(), false));
-			org.setOriginalUrl(fs.orginalFileUrl(org.getLogoId()));
-		}
-		return org;
-	}
-
 }

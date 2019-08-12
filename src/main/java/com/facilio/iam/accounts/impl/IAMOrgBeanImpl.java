@@ -15,11 +15,10 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
 import com.facilio.iam.accounts.bean.IAMOrgBean;
 import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.iam.accounts.util.IAMAccountConstants;
+import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
@@ -85,7 +84,7 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			return createOrgFromProps(props.get(0));
+			return IAMOrgUtil.createOrgFromProps(props.get(0));
 		}
 		return null;
 	}
@@ -101,23 +100,12 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			return createOrgFromProps(props.get(0));
+			return IAMOrgUtil.createOrgFromProps(props.get(0));
 		}
 		return null;
 	}
 
-		
-	private Organization createOrgFromProps(Map<String, Object> prop) throws Exception {
-		Organization org = FieldUtil.getAsBeanFromMap(prop, Organization.class);
-		if (org.getLogoId() > 0) {
-			FileStore fs = FileStoreFactory.getInstance().getFileStoreFromOrg(org.getId());
-			org.setLogoUrl(fs.getPrivateUrl(org.getLogoId(), false));
-			org.setOriginalUrl(fs.orginalFileUrl(org.getLogoId()));
-		}
-		return org;
-	}
 	
-    
     @Override
 	public List<IAMUser> getAllOrgUsersv2(long orgId) throws Exception {
 		
