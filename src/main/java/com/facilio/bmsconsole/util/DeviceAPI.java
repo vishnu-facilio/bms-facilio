@@ -550,19 +550,11 @@ public class DeviceAPI
 				historicalLoggerContext.setDependentId(parentHistoricalLoggerContext.getId());
 				HistoricalLoggerUtil.addHistoricalLogger(historicalLoggerContext);
 				historicalLoggerMap.put(parentmeterid, historicalLoggerContext);
-				if(AccountUtil.getCurrentOrg().getOrgId() == 78)
-				{
-				LOGGER.error("parentmeterid ---"+parentmeterid);
-				LOGGER.error("currentmeter ---"+currentMeter);
-				LOGGER.error("histlogMap ---"+historicalLoggerMap);
-				}
-				List<EnergyMeterContext> vm = DeviceAPI.getVirtualMeters(Collections.singletonList(parentmeterid));
 				
-				if(AccountUtil.getCurrentOrg().getOrgId() == 78)
-				{
-				LOGGER.error("vmlist ---"+vm);
+				List<EnergyMeterContext> vm = DeviceAPI.getVirtualMeters(Collections.singletonList(parentmeterid));
+				if(vm != null && vm.size() > 0) {
+					checkParent (vm.get(0), startTime, endTime, loggerGroupId, historicalLoggerMap);
 				}
-				checkParent (vm.get(0), startTime, endTime, loggerGroupId, historicalLoggerMap);	
 			}
 			
 		}
