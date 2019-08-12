@@ -541,7 +541,8 @@ public class DeviceAPI
 			return;
 		}		
 		for(Long parentmeterid : parentMeterIds)
-		{			
+		{	
+					
 			HistoricalLoggerContext historicalLoggerContext = gethistoricalLogger(parentmeterid, startTime, endTime, false,loggerGroupId);
 			if(!historicalLoggerMap.containsKey(parentmeterid)) {
 				HistoricalLoggerContext parentHistoricalLoggerContext = historicalLoggerMap.get(currentMeter.getId());
@@ -549,8 +550,18 @@ public class DeviceAPI
 				historicalLoggerContext.setDependentId(parentHistoricalLoggerContext.getId());
 				HistoricalLoggerUtil.addHistoricalLogger(historicalLoggerContext);
 				historicalLoggerMap.put(parentmeterid, historicalLoggerContext);
-					
+				if(AccountUtil.getCurrentOrg().getOrgId() == 78)
+				{
+				LOGGER.error("parentmeterid ---"+parentmeterid);
+				LOGGER.error("currentmeter ---"+currentMeter);
+				LOGGER.error("histlogMap ---"+historicalLoggerMap);
+				}
 				List<EnergyMeterContext> vm = DeviceAPI.getVirtualMeters(Collections.singletonList(parentmeterid));
+				
+				if(AccountUtil.getCurrentOrg().getOrgId() == 78)
+				{
+				LOGGER.error("vmlist ---"+vm);
+				}
 				checkParent (vm.get(0), startTime, endTime, loggerGroupId, historicalLoggerMap);	
 			}
 			
