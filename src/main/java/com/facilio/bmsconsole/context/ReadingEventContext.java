@@ -1,15 +1,18 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.apache.struts2.json.annotations.JSON;
 
 public class ReadingEventContext extends BaseEventContext {
 	private static final long serialVersionUID = 1L;
 
 	@Override
 	public String constructMessageKey() {
-		if (getResource() != null) {
-			return ruleId + "_" + getResource().getId();	
+		if (getResource() != null && getRule() != null) {
+			return rule.getId() + "_" + getResource().getId();
 		}
 		return null;
 	}
@@ -22,32 +25,37 @@ public class ReadingEventContext extends BaseEventContext {
 		super.updateAlarmContext(baseAlarm, add);
 		ReadingAlarm readingAlarm = (ReadingAlarm) baseAlarm;
 
-		if (ruleId != -1) {
-			readingAlarm.setRuleId(ruleId);
-		}
-		if (subRuleId != -1) {
-			readingAlarm.setSubRuleId(subRuleId);
-		}
+		readingAlarm.setReadingAlarmCategory(readingAlarmCategory);
+		readingAlarm.setRule(rule);
+		readingAlarm.setSubRule(subRule);
 		if (readingFieldId != -1) {
 			readingAlarm.setReadingFieldId(readingFieldId);
 		}
 		return baseAlarm;
 	}
-	
-	private long ruleId = -1;
-	public long getRuleId() {
-		return ruleId;
+
+	private ReadingAlarmCategoryContext readingAlarmCategory;
+	public ReadingAlarmCategoryContext getReadingAlarmCategory() {
+		return readingAlarmCategory;
 	}
-	public void setRuleId(long ruleId) {
-		this.ruleId = ruleId;
+	public void setReadingAlarmCategory(ReadingAlarmCategoryContext readingAlarmCategory) {
+		this.readingAlarmCategory = readingAlarmCategory;
 	}
 
-	private long subRuleId = -1;
-	public long getSubRuleId() {
-		return subRuleId;
+	private ReadingRuleContext rule;
+	public ReadingRuleContext getRule() {
+		return rule;
 	}
-	public void setSubRuleId(long subRuleId) {
-		this.subRuleId = subRuleId;
+	public void setRule(ReadingRuleContext rule) {
+		this.rule = rule;
+	}
+
+	private ReadingRuleContext subRule;
+	public ReadingRuleContext getSubRule() {
+		return subRule;
+	}
+	public void setSubRule(ReadingRuleContext subRule) {
+		this.subRule = subRule;
 	}
 
 	private long readingFieldId = -1;
@@ -62,5 +70,25 @@ public class ReadingEventContext extends BaseEventContext {
 	@JsonSerialize
 	public Type getEventTypeEnum() {
 		return Type.READING_ALARM;
+	}
+
+	@JsonIgnore
+	@JSON(deserialize = false)
+	public void setRuleId(long ruleId) {
+		if (ruleId > 0) {
+			ReadingRuleContext ruleContext = new ReadingRuleContext();
+			ruleContext.setId(ruleId);
+			setRule(ruleContext);
+		}
+	}
+
+	@JsonIgnore
+	@JSON(deserialize = false)
+	public void setSubRuleId(long subRuleId) {
+		if (subRuleId > 0) {
+			ReadingRuleContext ruleContext = new ReadingRuleContext();
+			ruleContext.setId(subRuleId);
+			setSubRule(ruleContext);
+		}
 	}
 }

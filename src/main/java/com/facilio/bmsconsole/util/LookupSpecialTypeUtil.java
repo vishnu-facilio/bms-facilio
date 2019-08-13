@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.accounts.dto.Group;
@@ -326,6 +327,11 @@ public class LookupSpecialTypeUtil {
 			PMTriggerContext pmTriggerContext = new PMTriggerContext();
 			pmTriggerContext.setId(id);
 			return pmTriggerContext;
+		}
+		else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
+			ReadingRuleContext readingRuleContext = new ReadingRuleContext();
+			readingRuleContext.setId(id);
+			return readingRuleContext;
 		}
 		return null;
 	}

@@ -560,7 +560,9 @@ public class ColumnFactory {
 		columns.add(new ViewField("resource", "Asset"));
 		columns.add(new ViewField("lastOccurredTime", "Last Reported"));
 		columns.add(new ViewField("acknowledgedBy", "Acknowledged"));
-
+		columns.add(new ViewField("noOfOccurrences", "No Of Occurrences"));
+		columns.add(new ViewField("lastCreatedTime", "Last Created Time"));
+		columns.add(new ViewField("readingalarmcategory", "Alarm Category" ));
 		return columns;
 	}
 

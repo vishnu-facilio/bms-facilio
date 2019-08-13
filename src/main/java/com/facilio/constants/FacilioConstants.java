@@ -227,6 +227,7 @@ public class FacilioConstants {
 		public static final String NEW_READING_ALARM = "newreadingalarm";
 		public static final String READING_EVENT = "readingevent";
 		public static final String IS_ALARM_CREATED = "isalarmcreated";
+		public static final String READING_ALARM_CATEGORY = "readingalarmcategory";
 		
 		public static final String ML_ANOMALY_ALARM = "mlAnomalyAlarm";
 	
@@ -1293,6 +1294,7 @@ public class FacilioConstants {
 			classMap.put(BASE_ALARM, BaseAlarmContext.class);
 			classMap.put(NEW_READING_ALARM, ReadingAlarm.class);
 			classMap.put(READING_EVENT, ReadingEventContext.class);
+			classMap.put(READING_ALARM_CATEGORY, ReadingAlarmCategoryContext.class);
 			
 
 			return classMap;

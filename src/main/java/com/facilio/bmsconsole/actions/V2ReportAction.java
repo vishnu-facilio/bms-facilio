@@ -931,7 +931,7 @@ public class V2ReportAction extends FacilioAction {
 		List<ReadingRuleContext> readingRules = new ArrayList<>();
 		if(isWithPrerequsite) {							// new 1st
 			ReadingAlarm readingAlarmContext = (ReadingAlarm) alarmOccurrence.getAlarm();
-			AlarmRuleContext alarmRuleContext = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(readingAlarmContext.getRuleId()));
+			AlarmRuleContext alarmRuleContext = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(readingAlarmContext.getRule().getId()));
 			readingRules.add(alarmRuleContext.getAlarmTriggerRule());
 			readingRules.add(alarmRuleContext.getPreRequsite());
 		}
@@ -943,7 +943,7 @@ public class V2ReportAction extends FacilioAction {
 			long ruleId = -1;
 			
 			if(alarmOccurrence.getAlarm() instanceof ReadingAlarm) {
-				ruleId = ((ReadingAlarm)alarmOccurrence.getAlarm()).getRuleId();
+				ruleId = ((ReadingAlarm)alarmOccurrence.getAlarm()).getRule().getId();
 			}
 //			else if (alarm instanceof MLAlarmContext) {
 //			ruleId = ((MLAlarmContext)alarm).getRuleId();

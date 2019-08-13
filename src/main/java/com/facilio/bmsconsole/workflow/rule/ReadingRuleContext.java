@@ -868,8 +868,13 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 			event.setEventMessage(subject);
 		}
 		event.setReadingFieldId(this.getReadingFieldId());
-		event.setRuleId(this.getRuleGroupId());
-		event.setSubRuleId(this.getId());
+		ReadingRuleContext rule = new ReadingRuleContext();
+		rule.setId(this.getRuleGroupId());
+		event.setRule(rule);
+
+		ReadingRuleContext subRule = new ReadingRuleContext();
+		subRule.setId(this.getRuleGroupId());
+		event.setSubRule(subRule);
 		DateRange range = getRange(reading);
 		event.setDescription(getMessage(range, reading));
 		event.setResource((ResourceContext) reading.getParent());

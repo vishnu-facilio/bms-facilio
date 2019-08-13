@@ -169,9 +169,31 @@ public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 	
 	public void updateAlarm(BaseAlarmContext baseAlarm) {
 		baseAlarm.setSeverity(severity);
-		baseAlarm.setAcknowledged(getAcknowledged());
-		baseAlarm.setAcknowledgedBy(getAcknowledgedBy());
-		baseAlarm.setAcknowledgedTime(getAcknowledgedTime());
+		if (baseAlarm.isAcknowledged()) {
+			baseAlarm.setAcknowledged(isAcknowledged() ? false : isAcknowledged());
+		}
+		else {
+			baseAlarm.setAcknowledged(isAcknowledged());
+		}
+
+		if (baseAlarm.getAcknowledgedBy() != null && baseAlarm.getAcknowledgedBy().getId() > 0) {
+			User acknowledgedBy = getAcknowledgedBy();
+			if (acknowledgedBy == null) {
+				acknowledgedBy = new User();
+				acknowledgedBy.setId(-99);
+			}
+			baseAlarm.setAcknowledgedBy(acknowledgedBy);
+		}
+		else {
+			baseAlarm.setAcknowledgedBy(getAcknowledgedBy());
+		}
+
+		if (baseAlarm.getAcknowledgedTime() > 0) {
+			baseAlarm.setAcknowledgedTime(getAcknowledgedTime() < 0 ? -99 : getAcknowledgedTime());
+		}
+		else {
+			baseAlarm.setAcknowledgedTime(getAcknowledgedTime());
+		}
 		baseAlarm.setLastOccurrence(this);
 	}
 	
