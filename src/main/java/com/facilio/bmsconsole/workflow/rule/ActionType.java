@@ -33,6 +33,8 @@ import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.AlarmSeverityContext;
 import com.facilio.bmsconsole.context.AssetBDSourceDetailsContext;
+import com.facilio.bmsconsole.context.BaseAlarmContext;
+import com.facilio.bmsconsole.context.BaseEventContext;
 import com.facilio.bmsconsole.context.NoteContext;
 import com.facilio.bmsconsole.context.NotificationContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
@@ -53,12 +55,16 @@ import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ReadingRuleType;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.controlaction.context.ControlActionCommandContext;
+import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.events.commands.NewEventsToAlarmsConversionCommand.PointedList;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.fw.BeanFactory;
@@ -954,7 +960,29 @@ public enum ActionType {
 			long fieldId = FacilioUtil.parseLong(obj.get("metric"));
 			long resourceId = FacilioUtil.parseLong(obj.get("resource"));
 			String val = (String) obj.get("val");
-			TimeSeriesAPI.setControlValue(resourceId, fieldId, val);
+			if(AccountUtil.getCurrentOrg().getId() == 104l) {
+				TimeSeriesAPI.setControlValue(resourceId, fieldId, val);
+			}
+			else {
+				ResourceContext resourceContext = new ResourceContext();
+				resourceContext.setId(resourceId);
+				
+				ControlActionCommandContext controlActionCommand = new ControlActionCommandContext();
+				controlActionCommand.setResource(resourceContext);
+				controlActionCommand.setFieldId(fieldId);
+				controlActionCommand.setValue(val);
+				
+				context.put(ControlActionUtil.CONTROL_ACTION_COMMANDS, Collections.singletonList(controlActionCommand));
+				if(currentRule.getRuleTypeEnum() == RuleType.SCHEDULED_RULE) {
+					context.put(ControlActionUtil.CONTROL_ACTION_COMMAND_EXECUTED_FROM, ControlActionCommandContext.Control_Action_Execute_Mode.SCHEDULE);
+				}
+				else if(currentRule.getRuleTypeEnum() == RuleType.READING_ALARM_RULE) {
+					context.put(ControlActionUtil.CONTROL_ACTION_COMMAND_EXECUTED_FROM, ControlActionCommandContext.Control_Action_Execute_Mode.ALARM_CONDITION);
+				}
+				
+				Chain executeControlActionCommandChain = TransactionChainFactory.getExecuteControlActionCommandChain();
+				executeControlActionCommandChain.execute(context);
+			}
 		}
 	},
 	CHANGE_STATE (19) {

@@ -19,16 +19,40 @@ public class ReadingAlarmRuleContext extends WorkflowRuleContext {
 	public void setReadingRuleGroupId(long readingRuleGroupId) {
 		this.readingRuleGroupId = readingRuleGroupId;
 	}
+	long resourceId = -1;
 	
+	public long getResourceId() {
+		return resourceId;
+	}
+	public void setResourceId(long resourceId) {
+		this.resourceId = resourceId;
+	}
 	@Override
 	public boolean evaluateMisc(String moduleName, Object record, Map<String, Object> placeHolders,FacilioContext context) throws Exception {
 		// TODO Auto-generated method stub
 		if(record instanceof ReadingAlarmContext || record instanceof MLAlarmContext) {
 			
 			long ruleId = record instanceof ReadingAlarmContext ? ((ReadingAlarmContext) record).getRuleId() : ((MLAlarmContext) record).getRuleId();
+			
+			boolean ruleFlag = false,resourceFlag = true;
 			if(ruleId == getReadingRuleGroupId()) {
-				return true;
+				ruleFlag = true;
 			}
+			
+			if(resourceId > 0) {
+				resourceFlag = false;
+				try {
+					long resourceId = record instanceof ReadingAlarmContext ? ((ReadingAlarmContext) record).getResource().getId() : ((MLAlarmContext) record).getResource().getId();
+					if(resourceId == getResourceId()) {
+						resourceFlag = true;
+					}
+				}
+				catch(Exception e) {
+					
+				}
+			}
+			
+			return ruleFlag && resourceFlag;
 		}
 		
 		return false;

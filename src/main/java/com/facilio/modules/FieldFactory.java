@@ -1336,6 +1336,7 @@ public class FieldFactory {
 		fields.add(getIdField(module));
 //		fields.add(getOrgIdField(module));
 		fields.add(getField("readingRuleGroupId", "READING_RULE_GROUP_ID", module, FieldType.LOOKUP));
+		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.LOOKUP));
 
 		return fields;
 	}
