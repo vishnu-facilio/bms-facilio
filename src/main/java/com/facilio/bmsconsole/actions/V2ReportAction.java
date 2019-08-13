@@ -1470,6 +1470,9 @@ public class V2ReportAction extends FacilioAction {
 				
 				for(WorkflowExpression workflowExp:workflow.getExpressions()) {
 					
+					if(!(workflowExp instanceof ExpressionContext)) {
+						continue;
+					}
 					ExpressionContext exp = (ExpressionContext) workflowExp;
 					if(exp.getModuleName() != null) {
 						
