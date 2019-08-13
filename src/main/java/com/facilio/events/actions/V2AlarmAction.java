@@ -2,6 +2,8 @@ package com.facilio.events.actions;
 
 import java.util.List;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import org.apache.commons.chain.Chain;
 
 import com.facilio.bmsconsole.actions.FacilioAction;
@@ -126,6 +128,7 @@ public class V2AlarmAction extends FacilioAction {
 	
 	public String deleteAlarmOccurrence() throws Exception {
 		FacilioContext context = new FacilioContext();
+		CommonCommandUtil.addEventType(EventType.DELETE, context);
 		context.put(FacilioConstants.ContextNames.RECORD_ID, getId());
 		
 		Chain c = TransactionChainFactory.getDeleteAlarmOccurrenceChain();

@@ -61,7 +61,7 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 			for (Map.Entry<String, List<BaseEventContext>> entry : eventsMap.entrySet()) {
 				List<BaseEventContext> baseEvents = entry.getValue();
 				for (BaseEventContext baseEvent : baseEvents) {
-					processEventToAlarm(baseEvent);
+					processEventToAlarm(baseEvent, context);
 				}
 				PointedList<AlarmOccurrenceContext> pointedList = alarmOccurrenceMap.get(entry.getKey());
 				
@@ -72,7 +72,7 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 						BaseEventContext createdEvent = BaseEventContext.createNewEvent(alarm.getTypeEnum(), alarm.getResource(), AlarmAPI.getAlarmSeverity("Clear"), "Automated Clear Event", alarm.getKey(), alarmOccurrence.getCreatedTime());
 						baseEvents.add(createdEvent);
 						this.baseEvents.add(createdEvent);
-						processEventToAlarm(createdEvent);
+						processEventToAlarm(createdEvent, context);
 					}
 				}
 			}
@@ -88,19 +88,19 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 		
 	}
 
-	private void processEventToAlarm(BaseEventContext baseEvent) throws Exception {
+	private void processEventToAlarm(BaseEventContext baseEvent, Context context) throws Exception {
 		if (baseEvent.getEventStateEnum() != EventState.IGNORED) {
 			if(baseEvent.getSeverityString().equals(FacilioConstants.Alarm.INFO_SEVERITY)) {
 				baseEvent.setEventState(EventState.IGNORED);
 			}
 			else {
-				addOrUpdateAlarm(baseEvent);
+				addOrUpdateAlarm(baseEvent, context);
 			}
 			baseEvent.setInternalState(EventInternalState.COMPLETED);
 		}
 	}
 
-	private void addOrUpdateAlarm(BaseEventContext baseEvent) throws Exception {
+	private void addOrUpdateAlarm(BaseEventContext baseEvent, Context context) throws Exception {
 		PointedList<AlarmOccurrenceContext> pointedList = alarmOccurrenceMap.get(baseEvent.getMessageKey());
 		if (pointedList == null) {
 			pointedList = new PointedList<>();
@@ -111,7 +111,7 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 		boolean mostRecent = pointedList.isCurrentLast();
 		if (alarmOccurrence == null) {
 			// Only for newly creating alarm
-			alarmOccurrence = NewAlarmAPI.createAlarm(baseEvent);
+			alarmOccurrence = NewAlarmAPI.createAlarm(baseEvent, context);
 			pointedList.add(alarmOccurrence);
 			baseEvent.setEventState(EventState.ALARM_CREATED);
 		}
@@ -123,7 +123,7 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 			if (alarmOccurrence.getCreatedTime() < baseEvent.getCreatedTime()) {
 				oldObjectIndex ++;
 			}
-			alarmOccurrence = NewAlarmAPI.createAlarmOccurrence(alarmOccurrence.getAlarm(), baseEvent, mostRecent);
+			alarmOccurrence = NewAlarmAPI.createAlarmOccurrence(alarmOccurrence.getAlarm(), baseEvent, mostRecent, context);
 			if (mostRecent) {
 				pointedList.add(alarmOccurrence);
 				pointedList.moveNext();
@@ -137,12 +137,12 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 			// if alarm is not cleared, only update in local object.
 			if (baseEvent.getCreatedTime() < alarmOccurrence.getCreatedTime()) {
 				int oldObjectIndex = pointedList.indexOf(alarmOccurrence);
-				alarmOccurrence = NewAlarmAPI.createAlarmOccurrence(alarmOccurrence.getAlarm(), baseEvent, mostRecent);
+				alarmOccurrence = NewAlarmAPI.createAlarmOccurrence(alarmOccurrence.getAlarm(), baseEvent, mostRecent, context);
 				pointedList.add(oldObjectIndex, alarmOccurrence);
 				pointedList.setPosition(oldObjectIndex);
 			}
 			
-			NewAlarmAPI.updateAlarmOccurrence(alarmOccurrence, baseEvent, mostRecent);
+			NewAlarmAPI.updateAlarmOccurrence(alarmOccurrence, baseEvent, mostRecent, context);
 			baseEvent.setEventState(EventState.ALARM_UPDATED);
 		}
 		

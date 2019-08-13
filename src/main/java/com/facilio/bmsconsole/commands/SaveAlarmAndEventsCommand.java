@@ -1,14 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -129,6 +124,21 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 				builder.addRecords(eventsMap.get(type));
 				builder.save();
 			}
+		}
+
+		Collection<BaseAlarmContext> alarmList = alarmMap.values();
+		if (CollectionUtils.isNotEmpty(alarmList) && alarmList.size() == 1) {
+			Map<String, List<BaseAlarmContext>> alarmModuleMap = new HashMap<>();
+			for (BaseAlarmContext alarm : alarmList) {
+				String alarmModuleName = NewAlarmAPI.getAlarmModuleName(alarm.getTypeEnum());
+				List<BaseAlarmContext> baseAlarmContexts = alarmModuleMap.get(alarmModuleName);
+				if (baseAlarmContexts == null) {
+					baseAlarmContexts = new ArrayList<>();
+					alarmModuleMap.put(alarmModuleName, baseAlarmContexts);
+				}
+				baseAlarmContexts.add(alarm);
+			}
+			context.put(FacilioConstants.ContextNames.RECORD_MAP, alarmModuleMap);
 		}
 		return false;
 	}

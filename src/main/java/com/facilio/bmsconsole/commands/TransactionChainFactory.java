@@ -3497,6 +3497,7 @@ public class TransactionChainFactory {
 			c.addCommand(new InsertNewEventsCommand());
 			c.addCommand(new NewEventsToAlarmsConversionCommand());
 			c.addCommand(new SaveAlarmAndEventsCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.BUSSINESS_LOGIC_ALARM_RULE));
 			return c;
 		}
 

@@ -10,6 +10,7 @@ import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -211,9 +212,9 @@ public class NewAlarmAPI {
 		return null;
 	}
 
-	public static AlarmOccurrenceContext createAlarm(BaseEventContext baseEvent) throws Exception {
+	public static AlarmOccurrenceContext createAlarm(BaseEventContext baseEvent, Context context) throws Exception {
 		AlarmOccurrenceContext alarmOccurrence = new AlarmOccurrenceContext();
-		baseEvent.updateAlarmOccurrenceContext(alarmOccurrence, true);
+		baseEvent.updateAlarmOccurrenceContext(alarmOccurrence, context,true);
 
 		BaseAlarmContext baseAlarm = baseEvent.updateAlarmContext(null, true);
 		updateAlarmSystemFields(baseAlarm, alarmOccurrence);
@@ -228,9 +229,9 @@ public class NewAlarmAPI {
 	}
 
 	public static AlarmOccurrenceContext createAlarmOccurrence(BaseAlarmContext baseAlarm, BaseEventContext baseEvent,
-			boolean mostRecent) throws Exception {
+															   boolean mostRecent, Context context) throws Exception {
 		AlarmOccurrenceContext alarmOccurrence = new AlarmOccurrenceContext();
-		baseEvent.updateAlarmOccurrenceContext(alarmOccurrence, true);
+		baseEvent.updateAlarmOccurrenceContext(alarmOccurrence, context,true);
 		alarmOccurrence.setAlarm(baseAlarm);
 
 		addAlarmOccurrence(alarmOccurrence, baseEvent, mostRecent);
@@ -243,8 +244,8 @@ public class NewAlarmAPI {
 	}
 
 	public static void updateAlarmOccurrence(AlarmOccurrenceContext alarmOccurrence, BaseEventContext baseEvent,
-			boolean mostRecent) throws Exception {
-		baseEvent.updateAlarmOccurrenceContext(alarmOccurrence, false);
+											 boolean mostRecent, Context context) throws Exception {
+		baseEvent.updateAlarmOccurrenceContext(alarmOccurrence, context, false);
 
 		rollUpAlarm(alarmOccurrence, baseEvent, mostRecent);
 	}

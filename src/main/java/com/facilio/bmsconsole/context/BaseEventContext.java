@@ -1,5 +1,9 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioContext;
+import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
@@ -196,7 +200,7 @@ public abstract class BaseEventContext extends ModuleBaseWithCustomFields {
 		return baseAlarm;
 	}
 	
-	public void updateAlarmOccurrenceContext(AlarmOccurrenceContext alarmOccurrence, boolean add) throws Exception {
+	public void updateAlarmOccurrenceContext(AlarmOccurrenceContext alarmOccurrence, Context context, boolean add) throws Exception {
 		AlarmSeverityContext previousSeverity = alarmOccurrence.getSeverity();
 		alarmOccurrence.setSeverity(getSeverity());
 		alarmOccurrence.setAutoClear(getAutoClear());
@@ -208,15 +212,20 @@ public abstract class BaseEventContext extends ModuleBaseWithCustomFields {
 		}
 		
 		if (add) {
+			CommonCommandUtil.addEventType(EventType.CREATE, (FacilioContext) context);
 			alarmOccurrence.setCreatedTime(getCreatedTime());
 			alarmOccurrence.setResource(getResource());
 		} 
 		else {
 			if (!previousSeverity.equals(getSeverity())) {
 				if (!getSeverity().equals(clearSeverity)) {
+					CommonCommandUtil.addEventType(EventType.UPDATED_ALARM_SEVERITY, (FacilioContext) context);
 					alarmOccurrence.setAcknowledged(false);
 					alarmOccurrence.setAcknowledgedBy(null);
 					alarmOccurrence.setAcknowledgedTime(-1l);
+				}
+				else {
+					CommonCommandUtil.addEventType(EventType.ALARM_CLEARED, (FacilioContext) context);
 				}
 				alarmOccurrence.setPreviousSeverity(previousSeverity);
 			}
