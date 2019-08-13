@@ -123,18 +123,50 @@ public class UserBeanImpl implements UserBean {
 		Map<String, Object> props = FieldUtil.getAsProperties(user);
 		int updatedRows = updateBuilder.update(props);
 
-		GenericDeleteRecordBuilder relDeleteBuilder = new GenericDeleteRecordBuilder()
-				.table(ModuleFactory.getShiftUserRelModule().getTableName()).andCondition(CriteriaAPI
-						.getCondition("ORG_USERID", "userId", String.valueOf(user.getOuid()), NumberOperators.EQUALS));
-		relDeleteBuilder.delete();
+		if (updatedRows > 0) {
+			GenericUpdateRecordBuilder updateOrgUserBuilder = new GenericUpdateRecordBuilder()
+					.table(AccountConstants.getAppOrgUserModule().getTableName())
+					.fields(AccountConstants.getAppOrgUserFields())
+					.andCustomWhere("ORG_USERID = ?", user.getOuid());
 
-//		if (user.getShiftId() != null) {
-//			insertShiftRel(user.getOuid(), user.getShiftId());
-//		}
+			if(user.getAccessibleSpace() != null) {
+				deleteAccessibleSpace(user.getOuid());
+				addAccessibleSpace(user.getOuid(), user.getAccessibleSpace());
+			}
+			if(user.getGroups() != null) {
+				deleteAccessibleGroups(user.getOuid());
+				addAccessibleTeam(user.getOuid(), user.getGroups());
+			}
 
-		return (updatedRows > 0);
+			Map<String, Object> orgUserprops = FieldUtil.getAsProperties(user);
+			
+			int appUpdatedRows = updateOrgUserBuilder.update(orgUserprops);
+			if (appUpdatedRows > 0) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
+	private void deleteAccessibleSpace(long ouId) throws Exception {
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(ModuleFactory.getAccessibleSpaceModule().getTableName())
+				;	
+		builder.andCondition(CriteriaAPI.getCondition("ORG_USER_ID", "orgUserId", String.valueOf(ouId), NumberOperators.EQUALS));
+		
+		builder.delete();
+	}
+	
+	private void deleteAccessibleGroups(long ouId) throws Exception {
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(AccountConstants.getGroupMemberModule().getTableName())
+				;
+		builder.andCondition(CriteriaAPI.getCondition("ORG_USERID", "orgUserId", String.valueOf(ouId), NumberOperators.EQUALS));
+		builder.delete();
+	}
+	
+	
 	@Override
 	public void createUser(long orgId, User user) throws Exception {
 		User userExisting = getUser(orgId, user.getEmail());
@@ -158,8 +190,7 @@ public class UserBeanImpl implements UserBean {
 		user.setOrgId(orgId);
 		user.setUserType(AccountConstants.UserType.USER.getValue());
 		user.setUserStatus(true);
-		UserBean userBean = (UserBean) BeanFactory.lookup("UserBean", user.getOrgId());
-		user.setAccessibleSpace(userBean.getAccessibleSpaceList(user.getOuid()));
+		//user.setAccessibleSpace(getAccessibleSpaceList(user.getOuid()));
 		addToAppORGUsers(user);
 		addUserDetail(user);
 		
