@@ -35,7 +35,6 @@ import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.BulkWorkOrderContext;
 import com.facilio.bmsconsole.context.PMIncludeExcludeResourceContext;
-import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMJobsContext.PMJobsStatus;
 import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.PMReminder.ReminderType;
@@ -52,6 +51,8 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SpaceContext;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
+import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderContext.PreRequisiteStatus;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -67,25 +68,17 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.PickListOperators;
-import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.db.criteria.operators.*;
+import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FacilioStatus;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.ScheduleInfo;
@@ -96,6 +89,25 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class PreventiveMaintenanceAPI {
 	
@@ -342,17 +354,6 @@ public class PreventiveMaintenanceAPI {
 		return resourceIds;
  	}
 	
-	public static PMJobsContext getpmJob(PreventiveMaintenance pm,PMTriggerContext pmTrigger ,Long resourceId,Long nextExecutionTime, boolean addToDb) {
-		PMJobsContext pmJob = new PMJobsContext();
-		pmJob.setPmId(pm.getId());
-		pmJob.setResourceId(resourceId);
-		pmJob.setPmTriggerId(pmTrigger.getId());
-		pmJob.setNextExecutionTime(nextExecutionTime);
-		pmJob.setProjected(!addToDb);
-		pmJob.setStatus(PMJobsStatus.ACTIVE);
-		return pmJob;
-	}
-
 	// TODO remove this after fixing the scheduler
 	private static long getEndTime(FacilioFrequency frequency) throws Exception {
 		if (AccountUtil.getCurrentOrg().getOrgId() == 92L) {
@@ -794,16 +795,12 @@ public class PreventiveMaintenanceAPI {
 		List<FacilioField> fields = modBean.getAllFields("workorder");
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		FacilioField minCreatedTime = FieldFactory.getField("minCreatedTime", "MIN(WorkOrders.CREATED_TIME)", FieldType.NUMBER);
-		GenericSelectRecordBuilder selectRecordsBuilder = new GenericSelectRecordBuilder();
-		selectRecordsBuilder.table(module.getTableName())
+		SelectRecordsBuilder woSelectBuilder = new SelectRecordsBuilder();
+		woSelectBuilder.module(module)
 				.select(Arrays.asList(minCreatedTime))
-				.innerJoin("Tickets")
-				.on("Tickets.ID=WorkOrders.ID")
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), String.valueOf(preopen.getId()), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("pm"), String.valueOf(pmId), NumberOperators.EQUALS))
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
-				;
-		List<Map<String, Object>> props = selectRecordsBuilder.get();
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("pm"), String.valueOf(pmId), NumberOperators.EQUALS));
+		List<Map<String, Object>> props = woSelectBuilder.getAsProps();
 		if (props == null || props.isEmpty()) {
 			return null;
 		}
@@ -820,7 +817,7 @@ public class PreventiveMaintenanceAPI {
 		for (PreventiveMaintenance activePm: pms) {
 			try {
 				PreventiveMaintenance pm = new PreventiveMaintenance();
-				pm.setStatus(false);
+				pm.setStatus(PMStatus.INACTIVE);
 
 				FacilioContext context = new FacilioContext();
 				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(activePm.getId()));
@@ -847,7 +844,7 @@ public class PreventiveMaintenanceAPI {
 					continue;
 				}
 				PreventiveMaintenance pm = new PreventiveMaintenance();
-				pm.setStatus(true);
+				pm.setStatus(PMStatus.ACTIVE);
 
 				FacilioContext context = new FacilioContext();
 				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(activePm.getId()));
@@ -870,7 +867,7 @@ public class PreventiveMaintenanceAPI {
 		for (PreventiveMaintenance activePm: pms) {
 			try {
 				PreventiveMaintenance pm = new PreventiveMaintenance();
-				pm.setStatus(false);
+				pm.setStatus(PMStatus.INACTIVE);
 				FacilioContext context = new FacilioContext();
 				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(activePm.getId()));
 				context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
@@ -1158,7 +1155,7 @@ public class PreventiveMaintenanceAPI {
 	
 	public static void setPMInActive(long pmId) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException, SQLException {
 		PreventiveMaintenance updatePm = new PreventiveMaintenance();
-		updatePm.setStatus(false);
+		updatePm.setStatus(PMStatus.INACTIVE);
 		
 		FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
@@ -1966,21 +1963,34 @@ public class PreventiveMaintenanceAPI {
 		return actions;
 	}
 
-    public static void updateWorkOrderCreationStatus(List<Long> ids, boolean status) throws Exception {
+	public static Criteria getPMExcludeCriteria() {
+		Criteria cr = new Criteria();
+		Map<String, FacilioField> pmFieldMap = FieldFactory.getAsMap(FieldFactory.getPreventiveMaintenanceFields());
+		cr.addAndCondition(CriteriaAPI.getCondition(pmFieldMap.get("status"), "3", NumberOperators.NOT_EQUALS));
+		return cr;
+	}
+
+	public static void updateWorkOrderCreationStatus(Connection conn, List<Long> ids, int status) throws Exception {
 		if (ids == null || ids.isEmpty()) {
 			return;
 		}
-        FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
-        List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
-        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-        Map<String, Object> props = new HashMap<>();
-        props.put("woGenerationStatus", status);
-        GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder();
-        updateRecordBuilder.fields(Arrays.asList(fieldMap.get("woGenerationStatus")))
-                .table(module.getTableName())
-//                .andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-                .andCondition(CriteriaAPI.getCondition(fieldMap.get("id"), ids, NumberOperators.EQUALS));
-        updateRecordBuilder.update(props);
+		FacilioModule module = ModuleFactory.getPreventiveMaintenanceModule();
+		List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		Map<String, Object> props = new HashMap<>();
+		props.put("woGenerationStatus", status);
+		GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder();
+		updateRecordBuilder.fields(Arrays.asList(fieldMap.get("woGenerationStatus")))
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("id"), ids, NumberOperators.EQUALS));
+		if (conn != null) {
+			updateRecordBuilder.useExternalConnection(conn);
+		}
+		updateRecordBuilder.update(props);
+	}
+
+    public static void updateWorkOrderCreationStatus(List<Long> ids, int status) throws Exception {
+		updateWorkOrderCreationStatus(null, ids, status);
     }
 
 	public static WorkOrderContext createWOContextsFromPMOnce(Context context, PreventiveMaintenance pm, PMTriggerContext trigger,  WorkorderTemplate woTemplate,  long startTime) throws Exception{
@@ -2216,13 +2226,13 @@ public class PreventiveMaintenanceAPI {
 				FacilioContext context = new FacilioContext();
 				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(pmId));
 				PreventiveMaintenance pm = new PreventiveMaintenance();
-				pm.setStatus(false);
+				pm.setStatus(PMStatus.INACTIVE);
 				context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 				Chain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChain();
 				addTemplate.execute(context);
 
 				pm = new PreventiveMaintenance();
-				pm.setStatus(true);
+				pm.setStatus(PMStatus.ACTIVE);
 				context = new FacilioContext();
 				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(pmId));
 				context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
@@ -2344,4 +2354,244 @@ public class PreventiveMaintenanceAPI {
 		//}
 	}
 
+    private static List<Long> getScheduledWOIds(List<Long> pmIds) throws Exception {
+        FacilioStatus status = TicketAPI.getStatus("preopen");
+        if (status == null) {
+            CommonCommandUtil.emailAlert("Org does not have pre-open state", "ORGID: "+ AccountUtil.getCurrentAccount().getOrg().getOrgId());
+            throw new IllegalStateException("Org does not have pre-open state");
+        }
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.WORK_ORDER);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+        SelectRecordsBuilder<WorkOrderContext> selectRecordsBuilder = new SelectRecordsBuilder<>();
+        selectRecordsBuilder.select(Arrays.asList(FieldFactory.getIdField(module)))
+                .beanClass(WorkOrderContext.class)
+                .module(module)
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("pm"), pmIds, NumberOperators.EQUALS))
+                .andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), String.valueOf(status.getId()), NumberOperators.EQUALS));
+        List<WorkOrderContext> wos = selectRecordsBuilder.get();
+        if (wos != null && !wos.isEmpty()) {
+            List<Long> res = new ArrayList<>();
+            for (WorkOrderContext w : wos) {
+                res.add(w.getId());
+            }
+            return res;
+        }
+        return Collections.emptyList();
+    }
+
+	public static void deleteScheduledWorkorders(Connection conn, List<Long> pmIds) throws Exception {
+		if (pmIds.isEmpty()) {
+			return;
+		}
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule workorderModule = modBean.getModule("workorder");
+		List<FacilioField> woFields = modBean.getAllFields(workorderModule.getName());
+		Map<String, FacilioField> woFieldMap = FieldFactory.getAsMap(woFields);
+
+		DeleteRecordBuilder deleteRecordBuilder = new DeleteRecordBuilder();
+		deleteRecordBuilder.module(workorderModule);
+		deleteRecordBuilder.andCondition(CriteriaAPI.getCondition(woFieldMap.get("pm"), pmIds, NumberOperators.EQUALS));
+		deleteRecordBuilder.andCondition(CriteriaAPI.getCondition(woFieldMap.get("jobStatus"), 1+"", NumberOperators.EQUALS));
+		if (conn != null) {
+			deleteRecordBuilder.useExternalConnection(conn);
+		}
+		deleteRecordBuilder.markAsDelete();
+	}
+
+    public static void deleteScheduledWorkorders(List<Long> pmIds) throws Exception {
+		deleteScheduledWorkorders(null, pmIds);
+    }
+
+	public static void deleteMultiWoPMReminders(List<Long> pmIds) throws Exception {
+		if (pmIds.isEmpty()) {
+			return;
+		}
+
+		FacilioModule module = ModuleFactory.getPMResourceScheduleRuleRelModule();
+		Map<String, FacilioField> fieldMap =  FieldFactory.getAsMap(FieldFactory.getPMResourceScheduleRuleRelFields());
+
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder();
+		selectRecordBuilder.select(Arrays.asList(fieldMap.get("scheduleRuleId")))
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("pmId"), pmIds, NumberOperators.EQUALS))
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module));
+				;
+		List<Map<String, Object>> props = selectRecordBuilder.get();
+		List<Long> workFlowIds = new ArrayList<>();
+		if (props != null && !props.isEmpty()) {
+			for (Map<String, Object> prop: props) {
+				if (prop.get("scheduleRuleId") != null) {
+					workFlowIds.add((Long) prop.get("scheduleRuleId"));
+				}
+			}
+		}
+
+		if (!workFlowIds.isEmpty()) {
+			WorkflowRuleAPI.deleteWorkFlowRules(workFlowIds);
+		}
+
+		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder()
+				.table(module.getTableName())
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("pmId"), pmIds, NumberOperators.EQUALS));
+		deleteRecordBuilder.delete();
+	}
+
+	public static void deleteTriggers(List<Long> triggerPMIds) throws Exception {
+		if (!triggerPMIds.isEmpty()) {
+			FacilioModule triggerModule = ModuleFactory.getPMTriggersModule();
+			List<FacilioField> triggerFields = FieldFactory.getPMTriggerFields();
+			FacilioField pmIdField = FieldFactory.getAsMap(triggerFields).get("pmId");
+			GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+					.table(triggerModule.getTableName())
+					.andCondition(CriteriaAPI.getCondition(pmIdField, triggerPMIds, NumberOperators.EQUALS));
+			deleteBuilder.delete();
+		}
+	}
+
+	public static void deletePmResourcePlanner(List<Long> pmids) throws Exception {
+		if (pmids !=  null && !pmids.isEmpty()) {
+			FacilioModule module = ModuleFactory.getPMResourcePlannerModule();
+			List<FacilioField> fields = FieldFactory.getPMResourcePlannerFields();
+			FacilioField pmIdField = FieldFactory.getAsMap(fields).get("pmId");
+			GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+					.table(module.getTableName())
+					.andCondition(CriteriaAPI.getCondition(pmIdField, StringUtils.join(pmids, ","), NumberOperators.EQUALS));
+			deleteBuilder.delete();
+		}
+	}
+
+	public static void deletePmIncludeExclude(List<Long> pmids) throws Exception {
+		if (pmids !=  null && !pmids.isEmpty()) {
+			FacilioModule module = ModuleFactory.getPMIncludeExcludeResourceModule();
+			List<FacilioField> fields = FieldFactory.getPMIncludeExcludeResourceFields();
+			FacilioField pmIdField = FieldFactory.getAsMap(fields).get("pmId");
+			GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+					.table(module.getTableName())
+					.andCondition(CriteriaAPI.getCondition(pmIdField,StringUtils.join(pmids, ","), NumberOperators.EQUALS));
+			deleteBuilder.delete();
+		}
+	}
+
+	public static void deletePMReminders(List<Long> pmIds) throws Exception {
+		if (pmIds.isEmpty()) {
+			return;
+		}
+		deleteNewPMReminders(pmIds);
+	}
+
+	private static void deleteNewPMReminders(List<Long> pmIds) throws Exception {
+		FacilioModule reminderModule = ModuleFactory.getPMReminderModule();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getPMReminderFields());
+
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+				.select(Arrays.asList(fieldMap.get("scheduleRuleId")))
+				.table(reminderModule.getTableName())
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(reminderModule))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("pmId"), pmIds, NumberOperators.EQUALS));
+
+		List<Map<String, Object>> props = selectRecordBuilder.get();
+		List<Long> workFlowIds = new ArrayList<>();
+		if (props != null && !props.isEmpty()) {
+			for (Map<String, Object> prop: props) {
+				if (prop.get("scheduleRuleId") != null) {
+					workFlowIds.add((Long) prop.get("scheduleRuleId"));
+				}
+			}
+		}
+
+		if (!workFlowIds.isEmpty()) {
+			WorkflowRuleAPI.deleteWorkFlowRules(workFlowIds);
+		}
+
+		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
+				.table(reminderModule.getTableName())
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(reminderModule))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("pmId"), pmIds, NumberOperators.EQUALS));
+		deleteBuilder.delete();
+	}
+
+	public static int deletePMs(List<Long> recordIds) throws Exception {
+		int count = 0;
+		if(recordIds != null && !recordIds.isEmpty()) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+			DeleteRecordBuilder<ResourceContext> deleteBuilder = new DeleteRecordBuilder<ResourceContext>()
+				.module(module)
+				.andCondition(CriteriaAPI.getIdCondition(recordIds, module));
+			count = deleteBuilder.delete();
+		}
+		return count;
+	}
+
+	public static int markAsDelete(List<Long> recordIds) throws Exception {
+		//Deleting via Delete Cascading
+
+		int count = 0;
+
+		if(recordIds != null && !recordIds.isEmpty()) {
+			List<FacilioField> fields = FieldFactory.getPreventiveMaintenanceFields();
+			FacilioModule pmModule = ModuleFactory.getPreventiveMaintenanceModule();
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+
+			Map<String, Object> updateMap = new HashMap<>();
+			updateMap.put("status", 3);
+
+			GenericUpdateRecordBuilder updateRecordBuilder = new GenericUpdateRecordBuilder();
+			updateRecordBuilder.table("Preventive_Maintenance");
+			updateRecordBuilder.fields(Arrays.asList(fieldMap.get("status")));
+			updateRecordBuilder.andCondition(CriteriaAPI.getIdCondition(recordIds, pmModule));
+			count = updateRecordBuilder.update(updateMap);
+		}
+		return count;
+	}
+
+	public static Criteria getWorkOrderExcludeCriteria() throws Exception {
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getPreventiveMaintenanceFields());
+		Criteria pmCriteria = new Criteria();
+		pmCriteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("status"), PMStatus.DELETED.getValue()+"", NumberOperators.EQUALS));
+		pmCriteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("woGenerationStatus"), "1", NumberOperators.EQUALS));
+		List<PreventiveMaintenance> pms = getPMs(null, pmCriteria, null, null, Arrays.asList(fieldMap.get("id")), false);
+		if (pms == null || pms.isEmpty()) {
+			return null;
+		}
+
+		List<Long> pmIds = pms.stream().map(ModuleBaseWithCustomFields::getId).collect(Collectors.toList());
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		Map<String, FacilioField> woFieldMap = FieldFactory.getAsMap(modBean.getAllFields("workorder"));
+
+		Criteria woCriteria = new Criteria();
+		woCriteria.addAndCondition(CriteriaAPI.getCondition(woFieldMap.get("pm"), pmIds, NumberOperators.NOT_EQUALS));
+
+		return woCriteria;
+	}
+
+
+	public static boolean canOpenWorkOrder(PreventiveMaintenance pm) {
+		return pm.getStatusEnum() == PMStatus.ACTIVE && !pm.isWoGenerating();
+	}
+
+
+	public static void updatePMStatusInSeparateTransaction(List<Long> pmIds, int status) throws SQLException {
+		try (Connection conn = FacilioConnectionPool.getInstance().getConnectionFromPool()) {
+			boolean olderCommit = false;
+			try {
+				olderCommit = conn.getAutoCommit();
+				conn.setAutoCommit(false);
+				updateWorkOrderCreationStatus(conn, pmIds, status);
+				conn.commit();
+			} catch (Exception e) {
+				if (conn != null) {
+					conn.rollback();
+				}
+				LOGGER.log(Level.SEVERE, "Exception occurred in updating status for the PM(s) - "+ StringUtils.join(pmIds, ','), e);
+				CommonCommandUtil.emailException("ScheduleNewPMCommand", "Exception occurred in updating status for the PM(s) - "+ StringUtils.join(pmIds, ','), e);
+			} finally {
+				conn.setAutoCommit(olderCommit);
+			}
+		}
+	}
 }

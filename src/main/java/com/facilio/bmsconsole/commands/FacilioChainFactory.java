@@ -1138,7 +1138,7 @@ public class FacilioChainFactory {
 		c.addCommand(new AddPMTriggerCommand());
 		c.addCommand(new AddTaskSectionTriggersCommand());
 		c.addCommand(new AddPMRelFieldsCommand());
-		c.addCommand(new ScheduleCreateWOJob());
+		c.addCommand(new SchedulePreOpenWOCreateCommand());
 		// c.addCommand(new scheduleBeforePMRemindersCommand());
 		c.addCommand(new UpdateReadingDataMetaCommand());
 		c.addCommand(new AddValidationRulesCommand());
@@ -1174,7 +1174,7 @@ public class FacilioChainFactory {
 		c.addCommand(new AddPMReminderCommand());
 		c.addCommand(new AddPMRelFieldsCommand());
 		c.addCommand(new BlockPMEditOnWOGeneration());
-		c.addCommand(new ScheduleCreateWOJob());
+		c.addCommand(new SchedulePreOpenWOCreateCommand());
 		// c.addCommand(new scheduleBeforePMRemindersCommand());
 		c.addCommand(new UpdateReadingDataMetaCommand());
 		c.addCommand(new AddValidationRulesCommand());
@@ -1198,8 +1198,9 @@ public class FacilioChainFactory {
 	public static Chain getDeletePreventiveMaintenanceChain() {
 		Chain c = FacilioChain.getTransactionChain();
 		c.addCommand(new GetPreventiveMaintenanceCommand());
-		c.addCommand(new BlockPMEditOnWOGeneration(true, false));
 		c.addCommand(new DeletePMAndDependenciesCommand(true));
+		c.addCommand(new BlockPMEditOnWOGeneration(true, false));
+		c.addCommand(new DeletePMCommand());
 		return c;
 	}
 	

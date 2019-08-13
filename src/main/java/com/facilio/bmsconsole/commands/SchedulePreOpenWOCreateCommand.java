@@ -7,20 +7,19 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
-import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.FacilioTimer;
 
-public class ScheduleCreateWOJob extends FacilioCommand {
+public class SchedulePreOpenWOCreateCommand extends FacilioCommand {
     private boolean isStatusChange;
     private boolean isBulkUpdate;
 
-    public ScheduleCreateWOJob(boolean b, boolean isStatusChange) {
+    public SchedulePreOpenWOCreateCommand(boolean b, boolean isStatusChange) {
         this.isBulkUpdate = b;
         this.isStatusChange = isStatusChange;
     }
 
-    public  ScheduleCreateWOJob() {}
+    public SchedulePreOpenWOCreateCommand() {}
 
     @Override
     public boolean executeCommand(Context context) throws Exception {
@@ -48,10 +47,10 @@ public class ScheduleCreateWOJob extends FacilioCommand {
             return false;
         }
         for (Long id: pmIds) {
+            FacilioTimer.deleteJob(id, "SchedulePMBackgroundJob");
             FacilioTimer.deleteJob(id, "ScheduleNewPM");
-            FacilioTimer.scheduleOneTimeJob(id, "ScheduleNewPM", 5, "priority");
+            FacilioTimer.scheduleOneTimeJob(id, "SchedulePMBackgroundJob", 300, "priority");
         }
-        PreventiveMaintenanceAPI.updateWorkOrderCreationStatus(pmIds, true);
         return false;
     }
 }

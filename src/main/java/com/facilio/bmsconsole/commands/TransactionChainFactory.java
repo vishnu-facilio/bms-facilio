@@ -1609,7 +1609,8 @@ public class TransactionChainFactory {
 			c.addCommand(new CreateTaskSectionTriggerRelCommand());
 			c.addCommand(new AddPMRelFieldsCommand(true));
 			c.addCommand(new BlockPMEditOnWOGeneration(true, true));
-			c.addCommand(new ScheduleCreateWOJob(true, true));
+			c.addCommand(new SchedulePreOpenWOCreateCommand(true, true));
+			c.addCommand(new SchedulePreOpenWODeleteCommand(true));
 			return c;
 		}
 

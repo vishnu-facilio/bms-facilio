@@ -52,7 +52,7 @@ public class BulkAddTasksCommand extends FacilioCommand implements PostTransacti
         List<WorkOrderContext> workOrderContexts = bulkWorkOrderContext.getWorkOrderContexts();
         Map<Long, Integer> workOrderTaskMap = new HashMap<>();
         Map<Long, Integer> workOrderPrerequisiteMap = new HashMap<>();
-       for (int i = 0; i < workOrderContexts.size(); i++) {
+        for (int i = 0; i < workOrderContexts.size(); i++) {
            WorkOrderContext wo = workOrderContexts.get(i);
            Map<String, List<TaskContext>> taskMap = bulkWorkOrderContext.getTaskMaps().get(i);
 

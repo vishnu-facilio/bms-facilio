@@ -2302,7 +2302,7 @@ public class FieldFactory {
 
 		FacilioField status = new FacilioField();
 		status.setName("status");
-		status.setDataType(FieldType.BOOLEAN);
+		status.setDataType(FieldType.NUMBER);
 		status.setColumnName("STATUS");
 		status.setModule(module);
 		fields.add(status);
