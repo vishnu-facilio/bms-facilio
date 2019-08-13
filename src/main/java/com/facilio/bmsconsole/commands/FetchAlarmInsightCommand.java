@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -189,7 +190,7 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 		fieldMap.putAll(FieldFactory.getAsMap(occurrenceFields));
 
 		List<FacilioField> selectFields = new ArrayList<>();
-		FacilioField ruleField = fieldMap.get("ruleId");
+		FacilioField ruleField = fieldMap.get("rule");
 		String clearedTimeFieldColumn = fieldMap.get("clearedTime").getColumnName();
 		String createdTimeFieldColumn = fieldMap.get("createdTime").getColumnName();
 		FacilioField resourceFieldColumn = fieldMap.get("resource");
@@ -229,6 +230,15 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 		}
 
 		List<Map<String, Object>> props = builder.getAsProps();
+		// backward-compatibility
+		if (CollectionUtils.isNotEmpty(props)) {
+			for (Map<String, Object> prop : props) {
+				if (prop.containsKey("rule")) {
+					ReadingRuleContext rule = (ReadingRuleContext) prop.get("rule");
+					prop.put("ruleId", rule.getId());
+				}
+			}
+		}
 		return props;
 	}
 

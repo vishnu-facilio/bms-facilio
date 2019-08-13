@@ -296,7 +296,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 													.select(fields)
 													.beanClass(ReadingAlarm.class)
 													.moduleName(FacilioConstants.ContextNames.NEW_READING_ALARM)
-													.andCondition(CriteriaAPI.getCondition(fieldMap.get("ruleId"), String.valueOf(rule.getRuleGroupId()), PickListOperators.IS))
+													.andCondition(CriteriaAPI.getCondition(fieldMap.get("rule"), String.valueOf(rule.getRuleGroupId()), PickListOperators.IS))
 													.fetchLookup((LookupField) fieldMap.get("severity"))
 													.get();
 			if (CollectionUtils.isNotEmpty(readingAlarms)) {
