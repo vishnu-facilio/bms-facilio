@@ -970,6 +970,8 @@ public class UserBeanImpl implements UserBean {
 		criteria.addAndCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
 		criteria.addAndCondition(CriteriaAPI.getCondition("EMAIL", "email", String.valueOf(email), StringOperators.IS));
 		criteria.addAndCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
+		
+		selectBuilder.andCriteria(criteria);
 				
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
