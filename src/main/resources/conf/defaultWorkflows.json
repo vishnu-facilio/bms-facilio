@@ -217,13 +217,13 @@
             	ranges = date.getDateRange(\"Current Week\");
                 monthRanges = date.getDateRange(\"Current Month\");
 		    	alarmsCurrWeekCri = {
-              		criteria : [ruleId == ruleId && lastOccurredTime == ranges ]
+              		criteria : [rule == ruleId && lastOccurredTime == ranges ]
             	};
                   alarmSevrityModule = Module(\"alarmseverity\");
                   AlarmSeverityContext clearSeverityContext = alarmSevrityModule.fetch(clearCondition);
                   clearId = clearSeverityContext.get(0).get(\"id\");
                   activeAssetcri = {
-					criteria : [ruleId == ruleId && severity != clearId  ]
+					criteria : [rule == ruleId && severity != clearId  ]
 				};
 		        readingAlarmModule = Module(\"newreadingalarm\");
                 workOrderModule = Module(\"ticket\");
@@ -269,16 +269,16 @@
 				  ranges = date.getDateRange(\"Current Week\");
 				  monthRanges = date.getDateRange(\"Current Month\");
 				  alarmsCurrWeekCri = {
-				    criteria: [ruleId == ruleId && lastOccurredTime == ranges]
+				    criteria: [rule == ruleId && lastOccurredTime == ranges]
 				  };
 				  readingAlarmModule = Module(\"newreadingalarm\");
 				  workOrderModule = Module(\"workorder\");
 				  alarmoccurrenceModule = Module(\"alarmoccurrence\");
 				  woThisWeek = {
-				    criteria: [ruleId == ruleId && lastOccurredTime == ranges]
+				    criteria: [rule == ruleId && lastOccurredTime == ranges]
 				  };
 				  woThisMonth = {
-				    criteria: [ruleId == ruleId && lastOccurredTime == monthRanges]
+				    criteria: [rule == ruleId && lastOccurredTime == monthRanges]
 				  };
 				  currWeekOccurence = readingAlarmModule.fetch(woThisWeek);
 				  occurencesID = []
@@ -301,7 +301,7 @@
 				    }
 				  }
 				  woThisMonth = {
-				    criteria: [ruleId == ruleId && lastOccurredTime == monthRanges]
+				    criteria: [rule == ruleId && lastOccurredTime == monthRanges]
 				  };
 				  currMonthOccurence = readingAlarmModule.fetch(woThisMonth);
 				  occurencesMonthID = []
@@ -369,10 +369,10 @@
 			  monthRanges = date.getDateRange(\"Current Year\");
 			    db = {
 			      criteria: [lastOccurredTime == monthRanges],
-			      field:\"ruleId\",
-			      aggregation:\"count, ruleId\",
-			      groupBy:\"ruleId\",
-			      orderBy:\"ruleId\" desc
+			      field:\"rule\",
+			      aggregation:\"count, rule\",
+			      groupBy:\"rule\",
+			      orderBy:\"rule\" desc
 			    }; readingAlarmModule = Module(\"newreadingalarm\");
 			      activeRecord = readingAlarmModule.fetch(db); ranking = 0;
 			      if (activeRecord != null) {

@@ -83,6 +83,20 @@ public class FieldFactory {
 			alarmsFieldsInclude.add("autoClear");
 //			alarmsFieldsInclude.add("noOfAttachments");
 		}
+		public static List<String> newAlarmsFieldsInclude = new ArrayList<String>();
+		static {
+			newAlarmsFieldsInclude.add("readingAlarmCategory");
+			newAlarmsFieldsInclude.add("rule");
+			newAlarmsFieldsInclude.add("acknowledged");
+			newAlarmsFieldsInclude.add("acknowledgedBy");
+			newAlarmsFieldsInclude.add("acknowledgedTime");
+			newAlarmsFieldsInclude.add("lastClearedTime");
+			newAlarmsFieldsInclude.add("lastCreatedTime");
+			newAlarmsFieldsInclude.add("lastOccurredTime");
+			newAlarmsFieldsInclude.add("resource");
+			newAlarmsFieldsInclude.add("Severity");
+			newAlarmsFieldsInclude.add("subject");
+		}
 		public static List<String> workOrderFieldsInclude = new ArrayList<String>();
 		static {
 			workOrderFieldsInclude.add("actualWorkDuration");

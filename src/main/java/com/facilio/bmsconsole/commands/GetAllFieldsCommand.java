@@ -126,7 +126,13 @@ public class GetAllFieldsCommand extends FacilioCommand {
 					else if(FieldFactory.Fields.assetFieldsInclude.contains(fieldObject.getName())) {
 						fields.add(fieldObject);
 					}
-				}else {
+				}
+				else if (moduleName.equals("newreadingalarm")) {
+					if(FieldFactory.Fields.newAlarmsFieldsInclude.contains(fieldObject.getName())) {
+						fields.add(fieldObject);
+					}
+				}
+				else {
 					fields = allFields;
 				}
 			}
