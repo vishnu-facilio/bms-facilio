@@ -305,7 +305,12 @@ public class WorkflowRuleContext implements Serializable {
 		return -1;
 	}
 	public void setRuleType(int ruleType) {
-		this.ruleType = RULE_TYPES[ruleType - 1];
+		if (ruleType > 0) {
+			this.ruleType = RULE_TYPES[ruleType - 1];
+		}
+		else {
+			this.ruleType = null;
+		}
 	}
 	public void setRuleType(RuleType ruleType) {
 		this.ruleType = ruleType;

@@ -74,6 +74,12 @@ public class BaseAlarmContext extends ModuleBaseWithCustomFields {
 	public void setAcknowledged(Boolean acknowledged) {
 		this.acknowledged = acknowledged;
 	}
+	public Boolean isAcknowledged() {
+		if (acknowledged == null) {
+			return false;
+		}
+		return acknowledged;
+	}
 	
 	private User acknowledgedBy;
 	public User getAcknowledgedBy() {
