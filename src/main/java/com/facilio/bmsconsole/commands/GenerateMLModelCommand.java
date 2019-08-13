@@ -38,6 +38,7 @@ public class GenerateMLModelCommand extends FacilioCommand {
 		postObj.put("ml_id",mlContext.getId());
 		postObj.put("orgid", mlContext.getOrgId());
 		postObj.put("date", getCurrentDate(mlContext));
+		postObj.put("predictedtime", mlContext.getPredictionTime());
 		
 		JSONObject modelVariables = new JSONObject();
 		if(mlContext.getMLModelVariable()!=null)
