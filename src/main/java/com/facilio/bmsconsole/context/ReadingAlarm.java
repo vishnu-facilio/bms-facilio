@@ -1,22 +1,32 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+
 public class ReadingAlarm extends BaseAlarmContext {
 	private static final long serialVersionUID = 1L;
-	
-	private long ruleId;
-	public long getRuleId() {
-		return ruleId;
+
+	private ReadingAlarmCategoryContext readingAlarmCategory;
+	public ReadingAlarmCategoryContext getReadingAlarmCategory() {
+		return readingAlarmCategory;
 	}
-	public void setRuleId(long ruleId) {
-		this.ruleId = ruleId;
+	public void setReadingAlarmCategory(ReadingAlarmCategoryContext readingAlarmCategory) {
+		this.readingAlarmCategory = readingAlarmCategory;
 	}
 
-	private long subRuleId = -1;
-	public long getSubRuleId() {
-		return subRuleId;
+	private ReadingRuleContext rule;
+	public ReadingRuleContext getRule() {
+		return rule;
 	}
-	public void setSubRuleId(long subRuleId) {
-		this.subRuleId = subRuleId;
+	public void setRule(ReadingRuleContext rule) {
+		this.rule = rule;
+	}
+
+	private ReadingRuleContext subRule;
+	public ReadingRuleContext getSubRule() {
+		return subRule;
+	}
+	public void setSubRule(ReadingRuleContext subRule) {
+		this.subRule = subRule;
 	}
 	
 	private long readingFieldId;
@@ -26,13 +36,4 @@ public class ReadingAlarm extends BaseAlarmContext {
 	public void setReadingFieldId(long readingFieldId) {
 		this.readingFieldId = readingFieldId;
 	}
-	
-//	@Override
-//	public Type getType() {
-//		if (super.getType() != Type.READING_ALARM) {
-//			setType(Type.READING_ALARM);
-//		}
-//		return super.getType();
-//	}
-
 }

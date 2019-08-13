@@ -90,7 +90,23 @@ public class BaseAlarmContext extends ModuleBaseWithCustomFields {
 	public void setAcknowledgedTime(long acknowledgedTime) {
 		this.acknowledgedTime = acknowledgedTime;
 	}
-	
+
+	private long noOfOccurrences = -1;
+	public long getNoOfOccurrences() {
+		return noOfOccurrences;
+	}
+	public void setNoOfOccurrences(long noOfOccurrences) {
+		this.noOfOccurrences = noOfOccurrences;
+	}
+
+	private long lastCreatedTime = -1;
+	public long getLastCreatedTime() {
+		return lastCreatedTime;
+	}
+	public void setLastCreatedTime(long lastCreatedTime) {
+		this.lastCreatedTime = lastCreatedTime;
+	}
+
 	private long lastOccurredTime = -1;
 	public long getLastOccurredTime() {
 		return lastOccurredTime;

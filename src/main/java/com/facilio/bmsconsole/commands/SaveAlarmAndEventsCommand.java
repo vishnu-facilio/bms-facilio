@@ -145,7 +145,8 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule alarmOccurrenceModule = modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
-			FacilioField noOfEventsField = modBean.getField("noOfEvents", alarmOccurrenceModule.getName());
+			Map<String, FacilioField> occurrenceFieldMap = FieldFactory.getAsMap(modBean.getAllFields(alarmOccurrenceModule.getName()));
+			FacilioField noOfEventsField = occurrenceFieldMap.get("noOfEvents");
 			
 			FacilioModule eventModule = modBean.getModule(FacilioConstants.ContextNames.BASE_EVENT);
 			Map<String, FacilioField> eventFieldMap = FieldFactory.getAsMap(modBean.getAllFields(eventModule.getName()));
@@ -177,6 +178,42 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 						.module(alarmOccurrenceModule)
 						.fields(Collections.singletonList(noOfEventsField))
 						.andCondition(CriteriaAPI.getIdCondition(id, alarmOccurrenceModule));
+
+				updateRecordBuilder.updateViaMap(updateMap);
+			}
+
+
+			Set<Long> alarmIds = new HashSet<>();
+			for (String key : alarmOccurrenceMap.keySet()) {
+				for (AlarmOccurrenceContext alarmOccurrence : alarmOccurrenceMap.get(key)) {
+					alarmIds.add(alarmOccurrence.getAlarm().getId());
+				}
+			}
+
+			FacilioModule alarmModule = modBean.getModule(FacilioConstants.ContextNames.BASE_ALARM);
+			FacilioField noOfOccurrenceField = modBean.getField("noOfOccurrences", alarmModule.getName());
+
+			fields = new ArrayList<>();
+			FacilioField alarmField = occurrenceFieldMap.get("alarm");
+			fields.add(alarmField);
+			fields.add(countField);
+			builder = new GenericSelectRecordBuilder()
+					.table(alarmOccurrenceModule.getTableName())
+					.select(fields)
+					.groupBy(alarmField.getCompleteColumnName())
+					.andCondition(CriteriaAPI.getCondition(alarmField, StringUtils.join(alarmIds, ","), NumberOperators.EQUALS));
+			list = builder.get();
+			updateMap = new HashMap<>();
+			for (Map<String, Object> map : list) {
+				long id = ((Number) map.get("alarm")).longValue();
+				int numberOfOccurrences = ((Number) map.get("count")).intValue();
+
+				updateMap.put("noOfOccurrences", numberOfOccurrences);
+
+				UpdateRecordBuilder<WorkOrderContext> updateRecordBuilder = new UpdateRecordBuilder<WorkOrderContext>()
+						.module(alarmModule)
+						.fields(Collections.singletonList(noOfOccurrenceField))
+						.andCondition(CriteriaAPI.getIdCondition(id, alarmModule));
 
 				updateRecordBuilder.updateViaMap(updateMap);
 			}
