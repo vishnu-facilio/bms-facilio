@@ -10,6 +10,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.accounts.dto.Group;
@@ -152,6 +153,9 @@ public class LookupSpecialTypeUtil {
 			}
 			return null;
 		}
+		else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
+			return WorkflowRuleAPI.getWorkflowRule(id, false, false, true);
+		}
 		return null;
 	}
 	
@@ -243,6 +247,15 @@ public class LookupSpecialTypeUtil {
 				return triggers.stream().collect(Collectors.toMap(PMTriggerContext::getId, Function.identity()));
 			}
 		}
+		else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
+			if (!(ids instanceof List)) {
+				ids = new ArrayList<>(ids);
+			}
+			List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getWorkflowRules((List<Long>) ids);
+			if (CollectionUtils.isNotEmpty(workflowRules)) {
+				return workflowRules.stream().collect(Collectors.toMap(WorkflowRuleContext::getId, Function.identity()));
+			}
+		}
 		return null;
 	}
 	
@@ -273,6 +286,12 @@ public class LookupSpecialTypeUtil {
 		}
 		else if ("trigger".equals(specialType)) {
 			return PreventiveMaintenanceAPI.getPMTriggersByTriggerIds(ids);
+		}
+		else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
+			if (!(ids instanceof List)) {
+				ids = new ArrayList<>(ids);
+			}
+			return WorkflowRuleAPI.getWorkflowRules((List<Long>) ids);
 		}
 		return null;
 	}
