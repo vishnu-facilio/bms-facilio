@@ -3904,6 +3904,15 @@ public class TransactionChainFactory {
 			c.addCommand(new UploadImportFileCommand());
 			return c;
 		}
+		
+		public static Chain getExecuteControlActionCommandChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new FillRDMForControlActionCommand());
+			c.addCommand(new FillDefaultValuesForControlActionCommand());
+			c.addCommand(new AddControlActionCommand());
+			c.addCommand(new PublishIOTMessageControlActionCommand());
+			return c;
+		}
 }
 
 

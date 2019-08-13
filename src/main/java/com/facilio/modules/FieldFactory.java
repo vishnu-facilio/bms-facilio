@@ -4741,6 +4741,8 @@ public class FieldFactory {
 		fields.add(getField("readingType", "READING_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("custom", "IS_CUSTOM", module, FieldType.BOOLEAN));
 		fields.add(getField("unit", "UNIT", module, FieldType.NUMBER));
+		fields.add(getField("isControllable", "IS_CONTROLLABLE", module, FieldType.BOOLEAN));
+		fields.add(getField("controlActionMode", "CONTROL_MODE", module, FieldType.NUMBER));
 		return fields;
 	}
 	

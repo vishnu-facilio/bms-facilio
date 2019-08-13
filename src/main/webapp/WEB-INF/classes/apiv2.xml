@@ -359,6 +359,12 @@
 		</action>
 	</package>
 	
+	<package name="controlActionModule" namespace="/api/v2/controlAction" extends="v2Api">
+
+		<action name="setReadingValue"
+			class="com.facilio.controlaction.action.ControlActionAction" method="setReadingValue"></action>
+	</package>
+	
 	<package name="KPIModule" namespace="/api/v2/kpi" extends="v2Api">
 
 		<action name="addKPICategory"

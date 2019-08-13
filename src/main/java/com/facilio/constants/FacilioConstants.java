@@ -536,6 +536,7 @@ public class FacilioConstants {
 		public static final String MV_BASELINE_MODULE = "mvbaseline";
 		public static final String MV_ADJUSTMENT_MODULE = "mvadjustment";
 		
+		public static final String CONTROL_ACTION_COMMAND_MODULE = "controlActionCommand";
 
         public static final String IS_PREREQUISITE="isPrerequisite";
 		public static final String PICKLIST = "pickList";

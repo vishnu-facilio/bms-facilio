@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.context;
 import java.io.Serializable;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.ReadingDataMeta.ControlActionMode;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.unitconversion.Unit;
 
@@ -138,6 +139,35 @@ public class ReadingDataMeta implements Serializable {
 		this.inputValues = inputValues;
 	}
 	
+	ControlActionMode controlActionMode;
+	public int getControlActionMode() {
+		if(controlActionMode != null) {
+			return controlActionMode.getValue();
+		}
+		return -1;
+	}
+
+	public void setControlActionMode(int controlActionMode) {
+		if(controlActionMode > 0) {
+			this.controlActionMode = ControlActionMode.valueOf(controlActionMode);
+		}
+	}
+	private Boolean isControllable;
+	
+	public boolean isControllable() {
+		if(isControllable != null) {
+			return isControllable.booleanValue();
+		}
+		return false;
+	}
+	
+	public Boolean getIsControllable() {
+		return isControllable;
+	}
+	public void setIsControllable(Boolean isControllable) {
+		this.isControllable = isControllable;
+	}
+
 	private Boolean custom;
 	public boolean isCustom() {
 		if(custom != null) {
@@ -180,6 +210,22 @@ public class ReadingDataMeta implements Serializable {
 			return ordinal() + 1;
 		}
 		public static ReadingType valueOf (int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
+ 	}
+	
+	public static enum ControlActionMode {
+		SANDBOX,
+		LIVE
+		;
+		
+		public int getValue() {
+			return ordinal() + 1;
+		}
+		public static ControlActionMode valueOf (int value) {
 			if (value > 0 && value <= values().length) {
 				return values()[value - 1];
 			}
