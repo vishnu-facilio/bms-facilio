@@ -51,13 +51,6 @@ public class EventsToAlarmsCommand extends FacilioCommand {
 			FacilioField alarmIdField = fieldMap.get("alarmId");
 			FacilioField createdTimeField = fieldMap.get("createdTime");
 			
-			if(AccountUtil.getCurrentOrg().getId() == 78l) {
-				long alarmId = event.getAlarmId();
-				if(alarmId == 3463448l) {
-					LOGGER.error("EventPayload : "+event.getAlarmId() +" severity "+event.getSeverity());
-				}
-			}
-			
 			setMessageKey(event);
 			GenericSelectRecordBuilder eventSelectBuilder = new GenericSelectRecordBuilder()
 					.select(fields)
@@ -98,6 +91,12 @@ public class EventsToAlarmsCommand extends FacilioCommand {
 
 		if (CollectionUtils.isNotEmpty(events)) {
 			for (EventContext event : events) {
+				if(AccountUtil.getCurrentOrg().getId() == 78l) {
+					long alarmId = event.getAlarmId();
+					if(alarmId == 3463448l) {
+						LOGGER.error("EventPayload : "+event.getAlarmId() +" severity "+event.getSeverity());
+					}
+				}
 				processEventToAlarm(event,context);
 			}
 		}
