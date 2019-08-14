@@ -85,17 +85,16 @@ public class FieldFactory {
 		}
 		public static List<String> newAlarmsFieldsInclude = new ArrayList<String>();
 		static {
-			newAlarmsFieldsInclude.add("readingAlarmCategory");
-			newAlarmsFieldsInclude.add("rule");
+			newAlarmsFieldsInclude.add("subject");
 			newAlarmsFieldsInclude.add("acknowledged");
 			newAlarmsFieldsInclude.add("acknowledgedBy");
+			newAlarmsFieldsInclude.add("Severity");
+			newAlarmsFieldsInclude.add("rule");
 			newAlarmsFieldsInclude.add("acknowledgedTime");
 			newAlarmsFieldsInclude.add("lastClearedTime");
 			newAlarmsFieldsInclude.add("lastCreatedTime");
 			newAlarmsFieldsInclude.add("lastOccurredTime");
 			newAlarmsFieldsInclude.add("resource");
-			newAlarmsFieldsInclude.add("Severity");
-			newAlarmsFieldsInclude.add("subject");
 			newAlarmsFieldsInclude.add("readingalarmcategory");
 		}
 		public static List<String> workOrderFieldsInclude = new ArrayList<String>();
