@@ -973,10 +973,10 @@ public enum ActionType {
 				controlActionCommand.setValue(val);
 				
 				context.put(ControlActionUtil.CONTROL_ACTION_COMMANDS, Collections.singletonList(controlActionCommand));
-				if(currentRule.getRuleTypeEnum() == RuleType.SCHEDULED_RULE) {
+				if(currentRule.getRuleTypeEnum() == RuleType.CONTROL_ACTION_SCHEDULED_RULE) {
 					context.put(ControlActionUtil.CONTROL_ACTION_COMMAND_EXECUTED_FROM, ControlActionCommandContext.Control_Action_Execute_Mode.SCHEDULE);
 				}
-				else if(currentRule.getRuleTypeEnum() == RuleType.READING_ALARM_RULE) {
+				else if(currentRule.getRuleTypeEnum() == RuleType.CONTROL_ACTION_READING_ALARM_RULE) {
 					context.put(ControlActionUtil.CONTROL_ACTION_COMMAND_EXECUTED_FROM, ControlActionCommandContext.Control_Action_Execute_Mode.ALARM_CONDITION);
 				}
 				

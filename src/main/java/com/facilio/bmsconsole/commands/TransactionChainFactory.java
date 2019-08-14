@@ -1204,6 +1204,12 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain addReadingAlarmRuleChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new AddReadingAlarmRuleCommand());
+			return c;
+		}
+		
 		public static Chain updateAlarmRuleChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new UpdateAlarmRuleCommand());
@@ -1380,6 +1386,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddMLOccurrenceCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.REPORT_DOWNTIME_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.READING_ALARM_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.CONTROL_ACTION_READING_ALARM_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.BUSSINESS_LOGIC_ALARM_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.PM_ALARM_RULE));
 			c.addCommand(new ForkChainToInstantJobCommand()
@@ -1406,6 +1413,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.BUSSINESS_LOGIC_ALARM_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.PM_ALARM_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.READING_ALARM_RULE));
+			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.CONTROL_ACTION_READING_ALARM_RULE));
 			c.addCommand(new ForkChainToInstantJobCommand()
 				.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ALARM_NOTIFICATION_RULE, RuleType.CUSTOM_ALARM_NOTIFICATION_RULE))
 				.addCommand(new AddClearCommentInWoOnAlarmClearCommand())
