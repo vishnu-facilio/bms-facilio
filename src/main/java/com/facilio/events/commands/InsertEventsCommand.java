@@ -27,6 +27,14 @@ public class InsertEventsCommand extends FacilioCommand {
 		List<JSONObject> payloads = (List<JSONObject>) context.get(EventConstants.EventContextNames.EVENT_PAYLOADS);
 		if (payloads == null) {
 			JSONObject payload = (JSONObject) context.get(EventConstants.EventContextNames.EVENT_PAYLOAD);
+			
+			if(AccountUtil.getCurrentOrg().getId() == 78l && payload.containsKey("alarmId")) {
+				long alarmId = (long) payload.get("key");
+				if(alarmId == 3463448l) {
+					LOGGER.error("EventPayload : "+payload);
+				}
+			}
+			
 			if (payload != null) {
 				payloads = Collections.singletonList(payload);
 			}

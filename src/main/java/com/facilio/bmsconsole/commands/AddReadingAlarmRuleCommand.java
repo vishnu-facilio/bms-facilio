@@ -32,7 +32,8 @@ public class AddReadingAlarmRuleCommand extends FacilioCommand {
 				
 				if(readingAlarmRuleContext.getActions() != null && readingAlarmRuleContext.getActions().stream().allMatch(act->act.getActionType()==22)){
 					readingAlarmRuleContext.setRuleType(RuleType.REPORT_DOWNTIME_RULE);
-				}else{
+				}
+				else{
 					readingAlarmRuleContext.setRuleType(RuleType.READING_ALARM_RULE);
 				}
 				
