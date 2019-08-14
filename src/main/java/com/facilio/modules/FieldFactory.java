@@ -96,6 +96,7 @@ public class FieldFactory {
 			newAlarmsFieldsInclude.add("resource");
 			newAlarmsFieldsInclude.add("Severity");
 			newAlarmsFieldsInclude.add("subject");
+			newAlarmsFieldsInclude.add("readingalarmcategory");
 		}
 		public static List<String> workOrderFieldsInclude = new ArrayList<String>();
 		static {
