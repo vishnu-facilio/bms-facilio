@@ -65,7 +65,8 @@
 	 <job name='AddAnomalyJob' classname='com.facilio.bmsconsole.jobs.AddAnomalyJob' transactionTimeout='7200000'/>
 	 <job name='testMLHistoricalJob' classname='com.facilio.bmsconsole.jobs.DefaultMLHistoricalJob' transactionTimeout='7200000'/>
 	 <job name='energyPredictionJob' classname='com.facilio.bmsconsole.jobs.AddNewMLEnergyPredictionJob' transactionTimeout='7200000'/>
-	 
+	 <job name='testMLSplitJob' classname='com.facilio.bmsconsole.jobs.DefaultMLSplitHistoricalJob' transactionTimeout='7200000'/>
+
 	 
 	 <job name='StateFlowScheduledRule' classname='com.facilio.bmsconsole.jobs.StateFlowScheduledRuleJob' transactionTimeout='900000' />
 
