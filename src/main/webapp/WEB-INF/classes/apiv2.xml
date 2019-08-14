@@ -376,6 +376,9 @@
 		<action name="updateReadingAlarmRule"
 		class="com.facilio.controlaction.action.ControlActionAction" method="updateReadingAlarmRule"></action>
 		
+		<action name="deleteReadingAlarmRule"
+		class="com.facilio.controlaction.action.ControlActionAction" method="deleteReadingAlarmRule"></action>
+		
 		<action name="addScheduledRule"
 		class="com.facilio.controlaction.action.ControlActionAction" method="addScheduledRule"></action>
 		

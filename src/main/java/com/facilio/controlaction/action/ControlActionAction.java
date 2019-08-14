@@ -28,6 +28,15 @@ public class ControlActionAction extends FacilioAction {
 	long fieldId = -1;
 	String value;
 	
+	long ruleId;
+	
+	public long getRuleId() {
+		return ruleId;
+	}
+	public void setRuleId(long ruleId) {
+		this.ruleId = ruleId;
+	}
+
 	ReadingAlarmRuleContext readingAlarmRuleContext;
 	public ReadingAlarmRuleContext getReadingAlarmRuleContext() {
 		return readingAlarmRuleContext;
@@ -93,6 +102,18 @@ public class ControlActionAction extends FacilioAction {
 		addReadingAlarmRuleChain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.READING_ALARM_RULE, readingAlarmRuleContext);
+		
+		return SUCCESS;
+	}
+	
+	public String deleteReadingAlarmRule() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		
+		context.put(FacilioConstants.ContextNames.RULE_ID, ruleId);
+		
+		Chain addReadingAlarmRuleChain = TransactionChainFactory.deleteReadingAlarmRuleChain();
+		addReadingAlarmRuleChain.execute(context);
 		
 		return SUCCESS;
 	}
