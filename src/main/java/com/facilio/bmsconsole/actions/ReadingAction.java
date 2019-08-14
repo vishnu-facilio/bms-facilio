@@ -1249,14 +1249,14 @@ public class ReadingAction extends FacilioAction {
 		return this.perPage;
 	}
 	
-	// connected, formula or nonformula
+	// connected, writable, readable, formula or nonformula
 	private String readingType;
 	public String getReadingType() {
 		return readingType;
 	}
 	public void setReadingType(String readingType) {
 		this.readingType = readingType;
-	} 
+	}
 	
 	private Boolean fetchCount;
 	public boolean isFetchCount() {
