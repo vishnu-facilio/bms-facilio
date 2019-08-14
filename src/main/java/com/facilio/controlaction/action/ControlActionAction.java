@@ -82,6 +82,21 @@ public class ControlActionAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String updateReadingAlarmRule() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		
+		context.put(FacilioConstants.ContextNames.READING_ALARM_RULES, Collections.singletonList(readingAlarmRuleContext));
+		context.put(FacilioConstants.ContextNames.RULE_TYPE, RuleType.CONTROL_ACTION_READING_ALARM_RULE);
+		
+		Chain addReadingAlarmRuleChain = TransactionChainFactory.updateReadingAlarmRuleChain();
+		addReadingAlarmRuleChain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.READING_ALARM_RULE, readingAlarmRuleContext);
+		
+		return SUCCESS;
+	}
+	
 	public String addScheduledRule() throws Exception {
 		
 		return SUCCESS;

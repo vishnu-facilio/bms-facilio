@@ -1210,6 +1210,12 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static Chain updateReadingAlarmRuleChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new UpdateReadingAlarmRuleCommand());
+			return c;
+		}
+		
 		public static Chain updateAlarmRuleChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new UpdateAlarmRuleCommand());
