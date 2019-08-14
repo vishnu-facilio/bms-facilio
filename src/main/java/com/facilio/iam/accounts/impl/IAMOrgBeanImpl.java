@@ -7,7 +7,6 @@ import java.util.Map;
 
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
-import com.facilio.accounts.util.AccountConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -110,9 +109,9 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 	public List<IAMUser> getAllOrgUsersv2(long orgId) throws Exception {
 		
     	List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(AccountConstants.getAppUserFields());
-		fields.addAll(AccountConstants.getAppOrgUserFields());
-		fields.add(AccountConstants.getOrgIdField());
+		fields.addAll(IAMAccountConstants.getAccountsUserFields());
+		fields.addAll(IAMAccountConstants.getAccountsOrgUserFields());
+		fields.add(IAMAccountConstants.getOrgIdField());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
@@ -138,7 +137,7 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 	
 	@Override
 	public List<IAMUser> getOrgUsersv2(long orgId, boolean status) throws Exception {
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(AccountConstants.getAppOrgUserFields());
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(IAMAccountConstants.getAccountsOrgUserFields());
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("userStatus"), String.valueOf(status), NumberOperators.EQUALS));
 		return getOrgUsersv2(orgId, criteria);
@@ -173,8 +172,8 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 	
 	private List<Map<String, Object>> fetchOrgUserProps (long orgId, Criteria criteria) throws Exception {
 		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(AccountConstants.getAppUserFields());
-		fields.addAll(AccountConstants.getAppOrgUserFields());
+		fields.addAll(IAMAccountConstants.getAccountsUserFields());
+		fields.addAll(IAMAccountConstants.getAccountsOrgUserFields());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
@@ -191,8 +190,8 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 	public List<IAMUser> getActiveOrgUsersv2(long orgId) throws Exception {
 
 		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(AccountConstants.getAppUserFields());
-		fields.addAll(AccountConstants.getAppOrgUserFields());
+		fields.addAll(IAMAccountConstants.getAccountsUserFields());
+		fields.addAll(IAMAccountConstants.getAccountsOrgUserFields());
 
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
