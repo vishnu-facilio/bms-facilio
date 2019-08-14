@@ -23,7 +23,7 @@ public class PMEditBlockRemovalCommand extends FacilioCommand implements PostTra
     @Override
     public boolean postExecute() throws Exception {
         if (AccountUtil.getCurrentOrg().getOrgId() == 176L) {
-            LOGGER.log(Level.SEVERE, "Executing block removal");
+            LOGGER.log(Level.SEVERE, "Executing postExecute removal");
         }
         removeBlock();
         return false;
@@ -36,6 +36,9 @@ public class PMEditBlockRemovalCommand extends FacilioCommand implements PostTra
 
     private void removeBlock() throws Exception {
         List<Long> recordIds = Collections.singletonList(pmId);
+        if (AccountUtil.getCurrentOrg().getOrgId() == 176L) {
+            LOGGER.log(Level.SEVERE, "Executing removeBlock removal");
+        }
         try {
             PreventiveMaintenanceAPI.updateWorkOrderCreationStatus(recordIds, 0);
         } catch (Exception e) {
