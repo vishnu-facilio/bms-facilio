@@ -8,7 +8,10 @@ import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.bmsconsole.workflow.rule.ReadingAlarmRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.controlaction.context.ControlActionCommandContext;
 import com.facilio.controlaction.util.ControlActionUtil;
 
@@ -19,6 +22,15 @@ public class ControlActionAction extends FacilioAction {
 	long resourceId = -1;
 	long fieldId = -1;
 	String value;
+	
+	ReadingAlarmRuleContext readingAlarmRuleContext;
+	public ReadingAlarmRuleContext getReadingAlarmRuleContext() {
+		return readingAlarmRuleContext;
+	}
+	public void setReadingAlarmRuleContext(ReadingAlarmRuleContext readingAlarmRuleContext) {
+		this.readingAlarmRuleContext = readingAlarmRuleContext;
+	}
+	
 	public long getResourceId() {
 		return resourceId;
 	}
@@ -47,6 +59,21 @@ public class ControlActionAction extends FacilioAction {
 	public String getControlActionCommands() throws Exception {
 		
 		setResult(ControlActionUtil.CONTROL_ACTION_COMMANDS, ControlActionUtil.getCommands());
+		return SUCCESS;
+	}
+	
+	public String addReadingAlarmRule() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		
+		context.put(FacilioConstants.ContextNames.READING_ALARM_RULES, Collections.singletonList(readingAlarmRuleContext));
+		context.put(FacilioConstants.ContextNames.RULE_TYPE, RuleType.CONTROL_ACTION_READING_ALARM_RULE);
+		
+		Chain addReadingAlarmRuleChain = TransactionChainFactory.addReadingAlarmRuleChain();
+		addReadingAlarmRuleChain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.READING_ALARM_RULE, readingAlarmRuleContext);
+		
 		return SUCCESS;
 	}
 	

@@ -25,16 +25,34 @@ public class AddReadingAlarmRuleCommand extends FacilioCommand {
 		
 		AlarmRuleContext alarmRule = (AlarmRuleContext) context.get(FacilioConstants.ContextNames.ALARM_RULE);
 		
-		if(alarmRule.getReadingAlarmRuleContexts() != null) {
+		RuleType ruleType = (RuleType) context.get(FacilioConstants.ContextNames.RULE_TYPE);
+		
+		List<ReadingAlarmRuleContext> readingAlarmRuleContexts = null;
+		if(alarmRule != null) {
+			readingAlarmRuleContexts = alarmRule.getReadingAlarmRuleContexts();
+		}
+		else {
+			readingAlarmRuleContexts = (List<ReadingAlarmRuleContext>) context.get(FacilioConstants.ContextNames.READING_ALARM_RULES);
+		}
+		
+		if(readingAlarmRuleContexts != null) {
 			
-			for(ReadingAlarmRuleContext readingAlarmRuleContext : alarmRule.getReadingAlarmRuleContexts()) {
-				readingAlarmRuleContext.setReadingRuleGroupId(alarmRule.getPreRequsite().getRuleGroupId());
+			for(ReadingAlarmRuleContext readingAlarmRuleContext : readingAlarmRuleContexts) {
 				
-				if(readingAlarmRuleContext.getActions() != null && readingAlarmRuleContext.getActions().stream().allMatch(act->act.getActionType()==22)){
-					readingAlarmRuleContext.setRuleType(RuleType.REPORT_DOWNTIME_RULE);
+				if(readingAlarmRuleContext.getReadingRuleGroupId() < 0) {
+					readingAlarmRuleContext.setReadingRuleGroupId(alarmRule.getPreRequsite().getRuleGroupId());
 				}
-				else{
-					readingAlarmRuleContext.setRuleType(RuleType.READING_ALARM_RULE);
+				
+				if(ruleType != null) {
+					readingAlarmRuleContext.setRuleType(ruleType);
+				}
+				else {
+					if(readingAlarmRuleContext.getActions() != null && readingAlarmRuleContext.getActions().stream().allMatch(act->act.getActionType()==22)){
+						readingAlarmRuleContext.setRuleType(RuleType.REPORT_DOWNTIME_RULE);
+					}
+					else{
+						readingAlarmRuleContext.setRuleType(RuleType.READING_ALARM_RULE);
+					}
 				}
 				
 				readingAlarmRuleContext.setEventId(WorkflowRuleAPI.addOrGetWorkflowEvent(readingAlarmRuleContext.getEvent()));

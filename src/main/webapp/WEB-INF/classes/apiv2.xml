@@ -369,6 +369,9 @@
 		
 		<action name="getControllablePoints"
 		class="com.facilio.controlaction.action.ControlActionAction" method="getControllablePoints"></action>
+		
+		<action name="addReadingAlarmRule"
+		class="com.facilio.controlaction.action.ControlActionAction" method="addReadingAlarmRule"></action>
 	</package>
 	
 	<package name="KPIModule" namespace="/api/v2/kpi" extends="v2Api">

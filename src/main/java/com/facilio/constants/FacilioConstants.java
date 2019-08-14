@@ -654,10 +654,13 @@ public class FacilioConstants {
 		public static final String WORKFLOW_RULE_ID = "workflowRuleID";
 		public static final String WORKFLOW_RULE_MODULE = "workflowrule";
 		public static final String READING_RULE_MODULE = "readingrule";
+		public static final String READING_ALARM_RULES = "readingalarmrules";
+		public static final String READING_ALARM_RULE = "readingalarmrule";
 		public static final String WORKORDER_ACTIVITY = "workorderactivity";
 		public static final String RULE_COUNT = "ruleCount";
 		public static final String RULES = "rules";
 		public static final String ALARM_RULE = "alarmRule";
+		public static final String RULE_TYPE = "ruleType";
 		public static final String IS_SUMMARY ="isSummary";
 		public static final String OLD_ALARM_RULE = "oldalarmRule";
 		public static final String ALARM_RULE_ACTIVE_ALARM = "alarmRuleActiveAlarm";
