@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import org.apache.commons.chain.Context;
@@ -7,9 +8,12 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class PMEditBlockRemovalCommand extends FacilioCommand implements PostTransactionCommand {
 
+    private static final Logger LOGGER = Logger.getLogger(PMEditBlockRemovalCommand.class.getName());
     private long pmId;
 
     public PMEditBlockRemovalCommand(long pmId) {
@@ -18,6 +22,9 @@ public class PMEditBlockRemovalCommand extends FacilioCommand implements PostTra
 
     @Override
     public boolean postExecute() throws Exception {
+        if (AccountUtil.getCurrentOrg().getOrgId() == 176L) {
+            LOGGER.log(Level.SEVERE, "Executing block removal");
+        }
         removeBlock();
         return false;
     }
