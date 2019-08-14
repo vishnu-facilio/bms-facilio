@@ -1,14 +1,19 @@
 package com.facilio.controlaction.action;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.chain.Chain;
 
 import com.facilio.bmsconsole.actions.FacilioAction;
+import com.facilio.bmsconsole.actions.WorkflowRuleAction;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingAlarmRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -73,6 +78,29 @@ public class ControlActionAction extends FacilioAction {
 		addReadingAlarmRuleChain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.READING_ALARM_RULE, readingAlarmRuleContext);
+		
+		return SUCCESS;
+	}
+	
+	public String addScheduledRule() throws Exception {
+		
+		return SUCCESS;
+	}
+	
+	public String getControlActionRules() throws Exception {
+		
+		List<WorkflowRuleContext> rules = new ArrayList<WorkflowRuleContext>();
+		
+		List<WorkflowRuleContext> alarmRules = WorkflowRuleAPI.getAllWorkflowRuleContextOfType(RuleType.CONTROL_ACTION_READING_ALARM_RULE, true, true);
+		if(alarmRules != null) {
+			rules.addAll(alarmRules);
+		}
+		
+		List<WorkflowRuleContext> scheduledRules = WorkflowRuleAPI.getAllWorkflowRuleContextOfType(RuleType.CONTROL_ACTION_SCHEDULED_RULE, true, true);
+		if(scheduledRules != null) {
+			rules.addAll(scheduledRules);
+		}
+		setResult(FacilioConstants.ContextNames.WORKFLOW_RULES, rules);
 		
 		return SUCCESS;
 	}

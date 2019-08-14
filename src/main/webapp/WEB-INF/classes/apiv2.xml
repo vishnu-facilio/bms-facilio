@@ -372,6 +372,12 @@
 		
 		<action name="addReadingAlarmRule"
 		class="com.facilio.controlaction.action.ControlActionAction" method="addReadingAlarmRule"></action>
+		
+		<action name="addScheduledRule"
+		class="com.facilio.controlaction.action.ControlActionAction" method="addScheduledRule"></action>
+		
+		<action name="getControlActionRules"
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControlActionRules"></action>
 	</package>
 	
 	<package name="KPIModule" namespace="/api/v2/kpi" extends="v2Api">
