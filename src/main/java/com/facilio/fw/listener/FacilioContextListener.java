@@ -21,6 +21,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import com.facilio.service.FacilioService;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.flywaydb.core.Flyway;
@@ -66,6 +67,7 @@ public class FacilioContextListener implements ServletContextListener {
 		}
 		FacilioScheduler.stopSchedulers();
 		InstantJobExecutor.INSTANCE.stopExecutor();
+		FacilioService.shutDown();
 		timer.cancel();
 	}
 
