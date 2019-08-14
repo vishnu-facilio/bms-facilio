@@ -1393,6 +1393,16 @@ public class ReadOnlyChainFactory {
 		c.addCommand(fetchModuleDataDetailsChain());
 		c.addCommand(new FetchAttendeesCommand());
 		return c;
+	
+	public static Chain getAssetMovementListChain() {
+		Chain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForAssetMovement());
+		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new GenericGetModuleDataListCommand());
+		return chain;
 	}
 
 	public static Chain fetchControlGroupsChain() {

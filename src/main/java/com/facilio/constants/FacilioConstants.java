@@ -1191,6 +1191,10 @@ public class FacilioConstants {
 
 		public static final Object DEFAULT_DATE = "defaultDate";
 		public static final Object READING_RULE_ALARM_OCCURANCE = "readingRuleAlarmOccurance";
+		
+		public static final String ASSET_MOVEMENT = "assetmovement";
+		public static final String ASSET_MOVEMENT_RECORDS = "assetmovementrecords";
+
 
 		public static final String IS_EMAIL_VERIFICATION_NEEDED = "isEmailVerificationNeeded";
 

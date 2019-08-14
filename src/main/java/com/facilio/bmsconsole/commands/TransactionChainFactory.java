@@ -3397,6 +3397,23 @@ public class TransactionChainFactory {
 			c.addCommand(new AddControlActionCommand());
 			c.addCommand(new PublishIOTMessageControlActionCommand());
 			return c;
+		public static Chain getAddAssetMovementChain() {
+			Chain chain = getDefaultChain();
+			chain.addCommand(SetTableNamesCommand.getForAssetMovement());
+			chain.addCommand(new AssetMovementPropsSetCommand());
+			chain.addCommand(new GenericAddModuleDataCommand());
+			chain.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
+			chain.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_RULE));
+			return chain;
+		}
+		
+		public static Chain getUpdateAssetMovementChain() {
+			Chain chain = getDefaultChain();
+			chain.addCommand(SetTableNamesCommand.getForAssetMovement());
+			chain.addCommand(new GenericUpdateModuleDataCommand());
+			chain.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
+			chain.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_RULE));
+			return chain;
 		}
 
 		public static FacilioChain addReservationChain() {

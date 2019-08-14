@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.facilio.aws.util.FacilioProperties;
+import com.facilio.aws.util.AwsUtil;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -291,7 +291,7 @@ public class AssetContext extends ResourceContext {
 	
 	
 	public String getUrl() {
-		return FacilioProperties.getConfig("clientapp.url") + "/app/at/asset/all/" + getId() + "/overview";
+		return AwsUtil.getConfig("clientapp.url") + "/app/at/asset/all/" + getId() + "/overview";
 	}
 
 
@@ -386,4 +386,30 @@ public class AssetContext extends ResourceContext {
 		}
 		return false;
 	}
+	
+	public Boolean moveApprovalNeeded;
+	public Boolean getMoveApprovalNeeded() {
+		return moveApprovalNeeded;
+	}
+	public void setMoveApprovalNeeded(Boolean moveApprovalNeeded) {
+		this.moveApprovalNeeded = moveApprovalNeeded;
+	}
+	public boolean isMoveApprovalNeeded() {
+		if(moveApprovalNeeded != null) {
+			return moveApprovalNeeded.booleanValue();
+		}
+		return false;
+	}
+	
+	private long currentSpaceId;
+
+	public long getCurrentSpaceId() {
+		return currentSpaceId;
+	}
+
+	public void setCurrentSpaceId(long currentSpaceId) {
+		this.currentSpaceId = currentSpaceId;
+	}
+	
+	
 }
