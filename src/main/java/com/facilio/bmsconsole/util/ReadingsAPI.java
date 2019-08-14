@@ -403,6 +403,22 @@ public class ReadingsAPI {
 		return null;
 	}
 	
+	public static List<ReadingDataMeta> getControllableRDMs() throws Exception {
+		
+		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getReadingDataMetaFields());
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getReadingDataMetaFields())
+				.table(ModuleFactory.getReadingDataMetaModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("isControllable"), Boolean.TRUE.toString(), BooleanOperators.IS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		List<ReadingDataMeta> readingMetaList = getReadingDataFromProps(props, null);
+		return readingMetaList;
+	}
+	
 	private static ReadingDataMeta getRDMFromProp (Map<String, Object> prop, Map<Long, FacilioField> fieldMap) throws Exception {
 		ReadingDataMeta meta = FieldUtil.getAsBeanFromMap(prop, ReadingDataMeta.class);
 		Object value = meta.getValue();

@@ -8,8 +8,8 @@ import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ControlActionMode;
 import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.fields.FacilioField;
 
 public class ControlActionCommandContext extends ModuleBaseWithCustomFields {
 
@@ -26,7 +26,16 @@ public class ControlActionCommandContext extends ModuleBaseWithCustomFields {
 	String value;
 	User executedBy;
 	ReadingDataMeta rdm;
+	FacilioField field;
 	
+	public FacilioField getField() {
+		return field;
+	}
+
+	public void setField(FacilioField field) {
+		this.field = field;
+	}
+
 	public ReadingDataMeta getRdm() {
 		return rdm;
 	}
@@ -104,7 +113,7 @@ public class ControlActionCommandContext extends ModuleBaseWithCustomFields {
 		return -1;
 	}
 
-	public void setExecutedFrom(int executedMode) {
+	public void setExecutedMode(int executedMode) {
 		if(executedMode > 0) {
 			this.executedMode = Control_Action_Execute_Mode.getAllOptions().get(executedMode);
 		}

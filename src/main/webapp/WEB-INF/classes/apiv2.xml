@@ -363,6 +363,12 @@
 
 		<action name="setReadingValue"
 			class="com.facilio.controlaction.action.ControlActionAction" method="setReadingValue"></action>
+			
+		<action name="getControlActionCommands"
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControlActionCommands"></action>
+		
+		<action name="getControllablePoints"
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControllablePoints"></action>
 	</package>
 	
 	<package name="KPIModule" namespace="/api/v2/kpi" extends="v2Api">

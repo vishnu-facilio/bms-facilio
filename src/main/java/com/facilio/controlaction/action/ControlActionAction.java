@@ -7,6 +7,7 @@ import org.apache.commons.chain.Chain;
 import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.controlaction.context.ControlActionCommandContext;
 import com.facilio.controlaction.util.ControlActionUtil;
@@ -36,6 +37,18 @@ public class ControlActionAction extends FacilioAction {
 	public void setValue(String value) {
 		this.value = value;
 	} 
+	
+	public String getControllablePoints() throws Exception {
+		
+		setResult(ControlActionUtil.CONTROL_ACTION_CONTROLLABLE_POINTS, ReadingsAPI.getControllableRDMs());
+		return SUCCESS;
+	}
+	
+	public String getControlActionCommands() throws Exception {
+		
+		setResult(ControlActionUtil.CONTROL_ACTION_COMMANDS, ControlActionUtil.getCommands());
+		return SUCCESS;
+	}
 	
 	public String setReadingValue() throws Exception {
 		
