@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BulkWorkOrderContext;
 import com.facilio.bmsconsole.context.PMResourcePlannerContext;
@@ -201,6 +202,10 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
 
         if (!bulkWorkOrderContexts.isEmpty()) {
             BulkWorkOrderContext bulkWorkOrderContext = new BulkWorkOrderContext(bulkWorkOrderContexts);
+            if (AccountUtil.getCurrentOrg().getOrgId() == 176L) {
+                LOGGER.log(Level.SEVERE, "Scheduling Pm " + pm.getId());
+                LOGGER.log (Level.FINE,"No  of work orders to save " + bulkWorkOrderContext.getWorkOrderContexts().size());
+            }
             LOGGER.log (Level.FINE,"No  of work orders to save " + bulkWorkOrderContext.getWorkOrderContexts().size());
             context.put(FacilioConstants.ContextNames.BULK_WORK_ORDER_CONTEXT, bulkWorkOrderContext);
             context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
