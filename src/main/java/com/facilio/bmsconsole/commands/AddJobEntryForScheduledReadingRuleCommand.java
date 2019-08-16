@@ -5,6 +5,7 @@ import org.apache.commons.chain.Context;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateTimeUtil;
@@ -17,11 +18,17 @@ public class AddJobEntryForScheduledReadingRuleCommand extends FacilioCommand {
 		
 		AlarmRuleContext alarmRule = (AlarmRuleContext) context.get(FacilioConstants.ContextNames.ALARM_RULE);
 		
-		ReadingRuleContext preRequsiteRule = alarmRule.getPreRequsite();
+		WorkflowRuleContext workflowRuleContext = null;
+		if(alarmRule != null) {
+			workflowRuleContext = alarmRule.getPreRequsite();;
+		}
+		else {
+			workflowRuleContext = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
+		}
 		
-		if(preRequsiteRule.getEvent() != null && preRequsiteRule.getEvent().getActivityTypeEnum().equals(EventType.SCHEDULED_READING_RULE)) {
+		if(workflowRuleContext.getEvent() != null && workflowRuleContext.getEvent().getActivityTypeEnum().equals(EventType.SCHEDULED_READING_RULE)) {
 
-			FacilioTimer.scheduleCalendarJob(preRequsiteRule.getId(), FacilioConstants.Job.SCHEDULED_READING_RULE_JOB_NAME, DateTimeUtil.getCurrenTime(), preRequsiteRule.getSchedule(), FacilioConstants.Job.EXECUTER_NAME_FACILIO);
+			FacilioTimer.scheduleCalendarJob(workflowRuleContext.getId(), FacilioConstants.Job.SCHEDULED_READING_RULE_JOB_NAME, DateTimeUtil.getCurrenTime(), workflowRuleContext.getSchedule(), FacilioConstants.Job.EXECUTER_NAME_FACILIO);
 		}
 		
 		return false;

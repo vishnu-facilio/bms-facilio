@@ -370,17 +370,14 @@
 		<action name="getControllablePoints"
 		class="com.facilio.controlaction.action.ControlActionAction" method="getControllablePoints"></action>
 		
-		<action name="addReadingAlarmRule"
-		class="com.facilio.controlaction.action.ControlActionAction" method="addReadingAlarmRule"></action>
+		<action name="addControlActionRule"
+		class="com.facilio.controlaction.action.ControlActionAction" method="addControlActionRule"></action>
 		
 		<action name="updateReadingAlarmRule"
 		class="com.facilio.controlaction.action.ControlActionAction" method="updateReadingAlarmRule"></action>
 		
 		<action name="deleteReadingAlarmRule"
 		class="com.facilio.controlaction.action.ControlActionAction" method="deleteReadingAlarmRule"></action>
-		
-		<action name="addScheduledRule"
-		class="com.facilio.controlaction.action.ControlActionAction" method="addScheduledRule"></action>
 		
 		<action name="getControlActionRules"
 		class="com.facilio.controlaction.action.ControlActionAction" method="getControlActionRules"></action>

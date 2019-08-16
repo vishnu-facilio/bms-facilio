@@ -1151,11 +1151,12 @@ public class TransactionChainFactory {
 			c.addCommand(new SendReadingReportMailCommand());
 			return c;
 		}
-
+		
 		public static Chain addWorkflowRuleChain() {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddWorkflowRuleCommand());
 			c.addCommand(new AddActionsForWorkflowRule());
+			c.addCommand(new AddJobEntryForScheduledReadingRuleCommand());
 			return c;
 		}
 		

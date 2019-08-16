@@ -10,8 +10,6 @@ import com.facilio.constants.FacilioConstants;
 
 public class ExecuteScheduledReadingRuleCommand extends FacilioCommand {
 
-	private static RuleType[] ruleTypes = {RuleType.READING_RULE,RuleType.ALARM_TRIGGER_RULE,RuleType.ALARM_CLEAR_RULE,RuleType.ALARM_RCA_RULES,RuleType.PM_READING_TRIGGER};
-	
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
