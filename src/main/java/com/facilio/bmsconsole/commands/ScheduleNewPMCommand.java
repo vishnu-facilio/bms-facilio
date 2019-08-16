@@ -220,7 +220,7 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
 
         if (AccountUtil.getCurrentOrg().getOrgId() == 176L) {
             LOGGER.log(Level.SEVERE, "Scheduling Pm " + pm.getId());
-            LOGGER.log (Level.FINE,"No  of work orders to save " + bulkWorkOrderContexts.size());
+            LOGGER.log (Level.SEVERE,"No  of work orders to save " + bulkWorkOrderContexts.size());
         }
 
         List<WorkOrderContext> ws = (List<WorkOrderContext>) context.get(FacilioConstants.ContextNames.WO_CONTEXTS);
