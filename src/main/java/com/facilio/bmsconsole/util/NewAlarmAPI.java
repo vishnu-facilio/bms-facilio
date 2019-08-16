@@ -1,15 +1,12 @@
 package com.facilio.bmsconsole.util;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import com.facilio.modules.fields.LookupField;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -297,8 +294,15 @@ public class NewAlarmAPI {
 	public static AlarmOccurrenceContext getAlarmOccurrence(long recordId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
+		List<FacilioField> allFields = modBean.getAllFields(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
+		List<LookupField> fetchLookupFields = new ArrayList<>();
+		fetchLookupFields.add((LookupField) fieldMap.get("severity"));
+		fetchLookupFields.add((LookupField) fieldMap.get("previousSeverity"));
 		SelectRecordsBuilder<AlarmOccurrenceContext> builder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
-				.module(module).select(modBean.getAllFields(FacilioConstants.ContextNames.ALARM_OCCURRENCE))
+				.module(module)
+				.select(allFields)
+				.fetchLookups(fetchLookupFields)
 				.beanClass(AlarmOccurrenceContext.class).andCondition(CriteriaAPI.getIdCondition(recordId, module));
 		AlarmOccurrenceContext alarmOccurrenceContext = builder.fetchFirst();
 		if (alarmOccurrenceContext != null) {

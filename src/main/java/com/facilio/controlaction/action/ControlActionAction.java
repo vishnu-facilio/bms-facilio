@@ -45,6 +45,16 @@ public class ControlActionAction extends FacilioAction {
 		this.readingAlarmRuleContext = readingAlarmRuleContext;
 	}
 	
+	WorkflowRuleContext workflowRuleContext;
+		
+	
+	public WorkflowRuleContext getWorkflowRuleContext() {
+		return workflowRuleContext;
+	}
+	public void setWorkflowRuleContext(WorkflowRuleContext workflowRuleContext) {
+		this.workflowRuleContext = workflowRuleContext;
+	}
+	
 	public long getResourceId() {
 		return resourceId;
 	}
@@ -76,17 +86,29 @@ public class ControlActionAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	public String addReadingAlarmRule() throws Exception {
+	public String addControlActionRule() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
-		
-		context.put(FacilioConstants.ContextNames.READING_ALARM_RULES, Collections.singletonList(readingAlarmRuleContext));
-		context.put(FacilioConstants.ContextNames.RULE_TYPE, RuleType.CONTROL_ACTION_READING_ALARM_RULE);
-		
-		Chain addReadingAlarmRuleChain = TransactionChainFactory.addReadingAlarmRuleChain();
-		addReadingAlarmRuleChain.execute(context);
-		
-		setResult(FacilioConstants.ContextNames.READING_ALARM_RULE, readingAlarmRuleContext);
+		if(readingAlarmRuleContext != null) {
+			
+			context.put(FacilioConstants.ContextNames.READING_ALARM_RULES, Collections.singletonList(readingAlarmRuleContext));
+			context.put(FacilioConstants.ContextNames.RULE_TYPE, RuleType.CONTROL_ACTION_READING_ALARM_RULE);
+			
+			Chain addReadingAlarmRuleChain = TransactionChainFactory.addReadingAlarmRuleChain();
+			addReadingAlarmRuleChain.execute(context);
+			
+			setResult(FacilioConstants.ContextNames.READING_ALARM_RULE, readingAlarmRuleContext);
+		}
+		else if (workflowRuleContext != null) {
+			
+			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
+			workflowRuleContext.setRuleType(RuleType.CONTROL_ACTION_SCHEDULED_RULE);
+			
+			Chain addWorkflowRuleChain = TransactionChainFactory.addWorkflowRuleChain();
+			addWorkflowRuleChain.execute(context);
+			
+			setResult(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
+		}
 		
 		return SUCCESS;
 	}
@@ -114,11 +136,6 @@ public class ControlActionAction extends FacilioAction {
 		
 		Chain addReadingAlarmRuleChain = TransactionChainFactory.deleteReadingAlarmRuleChain();
 		addReadingAlarmRuleChain.execute(context);
-		
-		return SUCCESS;
-	}
-	
-	public String addScheduledRule() throws Exception {
 		
 		return SUCCESS;
 	}

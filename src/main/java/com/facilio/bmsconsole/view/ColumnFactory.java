@@ -554,15 +554,15 @@ public class ColumnFactory {
 
 	private static List<ViewField> getDefaultReadingAlarmColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
-
 		columns.add(new ViewField("severity", "Severity"));
 		columns.add(new ViewField("subject", "Message"));
-		columns.add(new ViewField("resource", "Asset"));
-		columns.add(new ViewField("lastOccurredTime", "Last Reported"));
-		columns.add(new ViewField("acknowledgedBy", "Acknowledged"));
-		columns.add(new ViewField("noOfOccurrences", "No Of Occurrences"));
+		columns.add(new ViewField("resource", "Resource"));
+		columns.add(new ViewField("lastOccurredTime", "Last Occurred Time"));
+		columns.add(new ViewField("acknowledgedBy", "Acknowledged By"));
+		columns.add(new ViewField("acknowledged", "Acknowledged"));
+		columns.add(new ViewField("noOfOccurrences", "Occurrences"));
 		columns.add(new ViewField("lastCreatedTime", "Last Created Time"));
-		columns.add(new ViewField("readingalarmcategory", "Alarm Category" ));
+		columns.add(new ViewField("readingalarmcategory", "Category" ));
 		return columns;
 	}
 

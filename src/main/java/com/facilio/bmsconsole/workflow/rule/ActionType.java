@@ -1,25 +1,5 @@
 package com.facilio.bmsconsole.workflow.rule;
 
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
-import com.facilio.accounts.dto.Account;
-import org.apache.commons.beanutils.BeanUtils;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
@@ -29,31 +9,9 @@ import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.AlarmContext;
-import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
-import com.facilio.bmsconsole.context.AlarmSeverityContext;
-import com.facilio.bmsconsole.context.AssetBDSourceDetailsContext;
-import com.facilio.bmsconsole.context.BaseAlarmContext;
-import com.facilio.bmsconsole.context.BaseEventContext;
-import com.facilio.bmsconsole.context.NoteContext;
-import com.facilio.bmsconsole.context.NotificationContext;
-import com.facilio.bmsconsole.context.PMTriggerContext;
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
-import com.facilio.bmsconsole.context.ReadingAlarmContext;
-import com.facilio.bmsconsole.context.ReadingContext;
-import com.facilio.bmsconsole.context.ReadingEventContext;
-import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
-import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.util.AlarmAPI;
-import com.facilio.bmsconsole.util.NotificationAPI;
-import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
-import com.facilio.bmsconsole.util.ReadingRuleAPI;
-import com.facilio.bmsconsole.util.SMSUtil;
-import com.facilio.bmsconsole.util.StateFlowRulesAPI;
-import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.util.WorkOrderAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
+import com.facilio.bmsconsole.util.*;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ReadingRuleType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
@@ -64,27 +22,32 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
-import com.facilio.events.commands.NewEventsToAlarmsConversionCommand.PointedList;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FacilioStatus;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.UpdateRecordBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.tasker.FacilioTimer;
+import com.facilio.time.DateTimeUtil;
 import com.facilio.timeseries.TimeSeriesAPI;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.util.WorkflowV2Util;
+import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+
+import java.time.Instant;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public enum ActionType {
 
@@ -627,32 +590,60 @@ public enum ActionType {
 								  Object currentRecord) {
 			// TODO Auto-generated method stub
 			try {
-				AlarmContext alarm = (AlarmContext) currentRecord;
-				WorkOrderContext wo = getWorkOrder((AlarmContext) currentRecord);
-				if (wo == null) {
-					FacilioContext woContext = new FacilioContext();
-					woContext.put(FacilioConstants.ContextNames.ALARM, alarm);
-					woContext.put(FacilioConstants.ContextNames.RECORD, obj);
+				if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
+					AlarmOccurrenceContext lastOccurrence = getAlarmOccurrenceFromAlarm((BaseAlarmContext) currentRecord);
+					if (lastOccurrence != null) {
+						WorkOrderContext workOrder = WorkOrderAPI.getWorkOrder(lastOccurrence.getWoId());
+						if (workOrder == null) {
+							FacilioContext woContext = new FacilioContext();
+							woContext.put(FacilioConstants.ContextNames.RECORD_ID, lastOccurrence.getId());
+							Chain c = TransactionChainFactory.getV2AlarmOccurrenceCreateWO();
+							c.execute(woContext);
+						}
+						else {
+							NoteContext note = new NoteContext();
+							note.setBody(getNewV2AlarmCommentForUnClosedWO((BaseAlarmContext) currentRecord));
+							note.setParentId(workOrder.getId());
+							note.setCreatedTime(lastOccurrence.getLastOccurredTime());
 
-					Chain addWorkOrder = TransactionChainFactory.getAddWoFromAlarmChain();
-					addWorkOrder.execute(woContext);
+							FacilioContext noteContext = new FacilioContext();
+							noteContext.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TICKET_NOTES);
+							noteContext.put(FacilioConstants.ContextNames.TICKET_MODULE, FacilioConstants.ContextNames.WORK_ORDER);
+							noteContext.put(FacilioConstants.ContextNames.NOTE, note);
 
-				} else {
-					fetchSeverities(alarm);
-					NoteContext note = new NoteContext();
-					note.setBody(getNewAlarmCommentForUnClosedWO(alarm));
-					note.setParentId(wo.getId());
-					note.setCreatedTime(alarm.getModifiedTime());
+							Chain addNote = TransactionChainFactory.getAddNotesChain();
+							addNote.execute(noteContext);
+						}
+					}
+				}
+				else {
+					AlarmContext alarm = (AlarmContext) currentRecord;
+					WorkOrderContext wo = getWorkOrder((AlarmContext) currentRecord);
+					if (wo == null) {
+						FacilioContext woContext = new FacilioContext();
+						woContext.put(FacilioConstants.ContextNames.ALARM, alarm);
+						woContext.put(FacilioConstants.ContextNames.RECORD, obj);
 
-					FacilioContext noteContext = new FacilioContext();
-					noteContext.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TICKET_NOTES);
-					noteContext.put(FacilioConstants.ContextNames.TICKET_MODULE, FacilioConstants.ContextNames.WORK_ORDER);
-					noteContext.put(FacilioConstants.ContextNames.NOTE, note);
+						Chain addWorkOrder = TransactionChainFactory.getAddWoFromAlarmChain();
+						addWorkOrder.execute(woContext);
 
-					Chain addNote = TransactionChainFactory.getAddNotesChain();
-					addNote.execute(noteContext);
+					} else {
+						fetchSeverities(alarm);
+						NoteContext note = new NoteContext();
+						note.setBody(getNewAlarmCommentForUnClosedWO(alarm));
+						note.setParentId(wo.getId());
+						note.setCreatedTime(alarm.getModifiedTime());
 
-					AlarmAPI.updateWoIdInAlarm(wo.getId(), alarm.getId());
+						FacilioContext noteContext = new FacilioContext();
+						noteContext.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.TICKET_NOTES);
+						noteContext.put(FacilioConstants.ContextNames.TICKET_MODULE, FacilioConstants.ContextNames.WORK_ORDER);
+						noteContext.put(FacilioConstants.ContextNames.NOTE, note);
+
+						Chain addNote = TransactionChainFactory.getAddNotesChain();
+						addNote.execute(noteContext);
+
+						AlarmAPI.updateWoIdInAlarm(wo.getId(), alarm.getId());
+					}
 				}
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
@@ -668,7 +659,16 @@ public enum ActionType {
 								  Object currentRecord) throws Exception {
 			// TODO Auto-generated method stub
 			try {
-				WorkOrderContext wo = WorkOrderAPI.getWorkOrder(((AlarmContext) currentRecord).getId());
+				WorkOrderContext wo = null;
+				if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
+					AlarmOccurrenceContext lastOccurrence = getAlarmOccurrenceFromAlarm((BaseAlarmContext) currentRecord);
+					if (lastOccurrence != null) {
+						wo = WorkOrderAPI.getWorkOrder(lastOccurrence.getWoId());
+					}
+				}
+				else {
+					wo = WorkOrderAPI.getWorkOrder(((AlarmContext) currentRecord).getId());
+				}
 				if (wo != null) {
 					FacilioContext updateContext = new FacilioContext();
 					updateContext.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CLOSE_WORK_ORDER);
@@ -1133,6 +1133,12 @@ public enum ActionType {
 //	}
 	;
 
+	private static AlarmOccurrenceContext getAlarmOccurrenceFromAlarm(BaseAlarmContext baseAlarm) throws Exception {
+		AlarmOccurrenceContext lastOccurrence = NewAlarmAPI.getAlarmOccurrence(baseAlarm.getLastOccurrenceId());
+		baseAlarm.setLastOccurrence(lastOccurrence);
+		return lastOccurrence;
+	}
+
 	private int val;
 
 	private ActionType(int val) {
@@ -1254,6 +1260,16 @@ public enum ActionType {
 			alarm.setPreviousSeverity(severityMap.get(alarm.getPreviousSeverity().getId()));
 		}
 		alarm.setSeverity(severityMap.get(alarm.getSeverity().getId()));
+	}
+
+	private static String getNewV2AlarmCommentForUnClosedWO (BaseAlarmContext alarm) {
+		AlarmOccurrenceContext lastOccurrence = alarm.getLastOccurrence();
+		if (lastOccurrence.getPreviousSeverity() == null) {
+			return "Alarm associated with this work order has been raised to "+lastOccurrence.getSeverity().getSeverity()+" at "+ DateTimeUtil.getFormattedTime(lastOccurrence.getLastOccurredTime());
+		}
+		else {
+			return "Alarm associated with this work order updated from "+lastOccurrence.getPreviousSeverity().getSeverity()+" to "+lastOccurrence.getSeverity().getSeverity()+" at "+ DateTimeUtil.getFormattedTime(lastOccurrence.getLastOccurredTime());
+		}
 	}
 
 	private static String getNewAlarmCommentForUnClosedWO (AlarmContext alarm) {
