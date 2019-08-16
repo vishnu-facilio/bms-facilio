@@ -40,10 +40,6 @@ public interface OrgBean {
 
 	public List<User> getActiveOrgUsers(long orgId) throws Exception;
 
-	public List<User> getRequesters(long orgId) throws Exception;
-	
-//	public long getPortalId() throws Exception ;
-	
 	public User getSuperAdmin(long orgId) throws Exception;
 	
 	public List getEnergyMeterList() throws Exception ;

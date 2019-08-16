@@ -16,6 +16,7 @@ import com.facilio.accounts.dto.GroupMember;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountConstants.GroupMemberRole;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.UserUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -185,15 +186,12 @@ public class GroupBeanImpl implements GroupBean {
 	public List<GroupMember> getGroupMembers(long groupId) throws Exception {
 		
 		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(AccountConstants.getAppUserFields());
 		fields.addAll(AccountConstants.getAppOrgUserFields());
 		fields.addAll(AccountConstants.getGroupMemberFields());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
-				.table("Users")
-				.innerJoin("ORG_Users")
-				.on("Users.USERID = ORG_Users.USERID")
+				.table("ORG_Users")
 				.innerJoin("GroupMembers")
 				.on("GroupMembers.ORG_USERID = ORG_Users.ORG_USERID")
 				.andCustomWhere("GroupMembers.GROUPID = ? AND ORG_Users.DELETED_TIME = -1", groupId);
@@ -201,6 +199,7 @@ public class GroupBeanImpl implements GroupBean {
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			List<GroupMember> members = new ArrayList<>();
+			UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId());
 			for(Map<String, Object> prop : props) {
 				members.add(FieldUtil.getAsBeanFromMap(prop, GroupMember.class));
 			}

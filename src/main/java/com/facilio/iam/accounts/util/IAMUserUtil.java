@@ -22,9 +22,11 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
@@ -361,4 +363,17 @@ public class IAMUserUtil {
 	public static boolean setDefaultOrg(long uid, long orgId) throws Exception {
 		return IAMUtil.getUserBean().setDefaultOrgv2(uid, orgId);
 	}
+	public static Map<Long, Map<String, Object>> getUserData(List<Long> uids, long orgId) throws Exception {
+		return IAMUtil.getUserBean().getUserDataForUids(uids, orgId);
+	}
+	
+	public static Map<Long, Map<String, Object>> getUserDataForOrg(long orgId) throws Exception {
+		return IAMUtil.getUserBean().getUserDataForOrg(orgId);
+	}
+	
+	public static Map<Long,Map<String, Object>> getIAMOrgUserData(Criteria criteria, long orgId) throws Exception {
+		return IAMUtil.getUserBean().getUserData(criteria, orgId);
+	}
+	
+	
 }

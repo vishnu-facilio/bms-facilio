@@ -87,7 +87,7 @@ public class LookupSpecialTypeUtil {
 			return userMap;
 		}
 		else if(FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
-			List<User> users = AccountUtil.getOrgBean().getRequesters(AccountUtil.getCurrentOrg().getOrgId());
+			List<User> users = AccountUtil.getOrgBean().getOrgPortalUsers(AccountUtil.getCurrentOrg().getOrgId());
 			Map<Long, String> userMap = new HashMap<Long, String>();
 			if (users != null) {
 				for (User usr : users) {
@@ -528,8 +528,7 @@ public class LookupSpecialTypeUtil {
 	
 	public static List<FacilioField> getAllFields(String specialType) {
 		if(FacilioConstants.ContextNames.USERS.equals(specialType) || FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
-			List<FacilioField> fields = AccountConstants.getAppUserFields();
-			fields.addAll(AccountConstants.getAppOrgUserFields());
+			List<FacilioField> fields =AccountConstants.getAppOrgUserFields();
 			return fields;
 		}
 		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {

@@ -576,14 +576,14 @@ public class AccountConstants {
 		}
 	}
 
-	public static FacilioModule getAppUserModule() {
-		FacilioModule userModule = new FacilioModule();
-		userModule.setName("app_user");
-		userModule.setDisplayName("App Users");
-		userModule.setTableName("Users");
-
-		return userModule;
-	}
+//	public static FacilioModule getAppUserModule() {
+//		FacilioModule userModule = new FacilioModule();
+//		userModule.setName("app_user");
+//		userModule.setDisplayName("App Users");
+//		userModule.setTableName("Users");
+//
+//		return userModule;
+//	}
 
 	public static FacilioModule getUserMobileSettingModule() {
 		FacilioModule userModule = new FacilioModule();
@@ -725,89 +725,89 @@ public class AccountConstants {
 //		return password;
 //	}
 
-	public static List<FacilioField> getAppUserFields() {
-		FacilioModule module = getAppUserModule();
-		List<FacilioField> fields = new ArrayList<>();
-
-		FacilioField uid = new FacilioField();
-		uid.setName("uid");
-		uid.setDataType(FieldType.NUMBER);
-		uid.setColumnName("USERID");
-		uid.setModule(module);
-		fields.add(uid);
-
-		FacilioField name = new FacilioField();
-		name.setName("name");
-		name.setDataType(FieldType.STRING);
-		name.setColumnName("NAME");
-		name.setModule(module);
-		fields.add(name);
-
-		FacilioField domainName = new FacilioField();
-		domainName.setName("domainName");
-		domainName.setDataType(FieldType.STRING);
-		domainName.setColumnName("DOMAIN_NAME");
-		domainName.setModule(module);
-		fields.add(domainName);
-
-//		FacilioField city = new FacilioField();
-//		city.setName("city");
-//		city.setDataType(FieldType.STRING);
-//		city.setColumnName("CITY");
-//		city.setModule(module);
-//		fields.add(city);
-
-		FacilioField userVerified = new FacilioField();
-		userVerified.setName("userVerified");
-		userVerified.setDataType(FieldType.BOOLEAN);
-		userVerified.setColumnName("USER_VERIFIED");
-		userVerified.setModule(module);
-		fields.add(userVerified);
-
-		FacilioField email = new FacilioField();
-		email.setName("email");
-		email.setDataType(FieldType.STRING);
-		email.setColumnName("EMAIL");
-		email.setModule(module);
-		fields.add(email);
-
-		FacilioField photoId = new FacilioField();
-		photoId.setName("photoId");
-		photoId.setDataType(FieldType.NUMBER);
-		photoId.setColumnName("PHOTO_ID");
-		photoId.setModule(module);
-		fields.add(photoId);
-
-		FacilioField timezone = new FacilioField();
-		timezone.setName("timezone");
-		timezone.setDataType(FieldType.STRING);
-		timezone.setColumnName("TIMEZONE");
-		timezone.setModule(module);
-		fields.add(timezone);
-
-		FacilioField language = new FacilioField();
-		language.setName("language");
-		language.setDataType(FieldType.STRING);
-		language.setColumnName("LANGUAGE");
-		language.setModule(module);
-		fields.add(language);
-
-		FacilioField phone = new FacilioField();
-		phone.setName("phone");
-		phone.setDataType(FieldType.STRING);
-		phone.setColumnName("PHONE");
-		phone.setModule(module);
-		fields.add(phone);
-
-		FacilioField mobile = new FacilioField();
-		mobile.setName("mobile");
-		mobile.setDataType(FieldType.STRING);
-		mobile.setColumnName("MOBILE");
-		mobile.setModule(module);
-		fields.add(mobile);
-
-		return fields;
-	}
+//	public static List<FacilioField> getAppUserFields() {
+//		FacilioModule module = getAppUserModule();
+//		List<FacilioField> fields = new ArrayList<>();
+//
+//		FacilioField uid = new FacilioField();
+//		uid.setName("uid");
+//		uid.setDataType(FieldType.NUMBER);
+//		uid.setColumnName("USERID");
+//		uid.setModule(module);
+//		fields.add(uid);
+//
+//		FacilioField name = new FacilioField();
+//		name.setName("name");
+//		name.setDataType(FieldType.STRING);
+//		name.setColumnName("NAME");
+//		name.setModule(module);
+//		fields.add(name);
+//
+//		FacilioField domainName = new FacilioField();
+//		domainName.setName("domainName");
+//		domainName.setDataType(FieldType.STRING);
+//		domainName.setColumnName("DOMAIN_NAME");
+//		domainName.setModule(module);
+//		fields.add(domainName);
+//
+////		FacilioField city = new FacilioField();
+////		city.setName("city");
+////		city.setDataType(FieldType.STRING);
+////		city.setColumnName("CITY");
+////		city.setModule(module);
+////		fields.add(city);
+//
+//		FacilioField userVerified = new FacilioField();
+//		userVerified.setName("userVerified");
+//		userVerified.setDataType(FieldType.BOOLEAN);
+//		userVerified.setColumnName("USER_VERIFIED");
+//		userVerified.setModule(module);
+//		fields.add(userVerified);
+//
+//		FacilioField email = new FacilioField();
+//		email.setName("email");
+//		email.setDataType(FieldType.STRING);
+//		email.setColumnName("EMAIL");
+//		email.setModule(module);
+//		fields.add(email);
+//
+//		FacilioField photoId = new FacilioField();
+//		photoId.setName("photoId");
+//		photoId.setDataType(FieldType.NUMBER);
+//		photoId.setColumnName("PHOTO_ID");
+//		photoId.setModule(module);
+//		fields.add(photoId);
+//
+//		FacilioField timezone = new FacilioField();
+//		timezone.setName("timezone");
+//		timezone.setDataType(FieldType.STRING);
+//		timezone.setColumnName("TIMEZONE");
+//		timezone.setModule(module);
+//		fields.add(timezone);
+//
+//		FacilioField language = new FacilioField();
+//		language.setName("language");
+//		language.setDataType(FieldType.STRING);
+//		language.setColumnName("LANGUAGE");
+//		language.setModule(module);
+//		fields.add(language);
+//
+//		FacilioField phone = new FacilioField();
+//		phone.setName("phone");
+//		phone.setDataType(FieldType.STRING);
+//		phone.setColumnName("PHONE");
+//		phone.setModule(module);
+//		fields.add(phone);
+//
+//		FacilioField mobile = new FacilioField();
+//		mobile.setName("mobile");
+//		mobile.setDataType(FieldType.STRING);
+//		mobile.setColumnName("MOBILE");
+//		mobile.setModule(module);
+//		fields.add(mobile);
+//
+//		return fields;
+//	}
 
 	public static FacilioModule getPortalInfoModule() {
 		FacilioModule portalInfoModule = new FacilioModule();
@@ -908,19 +908,19 @@ public class AccountConstants {
 		invitedTime.setModule(module);
 		fields.add(invitedTime);
 
-		FacilioField isDefaultOrg = new FacilioField();
-		isDefaultOrg.setName("isDefaultOrg");
-		isDefaultOrg.setDataType(FieldType.BOOLEAN);
-		isDefaultOrg.setColumnName("ISDEFAULT");
-		isDefaultOrg.setModule(module);
-		fields.add(isDefaultOrg);
-
-		FacilioField userStatus = new FacilioField();
-		userStatus.setName("userStatus");
-		userStatus.setDataType(FieldType.BOOLEAN);
-		userStatus.setColumnName("USER_STATUS");
-		userStatus.setModule(module);
-		fields.add(userStatus);
+//		FacilioField isDefaultOrg = new FacilioField();
+//		isDefaultOrg.setName("isDefaultOrg");
+//		isDefaultOrg.setDataType(FieldType.BOOLEAN);
+//		isDefaultOrg.setColumnName("ISDEFAULT");
+//		isDefaultOrg.setModule(module);
+//		fields.add(isDefaultOrg);
+//
+//		FacilioField userStatus = new FacilioField();
+//		userStatus.setName("userStatus");
+//		userStatus.setDataType(FieldType.BOOLEAN);
+//		userStatus.setColumnName("USER_STATUS");
+//		userStatus.setModule(module);
+//		fields.add(userStatus);
 
 		FacilioField inviteAcceptStatus = new FacilioField();
 		inviteAcceptStatus.setName("inviteAcceptStatus");

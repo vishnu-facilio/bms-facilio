@@ -28,6 +28,7 @@ import org.json.simple.parser.ParseException;
 
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.UserUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BreakContext;
 import com.facilio.bmsconsole.context.BusinessHourContext;
@@ -500,17 +501,9 @@ public class ShiftAPI {
 	}
 	
 	public static List<String> getAssociatedUserNames(long shiftId) throws Exception {
-		FacilioField name = new FacilioField();
-		name.setName("name");
-		name.setDataType(FieldType.STRING);
-		name.setColumnName("NAME");
-		name.setModule(AccountConstants.getAppUserModule());
-		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(Arrays.asList(name))
-				.table("Users")
-				.innerJoin("ORG_Users")
-				.on("Users.USERID = ORG_USERS.USERID")
+				.select(AccountConstants.getAppOrgUserFields())
+				.table("ORG_Users")
 				.innerJoin("Shift_User_Rel")
 				.on("ORG_Users.ORG_USERID = Shift_User_Rel.ORG_USERID")
 				.innerJoin("Shift")
@@ -519,6 +512,7 @@ public class ShiftAPI {
 				.andCondition(CriteriaAPI.getCondition("Shift.ORGID", "orgId", String.valueOf(AccountUtil.getCurrentOrg().getId()), NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
+		UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId());
 		
 		return props.stream().map(x -> {return StringEscapeUtils.escapeHtml4((String) x.get("name"));}).collect(Collectors.toList());
 	}

@@ -18,6 +18,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountConstants.UserType;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.UserUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
@@ -36,7 +37,6 @@ import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
 
@@ -107,18 +107,14 @@ public class OrgBeanImpl implements OrgBean {
 	public List<User> getAllOrgUsers(long orgId) throws Exception {
 		
 		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(AccountConstants.getAppUserFields());
 		fields.addAll(AccountConstants.getAppOrgUserFields());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
-				.table("Users")
-				.innerJoin("ORG_Users")
-				.on("Users.USERID = ORG_Users.USERID");
-		
+				.table("ORG_Users")
+		;
 		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("USER_TYPE", "userType", String.valueOf(AccountConstants.UserType.USER.getValue()), NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime","-1", NumberOperators.EQUALS));
 				
 		User currentUser = AccountUtil.getCurrentAccount().getUser();
 		if(currentUser == null){
@@ -163,6 +159,7 @@ public class OrgBeanImpl implements OrgBean {
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
+			UserUtil.setIAMUserProps(props, orgId);
 			for(Map<String, Object> prop : props) {
 				User user = UserBeanImpl.createUserFromProps(prop, true, true, false);
 				UserBean userBean = (UserBean) BeanFactory.lookup("UserBean", user.getOrgId());
@@ -176,10 +173,17 @@ public class OrgBeanImpl implements OrgBean {
 	
 	@Override
 	public List<User> getOrgUsers(long orgId, boolean status) throws Exception {
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(AccountConstants.getAppOrgUserFields());
-		Criteria criteria = new Criteria();
-		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("userStatus"), String.valueOf(status), NumberOperators.EQUALS));
-		return getOrgUsers(orgId, criteria);
+		List<User> userList = getOrgUsers(orgId, null);
+		if(CollectionUtils.isNotEmpty(userList)) {
+			List<User> finalUserList = new ArrayList<User>();
+			for(User user : userList) {
+				if(user.isActive() == status) {
+					finalUserList.add(user);
+				}
+			}
+			return finalUserList;
+		}
+		return null;
 	}
 	
 	@Override
@@ -187,8 +191,12 @@ public class OrgBeanImpl implements OrgBean {
 		List<Map<String, Object>> props = fetchOrgUserProps(orgId, criteria);
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
+			UserUtil.setIAMUserProps(props, orgId);
 			for(Map<String, Object> prop : props) {
-				users.add(UserBeanImpl.createUserFromProps(prop, true, false, false));
+				User user = UserBeanImpl.createUserFromProps(prop, true, false, false);
+				if(user.getUserType() == UserType.USER.getValue()) {
+					users.add(user);
+				}
 			}
 			return users;
 		}
@@ -200,9 +208,12 @@ public class OrgBeanImpl implements OrgBean {
 		List<Map<String, Object>> props = fetchOrgUserProps(orgId, criteria);
 		if (props != null && !props.isEmpty()) {
 			Map<Long, User> users = new HashMap<>();
+			UserUtil.setIAMUserProps(props, orgId);
 			for(Map<String, Object> prop : props) {
 				User user = UserBeanImpl.createUserFromProps(prop, true, false, false);
-				users.put(user.getId(), user);
+				if(user.getUserType() == UserType.USER.getValue()) {
+					users.put(user.getId(), user);
+				}
 			}
 			return users;
 		}
@@ -211,78 +222,32 @@ public class OrgBeanImpl implements OrgBean {
 	
 	private List<Map<String, Object>> fetchOrgUserProps (long orgId, Criteria criteria) throws Exception {
 		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(AccountConstants.getAppUserFields());
 		fields.addAll(AccountConstants.getAppOrgUserFields());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
-				.table("Users")
-				.innerJoin("ORG_Users")
-				.on("Users.USERID = ORG_Users.USERID")
-				.andCriteria(criteria);
+				.table("ORG_Users")
 				;
 		
+		if(criteria != null) {
+			selectBuilder.andCriteria(criteria);
+		}
 		selectBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("USER_TYPE", "userType", String.valueOf(AccountConstants.UserType.USER.getValue()), NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
 						
 		return selectBuilder.get();
 	}
 
 	public List<User> getActiveOrgUsers(long orgId) throws Exception {
 
-		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(AccountConstants.getAppUserFields());
-		fields.addAll(AccountConstants.getAppOrgUserFields());
-
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(fields)
-				.table("Users")
-				.innerJoin("ORG_Users")
-				.on("Users.USERID = ORG_Users.USERID");
-		
-		selectBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("INVITATION_ACCEPT_STATUS", "invitationStatus", "1", NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("USER_TYPE", "userType", String.valueOf(AccountConstants.UserType.USER.getValue()), NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("USER_STATUS", "userStatus", "1", NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("USER_VERIFIED", "userVerified", "1", NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedtime", "-1", NumberOperators.EQUALS));
-			
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			List<User> users = new ArrayList<>();
-			for(Map<String, Object> prop : props) {
-				users.add(UserBeanImpl.createUserFromProps(prop, true, false, false));
+		List<User> userList = getOrgUsers(orgId, null);
+		if(CollectionUtils.isNotEmpty(userList)) {
+			List<User> finalUserList = new ArrayList<User>();
+			for(User user : userList) {
+				if(user.isActive() && user.isUserVerified() && user.isInviteAcceptStatus()) {
+					finalUserList.add(user);
+				}
 			}
-			return users;
-		}
-		return null;
-	}
-	
-	public List<User> getRequesters(long orgId) throws Exception {
-		
-		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(AccountConstants.getAppUserFields());
-		fields.addAll(AccountConstants.getAppOrgUserFields());
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(fields)
-				.table("Users")
-				.innerJoin("ORG_Users")
-				.on("Users.USERID = ORG_Users.USERID");
-		
-		selectBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("USER_TYPE", "userType", String.valueOf(AccountConstants.UserType.REQUESTER.getValue()), NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedtime", "-1", NumberOperators.EQUALS));
-	
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			List<User> users = new ArrayList<>();
-			for(Map<String, Object> prop : props) {
-				users.add(UserBeanImpl.createUserFromProps(prop, true, false, false));
-			}
-			return users;
+			return finalUserList;
 		}
 		return null;
 	}
@@ -297,24 +262,21 @@ public class OrgBeanImpl implements OrgBean {
 		}
 		
 		List<FacilioField> fields = new ArrayList<>();
-		fields.addAll(AccountConstants.getAppUserFields());
-		fields.addAll(AccountConstants.getAppOrgUserFields());
+		 fields.addAll(AccountConstants.getAppOrgUserFields());
 		fields.add(AccountConstants.getOrgIdField(AccountConstants.getAppOrgUserModule()));
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(fields)
-				.table("Users")
-				.innerJoin("ORG_Users")
-				.on("Users.USERID = ORG_Users.USERID")
+				.table("ORG_Users")
 				.innerJoin("Role")
 				.on("ORG_Users.ROLE_ID = Role.ROLE_ID");
 		
 		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedtime", "-1", NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.ROLE_ID", "roleId", String.valueOf(superAdminRole.getRoleId()), NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
+			UserUtil.setIAMUserProps(props, orgId);
 			return UserBeanImpl.createUserFromProps(props.get(0), true, false, false);
 		}
 		return null;
@@ -383,33 +345,20 @@ public class OrgBeanImpl implements OrgBean {
 	@Override 
     public List<User> getOrgPortalUsers(long orgId) throws Exception { 
        
-        List<FacilioField> fields = new ArrayList<>(); 
-        FacilioModule orgUserModule = AccountConstants.getAppOrgUserModule();
-        FacilioModule userModule = AccountConstants.getAppUserModule();
-        
-        fields.addAll(AccountConstants.getAppOrgUserFields()); 
-        fields.addAll(AccountConstants.getAppUserFields()); 
-        GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder() 
-                .select(fields) 
-                .table(userModule.getTableName()) 
-                .innerJoin(orgUserModule.getTableName()) 
-                .on("Users.USERID = ORG_Users.USERID") ;
-        
-    	selectBuilder.andCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
-    	selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.USER_TYPE", "userType", String.valueOf(UserType.REQUESTER.getValue()), NumberOperators.EQUALS));
-    	selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
-        
-    	List<Map<String, Object>> props = selectBuilder.get(); 
-        if (props != null && !props.isEmpty()) { 
-            List<User> users = new ArrayList<>(); 
-            for(Map<String, Object> prop : props) { 
-                User user = UserBeanImpl.createUserFromProps(prop, true, true, true); 
-                user.setFacilioAuth(true); 
-                users.add(user); 
-            } 
-            return users; 
-        } 
-        return null; 
+		List<Map<String, Object>> props = fetchOrgUserProps(orgId, null);
+		if (props != null && !props.isEmpty()) {
+			List<User> users = new ArrayList<>();
+			UserUtil.setIAMUserProps(props, orgId);
+			for(Map<String, Object> prop : props) {
+				User user = UserBeanImpl.createUserFromProps(prop, true, false, false);
+				if(user.getUserType() == UserType.REQUESTER.getValue()) {
+					user.setFacilioAuth(true);
+					users.add(user);
+				}
+			}
+			return users;
+		}
+		return null;
     }
 
 	@Override

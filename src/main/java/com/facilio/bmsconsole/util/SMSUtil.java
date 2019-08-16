@@ -61,46 +61,46 @@ public class SMSUtil {
 	
 	public static String sendOtp(String phonenumber) throws Exception
 	{
-		SMSUtil otpsystem = new SMSUtil();
-		String otp = String.valueOf(((int)(Math.random()*(10000-1000)))+ 1000);
-		
-		String user = AccountConstants.getAppUserModule().getTableName();
-		
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(AccountConstants.getAppOrgUserFields())
-				.table(AccountConstants.getAppOrgUserModule().getTableName())
-				.innerJoin(user)
-				.on(AccountConstants.getAppOrgUserModule().getTableName()+".USERID = "+user+".USERID")
-				.andCustomWhere(user+".MOBILE = ? AND DELETED_TIME = -1", phonenumber);
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		Map<String, Object> prop = props.get(0);
-		Long ouid = (Long) prop.get("ouid");
-		
-		LOGGER.info("###############3The Org-User id is "+ouid);
-		
-		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-				.table(AccountConstants.getAppOrgUserModule().getTableName())
-				.fields(AccountConstants.getAppOrgUserFields())
-				.andCustomWhere("ORG_USERID = ?", ouid);
-		prop.put("otp", otp);
-		prop.put("otpTime", System.currentTimeMillis());
-		updateBuilder.update(prop);
-		
-		
-		otpsystem.setOtp(otp);
-		otpsystem.setPhonenumber(phonenumber);
-		otpsystem.setExpiryTime(System.currentTimeMillis() + 40000);
-		otpdata.put(phonenumber,otpsystem);
-		
-		
-		PhoneNumber tophone = new com.twilio.sdk.type.PhoneNumber(phonenumber);
-		PhoneNumber fromphone = new com.twilio.sdk.type.PhoneNumber("+16106248741");
-		
-		com.twilio.sdk.resource.api.v2010.account.Message tmessage = com.twilio.sdk.resource.api.v2010.account.Message.create(ACCOUNTS_ID,tophone , 
-				fromphone,"Your OTP is " +otpsystem.getOtp()).execute();
-		
-		System.out.println(tmessage.getSid());
+//		SMSUtil otpsystem = new SMSUtil();
+//		String otp = String.valueOf(((int)(Math.random()*(10000-1000)))+ 1000);
+//		
+//		String user = AccountConstants.getAppUserModule().getTableName();
+//		
+//		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+//				.select(AccountConstants.getAppOrgUserFields())
+//				.table(AccountConstants.getAppOrgUserModule().getTableName())
+//				.innerJoin(user)
+//				.on(AccountConstants.getAppOrgUserModule().getTableName()+".USERID = "+user+".USERID")
+//				.andCustomWhere(user+".MOBILE = ? AND DELETED_TIME = -1", phonenumber);
+//		
+//		List<Map<String, Object>> props = selectBuilder.get();
+//		Map<String, Object> prop = props.get(0);
+//		Long ouid = (Long) prop.get("ouid");
+//		
+//		LOGGER.info("###############3The Org-User id is "+ouid);
+//		
+//		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+//				.table(AccountConstants.getAppOrgUserModule().getTableName())
+//				.fields(AccountConstants.getAppOrgUserFields())
+//				.andCustomWhere("ORG_USERID = ?", ouid);
+//		prop.put("otp", otp);
+//		prop.put("otpTime", System.currentTimeMillis());
+//		updateBuilder.update(prop);
+//		
+//		
+//		otpsystem.setOtp(otp);
+//		otpsystem.setPhonenumber(phonenumber);
+//		otpsystem.setExpiryTime(System.currentTimeMillis() + 40000);
+//		otpdata.put(phonenumber,otpsystem);
+//		
+//		
+//		PhoneNumber tophone = new com.twilio.sdk.type.PhoneNumber(phonenumber);
+//		PhoneNumber fromphone = new com.twilio.sdk.type.PhoneNumber("+16106248741");
+//		
+//		com.twilio.sdk.resource.api.v2010.account.Message tmessage = com.twilio.sdk.resource.api.v2010.account.Message.create(ACCOUNTS_ID,tophone , 
+//				fromphone,"Your OTP is " +otpsystem.getOtp()).execute();
+//		
+//		System.out.println(tmessage.getSid());
 		
 		return "Otp Sent successfully";
 		
@@ -125,46 +125,46 @@ public class SMSUtil {
 	
 	public static String verifyOtp(String phonenumber, String otp) throws Exception
 	{
-		if(phonenumber == null || otp == null){
-			return "invalid Phonenumber and OTP Code";
-		}
-		
-		String user = AccountConstants.getAppUserModule().getTableName();
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(AccountConstants.getAppOrgUserFields())
-				.table(AccountConstants.getAppOrgUserModule().getTableName())
-				.innerJoin(user)
-				.on(AccountConstants.getAppOrgUserModule().getTableName()+".USERID = "+user+".USERID")
-				.andCustomWhere(user+".MOBILE = ? AND DELETED_TIME = -1", phonenumber);
-		
-		
-		List<Map<String, Object>> props = selectBuilder.get();
-		Map<String, Object> prop = props.get(0);
-		String otp_data = (String) prop.get("otp");
-		Long expiryTime = (Long) prop.get("otpTime") + 60000L;
-		Long ouid = (Long) prop.get("ouid");
-		
-		if (otp_data != null && otp_data.equals(otp)) {
-		
-			if (System.currentTimeMillis() > expiryTime){
-				
-				return "Otp has Expired";
-			}
-				
-			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-					.table(AccountConstants.getAppOrgUserModule().getTableName())
-					.fields(AccountConstants.getAppOrgUserFields())
-					.andCustomWhere("ORG_USERID = ?", ouid);
-
-			prop.put("otpTime", 0L);
-			updateBuilder.update(prop);
-		}
-		else
-		{
-			return "Otp Mismatch";
-		}
-	
-		
+//		if(phonenumber == null || otp == null){
+//			return "invalid Phonenumber and OTP Code";
+//		}
+//		
+//		String user = AccountConstants.getAppUserModule().getTableName();
+//		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+//				.select(AccountConstants.getAppOrgUserFields())
+//				.table(AccountConstants.getAppOrgUserModule().getTableName())
+//				.innerJoin(user)
+//				.on(AccountConstants.getAppOrgUserModule().getTableName()+".USERID = "+user+".USERID")
+//				.andCustomWhere(user+".MOBILE = ? AND DELETED_TIME = -1", phonenumber);
+//		
+//		
+//		List<Map<String, Object>> props = selectBuilder.get();
+//		Map<String, Object> prop = props.get(0);
+//		String otp_data = (String) prop.get("otp");
+//		Long expiryTime = (Long) prop.get("otpTime") + 60000L;
+//		Long ouid = (Long) prop.get("ouid");
+//		
+//		if (otp_data != null && otp_data.equals(otp)) {
+//		
+//			if (System.currentTimeMillis() > expiryTime){
+//				
+//				return "Otp has Expired";
+//			}
+//				
+//			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+//					.table(AccountConstants.getAppOrgUserModule().getTableName())
+//					.fields(AccountConstants.getAppOrgUserFields())
+//					.andCustomWhere("ORG_USERID = ?", ouid);
+//
+//			prop.put("otpTime", 0L);
+//			updateBuilder.update(prop);
+//		}
+//		else
+//		{
+//			return "Otp Mismatch";
+//		}
+//	
+//		
 //		if(otpdata.containsKey(phonenumber)){
 //		 SMSUtil newdata = otpdata.get(phonenumber);
 //		 if(newdata != null){

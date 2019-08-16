@@ -1563,10 +1563,7 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 			FacilioModule workOrderModule = modBean.getModule(FacilioConstants.ContextNames.WORK_ORDER);
 			FacilioModule ticketModule = modBean.getModule(FacilioConstants.ContextNames.TICKET);
 			FacilioModule orgUserModule = AccountConstants.getAppOrgUserModule();
-			FacilioModule userModule = AccountConstants.getAppUserModule();
 			FacilioModule resourceModule = modBean.getModule(FacilioConstants.ContextNames.RESOURCE);
-
-
 
 			List<FacilioField> workorderFields = modBean.getAllFields(workOrderModule.getName());
 			List<FacilioField> resourceFields = modBean.getAllFields(resourceModule.getName());
@@ -1587,28 +1584,16 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 
 			FacilioField userIdField = AccountConstants.getUserIdField(orgUserModule);
 
-			List<FacilioField> userFields = AccountConstants.getAppUserFields();
-			Map<String,FacilioField> userFieldMap = FieldFactory.getAsMap(userFields);
-
-			FacilioField userNameField = userFieldMap.get("name");
-			FacilioField userField = userNameField.clone();
-			userField.setName("user_name");
-			fields.add(userField);
-
-
 			FacilioField resourceNameField = resourceFieldMap.get("name");
 			FacilioField resourceField = resourceNameField.clone();
 			resourceField.setName("site_name");
 			fields.add(resourceField);
-
-
 
 			GenericSelectRecordBuilder selectRecordsBuilder = new GenericSelectRecordBuilder()
 					  													.table(workOrderModule.getTableName())
 					  													.select(fields)
 					  													.innerJoin(ticketModule.getTableName()).on(workOrderModule.getTableName() +".ID = "+ticketModule.getTableName()+".ID")
 					  													.innerJoin(orgUserModule.getTableName()).on(orgUserModule.getTableName() +".ORG_USERID = "+assignedToField.getCompleteColumnName())
-					  													.innerJoin(userModule.getTableName()).on(userIdField.getCompleteColumnName()+" = "+userModule.getTableName()+".USERID")
 					  													.innerJoin(resourceModule.getTableName()).on(workOrderModule.getTableName() +".SITE_ID = "+resourceModule.getTableName()+".ID")
 					  													.andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN))
 					  													.andCondition(CriteriaAPI.getCondition(FieldFactory.getSiteIdField(workOrderModule), CommonOperators.IS_NOT_EMPTY))
@@ -1616,13 +1601,21 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 					  													.andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".ORGID", "orgId", ""+AccountUtil.getCurrentOrg().getOrgId(), NumberOperators.EQUALS))
 																		.andCriteria(closedCriteria)
 																		.limit(Integer.parseInt(count))
-					  													.groupBy(assignedToField.getCompleteColumnName()+","+userIdField.getCompleteColumnName()+","+userField.getCompleteColumnName()+","+resourceField.getCompleteColumnName())
+					  													.groupBy(assignedToField.getCompleteColumnName()+","+userIdField.getCompleteColumnName()+","+resourceField.getCompleteColumnName())
 																		.orderBy(idCountField.getColumnName()+" DESC")
 			                                                            .andCustomWhere("ACTUAL_WORK_END <= DUE_DATE");
 
 
 
 		 List<Map<String, Object>> topNTechnicians = selectRecordsBuilder.get();
+		 if(CollectionUtils.isNotEmpty(topNTechnicians)) {
+			 Map<Long, User> orgUsers = AccountUtil.getOrgBean().getOrgUsersAsMap(AccountUtil.getCurrentOrg().getOrgId(), null);
+			 for(Map<String, Object> map : topNTechnicians) {
+				 long userId = (long)map.get("uid");
+				 User techDetails = orgUsers.get(userId);
+				 map.put("user_name", techDetails.getName());
+			 }
+		 }
 		 return topNTechnicians;
 
 	    }

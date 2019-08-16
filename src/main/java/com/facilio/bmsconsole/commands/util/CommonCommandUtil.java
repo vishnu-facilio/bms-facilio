@@ -446,37 +446,7 @@ public class CommonCommandUtil {
     	OrgBean bean = (OrgBean) BeanFactory.lookup("OrgBean", orgId);	
     	return bean.orgInfo();	
 	}
-    public static Boolean verifiedUser(long userID) throws Exception {
-//    	GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-//    	.andCustomWhere("", userID)
-//    	
-    	
-    	// System.out.println("TableNAme " + AccountConstants.getUserModule().getTableName());
-    //	System.out.println("ID" + userID);
-    	
-    	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(AccountConstants.getAppOrgUserFields())
-				.table(AccountConstants.getAppOrgUserModule().getTableName())
-				.andCustomWhere("ORG_USERID = ?", userID);
-    	
-    	List<Map<String, Object>> props = selectBuilder.get();
-    	Long ouid = null;
-		if (props != null && !props.isEmpty()) {
-			Map<String, Object> prop = props.get(0);
-			ouid = (Long) prop.get("uid");
-		}
-    	
-    	GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-		.table(AccountConstants.getAppUserModule().getTableName())
-		.fields(AccountConstants.getAppUserFields())
-		.andCustomWhere("USERID = ?", ouid );
-    	Map<String, Object> prop = new HashMap<>();
-	    prop.put("userVerified", true);
-	    updateBuilder.update(prop);
-    	
-    	return true;
-    }
-    public static JSONObject getOrgInfo() throws Exception {
+      public static JSONObject getOrgInfo() throws Exception {
     	
     	JSONObject result = new JSONObject();
     	FacilioModule module = AccountConstants.getOrgInfoModule();

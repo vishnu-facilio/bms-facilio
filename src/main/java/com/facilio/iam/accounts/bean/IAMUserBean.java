@@ -6,6 +6,7 @@ import java.util.Map;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
+import com.facilio.db.criteria.Criteria;
 
 public interface IAMUserBean {
 	
@@ -78,5 +79,11 @@ public interface IAMUserBean {
 
 	public IAMAccount getAccount(long userId, String orgDomain) throws Exception;
 
+	public Map<Long, Map<String, Object>> getUserData(Criteria criteria, long orgId) throws Exception;
+
+	public Map<Long, Map<String, Object>> getUserDataForUids(List<Long> userIds, long orgId) throws Exception;
 	
+	public Map<Long, Map<String, Object>> getUserDataForOrg(long orgId) throws Exception;
+
+
 }

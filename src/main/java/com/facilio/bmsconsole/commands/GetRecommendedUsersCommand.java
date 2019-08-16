@@ -5,6 +5,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.impl.UserBeanImpl;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.UserUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.constants.FacilioConstants;
@@ -126,8 +127,8 @@ public class GetRecommendedUsersCommand extends FacilioCommand {
     private List<User> getUserList(Role role, long groupId) throws Exception {
         Criteria criteria = new Criteria();
         criteria.addAndCondition(CriteriaAPI.getCondition("ROLE_ID", "roleId", String.valueOf(role.getRoleId()), PickListOperators.IS));
-
-        GenericSelectRecordBuilder selectRecordBuilder = UserBeanImpl.fetchUserSelectBuilder(criteria);
+        
+        GenericSelectRecordBuilder selectRecordBuilder = UserBeanImpl.fetchUserSelectBuilder(criteria, AccountUtil.getCurrentOrg().getOrgId());
 
         if (groupId > 0) {
             selectRecordBuilder.innerJoin(AccountConstants.getGroupMemberModule().getTableName())
@@ -139,6 +140,7 @@ public class GetRecommendedUsersCommand extends FacilioCommand {
         List<Map<String, Object>> userProps = selectRecordBuilder.get();
         List<User> usersWithRole = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(userProps)) {
+        	UserUtil.setIAMUserProps(userProps, AccountUtil.getCurrentOrg().getOrgId());
             for (Map<String, Object> prop : userProps) {
                 usersWithRole.add(UserBeanImpl.createUserFromProps(prop, false, false, false));
             }

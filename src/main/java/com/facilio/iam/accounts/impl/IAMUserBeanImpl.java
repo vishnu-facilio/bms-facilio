@@ -23,6 +23,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.util.EncryptionUtil;
 import com.facilio.fw.LRUCache;
 import com.facilio.iam.accounts.bean.IAMUserBean;
@@ -45,6 +46,7 @@ import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.db.transaction.FacilioTransactionManager;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
@@ -103,15 +105,6 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return (updatedRows > 0);
 	}
 	
-//	@Override
-//	public long inviteAdminConsoleUserv2(long orgId, IAMUser user) throws Exception {
-//		long userId = inviteUserv2(orgId, user, false);
-//		if(userId > 0) {
-//			acceptUserv2(user);
-//		}
-//		return userId;
-//	}
-
 
 	private long addUserv2(long orgId, IAMUser user, boolean emailRegRequired) throws Exception {
 
@@ -1059,6 +1052,54 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			return getAccount(email, portalDomain);
 		}
 		return null;
+	}
+
+
+	@Override
+	public Map<Long, Map<String, Object>> getUserData(Criteria criteria, long orgId) throws Exception {
+		// TODO Auto-generated method stub
+		List<FacilioField> fields = new ArrayList<>();
+		fields.addAll(IAMAccountConstants.getAccountsUserFields());
+		fields.addAll(IAMAccountConstants.getAccountsOrgUserFields());
+		fields.add(IAMAccountConstants.getOrgIdField(IAMAccountConstants.getOrgModule()));
+		
+		GenericSelectRecordBuilder selectBuilder = getFacilioUserBuilder(null, false);
+				
+		if(criteria != null) {
+			selectBuilder.andCriteria(criteria);
+		}
+		
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.DELETED_TIME", "deletedtime", String.valueOf(-1), NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> list = selectBuilder.get();
+		if(CollectionUtils.isNotEmpty(list)) {
+			Map<Long, Map<String, Object>> userMap = new HashMap<>();
+			for (Map<String, Object> prop : list) {
+				userMap.put((long)prop.get("uid"), prop);
+			}
+			return userMap;
+		}
+		return null;
+	}
+
+
+	@Override
+	public Map<Long, Map<String, Object>> getUserDataForUids(List<Long> userIds, long orgId) throws Exception {
+		// TODO Auto-generated method stub
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(IAMAccountConstants.getAccountsUserFields());
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("uid"), userIds, NumberOperators.EQUALS));
+		
+		return getUserData(criteria, orgId);
+		
+	}
+
+	@Override
+	public Map<Long, Map<String, Object>> getUserDataForOrg(long orgId) throws Exception {
+		// TODO Auto-generated method stub
+		return getUserData(null, orgId);
 	}
 	
 }
