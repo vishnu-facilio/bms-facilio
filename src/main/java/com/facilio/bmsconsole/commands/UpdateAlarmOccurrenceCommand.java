@@ -1,12 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -84,6 +87,21 @@ public class UpdateAlarmOccurrenceCommand extends FacilioCommand {
 					.fields(updateOnlyAlarmFields)
 					.andCondition(CriteriaAPI.getCondition("LAST_OCCURRENCE_ID", "lastOccurrenceId", StringUtils.join(recordIds, ','), NumberOperators.EQUALS));
 			alarmUpdateBuilder.update(baseAlarm);
+
+			List<AlarmOccurrenceContext> alarmOccurrences = NewAlarmAPI.getAlarmOccurrences(recordIds);
+			if (CollectionUtils.isNotEmpty(alarmOccurrences)) {
+				Map<String, List> recordMap = new HashMap<>();
+				for (AlarmOccurrenceContext occurrence: alarmOccurrences) {
+					String moduleName = NewAlarmAPI.getAlarmModuleName(occurrence.getAlarm().getTypeEnum());
+					List list = recordMap.get(moduleName);
+					if (list == null) {
+						list = new ArrayList();
+						recordMap.put(moduleName, list);
+					}
+					list.add(occurrence.getAlarm());
+				}
+				context.put(FacilioConstants.ContextNames.RECORD_MAP, recordMap);
+			}
 		}
 		return false;
 	}

@@ -292,7 +292,7 @@ public class NewAlarmAPI {
 		}
 	}
 
-	public static AlarmOccurrenceContext getAlarmOccurrence(long recordId) throws Exception {
+	public static List<AlarmOccurrenceContext> getAlarmOccurrences(List<Long> recordIds) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
 		List<FacilioField> allFields = modBean.getAllFields(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
@@ -304,14 +304,27 @@ public class NewAlarmAPI {
 				.module(module)
 				.select(allFields)
 				.fetchLookups(fetchLookupFields)
-				.beanClass(AlarmOccurrenceContext.class).andCondition(CriteriaAPI.getIdCondition(recordId, module));
-		AlarmOccurrenceContext alarmOccurrenceContext = builder.fetchFirst();
-		if (alarmOccurrenceContext != null) {
-			if (alarmOccurrenceContext.getAlarm() != null) {
-				alarmOccurrenceContext.setAlarm(getAlarm(alarmOccurrenceContext.getAlarm().getId()));
+				.beanClass(AlarmOccurrenceContext.class).andCondition(CriteriaAPI.getIdCondition(recordIds, module));
+		List<AlarmOccurrenceContext> occurrenceContexts = builder.get();
+		if (CollectionUtils.isNotEmpty(occurrenceContexts)) {
+			List<Long> alarmIds = new ArrayList<>();
+			for (AlarmOccurrenceContext alarmOccurrence: occurrenceContexts) {
+				alarmIds.add(alarmOccurrence.getAlarm().getId());
+			}
+			Map<Long, BaseAlarmContext> alarmMap = FieldUtil.getAsMap(getAlarms(alarmIds));
+			for (AlarmOccurrenceContext alarmOccurrence: occurrenceContexts) {
+				alarmOccurrence.setAlarm(alarmMap.get(alarmOccurrence.getAlarm().getId()));
 			}
 		}
-		return alarmOccurrenceContext;
+		return occurrenceContexts;
+	}
+
+	public static AlarmOccurrenceContext getAlarmOccurrence(long recordId) throws Exception {
+		List<AlarmOccurrenceContext> alarmOccurrences = getAlarmOccurrences(Collections.singletonList(recordId));
+		if (CollectionUtils.isNotEmpty(alarmOccurrences)) {
+			return alarmOccurrences.get(0);
+		}
+		return null;
 	}
 
 	public static List<AlarmOccurrenceContext> getReadingAlarmOccurrences(long entityId, long startTime, long endTime)
