@@ -12,19 +12,24 @@ import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BuildingOperator;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
@@ -360,5 +365,45 @@ public class NewAlarmAPI {
 
 		selectBuilder.andCriteria(criteria);
 		return selectBuilder;
+	}
+	public static Long getActiveAlarms(long spaceId) throws Exception
+	{
+		
+		FacilioField countFld = new FacilioField();
+		countFld.setName("active");
+		countFld.setColumnName("COUNT(*)");
+		countFld.setDataType(FieldType.NUMBER);
+
+		List<FacilioField> fields = new ArrayList<>();
+		fields.add(countFld);
+		
+		FacilioField resourceIdFld = new FacilioField();
+		resourceIdFld.setName("resourceId");
+		resourceIdFld.setColumnName("RESOURCE_ID");
+		resourceIdFld.setModule(ModuleFactory.getTicketsModule());
+		resourceIdFld.setDataType(FieldType.NUMBER);
+
+		Condition spaceCond = new Condition();
+		spaceCond.setField(resourceIdFld);
+		spaceCond.setOperator(BuildingOperator.BUILDING_IS);
+		spaceCond.setValue(spaceId+"");
+		
+		long orgId = AccountUtil.getCurrentOrg().getOrgId();
+		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+				.select(fields)
+				.table("BaseAlarm")
+				.innerJoin("Alarm_Severity")
+				.on("BaseAlarm.SEVERITY=Alarm_Severity.ID")
+				.andCustomWhere("BaseAlarm.ORGID=?",orgId)
+				.andCustomWhere("Alarm_Severity.SEVERITY != ?",FacilioConstants.Alarm.CLEAR_SEVERITY)
+				//.andCondition(getSpaceCondition(spaceId));
+				.andCondition(spaceCond);
+		List<Map<String, Object>> rs = builder.get();
+		if(rs.isEmpty()) {
+			return 0L;
+		}
+		
+		return ((Number) rs.get(0).get("active")).longValue();
+		
 	}
 }

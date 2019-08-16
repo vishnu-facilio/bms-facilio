@@ -205,6 +205,36 @@
 							  return resultMap;
 							}"
 		},
+		"4": {
+			"description" : "portfolioAlarmCardData",
+			"usage" : "total consumption,baseline consumption,carbon saved for MV summary",
+			"workflow" : "Map openalarms()
+		     {
+                clearCondition = {
+                   criteria :[severity == \"Clear\" ],
+                 }
+                 alarmSevrityModule = Module(\"alarmseverity\");
+                 AlarmSeverityContext clearSeverityContext = alarmSevrityModule.fetch(clearCondition);
+                 clearId = clearSeverityContext.get(0).get(\"id\");
+                 activeAssetcri = {
+					criteria : [severity != clearId  ],
+                    field : \"id\",
+                   	aggregation : \"count\",
+				  };
+               	unAcknowledgedCri = {
+                 	criteria : [severity != clearId && acknowledged == false  ] ,
+                 	field : \"id\",
+                   	aggregation : \"count\",
+               	}
+		        readingAlarmModule = Module(\"newreadingalarm\");
+		        activeRecord = readingAlarmModule.fetch(activeAssetcri);
+               	unAckRecord = readingAlarmModule.fetch(unAcknowledgedCri);
+                resultMap = {};
+                resultMap[\"active\"] = activeRecord;
+               	resultMap[\"unacknowledged\"] = unAckRecord;
+                return resultMap;
+		    }"
+		},
 		"50": {
         	"description" : "ruleNewAlarmsDetails",
         	"usage" : "rulesNewSummary",
