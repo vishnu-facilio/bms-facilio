@@ -244,9 +244,10 @@ public class PermissionUtil {
 
 	public static boolean currentUserHasPermission(String moduleName, String action) throws Exception {
 		Role role = AccountUtil.getCurrentUser().getRole();
-
-		if(role.getName().equals(AccountConstants.DefaultSuperAdmin.SUPER_ADMIN) || role.getName().equals(AccountConstants.DefaultSuperAdmin.ADMINISTRATOR)) {
-			return true;
+		if (role != null) {
+			if(role.getName().equals(AccountConstants.DefaultSuperAdmin.SUPER_ADMIN) || role.getName().equals(AccountConstants.DefaultSuperAdmin.ADMINISTRATOR)) {
+				return true;
+			}
 		}
 		FacilioModule module = null;
 //		if(!isSpecialModule(moduleName)) {
