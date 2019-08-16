@@ -6,21 +6,14 @@ import java.util.function.Function;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.context.*;
 import com.facilio.modules.fields.LookupField;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
-import com.facilio.bmsconsole.context.AlarmSeverityContext;
-import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
-import com.facilio.bmsconsole.context.BaseEventContext;
-import com.facilio.bmsconsole.context.MLAnomalyAlarm;
-import com.facilio.bmsconsole.context.RCAAlarm;
-import com.facilio.bmsconsole.context.ReadingAlarm;
-import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
@@ -37,7 +30,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 
 public class NewAlarmAPI {
-	
+
 	private static final Logger LOGGER = Logger.getLogger(NewAlarmAPI.class.getName());
 
 	public static List<BaseAlarmContext> getAlarms(List<Long> ids) throws Exception {
@@ -100,15 +93,19 @@ public class NewAlarmAPI {
 		}
 
 		switch (type) {
-		case READING_ALARM:
-			return ReadingAlarm.class;
-		case ML_ANOMALY_ALARM:
-			return MLAnomalyAlarm.class;
-		case RCA_ALARM:
-			return RCAAlarm.class;
+			case READING_ALARM:
+				return ReadingAlarm.class;
+			case ML_ANOMALY_ALARM:
+				return MLAnomalyAlarm.class;
+			case RCA_ALARM:
+				return RCAAlarm.class;
+			case READING_RCA_ALARM:
+				return ReadingRCAAlarm.class;
+			case BMS_ALARM:
+				return BMSAlarmContext.class;
 
-		default:
-			throw new IllegalArgumentException("Invalid alarm type");
+			default:
+				throw new IllegalArgumentException("Invalid alarm type");
 		}
 	}
 
@@ -118,15 +115,19 @@ public class NewAlarmAPI {
 		}
 
 		switch (type) {
-		case READING_ALARM:
-			return "newreadingalarm";
-		case ML_ANOMALY_ALARM:
-			return "mlanomalyalarm";
-		case RCA_ALARM:
-			return "rcaalarm";
+			case READING_ALARM:
+				return "newreadingalarm";
+			case ML_ANOMALY_ALARM:
+				return "mlanomalyalarm";
+			case RCA_ALARM:
+				return "rcaalarm";
+			case READING_RCA_ALARM:
+				return "readingrcaalarm";
+			case BMS_ALARM:
+				return "bmsalarm";
 
-		default:
-			throw new IllegalArgumentException("Invalid alarm type");
+			default:
+				throw new IllegalArgumentException("Invalid alarm type");
 		}
 	}
 
@@ -144,18 +145,18 @@ public class NewAlarmAPI {
 				.orderBy("CREATED_TIME DESC, ID DESC").limit(1);
 		return builder.fetchFirst();
 	}
-	
+
 	public static Map<Long, AlarmOccurrenceContext> getLatestAlarmOccuranceMap(List<BaseAlarmContext> baseAlarms) throws Exception {
 		if (baseAlarms == null) {
 			return null;
 		}
-		
+
 		List<Long> ids = baseAlarms.stream().map(alarm -> alarm.getId()).collect(Collectors.toList());
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		
+
 		SelectRecordsBuilder<AlarmOccurrenceContext> builder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
 				.beanClass(AlarmOccurrenceContext.class).moduleName(FacilioConstants.ContextNames.ALARM_OCCURRENCE)
 				.select(fields)
@@ -236,7 +237,7 @@ public class NewAlarmAPI {
 	}
 
 	private static void addAlarmOccurrence(AlarmOccurrenceContext alarmOccurrence, BaseEventContext baseEvent,
-			boolean mostRecent) throws Exception {
+										   boolean mostRecent) throws Exception {
 		rollUpAlarm(alarmOccurrence, baseEvent, mostRecent);
 	}
 
@@ -248,7 +249,7 @@ public class NewAlarmAPI {
 	}
 
 	private static void rollUpAlarm(AlarmOccurrenceContext alarmOccurrence, BaseEventContext baseEvent,
-			boolean mostRecent) throws Exception {
+									boolean mostRecent) throws Exception {
 		if (!mostRecent) {
 			return;
 		}
@@ -320,14 +321,14 @@ public class NewAlarmAPI {
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		SelectRecordsBuilder<AlarmOccurrenceContext> selectBuilder = getAlarmBuilder(startTime, endTime, fields,
 				fieldMap)
-						.andCondition(CriteriaAPI.getCondition(fieldMap.get("alarm"), String.valueOf(entityId),
-								NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("alarm"), String.valueOf(entityId),
+						NumberOperators.EQUALS));
 
 		return selectBuilder.get();
 	}
 
 	private static SelectRecordsBuilder<AlarmOccurrenceContext> getAlarmBuilder(long startTime, long endTime,
-			List<FacilioField> fields, Map<String, FacilioField> fieldMap) {
+																				List<FacilioField> fields, Map<String, FacilioField> fieldMap) {
 		SelectRecordsBuilder<AlarmOccurrenceContext> selectBuilder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
 				.select(fields).moduleName(FacilioConstants.ContextNames.ALARM_OCCURRENCE)
 				.beanClass(AlarmOccurrenceContext.class)

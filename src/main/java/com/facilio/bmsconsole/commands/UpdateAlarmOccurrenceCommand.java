@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioContext;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -49,6 +52,7 @@ public class UpdateAlarmOccurrenceCommand extends FacilioCommand {
 			}
 			if (alarmOccurrence.getSeverity() != null && alarmOccurrence.getSeverity().equals(AlarmAPI.getAlarmSeverity("Clear"))) {
 				alarmOccurrence.setClearedTime(currentTimeMillis);
+				CommonCommandUtil.addEventType(EventType.ALARM_CLEARED, (FacilioContext) context);
 			}
 
 			Condition idCondition = CriteriaAPI.getIdCondition(recordIds, occurrenceModule);
