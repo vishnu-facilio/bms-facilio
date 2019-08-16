@@ -85,91 +85,93 @@ public class ScopeInterceptor extends AbstractInterceptor {
 					PortalInfoContext portalInfo = AccountUtil.getOrgBean().getPortalInfo(currentAccount.getOrg().getOrgId(), false);
 					currentAccount.getOrg().setPortalId(portalInfo.getPortalId());
 				}
-				if(currentAccount.getUser() != null) {
-					List<Long> accessibleSpace = null;
-					if (currentAccount.getUser() != null) {
-						accessibleSpace = currentAccount.getUser().getAccessibleSpace();
-					}
-					if (currentAccount != null) {
-						List<Long> sites = CommonCommandUtil.getMySiteIds();
-						if (sites != null && sites.size() == 1) {
-							currentAccount.setCurrentSiteId(sites.get(0));
-							if (accessibleSpace == null) {
-								accessibleSpace = new ArrayList<>();
-								accessibleSpace.add(sites.get(0));
-								currentAccount.getUser().setAccessibleSpace(accessibleSpace);
-							}
-						} else {
-							String currentSite = request.getHeader("X-current-site");
-							long currentSiteId = -1;
-							if (currentSite != null && !currentSite.isEmpty()) {
-								try {
-									currentSiteId = Long.valueOf(currentSite);
-								} catch (NumberFormatException ex) {
-									// ignore if header value is wrong
-								}
-								if (currentSiteId != -1 && sites != null && !sites.isEmpty()) {
-									boolean found = false;
-									for (long id: sites) {
-										if (id == currentSiteId) {
-											found = true;
-											break;
-										}
-									}
-									if (!found) {
-										throw new IllegalArgumentException("Invalid Site.");
-									}
-								}
-								currentAccount.setCurrentSiteId(currentSiteId);
-								if (currentSiteId != -1 && accessibleSpace == null) {
+				else {
+					if(currentAccount.getUser() != null) {
+						List<Long> accessibleSpace = null;
+						if (currentAccount.getUser() != null) {
+							accessibleSpace = currentAccount.getUser().getAccessibleSpace();
+						}
+						if (currentAccount != null) {
+							List<Long> sites = CommonCommandUtil.getMySiteIds();
+							if (sites != null && sites.size() == 1) {
+								currentAccount.setCurrentSiteId(sites.get(0));
+								if (accessibleSpace == null) {
 									accessibleSpace = new ArrayList<>();
-									accessibleSpace.add(currentSiteId);
+									accessibleSpace.add(sites.get(0));
 									currentAccount.getUser().setAccessibleSpace(accessibleSpace);
 								}
+							} else {
+								String currentSite = request.getHeader("X-current-site");
+								long currentSiteId = -1;
+								if (currentSite != null && !currentSite.isEmpty()) {
+									try {
+										currentSiteId = Long.valueOf(currentSite);
+									} catch (NumberFormatException ex) {
+										// ignore if header value is wrong
+									}
+									if (currentSiteId != -1 && sites != null && !sites.isEmpty()) {
+										boolean found = false;
+										for (long id: sites) {
+											if (id == currentSiteId) {
+												found = true;
+												break;
+											}
+										}
+										if (!found) {
+											throw new IllegalArgumentException("Invalid Site.");
+										}
+									}
+									currentAccount.setCurrentSiteId(currentSiteId);
+									if (currentSiteId != -1 && accessibleSpace == null) {
+										accessibleSpace = new ArrayList<>();
+										accessibleSpace.add(currentSiteId);
+										currentAccount.getUser().setAccessibleSpace(accessibleSpace);
+									}
+								}
 							}
 						}
-					}
-					request.setAttribute("ORGID", currentAccount.getOrg().getOrgId());
-					request.setAttribute("USERID", currentAccount.getUser().getOuid());
-										
-	
-					String timezoneVar = null;
-					if (AccountUtil.getCurrentAccount().getCurrentSiteId() > 0)
-					{
-						SiteContext site = SpaceAPI.getSiteSpace(AccountUtil.getCurrentAccount().getCurrentSiteId());
-						if(site != null) {
-							timezoneVar = site.getTimeZone();
+						request.setAttribute("ORGID", currentAccount.getOrg().getOrgId());
+						request.setAttribute("USERID", currentAccount.getUser().getOuid());
+											
+		
+						String timezoneVar = null;
+						if (AccountUtil.getCurrentAccount().getCurrentSiteId() > 0)
+						{
+							SiteContext site = SpaceAPI.getSiteSpace(AccountUtil.getCurrentAccount().getCurrentSiteId());
+							if(site != null) {
+								timezoneVar = site.getTimeZone();
+							}
 						}
+						if (StringUtils.isEmpty(timezoneVar))
+						{
+							timezoneVar = AccountUtil.getCurrentOrg().getTimezone();
+						}
+						AccountUtil.setTimeZone(timezoneVar);
+						
+						Parameter action = ActionContext.getContext().getParameters().get("permission"); 
+	                    Parameter moduleName = ActionContext.getContext().getParameters().get("moduleName"); 
+	                    if (action != null && action.getValue() != null && moduleName != null && moduleName.getValue() != null && !isAuthorizedAccess(moduleName.getValue(), action.getValue())) { 
+	                        return "unauthorized"; 
+	                    } 
+						
+						String lang = currentAccount.getUser().getLanguage();
+						Locale localeObj = null;
+						if (lang == null || lang.trim().isEmpty()) {
+							localeObj = request.getLocale();
+						} else {
+							localeObj = new Locale(lang);
+						}
+		
+						String timezone = currentAccount.getUser().getTimezone();
+						TimeZone timezoneObj = null;
+						if (timezone == null || timezone.trim().isEmpty()) {
+							Calendar calendar = Calendar.getInstance(localeObj);
+							timezoneObj = calendar.getTimeZone();
+						} else {
+							timezoneObj = TimeZone.getTimeZone(timezone);
+						}
+						ActionContext.getContext().getSession().put("TIMEZONE", timezoneObj);
 					}
-					if (StringUtils.isEmpty(timezoneVar))
-					{
-						timezoneVar = AccountUtil.getCurrentOrg().getTimezone();
-					}
-					AccountUtil.setTimeZone(timezoneVar);
-					
-					Parameter action = ActionContext.getContext().getParameters().get("permission"); 
-                    Parameter moduleName = ActionContext.getContext().getParameters().get("moduleName"); 
-                    if (action != null && action.getValue() != null && moduleName != null && moduleName.getValue() != null && !isAuthorizedAccess(moduleName.getValue(), action.getValue())) { 
-                        return "unauthorized"; 
-                    } 
-					
-					String lang = currentAccount.getUser().getLanguage();
-					Locale localeObj = null;
-					if (lang == null || lang.trim().isEmpty()) {
-						localeObj = request.getLocale();
-					} else {
-						localeObj = new Locale(lang);
-					}
-	
-					String timezone = currentAccount.getUser().getTimezone();
-					TimeZone timezoneObj = null;
-					if (timezone == null || timezone.trim().isEmpty()) {
-						Calendar calendar = Calendar.getInstance(localeObj);
-						timezoneObj = calendar.getTimeZone();
-					} else {
-						timezoneObj = TimeZone.getTimeZone(timezone);
-					}
-					ActionContext.getContext().getSession().put("TIMEZONE", timezoneObj);
 				}
 			} else {
 				String authRequired = ActionContext.getContext().getParameters().get("auth").getValue();
