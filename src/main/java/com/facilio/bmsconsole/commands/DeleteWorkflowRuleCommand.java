@@ -23,6 +23,9 @@ public class DeleteWorkflowRuleCommand extends FacilioCommand {
 			if(readingAlarmRules != null && !readingAlarmRules.isEmpty()) {
 				readingAlarmRuleIds.addAll(readingAlarmRules.stream().map(ReadingAlarmRuleContext::getId).collect(Collectors.toList()));
 			}
+			else {
+				readingAlarmRuleIds.add(ruleId);
+			}
 		}
 		WorkflowRuleAPI.deleteWorkFlowRules(readingAlarmRuleIds);
 		

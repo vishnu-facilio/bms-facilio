@@ -5,10 +5,8 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
-import org.apache.tiles.request.collection.CollectionUtil;
 
 import com.facilio.bmsconsole.actions.FacilioAction;
-import com.facilio.bmsconsole.actions.WorkflowRuleAction;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ResourceContext;
@@ -124,29 +122,43 @@ public class ControlActionAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	public String updateReadingAlarmRule() throws Exception {
+	public String updateControlActionRule() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
 		
-		context.put(FacilioConstants.ContextNames.READING_ALARM_RULES, Collections.singletonList(readingAlarmRuleContext));
-		context.put(FacilioConstants.ContextNames.RULE_TYPE, RuleType.CONTROL_ACTION_READING_ALARM_RULE);
-		
-		Chain addReadingAlarmRuleChain = TransactionChainFactory.updateReadingAlarmRuleChain();
-		addReadingAlarmRuleChain.execute(context);
-		
-		setResult(FacilioConstants.ContextNames.READING_ALARM_RULE, readingAlarmRuleContext);
+		if(readingAlarmRuleContext != null) {
+			context.put(FacilioConstants.ContextNames.READING_ALARM_RULES, Collections.singletonList(readingAlarmRuleContext));
+			context.put(FacilioConstants.ContextNames.RULE_TYPE, RuleType.CONTROL_ACTION_READING_ALARM_RULE);
+			
+			Chain addReadingAlarmRuleChain = TransactionChainFactory.updateReadingAlarmRuleChain();
+			addReadingAlarmRuleChain.execute(context);
+			
+			setResult(FacilioConstants.ContextNames.READING_ALARM_RULE, readingAlarmRuleContext);
+		}
+		else if (workflowRuleContext != null) {
+			
+			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
+			workflowRuleContext.setRuleType(RuleType.CONTROL_ACTION_SCHEDULED_RULE);
+			
+			Chain addWorkflowRuleChain = TransactionChainFactory.updateWorkflowRuleChain();
+			addWorkflowRuleChain.execute(context);
+			
+			setResult(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
+		}
 		
 		return SUCCESS;
 	}
 	
-	public String deleteReadingAlarmRule() throws Exception {
+	public String deleteControlActionRule() throws Exception {
+		
 		
 		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ID, Collections.singletonList(ruleId));
 		
-		context.put(FacilioConstants.ContextNames.RULE_ID, ruleId);
+		Chain deleteRule = TransactionChainFactory.getDeleteWorkflowRuleChain();
+		deleteRule.execute(context);
 		
-		Chain addReadingAlarmRuleChain = TransactionChainFactory.deleteReadingAlarmRuleChain();
-		addReadingAlarmRuleChain.execute(context);
+		setResult("result", context.get(FacilioConstants.ContextNames.RESULT));
 		
 		return SUCCESS;
 	}

@@ -15,6 +15,8 @@ import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingAlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.ModuleFactory;
 
 public class UpdateReadingAlarmRuleCommand extends FacilioCommand {
 
@@ -62,6 +64,8 @@ public class UpdateReadingAlarmRuleCommand extends FacilioCommand {
 				}
 				
 				WorkflowRuleAPI.updateWorkflowRule(readingAlarmRuleContext);
+				
+				WorkflowRuleAPI.updateExtendedRule(readingAlarmRuleContext, ModuleFactory.getReadingAlarmRuleModule(), FieldFactory.getReadingAlarmRuleFields());
 				
 				ActionAPI.deleteAllActionsFromWorkflowRules(Collections.singletonList(readingAlarmRuleContext.getId()));
 				

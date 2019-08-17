@@ -292,7 +292,7 @@ public class WorkflowRuleAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, id);
 		
-		Chain deleteRule = FacilioChainFactory.getDeleteWorkflowRuleChain();
+		Chain deleteRule = TransactionChainFactory.getDeleteWorkflowRuleChain();
 		deleteRule.execute(context);
 		
 		setResult("result", context.get(FacilioConstants.ContextNames.RESULT));

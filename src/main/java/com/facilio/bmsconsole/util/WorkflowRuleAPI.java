@@ -53,6 +53,7 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -871,6 +872,9 @@ public class WorkflowRuleAPI {
 					}
 					else if(EventType.SCHEDULED.isPresent(rule.getEvent().getActivityType()) && rule.getRuleType() == RuleType.RECORD_SPECIFIC_RULE.getIntVal()) {
 						SingleRecordRuleAPI.deleteRecordSpecificRuleJob(rule);
+					}
+					else if (EventType.SCHEDULED_READING_RULE.isPresent(rule.getEvent().getActivityType())) {
+						FacilioTimer.deleteJob(rule.getId(), FacilioConstants.Job.SCHEDULED_READING_RULE_JOB_NAME);
 					}
 				}
 			}

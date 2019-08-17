@@ -1240,12 +1240,6 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
-	public static Chain getDeleteWorkflowRuleChain() {
-		Chain c = FacilioChain.getTransactionChain();
-		c.addCommand(new DeleteWorkflowRuleCommand());
-		return c;
-	}
-	
 	public static Chain getReadingRulesOfFieldsChain() {
 		Chain c = FacilioChain.getNonTransactionChain();
 		c.addCommand(new GetReadingRulesFromFieldsCommand());

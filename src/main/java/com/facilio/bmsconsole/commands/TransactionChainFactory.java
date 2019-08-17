@@ -1156,7 +1156,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddWorkflowRuleCommand());
 			c.addCommand(new AddActionsForWorkflowRule());
-			c.addCommand(new AddJobEntryForScheduledReadingRuleCommand());
+			c.addCommand(new AddOrUpdateJobEntryForScheduledReadingRuleCommand());
 			return c;
 		}
 		
@@ -1193,6 +1193,7 @@ public class TransactionChainFactory {
 			c.addCommand(new UpdateWorkflowRuleCommand());
 			c.addCommand(new DeleterOldRuleActionsCommand());
 			c.addCommand(new AddActionsForWorkflowRule());
+			c.addCommand(new AddOrUpdateJobEntryForScheduledReadingRuleCommand());
 			return c;
 		}
 		
@@ -1200,7 +1201,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(new AddAlarmRuleCommand());
 			c.addCommand(new AddActionForAlarmRuleCommand());
-			c.addCommand(new AddJobEntryForScheduledReadingRuleCommand());
+			c.addCommand(new AddOrUpdateJobEntryForScheduledReadingRuleCommand());
 			c.addCommand(new AddReadingAlarmRuleCommand());
 			return c;
 		}
@@ -1223,9 +1224,9 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
-		public static Chain deleteReadingAlarmRuleChain() {
-			Chain c = getDefaultChain();
-			c.addCommand(new DeleteReadingAlarmRuleCommand());
+		public static Chain getDeleteWorkflowRuleChain() {
+			Chain c = FacilioChain.getTransactionChain();
+			c.addCommand(new DeleteWorkflowRuleCommand());
 			return c;
 		}
 		
@@ -1233,7 +1234,7 @@ public class TransactionChainFactory {
 			Chain c = getDefaultChain();
 			c.addCommand(new UpdateAlarmRuleCommand());
 			c.addCommand(new AddActionForAlarmRuleCommand());
-			c.addCommand(new AddJobEntryForScheduledReadingRuleCommand());
+			c.addCommand(new AddOrUpdateJobEntryForScheduledReadingRuleCommand());
 			c.addCommand(new AddReadingAlarmRuleCommand());
 			return c;
 		}

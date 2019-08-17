@@ -373,11 +373,11 @@
 		<action name="addControlActionRule"
 		class="com.facilio.controlaction.action.ControlActionAction" method="addControlActionRule"></action>
 		
-		<action name="updateReadingAlarmRule"
-		class="com.facilio.controlaction.action.ControlActionAction" method="updateReadingAlarmRule"></action>
+		<action name="updateControlActionRule"
+		class="com.facilio.controlaction.action.ControlActionAction" method="updateControlActionRule"></action>
 		
-		<action name="deleteReadingAlarmRule"
-		class="com.facilio.controlaction.action.ControlActionAction" method="deleteReadingAlarmRule"></action>
+		<action name="deleteControlActionRule"
+		class="com.facilio.controlaction.action.ControlActionAction" method="deleteControlActionRule"></action>
 		
 		<action name="getControlActionRules"
 		class="com.facilio.controlaction.action.ControlActionAction" method="getControlActionRules"></action>
