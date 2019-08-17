@@ -5,10 +5,12 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
+import org.apache.tiles.request.collection.CollectionUtil;
 
 import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.actions.WorkflowRuleAction;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
@@ -27,6 +29,15 @@ public class ControlActionAction extends FacilioAction {
 	long resourceId = -1;
 	long fieldId = -1;
 	String value;
+	
+	public ReadingDataMeta getRdm() {
+		return rdm;
+	}
+	public void setRdm(ReadingDataMeta rdm) {
+		this.rdm = rdm;
+	}
+
+	ReadingDataMeta rdm;
 	
 	long ruleId;
 	
@@ -136,6 +147,21 @@ public class ControlActionAction extends FacilioAction {
 		
 		Chain addReadingAlarmRuleChain = TransactionChainFactory.deleteReadingAlarmRuleChain();
 		addReadingAlarmRuleChain.execute(context);
+		
+		return SUCCESS;
+	}
+	
+	public String updateRDM() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		
+		context.put(FacilioConstants.ContextNames.READING_DATA_META_LIST, Collections.singletonList(rdm));
+		
+		Chain addReadingAlarmRuleChain = TransactionChainFactory.updateReadingDataMetaChain();
+		addReadingAlarmRuleChain.execute(context);
+		
+		
+		setResult("rdm", rdm);
 		
 		return SUCCESS;
 	}
