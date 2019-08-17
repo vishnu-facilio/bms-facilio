@@ -196,6 +196,25 @@ public class ControlActionAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String getControlActionRule() throws Exception {
+		
+		
+		WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(ruleId, true, true, true);
+		
+		if(rule.getRuleTypeEnum() == RuleType.CONTROL_ACTION_SCHEDULED_RULE) {
+			
+			workflowRuleContext = rule;
+			setResult(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
+		}
+		else if (rule.getRuleTypeEnum() == RuleType.CONTROL_ACTION_READING_ALARM_RULE) {
+			
+			readingAlarmRuleContext = (ReadingAlarmRuleContext)rule;
+			setResult(FacilioConstants.ContextNames.READING_ALARM_RULE, readingAlarmRuleContext);
+		}
+		
+		return SUCCESS;
+	}
+	
 	public String setReadingValue() throws Exception {
 		
 		if(resourceId <= 0 || fieldId <= 0 || value == null) {

@@ -382,6 +382,9 @@
 		<action name="getControlActionRules"
 		class="com.facilio.controlaction.action.ControlActionAction" method="getControlActionRules"></action>
 		
+		<action name="getControlActionRule"
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControlActionRule"></action>
+		
 		<action name="updateRDM"
 		class="com.facilio.controlaction.action.ControlActionAction" method="updateRDM"></action>
 	</package>
