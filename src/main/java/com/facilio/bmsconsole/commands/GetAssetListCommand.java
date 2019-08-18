@@ -127,7 +127,7 @@ public class GetAssetListCommand extends FacilioCommand {
 		else {
 			Boolean withWritableReadings = (Boolean) context.get(FacilioConstants.ContextNames.WITH_WRITABLE_READINGS);
 			if (withWritableReadings != null && withWritableReadings) {
-		        builder.andCustomWhere("exists(select 1 from Reading_Data_Meta r where r.ORGID=? and r.RESOURCE_ID=Assets.ID and r.READING_TYPE=2 and r.VALUE <> '-1' and r.VALUE IS NOT NULL)", AccountUtil.getCurrentOrg().getId());		
+		        builder.andCustomWhere("exists(select 1 from Reading_Data_Meta r where r.ORGID=? and r.RESOURCE_ID=Assets.ID and r.IS_CONTROLLABLE=1 and r.VALUE <> '-1' and r.VALUE IS NOT NULL)", AccountUtil.getCurrentOrg().getId());		
 			}
 		}
 		Long readingId = (Long) context.get(FacilioConstants.ContextNames.READING_ID);
