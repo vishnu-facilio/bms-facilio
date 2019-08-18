@@ -185,5 +185,10 @@ public class IAMUserUtil {
 		return  FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserData(criteria, orgId));
 	}
 	
+	public static boolean rollbackUserAdded(IAMUser user, long orgId) throws Exception {
+		user.setOrgId(orgId);
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().deleteUserv2(user));
+	
+	}
 	
 }
