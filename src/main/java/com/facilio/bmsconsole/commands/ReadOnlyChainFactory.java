@@ -294,6 +294,12 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 	
+	public static Chain getRDMChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetRDMCommand());
+		return c;
+	}
+	
 	public static Chain getAlarmDetailsChain() {
 		Chain c = getDefaultChain();
 		c.addCommand(SetTableNamesCommand.getForAlarm());

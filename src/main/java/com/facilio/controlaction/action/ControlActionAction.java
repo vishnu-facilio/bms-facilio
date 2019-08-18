@@ -5,8 +5,11 @@ import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.actions.FacilioAction;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ResourceContext;
@@ -85,7 +88,20 @@ public class ControlActionAction extends FacilioAction {
 	
 	public String getControllablePoints() throws Exception {
 		
-		setResult(ControlActionUtil.CONTROL_ACTION_CONTROLLABLE_POINTS, ReadingsAPI.getControllableRDMs());
+		if(getPerPage() < 0) {
+			setPerPage(50);
+		}
+		if(getPage() < 0) {
+			setPage(1);
+		}
+		
+		FacilioContext constructListContext = constructListContext();
+		
+		Chain rdmChain = ReadOnlyChainFactory.getRDMChain();
+		
+		rdmChain.execute(constructListContext);
+		
+		setResult(ControlActionUtil.CONTROL_ACTION_CONTROLLABLE_POINTS, constructListContext.get(FacilioConstants.ContextNames.READING_DATA_META_LIST));
 		return SUCCESS;
 	}
 	

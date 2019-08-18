@@ -375,7 +375,7 @@ public class ReadingsAPI {
 		return builder.get();
 	}
 	
-	private static List<ReadingDataMeta> getReadingDataFromProps(List<Map<String, Object>> props, Map<Long, FacilioField> fieldMap) throws Exception {
+	public static List<ReadingDataMeta> getReadingDataFromProps(List<Map<String, Object>> props, Map<Long, FacilioField> fieldMap) throws Exception {
 		if(props != null && !props.isEmpty()) {
 			List<ReadingDataMeta> metaList = new ArrayList<>();
 			for (Map<String, Object> prop : props) {
@@ -404,8 +404,6 @@ public class ReadingsAPI {
 	}
 	
 	public static List<ReadingDataMeta> getControllableRDMs() throws Exception {
-		
-		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
 		
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getReadingDataMetaFields());
 		
