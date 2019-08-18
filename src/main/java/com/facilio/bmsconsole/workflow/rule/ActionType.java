@@ -24,6 +24,7 @@ import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.UserUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -442,11 +443,12 @@ public enum ActionType {
 					.on("ORG_Users.USERID = User_Mobile_Setting.USERID")
 //					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(AccountConstants.getOrgUserModule()))
 					.andCondition(CriteriaAPI.getCondition("ORG_Users.ORG_USERID", "ouid", idList, NumberOperators.EQUALS))
-					.andCustomWhere("ORG_Users.USER_STATUS = true and ORG_Users.DELETED_TIME = -1")
+					.andCustomWhere("ORG_Users.USER_STATUS = true")
 					.orderBy("USER_MOBILE_SETTING_ID");
 
 			List<Map<String, Object>> props = selectBuilder.get();
 			if (props != null && !props.isEmpty()) {
+				UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId());
 				for (Map<String, Object> prop : props) {
 					Boolean fromPortal = (Boolean)prop.get("fromPortal");
 					if (fromPortal == null) {

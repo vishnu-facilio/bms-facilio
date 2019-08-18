@@ -194,7 +194,7 @@ public class GroupBeanImpl implements GroupBean {
 				.table("ORG_Users")
 				.innerJoin("GroupMembers")
 				.on("GroupMembers.ORG_USERID = ORG_Users.ORG_USERID")
-				.andCustomWhere("GroupMembers.GROUPID = ? AND ORG_Users.DELETED_TIME = -1", groupId);
+				.andCustomWhere("GroupMembers.GROUPID = ?", groupId);
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
