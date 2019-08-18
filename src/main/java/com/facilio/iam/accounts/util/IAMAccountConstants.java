@@ -492,6 +492,15 @@ public class IAMAccountConstants {
 			deletedTime.setModule(getAccountsOrgUserModule());
 			return deletedTime;
 		}
+
+		public static FacilioField getOrgDeletedTimeField() {
+			FacilioField deletedTime = new FacilioField();
+			deletedTime.setName("deletedTime");
+			deletedTime.setDataType(FieldType.NUMBER);
+			deletedTime.setColumnName("DELETED_TIME");
+			deletedTime.setModule(getOrgModule());
+			return deletedTime;
+		}
 		
 		public static FacilioField getOrgIdField() {
 			return getOrgIdField(null);

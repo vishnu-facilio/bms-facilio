@@ -1,9 +1,12 @@
 package com.facilio.iam.accounts.impl;
 
+import java.io.UnsupportedEncodingException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -12,27 +15,25 @@ import javax.transaction.TransactionManager;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.amazonaws.util.StringUtils;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTCreator;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTCreationException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
-import com.facilio.accounts.dto.User;
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.util.EncryptionUtil;
-import com.facilio.fw.LRUCache;
-import com.facilio.iam.accounts.bean.IAMUserBean;
-import com.facilio.iam.accounts.exceptions.AccountException;
-import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
-import com.facilio.iam.accounts.util.IAMAccountConstants;
-import com.facilio.iam.accounts.util.IAMOrgUtil;
-import com.facilio.iam.accounts.util.IAMUserUtil;
-import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -44,12 +45,19 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.db.transaction.FacilioTransactionManager;
-import com.facilio.fs.FileStore;
-import com.facilio.fs.FileStoreFactory;
+import com.facilio.fw.LRUCache;
+import com.facilio.iam.accounts.bean.IAMUserBean;
+import com.facilio.iam.accounts.exceptions.AccountException;
+import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
+import com.facilio.iam.accounts.util.IAMAccountConstants;
+import com.facilio.iam.accounts.util.IAMOrgUtil;
+import com.facilio.iam.accounts.util.IAMUserUtil;
+import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.service.FacilioService;
 
 ;
 
@@ -57,11 +65,13 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 	private static final String USER_TOKEN_REGEX = "#";
 	private static Logger log = LogManager.getLogger(IAMUserBeanImpl.class.getName());
+	public static final String JWT_DELIMITER = "#";
+
 
 	
 	private long addUserEntryv2(IAMUser user, boolean emailVerificationRequired) throws Exception {
 
-		if (StringUtils.isNullOrEmpty(user.getDomainName())) {
+		if (StringUtils.isEmpty(user.getDomainName())) {
 			user.setDomainName("app");
 		}
 		
@@ -735,7 +745,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		
 		Organization org = IAMUtil.getOrgBean().getOrgv2(orgId);
 		String tokenKey = orgId + "-" + uid ;
-		String jwt = IAMUserUtil.createJWT("id", "auth0", tokenKey, System.currentTimeMillis() + 24 * 60 * 60000);
+		String jwt = createJWT("id", "auth0", tokenKey, System.currentTimeMillis() + 24 * 60 * 60000);
 		
 		JSONObject sessionInfo = new JSONObject();
 		sessionInfo.put("allowUrls", url);
@@ -857,7 +867,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "orgDeletedTime", "-1", NumberOperators.EQUALS));
 		
 		if (includePortal) {
-			if (StringUtils.isNullOrEmpty(portalDomain)) {
+			if (StringUtils.isEmpty(portalDomain)) {
 				portalDomain = "app";
 			}
 			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.DOMAIN_NAME", "portalDomain", portalDomain, StringOperators.IS));
@@ -873,8 +883,10 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		userEmailCriteria.addAndCondition(CriteriaAPI.getCondition("Account_Users.USERID", "userId", String.valueOf(userId), NumberOperators.EQUALS));
 		selectBuilder.andCriteria(userEmailCriteria);
 		
-		if (!StringUtils.isNullOrEmpty(orgDomain)) {
+		if (!StringUtils.isEmpty(orgDomain)) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.FACILIODOMAINNAME", "facilioDomainName", orgDomain, StringOperators.IS));
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
+			
 		} 
 		else {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ISDEFAULT", "isDefault", "1", NumberOperators.EQUALS));
@@ -916,8 +928,10 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		userEmailCriteria.addOrCondition(CriteriaAPI.getCondition("Account_Users.MOBILE", "mobile", email, StringOperators.IS));
 		selectBuilder.andCriteria(userEmailCriteria);
 		
-		if (!StringUtils.isNullOrEmpty(orgDomain)) {
+		if (!StringUtils.isEmpty(orgDomain)) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.FACILIODOMAINNAME", "facilioDomainName", orgDomain, StringOperators.IS));
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
+			
 		} 
 		else {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ISDEFAULT", "isDefault", "1", NumberOperators.EQUALS));
@@ -943,6 +957,8 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		
 		if (orgId > 0) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
+			
 		} 
 		else {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ISDEFAULT", "isDefault", "1", NumberOperators.EQUALS));
@@ -979,7 +995,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		userEmailCriteria.addOrCondition(CriteriaAPI.getCondition("Account_Users.MOBILE", "mobile", email, StringOperators.IS));
 			
 		selectBuilder.andCriteria(userEmailCriteria);
-		if (StringUtils.isNullOrEmpty(portalDomain)) {
+		if (StringUtils.isEmpty(portalDomain)) {
 			portalDomain = "app";
 		}
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.DOMAIN_NAME", "portalDomain", portalDomain, StringOperators.IS));
@@ -997,11 +1013,11 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	public IAMAccount getPermalinkAccount(String token, List<String> urls) throws Exception {
 		// TODO Auto-generated method stub
 		if(verifyPermalinkForURL(token, urls)) {
-			DecodedJWT decodedjwt = IAMUserUtil.validateJWT(token, "auth0");
+			DecodedJWT decodedjwt = validateJWT(token, "auth0");
 	
 			String[] tokens = null;
-			if (decodedjwt.getSubject().contains(IAMUserUtil.JWT_DELIMITER)) {
-				tokens = decodedjwt.getSubject().split(IAMUserUtil.JWT_DELIMITER)[0].split("-");
+			if (decodedjwt.getSubject().contains(JWT_DELIMITER)) {
+				tokens = decodedjwt.getSubject().split(JWT_DELIMITER)[0].split("-");
 			}
 			else {
 				tokens = decodedjwt.getSubject().split("_")[0].split("-");
@@ -1101,5 +1117,166 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		// TODO Auto-generated method stub
 		return getUserData(null, orgId);
 	}
+
+
+	@Override
+	public boolean verifyPasswordv2(String emailAddress, String domain, String password) throws Exception {
+		// TODO Auto-generated method stub
+		boolean passwordValid = false;
+		try {
+			if (StringUtils.isEmpty(domain)) {
+				domain = "app";
+			}
+			
+			List<FacilioField> fields = new ArrayList<>();
+			fields.addAll(IAMAccountConstants.getAccountsUserFields());
+			fields.add(IAMAccountConstants.getUserPasswordField());
+			
+			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+					.select(fields)
+					.table("Account_Users");
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.EMAIL", "email", emailAddress, StringOperators.IS));
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.DOMAIN_NAME", "domainName", domain, StringOperators.IS));
+			selectBuilder.andCondition(CriteriaAPI.getCondition("USER_VERIFIED", "userVerified", "1", NumberOperators.EQUALS));
+			
+			log.info("Domain  " + domain);
+			log.info("Email Address  " + emailAddress);
+			log.info("PAssword  " + password);
+			
+			List<Map<String, Object>> props = selectBuilder.get();
+
+			if (CollectionUtils.isNotEmpty(props)) {
+				Map<String, Object> result = props.get(0);
+				String storedPass = (String)result.get("password");
+				if (storedPass.equals(password)) {
+					passwordValid = true;
+				}
+			} else {
+				log.info("No records found for  " + emailAddress);
+				throw new AccountException(ErrorCode.USER_DOESNT_EXIST_IN_ORG, "User doesn't exists");
+			}
+
+		} catch (SQLException | RuntimeException e) {
+			log.info("Exception while verifying password, "+ e.toString());
+		} 
+		return passwordValid;
+	}
+
+
+	@Override
+	public String validateAndGenerateToken(String emailaddress, String password, String userAgent, String userType,
+			String ipAddress, String domain, boolean startUserSession) throws Exception {
+		// TODO Auto-generated method stub
+		if (verifyPasswordv2(emailaddress, domain, password)) {
+
+			IAMUser user = getFacilioUser(emailaddress, -1, domain);
+			if (user != null) {
+				long uid = user.getUid();
+				String jwt = createJWT("id", "auth0", String.valueOf(user.getUid()),
+						System.currentTimeMillis() + 24 * 60 * 60000);
+				if (startUserSession) {
+					startUserSessionv2(uid, emailaddress, jwt, ipAddress, userAgent, userType);
+				}
+				return jwt;
+			}
+			throw new AccountException(ErrorCode.EMAIL_ALREADY_EXISTS, "User is deactivated, Please contact admin to activate.");
+
+		}
+		throw new AccountException(ErrorCode.EMAIL_ALREADY_EXISTS, "Invalid Password");
+	}
+	
+	public static String createJWT(String id, String issuer, String subject, long ttlMillis) {
+		 
+		try {
+		    Algorithm algorithm = Algorithm.HMAC256("secret");
+		    
+		    String key = subject + JWT_DELIMITER + System.currentTimeMillis();
+		    JWTCreator.Builder builder = JWT.create().withSubject(key)
+	        .withIssuer(issuer);
+		    
+		    return builder.sign(algorithm);
+		} catch (UnsupportedEncodingException | JWTCreationException exception){
+			log.info("exception occurred while creating JWT "+ exception.toString());
+		    //UTF-8 encoding not supported
+		}
+		return null;
+	}
+
+	public static DecodedJWT validateJWT(String token, String issuer) {
+		try {
+			Algorithm algorithm = Algorithm.HMAC256("secret");
+			JWTVerifier verifier = JWT.require(algorithm).withIssuer(issuer).build(); // Reusable verifier instance
+
+			DecodedJWT jwt = verifier.verify(token);
+			System.out.println("\ndecoded " + jwt.getSubject());
+			System.out.println("\ndecoded " + jwt.getClaims());
+
+			return jwt;
+		} catch (UnsupportedEncodingException | JWTVerificationException exception) {
+			log.info("exception occurred while decoding JWT "+ exception.toString());
+			// UTF-8 encoding not supported
+			return null;
+
+		}
+	}
+
+
+	@Override
+	public IAMAccount verifyFacilioToken(String idToken, boolean overrideSessionCheck, String orgDomain,
+			String portalDomain) throws Exception {
+		System.out.println("verifiyFacilioToken() :idToken :"+idToken);
+		try {
+			DecodedJWT decodedjwt = validateJWT(idToken, "auth0");
+			if(decodedjwt != null) {
+				String uId = null;
+				if (decodedjwt.getSubject().contains(JWT_DELIMITER)) {
+					uId = decodedjwt.getSubject().split(JWT_DELIMITER)[0];
+				}
+				else {
+					uId = decodedjwt.getSubject().split("_")[0];
+				}
+				IAMAccount account = null;
+				try {
+					long userId = Long.parseLong(uId);
+					if(overrideSessionCheck) {
+						account = IAMUtil.getUserBean().getAccount(userId, orgDomain);
+					}
+					else {
+						account = IAMUtil.getUserBean().verifyUserSessionv2(uId, idToken, orgDomain);
+					}
+				}
+				catch(NumberFormatException e) {
+					account = IAMUtil.getUserBean().verifyUserSessionUsingEmail(uId, idToken, portalDomain);
+				}
+				return account;
+			}
+			return null;
+		}
+		catch (AccountException e) {
+			throw e;
+		}
+		catch (Exception e) {
+			log.info("Exception occurred "+e.toString());
+			return null;
+		}
+	}
+
+
+	@Override
+	public boolean verifyUser(long userId) throws Exception {
+		// TODO Auto-generated method stub
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+				.table(com.facilio.iam.accounts.util.IAMAccountConstants.getAccountsUserModule().getTableName()).fields(com.facilio.iam.accounts.util.IAMAccountConstants.getAccountsUserFields())
+				.andCustomWhere("USERID = ?", userId);
+		Map<String, Object> prop = new HashMap<>();
+		prop.put("userVerified", true);
+		if(updateBuilder.update(prop) > 0) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
 	
 }

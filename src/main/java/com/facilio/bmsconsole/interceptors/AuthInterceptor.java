@@ -18,8 +18,11 @@ import org.apache.struts2.ServletActionContext;
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.UserUtil;
 import com.facilio.auth.cookie.FacilioCookie;
+import com.facilio.iam.accounts.impl.IAMUserBeanImpl;
 import com.facilio.iam.accounts.util.IAMUserUtil;
+import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.screen.util.ScreenUtil;
 import com.facilio.util.AuthenticationUtil;
@@ -128,7 +131,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 			
 			String deviceToken = FacilioCookie.getUserCookie(request, "fc.deviceToken");
 			if (deviceToken != null && !"".equals(deviceToken)) {
-				long connectedScreenId = Long.parseLong(IAMUserUtil.validateJWT(deviceToken, "auth0").getSubject().split(IAMUserUtil.JWT_DELIMITER)[0]);
+				long connectedScreenId = Long.parseLong(IAMUserBeanImpl.validateJWT(deviceToken, "auth0").getSubject().split(IAMUserBeanImpl.JWT_DELIMITER)[0]);
 				RemoteScreenContext remoteScreen = ScreenUtil.getRemoteScreen(connectedScreenId);
 				if (remoteScreen != null) {
 					// TODO - check here

@@ -263,10 +263,16 @@ public class FacilioAuthAction extends FacilioAction {
 		Account account = new Account(iamAccount.getOrg(), new User(iamAccount.getUser()));
 		
 		AccountUtil.setCurrentAccount(account);
-		if (account != null && account.getOrg().getOrgId() > 0) {
-			signupContext.put("orgId", account.getOrg().getOrgId());
-			Chain c = TransactionChainFactory.getOrgSignupChain();
-			c.execute(signupContext);
+		try {
+			if (account != null && account.getOrg().getOrgId() > 0) {
+				signupContext.put("orgId", account.getOrg().getOrgId());
+				Chain c = TransactionChainFactory.getOrgSignupChain();
+				c.execute(signupContext);
+			}
+		}
+		catch(Exception e) {
+			IAMOrgUtil.rollBackSignedUpOrg(iamAccount.getOrg().getOrgId(), iamAccount.getUser().getUid());
+			throw e;
 		}
 		setJsonresponse("message", "success");
 		return SUCCESS;

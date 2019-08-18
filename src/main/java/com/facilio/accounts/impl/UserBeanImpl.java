@@ -159,41 +159,47 @@ public class UserBeanImpl implements UserBean {
 	
 
 	private void addToAppORGUsers(User user, boolean isEmailVerificationNeeded) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-
-		InsertRecordBuilder<ResourceContext> insertRecordBuilder = new InsertRecordBuilder<ResourceContext>()
-				.moduleName(FacilioConstants.ContextNames.RESOURCE)
-				.fields(modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE));
-		ResourceContext resource = new ResourceContext();
-		resource.setName(user.getEmail());
-		resource.setResourceType(ResourceType.USER);
-
-		long id = insertRecordBuilder.insert(resource);
-		user.setId(id);
-
-		List<FacilioField> fields = new ArrayList<FacilioField>();
-		fields.addAll(AccountConstants.getAppOrgUserFields());
-		fields.add(AccountConstants.getOrgIdField(AccountConstants.getAppOrgUserModule()));
-		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-				.table(AccountConstants.getAppOrgUserModule().getTableName()).fields(fields);
-
-		Map<String, Object> props = FieldUtil.getAsProperties(user);
-		insertBuilder.addRecord(props);
-		insertBuilder.save();
-
-		user.setOuid((long) props.get("ouid"));
-		if((long)props.get("ouid") > 0) {
-			if(isEmailVerificationNeeded && !user.isUserVerified() && !user.isInviteAcceptStatus()) {
-				sendInvitation(user, false);
+		try {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+	
+			InsertRecordBuilder<ResourceContext> insertRecordBuilder = new InsertRecordBuilder<ResourceContext>()
+					.moduleName(FacilioConstants.ContextNames.RESOURCE)
+					.fields(modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE));
+			ResourceContext resource = new ResourceContext();
+			resource.setName(user.getEmail());
+			resource.setResourceType(ResourceType.USER);
+	
+			long id = insertRecordBuilder.insert(resource);
+			user.setId(id);
+	
+			List<FacilioField> fields = new ArrayList<FacilioField>();
+			fields.addAll(AccountConstants.getAppOrgUserFields());
+			fields.add(AccountConstants.getOrgIdField(AccountConstants.getAppOrgUserModule()));
+			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+					.table(AccountConstants.getAppOrgUserModule().getTableName()).fields(fields);
+	
+			Map<String, Object> props = FieldUtil.getAsProperties(user);
+			insertBuilder.addRecord(props);
+			insertBuilder.save();
+	
+			user.setOuid((long) props.get("ouid"));
+			if((long)props.get("ouid") > 0) {
+				if(isEmailVerificationNeeded && !user.isUserVerified() && !user.isInviteAcceptStatus()) {
+					sendInvitation(user, false);
+				}
 			}
+			FacilioContext context = new FacilioContext();
+			context.put(FacilioConstants.ContextNames.RECORD_ID, id);
+			context.put(FacilioConstants.ContextNames.MODULE_LIST,
+					modBean.getSubModules(FacilioConstants.ContextNames.USERS, FacilioModule.ModuleType.READING));
+	
+			Chain addRDMChain = FacilioChainFactory.addResourceRDMChain();
+			addRDMChain.execute(context);
 		}
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD_ID, id);
-		context.put(FacilioConstants.ContextNames.MODULE_LIST,
-				modBean.getSubModules(FacilioConstants.ContextNames.USERS, FacilioModule.ModuleType.READING));
-
-		Chain addRDMChain = FacilioChainFactory.addResourceRDMChain();
-		addRDMChain.execute(context);
+		catch(Exception e) {
+			IAMUserUtil.deleteUser(user, user.getOrgId());
+			throw e;
+		}
 		
 	}
 	
@@ -442,7 +448,6 @@ public class UserBeanImpl implements UserBean {
 
 	@Override
 	public boolean deleteUser(long ouid) throws Exception {
-
 		User user = getUser(ouid);
 		return IAMUserUtil.deleteUser(user, AccountUtil.getCurrentOrg().getOrgId());
 	}

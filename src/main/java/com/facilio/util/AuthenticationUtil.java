@@ -19,7 +19,7 @@ import com.facilio.iam.accounts.util.IAMUserUtil;
 
 public class AuthenticationUtil {
 	
-	public static IAMAccount validateToken(HttpServletRequest request, boolean portalUser, String portalDomain) throws AccountException {
+	public static IAMAccount validateToken(HttpServletRequest request, boolean portalUser, String portalDomain) throws Exception {
 		String facilioToken = null;
 		
 		if(StringUtils.isEmpty(portalDomain)) {

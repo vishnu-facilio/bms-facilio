@@ -7,6 +7,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.UserUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.executor.CommandExecutor;
 import com.facilio.fs.FileInfo.FileFormat;
@@ -37,7 +38,7 @@ public class PdfUtil {
         }
         if(directoryExits){
             try {
-                String token = IAMUserUtil.createJWT("id", "auth0", username, System.currentTimeMillis()+60*60000);
+                String token = UserUtil.createJWT("id", "auth0", String.valueOf(AccountUtil.getCurrentUser().getUid()), System.currentTimeMillis()+60*60000);
                 File pdfFile = File.createTempFile("report-", format.getExtention(), pdfDirectory);
                 pdfFileLocation = pdfFile.getAbsolutePath();
                 String serverName = AwsUtil.getAppDomain();
@@ -69,7 +70,7 @@ public class PdfUtil {
           
           if(directoryExits) {
         	  try {
-        		  String token = IAMUserUtil.createJWT("id", "auth0", String.valueOf(AccountUtil.getCurrentUser().getUid()), System.currentTimeMillis()+60*60000);
+        		  String token = UserUtil.createJWT("id", "auth0", String.valueOf(AccountUtil.getCurrentUser().getUid()), System.currentTimeMillis()+60*60000);
         		  File pdfFile = File.createTempFile("report-", format.getExtention(), pdfDirectory);
                   pdfFileLocation = pdfFile.getAbsolutePath();
                   String serverName = AwsUtil.getAppDomain();

@@ -7,6 +7,7 @@ import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.iam.accounts.exceptions.AccountException;
 
 public interface IAMUserBean {
 	
@@ -17,6 +18,8 @@ public interface IAMUserBean {
 	IAMUser verifyEmailv2(String token);
 
 	IAMUser resetPasswordv2(String token, String password);
+	
+	public boolean verifyPasswordv2(String email, String domain, String password) throws Exception;
 
 	IAMUser validateUserInvitev2(String token);
 
@@ -84,6 +87,12 @@ public interface IAMUserBean {
 	public Map<Long, Map<String, Object>> getUserDataForUids(List<Long> userIds, long orgId) throws Exception;
 	
 	public Map<Long, Map<String, Object>> getUserDataForOrg(long orgId) throws Exception;
+	
+	public String validateAndGenerateToken(String emailaddress, String password, String userAgent, String userType,
+			String ipAddress, String domain, boolean startUserSession) throws Exception ;
 
+	public IAMAccount verifyFacilioToken(String idToken, boolean overrideSessionCheck, String orgDomain, String portalDomain) throws Exception;
+	
+	public boolean verifyUser(long userId) throws Exception;
 
 }

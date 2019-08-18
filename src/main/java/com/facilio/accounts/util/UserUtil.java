@@ -1,21 +1,49 @@
 package com.facilio.accounts.util;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTCreator;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTCreationException;
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.User;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.iam.accounts.impl.IAMUserBeanImpl;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.iam.accounts.util.IAMUtil;
 
 public class UserUtil {
+
+	public static final String JWT_DELIMITER = "#";
+	private static Logger log = LogManager.getLogger(UserUtil.class.getName());
+	
+	public static String createJWT(String id, String issuer, String subject, long ttlMillis) {
+		 
+		try {
+		    Algorithm algorithm = Algorithm.HMAC256("secret");
+		    
+		    String key = subject + JWT_DELIMITER + System.currentTimeMillis();
+		    JWTCreator.Builder builder = JWT.create().withSubject(key)
+	        .withIssuer(issuer);
+		    
+		    return builder.sign(algorithm);
+		} catch (UnsupportedEncodingException | JWTCreationException exception){
+			log.info("exception occurred while creating JWT "+ exception.toString());
+		    //UTF-8 encoding not supported
+		}
+		return null;
+	}
 
 	public static List<User> getAppUsers(List<IAMUser> iamUsers) throws Exception {
 	
