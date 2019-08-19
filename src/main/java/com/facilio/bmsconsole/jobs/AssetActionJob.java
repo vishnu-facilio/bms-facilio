@@ -22,7 +22,7 @@ public class AssetActionJob extends FacilioJob {
 	@Override
 	public void execute(JobContext jc) {
 		try {
-			List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getAllWorkflowRuleContextOfType(RuleType.ASSET_ACTION_RULE, false, true);
+			List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getAllWorkflowRuleContextOfType(RuleType.ASSET_ACTION_RULE, false, true,true);
 			
 			FacilioContext context = new FacilioContext();
 			context.put("workflowRules", workflowRules);

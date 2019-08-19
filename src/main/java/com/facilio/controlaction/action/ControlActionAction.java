@@ -244,12 +244,12 @@ public class ControlActionAction extends FacilioAction {
 		
 		List<WorkflowRuleContext> rules = new ArrayList<WorkflowRuleContext>();
 		
-		List<WorkflowRuleContext> alarmRules = WorkflowRuleAPI.getAllWorkflowRuleContextOfType(RuleType.CONTROL_ACTION_READING_ALARM_RULE, true, true);
+		List<WorkflowRuleContext> alarmRules = WorkflowRuleAPI.getAllWorkflowRuleContextOfType(RuleType.CONTROL_ACTION_READING_ALARM_RULE, true, true,false);
 		if(alarmRules != null) {
 			rules.addAll(alarmRules);
 		}
 		
-		List<WorkflowRuleContext> scheduledRules = WorkflowRuleAPI.getAllWorkflowRuleContextOfType(RuleType.CONTROL_ACTION_SCHEDULED_RULE, true, true);
+		List<WorkflowRuleContext> scheduledRules = WorkflowRuleAPI.getAllWorkflowRuleContextOfType(RuleType.CONTROL_ACTION_SCHEDULED_RULE, true, true,false);
 		if(scheduledRules != null) {
 			rules.addAll(scheduledRules);
 		}
