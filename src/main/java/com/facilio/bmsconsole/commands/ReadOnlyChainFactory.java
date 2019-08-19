@@ -1326,4 +1326,10 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetControllableAssetsCommand());
 		return c;
 	}
+
+	public static Chain getControllableFieldsChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetControllableFieldsCommand());
+		return c;
+	}
 }

@@ -15,6 +15,7 @@ public class ControlActionUtil {
 
 	public static final String CONTROL_ACTION_COMMANDS = "controlActionCommands";
 	public static final String CONTROLLABLE_RESOURCES = "controllableResources";
+	public static final String CONTROLLABLE_FIELDS = "controllableFields";
 	public static final String CONTROL_ACTION_COMMANDS_COUNT = "controlActionCommandscount";
 	public static final String CONTROL_ACTION_COMMAND_EXECUTED_FROM = "controlActionCommandExecutedFrom"; 
 	public static final String CONTROL_ACTION_CONTROLLABLE_POINTS = "controllablePoints"; 
