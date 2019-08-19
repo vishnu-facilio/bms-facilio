@@ -90,11 +90,24 @@ public class ReservationAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.Reservation.RESERVATION);
         context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 
-        Chain deleteModuleDataChain = FacilioChainFactory.deleteModuleDataChain();
-        deleteModuleDataChain.execute(context);
+        Chain deleteReservation = FacilioChainFactory.deleteModuleDataChain();
+        deleteReservation.execute(context);
 
         setResult(FacilioConstants.ContextNames.ROWS_UPDATED, context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
         return SUCCESS;
     }
+
+    public String updateReservation() throws Exception {
+        FacilioContext context = new FacilioContext();
+        context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
+        context.put(FacilioConstants.ContextNames.Reservation.RESERVATION, reservation);
+
+        Chain updateReservation = TransactionChainFactory.updateReservationChain();
+        updateReservation.execute(context);
+
+        setResult(FacilioConstants.ContextNames.ROWS_UPDATED, context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
+        return SUCCESS;
+    }
+
 
 }

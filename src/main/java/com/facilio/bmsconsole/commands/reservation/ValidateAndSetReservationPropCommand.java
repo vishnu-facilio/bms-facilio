@@ -1,27 +1,112 @@
 package com.facilio.bmsconsole.commands.reservation;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.reservation.InternalAttendeeContext;
 import com.facilio.bmsconsole.context.reservation.ReservationContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.DeleteRecordBuilder;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.time.Duration;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class ValidateAndSetReservationPropCommand extends FacilioCommand {
+
+    private boolean isAdd = false;
+
+    public ValidateAndSetReservationPropCommand(boolean isAdd) {
+        this.isAdd = isAdd;
+    }
+
     @Override
     public boolean executeCommand(Context context) throws Exception {
         ReservationContext reservation = (ReservationContext) context.get(FacilioConstants.ContextNames.Reservation.RESERVATION);
 
         if (reservation == null) {
-            throw new IllegalArgumentException("Reservation object cannot be null during addition");
+            throw new IllegalArgumentException("Reservation object cannot be null");
         }
 
         context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.Reservation.RESERVATION);
         context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
+
+        if (isAdd) {
+            checkForNull(reservation);
+        }
+        if (reservation.getNoOfAttendees() != -1 ) {
+            int totalAttendees = (reservation.getInternalAttendees() == null ? 0 : reservation.getInternalAttendees().size())
+                    + (reservation.getExternalAttendees() == null ? 0 : reservation.getExternalAttendees().size());
+            if (totalAttendees > reservation.getNoOfAttendees()) {
+                throw new IllegalArgumentException("Total attendees list shouldn't exceed noOfAttendees during addition of reservation");
+            }
+        }
+        if (reservation.getDurationTypeEnum() != null) { //For now if duration type is changed, both scheduled Start and scheduledEnd and space should be sent again
+            computeEndTime(reservation);
+            checkOverlapOfReservation(reservation);
+        }
+
+        if (!isAdd && (CollectionUtils.isNotEmpty(reservation.getInternalAttendees()) || CollectionUtils.isNotEmpty(reservation.getExternalAttendees()))) {
+            deleteOldAttendees(reservation);
+        }
+
+        context.put(FacilioConstants.ContextNames.RECORD, reservation);
+        if (isAdd) {
+            CommonCommandUtil.addToRecordMap((FacilioContext) context, FacilioConstants.ContextNames.Reservation.RESERVATION, reservation);
+        }
+        else {
+            context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(reservation.getId()));
+        }
+
+        return false;
+    }
+
+    private void checkOverlapOfReservation(ReservationContext reservation) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.Reservation.RESERVATION);
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+        FacilioField spaceField = fieldMap.get("space");
+        FacilioField scheduledStartField = fieldMap.get("scheduledStartTime");
+        FacilioField scheduledEndField = fieldMap.get("scheduledEndTime");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.Reservation.RESERVATION);
+
+        SelectRecordsBuilder<ReservationContext> selectBuilder = new SelectRecordsBuilder<ReservationContext>()
+                                                                .select(fields)
+                                                                .module(module)
+                                                                .beanClass(ReservationContext.class)
+                                                                .andCondition(CriteriaAPI.getCondition(spaceField, String.valueOf(reservation.getSpace().getId()), PickListOperators.IS))
+                                                                .andCondition(CriteriaAPI.getCondition(scheduledStartField, String.valueOf(reservation.getScheduledEndTime()), DateOperators.IS_BEFORE))
+                                                                .andCondition(CriteriaAPI.getCondition(scheduledEndField, String.valueOf(reservation.getScheduledStartTime()), DateOperators.IS_AFTER))
+                                                                ;
+
+        if (reservation.getId() != -1) {
+            selectBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(module), String.valueOf(reservation.getId()), NumberOperators.NOT_EQUALS));
+        }
+        List<ReservationContext> reservations = selectBuilder.get();
+
+        if (CollectionUtils.isNotEmpty(reservations)) {
+            throw new IllegalArgumentException("The space is not available for the specified time slot");
+        }
+    }
+
+
+
+    private void checkForNull (ReservationContext reservation) {
         if (StringUtils.isEmpty(reservation.getName())) {
             throw new IllegalArgumentException("Reservation Name cannot be null during addition");
         }
@@ -34,23 +119,13 @@ public class ValidateAndSetReservationPropCommand extends FacilioCommand {
         if (reservation.getDurationTypeEnum() == null) {
             throw new IllegalArgumentException("Duration type cannot be null during addition of reservation");
         }
-        computeEndTime(reservation);
-
-        int totalAttendees = (reservation.getInternalAttendees() == null ? 0 : reservation.getInternalAttendees().size())
-                                + (reservation.getExternalAttendees() == null ? 0 : reservation.getExternalAttendees().size());
-        if (reservation.getNoOfAttendees() != -1 && totalAttendees > reservation.getNoOfAttendees()) {
-            throw new IllegalArgumentException("Total attendees list shouldn't exceed noOfAttendees during addition of reservation");
-        }
-
-        // Have to do validation check
-
-        context.put(FacilioConstants.ContextNames.RECORD, reservation);
-        CommonCommandUtil.addToRecordMap((FacilioContext) context, FacilioConstants.ContextNames.Reservation.RESERVATION, reservation);
-
-        return false;
     }
 
     private void computeEndTime(ReservationContext reservation) {
+        if (reservation.getScheduledStartTime() == -1) {
+            throw new IllegalArgumentException("Scheduled start time cannot be null when durationType is changed");
+        }
+
         switch (reservation.getDurationTypeEnum()) {
             case HALF_AN_HOUR:
                 reservation.setScheduledEndTime(reservation.getScheduledStartTime() + Duration.ofMinutes(30).toMillis());
@@ -75,5 +150,20 @@ public class ValidateAndSetReservationPropCommand extends FacilioCommand {
                 }
                 break;
         }
+    }
+
+    private void deleteOldAttendees(ReservationContext reservation) throws Exception {
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        commondDeleteAttendees(modBean, reservation.getId(), FacilioConstants.ContextNames.Reservation.RESERVATIONS_INTERNAL_ATTENDEE);
+        commondDeleteAttendees(modBean, reservation.getId(), FacilioConstants.ContextNames.Reservation.RESERVATIONS_EXTERNAL_ATTENDEE);
+    }
+
+    private void commondDeleteAttendees (ModuleBean modBean, long id, String module) throws Exception {
+        FacilioField reservationField = modBean.getField("reservation", module);
+
+        new DeleteRecordBuilder<InternalAttendeeContext>()
+                .moduleName(module)
+                .andCondition(CriteriaAPI.getCondition(reservationField, String.valueOf(id), PickListOperators.IS))
+                .delete();
     }
 }

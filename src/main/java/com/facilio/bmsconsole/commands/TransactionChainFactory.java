@@ -3973,8 +3973,18 @@ public class TransactionChainFactory {
 
 		public static Chain addReservationChain() {
 			Chain c = getDefaultChain();
-			c.addCommand(new ValidateAndSetReservationPropCommand());
+			c.addCommand(new ValidateAndSetReservationPropCommand(true));
 			c.addCommand(new GenericAddModuleDataCommand());
+			c.addCommand(addReservationInternalAttendeeChain());
+			c.addCommand(addReservationExternalAttendeeChain());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
+			return c;
+		}
+
+		public static Chain updateReservationChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ValidateAndSetReservationPropCommand(false));
+			c.addCommand(new GenericUpdateModuleDataCommand());
 			c.addCommand(addReservationInternalAttendeeChain());
 			c.addCommand(addReservationExternalAttendeeChain());
 			c.addCommand(new ExecuteAllWorkflowsCommand());

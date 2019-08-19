@@ -1626,6 +1626,10 @@
 				method="fetchReservationDetail">
 			<param name="recordId">{1}</param>
 		</action>
+		<action name="update"
+				class="com.facilio.bmsconsole.actions.ReservationAction"
+				method="updateReservation">
+		</action>
 		<action name="delete"
 				class="com.facilio.bmsconsole.actions.ReservationAction"
 				method="deleteReservation">
