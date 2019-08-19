@@ -8,6 +8,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -72,6 +73,7 @@ public class RecordSpecificRuleAction extends FacilioAction {
 	public String addOrUpdateRecordSpecificRule() throws Exception {
 		FacilioContext context = new FacilioContext();
 		
+		recordRule.setRuleType(RuleType.RECORD_SPECIFIC_RULE);
 		context.put(FacilioConstants.ContextNames.RECORD, recordRule);
 		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, actions);
 		
