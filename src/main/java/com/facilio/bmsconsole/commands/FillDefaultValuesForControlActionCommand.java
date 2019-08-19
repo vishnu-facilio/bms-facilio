@@ -22,6 +22,7 @@ public class FillDefaultValuesForControlActionCommand extends FacilioCommand {
 			command.setExecutedBy(AccountUtil.getCurrentUser());
 			command.setExecutedTime(DateTimeUtil.getCurrenTime());
 			command.setExecutedMode(controlActionExecuteMode.getIntVal());
+			command.setStatus(ControlActionCommandContext.Status.SUCCESS.getIntVal());
 		}
 		return false;
 	}

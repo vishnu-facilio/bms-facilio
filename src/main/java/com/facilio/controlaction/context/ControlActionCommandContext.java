@@ -21,6 +21,7 @@ public class ControlActionCommandContext extends ModuleBaseWithCustomFields {
 	String command;
 	long executedTime;
 	Control_Action_Execute_Mode executedMode;
+	Status status;
 	ResourceContext resource;
 	long fieldId;
 	String value;
@@ -118,6 +119,19 @@ public class ControlActionCommandContext extends ModuleBaseWithCustomFields {
 			this.executedMode = Control_Action_Execute_Mode.getAllOptions().get(executedMode);
 		}
 	}
+	
+	public int getStatus() {
+		if(status != null) {
+			return status.getIntVal();
+		}
+		return -1;
+	}
+
+	public void setStatus(int status) {
+		if(status > 0) {
+			this.status = Status.getAllOptions().get(status);
+		}
+	}
 	public enum Control_Action_Execute_Mode {
 		
 		MANUAL(1, "Manual"),
@@ -154,6 +168,45 @@ public class ControlActionCommandContext extends ModuleBaseWithCustomFields {
 		}
 
 		public static Map<Integer, Control_Action_Execute_Mode> getAllOptions() {
+			return optionMap;
+		}
+	}
+	
+	public enum Status {
+		
+		SUCCESS(1, "Success"),
+		PENDING(2, "Pending"),
+		ERROR(3, "Error"),
+		;
+
+		int intVal;
+		String name;
+
+		public int getIntVal() {
+			return intVal;
+		}
+
+		public String getName() {
+			return name;
+		}
+
+		private Status(int intVal, String name) {
+			this.intVal = intVal;
+			this.name = name;
+		}
+
+		private static final Map<Integer, Status> optionMap = Collections.unmodifiableMap(initTypeMap());
+
+		private static Map<Integer, Status> initTypeMap() {
+			Map<Integer, Status> typeMap = new HashMap<>();
+
+			for (Status type : values()) {
+				typeMap.put(type.getIntVal(), type);
+			}
+			return typeMap;
+		}
+
+		public static Map<Integer, Status> getAllOptions() {
 			return optionMap;
 		}
 	}
