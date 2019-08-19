@@ -234,8 +234,14 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 		if (CollectionUtils.isNotEmpty(props)) {
 			for (Map<String, Object> prop : props) {
 				if (prop.containsKey("rule")) {
-					ReadingRuleContext rule = (ReadingRuleContext) prop.get("rule");
-					prop.put("ruleId", rule.getId());
+					Object ruleProp = prop.get("rule");
+					if (prop instanceof Map) {
+						prop.put("ruleId", ((Map) ruleProp).get("id"));
+					}
+					else if (prop instanceof ReadingRuleContext) {
+						ReadingRuleContext rule = (ReadingRuleContext) ruleProp;
+						prop.put("ruleId", rule.getId());
+					}
 				}
 			}
 		}
