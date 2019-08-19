@@ -34,7 +34,7 @@ public class BMSEventContext extends BaseEventContext {
     }
 
     @Override
-    public BaseAlarmContext updateAlarmContext(BaseAlarmContext baseAlarm, boolean add) {
+    public BaseAlarmContext updateAlarmContext(BaseAlarmContext baseAlarm, boolean add) throws Exception {
         if (add && baseAlarm == null) {
             baseAlarm = new BMSAlarmContext();
         }

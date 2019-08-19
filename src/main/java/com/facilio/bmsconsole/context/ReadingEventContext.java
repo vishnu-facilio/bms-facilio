@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
+import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -18,14 +19,20 @@ public class ReadingEventContext extends BaseEventContext {
 	}
 	
 	@Override
-	public BaseAlarmContext updateAlarmContext(BaseAlarmContext baseAlarm, boolean add) {
+	public BaseAlarmContext updateAlarmContext(BaseAlarmContext baseAlarm, boolean add) throws Exception {
 		if (add && baseAlarm == null) {
 			baseAlarm = new ReadingAlarm();
 		}
 		super.updateAlarmContext(baseAlarm, add);
 		ReadingAlarm readingAlarm = (ReadingAlarm) baseAlarm;
 
+		if (readingAlarmCategory == null) {
+			if (getResource() != null) {
+				readingAlarmCategory = NewAlarmAPI.getReadingAlarmCategory(getResource().getId());
+			}
+		}
 		readingAlarm.setReadingAlarmCategory(readingAlarmCategory);
+
 		readingAlarm.setRule(rule);
 		readingAlarm.setSubRule(subRule);
 		if (readingFieldId != -1) {

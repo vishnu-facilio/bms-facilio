@@ -406,4 +406,41 @@ public class NewAlarmAPI {
 		return ((Number) rs.get(0).get("active")).longValue();
 		
 	}
+
+	public static ReadingAlarmCategoryContext getReadingAlarmCategory(long resourceId) throws Exception {
+		if (resourceId > 0) {
+			ResourceContext resource = ResourceAPI.getExtendedResource(resourceId);
+			if (resource != null && resource.getResourceTypeEnum() == ResourceContext.ResourceType.ASSET) {
+				AssetContext asset = (AssetContext) resource;
+				if (asset.getCategory() != null && asset.getCategory().getId() != -1) {
+					return getAlarmTypeFromAssetCategory(asset.getCategory().getId());
+				}
+			}
+		}
+		return null;
+	}
+
+	public static ReadingAlarmCategoryContext getAlarmTypeFromAssetCategory(long categoryId) throws Exception {
+		AssetCategoryContext category = AssetsAPI.getCategoryForAsset(categoryId);
+
+		String name = null;
+		switch (category.getTypeEnum()) {
+			case ENERGY:
+				name = "energy";
+				break;
+			case HVAC:
+				name = "hvac";
+				break;
+			default:
+				return null;
+		}
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		SelectRecordsBuilder<ReadingAlarmCategoryContext> builder = new SelectRecordsBuilder<ReadingAlarmCategoryContext>()
+				.module(modBean.getModule(FacilioConstants.ContextNames.READING_ALARM_CATEGORY))
+				.select(modBean.getAllFields(FacilioConstants.ContextNames.READING_ALARM_CATEGORY))
+				.beanClass(ReadingAlarmCategoryContext.class)
+				.andCondition(CriteriaAPI.getCondition("NAME", "name", name, StringOperators.IS));
+		return builder.fetchFirst();
+	}
 }

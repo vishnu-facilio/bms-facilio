@@ -187,7 +187,7 @@ public abstract class BaseEventContext extends ModuleBaseWithCustomFields {
 		this.recommendation = recommendation;
 	}
 	
-	public BaseAlarmContext updateAlarmContext(BaseAlarmContext baseAlarm, boolean add) {
+	public BaseAlarmContext updateAlarmContext(BaseAlarmContext baseAlarm, boolean add) throws Exception {
 		if (StringUtils.isNotEmpty(getEventMessage())) {
 			baseAlarm.setSubject(getEventMessage());
 		}
