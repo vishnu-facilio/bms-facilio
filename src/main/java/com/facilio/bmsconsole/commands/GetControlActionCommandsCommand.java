@@ -115,6 +115,9 @@ public class GetControlActionCommandsCommand extends FacilioCommand {
 				FacilioField field = modbean.getField(prop.getFieldId());
 				prop.setField(field);
 				prop.setResource(ResourceAPI.getResource(prop.getResource().getId()));
+				if(prop.getExecutedBy() != null && prop.getExecutedBy().getId() > 0) {
+					prop.setExecutedBy(AccountUtil.getUserBean().getUser(prop.getExecutedBy().getId()));
+				}
 			}
 			
 			context.put(ControlActionUtil.CONTROL_ACTION_COMMANDS, props);
