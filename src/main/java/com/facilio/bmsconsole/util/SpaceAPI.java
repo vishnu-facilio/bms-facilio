@@ -1072,6 +1072,24 @@ public static long getSitesCount() throws Exception {
 				.andCondition(CriteriaAPI.getIdCondition(idList, module));
 		return selectBuilder.getAsMap();
 	}
+
+	public static Map<Long, SpaceContext> getSpaceMap(Collection<Long> idList) throws Exception
+	{
+		if(CollectionUtils.isEmpty(idList)) {
+			return null;
+		}
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.SPACE);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.SPACE);
+		SelectRecordsBuilder<SpaceContext> selectBuilder = new SelectRecordsBuilder<SpaceContext>()
+				.select(fields)
+				.table(module.getTableName())
+				.moduleName(module.getName())
+				.beanClass(SpaceContext.class)
+//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+				.andCondition(CriteriaAPI.getIdCondition(idList, module));
+		return selectBuilder.getAsMap();
+	}
 	
 	public static List<BaseSpaceContext> getBaseSpaces(String idList) throws Exception
 	{
