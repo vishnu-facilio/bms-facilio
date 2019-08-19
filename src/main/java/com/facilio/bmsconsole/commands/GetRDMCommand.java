@@ -14,6 +14,7 @@ import com.facilio.bmsconsole.context.AlarmContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
@@ -22,6 +23,8 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
@@ -38,6 +41,8 @@ public class GetRDMCommand extends FacilioCommand {
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getReadingDataMetaFields())
 				.table(ModuleFactory.getReadingDataMetaModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("value"), "-1", StringOperators.ISN_T))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("readingType"), ReadingDataMeta.ReadingType.WRITE.getValue()+"", NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("isControllable"), Boolean.TRUE.toString(), BooleanOperators.IS));	// move this criteria to Action
 		
 		
@@ -101,6 +106,10 @@ public class GetRDMCommand extends FacilioCommand {
 		
 		List<Map<String, Object>> props = builder.get();
 		List<ReadingDataMeta> readingMetaList = ReadingsAPI.getReadingDataFromProps(props, null);
+		
+		for(ReadingDataMeta readingMeta :readingMetaList) {
+			readingMeta.setResourceContext(ResourceAPI.getResource(readingMeta.getResourceId()));
+		}
 		
 		context.put(FacilioConstants.ContextNames.READING_DATA_META_LIST, readingMetaList);
 		

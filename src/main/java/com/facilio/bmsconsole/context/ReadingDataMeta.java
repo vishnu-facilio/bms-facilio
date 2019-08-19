@@ -49,6 +49,15 @@ public class ReadingDataMeta implements Serializable {
 		this.resourceId = resourceId;
 	}
 	
+	private ResourceContext resourceContext;
+	
+	public ResourceContext getResourceContext() {
+		return resourceContext;
+	}
+	public void setResourceContext(ResourceContext resourceContext) {
+		this.resourceContext = resourceContext;
+	}
+
 	private long fieldId = -1;
 	public long getFieldId() {
 		return fieldId;
