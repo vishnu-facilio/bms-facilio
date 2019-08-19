@@ -54,8 +54,7 @@ public class SetLatestDateRange extends FacilioCommand {
 				
 				context.put(FacilioConstants.ContextNames.START_TIME, startTime);
 				context.put(FacilioConstants.ContextNames.END_TIME, currentTime);
-			}else{
-				context.put(FacilioConstants.ContextNames.DATE_OPERATOR, DateOperators.TODAY.getOperatorId());
+				context.put(FacilioConstants.ContextNames.DATE_OPERATOR, DateOperators.BETWEEN.getOperatorId());
 			}
 		}
 		return false;
