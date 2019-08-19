@@ -1,7 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import com.facilio.modules.FieldType;
+import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -17,6 +23,7 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import org.apache.commons.collections4.MapUtils;
 
 public class GenericGetModuleDataDetailCommand extends FacilioCommand {
 
@@ -66,6 +73,33 @@ public class GenericGetModuleDataDetailCommand extends FacilioCommand {
 			if(records.size() > 0) {
 				ResourceAPI.loadModuleResources(records, fields);
 				context.put(FacilioConstants.ContextNames.RECORD, records.get(0));
+
+				List<FacilioField> lookupFields = fields.stream().filter(field -> field.getDataTypeEnum() == FieldType.LOOKUP && !field.isDefault()).collect(Collectors.toList());
+				Map<String, FacilioField> primaryFieldMap = new HashMap<>();
+				for (FacilioField field : lookupFields) {
+					String name = ((LookupField) field).getLookupModule().getName();
+					FacilioField primaryField = modBean.getPrimaryField(name);
+					if (primaryField != null) {
+						primaryFieldMap.put(name, primaryField);
+					}
+				}
+
+				if (MapUtils.isNotEmpty(primaryFieldMap)) {
+					for (ModuleBaseWithCustomFields record : records) {
+						Map<String, Object> data = record.getData();
+						if (MapUtils.isEmpty(data)) {
+							continue;
+						}
+						for (String key : data.keySet()) {
+							if (primaryFieldMap.containsKey(key)) {
+								FacilioField primaryField = primaryFieldMap.get(key);
+								ModuleBaseWithCustomFields lookupRecord = (ModuleBaseWithCustomFields) data.get(key);
+								Object property = PropertyUtils.getProperty(lookupRecord, primaryField.getName());
+								PropertyUtils.setProperty(lookupRecord, "primaryValue", property);
+							}
+						}
+					}
+				}
 			}
 		}
 		return false;
