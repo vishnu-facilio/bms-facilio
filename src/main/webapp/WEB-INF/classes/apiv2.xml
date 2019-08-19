@@ -387,6 +387,10 @@
 		
 		<action name="updateRDM"
 		class="com.facilio.controlaction.action.ControlActionAction" method="updateRDM"></action>
+		
+		<action name="getControllableAssets"
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControllableAssets"></action>
+		
 	</package>
 	
 	<package name="KPIModule" namespace="/api/v2/kpi" extends="v2Api">

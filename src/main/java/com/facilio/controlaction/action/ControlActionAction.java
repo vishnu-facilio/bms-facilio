@@ -106,6 +106,20 @@ public class ControlActionAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	
+	public String getControllableAssets() throws Exception {
+		
+		FacilioContext constructListContext = constructListContext();
+		
+		Chain commandChain = ReadOnlyChainFactory.getControllableAssetsChain();
+		
+		commandChain.execute(constructListContext);
+		
+		setResult(ControlActionUtil.CONTROLLABLE_RESOURCES, constructListContext.get(ControlActionUtil.CONTROLLABLE_RESOURCES));
+		
+		return SUCCESS;
+	}
+	
 	public String getControlActionCommands() throws Exception {
 		
 		
