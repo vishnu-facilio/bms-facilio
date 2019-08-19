@@ -1148,6 +1148,7 @@ public class FacilioConstants {
 		public static final String IMPORT_PROCESS_CONTEXT = "importProcessContext";
 
 		public static final String INCLUDE_SERVING_SITE = "includeServingSite";
+		public static final Object DEFAULT_DATE = "defaultDate";
 
 
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());

@@ -307,6 +307,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.REPORT_SHOW_SAFE_LIMIT, showSafeLimit);
 		context.put(FacilioConstants.Workflow.WORKFLOW, transformWorkflow);
 		context.put(FacilioConstants.ContextNames.REPORT_HANDLE_BOOLEAN, newFormat);
+		context.put(FacilioConstants.ContextNames.DEFAULT_DATE, defaultDate);
 		
 		if(regressionConfig != null && !regressionConfig.isEmpty()) {
 			context.put(FacilioConstants.ContextNames.REGRESSION_CONFIG, regressionConfig);
@@ -705,6 +706,15 @@ public class V2ReportAction extends FacilioAction {
 	}
 	public void setResourceId(long resourceId) {
 		this.resourceId = resourceId;
+	}
+	
+	private boolean defaultDate = false;
+	
+	public boolean getDefaultDate(){
+		return defaultDate;
+	}
+	public void setDefaultDate(boolean date){
+		this.defaultDate = date;
 	}
 	
 //	public String fetchReportDataFromPm() throws Exception{
