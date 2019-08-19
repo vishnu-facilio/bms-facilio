@@ -11,8 +11,10 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
@@ -108,7 +110,9 @@ public class GetRDMCommand extends FacilioCommand {
 		List<ReadingDataMeta> readingMetaList = ReadingsAPI.getReadingDataFromProps(props, null);
 		
 		for(ReadingDataMeta readingMeta :readingMetaList) {
-			readingMeta.setResourceContext(ResourceAPI.getResource(readingMeta.getResourceId()));
+			AssetContext asset = AssetsAPI.getAssetInfo(readingMeta.getResourceId());
+			asset.setCategory(AssetsAPI.getCategoryForAsset(asset.getCategory().getId()));
+			readingMeta.setResourceContext(asset);
 		}
 		
 		context.put(FacilioConstants.ContextNames.READING_DATA_META_LIST, readingMetaList);
