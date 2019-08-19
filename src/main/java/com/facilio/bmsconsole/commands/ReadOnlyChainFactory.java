@@ -1314,4 +1314,10 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetRecommendedUsersCommand());
 		return c;
 	}
+
+	public static Chain getControlActionCommandsChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetControlActionCommandsCommand());
+		return c;
+	}
 }

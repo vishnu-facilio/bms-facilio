@@ -2,67 +2,54 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
-import com.facilio.bmsconsole.context.AlarmContext;
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.ReadingAlarmContext;
-import com.facilio.bmsconsole.context.ReadingDataMeta;
-import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.ResourceAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.view.FacilioView;
-import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.controlaction.context.ControlActionCommandContext;
+import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
-import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 
-public class GetRDMCommand extends FacilioCommand {
+public class GetControlActionCommandsCommand extends FacilioCommand {
 
-	@Override
-	public boolean executeCommand(Context context) throws Exception {
+    @Override
+    public boolean executeCommand(Context context) throws Exception {
 		
-		String moduleName = ModuleFactory.getReadingDataMetaModule().getName();
+    	
+    	ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getReadingDataMetaFields());
+		FacilioModule controlActionModule = modbean.getModule(FacilioConstants.ContextNames.CONTROL_ACTION_COMMAND_MODULE);
 		
 		Boolean fetchCount = (Boolean) context.get(FacilioConstants.ContextNames.FETCH_COUNT);
 		List<FacilioField> fields = null;
 		if (fetchCount != null && fetchCount) {
 			FacilioField countFld = new FacilioField();
 			countFld.setName("count");
-			countFld.setColumnName("COUNT(Reading_Data_Meta.ID)");
+			countFld.setColumnName("COUNT("+controlActionModule.getTableName()+".ID)");
 			countFld.setDataType(FieldType.NUMBER);
 			fields = Collections.singletonList(countFld);
 		}
 		else {
-			fields = FieldFactory.getReadingDataMetaFields();
+			fields = modbean.getAllFields(FacilioConstants.ContextNames.CONTROL_ACTION_COMMAND_MODULE);
 		}
 		
-		
-		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
+		SelectRecordsBuilder<ControlActionCommandContext> builder = new SelectRecordsBuilder<ControlActionCommandContext>()
+				.module(controlActionModule)
 				.select(fields)
-				.table(ModuleFactory.getReadingDataMetaModule().getTableName())
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("value"), "-1", StringOperators.ISN_T))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("readingType"), ReadingDataMeta.ReadingType.WRITE.getValue()+"", NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("isControllable"), Boolean.TRUE.toString(), BooleanOperators.IS));	// move this criteria to Action
-		
+				.beanClass(ControlActionCommandContext.class);
 		
 		JSONObject filters = (JSONObject) context.get(FacilioConstants.ContextNames.FILTERS);
 		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
@@ -90,7 +77,7 @@ public class GetRDMCommand extends FacilioCommand {
 			}
 		}
 		
-		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(moduleName);
+		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(controlActionModule.getName());
 		if(scopeCriteria != null)
 		{
 			builder.andCriteria(scopeCriteria);
@@ -121,24 +108,25 @@ public class GetRDMCommand extends FacilioCommand {
 			builder.andCustomWhere("Alarms.ENTITY_ID = ?", entityId);
 		}
 		
-		
-		List<Map<String, Object>> props = builder.get();
+		List<ControlActionCommandContext> props = builder.get();
 		
 		if(fetchCount == null || !fetchCount) {
-			List<ReadingDataMeta> readingMetaList = ReadingsAPI.getReadingDataFromProps(props, null);
-			
-			for(ReadingDataMeta readingMeta :readingMetaList) {
-				AssetContext asset = AssetsAPI.getAssetInfo(readingMeta.getResourceId());
-				asset.setCategory(AssetsAPI.getCategoryForAsset(asset.getCategory().getId()));
-				readingMeta.setResourceContext(asset);
+			for(ControlActionCommandContext prop :props) {
+				FacilioField field = modbean.getField(prop.getFieldId());
+				prop.setField(field);
+				prop.setResource(ResourceAPI.getResource(prop.getResource().getId()));
 			}
 			
-			context.put(FacilioConstants.ContextNames.READING_DATA_META_LIST, readingMetaList);
+			context.put(ControlActionUtil.CONTROL_ACTION_COMMANDS, props);
 		}
 		else {
-			context.put(FacilioConstants.ContextNames.READING_DATA_META_COUNT, props.get(0).get("count"));
+			
+			context.put(ControlActionUtil.CONTROL_ACTION_COMMANDS_COUNT, props.get(0).getData().get("count"));
+				
 		}
 		
+		
+    	
 		return false;
 	}
 

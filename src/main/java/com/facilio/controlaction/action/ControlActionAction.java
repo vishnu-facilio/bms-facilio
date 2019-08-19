@@ -102,12 +102,29 @@ public class ControlActionAction extends FacilioAction {
 		rdmChain.execute(constructListContext);
 		
 		setResult(ControlActionUtil.CONTROL_ACTION_CONTROLLABLE_POINTS, constructListContext.get(FacilioConstants.ContextNames.READING_DATA_META_LIST));
+		setResult(FacilioConstants.ContextNames.READING_DATA_META_COUNT, constructListContext.get(FacilioConstants.ContextNames.READING_DATA_META_COUNT));
 		return SUCCESS;
 	}
 	
 	public String getControlActionCommands() throws Exception {
 		
-		setResult(ControlActionUtil.CONTROL_ACTION_COMMANDS, ControlActionUtil.getCommands());
+		
+		if(getPerPage() < 0) {
+			setPerPage(50);
+		}
+		if(getPage() < 0) {
+			setPage(1);
+		}
+		
+		FacilioContext constructListContext = constructListContext();
+		
+		Chain commandChain = ReadOnlyChainFactory.getControlActionCommandsChain();
+		
+		commandChain.execute(constructListContext);
+		
+		setResult(ControlActionUtil.CONTROL_ACTION_COMMANDS, constructListContext.get(ControlActionUtil.CONTROL_ACTION_COMMANDS));
+		setResult(ControlActionUtil.CONTROL_ACTION_COMMANDS_COUNT, constructListContext.get(FacilioConstants.ContextNames.READING_DATA_META_COUNT));
+		
 		return SUCCESS;
 	}
 	
