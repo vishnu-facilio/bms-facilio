@@ -49,7 +49,8 @@ public class GetControlActionCommandsCommand extends FacilioCommand {
 		SelectRecordsBuilder<ControlActionCommandContext> builder = new SelectRecordsBuilder<ControlActionCommandContext>()
 				.module(controlActionModule)
 				.select(fields)
-				.beanClass(ControlActionCommandContext.class);
+				.beanClass(ControlActionCommandContext.class)
+				.orderBy("EXECUTED_TIME desc");
 		
 		JSONObject filters = (JSONObject) context.get(FacilioConstants.ContextNames.FILTERS);
 		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
