@@ -101,6 +101,8 @@ public class ControlActionAction extends FacilioAction {
 		
 		FacilioContext constructListContext = constructListContext();
 		
+		constructListContext.put(FacilioConstants.ContextNames.MODULE_NAME, ModuleFactory.getReadingDataMetaModule().getName());
+		
 		Chain rdmChain = ReadOnlyChainFactory.getRDMChain();
 		
 		rdmChain.execute(constructListContext);
@@ -150,6 +152,8 @@ public class ControlActionAction extends FacilioAction {
 		}
 		
 		FacilioContext constructListContext = constructListContext();
+		
+		constructListContext.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.CONTROL_ACTION_COMMAND_MODULE);
 		
 		Chain commandChain = ReadOnlyChainFactory.getControlActionCommandsChain();
 		

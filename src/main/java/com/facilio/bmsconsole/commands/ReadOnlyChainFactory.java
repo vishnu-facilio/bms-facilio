@@ -297,6 +297,8 @@ public class ReadOnlyChainFactory {
 	
 	public static Chain getRDMChain() {
 		Chain c = getDefaultChain();
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new GetRDMCommand());
 		return c;
 	}
@@ -1318,6 +1320,8 @@ public class ReadOnlyChainFactory {
 
 	public static Chain getControlActionCommandsChain() {
 		Chain c = getDefaultChain();
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new GetControlActionCommandsCommand());
 		return c;
 	}

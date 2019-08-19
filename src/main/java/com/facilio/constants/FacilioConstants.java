@@ -770,6 +770,7 @@ public class FacilioConstants {
 		public static final String READING_DATA_META_ID = "readingDataMetaId";
 		public static final String READING_DATA_META_LIST = "readingDataMetaList";
 		public static final String READING_DATA_META_COUNT = "readingDataMetaCount";
+		public static final String READING_DATA_META = "readingdatameta";
 		public static final String READING_DATA_META_MAP = "readingDataMetaMap";
 		public static final String READING_DATA_META_TYPE = "readingDataMetaType";
 		public static final String FORMULA_FIELD = "formulaField";
