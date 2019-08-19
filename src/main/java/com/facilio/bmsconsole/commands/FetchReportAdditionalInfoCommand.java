@@ -143,16 +143,24 @@ public class FetchReportAdditionalInfoCommand extends FacilioCommand {
 			
 			if (parentIds != null) {
 				List<AlarmOccurrenceContext> occurrences = null;
-				AlarmOccurrenceContext alarmOccurrence = NewAlarmAPI.getAlarmOccurrence(occurrenceId);
-				if (alarmOccurrence != null && alarmOccurrence.getAlarm() != null) {
+				if (occurrenceId == null || occurrenceId == -1) {
+					occurrences = NewAlarmAPI.getReadingAlarmOccurrences(parentIds, -1l, dp.getyAxis().getFieldId(), report.getDateRange().getStartTime(), report.getDateRange().getEndTime());
+				}
+				else if (currentAlarm != null && currentAlarm.getReadingFieldId() == dp.getyAxis().getFieldId() && parentIds.contains(currentAlarm.getResource().getId())) {
+					AlarmOccurrenceContext alarmOccurrence = NewAlarmAPI.getAlarmOccurrence(occurrenceId);
 					occurrences = NewAlarmAPI.getReadingAlarmOccurrences(alarmOccurrence.getAlarm().getId(), report.getDateRange().getStartTime(), report.getDateRange().getEndTime());
-					
-					if (CollectionUtils.isNotEmpty(occurrences)) {
-						for (AlarmOccurrenceContext occurrence: occurrences) {
-							allAlarms.add(occurrence);
-						}
+				}
+
+//				AlarmOccurrenceContext alarmOccurrence = NewAlarmAPI.getAlarmOccurrence(occurrenceId);
+//				if (alarmOccurrence != null && alarmOccurrence.getAlarm() != null) {
+//					occurrences = NewAlarmAPI.getReadingAlarmOccurrences(alarmOccurrence.getAlarm().getId(), report.getDateRange().getStartTime(), report.getDateRange().getEndTime());
+
+				if (CollectionUtils.isNotEmpty(occurrences)) {
+					for (AlarmOccurrenceContext occurrence: occurrences) {
+						allAlarms.add(occurrence);
 					}
 				}
+//				}
 			}
 		}
 		

@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.context.*;
+import com.facilio.db.criteria.operators.*;
 import com.facilio.modules.fields.LookupField;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -20,10 +21,6 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BuildingOperator;
-import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -330,6 +327,43 @@ public class NewAlarmAPI {
 			return alarmOccurrences.get(0);
 		}
 		return null;
+	}
+
+	public static List<AlarmOccurrenceContext> getReadingAlarmOccurrences(List<Long> resourceId, Long ruleId, long fieldId, long startTime, long endTime) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		SelectRecordsBuilder<AlarmOccurrenceContext> selectBuilder = getAlarmBuilder(startTime, endTime, fields, fieldMap);
+		boolean ruleAvailable = false;
+		if (CollectionUtils.isNotEmpty(resourceId)) {
+			ruleAvailable = true;
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), resourceId, PickListOperators.IS));
+		}
+
+		if (ruleId != null && ruleId != -1) {
+			FacilioModule readingAlarmModule = modBean.getModule(FacilioConstants.ContextNames.NEW_READING_ALARM);
+			selectBuilder
+					.innerJoin(readingAlarmModule.getTableName())
+					.on("AlarmOccurrence.ALARM_ID = " + readingAlarmModule.getTableName() + ".ID");
+			Map<String, FacilioField> readingAlarmFieldMap = FieldFactory.getAsMap(modBean.getAllFields(readingAlarmModule.getName()));
+			selectBuilder.andCondition(CriteriaAPI.getCondition(readingAlarmFieldMap.get("rule"), String.valueOf(ruleId), PickListOperators.IS));
+			ruleAvailable = true;
+		}
+//		if (org.apache.commons.collections.CollectionUtils.isNotEmpty(resourceId)) {
+//			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), resourceId, PickListOperators.IS));
+//		}
+		if (!ruleAvailable) {
+			throw new IllegalArgumentException("Resource Id or Rule Id should be available");
+		}
+
+		if(fieldId > 0) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("readingFieldId"), String.valueOf(fieldId), NumberOperators.EQUALS));
+		}
+		List<AlarmOccurrenceContext> alarms = selectBuilder.get();
+		/*if (AccountUtil.getCurrentOrg().getId() == 75) {
+			LOGGER.info("Fetched Alarm Query : "+selectBuilder.toString());
+		}*/
+		return alarms;
 	}
 
 	public static List<AlarmOccurrenceContext> getReadingAlarmOccurrences(long entityId, long startTime, long endTime)

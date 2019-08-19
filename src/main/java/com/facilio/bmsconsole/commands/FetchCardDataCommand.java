@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.util.*;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -17,23 +19,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.DashboardAction;
 import com.facilio.bmsconsole.actions.V2ReportAction;
-import com.facilio.bmsconsole.context.AlarmContext;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.BuildingContext;
-import com.facilio.bmsconsole.context.DashboardWidgetContext;
-import com.facilio.bmsconsole.context.EnergyMeterContext;
-import com.facilio.bmsconsole.context.PhotosContext;
-import com.facilio.bmsconsole.context.ReadingAlarmContext;
-import com.facilio.bmsconsole.context.ReportSpaceFilterContext;
-import com.facilio.bmsconsole.context.WidgetStaticContext;
-import com.facilio.bmsconsole.context.WidgetVsWorkflowContext;
 import com.facilio.bmsconsole.reports.ReportsUtil;
-import com.facilio.bmsconsole.util.AlarmAPI;
-import com.facilio.bmsconsole.util.BaseLineAPI;
-import com.facilio.bmsconsole.util.DashboardUtil;
-import com.facilio.bmsconsole.util.DeviceAPI;
-import com.facilio.bmsconsole.util.ReadingRuleAPI;
-import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
 import com.facilio.cards.util.CardType;
 import com.facilio.cards.util.CardUtil;
@@ -403,33 +389,43 @@ public class FetchCardDataCommand extends FacilioCommand {
 		
 		Map<String,Object> result = new HashMap<>();
 		List<Long> resourceIds = resourceId != null && resourceId != -1 ? Collections.singletonList(resourceId) : null;
-		if (!isRCA) {
-			List<ReadingAlarmContext> allAlarms = AlarmAPI.getReadingAlarms(resourceIds, ruleId, -1, dateRange.getStartTime(), dateRange.getEndTime(), false);
-			
-			Map<Long, ReadingAlarmContext> alarmMap = new HashMap<>();
-			
-			JSONArray json = FetchReportAdditionalInfoCommand.splitAlarms(allAlarms, dateRange, alarmMap);
+
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
+			List<AlarmOccurrenceContext> readingAlarmOccurrences = NewAlarmAPI.getReadingAlarmOccurrences(resourceIds, ruleId, -1, dateRange.getStartTime(), dateRange.getEndTime());
+			Map<Long, AlarmOccurrenceContext> alarmMap = new HashMap<>();
+			JSONArray json = FetchReportAdditionalInfoCommand.splitAlarmOccurrence(readingAlarmOccurrences, dateRange, alarmMap);
 			result.put("alarms", json);
 			result.put("alarmInfo", alarmMap);
-		} else {
-			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(EventFieldFactory.getEventFields());
-			
-			Criteria criteria = new Criteria();
-			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("subRuleId"), ruleId.toString(), NumberOperators.EQUALS));
-			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), dateRange.getStartTime() + "," + dateRange.getEndTime(),DateOperators.BETWEEN));
-			
-			List<EventContext> events = EventAPI.getEvent(criteria);
-			
-			if(events != null) {
-				Map<Long,EventContext> eventIdMap = new HashMap<>();
-				Map<Long,EventContext> eventCreationTimeMap = new HashMap<>();
-				
-				for(EventContext event :events) {
-					eventIdMap.put(event.getId(), event);
-					eventCreationTimeMap.put(event.getCreatedTime(), event);
+		}
+
+		else {
+			if (!isRCA) {
+				List<ReadingAlarmContext> allAlarms = AlarmAPI.getReadingAlarms(resourceIds, ruleId, -1, dateRange.getStartTime(), dateRange.getEndTime(), false);
+
+				Map<Long, ReadingAlarmContext> alarmMap = new HashMap<>();
+				JSONArray json = FetchReportAdditionalInfoCommand.splitAlarms(allAlarms, dateRange, alarmMap);
+				result.put("alarms", json);
+				result.put("alarmInfo", alarmMap);
+			} else {
+				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(EventFieldFactory.getEventFields());
+
+				Criteria criteria = new Criteria();
+				criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("subRuleId"), ruleId.toString(), NumberOperators.EQUALS));
+				criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), dateRange.getStartTime() + "," + dateRange.getEndTime(), DateOperators.BETWEEN));
+
+				List<EventContext> events = EventAPI.getEvent(criteria);
+
+				if (events != null) {
+					Map<Long, EventContext> eventIdMap = new HashMap<>();
+					Map<Long, EventContext> eventCreationTimeMap = new HashMap<>();
+
+					for (EventContext event : events) {
+						eventIdMap.put(event.getId(), event);
+						eventCreationTimeMap.put(event.getCreatedTime(), event);
+					}
+					result.put("events", FetchReportAdditionalInfoCommand.splitEvents(dateRange, eventCreationTimeMap, events));
+					result.put("eventInfo", eventIdMap);
 				}
-				result.put("events", FetchReportAdditionalInfoCommand.splitEvents(dateRange, eventCreationTimeMap,events));
-				result.put("eventInfo", eventIdMap);
 			}
 		}
 		
