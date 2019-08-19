@@ -2,6 +2,10 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 
+import com.facilio.beans.ModuleCRUDBean;
+import com.facilio.events.context.EventContext;
+import com.facilio.events.context.EventRuleContext;
+import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -32,8 +36,12 @@ public class InsertNewEventsCommand extends FacilioCommand {
 			baseEvent.setCreatedTime(DateTimeUtil.getCurrenTime());
 		}
 		
-		if (baseEvent.getSeverity() == null) {
-			throw new IllegalArgumentException("Severity of event cannot be empty");
+		if (baseEvent.shouldIgnore()) {
+			baseEvent.setSeverity(AlarmAPI.getAlarmSeverity("Info"));
+			baseEvent.setEventState(EventContext.EventState.IGNORED);
+		}
+		else if (!baseEvent.isSuperCalled()) {
+			throw new IllegalArgumentException("method shouldIgnore of BaseEvent is never called");
 		}
 	}
 

@@ -1,34 +1,29 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.workflow.rule.EventType;
-import com.facilio.chain.FacilioContext;
-import com.facilio.modules.FieldUtil;
-import com.fasterxml.jackson.annotation.JsonAnyGetter;
-import com.fasterxml.jackson.annotation.JsonAnySetter;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioContext;
 import com.facilio.events.context.EventContext;
 import com.facilio.events.context.EventContext.EventInternalState;
 import com.facilio.events.context.EventContext.EventState;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.time.DateTimeUtil;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
-import java.util.Map;
 
 public abstract class BaseEventContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
 
 	private String description;
+	private boolean superCalled = false;
+
 	public String getDescription() {
 		return description;
 	}
@@ -329,5 +324,17 @@ public abstract class BaseEventContext extends ModuleBaseWithCustomFields {
 		baseEvent.setResource(resourceContext);
 		
 		return baseEvent;
+	}
+
+	public boolean shouldIgnore() {
+		superCalled = true;
+		if (getSeverity() == null) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isSuperCalled() {
+		return superCalled;
 	}
 }

@@ -64,7 +64,11 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 					processEventToAlarm(baseEvent, context);
 				}
 				PointedList<AlarmOccurrenceContext> pointedList = alarmOccurrenceMap.get(entry.getKey());
-				
+
+				if (CollectionUtils.isEmpty(pointedList)) {
+				    continue;
+                }
+
 				List<AlarmOccurrenceContext> list = new ArrayList<>(pointedList);
 				for (AlarmOccurrenceContext alarmOccurrence : list) {
 					if (!alarmOccurrence.equals(pointedList.getLastRecord()) && !alarmOccurrence.getSeverity().equals(AlarmAPI.getAlarmSeverity("Clear"))) {

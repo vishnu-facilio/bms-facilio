@@ -11,10 +11,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -65,8 +67,19 @@ public class EventAPI {
 	 public static long processEvents(long timestamp, JSONObject object, List<EventRuleContext> eventRules, Map<String, Integer> eventCountMap, long lastEventTime) throws Exception {
 		FacilioContext context = new FacilioContext();
 		populateProcessEventParams(context, timestamp, object, eventRules, eventCountMap, lastEventTime);
-		Chain processEventChain = EventConstants.EventChainFactory.processEventChain();
-	    processEventChain.execute(context);
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
+			JSONArray jsonArray = new JSONArray();
+			object.put("controllerId", 23);
+			jsonArray.add(object);
+			context.put(EventConstants.EventContextNames.EVENT_PAYLOAD, jsonArray);
+			Chain c = TransactionChainFactory.getV2AddEventPayloadChain();
+			c.execute(context);
+			return System.currentTimeMillis();
+		}
+		else {
+			Chain processEventChain = EventConstants.EventChainFactory.processEventChain();
+			processEventChain.execute(context);
+		}
 	    return (long) context.get(EventConstants.EventContextNames.EVENT_LAST_TIMESTAMP);
 	 } 
 	 

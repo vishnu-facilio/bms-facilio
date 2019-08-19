@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.events.commands.NewExecuteEventRulesCommand;
+import com.facilio.events.constants.EventConstants;
 import com.facilio.bmsconsole.commands.reservation.CreateExternalAttendeesCommand;
 import com.facilio.bmsconsole.commands.reservation.CreateInternalAttendeesCommand;
 import com.facilio.bmsconsole.commands.reservation.ValidateAndSetReservationPropCommand;
@@ -51,6 +53,7 @@ import com.facilio.workflows.command.UpdateNameSpaceCommand;
 import com.facilio.workflows.command.UpdateUserFunctionCommand;
 import com.facilio.workflows.command.UpdateWorkflowCommand;
 import com.facilio.workflows.command.updateScheduledWorkflowCommand;
+import org.apache.commons.chain.Context;
 
 public class TransactionChainFactory {
 
@@ -3519,6 +3522,7 @@ public class TransactionChainFactory {
 		
 		public static Chain getV2AddEventChain() {
 			Chain c = getDefaultChain();
+			c.addCommand(new NewExecuteEventRulesCommand());
 			c.addCommand(new InsertNewEventsCommand());
 			c.addCommand(new NewEventsToAlarmsConversionCommand());
 			c.addCommand(new SaveAlarmAndEventsCommand());
@@ -3526,6 +3530,13 @@ public class TransactionChainFactory {
 			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.READING_ALARM_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.BUSSINESS_LOGIC_ALARM_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(false,RuleType.PM_ALARM_RULE));
+			c.addCommand(new FacilioCommand() {
+				@Override
+				public boolean executeCommand(Context context) throws Exception {
+					context.remove(EventConstants.EventContextNames.EVENT_RULE_LIST);
+					return false;
+				}
+			});
 			c.addCommand(new ForkChainToInstantJobCommand()
 					.addCommand(new ExecuteAllWorkflowsCommand(RuleType.ALARM_NOTIFICATION_RULE, RuleType.CUSTOM_ALARM_NOTIFICATION_RULE))
 			);
