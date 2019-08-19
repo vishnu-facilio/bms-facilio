@@ -156,7 +156,7 @@ public class ControlActionAction extends FacilioAction {
 		commandChain.execute(constructListContext);
 		
 		setResult(ControlActionUtil.CONTROL_ACTION_COMMANDS, constructListContext.get(ControlActionUtil.CONTROL_ACTION_COMMANDS));
-		setResult(ControlActionUtil.CONTROL_ACTION_COMMANDS_COUNT, constructListContext.get(FacilioConstants.ContextNames.READING_DATA_META_COUNT));
+		setResult(ControlActionUtil.CONTROL_ACTION_COMMANDS_COUNT, constructListContext.get(ControlActionUtil.CONTROL_ACTION_COMMANDS_COUNT));
 		
 		return SUCCESS;
 	}
