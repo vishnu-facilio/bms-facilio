@@ -3,7 +3,12 @@ package com.facilio.bmsconsole.context;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
+import com.facilio.modules.FieldUtil;
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
@@ -14,6 +19,11 @@ import com.facilio.events.context.EventContext.EventState;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.time.DateTimeUtil;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+
+import java.util.Map;
 
 public abstract class BaseEventContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
@@ -186,6 +196,34 @@ public abstract class BaseEventContext extends ModuleBaseWithCustomFields {
 	public void setRecommendation(String recommendation) {
 		this.recommendation = recommendation;
 	}
+
+	private JSONObject additionInfo;
+	public JSONObject getAdditionInfo() {
+		if (additionInfo == null) {
+			this.additionInfo = new JSONObject();
+			if (MapUtils.isNotEmpty(getData())) {
+				this.additionInfo.putAll(getData());
+			}
+		}
+		return additionInfo;
+	}
+	public void addAdditionInfo(String key, Object value) {
+		if(this.additionInfo == null) {
+			this.additionInfo =  new JSONObject();
+		}
+		this.additionInfo.put(key,value);
+	}
+
+	public String getAdditionalInfoJsonStr() {
+		if(additionInfo != null) {
+			return additionInfo.toJSONString();
+		}
+		return null;
+	}
+	public void setAdditionalInfoJsonStr(String jsonStr) throws ParseException {
+		JSONParser parser = new JSONParser();
+		additionInfo = (JSONObject) parser.parse(jsonStr);
+	}
 	
 	public BaseAlarmContext updateAlarmContext(BaseAlarmContext baseAlarm, boolean add) throws Exception {
 		if (StringUtils.isNotEmpty(getEventMessage())) {
@@ -210,7 +248,17 @@ public abstract class BaseEventContext extends ModuleBaseWithCustomFields {
 		if (getSeverity().equals(clearSeverity)) {
 			alarmOccurrence.setClearedTime(getCreatedTime());
 		}
-		
+
+		JSONObject additionInfo = getAdditionInfo();
+		if (additionInfo != null && !additionInfo.isEmpty()) {
+			for (Object keySet : additionInfo.keySet()) {
+				Object o = additionInfo.get(keySet);
+				if (o != null) {
+					alarmOccurrence.addAdditionInfo(keySet.toString(), o);
+				}
+			}
+		}
+
 		if (add) {
 			CommonCommandUtil.addEventType(EventType.CREATE, (FacilioContext) context);
 			alarmOccurrence.setCreatedTime(getCreatedTime());

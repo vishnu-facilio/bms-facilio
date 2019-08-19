@@ -26,7 +26,8 @@ public class JsonToV2EventCommand extends FacilioCommand {
 				Type type = getAlarmType(jsonObject);
 
 				if (type == null) {
-					throw new IllegalArgumentException("Alarm type cannot be null or empty");
+					// default event is bms alarm
+					type = Type.BMS_ALARM;
 				}
 				
 				BaseEventContext baseEvent = (BaseEventContext) FieldUtil.getAsBeanFromMap(jsonObject, NewEventAPI.getEventClass(type));

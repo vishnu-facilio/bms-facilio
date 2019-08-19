@@ -2,6 +2,9 @@ package com.facilio.bmsconsole.context;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
@@ -165,6 +168,31 @@ public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 	}
 	public void setResource(ResourceContext resource) {
 		this.resource = resource;
+	}
+
+	public JSONObject additionInfo;
+	public JSONObject getAdditionInfo() {
+		return additionInfo;
+	}
+	public void setAdditionInfo(JSONObject additionInfo) {
+		this.additionInfo = additionInfo;
+	}
+	public void addAdditionInfo(String key, Object value) {
+		if(this.additionInfo == null) {
+			this.additionInfo =  new JSONObject();
+		}
+		this.additionInfo.put(key,value);
+	}
+
+	public String getAdditionalInfoJsonStr() {
+		if(additionInfo != null) {
+			return additionInfo.toJSONString();
+		}
+		return null;
+	}
+	public void setAdditionalInfoJsonStr(String jsonStr) throws ParseException {
+		JSONParser parser = new JSONParser();
+		additionInfo = (JSONObject) parser.parse(jsonStr);
 	}
 	
 	public void updateAlarm(BaseAlarmContext baseAlarm) {
