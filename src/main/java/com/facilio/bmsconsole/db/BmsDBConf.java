@@ -167,6 +167,22 @@ public class BmsDBConf extends DBConf {
         return Locale.US;
     }
 
+    @Override
+    public String getCurrentDataSource() {
+        if (AccountUtil.getCurrentOrg() != null) {
+            return AccountUtil.getCurrentOrg().getDatasource();
+        }
+        return null;
+    }
+
+    @Override
+    public String getCurrentDBName() {
+        if (AccountUtil.getCurrentOrg() != null) {
+            return AccountUtil.getCurrentOrg().getDbName();
+        }
+        return null;
+    }
+
     /**
      * fetches file's URL, File Name and Content type
      * @param selectFields

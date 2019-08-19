@@ -36,6 +36,7 @@ public abstract class FacilioJob implements Runnable {
 		currentThread.setName(threadName + "-" + jc.getJobId()+"-"+ jc.getJobName());
 		int status = 0;
 		try {
+			AccountUtil.cleanCurrentAccount();
 			if ( JobStore.updateStartExecution(jc.getJobId(), jc.getJobName(), jc.getJobStartTime(), jc.getJobExecutionCount()) < 1 ) {
 				executor.jobEnd(jc.getJobKey());
 				return;

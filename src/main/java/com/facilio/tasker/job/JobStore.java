@@ -435,8 +435,8 @@ public class JobStore {
 	static int updateStartExecution(long jobId, String jobName, long jobStartTime, int jobExecutionCount) {
 		int rowsUpdated = 0;
 		String query = "update Jobs set STATUS = 2, JOB_SERVER_ID = ?, CURRENT_EXECUTION_TIME = ?, EXECUTION_ERROR_COUNT = ? where JOBID = ? and JOBNAME= ? and CURRENT_EXECUTION_TIME = ? and EXECUTION_ERROR_COUNT = ?";
-		try(Connection connection = FacilioConnectionPool.getInstance().getConnectionFromPool();
-		PreparedStatement statement = connection.prepareStatement(query)){
+		try(Connection connection = FacilioConnectionPool.getInstance().getDirectConnection();
+			PreparedStatement statement = connection.prepareStatement(query)){
 			statement.setLong(1, ServerInfo.getServerId());
 			statement.setLong(2, System.currentTimeMillis());
 			statement.setInt(3, jobExecutionCount+1);

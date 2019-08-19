@@ -106,7 +106,7 @@ public abstract class FileStore {
 		PreparedStatement pstmt = null;
 		boolean olderCommit = false;
 		try {
-			conn = FacilioConnectionPool.INSTANCE.getConnectionFromPool(); //Getting connection from pool since this has to be done outside transaction
+			conn = FacilioConnectionPool.INSTANCE.getDirectConnection(); //Getting connection from pool since this has to be done outside transaction
 			olderCommit = conn.getAutoCommit();
 			conn.setAutoCommit(false);
 			

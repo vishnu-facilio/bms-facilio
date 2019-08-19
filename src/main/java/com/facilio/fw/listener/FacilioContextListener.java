@@ -101,7 +101,7 @@ public class FacilioContextListener implements ServletContextListener {
 		FacilioEnum.getEnumValues("CostType");
 
 		try {
-			migrateSchemaChanges();
+//			migrateSchemaChanges();
 			// ServerInfo.registerServer();
 			//timer.schedule(new ServerInfo(), 30000L, 30000L);
 
