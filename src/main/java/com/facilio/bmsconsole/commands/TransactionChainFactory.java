@@ -1,5 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.bmsconsole.commands.reservation.CreateExternalAttendeesCommand;
+import com.facilio.bmsconsole.commands.reservation.CreateInternalAttendeesCommand;
+import com.facilio.bmsconsole.commands.reservation.ValidateAndSetReservationPropCommand;
 import org.apache.commons.chain.Chain;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -3954,6 +3957,30 @@ public class TransactionChainFactory {
 			c.addCommand(new FillDefaultValuesForControlActionCommand());
 			c.addCommand(new AddControlActionCommand());
 			c.addCommand(new PublishIOTMessageControlActionCommand());
+			return c;
+		}
+
+		public static Chain addReservationChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new ValidateAndSetReservationPropCommand());
+			c.addCommand(new GenericAddModuleDataCommand());
+			c.addCommand(addReservationInternalAttendeeChain());
+			c.addCommand(addReservationExternalAttendeeChain());
+			c.addCommand(new ExecuteAllWorkflowsCommand());
+			return c;
+		}
+
+		private static Chain addReservationInternalAttendeeChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new CreateInternalAttendeesCommand());
+			c.addCommand(new GenericAddModuleDataListCommand());
+			return c;
+		}
+
+		private static Chain addReservationExternalAttendeeChain() {
+			Chain c = getDefaultChain();
+			c.addCommand(new CreateExternalAttendeesCommand());
+			c.addCommand(new GenericAddModuleDataListCommand());
 			return c;
 		}
 }

@@ -692,6 +692,28 @@ public class CommonCommandUtil {
 			
 		}
 	}
+
+	public static void addToRecordMap(FacilioContext context, String moduleName, ModuleBaseWithCustomFields record) {
+		Map<String, List> recordMap = (Map<String, List>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
+		if (recordMap == null) {
+			recordMap = new HashMap<>();
+			context.put(FacilioConstants.ContextNames.RECORD_MAP, recordMap);
+			recordMap.put(moduleName, Collections.singletonList(record));
+		}
+		else {
+			List records = recordMap.get(moduleName);
+			if (records == null) {
+				recordMap.put(moduleName, Collections.singletonList(record));
+			}
+			else {
+				if (!(records instanceof ArrayList)) {
+					records = new ArrayList<>(records);
+					recordMap.put(moduleName, records);
+				}
+				records.add(record);
+			}
+		}
+	}
 	
 	public static Map<String, List> getRecordMap(FacilioContext context) {
 		Map<String, List> recordMap = (Map<String, List>) context.get(FacilioConstants.ContextNames.RECORD_MAP);

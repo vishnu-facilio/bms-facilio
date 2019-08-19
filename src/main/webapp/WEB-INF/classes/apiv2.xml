@@ -1615,6 +1615,28 @@
 
 	</package>
 
+	<package name="reservationApiV2"
+			 namespace="/api/v2/reservations" extends="v2Api">
+		<action name="add"
+				class="com.facilio.bmsconsole.actions.ReservationAction"
+				method="addReservation">
+		</action>
+		<action name="*"
+				class="com.facilio.bmsconsole.actions.ReservationAction"
+				method="fetchReservationDetail">
+			<param name="recordId">{1}</param>
+		</action>
+	</package>
+
+	<package name="reservationListApiV2"
+			 namespace="/api/v2/reservations/view" extends="v2Api">
+		<action name="*"
+				class="com.facilio.bmsconsole.actions.ReservationAction"
+				method="fetchReservationList">
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
+
 	<package name="assetApiV2" namespace="/api/v2/assets"
 		extends="v2Api">
 

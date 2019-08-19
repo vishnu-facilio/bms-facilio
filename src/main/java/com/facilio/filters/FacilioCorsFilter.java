@@ -283,6 +283,9 @@ public class FacilioCorsFilter implements Filter {
         }
 
         String[] originHeaderdomain = originHeader.split("://");
+        if (AwsUtil.isDevelopment() && originHeaderdomain[0].equalsIgnoreCase("chrome-extension")) {
+            return true;
+        }
         if (customdomains != null) {
 			if (customdomains.containsKey(originHeaderdomain[1])) {
 				return true;

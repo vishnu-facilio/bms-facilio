@@ -6,6 +6,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.reservation.ExternalAttendeeContext;
+import com.facilio.bmsconsole.context.reservation.InternalAttendeeContext;
+import com.facilio.bmsconsole.context.reservation.ReservationContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import org.json.simple.JSONObject;
 
@@ -69,6 +72,13 @@ public class FacilioConstants {
 	}
 
 	public static class ContextNames {
+
+		public static class Reservation {
+			public static final String RESERVATION = "reservation";
+			public static final String RESERVATION_LIST = "reservations";
+			public static final String RESERVATIONS_INTERNAL_ATTENDEE = "reservationInternalAttendee";
+			public static final String RESERVATIONS_EXTERNAL_ATTENDEE = "reservationExternalAttendee";
+		}
 
 		public static final String CONNECTION = "connectionContext";
         public static final String OFFSET = "offset";
@@ -1302,7 +1312,10 @@ public class FacilioConstants {
 			classMap.put(NEW_READING_ALARM, ReadingAlarm.class);
 			classMap.put(READING_EVENT, ReadingEventContext.class);
 			classMap.put(READING_ALARM_CATEGORY, ReadingAlarmCategoryContext.class);
-			
+
+			classMap.put(Reservation.RESERVATION, ReservationContext.class);
+			classMap.put(Reservation.RESERVATIONS_INTERNAL_ATTENDEE, InternalAttendeeContext.class);
+			classMap.put(Reservation.RESERVATIONS_EXTERNAL_ATTENDEE, ExternalAttendeeContext.class);
 
 			return classMap;
 		}
