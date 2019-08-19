@@ -394,6 +394,9 @@
 		<action name="getControllableFields"
 		class="com.facilio.controlaction.action.ControlActionAction" method="getControllableFields"></action>
 		
+		<action name="metaData"
+		class="com.facilio.controlaction.action.ControlActionAction" method="metaData"></action>
+		
 	</package>
 	
 	<package name="KPIModule" namespace="/api/v2/kpi" extends="v2Api">

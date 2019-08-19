@@ -22,6 +22,10 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.controlaction.context.ControlActionCommandContext;
 import com.facilio.controlaction.util.ControlActionUtil;
+import com.facilio.modules.AggregateOperator;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.ModuleFactory;
 
 public class ControlActionAction extends FacilioAction {
 
@@ -206,6 +210,44 @@ public class ControlActionAction extends FacilioAction {
 			addWorkflowRuleChain.execute(context);
 			
 			setResult(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
+		}
+		
+		return SUCCESS;
+	}
+	
+	String moduleName;
+	
+	public String getModuleName() {
+		return moduleName;
+	}
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
+	
+	public String metaData() throws Exception {
+		
+		JSONObject meta = new JSONObject();
+		if(moduleName.equals(ModuleFactory.getReadingDataMetaModule().getName())) {
+			
+			meta.put("module", ModuleFactory.getReadingDataMetaModule());
+			meta.put("fields", FieldFactory.getReadingDataMetaFields());
+			
+			JSONObject operators = new JSONObject();
+			for (FieldType ftype : FieldType.values()) {
+				operators.put(ftype.name(), ftype.getOperators());
+			}
+			
+			meta.put("operators", operators);
+			
+			JSONObject reportOperators = new JSONObject();
+			reportOperators.put("DateAggregateOperator", AggregateOperator.DateAggregateOperator.values());
+			reportOperators.put("NumberAggregateOperator", AggregateOperator.NumberAggregateOperator.values());
+			reportOperators.put("StringAggregateOperator", AggregateOperator.StringAggregateOperator.values());
+			reportOperators.put("SpaceAggregateOperator", AggregateOperator.SpaceAggregateOperator.values());
+			reportOperators.put("EnergyPurposeAggregateOperator", AggregateOperator.EnergyPurposeAggregateOperator.values());
+			meta.put("reportOperators", reportOperators);
+			
+			setResult("meta", meta);
 		}
 		
 		return SUCCESS;
