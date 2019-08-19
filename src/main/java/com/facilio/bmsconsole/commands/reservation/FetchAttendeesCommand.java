@@ -6,6 +6,7 @@ import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.reservation.ExternalAttendeeContext;
 import com.facilio.bmsconsole.context.reservation.InternalAttendeeContext;
 import com.facilio.bmsconsole.context.reservation.ReservationContext;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.PickListOperators;
@@ -29,6 +30,7 @@ public class FetchAttendeesCommand extends FacilioCommand {
 
         if (reservation != null) {
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+            reservation.setSpace(SpaceAPI.getSpace(reservation.getSpace().getId()));
             reservation.setInternalAttendees(fetchInternalAttendees(modBean, reservation.getId()));
             reservation.setExternalAttendees(fetchexternalAttendees(modBean, reservation.getId()));
         }
