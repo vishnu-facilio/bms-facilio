@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.reservation.ReservationContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.time.DateTimeUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
@@ -62,6 +63,11 @@ public class ValidateAndSetReservationPropCommand extends FacilioCommand {
                 break;
             case TWO_HOURS:
                 reservation.setScheduledEndTime(reservation.getScheduledStartTime() + Duration.ofHours(2).toMillis());
+                break;
+            case ALL_DAY:
+                long starTime = reservation.getScheduledStartTime();
+                reservation.setScheduledStartTime(DateTimeUtil.getDayStartTimeOf(starTime));
+                reservation.setScheduledEndTime(DateTimeUtil.getDayEndTimeOf(starTime));
                 break;
             case CUSTOM:
                 if (reservation.getScheduledEndTime() == -1) {

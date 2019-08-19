@@ -1,9 +1,11 @@
 package com.facilio.bmsconsole.actions;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.reservation.ReservationContext;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -33,13 +35,6 @@ public class ReservationAction extends FacilioAction {
         return SUCCESS;
     }
 
-    private List<ReservationContext> reservationList;
-    public List<ReservationContext> getReservationList() {
-        return reservationList;
-    }
-    public void setReservationList(List<ReservationContext> reservationList) {
-        this.reservationList = reservationList;
-    }
     public String fetchReservationList() throws Exception {
         if (StringUtils.isEmpty(getOrderBy())) {
             setOrderBy("Reservations.LOCAL_ID");
@@ -56,8 +51,7 @@ public class ReservationAction extends FacilioAction {
             setResult(FacilioConstants.ContextNames.COUNT, context.get(FacilioConstants.ContextNames.RECORD_COUNT));
         }
         else {
-            reservationList = (List<ReservationContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
-            setResult(FacilioConstants.ContextNames.Reservation.RESERVATION_LIST, reservationList);
+            setResult(FacilioConstants.ContextNames.Reservation.RESERVATION_LIST, (List<ReservationContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST));
         }
         return SUCCESS;
     }
@@ -79,6 +73,27 @@ public class ReservationAction extends FacilioAction {
 
         reservation = (ReservationContext) context.get(FacilioConstants.ContextNames.RECORD);
         setResult(FacilioConstants.ContextNames.Reservation.RESERVATION, reservation);
+        return SUCCESS;
+    }
+
+    private List<Long> id;
+    public List<Long> getId() {
+        return id;
+    }
+    public void setId(List<Long> id) {
+        this.id = id;
+    }
+
+    public String deleteReservation() throws Exception {
+        FacilioContext context = new FacilioContext();
+        context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.Reservation.RESERVATION);
+        context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
+
+        Chain deleteModuleDataChain = FacilioChainFactory.deleteModuleDataChain();
+        deleteModuleDataChain.execute(context);
+
+        setResult(FacilioConstants.ContextNames.ROWS_UPDATED, context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
         return SUCCESS;
     }
 
