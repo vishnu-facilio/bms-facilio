@@ -127,10 +127,12 @@ public class GetRDMCommand extends FacilioCommand {
 		if(fetchCount == null || !fetchCount) {
 			List<ReadingDataMeta> readingMetaList = ReadingsAPI.getReadingDataFromProps(props, null);
 			
-			for(ReadingDataMeta readingMeta :readingMetaList) {
-				AssetContext asset = AssetsAPI.getAssetInfo(readingMeta.getResourceId());
-				asset.setCategory(AssetsAPI.getCategoryForAsset(asset.getCategory().getId()));
-				readingMeta.setResourceContext(asset);
+			if(readingMetaList != null) {
+				for(ReadingDataMeta readingMeta :readingMetaList) {
+					AssetContext asset = AssetsAPI.getAssetInfo(readingMeta.getResourceId());
+					asset.setCategory(AssetsAPI.getCategoryForAsset(asset.getCategory().getId()));
+					readingMeta.setResourceContext(asset);
+				}
 			}
 			
 			context.put(FacilioConstants.ContextNames.READING_DATA_META_LIST, readingMetaList);
