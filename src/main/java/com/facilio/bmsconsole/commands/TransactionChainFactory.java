@@ -3397,6 +3397,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddControlActionCommand());
 			c.addCommand(new PublishIOTMessageControlActionCommand());
 			return c;
+		}
 		public static Chain getAddAssetMovementChain() {
 			Chain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForAssetMovement());
@@ -3404,6 +3405,7 @@ public class TransactionChainFactory {
 			chain.addCommand(new GenericAddModuleDataCommand());
 			chain.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
 			chain.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_RULE));
+			chain.addCommand(new AddActivitiesCommand());
 			return chain;
 		}
 		
@@ -3411,8 +3413,8 @@ public class TransactionChainFactory {
 			Chain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForAssetMovement());
 			chain.addCommand(new GenericUpdateModuleDataCommand());
-			chain.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
-			chain.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_RULE));
+			chain.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+			chain.addCommand(new AddActivitiesCommand());
 			return chain;
 		}
 

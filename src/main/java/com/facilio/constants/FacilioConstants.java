@@ -1243,6 +1243,7 @@ public class FacilioConstants {
 			classMap.put(ASSET_DEPARTMENT, AssetDepartmentContext.class);
 			classMap.put(ASSET_PHOTOS, PhotosContext.class);
 			classMap.put(ASSET_ACTIVITY, ActivityContext.class);
+			classMap.put(ASSET_MOVEMENT, AssetMovementContext.class);
 			classMap.put(WORKORDER_ACTIVITY, ActivityContext.class);
 			classMap.put(ENERGY_METER, EnergyMeterContext.class);
 			classMap.put(CHILLER, ChillerContext.class);

@@ -374,7 +374,8 @@ public class FieldUtil {
 					FacilioConstants.ContextNames.TERMS_AND_CONDITIONS,
 					FacilioConstants.ContextNames.Reservation.RESERVATION,
 					FacilioConstants.ContextNames.Reservation.RESERVATIONS_EXTERNAL_ATTENDEE,
-					FacilioConstants.ContextNames.Reservation.RESERVATIONS_INTERNAL_ATTENDEE
+					FacilioConstants.ContextNames.Reservation.RESERVATIONS_INTERNAL_ATTENDEE,
+					FacilioConstants.ContextNames.Reservation.ASSET_MOVEMENT
 			))
 			);
 

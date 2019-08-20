@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.accounts.dto.User;
+import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class AssetMovementContext extends ModuleBaseWithCustomFields{
@@ -24,12 +25,6 @@ public class AssetMovementContext extends ModuleBaseWithCustomFields{
 	}
 	public void setApprovalNeeded(Boolean approvalNeeded) {
 		this.approvalNeeded = approvalNeeded;
-	}
-	public boolean isApprovalNeeded() {
-		if(approvalNeeded != null) {
-			return approvalNeeded.booleanValue();
-		}
-		return false;
 	}
 	
 	private long assetId;
@@ -81,5 +76,4 @@ public class AssetMovementContext extends ModuleBaseWithCustomFields{
 	public void setToGeoLocation(String toGeoLocation) {
 		this.toGeoLocation = toGeoLocation;
 	}
-	
 }

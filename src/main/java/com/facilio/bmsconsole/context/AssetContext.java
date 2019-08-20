@@ -388,19 +388,15 @@ public class AssetContext extends ResourceContext {
 	}
 	
 	public Boolean moveApprovalNeeded;
+
 	public Boolean getMoveApprovalNeeded() {
 		return moveApprovalNeeded;
 	}
+
 	public void setMoveApprovalNeeded(Boolean moveApprovalNeeded) {
 		this.moveApprovalNeeded = moveApprovalNeeded;
 	}
-	public boolean isMoveApprovalNeeded() {
-		if(moveApprovalNeeded != null) {
-			return moveApprovalNeeded.booleanValue();
-		}
-		return false;
-	}
-	
+
 	private long currentSpaceId;
 
 	public long getCurrentSpaceId() {
