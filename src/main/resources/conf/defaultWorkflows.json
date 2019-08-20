@@ -652,7 +652,8 @@
 		            }; readingAlarmModule = Module(\"readingalarm\");
 		              workOrderModule = Module(\"workorder\");
 		                woThisWeek = {
-		                  criteria: [ruleId == ruleId && createdTime == ranges && woId != null]
+		                  criteria: [ruleId == ruleId && createdTime == ranges && woId != null],
+		                  groupBy: \"woId\",
 		                };
 		
 		                currWeekWo = readingAlarmModule.fetch(woThisWeek); currentWeekWo = 0 currentWeekWoId = []
@@ -665,7 +666,8 @@
 		                  }
 		                }
 		               woThisMonth = {
-		                 criteria: [ruleId == ruleId && createdTime == monthRanges && woId != null]
+		                 criteria: [ruleId == ruleId && createdTime == monthRanges && woId != null],
+		                 groupBy: \"woId\",
 		               };
                       monthWO = readingAlarmModule.fetch(woThisMonth);
                       currentMonthWo = 0;
@@ -674,7 +676,7 @@
                         currentMonthWo = monthWO.size();
                         for each index, value in monthWO {
                             if (value != null) {
-                              currentMonthWoID.add(value.get(\"woId\"));
+                              	   currentMonthWoID.add(value.get(\"woId\"));
                                 }
                               }
                             }
