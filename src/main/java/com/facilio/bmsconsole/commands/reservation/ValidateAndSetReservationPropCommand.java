@@ -9,6 +9,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
@@ -145,6 +146,7 @@ public class ValidateAndSetReservationPropCommand extends FacilioCommand {
         FacilioField spaceField = fieldMap.get("space");
         FacilioField scheduledStartField = fieldMap.get("scheduledStartTime");
         FacilioField scheduledEndField = fieldMap.get("scheduledEndTime");
+        FacilioField statusField = fieldMap.get("status");
         FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.Reservation.RESERVATION);
 
         SelectRecordsBuilder<ReservationContext> selectBuilder = new SelectRecordsBuilder<ReservationContext>()
@@ -154,6 +156,7 @@ public class ValidateAndSetReservationPropCommand extends FacilioCommand {
                                                                 .andCondition(CriteriaAPI.getCondition(spaceField, String.valueOf(reservation.getSpace().getId()), PickListOperators.IS))
                                                                 .andCondition(CriteriaAPI.getCondition(scheduledStartField, String.valueOf(reservation.getScheduledEndTime()), DateOperators.IS_BEFORE))
                                                                 .andCondition(CriteriaAPI.getCondition(scheduledEndField, String.valueOf(reservation.getScheduledStartTime()), DateOperators.IS_AFTER))
+                                                                .andCondition(CriteriaAPI.getCondition(scheduledEndField, String.valueOf(ReservationContext.ReservationStatus.SCHEDULED.getIndex()), EnumOperators.IS))
                                                                 ;
 
         if (reservation.getId() > 0) {
