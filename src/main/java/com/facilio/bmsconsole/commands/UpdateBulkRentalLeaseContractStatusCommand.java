@@ -8,6 +8,7 @@ import java.util.Map;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.PurchaseContractContext;
 import com.facilio.bmsconsole.context.RentalLeaseContractContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -34,6 +35,9 @@ public class UpdateBulkRentalLeaseContractStatusCommand extends FacilioCommand {
 						.module(rentalLeaseContractModule)
 						.fields(updatedfields)
 						.andCondition(CriteriaAPI.getIdCondition(purchaseContractIds,rentalLeaseContractModule));
+		updateBuilder.withChangeSet(RentalLeaseContractContext.class);
+		context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, updateBuilder.getChangeSet());
+
 	     context.put(FacilioConstants.ContextNames.ROWS_UPDATED, updateBuilder.updateViaMap(updateMap));
 		return false;
 	}

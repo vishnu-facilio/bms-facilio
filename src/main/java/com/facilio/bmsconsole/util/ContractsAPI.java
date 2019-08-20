@@ -231,7 +231,7 @@ public class ContractsAPI {
 				.andCondition(CriteriaAPI.getIdCondition(data.getId(), module));
 		
 		if (isChangeSetNeeded) {
-			updateRecordBuilder.withChangeSet(ModuleBaseWithCustomFields.class);
+			updateRecordBuilder.withChangeSet(ContractsContext.class);
 		}
 		
 		

@@ -184,7 +184,9 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 				.module(module)
 				.fields(fields)
 				.andCondition(CriteriaAPI.getIdCondition(record.getId(), module));
+		updateBuilder.withChangeSet(ModuleBaseWithCustomFields.class);
 		updateBuilder.updateViaMap(prop);
+		context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, updateBuilder.getChangeSet());
 		
 		if ((module.getName().contains("workorder")) && oldState != null && oldState.getDisplayName() != null && facilioStatus != null && facilioStatus.getDisplayName() != null) {
 			JSONObject info = new JSONObject();

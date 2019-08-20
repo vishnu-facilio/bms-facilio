@@ -27,12 +27,14 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.AssetDepartmentContext;
+import com.facilio.bmsconsole.context.AssetMovementContext;
 import com.facilio.bmsconsole.context.AssetTypeContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.DBUtil;
@@ -952,6 +954,33 @@ public class AssetsAPI {
 
 	}
 
+   public static void updateAssetMovement(long movementId) throws Exception {
+	   
+	   ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET_MOVEMENT);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET_MOVEMENT);
+		SelectRecordsBuilder<AssetMovementContext> selectBuilder = new SelectRecordsBuilder<AssetMovementContext>().select(fields)
+				.table(module.getTableName()).moduleName(module.getName()).beanClass(AssetMovementContext.class)
+				.andCondition(CriteriaAPI.getIdCondition(movementId, module));
+				;
+		AssetMovementContext assetMovementRecord = selectBuilder.fetchFirst();
+		FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+		List<FacilioField> assetFields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
+
+		
+		if(assetMovementRecord != null) {
+			AssetContext asset = new AssetContext();
+			SiteContext newsite = SpaceAPI.getSiteSpace(assetMovementRecord.getToSite());
+			asset.setIdentifiedLocation(newsite);
+			asset.setCurrentSpaceId(assetMovementRecord.getToSpace());
+			UpdateRecordBuilder<AssetContext> updateBuilder = new UpdateRecordBuilder<AssetContext>()
+					.module(module)
+					.fields(fields)
+					.andCondition(CriteriaAPI.getIdCondition(assetMovementRecord.getAssetId(), assetModule));
+
+			updateBuilder.update(asset);
+		}
+   }
    
 
 }
