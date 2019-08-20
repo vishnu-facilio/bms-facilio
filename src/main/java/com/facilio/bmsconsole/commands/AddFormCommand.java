@@ -59,6 +59,9 @@ public class AddFormCommand extends FacilioCommand {
 				List<FormField> formFields = new ArrayList<>();
 				for (FacilioField field : allFields) {
 					if (field.isDefault()) {
+						if (field.getName().equals("moduleState") || field.getName().equals("stateFlowId")) {
+							continue;
+						}
 						FormField formField = new FormField(field.getId(), field.getName(), field.getDisplayType(), field.getDisplayName(), Required.REQUIRED, 0, 1);
 						formFields.add(formField);
 					}

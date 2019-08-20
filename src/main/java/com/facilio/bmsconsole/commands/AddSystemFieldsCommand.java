@@ -44,11 +44,13 @@ public class AddSystemFieldsCommand extends FacilioCommand {
 			
 			LookupField moduleStateField = (LookupField) FieldFactory.getField("moduleState", "Status", "MODULE_STATE", module, FieldType.LOOKUP);
 			moduleStateField.setDefault(true);
+			moduleStateField.setDisplayType(FieldDisplayType.LOOKUP_SIMPLE);
 			moduleStateField.setLookupModule(modBean.getModule("ticketstatus"));
 			fields.add(moduleStateField);
 
 			FacilioField stateFlowIdField = FieldFactory.getField("stateFlowId", "State Flow Id", "STATE_FLOW_ID", module, FieldType.NUMBER);
 			stateFlowIdField.setDefault(true);
+			stateFlowIdField.setDisplayType(FieldDisplayType.NUMBER);
 			fields.add(stateFlowIdField);
 		}
 		return false;
