@@ -52,6 +52,9 @@ public class ConstructEditAssetActivityCommand extends FacilioCommand {
 
 		CommonCommandUtil.addActivityToContext(recordIds.get(0), -1, AssetActivityType.UPDATE, info, (FacilioContext) context);
 		}
+		
+		// Temp... move this to a common place
+		context.put(FacilioConstants.ContextNames.STATE_TRANSITION_ONLY_CONDITIONED_CHECK, true);
 
 		return false;
 	}
