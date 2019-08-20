@@ -1393,6 +1393,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(fetchModuleDataDetailsChain());
 		c.addCommand(new FetchAttendeesCommand());
 		return c;
+	}
 	
 	public static Chain getAssetMovementListChain() {
 		Chain chain = getDefaultChain();
