@@ -68,6 +68,11 @@ public enum EnumOperators implements Operator<String> {
 			}
 			return null;
 		}
+		
+		@Override
+		public boolean updateFieldNameWithModule() {
+			return false;
+		}
 	},
 	ISN_T(55, "isn't") {
 		@Override
@@ -94,6 +99,11 @@ public enum EnumOperators implements Operator<String> {
 				return new FacilioModulePredicate(fieldName, PredicateUtils.notPredicate(computeValueIsPredicate(value)));
 			}
 			return null;
+		}
+		
+		@Override
+		public boolean updateFieldNameWithModule() {
+			return false;
 		}
 	}
 	;

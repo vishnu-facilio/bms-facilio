@@ -4136,6 +4136,7 @@ public class ViewFactory {
 
 	private static FacilioView getTodayReservationView() {
 		FacilioView view = getScheduledReservationView();
+		view.setName("today");
 		view.setDisplayName("Today");
 		view.getCriteria().addAndCondition(CriteriaAPI.getCondition(getReservationScheduledTimeField(), DateOperators.TODAY));
 		return view;
@@ -4143,6 +4144,7 @@ public class ViewFactory {
 
 	private static FacilioView getThisWeekReservationView() {
 		FacilioView view = getScheduledReservationView();
+		view.setName("thisweek");
 		view.setDisplayName("This Week");
 		view.getCriteria().addAndCondition(CriteriaAPI.getCondition(getReservationScheduledTimeField(), DateOperators.CURRENT_WEEK));
 		return view;
@@ -4150,6 +4152,7 @@ public class ViewFactory {
 
 	private static FacilioView getNextWeekReservationView() {
 		FacilioView view = getScheduledReservationView();
+		view.setName("nextweek");
 		view.setDisplayName("Next Week");
 		view.getCriteria().addAndCondition(CriteriaAPI.getCondition(getReservationScheduledTimeField(), DateOperators.NEXT_WEEK));
 		return view;
@@ -4157,6 +4160,7 @@ public class ViewFactory {
 
 	private static FacilioView getOnGoingReservationView() {
 		FacilioView view = getScheduledReservationView();
+		view.setName("ongoing");
 		view.setDisplayName("On Going");
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getCondition(getReservationStatusField(), String.valueOf(ReservationContext.ReservationStatus.ON_GOING.getIndex()), EnumOperators.IS));
@@ -4166,6 +4170,7 @@ public class ViewFactory {
 
 	private static FacilioView getCompletedReservationView() {
 		FacilioView view = getScheduledReservationView();
+		view.setName("completed");
 		view.setDisplayName("Completed");
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getCondition(getReservationStatusField(), String.valueOf(ReservationContext.ReservationStatus.FINISHED.getIndex()), EnumOperators.IS));
