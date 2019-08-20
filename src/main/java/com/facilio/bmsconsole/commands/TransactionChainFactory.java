@@ -3988,7 +3988,8 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericUpdateModuleDataCommand());
 			c.addCommand(addReservationInternalAttendeeChain());
 			c.addCommand(addReservationExternalAttendeeChain());
-			c.addCommand(new ExecuteAllWorkflowsCommand());
+			c.addCommand(new UpdateRecordRuleJobOnRecordUpdationCommand());
+//			c.addCommand(new ExecuteAllWorkflowsCommand());
 			return c;
 		}
 
