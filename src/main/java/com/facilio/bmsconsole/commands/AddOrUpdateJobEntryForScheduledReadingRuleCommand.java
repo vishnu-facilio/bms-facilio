@@ -35,7 +35,7 @@ public class AddOrUpdateJobEntryForScheduledReadingRuleCommand extends FacilioCo
 				FacilioTimer.deleteJob(workflowRuleContext.getId(), FacilioConstants.Job.SCHEDULED_READING_RULE_JOB_NAME);
 			}
 
-			FacilioTimer.scheduleCalendarJob(workflowRuleContext.getId(), FacilioConstants.Job.SCHEDULED_READING_RULE_JOB_NAME, DateTimeUtil.getCurrenTime(), workflowRuleContext.getSchedule(), FacilioConstants.Job.EXECUTER_NAME_FACILIO);
+			FacilioTimer.scheduleCalendarJob(workflowRuleContext.getId(), FacilioConstants.Job.SCHEDULED_READING_RULE_JOB_NAME, DateTimeUtil.getCurrenTime(), workflowRuleContext.getSchedule(), FacilioConstants.Job.EXECUTER_NAME_PRIORTIY);
 		}
 		
 		return false;
