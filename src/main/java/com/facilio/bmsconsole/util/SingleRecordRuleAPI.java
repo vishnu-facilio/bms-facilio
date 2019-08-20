@@ -141,14 +141,14 @@ public class SingleRecordRuleAPI extends WorkflowRuleAPI{
 				else {
 					nextExecutionTime = fieldVal ; 
 				}
-			   FacilioTimer.scheduleOneTimeJob(rule.getId(), FacilioConstants.Job.RECORD_SPECIFIC_RULE_JOB_NAME, nextExecutionTime, "facilio");
+			   FacilioTimer.scheduleOneTimeJob(rule.getId(), FacilioConstants.Job.RECORD_SPECIFIC_RULE_JOB_NAME, nextExecutionTime, "priority");
 			}
 		}
 		else {
 			if(rule.getSchedule() == null) {
 				throw new IllegalArgumentException("Periodic jobs should have schedule info");
 			}
-			FacilioTimer.scheduleCalendarJob(rule.getId(), FacilioConstants.Job.RECORD_SPECIFIC_RULE_JOB_NAME, startTime, rule.getSchedule(), "facilio");
+			FacilioTimer.scheduleCalendarJob(rule.getId(), FacilioConstants.Job.RECORD_SPECIFIC_RULE_JOB_NAME, startTime, rule.getSchedule(), "priority");
 		}
 
 	}
