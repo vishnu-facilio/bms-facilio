@@ -1077,6 +1077,21 @@ public enum ActionType {
 					Chain newAssetBreakdown = TransactionChainFactory.getAddAssetDowntimeChain();
 					newAssetBreakdown.execute(context);
 				}
+				else if (currentRecord instanceof ReadingAlarm) {
+					// new alarm
+					ReadingAlarm readingAlarm = (ReadingAlarm) currentRecord;
+					AlarmOccurrenceContext occurrence = ActionType.getAlarmOccurrenceFromAlarm(readingAlarm);
+					AssetBDSourceDetailsContext assetBreakdown = new AssetBDSourceDetailsContext();
+					assetBreakdown.setCondition(readingAlarm.getSubject());
+					assetBreakdown.setFromtime(occurrence.getCreatedTime());
+					assetBreakdown.setTotime(occurrence.getClearedTime());
+					assetBreakdown.setAssetid(readingAlarm.getResource().getId());
+					assetBreakdown.setSourceId(readingAlarm.getId());
+					assetBreakdown.setSourceType(AssetBDSourceDetailsContext.SourceType.ALARM.getValue());
+					context.put(FacilioConstants.ContextNames.ASSET_BD_SOURCE_DETAILS, assetBreakdown);
+					Chain newAssetBreakdown = TransactionChainFactory.getAddAssetDowntimeChain();
+					newAssetBreakdown.execute(context);
+				}
 			}
 		}
 	},
