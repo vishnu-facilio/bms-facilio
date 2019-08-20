@@ -6211,7 +6211,7 @@ VALUES ((SELECT LAST_INSERT_ID()), ${orgId}, @SPACE_MODULE_ID);
 
 
 INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME, MODULE_TYPE, IS_TRASH_ENABLED)
-VALUES (${orgId}, 'reservationInternalAttendee', 'Internal Attendees', 'Reservation_Internal_Attendees', @SUPPORTING_ENTITY_MODULE_TYPE, false);
+VALUES (${orgId}, 'reservationInternalAttendee', 'Internal Attendees', 'Reservation_Internal_Attendees', @SUB_ENTITY_MODULE_TYPE, false);
 SET @RESERVATIONS_INTERNAL_ATTENDEES_MODULE_ID := (SELECT LAST_INSERT_ID());
 
 INSERT INTO Fields (ORGID, MODULEID, NAME, DISPLAY_NAME, DISPLAY_TYPE, COLUMN_NAME, DATA_TYPE, REQUIRED, DISABLED, IS_DEFAULT) 
@@ -6226,7 +6226,7 @@ VALUES ((SELECT LAST_INSERT_ID()), ${orgId}, 'users');
 
 
 INSERT INTO Modules (ORGID, NAME, DISPLAY_NAME, TABLE_NAME, MODULE_TYPE, IS_TRASH_ENABLED)
-VALUES (${orgId}, 'reservationExternalAttendee', 'External Attendees', 'Reservation_External_Attendees', @SUPPORTING_ENTITY_MODULE_TYPE, false);
+VALUES (${orgId}, 'reservationExternalAttendee', 'External Attendees', 'Reservation_External_Attendees', @SUB_ENTITY_MODULE_TYPE, false);
 SET @RESERVATIONS_EXTERNAL_ATTENDEES_MODULE_ID := (SELECT LAST_INSERT_ID());
 
 INSERT INTO Fields (ORGID, MODULEID, NAME, DISPLAY_NAME, DISPLAY_TYPE, COLUMN_NAME, DATA_TYPE, REQUIRED, DISABLED, IS_DEFAULT) 
