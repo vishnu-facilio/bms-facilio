@@ -33,6 +33,7 @@ public class AddNewMLEnergyPredictionJob extends FacilioJob {
 			context.put("energyMeterID",props.get("energyMeterId"));
 			context.put("weekEnd", props.get("weekEnd"));
 			context.put("meterInterval", props.get("meterInterval"));
+			context.put("modelName", props.get("modelName"));
 			c.execute(context);
 		}
 	}
