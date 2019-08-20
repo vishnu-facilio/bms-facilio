@@ -3830,4 +3830,14 @@
 			</result>
 		</action>
 	</package>
+	
+	<package name="controlActionModulev1" namespace="/api/controlAction" extends="homeApi">
+		<action name="metaData" class="com.facilio.controlaction.action.ControlActionAction"
+			method="metaData">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">meta.*</param>
+			</result>
+		</action>
+	</package>
 </struts>

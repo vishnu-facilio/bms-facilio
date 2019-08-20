@@ -228,6 +228,14 @@ public class ControlActionAction extends FacilioAction {
 		this.moduleName = moduleName;
 	}
 	
+	private JSONObject meta;
+	public JSONObject getMeta() {
+		return meta;
+	}
+	public void setMeta(JSONObject meta) {
+		this.meta = meta;
+	}
+	
 	public String metaData() throws Exception {
 		
 		JSONObject meta = new JSONObject();
@@ -251,7 +259,8 @@ public class ControlActionAction extends FacilioAction {
 			reportOperators.put("EnergyPurposeAggregateOperator", AggregateOperator.EnergyPurposeAggregateOperator.values());
 			meta.put("reportOperators", reportOperators);
 			
-			setResult("meta", meta);
+			setMeta(meta);
+			
 		}
 		
 		return SUCCESS;
