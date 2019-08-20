@@ -464,7 +464,7 @@ public class ViewFactory {
 		
 		order = 1;
 		views = new LinkedHashMap<>();
-		views.put("today", getTodayReservationView().setOrder(order++));
+		views.put("nearing", getTodayReservationView().setOrder(order++));
 		views.put("thisweek", getThisWeekReservationView().setOrder(order++));
 		views.put("nextweek", getNextWeekReservationView().setOrder(order++));
 		views.put("ongoing", getOnGoingReservationView().setOrder(order++));
@@ -4136,9 +4136,15 @@ public class ViewFactory {
 
 	private static FacilioView getTodayReservationView() {
 		FacilioView view = getScheduledReservationView();
-		view.setName("today");
-		view.setDisplayName("Today");
-		view.getCriteria().addAndCondition(CriteriaAPI.getCondition(getReservationScheduledTimeField(), DateOperators.TODAY));
+		view.setName("nearing");
+		view.setDisplayName("Nearing");
+
+		Criteria criteria = new Criteria();
+		criteria.addOrCondition(CriteriaAPI.getCondition(getReservationScheduledTimeField(), DateOperators.TODAY));
+		criteria.addOrCondition(CriteriaAPI.getCondition(getReservationScheduledTimeField(), DateOperators.YESTERDAY));
+		criteria.addOrCondition(CriteriaAPI.getCondition(getReservationScheduledTimeField(), DateOperators.TOMORROW));
+
+		view.getCriteria().andCriteria(criteria);
 		return view;
 	}
 
