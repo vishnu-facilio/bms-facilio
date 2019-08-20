@@ -505,21 +505,25 @@
 		                firstRes =res[0];
 		                previousClearedTime = 0 
 		                if (firstRes.clearedTime != null ) {
-		                  previousClearedTime = firstRes.clearedTime;
+		                  previousClearedTime = firstRes.createdTime;
 		                }
+		                meanTimeToTriggerSize = 0
 		                for each index,value in res {
 							if(index > 0) {
 		                        if (value != null) {
 		                            createdTime = value.createdTime;
-		      						meanTimeBetweenTigger = meanTimeBetweenTigger + (createdTime -previousClearedTime); 
-		      						if (value.clearedTime != null) {
-		      							previousClearedTime = value.clearedTime ;
+                                  if (createdTime > previousClearedTime) {
+                                  		meanTimeToTriggerSize  = meanTimeToTriggerSize + 1
+                                   		meanTimeBetweenTigger = meanTimeBetweenTigger + (createdTime - previousClearedTime); 
+                                  }
+		      						if (value.createdTime != null) {
+		      							previousClearedTime = value.createdTime ;
 		      						
 		      						}
 		                        }                                
 							}
 		                }
-					    meanTimeBetweenTigger = meanTimeBetweenTigger / res.size();	
+					    meanTimeBetweenTigger = meanTimeBetweenTigger / meanTimeToTriggerSize;	
 		                for each index,value in res {
 					        if(index > 0) {
 		                        if (value != null) {
@@ -575,6 +579,7 @@
 		            resMap[\"pmtbt\"] = previousMonthMeanTimeBetweenTigger;
 		            resMap[\"previousMonthTimeToClear\"] = previousMonthTimeToClear;
 		            resMap[\"pmttc\"] = previousMonthmeanTimeToClear;
+              		log resMap;
 		         	return resMap;
 		        
 		    }"
