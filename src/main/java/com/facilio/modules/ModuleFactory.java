@@ -95,8 +95,7 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.CONTRACTS, getContractsModule());
 		moduleMap.put(FacilioConstants.ContextNames.NEW_READING_ALARM, getReadingAlarmModule());
 		moduleMap.put(FacilioConstants.ContextNames.Reservation.RESERVATION, getReservationModule());
-
-
+		moduleMap.put(FacilioConstants.ContextNames.BMS_ALARM, getBmsAlarmModule());
 		return moduleMap;
 	}
 	
@@ -2526,6 +2525,13 @@ public class ModuleFactory {
 		module.setName(ContextNames.NEW_READING_ALARM);
 		module.setDisplayName("New Reading Alarm");
 		module.setTableName("ReadingAlarm");
+		return module;
+	}
+	public static FacilioModule getBmsAlarmModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ContextNames.BMS_ALARM);
+		module.setDisplayName("BMS Alarm");
+		module.setTableName("BMSAlarm");
 		return module;
 	}
 
