@@ -1,12 +1,10 @@
 package com.facilio.controlaction.action;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.FacilioAction;
@@ -15,7 +13,6 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.ActionAPI;
-import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingAlarmRuleContext;

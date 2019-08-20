@@ -4,7 +4,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -12,26 +11,22 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.ActionAPI;
-import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.controlaction.context.ControlActionCommandContext;
-import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 
 public class GetControlActionRulesCommand extends FacilioCommand {
@@ -39,7 +34,6 @@ public class GetControlActionRulesCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
 		
-    	
 		FacilioModule workflowRuleModule = ModuleFactory.getWorkflowRuleModule();
 		
 		Boolean fetchCount = (Boolean) context.get(FacilioConstants.ContextNames.FETCH_COUNT);
@@ -60,8 +54,11 @@ public class GetControlActionRulesCommand extends FacilioCommand {
 		
 		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
-													.table(module.getTableName())
-													.andCondition(CriteriaAPI.getCondition("RULE_TYPE", "ruleType", RuleType.CONTROL_ACTION_READING_ALARM_RULE.getIntVal()+","+RuleType.CONTROL_ACTION_SCHEDULED_RULE.getIntVal(), NumberOperators.EQUALS));
+													.table(module.getTableName());
+		
+		Criteria rulesTypeToBeFetchedCriteria = getRuleTypesToBeFetched();
+		
+		ruleBuilder.andCriteria(rulesTypeToBeFetchedCriteria);
 		
 		if (!fetchCount) {
 			fields.addAll(FieldFactory.getWorkflowEventFields());
@@ -135,16 +132,42 @@ public class GetControlActionRulesCommand extends FacilioCommand {
 					rule.setActions(actionList);
 				}
 			}
-			
 			context.put(FacilioConstants.ContextNames.WORKFLOW_RULES, rules);
 		}
 		else {
-			
 			context.put(FacilioConstants.ContextNames.WORKFLOW_RULES_COUNT, props.get(0).get("count"));
-				
 		}
 		
 		return false;
 	}
+
+	private Criteria getRuleTypesToBeFetched() throws Exception {
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+    	
+    	FacilioModule reservationModule = modBean.getModule(FacilioConstants.ContextNames.Reservation.RESERVATION);
+		
+		Criteria criteria = new Criteria();
+		Criteria criteria1 = new Criteria();
+		
+		Condition condition1 = CriteriaAPI.getCondition("RULE_TYPE", "ruleType", RuleType.CONTROL_ACTION_READING_ALARM_RULE.getIntVal()+","+RuleType.CONTROL_ACTION_SCHEDULED_RULE.getIntVal(), NumberOperators.EQUALS);
+		
+		Condition condition2 = CriteriaAPI.getCondition("RULE_TYPE", "ruleType", RuleType.RECORD_SPECIFIC_RULE.getIntVal()+"", NumberOperators.EQUALS);
+		
+		Condition condition3 = CriteriaAPI.getCondition("MODULEID", "moduleId", reservationModule.getModuleId()+"", NumberOperators.EQUALS);
+		
+		criteria1.addAndCondition(condition2);
+		criteria1.addAndCondition(condition3);
+		
+		
+		criteria.addAndCondition(condition1);
+		criteria.orCriteria(criteria1);
+		
+		return criteria;
+	}
+	
+	
+	
+	
 
 }
