@@ -104,6 +104,7 @@ public class ValidateAndSetReservationPropCommand extends FacilioCommand {
         return false;
     }
 
+    private static final long CHECK_IN_BUFFER = Duration.ofMinutes(30).toMillis();
     private void validateState (ReservationContext reservation) throws Exception {
         if (reservation.getId() <= 0) {
             throw new IllegalArgumentException("Reservation ID is mandatory during updation");
@@ -114,8 +115,21 @@ public class ValidateAndSetReservationPropCommand extends FacilioCommand {
         }
 
         switch (oldRecord.getStatusEnum()) {
+            case SCHEDULED:
+                if (ReservationContext.ReservationStatus.ON_GOING == reservation.getStatusEnum()) {
+                    if (oldRecord.getScheduledStartTime() - System.currentTimeMillis() > CHECK_IN_BUFFER) {
+                        throw new IllegalArgumentException("Reservaton can be Checked-In only half an hour prior to Scheduled Start Time");
+                    }
+                }
+                else if (ReservationContext.ReservationStatus.CANCELLED != reservation.getStatusEnum()) {
+                    throw new IllegalArgumentException("Scheduled Reservaton can only be cancelled/ Checked-In");
+                }
+                break;
             case ON_GOING:
-                throw new IllegalArgumentException("Cannot edit an On Going Reservation");
+                if (ReservationContext.ReservationStatus.FINISHED != reservation.getStatusEnum()) {
+                    throw new IllegalArgumentException("Cannot edit an On Going Reservation");
+                }
+                break;
             case FINISHED:
                 throw new IllegalArgumentException("Cannot edit a completed Reservation");
             case CANCELLED:
