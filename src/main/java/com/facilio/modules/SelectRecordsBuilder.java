@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.log4j.LogManager;
@@ -290,8 +291,15 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 						for (String lookupName : lookupFields.keySet()) {
 							Map<String, Object> map = (Map<String, Object>) data.get(lookupName);
 							if (map != null) {
-								Class classFromModule = FacilioConstants.ContextNames.getClassFromModule(lookupFields.get(lookupName).getLookupModule());
-								data.put(lookupName, FieldUtil.getAsBeanFromMap(map, classFromModule));
+								LookupField lookupField = lookupFields.get(lookupName);
+								if(LookupSpecialTypeUtil.isSpecialType(lookupField.getSpecialType())) {
+									Object lookupObject = LookupSpecialTypeUtil.getEmptyLookedupObject(lookupField.getSpecialType(), -1);
+									data.put(lookupName, FieldUtil.getAsBeanFromMap(map, lookupObject.getClass()));
+								}
+								else {
+									Class classFromModule = FacilioConstants.ContextNames.getClassFromModule(lookupField.getLookupModule());
+									data.put(lookupName, FieldUtil.getAsBeanFromMap(map, classFromModule));
+								}
 							}
 						}
 					}
