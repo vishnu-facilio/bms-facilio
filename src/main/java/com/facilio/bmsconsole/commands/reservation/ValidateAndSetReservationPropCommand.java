@@ -122,9 +122,12 @@ public class ValidateAndSetReservationPropCommand extends FacilioCommand {
                             if (oldRecord.getScheduledStartTime() - System.currentTimeMillis() > CHECK_IN_BUFFER) {
                                 throw new IllegalArgumentException("Reservaton can be Checked-In only half an hour prior to Scheduled Start Time");
                             }
+                            else {
+                                reservation.setActualStartTime(System.currentTimeMillis());
+                            }
                             break;
-                        case CANCELLED:
                         case SCHEDULED:
+                        case CANCELLED:
                             break;
                         default:
                             throw new IllegalArgumentException("Scheduled Reservaton can only be cancelled/ Checked-In");
@@ -133,7 +136,10 @@ public class ValidateAndSetReservationPropCommand extends FacilioCommand {
                 }
                 break;
             case ON_GOING:
-                if (ReservationContext.ReservationStatus.FINISHED != reservation.getStatusEnum()) {
+                if (ReservationContext.ReservationStatus.FINISHED == reservation.getStatusEnum()) {
+                    reservation.setActualEndTime(System.currentTimeMillis());
+                }
+                else {
                     throw new IllegalArgumentException("Cannot edit an On Going Reservation");
                 }
                 break;
