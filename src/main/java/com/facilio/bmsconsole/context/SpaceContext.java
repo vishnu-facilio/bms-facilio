@@ -46,6 +46,9 @@ public class SpaceContext extends BaseSpaceContext {
 	public void setReservable(Boolean reservable) {
 		this.reservable = reservable;
 	}
+	public void setReservable(boolean reservable) {
+		this.reservable = reservable;
+	}
 	public boolean isReservable() {
 		if (reservable != null) {
 			return reservable.booleanValue();

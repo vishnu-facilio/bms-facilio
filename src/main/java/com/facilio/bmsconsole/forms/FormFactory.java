@@ -1063,7 +1063,7 @@ public class FormFactory {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("RESERVATIONS");
 		form.setName("web_default");
-		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS));
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.Reservation.RESERVATION));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getReservationFormFields());
 		form.setFormType(FormType.WEB);

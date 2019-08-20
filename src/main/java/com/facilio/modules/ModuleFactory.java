@@ -94,6 +94,7 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.TERMS_AND_CONDITIONS, getTermsAndConditionModule());
 		moduleMap.put(FacilioConstants.ContextNames.CONTRACTS, getContractsModule());
 		moduleMap.put(FacilioConstants.ContextNames.NEW_READING_ALARM, getReadingAlarmModule());
+		moduleMap.put(FacilioConstants.ContextNames.Reservation.RESERVATION, getReservationModule());
 
 
 		return moduleMap;
@@ -2557,6 +2558,14 @@ public class ModuleFactory {
 		module.setName(ContextNames.PREFERENCE_RULES);
 		module.setDisplayName("Preferences Rules");
 		module.setTableName("Preference_Rules");
+		return module;
+	}
+	
+	public static FacilioModule getReservationModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ContextNames.Reservation.RESERVATION);
+		module.setDisplayName("Reservation");
+		module.setTableName("Reservation");
 		return module;
 	}
 }
