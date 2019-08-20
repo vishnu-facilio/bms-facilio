@@ -84,6 +84,8 @@
 									  	
 									  	valueMap = {};
 										valueMap[\"value\"] = recordObj;
+										
+										resultMap[variableObj.key] = valueMap;
 									  }
 									  else if (variableObj.fetchType == \"liveValue\") {
 									  	  fieldObj = NameSpace(\"module\").getField(variableObj.select, variableObj.module);
