@@ -574,7 +574,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("scheduledStartTime", "Scheduled Start Time"));
 		columns.add(new ViewField("scheduledEndTime", "Scheduled End Time"));
 		columns.add(new ViewField("noOfAttendees", "No. Of Attendees"));
-		columns.add(new ViewField("status", "Status"));
+//		columns.add(new ViewField("status", "Status"));
 		columns.add(new ViewField("reservedFor", "Reserved For"));
 		return columns;
 	}
