@@ -8,6 +8,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.reservation.ReservationContext;
+import com.facilio.db.criteria.operators.*;
+import com.facilio.modules.fields.SystemEnumField;
 import org.apache.commons.collections4.MapUtils;
 
 import com.facilio.beans.ModuleBean;
@@ -25,13 +28,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.operators.CommonOperators;
-import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.db.criteria.operators.LookupOperator;
-import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.PickListOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -468,6 +464,11 @@ public class ViewFactory {
 		
 		order = 1;
 		views = new LinkedHashMap<>();
+		views.put("today", getTodayReservationView().setOrder(order++));
+		views.put("thisweek", getThisWeekReservationView().setOrder(order++));
+		views.put("nextweek", getNextWeekReservationView().setOrder(order++));
+		views.put("ongoing", getOnGoingReservationView().setOrder(order++));
+		views.put("completed", getCompletedReservationView().setOrder(order++));
 		views.put("all", getAllReservationView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.Reservation.RESERVATION, views);
 	
@@ -4112,5 +4113,64 @@ public class ViewFactory {
 		return allView;
 	}
 
+	private static FacilioField getReservationStatusField() {
+		SystemEnumField field = (SystemEnumField) FieldFactory.getField("status", "Reservations.STATUS", FieldType.SYSTEM_ENUM);
+		field.setEnumName("ReservationStatus");
+		return field;
+	}
+
+	private static FacilioField getReservationScheduledTimeField() {
+		return FieldFactory.getField("scheduledStartTime","Reservations.SCHEDULED_START_TIME", FieldType.DATE_TIME);
+	}
+
+	private static FacilioView getScheduledReservationView() {
+		FacilioView view = new FacilioView();
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition(getReservationStatusField(), String.valueOf(ReservationContext.ReservationStatus.SCHEDULED.getIndex()), EnumOperators.IS));
+		view.setCriteria(criteria);
+
+		view.setSortFields(Arrays.asList(new SortField(getReservationScheduledTimeField(), false)));
+		return view;
+	}
+
+	private static FacilioView getTodayReservationView() {
+		FacilioView view = getScheduledReservationView();
+		view.setDisplayName("Today");
+		view.getCriteria().addAndCondition(CriteriaAPI.getCondition(getReservationScheduledTimeField(), DateOperators.TODAY));
+		return view;
+	}
+
+	private static FacilioView getThisWeekReservationView() {
+		FacilioView view = getScheduledReservationView();
+		view.setDisplayName("This Week");
+		view.getCriteria().addAndCondition(CriteriaAPI.getCondition(getReservationScheduledTimeField(), DateOperators.CURRENT_WEEK));
+		return view;
+	}
+
+	private static FacilioView getNextWeekReservationView() {
+		FacilioView view = getScheduledReservationView();
+		view.setDisplayName("Next Week");
+		view.getCriteria().addAndCondition(CriteriaAPI.getCondition(getReservationScheduledTimeField(), DateOperators.NEXT_WEEK));
+		return view;
+	}
+
+	private static FacilioView getOnGoingReservationView() {
+		FacilioView view = getScheduledReservationView();
+		view.setDisplayName("On Going");
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition(getReservationStatusField(), String.valueOf(ReservationContext.ReservationStatus.ON_GOING.getIndex()), EnumOperators.IS));
+		view.setCriteria(criteria);
+		return view;
+	}
+
+	private static FacilioView getCompletedReservationView() {
+		FacilioView view = getScheduledReservationView();
+		view.setDisplayName("Completed");
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition(getReservationStatusField(), String.valueOf(ReservationContext.ReservationStatus.FINISHED.getIndex()), EnumOperators.IS));
+		view.setCriteria(criteria);
+		return view;
+	}
 
 }

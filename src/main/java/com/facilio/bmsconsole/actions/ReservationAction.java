@@ -37,7 +37,8 @@ public class ReservationAction extends FacilioAction {
 
     public String fetchReservationList() throws Exception {
         if (StringUtils.isEmpty(getOrderBy())) {
-            setOrderBy("Reservations.LOCAL_ID");
+            setOrderBy("Reservations.SCHEDULED_START_TIME");
+            setOrderType("DESC");
         }
         ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
         FacilioContext context = constructListContext();

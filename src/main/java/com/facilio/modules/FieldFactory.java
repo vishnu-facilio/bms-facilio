@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.modules.fields.*;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.facilio.accounts.util.AccountConstants;
@@ -19,11 +20,6 @@ import com.facilio.agent.AgentKeys;
 import com.facilio.agentIntegration.AgentIntegrationKeys;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.tasker.tasks.EventUtil;
-import com.facilio.modules.fields.BooleanField;
-import com.facilio.modules.fields.EnumField;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.NumberField;
 
 public class FieldFactory {
 
@@ -6259,6 +6255,8 @@ public class FieldFactory {
 			case ENUM:
 				columnFld = new EnumField();
 				break;
+			case SYSTEM_ENUM:
+				columnFld = new SystemEnumField();
 			default:
 				columnFld = new FacilioField();
 				break;
