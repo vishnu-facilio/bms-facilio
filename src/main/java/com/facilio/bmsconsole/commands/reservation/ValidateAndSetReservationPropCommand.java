@@ -75,7 +75,7 @@ public class ValidateAndSetReservationPropCommand extends FacilioCommand {
         if (isAdd) {
             checkForNull(reservation);
         }
-        if (reservation.getNoOfAttendees() != -1 ) {
+        if (reservation.getNoOfAttendees() > 0 ) {
             int totalAttendees = (reservation.getInternalAttendees() == null ? 0 : reservation.getInternalAttendees().size())
                     + (reservation.getExternalAttendees() == null ? 0 : reservation.getExternalAttendees().size());
             if (totalAttendees > reservation.getNoOfAttendees()) {
@@ -104,7 +104,7 @@ public class ValidateAndSetReservationPropCommand extends FacilioCommand {
     }
 
     private void validateState (ReservationContext reservation) throws Exception {
-        if (reservation.getId() == -1) {
+        if (reservation.getId() <= 0) {
             throw new IllegalArgumentException("Reservation ID is mandatory during updation");
         }
         ReservationContext oldRecord = fetchOld(reservation.getId());
@@ -156,7 +156,7 @@ public class ValidateAndSetReservationPropCommand extends FacilioCommand {
                                                                 .andCondition(CriteriaAPI.getCondition(scheduledEndField, String.valueOf(reservation.getScheduledStartTime()), DateOperators.IS_AFTER))
                                                                 ;
 
-        if (reservation.getId() != -1) {
+        if (reservation.getId() > 0) {
             selectBuilder.andCondition(CriteriaAPI.getCondition(FieldFactory.getIdField(module), String.valueOf(reservation.getId()), NumberOperators.NOT_EQUALS));
         }
         List<ReservationContext> reservations = selectBuilder.get();
@@ -207,10 +207,14 @@ public class ValidateAndSetReservationPropCommand extends FacilioCommand {
                 reservation.setScheduledEndTime(DateTimeUtil.getDayEndTimeOf(starTime));
                 break;
             case CUSTOM:
-                if (reservation.getScheduledEndTime() == -1) {
+                if (reservation.getScheduledEndTime() <= 0) {
                     throw new IllegalArgumentException("Scheduled end time cannot be null when durationType is custom during addition of reservation");
                 }
                 break;
+        }
+
+        if (reservation.getScheduledStartTime() >= reservation.getScheduledEndTime()) {
+            throw new IllegalArgumentException("Invalid time range for reservation");
         }
     }
 

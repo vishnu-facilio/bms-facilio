@@ -16,8 +16,11 @@ public class CreateInternalAttendeesCommand extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         ReservationContext reservation = (ReservationContext) context.get(FacilioConstants.ContextNames.Reservation.RESERVATION);
+        context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.Reservation.RESERVATIONS_INTERNAL_ATTENDEE);
+        context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, false);
         if (CollectionUtils.isEmpty(reservation.getInternalAttendees())) {
             context.put(FacilioConstants.ContextNames.RECORD_LIST, Collections.EMPTY_LIST); //To avoid no record exception
+            context.remove(FacilioConstants.ContextNames.RECORD);
         }
         else {
             List<InternalAttendeeContext> attendees = new ArrayList<>();
@@ -27,8 +30,6 @@ public class CreateInternalAttendeesCommand extends FacilioCommand {
                 internalAttendee.setAttendee(attendee);
                 attendees.add(internalAttendee);
             }
-            context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.Reservation.RESERVATIONS_INTERNAL_ATTENDEE);
-            context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, false);
             context.put(FacilioConstants.ContextNames.RECORD_LIST, attendees);
         }
         return false;
