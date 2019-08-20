@@ -1045,6 +1045,7 @@ public class FacilioConstants {
 		public static final String TRANSITION = "transition";
 		public static final String STATE_TRANSITION_ONLY_CONDITIONED_CHECK = "stateTransitionOnlyConditionedCheck";
 		public static final String STATEFLOW_DIAGRAM = "stateFlowDiagram";
+		public static final String DEFAULT_STATEFLOW = "defaultStateflow";
 
 		public static final String ROTATING_ASSET = "rotatingAsset";
 		

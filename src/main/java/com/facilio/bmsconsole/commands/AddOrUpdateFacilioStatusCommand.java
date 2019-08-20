@@ -16,12 +16,12 @@ public class AddOrUpdateFacilioStatusCommand extends FacilioCommand {
 		FacilioStatus facilioStatus = (FacilioStatus) context.get(FacilioConstants.ContextNames.TICKET_STATUS);
 		String parentModuleName = (String) context.get(FacilioConstants.ContextNames.PARENT_MODULE);
 		if (facilioStatus != null) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(parentModuleName);
 			if (facilioStatus.getId() > 0) {
-				TicketAPI.updateStatus(facilioStatus);
+				TicketAPI.updateStatus(facilioStatus, module);
 			}
 			else {
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				FacilioModule module = modBean.getModule(parentModuleName);
 				TicketAPI.addStatus(facilioStatus, module);
 			}
 		}

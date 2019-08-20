@@ -1464,6 +1464,7 @@ public class TransactionChainFactory {
 			commonAddModuleChain(c);
 			c.addCommand(new CreateCustomModuleDefaultSubModuleCommand());
 			c.addCommand(new AddDefaultFormForCustomModuleCommand());
+			c.addCommand(new AddDefaultStateFlowCommand());
 			return c;
 		}
 
