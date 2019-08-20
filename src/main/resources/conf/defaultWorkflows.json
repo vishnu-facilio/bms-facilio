@@ -78,6 +78,13 @@
                                           
                                           resultMap[variableObj.key] = valueMap;
 									  }
+									  else if (variableObj.fetchType == \"space\") {
+									  	fetchModule = Module(variableObj.module);
+									  	recordObj = fetchModule.fetch([id == (variableParentId)]);
+									  	
+									  	valueMap = {};
+										valueMap[\"value\"] = recordObj;
+									  }
 									  else if (variableObj.fetchType == \"liveValue\") {
 									  	  fieldObj = NameSpace(\"module\").getField(variableObj.select, variableObj.module);
 									  	  if (fieldObj != null) {
