@@ -6257,6 +6257,7 @@ public class FieldFactory {
 				break;
 			case SYSTEM_ENUM:
 				columnFld = new SystemEnumField();
+				break;
 			default:
 				columnFld = new FacilioField();
 				break;
