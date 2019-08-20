@@ -66,6 +66,7 @@ public class FormFactory {
 		forms.put("rentalLeaseContractForm", getRentalLeaseContractForm());
 		forms.put("warrantyContractForm", getWarrantyContractForm());
 		forms.put("termsAndConditionForm", getTermsAndConditionForm());
+		forms.put("reservationForm", getReservationForm());
 		
 			
 		return forms;
@@ -1055,6 +1056,36 @@ public class FormFactory {
 		fields.add(new FormField("isEditable", FieldDisplayType.DECISION_BOX, "Is Editable", Required.OPTIONAL, 5, 2));
 		fields.add(new FormField("defaultOnPo", FieldDisplayType.DECISION_BOX, "Default On PO", Required.OPTIONAL, 5, 3));
 		
+		return fields;
+	}
+	
+	public static FacilioForm getReservationForm() {
+		FacilioForm form = new FacilioForm();
+		form.setDisplayName("RESERVATIONS");
+		form.setName("web_default");
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS));
+		form.setLabelPosition(LabelPosition.TOP);
+		form.setFields(getReservationFormFields());
+		form.setFormType(FormType.WEB);
+		return form;
+	}
+	
+	private static List<FormField> getReservationFormFields() {
+		List<FormField> fields = new ArrayList<>();
+		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
+		fields.add(new FormField("space", FieldDisplayType.SPACECHOOSER, "Space", Required.REQUIRED, 3, 1));
+		fields.add(new FormField("durationType", FieldDisplayType.SELECTBOX, "Duration Type", Required.OPTIONAL, 4, 1));
+		fields.add(new FormField("scheduledStartTime", FieldDisplayType.DATETIME, "Scheduled Start Time", Required.OPTIONAL, 5, 2));
+//		fields.add(new FormField("actualStartTime", FieldDisplayType.DATETIME, "Actual Start Time", Required.OPTIONAL, 5, 2));
+		fields.add(new FormField("scheduledEndTime", FieldDisplayType.DATETIME, "Scheduled End Time", Required.OPTIONAL, 5, 3));
+//		fields.add(new FormField("actualEndTime", FieldDisplayType.DATETIME, "Actual End Time", Required.OPTIONAL, 5, 3));
+		fields.add(new FormField("noOfAttendees", FieldDisplayType.NUMBER, "No. Of Attendees", Required.OPTIONAL, 6, 1));
+		fields.add(new FormField("reservedFor", FieldDisplayType.USER, "Reserved For", Required.OPTIONAL, 7, 1));
+		fields.add(new FormField("internalAttendees", FieldDisplayType.MULTI_USER_LIST, "Internal Attendees", Required.OPTIONAL, 8, 1));
+		fields.add(new FormField("externalAttendees", FieldDisplayType.EXTERNAL_ATTENDEES, "External Attendees", Required.OPTIONAL, 9, 1));
+
+
 		return fields;
 	}
 	

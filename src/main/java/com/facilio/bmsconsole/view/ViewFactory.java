@@ -457,6 +457,11 @@ public class ViewFactory {
 		views.put("all", getAllReadingAlarmViews().setOrder(order++));
 		views.put("all", getMLAnomalyViews().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.ML_ANOMALY_ALARM, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllReservationView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.Reservation.RESERVATION, views);
 	
 		
 		return viewsMap;
@@ -3983,5 +3988,13 @@ public class ViewFactory {
 		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 		return allView;
 	}
+	private static FacilioView getAllReservationView() {
+		
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Reservations");
+		return allView;
+	}
+
 
 }
