@@ -120,6 +120,11 @@ public class SingleRecordRuleAPI extends WorkflowRuleAPI{
 		WorkflowEventContext event = getWorkflowEvent(rule.getEventId());
 		if(rule.getSchedule() == null) {
 			Long fieldVal = getDateFieldVal(rule.getParentId(), event.getModule(), rule.getDateFieldId());
+
+			if (fieldVal == null) {
+				return;
+			}
+
 			fieldVal = fieldVal / 1000;
 			if(rule.getTimeObj() != null) {
 			  fieldVal += rule.getTimeObj().toSecondOfDay();
