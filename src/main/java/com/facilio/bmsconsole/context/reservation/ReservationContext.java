@@ -95,6 +95,23 @@ public class ReservationContext extends ModuleBaseWithCustomFields {
         this.durationType = DurationType.valueOf(durationType);
     }
 
+    private ReservationStatus status;
+    public ReservationStatus getStatusEnum() {
+        return status;
+    }
+    public void setStatus(ReservationStatus status) {
+        this.status = status;
+    }
+    public int getStatus() {
+        if (status != null) {
+            return status.getIndex();
+        }
+        return -1;
+    }
+    public void setStatus(int status) {
+        this.status = ReservationStatus.valueOf(status);
+    }
+
     private SpaceContext space;
     public SpaceContext getSpace() {
         return space;
@@ -144,6 +161,36 @@ public class ReservationContext extends ModuleBaseWithCustomFields {
         }
 
         public static DurationType valueOf(int value) {
+            if (value > 0 && value <= values().length) {
+                return values()[value - 1];
+            }
+            return null;
+        }
+    }
+
+    public static enum ReservationStatus implements FacilioEnum {
+        SCHEDULED ("Scheduled"),
+        ON_GOING ("On Going"),
+        FINISHED ("Finished"),
+        CANCELLED ("Cancelled")
+        ;
+
+        private String name;
+        ReservationStatus (String name) {
+            this.name = name;
+        }
+
+        @Override
+        public int getIndex() {
+            return ordinal() + 1;
+        }
+
+        @Override
+        public String getValue() {
+            return name;
+        }
+
+        public static ReservationStatus valueOf(int value) {
             if (value > 0 && value <= values().length) {
                 return values()[value - 1];
             }
