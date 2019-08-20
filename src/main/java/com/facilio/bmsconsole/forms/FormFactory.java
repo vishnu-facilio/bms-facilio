@@ -1074,16 +1074,17 @@ public class FormFactory {
 		List<FormField> fields = new ArrayList<>();
 		fields.add(new FormField("name", FieldDisplayType.TEXTBOX, "Name", Required.REQUIRED, 1, 1));
 		fields.add(new FormField("description", FieldDisplayType.TEXTAREA, "Description", Required.OPTIONAL, 2, 1));
-		fields.add(new FormField("space", FieldDisplayType.SPACECHOOSER, "Space", Required.REQUIRED, 3, 1));
-		fields.add(new FormField("durationType", FieldDisplayType.SELECTBOX, "Duration Type", Required.OPTIONAL, 4, 1));
-		fields.add(new FormField("scheduledStartTime", FieldDisplayType.DATETIME, "Scheduled Start Time", Required.OPTIONAL, 5, 2));
+		fields.add(new FormField("siteId", FieldDisplayType.LOOKUP_SIMPLE, "Site", Required.REQUIRED, "site", 3, 2));
+		fields.add(new FormField("space", FieldDisplayType.RESERVABLE_SPACES, "Space", Required.REQUIRED, 4, 1));
+		fields.add(new FormField("durationType", FieldDisplayType.SELECTBOX, "Duration Type", Required.OPTIONAL, 5, 1));
+		fields.add(new FormField("scheduledStartTime", FieldDisplayType.DATETIME, "Scheduled Start Time", Required.OPTIONAL, 6, 2));
 //		fields.add(new FormField("actualStartTime", FieldDisplayType.DATETIME, "Actual Start Time", Required.OPTIONAL, 5, 2));
-		fields.add(new FormField("scheduledEndTime", FieldDisplayType.DATETIME, "Scheduled End Time", Required.OPTIONAL, 5, 3));
+		fields.add(new FormField("scheduledEndTime", FieldDisplayType.DATETIME, "Scheduled End Time", Required.OPTIONAL, 6, 3));
 //		fields.add(new FormField("actualEndTime", FieldDisplayType.DATETIME, "Actual End Time", Required.OPTIONAL, 5, 3));
-		fields.add(new FormField("noOfAttendees", FieldDisplayType.NUMBER, "No. Of Attendees", Required.OPTIONAL, 6, 1));
-		fields.add(new FormField("reservedFor", FieldDisplayType.USER, "Reserved For", Required.OPTIONAL, 7, 1));
-		fields.add(new FormField("internalAttendees", FieldDisplayType.MULTI_USER_LIST, "Internal Attendees", Required.OPTIONAL, 8, 1));
-		fields.add(new FormField("externalAttendees", FieldDisplayType.EXTERNAL_ATTENDEES, "External Attendees", Required.OPTIONAL, 9, 1));
+		fields.add(new FormField("noOfAttendees", FieldDisplayType.NUMBER, "No. Of Attendees", Required.OPTIONAL, 7, 1));
+		fields.add(new FormField("reservedFor", FieldDisplayType.USER, "Reserved For", Required.OPTIONAL, 8, 1));
+		fields.add(new FormField("internalAttendees", FieldDisplayType.MULTI_USER_LIST, "Internal Attendees", Required.OPTIONAL, 9, 1));
+		fields.add(new FormField("externalAttendees", FieldDisplayType.EXTERNAL_ATTENDEES, "External Attendees", Required.OPTIONAL, 10, 1));
 
 
 		return fields;
