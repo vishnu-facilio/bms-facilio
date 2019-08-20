@@ -692,6 +692,56 @@ public class LoginAction extends FacilioAction {
 		setResult("account", account);
 		return SUCCESS;
 	}
+	public String fetchCurrentAccount() throws Exception {
+		
+		account = new HashMap<>();
+		HashMap<String, Object> appProps = new HashMap<>();
+		appProps.put("permissions", AccountConstants.ModulePermission.toMap());
+		appProps.put("permissions_groups", AccountConstants.PermissionGroup.toMap());
+		appProps.put("operators", CommonCommandUtil.getOperators());
+		appProps.put(FacilioConstants.ContextNames.ALL_METRICS, CommonCommandUtil.getAllMetrics());
+		appProps.put(FacilioConstants.ContextNames.ORGUNITS_LIST, CommonCommandUtil.orgUnitsList());
+		appProps.put(FacilioConstants.ContextNames.METRICS_WITH_UNITS, CommonCommandUtil.metricWithUnits());
+		account.put("appProps", appProps);
+		
+		Map<String, Object> config = new HashMap<>();
+		config.put("ws_endpoint", WmsApi.getWebsocketEndpoint(AccountUtil.getCurrentUser().getId()));
+		config.put("payment_endpoint", getPaymentEndpoint());
+		Properties buildinfo = (Properties)ServletActionContext.getServletContext().getAttribute("buildinfo");
+		config.put("build", buildinfo);
+		account.put("config", config);
+		
+		account.put("org", AccountUtil.getCurrentOrg());
+		account.put("user", AccountUtil.getCurrentUser());
+		account.put("timezone",AccountUtil.getCurrentAccount().getTimeZone()); 
+		account.put("License", AccountUtil.getFeatureLicense());
+		
+		
+		//log.info(AccountUtil.getCurrentUser().getEmail()+"))(()()()(((((())))))");
+		//log.info(AccountUtil.getCurrentAccount().getOrg().getDomain()+"$$$$$$$$$$$$$$$$$$$$$");
+		List<User> users = AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId());
+		List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(AccountUtil.getCurrentOrg().getId(), true);
+		
+		Map<Long, Set<Long>> userSites = new HashMap<>();
+		if (users != null) {
+			userSites = AccountUtil.getUserBean().getUserSites(users.stream().map(i -> i.getOuid()).collect(Collectors.toList()));
+		}
+		
+		Map<String, Object> data = new HashMap<>();
+
+		data.put("orgInfo", CommonCommandUtil.getOrgInfo());
+		data.put("users", users);
+		data.put("userSites", userSites);
+
+		data.put("groups", groups);
+		data.put("buildings", SpaceAPI.getAllBuildings());
+		data.put("buildingList", ReportsUtil.getBuildingMap());
+		data.put("calendarColor", TicketAPI.getCalendarColor());	
+		account.put("data", data);
+		
+		setResult("account", account);
+		return SUCCESS;
+	}
 	
 	public String getMySiteList() throws Exception {
 		setResult("site", CommonCommandUtil.getMySites());
