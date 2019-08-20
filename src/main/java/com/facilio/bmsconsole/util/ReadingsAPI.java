@@ -144,6 +144,7 @@ public class ReadingsAPI {
 			prop.put("readingType", readingType.getValue());
 			if (readingType == ReadingType.WRITE) {
 				prop.put("isControllable", true);
+				prop.put("controlActionMode", ReadingDataMeta.ControlActionMode.LIVE.getValue());
 			}
 		}
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
