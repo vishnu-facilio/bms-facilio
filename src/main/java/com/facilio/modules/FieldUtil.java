@@ -109,14 +109,21 @@ public class FieldUtil {
 				return booleanVal;
 			case LOOKUP:
 			case NUMBER:	
-			case DATE:
-			case DATE_TIME:
 			case FILE:
 			case COUNTER:
 			case ID:
 			case SYSTEM_ENUM:
 				if(value != null && !(value instanceof String && ((String)value).isEmpty())) {
 					return FacilioUtil.parseLong(value);
+				}
+				else {
+					return null;
+				}
+			case DATE:
+			case DATE_TIME:
+				if(value != null && !(value instanceof String && ((String)value).isEmpty())) {
+					Long longVal = FacilioUtil.parseLong(value);
+					return longVal > 0l ? longVal : null;
 				}
 				else {
 					return null;
