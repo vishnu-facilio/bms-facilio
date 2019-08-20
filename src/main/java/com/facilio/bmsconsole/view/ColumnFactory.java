@@ -75,6 +75,7 @@ public class ColumnFactory {
 		columnMap.put("rentalleasecontracts-default", getDefaultRentalLeaseContractColumns());
 		columnMap.put("warrantycontracts-default", getDefaultWarrantyContractColumns());
 		columnMap.put("termsandconditions-default", getDefaultTermsAndConditionColumns());
+		columnMap.put("reservation-default", getDefaultReservationColumns());
 
 		// Default report columns
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
@@ -563,6 +564,17 @@ public class ColumnFactory {
 		columns.add(new ViewField("noOfOccurrences", "Occurrences"));
 		columns.add(new ViewField("lastCreatedTime", "Last Created Time"));
 		columns.add(new ViewField("readingalarmcategory", "Category" ));
+		return columns;
+	}
+	
+	private static List<ViewField> getDefaultReservationColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("space", "Space"));
+		columns.add(new ViewField("scheduledStartTime", "Scheduled Start Time"));
+		columns.add(new ViewField("scheduledEndTime", "Scheduled End Time"));
+		columns.add(new ViewField("noOfAttendees", "No. Of Attendees"));
+		columns.add(new ViewField("reservedFor", "Reserved For"));
 		return columns;
 	}
 
