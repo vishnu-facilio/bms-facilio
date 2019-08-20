@@ -4200,5 +4200,9 @@
 			class="com.facilio.bmsconsole.actions.AssetMovementAction" method="listAssetMovement" />
 		<action name="approve"
 		class="com.facilio.bmsconsole.actions.AssetMovementAction" method="approveAssetMovement" />
+		<action name="reject"
+		class="com.facilio.bmsconsole.actions.AssetMovementAction" method="rejectAssetMovement" />
+		<action name="complete"
+		class="com.facilio.bmsconsole.actions.AssetMovementAction" method="completeAssetMovement" />
 	</package>
 </struts>

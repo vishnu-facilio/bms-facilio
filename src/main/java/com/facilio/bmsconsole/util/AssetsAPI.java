@@ -974,8 +974,8 @@ public class AssetsAPI {
 			asset.setIdentifiedLocation(newsite);
 			asset.setCurrentSpaceId(assetMovementRecord.getToSpace());
 			UpdateRecordBuilder<AssetContext> updateBuilder = new UpdateRecordBuilder<AssetContext>()
-					.module(module)
-					.fields(fields)
+					.module(assetModule)
+					.fields(assetFields)
 					.andCondition(CriteriaAPI.getIdCondition(assetMovementRecord.getAssetId(), assetModule));
 
 			updateBuilder.update(asset);

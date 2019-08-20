@@ -67,6 +67,34 @@ public class AssetMovementAction extends FacilioAction{
 		return SUCCESS;
 	}
 	
+	public String rejectAssetMovement() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.REJECT_ASSET_MOVEMENT);
+		context.put(FacilioConstants.ContextNames.RECORD, assetMovement);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST,Collections.singletonList(assetMovement.getId()));
+		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ASSET_ACTIVITY);
+		
+		Chain chain = TransactionChainFactory.getUpdateAssetMovementChain();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.ASSET_MOVEMENT_RECORDS, context.get(FacilioConstants.ContextNames.RECORD));
+		return SUCCESS;
+	}
+	
+	public String completeAssetMovement() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.COMPLETE_ASSET_MOVEMENT);
+		context.put(FacilioConstants.ContextNames.RECORD, assetMovement);
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST,Collections.singletonList(assetMovement.getId()));
+		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ASSET_ACTIVITY);
+		
+		Chain chain = TransactionChainFactory.getUpdateAssetMovementChain();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.ASSET_MOVEMENT_RECORDS, context.get(FacilioConstants.ContextNames.RECORD));
+		return SUCCESS;
+	}
+	
 	public String updateAssetMovement() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, assetMovement);
