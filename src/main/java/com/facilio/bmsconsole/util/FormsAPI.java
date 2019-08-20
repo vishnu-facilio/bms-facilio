@@ -510,7 +510,9 @@ public class FormsAPI {
 			}
 			if (!hasPhoto) {
 				FacilioField photoField = modBean.getField("photo", form.getModule().getName());
-				defaultFields.add(getFormFieldFromFacilioField(photoField, 1));
+				if (photoField != null) {
+					defaultFields.add(getFormFieldFromFacilioField(photoField, 1));					
+				}
 			}
 		}
 	}
