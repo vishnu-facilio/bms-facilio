@@ -542,6 +542,7 @@ public class FormFactory {
 		fields.add(new FormField("rotatingItem", FieldDisplayType.LOOKUP_SIMPLE, "Rotating Item",Required.OPTIONAL, "item", 12,2));
 		fields.add(new FormField("rotatingTool", FieldDisplayType.LOOKUP_SIMPLE, "Rotating Tool",Required.OPTIONAL, "tool", 12,3));
 		fields.add(new FormField("moveApprovalNeeded", FieldDisplayType.DECISION_BOX, "Is Move Approval Needed",Required.OPTIONAL, 13,2));
+		fields.add(new FormField("geoLocationEnabled", FieldDisplayType.DECISION_BOX, "Is Geo Location Enabled",Required.OPTIONAL, 13,2));
 		return Collections.unmodifiableList(fields);
 	}
 

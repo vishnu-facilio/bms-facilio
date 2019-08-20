@@ -83,7 +83,7 @@ public class AssetMovementAction extends FacilioAction{
 	
 	public String completeAssetMovement() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.COMPLETE_ASSET_MOVEMENT);
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.STATE_TRANSITION);
 		context.put(FacilioConstants.ContextNames.RECORD, assetMovement);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST,Collections.singletonList(assetMovement.getId()));
 		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ASSET_ACTIVITY);
