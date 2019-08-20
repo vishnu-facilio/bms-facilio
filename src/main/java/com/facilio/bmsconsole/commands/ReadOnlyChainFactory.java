@@ -1325,6 +1325,14 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetControlActionCommandsCommand());
 		return c;
 	}
+	
+	public static Chain getControlActionRulesChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GetControlActionRulesCommand());
+		return c;
+	}
 
 	public static Chain getControllableAssetsChain() {
 		Chain c = getDefaultChain();

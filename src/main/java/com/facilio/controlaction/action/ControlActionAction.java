@@ -300,20 +300,26 @@ public class ControlActionAction extends FacilioAction {
 	
 	public String getControlActionRules() throws Exception {
 		
-		List<WorkflowRuleContext> rules = new ArrayList<WorkflowRuleContext>();
-		
-		List<WorkflowRuleContext> alarmRules = WorkflowRuleAPI.getAllWorkflowRuleContextOfType(RuleType.CONTROL_ACTION_READING_ALARM_RULE, true, true,false);
-		if(alarmRules != null) {
-			rules.addAll(alarmRules);
+		if(getPerPage() < 0) {
+			setPerPage(50);
+		}
+		if(getPage() < 0) {
+			setPage(1);
 		}
 		
-		List<WorkflowRuleContext> scheduledRules = WorkflowRuleAPI.getAllWorkflowRuleContextOfType(RuleType.CONTROL_ACTION_SCHEDULED_RULE, true, true,false);
-		if(scheduledRules != null) {
-			rules.addAll(scheduledRules);
-		}
-		setResult(FacilioConstants.ContextNames.WORKFLOW_RULES, rules);
+		FacilioContext constructListContext = constructListContext();
+		
+		constructListContext.put(FacilioConstants.ContextNames.MODULE_NAME,ModuleFactory.getWorkflowRuleModule().getName());
+		
+		Chain commandChain = ReadOnlyChainFactory.getControlActionRulesChain();
+		
+		commandChain.execute(constructListContext);
+		
+		setResult(FacilioConstants.ContextNames.WORKFLOW_RULES, constructListContext.get(FacilioConstants.ContextNames.WORKFLOW_RULES));
+		setResult(FacilioConstants.ContextNames.WORKFLOW_RULES_COUNT, constructListContext.get(FacilioConstants.ContextNames.WORKFLOW_RULES_COUNT));
 		
 		return SUCCESS;
+		
 	}
 	
 	public String getControlActionRule() throws Exception {

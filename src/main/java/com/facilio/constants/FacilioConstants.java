@@ -662,6 +662,7 @@ public class FacilioConstants {
 		public static final String WORKFLOW_UPDATE = "workflowUpdate";
 		public static final String WORKFLOW_RULE = "workflowRule";
 		public static final String WORKFLOW_RULES = "workflowRules";
+		public static final String WORKFLOW_RULES_COUNT = "workflowRulesCount";
 		public static final String WORKFLOW_RULE_ID = "workflowRuleID";
 		public static final String WORKFLOW_RULE_MODULE = "workflowrule";
 		public static final String READING_RULE_MODULE = "readingrule";
