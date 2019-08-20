@@ -329,7 +329,7 @@ public class ControlActionAction extends FacilioAction {
 			rule.setActions(actionList);
 		}
 		
-		if(rule.getRuleTypeEnum() == RuleType.CONTROL_ACTION_SCHEDULED_RULE) {
+		if(rule.getRuleTypeEnum() == RuleType.CONTROL_ACTION_SCHEDULED_RULE || rule.getRuleTypeEnum() == RuleType.RECORD_SPECIFIC_RULE) {
 			
 			workflowRuleContext = rule;
 			setResult(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
