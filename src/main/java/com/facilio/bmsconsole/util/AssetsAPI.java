@@ -982,5 +982,17 @@ public class AssetsAPI {
 		}
    }
    
+   public static AssetMovementContext getAssetMovementContext(long id) throws Exception {
+	   
+	   ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET_MOVEMENT);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET_MOVEMENT);
+		SelectRecordsBuilder<AssetMovementContext> selectBuilder = new SelectRecordsBuilder<AssetMovementContext>().select(fields)
+				.table(module.getTableName()).moduleName(module.getName()).beanClass(AssetMovementContext.class)
+				.andCondition(CriteriaAPI.getIdCondition(id, module));
+				;
+		AssetMovementContext assetMovementRecord = selectBuilder.fetchFirst();
+        return assetMovementRecord;
+   }
 
 }

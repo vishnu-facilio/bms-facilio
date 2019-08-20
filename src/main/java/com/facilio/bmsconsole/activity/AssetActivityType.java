@@ -61,6 +61,20 @@ public enum AssetActivityType implements ActivityType {
 			return " updated the asset";
 		}
 	},
+	CREATE_MOVEMENT(40) {
+		@Override
+		public String constructMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return " initiated a move request #" + json.get("movementId");
+		}
+	},
+	UPDATE_MOVEMENT(41) {
+		@Override
+		public String constructMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return " updated the move request #" + json.get("movementId") +" status to " + json.get("newStatus");
+		}
+	},
 	;
 
 	private AssetActivityType(int value) {
