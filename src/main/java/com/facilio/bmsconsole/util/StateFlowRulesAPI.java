@@ -202,6 +202,16 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			info.put("newValue", facilioStatus.getDisplayName());
 			CommonCommandUtil.addActivityToContext(record.getId(), -1, AssetActivityType.UPDATE_STATUS, info, (FacilioContext) context);
 		}
+		
+		if ((module.getName().contains("assetmovement")) && oldState != null && oldState.getDisplayName() != null && facilioStatus != null && facilioStatus.getDisplayName() != null) {
+			JSONObject info = new JSONObject();
+			info.put("status", facilioStatus.getDisplayName());
+			info.put("oldValue", oldState.getDisplayName());
+			info.put("newValue", facilioStatus.getDisplayName());
+			CommonCommandUtil.addActivityToContext(record.getId(), -1, AssetActivityType.LOCATION, info, (FacilioContext) context);
+		}
+		
+		
 		checkAutomatedCondition(facilioStatus, module, record, context);
 		addScheduledJobIfAny(facilioStatus.getId(), module.getName(), record, (FacilioContext) context);
 	}
