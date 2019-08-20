@@ -131,17 +131,7 @@ public class FormsAPI {
 	}
 
 	public static List<FacilioForm> getFormFromDB(Criteria criteria) throws Exception {
-		List<FacilioForm> forms = getDBFormList(null, null, criteria, null);
-		if (forms == null || forms.isEmpty()) {
-			return null;
-		}
-	
-		for (FacilioForm form: forms) {
-			setFormSections(form);
-			setFormFields(form);
-		}
-		
-		return forms;
+		return getDBFormList(null, null, criteria, null, true);
 	}
 	
 	private static void setFormFields (FacilioForm form) throws Exception {
@@ -440,10 +430,10 @@ public class FormsAPI {
 	}
 	
 	public static List<FacilioForm> getDBFormList(String moduleName,FormType formType) throws Exception{
-		return getDBFormList(moduleName, formType, null, null);
+		return getDBFormList(moduleName, formType, null, null, false);
 	}
 	
-	public static List<FacilioForm> getDBFormList(String moduleName,FormType formType, Criteria criteria, Map<String, Object> selectParams) throws Exception{
+	public static List<FacilioForm> getDBFormList(String moduleName,FormType formType, Criteria criteria, Map<String, Object> selectParams, boolean fetchFields) throws Exception{
 		
 		FacilioModule formModule = ModuleFactory.getFormModule();
 		
@@ -479,7 +469,15 @@ public class FormsAPI {
 			formListBuilder.orderBy("ID asc");
 		}
 		
-		return FieldUtil.getAsBeanListFromMapList(formListBuilder.get(), FacilioForm.class);
+		List<FacilioForm> forms = FieldUtil.getAsBeanListFromMapList(formListBuilder.get(), FacilioForm.class);
+		
+		if (fetchFields && CollectionUtils.isNotEmpty(forms)) {
+			for (FacilioForm form: forms) {
+				setFormSections(form);
+				setFormFields(form);
+			}
+		}
+		return forms;
 			
 	}
 	
@@ -501,20 +499,18 @@ public class FormsAPI {
 
 		if (form.getModule().getTypeEnum() == FacilioModule.ModuleType.CUSTOM) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			if (CollectionUtils.isNotEmpty(defaultFields)) {
-				boolean hasPhoto = false;
-				for (FormField field : defaultFields) {
-					if (field.getField() != null) {
-						if (field.getField().getName().equals("photo")) {
-							hasPhoto = true;
-							break;
-						}
+			boolean hasPhoto = false;
+			for (FormField field : defaultFields) {
+				if (field.getField() != null) {
+					if (field.getField().getName().equals("photo")) {
+						hasPhoto = true;
+						break;
 					}
 				}
-				if (hasPhoto) {
-					FacilioField photoField = modBean.getField("photo", form.getModule().getName());
-					defaultFields.add(getFormFieldFromFacilioField(photoField, 1));
-				}
+			}
+			if (!hasPhoto) {
+				FacilioField photoField = modBean.getField("photo", form.getModule().getName());
+				defaultFields.add(getFormFieldFromFacilioField(photoField, 1));
 			}
 		}
 	}
@@ -614,7 +610,7 @@ public class FormsAPI {
 			Map<String, Object> params = new HashMap<>();
 			params.put(Builder.ORDER_BY, "id");
 			params.put(Builder.LIMIT, 1);
-			List<FacilioForm> forms = getDBFormList(moduleName, form.getFormTypeEnum(), null, params);
+			List<FacilioForm> forms = getDBFormList(moduleName, form.getFormTypeEnum(), null, params, true);
 			if (CollectionUtils.isNotEmpty(forms)) {
 				return forms.get(0);
 			}
