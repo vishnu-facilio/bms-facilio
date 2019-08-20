@@ -283,7 +283,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 			}
 			
 			ReadingDataMeta meta = metaMap.get(getRDMKey(assetId, fieldId));
-			if (rType!=null && rType.isWritable()) {
+			if (rType==null || rType.isWritable()) {
 				writableReadingList.add(meta);
 			}
 			else {

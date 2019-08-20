@@ -142,6 +142,9 @@ public class ReadingsAPI {
 		
 		if (readingType != null) {
 			prop.put("readingType", readingType.getValue());
+			if (readingType == ReadingType.WRITE) {
+				prop.put("isControllable", true);
+			}
 		}
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 														.table(module.getTableName())
@@ -267,11 +270,11 @@ public class ReadingsAPI {
 	}
 	
 	public static long getReadingDataMetaCount(Long resourceId, boolean excludeEmptyFields, String search, ReadingInputType...inputTypes) throws Exception {
-		return getReadingDataMetaCount(Collections.singletonList(resourceId), excludeEmptyFields, search, inputTypes);
+		return getReadingDataMetaCount(Collections.singletonList(resourceId), excludeEmptyFields, search, null, inputTypes);
 	}
 	
-	public static long getReadingDataMetaCount(Collection<Long> resourceIds, boolean excludeEmptyFields, String search, ReadingInputType...inputTypes) throws Exception {
-		List<Map<String, Object>> props = getRDMProps(resourceIds, null, excludeEmptyFields, true, null, search, null, inputTypes);
+	public static long getReadingDataMetaCount(Collection<Long> resourceIds, boolean excludeEmptyFields, String search, ReadingType readingType, ReadingInputType...inputTypes) throws Exception {
+		List<Map<String, Object>> props = getRDMProps(resourceIds, null, excludeEmptyFields, true, null, search, readingType, inputTypes);
 		if (props != null && !props.isEmpty()) {
 			return (long) props.get(0).get("count");
 		}
@@ -346,7 +349,9 @@ public class ReadingsAPI {
 		}
 		
 		if(readingType != null) {
-			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("readingType"), String.valueOf(readingType.getValue()), PickListOperators.IS));
+//			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("readingType"), String.valueOf(readingType.getValue()), PickListOperators.IS));
+			boolean isControllable = readingType == ReadingType.WRITE;
+			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("isControllable"), String.valueOf(isControllable), BooleanOperators.IS));
 		}
 		
 		if (inputTypes != null && inputTypes.length > 0) {

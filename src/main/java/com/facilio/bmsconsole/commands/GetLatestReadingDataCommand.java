@@ -73,7 +73,7 @@ public class GetLatestReadingDataCommand extends FacilioCommand {
 			}
 			
 			if (fetchCount) {
-				long count = ReadingsAPI.getReadingDataMetaCount(parentIds, excludeEmptyFields, search, types);
+				long count = ReadingsAPI.getReadingDataMetaCount(parentIds, excludeEmptyFields, search, readingType, types);
 				context.put(FacilioConstants.ContextNames.COUNT, count);
 				return false;
 			}
