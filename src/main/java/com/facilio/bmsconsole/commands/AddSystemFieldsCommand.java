@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.facilio.fs.FileInfo;
+import com.facilio.modules.fields.FileField;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -41,6 +43,19 @@ public class AddSystemFieldsCommand extends FacilioCommand {
 			mainField.setRequired(true);
 			mainField.setDefault(true);
 			fields.add(mainField);
+
+			FileField photoField = new FileField();
+			photoField.setName("photo");
+			photoField.setDisplayName("Photo");
+			photoField.setColumnName("PHOTO_ID");
+			photoField.setModule(module);
+			photoField.setDataType(FieldType.FILE);
+			photoField.setDisplayType(FieldDisplayType.IMAGE);
+			photoField.setFormat(FileInfo.FileFormat.IMAGE);
+			photoField.setMainField(false);
+			photoField.setRequired(false);
+			photoField.setDefault(true);
+			fields.add(photoField);
 			
 			LookupField moduleStateField = (LookupField) FieldFactory.getField("moduleState", "Status", "MODULE_STATE", module, FieldType.LOOKUP);
 			moduleStateField.setDefault(true);

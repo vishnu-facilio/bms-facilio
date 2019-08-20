@@ -498,6 +498,25 @@ public class FormsAPI {
 				defaultFields.addAll(FormFactory.getRequesterFormFields(false));
 				break;
 		}
+
+		if (form.getModule().getTypeEnum() == FacilioModule.ModuleType.CUSTOM) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			if (CollectionUtils.isNotEmpty(defaultFields)) {
+				boolean hasPhoto = false;
+				for (FormField field : defaultFields) {
+					if (field.getField() != null) {
+						if (field.getField().getName().equals("photo")) {
+							hasPhoto = true;
+							break;
+						}
+					}
+				}
+				if (hasPhoto) {
+					FacilioField photoField = modBean.getField("photo", form.getModule().getName());
+					defaultFields.add(getFormFieldFromFacilioField(photoField, 1));
+				}
+			}
+		}
 	}
 	
 	private static void setUnusedPortalSystemFields(FacilioForm form, List<FormField> defaultFields) {
@@ -521,7 +540,7 @@ public class FormsAPI {
 		List<FormField> defaultFields = new ArrayList<>();
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioForm defaultForm = FormFactory.getDefaultForm(moduleName, form, true);
+		FacilioForm defaultForm = getDefaultForm(moduleName, form, true);
 		if (defaultForm != null && CollectionUtils.isNotEmpty(defaultForm.getFields())) {
 			for (FormField f: defaultForm.getFields()) {	// TODO get fields from all sections
 				if (!formFieldMap.containsKey(f.getName()) && (f.getField() == null || f.getField().isDefault())) {
