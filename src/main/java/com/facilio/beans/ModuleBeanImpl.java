@@ -880,7 +880,15 @@ public class ModuleBeanImpl implements ModuleBean {
 							}
 							lookupField.setLookupModule(module);
 							fieldProps.put("lookupModuleId", module.getModuleId());
-						} else if (StringUtils.isEmpty(lookupField.getSpecialType())) {
+						}
+						else if (StringUtils.isNotEmpty(lookupField.getSpecialType())) {
+							FacilioModule module = getMod(lookupField.getSpecialType());
+							if (module == null) {
+								throw new IllegalArgumentException("Invalid lookup Module");
+							}
+							lookupField.setLookupModule(module);
+						}
+						else {
 							throw new IllegalArgumentException("Lookup module is not specified");
 						}
 					}
