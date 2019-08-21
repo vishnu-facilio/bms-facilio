@@ -210,20 +210,6 @@ public enum EventType {
 			// TODO Auto-generated method stub
 			return null;
 		}
-	},
-	APPROVE_ASSET_MOVEMENT (1 << 23) {
-		@Override
-		public String getMessage(JSONObject json) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-	},
-	REJECT_ASSET_MOVEMENT (1 << 24) {
-		@Override
-		public String getMessage(JSONObject json) {
-			// TODO Auto-generated method stub
-			return null;
-		}
 	}
 	;
 
