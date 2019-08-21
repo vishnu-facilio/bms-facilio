@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AssetMovementContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.workflow.rule.StateContext;
 import com.facilio.chain.FacilioContext;
@@ -50,7 +51,7 @@ public class CompleteAssetMoveCommand extends FacilioCommand {
 									if(status.getType() == StatusType.CLOSED) {
 										AssetsAPI.updateAssetMovement(recordId);
 										JSONObject completedInfo = new JSONObject();
-										completedInfo.put("value", assetMovement.getToSpace());
+										completedInfo.put("value", SpaceAPI.getBaseSpace(assetMovement.getToSpace()).getName());
 										CommonCommandUtil.addActivityToContext(assetMovement.getAssetId(), -1, AssetActivityType.LOCATION, completedInfo, (FacilioContext) context);
 									}
 								}
