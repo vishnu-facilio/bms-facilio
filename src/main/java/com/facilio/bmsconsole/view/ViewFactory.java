@@ -426,7 +426,7 @@ public class ViewFactory {
 		
 		order = 1;
 		views = new LinkedHashMap<>();
-		views.put("allNewAlarms", getAllReadingAlarmViews().setOrder(order++));
+		views.put("all", getAllReadingAlarmViews().setOrder(order++));
 		views.put("active", getReadingAlarmSeverity("active", "Active", FacilioConstants.Alarm.CLEAR_SEVERITY, false).setOrder(order++));
 		views.put("unacknowledged", getReadingAlarmUnacknowledged().setOrder(order++));
 		views.put("critical", getReadingAlarmSeverity("critical", "Critical Alarms", "Critical", true).setOrder(order++));
@@ -436,13 +436,13 @@ public class ViewFactory {
 				.setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.NEW_READING_ALARM, views);
 
-		views.put("allbmsalarm", getBmsAlarm("bmsAlarm" , "All Bms Alarm", true).setOrder(order++));
-		views.put("activebmsalarm", getBmsAlarmSeverity("bmsActive", "Bms Active Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, false).setOrder(order++));
+		views.put("bmsAlarm", getBmsAlarm("bmsAlarm" , "All Bms Alarm", true).setOrder(order++));
+		views.put("bmsActive", getBmsAlarmSeverity("bmsActive", "Bms Active Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, false).setOrder(order++));
 		views.put("unacknowledgedbmsalarm", getBmsAlarmUnacknowledged().setOrder(order++));
-		views.put("criticalbmsalarm", getBmsAlarmSeverity("bmsCritical", "Bms Critical Alarms", "Critical", true).setOrder(order++));
-		views.put("majorbmsalarm", getBmsAlarmSeverity("bmsMajor", "Bms Major Alarms", "Major", true).setOrder(order++));
-		views.put("minorbmsalarm", getBmsAlarmSeverity("bmsMinor", "Bms Minor Alarms", "Minor", true).setOrder(order++));
-		views.put("clearedbmsalarm", getBmsAlarmSeverity("bmsCleared", "Bms Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true).setOrder(order++));
+		views.put("bmsCritical", getBmsAlarmSeverity("bmsCritical", "Bms Critical Alarms", "Critical", true).setOrder(order++));
+		views.put("bmsMajor", getBmsAlarmSeverity("bmsMajor", "Bms Major Alarms", "Major", true).setOrder(order++));
+		views.put("bmsMinor", getBmsAlarmSeverity("bmsMinor", "Bms Minor Alarms", "Minor", true).setOrder(order++));
+		views.put("bmsCleared", getBmsAlarmSeverity("bmsCleared", "Bms Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true).setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.BMS_ALARM, views);
 
 
@@ -589,7 +589,7 @@ public class ViewFactory {
 		
 		groupVsViews = new ArrayList<>();
 		ArrayList<String> fddAlarms = new ArrayList<String>();
-		fddAlarms.add("allNewAlarms");
+		fddAlarms.add("all");
 		fddAlarms.add("active");
 		fddAlarms.add("unacknowledged");
 		fddAlarms.add("critical");
@@ -604,12 +604,13 @@ public class ViewFactory {
 		groupVsViews.add(groupDetails);
 		
 		ArrayList<String> bmsAlarms = new ArrayList<String>();
-		bmsAlarms.add("allbmsalarm");
-		bmsAlarms.add("activebmsalarm");
+		bmsAlarms.add("bmsAlarm");
+		bmsAlarms.add("bmsActive");
 		bmsAlarms.add("unacknowledgedbmsalarm");
-		bmsAlarms.add("majorbmsalarm");
-		bmsAlarms.add("minorbmsalarm");
-		bmsAlarms.add("clearedbmsalarm");
+		bmsAlarms.add("bmsMajor");
+		bmsAlarms.add("bmsMinor");
+		bmsAlarms.add("bmsCritical");
+		bmsAlarms.add("bmsCleared");
 		
 		
 		groupDetails = new HashMap<>();
@@ -4008,7 +4009,7 @@ public class ViewFactory {
 		createdTime.setModule(ModuleFactory.getBmsAlarmModule());
 
 		FacilioView typeAlarms = new FacilioView();
-		typeAlarms.setName("bmsUnacknowledged");
+		typeAlarms.setName("unacknowledgedbmsalarm");
 		typeAlarms.setDisplayName("Unacknowledged");
 		typeAlarms.setCriteria(criteria);
 		typeAlarms.setModuleName("bmsAlarm");

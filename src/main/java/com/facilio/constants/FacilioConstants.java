@@ -238,8 +238,8 @@ public class FacilioConstants {
 		public static final String READING_EVENT = "readingevent";
 		public static final String IS_ALARM_CREATED = "isalarmcreated";
 		public static final String READING_ALARM_CATEGORY = "readingalarmcategory";
-		public static final String BMS_ALARM ="bmsAlarm";
 		public static final String BMS_EVENT = "bmsevent";
+		public static final String BMS_ALARM ="bmsalarm";
 		public static final String IS_INCLUDE = "isInclude";
 		
 		public static final String ML_ANOMALY_ALARM = "mlAnomalyAlarm";
