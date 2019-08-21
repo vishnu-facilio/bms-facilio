@@ -18,12 +18,16 @@ public class ConstructStateFlowTransitionCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		StateflowTransitionContext stateFlowRuleContext = (StateflowTransitionContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
 		FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
+		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		if (stateFlowRuleContext != null) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			if (module == null) {
+				module = modBean.getModule(moduleName);
+			}
 			if (module == null) {
 				throw new IllegalArgumentException("Module name cannot be empty");
 			}
 			
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioField field = modBean.getField("moduleState", module.getName());
 			if (field == null) {
 				throw new IllegalArgumentException("StateFlow is not active for module " + module.getName());
