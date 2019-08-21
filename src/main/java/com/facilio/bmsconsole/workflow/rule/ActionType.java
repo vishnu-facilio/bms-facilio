@@ -979,6 +979,9 @@ public enum ActionType {
 				else if(currentRule.getRuleTypeEnum() == RuleType.CONTROL_ACTION_READING_ALARM_RULE) {
 					context.put(ControlActionUtil.CONTROL_ACTION_COMMAND_EXECUTED_FROM, ControlActionCommandContext.Control_Action_Execute_Mode.ALARM_CONDITION);
 				}
+				else if(currentRule.getRuleTypeEnum() == RuleType.RECORD_SPECIFIC_RULE) {
+					context.put(ControlActionUtil.CONTROL_ACTION_COMMAND_EXECUTED_FROM, ControlActionCommandContext.Control_Action_Execute_Mode.RESERVATION_CONDITION);
+				}
 				
 				Chain executeControlActionCommandChain = TransactionChainFactory.getExecuteControlActionCommandChain();
 				executeControlActionCommandChain.execute(context);
