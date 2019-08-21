@@ -12,9 +12,12 @@ import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AssetMovementContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.util.StateFlowRulesAPI;
+import com.facilio.bmsconsole.workflow.rule.StateContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
 
@@ -36,12 +39,13 @@ public class CompleteAssetMoveCommand extends FacilioCommand {
 						for(UpdateChangeSet changes : updatedSet) {
 							FacilioField field = modBean.getField(changes.getFieldId()) ;
 							if(field != null) {
-								if(field.getName() == "moduleState") {
+								if(field.getName().equals("moduleState")) {
 									JSONObject info = new JSONObject();
 									AssetMovementContext assetMovement = AssetsAPI.getAssetMovementContext(recordId);
 									info.put("movementId", recordId);
 									info.put("newStatus", changes.getNewValue());
 									CommonCommandUtil.addActivityToContext(assetMovement.getAssetId(), -1, AssetActivityType.UPDATE_MOVEMENT, info, (FacilioContext) context);
+									FacilioStatus status = StateFlowRulesAPI.getStateContext((long)changes.getNewValue());
 									if(changes.getNewValue() == "Completed") {
 										AssetsAPI.updateAssetMovement(recordId);
 										JSONObject completedInfo = new JSONObject();

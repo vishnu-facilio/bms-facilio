@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
@@ -12,6 +13,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetMovementContext;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioStatus;
@@ -29,6 +31,14 @@ public class AssetMovementAction extends FacilioAction{
 		this.assetMovement = assetMovement;
 	}
 
+	private Map<String, List<WorkflowRuleContext>> stateFlows;
+	public Map<String, List<WorkflowRuleContext>> getStateFlows() {
+		return stateFlows;
+	}
+	public void setStateFlows(Map<String, List<WorkflowRuleContext>> stateFlows) {
+		this.stateFlows = stateFlows;
+	}
+	
 	private Boolean fetchCount;
 	public Boolean getFetchCount() {
 		if (fetchCount == null) {
@@ -40,6 +50,14 @@ public class AssetMovementAction extends FacilioAction{
 		this.fetchCount = fetchCount;
 	}
 	
+	private Long stateTransitionId;
+	public Long getStateTransitionId() {
+		return stateTransitionId;
+	}
+	public void setStateTransitionId(Long stateTransitionId) {
+		this.stateTransitionId = stateTransitionId;
+	}
+
 	public String addAssetMovement() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, assetMovement);
@@ -98,6 +116,7 @@ public class AssetMovementAction extends FacilioAction{
 	public String updateAssetMovement() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, assetMovement);
+		context.put(FacilioConstants.ContextNames.TRANSITION_ID, getStateTransitionId());
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST,Collections.singletonList(assetMovement.getId()));
 		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ASSET_ACTIVITY);
 		
@@ -146,6 +165,9 @@ public class AssetMovementAction extends FacilioAction{
 		else {
 			List<AssetMovementContext> assetMovementRecords = (List<AssetMovementContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 			setResult(FacilioConstants.ContextNames.ASSET_MOVEMENT_RECORDS, assetMovementRecords);
+			setStateFlows((Map<String, List<WorkflowRuleContext>>) context.get("stateFlows"));
+			setResult("stateFlows", getStateFlows());
+			
 		}
 		return SUCCESS;
 	}
