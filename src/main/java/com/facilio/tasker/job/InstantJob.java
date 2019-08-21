@@ -51,7 +51,6 @@ public abstract class InstantJob {
 //            if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 88 && jobName.equals("ControllerActivityWatcher")) {
 //            	LOGGER.info("Executing Job "+jobName+" with props : "+context);
 //            }
-            InstantJobExecutor.INSTANCE.jobEnd(getReceiptHandle());
             status = 1;
         } catch (Exception e) {
             status = 2;
@@ -63,6 +62,7 @@ public abstract class InstantJob {
             job.setIsPeriodic(false);
             JobLogger.log(job, (System.currentTimeMillis() - startTime), status);
             currentThread.setName(threadName);
+            InstantJobExecutor.INSTANCE.jobEnd(getReceiptHandle());
         }
     }
 
