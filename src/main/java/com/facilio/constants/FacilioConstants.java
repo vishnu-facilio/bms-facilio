@@ -441,6 +441,7 @@ public class FacilioConstants {
 		public static final String REPORT_CONTEXT = "reportContext";
 		public static final String REPORT_ID = "reportId";
 		public static final String REPORT_INFO = "reportInfo";
+		public static final String ANALYTICS_TYPE = "analyticsType";
 		
 		public static final String BUILDING = "building";
 		public static final String BUILDING_LIST = "buildings";

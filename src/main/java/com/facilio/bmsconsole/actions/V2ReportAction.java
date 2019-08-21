@@ -220,6 +220,9 @@ public class V2ReportAction extends FacilioAction {
 			reportContext.setReportTemplate(template);
 
 		}
+		if(analyticsType != -1) {
+			reportContext.addToReportState(FacilioConstants.ContextNames.ANALYTICS_TYPE, analyticsType);
+		}
 
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 		context.put(FacilioConstants.ContextNames.REPORT_HANDLE_BOOLEAN, newFormat);
@@ -308,6 +311,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.REPORT_SHOW_SAFE_LIMIT, showSafeLimit);
 		context.put(FacilioConstants.Workflow.WORKFLOW, transformWorkflow);
 		context.put(FacilioConstants.ContextNames.REPORT_HANDLE_BOOLEAN, newFormat);
+		context.put(FacilioConstants.ContextNames.ANALYTICS_TYPE, analyticsType);
 		
 		if(regressionConfig != null && !regressionConfig.isEmpty()) {
 			context.put(FacilioConstants.ContextNames.REGRESSION_CONFIG, regressionConfig);
@@ -852,6 +856,14 @@ public class V2ReportAction extends FacilioAction {
 	}
 	public void setShowSafeLimit(boolean showSafeLimit) {
 		this.showSafeLimit = showSafeLimit;
+	}
+	
+	private int analyticsType = -1;
+	public int isanalyticsType() {
+		return analyticsType;
+	}
+	public void setAnalyticsType(int analyticsType) {
+		this.analyticsType = analyticsType;
 	}
 
 	private Boolean showAlarms;
