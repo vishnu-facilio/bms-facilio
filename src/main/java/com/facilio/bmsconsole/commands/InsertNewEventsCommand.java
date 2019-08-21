@@ -2,9 +2,14 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleCRUDBean;
+import com.facilio.bmsconsole.context.BMSEventContext;
+import com.facilio.bmsconsole.context.ControllerContext;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.events.context.EventContext;
 import com.facilio.events.context.EventRuleContext;
+import com.facilio.events.util.EventAPI;
 import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -34,6 +39,23 @@ public class InsertNewEventsCommand extends FacilioCommand {
 		
 		if (baseEvent.getCreatedTime() == -1) {
 			baseEvent.setCreatedTime(DateTimeUtil.getCurrenTime());
+		}
+
+		if (baseEvent instanceof BMSEventContext) {
+			if (baseEvent.getResource() == null && ((BMSEventContext) baseEvent).getSource() != null) {
+				ControllerContext controller = ((BMSEventContext) baseEvent).getController();
+				long controllerId = controller == null ? -1 : controller.getId();
+				long orgId = AccountUtil.getCurrentOrg().getId();
+				long resourceId = EventAPI.getResourceFromSource(((BMSEventContext) baseEvent).getSource(), orgId, controllerId);
+				if(resourceId != -1) {
+					if (resourceId != 0) {
+						baseEvent.setResource(ResourceAPI.getResource(resourceId));
+					}
+				}
+				else {
+					EventAPI.addSourceToResourceMapping(((BMSEventContext) baseEvent).getSource(), orgId, controllerId);
+				}
+			}
 		}
 		
 		if (baseEvent.shouldIgnore()) {

@@ -8,6 +8,8 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.util.EventAPI;
 
+import java.util.Map;
+
 public class UpdateSourceToResourceMappingCommand extends FacilioCommand {
 
 	@Override
@@ -23,7 +25,13 @@ public class UpdateSourceToResourceMappingCommand extends FacilioCommand {
 		if(id == -1) {
 			throw new IllegalArgumentException("Invalid ID specified during updation of Node-Asset mapping");
 		}
-		
+
+		Map<String, Object> source = EventAPI.getSource(id);
+		if (source == null) {
+			throw new IllegalArgumentException("Invalid ID specified during updation of Node-Asset mapping");
+		}
+		context.put(EventConstants.EventContextNames.SOURCE, source.get(EventConstants.EventContextNames.SOURCE));
+
 		EventAPI.updateResourceForSource(assetId, id, AccountUtil.getCurrentOrg().getOrgId());
 		
 		return false;

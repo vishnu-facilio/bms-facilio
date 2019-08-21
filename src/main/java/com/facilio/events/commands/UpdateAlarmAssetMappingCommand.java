@@ -1,8 +1,22 @@
 package com.facilio.events.commands;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.BMSAlarmContext;
+import com.facilio.bmsconsole.context.BMSEventContext;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.StringOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.UpdateRecordBuilder;
+import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -19,17 +33,37 @@ public class UpdateAlarmAssetMappingCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		String source = (String) context.get(EventConstants.EventContextNames.SOURCE);
 		long resourceId = (long) context.get(EventConstants.EventContextNames.RESOURCE_ID);
-		
-		JSONObject json = new JSONObject();
-		json.put("orgId", AccountUtil.getCurrentOrg().getOrgId());
-		json.put("source", source);
-		json.put("resourceId", resourceId);
-		
-		Map<String, String> headers = new HashMap<>();
-		headers.put("Content-Type","application/json");
-		String server = AwsUtil.getConfig("clientapp.url");
-		String url = server + "/internal/updateAlarmResource";
-		AwsUtil.doHttpPost(url, headers, null, json.toJSONString());
+
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
+			ResourceContext resource = ResourceAPI.getResource(resourceId);
+			if (resource != null) {
+				BMSAlarmContext alarm = new BMSAlarmContext();
+				alarm.setResource(resource);
+
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BMS_ALARM);
+				List<FacilioField> allFields = modBean.getAllFields(FacilioConstants.ContextNames.BMS_ALARM);
+				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
+
+				UpdateRecordBuilder<BMSAlarmContext> builder = new UpdateRecordBuilder<BMSAlarmContext>()
+						.fields(Collections.singletonList(fieldMap.get("resource")))
+						.module(module)
+						.andCondition(CriteriaAPI.getCondition(fieldMap.get("source"), source, StringOperators.IS));
+				builder.update(alarm);
+			}
+		}
+		else {
+			JSONObject json = new JSONObject();
+			json.put("orgId", AccountUtil.getCurrentOrg().getOrgId());
+			json.put("source", source);
+			json.put("resourceId", resourceId);
+
+			Map<String, String> headers = new HashMap<>();
+			headers.put("Content-Type", "application/json");
+			String server = AwsUtil.getConfig("clientapp.url");
+			String url = server + "/internal/updateAlarmResource";
+			AwsUtil.doHttpPost(url, headers, null, json.toJSONString());
+		}
 		
 		context.put(FacilioConstants.ContextNames.RESULT, "success");
 		return false;

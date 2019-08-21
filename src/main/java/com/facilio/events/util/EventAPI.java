@@ -271,7 +271,14 @@ public class EventAPI {
 														.andCondition(getControllerIdCondition(controllerId, module));		
 		updateBuilder.update(prop);
 	}
-	
+
+	public static Map<String, Object> getSource(long id) throws Exception {
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+				.table(EventConstants.EventModuleFactory.getSourceToResourceMappingModule().getTableName())
+				.select(EventConstants.EventFieldFactory.getSourceToResourceMappingFields())
+				.andCondition(CriteriaAPI.getIdCondition(id, EventConstants.EventModuleFactory.getSourceToResourceMappingModule()));
+		return selectRecordBuilder.fetchFirst();
+	}
 	
 	public static void updateResourceForSource(long assetId, long id, long orgId) throws SQLException {
 		FacilioModule module=EventConstants.EventModuleFactory.getSourceToResourceMappingModule();
