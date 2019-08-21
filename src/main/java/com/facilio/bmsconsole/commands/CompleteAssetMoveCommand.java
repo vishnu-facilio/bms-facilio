@@ -18,6 +18,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioStatus;
+import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
 
@@ -46,7 +47,7 @@ public class CompleteAssetMoveCommand extends FacilioCommand {
 									info.put("newStatus", changes.getNewValue());
 									CommonCommandUtil.addActivityToContext(assetMovement.getAssetId(), -1, AssetActivityType.UPDATE_MOVEMENT, info, (FacilioContext) context);
 									FacilioStatus status = StateFlowRulesAPI.getStateContext((long)changes.getNewValue());
-									if(changes.getNewValue() == "Completed") {
+									if(status.getType() == StatusType.CLOSED) {
 										AssetsAPI.updateAssetMovement(recordId);
 										JSONObject completedInfo = new JSONObject();
 										completedInfo.put("value", assetMovement.getToSpace());
