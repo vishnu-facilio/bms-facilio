@@ -437,12 +437,12 @@ public class ViewFactory {
 		viewsMap.put(FacilioConstants.ContextNames.NEW_READING_ALARM, views);
 
 		views.put("allbmsalarm", getBmsAlarm("bmsAlarm" , "All Bms Alarm", true).setOrder(order++));
-		views.put("activebmsalarm", getBmsAlarmSeverity("active", "Bms Active Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, false).setOrder(order++));
+		views.put("activebmsalarm", getBmsAlarmSeverity("bmsActive", "Bms Active Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, false).setOrder(order++));
 		views.put("unacknowledgedbmsalarm", getBmsAlarmUnacknowledged().setOrder(order++));
-		views.put("criticalbmsalarm", getBmsAlarmSeverity("critical", "Bms Critical Alarms", "Critical", true).setOrder(order++));
-		views.put("majorbmsalarm", getBmsAlarmSeverity("major", "Bms Major Alarms", "Major", true).setOrder(order++));
-		views.put("minorbmsalarm", getBmsAlarmSeverity("minor", "Bms Minor Alarms", "Minor", true).setOrder(order++));
-		views.put("clearedbmsalarm", getBmsAlarmSeverity("cleared", "Bms Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true).setOrder(order++));
+		views.put("criticalbmsalarm", getBmsAlarmSeverity("bmsCritical", "Bms Critical Alarms", "Critical", true).setOrder(order++));
+		views.put("majorbmsalarm", getBmsAlarmSeverity("bmsMajor", "Bms Major Alarms", "Major", true).setOrder(order++));
+		views.put("minorbmsalarm", getBmsAlarmSeverity("bmsMinor", "Bms Minor Alarms", "Minor", true).setOrder(order++));
+		views.put("clearedbmsalarm", getBmsAlarmSeverity("bmsCleared", "Bms Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true).setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.BMS_ALARM, views);
 
 
@@ -3992,6 +3992,7 @@ public class ViewFactory {
 		typeAlarms.setName("unacknowledged");
 		typeAlarms.setDisplayName("Unacknowledged");
 		typeAlarms.setCriteria(criteria);
+		typeAlarms.setModuleName("newreadingalarm");
 		typeAlarms.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 
 		return typeAlarms;
@@ -4007,7 +4008,7 @@ public class ViewFactory {
 		createdTime.setModule(ModuleFactory.getBmsAlarmModule());
 
 		FacilioView typeAlarms = new FacilioView();
-		typeAlarms.setName("unacknowledged");
+		typeAlarms.setName("bmsUnacknowledged");
 		typeAlarms.setDisplayName("Unacknowledged");
 		typeAlarms.setCriteria(criteria);
 		typeAlarms.setModuleName("bmsAlarm");
