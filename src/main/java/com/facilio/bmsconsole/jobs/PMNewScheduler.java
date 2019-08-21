@@ -205,11 +205,11 @@ public class PMNewScheduler extends FacilioJob {
 					if ((maxTime/1000)  < endTime) {
 						BulkWorkOrderContext bulkWoContextsFromTrigger = PreventiveMaintenanceAPI.createBulkWoContextsFromPM(context, pm, trigger, maxTime / 1000, workorderTemplate);
 						bulkWorkOrderContexts.add(bulkWoContextsFromTrigger);
-					} else {
-						long startTime = trigger.getStartTime();
-						BulkWorkOrderContext bulkWoContextsFromTrigger = PreventiveMaintenanceAPI.createBulkWoContextsFromPM(context, pm, trigger, startTime / 1000, workorderTemplate);
-						bulkWorkOrderContexts.add(bulkWoContextsFromTrigger);
 					}
+				} else {
+					long startTime = trigger.getStartTime();
+					BulkWorkOrderContext bulkWoContextsFromTrigger = PreventiveMaintenanceAPI.createBulkWoContextsFromPM(context, pm, trigger, startTime / 1000, workorderTemplate);
+					bulkWorkOrderContexts.add(bulkWoContextsFromTrigger);
 				}
 			}
 		}
