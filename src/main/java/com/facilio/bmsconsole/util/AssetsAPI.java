@@ -58,6 +58,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.FacilioUtil;
 
 public class AssetsAPI {
 	
@@ -964,24 +965,85 @@ public class AssetsAPI {
 				.andCondition(CriteriaAPI.getIdCondition(movementId, module));
 				;
 		AssetMovementContext assetMovementRecord = selectBuilder.fetchFirst();
-		FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
-		List<FacilioField> assetFields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
-
+	
 		
 		if(assetMovementRecord != null) {
 			AssetContext asset = new AssetContext();
-			SiteContext newsite = SpaceAPI.getSiteSpace(assetMovementRecord.getToSite());
-			asset.setIdentifiedLocation(newsite);
-			asset.setCurrentSpaceId(assetMovementRecord.getToSpace());
-			UpdateRecordBuilder<AssetContext> updateBuilder = new UpdateRecordBuilder<AssetContext>()
-					.module(assetModule)
-					.fields(assetFields)
-					.andCondition(CriteriaAPI.getIdCondition(assetMovementRecord.getAssetId(), assetModule));
-
-			updateBuilder.update(asset);
+			if(assetMovementRecord.getToSite() > 0 && assetMovementRecord.getToSpace() > 0) {
+				SiteContext newsite = SpaceAPI.getSiteSpace(assetMovementRecord.getToSite());
+				asset.setIdentifiedLocation(newsite);
+				asset.setCurrentSpaceId(assetMovementRecord.getToSpace());
+				updateAsset(asset, assetMovementRecord.getAssetId());
+			}
+			else if(StringUtils.isNotEmpty(assetMovementRecord.getToGeoLocation())) {
+				AssetContext assetContext = AssetsAPI.getAssetInfo(assetMovementRecord.getAssetId());
+				String[] latLng = assetMovementRecord.getToGeoLocation().trim().split("\\s*,\\s*");
+				double newLat = Double.parseDouble(latLng[0]);
+				double newLng = Double.parseDouble(latLng[1]);
+		    	SiteContext assetSite = SpaceAPI.getSiteSpace(assetContext.getIdentifiedLocation().getSiteId());
+			  	if(isWithInLocation(assetMovementRecord.getToGeoLocation(), assetSite.getLocation().getLat(), assetSite.getLocation().getLng(), asset.getBoundaryRadius())) {
+			  		asset.setCurrentLocation(assetMovementRecord.getToGeoLocation());
+			  		updateAsset(asset, assetMovementRecord.getAssetId());
+			  		return;
+			  	}
+				List<SiteContext> sites = SpaceAPI.getAllSites(1);
+				boolean isWithinAnySite = false;
+			    for(SiteContext site : sites) {
+			    	if(site.getBoundaryRadius() > 0) {
+			    		if(isWithInLocation(site.getLocation().getLat() + "," + site.getLocation().getLng(), newLat, newLng, site.getBoundaryRadius())) {
+				    		isWithinAnySite = true;
+				    		asset.setCurrentLocation(assetMovementRecord.getToGeoLocation());
+				    		asset.setIdentifiedLocation(site);
+				    		updateAsset(asset, assetMovementRecord.getAssetId());
+			    		}
+			    	}
+			    	else {
+		    			asset.setCurrentLocation(assetMovementRecord.getToGeoLocation());
+			    		asset.setIdentifiedLocation(null);
+			    		asset.setCurrentSpaceId(-99);
+			    		updateAsset(asset, assetMovementRecord.getAssetId());
+			    	}
+			    }
+			    
+				if(!isWithinAnySite) {
+					throw new IllegalArgumentException("Invalid geolocation.Not present in any of the sites");
+				}
+			}
+			
 		}
    }
    
+   private static void updateAsset(AssetContext asset, long assetId) throws Exception {
+	   	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+		List<FacilioField> assetFields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
+
+	   UpdateRecordBuilder<AssetContext> updateBuilder = new UpdateRecordBuilder<AssetContext>()
+				.module(assetModule)
+				.fields(assetFields)
+				.andCondition(CriteriaAPI.getIdCondition(assetId, assetModule));
+
+		updateBuilder.update(asset);
+
+   }
+   public static boolean isWithInLocation (String location, double lat, double lng, int boundaryRadius) {
+		if (StringUtils.isEmpty(location)) {
+			return false;
+		}
+		return getDistance(location, lat, lng) <= boundaryRadius;
+	}
+	
+	private static double getDistance (String location, double lat, double lng) {
+		if (StringUtils.isEmpty(location)) {
+			return 0;
+		}
+		String[] latLng = location.trim().split("\\s*,\\s*");
+		double prevLat = Double.parseDouble(latLng[0]);
+		double prevLng = Double.parseDouble(latLng[1]);
+		
+		double distance = FacilioUtil.calculateHaversineDistance(prevLat, prevLng, lat, lng);
+		return distance;
+	}
    public static AssetMovementContext getAssetMovementContext(long id) throws Exception {
 	   
 	   ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
@@ -22,6 +23,7 @@ import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.FacilioUtil;
 
 ;
 
@@ -51,7 +53,8 @@ public class CompleteAssetMoveCommand extends FacilioCommand {
 									if(status.getType() == StatusType.CLOSED) {
 										AssetsAPI.updateAssetMovement(recordId);
 										JSONObject completedInfo = new JSONObject();
-										completedInfo.put("value", SpaceAPI.getBaseSpace(assetMovement.getToSpace()).getName());
+										completedInfo.put("currentSite", SpaceAPI.getBaseSpace(assetMovement.getToSite()).getName());
+										completedInfo.put("currentSpace", SpaceAPI.getBaseSpace(assetMovement.getToSpace()).getName());
 										CommonCommandUtil.addActivityToContext(assetMovement.getAssetId(), -1, AssetActivityType.LOCATION, completedInfo, (FacilioContext) context);
 									}
 								}
@@ -64,5 +67,6 @@ public class CompleteAssetMoveCommand extends FacilioCommand {
 			
 		return false;
 	}
-
+	
+	
 }
