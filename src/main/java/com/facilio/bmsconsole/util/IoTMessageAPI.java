@@ -343,10 +343,6 @@ public class IoTMessageAPI {
 	}
 	
  	private static void publishIotMessage(String client, JSONObject object) throws Exception {
- 		// Temp
- 		if (client.equals("smartae-alwasl")) {
- 			client = "alwasl";
- 		}
  		Long agentId = (Long) object.remove(AgentKeys.AGENT_ID);
 	    String topic = client+"/msgs";
 		LOGGER.info(AwsUtil.getConfig("iot.endpoint") +" " + client+"-facilio" + " " + topic + " " + object);
