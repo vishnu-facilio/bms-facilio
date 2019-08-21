@@ -1036,6 +1036,16 @@ public class ReadingAction extends FacilioAction {
 	public void setLoggerGroupId(long loggerGroupId) {
 		this.loggerGroupId = loggerGroupId;
 	}
+	
+	private Boolean isInclude;
+
+	public Boolean getIsInclude() {
+		return isInclude;
+	}
+
+	public void setIsInclude(Boolean isInclude) {
+		this.isInclude = isInclude;
+	}
 
 	public String runThroughRule() throws Exception {
 		
@@ -1047,6 +1057,7 @@ public class ReadingAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, id);
 		context.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
 		context.put(FacilioConstants.ContextNames.RESOURCE_LIST, historicalLoggerAssetIds);
+		context.put(FacilioConstants.ContextNames.IS_INCLUDE,isInclude);
 		
 		Chain runThroughRuleChain = TransactionChainFactory.runThroughReadingRuleChain();
 		runThroughRuleChain.execute(context);
