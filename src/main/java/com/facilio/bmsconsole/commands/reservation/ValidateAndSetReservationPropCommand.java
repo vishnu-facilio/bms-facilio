@@ -98,6 +98,7 @@ public class ValidateAndSetReservationPropCommand extends FacilioCommand {
             CommonCommandUtil.addToRecordMap((FacilioContext) context, FacilioConstants.ContextNames.Reservation.RESERVATION, reservation);
         }
         else {
+            context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
             context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(reservation.getId()));
         }
 
