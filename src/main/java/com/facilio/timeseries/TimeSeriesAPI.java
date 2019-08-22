@@ -553,6 +553,10 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 				.table("Unmodeled_Instance");
 		for(Object instance:instanceArray) {
 			JSONObject instanceObj = (JSONObject) instance;
+			
+			if(instanceObj==null || instanceObj.isEmpty()) {
+				continue;
+			}
 			if (instanceNames != null) {
 				// Checking if the instance already exists. No need to add again on re-discovering of points
 				String name = instanceObj.get("device") + "|" + instanceObj.get("instance");
@@ -601,6 +605,9 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 				.table(module.getTableName());
 		for(Object instance:instanceArray) {
 			JSONObject instanceObj = (JSONObject) instance;
+			if(instanceObj==null || instanceObj.isEmpty()) {
+				continue;
+			}
 			if (instanceNames != null) {
 				// Checking if the instance already exists. No need to add again on re-discovering of points
 				String name = instanceObj.get("device") + "|" + instanceObj.get("instance");
