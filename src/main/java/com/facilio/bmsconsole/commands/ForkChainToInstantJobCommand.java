@@ -26,8 +26,15 @@ public class ForkChainToInstantJobCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		if (!commands.isEmpty()) {
-			context.put(FacilioConstants.Job.FORKED_COMMANDS, commands);
-			FacilioTimer.scheduleInstantJob("ForkedChain", (FacilioContext) context);
+			Context noSeriablable = new FacilioContext();
+			for (Object key : context.entrySet()) {
+				Object object = context.get(key);
+				if (object != null && object instanceof Serializable) {
+					noSeriablable.put(key, object);
+				}
+			}
+			noSeriablable.put(FacilioConstants.Job.FORKED_COMMANDS, commands);
+			FacilioTimer.scheduleInstantJob("ForkedChain", (FacilioContext) noSeriablable);
 		}
 		return false;
 	}
