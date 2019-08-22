@@ -69,6 +69,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.report.context.ReadingAnalysisContext;
+import com.facilio.report.context.ReadingAnalysisContext.AnalyticsType;
 import com.facilio.report.context.ReadingAnalysisContext.ReportFilterMode;
 import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
 import com.facilio.report.context.ReportBaseLineContext;
@@ -490,6 +491,7 @@ public class V2ReportAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.REPORT_MODE, mode);
 			context.put(FacilioConstants.ContextNames.REPORT_CALLING_FROM, "card");
 			context.put(FacilioConstants.ContextNames.REPORT_HANDLE_BOOLEAN, newFormat);
+			context.put(FacilioConstants.ContextNames.ANALYTICS_TYPE, AnalyticsType.READINGS.getIntVal());
 			
 			newFormat = true;
 			Chain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReadingReportChain() : ReadOnlyChainFactory.fetchReadingReportChain();
