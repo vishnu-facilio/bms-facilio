@@ -85,21 +85,4 @@ public class AssetMovementContext extends ModuleBaseWithCustomFields{
 	public void setToGeoLocation(String toGeoLocation) {
 		this.toGeoLocation = toGeoLocation;
 	}
-	
-	public Boolean isMovementNeeded;
-
-	public Boolean getIsMovementNeeded() {
-		return isMovementNeeded;
-	}
-
-	public void setIsMovementNeeded(Boolean isMovementNeeded) {
-		this.isMovementNeeded = isMovementNeeded;
-	}
-
-	public boolean isMovementNeeded() {
-		if (isMovementNeeded != null) {
-			return isMovementNeeded.booleanValue();
-		}
-		return false;
-	}
 }

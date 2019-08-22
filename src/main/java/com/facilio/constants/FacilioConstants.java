@@ -1194,7 +1194,10 @@ public class FacilioConstants {
 		
 		public static final String ASSET_MOVEMENT = "assetmovement";
 		public static final String ASSET_MOVEMENT_RECORDS = "assetmovementrecords";
-
+		
+		public static final int SITE_BOUNDARY_RADIUS = 1000; //meter 
+		public static final int ASSET_BOUNDARY_RADIUS = 10; //meter 
+		
 
 		public static final String IS_EMAIL_VERIFICATION_NEEDED = "isEmailVerificationNeeded";
 

@@ -5,12 +5,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetMovementContext;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
@@ -61,11 +63,13 @@ public class AssetMovementAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.RECORD, assetMovement);
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE,EventType.CREATE);
 		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ASSET_ACTIVITY);
-		
-		Chain chain = TransactionChainFactory.getAddAssetMovementChain();
-		chain.execute(context);
-		
-		setResult(FacilioConstants.ContextNames.ASSET_MOVEMENT_RECORDS, context.get(FacilioConstants.ContextNames.RECORD));
+		if(assetMovement != null) {
+			if((!StringUtils.isNotEmpty(assetMovement.getFromGeoLocation()) && AssetsAPI.checkIfAssetMovementNecessary(assetMovement.getToGeoLocation(), assetMovement.getFromGeoLocation(), assetMovement.getAssetId())) || StringUtils.isEmpty(assetMovement.getFromGeoLocation())) {
+				Chain chain = TransactionChainFactory.getAddAssetMovementChain();
+				chain.execute(context);
+				setResult(FacilioConstants.ContextNames.ASSET_MOVEMENT_RECORDS, context.get(FacilioConstants.ContextNames.RECORD));
+			}
+		}
 		return SUCCESS;
 	}
 	

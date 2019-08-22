@@ -58,6 +58,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 import com.facilio.util.FacilioUtil;
 
 public class AssetsAPI {
@@ -981,28 +982,27 @@ public class AssetsAPI {
 				double newLat = Double.parseDouble(latLng[0]);
 				double newLng = Double.parseDouble(latLng[1]);
 		    	SiteContext assetSite = SpaceAPI.getSiteSpace(assetContext.getIdentifiedLocation().getSiteId());
-			  	if(isWithInLocation(assetMovementRecord.getToGeoLocation(), assetSite.getLocation().getLat(), assetSite.getLocation().getLng(), asset.getBoundaryRadius())) {
+		      	if(isWithinSiteLocation(assetSite, newLat, newLng)) {
 			  		asset.setCurrentLocation(assetMovementRecord.getToGeoLocation());
-			  		updateAsset(asset, assetMovementRecord.getAssetId());
+			  		asset.setCurrentSpaceId(-99);
+		    		updateAsset(asset, assetMovementRecord.getAssetId());
 			  		return;
 			  	}
-				List<SiteContext> sites = SpaceAPI.getAllSites(1);
+				List<SiteContext> sites = SpaceAPI.getAllSites(Collections.singletonList((LookupField) modBean.getField("location", FacilioConstants.ContextNames.SITE)));
+				
 				boolean isWithinAnySite = false;
 			    for(SiteContext site : sites) {
-			    	if(site.getBoundaryRadius() > 0) {
-			    		if(isWithInLocation(site.getLocation().getLat() + "," + site.getLocation().getLng(), newLat, newLng, site.getBoundaryRadius())) {
-				    		isWithinAnySite = true;
-				    		asset.setCurrentLocation(assetMovementRecord.getToGeoLocation());
-				    		asset.setIdentifiedLocation(site);
-				    		updateAsset(asset, assetMovementRecord.getAssetId());
-			    		}
+			    	if(asset.getIdentifiedLocation().getSiteId() == site.getSiteId()) {
+			    		continue;
 			    	}
-			    	else {
-		    			asset.setCurrentLocation(assetMovementRecord.getToGeoLocation());
-			    		asset.setIdentifiedLocation(null);
+			    	if(isWithinSiteLocation(site, newLat, newLng)) {
+			    		isWithinAnySite = true;
+			    		asset.setCurrentLocation(assetMovementRecord.getToGeoLocation());
+			    		asset.setIdentifiedLocation(site);
 			    		asset.setCurrentSpaceId(-99);
 			    		updateAsset(asset, assetMovementRecord.getAssetId());
-			    	}
+			    		break;
+		    		}
 			    }
 			    
 				if(!isWithinAnySite) {
@@ -1033,7 +1033,18 @@ public class AssetsAPI {
 		return getDistance(location, lat, lng) <= boundaryRadius;
 	}
 	
-	private static double getDistance (String location, double lat, double lng) {
+   public static boolean isWithinSiteLocation (SiteContext site, double lat, double lng) {
+		if(site.getBoundaryRadius() <= 0) {
+    		site.setBoundaryRadius(FacilioConstants.ContextNames.SITE_BOUNDARY_RADIUS);//meters
+    	}
+	
+		if (site == null || site.getLocation() == null || site.getLocation().getLat() == -1 || site.getLocation().getLng() == -1) {
+			return false;
+		}
+		return FacilioUtil.calculateHaversineDistance(site.getLocation().getLat(), site.getLocation().getLng(), lat, lng) <= site.getBoundaryRadius();
+	}
+	
+	public static double getDistance (String location, double lat, double lng) {
 		if (StringUtils.isEmpty(location)) {
 			return 0;
 		}
@@ -1056,5 +1067,24 @@ public class AssetsAPI {
 		AssetMovementContext assetMovementRecord = selectBuilder.fetchFirst();
         return assetMovementRecord;
    }
-
+   
+   public static boolean checkIfAssetMovementNecessary(String toLocation, String currentLocation, long assetId) throws Exception {
+	   if(StringUtils.isNotEmpty(toLocation) && StringUtils.isNotEmpty(currentLocation)) {
+			String[] latLng = toLocation.trim().split("\\s*,\\s*");
+			double newLat = Double.parseDouble(latLng[0]);
+			double newLng = Double.parseDouble(latLng[1]);
+			AssetContext asset = getAssetInfo(assetId);
+			if(asset.getBoundaryRadius() <= 0) {
+				asset.setBoundaryRadius(FacilioConstants.ContextNames.ASSET_BOUNDARY_RADIUS);
+			}
+			if(AssetsAPI.isWithInLocation(currentLocation, newLat, newLng, asset.getBoundaryRadius())) {
+				return false;
+			}
+			return true;
+		}
+	   return false;
+		
+   }
+   
+  
 }

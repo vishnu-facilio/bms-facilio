@@ -1402,6 +1402,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new LoadViewCommand());
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
 		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new AddLookupFetchForAssetMovementCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
 		chain.addCommand(new GetStateflowsForModuleDataListCommand());
 		return chain;
