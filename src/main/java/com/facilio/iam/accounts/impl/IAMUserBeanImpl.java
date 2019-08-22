@@ -115,7 +115,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 	private long addUserv2(long orgId, IAMUser user, boolean emailRegRequired) throws Exception {
 
-		IAMUser orgUser = getFacilioUser(user.getEmail(), orgId, null);
+		IAMUser orgUser = getFacilioUser(user.getEmail(), orgId, user.getDomainName());
 		if (orgUser != null) {
 			throw new AccountException(AccountException.ErrorCode.EMAIL_ALREADY_EXISTS, "This user already exists in your organization.");
 		}
@@ -954,7 +954,9 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		else {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ISDEFAULT", "isDefault", "1", NumberOperators.EQUALS));
 		}
-		
+		if(org.apache.commons.lang3.StringUtils.isNotEmpty(portalDomain)) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.DOMAIN_NAME", "domainName", portalDomain, StringOperators.IS));
+		}
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USER_STATUS", "userStatus", "1", NumberOperators.EQUALS));
 		

@@ -47,7 +47,7 @@ public class IAMUserUtil {
 		String timezone = (String) signupInfo.get("timezone");
 		Locale locale = (Locale) signupInfo.get("locale");
 
-		IAMUser userObj = IAMUtil.getUserBean().getFacilioUser(email, orgId, null);
+		IAMUser userObj = IAMUtil.getUserBean().getFacilioUser(email, orgId, "app");
 		if (userObj != null) {
 			throw new AccountException(AccountException.ErrorCode.EMAIL_ALREADY_EXISTS,
 					"This user is not permitted to do this action.");
