@@ -720,8 +720,6 @@ public class LoginAction extends FacilioAction {
 		//log.info(AccountUtil.getCurrentUser().getEmail()+"))(()()()(((((())))))");
 		//log.info(AccountUtil.getCurrentAccount().getOrg().getDomain()+"$$$$$$$$$$$$$$$$$$$$$");
 		List<User> users = AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId());
-		List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(AccountUtil.getCurrentOrg().getId(), true);
-		
 		Map<Long, Set<Long>> userSites = new HashMap<>();
 		if (users != null) {
 			userSites = AccountUtil.getUserBean().getUserSites(users.stream().map(i -> i.getOuid()).collect(Collectors.toList()));
@@ -733,8 +731,6 @@ public class LoginAction extends FacilioAction {
 		data.put("users", users);
 		data.put("userSites", userSites);
 
-		data.put("groups", groups);
-		data.put("buildings", SpaceAPI.getAllBuildings());
 		data.put("buildingList", ReportsUtil.getBuildingMap());
 		data.put("calendarColor", TicketAPI.getCalendarColor());	
 		account.put("data", data);
@@ -753,15 +749,26 @@ public class LoginAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String getOrgs() throws Exception {
+		List<Organization> orgs = AccountUtil.getUserBean().getOrgs(AccountUtil.getCurrentUser().getUid());
+		setResult("Orgs", orgs);
+		return SUCCESS;
+	}
+	
 	public String getRoles() throws Exception {
 		List<Role> roles = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getOrgId()).getRoles();
 		setResult("Roles", roles);
 		return SUCCESS;
 	}
 	
-	public String getOrgs() throws Exception {
-		List<Organization> orgs = AccountUtil.getUserBean().getOrgs(AccountUtil.getCurrentUser().getUid());
-		setResult("Orgs", orgs);
+	public String getGroups() throws Exception {
+		List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(AccountUtil.getCurrentOrg().getId(), true);
+		setResult("groups", groups);
+		return SUCCESS;
+	}
+	
+	public String getAllBuildings() throws Exception {
+		setResult("buildings", SpaceAPI.getAllBuildings());
 		return SUCCESS;
 	}
 	

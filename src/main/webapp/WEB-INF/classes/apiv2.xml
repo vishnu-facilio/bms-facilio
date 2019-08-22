@@ -85,11 +85,17 @@
 		<action name="getSites" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getAllSites">
 		</action>
+		<action name="getOrgs" class="com.facilio.bmsconsole.actions.LoginAction"
+			method="getOrgs">
+		</action>
 		<action name="getRoles" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getRoles">
 		</action>
-		<action name="getOrgs" class="com.facilio.bmsconsole.actions.LoginAction"
-			method="getOrgs">
+		<action name="getGroups" class="com.facilio.bmsconsole.actions.LoginAction"
+			method="getGroups">
+		</action>
+		<action name="getAllBuildings" class="com.facilio.bmsconsole.actions.LoginAction"
+			method="getAllBuildings">
 		</action>
 		<action name="getMainEnergyMeters" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getAllMainEnergyMeters">
