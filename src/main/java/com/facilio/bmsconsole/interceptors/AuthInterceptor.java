@@ -9,7 +9,6 @@ import java.util.List;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpHeaders;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -72,13 +71,13 @@ public class AuthInterceptor extends AbstractInterceptor {
 				}
 			}
 			else if (!isRemoteScreenMode(request)) {
-				String authRequired = ActionContext.getContext().getParameters().get("auth").getValue();
-				if(StringUtils.isEmpty(authRequired) || "true".equalsIgnoreCase(authRequired)) {
-					IAMAccount iamAccount = AuthenticationUtil.validateToken(request, false, "app");
-					if (iamAccount != null) {
-						request.setAttribute("iamAccount", iamAccount);
-					}
-					else {
+				IAMAccount iamAccount = AuthenticationUtil.validateToken(request, false, "app");
+				if (iamAccount != null) {
+					request.setAttribute("iamAccount", iamAccount);
+				}
+				else {
+					String authRequired = ActionContext.getContext().getParameters().get("auth").getValue();
+					if (authRequired == null || "".equalsIgnoreCase(authRequired.trim()) || "true".equalsIgnoreCase(authRequired)) {
 						return Action.LOGIN;
 					}
 				}
