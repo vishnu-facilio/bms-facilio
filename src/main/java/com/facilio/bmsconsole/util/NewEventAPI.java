@@ -1,12 +1,20 @@
 package com.facilio.bmsconsole.util;
 
+import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.bmsconsole.templates.JSONTemplate;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.SelectRecordsBuilder;
 import org.json.simple.JSONObject;
 
+import java.util.List;
 import java.util.Map;
 
 public class NewEventAPI {
@@ -75,5 +83,36 @@ public class NewEventAPI {
 		eventProp.put("messageKey", event.getMessageKey()); //Setting the new key in case if it's updated
 		CommonCommandUtil.appendModuleNameInKey(null, "event", eventProp, placeHolders);//Updating the placeholders with the new event props
 		return event;
+	}
+
+	public static BaseEventContext getEvent(long id) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_EVENT);
+		SelectRecordsBuilder<BaseEventContext> builder = new SelectRecordsBuilder<BaseEventContext>()
+				.module(module)
+				.select(modBean.getAllFields(module.getName()))
+				.beanClass(BaseEventContext.class)
+				.andCondition(CriteriaAPI.getIdCondition(id, module));
+		BaseEventContext baseEventContext = builder.fetchFirst();
+		return getExtendedEvent(baseEventContext);
+	}
+
+	private static BaseEventContext getExtendedEvent(BaseEventContext baseEventContext) throws Exception {
+		if (baseEventContext == null) {
+			return null;
+		}
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+
+		Type eventTypeEnum = baseEventContext.getEventTypeEnum();
+
+		String moduleName = NewEventAPI.getEventModuleName(eventTypeEnum);
+		FacilioModule module = modBean.getModule(moduleName);
+
+		SelectRecordsBuilder<BaseEventContext> builder = new SelectRecordsBuilder<BaseEventContext>()
+				.module(module)
+				.select(modBean.getAllFields(module.getName()))
+				.beanClass(NewEventAPI.getEventClass(eventTypeEnum))
+				.andCondition(CriteriaAPI.getIdCondition(baseEventContext.getId(), module));
+		return builder.fetchFirst();
 	}
 }

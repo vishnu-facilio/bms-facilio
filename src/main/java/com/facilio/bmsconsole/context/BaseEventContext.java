@@ -18,7 +18,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-public abstract class BaseEventContext extends ModuleBaseWithCustomFields {
+public class BaseEventContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
 
 	private String description;
@@ -71,7 +71,9 @@ public abstract class BaseEventContext extends ModuleBaseWithCustomFields {
 	public void setMessageKey(String messageKey) {
 		this.messageKey = messageKey;
 	};
-	public abstract String constructMessageKey();
+	public String constructMessageKey() {
+		return null;
+	}
 	
 	private EventState eventState;
 	public int getEventState() {
@@ -154,16 +156,24 @@ public abstract class BaseEventContext extends ModuleBaseWithCustomFields {
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
-	
+
+	private Type type;
 	@JsonInclude
 	public final int getEventType() {
-		Type type = getEventTypeEnum();
+		type = getEventTypeEnum();
 		if (type != null) {
 			return type.getIndex();
 		}
 		return -1;
 	}
-	public abstract Type getEventTypeEnum();
+	// this will be used only to get data from database
+	public final void setEventType(int eventType) {
+		type = Type.valueOf(eventType);
+	}
+	// this will be used only to get data from database
+	public Type getEventTypeEnum() {
+		return type;
+	}
 	
 	private Boolean autoClear;
 	public Boolean getAutoClear() {

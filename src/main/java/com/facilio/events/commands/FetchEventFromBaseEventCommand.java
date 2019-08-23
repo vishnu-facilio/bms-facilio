@@ -1,0 +1,74 @@
+package com.facilio.events.commands;
+
+import com.facilio.bmsconsole.commands.FacilioCommand;
+import com.facilio.bmsconsole.context.BMSAlarmContext;
+import com.facilio.bmsconsole.context.BMSEventContext;
+import com.facilio.bmsconsole.context.BaseEventContext;
+import com.facilio.bmsconsole.context.ReadingEventContext;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.events.constants.EventConstants;
+import com.facilio.events.context.EventContext;
+import org.apache.commons.chain.Command;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class FetchEventFromBaseEventCommand extends FacilioCommand {
+
+    @Override
+    public boolean executeCommand(Context context) throws Exception {
+        List<BaseEventContext> baseEvents = (List<BaseEventContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+
+        List<EventContext> events = convertToEventContext(baseEvents);
+        context.put(EventConstants.EventContextNames.EVENT_LIST, events);
+        return false;
+    }
+
+    private List<EventContext> convertToEventContext(List<BaseEventContext> baseEvents) {
+        List<EventContext> list = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(baseEvents)) {
+            for (BaseEventContext baseEventContext : baseEvents) {
+                EventContext event = new EventContext();
+                event.setId(baseEventContext.getId());
+                event.setDescription(baseEventContext.getDescription());
+
+                event.setEventMessage(baseEventContext.getEventMessage());
+                event.setInternalState(baseEventContext.getInternalState());
+                event.setEventState(baseEventContext.getEventState());
+                if (baseEventContext.getResource() != null) {
+                    event.setResourceId(baseEventContext.getResource().getId());
+                }
+                if (baseEventContext.getAlarmOccurrence() != null) {
+                    event.setAlarmId(baseEventContext.getAlarmOccurrence().getId());
+                }
+                event.setCreatedTime(baseEventContext.getCreatedTime());
+                event.setMessageKey(baseEventContext.getMessageKey());
+                event.setComment(baseEventContext.getComment());
+                event.setAdditionInfo(baseEventContext.getAdditionInfo());
+
+                event.setOrgId(baseEventContext.getOrgId());
+
+                if (baseEventContext instanceof ReadingEventContext) {
+                    ReadingEventContext readingEventContext = (ReadingEventContext) baseEventContext;
+                    if (readingEventContext.getRule() != null) {
+                        event.setEventRuleId(readingEventContext.getRule().getId());
+                    }
+                    if (readingEventContext.getSubRule() != null) {
+                        event.setSubRuleId(readingEventContext.getSubRule().getId());
+                    }
+                } else if (baseEventContext instanceof BMSEventContext) {
+                    BMSEventContext bmsEvent = (BMSEventContext) baseEventContext;
+                    event.setSource(bmsEvent.getSource());
+                    event.setCondition(bmsEvent.getCondition());
+                }
+
+                list.add(event);
+            }
+        }
+        return list;
+    }
+
+
+}

@@ -1,22 +1,24 @@
 package com.facilio.events.actions;
 
-import java.util.List;
-import java.util.Map;
-
-import org.apache.commons.chain.Chain;
-import org.json.simple.JSONObject;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.FacilioAction;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.events.commands.FetchEventFromBaseEventCommand;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.events.context.EventProperty;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.util.EventAPI;
 import com.facilio.events.util.EventRulesAPI;
+import org.apache.commons.chain.Chain;
+import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONObject;
+
+import java.util.List;
+import java.util.Map;
 
 @SuppressWarnings("serial")
 public class EventAction extends FacilioAction {
@@ -54,11 +56,23 @@ public class EventAction extends FacilioAction {
 	public String eventDetail() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(EventConstants.EventContextNames.EVENT_ID, eventId);
-		Chain getEventDetailChain = EventConstants.EventChainFactory.getEventDetailChain();
-		getEventDetailChain.execute(context);
-		
-		setEvent((EventContext) context.get(EventConstants.EventContextNames.EVENT));
-		
+
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
+			Chain c = ReadOnlyChainFactory.getV2EventDetailChain();
+			c.addCommand(new FetchEventFromBaseEventCommand());
+			c.execute(context);
+
+			List<EventContext> list = (List<EventContext>) context.get(EventConstants.EventContextNames.EVENT_LIST);
+			if (CollectionUtils.isNotEmpty(list)) {
+				setEvent(list.get(0));
+			}
+		}
+		else {
+			Chain getEventDetailChain = EventConstants.EventChainFactory.getEventDetailChain();
+			getEventDetailChain.execute(context);
+			setEvent((EventContext) context.get(EventConstants.EventContextNames.EVENT));
+		}
+
 		return SUCCESS;
 	}
 	
@@ -129,18 +143,26 @@ public class EventAction extends FacilioAction {
 	public String eventList() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
- 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
- 		
- 		int offset = (this.page - 1) * this.perPage;
- 		JSONObject pagination = new JSONObject();
- 		pagination.put("offset", offset);
- 		pagination.put("limit", this.perPage);
- 		
- 		context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
- 		context.put(EventConstants.EventContextNames.ALARM_ID, alarmId);
- 		
-		Chain eventListChain = EventConstants.EventChainFactory.getEventListChain();
-		eventListChain.execute(context);
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
+			context.put(FacilioConstants.ContextNames.RECORD_ID, getAlarmId());
+			Chain chain = ReadOnlyChainFactory.getEventListChain();
+			chain.addCommand(new FetchEventFromBaseEventCommand());
+			chain.execute(context);
+		}
+		else {
+			context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+
+			int offset = (this.page - 1) * this.perPage;
+			JSONObject pagination = new JSONObject();
+			pagination.put("offset", offset);
+			pagination.put("limit", this.perPage);
+
+			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
+			context.put(EventConstants.EventContextNames.ALARM_ID, alarmId);
+
+			Chain eventListChain = EventConstants.EventChainFactory.getEventListChain();
+			eventListChain.execute(context);
+		}
 		
 		setEvents((List<EventContext>) context.get(EventConstants.EventContextNames.EVENT_LIST));
 		return SUCCESS;

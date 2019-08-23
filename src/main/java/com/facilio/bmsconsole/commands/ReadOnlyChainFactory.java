@@ -1302,6 +1302,12 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetV2EventListCommand());
 		return c;
 	}
+
+	public static Chain getV2EventDetailChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetV2EventDetailCommand());
+		return c;
+	}
 	
 	public static FacilioChain fetchMVWidgetResultChain() {
 		FacilioChain c = getDefaultChain();
