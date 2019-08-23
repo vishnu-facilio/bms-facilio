@@ -1291,6 +1291,12 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 
+	public static FacilioChain getAlarmOccurrenceDetailsChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetAlarmOccurrenceDetailsCommand());
+		return c;
+	}
+
 	public static FacilioChain getAlarmOccurrenceListChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetAlarmOccurrenceListCommand());

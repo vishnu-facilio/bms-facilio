@@ -272,7 +272,7 @@ public class AlarmAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, getId());
 
 		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
-			Chain chain = ReadOnlyChainFactory.getAlarmOccurrenceListChain();
+			Chain chain = ReadOnlyChainFactory.getAlarmOccurrenceDetailsChain();
 			chain.addCommand(new FetchAlarmFromOccurrenceCommand());
 			chain.execute(context);
 

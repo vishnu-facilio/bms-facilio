@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.commands;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.bmsconsole.util.NewAlarmAPI;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -21,10 +20,22 @@ public class GetAlarmOccurrenceListCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		List<Long> recordId = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
+		long recordId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+		if (recordId > 0) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
-		List<AlarmOccurrenceContext> alarmOccurrences = NewAlarmAPI.getAlarmOccurrences(recordId);
-		context.put(FacilioConstants.ContextNames.RECORD_LIST, alarmOccurrences);
+			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
+			List<FacilioField> allFields = modBean.getAllFields(module.getName());
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
+			SelectRecordsBuilder<AlarmOccurrenceContext> builder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
+					.module(module)
+					.beanClass(AlarmOccurrenceContext.class)
+					.select(allFields)
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("alarm"), String.valueOf(recordId), NumberOperators.EQUALS));
+			List<AlarmOccurrenceContext> list = builder.get();
+
+			context.put(FacilioConstants.ContextNames.RECORD_LIST, list);
+		}
 		return false;
 	}
 
