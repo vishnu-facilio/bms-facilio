@@ -40,6 +40,8 @@ public class ReadingRCAEvent extends BaseEventContext {
         if (subRuleId != -1) {
             rcaAlarm.setSubRuleId(subRuleId);
         }
+        
+        rcaAlarm.setParentId(parentId);
 
         return baseAlarm;
     }

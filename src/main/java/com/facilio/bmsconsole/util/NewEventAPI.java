@@ -53,7 +53,7 @@ public class NewEventAPI {
 				return "RcaEvent";
 
 			case READING_RCA_ALARM:
-				return "readingevent";
+				return "readingrcaevent";
 
 			case BMS_ALARM:
 				return "bmsevent";
