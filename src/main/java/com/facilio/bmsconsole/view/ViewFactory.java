@@ -3957,7 +3957,7 @@ public class ViewFactory {
 		createdTime.setName("lastOccurredTime");	
 		createdTime.setDataType(FieldType.DATE_TIME);
 		createdTime.setColumnName("LAST_OCCURRED_TIME");
-		createdTime.setModule(ModuleFactory.getBmsAlarmModule());
+		createdTime.setModule(ModuleFactory.getBaseAlarmModule());
 
 		FacilioView view = new FacilioView();
 		view.setName(name);
@@ -3974,7 +3974,7 @@ public class ViewFactory {
 		createdTime.setName("lastOccurredTime");	
 		createdTime.setDataType(FieldType.DATE_TIME);
 		createdTime.setColumnName("LAST_OCCURRED_TIME");
-		createdTime.setModule(ModuleFactory.getBmsAlarmModule());
+		createdTime.setModule(ModuleFactory.getBaseAlarmModule());
 
 		FacilioView view = new FacilioView();
 		view.setName(name);
@@ -4230,7 +4230,7 @@ public class ViewFactory {
 		lastOccurredTime.setName("lastOccurredTime");	
 		lastOccurredTime.setDataType(FieldType.DATE_TIME);
 		lastOccurredTime.setColumnName("LAST_OCCURRED_TIME");
-		lastOccurredTime.setModule(ModuleFactory.getMlAnomalyAlarmModule());
+		lastOccurredTime.setModule(ModuleFactory.getBaseAlarmModule());
 
 		FacilioView view = new FacilioView();
 		view.setName(name);
