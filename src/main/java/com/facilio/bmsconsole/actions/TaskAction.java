@@ -656,6 +656,7 @@ public class TaskAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
 		setResult(FacilioConstants.ContextNames.TASK_LIST, taskContextList);
 		setResult("error", getError());
+		setResult("preRequestStatus", preRequestStatus);
 		return SUCCESS;
 	}
 	
