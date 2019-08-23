@@ -441,7 +441,6 @@ public enum ActionType {
 			FacilioModule module = ModuleFactory.getPMTriggersModule();
 			GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 					.select(FieldFactory.getPMTriggerFields()).table(module.getTableName())
-//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 					.andCustomWhere("RULE_ID = ?", currentRule.getId());
 			List<Map<String, Object>> pmProps = selectRecordBuilder.get();
 			if (pmProps != null && !pmProps.isEmpty()) {
@@ -454,9 +453,19 @@ public enum ActionType {
 					pmContext.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, Instant.now().getEpochSecond());
 					pmContext.put(FacilioConstants.ContextNames.PM_RESET_TRIGGERS, true);
 
-					if (currentRecord instanceof AlarmContext) {
-						fetchSeverities((AlarmContext) currentRecord);
-						pmContext.put(FacilioConstants.ContextNames.PM_UNCLOSED_WO_COMMENT, getNewAlarmCommentForUnClosedWO((AlarmContext) currentRecord));
+					if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
+						if (currentRecord instanceof BaseAlarmContext) {
+							AlarmOccurrenceContext occurrence = ActionType.getAlarmOccurrenceFromAlarm((BaseAlarmContext) currentRecord);
+							((BaseAlarmContext) currentRecord).setLastOccurrence(occurrence);
+							String comment = ActionType.getNewV2AlarmCommentForUnClosedWO((BaseAlarmContext) currentRecord);
+							pmContext.put(FacilioConstants.ContextNames.PM_UNCLOSED_WO_COMMENT, comment);
+						}
+					}
+					else {
+						if (currentRecord instanceof AlarmContext) {
+							fetchSeverities((AlarmContext) currentRecord);
+							pmContext.put(FacilioConstants.ContextNames.PM_UNCLOSED_WO_COMMENT, getNewAlarmCommentForUnClosedWO((AlarmContext) currentRecord));
+						}
 					}
 
 					pmContext.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
