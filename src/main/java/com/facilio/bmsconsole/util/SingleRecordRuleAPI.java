@@ -196,6 +196,7 @@ public class SingleRecordRuleAPI extends WorkflowRuleAPI{
 								if(changes.getFieldId() == rule.getDateFieldId()) {
 									FacilioTimer.deleteJob(rule.getId(), FacilioConstants.Job.RECORD_SPECIFIC_RULE_JOB_NAME);
 									SingleRecordRuleAPI.addJob(rule);
+									break;
 								}
 							}
 						}

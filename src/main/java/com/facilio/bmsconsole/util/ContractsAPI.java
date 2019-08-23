@@ -240,7 +240,7 @@ public class ContractsAPI {
 		
 		
 		context.put(FacilioConstants.ContextNames.ROWS_UPDATED, updateRecordBuilder.update(data));
-		context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, updateRecordBuilder.getChangeSet());
+		context.put(FacilioConstants.ContextNames.CHANGE_SET, updateRecordBuilder.getChangeSet());
 		
 	}
 	

@@ -3348,9 +3348,9 @@ public class TransactionChainFactory {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new ValidateAndSetReservationPropCommand(false));
 			c.addCommand(new GenericUpdateModuleDataCommand());
+			c.addCommand(new UpdateRecordRuleJobOnRecordUpdationCommand());
 			c.addCommand(addReservationInternalAttendeeChain());
 			c.addCommand(addReservationExternalAttendeeChain());
-			c.addCommand(new UpdateRecordRuleJobOnRecordUpdationCommand());
 //			c.addCommand(new ExecuteAllWorkflowsCommand());
 			return c;
 		}

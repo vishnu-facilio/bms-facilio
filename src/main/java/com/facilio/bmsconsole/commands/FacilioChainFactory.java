@@ -1844,6 +1844,7 @@ public class FacilioChainFactory {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new GenericDeleteModuleDataCommand());
 		c.addCommand(new ExecuteAllWorkflowsCommand());
+		c.addCommand(new DeleteRecordRuleJobOnRecordDeletionCommand());
 		return c;
 	}
 	

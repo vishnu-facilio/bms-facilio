@@ -432,7 +432,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 			case LOOKUP:
 				return CriteriaAPI.getCondition(field, value, PickListOperators.IS);
 			case ENUM:
-				return CriteriaAPI.getCondition(field, value, EnumOperators.VALUE_IS);
+				return CriteriaAPI.getCondition(field, value, EnumOperators.IS);
 			default:
 				return null;
 		}
