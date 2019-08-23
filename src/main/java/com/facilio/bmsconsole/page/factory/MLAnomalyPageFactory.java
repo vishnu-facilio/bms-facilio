@@ -30,14 +30,20 @@ public class MLAnomalyPageFactory extends PageFactory {
 		addAnomaliesTrends(tab1Sec1);
 		addSubMeterDetails(tab1Sec1);
 		
+		Tab tab3 = page.new Tab("anomalyRCA", "anomalyRCA");
+		page.addTab(tab3);
 		
-		Tab tab2 = page.new Tab("root_cause");
-		page.addTab(tab2);
+		Section tab3Sec1 = page.new Section();
+		tab3.addSection(tab3Sec1);
 		
-		Section tab2Sec1 = page.new Section();
-		tab2.addSection(tab2Sec1);
-		
-		addAnomalyRCAWidget(tab2Sec1);
+		addAnomalyRCAWidget(tab3Sec1);
+//		Tab tab2 = page.new Tab("root_cause");
+//		page.addTab(tab2);
+//		
+//		Section tab2Sec1 = page.new Section();
+//		tab2.addSection(tab2Sec1);
+//		
+//		addAnomalyRCAWidget(tab2Sec1);
 		
 
 		return page;

@@ -2574,4 +2574,12 @@ public class ModuleFactory {
 		module.setTableName("Reservation");
 		return module;
 	}
+	
+	public static FacilioModule getMlAnomalyAlarmModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ContextNames.ML_ANOMALY_ALARM);
+		module.setDisplayName("ML Anomaly Alarm");
+		module.setTableName("ML_Anomaly_Alarm");
+		return module;
+	}
 }

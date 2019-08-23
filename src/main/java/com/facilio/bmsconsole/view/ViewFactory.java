@@ -460,6 +460,11 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getMLAnomalyViews().setOrder(order++));
+		views.put("activeAnomaly", getAnomalyAlarmSeverity("activeAnomaly", "Active Anomaly Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, false).setOrder(order++));
+		views.put("criticalAnomaly", getAnomalyAlarmSeverity("criticalAnomaly", "Critical Anomaly Alarms", "Critical", true).setOrder(order++));
+		views.put("majorAnomaly", getAnomalyAlarmSeverity("majorAnomaly", "Major Anomaly Alarms", "Major", true).setOrder(order++));
+		views.put("minorAnomaly", getAnomalyAlarmSeverity("minorAnomaly", "Minor Anomaly Alarms", "Minor", true).setOrder(order++));
+		views.put("clearedAnomaly", getAnomalyAlarmSeverity("clearedAnomaly", "Cleared Anomaly Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true).setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.ML_ANOMALY_ALARM, views);
 		
 		order = 1;
@@ -471,6 +476,7 @@ public class ViewFactory {
 		views.put("completed", getCompletedReservationView().setOrder(order++));
 		views.put("all", getAllReservationView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.Reservation.RESERVATION, views);
+		
 	
 		
 		return viewsMap;
@@ -4211,6 +4217,28 @@ public class ViewFactory {
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getCondition(getReservationStatusField(), String.valueOf(ReservationContext.ReservationStatus.FINISHED.getIndex()), EnumOperators.IS));
 		view.setCriteria(criteria);
+		return view;
+	}
+	private static FacilioView getAnomalyAlarmSeverity(String name, String displayName, String severity, boolean equals) {
+
+		Condition alarmCondition = getReadingAlarmSeverityCondition(severity, equals);
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(alarmCondition);
+
+		FacilioField lastOccurredTime = new FacilioField();
+		lastOccurredTime.setName("lastOccurredTime");	
+		lastOccurredTime.setDataType(FieldType.DATE_TIME);
+		lastOccurredTime.setColumnName("LAST_OCCURRED_TIME");
+		lastOccurredTime.setModule(ModuleFactory.getMlAnomalyAlarmModule());
+
+		FacilioView view = new FacilioView();
+		view.setName(name);
+		view.setDisplayName(displayName);
+		view.setCriteria(criteria);
+		view.setModuleName("mlAnomalyAlarm");
+		view.setSortFields(Arrays.asList(new SortField(lastOccurredTime, false)));
+
 		return view;
 	}
 

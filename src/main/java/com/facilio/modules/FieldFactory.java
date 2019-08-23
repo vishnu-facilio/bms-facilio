@@ -85,7 +85,6 @@ public class FieldFactory {
 			newAlarmsFieldsInclude.add("acknowledged");
 			newAlarmsFieldsInclude.add("acknowledgedBy");
 			newAlarmsFieldsInclude.add("Severity");
-			newAlarmsFieldsInclude.add("rule");
 			newAlarmsFieldsInclude.add("acknowledgedTime");
 			newAlarmsFieldsInclude.add("lastClearedTime");
 			newAlarmsFieldsInclude.add("lastCreatedTime");
