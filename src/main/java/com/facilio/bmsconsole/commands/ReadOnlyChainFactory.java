@@ -1303,8 +1303,8 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 
-	public static Chain getV2EventDetailChain() {
-		Chain c = getDefaultChain();
+	public static FacilioChain getV2EventDetailChain() {
+		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetV2EventDetailCommand());
 		return c;
 	}
