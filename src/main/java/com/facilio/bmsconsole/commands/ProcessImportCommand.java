@@ -492,8 +492,7 @@ public class ProcessImportCommand extends FacilioCommand {
 						FacilioContext context = new FacilioContext();
 						context.put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(module));
 						
-						Chain addCategory = FacilioChain.getTransactionChain();
-						TransactionChainFactory.commonAddModuleChain(addCategory);
+						FacilioChain addCategory = TransactionChainFactory.commonAddModuleChain();
 						
 						addCategory.execute(context);
 						

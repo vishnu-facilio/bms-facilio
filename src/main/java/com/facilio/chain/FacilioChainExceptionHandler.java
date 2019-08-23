@@ -19,21 +19,6 @@ public class FacilioChainExceptionHandler extends FacilioCommand {
 	public boolean postprocess(Context context, Exception exception) {
 		// TODO Auto-generated method stub
 		
-		try {
-			if(context instanceof FacilioContext) {
-				FacilioContext fc = (FacilioContext)context;
-				if(exception != null) {
-					fc.rollback();
-				}
-				else {
-					fc.commit();
-				}
-			}
-		}
-		catch(Exception e) {
-			log.info("Exception occurred ", e);
-		}
-		
 		return false;
 	}
 

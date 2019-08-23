@@ -4,11 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.transaction.Status;
-import javax.transaction.SystemException;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
-import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.db.util.DBConf;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -30,6 +29,7 @@ public class FacilioChain extends ChainBase {
 	private List<PostTransactionCommand> postTransactionChains;
 	private boolean enableTransaction = true;
 	private int timeout = -1;
+	private FacilioContext context;
 
 	public static FacilioChain getTransactionChain() {
 		return new FacilioChain(true);
@@ -54,6 +54,13 @@ public class FacilioChain extends ChainBase {
 
 	private static final Logger LOGGER = LogManager.getLogger(FacilioChain.class.getName());
 
+	public FacilioContext getContext() {
+		if (context == null) {
+			context = new FacilioContext();
+		}
+		return context;
+	}
+
 	@Override
 	public void addCommand(Command command) {
 		if (!AwsUtil.isProduction()) {
@@ -70,6 +77,7 @@ public class FacilioChain extends ChainBase {
 			FacilioChain chain = ((FacilioChain) command);
 			addPostTransaction(chain.postTransactionChains);
 			chain.postTransactionChains = null;
+			chain.context = context;
 		}
 		super.addCommand(command);
 	}
@@ -96,7 +104,23 @@ public class FacilioChain extends ChainBase {
 		postTransactionChains.add(command);
 	}
 
+	private boolean throwError = true;
+	public boolean execute() throws Exception {
+		throwError = false;
+		return execute(getContext());
+	}
+
+	/**
+	 * @deprecated
+	 * Use execute() instead
+	 */
+	@Deprecated
 	public boolean execute(Context context) throws Exception {
+
+//		if (throwError && DBConf.getInstance().isDevelopment()) {
+//			throw new IllegalArgumentException("Use execute() directly and not this execute.");
+//		}
+
 		this.addCommand(new FacilioChainExceptionHandler());
 
 		FacilioChain facilioChain = rootChain.get();
