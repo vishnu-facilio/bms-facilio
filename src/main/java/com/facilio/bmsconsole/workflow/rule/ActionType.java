@@ -1045,24 +1045,16 @@ public enum ActionType {
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
 								  Object currentRecord) throws Exception {
-			ModuleBaseWithCustomFields moduleData = ((ModuleBaseWithCustomFields) currentRecord);
 			Object newState = obj.get("new_state");
 			long newStateId = newState != null ? Long.parseLong(newState.toString()) : -1;
 
 			String moduleName = (String) obj.get("moduleName");
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
+			
 
 			FacilioStatus status = TicketAPI.getStatus(newStateId);
-			if (status == null) {
-				// Invalid status
-				return;
-			}
-			if (status.getParentModuleId() != module.getModuleId()) {
-				// Invalid status for current module
-				return;
-			}
-			StateFlowRulesAPI.updateState(moduleData, module, status, false, context);
+			changeState(status, module, context, currentRecord);
 		}
 	},
 	ML_JOB_ACTION (20) {
@@ -1151,57 +1143,22 @@ public enum ActionType {
 			}
 		}
 	},
-//	ADD_READING_EVENT (23) {
-//		@Override
-//		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
-//			ReadingEventContext event = ((ReadingRuleContext) currentRule).constructEvent(obj, (ReadingContext) currentRecord);
-//
-//			context.put(EventConstants.EventContextNames.EVENT_LIST, Collections.singletonList(event));
-//			Boolean isHistorical = (Boolean) context.get(EventConstants.EventContextNames.IS_HISTORICAL_EVENT);
-//			if (isHistorical == null) {
-//				isHistorical = false;
-//			}
-//
-//			if (!isHistorical) {
-//				Chain addEvent = TransactionChainFactory.getV2AddEventChain();
-//				addEvent.execute(context);
-//			}
-//			else {
-//				processAlarmMeta((ReadingRuleContext) currentRule, (ResourceContext) ((ReadingContext) currentRecord).getParent(), ((ReadingContext) currentRecord).getTtime(), event, context);
-//			}
-//		}
-//
-//		//Assuming readings will come in ascending order of time and this is needed only for historical
-//		private void processAlarmMeta (ReadingRuleContext rule, ResourceContext resource, long time, ReadingEventContext event, Context context) throws Exception {
-//			Map<Long, ReadingRuleAlarmMeta> metaMap = (Map<Long, ReadingRuleAlarmMeta>) context.get(FacilioConstants.ContextNames.READING_RULE_ALARM_META);
-////			if (metaMap == null) {
-////				metaMap = new HashMap<>();
-////				rule.setAlarmMetaMap(metaMap);
-////				metaMap.put(resource.getId(), addAlarmMeta(event.getAlarmOccurrence(), resource, rule, isHistorical));
-////			} else {
-//			ReadingRuleAlarmMeta alarmMeta = metaMap.get(resource.getId());
-//			if (alarmMeta == null) {
-////					metaMap.put(resource.getId(), addAlarmMeta(event.getAlarmOccurrence(), resource, rule, isHistorical));
-//				metaMap.put(resource.getId(), addAlarmMeta(event.getAlarmOccurrence(), resource, rule));
-//			} else if (alarmMeta.isClear()) {
-//				alarmMeta.setClear(false);
-////					if (!isHistorical) {
-////						alarmMeta.setAlarmId(event.getAlarmOccurrence().getId());
-////						ReadingRuleAPI.markAlarmMetaAsNotClear(alarmMeta.getId(), event.getAlarmOccurrence().getId());
-////					}
-//			}
-////			}
-//		}
-//
-//		private ReadingRuleAlarmMeta addAlarmMeta (AlarmOccurrenceContext alarmOccurence, ResourceContext resource, ReadingRuleContext rule) throws Exception {
-////			if (isHistorical) {
-//			return ReadingRuleAPI.constructNewAlarmMeta(-1, resource, rule, false);
-////			}
-////			else {
-////				return ReadingRuleAPI.addAlarmMeta(alarmOccurence.getId(), resource.getId(), rule);
-////			}
-//		}
-//	}
+	ASSET_EXPIRE_ACTION (23) {
+		@Override
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
+								  Object currentRecord) throws Exception {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule("asset");
+			
+			FacilioStatus expiredStatus = TicketAPI.getStatus(module, "Expired");
+			changeState(expiredStatus, module, context, currentRecord);
+		}
+		
+		@Override
+		public boolean isTemplateNeeded() {
+			return false;
+		}
+	},
 	;
 
 	private static AlarmOccurrenceContext getAlarmOccurrenceFromAlarm(BaseAlarmContext baseAlarm) throws Exception {
@@ -1350,5 +1307,19 @@ public enum ActionType {
 		else {
 			return "Alarm associated with this work order updated from "+alarm.getPreviousSeverity().getSeverity()+" to "+alarm.getSeverity().getSeverity()+" at "+alarm.getModifiedTimeString();
 		}
+	}
+	
+	private static void changeState(FacilioStatus status, FacilioModule module, Context context, Object currentRecord) throws Exception {
+		ModuleBaseWithCustomFields moduleData = ((ModuleBaseWithCustomFields) currentRecord);
+
+		if (status == null) {
+			// Invalid status
+			return;
+		}
+		if (status.getParentModuleId() != module.getModuleId()) {
+			// Invalid status for current module
+			return;
+		}
+		StateFlowRulesAPI.updateState(moduleData, module, status, false, context);
 	}
 }
