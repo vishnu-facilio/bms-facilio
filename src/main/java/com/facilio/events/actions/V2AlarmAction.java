@@ -1,5 +1,6 @@
 package com.facilio.events.actions;
 
+import java.util.Collections;
 import java.util.List;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -94,7 +95,7 @@ public class V2AlarmAction extends FacilioAction {
 	
 	public String getAlarmOccurrenceList() throws Exception {
 		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.RECORD_ID, getId());
+		context.put(ContextNames.RECORD_ID_LIST, Collections.singletonList(getId()));
 		
 		Chain c = ReadOnlyChainFactory.getAlarmOccurrenceListChain();
 		c.execute(context);

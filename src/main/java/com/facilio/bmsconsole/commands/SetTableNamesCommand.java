@@ -82,6 +82,10 @@ public class SetTableNamesCommand extends FacilioCommand {
 	public static SetTableNamesCommand getForAlarm() {
 		return new SetTableNamesCommand("alarm", "Alarms");
 	}
+
+	public static SetTableNamesCommand getForAlarmOccurrence() {
+		return new SetTableNamesCommand("alarmoccurrence", "AlarmOccurrence");
+	}
 	
 	public static SetTableNamesCommand getForReadingAlarm() {
 		return new SetTableNamesCommand(FacilioConstants.ContextNames.READING_ALARM, "Reading_Alarms");

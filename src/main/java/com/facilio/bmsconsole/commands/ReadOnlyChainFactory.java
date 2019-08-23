@@ -1278,6 +1278,19 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 
+	public static FacilioChain getAllAlarmOccurrenceListChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForAlarmOccurrence());
+		c.addCommand(new LoadModuleNameCommand());
+		c.addCommand(new LoadViewCommand());
+		c.addCommand(new LoadAllFieldsCommand());
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new GenericGetModuleDataListCommand());
+		c.addCommand(new FetchAlarmFromOccurrenceCommand());
+		return c;
+	}
+
 	public static FacilioChain getAlarmOccurrenceListChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetAlarmOccurrenceListCommand());
