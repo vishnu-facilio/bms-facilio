@@ -22,6 +22,7 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.controlaction.context.ControlActionCommandContext;
+import com.facilio.controlaction.context.ControlGroupContext;
 import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.FieldFactory;
@@ -36,6 +37,7 @@ public class ControlActionAction extends FacilioAction {
 	long fieldId = -1;
 	String value;
 	long controlGroupId = -1l;
+	ControlGroupContext controlGroup;
 	
 	public long getControlGroupId() {
 		return controlGroupId;
@@ -195,6 +197,57 @@ public class ControlActionAction extends FacilioAction {
 			addWorkflowRuleChain.execute(context);
 			
 			setResult(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
+		}
+		
+		return SUCCESS;
+	}
+	
+	public String addControlGroup() throws Exception {
+		
+		if(controlGroup != null) {
+			
+			FacilioChain addControlGroupChain = TransactionChainFactory.addControlGroupChain();
+			
+			FacilioContext context= addControlGroupChain.getContext();
+			context.put(ControlActionUtil.CONTROL_ACTION_GROUP_CONTEXTS, Collections.singletonList(controlGroup));
+			
+			addControlGroupChain.execute();
+			
+			setResult(ControlActionUtil.CONTROL_ACTION_GROUP_CONTEXTS, controlGroup);
+		}
+		
+		return SUCCESS;
+	}
+	
+	public String updateControlGroup() throws Exception {
+		
+		if(controlGroup != null) {
+			
+			FacilioChain addControlGroupChain = TransactionChainFactory.updateControlGroupChain();
+			
+			FacilioContext context= addControlGroupChain.getContext();
+			context.put(ControlActionUtil.CONTROL_ACTION_GROUP_CONTEXTS, Collections.singletonList(controlGroup));
+			
+			addControlGroupChain.execute();
+			
+			setResult(ControlActionUtil.CONTROL_ACTION_GROUP_CONTEXTS, controlGroup);
+		}
+		
+		return SUCCESS;
+	}
+	
+	public String deleteControlGroup() throws Exception {
+		
+		if(controlGroup != null) {
+			
+			FacilioChain addReadingAlarmRuleChain = TransactionChainFactory.deleteControlGroupChain();
+			
+			FacilioContext context= addReadingAlarmRuleChain.getContext();
+			context.put(ControlActionUtil.CONTROL_ACTION_GROUP_CONTEXTS, Collections.singletonList(controlGroup));
+			
+			addReadingAlarmRuleChain.execute();
+			
+			setResult(ControlActionUtil.CONTROL_ACTION_GROUP_CONTEXTS, controlGroup);
 		}
 		
 		return SUCCESS;

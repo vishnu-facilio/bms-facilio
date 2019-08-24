@@ -1,5 +1,6 @@
 package com.facilio.controlaction.util;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +21,7 @@ import com.facilio.controlaction.context.ControlActionCommandContext;
 import com.facilio.controlaction.context.ControlGroupContext;
 import com.facilio.controlaction.context.ControlGroupInclExclContext;
 import com.facilio.controlaction.context.ControlGroupSpace;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -195,5 +197,26 @@ public class ControlActionUtil {
 			prop.setResource(ResourceAPI.getResource(prop.getResource().getId()));
 		}
 		return props;
+	}
+
+	public static void deleteDependenciesForControlGroup(ControlGroupContext controlGroup) throws SQLException {
+		deleteGroupSpaces(controlGroup);
+		deleteGroupInclExclResources(controlGroup);
+	}
+
+	private static void deleteGroupInclExclResources(ControlGroupContext controlGroup) throws SQLException {
+		
+		GenericDeleteRecordBuilder delete = new GenericDeleteRecordBuilder()
+				.table(ModuleFactory.getControlGroupSpaceModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("CONTROL_GROUP_ID", "controlGroupId", controlGroup.getId()+"", NumberOperators.EQUALS));
+		delete.delete();
+	}
+
+	private static void deleteGroupSpaces(ControlGroupContext controlGroup) throws SQLException {
+
+		GenericDeleteRecordBuilder delete = new GenericDeleteRecordBuilder()
+				.table(ModuleFactory.getControlGroupInclExclModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("CONTROL_GROUP_ID", "controlGroupId", controlGroup.getId()+"", NumberOperators.EQUALS));
+		delete.delete();
 	}
 }

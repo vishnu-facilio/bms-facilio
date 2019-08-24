@@ -411,6 +411,15 @@
 		<action name="getControllableFields"
 		class="com.facilio.controlaction.action.ControlActionAction" method="getControllableFields"></action>
 		
+		<action name="addControlGroup"
+		class="com.facilio.controlaction.action.ControlActionAction" method="addControlGroup"></action>
+		
+		<action name="updateControlGroup"
+		class="com.facilio.controlaction.action.ControlActionAction" method="updateControlGroup"></action>
+		
+		<action name="deleteControlGroup"
+		class="com.facilio.controlaction.action.ControlActionAction" method="deleteControlGroup"></action>
+		
 		<action name="metaData"
 		class="com.facilio.controlaction.action.ControlActionAction" method="metaData"></action>
 		

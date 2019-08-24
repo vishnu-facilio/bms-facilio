@@ -575,6 +575,28 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static FacilioChain addControlGroupChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new AddControlGroupCommand());
+			c.addCommand(new AddControlGroupSpaceCommand());
+			c.addCommand(new AddControlGroupInclExclCommand());
+			return c;
+		}
+		
+		public static FacilioChain updateControlGroupChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new UpdateControlGroupCommand());
+			c.addCommand(new AddControlGroupSpaceCommand());
+			c.addCommand(new AddControlGroupInclExclCommand());
+			return c;
+		}
+		
+		public static FacilioChain deleteControlGroupChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new DeleteControlGroupCommand());
+			return c;
+		}
+		
 		public static FacilioChain updateReadingAlarmRuleChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new UpdateReadingAlarmRuleCommand());
