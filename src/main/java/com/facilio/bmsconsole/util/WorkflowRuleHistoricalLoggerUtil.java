@@ -7,9 +7,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.MapUtils;
+
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
+import com.facilio.bmsconsole.context.BaseAlarmContext;
+import com.facilio.bmsconsole.context.BaseEventContext;
+import com.facilio.bmsconsole.context.ReadingAlarm;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
+import com.facilio.bmsconsole.context.ReadingEventContext;
 import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLoggerContext;
+import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -25,7 +33,9 @@ import com.facilio.modules.DeleteRecordBuilder;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 
 public class WorkflowRuleHistoricalLoggerUtil {
@@ -176,7 +186,7 @@ public class WorkflowRuleHistoricalLoggerUtil {
 		
 	}
 	
-	public static void deleteReadingAlarm(long ruleId, long startTime, long endTime, long resourceId) throws Exception
+	public static void deleteReadingAlarm(long ruleId, Long startTime, Long endTime, long resourceId) throws Exception
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.READING_ALARM);
@@ -184,7 +194,7 @@ public class WorkflowRuleHistoricalLoggerUtil {
 		DeleteRecordBuilder<ReadingAlarmContext> builder = new DeleteRecordBuilder<ReadingAlarmContext>()
 				.module(module)
 				.andCondition(CriteriaAPI.getCondition("RULE_ID", "ruleId", ""+ruleId, NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resourceId", ""+resourceId, NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resource", ""+resourceId, NumberOperators.EQUALS));
 		
 		
 		Criteria criteria = new Criteria();
@@ -198,12 +208,14 @@ public class WorkflowRuleHistoricalLoggerUtil {
 		criteria.orCriteria(subCriteria);
 		
 		builder.andCriteria(criteria);
-		
-		
 				
 		builder.delete();
 		
 	}
-	
 
+	public static void deleteAlarmOccurrencesWithEdgeCases(long ruleId, Long startTime, Long endTime, long resourceId) throws Exception {
+		
+		NewAlarmAPI.deleteIntervalBasedAlarmOccurrences(ruleId, (long)startTime, (long)endTime, resourceId);
+		
+	}	
 }

@@ -17,15 +17,18 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.DeleteRecordBuilder;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
@@ -477,4 +480,118 @@ public class NewAlarmAPI {
 				.andCondition(CriteriaAPI.getCondition("NAME", "name", name, StringOperators.IS));
 		return builder.fetchFirst();
 	}
+
+	public static void deleteIntervalBasedAlarmOccurrences(long ruleId, long startTime, long endTime, long resourceId)
+			throws Exception {
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
+
+		List<FacilioField> allFields = modBean.getAllFields(module.getName());
+
+		SelectRecordsBuilder<AlarmOccurrenceContext> selectbuilder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
+				.beanClass(AlarmOccurrenceContext.class).moduleName(FacilioConstants.ContextNames.ALARM_OCCURRENCE)
+				.select(allFields).innerJoin("ReadingAlarm").on("AlarmOccurrence.ALARM_ID = ReadingAlarm.ID")
+				.andCondition(CriteriaAPI.getCondition("RULE_ID", "ruleId", "" + ruleId, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resource", "" + resourceId, NumberOperators.EQUALS));
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", "" + endTime, NumberOperators.LESS_THAN));
+		criteria.addAndCondition(CriteriaAPI.getCondition("CLEARED_TIME", "clearedTime", "" + startTime, NumberOperators.GREATER_THAN));
+
+		selectbuilder.andCriteria(criteria);
+		List<AlarmOccurrenceContext> AlarmOccurrenceList = selectbuilder.get();
+
+		List<Long> delAlarmOccurrenceIds = new ArrayList<Long>();
+		AlarmOccurrenceContext initialEdgeCaseAlarmOccurrence = new AlarmOccurrenceContext();
+		AlarmOccurrenceContext finalEdgeCaseAlarmOccurrence = new AlarmOccurrenceContext();
+		
+		if (AlarmOccurrenceList != null && !AlarmOccurrenceList.isEmpty()){
+			
+			if (AlarmOccurrenceList.get(0).getCreatedTime() < startTime) {
+				initialEdgeCaseAlarmOccurrence = AlarmOccurrenceList.get(0);
+			}
+			if (AlarmOccurrenceList.get(AlarmOccurrenceList.size() - 1).getClearedTime() > endTime) {
+				finalEdgeCaseAlarmOccurrence = AlarmOccurrenceList.get(AlarmOccurrenceList.size() - 1);
+			}
+			
+			for (AlarmOccurrenceContext alarmOccurrence : AlarmOccurrenceList) {
+				if (alarmOccurrence.equals(initialEdgeCaseAlarmOccurrence) || alarmOccurrence.equals(finalEdgeCaseAlarmOccurrence)) {
+					continue;
+				}
+				delAlarmOccurrenceIds.add((Long) alarmOccurrence.getId());
+			}
+			
+		}
+
+		deleteAllAlarmOccurences(delAlarmOccurrenceIds);
+		FacilioModule eventModule = modBean.getModule(FacilioConstants.ContextNames.BASE_EVENT);
+		List<FacilioField> allEventFields = modBean.getAllFields(eventModule.getName());
+
+		if (initialEdgeCaseAlarmOccurrence != null) {
+			
+			BaseAlarmContext baseAlarm = initialEdgeCaseAlarmOccurrence.getAlarm();	
+			if (baseAlarm.getTypeEnum() == BaseAlarmContext.Type.READING_ALARM) {
+				
+				BaseEventContext clearEvent = new ReadingEventContext();
+				clearEvent.setSeverity(AlarmAPI.getAlarmSeverity("Clear"));
+				clearEvent.setSeverityString(AlarmAPI.getAlarmSeverity("Clear").getSeverity());
+				clearEvent.setComment("Automated event");
+				clearEvent.setEventMessage("Automated Clear Event");
+				clearEvent.setMessageKey(baseAlarm.getKey());
+				clearEvent.setCreatedTime(startTime - 1);
+				clearEvent.setResource(baseAlarm.getResource());
+
+				InsertRecordBuilder<BaseEventContext> insertBuilder = new InsertRecordBuilder<BaseEventContext>()
+						.moduleName(FacilioConstants.ContextNames.BASE_EVENT).fields(allEventFields);
+
+				insertBuilder.addRecord(clearEvent);
+				insertBuilder.save();
+
+				DeleteRecordBuilder<BaseEventContext> deletebuilder = new DeleteRecordBuilder<BaseEventContext>()
+						.module(eventModule)
+						.andCondition(CriteriaAPI.getCondition("ALARM_OCCURRENCE_ID", "alarmOccurrence","" +initialEdgeCaseAlarmOccurrence.getId(), NumberOperators.EQUALS))
+						.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", "" + startTime, NumberOperators.GREATER_THAN_EQUAL));
+				deletebuilder.delete();
+
+				initialEdgeCaseAlarmOccurrence.setClearedTime(startTime - 1);
+			}
+		}
+
+		if (finalEdgeCaseAlarmOccurrence != null) {
+			
+			SelectRecordsBuilder<BaseEventContext> selectEventbuilder = new SelectRecordsBuilder<BaseEventContext>()
+					.select(allEventFields).module(eventModule)
+					.andCondition(CriteriaAPI.getCondition("ALARM_OCCURRENCE_ID", "alarmOccurrence","" +finalEdgeCaseAlarmOccurrence.getId(), NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", "" +endTime, NumberOperators.GREATER_THAN_EQUAL))
+					.orderBy("CREATED_TIME").limit(1);
+
+			List<BaseEventContext> nextClosestEventList = selectEventbuilder.get();
+
+			if (nextClosestEventList != null && !nextClosestEventList.isEmpty()){
+				BaseEventContext nextClosestEvent = nextClosestEventList.get(0);
+				finalEdgeCaseAlarmOccurrence.setClearedTime(nextClosestEvent.getCreatedTime());
+			}
+
+			DeleteRecordBuilder<BaseEventContext> deletebuilder = new DeleteRecordBuilder<BaseEventContext>()
+					.module(eventModule)
+					.andCondition(CriteriaAPI.getCondition("ALARM_OCCURRENCE_ID", "alarmOccurrence",""+finalEdgeCaseAlarmOccurrence.getId(), NumberOperators.EQUALS))
+					.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", ""+endTime, NumberOperators.LESS_THAN_EQUAL));
+			deletebuilder.delete();
+		}
+	}
+
+	public static void deleteAllAlarmOccurences(List<Long> delAlarmOccurrenceIds) throws Exception {
+
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
+		 
+		GenericDeleteRecordBuilder deletebuilder = new GenericDeleteRecordBuilder()
+				.table(module.getTableName())
+				.andCondition(CriteriaAPI.getIdCondition(delAlarmOccurrenceIds, module));
+		deletebuilder.delete();
+		
+	}
+
+	
 }
