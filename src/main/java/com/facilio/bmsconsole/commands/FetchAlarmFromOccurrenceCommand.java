@@ -1,8 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.context.AlarmContext;
-import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
-import com.facilio.bmsconsole.context.BaseAlarmContext;
+import com.facilio.bmsconsole.context.*;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
@@ -20,13 +18,29 @@ public class FetchAlarmFromOccurrenceCommand extends FacilioCommand {
         List<AlarmOccurrenceContext> occurrences = (List<AlarmOccurrenceContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
         if (CollectionUtils.isNotEmpty(occurrences)) {
             List<Long> alarmIds = new ArrayList<>();
+            List<Long> readingCategoryId = new ArrayList<>();
             for (AlarmOccurrenceContext alarmOccurrenceContext : occurrences) {
-                alarmIds.add(alarmOccurrenceContext.getAlarm().getId());
+                BaseAlarmContext alarm = alarmOccurrenceContext.getAlarm();
+                alarmIds.add(alarm.getId());
+                if (alarm instanceof ReadingAlarm) {
+                    ReadingAlarmCategoryContext readingAlarmCategory = ((ReadingAlarm) alarm).getReadingAlarmCategory();
+                    if (readingAlarmCategory != null) {
+                        readingCategoryId.add(readingAlarmCategory.getId());
+                    }
+                }
             }
 
+            Map<Long, ReadingAlarmCategoryContext> categoryMap = FieldUtil.getAsMap(NewAlarmAPI.getReadingAlarmCategory(readingCategoryId));
             Map<Long, BaseAlarmContext> alarmMap = FieldUtil.getAsMap(NewAlarmAPI.getAlarms(alarmIds));
             for (AlarmOccurrenceContext alarmOccurrenceContext : occurrences) {
-                alarmOccurrenceContext.setAlarm(alarmMap.get(alarmOccurrenceContext.getAlarm().getId()));
+                BaseAlarmContext alarm = alarmOccurrenceContext.getAlarm();
+                alarmOccurrenceContext.setAlarm(alarmMap.get(alarm.getId()));
+                if (alarm instanceof ReadingAlarm) {
+                    ReadingAlarmCategoryContext readingAlarmCategory = ((ReadingAlarm) alarm).getReadingAlarmCategory();
+                    if (readingAlarmCategory != null) {
+                        ((ReadingAlarm) alarm).setReadingAlarmCategory(categoryMap.get(((ReadingAlarm) alarm).getReadingAlarmCategory().getId()));
+                    }
+                }
             }
 
             context.put(FacilioConstants.ContextNames.ALARM_LIST, convertToAlarmObject(occurrences));
@@ -40,6 +54,7 @@ public class FetchAlarmFromOccurrenceCommand extends FacilioCommand {
             for (AlarmOccurrenceContext alarmOccurrenceContext : occurrences) {
                 AlarmContext alarmContext = new AlarmContext();
                 alarmContext.setId(alarmOccurrenceContext.getId());
+                alarmContext.setSerialNumber(alarmOccurrenceContext.getId());
 
                 BaseAlarmContext baseAlarm = alarmOccurrenceContext.getAlarm();
                 alarmContext.setSubject(baseAlarm.getSubject());
@@ -51,11 +66,22 @@ public class FetchAlarmFromOccurrenceCommand extends FacilioCommand {
                 alarmContext.setPreviousSeverity(alarmOccurrenceContext.getPreviousSeverity());
                 alarmContext.setAutoClear(alarmOccurrenceContext.getAutoClear());
                 alarmContext.setCreatedTime(alarmOccurrenceContext.getCreatedTime());
-                alarmContext.setModifiedTime(alarmOccurrenceContext.getLastOccurredTime());
+                alarmContext.setModifiedTime(baseAlarm.getLastOccurredTime());
 
                 alarmContext.setDescription(baseAlarm.getDescription());
                 alarmContext.setNoOfEvents(alarmOccurrenceContext.getNoOfEvents());
                 alarmContext.setResource(baseAlarm.getResource());
+
+                if (baseAlarm instanceof ReadingAlarm) {
+                    ReadingAlarmCategoryContext readingAlarmCategory = ((ReadingAlarm) baseAlarm).getReadingAlarmCategory();
+                    if (readingAlarmCategory != null) {
+                        TicketCategoryContext category = new TicketCategoryContext();
+                        category.setName(readingAlarmCategory.getName());
+                        category.setDisplayName(readingAlarmCategory.getDisplayName());
+                        category.setId(readingAlarmCategory.getId());
+                        alarmContext.setCategory(category);
+                    }
+                }
 
                 alarms.add(alarmContext);
             }

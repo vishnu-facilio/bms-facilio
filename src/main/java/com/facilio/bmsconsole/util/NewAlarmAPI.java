@@ -505,37 +505,37 @@ public class NewAlarmAPI {
 		List<Long> delAlarmOccurrenceIds = new ArrayList<Long>();
 		AlarmOccurrenceContext initialEdgeCaseAlarmOccurrence = new AlarmOccurrenceContext();
 		AlarmOccurrenceContext finalEdgeCaseAlarmOccurrence = new AlarmOccurrenceContext();
-		
+
 		if (AlarmOccurrenceList != null && !AlarmOccurrenceList.isEmpty()){
-			
+
 			if (AlarmOccurrenceList.get(0).getCreatedTime() < startTime) {
 				initialEdgeCaseAlarmOccurrence = AlarmOccurrenceList.get(0);
 			}
 			if (AlarmOccurrenceList.get(AlarmOccurrenceList.size() - 1).getClearedTime() > endTime) {
 				finalEdgeCaseAlarmOccurrence = AlarmOccurrenceList.get(AlarmOccurrenceList.size() - 1);
 			}
-			
+
 			for (AlarmOccurrenceContext alarmOccurrence : AlarmOccurrenceList) {
 				if (alarmOccurrence.equals(initialEdgeCaseAlarmOccurrence) || alarmOccurrence.equals(finalEdgeCaseAlarmOccurrence)) {
 					continue;
 				}
 				delAlarmOccurrenceIds.add((Long) alarmOccurrence.getId());
 			}
-			
+
 		}
 
 		deleteAllAlarmOccurences(delAlarmOccurrenceIds);
 		FacilioModule eventModule = modBean.getModule(FacilioConstants.ContextNames.BASE_EVENT);
 		List<FacilioField> allEventFields = modBean.getAllFields(eventModule.getName());
 
-		
+
 		if (initialEdgeCaseAlarmOccurrence != null) {
 			LOGGER.info("InitialEdgeCaseAlarmOccurrence Present "+initialEdgeCaseAlarmOccurrence.getId());
-			
+
 		}
 
 		if (finalEdgeCaseAlarmOccurrence != null) {
-			LOGGER.info("finalEdgeCaseAlarmOccurrence Present "+finalEdgeCaseAlarmOccurrence.getId());	
+			LOGGER.info("finalEdgeCaseAlarmOccurrence Present "+finalEdgeCaseAlarmOccurrence.getId());
 		}
 	}
 
@@ -543,13 +543,26 @@ public class NewAlarmAPI {
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
-		 
+
 		GenericDeleteRecordBuilder deletebuilder = new GenericDeleteRecordBuilder()
 				.table(module.getTableName())
 				.andCondition(CriteriaAPI.getIdCondition(delAlarmOccurrenceIds, module));
 		deletebuilder.delete();
-		
+
 	}
 
-	
+
+
+	public static List<ReadingAlarmCategoryContext> getReadingAlarmCategory(List<Long> readingCategoryIds) throws Exception {
+		if (CollectionUtils.isEmpty(readingCategoryIds)) {
+			return new ArrayList<>();
+		}
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		SelectRecordsBuilder<ReadingAlarmCategoryContext> builder = new SelectRecordsBuilder<ReadingAlarmCategoryContext>()
+				.module(modBean.getModule(FacilioConstants.ContextNames.READING_ALARM_CATEGORY))
+				.select(modBean.getAllFields(FacilioConstants.ContextNames.READING_ALARM_CATEGORY))
+				.beanClass(ReadingAlarmCategoryContext.class)
+				.andCondition(CriteriaAPI.getIdCondition(readingCategoryIds, modBean.getModule(FacilioConstants.ContextNames.READING_ALARM_CATEGORY)));
+		return builder.get();
+	}
 }

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.events.util.EventAPI;
+import com.facilio.modules.fields.LookupField;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -42,6 +43,9 @@ public class GetV2EventListCommand extends FacilioCommand {
 						.beanClass(NewEventAPI.getEventClass(alarmType))
 						.andCondition(CriteriaAPI.getCondition(fieldMap.get("alarmOccurrence"),
 								String.valueOf(recordId), NumberOperators.EQUALS));
+				if (fieldMap.containsKey("severity")) {
+					builder.fetchLookup((LookupField) fieldMap.get("severity"));
+				}
 				List<BaseEventContext> list = builder.get();
 				
 				context.put(FacilioConstants.ContextNames.RECORD_LIST, list);

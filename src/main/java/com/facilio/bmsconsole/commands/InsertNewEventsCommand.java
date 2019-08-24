@@ -43,8 +43,7 @@ public class InsertNewEventsCommand extends FacilioCommand {
 
 		if (baseEvent instanceof BMSEventContext) {
 			if (baseEvent.getResource() == null && ((BMSEventContext) baseEvent).getSource() != null) {
-				ControllerContext controller = ((BMSEventContext) baseEvent).getController();
-				long controllerId = controller == null ? -1 : controller.getId();
+				long controllerId = ((BMSEventContext) baseEvent).getController();
 				long orgId = AccountUtil.getCurrentOrg().getId();
 				long resourceId = EventAPI.getResourceFromSource(((BMSEventContext) baseEvent).getSource(), orgId, controllerId);
 				if(resourceId != -1) {

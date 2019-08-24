@@ -47,6 +47,9 @@ public class FetchEventFromBaseEventCommand extends FacilioCommand {
                 event.setMessageKey(baseEventContext.getMessageKey());
                 event.setComment(baseEventContext.getComment());
                 event.setAdditionInfo(baseEventContext.getAdditionInfo());
+                if (baseEventContext.getSeverity() != null) {
+                    event.setSeverity(baseEventContext.getSeverity().getDisplayName());
+                }
 
                 event.setOrgId(baseEventContext.getOrgId());
 

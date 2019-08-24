@@ -18,11 +18,11 @@ public class BMSAlarmContext extends BaseAlarmContext {
         this.source = source;
     }
 
-    private ControllerContext controller;
-    public ControllerContext getController() {
+    private long controller;
+    public long getController() {
         return controller;
     }
-    public void setController(ControllerContext controller) {
+    public void setController(long controller) {
         this.controller = controller;
     }
 }

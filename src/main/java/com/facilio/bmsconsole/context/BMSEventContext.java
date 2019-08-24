@@ -20,19 +20,14 @@ public class BMSEventContext extends BaseEventContext {
         this.source = source;
     }
 
-    private ControllerContext controller;
-    public ControllerContext getController() {
+    private long controller;
+    public long getController() {
         return controller;
     }
-    public void setController(ControllerContext controller) {
+    public void setController(long controller) {
         this.controller = controller;
     }
-    public void setControllerId(long controllerId) {
-        if (controllerId > 0) {
-            controller = new ControllerContext();
-            controller.setId(controllerId);
-        }
-    }
+
 
     @Override
     public boolean shouldIgnore() {
@@ -44,7 +39,7 @@ public class BMSEventContext extends BaseEventContext {
 
     @Override
     public String constructMessageKey() {
-        return "BMSEvent_" + condition + "_" + source + "_" + (controller == null ? "empty_controller" : controller.getId());
+        return "BMSEvent_" + condition + "_" + source + "_" + (controller == -1 ? "empty_controller" : controller);
     }
 
     @Override
