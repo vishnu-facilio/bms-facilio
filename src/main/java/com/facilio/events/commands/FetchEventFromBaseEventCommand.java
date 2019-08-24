@@ -35,7 +35,9 @@ public class FetchEventFromBaseEventCommand extends FacilioCommand {
                 event.setDescription(baseEventContext.getDescription());
 
                 event.setEventMessage(baseEventContext.getEventMessage());
-                event.setInternalState(baseEventContext.getInternalState());
+                if (baseEventContext.getInternalStateEnum() != null) {
+                    event.setInternalState(baseEventContext.getInternalStateEnum());
+                }
                 event.setEventState(baseEventContext.getEventState());
                 if (baseEventContext.getResource() != null) {
                     event.setResourceId(baseEventContext.getResource().getId());

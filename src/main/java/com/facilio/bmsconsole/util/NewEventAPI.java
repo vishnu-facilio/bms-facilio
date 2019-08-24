@@ -12,10 +12,10 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.SelectRecordsBuilder;
+import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class NewEventAPI {
 
@@ -94,25 +94,46 @@ public class NewEventAPI {
 				.beanClass(BaseEventContext.class)
 				.andCondition(CriteriaAPI.getIdCondition(id, module));
 		BaseEventContext baseEventContext = builder.fetchFirst();
-		return getExtendedEvent(baseEventContext);
+		if (baseEventContext != null) {
+			List<BaseEventContext> list = getExtendedEvent(Collections.singletonList(baseEventContext));
+			if (CollectionUtils.isNotEmpty(list)) {
+				return list.get(0);
+			}
+		}
+		return null;
 	}
 
-	private static BaseEventContext getExtendedEvent(BaseEventContext baseEventContext) throws Exception {
-		if (baseEventContext == null) {
-			return null;
+	public static List<BaseEventContext> getExtendedEvent(List<BaseEventContext> baseEventContexts) throws Exception {
+		if (CollectionUtils.isEmpty(baseEventContexts)) {
+			return new ArrayList<>();
 		}
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
-		Type eventTypeEnum = baseEventContext.getEventTypeEnum();
+		Map<Type, List<Long>> map = new HashMap<>();
+		for (BaseEventContext event : baseEventContexts) {
+			List<Long> list = map.get(event.getEventTypeEnum());
+			if (list == null) {
+				list = new ArrayList<>();
+				map.put(event.getEventTypeEnum(), list);
+			}
+			list.add(event.getId());
+		}
 
-		String moduleName = NewEventAPI.getEventModuleName(eventTypeEnum);
-		FacilioModule module = modBean.getModule(moduleName);
+		List<BaseEventContext> newList = new ArrayList<>();
+		for (Type type : map.keySet()) {
+			if (CollectionUtils.isNotEmpty(map.get(type))) {
+				continue;
+			}
+			String moduleName = NewEventAPI.getEventModuleName(type);
+			FacilioModule module = modBean.getModule(moduleName);
 
-		SelectRecordsBuilder<BaseEventContext> builder = new SelectRecordsBuilder<BaseEventContext>()
-				.module(module)
-				.select(modBean.getAllFields(module.getName()))
-				.beanClass(NewEventAPI.getEventClass(eventTypeEnum))
-				.andCondition(CriteriaAPI.getIdCondition(baseEventContext.getId(), module));
-		return builder.fetchFirst();
+			SelectRecordsBuilder<BaseEventContext> builder = new SelectRecordsBuilder<BaseEventContext>()
+					.module(module)
+					.select(modBean.getAllFields(module.getName()))
+					.beanClass(NewEventAPI.getEventClass(type))
+					.andCondition(CriteriaAPI.getIdCondition(map.get(type), module));
+			newList.addAll(builder.get());
+		}
+		return newList;
 	}
 }
