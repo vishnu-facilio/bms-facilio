@@ -432,6 +432,94 @@
 			    return resultMap;
 			}",
         },
+         "53": {
+        	"description" : "newAlarmMeanTimeBetweenTriggers",
+        	"usage" : "newAlarmrulesSummary",
+        	"workflow": "Map getNewAlarmRuleTriggerDetials(Number ruleId)
+				{
+				  date = NameSpace(\"date\");
+				  tillLastMonthranges = date.getDateRange(\"Current year upto last month\");
+				  currentMonthranges = date.getDateRange(\"Current Month\");
+				  tillLastMonthcri = {
+				    criteria : [rule == ruleId && lastOccurredTime == tillLastMonthranges ],
+				        orderBy : \"lastOccurredTime\" asc
+				  };
+				  currentMonthCri = {
+				    criteria : [rule == ruleId && lastOccurredTime == currentMonthranges ],
+				        orderBy : \"lastOccurredTime\" asc
+				  };
+				  currentMonthAlarmId = [],
+				  readingAlarmModule = Module(\"newreadingalarm\");
+				  alarmoccurrenceModule = Module(\"alarmoccurrence\");
+				  currentMonthresult = readingAlarmModule.fetch(currentMonthCri);
+				  tillLastMonthMonthresult = readingAlarmModule.fetch(tillLastMonthcri);
+				
+				  if (currentMonthresult != null) {
+				    for each index,value in currentMonthresult {
+				      currentMonthAlarmId.add(value.id)
+				    }
+				  }
+				  tillLastMonthAlarmId = []
+				  if (tillLastMonthMonthresult != null) {
+				    
+				    for each index,value in tillLastMonthMonthresult {
+				      tillLastMonthAlarmId.add(value.id)
+				    }
+				  }
+				  alarmMonthOccurenceList = alarmoccurrenceModule.fetch([alarm == currentMonthAlarmId ]);
+				  alarmOccurenceTillLMonthList = alarmoccurrenceModule.fetch([alarm == tillLastMonthAlarmId ]);
+				
+				  mtbt = 0;
+				  pmtbt = 0;
+				  mttc = 0;
+				  mOverAllDuration = 0;
+				  pmttc = 0;
+				  pmOverAllDuration = 0;
+				  if (alarmMonthOccurenceList != null) {
+				    perivousTriggerTime = 0
+				     sumMtbt = 0;
+				    sumMttc = 0;
+				    countOfClearedOccurence = 0
+				    	 for each index,occurrence in alarmMonthOccurenceList {
+				           sumMtbt = perivousTriggerTime + occurrence.createdTime
+				           previousClearedTime = occurrence.createdTime ;
+				           if (occurrence.clearedTime != null) {
+				             countOfClearedOccurence = countOfClearedOccurence + 1;
+				             sumMttc = sumMttc + (occurrence.clearedTime - occurrence.createdTime);
+				           }
+				           
+				         }
+				    mOverAllDuration = sumMttc;
+				     mttc = sumMttc /countOfClearedOccurence;
+				    mtbt = sumMtbt / alarmMonthOccurenceList.size();
+				  }	
+				  if (alarmOccurenceTillLMonthList != null) {
+				    perivousTriggerTime = 0
+				      sumPmtbt = 0;
+				    sumPmttc = 0;
+				    countOfClearedOccurence = 0
+				    	 for each index,occurrence in alarmOccurenceTillLMonthList {
+				           sumPmtbt = perivousTriggerTime + occurrence.createdTime
+				           previousClearedTime = occurrence.createdTime ;
+							if (occurrence.clearedTime != null) {
+				             countOfClearedOccurence = countOfClearedOccurence + 1;
+				             sumMttc = sumMttc + (occurrence.clearedTime - occurrence.createdTime);
+				           }
+				         }
+				     pmtbt = sumPmtbt / alarmOccurenceTillLMonthList.size();
+				 	mOverAllDuration = sumPmttc;
+				     pmttc = sumPmttc /countOfClearedOccurence;
+				  }	
+				  resMap = {};
+					resMap[\"mtbt\"] = mtbt;
+					resMap[\"timeToClear\"] = mOverAllDuration;
+					resMap[\"mttc\"] = mttc;
+					resMap[\"pmtbt\"] = pmtbt;
+					resMap[\"previousMonthTimeToClear\"] = pmOverAllDuration;
+					resMap[\"pmttc\"] = pmttc;
+				  return resMap;
+				}"
+        },
 		"99":{
 			"description" : "mlpredictedEnergyWastage",
 			"usage" : "AnomalySummary",
