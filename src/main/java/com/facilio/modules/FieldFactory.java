@@ -6489,6 +6489,45 @@ public class FieldFactory {
 		return fields;
 	}
 	
+	
+	public static List<FacilioField> getControlGroupFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getControlGroupModule();
+		
+		fields.add(getIdField(module));
+		fields.add(getNameField(module));
+		fields.add(getSiteIdField(module));
+		
+		fields.add(getField("assetCategoryId", "ASSET_CATEGORY_ID", module, FieldType.LOOKUP));
+		fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
+		
+		return fields;
+	}
+	
+	
+	public static List<FacilioField> getControlGroupSpaceFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getControlGroupSpaceModule();
+		
+		fields.add(getIdField(module));
+		fields.add(getField("controlGroupId", "CONTROL_GROUP_ID", module, FieldType.LOOKUP));
+		fields.add(getField("spaceId", "SPACE_ID", module, FieldType.LOOKUP));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getControlGroupInclExclFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getControlGroupInclExclModule();
+		
+		fields.add(getIdField(module));
+		fields.add(getField("controlGroupId", "CONTROL_GROUP_ID", module, FieldType.LOOKUP));
+		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("isInclude", "IS_INCLUDE", module, FieldType.BOOLEAN));
+		
+		return fields;
+	}
+	
 	public static List<FacilioField> getPreferencesMetaFields() {
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getPreferenceMetaModule();

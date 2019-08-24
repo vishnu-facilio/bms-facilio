@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.tiles.request.collection.CollectionUtil;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountConstants;
@@ -462,7 +463,15 @@ public class AssetsAPI {
 		return getAssetListOfCategory(category,-1);
 	}
 	
-	public static List<AssetContext> getAssetListOfCategory(long category,long buildingId) throws Exception
+	public static List<AssetContext> getAssetListOfCategory(long category,long buildingId) throws Exception {
+		List<Long> buildingIds = null;
+		if(buildingId > 0) {
+			buildingIds = Collections.singletonList(buildingId);
+		}
+		return getAssetListOfCategory(category, buildingIds);
+	}
+	
+	public static List<AssetContext> getAssetListOfCategory(long category,List<Long> buildingIds) throws Exception
 	{
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -476,8 +485,8 @@ public class AssetsAPI {
 				.beanClass(AssetContext.class)
 				.andCondition(CriteriaAPI.getCondition(categoryField, String.valueOf(category), PickListOperators.IS));
 		
-		if(buildingId > 0) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition("SPACE_ID", "space", ""+buildingId, BuildingOperator.BUILDING_IS));
+		if(buildingIds != null && !buildingIds.isEmpty()) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("SPACE_ID", "space", StringUtils.join(buildingIds, ","), BuildingOperator.BUILDING_IS));
 		}
 		List<AssetContext> assets = selectBuilder.get();
 		return assets;

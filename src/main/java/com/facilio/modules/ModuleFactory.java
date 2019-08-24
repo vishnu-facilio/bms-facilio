@@ -8,6 +8,7 @@ import com.facilio.agent.AgentKeys;
 import com.facilio.agentIntegration.AgentIntegrationKeys;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.modules.fields.FacilioField;
 
 public class ModuleFactory {
@@ -2580,6 +2581,30 @@ public class ModuleFactory {
 		module.setName(ContextNames.ML_ANOMALY_ALARM);
 		module.setDisplayName("ML Anomaly Alarm");
 		module.setTableName("ML_Anomaly_Alarm");
+		return module;
+	}
+	
+	public static FacilioModule getControlGroupModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ControlActionUtil.CONTROL_ACTION_GROUP_CONTEXT);
+		module.setDisplayName(ControlActionUtil.CONTROL_ACTION_GROUP_CONTEXT);
+		module.setTableName("Control_Groups");
+		return module;
+	}
+	
+	public static FacilioModule getControlGroupSpaceModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ControlActionUtil.CONTROL_ACTION_GROUP_CONTEXT_SPACE);
+		module.setDisplayName(ControlActionUtil.CONTROL_ACTION_GROUP_CONTEXT_SPACE);
+		module.setTableName("Control_Group_Spaces");
+		return module;
+	}
+	
+	public static FacilioModule getControlGroupInclExclModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ControlActionUtil.CONTROL_ACTION_GROUP_CONTEXT_INCL_EXLC);
+		module.setDisplayName(ControlActionUtil.CONTROL_ACTION_GROUP_CONTEXT_INCL_EXLC);
+		module.setTableName("Control_Group_Include_Exclude_Resource");
 		return module;
 	}
 }

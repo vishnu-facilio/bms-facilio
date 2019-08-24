@@ -3333,6 +3333,17 @@ public class TransactionChainFactory {
 			c.addCommand(new PublishIOTMessageControlActionCommand());
 			return c;
 		}
+		
+		public static FacilioChain getExecuteControlActionCommandForControlGroupChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new FetchControlGroupCommand());
+			c.addCommand(new GetControlActionCommandFromControlGroupCommand());
+			c.addCommand(new FillRDMForControlActionCommand());
+			c.addCommand(new FillDefaultValuesForControlActionCommand());
+			c.addCommand(new AddControlActionCommand());
+			c.addCommand(new PublishIOTMessageControlActionCommand());
+			return c;
+		}
 
 		public static FacilioChain addReservationChain() {
 			FacilioChain c = getDefaultChain();

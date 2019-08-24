@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.chain.Context;
@@ -20,14 +21,18 @@ public class FillRDMForControlActionCommand extends FacilioCommand {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
+		List<ControlActionCommandContext> removableCommands = new ArrayList<ControlActionCommandContext>();
 		for(ControlActionCommandContext command :commands) {
 			FacilioField field = modBean.getField(command.getFieldId());
 			ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(command.getResource().getId(), field);
-			command.setRdm(rdm);
-			if(!rdm.isControllable()) {
-				throw new Exception("Resource - "+command.getResource().getId() +" with field - "+command.getFieldId() +" is not controllable");
+			if(!rdm.isControllable() || rdm.getReadingTypeEnum() != ReadingDataMeta.ReadingType.WRITE) {
+				removableCommands.add(command);
+			}
+			else {
+				command.setRdm(rdm);
 			}
 		}
+		commands.removeAll(removableCommands);
 		
 		return false;
 	}

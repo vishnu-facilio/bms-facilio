@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingAlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.controlaction.context.ControlActionCommandContext;
@@ -34,7 +35,14 @@ public class ControlActionAction extends FacilioAction {
 	long resourceId = -1;
 	long fieldId = -1;
 	String value;
+	long controlGroupId = -1l;
 	
+	public long getControlGroupId() {
+		return controlGroupId;
+	}
+	public void setControlGroupId(long controlGroupId) {
+		this.controlGroupId = controlGroupId;
+	}
 	public ReadingDataMeta getRdm() {
 		return rdm;
 	}
@@ -345,25 +353,39 @@ public class ControlActionAction extends FacilioAction {
 	
 	public String setReadingValue() throws Exception {
 		
-		if(resourceId <= 0 || fieldId <= 0 || value == null) {
-			throw new IllegalArgumentException("One or more value is missing");
+//		if(resourceId <= 0 || fieldId <= 0 || value == null) {
+//			throw new IllegalArgumentException("One or more value is missing");
+//		}
+		
+		if(controlGroupId > 0) {
+			
+			FacilioChain executeControlActionCommandChain = TransactionChainFactory.getExecuteControlActionCommandForControlGroupChain();
+			
+			FacilioContext context = executeControlActionCommandChain.getContext();
+			
+			context.put(ControlActionUtil.CONTROL_ACTION_GROUP_ID, controlGroupId);
+			context.put(ControlActionUtil.VALUE, value);
+			context.put(ControlActionUtil.CONTROL_ACTION_COMMAND_EXECUTED_FROM, ControlActionCommandContext.Control_Action_Execute_Mode.CARD);
+			
+			executeControlActionCommandChain.execute();
 		}
-		
-		ResourceContext resourceContext = new ResourceContext();
-		resourceContext.setId(resourceId);
-		
-		ControlActionCommandContext controlActionCommand = new ControlActionCommandContext();
-		controlActionCommand.setResource(resourceContext);
-		controlActionCommand.setFieldId(fieldId);
-		controlActionCommand.setValue(value);
-		
-		FacilioContext context = new FacilioContext();
-		
-		context.put(ControlActionUtil.CONTROL_ACTION_COMMANDS, Collections.singletonList(controlActionCommand));
-		context.put(ControlActionUtil.CONTROL_ACTION_COMMAND_EXECUTED_FROM, ControlActionCommandContext.Control_Action_Execute_Mode.CARD);
-		
-		Chain executeControlActionCommandChain = TransactionChainFactory.getExecuteControlActionCommandChain();
-		executeControlActionCommandChain.execute(context);
+		else {
+			ResourceContext resourceContext = new ResourceContext();
+			resourceContext.setId(resourceId);
+			
+			ControlActionCommandContext controlActionCommand = new ControlActionCommandContext();
+			controlActionCommand.setResource(resourceContext);
+			controlActionCommand.setFieldId(fieldId);
+			controlActionCommand.setValue(value);
+			
+			FacilioContext context = new FacilioContext();
+			
+			context.put(ControlActionUtil.CONTROL_ACTION_COMMANDS, Collections.singletonList(controlActionCommand));
+			context.put(ControlActionUtil.CONTROL_ACTION_COMMAND_EXECUTED_FROM, ControlActionCommandContext.Control_Action_Execute_Mode.CARD);
+			
+			Chain executeControlActionCommandChain = TransactionChainFactory.getExecuteControlActionCommandChain();
+			executeControlActionCommandChain.execute(context);
+		}
 		
 		return SUCCESS;
 	}
