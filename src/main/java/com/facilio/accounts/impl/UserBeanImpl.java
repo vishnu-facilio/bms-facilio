@@ -81,7 +81,7 @@ public class UserBeanImpl implements UserBean {
 		return getUser(email).getUid();
 	}
 
-	private long addUserEntry(User user, boolean emailVerificationRequired) throws Exception {
+	private long addUserEntry(User user, boolean isSignUpEmailVerificationNeeded) throws Exception {
 		User existingUser = getUserv2(user.getEmail(), user.getDomainName());
 		if(existingUser == null) {
 			
@@ -95,7 +95,7 @@ public class UserBeanImpl implements UserBean {
 			insertBuilder.addRecord(props);
 			insertBuilder.save();
 			if(user.getUid() > 0) {
-				if (emailVerificationRequired && !user.isUserVerified()) {
+				if (isSignUpEmailVerificationNeeded && !user.isUserVerified()) {
 					sendEmailRegistration(user);
 				}
 			}
@@ -183,21 +183,21 @@ public class UserBeanImpl implements UserBean {
 	}
 	
 	@Override
-	public void createUserEntry(long orgId, User user, boolean isEmailVerificationNeeded) throws Exception {
+	public void createUserEntry(long orgId, User user, boolean isSignUpEmailVerificationNeeded) throws Exception {
 
-		long uid = addUserEntry(user, isEmailVerificationNeeded);
+		long uid = addUserEntry(user, isSignUpEmailVerificationNeeded);
 		user.setUid(uid);
 		user.setOrgId(orgId);
 		user.setUserType(AccountConstants.UserType.USER.getValue());
 		user.setUserStatus(true);
 		//user.setAccessibleSpace(getAccessibleSpaceList(user.getOuid()));
-		addToAppORGUsers(user);
+		addToAppORGUsers(user, true);
 		addUserDetail(user);
 		
 	}
 	
 
-	private void addToAppORGUsers(User user) throws Exception {
+	private void addToAppORGUsers(User user, boolean isEmailVerificationNeeded) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
 		InsertRecordBuilder<ResourceContext> insertRecordBuilder = new InsertRecordBuilder<ResourceContext>()
@@ -219,7 +219,7 @@ public class UserBeanImpl implements UserBean {
 
 		user.setOuid((long) props.get("ouid"));
 		if((long)props.get("ouid") > 0) {
-			if(!user.isUserVerified() && !user.isInviteAcceptStatus()) {
+			if(isEmailVerificationNeeded && !user.isUserVerified() && !user.isInviteAcceptStatus()) {
 				sendInvitation(user, false);
 			}
 		}
@@ -638,7 +638,6 @@ public class UserBeanImpl implements UserBean {
 		selectBuilder.andCriteria(criteria);
 			
 		List<Map<String, Object>> props = selectBuilder.get();
-		log.log(Level.FATAL, "Query: " + selectBuilder.toString() + "; props: " + props);
 		if (props != null && !props.isEmpty()) {
 			User user = createUserFromProps(props.get(0), true, true, false);
 			return user;
@@ -734,7 +733,7 @@ public class UserBeanImpl implements UserBean {
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Users.DOMAIN_NAME", "domainName", portalDomain, StringOperators.IS));
 		
 		Criteria criteria = new Criteria();
-		criteria.addAndCondition(CriteriaAPI.getCondition("USER_STATUS", "userStatus", "1", NumberOperators.EQUALS));
+	//	criteria.addAndCondition(CriteriaAPI.getCondition("USER_STATUS", "userStatus", "1", NumberOperators.EQUALS));
 		criteria.addAndCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", String.valueOf(-1), NumberOperators.EQUALS));
 		
 		
@@ -768,6 +767,7 @@ public class UserBeanImpl implements UserBean {
 		selectBuilder.andCondition(CriteriaAPI.getCondition("PortalInfo.PORTALID", "portalId", String.valueOf(portalId), NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Users.EMAIL", "email", email, StringOperators.IS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.USER_TYPE", "userType", String.valueOf(UserType.REQUESTER.getValue()), NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("ORG_Users.DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
 		
 		
 		List<Map<String, Object>> props = selectBuilder.get();
@@ -992,7 +992,7 @@ public class UserBeanImpl implements UserBean {
 	}
 
 	@Override
-	public long inviteRequester(long orgId, User user) throws Exception {
+	public long inviteRequester(long orgId, User user, boolean isEmailVerificationNeeded) throws Exception {
 		if (AccountUtil.getCurrentOrg() != null) {
 			Organization org = AccountUtil.getOrgBean().getOrg(AccountUtil.getCurrentOrg().getDomain());
 			PortalInfoContext portalInfo = AccountUtil.getOrgBean().getPortalInfo(org.getId(), false);
@@ -1000,7 +1000,7 @@ public class UserBeanImpl implements UserBean {
 			user.setOrgId(org.getOrgId());
 			user.setDomainName(org.getDomain());
 			user.setPortalId(org.getPortalId());
-			user.setId(addRequester(orgId, user, false, true));
+			user.setId(addRequester(orgId, user, isEmailVerificationNeeded, true));
 			if (user.getAccessibleSpace() != null) {
 				addAccessibleSpace(user.getOuid(), user.getAccessibleSpace());
 			}
@@ -1014,8 +1014,7 @@ public class UserBeanImpl implements UserBean {
 		IAMUser iamUser = IAMUserUtil.getUser(user.getEmail(), user.getDomainName(), user.getDomainName());
 		if (iamUser != null) {
 			User portalUser = new User(iamUser);
-			log.info("Requester email already exists in the portal for org: " + orgId + ", ouid: "
-					+ portalUser.getOuid());
+			log.info("Requester email " + iamUser.getEmail() +" already exists in the portal for org: " + orgId);
 			return getUser(portalUser.getEmail(), iamUser.getDomainName()).getOuid();
 		}
 		if(IAMUserUtil.addUser(user, orgId) > 0) {
@@ -1023,7 +1022,7 @@ public class UserBeanImpl implements UserBean {
 			user.setOrgId(orgId);
 			user.setUserType(AccountConstants.UserType.REQUESTER.getValue());
 			user.setUserStatus(true);
-			addToAppORGUsers(user);
+			addToAppORGUsers(user, emailVerification);
 			return user.getOuid();
 		
 		}

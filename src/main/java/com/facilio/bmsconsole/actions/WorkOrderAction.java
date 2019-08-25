@@ -170,9 +170,9 @@ public class WorkOrderAction extends FacilioAction {
 		}
 		FacilioContext context = new FacilioContext();
 		//not to send email while creating wo directly from portal 
-		if(workorder.getRequester() != null && workorder.getRequester().getUid() <= 0) {
-			workorder.getRequester().setInviteAcceptStatus(true);
-		}
+//		if(workorder.getRequester() != null && workorder.getRequester().getUid() <= 0) {
+//			workorder.getRequester().setInviteAcceptStatus(true);
+//		}
 		context.put(FacilioConstants.ContextNames.REQUESTER, workorder.getRequester());
 		if (AccountUtil.getCurrentUser() == null) {
 			context.put(FacilioConstants.ContextNames.IS_PUBLIC_REQUEST, true);

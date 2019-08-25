@@ -1176,6 +1176,7 @@ public class FacilioConstants {
 		public static final String INCLUDE_SERVING_SITE = "includeServingSite";
 		public static final Object READING_RULE_ALARM_OCCURANCE = "readingRuleAlarmOccurance";
 
+		public static final String IS_EMAIL_VERIFICATION_NEEDED = "isEmailVerificationNeeded";
 
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {

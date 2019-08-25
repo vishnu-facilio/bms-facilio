@@ -30,7 +30,7 @@ public class AddTenantCommand extends GenericAddModuleDataCommand {
 			user.setEmail(user.getMobile());
 		}
 
-		long userId = AccountUtil.getUserBean().inviteRequester(orgid, user);
+		long userId = AccountUtil.getUserBean().inviteRequester(orgid, user, true);
 	    tenant.getContact().setId(userId);
     	TenantsAPI.addTenantLogo(tenant);
 		super.executeCommand(context);

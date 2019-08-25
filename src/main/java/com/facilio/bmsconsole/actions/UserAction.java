@@ -135,13 +135,14 @@ public class UserAction extends FacilioAction {
 			}
 			PortalInfoContext portalInfo = AccountUtil.getOrgBean().getPortalInfo(AccountUtil.getCurrentOrg().getOrgId(), false);
 			User userTobeDeleted = AccountUtil.getUserBean().getPortalUsers(user.getEmail(), portalInfo.getPortalId());
-			AccountUtil.getUserBean().deleteUser(userTobeDeleted.getOuid());
-		
+			if(AccountUtil.getUserBean().deleteUser(userTobeDeleted.getOuid())) {
+				setUserId(userTobeDeleted.getOuid());
+			    return SUCCESS;
+			}
+			return ERROR;
 		} catch (Exception e) {
 			return ERROR;
 		}
-		portalUserList();
-		return SUCCESS;
 	}
 	
 	private void checkforTenantPrimaryContact(String email) throws Exception{
@@ -207,9 +208,9 @@ public class UserAction extends FacilioAction {
 	public String deleteUser() throws Exception {
 		
 	    if(AccountUtil.getUserBean().deleteUser(user.getOuid())) {
+	    	setUserId(user.getOuid());
 	    	return SUCCESS;
 	    }
-		
 		return ERROR;
 	}
 	
@@ -257,7 +258,7 @@ public class UserAction extends FacilioAction {
 //		}
 		
 		try {
-			if(AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user) > 0) {
+			if(AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, true) > 0) {
 				setUserId(user.getId());
 			}
 			else {

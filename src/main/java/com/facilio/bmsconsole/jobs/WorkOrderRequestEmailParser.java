@@ -106,6 +106,8 @@ public class WorkOrderRequestEmailParser extends FacilioJob {
 			
 			User requester = new User();
 			requester.setEmail(parser.getFrom());
+			//not to send email while creating wo from email 
+			//requester.setInviteAcceptStatus(true);
 			
 			workorderContext.setSubject(parser.getSubject());
 			if (parser.getPlainContent() != null) {

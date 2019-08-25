@@ -954,9 +954,6 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		else {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ISDEFAULT", "isDefault", "1", NumberOperators.EQUALS));
 		}
-		if(org.apache.commons.lang3.StringUtils.isNotEmpty(portalDomain)) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_Users.DOMAIN_NAME", "domainName", portalDomain, StringOperators.IS));
-		}
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USER_STATUS", "userStatus", "1", NumberOperators.EQUALS));
 		

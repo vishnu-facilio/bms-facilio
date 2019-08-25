@@ -149,8 +149,9 @@
 		<param name="moduleName">setup</param>
 		<param name="permission">USER_ACCESS_ADMINISTER</param>
 		<param name="cache">org</param>
-		<result name="success" type="json">
-			<param name="includeProperties">users.*</param></result>
+		<result name = "success" type="json">
+				<param name ="includeProperties">userId</param>
+		</result>
 		<result name="error" type="json">
 		  <param name="includeProperties">error.*</param></result>
 	</action>
