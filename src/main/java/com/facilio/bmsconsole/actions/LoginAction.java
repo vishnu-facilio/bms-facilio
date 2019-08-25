@@ -716,9 +716,6 @@ public class LoginAction extends FacilioAction {
 		account.put("timezone",AccountUtil.getCurrentAccount().getTimeZone()); 
 		account.put("License", AccountUtil.getFeatureLicense());
 		
-		
-		//log.info(AccountUtil.getCurrentUser().getEmail()+"))(()()()(((((())))))");
-		//log.info(AccountUtil.getCurrentAccount().getOrg().getDomain()+"$$$$$$$$$$$$$$$$$$$$$");
 		List<User> users = AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId());
 		Map<Long, Set<Long>> userSites = new HashMap<>();
 		if (users != null) {
@@ -726,13 +723,9 @@ public class LoginAction extends FacilioAction {
 		}
 		
 		Map<String, Object> data = new HashMap<>();
-
 		data.put("orgInfo", CommonCommandUtil.getOrgInfo());
 		data.put("users", users);
 		data.put("userSites", userSites);
-
-		data.put("buildingList", ReportsUtil.getBuildingMap());
-		data.put("calendarColor", TicketAPI.getCalendarColor());	
 		account.put("data", data);
 		
 		setResult("account", account);
