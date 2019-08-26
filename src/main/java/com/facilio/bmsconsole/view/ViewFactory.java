@@ -8,9 +8,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.bmsconsole.context.reservation.ReservationContext;
-import com.facilio.db.criteria.operators.*;
-import com.facilio.modules.fields.SystemEnumField;
 import org.apache.commons.collections4.MapUtils;
 
 import com.facilio.beans.ModuleBean;
@@ -22,12 +19,21 @@ import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
+import com.facilio.bmsconsole.context.reservation.ReservationContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.criteria.operators.EnumOperators;
+import com.facilio.db.criteria.operators.LookupOperator;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -40,6 +46,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.NumberField;
+import com.facilio.modules.fields.SystemEnumField;
 import com.facilio.time.DateTimeUtil;
 
 public class ViewFactory {
@@ -1730,30 +1737,14 @@ public class ViewFactory {
 		return overdueView;
 	}
 
-	public static Criteria getAllOverdueWorkOrdersCriteria() {
-		FacilioField dueField = new FacilioField();
-		dueField.setName("dueDate");
-		dueField.setColumnName("DUE_DATE");
-		dueField.setDataType(FieldType.DATE_TIME);
-		dueField.setModule(ModuleFactory.getTicketsModule());
-
-		Condition overdue = new Condition();
-		overdue.setField(dueField);
-		overdue.setOperator(DateOperators.TILL_YESTERDAY);
-
-		Criteria criteria = new Criteria();
-		criteria.addAndCondition(overdue);
-		criteria.addAndCondition(getOpenStatusCondition());
-
-		return criteria;
-	}
-
 	private static FacilioView getAllOverdueWorkOrders() {
 
 		FacilioView overdueView = new FacilioView();
 		overdueView.setName("overdue");
 		overdueView.setDisplayName("Overdue");
-		overdueView.setCriteria(getAllOverdueWorkOrdersCriteria());
+		Criteria criteria = getOverdueCriteria();
+		criteria.addAndCondition(getOpenStatusCondition());
+		overdueView.setCriteria(criteria);
 
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("createdTime");

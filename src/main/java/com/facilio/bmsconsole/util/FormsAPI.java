@@ -37,6 +37,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
@@ -481,16 +482,16 @@ public class FormsAPI {
 			
 	}
 	
-	private static void setUnusedSystemFields(FacilioForm form, List<FormField> defaultFields) throws Exception {
+	private static void addUnusedSystemFields(FacilioForm form, List<FormField> defaultFields) throws Exception {
 		if (form.getFormTypeEnum() == FormType.WEB) {
-			setUnusedWebSystemFields(form, defaultFields);
+			addUnusedWebSystemFields(form, defaultFields);
 		}
 		else if (form.getFormTypeEnum() == FormType.PORTAL) {
-			setUnusedPortalSystemFields(form, defaultFields);
+			addUnusedPortalSystemFields(form, defaultFields);
 		}
 	}
 	
-	private static void setUnusedWebSystemFields(FacilioForm form, List<FormField> defaultFields) throws Exception {
+	private static void addUnusedWebSystemFields(FacilioForm form, List<FormField> defaultFields) throws Exception {
 		switch (form.getModule().getName()) {
 			case ContextNames.WORK_ORDER:
 				defaultFields.addAll(FormFactory.getRequesterFormFields(false));
@@ -500,7 +501,7 @@ public class FormsAPI {
 		if (form.getModule().getTypeEnum() == FacilioModule.ModuleType.CUSTOM) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			boolean hasPhoto = false;
-			for (FormField field : defaultFields) {
+			for (FormField field : form.getFields()) {
 				if (field.getField() != null) {
 					if (field.getField().getName().equals("photo")) {
 						hasPhoto = true;
@@ -517,7 +518,7 @@ public class FormsAPI {
 		}
 	}
 	
-	private static void setUnusedPortalSystemFields(FacilioForm form, List<FormField> defaultFields) {
+	private static void addUnusedPortalSystemFields(FacilioForm form, List<FormField> defaultFields) {
 		switch (form.getModule().getName()) {
 			case ContextNames.WORK_ORDER:
 				defaultFields.addAll(FormFactory.getWoClassifierFields());
@@ -531,26 +532,31 @@ public class FormsAPI {
 		List<FormField> fields = form.getFields();
 		if (fields == null) {
 			fields = getFormFieldsFromSections(form.getSections());
+			form.setFields(fields);
 		}
 		Map<String, FormField> formFieldMap = fields.stream().collect(Collectors.toMap(FormField::getName, Function.identity()));
 		
 		
-		List<FormField> defaultFields = new ArrayList<>();
-		
+		List<FormField> systemFields = new ArrayList<>();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioForm defaultForm = getDefaultForm(moduleName, form, true);
-		if (defaultForm != null && CollectionUtils.isNotEmpty(defaultForm.getFields())) {
-			for (FormField f: defaultForm.getFields()) {	// TODO get fields from all sections
-				if (!formFieldMap.containsKey(f.getName()) && (f.getField() == null || f.getField().isDefault())) {
-					FormField formField = FieldUtil.cloneBean(f, FormField.class);
-					FacilioField field = modBean.getField(formField.getName(), moduleName);
-					if (field != null) {
-						formField.setFieldId(field.getFieldId());
+		if (form.getModule().getTypeEnum() == ModuleType.CUSTOM) {
+			addUnusedSystemFields(form, systemFields);
+		}
+		else {
+			FacilioForm defaultForm = getDefaultForm(moduleName, form, true);
+			if (defaultForm != null && CollectionUtils.isNotEmpty(defaultForm.getFields())) {
+				for (FormField f: defaultForm.getFields()) {	// TODO get fields from all sections
+					if (!formFieldMap.containsKey(f.getName()) && (f.getField() == null || f.getField().isDefault())) {
+						FormField formField = FieldUtil.cloneBean(f, FormField.class);
+						FacilioField field = modBean.getField(formField.getName(), moduleName);
+						if (field != null) {
+							formField.setFieldId(field.getFieldId());
+						}
+						systemFields.add(formField);
 					}
-					defaultFields.add(formField);
 				}
+				addUnusedSystemFields(defaultForm, systemFields);
 			}
-			setUnusedSystemFields(defaultForm, defaultFields);
 		}
 		
 		List<FacilioField> customFields = modBean.getAllCustomFields(moduleName);
@@ -562,7 +568,7 @@ public class FormsAPI {
 		}
 		
 		Map<String, List<FormField>> formMap = new HashMap<>();
-		formMap.put("systemFields", defaultFields);
+		formMap.put("systemFields", systemFields);
 		formMap.put("customFields", customFormFields);
 		return formMap;
 	}
