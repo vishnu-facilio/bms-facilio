@@ -17,6 +17,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.TransactionBeanFactory;
 import com.facilio.time.DateRange;
+import com.facilio.util.FacilioUtil;
 
 public class PMPlannerAction extends FacilioAction{
 	private static final Logger log = LogManager.getLogger(PMPlannerAction.class.getName());
@@ -72,6 +73,7 @@ public class PMPlannerAction extends FacilioAction{
 		context.put(ContextNames.BUILDING_ID, buildingId);
 		context.put(ContextNames.CATEGORY_ID, categoryId);
 		if (filterJson != null) {
+			filterJson = FacilioUtil.parseJson(filterJson.toJSONString());
 			context.put(FacilioConstants.ContextNames.FILTERS, filterJson);
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, ContextNames.WORK_ORDER);
 		}
