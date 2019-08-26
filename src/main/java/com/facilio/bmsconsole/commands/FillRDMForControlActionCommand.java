@@ -25,7 +25,7 @@ public class FillRDMForControlActionCommand extends FacilioCommand {
 		for(ControlActionCommandContext command :commands) {
 			FacilioField field = modBean.getField(command.getFieldId());
 			ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(command.getResource().getId(), field);
-			if(!rdm.isControllable() || rdm.getReadingTypeEnum() != ReadingDataMeta.ReadingType.WRITE) {
+			if(rdm == null || !rdm.isControllable() || rdm.getReadingTypeEnum() != ReadingDataMeta.ReadingType.WRITE) {
 				removableCommands.add(command);
 			}
 			else {
