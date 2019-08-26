@@ -9,6 +9,7 @@ import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.bmsconsole.context.Preference;
 import com.facilio.bmsconsole.util.ContractsAPI;
+import com.facilio.bmsconsole.util.InventoryApi;
 import com.facilio.constants.FacilioConstants;
 
 public class PreferenceFactory {
@@ -23,6 +24,7 @@ public class PreferenceFactory {
 	private static void initializeMap() {
 		
 		map.put(FacilioConstants.ContextNames.PURCHASE_CONTRACTS, getContractsPrefList());
+		map.put(FacilioConstants.ContextNames.STORE_ROOM, getStoreRoomPrefList());
 	}
 	
 	private static void initializeModuleMap() {
@@ -67,6 +69,14 @@ public class PreferenceFactory {
 		List<Preference> contractPreference = new ArrayList<Preference>();
 		contractPreference.add(ContractsAPI.getExpiryNotificationPref());
 		return contractPreference;
+	}
+	
+	private static List<Preference> getStoreRoomPrefList() {
+		
+		List<Preference> storeRoomPreference = new ArrayList<Preference>();
+		storeRoomPreference.add(InventoryApi.getStoreRoomOutOfStockNotificationPref());
+		storeRoomPreference.add(InventoryApi.getStoreRoomMinQtyNotificationPref());
+		return storeRoomPreference;
 	}
 
 }

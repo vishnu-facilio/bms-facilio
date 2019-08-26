@@ -23,26 +23,30 @@ import com.facilio.modules.ModuleFactory;
 public class PreferenceRuleUtil {
 
 	
-	public static void addPreferenceRule(long moduleId, long recordId, long ruleId, String prefName) throws Exception {
+	public static void addPreferenceRule(long moduleId, long recordId, List<Long> ruleIdList, String prefName) throws Exception {
 		List<Map<String, Object>> list = getPreferenceRule(moduleId, prefName, recordId);
 		if(CollectionUtils.isNotEmpty(list)) {
+			for (Long ruleId: ruleIdList) {
 			  Map<String, Object> updateMap = new HashMap<String, Object>();
 			  updateMap.put("ruleId", ruleId);
 			  updatePrefRuleRel(updateMap, Collections.singletonList((Long)list.get(0).get("id")));
 			  WorkflowRuleAPI.deleteWorkflowRule((Long)list.get(0).get("ruleId"));
+			}
 		}
 		else {
-			Map<String, Object> prop = new HashMap<String, Object>();
-			prop.put("moduleId", moduleId);
-			prop.put("recordId", recordId);
-			prop.put("ruleId", ruleId);
-			prop.put("prefName", prefName);
-			
-			GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
-					.table(ModuleFactory.getPreferenceRuleModule().getTableName())
-					.fields(FieldFactory.getPreferencesRuleFields())
-					.addRecord(prop);
-			insertBuilder.save();
+			for (Long ruleId: ruleIdList) {
+				Map<String, Object> prop = new HashMap<String, Object>();
+				prop.put("moduleId", moduleId);
+				prop.put("recordId", recordId);
+				prop.put("ruleId", ruleId);
+				prop.put("prefName", prefName);
+				
+				GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
+						.table(ModuleFactory.getPreferenceRuleModule().getTableName())
+						.fields(FieldFactory.getPreferencesRuleFields())
+						.addRecord(prop);
+				insertBuilder.save();
+			}
 		}
 	}
 	
@@ -67,9 +71,11 @@ public class PreferenceRuleUtil {
 	public static void disablePreferenceRule(long moduleId, long recordId, String prefName) throws Exception {
 	  List<Map<String, Object>> list = getPreferenceRule(moduleId, prefName, recordId);
 		if(CollectionUtils.isNotEmpty(list)) {
-		  Map<String, Object> map = list.get(0);
-		  deletePreferenceRuleRel((Long)map.get("id"));
-		  WorkflowRuleAPI.deleteWorkflowRule((Long)map.get("ruleId"));
+			for (Map<String, Object> map: list) {
+//		  		Map<String, Object> map = list.get(0);
+				deletePreferenceRuleRel((Long)map.get("id"));
+				WorkflowRuleAPI.deleteWorkflowRule((Long)map.get("ruleId"));
+			}
 	  }
 	  
 	}

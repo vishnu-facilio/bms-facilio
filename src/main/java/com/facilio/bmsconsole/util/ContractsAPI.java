@@ -350,7 +350,9 @@ public class ContractsAPI {
 			@Override
 			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
 				Long ruleId = saveExpiryPrefs(map, recordId);
-				PreferenceRuleUtil.addPreferenceRule(moduleId, recordId, ruleId, getName());
+				List<Long> ruleIdList = new ArrayList<>();
+				ruleIdList.add(ruleId);
+				PreferenceRuleUtil.addPreferenceRule(moduleId, recordId, ruleIdList, getName());
 			}
 
 			@Override
