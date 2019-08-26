@@ -52,7 +52,7 @@ public class NewAlarmAPI {
 		return getExtendedAlarms(list);
 	}
 
-	private static List<BaseAlarmContext> getExtendedAlarms(List<BaseAlarmContext> list) throws Exception {
+	public static List<BaseAlarmContext> getExtendedAlarms(List<BaseAlarmContext> list) throws Exception {
 		List<BaseAlarmContext> baseAlarms = new ArrayList<>();
 		if (CollectionUtils.isEmpty(list)) {
 			return baseAlarms;
@@ -77,6 +77,10 @@ public class NewAlarmAPI {
 					.moduleName(getAlarmModuleName(type)).beanClass(getAlarmClass(type))
 					.select(modBean.getAllFields(getAlarmModuleName(type)))
 					.andCondition(CriteriaAPI.getIdCondition(entry.getValue(), module));
+			List<LookupField> lookupFields = getLookupFields(type);
+			if (CollectionUtils.isNotEmpty(lookupFields)) {
+				selectBuilder.fetchLookups(lookupFields);
+			}
 			List<BaseAlarmContext> alarmList = selectBuilder.get();
 			baseAlarms.addAll(alarmList);
 		}
@@ -112,6 +116,20 @@ public class NewAlarmAPI {
 			default:
 				throw new IllegalArgumentException("Invalid alarm type");
 		}
+	}
+
+	private static List<LookupField> getLookupFields(Type type) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<LookupField> lookupFields = null;
+		switch (type) {
+			case READING_ALARM:
+				lookupFields = new ArrayList<>();
+				FacilioField rule = modBean.getField("rule", FacilioConstants.ContextNames.NEW_READING_ALARM);
+				if (rule instanceof LookupField) {
+					lookupFields.add((LookupField) rule);
+				}
+		}
+		return lookupFields;
 	}
 
 	public static String getAlarmModuleName(Type type) {
