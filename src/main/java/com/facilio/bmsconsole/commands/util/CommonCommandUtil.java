@@ -455,8 +455,8 @@ public class CommonCommandUtil {
     //	System.out.println("ID" + userID);
     	
     	GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-				.select(AccountConstants.getOrgUserFields())
-				.table(AccountConstants.getOrgUserModule().getTableName())
+				.select(AccountConstants.getAppOrgUserFields())
+				.table(AccountConstants.getAppOrgUserModule().getTableName())
 				.andCustomWhere("ORG_USERID = ?", userID);
     	
     	List<Map<String, Object>> props = selectBuilder.get();
@@ -467,8 +467,8 @@ public class CommonCommandUtil {
 		}
     	
     	GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
-		.table(AccountConstants.getUserModule().getTableName())
-		.fields(AccountConstants.getUserFields())
+		.table(AccountConstants.getAppUserModule().getTableName())
+		.fields(AccountConstants.getAppUserFields())
 		.andCustomWhere("USERID = ?", ouid );
     	Map<String, Object> prop = new HashMap<>();
 	    prop.put("userVerified", true);
@@ -690,6 +690,28 @@ public class CommonCommandUtil {
 			});
 			
 			
+		}
+	}
+
+	public static void addToRecordMap(FacilioContext context, String moduleName, ModuleBaseWithCustomFields record) {
+		Map<String, List> recordMap = (Map<String, List>) context.get(FacilioConstants.ContextNames.RECORD_MAP);
+		if (recordMap == null) {
+			recordMap = new HashMap<>();
+			context.put(FacilioConstants.ContextNames.RECORD_MAP, recordMap);
+			recordMap.put(moduleName, Collections.singletonList(record));
+		}
+		else {
+			List records = recordMap.get(moduleName);
+			if (records == null) {
+				recordMap.put(moduleName, Collections.singletonList(record));
+			}
+			else {
+				if (!(records instanceof ArrayList)) {
+					records = new ArrayList<>(records);
+					recordMap.put(moduleName, records);
+				}
+				records.add(record);
+			}
 		}
 	}
 	

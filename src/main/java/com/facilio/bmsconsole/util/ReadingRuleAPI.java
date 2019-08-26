@@ -216,8 +216,14 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 	}
 	
 	public static List<ReadingRuleContext> getReadingRules(Criteria criteria) throws Exception {
-		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
-		fields.addAll(FieldFactory.getReadingRuleFields());
+		return getReadingRules(criteria, null);
+	}
+	
+	public static List<ReadingRuleContext> getReadingRules(Criteria criteria, List<FacilioField> fields) throws Exception {
+		if (fields == null) {
+			fields = FieldFactory.getWorkflowRuleFields();
+			fields.addAll(FieldFactory.getReadingRuleFields());
+		}
 		
 		FacilioModule workflowModule = ModuleFactory.getWorkflowRuleModule();
 		FacilioModule readingRuleModule = ModuleFactory.getReadingRuleModule();
@@ -290,7 +296,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 													.select(fields)
 													.beanClass(ReadingAlarm.class)
 													.moduleName(FacilioConstants.ContextNames.NEW_READING_ALARM)
-													.andCondition(CriteriaAPI.getCondition(fieldMap.get("ruleId"), String.valueOf(rule.getRuleGroupId()), PickListOperators.IS))
+													.andCondition(CriteriaAPI.getCondition(fieldMap.get("rule"), String.valueOf(rule.getRuleGroupId()), PickListOperators.IS))
 													.fetchLookup((LookupField) fieldMap.get("severity"))
 													.get();
 			if (CollectionUtils.isNotEmpty(readingAlarms)) {

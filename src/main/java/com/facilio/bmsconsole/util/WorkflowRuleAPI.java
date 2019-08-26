@@ -53,6 +53,7 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.UpdateChangeSet;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.tasker.FacilioTimer;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -118,6 +119,8 @@ public class WorkflowRuleAPI {
 				ReadingRuleAPI.addReadingRuleMetrics((ReadingRuleContext) rule);
 				break;
 			case READING_ALARM_RULE:
+			case CONTROL_ACTION_READING_ALARM_RULE:
+			case REPORT_DOWNTIME_RULE:
 				addExtendedProps(ModuleFactory.getReadingAlarmRuleModule(), FieldFactory.getReadingAlarmRuleFields(), ruleProps);
 				break;
 			case SLA_RULE:
@@ -358,7 +361,7 @@ public class WorkflowRuleAPI {
 		return null;
 	}
 	
-	public static List<WorkflowRuleContext> getAllWorkflowRuleContextOfType (WorkflowRuleContext.RuleType ruleType,boolean fetchEvent,boolean fetchAction) throws Exception {
+	public static List<WorkflowRuleContext> getAllWorkflowRuleContextOfType (WorkflowRuleContext.RuleType ruleType,boolean fetchEvent,boolean fetchAction,boolean fetchActiveRulesOnly) throws Exception {
 		
 		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -367,8 +370,11 @@ public class WorkflowRuleAPI {
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 													.table(module.getTableName())
 //													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-													.andCondition(CriteriaAPI.getCondition("RULE_TYPE", "ruleType", ruleType.getIntVal()+"", StringOperators.IS))
-													.andCondition(CriteriaAPI.getCondition("STATUS", "status", 1+"", StringOperators.IS));
+													.andCondition(CriteriaAPI.getCondition("RULE_TYPE", "ruleType", ruleType.getIntVal()+"", StringOperators.IS));
+		
+		if(fetchActiveRulesOnly) {
+			ruleBuilder.andCondition(CriteriaAPI.getCondition("STATUS", "status", 1+"", StringOperators.IS));
+		}
 		
 		if (fetchEvent) {
 			fields.addAll(FieldFactory.getWorkflowEventFields());
@@ -651,6 +657,8 @@ public class WorkflowRuleAPI {
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getSLARuleModule(), FieldFactory.getSLARuleFields(), entry.getValue()));
 					break;
 				case READING_ALARM_RULE:
+				case CONTROL_ACTION_READING_ALARM_RULE:
+				case REPORT_DOWNTIME_RULE:
 					typeWiseProps.put(entry.getKey(), getExtendedProps(ModuleFactory.getReadingAlarmRuleModule(), FieldFactory.getReadingAlarmRuleFields(), entry.getValue()));
 					break;
 				case APPROVAL_RULE:
@@ -773,12 +781,15 @@ public class WorkflowRuleAPI {
 							rule = ApprovalRulesAPI.constructApprovalRuleFromProps(prop, modBean);
 							break;
 						case READING_ALARM_RULE:
+						case CONTROL_ACTION_READING_ALARM_RULE:
+						case REPORT_DOWNTIME_RULE:
 							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
 							rule = constructReadingAlarmRuleFromProps(prop, modBean);
 							break;
 						case STATE_RULE:
 							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
-							rule = StateFlowRulesAPI.constructStateRuleFromProps(prop, modBean);
+							rule = FieldUtil.getAsBeanFromMap(prop, StateflowTransitionContext.class);
+//							rule = StateFlowRulesAPI.constructStateRuleFromProps(prop, modBean);
 							break;
 						case STATE_FLOW:
 							prop.putAll(typeWiseExtendedProps.get(ruleType).get(prop.get("id")));
@@ -818,6 +829,8 @@ public class WorkflowRuleAPI {
 				}
 				workflows.add(rule);
 			}
+
+			StateFlowRulesAPI.constructStateRule(workflows);
 			return workflows;
 		}
 		return null;
@@ -862,6 +875,9 @@ public class WorkflowRuleAPI {
 					}
 					else if(EventType.SCHEDULED.isPresent(rule.getEvent().getActivityType()) && rule.getRuleType() == RuleType.RECORD_SPECIFIC_RULE.getIntVal()) {
 						SingleRecordRuleAPI.deleteRecordSpecificRuleJob(rule);
+					}
+					else if (EventType.SCHEDULED_READING_RULE.isPresent(rule.getEvent().getActivityType())) {
+						FacilioTimer.deleteJob(rule.getId(), FacilioConstants.Job.SCHEDULED_READING_RULE_JOB_NAME);
 					}
 				}
 			}
@@ -990,9 +1006,9 @@ public class WorkflowRuleAPI {
 			long workflowStartTime = System.currentTimeMillis();
 			workflowRule.setTerminateExecution(false);
 			boolean result = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(workflowRule, module.getName(), record, changeSet, recordPlaceHolders, context);
-			LOGGER.info("Time take to execute workflow and actions: " + (System.currentTimeMillis() - workflowStartTime));
+			LOGGER.debug("Time take to execute workflow and actions: " + (System.currentTimeMillis() - workflowStartTime));
 
-			LOGGER.info("Result of rule : "+workflowRule.getId()+" for record : "+record+" is "+result);
+			LOGGER.debug("Result of rule : "+workflowRule.getId()+" for record : "+record+" is "+result);
 
 			if (AccountUtil.getCurrentOrg().getId() == 186 && workflowRule.getId() == 6448) {
 				LOGGER.info("Result of rule : "+workflowRule.getId()+" for record : "+record+" is "+result);
@@ -1014,7 +1030,7 @@ public class WorkflowRuleAPI {
 			}
 			
 			LOGGER.debug("Time taken to execute rule : "+workflowRule.getName()+" with id : "+workflowRule.getId()+" for module : "+module.getName()+" is "+(System.currentTimeMillis() - workflowStartTime));
-			if(!stopFurtherExecution) {
+			if(workflowRule.getRuleTypeEnum().isChildSupport() && !stopFurtherExecution) {
 				Criteria currentCriteria = new Criteria();
 				currentCriteria.addAndCondition(CriteriaAPI.getCondition(parentRuleField, String.valueOf(workflowRule.getId()), NumberOperators.EQUALS));
 				currentCriteria.addAndCondition(CriteriaAPI.getCondition(onSuccessField, String.valueOf(result), BooleanOperators.IS));

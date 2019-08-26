@@ -27,7 +27,8 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.fw.BeanFactory;
-import com.facilio.fw.auth.CognitoUtil;
+import com.facilio.iam.accounts.util.IAMUserUtil;
+import com.facilio.iam.accounts.util.IAMUtil;
 import com.mysql.jdbc.exceptions.MySQLIntegrityConstraintViolationException;
 import com.opensymphony.xwork2.ActionSupport;
 
@@ -200,7 +201,7 @@ private static Logger log = LogManager.getLogger(Home.class.getName());
 					setJsonresponse("errorcode", "1");
 					return ERROR;
 				}
-				String jwt = CognitoUtil.createJWT("id", "auth0", username, System.currentTimeMillis() + 24 * 60 * 60000,portaluser);
+				String jwt = IAMUserUtil.createJWT("id", "auth0", username, System.currentTimeMillis() + 24 * 60 * 60000);
 				System.out.println("Response token is " + jwt);
 				setJsonresponse("token", jwt);
 				setJsonresponse("username", username);
@@ -228,11 +229,11 @@ private static Logger log = LogManager.getLogger(Home.class.getName());
 				System.out.println("#################### facilio.in::: " + request.getServerName());
 				response.addCookie(authmodel);
 				
-				long uid = AccountUtil.getUserBean().getFacilioUser(username).getUid();
+				long uid = AccountUtil.getUserBean().getUser(username).getUid();
 				String userAgent = request.getHeader("User-Agent");
 				userAgent = userAgent != null ? userAgent : "";
 				String userType = (AccountUtil.getCurrentAccount().isFromMobile() ? "mobile" : "web");
-				AccountUtil.getUserBean().startUserSession(uid, username, jwt, request.getRemoteAddr(), userAgent, userType);
+				IAMUtil.getUserBean().startUserSessionv2(uid, username, jwt, request.getRemoteAddr(), userAgent, userType);
 			} catch (Exception e) {
 				log.info("Exception occurred ", e);
 				setJsonresponse("message", "Error while validating user name and password");
@@ -399,9 +400,9 @@ Pragma: no-cache
 			User user = new User();
 			user.setName(username);
 			user.setEmail(emailaddress);
-			
+			   
 			UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
-			userBean.addRequester(AccountUtil.getCurrentOrg().getId(), user);
+			userBean.inviteRequester(AccountUtil.getCurrentOrg().getId(), user, true);
 			
 		} catch (MySQLIntegrityConstraintViolationException e){
 			setJsonresponse("message", "Username exists for this portal");
@@ -438,7 +439,7 @@ Pragma: no-cache
 	public String generateAuthToken()
 	{
 		System.out.println("generateAuthToken() : username :"+username);
-		String jwt = CognitoUtil.createJWT("id", "auth0", username, System.currentTimeMillis()+24*60*60000,false);
+		String jwt = IAMUserUtil.createJWT("id", "auth0", username, System.currentTimeMillis()+24*60*60000);
 		System.out.println("Response token is "+ jwt);
 		setJsonresponse("authtoken",jwt);
 		setJsonresponse("username",username);
@@ -503,7 +504,7 @@ Pragma: no-cache
 		long orgId = 0;
         try{
         	
-        	User userObj = AccountUtil.getUserBean().getFacilioUser(customerEmail);
+        	User userObj = AccountUtil.getUserBean().getUser(customerEmail);
         	orgId = userObj.getOrgId();
 		}
 		catch (Exception e) {

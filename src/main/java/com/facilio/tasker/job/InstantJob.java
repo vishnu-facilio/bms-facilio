@@ -3,13 +3,14 @@ package com.facilio.tasker.job;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.jobs.JobLogger;
 import com.facilio.chain.FacilioContext;
 import com.facilio.tasker.config.InstantJobConf;
 import com.facilio.tasker.executor.InstantJobExecutor;
-import org.apache.commons.lang3.StringUtils;
 
 public abstract class InstantJob {
 
@@ -50,7 +51,6 @@ public abstract class InstantJob {
 //            if (AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getId() == 88 && jobName.equals("ControllerActivityWatcher")) {
 //            	LOGGER.info("Executing Job "+jobName+" with props : "+context);
 //            }
-            InstantJobExecutor.INSTANCE.jobEnd(getReceiptHandle());
             status = 1;
         } catch (Exception e) {
             status = 2;
@@ -62,6 +62,7 @@ public abstract class InstantJob {
             job.setIsPeriodic(false);
             JobLogger.log(job, (System.currentTimeMillis() - startTime), status);
             currentThread.setName(threadName);
+            InstantJobExecutor.INSTANCE.jobEnd(getReceiptHandle());
         }
     }
 

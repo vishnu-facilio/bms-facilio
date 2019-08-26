@@ -459,7 +459,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			newPm.setCreatedById(AccountUtil.getOrgBean().getSuperAdmin(orgId).getId());
 			newPm.setOrgId(orgId);
 			newPm.setCreatedTime(System.currentTimeMillis());
-			newPm.setStatus(false);
+			newPm.setStatus(PMStatus.INACTIVE);
 			newPm.setTriggerType(4);
 			
 			Map<String, Object> pmProps = FieldUtil.getAsProperties(newPm);

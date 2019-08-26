@@ -2,6 +2,13 @@ package com.facilio.bmsconsole.commands;
 
 import java.io.Serializable;
 import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ForkJoinTask;
 import java.util.concurrent.RecursiveAction;
 
@@ -77,7 +84,7 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 				else {
 					new ParallalWorkflowExecution(AccountUtil.getCurrentAccount(), recordMap, changeSetMap, (FacilioContext) context).invoke();
 				}
-				LOGGER.debug("Time taken to Execute workflows for modules : "+recordMap.keySet()+" is "+(System.currentTimeMillis() - startTime));
+				LOGGER.debug("Time taken to Execute workflows for modules : "+recordMap.keySet()+" is "+(System.currentTimeMillis() - startTime) + " : " + getPrintDebug());
 			}
 		}
 		catch(Exception e) {
@@ -95,7 +102,27 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 		}
 		return false;
 	}
-	
+
+	protected List<WorkflowRuleContext> getWorkflowRules(FacilioModule module, List<EventType> activities, List<? extends ModuleBaseWithCustomFields> records) throws Exception {
+		Criteria parentCriteria = getCriteria(records);
+
+		// don't take any record if criteria
+		if (parentCriteria == null) {
+			return null;
+		}
+		List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(module, activities, parentCriteria, ruleTypes);
+		return workflowRules;
+	}
+
+	protected Criteria getCriteria(List<? extends ModuleBaseWithCustomFields> value) {
+		Map<String, FacilioField> fields = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleFields());
+		FacilioField parentRule = fields.get("parentRuleId");
+
+		Criteria parentCriteria = new Criteria();
+		parentCriteria.addAndCondition(CriteriaAPI.getCondition(parentRule, CommonOperators.IS_EMPTY));
+		return parentCriteria;
+	}
+
 	private void fetchAndExecuteRules(Map<String, List> recordMap, Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap, FacilioContext context) throws Exception {
 		for (Map.Entry<String, List> entry : recordMap.entrySet()) {
 			String moduleName = entry.getKey();
@@ -120,12 +147,8 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 				FacilioModule module = modBean.getModule(moduleName);
 				
-				Map<String, FacilioField> fields = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleFields());
-				FacilioField parentRule = fields.get("parentRuleId");
-				Criteria parentCriteria = new Criteria();
-				parentCriteria.addAndCondition(CriteriaAPI.getCondition(parentRule, CommonOperators.IS_EMPTY));
 				long currentTime = System.currentTimeMillis();
-				List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(module, activities, parentCriteria, ruleTypes);
+				List<WorkflowRuleContext> workflowRules = getWorkflowRules(module, activities, entry.getValue());
 				LOGGER.debug("Time taken to fetch workflow: " + (System.currentTimeMillis() - currentTime) + " : " + getPrintDebug());
 				currentTime = System.currentTimeMillis();
 				
@@ -161,7 +184,7 @@ public class ExecuteAllWorkflowsCommand extends FacilioCommand implements Serial
 						WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(workflowRules, module, record, changeSet, it, recordPlaceHolders, context,propagateError, activities);
 					}
 				}
-				LOGGER.debug("Time taken to execute workflow: " + (System.currentTimeMillis() - currentTime));
+				LOGGER.debug("Time taken to execute workflow: " + (System.currentTimeMillis() - currentTime) + " : " + getPrintDebug());
 			}
 		}
 	}

@@ -57,9 +57,11 @@ public class GetPreventiveMaintenanceCommand extends FacilioCommand {
 		if(permissionCriteria != null) {
 			criteria.andCriteria(permissionCriteria);
 		}
+
+		Criteria excludeCriteria = PreventiveMaintenanceAPI.getPMExcludeCriteria();
+		criteria.andCriteria(excludeCriteria);
 		
 		List<Long> idsToSelect = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
-		
 
 		JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
 		

@@ -1,5 +1,18 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BulkWorkOrderContext;
@@ -13,19 +26,6 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 public class BulkAddTasksCommand extends FacilioCommand implements PostTransactionCommand {
 
@@ -52,7 +52,7 @@ public class BulkAddTasksCommand extends FacilioCommand implements PostTransacti
         List<WorkOrderContext> workOrderContexts = bulkWorkOrderContext.getWorkOrderContexts();
         Map<Long, Integer> workOrderTaskMap = new HashMap<>();
         Map<Long, Integer> workOrderPrerequisiteMap = new HashMap<>();
-       for (int i = 0; i < workOrderContexts.size(); i++) {
+        for (int i = 0; i < workOrderContexts.size(); i++) {
            WorkOrderContext wo = workOrderContexts.get(i);
            Map<String, List<TaskContext>> taskMap = bulkWorkOrderContext.getTaskMaps().get(i);
 

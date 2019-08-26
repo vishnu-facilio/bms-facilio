@@ -41,7 +41,13 @@ public class AddOrUpdateStateFlowCommand extends FacilioCommand {
 				throw new Exception("Invalid Module");
 			}
 			stateFlow.setModuleId(facilioModule.getModuleId());
-			stateFlow.setDefaltStateFlow(false);
+			Boolean defaultStateflow = (Boolean) context.get(FacilioConstants.ContextNames.DEFAULT_STATEFLOW);
+			if (defaultStateflow == null || defaultStateflow == false) {
+				stateFlow.setDefaltStateFlow(false);
+			}
+			else {
+				stateFlow.setDefaltStateFlow(true);
+			}
 			
 			if (stateFlow.getExecutionOrder() == -1) {
 				stateFlow.setExecutionOrder(0);

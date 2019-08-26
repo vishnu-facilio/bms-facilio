@@ -35,7 +35,12 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 		long id = (long) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
 		DateRange range = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE);
 		List<Long> resourceIds = (List<Long>) context.get(FacilioConstants.ContextNames.RESOURCE_LIST);
+		Boolean isInclude = (Boolean) context.get(FacilioConstants.ContextNames.IS_INCLUDE);
 		
+		if(isInclude == null)
+		{
+			isInclude = true;
+		}
 		JSONObject jobprop = new JSONObject();
 		jobprop.put("startTime", range.getStartTime());
 		jobprop.put("endTime", range.getEndTime());
@@ -54,7 +59,7 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 		{
 			finalResourceIds = getMatchedResourcesIds(rule);
 		}
-		else 
+		else if (resourceIds!=null && !resourceIds.isEmpty() && isInclude)
 		{
 			List<Long> matchedResources = getMatchedResourcesIds(rule);
 			for(Long resourceId: resourceIds)
@@ -63,6 +68,20 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 					finalResourceIds.add(resourceId);
 				}
 			}
+		}
+		else if (resourceIds!=null && !resourceIds.isEmpty() && !isInclude)
+		{
+			List<Long> matchedResources = getMatchedResourcesIds(rule);
+			for(Long matchedResourceId: matchedResources)
+			{
+				if(!resourceIds.contains(matchedResourceId)) {
+					finalResourceIds.add(matchedResourceId);
+				}
+			}
+		}
+		else
+		{
+			throw new Exception("Not a valid Inclusion/Exclusion of Resources");
 		}
 		
 		long loggerGroupId = -1l;

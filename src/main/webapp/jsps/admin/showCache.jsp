@@ -7,9 +7,13 @@
 <title>Insert title here</title>
 </head>
 <body>
-<br>Module Cache =  <textarea rows="48" cols="150"><%out.println(com.facilio.fw.LRUCache.getModuleFieldsCache()); %></textarea>
+<br>Module Cache =  <textarea rows="48" cols="150"><%
+	out.println(com.facilio.fw.LRUCache.getModuleFieldsCache());
+%></textarea>
 
-<br>Fields Cache = <textarea  rows="8" cols="150"><%out.println(com.facilio.fw.LRUCache.getFieldsCache()); %></textarea>
+<br>Fields Cache = <textarea  rows="8" cols="150"><%
+	out.println(com.facilio.fw.LRUCache.getFieldsCache());
+%></textarea>
 
 <br><a href="clearcache"> Clear Cache</a>
 <br><a href="reloadBrowser"> Reload all users</a>

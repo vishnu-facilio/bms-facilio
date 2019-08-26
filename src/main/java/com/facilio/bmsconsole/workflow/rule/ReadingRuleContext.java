@@ -23,9 +23,13 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
+import com.facilio.bmsconsole.context.BaseEventContext;
+import com.facilio.bmsconsole.context.RCAEvent;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingEventContext;
+import com.facilio.bmsconsole.context.ReadingRCAEvent;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.bmsconsole.util.ActionAPI;
@@ -850,26 +854,62 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		}
 	}
 
-	public ReadingEventContext constructEvent(JSONObject obj, ReadingContext reading) throws Exception {
-		ReadingEventContext event = null;
-		if (obj == null) {
-			event = new ReadingEventContext();
-		}
-		else {
-			String severity = (String) obj.remove("severity");
-			obj.remove("alarmType");
-			event = FieldUtil.getAsBeanFromJson(obj, ReadingEventContext.class);
-			if (StringUtils.isNotEmpty(severity)) {
-				event.setSeverityString(severity);
+	public BaseEventContext constructEvent(JSONObject obj, ReadingContext reading,Context context) throws Exception {
+		
+		BaseEventContext event = null;
+		
+		if(getRuleType() == RuleType.ALARM_TRIGGER_RULE.getIntVal()) {
+			
+			if (obj == null) {
+				event = new ReadingEventContext();
 			}
+			else {
+				String severity = (String) obj.remove("severity");
+				obj.remove("alarmType");
+				event = FieldUtil.getAsBeanFromJson(obj, ReadingEventContext.class);
+				if (StringUtils.isNotEmpty(severity)) {
+					event.setSeverityString(severity);
+				}
+			}
+			ReadingEventContext readingEvent = (ReadingEventContext)event;
+			readingEvent.setReadingFieldId(this.getReadingFieldId());
+			
+			ReadingRuleContext rule = new ReadingRuleContext();
+			rule.setId(this.getRuleGroupId());
+			readingEvent.setRule(rule);
+			
+			ReadingRuleContext subRule = new ReadingRuleContext();
+			subRule.setId(this.getRuleGroupId());
+			readingEvent.setSubRule(subRule);
 		}
+		else if (getRuleType() == RuleType.ALARM_RCA_RULES.getIntVal()) {
+			
+			if (obj == null) {
+				event = new ReadingRCAEvent();
+			}
+			else {
+				String severity = (String) obj.remove("severity");
+				obj.remove("alarmType");
+				event = FieldUtil.getAsBeanFromJson(obj, ReadingRCAEvent.class);
+				if (StringUtils.isNotEmpty(severity)) {
+					event.setSeverityString(severity);
+				}
+			}
+			ReadingRCAEvent readingEvent = (ReadingRCAEvent)event;
+			AlarmOccurrenceContext alarmOccuranceContext = (AlarmOccurrenceContext) context.get(FacilioConstants.ContextNames.READING_RULE_ALARM_OCCURANCE);
+			readingEvent.setParentId(alarmOccuranceContext.getId());
+			readingEvent.setRuleId(this.getRuleGroupId());
+			readingEvent.setSubRuleId(this.getId());
+			readingEvent.setSeverity(alarmOccuranceContext.getSeverity());
+			readingEvent.setSeverityString(alarmOccuranceContext.getSeverity().getSeverity());
+			readingEvent.setEventMessage(getName());
+		}
+		
+		
 		if (obj.containsKey("subject")) {
 			String subject = (String) obj.get("subject");
 			event.setEventMessage(subject);
 		}
-		event.setReadingFieldId(this.getReadingFieldId());
-		event.setRuleId(this.getRuleGroupId());
-		event.setSubRuleId(this.getId());
 		DateRange range = getRange(reading);
 		event.setDescription(getMessage(range, reading));
 		event.setResource((ResourceContext) reading.getParent());

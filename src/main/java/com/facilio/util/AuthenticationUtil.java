@@ -1,17 +1,31 @@
 package com.facilio.util;
 
+import java.util.HashMap;
+
+import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
+import org.apache.struts2.ServletActionContext;
+
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.Account;
+import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.auth.cookie.FacilioCookie;
-import com.facilio.fw.auth.CognitoUtil;
+import com.facilio.iam.accounts.exceptions.AccountException;
+import com.facilio.iam.accounts.util.IAMUserUtil;
 
 
 public class AuthenticationUtil {
 	
-    public static CognitoUtil.CognitoUser getCognitoUser(HttpServletRequest request,boolean isPortaluser) throws Exception {
-        String facilioToken = null;
-        if(isPortaluser) {
+	public static IAMAccount validateToken(HttpServletRequest request, boolean portalUser, String portalDomain) throws AccountException {
+		String facilioToken = null;
+		
+		if(StringUtils.isEmpty(portalDomain)) {
+			portalDomain = "app";
+		}
+        if(portalUser) {
         	facilioToken = FacilioCookie.getUserCookie(request, "fc.idToken.facilioportal");
         } else {
         	facilioToken = FacilioCookie.getUserCookie(request, "fc.idToken.facilio");
@@ -29,7 +43,6 @@ public class AuthenticationUtil {
                     facilioToken = request.getHeader("Authorization").replace("Bearer ", "");
                 }
             }
-
             String overrideSessionCookie = FacilioCookie.getUserCookie(request, "fc.overrideSession");
             boolean overrideSessionCheck = false;
             if(overrideSessionCookie != null) {
@@ -37,19 +50,12 @@ public class AuthenticationUtil {
                     overrideSessionCheck = true;
                 }
             }
-            CognitoUtil.CognitoUser cognitoUser =  CognitoUtil.verifiyFacilioToken(facilioToken, isPortaluser, overrideSessionCheck);
-            return cognitoUser;
+            
+			IAMAccount iamAccount = IAMUserUtil.verifiyFacilioToken(facilioToken, overrideSessionCheck, null, portalDomain);
+			return iamAccount;
         }
-        return  null;
-    }
-
-    public static boolean checkIfSameUser(Account currentAccount, CognitoUtil.CognitoUser cognitoUser){
-    	if( currentAccount != null && cognitoUser != null && currentAccount.getUser() != null) {
-    		System.out.println(currentAccount.getUser().getEmail() + " mobile "+ currentAccount.getUser().getMobile() + " cognito "+ cognitoUser.getEmail());
-    		//return (currentAccount.getUser().getEmail().equalsIgnoreCase(cognitoUser.getEmail()));
-    		return true;
-    	}
-    	return false;
-    }
+        return null;
+	}
+	
 
 }

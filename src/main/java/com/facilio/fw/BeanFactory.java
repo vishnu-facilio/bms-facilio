@@ -18,8 +18,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.db.transaction.FacilioTransactionManager;
+import com.facilio.iam.accounts.util.IAMUtil;
 
 public class BeanFactory {
 
@@ -87,7 +87,7 @@ public class BeanFactory {
 	}
 
 	protected static Object lookup(String beanname, String domainname, boolean transaction) throws InstantiationException, IllegalAccessException, Exception {
-		Long orgid = AccountUtil.getOrgBean().getOrg(domainname).getOrgId();
+		Long orgid = IAMUtil.getOrgBean().getOrgv2(domainname).getOrgId();
 		return lookup(beanname, orgid, transaction);
 	}
 

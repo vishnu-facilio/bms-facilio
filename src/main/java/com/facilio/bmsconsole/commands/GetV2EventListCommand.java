@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.commands;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.events.util.EventAPI;
+import com.facilio.modules.fields.LookupField;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -25,25 +27,33 @@ public class GetV2EventListCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		long recordId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
+        AlarmOccurrenceContext alarmOccurrence = null;
 		if (recordId > 0) {
-			AlarmOccurrenceContext alarmOccurrence = NewAlarmAPI.getAlarmOccurrence(recordId);
-			if (alarmOccurrence != null) {
-				Type alarmType = alarmOccurrence.getAlarm().getTypeEnum();
-				
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				FacilioModule module = modBean.getModule(NewEventAPI.getEventModuleName(alarmType));
-				List<FacilioField> allFields = modBean.getAllFields(module.getName());
-				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
-				SelectRecordsBuilder<BaseEventContext> builder = new SelectRecordsBuilder<BaseEventContext>()
-						.module(module)
-						.select(allFields)
-						.beanClass(NewEventAPI.getEventClass(alarmType))
-						.andCondition(CriteriaAPI.getCondition(fieldMap.get("alarmOccurrence"), String.valueOf(recordId), NumberOperators.EQUALS));
-				List<BaseEventContext> list = builder.get();
-				
-				context.put(FacilioConstants.ContextNames.RECORD_LIST, list);
-			}
-		}
+		    alarmOccurrence = NewAlarmAPI.getAlarmOccurrence(recordId);
+        }
+
+        ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+        FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.BASE_EVENT);
+        List<FacilioField> allFields = modBean.getAllFields(module.getName());
+        Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
+
+        SelectRecordsBuilder<BaseEventContext> builder = new SelectRecordsBuilder<BaseEventContext>()
+                .module(module)
+                .select(allFields)
+                .beanClass(BaseEventContext.class);
+
+        if (alarmOccurrence != null) {
+            builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("alarmOccurrence"),
+                    String.valueOf(recordId), NumberOperators.EQUALS));
+        }
+
+        if (fieldMap.containsKey("severity")) {
+            builder.fetchLookup((LookupField) fieldMap.get("severity"));
+        }
+        List<BaseEventContext> list = builder.get();
+
+        context.put(FacilioConstants.ContextNames.RECORD_LIST, list);
+
 		return false;
 	}
 

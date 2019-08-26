@@ -346,6 +346,9 @@ public class IoTMessageAPI {
  		Long agentId = (Long) object.remove(AgentKeys.AGENT_ID);
 	    String topic = client+"/msgs";
 		LOGGER.info(AwsUtil.getConfig("iot.endpoint") +" " + client+"-facilio" + " " + topic + " " + object);
+		if (!AwsUtil.isProduction()) {
+ 			return;
+ 		}
 		AWSIotMqttClient mqttClient = new AWSIotMqttClient(AwsUtil.getConfig("iot.endpoint"), client+"-facilio", AwsUtil.getConfig("iot.accessKeyId"), AwsUtil.getConfig("iot.secretKeyId"));
 		try {
 			mqttClient.connect();

@@ -28,6 +28,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.LRUCache;
+import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.license.FreshsalesUtil;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.wms.message.Message;
@@ -89,9 +90,11 @@ public class AdminAction extends ActionSupport
 		newUser.setRoleId(roleId);
 		newUser.setPassword(FacilioAuthAction.cryptWithMD5(password));
 		newUser.setUserVerified(true);
+		newUser.setInviteAcceptStatus(true);
+		newUser.setInvitedTime(System.currentTimeMillis());
 		newUser.setUserStatus(true);
 		try {
-			AccountUtil.getTransactionalUserBean(orgId).inviteAdminConsoleUser(orgId, newUser);
+			AccountUtil.getTransactionalUserBean(orgId).createUser(orgId, newUser);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -423,16 +426,12 @@ public class AdminAction extends ActionSupport
 	
 	public String clearSession() throws Exception 
 	{
-		
 		String email =getEmail();
-		
 		long uid = getUserId();
-		 //System.out.println("session id :"+email+" "+uid);
-		 AccountUtil.getUserBean().clearAllUserSessions(uid, email);
+		IAMUserUtil.clearUserSessions(uid, email);
+		return SUCCESS;
 		
-		 return SUCCESS;
-		
-}
+	}
 	
 }	
 

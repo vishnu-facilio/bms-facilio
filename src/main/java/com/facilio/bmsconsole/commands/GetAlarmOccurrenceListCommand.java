@@ -23,7 +23,7 @@ public class GetAlarmOccurrenceListCommand extends FacilioCommand {
 		long recordId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 		if (recordId > 0) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			
+
 			FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
 			List<FacilioField> allFields = modBean.getAllFields(module.getName());
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
@@ -33,7 +33,7 @@ public class GetAlarmOccurrenceListCommand extends FacilioCommand {
 					.select(allFields)
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("alarm"), String.valueOf(recordId), NumberOperators.EQUALS));
 			List<AlarmOccurrenceContext> list = builder.get();
-			
+
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, list);
 		}
 		return false;

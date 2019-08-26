@@ -8,6 +8,7 @@ import java.util.Map;
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.FacilioFrequency;
+import com.facilio.bmsconsole.util.PMStatus;
 
 public class PreventiveMaintenance extends ResourceContext {
 	
@@ -42,19 +43,47 @@ public class PreventiveMaintenance extends ResourceContext {
 		setName(title);
 	}
 
-	private Boolean status;
-	public Boolean getStatus() {
-		return status;
+	private PMStatus status;
+	public int getStatus() {
+		if (status != null) {
+			return status.getValue();
+		}
+		return -1;
 	}
-	public void setStatus(Boolean status) {
+	public void setStatus(int status) {
+		this.status = PMStatus.valueOf(status);
+	}
+	public void setStatus(PMStatus status) {
 		this.status = status;
+	}
+	public PMStatus getStatusEnum() {
+		return status;
 	}
 
 	public boolean isActive() {
 		if (status != null) {
-			return status.booleanValue();
+			return status == PMStatus.ACTIVE;
 		}
 		return false;
+	}
+
+
+	private Boolean woGenerationStatus;
+	public Boolean getwoGenerationStatus() {
+		return woGenerationStatus;
+	}
+	public void setwoGenerationStatus(Boolean woGenerationStatus) {
+		this.woGenerationStatus = woGenerationStatus;
+	}
+	public boolean woGenerationStatus() {
+		if (woGenerationStatus != null) {
+			return woGenerationStatus.booleanValue();
+		}
+		return false;
+	}
+
+	public boolean isWoGenerating() {
+		return woGenerationStatus();
 	}
 
 	private User createdBy;

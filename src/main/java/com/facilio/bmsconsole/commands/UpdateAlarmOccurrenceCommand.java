@@ -1,9 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.util.NewAlarmAPI;
+import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioContext;
+import com.facilio.modules.*;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -18,9 +24,6 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 
 public class UpdateAlarmOccurrenceCommand extends FacilioCommand {
@@ -49,6 +52,7 @@ public class UpdateAlarmOccurrenceCommand extends FacilioCommand {
 			}
 			if (alarmOccurrence.getSeverity() != null && alarmOccurrence.getSeverity().equals(AlarmAPI.getAlarmSeverity("Clear"))) {
 				alarmOccurrence.setClearedTime(currentTimeMillis);
+				CommonCommandUtil.addEventType(EventType.ALARM_CLEARED, (FacilioContext) context);
 			}
 
 			Condition idCondition = CriteriaAPI.getIdCondition(recordIds, occurrenceModule);
@@ -79,7 +83,33 @@ public class UpdateAlarmOccurrenceCommand extends FacilioCommand {
 					.module(alarmModule)
 					.fields(updateOnlyAlarmFields)
 					.andCondition(CriteriaAPI.getCondition("LAST_OCCURRENCE_ID", "lastOccurrenceId", StringUtils.join(recordIds, ','), NumberOperators.EQUALS));
+			alarmUpdateBuilder.withChangeSet(BaseAlarmContext.class);
 			alarmUpdateBuilder.update(baseAlarm);
+			Map<Long, List<UpdateChangeSet>> changeSet = alarmUpdateBuilder.getChangeSet();
+
+			List<AlarmOccurrenceContext> alarmOccurrences = NewAlarmAPI.getAlarmOccurrences(recordIds);
+			if (CollectionUtils.isNotEmpty(alarmOccurrences)) {
+				Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = new HashMap<>();
+				Map<String, List> recordMap = new HashMap<>();
+				for (AlarmOccurrenceContext occurrence: alarmOccurrences) {
+					String moduleName = NewAlarmAPI.getAlarmModuleName(occurrence.getAlarm().getTypeEnum());
+					List list = recordMap.get(moduleName);
+					if (list == null) {
+						list = new ArrayList();
+						recordMap.put(moduleName, list);
+					}
+					list.add(occurrence.getAlarm());
+
+					Map<Long, List<UpdateChangeSet>> longListMap = changeSetMap.get(moduleName);
+					if (longListMap == null) {
+						longListMap = new HashMap<>();
+						changeSetMap.put(moduleName, longListMap);
+					}
+					longListMap.put(occurrence.getAlarm().getId(), changeSet.get(occurrence.getAlarm().getId()));
+				}
+				context.put(FacilioConstants.ContextNames.RECORD_MAP, recordMap);
+				context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, changeSetMap);
+			}
 		}
 		return false;
 	}

@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.modules.SelectRecordsBuilder;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -16,12 +18,19 @@ public class AddOrUpdateFacilioStatusCommand extends FacilioCommand {
 		FacilioStatus facilioStatus = (FacilioStatus) context.get(FacilioConstants.ContextNames.TICKET_STATUS);
 		String parentModuleName = (String) context.get(FacilioConstants.ContextNames.PARENT_MODULE);
 		if (facilioStatus != null) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(parentModuleName);
 			if (facilioStatus.getId() > 0) {
-				TicketAPI.updateStatus(facilioStatus);
+				FacilioModule ticketStatusModule = modBean.getModule(FacilioConstants.ContextNames.TICKET_STATUS);
+				SelectRecordsBuilder<FacilioStatus> builder = new SelectRecordsBuilder<FacilioStatus>()
+						.beanClass(FacilioStatus.class)
+						.module(ticketStatusModule)
+						.select(modBean.getAllFields(FacilioConstants.ContextNames.TICKET_STATUS))
+						.andCondition(CriteriaAPI.getIdCondition(facilioStatus.getId(), ticketStatusModule));
+				FacilioStatus previousStatus = builder.fetchFirst();
+				TicketAPI.updateStatus(facilioStatus, modBean.getModule(previousStatus.getParentModuleId()));
 			}
 			else {
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				FacilioModule module = modBean.getModule(parentModuleName);
 				TicketAPI.addStatus(facilioStatus, module);
 			}
 		}

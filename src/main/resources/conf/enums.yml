@@ -6,4 +6,9 @@ enums:
 
   - name: AlarmType
     enumClassName: com.facilio.bmsconsole.context.BaseAlarmContext$Type
-    
+
+  - name: ReservationDurationType
+    enumClassName: com.facilio.bmsconsole.context.reservation.ReservationContext$DurationType
+
+  - name: ReservationStatus
+    enumClassName: com.facilio.bmsconsole.context.reservation.ReservationContext$ReservationStatus

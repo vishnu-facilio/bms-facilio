@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.bmsconsole.util.PMStatus;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -57,7 +58,7 @@ public class UpdatePreventiveMaintenanceCommand extends FacilioCommand{
 
 		pm.setModifiedById(AccountUtil.getCurrentUser().getId());
 		pm.setLastModifiedTime(System.currentTimeMillis());
-		pm.setStatus(true);
+		pm.setStatus(PMStatus.ACTIVE);
 		
 		/*pm.setResourceId(workorder.getResource() != null ? workorder.getResource().getId() : -1);
 		pm.setAssignedToid(workorder.getAssignedTo() != null ? workorder.getAssignedTo().getId() : -1);

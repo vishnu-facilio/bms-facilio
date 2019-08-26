@@ -49,11 +49,21 @@ public class CalculateDeltaInReadingResetCommand extends FacilioCommand {
 				if(prevReadingValue != null && curReadingValue != null){
 					Object deltaValue;
 					if(field.getDataTypeEnum().equals(FieldType.DECIMAL)){
+						if(resetCounter.getEndvalue() < (Double) prevReadingValue ){
+							throw new IllegalArgumentException("End value is lesser than previous reading");
+						}else if (resetCounter.getStartvalue() > (Double) curReadingValue ){
+							throw new IllegalArgumentException("Start value is greater than current reading");
+						}
 						deltaValue = (resetCounter.getEndvalue() - (Double) prevReadingValue) + (Double) curReadingValue;
 						if (resetCounter.getStartvalue() > 0) {
 							deltaValue = (Double) deltaValue - resetCounter.getStartvalue();
 						}
 					}else{
+						if(resetCounter.getEndvalue() < (Long) prevReadingValue ){
+							throw new IllegalArgumentException("End value is lesser than previous reading");
+						}else if (resetCounter.getStartvalue() > (Long) curReadingValue ){
+							throw new IllegalArgumentException("Start value is greater than current reading");
+						}
 						deltaValue = (resetCounter.getEndvalue() - (Long) prevReadingValue) + (Long) curReadingValue;
 						if (resetCounter.getStartvalue() > 0) {
 							deltaValue = (Long) deltaValue - resetCounter.getStartvalue();

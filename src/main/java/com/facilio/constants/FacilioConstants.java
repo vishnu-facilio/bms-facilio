@@ -6,7 +6,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.reservation.ExternalAttendeeContext;
+import com.facilio.bmsconsole.context.reservation.InternalAttendeeContext;
+import com.facilio.bmsconsole.context.reservation.ReservationContext;
 import com.facilio.bmsconsole.view.CustomModuleData;
+import com.facilio.controlaction.util.ControlActionUtil;
+
 import org.json.simple.JSONObject;
 
 import com.facilio.activity.ActivityContext;
@@ -69,6 +74,13 @@ public class FacilioConstants {
 	}
 
 	public static class ContextNames {
+
+		public static class Reservation {
+			public static final String RESERVATION = "reservation";
+			public static final String RESERVATION_LIST = "reservations";
+			public static final String RESERVATIONS_INTERNAL_ATTENDEE = "reservationInternalAttendee";
+			public static final String RESERVATIONS_EXTERNAL_ATTENDEE = "reservationExternalAttendee";
+		}
 
 		public static final String CONNECTION = "connectionContext";
         public static final String OFFSET = "offset";
@@ -227,6 +239,10 @@ public class FacilioConstants {
 		public static final String NEW_READING_ALARM = "newreadingalarm";
 		public static final String READING_EVENT = "readingevent";
 		public static final String IS_ALARM_CREATED = "isalarmcreated";
+		public static final String READING_ALARM_CATEGORY = "readingalarmcategory";
+		public static final String BMS_EVENT = "bmsevent";
+		public static final String BMS_ALARM ="bmsalarm";
+		public static final String IS_INCLUDE = "isInclude";
 		
 		public static final String ML_ANOMALY_ALARM = "mlAnomalyAlarm";
 	
@@ -324,6 +340,7 @@ public class FacilioConstants {
 		
 		public static final String DASHBOARD = "dashboard";
 		public static final String DASHBOARD_TAB = "dashboardTab";
+		public static final String DASHBOARD_TABS_LIST = "dashboardTabsList";
 		public static final String DASHBOARD_TAB_ID = "dashboardTabId";
 		public static final String DASHBOARDS = "dashboards";
 		public static final String DASHBOARD_ID = "dashboardId";
@@ -427,6 +444,7 @@ public class FacilioConstants {
 		public static final String REPORT_CONTEXT = "reportContext";
 		public static final String REPORT_ID = "reportId";
 		public static final String REPORT_INFO = "reportInfo";
+		public static final String ANALYTICS_TYPE = "analyticsType";
 		
 		public static final String BUILDING = "building";
 		public static final String BUILDING_LIST = "buildings";
@@ -534,6 +552,7 @@ public class FacilioConstants {
 		public static final String MV_BASELINE_MODULE = "mvbaseline";
 		public static final String MV_ADJUSTMENT_MODULE = "mvadjustment";
 		
+		public static final String CONTROL_ACTION_COMMAND_MODULE = "controlActionCommand";
 
         public static final String IS_PREREQUISITE="isPrerequisite";
 		public static final String PICKLIST = "pickList";
@@ -648,13 +667,19 @@ public class FacilioConstants {
 		public static final String WORKFLOW_FETCH_CHILDREN = "workflowFetchChildren";
 		public static final String WORKFLOW_UPDATE = "workflowUpdate";
 		public static final String WORKFLOW_RULE = "workflowRule";
+		public static final String WORKFLOW_RULES = "workflowRules";
+		public static final String WORKFLOW_RULES_COUNT = "workflowRulesCount";
 		public static final String WORKFLOW_RULE_ID = "workflowRuleID";
 		public static final String WORKFLOW_RULE_MODULE = "workflowrule";
 		public static final String READING_RULE_MODULE = "readingrule";
+		public static final String READING_ALARM_RULES = "readingalarmrules";
+		public static final String READING_ALARM_RULE = "readingalarmrule";
 		public static final String WORKORDER_ACTIVITY = "workorderactivity";
 		public static final String RULE_COUNT = "ruleCount";
 		public static final String RULES = "rules";
+		public static final String RULE_ID = "ruleId";
 		public static final String ALARM_RULE = "alarmRule";
+		public static final String RULE_TYPE = "ruleType";
 		public static final String IS_SUMMARY ="isSummary";
 		public static final String OLD_ALARM_RULE = "oldalarmRule";
 		public static final String ALARM_RULE_ACTIVE_ALARM = "alarmRuleActiveAlarm";
@@ -751,6 +776,8 @@ public class FacilioConstants {
 		public static final String CURRRENT_READING_DATA_META = "currentReadingDataMeta";
 		public static final String READING_DATA_META_ID = "readingDataMetaId";
 		public static final String READING_DATA_META_LIST = "readingDataMetaList";
+		public static final String READING_DATA_META_COUNT = "readingDataMetaCount";
+		public static final String READING_DATA_META = "readingdatameta";
 		public static final String READING_DATA_META_MAP = "readingDataMetaMap";
 		public static final String READING_DATA_META_TYPE = "readingDataMetaType";
 		public static final String FORMULA_FIELD = "formulaField";
@@ -768,6 +795,9 @@ public class FacilioConstants {
 		public static final String IS_FETCH_RDM_FROM_UI="isFetchRDMFromUI";
 		public static final String RESET_COUNTER_META_LIST="ResetCounterMetaList";
 		public static final String RESET_COUNTER_META="resetcountermeta";
+		
+		
+		public static final String CONTROL_GROUP = ControlActionUtil.CONTROL_ACTION_GROUP_CONTEXT;
 		
 		public static final String PORTALINFO = "portalInfo";
 		public static final String PUBLICKEYFILE = "publicKeyFile";
@@ -1023,6 +1053,7 @@ public class FacilioConstants {
 		public static final String TRANSITION = "transition";
 		public static final String STATE_TRANSITION_ONLY_CONDITIONED_CHECK = "stateTransitionOnlyConditionedCheck";
 		public static final String STATEFLOW_DIAGRAM = "stateFlowDiagram";
+		public static final String DEFAULT_STATEFLOW = "defaultStateflow";
 
 		public static final String ROTATING_ASSET = "rotatingAsset";
 		
@@ -1149,7 +1180,9 @@ public class FacilioConstants {
 
 		public static final String INCLUDE_SERVING_SITE = "includeServingSite";
 		public static final Object DEFAULT_DATE = "defaultDate";
+		public static final Object READING_RULE_ALARM_OCCURANCE = "readingRuleAlarmOccurance";
 
+		public static final String IS_EMAIL_VERIFICATION_NEEDED = "isEmailVerificationNeeded";
 
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
@@ -1293,7 +1326,11 @@ public class FacilioConstants {
 			classMap.put(BASE_ALARM, BaseAlarmContext.class);
 			classMap.put(NEW_READING_ALARM, ReadingAlarm.class);
 			classMap.put(READING_EVENT, ReadingEventContext.class);
-			
+			classMap.put(READING_ALARM_CATEGORY, ReadingAlarmCategoryContext.class);
+
+			classMap.put(Reservation.RESERVATION, ReservationContext.class);
+			classMap.put(Reservation.RESERVATIONS_INTERNAL_ATTENDEE, InternalAttendeeContext.class);
+			classMap.put(Reservation.RESERVATIONS_EXTERNAL_ATTENDEE, ExternalAttendeeContext.class);
 
 			return classMap;
 		}

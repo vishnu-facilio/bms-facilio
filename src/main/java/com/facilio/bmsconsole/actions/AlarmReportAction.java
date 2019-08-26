@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.reports.ReportsUtil;
+import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -104,7 +105,11 @@ public class AlarmReportAction extends ActionSupport {
 		for(BuildingContext building:buildings) {
 			JSONObject buildingData=ReportsUtil.getBuildingData(building);
 			long spaceId=building.getId();
-			buildingData.put("activeCount", getActiveAlarms(spaceId));
+			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
+				buildingData.put("activeCount", NewAlarmAPI.getActiveAlarms(spaceId));
+			} else {
+				buildingData.put("activeCount", getActiveAlarms(spaceId));
+			}
 			//buildingData.put("totalCount", getTotalAlarms(spaceId));
 			buildingArray.add(buildingData);
 		}

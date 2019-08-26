@@ -107,6 +107,12 @@ public class ReportUtil {
 		}
 		report.addToReportState(FacilioConstants.ContextNames.REPORT_SHOW_SAFE_LIMIT, showSafeLimit);
 		
+		Integer analyticsType=(Integer) context.get(FacilioConstants.ContextNames.ANALYTICS_TYPE);
+		
+		if(analyticsType != null && analyticsType != -1) {
+			report.setAnalyticsType(analyticsType);
+		}
+		
 		WorkflowContext transformWorkflow = (WorkflowContext)context.get(FacilioConstants.Workflow.WORKFLOW);
 		if (transformWorkflow != null) {
 			report.setTransformWorkflow(transformWorkflow);

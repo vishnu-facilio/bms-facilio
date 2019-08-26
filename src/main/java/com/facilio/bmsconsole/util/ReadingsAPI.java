@@ -12,11 +12,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Chain;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
@@ -24,6 +26,8 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.agent.AgentUtil;
+import com.facilio.agent.FacilioAgent;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -75,6 +79,8 @@ public class ReadingsAPI {
 	public static final int DEFAULT_DATA_INTERVAL = 15; //In Minutes
 	public static final SecondsChronoUnit DEFAULT_DATA_INTERVAL_UNIT = new SecondsChronoUnit(DEFAULT_DATA_INTERVAL * 60); 
 	private static final int BATCH_SIZE =2000;
+	
+	public static final String FORMULA_FIELD_TABLE_NAME = "Formula_Readings";	
 	
 	public static int getOrgDefaultDataIntervalInMin() throws Exception {
 		Map<String, String> orgInfo = CommonCommandUtil.getOrgInfo(FacilioConstants.OrgInfoKeys.DEFAULT_DATA_INTERVAL);
@@ -136,6 +142,10 @@ public class ReadingsAPI {
 		
 		if (readingType != null) {
 			prop.put("readingType", readingType.getValue());
+			if (readingType == ReadingType.WRITE) {
+				prop.put("isControllable", true);
+				prop.put("controlActionMode", ReadingDataMeta.ControlActionMode.LIVE.getValue());
+			}
 		}
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 														.table(module.getTableName())
@@ -261,11 +271,11 @@ public class ReadingsAPI {
 	}
 	
 	public static long getReadingDataMetaCount(Long resourceId, boolean excludeEmptyFields, String search, ReadingInputType...inputTypes) throws Exception {
-		return getReadingDataMetaCount(Collections.singletonList(resourceId), excludeEmptyFields, search, inputTypes);
+		return getReadingDataMetaCount(Collections.singletonList(resourceId), excludeEmptyFields, search, null, inputTypes);
 	}
 	
-	public static long getReadingDataMetaCount(Collection<Long> resourceIds, boolean excludeEmptyFields, String search, ReadingInputType...inputTypes) throws Exception {
-		List<Map<String, Object>> props = getRDMProps(resourceIds, null, excludeEmptyFields, true, null, search, null, inputTypes);
+	public static long getReadingDataMetaCount(Collection<Long> resourceIds, boolean excludeEmptyFields, String search, ReadingType readingType, ReadingInputType...inputTypes) throws Exception {
+		List<Map<String, Object>> props = getRDMProps(resourceIds, null, excludeEmptyFields, true, null, search, readingType, inputTypes);
 		if (props != null && !props.isEmpty()) {
 			return (long) props.get(0).get("count");
 		}
@@ -340,7 +350,9 @@ public class ReadingsAPI {
 		}
 		
 		if(readingType != null) {
-			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("readingType"), String.valueOf(readingType.getValue()), PickListOperators.IS));
+//			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("readingType"), String.valueOf(readingType.getValue()), PickListOperators.IS));
+			boolean isControllable = readingType == ReadingType.WRITE;
+			builder.andCondition(CriteriaAPI.getCondition(readingFieldsMap.get("isControllable"), String.valueOf(isControllable), BooleanOperators.IS));
 		}
 		
 		if (inputTypes != null && inputTypes.length > 0) {
@@ -369,7 +381,7 @@ public class ReadingsAPI {
 		return builder.get();
 	}
 	
-	private static List<ReadingDataMeta> getReadingDataFromProps(List<Map<String, Object>> props, Map<Long, FacilioField> fieldMap) throws Exception {
+	public static List<ReadingDataMeta> getReadingDataFromProps(List<Map<String, Object>> props, Map<Long, FacilioField> fieldMap) throws Exception {
 		if(props != null && !props.isEmpty()) {
 			List<ReadingDataMeta> metaList = new ArrayList<>();
 			for (Map<String, Object> prop : props) {
@@ -395,6 +407,20 @@ public class ReadingsAPI {
 			return rdmMap;
 		}
 		return null;
+	}
+	
+	public static List<ReadingDataMeta> getControllableRDMs() throws Exception {
+		
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getReadingDataMetaFields());
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getReadingDataMetaFields())
+				.table(ModuleFactory.getReadingDataMetaModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("isControllable"), Boolean.TRUE.toString(), BooleanOperators.IS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		List<ReadingDataMeta> readingMetaList = getReadingDataFromProps(props, null);
+		return readingMetaList;
 	}
 	
 	private static ReadingDataMeta getRDMFromProp (Map<String, Object> prop, Map<Long, FacilioField> fieldMap) throws Exception {
@@ -774,12 +800,13 @@ public class ReadingsAPI {
 	}
 	
 	private static final  List<String> DEFAULT_READING_FIELDS = Collections.unmodifiableList(getDefaultReadingFieldNames());
-	private static final List<String> getDefaultReadingFieldNames() {
+	public static final List<String> getDefaultReadingFieldNames() {
 		List<String> fieldNames = new ArrayList<>();
 		List<FacilioField> fields = FieldFactory.getDefaultReadingFields(null);
 		for(FacilioField field : fields) {
 			fieldNames.add(field.getName());
 		}
+		fieldNames.add("sysCreatedTime");
 		return fieldNames;
 	}
 	
@@ -985,9 +1012,22 @@ public class ReadingsAPI {
 		}
 		
 		Map<Long, ControllerContext> controllers = null;
+		Set<Long> agentIds = new HashSet<>();
 		if (controllerIds != null && !controllerIds.isEmpty()) {
 			controllers = ControllerAPI.getControllersMap(controllerIds);
+			for(Entry<Long, ControllerContext> entry: controllers.entrySet()){
+				ControllerContext controller = entry.getValue();
+				if (controller.getAgentId() > 0) {
+					agentIds.add(controller.getAgentId());
+				}
+			}
 		}
+		
+		Map<Long, FacilioAgent> agentsMap = null;
+		if (CollectionUtils.isNotEmpty(agentIds)) {
+			agentsMap = AgentUtil.getAgentsMap(agentIds);
+		}
+
 		
 		for (ReadingContext reading : readings) {
 			FacilioModule module = moduleMap != null ? moduleMap.get(reading.getModuleId()) : bean.getModule(reading.getModuleId());
@@ -1000,6 +1040,12 @@ public class ReadingsAPI {
 				ControllerContext controller = controllers.get(controllerId);
 				if (controller.getDataInterval() != -1) {
 					minuteInterval = controller.getDataInterval();
+				}
+				else if (controller.getAgentId() > 0) {
+					FacilioAgent agent = agentsMap.get(controller.getAgentId());
+					if (agent.getDataInterval() != null && agent.getDataInterval() > 0l) {
+						minuteInterval = agent.getDataInterval().intValue();
+					}
 				}
 			}
 			reading.setDatum("interval", minuteInterval);

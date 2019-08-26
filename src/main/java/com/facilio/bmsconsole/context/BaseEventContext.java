@@ -1,20 +1,29 @@
 package com.facilio.bmsconsole.context;
 
-import org.apache.commons.lang3.StringUtils;
-
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioContext;
 import com.facilio.events.context.EventContext;
 import com.facilio.events.context.EventContext.EventInternalState;
 import com.facilio.events.context.EventContext.EventState;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.time.DateTimeUtil;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
-public abstract class BaseEventContext extends ModuleBaseWithCustomFields {
+public class BaseEventContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
 
 	private String description;
+	private boolean superCalled = false;
+
 	public String getDescription() {
 		return description;
 	}
@@ -62,7 +71,9 @@ public abstract class BaseEventContext extends ModuleBaseWithCustomFields {
 	public void setMessageKey(String messageKey) {
 		this.messageKey = messageKey;
 	};
-	public abstract String constructMessageKey();
+	public String constructMessageKey() {
+		return null;
+	}
 	
 	private EventState eventState;
 	public int getEventState() {
@@ -145,16 +156,24 @@ public abstract class BaseEventContext extends ModuleBaseWithCustomFields {
 	public void setComment(String comment) {
 		this.comment = comment;
 	}
-	
+
+	private Type type;
 	@JsonInclude
 	public final int getEventType() {
-		Type type = getEventTypeEnum();
+		type = getEventTypeEnum();
 		if (type != null) {
 			return type.getIndex();
 		}
 		return -1;
 	}
-	public abstract Type getEventTypeEnum();
+	// this will be used only to get data from database
+	public final void setEventType(int eventType) {
+		type = Type.valueOf(eventType);
+	}
+	// this will be used only to get data from database
+	public Type getEventTypeEnum() {
+		return type;
+	}
 	
 	private Boolean autoClear;
 	public Boolean getAutoClear() {
@@ -182,8 +201,36 @@ public abstract class BaseEventContext extends ModuleBaseWithCustomFields {
 	public void setRecommendation(String recommendation) {
 		this.recommendation = recommendation;
 	}
+
+	private JSONObject additionInfo;
+	public JSONObject getAdditionInfo() {
+		if (additionInfo == null) {
+			this.additionInfo = new JSONObject();
+			if (MapUtils.isNotEmpty(getData())) {
+				this.additionInfo.putAll(getData());
+			}
+		}
+		return additionInfo;
+	}
+	public void addAdditionInfo(String key, Object value) {
+		if(this.additionInfo == null) {
+			this.additionInfo =  new JSONObject();
+		}
+		this.additionInfo.put(key,value);
+	}
+
+	public String getAdditionalInfoJsonStr() {
+		if(additionInfo != null) {
+			return additionInfo.toJSONString();
+		}
+		return null;
+	}
+	public void setAdditionalInfoJsonStr(String jsonStr) throws ParseException {
+		JSONParser parser = new JSONParser();
+		additionInfo = (JSONObject) parser.parse(jsonStr);
+	}
 	
-	public BaseAlarmContext updateAlarmContext(BaseAlarmContext baseAlarm, boolean add) {
+	public BaseAlarmContext updateAlarmContext(BaseAlarmContext baseAlarm, boolean add) throws Exception {
 		if (StringUtils.isNotEmpty(getEventMessage())) {
 			baseAlarm.setSubject(getEventMessage());
 		}
@@ -196,7 +243,7 @@ public abstract class BaseEventContext extends ModuleBaseWithCustomFields {
 		return baseAlarm;
 	}
 	
-	public void updateAlarmOccurrenceContext(AlarmOccurrenceContext alarmOccurrence, boolean add) throws Exception {
+	public void updateAlarmOccurrenceContext(AlarmOccurrenceContext alarmOccurrence, Context context, boolean add) throws Exception {
 		AlarmSeverityContext previousSeverity = alarmOccurrence.getSeverity();
 		alarmOccurrence.setSeverity(getSeverity());
 		alarmOccurrence.setAutoClear(getAutoClear());
@@ -206,17 +253,32 @@ public abstract class BaseEventContext extends ModuleBaseWithCustomFields {
 		if (getSeverity().equals(clearSeverity)) {
 			alarmOccurrence.setClearedTime(getCreatedTime());
 		}
-		
+
+		JSONObject additionInfo = getAdditionInfo();
+		if (additionInfo != null && !additionInfo.isEmpty()) {
+			for (Object keySet : additionInfo.keySet()) {
+				Object o = additionInfo.get(keySet);
+				if (o != null) {
+					alarmOccurrence.addAdditionInfo(keySet.toString(), o);
+				}
+			}
+		}
+
 		if (add) {
+			CommonCommandUtil.addEventType(EventType.CREATE, (FacilioContext) context);
 			alarmOccurrence.setCreatedTime(getCreatedTime());
 			alarmOccurrence.setResource(getResource());
 		} 
 		else {
 			if (!previousSeverity.equals(getSeverity())) {
 				if (!getSeverity().equals(clearSeverity)) {
+					CommonCommandUtil.addEventType(EventType.UPDATED_ALARM_SEVERITY, (FacilioContext) context);
 					alarmOccurrence.setAcknowledged(false);
 					alarmOccurrence.setAcknowledgedBy(null);
 					alarmOccurrence.setAcknowledgedTime(-1l);
+				}
+				else {
+					CommonCommandUtil.addEventType(EventType.ALARM_CLEARED, (FacilioContext) context);
 				}
 				alarmOccurrence.setPreviousSeverity(previousSeverity);
 			}
@@ -272,5 +334,17 @@ public abstract class BaseEventContext extends ModuleBaseWithCustomFields {
 		baseEvent.setResource(resourceContext);
 		
 		return baseEvent;
+	}
+
+	public boolean shouldIgnore() {
+		superCalled = true;
+		if (getSeverity() == null) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean isSuperCalled() {
+		return superCalled;
 	}
 }

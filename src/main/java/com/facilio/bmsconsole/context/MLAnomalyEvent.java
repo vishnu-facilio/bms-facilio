@@ -16,7 +16,7 @@ public class MLAnomalyEvent extends BaseEventContext{
 	}
 	
 	@Override
-	public BaseAlarmContext updateAlarmContext(BaseAlarmContext baseAlarm, boolean add) {
+	public BaseAlarmContext updateAlarmContext(BaseAlarmContext baseAlarm, boolean add) throws Exception {
 		if (add && baseAlarm == null) {
 			baseAlarm = new MLAnomalyAlarm();
 		}
@@ -41,6 +41,10 @@ public class MLAnomalyEvent extends BaseEventContext{
 		{
 			anomalyAlarm.setReadingTime(readingTime);
 		}
+		if(mlid!=-1)
+		{
+			anomalyAlarm.setmlid(mlid);
+		}
 		
 		return baseAlarm;
 	}
@@ -51,6 +55,7 @@ public class MLAnomalyEvent extends BaseEventContext{
 	private double actualValue;
 	private double adjustedUpperBoundValue;
 	private long readingTime;
+	private long mlid;
 	
 	public void setEnergyDataFieldid(long energyDataFieldid)
 	{
@@ -101,6 +106,14 @@ public class MLAnomalyEvent extends BaseEventContext{
 	@JsonSerialize
 	public Type getEventTypeEnum() {
 		return Type.ML_ANOMALY_ALARM;
+	}
+
+	public long getmlid() {
+		return mlid;
+	}
+
+	public void setmlid(long mlid) {
+		this.mlid = mlid;
 	}
 
 }

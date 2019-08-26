@@ -249,6 +249,7 @@ public class ReportFactory {
 				{
 					String arguments = String.valueOf(System.currentTimeMillis());
 					setColumnName(getGenericColumnName().replace("?", arguments));
+					break;
 				}
 				
 				default: 

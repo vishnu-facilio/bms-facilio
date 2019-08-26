@@ -62,6 +62,13 @@ public class OpenScheduledWO extends FacilioJob {
             }
 
             WorkOrderContext wo = workOrderContexts.get(0);
+
+            PreventiveMaintenance pm = PreventiveMaintenanceAPI.getPM(wo.getPm().getId(), true);
+
+            if (!PreventiveMaintenanceAPI.canOpenWorkOrder(pm)) {
+                return;
+            }
+
             if(wo.getTrigger() != null && wo.getTrigger().getId() > 0) {
             	PMTriggerContext trigger = PreventiveMaintenanceAPI.getPMTriggersByTriggerIds(Collections.singletonList(wo.getTrigger().getId())).get(0);
             	wo.setTrigger(trigger);
@@ -149,8 +156,7 @@ public class OpenScheduledWO extends FacilioJob {
             Chain c = TransactionChainFactory.getWorkOrderWorkflowsChain(true);
             c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
             c.execute(context);
-            
-            PreventiveMaintenance pm = PreventiveMaintenanceAPI.getActivePM(wo.getPm().getId(), true);
+
             Map<Long, WorkOrderContext> pmToWo = new HashMap<>();
             pmToWo.put(pm.getId(), wo);
 

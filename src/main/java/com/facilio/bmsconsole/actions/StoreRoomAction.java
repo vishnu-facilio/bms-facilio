@@ -269,7 +269,7 @@ public class StoreRoomAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, ruleIds);
 		
-		Chain deleteRule = FacilioChainFactory.getDeleteWorkflowRuleChain();
+		Chain deleteRule = TransactionChainFactory.getDeleteWorkflowRuleChain();
 		deleteRule.execute(context);
 		
 		setResult("result", context.get(FacilioConstants.ContextNames.RESULT));

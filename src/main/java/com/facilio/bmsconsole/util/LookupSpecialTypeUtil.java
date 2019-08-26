@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.accounts.dto.Group;
@@ -49,6 +51,8 @@ public class LookupSpecialTypeUtil {
 				|| FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE.equals(specialType)
 				|| FacilioConstants.ContextNames.WORK_ORDER_TEMPLATE.equals(specialType)
 				|| FacilioConstants.ContextNames.FORMULA_FIELD.equals(specialType)
+				|| FacilioConstants.ContextNames.READING_DATA_META.equals(specialType)
+				|| FacilioConstants.ContextNames.CONTROL_GROUP.equals(specialType)
 				|| FacilioConstants.Workflow.WORKFLOW.equals(specialType)
 				|| "trigger".equals(specialType)
 				|| "connectedApps".equals(specialType)
@@ -58,7 +62,7 @@ public class LookupSpecialTypeUtil {
 	public static FacilioField getIdField (String specialType) {
 		if(FacilioConstants.ContextNames.USERS.equals(specialType) || 
 			FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
-			return FieldFactory.getAsMap(AccountConstants.getOrgUserFields()).get("ouid");
+			return FieldFactory.getAsMap(AccountConstants.getAppOrgUserFields()).get("ouid");
 		}
 		else if (FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
 			return FieldFactory.getAsMap(AccountConstants.getGroupFields()).get("groupId"); 
@@ -151,6 +155,9 @@ public class LookupSpecialTypeUtil {
 			}
 			return null;
 		}
+		else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
+			return WorkflowRuleAPI.getWorkflowRule(id, false, false, true);
+		}
 		return null;
 	}
 	
@@ -242,6 +249,15 @@ public class LookupSpecialTypeUtil {
 				return triggers.stream().collect(Collectors.toMap(PMTriggerContext::getId, Function.identity()));
 			}
 		}
+		else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
+			if (!(ids instanceof List)) {
+				ids = new ArrayList<>(ids);
+			}
+			List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getWorkflowRules((List<Long>) ids);
+			if (CollectionUtils.isNotEmpty(workflowRules)) {
+				return workflowRules.stream().collect(Collectors.toMap(WorkflowRuleContext::getId, Function.identity()));
+			}
+		}
 		return null;
 	}
 	
@@ -272,6 +288,12 @@ public class LookupSpecialTypeUtil {
 		}
 		else if ("trigger".equals(specialType)) {
 			return PreventiveMaintenanceAPI.getPMTriggersByTriggerIds(ids);
+		}
+		else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
+			if (!(ids instanceof List)) {
+				ids = new ArrayList<>(ids);
+			}
+			return WorkflowRuleAPI.getWorkflowRules((List<Long>) ids);
 		}
 		return null;
 	}
@@ -326,6 +348,11 @@ public class LookupSpecialTypeUtil {
 			PMTriggerContext pmTriggerContext = new PMTriggerContext();
 			pmTriggerContext.setId(id);
 			return pmTriggerContext;
+		}
+		else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
+			ReadingRuleContext readingRuleContext = new ReadingRuleContext();
+			readingRuleContext.setId(id);
+			return readingRuleContext;
 		}
 		return null;
 	}
@@ -450,7 +477,7 @@ public class LookupSpecialTypeUtil {
 	
 	public static FacilioModule getModule(String specialType) {
 		if(FacilioConstants.ContextNames.USERS.equals(specialType) || FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
-			FacilioModule module = AccountConstants.getOrgUserModule();
+			FacilioModule module = AccountConstants.getAppOrgUserModule();
 			module.setName(specialType);
 			return module;
 		}
@@ -481,6 +508,12 @@ public class LookupSpecialTypeUtil {
 		else if(FacilioConstants.ContextNames.FORMULA_FIELD.equals(specialType)) {
 			return ModuleFactory.getFormulaFieldModule();
 		}
+		else if(FacilioConstants.ContextNames.READING_DATA_META.equals(specialType)) {
+			return ModuleFactory.getReadingDataMetaModule();
+		}
+		else if(FacilioConstants.ContextNames.CONTROL_GROUP.equals(specialType)) {
+			return ModuleFactory.getControlGroupModule();
+		}
 		else if(FacilioConstants.Workflow.WORKFLOW.equals(specialType)) {
 			return ModuleFactory.getWorkflowModule();
 		}
@@ -495,8 +528,8 @@ public class LookupSpecialTypeUtil {
 	
 	public static List<FacilioField> getAllFields(String specialType) {
 		if(FacilioConstants.ContextNames.USERS.equals(specialType) || FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
-			List<FacilioField> fields = AccountConstants.getUserFields();
-			fields.addAll(AccountConstants.getOrgUserFields());
+			List<FacilioField> fields = AccountConstants.getAppUserFields();
+			fields.addAll(AccountConstants.getAppOrgUserFields());
 			return fields;
 		}
 		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
@@ -527,6 +560,12 @@ public class LookupSpecialTypeUtil {
 		}
 		else if(FacilioConstants.ContextNames.FORMULA_FIELD.equals(specialType)) {
 			return FieldFactory.getFormulaFieldFields();
+		}
+		else if(FacilioConstants.ContextNames.READING_DATA_META.equals(specialType)) {
+			return FieldFactory.getReadingDataMetaFields();
+		}
+		else if(FacilioConstants.ContextNames.CONTROL_GROUP.equals(specialType)) {
+			return FieldFactory.getControlGroupFields();
 		}
 		else if(FacilioConstants.Workflow.WORKFLOW.equals(specialType)) {
 			return FieldFactory.getWorkflowFields();

@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BulkWorkOrderContext;
-import com.facilio.bmsconsole.context.PMJobsContext;
 import com.facilio.bmsconsole.context.PMResourcePlannerContext;
 import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
@@ -21,7 +21,6 @@ import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -32,9 +31,8 @@ import java.util.logging.Logger;
 //Move to jobs package after migrations are completed and remove SerializableCommand interface
 public class ScheduleNewPMCommand extends FacilioJob implements SerializableCommand {
 
-    private static final Logger LOGGER = Logger.getLogger(PreventiveMaintenanceAPI.class.getName());
-    private boolean isBulkUpdate = false;
-    private List<PMJobsContext> pmJobsToBeScheduled;
+    private static final Logger LOGGER = Logger.getLogger(ScheduleNewPMCommand.class.getName());
+    private boolean isBulkUpdate;
 
     public static final long serialVersionUID = -1436898572846920375L;
 
@@ -92,6 +90,7 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
         PreventiveMaintenanceAPI.scheduleReminders(resourceTriggerWoMap, pms);
         return false;
     }
+
     private void schedulePM(PreventiveMaintenance pm, Context context) throws Exception {
         LOGGER.log(Level.FINE, "Generating work orders for PM: " + pm.getId());
         Map<Long, List<Long>> nextExecutionTimes = new HashMap<>();
@@ -203,15 +202,25 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
 
         if (!bulkWorkOrderContexts.isEmpty()) {
             BulkWorkOrderContext bulkWorkOrderContext = new BulkWorkOrderContext(bulkWorkOrderContexts);
+            if (AccountUtil.getCurrentOrg().getOrgId() == 176L) {
+                LOGGER.log(Level.SEVERE, "Scheduling Pm " + pm.getId());
+                LOGGER.log (Level.FINE,"No  of work orders to save " + bulkWorkOrderContext.getWorkOrderContexts().size());
+            }
             LOGGER.log (Level.FINE,"No  of work orders to save " + bulkWorkOrderContext.getWorkOrderContexts().size());
             context.put(FacilioConstants.ContextNames.BULK_WORK_ORDER_CONTEXT, bulkWorkOrderContext);
             context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
 
             Chain addWOChain = TransactionChainFactory.getTempAddPreOpenedWorkOrderChain();
+            addWOChain.addCommand(new PMEditBlockRemovalCommand(pm.getId()));
             addWOChain.execute(context);
             if (bulkWorkOrderContext.getWorkOrderContexts() != null && !bulkWorkOrderContext.getWorkOrderContexts().isEmpty()) {
                 wos.addAll(bulkWorkOrderContext.getWorkOrderContexts());
             }
+        }
+
+        if (AccountUtil.getCurrentOrg().getOrgId() == 176L) {
+            LOGGER.log(Level.SEVERE, "Scheduling Pm " + pm.getId());
+            LOGGER.log (Level.SEVERE,"No  of work orders to save " + bulkWorkOrderContexts.size());
         }
 
         List<WorkOrderContext> ws = (List<WorkOrderContext>) context.get(FacilioConstants.ContextNames.WO_CONTEXTS);
@@ -226,10 +235,10 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
 
     @Override
     public void execute(JobContext jc) throws Exception {
-        LOGGER.log(Level.INFO, "Creating jobs for pm: "+ jc.getJobId());
+        List<Long> recordIds = Collections.singletonList(jc.getJobId());
         FacilioContext context = new FacilioContext();
-        List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getPMsDetails(Arrays.asList(jc.getJobId()));
-
+        List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getPMsDetails(recordIds);
+        PreventiveMaintenanceAPI.deleteScheduledWorkorders(recordIds);
         Map<String,PMTriggerContext> triggerMap = new HashMap<>();
         if (pms.get(0).getTriggers() != null && !pms.get(0).getTriggers().isEmpty()) {
             for (int i = 0; i < pms.get(0).getTriggers().size(); i++) {
@@ -241,8 +250,5 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
             context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pms.get(0));
             execute(context);
         }
-
-        PreventiveMaintenanceAPI.updateWorkOrderCreationStatus(Arrays.asList(jc.getJobId()), false);
     }
-
 }

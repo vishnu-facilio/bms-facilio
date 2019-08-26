@@ -69,12 +69,13 @@ public class ColumnFactory {
 		columnMap.put("break-default", getDefaultBreakColumns());
 		columnMap.put("shiftRotation-default", getDefaultShiftRotationColumns());
 		columnMap.put("newreadingalarm-default", getDefaultReadingAlarmColumns());
-
+		columnMap.put("bmsAlarm-default", getDefaultBmsAlarmColumns());
 		columnMap.put("service-default", getDefaultServiceColumns());
 
 		columnMap.put("rentalleasecontracts-default", getDefaultRentalLeaseContractColumns());
 		columnMap.put("warrantycontracts-default", getDefaultWarrantyContractColumns());
 		columnMap.put("termsandconditions-default", getDefaultTermsAndConditionColumns());
+		columnMap.put("reservation-default", getDefaultReservationColumns());
 
 		// Default report columns
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
@@ -554,13 +555,43 @@ public class ColumnFactory {
 
 	private static List<ViewField> getDefaultReadingAlarmColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
-
 		columns.add(new ViewField("severity", "Severity"));
 		columns.add(new ViewField("subject", "Message"));
-		columns.add(new ViewField("resource", "Asset"));
-		columns.add(new ViewField("lastOccurredTime", "Last Reported"));
-		columns.add(new ViewField("acknowledgedBy", "Acknowledged"));
-
+		columns.add(new ViewField("resource", "Space / Asset"));
+		columns.add(new ViewField("lastOccurredTime", "Last Occurred Time"));
+		columns.add(new ViewField("acknowledgedBy", "Acknowledged By"));
+		columns.add(new ViewField("acknowledged", "Acknowledged"));
+		columns.add(new ViewField("noOfOccurrences", "Occurrences"));
+		columns.add(new ViewField("lastCreatedTime", "Last Created Time"));
+		columns.add(new ViewField("readingalarmcategory", "Category" ));
+		return columns;
+	}
+	
+	private static List<ViewField> getDefaultReservationColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("space", "Space"));
+		columns.add(new ViewField("scheduledStartTime", "Scheduled Start Time"));
+		columns.add(new ViewField("scheduledEndTime", "Scheduled End Time"));
+		columns.add(new ViewField("noOfAttendees", "No. Of Attendees"));
+//		columns.add(new ViewField("status", "Status"));
+		columns.add(new ViewField("reservedFor", "Reserved For"));
+		return columns;
+	}
+	
+	private static List<ViewField> getDefaultBmsAlarmColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("severity", "Severity"));
+		columns.add(new ViewField("subject", "Message"));
+		columns.add(new ViewField("resource", "Space / Asset"));
+		columns.add(new ViewField("source", "Source"));
+		columns.add(new ViewField("condition", "Condition"));
+		columns.add(new ViewField("lastOccurredTime", "Last Occurred Time"));
+		columns.add(new ViewField("acknowledgedBy", "Acknowledged By"));
+		columns.add(new ViewField("acknowledged", "Acknowledged"));
+		columns.add(new ViewField("noOfOccurrences", "Occurrences"));
+		columns.add(new ViewField("lastCreatedTime", "Last Created Time"));
+		columns.add(new ViewField("readingalarmcategory", "Category" ));
 		return columns;
 	}
 

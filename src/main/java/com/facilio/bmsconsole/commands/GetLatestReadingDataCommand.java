@@ -15,6 +15,7 @@ import org.json.simple.JSONObject;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
+import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingType;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -45,17 +46,24 @@ public class GetLatestReadingDataCommand extends FacilioCommand {
 			JSONObject pagination = (JSONObject) context.get(FacilioConstants.ContextNames.PAGINATION);
 			
 			List<ReadingInputType> readingTypes = new ArrayList<ReadingInputType>();
-			String readingType = (String) context.get(FacilioConstants.ContextNames.FILTER);
-			if (StringUtils.isNotEmpty(readingType)) {
-				if (readingType.equals("connected")) {
+			String inputType = (String) context.get(FacilioConstants.ContextNames.FILTER);
+			ReadingType readingType = null;
+			if (StringUtils.isNotEmpty(inputType)) {
+				if (inputType.equals("connected")) {
 					readingTypes.add(ReadingInputType.CONTROLLER_MAPPED);
 				}
-				if (readingType.equals("formula")) {
+				else if (inputType.equals("formula")) {
 					readingTypes.add(ReadingInputType.FORMULA_FIELD);
 				}
-				else if (readingType.equals("nonformula")) {
+				else if (inputType.equals("nonformula")) {
 					readingTypes = EnumSet.allOf(ReadingInputType.class).stream().filter(type -> type != ReadingInputType.FORMULA_FIELD)
 							.collect(Collectors.toList());
+				}
+				else if (inputType.equals("writable")) {
+					readingType = ReadingType.WRITE;
+				}
+				else if (inputType.equals("readable")) {
+					readingType = ReadingType.READ;
 				}
 			}
 			
@@ -65,7 +73,7 @@ public class GetLatestReadingDataCommand extends FacilioCommand {
 			}
 			
 			if (fetchCount) {
-				long count = ReadingsAPI.getReadingDataMetaCount(parentIds, excludeEmptyFields, search, types);
+				long count = ReadingsAPI.getReadingDataMetaCount(parentIds, excludeEmptyFields, search, readingType, types);
 				context.put(FacilioConstants.ContextNames.COUNT, count);
 				return false;
 			}
@@ -78,7 +86,7 @@ public class GetLatestReadingDataCommand extends FacilioCommand {
 				fieldMap = Collections.singletonMap(fieldId, field);
 			}
 			
-			List<ReadingDataMeta> rdmList = ReadingsAPI.getReadingDataMetaList(parentIds, fieldMap, excludeEmptyFields, pagination, search, types);
+			List<ReadingDataMeta> rdmList = ReadingsAPI.getReadingDataMetaList(parentIds, fieldMap, excludeEmptyFields, pagination, search, readingType, types);
 			
 			Boolean fetchInputValues = (Boolean) context.get(FacilioConstants.ContextNames.FETCH_READING_INPUT_VALUES);
 			if (rdmList != null && fetchInputValues != null && fetchInputValues) {

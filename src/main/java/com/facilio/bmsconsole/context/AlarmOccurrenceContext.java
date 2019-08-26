@@ -2,9 +2,20 @@ package com.facilio.bmsconsole.context;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
+	
+	private String subject;					// for client,alarm bar handling
+	public String getSubject() {
+		return subject;
+	}
+	public void setSubject(String subject) {
+		this.subject = subject;
+	}
 	
 	private AlarmSeverityContext severity;
 	public AlarmSeverityContext getSeverity() {
@@ -158,12 +169,59 @@ public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 	public void setResource(ResourceContext resource) {
 		this.resource = resource;
 	}
+
+	public JSONObject additionInfo;
+	public JSONObject getAdditionInfo() {
+		return additionInfo;
+	}
+	public void setAdditionInfo(JSONObject additionInfo) {
+		this.additionInfo = additionInfo;
+	}
+	public void addAdditionInfo(String key, Object value) {
+		if(this.additionInfo == null) {
+			this.additionInfo =  new JSONObject();
+		}
+		this.additionInfo.put(key,value);
+	}
+
+	public String getAdditionalInfoJsonStr() {
+		if(additionInfo != null) {
+			return additionInfo.toJSONString();
+		}
+		return null;
+	}
+	public void setAdditionalInfoJsonStr(String jsonStr) throws ParseException {
+		JSONParser parser = new JSONParser();
+		additionInfo = (JSONObject) parser.parse(jsonStr);
+	}
 	
 	public void updateAlarm(BaseAlarmContext baseAlarm) {
 		baseAlarm.setSeverity(severity);
-		baseAlarm.setAcknowledged(getAcknowledged());
-		baseAlarm.setAcknowledgedBy(getAcknowledgedBy());
-		baseAlarm.setAcknowledgedTime(getAcknowledgedTime());
+		if (baseAlarm.isAcknowledged()) {
+			baseAlarm.setAcknowledged(isAcknowledged() ? false : isAcknowledged());
+		}
+		else {
+			baseAlarm.setAcknowledged(isAcknowledged());
+		}
+
+		if (baseAlarm.getAcknowledgedBy() != null && baseAlarm.getAcknowledgedBy().getId() > 0) {
+			User acknowledgedBy = getAcknowledgedBy();
+			if (acknowledgedBy == null) {
+				acknowledgedBy = new User();
+				acknowledgedBy.setId(-99);
+			}
+			baseAlarm.setAcknowledgedBy(acknowledgedBy);
+		}
+		else {
+			baseAlarm.setAcknowledgedBy(getAcknowledgedBy());
+		}
+
+		if (baseAlarm.getAcknowledgedTime() > 0) {
+			baseAlarm.setAcknowledgedTime(getAcknowledgedTime() < 0 ? -99 : getAcknowledgedTime());
+		}
+		else {
+			baseAlarm.setAcknowledgedTime(getAcknowledgedTime());
+		}
 		baseAlarm.setLastOccurrence(this);
 	}
 	

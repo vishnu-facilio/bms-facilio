@@ -1,5 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.logging.Logger;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Context;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BulkWorkOrderContext;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -11,13 +19,6 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Context;
-
-import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 public class BulkUpdateTaskReadingInfoCommand extends FacilioCommand {
 	private static final Logger LOGGER = Logger.getLogger(UpdateReadingDataMetaCommand.class.getName());

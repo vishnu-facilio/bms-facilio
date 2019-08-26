@@ -253,6 +253,10 @@ public class PageWidget {
  		NO_OF_ANOMALIES("noOfAnomalies"),
  		ML_ALARM_ENERGY_CDD("mlAlarmEnergyCdd"),
  		ENERGY_WASTAGE_DETAILS("energWastageDetails"),
+ 		ASSET_COST_DETAILS("assetCostDetails"),
+ 		COST_BREAKUP("costBreakup"),
+ 		DEPRECIATION_SCHEDULE("depreciationSchedule"),
+ 		DEPRECIATION_COST_TREND("depreciationCostTrend"),
  		;
 		private String name;
 		

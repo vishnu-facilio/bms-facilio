@@ -11,10 +11,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -65,8 +67,19 @@ public class EventAPI {
 	 public static long processEvents(long timestamp, JSONObject object, List<EventRuleContext> eventRules, Map<String, Integer> eventCountMap, long lastEventTime) throws Exception {
 		FacilioContext context = new FacilioContext();
 		populateProcessEventParams(context, timestamp, object, eventRules, eventCountMap, lastEventTime);
-		Chain processEventChain = EventConstants.EventChainFactory.processEventChain();
-	    processEventChain.execute(context);
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
+			JSONArray jsonArray = new JSONArray();
+			object.put("controllerId", 23);
+			jsonArray.add(object);
+			context.put(EventConstants.EventContextNames.EVENT_PAYLOAD, jsonArray);
+			Chain c = TransactionChainFactory.getV2AddEventPayloadChain();
+			c.execute(context);
+			return System.currentTimeMillis();
+		}
+		else {
+			Chain processEventChain = EventConstants.EventChainFactory.processEventChain();
+			processEventChain.execute(context);
+		}
 	    return (long) context.get(EventConstants.EventContextNames.EVENT_LAST_TIMESTAMP);
 	 } 
 	 
@@ -91,6 +104,13 @@ public class EventAPI {
 											;
 		for (JSONObject payload : payloads) {
 			EventContext event = EventAPI.processPayload(-1l, payload, orgId);
+			
+			if(AccountUtil.getCurrentOrg().getId() == 78l) {
+				long alarmId = event.getAlarmId();
+				if(alarmId == 3463448l) {
+					LOGGER.error("EventPayload : "+event.getAlarmId() +" severity "+event.getSeverity());
+				}
+			}
 			events.add(event);
 			Map<String, Object> prop = FieldUtil.getAsProperties(event);
 			builder.addRecord(prop);
@@ -251,7 +271,14 @@ public class EventAPI {
 														.andCondition(getControllerIdCondition(controllerId, module));		
 		updateBuilder.update(prop);
 	}
-	
+
+	public static Map<String, Object> getSource(long id) throws Exception {
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+				.table(EventConstants.EventModuleFactory.getSourceToResourceMappingModule().getTableName())
+				.select(EventConstants.EventFieldFactory.getSourceToResourceMappingFields())
+				.andCondition(CriteriaAPI.getIdCondition(id, EventConstants.EventModuleFactory.getSourceToResourceMappingModule()));
+		return selectRecordBuilder.fetchFirst();
+	}
 	
 	public static void updateResourceForSource(long assetId, long id, long orgId) throws SQLException {
 		FacilioModule module=EventConstants.EventModuleFactory.getSourceToResourceMappingModule();

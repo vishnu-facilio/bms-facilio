@@ -30,6 +30,7 @@ import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.context.MLAlarmContext;
+import com.facilio.bmsconsole.context.MLAnomalyAlarm;
 import com.facilio.bmsconsole.context.ReadingAlarm;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.RegressionContext;
@@ -68,6 +69,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.report.context.ReadingAnalysisContext;
+import com.facilio.report.context.ReadingAnalysisContext.AnalyticsType;
 import com.facilio.report.context.ReadingAnalysisContext.ReportFilterMode;
 import com.facilio.report.context.ReadingAnalysisContext.ReportMode;
 import com.facilio.report.context.ReportBaseLineContext;
@@ -219,6 +221,9 @@ public class V2ReportAction extends FacilioAction {
 			reportContext.setReportTemplate(template);
 
 		}
+		if(analyticsType != -1) {
+			reportContext.addToReportState(FacilioConstants.ContextNames.ANALYTICS_TYPE, analyticsType);
+		}
 
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 		context.put(FacilioConstants.ContextNames.REPORT_HANDLE_BOOLEAN, newFormat);
@@ -308,6 +313,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.Workflow.WORKFLOW, transformWorkflow);
 		context.put(FacilioConstants.ContextNames.REPORT_HANDLE_BOOLEAN, newFormat);
 		context.put(FacilioConstants.ContextNames.DEFAULT_DATE, defaultDate);
+		context.put(FacilioConstants.ContextNames.ANALYTICS_TYPE, analyticsType);
 		
 		if(regressionConfig != null && !regressionConfig.isEmpty()) {
 			context.put(FacilioConstants.ContextNames.REGRESSION_CONFIG, regressionConfig);
@@ -486,6 +492,7 @@ public class V2ReportAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.REPORT_MODE, mode);
 			context.put(FacilioConstants.ContextNames.REPORT_CALLING_FROM, "card");
 			context.put(FacilioConstants.ContextNames.REPORT_HANDLE_BOOLEAN, newFormat);
+			context.put(FacilioConstants.ContextNames.ANALYTICS_TYPE, AnalyticsType.READINGS.getIntVal());
 			
 			newFormat = true;
 			Chain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReadingReportChain() : ReadOnlyChainFactory.fetchReadingReportChain();
@@ -862,6 +869,14 @@ public class V2ReportAction extends FacilioAction {
 	public void setShowSafeLimit(boolean showSafeLimit) {
 		this.showSafeLimit = showSafeLimit;
 	}
+	
+	private int analyticsType = -1;
+	public int isanalyticsType() {
+		return analyticsType;
+	}
+	public void setAnalyticsType(int analyticsType) {
+		this.analyticsType = analyticsType;
+	}
 
 	private Boolean showAlarms;
 	public Boolean isShowAlarms() {
@@ -940,7 +955,7 @@ public class V2ReportAction extends FacilioAction {
 		List<ReadingRuleContext> readingRules = new ArrayList<>();
 		if(isWithPrerequsite) {							// new 1st
 			ReadingAlarm readingAlarmContext = (ReadingAlarm) alarmOccurrence.getAlarm();
-			AlarmRuleContext alarmRuleContext = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(readingAlarmContext.getRuleId()));
+			AlarmRuleContext alarmRuleContext = new AlarmRuleContext(ReadingRuleAPI.getReadingRulesList(readingAlarmContext.getRule().getId()));
 			readingRules.add(alarmRuleContext.getAlarmTriggerRule());
 			readingRules.add(alarmRuleContext.getPreRequsite());
 		}
@@ -952,11 +967,14 @@ public class V2ReportAction extends FacilioAction {
 			long ruleId = -1;
 			
 			if(alarmOccurrence.getAlarm() instanceof ReadingAlarm) {
-				ruleId = ((ReadingAlarm)alarmOccurrence.getAlarm()).getRuleId();
+				ruleId = ((ReadingAlarm)alarmOccurrence.getAlarm()).getRule().getId();
 			}
 //			else if (alarm instanceof MLAlarmContext) {
-//				ruleId = ((MLAlarmContext)alarm).getRuleId();
-//			}
+//			ruleId = ((MLAlarmContext)alarm).getRuleId();
+//		}
+			else if ( alarmOccurrence.getAlarm() instanceof MLAnomalyAlarm) {
+				 MLAnomalyAlarm mlAnomalyAlarm = (MLAnomalyAlarm) alarmOccurrence.getAlarm();
+			}
 			if(ruleId > 0) {
 				ReadingRuleContext readingruleContext = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(ruleId);
 				readingRules.add(readingruleContext);
@@ -985,6 +1003,11 @@ public class V2ReportAction extends FacilioAction {
 				baselineArray.add(baselineJson);
 				baseLines = baselineArray.toJSONString();
 			}
+			
+		} 
+		else if ( alarmOccurrence.getAlarm() instanceof MLAnomalyAlarm) {
+		   MLAnomalyAlarm mlAnomalyAlarm = (MLAnomalyAlarm) alarmOccurrence.getAlarm();
+		   dataPoints.addAll(getDataPointsJSONForMLAnomalyAlarm(mlAnomalyAlarm, resource));
 			
 		}
 		
@@ -1222,6 +1245,38 @@ public class V2ReportAction extends FacilioAction {
 		}
 		return dataPoints;
 	}
+	private JSONArray getDataPointsJSONForMLAnomalyAlarm (MLAnomalyAlarm mlAlarm, ResourceContext resource) throws Exception  {
+		JSONArray dataPoints = new JSONArray();
+		JSONObject dataPoint = new JSONObject();
+		
+		dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
+		
+		JSONObject yAxisJson = new JSONObject();
+		yAxisJson.put("fieldId", mlAlarm.getEnergyDataFieldid());
+		yAxisJson.put("aggr", 0);
+		
+		dataPoint.put("yAxis", yAxisJson);
+		
+		dataPoint.put("type", 1);
+		dataPoints.add(dataPoint);
+		
+		dataPoint = new JSONObject();
+		
+		dataPoint.put("parentId", FacilioUtil.getSingleTonJsonArray(resource.getId()));
+		
+		yAxisJson = new JSONObject();
+		yAxisJson.put("fieldId", mlAlarm.getUpperAnomalyFieldid());
+		yAxisJson.put("aggr", 0);
+		
+		dataPoint.put("yAxis", yAxisJson);
+		
+		dataPoint.put("type", 1);
+		
+		dataPoints.add(dataPoint);
+		
+		return dataPoints;
+
+	}
 	
 	private JSONArray getDataPointsJSONFromRule(ReadingRuleContext readingruleContext,ResourceContext resource,AlarmContext alarmContext) throws Exception {
 		
@@ -1439,6 +1494,9 @@ public class V2ReportAction extends FacilioAction {
 				
 				for(WorkflowExpression workflowExp:workflow.getExpressions()) {
 					
+					if(!(workflowExp instanceof ExpressionContext)) {
+						continue;
+					}
 					ExpressionContext exp = (ExpressionContext) workflowExp;
 					if(exp.getModuleName() != null) {
 						

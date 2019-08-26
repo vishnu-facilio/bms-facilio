@@ -57,13 +57,60 @@ import com.facilio.tasker.FacilioTimer;
 public class StateFlowRulesAPI extends WorkflowRuleAPI {
 
 	public static WorkflowRuleContext constructStateRuleFromProps(Map<String, Object> prop, ModuleBean modBean) throws Exception {
+		return constructStateRuleFromProps(prop, modBean, true);
+	}
+
+	public static void constructStateRule(List<WorkflowRuleContext> list) throws Exception {
+		if (CollectionUtils.isNotEmpty(list)) {
+			List<Long> formIds = null;
+			for (WorkflowRuleContext workflowRuleContext : list) {
+				if (workflowRuleContext instanceof StateflowTransitionContext) {
+					StateflowTransitionContext stateFlowRule = (StateflowTransitionContext) workflowRuleContext;
+					stateFlowRule.setApprovers(SharingAPI.getSharing(stateFlowRule.getId(), ModuleFactory.getApproversModule(), ApproverContext.class));
+
+					List<ValidationContext> validations = ApprovalRulesAPI.getValidations(stateFlowRule.getId());
+					stateFlowRule.setValidations(validations);
+
+					if (stateFlowRule.getFormId() > 0) {
+						if (formIds == null) {
+							formIds = new ArrayList<>();
+						}
+						formIds.add(stateFlowRule.getFormId());
+					}
+				}
+			}
+
+			if (CollectionUtils.isNotEmpty(formIds)) {
+				Criteria criteria = new Criteria();
+				criteria.addAndCondition(CriteriaAPI.getIdCondition(formIds, ModuleFactory.getFormModule()));
+				List<FacilioForm> forms = FormsAPI.getFormFromDB(criteria);
+				if (forms == null) {
+					forms = new ArrayList<>();
+				}
+				Map<Long, FacilioForm> map = new HashMap<>();
+				for (FacilioForm form : forms) {
+					map.put(form.getId(), form);
+				}
+				for (WorkflowRuleContext workflowRuleContext : list) {
+					if (workflowRuleContext instanceof StateflowTransitionContext) {
+						StateflowTransitionContext stateFlowRule = (StateflowTransitionContext) workflowRuleContext;
+						stateFlowRule.setForm(map.get(stateFlowRule.getFormId()));
+					}
+				}
+			}
+		}
+	}
+
+	public static WorkflowRuleContext constructStateRuleFromProps(Map<String, Object> prop, ModuleBean modBean, boolean fetchChildren) throws Exception {
 		StateflowTransitionContext stateFlowRule = FieldUtil.getAsBeanFromMap(prop, StateflowTransitionContext.class);
 		stateFlowRule.setApprovers(SharingAPI.getSharing(stateFlowRule.getId(), ModuleFactory.getApproversModule(), ApproverContext.class));
 		
 		List<ValidationContext> validations = ApprovalRulesAPI.getValidations(stateFlowRule.getId());
 		stateFlowRule.setValidations(validations);
-		
-		getStateFlowTransitionChildren(stateFlowRule);
+
+		if (fetchChildren) {
+			getStateFlowTransitionChildren(stateFlowRule);
+		}
 		return stateFlowRule;
 	}
 	
@@ -605,20 +652,35 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 
 	public static void addStateFlowTransitionChildren(StateflowTransitionContext rule) throws Exception {
 		FacilioForm form = rule.getForm();
-		if (form != null) {
+
+		if (form == null || CollectionUtils.isEmpty(form.getSections())) {
+			if (rule.getFormId() > 0) {
+				FormsAPI.deleteForms(Collections.singletonList(rule.getFormId()));
+			}
+		}
+		else {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			Context context = new FacilioContext();
-			if (StringUtils.isEmpty(form.getName())) {
-				form.setName("Enter Details");
-			}
-			form.setName(form.getName() + "_" + rule.getId());
-			context.put(FacilioConstants.ContextNames.FORM, form);
 
 			FacilioModule module = modBean.getModule(rule.getModuleId());
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
 
-			Chain chain = TransactionChainFactory.getAddFormCommand();
-			chain.execute(context);
+			if (form.getId() > 0) {
+				context.put(FacilioConstants.ContextNames.FORM, form);
+
+				Chain chain = TransactionChainFactory.getUpdateFormChain();
+				chain.execute(context);
+			}
+			else {
+				if (StringUtils.isEmpty(form.getName())) {
+					form.setName("Enter Details");
+				}
+				form.setName(form.getName() + "_" + rule.getId());
+				context.put(FacilioConstants.ContextNames.FORM, form);
+
+				Chain chain = TransactionChainFactory.getAddFormCommand();
+				chain.execute(context);
+			}
 
 			rule.setFormId(form.getId());
 		}

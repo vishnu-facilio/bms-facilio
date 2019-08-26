@@ -305,4 +305,5 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		save();
 		return bean.getId();
 	}
+	
 }

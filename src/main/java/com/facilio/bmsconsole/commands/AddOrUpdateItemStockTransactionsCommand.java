@@ -74,7 +74,7 @@ public class AddOrUpdateItemStockTransactionsCommand extends FacilioCommand {
 							.select(fields).table(module.getTableName()).moduleName(module.getName())
 							.beanClass(ItemTransactionsContext.class)
 							.andCondition(CriteriaAPI.getCondition(fieldMap.get("transactionState"),
-									String.valueOf(TransactionState.ADDITION.getValue()), EnumOperators.VALUE_IS));
+									String.valueOf(TransactionState.ADDITION.getValue()), EnumOperators.IS));
 					List<ItemTransactionsContext> transactions = transactionsselectBuilder.get();
 					if (transactions != null && !transactions.isEmpty()) {
 						ItemTransactionsContext it = transactions.get(0);

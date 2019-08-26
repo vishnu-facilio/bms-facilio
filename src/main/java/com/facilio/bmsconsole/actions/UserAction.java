@@ -1,9 +1,6 @@
 package com.facilio.bmsconsole.actions;
 
 import java.io.File;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,30 +28,29 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.UserMobileSetting;
-import com.facilio.accounts.exception.AccountException;
 import com.facilio.accounts.impl.UserBeanImpl;
 import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.util.AccountConstants.UserType;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.bmsconsole.context.SetupLayout;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.DBUtil;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
+import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
-import com.opensymphony.xwork2.ActionContext;
 
 public class UserAction extends FacilioAction {
 
@@ -63,6 +59,16 @@ public class UserAction extends FacilioAction {
 	 */
 	private static final long serialVersionUID = 1L;
 	private static Logger log = LogManager.getLogger(UserAction.class.getName());
+	private boolean emailVerificationNeeded;
+	
+	public boolean isEmailVerificationNeeded() {
+		return emailVerificationNeeded;
+	}
+
+	public void setEmailVerificationNeeded(boolean emailVerificationNeeded) {
+		this.emailVerificationNeeded = emailVerificationNeeded;
+	}
+
 	private SetupLayout setup;
 	public SetupLayout getSetup() {
 		return this.setup;
@@ -103,7 +109,8 @@ public class UserAction extends FacilioAction {
 	}
 
 	public String userVerify() throws Exception{
-		CommonCommandUtil.verifiedUser(getUserId()); 
+	//	CommonCommandUtil.verifiedUser(getUserId());
+		AccountUtil.getUserBean().verifyUser(getUserId());
 		return SUCCESS;
 	}
 	public String userList() throws Exception {
@@ -122,27 +129,20 @@ public class UserAction extends FacilioAction {
 
 	public String deletePortalUser() throws Exception {
 		System.out.println("### Delete portal user :"+user.getEmail());
-		Connection conn = null;
-		Statement statement = null;
 		try	{
 			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
 			  checkforTenantPrimaryContact(user.getEmail());
 			}
-			Organization org = AccountUtil.getOrgBean().getPortalOrg(AccountUtil.getCurrentOrg().getDomain());
-			conn = FacilioConnectionPool.INSTANCE.getConnection();
-			statement = conn.createStatement();
-			String sql = "delete from faciliorequestors where PORTALID="+org.getPortalId() +" and  email = '"+ user.getEmail()+"';";
-			System.out.println(sql);
-			statement.execute(sql);
-		} catch (SQLException | RuntimeException e) {
-			log.info("Exception occurred ", e);
-			error = e.getMessage();
+			PortalInfoContext portalInfo = AccountUtil.getOrgBean().getPortalInfo(AccountUtil.getCurrentOrg().getOrgId(), false);
+			User userTobeDeleted = AccountUtil.getUserBean().getPortalUsers(user.getEmail(), portalInfo.getPortalId());
+			if(AccountUtil.getUserBean().deleteUser(userTobeDeleted.getOuid())) {
+				setUserId(userTobeDeleted.getOuid());
+			    return SUCCESS;
+			}
 			return ERROR;
-		} finally {
-			DBUtil.closeAll(conn, statement);
+		} catch (Exception e) {
+			return ERROR;
 		}
-		portalUserList();
-		return SUCCESS;
 	}
 	
 	private void checkforTenantPrimaryContact(String email) throws Exception{
@@ -151,7 +151,7 @@ public class UserAction extends FacilioAction {
 		List<FacilioField> fields = modBean.getAllFields(tenantModule.getName());
 		
 		
-		User requestorToBeDeleted = AccountUtil.getUserBean().getUserFromEmail(email);
+		User requestorToBeDeleted = AccountUtil.getUserBean().getUser(email);
 		
 		SelectRecordsBuilder<TenantContext> selectBuilder = new SelectRecordsBuilder<TenantContext>()
 												.table(tenantModule.getTableName())
@@ -206,17 +206,12 @@ public class UserAction extends FacilioAction {
 	}
 
 	public String deleteUser() throws Exception {
-		System.out.println("### Delete user :"+user.getEmail());
 		
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.USER, user);
-		Map params = ActionContext.getContext().getParameters();
-		
-		System.out.println("User object is "+params+"\n"+ user);
-		Command deleteUser = FacilioChainFactory.getDeleteUserCommand();
-		deleteUser.execute(context);
-		
-		return SUCCESS;
+	    if(AccountUtil.getUserBean().deleteUser(user.getOuid())) {
+	    	setUserId(user.getOuid());
+	    	return SUCCESS;
+	    }
+		return ERROR;
 	}
 	
 	private Map<Long, String> roles;
@@ -243,23 +238,32 @@ public class UserAction extends FacilioAction {
 			return ERROR;
 		}
 
-		user.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+		Organization org = AccountUtil.getCurrentOrg();
+		user.setOrgId(org.getOrgId());
+		user.setDomainName(org.getDomain());
 		if(isEmailEmpty) {
 			user.setEmail(user.getMobile());
 		}
 
+		user.setUserType(UserType.REQUESTER.getValue());
+		//if(emailVerificationNeeded) {
+			user.setUserVerified(false);
+			user.setInviteAcceptStatus(false);
+			user.setInvitedTime(System.currentTimeMillis());
+//		}
+//		else {
+//			user.setUserVerified(true);
+//			user.setInviteAcceptStatus(true);
+//			user.setInvitedTime(System.currentTimeMillis());
+//		}
+		
 		try {
-			long userid = AccountUtil.getTransactionalUserBean().inviteRequester(user.getOrgId(), user);
-			if(userid>0)
-			{
-				if (user.getPortal_verified()) {
-				// send invite
-				(new UserBeanImpl()).sendInvitation(user.getOuid(), user);
-				}
-
+			if(AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, true) > 0) {
+				setUserId(user.getId());
 			}
-			setUserId(user.getId());
-			
+			else {
+				return ERROR;
+			}
 		}
 		catch (Exception e) {
 			if (e instanceof AccountException) {
@@ -278,6 +282,7 @@ public class UserAction extends FacilioAction {
 	}
 	
 	public String addUser() throws Exception {
+
 		boolean isEmailEmpty = (user.getEmail() == null ||  user.getEmail().isEmpty());
 		boolean isMobileEmpty = (user.getMobile() == null || user.getMobile().isEmpty());
 		if(isEmailEmpty && isMobileEmpty) {
@@ -290,7 +295,8 @@ public class UserAction extends FacilioAction {
 			return ERROR;
 		}
 
-		user.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
+		Organization org = AccountUtil.getCurrentOrg();
+		user.setOrgId(org.getOrgId());
 		if(isEmailEmpty) {
 			user.setEmail(user.getMobile());
 		}
@@ -298,28 +304,37 @@ public class UserAction extends FacilioAction {
 		HttpServletRequest request = ServletActionContext.getRequest();
 		String value = FacilioCookie.getUserCookie(request, "fc.authtype");
 		user.setFacilioAuth("facilio".equals(value));
+		user.setDomainName("app");
+		
+		//if(emailVerificationNeeded) {
+			user.setUserVerified(false);
+			user.setInviteAcceptStatus(false);
+			user.setInvitedTime(System.currentTimeMillis());
+//		}
+//		else {
+//			user.setUserVerified(true);
+//			user.setInviteAcceptStatus(true);
+//			user.setInvitedTime(System.currentTimeMillis());
+//
+//		}
 
 
-//		Integer availableLicensedUsers = AccountUtil.getUserBean().getAvailableUserLicense(AccountUtil.getCurrentOrg().getOrgId());
-//		if (availableLicensedUsers < 1)
-//		{
-//			addFieldError("License", " Users license exceeded in your organization.");
-//			return ERROR;
-//		}
-//		Integer availableLicensedRoles = AccountUtil.getUserBean().getAvailableRoleLicense(AccountUtil.getCurrentOrg().getOrgId(), user.getRoleId());
-//		if (availableLicensedRoles < 1)
-//		{
-//			addFieldError("License", "This Role license exceeded in your organization.");
-//			return ERROR;	
-//		}
 		FacilioContext context = new FacilioContext();
+		//v2 authentication
+		if( (AccountUtil.getCurrentOrg() != null) && (user.getTimezone() == null) ) {
+			user.setTimezone(AccountUtil.getCurrentAccount().getTimeZone());
+		}
+		if( (AccountUtil.getCurrentUser() != null) && (user.getLanguage() == null) ) {
+			user.setLanguage(AccountUtil.getCurrentUser().getLanguage());
+		}
+		user.setUserType(UserType.USER.getValue());
 		context.put(FacilioConstants.ContextNames.USER, user);
 		context.put(FacilioConstants.ContextNames.ACCESSIBLE_SPACE, accessibleSpace);
 		
 		try {
-			Chain addUser = FacilioChainFactory.getAddUserCommand();
-			addUser.execute(context);
-			setUserId(user.getId());
+				context.put(FacilioConstants.ContextNames.USER, user);
+				Chain addUser = FacilioChainFactory.getAddUserCommand();
+				addUser.execute(context);
 		}
 		catch (Exception e) {
 			if (e instanceof AccountException) {
@@ -327,12 +342,16 @@ public class UserAction extends FacilioAction {
 				if (ae.getErrorCode().equals(AccountException.ErrorCode.EMAIL_ALREADY_EXISTS)) {
 					addFieldError("error", "This user already exists in your organization.");
 				}
+				if (ae.getErrorCode().equals(AccountException.ErrorCode.NOT_PERMITTED)) {
+					addFieldError("error", "Not Permitted to do this operation");
+				}
 			} else {
 				log.info("Exception occurred ", e);
 				addFieldError("error", "This user already exists in your organization.");
 			}
 			return ERROR;
 		}
+		setUserId(user.getId());
 		return SUCCESS;
 	}
 
@@ -345,20 +364,17 @@ public class UserAction extends FacilioAction {
 		if(user.getUserType() == AccountConstants.UserType.REQUESTER.getValue())
 		{
 			// requestore
-			
-			long portalid = AccountUtil.getOrgBean().getPortalId();
+			PortalInfoContext portalInfo = AccountUtil.getOrgBean().getPortalInfo(AccountUtil.getCurrentOrg().getOrgId(), false);
+			long portalid = portalInfo.getPortalId();
 			user.setPortalId(portalid);
-			(new UserBeanImpl()).sendInvitation(user.getOuid(), user);
+			(new UserBeanImpl()).resendInvite(user.getOuid());
 		}
 		else
 		{
 			long orgId=user.getOrgId();
 			// normal user 
 			AccountUtil.getTransactionalUserBean(orgId).resendInvite(getUserId());
-
 		}
-	
-		
 		return SUCCESS;
 	}
 	
@@ -488,20 +504,16 @@ public class UserAction extends FacilioAction {
 	
 	public String updateMyProfile() throws Exception{
 		subscriptionInfo();
-		AccountUtil.getUserBean().updateUser(AccountUtil.getCurrentUser().getId(), user);
+		AccountUtil.getUserBean().updateUser(user);
 		
 		return SUCCESS;
 	}
 	
 	public String updateUser() throws Exception {
-		
-		FacilioContext context = new FacilioContext();
-		context.put(FacilioConstants.ContextNames.USER, user);
-
-		Command addUser = FacilioChainFactory.getUpdateUserCommand();
-		addUser.execute(context);
-				
-		return SUCCESS;
+		if(AccountUtil.getUserBean().updateUser(user)) {
+			return SUCCESS;
+		}
+		return ERROR;
 	}
 	
 	private UserMobileSetting userMobileSetting;
@@ -546,16 +558,18 @@ public class UserAction extends FacilioAction {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.USER, user);
-		Map params = ActionContext.getContext().getParameters();
-		
-		System.out.println("User object is "+params+"\n"+ user);
-		Command addUser = FacilioChainFactory.getChangeUserStatusCommand();
-		addUser.execute(context);
-		
-		return SUCCESS;
+		if(user.getUserStatus()) {
+			if(AccountUtil.getUserBean().enableUser(user.getOuid())) {
+				return SUCCESS;
+			}
+		}
+		else {
+			if(AccountUtil.getUserBean().disableUser(user.getOuid())) {
+				return SUCCESS;
+			}
+		}
+		return ERROR;
 	}
-	
-
 
 	private File avatar;
 	

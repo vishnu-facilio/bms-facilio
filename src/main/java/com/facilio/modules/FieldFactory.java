@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.modules.fields.*;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.facilio.accounts.util.AccountConstants;
@@ -19,11 +20,6 @@ import com.facilio.agent.AgentKeys;
 import com.facilio.agentIntegration.AgentIntegrationKeys;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.tasker.tasks.EventUtil;
-import com.facilio.modules.fields.BooleanField;
-import com.facilio.modules.fields.EnumField;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.modules.fields.LookupField;
-import com.facilio.modules.fields.NumberField;
 
 public class FieldFactory {
 
@@ -82,6 +78,19 @@ public class FieldFactory {
 			alarmsFieldsInclude.add("condition");
 			alarmsFieldsInclude.add("autoClear");
 //			alarmsFieldsInclude.add("noOfAttachments");
+		}
+		public static List<String> newAlarmsFieldsInclude = new ArrayList<String>();
+		static {
+			newAlarmsFieldsInclude.add("subject");
+			newAlarmsFieldsInclude.add("acknowledged");
+			newAlarmsFieldsInclude.add("acknowledgedBy");
+			newAlarmsFieldsInclude.add("Severity");
+			newAlarmsFieldsInclude.add("acknowledgedTime");
+			newAlarmsFieldsInclude.add("lastClearedTime");
+			newAlarmsFieldsInclude.add("lastCreatedTime");
+			newAlarmsFieldsInclude.add("lastOccurredTime");
+			newAlarmsFieldsInclude.add("resource");
+			newAlarmsFieldsInclude.add("readingAlarmCategory");
 		}
 		public static List<String> workOrderFieldsInclude = new ArrayList<String>();
 		static {
@@ -607,7 +616,6 @@ public class FieldFactory {
 		fields.add(getField("tableName", "TABLE_NAME", module, FieldType.STRING));
 		fields.add(getField("type", "MODULE_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("trashEnabled", "IS_TRASH_ENABLED", module, FieldType.BOOLEAN));
-		fields.add(getField("name", "NAME", module, FieldType.STRING));
 		fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
 		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
 		fields.add(getField("createdBy", "CREATED_BY", module, FieldType.LOOKUP));
@@ -1315,7 +1323,7 @@ public class FieldFactory {
 		fields.add(getField("readingRuleType", "READING_RULE_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("upperBound", "UPPER_BOUND", module, FieldType.DECIMAL));
 		fields.add(getField("lowerBound", "LOWER_BOUND", module, FieldType.DECIMAL));
-
+		fields.add(getField("alarmCategoryId", "ALARM_CATEGORY_ID", module, FieldType.LOOKUP));
 		return fields;
 	}
 	
@@ -1337,7 +1345,8 @@ public class FieldFactory {
 		fields.add(getIdField(module));
 //		fields.add(getOrgIdField(module));
 		fields.add(getField("readingRuleGroupId", "READING_RULE_GROUP_ID", module, FieldType.LOOKUP));
-
+		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("rcaRuleId", "RCA_RULE_ID", module, FieldType.LOOKUP));
 		return fields;
 	}
 
@@ -2220,6 +2229,9 @@ public class FieldFactory {
 		fields.add(getField("metric", "METRIC", module, FieldType.STRING));
 		fields.add(getField("resource", "RESOURCE", module, FieldType.STRING));
 		fields.add(getField("val", "VAL", module, FieldType.STRING));
+		
+		fields.add(getField("actionType", "ACTION_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("controlActionGroupId", "CONTROL_ACTION_GROUP_ID", module, FieldType.LOOKUP));
 
 		return fields;
 	}
@@ -2303,7 +2315,7 @@ public class FieldFactory {
 
 		FacilioField status = new FacilioField();
 		status.setName("status");
-		status.setDataType(FieldType.BOOLEAN);
+		status.setDataType(FieldType.NUMBER);
 		status.setColumnName("STATUS");
 		status.setModule(module);
 		fields.add(status);
@@ -4742,6 +4754,8 @@ public class FieldFactory {
 		fields.add(getField("readingType", "READING_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("custom", "IS_CUSTOM", module, FieldType.BOOLEAN));
 		fields.add(getField("unit", "UNIT", module, FieldType.NUMBER));
+		fields.add(getField("isControllable", "IS_CONTROLLABLE", module, FieldType.BOOLEAN));
+		fields.add(getField("controlActionMode", "CONTROL_MODE", module, FieldType.NUMBER));
 		return fields;
 	}
 	
@@ -6082,22 +6096,22 @@ public class FieldFactory {
 	{
  		List<FacilioField> fields = new ArrayList<>();
  		FacilioModule module = ModuleFactory.getMLLogReadingModule();
- 		fields.add(getField("actualValue","DECIMAL_CF1",module,FieldType.NUMBER));
- 		fields.add(getField("adjustedLowerBound","DECIMAL_CF2",module,FieldType.NUMBER));
- 		fields.add(getField("adjustedUpperBound","DECIMAL_CF3",module,FieldType.NUMBER));
- 		fields.add(getField("gamAnomaly","DECIMAL_CF4",module,FieldType.NUMBER));
- 		fields.add(getField("lowerARMA","DECIMAL_CF5",module,FieldType.NUMBER));
- 		fields.add(getField("lowerAnomaly","DECIMAL_CF6",module,FieldType.NUMBER));
- 		fields.add(getField("lowerBound","DECIMAL_CF7",module,FieldType.NUMBER));
- 		fields.add(getField("lowerGAM","DECIMAL_CF8",module,FieldType.NUMBER));
- 		fields.add(getField("predicted","DECIMAL_CF9",module,FieldType.NUMBER));
- 		fields.add(getField("predictedResidual","DECIMAL_CF10",module,FieldType.NUMBER));
- 		fields.add(getField("residual","DECIMAL_CF11",module,FieldType.NUMBER));
- 		fields.add(getField("temperature","DECIMAL_CF12",module,FieldType.NUMBER));
- 		fields.add(getField("upperARMA","DECIMAL_CF13",module,FieldType.NUMBER));
- 		fields.add(getField("upperAnomaly","DECIMAL_CF14",module,FieldType.NUMBER));
- 		fields.add(getField("upperBound","DECIMAL_CF15",module,FieldType.NUMBER));
- 		fields.add(getField("upperGAM","DECIMAL_CF16",module,FieldType.NUMBER));
+ 		fields.add(getField("actualValue","actualValueLog","DECIMAL_CF1",module,FieldType.NUMBER));
+ 		fields.add(getField("adjustedLowerBound","adjustedLowerBoundLog","DECIMAL_CF2",module,FieldType.NUMBER));
+ 		fields.add(getField("adjustedUpperBound","adjustedUpperBoundLog","DECIMAL_CF3",module,FieldType.NUMBER));
+ 		fields.add(getField("gamAnomaly","gamAnomalyLog","DECIMAL_CF4",module,FieldType.NUMBER));
+ 		fields.add(getField("lowerARMA","lowerARMALog","DECIMAL_CF5",module,FieldType.NUMBER));
+ 		fields.add(getField("lowerAnomaly","lowerAnomaly","DECIMAL_CF6",module,FieldType.NUMBER));
+ 		fields.add(getField("lowerBound","lowerBound","DECIMAL_CF7",module,FieldType.NUMBER));
+ 		fields.add(getField("lowerGAM","lowerGAMLog","DECIMAL_CF8",module,FieldType.NUMBER));
+ 		fields.add(getField("predicted","predictedLog","DECIMAL_CF9",module,FieldType.NUMBER));
+ 		fields.add(getField("predictedResidual","predictedResidualLog","DECIMAL_CF10",module,FieldType.NUMBER));
+ 		fields.add(getField("residual","residual","DECIMAL_CF11",module,FieldType.NUMBER));
+ 		fields.add(getField("temperature","temperatureLog","DECIMAL_CF12",module,FieldType.NUMBER));
+ 		fields.add(getField("upperARMA","upperARMALog","DECIMAL_CF13",module,FieldType.NUMBER));
+ 		fields.add(getField("upperAnomaly","upperAnomalyLog","DECIMAL_CF14",module,FieldType.NUMBER));
+ 		fields.add(getField("upperBound","upperBoundLog","DECIMAL_CF15",module,FieldType.NUMBER));
+ 		fields.add(getField("upperGAM","upperGAMLog","DECIMAL_CF16",module,FieldType.NUMBER));
  		fields.add(getField("predictedTime","PREDICTED_TIME",module,FieldType.NUMBER));
 
  		return fields;
@@ -6107,8 +6121,8 @@ public class FieldFactory {
 	{
  		List<FacilioField> fields = new ArrayList<>();
  		FacilioModule module = ModuleFactory.getMLLogReadingModule();
- 		fields.add(getField("daywiseenergy","DECIMAL_CF1",module,FieldType.DECIMAL));
- 		fields.add(getField("endofmonthenergy","DECIMAL_CF2",module,FieldType.DECIMAL));
+ 		fields.add(getField("daywiseenergy","daywiseenergyLog","DECIMAL_CF1",module,FieldType.DECIMAL));
+ 		fields.add(getField("endofmonthenergy","endofmonthenergyLog","DECIMAL_CF2",module,FieldType.DECIMAL));
   		fields.add(getField("predictedTime","PREDICTED_TIME",module,FieldType.NUMBER));
 
  		return fields;
@@ -6152,11 +6166,11 @@ public class FieldFactory {
 	{
 		List<FacilioField> fields = new ArrayList<>();
 		FacilioModule module = ModuleFactory.getMLLogReadingModule();
-		fields.add(getField("meterID","DECIMAL_CF1",module,FieldType.NUMBER));
-		fields.add(getField("childMeter","DECIMAL_CF2",module,FieldType.NUMBER));
-		fields.add(getField("ratio","DECIMAL_CF3",module,FieldType.NUMBER));
-		fields.add(getField("upperAnomaly","DECIMAL_CF4",module,FieldType.NUMBER));
-		fields.add(getField("lowerAnomaly","DECIMAL_CF5",module,FieldType.NUMBER));
+		fields.add(getField("meterID","meterIDLog","DECIMAL_CF1",module,FieldType.NUMBER));
+		fields.add(getField("childMeter","childMeterLog","DECIMAL_CF2",module,FieldType.NUMBER));
+		fields.add(getField("ratio","ratioLog","DECIMAL_CF3",module,FieldType.NUMBER));
+		fields.add(getField("upperAnomaly","upperAnomalyLog","DECIMAL_CF4",module,FieldType.NUMBER));
+		fields.add(getField("lowerAnomaly","lowerAnomalyLog","DECIMAL_CF5",module,FieldType.NUMBER));
 		fields.add(getField("predictedTime","PREDICTED_TIME",module,FieldType.NUMBER));
 
 		return fields;
@@ -6242,6 +6256,9 @@ public class FieldFactory {
 				break;
 			case ENUM:
 				columnFld = new EnumField();
+				break;
+			case SYSTEM_ENUM:
+				columnFld = new SystemEnumField();
 				break;
 			default:
 				columnFld = new FacilioField();
@@ -6471,6 +6488,45 @@ public class FieldFactory {
 		fields.add(getField("scope", "SCOPE", module, FieldType.NUMBER));
 		fields.add(getField("siteId", "SITE_ID", module, FieldType.NUMBER));
 		fields.add(getField("dashboardId", "DASHBOARD_ID", module, FieldType.NUMBER));
+		
+		return fields;
+	}
+	
+	
+	public static List<FacilioField> getControlGroupFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getControlGroupModule();
+		
+		fields.add(getIdField(module));
+		fields.add(getNameField(module));
+		fields.add(getSiteIdField(module));
+		
+		fields.add(getField("assetCategoryId", "ASSET_CATEGORY_ID", module, FieldType.LOOKUP));
+		fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
+		
+		return fields;
+	}
+	
+	
+	public static List<FacilioField> getControlGroupSpaceFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getControlGroupSpaceModule();
+		
+		fields.add(getIdField(module));
+		fields.add(getField("controlGroupId", "CONTROL_GROUP_ID", module, FieldType.LOOKUP));
+		fields.add(getField("spaceId", "SPACE_ID", module, FieldType.LOOKUP));
+		
+		return fields;
+	}
+	
+	public static List<FacilioField> getControlGroupInclExclFields() {
+		List<FacilioField> fields = new ArrayList<>();
+		FacilioModule module = ModuleFactory.getControlGroupInclExclModule();
+		
+		fields.add(getIdField(module));
+		fields.add(getField("controlGroupId", "CONTROL_GROUP_ID", module, FieldType.LOOKUP));
+		fields.add(getField("resourceId", "RESOURCE_ID", module, FieldType.LOOKUP));
+		fields.add(getField("isInclude", "IS_INCLUDE", module, FieldType.BOOLEAN));
 		
 		return fields;
 	}

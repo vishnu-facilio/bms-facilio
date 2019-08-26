@@ -38,4 +38,29 @@ public class SpaceContext extends BaseSpaceContext {
 	public void setSpaceCategory(SpaceCategoryContext spaceCategory) {
 		this.spaceCategory = spaceCategory;
 	}
+
+	private Boolean reservable;
+	public Boolean getReservable() {
+		return reservable;
+	}
+	public void setReservable(Boolean reservable) {
+		this.reservable = reservable;
+	}
+	public void setReservable(boolean reservable) {
+		this.reservable = reservable;
+	}
+	public boolean isReservable() {
+		if (reservable != null) {
+			return reservable.booleanValue();
+		}
+		return false;
+	}
+
+	private float unitReservationCost = -1;
+	public float getUnitReservationCost() {
+		return unitReservationCost;
+	}
+	public void setUnitReservationCost(float unitReservationCost) {
+		this.unitReservationCost = unitReservationCost;
+	}
 }

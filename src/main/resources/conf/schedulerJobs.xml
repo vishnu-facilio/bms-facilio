@@ -37,7 +37,7 @@
 	 <job name='costCalculator' classname = 'com.facilio.bmsconsole.jobs.CostCalculatorJob' transactionTimeout='300000'/>
 	 <job name='DeleteControllerActivityRecords' classname = 'com.facilio.bmsconsole.jobs.DeleteControllerActivityRecordsJob' transactionTimeout='300000'/>
 	 
-	 <job name='HistoricalRunForReadingRule' classname = 'com.facilio.bmsconsole.jobs.HistoricalRunForReadingRule' transactionTimeout='72000000'/>
+	 <job name='HistoricalRunForReadingRule' classname = 'com.facilio.bmsconsole.jobs.HistoricalRunForReadingRule' transactionTimeout='14400000'/>
 	 <job name='ScheduledRuleExecution' classname = 'com.facilio.bmsconsole.jobs.ScheduledRuleExecutionJob' transactionTimeout='900000'/>
 	 <job name='ScheduledActionExecution' classname = 'com.facilio.bmsconsole.jobs.ScheduledActionExecutionJob' transactionTimeout='900000'/>
 	 
@@ -47,6 +47,9 @@
 	 <job name='EndShiftOTJ' classname= 'com.facilio.bmsconsole.jobs.ShiftEndOneTimeJob' transactionTimeout='300000'/>
 	 <job name='DeviceMonitor' classname= 'com.facilio.bmsconsole.jobs.DeviceMonitorJob' transactionTimeout='300000'/>
 	 <job name='ScheduleNewPM' classname= 'com.facilio.bmsconsole.commands.ScheduleNewPMCommand' transactionTimeout='600000'/>
+	 <job name='SchedulePMBackgroundJob' classname= 'com.facilio.bmsconsole.jobs.SchedulePMBackgroundJob' transactionTimeout='100000'/>
+	 <job name='ScheduleDeletePreOpenJob' classname= 'com.facilio.bmsconsole.jobs.ScheduleDeletePreOpenJob' transactionTimeout='1200000'/>
+	 <job name='DeletePMJob' classname= 'com.facilio.bmsconsole.jobs.DeletePMJob' transactionTimeout='1200000'/>
 	 <job name='AttendanceAbsentSchedulerJob' classname='com.facilio.bmsconsole.commands.AttendanceAbsentSchedulerJob' transactionTimeout='14400000'/>
 	 <job name= 'ShiftRotationSchedulerJob' classname='com.facilio.bmsconsole.commands.ShiftRotationSchedulerJob' transactionTimeout= '14400000'></job>
 
@@ -62,7 +65,8 @@
 	 <job name='AddAnomalyJob' classname='com.facilio.bmsconsole.jobs.AddAnomalyJob' transactionTimeout='7200000'/>
 	 <job name='testMLHistoricalJob' classname='com.facilio.bmsconsole.jobs.DefaultMLHistoricalJob' transactionTimeout='7200000'/>
 	 <job name='energyPredictionJob' classname='com.facilio.bmsconsole.jobs.AddNewMLEnergyPredictionJob' transactionTimeout='7200000'/>
-	 
+	 <job name='testMLSplitJob' classname='com.facilio.bmsconsole.jobs.DefaultMLSplitHistoricalJob' transactionTimeout='7200000'/>
+
 	 
 	 <job name='StateFlowScheduledRule' classname='com.facilio.bmsconsole.jobs.StateFlowScheduledRuleJob' transactionTimeout='900000' />
 

@@ -13,11 +13,17 @@
 		<interceptors>
 			<interceptor name="cacheinterceptor"
 						 class="com.facilio.bmsconsole.interceptors.CacheInterceptor" />
+			<interceptor name="scopeinterceptor"
+				class="com.facilio.bmsconsole.interceptors.ScopeInterceptor" />
+			<interceptor name="datasourceinterceptor"
+				class="com.facilio.bmsconsole.interceptors.DataSourceInterceptor" />
 			<interceptor name="authinterceptor"
-						 class="com.facilio.bmsconsole.interceptors.AuthInterceptor" />
+				class="com.facilio.bmsconsole.interceptors.AuthInterceptor" />
 			<interceptor-stack name="defaultInterceptor">
 				<interceptor-ref name="defaultStack" />
-				<interceptor-ref name="authinterceptor" />
+					<interceptor-ref name="authinterceptor" />
+				<interceptor-ref name="datasourceinterceptor" />
+				<interceptor-ref name="scopeinterceptor" />
 				<interceptor-ref name="cacheinterceptor" />
 				<interceptor-ref name="json">
 					<param name="enableSMD">true</param>
@@ -37,7 +43,7 @@
 
 		
   	
-    <action name="faciliosubmit" class="com.facilio.auth.actions.FacilioAuthAction" method="validateLogin">
+    <action name="faciliosubmit" class="com.facilio.auth.actions.FacilioAuthAction" method="validateLoginv2">
 		<param name="auth">false</param>
 		<result name="success" type="json">
 				<param name="includeProperties">jsonresponse.*</param>
@@ -112,7 +118,7 @@
 
 	<package name="authApi" namespace="/auth/api" extends="integration">
 
-		<action name="login" class="com.facilio.auth.actions.FacilioAuthAction" method="validateLogin">
+		<action name="login" class="com.facilio.auth.actions.FacilioAuthAction" method="validateLoginv2">
 			<param name="auth">false</param>
 			<result name="success" type="json">
 				<param name="includeProperties">jsonresponse.*</param>
@@ -121,6 +127,33 @@
 				<param name="includeProperties">jsonresponse.*</param>
 			</result>
 		</action>
+		<action name="verifyEmailRegistration" class="com.facilio.auth.actions.FacilioAuthAction" method="verifyEmailv2">
+			<param name="auth">false</param>
+			<result name="success" type="json">
+				<param name="includeProperties">jsonresponse.*</param>
+			</result>
+			<result name="error" type="json">
+				<param name="includeProperties">jsonresponse.*</param>
+			</result>
+		</action>
+		
+		<action name="addUserv2" class="com.facilio.bmsconsole.actions.UserAction" method="addUserv2">
+			<param name="auth">false</param>
+			<result name="success" type="json">
+				<param name="includeProperties">jsonresponse.*</param>
+			</result>
+			<result name="error" type="json">
+				<param name="includeProperties">jsonresponse.*</param>
+			</result>
+		</action>
+		
+		<action name="acceptOpInvite" class="com.facilio.auth.actions.FacilioAuthAction" method="acceptUserInvite">
+		<param name="auth">false</param>
+		<result name="success" type="json">
+				<param name="includeProperties">jsonresponse.*</param>
+		</result>
+	</action>
+		
 	</package>
 		
 </struts>

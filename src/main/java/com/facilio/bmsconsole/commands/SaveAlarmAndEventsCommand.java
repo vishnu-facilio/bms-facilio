@@ -1,5 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.*;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
@@ -16,15 +25,18 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.events.commands.NewEventsToAlarmsConversionCommand.PointedList;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.InsertRecordBuilder;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.MapUtils;
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.*;
 
 public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTransactionCommand {
+
+	private static final Logger LOGGER = LogManager.getLogger(SaveAlarmAndEventsCommand.class.getName());
 
 	private Map<String, PointedList<AlarmOccurrenceContext>> alarmOccurrenceMap;
 
@@ -48,6 +60,7 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 					InsertRecordBuilder<BaseAlarmContext> builder = new InsertRecordBuilder<BaseAlarmContext>()
 							.moduleName(NewAlarmAPI.getAlarmModuleName(baseAlarm.getTypeEnum()))
 							.fields(modBean.getAllFields(NewAlarmAPI.getAlarmModuleName(baseAlarm.getTypeEnum())));
+					LOGGER.debug("Alarm Value: " + FieldUtil.getAsProperties(baseAlarm));
 					builder.insert(baseAlarm);
 				}
 			}
@@ -92,13 +105,15 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 		}
 		
 		Map<Type, List<BaseEventContext>>  eventsMap = new HashMap<>();
-		for (BaseEventContext baseEvent : eventList) {
-			List<BaseEventContext> list = eventsMap.get(baseEvent.getEventTypeEnum());
-			if (list == null) {
-				list = new ArrayList<>();
-				eventsMap.put(baseEvent.getEventTypeEnum(), list);
+		if (eventList != null ) {
+			for (BaseEventContext baseEvent : eventList) {
+				List<BaseEventContext> list = eventsMap.get(baseEvent.getEventTypeEnum());
+				if (list == null) {
+					list = new ArrayList<>();
+					eventsMap.put(baseEvent.getEventTypeEnum(), list);
+				}
+				list.add(baseEvent);
 			}
-			list.add(baseEvent);
 		}
 		if (MapUtils.isNotEmpty(eventsMap)) {
 			for (Type type : eventsMap.keySet()) {
@@ -109,6 +124,21 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 				builder.addRecords(eventsMap.get(type));
 				builder.save();
 			}
+		}
+
+		Collection<BaseAlarmContext> alarmList = alarmMap.values();
+		if (CollectionUtils.isNotEmpty(alarmList) && alarmList.size() == 1) {
+			Map<String, List<BaseAlarmContext>> alarmModuleMap = new HashMap<>();
+			for (BaseAlarmContext alarm : alarmList) {
+				String alarmModuleName = NewAlarmAPI.getAlarmModuleName(alarm.getTypeEnum());
+				List<BaseAlarmContext> baseAlarmContexts = alarmModuleMap.get(alarmModuleName);
+				if (baseAlarmContexts == null) {
+					baseAlarmContexts = new ArrayList<>();
+					alarmModuleMap.put(alarmModuleName, baseAlarmContexts);
+				}
+				baseAlarmContexts.add(alarm);
+			}
+			context.put(FacilioConstants.ContextNames.RECORD_MAP, alarmModuleMap);
 		}
 		return false;
 	}
@@ -125,7 +155,8 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule alarmOccurrenceModule = modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
-			FacilioField noOfEventsField = modBean.getField("noOfEvents", alarmOccurrenceModule.getName());
+			Map<String, FacilioField> occurrenceFieldMap = FieldFactory.getAsMap(modBean.getAllFields(alarmOccurrenceModule.getName()));
+			FacilioField noOfEventsField = occurrenceFieldMap.get("noOfEvents");
 			
 			FacilioModule eventModule = modBean.getModule(FacilioConstants.ContextNames.BASE_EVENT);
 			Map<String, FacilioField> eventFieldMap = FieldFactory.getAsMap(modBean.getAllFields(eventModule.getName()));
@@ -157,6 +188,42 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 						.module(alarmOccurrenceModule)
 						.fields(Collections.singletonList(noOfEventsField))
 						.andCondition(CriteriaAPI.getIdCondition(id, alarmOccurrenceModule));
+
+				updateRecordBuilder.updateViaMap(updateMap);
+			}
+
+
+			Set<Long> alarmIds = new HashSet<>();
+			for (String key : alarmOccurrenceMap.keySet()) {
+				for (AlarmOccurrenceContext alarmOccurrence : alarmOccurrenceMap.get(key)) {
+					alarmIds.add(alarmOccurrence.getAlarm().getId());
+				}
+			}
+
+			FacilioModule alarmModule = modBean.getModule(FacilioConstants.ContextNames.BASE_ALARM);
+			FacilioField noOfOccurrenceField = modBean.getField("noOfOccurrences", alarmModule.getName());
+
+			fields = new ArrayList<>();
+			FacilioField alarmField = occurrenceFieldMap.get("alarm");
+			fields.add(alarmField);
+			fields.add(countField);
+			builder = new GenericSelectRecordBuilder()
+					.table(alarmOccurrenceModule.getTableName())
+					.select(fields)
+					.groupBy(alarmField.getCompleteColumnName())
+					.andCondition(CriteriaAPI.getCondition(alarmField, StringUtils.join(alarmIds, ","), NumberOperators.EQUALS));
+			list = builder.get();
+			updateMap = new HashMap<>();
+			for (Map<String, Object> map : list) {
+				long id = ((Number) map.get("alarm")).longValue();
+				int numberOfOccurrences = ((Number) map.get("count")).intValue();
+
+				updateMap.put("noOfOccurrences", numberOfOccurrences);
+
+				UpdateRecordBuilder<WorkOrderContext> updateRecordBuilder = new UpdateRecordBuilder<WorkOrderContext>()
+						.module(alarmModule)
+						.fields(Collections.singletonList(noOfOccurrenceField))
+						.andCondition(CriteriaAPI.getIdCondition(id, alarmModule));
 
 				updateRecordBuilder.updateViaMap(updateMap);
 			}

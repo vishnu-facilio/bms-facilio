@@ -109,14 +109,21 @@ public class FieldUtil {
 				return booleanVal;
 			case LOOKUP:
 			case NUMBER:	
-			case DATE:
-			case DATE_TIME:
 			case FILE:
 			case COUNTER:
 			case ID:
 			case SYSTEM_ENUM:
 				if(value != null && !(value instanceof String && ((String)value).isEmpty())) {
 					return FacilioUtil.parseLong(value);
+				}
+				else {
+					return null;
+				}
+			case DATE:
+			case DATE_TIME:
+				if(value != null && !(value instanceof String && ((String)value).isEmpty())) {
+					Long longVal = FacilioUtil.parseLong(value);
+					return longVal > 0l ? longVal : null;
 				}
 				else {
 					return null;
@@ -430,14 +437,53 @@ public class FieldUtil {
 	}
 
 	private static final Set<String> SITE_ID_ALLOWED_MODULES = Collections.unmodifiableSet(
-			new HashSet<>(Arrays.asList("resource", "asset", "building", "floor", "space", "zone", "alarm", "ticket", "workorder", "workorderrequest", "task", "readingalarm", "inventory", "tenant", "labour","mvproject")));
+			new HashSet<>(Arrays.asList("resource",
+										"asset",
+										"building",
+										"floor",
+										"space",
+										"zone",
+										"alarm",
+										"ticket",
+										"workorder",
+										"workorderrequest",
+										"task",
+										"readingalarm",
+										"inventory",
+										"tenant",
+										"labour",
+										"mvproject",
+										FacilioConstants.ContextNames.Reservation.RESERVATION,
+										FacilioConstants.ContextNames.Reservation.RESERVATIONS_EXTERNAL_ATTENDEE,
+										FacilioConstants.ContextNames.Reservation.RESERVATIONS_INTERNAL_ATTENDEE
+										)));
 
 	public static boolean isSiteIdFieldPresent(FacilioModule module) {
 		return SITE_ID_ALLOWED_MODULES.contains(module.getName()) || (module.getExtendModule() != null && module.getExtendModule().getName().equals("asset"));
 	}
 
 	private static final Set<String> SYSTEM_FIELDS_ALLOWED_MODULES = Collections.unmodifiableSet(
-			new HashSet<>(Arrays.asList(FacilioConstants.ContextNames.ASSET_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY, FacilioConstants.ContextNames.ITEM_ACTIVITY, FacilioConstants.ContextNames.PURCHASE_ORDER, FacilioConstants.ContextNames.PURCHASE_REQUEST, FacilioConstants.ContextNames.RECEIVABLE, FacilioConstants.ContextNames.RECEIPTS, FacilioConstants.ContextNames.CONTRACTS, FacilioConstants.ContextNames.GATE_PASS, FacilioConstants.ContextNames.SHIPMENT, FacilioConstants.ContextNames.INVENTORY_REQUEST, FacilioConstants.ContextNames.INVENTORY_REQUEST, FacilioConstants.ContextNames.ATTENDANCE, FacilioConstants.ContextNames.ATTENDANCE_TRANSACTIONS, FacilioConstants.ContextNames.SERVICE, FacilioConstants.ContextNames.TERMS_AND_CONDITIONS))
+			new HashSet<>(Arrays.asList(
+					FacilioConstants.ContextNames.ASSET_ACTIVITY,
+					FacilioConstants.ContextNames.WORKORDER_ACTIVITY,
+					FacilioConstants.ContextNames.ITEM_ACTIVITY,
+					FacilioConstants.ContextNames.PURCHASE_ORDER,
+					FacilioConstants.ContextNames.PURCHASE_REQUEST,
+					FacilioConstants.ContextNames.RECEIVABLE,
+					FacilioConstants.ContextNames.RECEIPTS,
+					FacilioConstants.ContextNames.CONTRACTS,
+					FacilioConstants.ContextNames.GATE_PASS,
+					FacilioConstants.ContextNames.SHIPMENT,
+					FacilioConstants.ContextNames.INVENTORY_REQUEST,
+					FacilioConstants.ContextNames.INVENTORY_REQUEST,
+					FacilioConstants.ContextNames.ATTENDANCE,
+					FacilioConstants.ContextNames.ATTENDANCE_TRANSACTIONS,
+					FacilioConstants.ContextNames.SERVICE,
+					FacilioConstants.ContextNames.TERMS_AND_CONDITIONS,
+					FacilioConstants.ContextNames.Reservation.RESERVATION,
+					FacilioConstants.ContextNames.Reservation.RESERVATIONS_EXTERNAL_ATTENDEE,
+					FacilioConstants.ContextNames.Reservation.RESERVATIONS_INTERNAL_ATTENDEE
+			))
 			);
 
 	public static boolean isSystemFieldsPresent (FacilioModule module) {

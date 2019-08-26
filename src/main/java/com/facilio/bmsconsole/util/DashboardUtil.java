@@ -31,8 +31,8 @@ import com.facilio.bmsconsole.context.BuildingContext;
 import com.facilio.bmsconsole.context.DashboardContext;
 import com.facilio.bmsconsole.context.DashboardFolderContext;
 import com.facilio.bmsconsole.context.DashboardSharingContext;
-import com.facilio.bmsconsole.context.DashboardTabContext;
 import com.facilio.bmsconsole.context.DashboardSharingContext.SharingType;
+import com.facilio.bmsconsole.context.DashboardTabContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext.WidgetType;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
@@ -2676,6 +2676,19 @@ public class DashboardUtil {
 
 		Map<String, Object> props = FieldUtil.getAsProperties(dashboardTabContext);
 		updateBuilder.update(props);
+	}
+	
+	public static void updateDashboardTabList(List<DashboardTabContext> dashboardTabContextList) throws Exception {
+		
+		for (DashboardTabContext dashboardTabContext :dashboardTabContextList) {
+			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
+					.table(ModuleFactory.getDashboardTabModule().getTableName())
+					.fields(FieldFactory.getDashboardTabFields())
+					.andCondition(CriteriaAPI.getIdCondition(dashboardTabContext.getId(), ModuleFactory.getDashboardTabModule()));
+	
+			Map<String, Object> props = FieldUtil.getAsProperties(dashboardTabContext);
+			updateBuilder.update(props);
+		}
 	}
 	
 	public static void deleteDashboardFolder(DashboardFolderContext dashboardFolder) throws Exception {

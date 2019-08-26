@@ -102,6 +102,9 @@ public class GetAlarmListCommand extends FacilioCommand {
 		{
 			builder.andCustomWhere("Alarms.ENTITY_ID = ?", entityId);
 		}
+		if (count != null) {
+			builder.setAggregation();
+		}
 
 		List<AlarmContext> alarms = builder.get();
 		AlarmAPI.loadExtendedAlarms(alarms);

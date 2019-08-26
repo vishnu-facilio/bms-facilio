@@ -3,6 +3,11 @@ package com.facilio.bmsconsole.commands;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.accounts.util.AccountConstants;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -26,6 +31,9 @@ public class AddOrgInfoCommand extends FacilioCommand {
             properties.put("value", facilioAuth);
             insertRecordBuilder.addRecord(properties);
             insertRecordBuilder.save();
+            
+        	AccountUtil.getRoleBean().createSuperdminRoles((long)context.get("orgId"));
+        	
             return false;
         }
 

@@ -9,11 +9,17 @@
 		<interceptors>
 			<interceptor name="cacheinterceptor"
 						 class="com.facilio.bmsconsole.interceptors.CacheInterceptor" />
+			<interceptor name="scopeinterceptor"
+				class="com.facilio.bmsconsole.interceptors.ScopeInterceptor" />
+			<interceptor name="datasourceinterceptor"
+				class="com.facilio.bmsconsole.interceptors.DataSourceInterceptor" />
 			<interceptor name="authinterceptor"
-						 class="com.facilio.bmsconsole.interceptors.AuthInterceptor" />
+				class="com.facilio.bmsconsole.interceptors.AuthInterceptor" />
 			<interceptor-stack name="defaultInterceptor">
 				<interceptor-ref name="defaultStack" />
 				<interceptor-ref name="authinterceptor" />
+				<interceptor-ref name="datasourceinterceptor" />
+				<interceptor-ref name="scopeinterceptor" />
 				<interceptor-ref name="cacheinterceptor" />
 				<interceptor-ref name="json">
 					<param name="enableSMD">true</param>
@@ -48,11 +54,17 @@
 		<interceptors>
 			<interceptor name="cacheinterceptor"
 				class="com.facilio.bmsconsole.interceptors.CacheInterceptor" />
+			<interceptor name="scopeinterceptor"
+				class="com.facilio.bmsconsole.interceptors.ScopeInterceptor" />
+			<interceptor name="datasourceinterceptor"
+				class="com.facilio.bmsconsole.interceptors.DataSourceInterceptor" />
 			<interceptor name="authinterceptor"
 				class="com.facilio.bmsconsole.interceptors.AuthInterceptor" />
 			<interceptor-stack name="defaultInterceptor">
 				<interceptor-ref name="defaultStack" />
 				<interceptor-ref name="authinterceptor" />
+				<interceptor-ref name="datasourceinterceptor" />
+				<interceptor-ref name="scopeinterceptor" />
 				<interceptor-ref name="cacheinterceptor" />				
 				<interceptor-ref name="json">
 					<param name="enableSMD">true</param>
@@ -3505,7 +3517,12 @@
 			<result name="success" type="json">
 				<param name="includeProperties">^dashboardTabContext.*</param>
 			</result>
-		</action>		
+		</action>
+		<action name="updateDashboardTabsList" class="com.facilio.bmsconsole.actions.DashboardAction" method="updateDashboardTabsList">
+			<result name="success" type="json">
+				<param name="includeProperties">dashboardTabContexts,dashboardTabContexts\[\d+\],dashboardTabContexts\[\d+\].*</param>
+			</result>
+		</action>			
 		<action name="getDashboardFolder" class="com.facilio.bmsconsole.actions.DashboardAction" method="getDashboardFolder">
 			<result name="success" type="json">
 				<param name="includeProperties">dashboardFolders,dashboardFolders\[\d+\],dashboardFolders\[\d+\].*</param>
@@ -3810,6 +3827,16 @@
 		<action name="edit" class="com.facilio.bmsconsole.actions.FormAction" method="updateForm">
 			<result name="success" type="json">
 				<param name="includeProperties">res</param>
+			</result>
+		</action>
+	</package>
+	
+	<package name="controlActionModulev1" namespace="/api/controlAction" extends="homeApi">
+		<action name="metaData" class="com.facilio.controlaction.action.ControlActionAction"
+			method="metaData">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+				<param name="includeProperties">meta.*</param>
 			</result>
 		</action>
 	</package>

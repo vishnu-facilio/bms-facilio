@@ -1,8 +1,8 @@
 package com.facilio.accounts.util;
 
 import com.facilio.aws.util.AwsUtil;
-import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.templates.Template;
+import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.util.TemplateAPI;
 
 import org.apache.commons.text.StringSubstitutor;
@@ -15,7 +15,6 @@ import org.json.simple.parser.ParseException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import com.facilio.aws.util.AwsUtil;
 
 public enum AccountEmailTemplate {
 	WELCOME_EMAIL(1),
@@ -101,74 +100,73 @@ public enum AccountEmailTemplate {
 		
 		JSONObject json = new JSONObject();
 		Template template = null;
+		
 		switch(templateVal) {
-			case 1:
-				json.put("sender", SUPPORTEMAIL);
-				json.put("to", "${toUser.email}");
-				json.put("subject", "Welcome to "+ BRAND+"!");
-				json.put("message", "Hi ${toUser.name}, Thanks for signing up for "+BRAND+".");
-				break;
-			case 2:
-				json.put("sender", SUPPORTEMAIL);
-				json.put("to", "${toUser.email}");
-				json.put("subject", "[" + BRAND +"] ${inviter.name} has invited you to join the ${org.name} organization");
-				try {
-					template = TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACCOUNTS, templateVal);
-					json.put("message", template.getOriginalTemplate().get("message"));
-					json.put("mailType", "html");
-				}
-				catch(Exception e) {
-					json.put("message", "Hi ${toUser.name}, ${inviter.name} has invited you to join the ${org.name} organization. Please click the below link to join the organization. ${invitelink}");
-					json.put("mailType", "text");
-					
-				}
-				break;
-			case 3:
-				json.put("sender", SUPPORTEMAIL);
-				json.put("to", "${toUser.email}");
-				json.put("subject", "Welcome! And confirm your email");
-				try {
-					template = TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACCOUNTS, templateVal);
-					json.put("message", template.getOriginalTemplate().get("message"));
-					json.put("mailType", "html");
-					
-				}
-				catch(Exception e) {
-					json.put("message", "Hi ${toUser.name}, Please click the below link to verify your email address. ${invitelink}");
-					json.put("mailType", "text");
-					
-				}
-				break;
-			case 4:
-				json.put("sender", SUPPORTEMAIL);
-				json.put("to", "${toUser.email}");
-				json.put("subject", "Reset your "+BRAND+" password");
-				try {
-					template = TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACCOUNTS, templateVal);
-					json.put("message",template.getOriginalTemplate().get("message"));
-					json.put("mailType", "html");
-					
-				}
-				catch(Exception e) {
-					json.put("message", "Hi ${toUser.name}, Please click the below link to reset your password. ${invitelink}");
-					json.put("mailType", "text");
-					
-				}
-				break;
-			case 5:
-				json.put("sender", SUPPORTEMAIL);
-				json.put("to", ALERTEMAIL);
-				json.put("subject","${toUser.name} with a mailId  ${toUser.email} has signedUp in ["+BRAND+ "]");
-				json.put("message", "Hi ${toUser.name}, Please click the below link to verify your email address. ${invitelink}\n" 
-						+ "Name:" + "${toUser.name}\n" + "Email:" + "${toUser.email}" + "Timezone:" + "${toUser.timezone}" );
-				break;
-			case 6:
-				json.put("sender", SUPPORTEMAIL);
-				json.put("to", "${toUser.email}");
-				json.put("subject","[${org.name}] Welcome and confirm your email" );
-				json.put("message", "Hi ${toUser.name}, Please click the below link to verify your email address. ${invitelink}" );
-				break;				
-		}
-		return json;
+		case 1:
+			json.put("sender", SUPPORTEMAIL);
+			json.put("to", "${toUser.email}");
+			json.put("subject", "Welcome to "+ BRAND+"!");
+			json.put("message", "Hi ${toUser.name}, Thanks for signing up for "+BRAND+".");
+			break;
+		case 2:
+			json.put("sender", SUPPORTEMAIL);
+			json.put("to", "${toUser.email}");
+			json.put("subject", "[" + BRAND +"] ${inviter.name} has invited you to join the ${org.name} organization");
+			try {
+				template = TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACCOUNTS, templateVal);
+				json.put("message", template.getOriginalTemplate().get("message"));
+				json.put("mailType", "html");
+			}
+			catch(Exception e) {
+				json.put("message", "Hi ${toUser.name}, ${inviter.name} has invited you to join the ${org.name} organization. Please click the below link to join the organization. ${invitelink}");
+				json.put("mailType", "text");
+			}
+			break;
+		case 3:
+			json.put("sender", SUPPORTEMAIL);
+			json.put("to", "${toUser.email}");
+			json.put("subject", "Welcome! And confirm your email");
+			try {
+				template = TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACCOUNTS, templateVal);
+				json.put("message", template.getOriginalTemplate().get("message"));
+				json.put("mailType", "html");
+				
+			}
+			catch(Exception e) {
+				json.put("message", "Hi ${toUser.name}, Please click the below link to verify your email address. ${invitelink}");
+				json.put("mailType", "text");
+				
+			}
+			break;
+		case 4:
+			json.put("sender", SUPPORTEMAIL);
+			json.put("to", "${toUser.email}");
+			json.put("subject", "Reset your "+BRAND+" password");
+			try {
+				template = TemplateAPI.getDefaultTemplate(DefaultTemplateType.ACCOUNTS, templateVal);
+				json.put("message",template.getOriginalTemplate().get("message"));
+				json.put("mailType", "html");
+				
+			}
+			catch(Exception e) {
+				json.put("message", "Hi ${toUser.name}, Please click the below link to reset your password. ${invitelink}");
+				json.put("mailType", "text");
+			}
+			break;
+		case 5:
+			json.put("sender", SUPPORTEMAIL);
+			json.put("to", ALERTEMAIL);
+			json.put("subject","${toUser.name} with a mailId  ${toUser.email} has signedUp in ["+BRAND+ "]");
+			json.put("message", "Hi ${toUser.name}, Please click the below link to verify your email address. ${invitelink}\n" 
+					+ "Name:" + "${toUser.name}\n" + "Email:" + "${toUser.email}" + "Timezone:" + "${toUser.timezone}" );
+			break;
+		case 6:
+			json.put("sender", SUPPORTEMAIL);
+			json.put("to", "${toUser.email}");
+			json.put("subject","[${org.name}] Welcome and confirm your email" );
+			json.put("message", "Hi ${toUser.name}, Please click the below link to verify your email address. ${invitelink}" );
+			break;				
+	}
+	return json;
 	}
 }

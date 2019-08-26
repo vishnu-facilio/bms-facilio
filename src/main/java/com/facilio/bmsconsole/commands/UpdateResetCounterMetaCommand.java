@@ -24,7 +24,7 @@ public class UpdateResetCounterMetaCommand extends FacilioCommand {
 		FacilioModule module = ModuleFactory.getResetCounterMetaModule();
 		
 		for(ResetCounterMetaContext resetCounter:resetCounterMetaList){
-			Map<String, Object> prop = FieldUtil.getAsProperties(resetCounter);;
+			Map<String, Object> prop = FieldUtil.getAsProperties(resetCounter);
 			GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 					.table(module.getTableName()).fields(FieldFactory.getResetCounterMetaFields())
 					.andCondition(CriteriaAPI.getIdCondition(resetCounter.getId(), module));

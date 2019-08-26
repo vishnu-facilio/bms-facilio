@@ -81,16 +81,14 @@ public class ReportTemplateContext {
 	public void setBuildingId(Long buildingId) {
 		this.buildingId = buildingId;
 	}
-	public Criteria getCriteria(ReportContext report) throws Exception{
+	public Criteria getCriteria(ReportContext report, ReportDataPointContext dp) throws Exception{
 		Criteria c = new Criteria ();
 		
-		FacilioModule facilioModule = report.getModule();
+		FacilioModule facilioModule = dp.getxAxis().getModule();
 		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		// Assumption that x Axis module has parentId
-		if(facilioModule == null) {
-			facilioModule = report.getDataPoints().get(0).getxAxis().getModule();
-		}
+		
 		FacilioField parentField = null;
 		
 		List<FacilioField> fields = bean.getAllFields(facilioModule.getName());

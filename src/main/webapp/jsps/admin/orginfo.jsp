@@ -73,7 +73,7 @@ function view(userId){
 	
 	FacilioApp.ajax({
 		method : "get",
-		url : contextPath + "/api/verifyusers?userid="+userId,
+		url : contextPath + "/api/verifyusers?userId="+userId,
 		done: function(data) {
 			document.getElementById(userId).innerHTML = 'true'
 		}
@@ -196,7 +196,7 @@ function myLicenseFunction() {
 	<td  style="max-width: 350px;width:350px;" align="center"><%=b.getName() %></td>
 	<td  style="max-width: 350px;width:350px;"  align="center"><%=b.getEmail() %></td>
 	<td  style="max-width: 350px;width:350px;" align="center" id=<%=b.getId() %>><%=b.getUserVerified() %></td>
-	<td style="max-width: 350px;width:350px;text-align: center;"> <button type="button" onclick="view(<%=b.getId()%>)">Update</button> </td>
+	<td style="max-width: 350px;width:350px;text-align: center;"> <button type="button" onclick="view(<%=b.getUid()%>)">Update</button> </td>
 	</tr>
 <%
 }

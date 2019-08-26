@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.Arrays;
 
+import com.facilio.bmsconsole.util.PMStatus;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
@@ -18,7 +19,7 @@ public class ResetContext extends FacilioCommand {
     @Override
     public boolean executeCommand(Context context) throws Exception {
         PreventiveMaintenance pm = new PreventiveMaintenance();
-        pm.setStatus(true);
+        pm.setStatus(PMStatus.ACTIVE);
 
         context.clear();
         context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(pmId));

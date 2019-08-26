@@ -152,7 +152,7 @@ public class GetExportReportDataCommand extends FacilioCommand {
 				url.append("&charttype=").append(chartType);
 			}
 			
-			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(), url.toString(), fileFormat);
+			fileUrl = PdfUtil.exportUrlAsPdf(url.toString(), fileFormat);
 		}
 		
 		context.put(FacilioConstants.ContextNames.FILE_URL, fileUrl);

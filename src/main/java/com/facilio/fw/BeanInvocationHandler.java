@@ -8,10 +8,11 @@ import java.util.logging.Logger;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
-import com.facilio.accounts.dto.Account;
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.db.ResponseCacheUtil;
+import com.facilio.accounts.dto.AccountsInterface;
+import com.facilio.accounts.dto.IAMUser;
+//import com.facilio.bmsconsole.db.ResponseCacheUtil;
 import com.facilio.db.transaction.FacilioTransactionManager;
+import com.facilio.db.util.DBConf;
 
 public class BeanInvocationHandler implements InvocationHandler {
 
@@ -53,14 +54,12 @@ public class BeanInvocationHandler implements InvocationHandler {
 		Object result;
 		boolean isTransaction =false;
 		try {
-			Account oldAccount = AccountUtil.getCurrentAccount();
-
+			AccountsInterface oldAccount = DBConf.getInstance().getCurrentAccount();
 			if (orgid != 0) {
 				if (oldAccount == null || orgid != oldAccount.getOrg().getOrgId()) {
-					AccountUtil.setCurrentAccount(orgid);
+					DBConf.getInstance().setNewAccount(orgid);
 				}
 			}
-
 
 			if (enableTransaction) {
 				TransactionManager tm = FacilioTransactionManager.INSTANCE.getTransactionManager();
@@ -78,11 +77,11 @@ public class BeanInvocationHandler implements InvocationHandler {
 			if (enableTransaction && isTransaction) {
 				LOGGER.info("commit transaction for " + method.getName());
 				FacilioTransactionManager.INSTANCE.getTransactionManager().commit();
-				ResponseCacheUtil.removeOrgCache(AccountUtil.getCurrentOrg().getId());
+				DBConf.getInstance().removeOrgCache(DBConf.getInstance().getCurrentOrgId());
 			}
-			if (orgid != 0 && oldAccount != null) {
-				AccountUtil.setCurrentAccount(oldAccount);
-			}
+//			if (orgid != 0 && oldAccount != null) {
+//				DBConf.getInstance().setNewAccount(oldAccount);
+//			}
 
 		}  catch (Exception e) {
 			LOGGER.log(Level.INFO,"exception for  for " + method.getName(),e);

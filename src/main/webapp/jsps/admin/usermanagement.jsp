@@ -10,19 +10,19 @@ java.sql.Timestamp,
   
  <%
    	String email = request.getParameter("email");
-    List<User> userList = null;
-    List<Map<String, Object>> sessions = null;
-    User usr = null;
-    			if (email != null) {
-   		usr = AccountUtil.getUserBean().getFacilioUser(email);
-   		sessions = AccountUtil.getUserBean().getUserSessions(usr.getUid(), null);
+       List<User> userList = null;
+       List<Map<String, Object>> sessions = null;
+       User usr = null;
+       			if (email != null) {
+      		usr = AccountUtil.getUserBean().getUser(email);
+      		sessions = AccountUtil.getUserBean().getUserSessions(usr.getUid(), null);
 
-   		long orgId = usr.getOrgId();
-   		long roleId = usr.getRoleId();
-   		if (AccountUtil.getRoleBean(orgId).getRole(roleId).getName().equalsIgnoreCase("Super Administrator")) {
-   			userList = AccountUtil.getOrgBean(orgId).getAllOrgUsers(orgId);
-   		}
-   	}
+      		long orgId = usr.getOrgId();
+      		long roleId = usr.getRoleId();
+      		if (AccountUtil.getRoleBean(orgId).getRole(roleId).getName().equalsIgnoreCase("Super Administrator")) {
+      			userList = AccountUtil.getOrgBean(orgId).getAllOrgUsers(orgId);
+      		}
+      	}
    %>
  
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">

@@ -8,6 +8,7 @@ import com.facilio.agent.AgentKeys;
 import com.facilio.agentIntegration.AgentIntegrationKeys;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
+import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.modules.fields.FacilioField;
 
 public class ModuleFactory {
@@ -94,8 +95,8 @@ public class ModuleFactory {
 		moduleMap.put(FacilioConstants.ContextNames.TERMS_AND_CONDITIONS, getTermsAndConditionModule());
 		moduleMap.put(FacilioConstants.ContextNames.CONTRACTS, getContractsModule());
 		moduleMap.put(FacilioConstants.ContextNames.NEW_READING_ALARM, getReadingAlarmModule());
-
-
+		moduleMap.put(FacilioConstants.ContextNames.Reservation.RESERVATION, getReservationModule());
+		moduleMap.put(FacilioConstants.ContextNames.BMS_ALARM, getBmsAlarmModule());
 		return moduleMap;
 	}
 	
@@ -211,6 +212,14 @@ public class ModuleFactory {
 		module.setName("module");
 		module.setDisplayName("Module");
 		module.setTableName("Modules");
+		return module;
+	}
+	
+	public static FacilioModule getSubModulesRelModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("submodulesrel");
+		module.setDisplayName("Sub Modules Rel");
+		module.setTableName("SubModulesRel");
 		return module;
 	}
 
@@ -2519,6 +2528,13 @@ public class ModuleFactory {
 		module.setTableName("ReadingAlarm");
 		return module;
 	}
+	public static FacilioModule getBmsAlarmModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ContextNames.BMS_ALARM);
+		module.setDisplayName("BMS Alarm");
+		module.setTableName("BMSAlarm");
+		return module;
+	}
 
 	public static FacilioModule getDigestConfigModule() {
 		FacilioModule module = new FacilioModule();
@@ -2549,6 +2565,46 @@ public class ModuleFactory {
 		module.setName(ContextNames.PREFERENCE_RULES);
 		module.setDisplayName("Preferences Rules");
 		module.setTableName("Preference_Rules");
+		return module;
+	}
+	
+	public static FacilioModule getReservationModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ContextNames.Reservation.RESERVATION);
+		module.setDisplayName("Reservation");
+		module.setTableName("Reservation");
+		return module;
+	}
+	
+	public static FacilioModule getMlAnomalyAlarmModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ContextNames.ML_ANOMALY_ALARM);
+		module.setDisplayName("ML Anomaly Alarm");
+		module.setTableName("ML_Anomaly_Alarm");
+		return module;
+	}
+	
+	public static FacilioModule getControlGroupModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ControlActionUtil.CONTROL_ACTION_GROUP_CONTEXT);
+		module.setDisplayName(ControlActionUtil.CONTROL_ACTION_GROUP_CONTEXT);
+		module.setTableName("Control_Groups");
+		return module;
+	}
+	
+	public static FacilioModule getControlGroupSpaceModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ControlActionUtil.CONTROL_ACTION_GROUP_CONTEXT_SPACE);
+		module.setDisplayName(ControlActionUtil.CONTROL_ACTION_GROUP_CONTEXT_SPACE);
+		module.setTableName("Control_Group_Spaces");
+		return module;
+	}
+	
+	public static FacilioModule getControlGroupInclExclModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ControlActionUtil.CONTROL_ACTION_GROUP_CONTEXT_INCL_EXLC);
+		module.setDisplayName(ControlActionUtil.CONTROL_ACTION_GROUP_CONTEXT_INCL_EXLC);
+		module.setTableName("Control_Group_Include_Exclude_Resource");
 		return module;
 	}
 }

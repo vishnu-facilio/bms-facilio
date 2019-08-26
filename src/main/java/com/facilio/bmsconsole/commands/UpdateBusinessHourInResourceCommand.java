@@ -39,7 +39,7 @@ public class UpdateBusinessHourInResourceCommand extends FacilioCommand {
 		BusinessHoursContext businessHours = (BusinessHoursContext) context
 				.get(FacilioConstants.ContextNames.BUSINESS_HOUR);
 		ResourceContext resource = ResourceAPI.getResource(resourceid);
-		if (resource.getResourceTypeEnum().equals(ResourceType.ASSET)) {
+		if (ResourceType.ASSET.equals(resource.getResourceTypeEnum())) {
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		FacilioField field = fieldMap.get("operatingHour");
 		List<Object> changeList = new ArrayList<Object>();

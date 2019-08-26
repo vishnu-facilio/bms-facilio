@@ -6,25 +6,18 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
-import com.chargebee.internal.StringJoiner;
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.StoreRoomContext;
 import com.facilio.bmsconsole.util.LocationAPI;
-import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.StoreroomApi;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.BuildingOperator;
-import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;

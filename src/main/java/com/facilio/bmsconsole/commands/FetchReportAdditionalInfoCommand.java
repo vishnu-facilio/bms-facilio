@@ -23,6 +23,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
+import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
@@ -142,20 +143,34 @@ public class FetchReportAdditionalInfoCommand extends FacilioCommand {
 			
 			if (parentIds != null) {
 				List<AlarmOccurrenceContext> occurrences = null;
-				AlarmOccurrenceContext alarmOccurrence = NewAlarmAPI.getAlarmOccurrence(occurrenceId);
-				if (alarmOccurrence != null && alarmOccurrence.getAlarm() != null) {
+				if (occurrenceId == null || occurrenceId == -1) {
+					occurrences = NewAlarmAPI.getReadingAlarmOccurrences(parentIds, -1l, dp.getyAxis().getFieldId(), report.getDateRange().getStartTime(), report.getDateRange().getEndTime());
+				}
+				else if (currentAlarm != null && currentAlarm.getReadingFieldId() == dp.getyAxis().getFieldId() && parentIds.contains(currentAlarm.getResource().getId())) {
+					AlarmOccurrenceContext alarmOccurrence = NewAlarmAPI.getAlarmOccurrence(occurrenceId);
 					occurrences = NewAlarmAPI.getReadingAlarmOccurrences(alarmOccurrence.getAlarm().getId(), report.getDateRange().getStartTime(), report.getDateRange().getEndTime());
-					
-					if (CollectionUtils.isNotEmpty(occurrences)) {
-						for (AlarmOccurrenceContext occurrence: occurrences) {
-							allAlarms.add(occurrence);
-						}
+				}
+
+//				AlarmOccurrenceContext alarmOccurrence = NewAlarmAPI.getAlarmOccurrence(occurrenceId);
+//				if (alarmOccurrence != null && alarmOccurrence.getAlarm() != null) {
+//					occurrences = NewAlarmAPI.getReadingAlarmOccurrences(alarmOccurrence.getAlarm().getId(), report.getDateRange().getStartTime(), report.getDateRange().getEndTime());
+
+				if (CollectionUtils.isNotEmpty(occurrences)) {
+					for (AlarmOccurrenceContext occurrence: occurrences) {
+						allAlarms.add(occurrence);
 					}
 				}
+//				}
 			}
 		}
 		
 		reportAggrData.put("alarms",  splitAlarmOccurrence(allAlarms, report.getDateRange(), alarmMap));
+		for(Long key : alarmMap.keySet()) {
+			AlarmOccurrenceContext alarmOccurrenceContext = alarmMap.get(key);
+			BaseAlarmContext baseAlarm = NewAlarmAPI.getAlarm(alarmOccurrenceContext.getAlarm().getId());
+			alarmOccurrenceContext.setAlarm(baseAlarm);
+			alarmOccurrenceContext.setSubject(alarmOccurrenceContext.getAlarm().getSubject());
+		}
 		reportAggrData.put("alarmInfo", alarmMap);
 	}
 	
@@ -395,7 +410,7 @@ public class FetchReportAdditionalInfoCommand extends FacilioCommand {
 						occurrenceMap.put(alarmOccurrence.getId(), alarmOccurrence);
 					}
 				}
-				json.put("occurrences", occurrenceIds);
+				json.put("alarm", occurrenceIds);		// changing name to 'alarm' to match previous alarm bar response for client 
 			}
 		}
 		

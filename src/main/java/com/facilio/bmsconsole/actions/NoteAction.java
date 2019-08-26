@@ -229,6 +229,7 @@ public class NoteAction extends FacilioAction {
 	public String v2addNote() throws Exception {
 		addNote();
 		setResult(FacilioConstants.ContextNames.NOTE, noteId);
+		setResult("Notes", note);
 		return SUCCESS;
 	}
  }

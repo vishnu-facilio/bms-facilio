@@ -34,8 +34,8 @@ public class ChangePreventiveMaintenanceStatusCommand extends FacilioCommand {
 					.andCondition(CriteriaAPI.getIdCondition(recordIds, module));
 			builder.update(pmProps);
 			
-			List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getPMsDetails(recordIds);
 			if (pm.isActive()) {
+				List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getPMsDetails(recordIds);
 				context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST, pms);
 			}
 		}

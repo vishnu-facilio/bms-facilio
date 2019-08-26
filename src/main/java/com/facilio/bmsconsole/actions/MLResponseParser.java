@@ -40,6 +40,7 @@ public class MLResponseParser extends ActionSupport
 				}
 				MLContext mlContext = mlContextList.get(0);
 				mlContext.setResult(result);
+				mlContext.setPredictionTime(predictedtime);
 				
 				Context context = new FacilioContext();
 				context.put(FacilioConstants.ContextNames.ML, mlContext);
@@ -93,6 +94,7 @@ public class MLResponseParser extends ActionSupport
 	String result;
 	long ml_id;
 	long orgid;
+	long predictedtime;
 	String error;
 	public void setResult(String result)
 	{
@@ -119,6 +121,14 @@ public class MLResponseParser extends ActionSupport
 	public void setOrgid(long orgid)
 	{
 		this.orgid = orgid;
+	}
+	public long getPredictedtime()
+	{
+		return predictedtime;
+	}
+	public void setPredictedtime(long predictedtime)
+	{
+		this.predictedtime = predictedtime;
 	}
 	
 	public void setError(String error)

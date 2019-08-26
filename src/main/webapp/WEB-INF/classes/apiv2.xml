@@ -49,11 +49,17 @@
 		<interceptors>
 			<interceptor name="cacheinterceptor"
 				class="com.facilio.bmsconsole.interceptors.CacheInterceptor" />
+			<interceptor name="scopeinterceptor"
+				class="com.facilio.bmsconsole.interceptors.ScopeInterceptor" />
+			<interceptor name="datasourceinterceptor"
+				class="com.facilio.bmsconsole.interceptors.DataSourceInterceptor" />
 			<interceptor name="authinterceptor"
 				class="com.facilio.bmsconsole.interceptors.AuthInterceptor" />
 			<interceptor-stack name="defaultInterceptor">
 				<interceptor-ref name="defaultStack" />
 				<interceptor-ref name="authinterceptor" />
+				<interceptor-ref name="datasourceinterceptor" />
+				<interceptor-ref name="scopeinterceptor" />
 				<interceptor-ref name="cacheinterceptor" />
 				<interceptor-ref name="json">
 					<param name="enableSMD">true</param>
@@ -68,28 +74,30 @@
 			class="com.facilio.bmsconsole.actions.LoginAction"
 			method="v2currentAccount">
 		</action>
+		<action name="fetchAccount"
+			class="com.facilio.bmsconsole.actions.LoginAction"
+			method="fetchCurrentAccount">
+		</action>
+		
 		<action name="getSite" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getMySiteList">
 		</action>
 		<action name="getSites" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getAllSites">
 		</action>
-		<action name="getRoles" class="com.facilio.bmsconsole.actions.LoginAction"
-			method="getRoles">
-		</action>
 		<action name="getOrgs" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getOrgs">
 		</action>
-		<action name="getOrgInfo" class="com.facilio.bmsconsole.actions.LoginAction"
-			method="getOrgInfo">
+		<action name="getRoles" class="com.facilio.bmsconsole.actions.LoginAction"
+			method="getRoles">
 		</action>
-		<action name="getServiceList" class="com.facilio.bmsconsole.actions.LoginAction"
-			method="getServiceList">
+		<action name="getGroups" class="com.facilio.bmsconsole.actions.LoginAction"
+			method="getGroups">
 		</action>
-		<action name="getShifts" class="com.facilio.bmsconsole.actions.LoginAction"
-			method="getAllShifts">
+		<action name="getAllBuildings" class="com.facilio.bmsconsole.actions.LoginAction"
+			method="getAllBuildings">
 		</action>
-			<action name="getMainEnergyMeters" class="com.facilio.bmsconsole.actions.LoginAction"
+		<action name="getMainEnergyMeters" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getAllMainEnergyMeters">
 		</action>
 		<action name="getCalendarColor" class="com.facilio.bmsconsole.actions.LoginAction"
@@ -191,7 +199,13 @@
 		<action name="delete"
 			class="com.facilio.events.actions.V2AlarmAction" method="deleteAlarmOccurrence" />
 	</package>
-	
+	<package name="newModuleAlarms" namespace="/api/v2/newAlarms/view" extends="v2Api">
+		<action name="*" class="com.facilio.events.actions.V2AlarmAction" method="alarmList">
+			<param name="moduleName">alarm</param>
+			<param name="permission">READ,READ_OWN,READ_TEAM</param>
+			<param name="viewName">{1}</param>
+		</action>
+	</package>
 	<package name="readingAlarmList" namespace="/api/v2/readingalarms/view" extends="v2Api">
 		<action name="*" class="com.facilio.events.actions.V2AlarmAction" method="alarmList">
 			<param name="moduleName">alarm</param>
@@ -360,6 +374,61 @@
 		<action name="getMVProjectWidgetResult"
 			class="com.facilio.mv.action.MVAction" method="getMVProjectWidgetResult">
 		</action>
+	</package>
+	
+	<package name="controlActionModule" namespace="/api/v2/controlAction" extends="v2Api">
+
+		<action name="setReadingValue"
+			class="com.facilio.controlaction.action.ControlActionAction" method="setReadingValue"></action>
+			
+		<action name="getControlGroups"
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControlGroups"></action>
+		
+		<action name="getControlGroupMeta"
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControlGroupMeta"></action>
+			
+		<action name="getControlActionCommands"
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControlActionCommands"></action>
+		
+		<action name="getControllablePoints"
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControllablePoints"></action>
+		
+		<action name="addControlActionRule"
+		class="com.facilio.controlaction.action.ControlActionAction" method="addControlActionRule"></action>
+		
+		<action name="updateControlActionRule"
+		class="com.facilio.controlaction.action.ControlActionAction" method="updateControlActionRule"></action>
+		
+		<action name="deleteControlActionRule"
+		class="com.facilio.controlaction.action.ControlActionAction" method="deleteControlActionRule"></action>
+		
+		<action name="getControlActionRules"
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControlActionRules"></action>
+		
+		<action name="getControlActionRule"
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControlActionRule"></action>
+		
+		<action name="updateRDM"
+		class="com.facilio.controlaction.action.ControlActionAction" method="updateRDM"></action>
+		
+		<action name="getControllableAssets"
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControllableAssets"></action>
+		
+		<action name="getControllableFields"
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControllableFields"></action>
+		
+		<action name="addControlGroup"
+		class="com.facilio.controlaction.action.ControlActionAction" method="addControlGroup"></action>
+		
+		<action name="updateControlGroup"
+		class="com.facilio.controlaction.action.ControlActionAction" method="updateControlGroup"></action>
+		
+		<action name="deleteControlGroup"
+		class="com.facilio.controlaction.action.ControlActionAction" method="deleteControlGroup"></action>
+		
+		<action name="metaData"
+		class="com.facilio.controlaction.action.ControlActionAction" method="metaData"></action>
+		
 	</package>
 	
 	<package name="KPIModule" namespace="/api/v2/kpi" extends="v2Api">
@@ -1358,6 +1427,10 @@
 			<param name="moduleName">asset</param>
 			<param name="permission">ADD_READING</param>
 		</action>
+		<action name="all" class="com.facilio.bmsconsole.actions.ReadingAction" method="v2getAllAssetReadings">
+			<param name="moduleName">setup</param>
+			<param name="permission">ASSET_SETTINGS</param>
+		</action>
 	</package>
 	<package name="dashboardApiv2" namespace="/api/v2/dashboard"
 		extends="v2Api">
@@ -1572,6 +1645,36 @@
 			<param name="viewName">{1}</param>
 		</action>
 
+	</package>
+
+	<package name="reservationApiV2"
+			 namespace="/api/v2/reservations" extends="v2Api">
+		<action name="add"
+				class="com.facilio.bmsconsole.actions.ReservationAction"
+				method="addReservation">
+		</action>
+		<action name="*"
+				class="com.facilio.bmsconsole.actions.ReservationAction"
+				method="fetchReservationDetail">
+			<param name="recordId">{1}</param>
+		</action>
+		<action name="update"
+				class="com.facilio.bmsconsole.actions.ReservationAction"
+				method="updateReservation">
+		</action>
+		<action name="delete"
+				class="com.facilio.bmsconsole.actions.ReservationAction"
+				method="deleteReservation">
+		</action>
+	</package>
+
+	<package name="reservationListApiV2"
+			 namespace="/api/v2/reservations/view" extends="v2Api">
+		<action name="*"
+				class="com.facilio.bmsconsole.actions.ReservationAction"
+				method="fetchReservationList">
+			<param name="viewName">{1}</param>
+		</action>
 	</package>
 
 	<package name="assetApiV2" namespace="/api/v2/assets"
@@ -1822,6 +1925,10 @@
 		<action name="getDefaultWorkflowResult"
 			class="com.facilio.workflows.action.WorkflowAction"
 			method="getDefaultWorkflowResultV2"></action>
+			
+		<action name="getFunctionMeta"
+			class="com.facilio.workflows.action.WorkflowAction"
+			method="getFunctionMeta"></action>
 	</package>
 
 	<package name="timeseriesApiv2" namespace="/api/v2/timeseries"

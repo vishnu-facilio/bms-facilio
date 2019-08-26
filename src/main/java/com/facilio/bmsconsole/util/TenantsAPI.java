@@ -223,9 +223,7 @@ public class TenantsAPI {
 		
 		User user = AccountUtil.getUserBean().getPortalUser(userId);
 		if (user.getPortal_verified() == false) {
-		
-			(new UserBeanImpl()).sendInvitation(user.getOuid(), user);
-			
+			(new UserBeanImpl()).resendInvite(user.getOuid());
 		}
 		
 		FacilioModule module = ModuleFactory.getOrgUserModule();
@@ -540,8 +538,7 @@ public class TenantsAPI {
 			return null;
 		}
 		FacilioModule module = ModuleFactory.getTenantsuserModule();
-		FacilioModule portalUsersModule = AccountConstants.getPortalUserModule();
-		FacilioModule orgUserModule = AccountConstants.getOrgUserModule();
+		FacilioModule orgUserModule = AccountConstants.getAppOrgUserModule();
 			
 		List<FacilioField> fields = FieldFactory.getTenantsUserFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -552,9 +549,6 @@ public class TenantsAPI {
 													.select(fields)
 													.innerJoin(orgUserModule.getTableName())
 													.on(orgUserModule.getTableName()+".ORG_USERID = "+module.getTableName()+".ORG_USERID")
-													.innerJoin(portalUsersModule.getTableName())
-													.on(portalUsersModule.getTableName()+".USERID = "+orgUserModule.getTableName()+".USERID")
-//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCondition(CriteriaAPI.getCondition(tenantId, ids, PickListOperators.IS))
 																					;
 		List<Map<String,Object>> props = selectBuilder.get();
@@ -587,7 +581,7 @@ public class TenantsAPI {
 		}
 
 		try {
-			AccountUtil.getUserBean().inviteRequester(orgid, user);
+			AccountUtil.getUserBean().inviteRequester(orgid, user, true);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -824,7 +818,7 @@ public class TenantsAPI {
 			if(contact.getEmail() == null || contact.getEmail().isEmpty()) {
 				contact.setEmail(contact.getMobile());
 			}
-			long userId = AccountUtil.getUserBean().inviteRequester(orgid, contact);
+			long userId = AccountUtil.getUserBean().inviteRequester(orgid, contact, true);
 			addTenantContact(contact, tenantId);
 		}
 	}

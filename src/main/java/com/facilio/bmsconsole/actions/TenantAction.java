@@ -715,7 +715,7 @@ private Map<String, Double> readingData;
 			StringBuilder url = new StringBuilder(AwsUtil.getConfig("clientapp.url")).append("/app/pdf/billing?")
 					.append("tenantId=").append(tenantId).append("&rateCardId=").append(rateCardId)
 					.append("&startTime=").append(startTime).append("&endTime=").append(endTime);
-			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(),url.toString());
+			fileUrl = PdfUtil.exportUrlAsPdf(url.toString());
 			return SUCCESS;
 		}
 		

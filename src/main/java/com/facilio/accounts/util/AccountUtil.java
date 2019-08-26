@@ -22,6 +22,7 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.transaction.FacilioConnectionPool;
 import com.facilio.fw.BeanFactory;
 import com.facilio.fw.TransactionBeanFactory;
+import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
@@ -31,6 +32,7 @@ import com.facilio.modules.fields.FacilioField;
 public class AccountUtil {
 
 	private static ThreadLocal<Account> currentAccount = new ThreadLocal<Account>();
+	public static final String JWT_DELIMITER = "#";
 	
 	public static void setCurrentAccount(Account account) throws Exception {
 
@@ -38,7 +40,7 @@ public class AccountUtil {
 	}
 	
 	public static void setCurrentAccount(long orgId) throws Exception {
-		Organization org = AccountUtil.getOrgBean().getOrg(orgId);
+		Organization org = IAMUtil.getOrgBean().getOrgv2(orgId);
 		
 		if (org != null) {
 
@@ -49,6 +51,22 @@ public class AccountUtil {
 		}
 	}
 	
+	public static void updateAccount(Account account, boolean addUserEntryIfNotExists) throws Exception {
+		if(account == null) {
+			return;
+		}
+		
+		if (account.getUser() == null || account.getOrg() == null) {
+			return;
+		}
+		
+		String email = account.getUser().getEmail();
+		
+		User user = null;
+		user = AccountUtil.getUserBean().getUser(email);
+		account.setUser(user);
+	}
+
 	public static Account getCurrentAccount() {
 		return currentAccount.get();
 	}
@@ -198,7 +216,8 @@ public class AccountUtil {
 		CONTRACT (1048576),
         NEW_ALARMS (2097152),
         DEVELOPER_SPACE (4194304),
-		SKIP_TRIGGERS (8388608)
+		SKIP_TRIGGERS (8388608),
+		RESOURCE_BOOKING (16777216)
 		;
 		
 		
@@ -291,4 +310,6 @@ public class AccountUtil {
 		}
 		return null;
 	}
+	
+	
 }

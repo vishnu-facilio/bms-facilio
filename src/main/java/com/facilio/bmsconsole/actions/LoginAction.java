@@ -50,7 +50,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
+import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.Role;
@@ -73,9 +73,10 @@ import com.facilio.bmsconsole.util.ShiftAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.fw.auth.CognitoUtil;
 import com.facilio.fw.auth.SAMLAttribute;
 import com.facilio.fw.auth.SAMLUtil;
+import com.facilio.iam.accounts.util.IAMUserUtil;
+import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.screen.util.ScreenUtil;
@@ -167,12 +168,13 @@ public class LoginAction extends FacilioAction {
 			if (facilioToken != null) {
 				User currentUser = AccountUtil.getCurrentUser();
 				if (currentUser != null) {
-					AccountUtil.getUserBean().endUserSession(currentUser.getUid(), currentUser.getEmail(),
-							facilioToken);
+					IAMUserUtil.logOut(currentUser.getUid(), facilioToken, currentUser.getEmail()
+							);
 				}
 			}
 		} catch (Exception e) {
 			log.info("Exception occurred ", e);
+			return ERROR;
 		}
 
 		HttpSession session = request.getSession();
@@ -690,6 +692,45 @@ public class LoginAction extends FacilioAction {
 		setResult("account", account);
 		return SUCCESS;
 	}
+	public String fetchCurrentAccount() throws Exception {
+		
+		account = new HashMap<>();
+		HashMap<String, Object> appProps = new HashMap<>();
+		appProps.put("permissions", AccountConstants.ModulePermission.toMap());
+		appProps.put("permissions_groups", AccountConstants.PermissionGroup.toMap());
+		appProps.put("operators", CommonCommandUtil.getOperators());
+		appProps.put(FacilioConstants.ContextNames.ALL_METRICS, CommonCommandUtil.getAllMetrics());
+		appProps.put(FacilioConstants.ContextNames.ORGUNITS_LIST, CommonCommandUtil.orgUnitsList());
+		appProps.put(FacilioConstants.ContextNames.METRICS_WITH_UNITS, CommonCommandUtil.metricWithUnits());
+		account.put("appProps", appProps);
+		
+		Map<String, Object> config = new HashMap<>();
+		config.put("ws_endpoint", WmsApi.getWebsocketEndpoint(AccountUtil.getCurrentUser().getId()));
+		config.put("payment_endpoint", getPaymentEndpoint());
+		Properties buildinfo = (Properties)ServletActionContext.getServletContext().getAttribute("buildinfo");
+		config.put("build", buildinfo);
+		account.put("config", config);
+		
+		account.put("org", AccountUtil.getCurrentOrg());
+		account.put("user", AccountUtil.getCurrentUser());
+		account.put("timezone",AccountUtil.getCurrentAccount().getTimeZone()); 
+		account.put("License", AccountUtil.getFeatureLicense());
+		
+		List<User> users = AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId());
+		Map<Long, Set<Long>> userSites = new HashMap<>();
+		if (users != null) {
+			userSites = AccountUtil.getUserBean().getUserSites(users.stream().map(i -> i.getOuid()).collect(Collectors.toList()));
+		}
+		
+		Map<String, Object> data = new HashMap<>();
+		data.put("orgInfo", CommonCommandUtil.getOrgInfo());
+		data.put("users", users);
+		data.put("userSites", userSites);
+		account.put("data", data);
+		
+		setResult("account", account);
+		return SUCCESS;
+	}
 	
 	public String getMySiteList() throws Exception {
 		setResult("site", CommonCommandUtil.getMySites());
@@ -701,30 +742,26 @@ public class LoginAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	public String getRoles() throws Exception {
-		List<Role> roles = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getOrgId()).getRoles();
-		setResult("Roles", roles);
-		return SUCCESS;
-	}
-	
 	public String getOrgs() throws Exception {
 		List<Organization> orgs = AccountUtil.getUserBean().getOrgs(AccountUtil.getCurrentUser().getUid());
 		setResult("Orgs", orgs);
 		return SUCCESS;
 	}
 	
-	public String getOrgInfo() throws Exception {
-		setResult("orgInfo", CommonCommandUtil.getOrgInfo());
+	public String getRoles() throws Exception {
+		List<Role> roles = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getOrgId()).getRoles();
+		setResult("Roles", roles);
 		return SUCCESS;
 	}
 	
-	public String getServiceList() throws Exception {
-		setResult("serviceList", ReportsUtil.getPurposeMapping());
+	public String getGroups() throws Exception {
+		List<Group> groups = AccountUtil.getGroupBean().getOrgGroups(AccountUtil.getCurrentOrg().getId(), true);
+		setResult("groups", groups);
 		return SUCCESS;
 	}
 	
-	public String getAllShifts() throws Exception {
-		setResult("shifts",ShiftAPI.getAllShifts());
+	public String getAllBuildings() throws Exception {
+		setResult("buildings", SpaceAPI.getAllBuildings());
 		return SUCCESS;
 	}
 	
@@ -749,31 +786,15 @@ public class LoginAction extends FacilioAction {
 	}
 	
 	public String validatePermalink() throws Exception {
-		
-		if (AccountUtil.getUserBean().verifyPermalinkForURL(getPermalink(), null)) {
+		Account permalinkAccount = AccountUtil.getUserBean().getPermalinkAccount(getPermalink(), null);
+		if(permalinkAccount != null) {
 			
-			DecodedJWT decodedjwt = CognitoUtil.validateJWT(getPermalink(), "auth0");
-			
-			if (decodedjwt != null) {
-				long orgId = -1;
-				long ouid = -1;
-				if (decodedjwt.getSubject().split("_").length > 1) {
-					orgId = Long.parseLong(decodedjwt.getSubject().split("_")[0].split("-")[0]);
-					ouid = Long.parseLong(decodedjwt.getSubject().split("_")[0].split("-")[1]);
-				}
-				else {
-					orgId = Long.parseLong(decodedjwt.getSubject().split("#")[0].split("-")[0]);
-					ouid = Long.parseLong(decodedjwt.getSubject().split("#")[0].split("-")[1]);
-				}
-
-				account = new HashMap<>();
-				account.put("org", AccountUtil.getOrgBean().getOrg(orgId));
-				account.put("user", AccountUtil.getUserBean().getUserInternal(ouid, false));
-				
-				return SUCCESS;
-			}
+			AccountUtil.setCurrentAccount(permalinkAccount);
+			account = new HashMap<>();
+			account.put("org", permalinkAccount.getOrg());
+			account.put("user", permalinkAccount.getUser());
+			return SUCCESS;
 		}
-		
 		account = null;
 		return ERROR;
 	}

@@ -10,7 +10,8 @@ import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.actions.FacilioAction;
-import com.facilio.fw.auth.CognitoUtil;
+import com.facilio.iam.accounts.util.IAMUserUtil;
+import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.screen.util.ScreenUtil;
 
 public class TVAction extends FacilioAction {
@@ -64,7 +65,7 @@ public class TVAction extends FacilioAction {
 					setResponseCode(0);
 					setResult("status", "connected");
 					
-					String jwt = CognitoUtil.createJWT("id", "auth0", connectedScreenId + "", System.currentTimeMillis() + 24 * 60 * 60000, true);
+					String jwt = IAMUserUtil.createJWT("id", "auth0", connectedScreenId + "", System.currentTimeMillis() + 24 * 60 * 60000);
 
 	                ServletActionContext.getRequest();
 	                HttpServletResponse response = ServletActionContext.getResponse();

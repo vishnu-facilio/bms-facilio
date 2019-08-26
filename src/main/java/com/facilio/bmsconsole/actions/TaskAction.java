@@ -656,6 +656,7 @@ public class TaskAction extends FacilioAction {
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
 		setResult(FacilioConstants.ContextNames.TASK_LIST, taskContextList);
 		setResult("error", getError());
+		setResult("preRequestStatus", preRequestStatus);
 		return SUCCESS;
 	}
 	
@@ -770,7 +771,7 @@ public class TaskAction extends FacilioAction {
 		StringBuilder body = new StringBuilder("\n\nDetails: \n");
 		if (e != null && AwsUtil.isProduction()) {
 			if (e instanceof IllegalArgumentException) {
-				if (AccountUtil.getCurrentOrg().getOrgId() == 155 || e.getMessage().equals("Task cannot be updated for completed tickets") || e.getMessage().equals("Tasks should be completed before resolve") || e.getMessage().equals(" Atleast one file has to be attached since attachment is required to close the task")
+				if (AccountUtil.getCurrentOrg().getOrgId() == 155 || e.getMessage().equals("Task cannot be updated for completed tickets") || e.getMessage().equals("Tasks should be completed before resolve") || e.getMessage().equals("Atleast one file has to be attached since attachment is required to close the task")
 						|| ((e.getMessage().equals("Input task cannot be closed without entering input value") && AccountUtil.getCurrentAccount().isFromAndroid()))) {
 					return;
 				}

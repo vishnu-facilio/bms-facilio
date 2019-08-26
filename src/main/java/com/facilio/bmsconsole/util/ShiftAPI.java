@@ -458,7 +458,7 @@ public class ShiftAPI {
 		ouid.setName("ouid");
 		ouid.setDataType(FieldType.NUMBER);
 		ouid.setColumnName("ORG_USERID");
-		ouid.setModule(AccountConstants.getOrgUserModule());
+		ouid.setModule(AccountConstants.getAppOrgUserModule());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(Arrays.asList(ouid))
@@ -478,7 +478,7 @@ public class ShiftAPI {
 		ouid.setName("ouid");
 		ouid.setDataType(FieldType.NUMBER);
 		ouid.setColumnName("ORG_USERID");
-		ouid.setModule(AccountConstants.getOrgUserModule());
+		ouid.setModule(AccountConstants.getAppOrgUserModule());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(Arrays.asList(ouid))
@@ -504,7 +504,7 @@ public class ShiftAPI {
 		name.setName("name");
 		name.setDataType(FieldType.STRING);
 		name.setColumnName("NAME");
-		name.setModule(AccountConstants.getUserModule());
+		name.setModule(AccountConstants.getAppUserModule());
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(Arrays.asList(name))

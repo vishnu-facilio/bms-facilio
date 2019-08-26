@@ -301,6 +301,7 @@ public class ProcessImportCommand extends FacilioCommand {
 									} catch (Exception e) {
 										
 										e.printStackTrace();
+										LOGGER.severe("Process Import Exception -- Row No --" + row_no + " Fields Mapping --" + fieldMapping.get(key));
 										throw new ImportParseException(row_no, fieldMapping.get(key), e);
 									}
 							}	
@@ -324,6 +325,7 @@ public class ProcessImportCommand extends FacilioCommand {
 									try {
 										lookupPropsList = getLookupProps(lookupField,colVal, fieldMapping.get(key), importProcessContext);
 									}catch(Exception e) {
+										LOGGER.severe("Process Import Lookup Exception -- Row No --" + row_no + " Fields Mapping --" + fieldMapping.get(key));
 										if(colVal.get(key) == null) {
 											throw new ImportFieldValueMissingException(row_no, fieldMapping.get(key), e);
 										}
@@ -348,6 +350,7 @@ public class ProcessImportCommand extends FacilioCommand {
 										specialLookupList = getSpecialLookupProps(lookupField,colVal, importProcessContext);
 									}catch(Exception e) {
 										if(colVal.get(lookupField.getModule().getName() + "__" + fieldMapping.get(lookupField.getName())) == null) {
+											LOGGER.severe("Process Import Special Loookup Exception -- Row No --" + row_no + " Fields Mapping --" + fieldMapping.get(key));
 											throw new ImportFieldValueMissingException(row_no, lookupField.getModule().getName() + "__" + fieldMapping.get(lookupField.getName()), e);
 										}
 										else {
@@ -489,8 +492,7 @@ public class ProcessImportCommand extends FacilioCommand {
 						FacilioContext context = new FacilioContext();
 						context.put(FacilioConstants.ContextNames.MODULE_LIST, Collections.singletonList(module));
 						
-						Chain addCategory = FacilioChain.getTransactionChain();
-						TransactionChainFactory.commonAddModuleChain(addCategory);
+						FacilioChain addCategory = TransactionChainFactory.commonAddModuleChain();
 						
 						addCategory.execute(context);
 						
@@ -561,7 +563,7 @@ public class ProcessImportCommand extends FacilioCommand {
 			
 			switch (moduleName) {
 			case "workorder": {
-				User user = AccountUtil.getUserBean().getFacilioUser(value.toString());
+				User user = AccountUtil.getUserBean().getUser(value.toString());
 				Map<String, Object> prop = FieldUtil.getAsProperties(user);
 				return prop;
 			}
@@ -584,14 +586,11 @@ public class ProcessImportCommand extends FacilioCommand {
 				return prop2;
 			}
 			case "users": {
-				if (value == null) {
-					return null;
-				}
-				User user = AccountUtil.getUserBean().getUserFromEmail(value.toString());
+				User user = AccountUtil.getUserBean().getUser(value.toString());
 				if(user == null) {
 					user = new User();
 					user.setEmail(value.toString());
-					AccountUtil.getUserBean().addRequester(AccountUtil.getCurrentOrg().getId(), user);
+					AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, false);
 				}
 				Map<String, Object> prop = FieldUtil.getAsProperties(user);
 				return prop;

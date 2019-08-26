@@ -19,6 +19,7 @@ import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.ViewField;
 import com.facilio.bmsconsole.context.WorkOrderRequestContext;
+import com.facilio.bmsconsole.context.reservation.ReservationContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
@@ -28,6 +29,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
@@ -44,6 +46,7 @@ import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.modules.fields.NumberField;
+import com.facilio.modules.fields.SystemEnumField;
 import com.facilio.time.DateTimeUtil;
 
 public class ViewFactory {
@@ -431,7 +434,44 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllReadingAlarmViews().setOrder(order++));
+		views.put("active", getReadingAlarmSeverity("active", "Active", FacilioConstants.Alarm.CLEAR_SEVERITY, false).setOrder(order++));
+		views.put("unacknowledged", getReadingAlarmUnacknowledged().setOrder(order++));
+		views.put("critical", getReadingAlarmSeverity("critical", "Critical Alarms", "Critical", true).setOrder(order++));
+		views.put("major", getReadingAlarmSeverity("major", "Major Alarms", "Major", true).setOrder(order++));
+		views.put("minor", getReadingAlarmSeverity("minor", "Minor Alarms", "Minor", true).setOrder(order++));
+		views.put("cleared", getReadingAlarmSeverity("cleared", "Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true)
+				.setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.NEW_READING_ALARM, views);
+
+		views.put("bmsAlarm", getBmsAlarm("bmsAlarm" , "All Bms Alarm", true).setOrder(order++));
+		views.put("bmsActive", getBmsAlarmSeverity("bmsActive", "Bms Active Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, false).setOrder(order++));
+		views.put("unacknowledgedbmsalarm", getBmsAlarmUnacknowledged().setOrder(order++));
+		views.put("bmsCritical", getBmsAlarmSeverity("bmsCritical", "Bms Critical Alarms", "Critical", true).setOrder(order++));
+		views.put("bmsMajor", getBmsAlarmSeverity("bmsMajor", "Bms Major Alarms", "Major", true).setOrder(order++));
+		views.put("bmsMinor", getBmsAlarmSeverity("bmsMinor", "Bms Minor Alarms", "Minor", true).setOrder(order++));
+		views.put("bmsCleared", getBmsAlarmSeverity("bmsCleared", "Bms Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true).setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.BMS_ALARM, views);
+		
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("all", getAllReadingAlarmViews().setOrder(order++));
+		views.put("active", getReadingAlarmSeverity("active", "Active", FacilioConstants.Alarm.CLEAR_SEVERITY, false).setOrder(order++));
+		views.put("unacknowledged", getReadingAlarmUnacknowledged().setOrder(order++));
+		views.put("critical", getReadingAlarmSeverity("critical", "Critical Alarms", "Critical", true).setOrder(order++));
+		views.put("major", getReadingAlarmSeverity("major", "Major Alarms", "Major", true).setOrder(order++));
+		views.put("minor", getReadingAlarmSeverity("minor", "Minor Alarms", "Minor", true).setOrder(order++));
+		views.put("cleared", getReadingAlarmSeverity("cleared", "Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true)
+				.setOrder(order++));
+		views.put("bmsAlarm", getBmsAlarm("bmsAlarm" , "All Bms Alarm", true).setOrder(order++));
+		views.put("bmsActive", getBmsAlarmSeverity("bmsActive", "Bms Active Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, false).setOrder(order++));
+		views.put("unacknowledgedbmsalarm", getBmsAlarmUnacknowledged().setOrder(order++));
+		views.put("bmsCritical", getBmsAlarmSeverity("bmsCritical", "Bms Critical Alarms", "Critical", true).setOrder(order++));
+		views.put("bmsMajor", getBmsAlarmSeverity("bmsMajor", "Bms Major Alarms", "Major", true).setOrder(order++));
+		views.put("bmsMinor", getBmsAlarmSeverity("bmsMinor", "Bms Minor Alarms", "Minor", true).setOrder(order++));
+		views.put("bmsCleared", getBmsAlarmSeverity("bmsCleared", "Bms Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true).setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.ALARM_OCCURRENCE, views);
+
 
 		order = 1;
 		views = new LinkedHashMap<>();
@@ -446,9 +486,24 @@ public class ViewFactory {
 		
 		order = 1;
 		views = new LinkedHashMap<>();
-		views.put("all", getAllReadingAlarmViews().setOrder(order++));
 		views.put("all", getMLAnomalyViews().setOrder(order++));
+		views.put("activeAnomaly", getAnomalyAlarmSeverity("activeAnomaly", "Active Anomaly Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, false).setOrder(order++));
+		views.put("criticalAnomaly", getAnomalyAlarmSeverity("criticalAnomaly", "Critical Anomaly Alarms", "Critical", true).setOrder(order++));
+		views.put("majorAnomaly", getAnomalyAlarmSeverity("majorAnomaly", "Major Anomaly Alarms", "Major", true).setOrder(order++));
+		views.put("minorAnomaly", getAnomalyAlarmSeverity("minorAnomaly", "Minor Anomaly Alarms", "Minor", true).setOrder(order++));
+		views.put("clearedAnomaly", getAnomalyAlarmSeverity("clearedAnomaly", "Cleared Anomaly Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true).setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.ML_ANOMALY_ALARM, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
+		views.put("nearing", getTodayReservationView().setOrder(order++));
+		views.put("thisweek", getThisWeekReservationView().setOrder(order++));
+		views.put("nextweek", getNextWeekReservationView().setOrder(order++));
+		views.put("ongoing", getOnGoingReservationView().setOrder(order++));
+		views.put("completed", getCompletedReservationView().setOrder(order++));
+		views.put("all", getAllReservationView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.Reservation.RESERVATION, views);
+		
 	
 		
 		return viewsMap;
@@ -493,6 +548,7 @@ public class ViewFactory {
 		groupViews.put("upcomingWorkorder", upcoming);
 
 		viewsMap1.put(FacilioConstants.ContextNames.WORK_ORDER, groupViews);
+				
 		return viewsMap1;
 
 	}
@@ -563,6 +619,40 @@ public class ViewFactory {
 		groupVsViews.add(groupDetails);
 
 		moduleVsGroup.put(FacilioConstants.ContextNames.WORK_ORDER, groupVsViews);
+		
+		groupVsViews = new ArrayList<>();
+		ArrayList<String> fddAlarms = new ArrayList<String>();
+		fddAlarms.add("all");
+		fddAlarms.add("active");
+		fddAlarms.add("unacknowledged");
+		fddAlarms.add("critical");
+		fddAlarms.add("major");
+		fddAlarms.add("minor");
+		fddAlarms.add("cleared");
+		
+		groupDetails = new HashMap<>();
+		groupDetails.put("name", "fddAlarmsViews");
+		groupDetails.put("displayName", "Fdd Alarms");
+		groupDetails.put("views", fddAlarms);
+		groupVsViews.add(groupDetails);
+		
+		ArrayList<String> bmsAlarms = new ArrayList<String>();
+		bmsAlarms.add("bmsAlarm");
+		bmsAlarms.add("bmsActive");
+		bmsAlarms.add("unacknowledgedbmsalarm");
+		bmsAlarms.add("bmsMajor");
+		bmsAlarms.add("bmsMinor");
+		bmsAlarms.add("bmsCritical");
+		bmsAlarms.add("bmsCleared");
+		
+		
+		groupDetails = new HashMap<>();
+		groupDetails.put("name", "bmsAlarmsViews");
+		groupDetails.put("displayName", "Bms Alarms");
+		groupDetails.put("views", bmsAlarms);
+		groupVsViews.add(groupDetails);
+		
+		moduleVsGroup.put(FacilioConstants.ContextNames.NEW_READING_ALARM, groupVsViews);
 		
 		groupVsViews = new ArrayList<>();
 		ArrayList<String> asset = new ArrayList<String>();
@@ -692,21 +782,49 @@ public class ViewFactory {
 
 		return open;
 	}
+	
+
+	private static Criteria getAssetStatusCriteria(String status) {
+		FacilioField statusTypeField = new FacilioField();
+		statusTypeField.setName("status");
+		statusTypeField.setColumnName("STATUS");
+		statusTypeField.setDataType(FieldType.STRING);
+		statusTypeField.setModule(ModuleFactory.getTicketStatusModule());
+
+		Condition statusActive = new Condition();
+		statusActive.setField(statusTypeField);
+		statusActive.setOperator(StringOperators.IS);
+		statusActive.setValue(status);
+
+		Criteria statusCriteria = new Criteria();
+		statusCriteria.addAndCondition(statusActive);
+
+		LookupField statusField = new LookupField();
+		statusField.setName("moduleState");
+		statusField.setColumnName("MODULE_STATE");
+		statusField.setDataType(FieldType.LOOKUP);
+		statusField.setModule(ModuleFactory.getAssetsModule());
+		statusField.setLookupModule(ModuleFactory.getTicketStatusModule());
+
+		Condition ticketActive = new Condition();
+		ticketActive.setField(statusField);
+		ticketActive.setOperator(LookupOperator.LOOKUP);
+		ticketActive.setCriteriaValue(statusCriteria);
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(ticketActive);
+		return criteria;
+	}
 
 	private static FacilioView getAssetsByState(String state) {
 
 		FacilioView assetView = new FacilioView();
+		Criteria criteria = getAssetStatusCriteria(state);
 		if (state.equals("Active")) {
-			Criteria criteria = new Criteria();
-			criteria.addAndCondition(getAssetStateCondition(state));
-
 			assetView.setName("active");
 			assetView.setDisplayName("Active Assets");
 			assetView.setCriteria(criteria);
 		} else if (state.equals("Retired")) {
-			Criteria criteria = new Criteria();
-			criteria.addAndCondition(getAssetStateCondition(state));
-
 			assetView.setName("retired");
 			assetView.setDisplayName("Retired Assets");
 			assetView.setCriteria(criteria);
@@ -1619,30 +1737,14 @@ public class ViewFactory {
 		return overdueView;
 	}
 
-	public static Criteria getAllOverdueWorkOrdersCriteria() {
-		FacilioField dueField = new FacilioField();
-		dueField.setName("dueDate");
-		dueField.setColumnName("DUE_DATE");
-		dueField.setDataType(FieldType.DATE_TIME);
-		dueField.setModule(ModuleFactory.getTicketsModule());
-
-		Condition overdue = new Condition();
-		overdue.setField(dueField);
-		overdue.setOperator(DateOperators.TILL_YESTERDAY);
-
-		Criteria criteria = new Criteria();
-		criteria.addAndCondition(overdue);
-		criteria.addAndCondition(getOpenStatusCondition());
-
-		return criteria;
-	}
-
 	private static FacilioView getAllOverdueWorkOrders() {
 
 		FacilioView overdueView = new FacilioView();
 		overdueView.setName("overdue");
 		overdueView.setDisplayName("Overdue");
-		overdueView.setCriteria(getAllOverdueWorkOrdersCriteria());
+		Criteria criteria = getOverdueCriteria();
+		criteria.addAndCondition(getOpenStatusCondition());
+		overdueView.setCriteria(criteria);
 
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("createdTime");
@@ -1886,6 +1988,7 @@ public class ViewFactory {
 		return view;
 	}
 
+	
 	public static Condition getAlarmSeverityCondition(String severity, boolean equals) {
 		LookupField severityField = new LookupField();
 		severityField.setName("severity");
@@ -3820,7 +3923,7 @@ public class ViewFactory {
 
 	private static FacilioView getAllReadingAlarmViews() {
 		FacilioField createdTime = new FacilioField();
-		createdTime.setName("lastOccurredTime");
+		createdTime.setName("lastOccurredTime");	
 		createdTime.setDataType(FieldType.DATE_TIME);
 		createdTime.setColumnName("LAST_OCCURRED_TIME");
 		createdTime.setModule(ModuleFactory.getBaseAlarmModule());
@@ -3828,8 +3931,168 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
 		allView.setDisplayName("All Alarms");
+		allView.setModuleName("newreadingalarm");
 		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 		return allView;
+	}
+	private static FacilioView getReadingAlarmSeverity(String name, String displayName, String severity, boolean equals) {
+
+		Condition alarmCondition = getReadingAlarmSeverityCondition(severity, equals);
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(alarmCondition);
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("lastOccurredTime");	
+		createdTime.setDataType(FieldType.DATE_TIME);
+		createdTime.setColumnName("LAST_OCCURRED_TIME");
+		createdTime.setModule(ModuleFactory.getBaseAlarmModule());
+
+		FacilioView view = new FacilioView();
+		view.setName(name);
+		view.setDisplayName(displayName);
+		view.setCriteria(criteria);
+		view.setModuleName("newreadingalarm");
+		view.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+
+		return view;
+	}
+	private static FacilioView getBmsAlarmSeverity(String name, String displayName, String severity, boolean equals) {
+
+		Condition alarmCondition = getReadingAlarmSeverityCondition(severity, equals);
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(alarmCondition);
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("lastOccurredTime");	
+		createdTime.setDataType(FieldType.DATE_TIME);
+		createdTime.setColumnName("LAST_OCCURRED_TIME");
+		createdTime.setModule(ModuleFactory.getBaseAlarmModule());
+
+		FacilioView view = new FacilioView();
+		view.setName(name);
+		view.setDisplayName(displayName);
+		view.setCriteria(criteria);
+		view.setModuleName("bmsAlarm");
+		view.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+
+		return view;
+	}
+	private static FacilioView getBmsAlarm(String name, String displayName, boolean equals) {
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("lastOccurredTime");	
+		createdTime.setDataType(FieldType.DATE_TIME);
+		createdTime.setColumnName("LAST_OCCURRED_TIME");
+		createdTime.setModule(ModuleFactory.getBaseAlarmModule());
+
+		FacilioView view = new FacilioView();
+		view.setName(name);
+		view.setDisplayName(displayName);
+		view.setModuleName("bmsAlarm");
+		view.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+
+		return view;
+	}
+	public static Condition getBmsAlarmSeverityCondition(String severity, boolean equals) {
+		LookupField severityField = new LookupField();
+		severityField.setName("severity");
+		severityField.setColumnName("SEVERITY");
+		severityField.setDataType(FieldType.LOOKUP);
+		severityField.setModule(ModuleFactory.getBmsAlarmModule());
+		severityField.setLookupModule(ModuleFactory.getAlarmSeverityModule());
+
+		Condition alarmCondition = new Condition();
+		alarmCondition.setField(severityField);
+		alarmCondition.setOperator(LookupOperator.LOOKUP);
+		alarmCondition.setCriteriaValue(getSeverityAlarmCriteria(severity, equals));
+
+		return alarmCondition;
+	}
+	public static Condition getReadingAlarmSeverityCondition(String severity, boolean equals) {
+		LookupField severityField = new LookupField();
+		severityField.setName("severity");
+		severityField.setColumnName("SEVERITY");
+		severityField.setDataType(FieldType.LOOKUP);
+		severityField.setModule(ModuleFactory.getBaseAlarmModule());
+		severityField.setLookupModule(ModuleFactory.getAlarmSeverityModule());
+
+		Condition alarmCondition = new Condition();
+		alarmCondition.setField(severityField);
+		alarmCondition.setOperator(LookupOperator.LOOKUP);
+		alarmCondition.setCriteriaValue(getSeverityAlarmCriteria(severity, equals));
+
+		return alarmCondition;
+	}
+	private static FacilioView getReadingAlarmUnacknowledged() {
+		Criteria criteria = getReadingAlarmUnacknowledgedCriteria();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("lastOccurredTime");	
+		createdTime.setDataType(FieldType.DATE_TIME);
+		createdTime.setColumnName("LAST_OCCURRED_TIME");
+		createdTime.setModule(ModuleFactory.getBaseAlarmModule());
+
+		FacilioView typeAlarms = new FacilioView();
+		typeAlarms.setName("unacknowledged");
+		typeAlarms.setDisplayName("Unacknowledged");
+		typeAlarms.setCriteria(criteria);
+		typeAlarms.setModuleName("newreadingalarm");
+		typeAlarms.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+
+		return typeAlarms;
+	}
+	
+	private static FacilioView getBmsAlarmUnacknowledged() {
+		Criteria criteria = getReadingAlarmUnacknowledgedCriteria();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("lastOccurredTime");	
+		createdTime.setDataType(FieldType.DATE_TIME);
+		createdTime.setColumnName("LAST_OCCURRED_TIME");
+		createdTime.setModule(ModuleFactory.getBmsAlarmModule());
+
+		FacilioView typeAlarms = new FacilioView();
+		typeAlarms.setName("unacknowledgedbmsalarm");
+		typeAlarms.setDisplayName("Unacknowledged");
+		typeAlarms.setCriteria(criteria);
+		typeAlarms.setModuleName("bmsAlarm");
+		typeAlarms.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+
+		return typeAlarms;
+	}
+	
+	public static Criteria getReadingAlarmUnacknowledgedCriteria() {
+		Condition falseCondition = new Condition();
+		falseCondition.setColumnName("ACKNOWLEDGED");
+		falseCondition.setFieldName("acknowledged");
+		falseCondition.setOperator(BooleanOperators.IS);
+		falseCondition.setValue(String.valueOf(false));
+
+		Condition emptyCondition = new Condition();
+		emptyCondition.setColumnName("ACKNOWLEDGED");
+		emptyCondition.setFieldName("acknowledged");
+		emptyCondition.setOperator(CommonOperators.IS_EMPTY);
+
+		Criteria criteria = new Criteria();
+		criteria.addOrCondition(emptyCondition);
+		criteria.addOrCondition(falseCondition);
+
+		LookupField severityField = new LookupField();
+		severityField.setName("severity");
+		severityField.setColumnName("SEVERITY");
+		severityField.setDataType(FieldType.LOOKUP);
+		severityField.setModule(ModuleFactory.getBaseAlarmModule());
+		severityField.setLookupModule(ModuleFactory.getAlarmSeverityModule());
+
+		Condition activeAlarm = new Condition();
+		activeAlarm.setField(severityField);
+		activeAlarm.setOperator(LookupOperator.LOOKUP);
+		activeAlarm.setCriteriaValue(getSeverityAlarmCriteria("Clear", false));
+
+		criteria.addAndCondition(activeAlarm);
+		return criteria;
 	}
 	private static FacilioView getAllTermsAndConditionView() {
 		FacilioField name = new FacilioField();
@@ -3888,6 +4151,106 @@ public class ViewFactory {
 		allView.setDisplayName("All Alarms");
 		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 		return allView;
+	}
+	private static FacilioView getAllReservationView() {
+		
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Reservations");
+		return allView;
+	}
+
+	private static FacilioField getReservationStatusField() {
+		SystemEnumField field = (SystemEnumField) FieldFactory.getField("status", "Reservations.STATUS", FieldType.SYSTEM_ENUM);
+		field.setEnumName("ReservationStatus");
+		return field;
+	}
+
+	private static FacilioField getReservationScheduledTimeField() {
+		return FieldFactory.getField("scheduledStartTime","Reservations.SCHEDULED_START_TIME", FieldType.DATE_TIME);
+	}
+
+	private static FacilioView getScheduledReservationView() {
+		FacilioView view = new FacilioView();
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition(getReservationStatusField(), String.valueOf(ReservationContext.ReservationStatus.SCHEDULED.getIndex()), EnumOperators.IS));
+		view.setCriteria(criteria);
+
+		view.setSortFields(Arrays.asList(new SortField(getReservationScheduledTimeField(), false)));
+		return view;
+	}
+
+	private static FacilioView getTodayReservationView() {
+		FacilioView view = getScheduledReservationView();
+		view.setName("nearing");
+		view.setDisplayName("Nearing");
+
+		Criteria criteria = new Criteria();
+		criteria.addOrCondition(CriteriaAPI.getCondition(getReservationScheduledTimeField(), DateOperators.TODAY));
+		criteria.addOrCondition(CriteriaAPI.getCondition(getReservationScheduledTimeField(), DateOperators.YESTERDAY));
+		criteria.addOrCondition(CriteriaAPI.getCondition(getReservationScheduledTimeField(), DateOperators.TOMORROW));
+
+		view.getCriteria().andCriteria(criteria);
+		return view;
+	}
+
+	private static FacilioView getThisWeekReservationView() {
+		FacilioView view = getScheduledReservationView();
+		view.setName("thisweek");
+		view.setDisplayName("This Week");
+		view.getCriteria().addAndCondition(CriteriaAPI.getCondition(getReservationScheduledTimeField(), DateOperators.CURRENT_WEEK));
+		return view;
+	}
+
+	private static FacilioView getNextWeekReservationView() {
+		FacilioView view = getScheduledReservationView();
+		view.setName("nextweek");
+		view.setDisplayName("Next Week");
+		view.getCriteria().addAndCondition(CriteriaAPI.getCondition(getReservationScheduledTimeField(), DateOperators.NEXT_WEEK));
+		return view;
+	}
+
+	private static FacilioView getOnGoingReservationView() {
+		FacilioView view = getScheduledReservationView();
+		view.setName("ongoing");
+		view.setDisplayName("On Going");
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition(getReservationStatusField(), String.valueOf(ReservationContext.ReservationStatus.ON_GOING.getIndex()), EnumOperators.IS));
+		view.setCriteria(criteria);
+		return view;
+	}
+
+	private static FacilioView getCompletedReservationView() {
+		FacilioView view = getScheduledReservationView();
+		view.setName("completed");
+		view.setDisplayName("Completed");
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition(getReservationStatusField(), String.valueOf(ReservationContext.ReservationStatus.FINISHED.getIndex()), EnumOperators.IS));
+		view.setCriteria(criteria);
+		return view;
+	}
+	private static FacilioView getAnomalyAlarmSeverity(String name, String displayName, String severity, boolean equals) {
+
+		Condition alarmCondition = getReadingAlarmSeverityCondition(severity, equals);
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(alarmCondition);
+
+		FacilioField lastOccurredTime = new FacilioField();
+		lastOccurredTime.setName("lastOccurredTime");	
+		lastOccurredTime.setDataType(FieldType.DATE_TIME);
+		lastOccurredTime.setColumnName("LAST_OCCURRED_TIME");
+		lastOccurredTime.setModule(ModuleFactory.getBaseAlarmModule());
+
+		FacilioView view = new FacilioView();
+		view.setName(name);
+		view.setDisplayName(displayName);
+		view.setCriteria(criteria);
+		view.setModuleName("mlAnomalyAlarm");
+		view.setSortFields(Arrays.asList(new SortField(lastOccurredTime, false)));
+
+		return view;
 	}
 
 }

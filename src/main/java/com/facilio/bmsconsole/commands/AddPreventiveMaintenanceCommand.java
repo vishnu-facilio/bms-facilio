@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.Map;
 
+import com.facilio.bmsconsole.util.PMStatus;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -26,12 +27,7 @@ public class AddPreventiveMaintenanceCommand extends FacilioCommand {
 		addDefaultProps(pm, context);
 		addResource(pm);
 		Map<String, Object> pmProps = FieldUtil.getAsProperties(pm);
-		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.SCHEDULED_WO) && pm.getTriggers() != null && !pm.getTriggers().isEmpty()) {
-			pmProps.put("woGenerationStatus", true);
-		} else {
-			context.put(FacilioConstants.ContextNames.SKIP_WO_CREATION, true);
-			pmProps.put("woGenerationStatus", false);
-		}
+		pmProps.put("woGenerationStatus", 0);
 		GenericInsertRecordBuilder builder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getPreventiveMaintenanceModule().getTableName())
 				.fields(FieldFactory.getPreventiveMaintenanceFields()).addRecord(pmProps);
@@ -60,7 +56,7 @@ public class AddPreventiveMaintenanceCommand extends FacilioCommand {
 		pm.setTemplateId(templateId);
 		pm.setCreatedById(AccountUtil.getCurrentUser().getId());
 		pm.setCreatedTime(System.currentTimeMillis());
-		pm.setStatus(true);
+		pm.setStatus(PMStatus.ACTIVE);
 		pm.setResourceType(ResourceType.PM);
 
 		/*if(workorder.getResource() != null) {

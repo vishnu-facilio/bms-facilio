@@ -3,12 +3,15 @@ package com.facilio.bmsconsole.commands;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.dto.Account;
+import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -24,18 +27,16 @@ public class AddRequesterCommand extends FacilioCommand {
 		User requester = (User) context.get(FacilioConstants.ContextNames.REQUESTER);
 		if (requester != null && requester.getEmail() != null && !"".equals(requester.getEmail())) {
 			long orgid = AccountUtil.getCurrentOrg().getOrgId();
-			Criteria criteria = new Criteria();
-			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(AccountConstants.getUserFields());
-			criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("email"), requester.getEmail(), StringOperators.IS));
-			List<User> user = AccountUtil.getOrgBean().getOrgUsers(orgid, criteria);
-			if (user != null && !user.isEmpty()) {
-				requester.setId(user.get(0).getOuid());
+			User portalUser = AccountUtil.getUserBean().getPortalUsers(requester.getEmail(), AccountUtil.getCurrentOrg().getPortalId());
+			Boolean isPublicRequest = (Boolean) context.get(FacilioConstants.ContextNames.IS_PUBLIC_REQUEST);
+			
+			if (portalUser != null) {
+				requester.setId(portalUser.getOuid());
 			}
 			else {
-				requester.setId(AccountUtil.getUserBean().inviteRequester(orgid, requester));		
+				requester.setId(AccountUtil.getUserBean().inviteRequester(orgid, requester, isPublicRequest != null && isPublicRequest ? false : true));		
 			}
 			
-			Boolean isPublicRequest = (Boolean) context.get(FacilioConstants.ContextNames.IS_PUBLIC_REQUEST);
 			if (isPublicRequest != null && isPublicRequest) {
 				setRequesterAsCurrentUser(requester);
 			}

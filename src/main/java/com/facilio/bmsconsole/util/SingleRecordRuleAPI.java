@@ -120,6 +120,11 @@ public class SingleRecordRuleAPI extends WorkflowRuleAPI{
 		WorkflowEventContext event = getWorkflowEvent(rule.getEventId());
 		if(rule.getSchedule() == null) {
 			Long fieldVal = getDateFieldVal(rule.getParentId(), event.getModule(), rule.getDateFieldId());
+
+			if (fieldVal == null) {
+				return;
+			}
+
 			fieldVal = fieldVal / 1000;
 			if(rule.getTimeObj() != null) {
 			  fieldVal += rule.getTimeObj().toSecondOfDay();
@@ -136,14 +141,14 @@ public class SingleRecordRuleAPI extends WorkflowRuleAPI{
 				else {
 					nextExecutionTime = fieldVal ; 
 				}
-			   FacilioTimer.scheduleOneTimeJob(rule.getId(), FacilioConstants.Job.RECORD_SPECIFIC_RULE_JOB_NAME, nextExecutionTime, "facilio");
+			   FacilioTimer.scheduleOneTimeJob(rule.getId(), FacilioConstants.Job.RECORD_SPECIFIC_RULE_JOB_NAME, nextExecutionTime, "priority");
 			}
 		}
 		else {
 			if(rule.getSchedule() == null) {
 				throw new IllegalArgumentException("Periodic jobs should have schedule info");
 			}
-			FacilioTimer.scheduleCalendarJob(rule.getId(), FacilioConstants.Job.RECORD_SPECIFIC_RULE_JOB_NAME, startTime, rule.getSchedule(), "facilio");
+			FacilioTimer.scheduleCalendarJob(rule.getId(), FacilioConstants.Job.RECORD_SPECIFIC_RULE_JOB_NAME, startTime, rule.getSchedule(), "priority");
 		}
 
 	}
@@ -191,6 +196,7 @@ public class SingleRecordRuleAPI extends WorkflowRuleAPI{
 								if(changes.getFieldId() == rule.getDateFieldId()) {
 									FacilioTimer.deleteJob(rule.getId(), FacilioConstants.Job.RECORD_SPECIFIC_RULE_JOB_NAME);
 									SingleRecordRuleAPI.addJob(rule);
+									break;
 								}
 							}
 						}

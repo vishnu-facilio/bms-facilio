@@ -1,5 +1,6 @@
 package com.facilio.workflowv2.util;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -64,6 +65,32 @@ public class UserFunctionAPI {
 			workflowContext = FieldUtil.getAsBeanFromMap(props.get(0), WorkflowUserFunctionContext.class);
 		}
 		return workflowContext;
+	}
+	
+	public static List<WorkflowUserFunctionContext> getWorkflowFunction(List<Long> ids) throws Exception {
+
+		FacilioModule module = ModuleFactory.getWorkflowUserFunctionModule();
+		List<FacilioField> fields = FieldFactory.getWorkflowUserFunctionFields();
+		fields.addAll(FieldFactory.getWorkflowFields());
+
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields)
+				.table(module.getTableName())
+				.innerJoin(ModuleFactory.getWorkflowModule().getTableName())
+				.on(ModuleFactory.getWorkflowModule().getTableName()+".ID="+module.getTableName()+".ID")
+				.andCondition(CriteriaAPI.getIdCondition(ids, module));
+
+		List<Map<String, Object>> props = selectBuilder.get();
+
+		List<WorkflowUserFunctionContext> functions = new ArrayList<WorkflowUserFunctionContext>();
+		if (props != null && !props.isEmpty()) {
+			for(Map<String, Object> prop :props) {
+				WorkflowUserFunctionContext workflowContext = FieldUtil.getAsBeanFromMap(prop, WorkflowUserFunctionContext.class);
+				workflowContext.fillFunctionHeaderFromScript();
+				functions.add(workflowContext);
+			}
+			
+		}
+		return functions;
 	}
 	
 }

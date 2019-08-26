@@ -23,8 +23,12 @@ public class AddNewMLEnergyPredictionJob extends FacilioJob {
 		if(props.get("isAnomaly").toString().equals("1"))
 		{
 			Chain c = FacilioChainFactory.enableAnomalyDetectionChain();
-			context.put("TreeHeirarchy", props.get("TreeHeirarchy"));
+			context.put("TreeHierarchy", props.get("TreeHierarchy"));
 			context.put("meterInterval", props.get("meterInterval"));
+			if(props.containsKey("ratioHierachy"))
+			{
+				context.put("ratioHierachy", props.get("ratioHierachy"));
+			}
 			c.execute(context);
 		}
 		else
@@ -33,6 +37,7 @@ public class AddNewMLEnergyPredictionJob extends FacilioJob {
 			context.put("energyMeterID",props.get("energyMeterId"));
 			context.put("weekEnd", props.get("weekEnd"));
 			context.put("meterInterval", props.get("meterInterval"));
+			context.put("modelName", props.get("modelName"));
 			c.execute(context);
 		}
 	}

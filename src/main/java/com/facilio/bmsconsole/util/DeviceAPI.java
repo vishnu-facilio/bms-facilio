@@ -78,7 +78,7 @@ public class DeviceAPI
 			List<ControllerContext> controllers = new ArrayList<>();
 			for(Map<String, Object> prop : props) {
 				controllers.add(FieldUtil.getAsBeanFromMap(prop, ControllerContext.class));
-			}
+			}		
 			return controllers;
 		}
 		return null;
@@ -542,23 +542,24 @@ public class DeviceAPI
 		}		
 		for(Long parentmeterid : parentMeterIds)
 		{	
-			List<HistoricalLoggerContext> currentMeterLoggerContextList = HistoricalLoggerUtil.getInProgressHistoricalLogger(parentmeterid);
-			if(currentMeterLoggerContextList != null && !currentMeterLoggerContextList.isEmpty())
-			{
-				List<EnergyMeterContext> alreadyRunningVM = DeviceAPI.getVirtualMeters(Collections.singletonList(parentmeterid));
-				throw new Exception("Historical already In-Progress for Parent "+ alreadyRunningVM.get(0).getName()+ ". You cannot run historical for the Current Meter "+ currentMeter.getName());				
-			}
 					
-			HistoricalLoggerContext historicalLoggerContext = gethistoricalLogger(parentmeterid, startTime, endTime, false,loggerGroupId);
 			if(!historicalLoggerMap.containsKey(parentmeterid)) {
-				HistoricalLoggerContext parentHistoricalLoggerContext = historicalLoggerMap.get(currentMeter.getId());
 				
-				historicalLoggerContext.setDependentId(parentHistoricalLoggerContext.getId());
-				HistoricalLoggerUtil.addHistoricalLogger(historicalLoggerContext);
-				historicalLoggerMap.put(parentmeterid, historicalLoggerContext);
-					
 				List<EnergyMeterContext> vm = DeviceAPI.getVirtualMeters(Collections.singletonList(parentmeterid));
-				checkParent (vm.get(0), startTime, endTime, loggerGroupId, historicalLoggerMap);	
+				
+				if(vm != null && vm.size() > 0) {
+					
+					HistoricalLoggerContext historicalLoggerContext = gethistoricalLogger(parentmeterid, startTime, endTime, false,loggerGroupId);
+					
+					HistoricalLoggerContext parentHistoricalLoggerContext = historicalLoggerMap.get(currentMeter.getId());
+					
+					historicalLoggerContext.setDependentId(parentHistoricalLoggerContext.getId());
+					HistoricalLoggerUtil.addHistoricalLogger(historicalLoggerContext);
+					historicalLoggerMap.put(parentmeterid, historicalLoggerContext);
+					
+					checkParent (vm.get(0), startTime, endTime, loggerGroupId, historicalLoggerMap);
+				}
+				
 			}
 			
 		}

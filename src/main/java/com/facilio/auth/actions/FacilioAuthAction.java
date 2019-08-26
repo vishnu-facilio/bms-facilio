@@ -8,14 +8,11 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -32,9 +29,12 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.amazonaws.util.StringUtils;
+import com.facilio.accounts.dto.Account;
+import com.facilio.accounts.dto.IAMAccount;
+import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
-import com.facilio.accounts.impl.UserBeanImpl;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.cookie.FacilioCookie;
 import com.facilio.aws.util.AwsUtil;
@@ -44,39 +44,48 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.builder.DBUtil;
-import com.facilio.db.transaction.FacilioConnectionPool;
-import com.facilio.fw.auth.CognitoUtil;
+import com.facilio.iam.accounts.exceptions.AccountException;
+import com.facilio.iam.accounts.util.IAMOrgUtil;
+import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.opensymphony.xwork2.ActionContext;
 
 public class FacilioAuthAction extends FacilioAction {
 
-    /**
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger LOGGER = Logger.getLogger(FacilioAuthAction.class.getName());
 
-    private String username = null;
-    private String password = null;
-    private String inviteToken = null;
-    private Map jsonresponse = new HashMap();
-    private JSONObject signupData;
-    private String response = null;
-    private String emailaddress;
-    private HashMap<String, Object> account;
-    private String phone;
-    private String companyname;
-    private String domainname;
-    private String timezone;
-    private String newPassword;
-    private String title;
-    private static MessageDigest md;
-    
-    JSONArray entry;
-    
-    public JSONArray getEntry() {
+	private String username = null;
+	private String password = null;
+	private String inviteToken = null;
+	private Map jsonresponse = new HashMap();
+	private JSONObject signupData;
+	private String response = null;
+	private String emailaddress;
+	private HashMap<String, Object> account;
+	private String phone;
+	private String companyname;
+	private String domainname;
+	private String timezone;
+	private String newPassword;
+	private String title;
+	private static MessageDigest md;
+	private String token;
+
+	public String getToken() {
+		return token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
+	}
+
+	JSONArray entry;
+
+	public JSONArray getEntry() {
 		return entry;
 	}
 
@@ -85,448 +94,358 @@ public class FacilioAuthAction extends FacilioAction {
 	}
 
 	public String getUsername() {
-        if(username != null) {
-            return username;
-        } else {
-            return getEmailaddress();
-        }
-    }
+		if (username != null) {
+			return username;
+		} else {
+			return getEmailaddress();
+		}
+	}
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+	public void setUsername(String username) {
+		this.username = username;
+	}
 
-    public String getPassword() {
-        return password;
-    }
+	public String getPassword() {
+		return password;
+	}
 
-    public void setPassword(String password) {
-        this.password = cryptWithMD5(password);
-    }
+	public void setPassword(String password) {
+		this.password = cryptWithMD5(password);
+	}
 
-    public String getInviteToken() {
-        return inviteToken;
-    }
+	public String getInviteToken() {
+		return inviteToken;
+	}
 
-    public void setInviteToken(String inviteToken) {
-        this.inviteToken = inviteToken;
-    }
+	public void setInviteToken(String inviteToken) {
+		this.inviteToken = inviteToken;
+	}
 
-    public Map<String, Object> getJsonresponse() {
-        return jsonresponse;
-    }
+	public Map<String, Object> getJsonresponse() {
+		return jsonresponse;
+	}
 
-    public void setJsonresponse(Map<String, Object> jsonresponse) {
-        this.jsonresponse = jsonresponse;
-    }
+	public void setJsonresponse(Map<String, Object> jsonresponse) {
+		this.jsonresponse = jsonresponse;
+	}
 
-    public JSONObject getSignupData() {
-        return signupData;
-    }
+	public JSONObject getSignupData() {
+		return signupData;
+	}
 
-    public void setSignupData(JSONObject signupData) {
-        this.signupData = signupData;
-    }
+	public void setSignupData(JSONObject signupData) {
+		this.signupData = signupData;
+	}
 
-    public String getResponse() {
-        return response;
-    }
+	public String getResponse() {
+		return response;
+	}
 
-    public void setResponse(String response) {
-        this.response = response;
-    }
+	public void setResponse(String response) {
+		this.response = response;
+	}
 
-    public String getEmailaddress() {
-        if(emailaddress != null) {
-            return emailaddress;
-        } else {
-        	if(username == null) {
-        		return null;
-        	}
-            return getUsername();
-        }
-    }
+	public String getEmailaddress() {
+		if (emailaddress != null) {
+			return emailaddress;
+		} else {
+			if (username == null) {
+				return null;
+			}
+			return getUsername();
+		}
+	}
 
-    public void setEmailaddress(String emailaddress) {
-        this.emailaddress = emailaddress;
-    }
+	public void setEmailaddress(String emailaddress) {
+		this.emailaddress = emailaddress;
+	}
 
-    public HashMap<String, Object> getAccount() {
-        return account;
-    }
+	public HashMap<String, Object> getAccount() {
+		return account;
+	}
 
-    public void setAccount(HashMap<String, Object> account) {
-        this.account = account;
-    }
+	public void setAccount(HashMap<String, Object> account) {
+		this.account = account;
+	}
 
-    public String getPhone() {
-        return phone;
-    }
+	public String getPhone() {
+		return phone;
+	}
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
 
-    public String getCompanyname() {
-        return companyname;
-    }
+	public String getCompanyname() {
+		return companyname;
+	}
 
-    public void setCompanyname(String companyname) {
-        this.companyname = companyname;
-    }
+	public void setCompanyname(String companyname) {
+		this.companyname = companyname;
+	}
 
-    public String getDomainname() {
-        return domainname;
-    }
+	public String getDomainname() {
+		return domainname;
+	}
 
-    public void setDomainname(String domainname) {
-        this.domainname = domainname;
-    }
+	public void setDomainname(String domainname) {
+		this.domainname = domainname;
+	}
 
-    public String getTimezone() {
-        return timezone;
-    }
+	public String getTimezone() {
+		return timezone;
+	}
 
-    public void setTimezone(String timezone) {
-        this.timezone = timezone;
-    }
+	public void setTimezone(String timezone) {
+		this.timezone = timezone;
+	}
 
-    public String getNewPassword() {
-        return newPassword;
-    }
+	public String getNewPassword() {
+		return newPassword;
+	}
 
-    public void setNewPassword(String newPassword) {
-        this.newPassword = cryptWithMD5(newPassword);
-    }
+	public void setNewPassword(String newPassword) {
+		this.newPassword = cryptWithMD5(newPassword);
+	}
 
-    public static MessageDigest getMd() {
-        return md;
-    }
+	public static MessageDigest getMd() {
+		return md;
+	}
 
-    public static void setMd(MessageDigest md) {
-        FacilioAuthAction.md = md;
-    }
+	public static void setMd(MessageDigest md) {
+		FacilioAuthAction.md = md;
+	}
 
-    private void setJsonresponse(String key, Object value) {
-        this.jsonresponse.put(key, value);
-    }
-    
+	private void setJsonresponse(String key, Object value) {
+		this.jsonresponse.put(key, value);
+	}
+
 	private String getTitle() {
-            return title;      
-    }
+		return title;
+	}
 
-    private void setTitle(String title) {
-        this.title = title;
-    }
+	private void setTitle(String title) {
+		this.title = title;
+	}
 
+	private boolean emailVerificationNeeded;
+	
+	public boolean isEmailVerificationNeeded() {
+		return emailVerificationNeeded;
+	}
 
+	public void setEmailVerificationNeeded(boolean emailVerificationNeeded) {
+		this.emailVerificationNeeded = emailVerificationNeeded;
+	}
+	public String signupUser() throws Exception {
 
-    public String signupUser() throws Exception	{
+		LOGGER.info("signupUser() : username :" + getUsername() + ", password :" + getPassword() + ", email : "
+				+ getEmailaddress());
+		HttpServletRequest request = ServletActionContext.getRequest();
+		LOGGER.info("### addFacilioUser() :" + emailaddress);
 
-        LOGGER.info("signupUser() : username :"+ getUsername() +", password :"+ getPassword() +", email : "+getEmailaddress() );
-        return addFacilioUser(getUsername(), getPassword(), getEmailaddress());
-    }
+		JSONObject signupInfo = new JSONObject();
+		signupInfo.put("name", getUsername());
+		signupInfo.put("email", emailaddress);
+		signupInfo.put("cognitoId", "facilio");
+		signupInfo.put("phone", getPhone());
+		signupInfo.put("companyname", getCompanyname());
+		signupInfo.put("domainname", getDomainname());
+		signupInfo.put("isFacilioAuth", true);
+		signupInfo.put("timezone", getTimezone());
+		signupInfo.put("servername", request.getServerName());
+		signupInfo.put("password", password);
+		FacilioContext signupContext = new FacilioContext();
+		signupContext.put(FacilioConstants.ContextNames.SIGNUP_INFO, signupInfo);
+		Locale locale = request.getLocale();
 
-    private String addFacilioUser(String username, String password, String emailaddress) throws Exception {
-        User userObj = AccountUtil.getUserBean().getFacilioUser(emailaddress);
-        if(userObj != null) {
-            setJsonresponse("message", "Email already exists");
-            return ERROR;
-        }
+		IAMAccount iamAccount = IAMOrgUtil.signUpOrg(signupInfo, locale);
+		Account account = new Account(iamAccount.getOrg(), new User(iamAccount.getUser()));
+		
+		AccountUtil.setCurrentAccount(account);
+		if (account != null && account.getOrg().getOrgId() > 0) {
+			signupContext.put("orgId", account.getOrg().getOrgId());
+			Chain c = TransactionChainFactory.getOrgSignupChain();
+			c.execute(signupContext);
+		}
+		setJsonresponse("message", "success");
+		return SUCCESS;
+	}
 
-        Organization orgObj = AccountUtil.getOrgBean().getOrg(getDomainname());
-        if(orgObj != null) {
-            setJsonresponse("message", "Org Domain Name already exists");
-            return ERROR;
-        }
-        HttpServletRequest request = ServletActionContext.getRequest();
-        LOGGER.info("### addFacilioUser() :"+emailaddress);
+	public String validateLoginv2() {
 
-        JSONObject signupInfo = new JSONObject();
-        signupInfo.put("name", getUsername());
-        signupInfo.put("email", emailaddress);
-        signupInfo.put("cognitoId", "facilio");
-        signupInfo.put("phone", getPhone());
-        signupInfo.put("companyname", getCompanyname());
-        signupInfo.put("domainname", getDomainname());
-        signupInfo.put("isFacilioAuth", true);
-        signupInfo.put("timezone", getTimezone());
-        signupInfo.put("servername", request.getServerName());
-        signupInfo.put("password", password);
-        FacilioContext signupContext = new FacilioContext();
-        signupContext.put(FacilioConstants.ContextNames.SIGNUP_INFO, signupInfo);
+		boolean portalUser = false;
 
-        Chain c = TransactionChainFactory.getOrgSignupChain();
-        c.execute(signupContext);
-        setJsonresponse("message", "success");
-        return SUCCESS;
-    }
+		if (getUsername() != null && getPassword() != null) {
+			try {
+				LOGGER.info("validateLogin() : username : " + getUsername() + "; password : " + getPassword()
+						+ " portal id : " + portalId());
+				String authtoken = null;
+				if(portalId() > 0) {
+					portalUser = true;
+				}
+				HttpServletRequest request = ServletActionContext.getRequest();
+				HttpServletResponse response = ServletActionContext.getResponse();
+				String userAgent = request.getHeader("User-Agent");
+				userAgent = userAgent != null ? userAgent : "";
+				String ipAddress = request.getHeader("X-Forwarded-For");
+				String serverName = request.getServerName();
+				String[] domainNameArray = serverName.split("\\.");
+				
+				String domainName = "app";
+				if (domainNameArray.length > 2) {
+					if(!domainNameArray[1].equals("facilio") ) {
+						domainName = domainNameArray[0];
+					}
+				}
+				
+				ipAddress = (ipAddress == null || "".equals(ipAddress.trim())) ? request.getRemoteAddr() : ipAddress;
+                String userType = "web";
+				String deviceType = request.getHeader("X-Device-Type");
+				if (StringUtils.isNullOrEmpty(deviceType)
+						&& ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType))) {
+					userType = "mobile";
+				}
 
-    public String validateLogin() {
+				try {
+					authtoken = IAMUserUtil.verifyLoginPassword(getUsername(), getPassword(), userAgent, userType,
+							ipAddress, domainName);
+				} catch (AccountException ex) {
+					setJsonresponse("message", ex.getMessage()); // can be removed later
+					setJsonresponse("errorcode", "1");
+					return ERROR;
+				}
 
-        boolean portalUser = false;
+				LOGGER.info("Response token is " + authtoken);
+				setJsonresponse("token", authtoken);
+				setJsonresponse("username", getUsername());
 
-        if(getUsername() != null && getPassword() != null) {
-            try {
-                LOGGER.info("validateLogin() : username : " + getUsername() + "; password : " + getPassword() + " portal id : " + portalId());
-                Boolean validPassword = null;
-                if (portalId() > 0) {
-                    validPassword = verifyPortalPassword(getUsername(), getPassword(), portalId());
-                    portalUser = true;
-                } else {
-                    validPassword = verifyPassword(getUsername(), getPassword());
-                }
+				Cookie cookie = new Cookie("fc.idToken.facilio", authtoken);
+				if (portalUser) {
+					cookie = new Cookie("fc.idToken.facilioportal", authtoken);
+				}
+				String parentdomain = request.getServerName().replaceAll("app.", "");
+				cookie.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
+				cookie.setPath("/");
+				cookie.setHttpOnly(true);
+				if (!(AwsUtil.isDevelopment() || AwsUtil.disableCSP())) {
+					cookie.setSecure(true);
+				}
+				cookie.setDomain(parentdomain);
+				response.addCookie(cookie);
 
-                if (validPassword == null) {
-                    setJsonresponse("message", "User doesn't exist"); // can be removed later
-                    setJsonresponse("errorcode", "1");
-                    return ERROR;
-                } else {
-                    if (validPassword) {
-                        User user;
-                        if(portalUser) {
-                            user = AccountUtil.getUserBean().getPortalUser(getUsername(), portalId());
-                        } else {
-                            user = AccountUtil.getUserBean().getFacilioUser(getUsername());
-                        }
-                        if(user == null) {
-                            setJsonresponse("message", "User is deactivated, Please contact admin to activate. ");
-                            setJsonresponse("errorcode", "1");
-                            return ERROR;
-                        }
-                    } else {
-                        LOGGER.info(">>>>> invalid Password :" + getUsername());
-                        setJsonresponse("errorcode", "1");
-                        return ERROR;
-                    }
-                }
+				Cookie authmodel = new Cookie("fc.authtype", "facilio");
+				authmodel.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
+				authmodel.setPath("/");
+				authmodel.setHttpOnly(false);
+				if (!(AwsUtil.isDevelopment() || AwsUtil.disableCSP())) {
+					authmodel.setSecure(true);
+				}
 
-                String jwt = CognitoUtil.createJWT("id", "auth0", getUsername(), System.currentTimeMillis() + 24 * 60 * 60000,portalUser);
-                LOGGER.info("Response token is " + jwt);
-                setJsonresponse("token", jwt);
-                setJsonresponse("username", getUsername());
+				authmodel.setDomain(parentdomain);
+				LOGGER.info("#################### facilio.in::: " + request.getServerName());
+				response.addCookie(authmodel);
 
-                HttpServletRequest request = ServletActionContext.getRequest();
-                HttpServletResponse response = ServletActionContext.getResponse();
+			} catch (Exception e) {
+				LOGGER.log(Level.INFO, "Exception while validating password, ", e);
+				setJsonresponse("message", "Error while validating user name and password");
+				return ERROR;
+			}
+			return SUCCESS;
+		}
+		setJsonresponse("message", "Invalid username or password");
+		return ERROR;
+	}
 
-                Cookie cookie = new Cookie("fc.idToken.facilio", jwt);
-                if(portalUser) {
-                    cookie = new Cookie("fc.idToken.facilioportal", jwt);
-                }
-                String parentdomain = request.getServerName().replaceAll("app.", "");
-                cookie.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
-                cookie.setPath("/");
-                cookie.setHttpOnly(true);
-                if( ! (AwsUtil.isDevelopment() || AwsUtil.disableCSP())) {
-                    cookie.setSecure(true);
-                }
-                cookie.setDomain(parentdomain);
-                response.addCookie(cookie);
+	public String loadWebView() {
+		HttpServletRequest request = ServletActionContext.getRequest();
+		HttpServletResponse response = ServletActionContext.getResponse();
+		String authtoken = request.getParameter("authtoken");
+		String serviceurl = request.getParameter("serviceurl");
+		String parentdomain = request.getServerName().replaceAll("app.", "");
 
-                Cookie authmodel = new Cookie("fc.authtype", "facilio");
-                authmodel.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
-                authmodel.setPath("/");
-                authmodel.setHttpOnly(false);
-                if( ! (AwsUtil.isDevelopment() || AwsUtil.disableCSP())) {
-                    authmodel.setSecure(true);
-                }
+		Cookie cookie = new Cookie("fc.idToken.facilio", authtoken);
+		cookie.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
+		cookie.setPath("/");
+		cookie.setHttpOnly(true);
+		if (!(AwsUtil.isDevelopment() || AwsUtil.disableCSP())) {
+			cookie.setSecure(true);
+		}
+		cookie.setDomain(parentdomain);
+		response.addCookie(cookie);
 
-                authmodel.setDomain(parentdomain);
-                LOGGER.info("#################### facilio.in::: " + request.getServerName());
-                response.addCookie(authmodel);
-                User user = AccountUtil.getUserBean().getFacilioUser(getUsername());
-                if(user != null ) {
-                    long uid = user.getUid();
-                    String userAgent = request.getHeader("User-Agent");
-                    userAgent = userAgent != null ? userAgent : "";
-                    String ipAddress = request.getHeader("X-Forwarded-For");
-                    ipAddress = (ipAddress == null || "".equals(ipAddress.trim())) ? request.getRemoteAddr() : ipAddress;
-                    String userType = (AccountUtil.getCurrentAccount().isFromMobile() ? "mobile" : "web");
-                    AccountUtil.getUserBean().startUserSession(uid, getUsername(), jwt, ipAddress, userAgent, userType);
-                }
-            } catch (Exception e) {
-                LOGGER.log(Level.INFO, "Exception while validating password, ", e);
-                setJsonresponse("message", "Error while validating user name and password");
-                return ERROR;
-            }
-            return SUCCESS;
-        }
-        setJsonresponse("message", "Invalid username or password");
-        return ERROR;
-    }
+		Cookie authmodel = new Cookie("fc.authtype", "facilio");
+		authmodel.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
+		authmodel.setPath("/");
+		authmodel.setHttpOnly(false);
+		if (!(AwsUtil.isDevelopment() || AwsUtil.disableCSP())) {
+			authmodel.setSecure(true);
+		}
+		authmodel.setDomain(parentdomain);
+		LOGGER.info("#################### facilio.in::: " + request.getServerName());
+		response.addCookie(authmodel);
 
-    public String loadWebView()
-    {
-    	 	HttpServletRequest request = ServletActionContext.getRequest();
-        HttpServletResponse response = ServletActionContext.getResponse();
-        String authtoken =  request.getParameter("authtoken");
-        String serviceurl = request.getParameter("serviceurl");
-        String parentdomain = request.getServerName().replaceAll("app.", "");
-        
-        Cookie cookie = new Cookie("fc.idToken.facilio", authtoken);
-        cookie.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
-        cookie.setPath("/");
-        cookie.setHttpOnly(true);
-        if( ! (AwsUtil.isDevelopment() || AwsUtil.disableCSP())) {
-            cookie.setSecure(true);
-        }
-        cookie.setDomain(parentdomain);
-        response.addCookie(cookie);
+		Cookie token = new Cookie("fc.idToken", "facilio");
+		token.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
+		token.setPath("/");
+		token.setHttpOnly(false);
+		if (!(AwsUtil.isDevelopment() || AwsUtil.disableCSP())) {
+			token.setSecure(true);
+		}
+		token.setDomain(request.getServerName());
+		response.addCookie(token);
 
-        Cookie authmodel = new Cookie("fc.authtype", "facilio");
-        authmodel.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
-        authmodel.setPath("/");
-        authmodel.setHttpOnly(false);
-        if( ! (AwsUtil.isDevelopment() || AwsUtil.disableCSP())) {
-            authmodel.setSecure(true);
-        }
-        authmodel.setDomain(parentdomain);
-        LOGGER.info("#################### facilio.in::: " + request.getServerName());
-        response.addCookie(authmodel);
-        
-        Cookie token = new Cookie("fc.idToken", "facilio");
-        token.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
-        token.setPath("/");
-        token.setHttpOnly(false);
-        if( ! (AwsUtil.isDevelopment() || AwsUtil.disableCSP())) {
-            token.setSecure(true);
-        }
-        token.setDomain(request.getServerName());
-        response.addCookie(token);
-        
-        try {
+		try {
 			response.sendRedirect(serviceurl);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-    	
-       	return null;
-    }
-    private Boolean verifyPassword(String emailaddress, String password) {
-        boolean passwordValid = false;
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs=null;
-        try {
-            conn = FacilioConnectionPool.INSTANCE.getConnection();
-            pstmt = conn.prepareStatement("SELECT Users.password,Users.EMAIL FROM Users inner join faciliousers on Users.USERID=faciliousers.USERID WHERE (faciliousers.email = ? or faciliousers.username = ?) and USER_VERIFIED=1");
-            pstmt.setString(1, emailaddress);
-            pstmt.setString(2, emailaddress);
-            rs = pstmt.executeQuery();
-            if(rs.next()) {
-                String storedPass = rs.getString("password");
-                String emailindb = rs.getString(2);
-                this.emailaddress = emailindb;
-                LOGGER.info("Stored : "+storedPass);
-                LOGGER.info("UserGiv: "+password);
-                if(storedPass.equals(password)) {
-                    passwordValid = true;
-                }
-            } else {
-            	LOGGER.log(Level.INFO, "No records found for  "+emailaddress);
-                return null;
-            }
 
-        } catch(SQLException | RuntimeException e) {
-            LOGGER.log(Level.INFO, "Exception while verifying password, ", e);
-        } finally {
-            DBUtil.closeAll(conn, pstmt,rs);
-        }
+		return null;
+	}
 
-        return passwordValid;
-    }
-    
-    public long portalId() {
-        if(AccountUtil.getCurrentOrg() != null) {
-            return AccountUtil.getCurrentOrg().getPortalId();
-        }
-        return -1L;
-    }
-    
-    private Boolean verifyPortalPassword(String emailAddress, String password, long portalId) {
-       	String query  = "SELECT Users.password FROM Users inner join faciliorequestors on Users.USERID=faciliorequestors.USERID WHERE faciliorequestors.email = ? and USER_VERIFIED=1 and PORTALID = ?";
-    			return verifyPortalPassword(emailAddress,  password,  portalId,query);
-    }
-    
-    private Boolean verifyPortalPassword(String emailAddress, String password, String portaldomain) {
-    	String query  = "select Users.password from Users, faciliorequestors,PortalInfo,Organizations where Users.USERID=faciliorequestors.USERID and PortalInfo.PORTALID=faciliorequestors.PORTALID and Organizations.ORGID=PortalInfo.ORGID and faciliorequestors.email = ? and USER_VERIFIED=1 and FACILIODOMAINNAME = ?";
+	public long portalId() {
+		if (AccountUtil.getCurrentOrg() != null) {
+			return AccountUtil.getCurrentOrg().getPortalId();
+		}
+		return -1L;
+	}
 
+	public String validateInviteLink() throws Exception {
 
-    	     return verifyPortalPassword(emailAddress,  password,  portaldomain,query);
-    	
-    }
+		JSONObject invitation = new JSONObject();
+		User user = AccountUtil.getUserBean().validateUserInvite(getInviteToken());
+		if(user != null) {
+			User us = AccountUtil.getUserBean().getUser(user.getOrgId(), user.getUid());
+			Organization org = AccountUtil.getOrgBean().getOrg(user.getOrgId());
+			AccountUtil.cleanCurrentAccount();
+			AccountUtil.setCurrentAccount(new Account(org, us));
+		}
+		
+		if (AccountUtil.getCurrentOrg().getId() == 75) {
+			LOGGER.info("validate user link email invitation" + user.getEmail());
+			LOGGER.info("validate user link username  invitation" + user.getName());
+		}
+		if (user != null) {
+			Organization org = AccountUtil.getOrgBean().getOrg(user.getOrgId());
+			invitation.put("email", user.getEmail());
+			invitation.put("orgname", org.getName());
+			invitation.put("userid", user.getOuid());
+		} else {
+			invitation.put("error", "link_expired");
+		}
 
-    private Boolean verifyPortalPassword(String emailAddress, String password, Object portalId,String query) {
-        boolean passwordValid = false;
-        Connection conn = null;
-        PreparedStatement pstmt = null;
-        ResultSet rs;
-        try {
-            conn = FacilioConnectionPool.INSTANCE.getConnection();
-            pstmt = conn.prepareStatement(query);
-            pstmt.setString(1, emailAddress);
-            if(portalId instanceof Long)
-            {
-            pstmt.setLong(2, (Long)portalId);
-            }
-            else
-            {
-            	pstmt.setString(2, (String)portalId);
-            }
-            rs = pstmt.executeQuery();
-            if(rs.next()) {
-                String storedPass = rs.getString("password");
-                LOGGER.info("Stored : "+storedPass);
-                LOGGER.info("UserGiv: "+password);
-                if(storedPass.equals(password)) {
-                    passwordValid = true;
-                }
-            } else {
-                return null;
-            }
-        } catch(SQLException | RuntimeException e) {
-            LOGGER.log(Level.INFO, "Exception while verifying password, ", e);
-        } finally {
-            DBUtil.closeAll(conn, pstmt);
-        }
+		setResult("invitation", invitation);
 
-        return passwordValid;
-    }
+		return SUCCESS;
+	}
 
-    public String validateInviteLink() throws Exception {
+	public String postIssueResponse() throws Exception {
 
-        JSONObject invitation = new JSONObject();
-        User user = AccountUtil.getUserBean().validateUserInvite(getInviteToken());
-        if(AccountUtil.getCurrentOrg().getId()==75) {
-        LOGGER.info("validate user link email invitation"+user.getEmail());
-        LOGGER.info("validate user link username  invitation"+user.getName());
-        }
-        if (user != null) {
-            Organization org = AccountUtil.getOrgBean().getOrg(user.getOrgId());
-            invitation.put("email", user.getEmail());
-            invitation.put("orgname", org.getName());
-            if(user.getPassword() == null) {
-                invitation.put("account_exists", false);
-            } else {
-                invitation.put("account_exists", true);
-            }
-            invitation.put("userid", user.getOuid());
-        } else {
-            invitation.put("error", "link_expired");
-        }
-        	
-        	 setResult("invitation", invitation);
-        
-
-        return SUCCESS;
-    }
-    
-    public String postIssueResponse() throws Exception {
-    	
 		HttpServletResponse response2 = ServletActionContext.getResponse();
 		HttpServletRequest request = ServletActionContext.getRequest();
-		
+
 		if (request.getParameterValues("hub.challenge") != null) {
 			setJsonresponse("message", "post issue verification response received successfully");
 			String str[] = request.getParameterValues("hub.challenge");
@@ -534,19 +453,18 @@ public class FacilioAuthAction extends FacilioAction {
 				response2.getWriter().write(str[0]);
 			}
 			return NONE;
-		}
-		else {
+		} else {
 			try {
-				
+
 				JSONParser parser = new JSONParser();
-				
-				Map<String,Object> jbJsonObj = (Map<String,Object>)entry.get(0);
-				List test1 = (List)jbJsonObj.get("changes");
-				Map<String,Object> jbJsonObj1 = (Map<String,Object>)test1.get(0);
-				Map<String,Object> jbJsonObj2 = (Map<String,Object>)jbJsonObj1.get("value");
+
+				Map<String, Object> jbJsonObj = (Map<String, Object>) entry.get(0);
+				List test1 = (List) jbJsonObj.get("changes");
+				Map<String, Object> jbJsonObj1 = (Map<String, Object>) test1.get(0);
+				Map<String, Object> jbJsonObj2 = (Map<String, Object>) jbJsonObj1.get("value");
 				String jb = jbJsonObj2.get("message").toString();
-				String link = (String)jbJsonObj2.get("permalink_url");
-				link = "<a href= '" + link + "' >"+link+"</a>";
+				String link = (String) jbJsonObj2.get("permalink_url");
+				link = "<a href= '" + link + "' >" + link + "</a>";
 
 				String line = null;
 				String url = "https://facilio.freshrelease.com/DEMO/issues";
@@ -561,7 +479,7 @@ public class FacilioAuthAction extends FacilioAction {
 
 				FacilioAuthAction issue = new FacilioAuthAction();
 				LOGGER.info("jbstring" + jb.toString());
-			
+
 				if (jb.toString().equals("")) {
 					issue.setTitle("Sample Test");
 				} else {
@@ -572,11 +490,11 @@ public class FacilioAuthAction extends FacilioAction {
 					issue.setTitle("test");
 				}
 				JSONObject jget = new JSONObject();
-				
+
 				jget.put("description", link);
 				jget.put("key", key);
 				jget.put("story_points", storyPoints);
-				jget.put("title", issue.getTitle() );
+				jget.put("title", issue.getTitle());
 				jget.put("resolved", resolved);
 				jget.put("blocked", blocked);
 				jget.put("following", following);
@@ -602,11 +520,11 @@ public class FacilioAuthAction extends FacilioAction {
 				newjget.put("issue", jget);
 				String body = newjget.toJSONString();
 				Map<String, String> headers = new HashMap<>();
-				headers.put("Authorization", "Token token=93LalYD_wbiIA1qD0sXiOQ"); 
+				headers.put("Authorization", "Token token=93LalYD_wbiIA1qD0sXiOQ");
 				headers.put("Content-Type", "application/json");
 				http("POST", url, headers, body);
 				LOGGER.info("postIssueResponse" + jb.toString());
-				
+
 				setJsonresponse("message", "post issue response recieved successfully");
 
 			} catch (Exception e) {
@@ -615,205 +533,221 @@ public class FacilioAuthAction extends FacilioAction {
 
 			}
 		}
-	    
+
 		return SUCCESS;
-         	
-    }
-  
-    private void http(String method, String url, Map headers, String body) {
-    	try {
-        URL obj = new URL(url);
-        HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
-        con.setRequestMethod(method);
-
-        // these are auth headers
-        for(Object head:headers.keySet()) {
-            con.setRequestProperty(head.toString(), headers.get(head).toString());
-        }
-        
-        con.setDoOutput(true);
-        DataOutputStream wr = new DataOutputStream(con.getOutputStream());
-        wr.writeBytes(body);
-        wr.flush();
-        wr.close();
-
-        int responseCode = con.getResponseCode();
-        LOGGER.info("\nSending 'POST' request to URL : " + url);
-        LOGGER.info("Post parameters : " + body);
-        LOGGER.info("Response Code : " + responseCode);
-
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(con.getInputStream()));
-        String inputLine;
-        StringBuffer response = new StringBuffer();
-        LOGGER.info("response code is "+con.getResponseCode());
-        while ((inputLine = in.readLine()) != null) {
-            response.append(inputLine);
-        }
-        in.close();
-        LOGGER.info("issue response in freshrelease"+response.toString());
-    	}
-    	catch (Exception e) {
-   	       LOGGER.log( Level.INFO, "Error while posting post issue response", e);
-    	}
 
 	}
 
-    public String verifyEmail() throws Exception {
-    	
-        JSONObject invitation = new JSONObject();
-        User user = AccountUtil.getUserBean().verifyEmail(getInviteToken());
-        if (user == null) {
-            invitation.put("error", "link_expired");
-        } else {
-            invitation.put("email", user.getEmail());
-            invitation.put("accepted", true);
-        }
-        ActionContext.getContext().getValueStack().set("invitation", invitation);
+	private void http(String method, String url, Map headers, String body) {
+		try {
+			URL obj = new URL(url);
+			HttpsURLConnection con = (HttpsURLConnection) obj.openConnection();
+			con.setRequestMethod(method);
 
-        return SUCCESS;
-    }
+			// these are auth headers
+			for (Object head : headers.keySet()) {
+				con.setRequestProperty(head.toString(), headers.get(head).toString());
+			}
 
-    public String resetPassword() throws Exception {
-        JSONObject invitation = new JSONObject();
-        if(getInviteToken() != null) {
-            User user = AccountUtil.getUserBean().resetPassword(getInviteToken(), getPassword());
-            System.out.println("########user resetpass"+user.getOrgId());
-            if(user.getUid() > 0){
-                invitation.put("status", "success");
-            }
-        } else {
-            User user;
-            if(portalId() > 0) {
-            	user = AccountUtil.getUserBean().getPortalUser(getEmailaddress(), portalId());
-            } else {
-                user = AccountUtil.getUserBean().getFacilioUser(getEmailaddress());
-            }
-            if(user != null) {
-            	long orgId=user.getOrgId();
-            	AccountUtil.getTransactionalUserBean(orgId).sendResetPasswordLink(user);
-                invitation.put("status", "success");
-            } else {
-                invitation.put("status", "failed");
-            }
-        }
-        ActionContext.getContext().getValueStack().set("invitation", invitation);
-        return SUCCESS;
-    }
+			con.setDoOutput(true);
+			DataOutputStream wr = new DataOutputStream(con.getOutputStream());
+			wr.writeBytes(body);
+			wr.flush();
+			wr.close();
 
-    public String changePassword() throws Exception {
-        User user = AccountUtil.getCurrentUser();
-        if(user != null) {
-            Boolean verifyOldPassword = verifyPassword(user.getEmail(), getPassword());
-            if (verifyOldPassword != null && verifyOldPassword) {
-                user.setPassword(getNewPassword());
-                AccountUtil.getUserBean().updateUser(user);
-                setJsonresponse("message", "Password changed successfully");
-                setJsonresponse("status", "success");
-                return SUCCESS;
-            }
-        }
-        setJsonresponse("message", "Current Password is incorrect");
-        setJsonresponse("status", "failure");
-        return ERROR;
-    }
+			int responseCode = con.getResponseCode();
+			LOGGER.info("\nSending 'POST' request to URL : " + url);
+			LOGGER.info("Post parameters : " + body);
+			LOGGER.info("Response Code : " + responseCode);
 
-    public String acceptUserInvite() throws Exception {
-        boolean status = AccountUtil.getTransactionalUserBean().acceptInvite(getInviteToken(), getPassword());
-        if(status){
-            return SUCCESS;
-        }
-        return ERROR;
-    }
+			BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+			String inputLine;
+			StringBuffer response = new StringBuffer();
+			LOGGER.info("response code is " + con.getResponseCode());
+			while ((inputLine = in.readLine()) != null) {
+				response.append(inputLine);
+			}
+			in.close();
+			LOGGER.info("issue response in freshrelease" + response.toString());
+		} catch (Exception e) {
+			LOGGER.log(Level.INFO, "Error while posting post issue response", e);
+		}
 
-    public static String cryptWithMD5(String pass) {
-        try {
-            md = MessageDigest.getInstance("MD5");
-            byte[] passBytes = pass.getBytes();
-            md.reset();
-            byte[] digested = md.digest(passBytes);
-            StringBuilder sb = new StringBuilder();
-            for (byte aDigested : digested) {
-                sb.append(Integer.toHexString(0xff & aDigested));
-            }
-            return sb.toString();
-        } catch (NoSuchAlgorithmException ex) {
-            LOGGER.log(Level.INFO, "Exception ", ex);
-        }
-        return null;
-    }
+	}
 
-    public String generateAuthToken() {
-        LOGGER.info("generateAuthToken() : username :"+getUsername());
-        Boolean passwordVerified = false;
-        boolean isportaluser=false;
-       
-        	passwordVerified = verifyPassword(getUsername(), getPassword());        
-        if(passwordVerified != null && passwordVerified) {
-            String jwt = CognitoUtil.createJWT("id", "auth0", getUsername(), System.currentTimeMillis() + 24 * 60 * 60000, isportaluser);
-            LOGGER.info("Response token is " + jwt);
-            setJsonresponse("authtoken", jwt);
-            setJsonresponse("username", getUsername());
-        } else {
-            setJsonresponse("message", "Invalid username / password");
-        }
-        return SUCCESS;
-    }
+	public String verifyEmail() throws Exception {
 
-    
-    public String generatePortalAuthToken() {
-       Boolean validPassword = verifyPortalPassword(getUsername(), getPassword(), getDomainname()); 
-       if(validPassword != null && validPassword) {
-           String jwt = CognitoUtil.createJWT("id", "auth0", getUsername(), System.currentTimeMillis() + 24 * 60 * 60000, true);
+		JSONObject invitation = new JSONObject();
+		User user = AccountUtil.getUserBean().verifyEmail(getInviteToken());
+		if (user == null) {
+			invitation.put("error", "link_expired");
+		} else {
+			invitation.put("email", user.getEmail());
+			invitation.put("accepted", true);
+		}
+		ActionContext.getContext().getValueStack().set("invitation", invitation);
 
+		return SUCCESS;
+	}
 
-           LOGGER.info("Response token is " + jwt);
-           setJsonresponse("authtoken", jwt);
-           setJsonresponse("username", getUsername());
-       } else {
-           setJsonresponse("message", "Invalid username / password");
-       }
-       return SUCCESS;
-    	
-    }
+	public String resetPassword() throws Exception {
+		JSONObject invitation = new JSONObject();
+		if (getInviteToken() != null) {
+			IAMUser iamUser = IAMUserUtil.resetPassword(getInviteToken(), getPassword());
+			User user = new User(iamUser);
+			if (user.getUid() > 0) {
+				invitation.put("status", "success");
+			}
+		} else {
+			User user;
+			HttpServletRequest request = ServletActionContext.getRequest();
+			String portalDomain = "app";
+			if(request.getAttribute("portalDomain") != null) {
+				portalDomain = (String)request.getAttribute("portalDomain");
+			}
+			if (portalId() > 0) {
+				user = AccountUtil.getUserBean().getPortalUsers(getEmailaddress(), portalId());
+			} else if(AccountUtil.getCurrentOrg() != null){
+				user = AccountUtil.getUserBean().getUser(getEmailaddress());
+			}
+			else
+			{
+				user = AccountUtil.getUserBean().getUser(getEmailaddress(), portalDomain);
+			}
+			if (user != null) {
+				AccountUtil.getUserBean().sendResetPasswordLinkv2(user);
+				invitation.put("status", "success");
+			} else {
+				invitation.put("status", "failed");
+			}
+		}
+		ActionContext.getContext().getValueStack().set("invitation", invitation);
+		return SUCCESS;
+	}
 
-    public String signupPortalUser() throws Exception	{
-        LOGGER.info("signupUser() : username :"+getUsername() +", password :"+password+", email : "+getEmailaddress() + "portal " + portalId() );
-        return addPortalUser(getUsername(), getPassword(), getEmailaddress(), portalId());
-    }
+	public String changePassword(){
+		try {
+			User user = AccountUtil.getCurrentUser();
+			Boolean changePassword = IAMUserUtil.changePassword(getPassword(), getNewPassword(), user.getUid(), AccountUtil.getCurrentOrg().getOrgId());
+			if (changePassword != null && changePassword) {
+				setJsonresponse("message", "Password changed successfully");
+				setJsonresponse("status", "success");
+				return SUCCESS;
+			}
+			setJsonresponse("message", "Current Password is incorrect");
+			setJsonresponse("status", "failure");
+			return ERROR;
+		}
+		catch(Exception e) {
+			setJsonresponse("status", "failure");
+			return ERROR;
+			
+		}
+	}
 
-     public String v2SignupPortalUser() throws Exception	{
-        LOGGER.info("signupUser() : username :"+getUsername() +", password :"+password+", email : "+getEmailaddress() + "portal " + portalId() );
-        addPortalUser(getUsername(), getPassword(), getEmailaddress(), portalId());
-        setResult("message",this.jsonresponse.values());
-        return SUCCESS;
-    }
-
-
-    private String addPortalUser(String username, String password, String emailaddress, long portalId) throws Exception {
-        LOGGER.info("### addPortalUser() :"+emailaddress);
-
-        User user = new User();
-        user.setName(username);
-        user.setEmail(emailaddress);
-        user.setPortalId(portalId);
-        user.setPassword(password);
-        
-        PortalInfoAction authAction = new PortalInfoAction();
-        authAction.getPortalInfo();
-        PortalInfoContext portalInfo = authAction.getProtalInfo(); 
-       
-        boolean opensignup = portalInfo.isSignup_allowed();  // SIGNUP_ALLOWED
-        boolean anydomain_allowedforsignup = portalInfo.is_anyDomain_allowed();
-
-        
-        if(!opensignup) {
-        	setJsonresponse("message", "Signup not allowed for this portal");
-        	setResponseCode(1);
+	public String acceptUserInvite() throws Exception {
+		if(AccountUtil.getUserBean().acceptInvite(getInviteToken(), getPassword())) {
 			return SUCCESS;
-        }
-        
-        boolean whitelisteddomain = false;
+		}
+		return ERROR;
+	}
+
+	public static String cryptWithMD5(String pass) {
+		try {
+			md = MessageDigest.getInstance("MD5");
+			byte[] passBytes = pass.getBytes();
+			md.reset();
+			byte[] digested = md.digest(passBytes);
+			StringBuilder sb = new StringBuilder();
+			for (byte aDigested : digested) {
+				sb.append(Integer.toHexString(0xff & aDigested));
+			}
+			return sb.toString();
+		} catch (NoSuchAlgorithmException ex) {
+			LOGGER.log(Level.INFO, "Exception ", ex);
+		}
+		return null;
+	}
+
+	public String generateAuthToken() {
+		LOGGER.info("generateAuthToken() : username :" + getUsername());
+		try {
+			String token = IAMUserUtil.generateAuthToken(getUsername(), getPassword(), "app");
+			if (token != null) {
+				LOGGER.info("Response token is " + token);
+				setJsonresponse("authtoken", token);
+				setJsonresponse("username", getUsername());
+			} else {
+				setJsonresponse("message", "Invalid username / password");
+			}
+			return SUCCESS;
+		} catch (Exception e) {
+			setJsonresponse("message", "Invalid username / password");
+			return ERROR;
+		}
+	}
+
+	public String generatePortalAuthToken() {
+		LOGGER.info("generatePortalAuthToken() : username :" + getUsername());
+		try {
+			String token = IAMUserUtil.generateAuthToken(getUsername(), getPassword(), getDomainname());
+			if (token != null) {
+				LOGGER.info("Response token is " + token);
+				setJsonresponse("authtoken", token);
+				setJsonresponse("username", getUsername());
+			} else {
+				setJsonresponse("message", "Invalid username / password");
+			}
+			return SUCCESS;
+		} catch (Exception e) {
+			setJsonresponse("message", "Invalid username / password");
+			return ERROR;
+		}
+
+	}
+
+	public String signupPortalUser() throws Exception {
+		LOGGER.info("signupUser() : username :" + getUsername() + ", password :" + password + ", email : "
+				+ getEmailaddress() + "portal " + portalId());
+		return addPortalUser(getUsername(), getPassword(), getEmailaddress(), portalId());
+	}
+
+	private String addPortalUser(String username, String password, String emailaddress, long portalId)
+			throws Exception {
+		LOGGER.info("### addPortalUser() :" + emailaddress);
+
+		User user = new User();
+		user.setName(username);
+		user.setEmail(emailaddress);
+		user.setPortalId(portalId);
+		user.setPassword(password);
+		user.setDomainName(AccountUtil.getCurrentOrg().getDomain());
+		
+		//if(emailVerificationNeeded) {
+			user.setUserVerified(false);
+			user.setInviteAcceptStatus(false);
+			user.setInvitedTime(System.currentTimeMillis());
+//		}
+//		else {
+//			user.setUserVerified(true);
+//			user.setInviteAcceptStatus(true);
+//			user.setInvitedTime(System.currentTimeMillis());
+//		}
+
+		PortalInfoAction authAction = new PortalInfoAction();
+		authAction.getPortalInfo();
+		PortalInfoContext portalInfo = authAction.getProtalInfo();
+
+		boolean opensignup = portalInfo.isSignup_allowed(); // SIGNUP_ALLOWED
+		boolean anydomain_allowedforsignup = portalInfo.is_anyDomain_allowed();
+
+		if (!opensignup) {
+			setJsonresponse("message", "Signup not allowed for this portal");
+			setResponseCode(1);
+			return SUCCESS;
+		}
+
+		boolean whitelisteddomain = false;
 
 		if (opensignup && !anydomain_allowedforsignup) {
 			String domains = portalInfo.getWhiteListed_domains();
@@ -828,85 +762,92 @@ public class FacilioAuthAction extends FacilioAction {
 					break;
 				}
 			}
-			if (!anydomain_allowedforsignup && !whitelisteddomain  ) {
+			if (!anydomain_allowedforsignup && !whitelisteddomain) {
 				setJsonresponse("message", "Only whitelisted domains allowed");
 				setResponseCode(1);
 				return SUCCESS;
 			}
 
 		}
-        if(anydomain_allowedforsignup || opensignup || whitelisteddomain) {
-            try {
-                AccountUtil.getTransactionalUserBean().createRequestor(AccountUtil.getCurrentOrg().getId(), user);
-                LOGGER.info("user signup done "+user);
-                try {
-					(new UserBeanImpl()).sendInvitation(user.getOuid(), user,true);
-					 LOGGER.info("Email invitation sent "+user);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					 LOGGER.log(java.util.logging.Level.SEVERE, "unable to send email", e);
-					 }
-               
-            } catch (InvocationTargetException ie) {
-                Throwable e= ie.getTargetException();
-                if(e.getMessage()!=null && e.getMessage().equals("Email Already Registered")) {
-                    setJsonresponse("message", "Email Already Registered");
-                    setResponseCode(1);
-                    return SUCCESS;
-                } else {
-                    throw ie;
-                }
-		    }
-            setJsonresponse("message", "success");
-            return SUCCESS;
-        }
-        return ERROR;
-    }
+		if (anydomain_allowedforsignup || opensignup || whitelisteddomain) {
+			try {
+				AccountUtil.getTransactionalUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, true);
+				LOGGER.info("user signup done " + user);
+			} catch (InvocationTargetException ie) {
+				Throwable e = ie.getTargetException();
+				if (e.getMessage() != null && e.getMessage().equals("Email Already Registered")) {
+					setJsonresponse("message", "Email Already Registered");
+					setResponseCode(1);
+					return SUCCESS;
+				} else {
+					throw ie;
+				}
+			}
+			setJsonresponse("message", "success");
+			return SUCCESS;
+		}
+		return ERROR;
+	}
 
-    public String changePortalPassword() {
-        Boolean verifyOldPassword = verifyPortalPassword(getEmailaddress(), getPassword(), portalId());
-        if(verifyOldPassword != null && verifyOldPassword) {
-            try {
-                User user = AccountUtil.getUserBean().getPortalUser(getEmailaddress(), portalId());
-                user.setPassword(getNewPassword());
-                AccountUtil.getUserBean().updateUser(user);
-                setJsonresponse("message", "Password changed successfully");
-                setJsonresponse("status", "success");
-                return SUCCESS;
-            } catch(Exception e) {
-                LOGGER.log(Level.INFO, "Exception while changing portal password, ", e);
-            }
-        } else {
-            setJsonresponse("message", "Current Password is incorrect");
-        }
-        setJsonresponse("status", "failure");
-        return ERROR;
-    }
-    
-    public String v2apiLogout() throws Exception { 
-    	apiLogout();
-    	return SUCCESS;
-    }
+	public String changePortalPassword() {
+		String result = changePassword();
+		return result;
+	}
 
+	public String v2apiLogout() throws Exception {
+		apiLogout();
+		return SUCCESS;
+	}
 
 	public String apiLogout() throws Exception {
 
-        HttpServletRequest request = ServletActionContext.getRequest();
-        HttpServletResponse response = ServletActionContext.getResponse();
-        HttpSession session = request.getSession();
+//		HttpServletRequest request = ServletActionContext.getRequest();
+//		HttpServletResponse response = ServletActionContext.getResponse();
+//		HttpSession session = request.getSession();
+//
+//		session.invalidate();
+//
+//		String parentdomain = request.getServerName().replaceAll("app.", ""); 
+//        
+//        if(portalId() > 0) { 
+//            FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilioportal", parentdomain); 
+//        } else { 
+//            FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilio", parentdomain); 
+//        } 
+//        
+//        FacilioCookie.eraseUserCookie(request, response, "fc.authtype", null); 
+//		return SUCCESS;
+		
+		HttpServletRequest request = ServletActionContext.getRequest();
+		HttpServletResponse response = ServletActionContext.getResponse();
 
-        session.invalidate();
-        
-        String parentdomain = request.getServerName().replaceAll("app.", "");
-        
-        if(portalId() > 0) {
-            FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilioportal", parentdomain);
-        } else {
-            FacilioCookie.eraseUserCookie(request, response, "fc.idToken.facilio", parentdomain);
-        }
+		// end user session
+		try {
+			
+			String facilioToken = null;
+			if(portalId() > 0) {
+				facilioToken = FacilioCookie.getUserCookie(request, "fc.idToken.facilioportal");
+			}else {
+				facilioToken = FacilioCookie.getUserCookie(request, "fc.idToken.facilio");
+			}
+			if (facilioToken != null) {
+				User currentUser = AccountUtil.getCurrentUser();
+				if (currentUser != null) {
+					IAMUserUtil.logOut(currentUser.getUid(), facilioToken, currentUser.getEmail()
+							);
+				}
+			}
+		} catch (Exception e) {
+			return ERROR;
+		}
 
-        FacilioCookie.eraseUserCookie(request, response, "fc.authtype", null);
+		HttpSession session = request.getSession();
+		session.invalidate();
+		String parentdomain = request.getServerName().replaceAll("app.", "");
+		FacilioCookie.eraseUserCookie(request, response, portalId() > 0 ? "fc.idToken.facilioportal" : "fc.idToken.facilio", parentdomain);
+		FacilioCookie.eraseUserCookie(request, response, "fc.authtype", null);
+		FacilioCookie.eraseUserCookie(request, response, "fc.currentSite", null);
+		return SUCCESS;
+	}
 
-        return SUCCESS;
-    }
 }

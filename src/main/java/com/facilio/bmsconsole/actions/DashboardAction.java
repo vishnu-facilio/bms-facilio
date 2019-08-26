@@ -20,7 +20,6 @@ import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.tiles.request.collection.CollectionUtil;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -148,8 +147,6 @@ import com.facilio.workflows.context.WorkflowExpression;
 import com.facilio.workflows.util.WorkflowUtil;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-
-import freemarker.core.CollectionAndSequence;
 
 //import com.facilio.workflows.context.WorkflowExpression;
 
@@ -6111,7 +6108,7 @@ public class DashboardAction extends FacilioAction {
 				if(dateFilter != null && dateFilter.size() > 0) {
 					url += "?daterange=" + dateFilter.toJSONString();
 				}
-				fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(),url, fileFormat);
+				fileUrl = PdfUtil.exportUrlAsPdf(url, fileFormat);
 			}
 			else {
 				getData();
@@ -6129,7 +6126,7 @@ public class DashboardAction extends FacilioAction {
 		FileFormat fileFormat = FileFormat.getFileFormat(type);
 		if(fileFormat == FileFormat.PDF || fileFormat == FileFormat.IMAGE) {
 			String url = ReportsUtil.getAnalyticsClientUrl(analyticsConfig, fileFormat);
-			fileUrl = PdfUtil.exportUrlAsPdf(AccountUtil.getCurrentOrg().getOrgId(), AccountUtil.getCurrentUser().getEmail(),url, fileFormat);
+			fileUrl = PdfUtil.exportUrlAsPdf(url, fileFormat);
 		}
 		else {
 			analyticsConfig.put("dateFilter", dateFilter);
@@ -6732,6 +6729,17 @@ public class DashboardAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String updateDashboardTabsList() throws Exception {
+			
+			FacilioContext context = new FacilioContext();
+			if(dashboardTabContexts != null) {
+				context.put(FacilioConstants.ContextNames.DASHBOARD_TABS_LIST, dashboardTabContexts);
+			}
+			Chain chain = TransactionChainFactory.getUpdateDashboardTabsListChain();
+			chain.execute(context);
+			return SUCCESS;
+		}
+	
 	public String updateDashboardWithWidgets() throws Exception {
 		
 		Long dashboardId = (Long) dashboardMeta.get("id");
@@ -6932,6 +6940,13 @@ public class DashboardAction extends FacilioAction {
 	}
 	public void setDashboardTabContext(DashboardTabContext dashboardTabContext) {
 		this.dashboardTabContext = dashboardTabContext;
+	}
+	List<DashboardTabContext> dashboardTabContexts;
+	public List<DashboardTabContext> getDashboardTabContexts() {
+		return dashboardTabContexts;
+	}
+	public void setDashboardTabContexts(List<DashboardTabContext> dashboardTabContexts) {
+		this.dashboardTabContexts = dashboardTabContexts;
 	}
 	public String viewDashboardTab() throws Exception {
 

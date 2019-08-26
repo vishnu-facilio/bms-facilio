@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.modules.FacilioModule;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
@@ -16,16 +17,20 @@ public class ConstructStateFlowTransitionCommand extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		StateflowTransitionContext stateFlowRuleContext = (StateflowTransitionContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
+		FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		if (stateFlowRuleContext != null) {
-			if (StringUtils.isEmpty(moduleName)) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			if (module == null) {
+				module = modBean.getModule(moduleName);
+			}
+			if (module == null) {
 				throw new IllegalArgumentException("Module name cannot be empty");
 			}
 			
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioField field = modBean.getField("moduleState", moduleName);
+			FacilioField field = modBean.getField("moduleState", module.getName());
 			if (field == null) {
-				throw new IllegalArgumentException("StateFlow is not active for module " + moduleName);
+				throw new IllegalArgumentException("StateFlow is not active for module " + module.getName());
 			}
 			
 //			List<FieldChangeFieldContext> fields = new ArrayList<>();
@@ -36,7 +41,7 @@ public class ConstructStateFlowTransitionCommand extends FacilioCommand {
 			
 			WorkflowEventContext event = new WorkflowEventContext();
 			event.setActivityType(EventType.STATE_TRANSITION);
-			event.setModuleName(moduleName);
+			event.setModuleName(module.getName());
 			stateFlowRuleContext.setEvent(event);
 		}
 		return false;

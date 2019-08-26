@@ -100,9 +100,9 @@
 	"11": {
 		"name": "PM_EMAIL_DUE_REMINDER",
 		"sender": "noreply@${org.domain}.facilio.com",
-		"subject": "Workorder is due by ${workorder.dueDateString}",
+		"subject": "Workorder is due by ${workorder.dueDateString:-}",
 		"to": "${workorder.assignedTo.email:-}",
-		"message": "The following workorder created from PPM ${workorder.subject} is in due by ${workorder.dueDateString}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nDue by : ${workorder.dueDateString}\n\nPlease view the workorder here - ${workorder.url}\n\nRegards,\nTeam Facilio."
+		"message": "The following workorder created from PPM ${workorder.subject} is in due by ${workorder.dueDateString}.\n\nSubject : ${workorder.subject}\nDescription : \n${workorder.description}\nDue by : ${workorder.dueDateString:-}\n\nPlease view the workorder here - ${workorder.url}\n\nRegards,\nTeam Facilio."
 	},
 	"12": {
 		"name": "NEW_WORK_REQUEST_EMAIL",

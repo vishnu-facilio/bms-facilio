@@ -21,7 +21,6 @@ import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
-import com.facilio.bmsconsole.context.HistoricalLoggerContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext.FormulaFieldType;
 import com.facilio.bmsconsole.context.PublishData;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -32,7 +31,6 @@ import com.facilio.bmsconsole.context.SpaceCategoryContext;
 import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLoggerContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.FormulaFieldAPI;
-import com.facilio.bmsconsole.util.HistoricalLoggerUtil;
 import com.facilio.bmsconsole.util.IoTMessageAPI;
 import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
 import com.facilio.bmsconsole.util.ReadingsAPI;
@@ -696,6 +694,33 @@ public class ReadingAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String v2getAllAssetReadings() throws Exception {
+		FacilioContext context = constructListContext();
+		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_IDS, parentCategoryIds);
+		
+		if (getSearch() != null) {
+			context.put(FacilioConstants.ContextNames.SEARCH, getSearch());
+		}
+		
+		if (StringUtils.isNotEmpty(getReadingType())) {
+			context.put(FacilioConstants.ContextNames.FILTER, getReadingType());
+		}
+
+		Chain getCategoryReadingChain = ReadOnlyChainFactory.getAllAssetReadingsChain();
+		getCategoryReadingChain.execute(context);
+		
+		if (isFetchCount()) {
+			setResult(ContextNames.COUNT, context.get(ContextNames.COUNT));
+		}
+		else {
+			setResult("readingFields", context.get(FacilioConstants.ContextNames.READING_FIELDS));
+			setResult("fieldVsRules", context.get(FacilioConstants.ContextNames.VALIDATION_RULES));
+		}
+		
+		return SUCCESS;
+	}
+	
+	
 	private List<Long> parentCategoryIds;
 	public List<Long> getParentCategoryIds() {
 		return this.parentCategoryIds;
@@ -1011,12 +1036,28 @@ public class ReadingAction extends FacilioAction {
 	public void setLoggerGroupId(long loggerGroupId) {
 		this.loggerGroupId = loggerGroupId;
 	}
+	
+	private Boolean isInclude;
+
+	public Boolean getIsInclude() {
+		return isInclude;
+	}
+
+	public void setIsInclude(Boolean isInclude) {
+		this.isInclude = isInclude;
+	}
 
 	public String runThroughRule() throws Exception {
+		
+		if(startTime >= endTime)
+		{
+			throw new Exception("Start time should be less than the Endtime");
+		}
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, id);
 		context.put(FacilioConstants.ContextNames.DATE_RANGE, new DateRange(startTime, endTime));
 		context.put(FacilioConstants.ContextNames.RESOURCE_LIST, historicalLoggerAssetIds);
+		context.put(FacilioConstants.ContextNames.IS_INCLUDE,isInclude);
 		
 		Chain runThroughRuleChain = TransactionChainFactory.runThroughReadingRuleChain();
 		runThroughRuleChain.execute(context);
@@ -1219,14 +1260,14 @@ public class ReadingAction extends FacilioAction {
 		return this.perPage;
 	}
 	
-	// connected, formula or nonformula
+	// connected, writable, readable, formula or nonformula
 	private String readingType;
 	public String getReadingType() {
 		return readingType;
 	}
 	public void setReadingType(String readingType) {
 		this.readingType = readingType;
-	} 
+	}
 	
 	private Boolean fetchCount;
 	public boolean isFetchCount() {

@@ -90,7 +90,7 @@ public class TicketAPI {
 	public static int deleteTickets(FacilioModule module, Collection<Long> recordIds, int level) throws Exception {
 		DeleteRecordBuilder<TicketContext> builder = new DeleteRecordBuilder<TicketContext>()
 															.module(module)
-															.recordsPerBatch(1000)
+															.recordsPerBatch(500)
 															.andCondition(CriteriaAPI.getIdCondition(recordIds, module));
 
 		if (level != -1) {
@@ -410,7 +410,7 @@ public class TicketAPI {
 		 return builder.get();
 	}
 	
-	public static void updateStatus(FacilioStatus status) throws Exception {
+	public static void updateStatus(FacilioStatus status, FacilioModule parentModule) throws Exception {
 		status.setParentModuleId(-1);
 		status.setStatus(null);
 		
@@ -418,7 +418,7 @@ public class TicketAPI {
 		FacilioModule ticketStatusModule = modBean.getModule(FacilioConstants.ContextNames.TICKET_STATUS);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TICKET_STATUS);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		checkTicketStatus(status, ticketStatusModule, fieldMap);
+		checkTicketStatus(status, ticketStatusModule, fieldMap, parentModule);
 		
 		UpdateRecordBuilder<FacilioStatus> builder = new UpdateRecordBuilder<FacilioStatus>()
 				.module(ticketStatusModule)
@@ -446,7 +446,7 @@ public class TicketAPI {
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TICKET_STATUS);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
-		checkTicketStatus(status, ticketStatusModule, fieldMap);
+		checkTicketStatus(status, ticketStatusModule, fieldMap, parentModule);
 		
 		SelectRecordsBuilder<FacilioStatus> builder = new SelectRecordsBuilder<FacilioStatus>()
 				.module(ticketStatusModule)
@@ -485,11 +485,12 @@ public class TicketAPI {
 		insertBuilder.insert(status);
 	}
 	
-	private static void checkTicketStatus(FacilioStatus status, FacilioModule ticketStatusModule, Map<String, FacilioField> fieldMap) throws Exception {
+	private static void checkTicketStatus(FacilioStatus status, FacilioModule ticketStatusModule, Map<String, FacilioField> fieldMap, FacilioModule parentModule) throws Exception {
 		SelectRecordsBuilder<FacilioStatus> builder = new SelectRecordsBuilder<FacilioStatus>()
 				.module(ticketStatusModule)
 				.beanClass(FacilioStatus.class)
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("displayName"), status.getDisplayName(), StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentModuleId"), String.valueOf(parentModule.getModuleId()), NumberOperators.EQUALS))
 				.select(Collections.singletonList(fieldMap.get("displayName")));
 		if (status.getId() > 0) {
 			builder.andCondition(CriteriaAPI.getCondition("ID", "id", String.valueOf(status.getId()), NumberOperators.NOT_EQUALS));

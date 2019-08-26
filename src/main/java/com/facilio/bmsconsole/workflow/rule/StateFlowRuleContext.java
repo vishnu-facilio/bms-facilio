@@ -14,12 +14,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Context;
-import org.apache.struts2.json.annotations.JSON;
-import org.json.simple.JSONObject;
-
-import java.util.Map;
 
 public class StateFlowRuleContext extends WorkflowRuleContext {
 	private static final long serialVersionUID = 1L;
