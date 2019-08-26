@@ -100,9 +100,6 @@
 		<action name="getMainEnergyMeters" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getAllMainEnergyMeters">
 		</action>
-		<action name="getCalendarColor" class="com.facilio.bmsconsole.actions.LoginAction"
-			method="getCalendarColor">
-		</action>
 		
 		<action name="validateInviteLink" class="com.facilio.auth.actions.FacilioAuthAction"
 			method="validateInviteLink">

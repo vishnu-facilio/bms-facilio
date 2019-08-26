@@ -770,11 +770,6 @@ public class LoginAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	public String getCalendarColor() throws Exception {
-		setResult("calendarColor", TicketAPI.getCalendarColor());
-		return SUCCESS;
-	}
-	
 	private String permalink;
 	
 	public void setPermalink(String permalink) {
