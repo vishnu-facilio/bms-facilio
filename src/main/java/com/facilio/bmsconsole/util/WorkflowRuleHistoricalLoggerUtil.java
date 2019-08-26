@@ -27,6 +27,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.events.context.EventContext;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.DeleteRecordBuilder;
@@ -191,25 +192,29 @@ public class WorkflowRuleHistoricalLoggerUtil {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.READING_ALARM);
 		
-		DeleteRecordBuilder<ReadingAlarmContext> builder = new DeleteRecordBuilder<ReadingAlarmContext>()
-				.module(module)
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(module.getTableName())
+				.innerJoin("Event", true)
+				.on("Event.ALARM_ID = Reading_Alarms.ID")
+				.innerJoin("Alarms", false)
+				.on("Alarms.ID = Reading_Alarms.ID")
+				.innerJoin("Tickets", true)
+				.on("Tickets.ID = Reading_Alarms.ID")
 				.andCondition(CriteriaAPI.getCondition("RULE_ID", "ruleId", ""+ruleId, NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("RESOURCE_ID", "resource", ""+resourceId, NumberOperators.EQUALS));
-		
+				.andCondition(CriteriaAPI.getCondition("Tickets.RESOURCE_ID", "resource", ""+resourceId, NumberOperators.EQUALS));
 		
 		Criteria criteria = new Criteria();
 		
 		Criteria subCriteria = new Criteria();
-		subCriteria.addAndCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", ""+endTime, NumberOperators.LESS_THAN));
+		subCriteria.addAndCondition(CriteriaAPI.getCondition("Alarms.CREATED_TIME", "createdTime", ""+endTime, NumberOperators.LESS_THAN));
 		subCriteria.addAndCondition(CriteriaAPI.getCondition("CLEARED_TIME", "clearedTime", ""+startTime, NumberOperators.GREATER_THAN));
 		
-		criteria.addOrCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN));
-		criteria.addOrCondition(CriteriaAPI.getCondition("CLEARED_TIME", "clearedTime", startTime+","+endTime, DateOperators.BETWEEN));
+		criteria.addOrCondition(CriteriaAPI.getCondition("Alarms.CREATED_TIME", "createdTime", startTime+","+endTime, DateOperators.BETWEEN));
+		criteria.addOrCondition(CriteriaAPI.getCondition("CLEARED_TIME", "clearedTime", startTime+","+endTime, DateOperators.BETWEEN));	
 		criteria.orCriteria(subCriteria);
 		
 		builder.andCriteria(criteria);
-				
-		builder.delete();
+		builder.delete();		
 		
 	}
 
