@@ -153,8 +153,9 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 	
 	private long addMultipleRatioCheckModel(Hashtable<Long,EnergyMeterContext> emContextTable, JSONArray ratioHierachyList) throws Exception
 	{
-		addReading(FacilioConstants.ContextNames.ENERGY_METER,emContextTable.get(0).getCategory().getId(),"checkRatioMLLogReadings",FieldFactory.getMLLogCheckRatioFields(),ModuleFactory.getMLLogReadingModule().getTableName());
-		addReading(FacilioConstants.ContextNames.ENERGY_METER,emContextTable.get(0).getCategory().getId(),"checkRatioMLReadings",FieldFactory.getMLCheckRatioFields(),ModuleFactory.getMLReadingModule().getTableName());
+		Entry<Long, EnergyMeterContext> entry = emContextTable.entrySet().iterator().next();
+		addReading(FacilioConstants.ContextNames.ENERGY_METER,emContextTable.get(entry.getKey()).getCategory().getId(),"checkRatioMLLogReadings",FieldFactory.getMLLogCheckRatioFields(),ModuleFactory.getMLLogReadingModule().getTableName());
+		addReading(FacilioConstants.ContextNames.ENERGY_METER,emContextTable.get(entry.getKey()).getCategory().getId(),"checkRatioMLReadings",FieldFactory.getMLCheckRatioFields(),ModuleFactory.getMLReadingModule().getTableName());
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
