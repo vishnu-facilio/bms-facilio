@@ -1,11 +1,7 @@
 package com.facilio.modules;
 
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -26,8 +22,6 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
 
 public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implements DeleteBuilderIfc<E> {
-	private static final int RECORDS_PER_BATCH = 2000;
-
 	private GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder();
 	private SelectRecordsBuilder<E> selectBuilder = new SelectRecordsBuilder<E>();
 	private UpdateRecordBuilder<E> updateBuilder = new UpdateRecordBuilder<E>();
@@ -35,8 +29,7 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 	private FacilioModule module;
 	private WhereBuilder where = new WhereBuilder();
 	private int level = 1;
-	private int recordsPerBatch = RECORDS_PER_BATCH;
-	
+
 	public DeleteRecordBuilder<E> moduleName (String moduleName) {
 		selectBuilder.moduleName(moduleName);
 		updateBuilder.moduleName(moduleName);
@@ -134,8 +127,9 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		return this;
 	}
 
+	@Override
 	public DeleteRecordBuilder<E> recordsPerBatch (int recordsPerBatch) {
-		this.recordsPerBatch = recordsPerBatch;
+		this.deleteBuilder.recordsPerBatch(recordsPerBatch);
 		return this;
 	}
 
@@ -144,7 +138,16 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 		// TODO Auto-generated method stub
 		checkForNull();
 		List<Long> ids = getIds();
-		
+		return commonDeleteByIds(ids);
+	}
+
+	@Override
+	public int batchDeleteById(Collection<Long> ids) throws Exception {
+		checkForNull();
+		return commonDeleteByIds(ids);
+	}
+
+	private int commonDeleteByIds (Collection<Long> ids) throws Exception {
 		if (CollectionUtils.isNotEmpty(ids)) {
 			FacilioModule currentModule = module;
 			FacilioModule extendedModule = module.getExtendModule();
@@ -157,20 +160,21 @@ public class DeleteRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 				currentLevel--;
 			}
 			deleteBuilder.table(currentModule.getTableName());
-			if (ids.size() <= recordsPerBatch) {
-				deleteBuilder.andCondition(CriteriaAPI.getIdCondition(ids, currentModule));
-				return deleteBuilder.delete();
-			}
-			else {
-				int deletedRecords = 0;
-				List<List<Long>> chunks = ListUtils.partition(ids, recordsPerBatch);
-				for (List<Long> idList : chunks) {
-					GenericDeleteRecordBuilder chunkDeleteBuilder = new GenericDeleteRecordBuilder(deleteBuilder);
-					deleteBuilder.andCondition(CriteriaAPI.getIdCondition(ids, currentModule));
-					deletedRecords += deleteBuilder.delete();
-				}
-				return deletedRecords;
-			}
+			return deleteBuilder.batchDeleteById(ids);
+//			if (ids.size() <= recordsPerBatch) {
+//				deleteBuilder.andCondition(CriteriaAPI.getIdCondition(ids, currentModule));
+//				return deleteBuilder.delete();
+//			}
+//			else {
+//				int deletedRecords = 0;
+//				List<List<Long>> chunks = ListUtils.partition(ids, recordsPerBatch);
+//				for (List<Long> idList : chunks) {
+//					GenericDeleteRecordBuilder chunkDeleteBuilder = new GenericDeleteRecordBuilder(deleteBuilder);
+//					deleteBuilder.andCondition(CriteriaAPI.getIdCondition(ids, currentModule));
+//					deletedRecords += deleteBuilder.delete();
+//				}
+//				return deletedRecords;
+//			}
 		}
 		return 0;
 	}

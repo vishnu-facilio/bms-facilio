@@ -150,8 +150,7 @@ public class BusinessHoursAPI {
 		return businessHours;
 	}
 
-	public static void deleteBusinessHours(long id) throws IllegalAccessException, InvocationTargetException,
-			NoSuchMethodException, SQLException, RuntimeException {
+	public static void deleteBusinessHours(long id) throws Exception {
 		FacilioModule businessHoursTable = ModuleFactory.getBusinessHoursModule();
 		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder().table(businessHoursTable.getTableName())
 				.andCondition(CriteriaAPI.getIdCondition(id, businessHoursTable)).andCondition(

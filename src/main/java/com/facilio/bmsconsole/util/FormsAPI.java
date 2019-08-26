@@ -389,7 +389,7 @@ public class FormsAPI {
 		return null;
 	}
 	
-	public static int deleteForms (Collection<Long> ids) throws SQLException {
+	public static int deleteForms (Collection<Long> ids) throws Exception {
 		FacilioModule module = ModuleFactory.getFormModule();
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 														.table(module.getTableName())
@@ -399,7 +399,7 @@ public class FormsAPI {
 		return deleteBuilder.delete();
 	}
 	
-	public static List<FormField> getFormFieldsFromFacilioFields (List<FacilioField> fields, int count) throws SQLException {
+	public static List<FormField> getFormFieldsFromFacilioFields (List<FacilioField> fields, int count) throws Exception {
 		List<FormField> formFields = new ArrayList<FormField>();
 		for(FacilioField field: fields) {
 			FormField formField = getFormFieldFromFacilioField(field, ++count);

@@ -765,7 +765,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		updateBuilder.update(FieldUtil.getAsProperties(rule));
 	}
 	
-	private void deleteOldFlaps(List<Long> flapsToBeDeleted) throws SQLException {
+	private void deleteOldFlaps(List<Long> flapsToBeDeleted) throws Exception {
 		// TODO Auto-generated method stub
 		if (!flapsToBeDeleted.isEmpty()) {
 			FacilioModule module = ModuleFactory.getReadingRuleFlapsModule();
@@ -777,7 +777,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		}
 	}
 	
-	private void deleteAllFlaps(long resourceId) throws SQLException {
+	private void deleteAllFlaps(long resourceId) throws Exception {
 		// TODO Auto-generated method stub
 		FacilioModule module = ModuleFactory.getReadingRuleFlapsModule();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getReadingRuleFlapsFields());

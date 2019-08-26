@@ -822,7 +822,7 @@ public class TenantsAPI {
 			addTenantContact(contact, tenantId);
 		}
 	}
-	private static int deleteUtilityMapping(TenantContext tenant) throws SQLException {
+	private static int deleteUtilityMapping(TenantContext tenant) throws Exception {
 		FacilioModule module = ModuleFactory.getTenantsUtilityMappingModule();
 		List<FacilioField> fields = FieldFactory.getTenantsUtilityMappingFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);

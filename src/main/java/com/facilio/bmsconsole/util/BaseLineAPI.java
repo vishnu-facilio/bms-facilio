@@ -62,7 +62,7 @@ public class BaseLineAPI {
 		relBuilder.save();
 	}
 	
-	public static int deleteExistingReportBaseLines(long reportId) throws SQLException {
+	public static int deleteExistingReportBaseLines(long reportId) throws Exception {
 		FacilioField reportField = FieldFactory.getAsMap(FieldFactory.getBaseLineReportsRelFields()).get("reportId");
 		FacilioModule module = ModuleFactory.getBaseLineReportRelModule();
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()

@@ -234,7 +234,7 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 		return rule;
 	}
 	
-	private static int deleteApprovers (List<ApproverContext> approvers) throws SQLException {
+	private static int deleteApprovers (List<ApproverContext> approvers) throws Exception {
 		if (CollectionUtils.isNotEmpty(approvers)) {
 			return SharingAPI.deleteSharing(approvers.stream().map(ApproverContext::getId).collect(Collectors.toList()), ModuleFactory.getApproversModule());
 		}

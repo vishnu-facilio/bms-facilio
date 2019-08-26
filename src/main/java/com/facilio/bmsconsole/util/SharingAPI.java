@@ -61,7 +61,7 @@ public class SharingAPI {
 		}
 		return null;
 	}
-	public static int deleteSharing (Collection<Long> ids, FacilioModule module) throws SQLException {
+	public static int deleteSharing (Collection<Long> ids, FacilioModule module) throws Exception {
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()
 														.table(module.getTableName())
 //														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))

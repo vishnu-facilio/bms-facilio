@@ -200,12 +200,12 @@ public class ControlActionUtil {
 		return props;
 	}
 
-	public static void deleteDependenciesForControlGroup(ControlGroupContext controlGroup) throws SQLException {
+	public static void deleteDependenciesForControlGroup(ControlGroupContext controlGroup) throws Exception {
 		deleteGroupSpaces(controlGroup);
 		deleteGroupInclExclResources(controlGroup);
 	}
 
-	private static void deleteGroupInclExclResources(ControlGroupContext controlGroup) throws SQLException {
+	private static void deleteGroupInclExclResources(ControlGroupContext controlGroup) throws Exception {
 		
 		GenericDeleteRecordBuilder delete = new GenericDeleteRecordBuilder()
 				.table(ModuleFactory.getControlGroupSpaceModule().getTableName())
@@ -213,7 +213,7 @@ public class ControlActionUtil {
 		delete.delete();
 	}
 
-	private static void deleteGroupSpaces(ControlGroupContext controlGroup) throws SQLException {
+	private static void deleteGroupSpaces(ControlGroupContext controlGroup) throws Exception {
 
 		GenericDeleteRecordBuilder delete = new GenericDeleteRecordBuilder()
 				.table(ModuleFactory.getControlGroupInclExclModule().getTableName())

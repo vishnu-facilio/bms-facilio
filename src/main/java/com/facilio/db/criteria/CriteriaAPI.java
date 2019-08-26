@@ -122,7 +122,7 @@ public class CriteriaAPI {
 		}
 	}
 	
-	public static void deleteCriteria (long id) throws SQLException {
+	public static void deleteCriteria (long id) throws Exception {
 		FacilioModule module = ModuleFactory.getCriteriaModule();
 		
 		GenericDeleteRecordBuilder deleteBuilder = new GenericDeleteRecordBuilder()

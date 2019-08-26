@@ -254,7 +254,7 @@ public class DashboardUtil {
 		return selectBuilder.get();
 	}
 	
-	public static boolean deleteDashboard(Long dashboardId) throws SQLException {
+	public static boolean deleteDashboard(Long dashboardId) throws Exception {
 		
 		GenericDeleteRecordBuilder deleteRecordBuilder = new GenericDeleteRecordBuilder();
 		
@@ -329,7 +329,7 @@ public class DashboardUtil {
 		return null;
 	}
 	
-	public static boolean deleteWidgetFromDashboard(Long dashboardId,Long widgetId) throws SQLException {
+	public static boolean deleteWidgetFromDashboard(Long dashboardId,Long widgetId) throws Exception {
 		
 		if(dashboardId != null && widgetId != null) {
 			
