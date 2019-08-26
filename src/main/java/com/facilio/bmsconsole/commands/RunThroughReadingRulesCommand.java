@@ -41,9 +41,6 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 		{
 			isInclude = true;
 		}
-		JSONObject jobprop = new JSONObject();
-		jobprop.put("startTime", range.getStartTime());
-		jobprop.put("endTime", range.getEndTime());
 		
 		if (id == -1 || range == null || range.getStartTime() == -1 || range.getEndTime() == -1) {
 			throw new IllegalArgumentException("In sufficient params for running Alarm Rules for historical data");
@@ -52,6 +49,12 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 		WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(id);
 		if (rule == null || !(rule instanceof ReadingRuleContext)) {
 			throw new IllegalArgumentException("Invalid Alarm rule id for running through historical data");
+		}
+				
+		WorkflowRuleHistoricalLoggerContext currentRuleLogger = WorkflowRuleHistoricalLoggerUtil.getActiveRuleHistoricalLogger(rule.getId());
+		if(currentRuleLogger != null)
+		{
+			throw new Exception("Historical already In-Progress for the Current Rule "+ currentRuleLogger.getRuleId());
 		}
 		
 		List<Long> finalResourceIds = new ArrayList<Long>();
@@ -105,7 +108,9 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 		}	
 		
 		if(finalResourceIds != null && !finalResourceIds.isEmpty()) {
-			
+			JSONObject jobprop = new JSONObject();
+			jobprop.put("startTime", range.getStartTime());
+			jobprop.put("endTime", range.getEndTime());
 			jobprop.put("resourceIds", finalResourceIds);
 			
 			BmsJobUtil.deleteJobWithProps(rule.getId(), "HistoricalRunForReadingRule");
