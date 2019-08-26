@@ -63,7 +63,7 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContextList.get(entry.getKey()).getCategory().getId(),"AnomalyDetectionMLLogReadings",FieldFactory.getMLLogCheckGamFields(),ModuleFactory.getMLLogReadingModule().getTableName());
 		addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContextList.get(entry.getKey()).getCategory().getId(),"AnomalyDetectionMLReadings",FieldFactory.getMLCheckGamFields(),ModuleFactory.getMLReadingModule().getTableName());
 		long ratioCheckMLid = 0L;
-		LOGGER.info("Additional Context "+context.containsKey("ratioHierachy"));
+		LOGGER.info("Additional Context "+context.containsKey("ratioHierarchy"));
 		if(context.containsKey("ratioHierarchy"))
 		{
 			JSONArray ratioHierachy = new JSONArray((String)context.get("ratioHierarchy"));
