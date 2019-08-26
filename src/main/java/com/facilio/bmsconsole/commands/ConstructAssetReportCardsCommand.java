@@ -69,10 +69,10 @@ public class ConstructAssetReportCardsCommand extends FacilioCommand{
 		criteria.addAndCondition(assetCondition);
 		card.put("criteria", criteria);
 		
-		card.put("secondaryName", "overdue");
+		/*card.put("secondaryName", "overdue");
 		Criteria secondaryCriteria = ViewFactory.getAllOverdueWorkOrdersCriteria();
 		secondaryCriteria.addAndCondition(assetCondition);
-		card.put("secondaryCriteria", secondaryCriteria);
+		card.put("secondaryCriteria", secondaryCriteria);*/
 		
 		return card;
 	}
