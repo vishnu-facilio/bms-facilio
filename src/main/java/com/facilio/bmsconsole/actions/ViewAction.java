@@ -5,7 +5,9 @@ import java.util.List;
 import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.ReportsChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ReportInfo;
@@ -159,6 +161,9 @@ public class ViewAction extends FacilioAction {
 	
 	
 	public String v2viewlist() throws Exception{
+		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS) && moduleName.equals("alarm")) {
+			setModuleName(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
+		}
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.GROUP_STATUS, getGroupStatus());
