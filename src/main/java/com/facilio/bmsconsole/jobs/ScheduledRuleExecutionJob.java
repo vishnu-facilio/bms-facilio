@@ -22,7 +22,7 @@ public class ScheduledRuleExecutionJob extends FacilioJob {
 		try {
 			WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(jc.getJobId(), true);
 			
-			if (!rule.isActive()) {
+			if (rule == null || !rule.isActive()) {
 				return;
 			}
 			
