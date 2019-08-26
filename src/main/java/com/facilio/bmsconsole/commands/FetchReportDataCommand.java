@@ -122,12 +122,13 @@ public class FetchReportDataCommand extends FacilioCommand {
 		}
 		List<List<ReportDataPointContext>> groupedDataPoints = groupDataPoints(dataPoints, handleBooleanFields);
 		if (groupedDataPoints != null && !groupedDataPoints.isEmpty()) {
-			for (List<ReportDataPointContext> dataPointList : groupedDataPoints) {
+			for (int i = 0; i < groupedDataPoints.size(); i++) {
+				List<ReportDataPointContext> dataPointList = groupedDataPoints.get(i);
 				if(handleUserScope(dataPointList.get(0))){
 					ReportDataContext data = fetchDataForGroupedDPList(dataPointList, report, sortPoint != null, sortPoint == null ? null : sortedData.getxValues());
 					reportData.add(data);
 				}else{
-					dataPoints.remove(dataPointList.get(0));
+					dataPoints.remove(dataPointList);
 					report.setHasEdit(false);
 				}
 			}
