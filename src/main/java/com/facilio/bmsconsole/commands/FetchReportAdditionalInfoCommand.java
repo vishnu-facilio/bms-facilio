@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.context.ReadingAlarm;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -76,11 +77,17 @@ public class FetchReportAdditionalInfoCommand extends FacilioCommand {
 
 				if (reportData != null && !reportData.isEmpty()) {
 					Long alarmId = null;
-					ReadingAlarmContext currentAlarm = null;
+					Object currentAlarm = null;
 					if (showAlarms || fetchEventBar) {
 						alarmId = (Long) context.get(FacilioConstants.ContextNames.ALARM_ID);
 						if (alarmId != null) {
-							currentAlarm = AlarmAPI.getReadingAlarmContext(alarmId);
+							if (AccountUtil.isFeatureEnabled(FeatureLicense.NEW_ALARMS)) {
+								AlarmOccurrenceContext alarmOccurrence = NewAlarmAPI.getAlarmOccurrence(alarmId);
+								currentAlarm = alarmOccurrence.getAlarm();
+							}
+							else {
+								currentAlarm = AlarmAPI.getReadingAlarmContext(alarmId);
+							}
 						}
 					}
 
@@ -96,34 +103,37 @@ public class FetchReportAdditionalInfoCommand extends FacilioCommand {
 
 					if (showAlarms && !fetchEventBar) {
 						if (AccountUtil.isFeatureEnabled(FeatureLicense.NEW_ALARMS)) {
-							newAlarm(report, showAlarms, fetchEventBar, alarmId, currentAlarm, reportAggrData, context, csvData);
+							newAlarm(report, showAlarms, fetchEventBar, alarmId, (ReadingAlarm) currentAlarm, reportAggrData, context, csvData);
 						}
 						else {
-							oldAlarm(report, showAlarms, fetchEventBar, alarmId, currentAlarm, reportAggrData, context, csvData);
+							oldAlarm(report, showAlarms, fetchEventBar, alarmId, (ReadingAlarmContext) currentAlarm, reportAggrData, context, csvData);
 						}
 					}
 					
 					if(fetchEventBar) {
-						Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(EventFieldFactory.getEventFields());
-						
-						Criteria criteria = new Criteria();
-						criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("subRuleId"), readingRuleId+"", NumberOperators.EQUALS));
-						criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), currentAlarm.getResource().getId()+"", NumberOperators.EQUALS));
-						criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), report.getDateRange().getStartTime()+","+ report.getDateRange().getEndTime(), DateOperators.BETWEEN));
-						
-						List<EventContext> events = EventAPI.getEvent(criteria);
-						
-						if(events != null) {
-							Map<Long,EventContext> eventIdMap = new HashMap<>();
-							Map<Long,EventContext> eventCreationTimeMap = new HashMap<>();
-							
-							for(EventContext event :events) {
-								eventIdMap.put(event.getId(), event);
-								eventCreationTimeMap.put(event.getCreatedTime(), event);
+						if (!AccountUtil.isFeatureEnabled(FeatureLicense.NEW_ALARMS)) {
+							Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(EventFieldFactory.getEventFields());
+
+							ReadingAlarmContext alarm = (ReadingAlarmContext) currentAlarm;
+							Criteria criteria = new Criteria();
+							criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("subRuleId"), readingRuleId + "", NumberOperators.EQUALS));
+							criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("resourceId"), alarm.getResource().getId() + "", NumberOperators.EQUALS));
+							criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), report.getDateRange().getStartTime() + "," + report.getDateRange().getEndTime(), DateOperators.BETWEEN));
+
+							List<EventContext> events = EventAPI.getEvent(criteria);
+
+							if (events != null) {
+								Map<Long, EventContext> eventIdMap = new HashMap<>();
+								Map<Long, EventContext> eventCreationTimeMap = new HashMap<>();
+
+								for (EventContext event : events) {
+									eventIdMap.put(event.getId(), event);
+									eventCreationTimeMap.put(event.getCreatedTime(), event);
+								}
+
+								reportAggrData.put("events", splitEvents(report.getDateRange(), eventCreationTimeMap, events));
+								reportAggrData.put("eventInfo", eventIdMap);
 							}
-							
-							reportAggrData.put("events", splitEvents( report.getDateRange(), eventCreationTimeMap,events));
-							reportAggrData.put("eventInfo", eventIdMap);
 						}
 					}
 				}
@@ -133,7 +143,7 @@ public class FetchReportAdditionalInfoCommand extends FacilioCommand {
 		return false;
 	}
 	
-	private void newAlarm(ReportContext report, boolean showAlarms, boolean fetchEventBar, Long occurrenceId, ReadingAlarmContext currentAlarm, 
+	private void newAlarm(ReportContext report, boolean showAlarms, boolean fetchEventBar, Long occurrenceId, ReadingAlarm currentAlarm,
 			Map<String, Object> reportAggrData, Context context, Collection<Map<String, Object>> csvData) throws Exception {
 		Map<Long, AlarmOccurrenceContext> alarmMap = new HashMap<>();
 		List<AlarmOccurrenceContext> allAlarms = new ArrayList<>();
@@ -168,8 +178,8 @@ public class FetchReportAdditionalInfoCommand extends FacilioCommand {
 		reportAggrData.put("alarms",  splitAlarmOccurrence(allAlarms, report.getDateRange(), alarmMap));
 		for(Long key : alarmMap.keySet()) {
 			AlarmOccurrenceContext alarmOccurrenceContext = alarmMap.get(key);
-			BaseAlarmContext baseAlarm = NewAlarmAPI.getAlarm(alarmOccurrenceContext.getAlarm().getId());
-			alarmOccurrenceContext.setAlarm(baseAlarm);
+//			BaseAlarmContext baseAlarm = NewAlarmAPI.getAlarm(alarmOccurrenceContext.getAlarm().getId());
+			alarmOccurrenceContext.setAlarm(alarmOccurrenceContext.getAlarm());
 			alarmOccurrenceContext.setSubject(alarmOccurrenceContext.getAlarm().getSubject());
 		}
 		reportAggrData.put("alarmInfo", alarmMap);
