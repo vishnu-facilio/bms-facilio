@@ -59,10 +59,11 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		buildGamModel(emContextList,(String) context.get("meterInterval"));
 		
 		Entry<Long, EnergyMeterContext> entry = emContextList.entrySet().iterator().next();
-		System.out.println("testing "+emContextList.get(entry.getKey()).getCategory().getId());
+		LOGGER.info("testing "+emContextList.get(entry.getKey()).getCategory().getId());
 		addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContextList.get(entry.getKey()).getCategory().getId(),"AnomalyDetectionMLLogReadings",FieldFactory.getMLLogCheckGamFields(),ModuleFactory.getMLLogReadingModule().getTableName());
 		addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContextList.get(entry.getKey()).getCategory().getId(),"AnomalyDetectionMLReadings",FieldFactory.getMLCheckGamFields(),ModuleFactory.getMLReadingModule().getTableName());
 		long ratioCheckMLid = 0L;
+		LOGGER.info("Additional Context "+context.containsKey("ratioHierachy"));
 		if(context.containsKey("ratioHierachy"))
 		{
 			JSONArray ratioHierachy = new JSONArray((String)context.get("ratioHierarchy"));
