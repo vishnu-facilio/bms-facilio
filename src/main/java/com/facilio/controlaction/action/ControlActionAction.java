@@ -39,6 +39,12 @@ public class ControlActionAction extends FacilioAction {
 	long controlGroupId = -1l;
 	ControlGroupContext controlGroup;
 	
+	public ControlGroupContext getControlGroup() {
+		return controlGroup;
+	}
+	public void setControlGroup(ControlGroupContext controlGroup) {
+		this.controlGroup = controlGroup;
+	}
 	public long getControlGroupId() {
 		return controlGroupId;
 	}
@@ -119,6 +125,28 @@ public class ControlActionAction extends FacilioAction {
 		
 		setResult(ControlActionUtil.CONTROL_ACTION_CONTROLLABLE_POINTS, constructListContext.get(FacilioConstants.ContextNames.READING_DATA_META_LIST));
 		setResult(FacilioConstants.ContextNames.READING_DATA_META_COUNT, constructListContext.get(FacilioConstants.ContextNames.READING_DATA_META_COUNT));
+		return SUCCESS;
+	}
+	
+	public String getControlGroups() throws Exception {
+		
+		if(getPerPage() < 0) {
+			setPerPage(50);
+		}
+		if(getPage() < 0) {
+			setPage(1);
+		}
+		
+		FacilioContext constructListContext = constructListContext();
+		
+		constructListContext.put(FacilioConstants.ContextNames.MODULE_NAME, ModuleFactory.getControlGroupModule().getName());
+		
+		Chain rdmChain = ReadOnlyChainFactory.fetchControlGroupsChain();
+		
+		rdmChain.execute(constructListContext);
+		
+		setResult(ControlActionUtil.CONTROL_ACTION_GROUP_CONTEXTS, constructListContext.get(ControlActionUtil.CONTROL_ACTION_GROUP_CONTEXTS));
+		setResult(ControlActionUtil.CONTROL_ACTION_GROUP_COUNT, constructListContext.get(ControlActionUtil.CONTROL_ACTION_GROUP_COUNT));
 		return SUCCESS;
 	}
 	

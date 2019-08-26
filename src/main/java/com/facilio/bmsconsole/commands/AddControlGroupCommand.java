@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.controlaction.context.ControlGroupContext;
 import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -21,6 +22,8 @@ public class AddControlGroupCommand extends FacilioCommand {
 		
 		if(controlGroups != null) {
 			for(ControlGroupContext controlGroup :controlGroups) {
+				
+				controlGroup.setOrgId(AccountUtil.getCurrentOrg().getId());
 				
 				Map<String, Object> props = FieldUtil.getAsProperties(controlGroup);
 				

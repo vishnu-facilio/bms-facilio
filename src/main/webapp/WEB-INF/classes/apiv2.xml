@@ -381,6 +381,9 @@
 		<action name="setReadingValue"
 			class="com.facilio.controlaction.action.ControlActionAction" method="setReadingValue"></action>
 			
+		<action name="getControlGroups"
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControlGroups"></action>
+			
 		<action name="getControlActionCommands"
 		class="com.facilio.controlaction.action.ControlActionAction" method="getControlActionCommands"></action>
 		

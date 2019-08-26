@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.controlaction.context.ControlGroupContext;
 import com.facilio.controlaction.context.ControlGroupSpace;
 import com.facilio.controlaction.util.ControlActionUtil;
@@ -35,6 +36,8 @@ public class AddControlGroupSpaceCommand extends FacilioCommand {
 				if(controlGroup.getControlGroupSpaces() != null) {
 					
 					for(ControlGroupSpace spaces : controlGroup.getControlGroupSpaces()) {
+						
+						spaces.setOrgId(AccountUtil.getCurrentOrg().getId());
 						spaces.setControlGroupId(controlGroup.getId());
 						
 						Map<String, Object> props = FieldUtil.getAsProperties(spaces);

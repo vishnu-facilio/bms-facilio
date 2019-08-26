@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.controlaction.context.ControlGroupContext;
 import com.facilio.controlaction.context.ControlGroupInclExclContext;
 import com.facilio.controlaction.context.ControlGroupSpace;
@@ -37,6 +38,8 @@ public class AddControlGroupInclExclCommand extends FacilioCommand {
 				if(controlGroup.getControlGroupInclExclContexts() != null) {
 					
 					for( ControlGroupInclExclContext resources : controlGroup.getControlGroupInclExclContexts()) {
+						
+						resources.setOrgId(AccountUtil.getCurrentOrg().getId());
 						resources.setControlGroupId(controlGroup.getId());
 						
 						Map<String, Object> props = FieldUtil.getAsProperties(resources);

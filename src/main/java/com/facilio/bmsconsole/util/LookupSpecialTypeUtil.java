@@ -52,6 +52,7 @@ public class LookupSpecialTypeUtil {
 				|| FacilioConstants.ContextNames.WORK_ORDER_TEMPLATE.equals(specialType)
 				|| FacilioConstants.ContextNames.FORMULA_FIELD.equals(specialType)
 				|| FacilioConstants.ContextNames.READING_DATA_META.equals(specialType)
+				|| FacilioConstants.ContextNames.CONTROL_GROUP.equals(specialType)
 				|| FacilioConstants.Workflow.WORKFLOW.equals(specialType)
 				|| "trigger".equals(specialType)
 				|| "connectedApps".equals(specialType)
@@ -510,6 +511,9 @@ public class LookupSpecialTypeUtil {
 		else if(FacilioConstants.ContextNames.READING_DATA_META.equals(specialType)) {
 			return ModuleFactory.getReadingDataMetaModule();
 		}
+		else if(FacilioConstants.ContextNames.CONTROL_GROUP.equals(specialType)) {
+			return ModuleFactory.getControlGroupModule();
+		}
 		else if(FacilioConstants.Workflow.WORKFLOW.equals(specialType)) {
 			return ModuleFactory.getWorkflowModule();
 		}
@@ -559,6 +563,9 @@ public class LookupSpecialTypeUtil {
 		}
 		else if(FacilioConstants.ContextNames.READING_DATA_META.equals(specialType)) {
 			return FieldFactory.getReadingDataMetaFields();
+		}
+		else if(FacilioConstants.ContextNames.CONTROL_GROUP.equals(specialType)) {
+			return FieldFactory.getControlGroupFields();
 		}
 		else if(FacilioConstants.Workflow.WORKFLOW.equals(specialType)) {
 			return FieldFactory.getWorkflowFields();

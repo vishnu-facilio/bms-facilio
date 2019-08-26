@@ -2,7 +2,8 @@ package com.facilio.controlaction.context;
 
 import java.util.List;
 
-import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.modules.fields.FacilioField;
 
 public class ControlGroupContext {
 	long id = -1l;
@@ -10,12 +11,26 @@ public class ControlGroupContext {
 	long siteId = -1l;
 	String name;
 	long assetCategoryId = -1l;
+	AssetCategoryContext assetCategoryContext;
 	long fieldId = -1;
+	FacilioField field;
 	List<ControlGroupSpace> controlGroupSpaces;
 	List<ControlGroupInclExclContext> controlGroupInclExclContexts;
 	List<Long> matchedResources;
 	
 	
+	public FacilioField getField() {
+		return field;
+	}
+	public void setField(FacilioField field) {
+		this.field = field;
+	}
+	public AssetCategoryContext getAssetCategoryContext() {
+		return assetCategoryContext;
+	}
+	public void setAssetCategoryContext(AssetCategoryContext assetCategoryContext) {
+		this.assetCategoryContext = assetCategoryContext;
+	}
 	public List<Long> getMatchedResources() {
 		return matchedResources;
 	}

@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
 import com.facilio.bmsconsole.commands.reservation.FetchAttendeesCommand;
+
+import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -1371,6 +1373,14 @@ public class ReadOnlyChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(fetchModuleDataDetailsChain());
 		c.addCommand(new FetchAttendeesCommand());
+		return c;
+	}
+
+	public static Chain fetchControlGroupsChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GenerateCriteriaFromFilterCommand());
+		c.addCommand(new GenerateSearchConditionCommand());
+		c.addCommand(new FetchControlGroupsCommand());
 		return c;
 	}
 }

@@ -49,6 +49,7 @@ public class ControlActionUtil {
 	public static final String CONTROL_ACTION_GROUP_CONTEXT_SPACE = "controlActionGroupSpace";
 	public static final String CONTROL_ACTION_GROUP_CONTEXT_INCL_EXLC = "controlActionGroupInclExcl";
 	public static final String CONTROL_ACTION_GROUP_CONTEXTS = "controlActionGroups";
+	public static final String CONTROL_ACTION_GROUP_COUNT = "controlActionGroupCount";
 	
 	public static List<ControlGroupContext> getControlActionGroups(List<Long> ids) throws Exception {
 		
