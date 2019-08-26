@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.Logger;
 import org.json.JSONArray;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -38,6 +39,7 @@ import com.facilio.tasker.ScheduleInfo.FrequencyType;
 
 public class EnableAnomalyDetectionCommand extends FacilioCommand
 {
+	private static final Logger LOGGER= Logger.getLogger(EnableAnomalyDetectionCommand.class.getName());
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception 
@@ -64,6 +66,7 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		if(context.containsKey("ratioHierachy"))
 		{
 			JSONArray ratioHierachy = new JSONArray((String)context.get("ratioHierarchy"));
+			LOGGER.info("Ratio Hierachy is "+ratioHierachy);
 			ratioCheckMLid = addMultipleRatioCheckModel(emContextList,ratioHierachy);
 		}
 		else
@@ -182,6 +185,7 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		long ratioHierachySize = ratioHierachyList.length(); 
 		for(long i=1;i<ratioHierachySize;i++)
 		{
+			LOGGER.info("Adding ML Model for "+i);
 			mlIDList.add(addMLModel("ratioCheck",logReadingModule.getModuleId(),readingModule.getModuleId()));
 		}
 		
@@ -189,7 +193,7 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		{
 			JSONArray emObject =(JSONArray) ratioHierachyList.get(i);
 			long ml_id = mlIDList.get(i);
-			
+			LOGGER.info("EM Object "+emObject.toString()+"::"+ml_id);
 			for(int j=0;j<emObject.length();j++)
 			{
 				String id = (String) emObject.get(j);
