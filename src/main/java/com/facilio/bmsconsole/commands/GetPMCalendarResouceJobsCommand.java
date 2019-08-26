@@ -5,8 +5,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -34,6 +34,7 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
 
@@ -129,7 +130,7 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 		FacilioField triggerField = woFieldMap.get("trigger");
 		FacilioField resourceField = woFieldMap.get("resource");
 
-
+		// To get the title part bases on asset (left side of the calendar)
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> commonBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 				.module(woModule)
 				.andCondition(CriteriaAPI.getCondition(woFieldMap.get("pm"), CommonOperators.IS_NOT_EMPTY))
@@ -178,6 +179,7 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 			groupBy.append(",").append(frequencyField.getColumnName());
 		}
 		
+		// To get the jobs data
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> groupBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>(commonBuilder)
 				.select(selectFields)
 				.innerJoin(assetTable).on(resourceField.getCompleteColumnName() + "=" + assetTable + ".ID")
@@ -239,6 +241,10 @@ public class GetPMCalendarResouceJobsCommand extends FacilioCommand {
 			selectFields.add(FieldFactory.getIdField(woModule));
 			for(String metric: selectedMetrics) {
 				selectFields.add(woFieldMap.get(metricFieldMap.get(metric)));
+			}
+			List<FacilioField> enumCustomFields = woFields.stream().filter(field -> !field.isDefault() && field instanceof EnumField).collect(Collectors.toList());
+			if (CollectionUtils.isNotEmpty(enumCustomFields)) {
+				selectFields.addAll(enumCustomFields);				
 			}
 			
 			
