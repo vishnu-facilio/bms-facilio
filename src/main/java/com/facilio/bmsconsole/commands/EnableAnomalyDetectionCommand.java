@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
@@ -55,9 +56,10 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 		
 		buildGamModel(emContextList,(String) context.get("meterInterval"));
 		
-		System.out.println("testing "+emContextList.get(0).getCategory().getId());
-		addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContextList.get(0).getCategory().getId(),"AnomalyDetectionMLLogReadings",FieldFactory.getMLLogCheckGamFields(),ModuleFactory.getMLLogReadingModule().getTableName());
-		addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContextList.get(0).getCategory().getId(),"AnomalyDetectionMLReadings",FieldFactory.getMLCheckGamFields(),ModuleFactory.getMLReadingModule().getTableName());
+		Entry<Long, EnergyMeterContext> entry = emContextList.entrySet().iterator().next();
+		System.out.println("testing "+emContextList.get(entry.getKey()).getCategory().getId());
+		addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContextList.get(entry.getKey()).getCategory().getId(),"AnomalyDetectionMLLogReadings",FieldFactory.getMLLogCheckGamFields(),ModuleFactory.getMLLogReadingModule().getTableName());
+		addReading(FacilioConstants.ContextNames.ASSET_CATEGORY,emContextList.get(entry.getKey()).getCategory().getId(),"AnomalyDetectionMLReadings",FieldFactory.getMLCheckGamFields(),ModuleFactory.getMLReadingModule().getTableName());
 		long ratioCheckMLid = 0L;
 		if(context.containsKey("ratioHierachy"))
 		{
@@ -221,8 +223,9 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
 	
 	private long addRatioCheckModel(Hashtable<Long,EnergyMeterContext> emContextList, String TreeHierarchy) throws Exception
 	{
-		addReading(FacilioConstants.ContextNames.ENERGY_METER,emContextList.get(0).getCategory().getId(),"checkRatioMLLogReadings",FieldFactory.getMLLogCheckRatioFields(),ModuleFactory.getMLLogReadingModule().getTableName());
-		addReading(FacilioConstants.ContextNames.ENERGY_METER,emContextList.get(0).getCategory().getId(),"checkRatioMLReadings",FieldFactory.getMLCheckRatioFields(),ModuleFactory.getMLReadingModule().getTableName());
+		Map.Entry<Long,EnergyMeterContext> entry = emContextList.entrySet().iterator().next();
+		addReading(FacilioConstants.ContextNames.ENERGY_METER,emContextList.get(entry.getKey()).getCategory().getId(),"checkRatioMLLogReadings",FieldFactory.getMLLogCheckRatioFields(),ModuleFactory.getMLLogReadingModule().getTableName());
+		addReading(FacilioConstants.ContextNames.ENERGY_METER,emContextList.get(entry.getKey()).getCategory().getId(),"checkRatioMLReadings",FieldFactory.getMLCheckRatioFields(),ModuleFactory.getMLReadingModule().getTableName());
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
