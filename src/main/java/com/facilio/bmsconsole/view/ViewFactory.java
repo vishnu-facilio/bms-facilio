@@ -632,7 +632,7 @@ public class ViewFactory {
 		
 		groupDetails = new HashMap<>();
 		groupDetails.put("name", "fddAlarmsViews");
-		groupDetails.put("displayName", "Fdd Alarms");
+		groupDetails.put("displayName", "FDD Alarms");
 		groupDetails.put("views", fddAlarms);
 		groupVsViews.add(groupDetails);
 		
@@ -648,7 +648,7 @@ public class ViewFactory {
 		
 		groupDetails = new HashMap<>();
 		groupDetails.put("name", "bmsAlarmsViews");
-		groupDetails.put("displayName", "Bms Alarms");
+		groupDetails.put("displayName", "BMS Alarms");
 		groupDetails.put("views", bmsAlarms);
 		groupVsViews.add(groupDetails);
 		

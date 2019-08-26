@@ -481,13 +481,12 @@
 				    sumMttc = 0;
 				    countOfClearedOccurence = 0
 				    	 for each index,occurrence in alarmMonthOccurenceList {
-				           sumMtbt = perivousTriggerTime + occurrence.createdTime
-				           previousClearedTime = occurrence.createdTime ;
+				           sumMtbt = occurrence.createdTime - perivousTriggerTime
+				           perivousTriggerTime = occurrence.createdTime ;
 				           if (occurrence.clearedTime != null) {
 				             countOfClearedOccurence = countOfClearedOccurence + 1;
 				             sumMttc = sumMttc + (occurrence.clearedTime - occurrence.createdTime);
 				           }
-				           
 				         }
 				    mOverAllDuration = sumMttc;
 				     mttc = sumMttc /countOfClearedOccurence;
@@ -499,8 +498,8 @@
 				    sumPmttc = 0;
 				    countOfClearedOccurence = 0
 				    	 for each index,occurrence in alarmOccurenceTillLMonthList {
-				           sumPmtbt = perivousTriggerTime + occurrence.createdTime
-				           previousClearedTime = occurrence.createdTime ;
+				    	 sumPmtbt = occurrence.createdTime - perivousTriggerTime
+				           perivousTriggerTime = occurrence.createdTime ;
 							if (occurrence.clearedTime != null) {
 				             countOfClearedOccurence = countOfClearedOccurence + 1;
 				             sumMttc = sumMttc + (occurrence.clearedTime - occurrence.createdTime);

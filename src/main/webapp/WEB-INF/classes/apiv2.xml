@@ -219,6 +219,16 @@
 			<param name="viewName">{1}</param>
 		</action>
 	</package>
+	<package name="anomalyRCA" namespace="/api/v2/mlAnomalyAlarm" extends="v2Api">
+		<action name="rca"
+			class="com.facilio.bmsconsole.actions.MLAnomalyAction"
+			method="fetchRcaAnomaly">
+		</action>
+		<action name="subMeters"
+			class="com.facilio.bmsconsole.actions.MLAnomalyAction"
+			method="fetchSubMeterHierarchy">
+		</action>
+	</package>
 	
 	<package name="state" namespace="/api/v2/state" extends="v2Api">
 		<action name="list"

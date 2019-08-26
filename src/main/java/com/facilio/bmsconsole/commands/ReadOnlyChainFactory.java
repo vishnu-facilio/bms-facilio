@@ -1384,4 +1384,15 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new FetchControlGroupsCommand());
 		return c;
 	}
+	
+	public static FacilioChain fetchMLSummaryDetailsChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetMLSummmaryDetail());
+		return c;
+	}
+	public static FacilioChain fetchRcaAnomaly() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetMLSummmaryDetail());
+		return c;
+	}
 }
