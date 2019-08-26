@@ -470,6 +470,14 @@ public class ReportContext {
 	public void setTemplate(String template) {
 		this.template = template;
 	}
+	
+	Boolean hasEdit = true;
+	public Boolean getHasEdit() {
+		return hasEdit;
+	}
+	public void setHasEdit(Boolean hasEdit) {
+		this.hasEdit = hasEdit;
+	}
 
 	// called when setting from client
 	public void setUserFilters(List<ReportUserFilterContext> userFilters, boolean updateField) {

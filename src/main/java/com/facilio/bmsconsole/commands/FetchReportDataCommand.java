@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,14 +13,17 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.StringJoiner;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -42,6 +46,7 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
@@ -97,17 +102,17 @@ public class FetchReportDataCommand extends FacilioCommand {
 		List<ReportDataContext> reportData = new ArrayList<>();
 		List<ReportDataPointContext> dataPoints = new ArrayList<>(report.getDataPoints());
 		if(report.getReportTemplate() != null ) {
-		Long reportParentId= report.getReportTemplate().getParentId();
-		if(reportParentId != null) {
-		Map<String, Object> metaData = new HashMap<>();
-		List<Long> parentIds = new ArrayList<>();
-		parentIds.add(reportParentId);
-		metaData.put("parentIds",parentIds);
-		for(ReportDataPointContext dataPoint : dataPoints) {
-			dataPoint.setMetaData(metaData);
-			dataPoint.setName(dataPoint.getyAxis().getLabel());
-		}
-		}
+			Long reportParentId= report.getReportTemplate().getParentId();
+			if(reportParentId != null) {
+			Map<String, Object> metaData = new HashMap<>();
+			List<Long> parentIds = new ArrayList<>();
+			parentIds.add(reportParentId);
+			metaData.put("parentIds",parentIds);
+				for(ReportDataPointContext dataPoint : dataPoints) {
+					dataPoint.setMetaData(metaData);
+					dataPoint.setName(dataPoint.getyAxis().getLabel());
+				}
+			}
 		}
 		ReportDataPointContext sortPoint = getSortPoint(dataPoints);
 		ReportDataContext sortedData = null;
@@ -118,9 +123,15 @@ public class FetchReportDataCommand extends FacilioCommand {
 		List<List<ReportDataPointContext>> groupedDataPoints = groupDataPoints(dataPoints, handleBooleanFields);
 		if (groupedDataPoints != null && !groupedDataPoints.isEmpty()) {
 			for (List<ReportDataPointContext> dataPointList : groupedDataPoints) {
-				ReportDataContext data = fetchDataForGroupedDPList(dataPointList, report, sortPoint != null, sortPoint == null ? null : sortedData.getxValues());
-				reportData.add(data);
+				if(handleUserScope(dataPointList.get(0))){
+					ReportDataContext data = fetchDataForGroupedDPList(dataPointList, report, sortPoint != null, sortPoint == null ? null : sortedData.getxValues());
+					reportData.add(data);
+				}else{
+					dataPoints.remove(dataPointList.get(0));
+					report.setHasEdit(false);
+				}
 			}
+			report.setDataPoints(dataPoints);
 		}
 		
 		if (AccountUtil.getCurrentOrg().getId() == 75 || AccountUtil.getCurrentOrg().getId() == 168) {
@@ -708,5 +719,35 @@ public class FetchReportDataCommand extends FacilioCommand {
 			}
 		}
 	}
+	
+	private boolean handleUserScope(ReportDataPointContext dataPoint) throws Exception{
+		ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = moduleBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+		List<FacilioField> fields = moduleBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		
+		FacilioField idField = FieldFactory.getIdField(module);
+		
+		SelectRecordsBuilder<ResourceContext> builder = new SelectRecordsBuilder<ResourceContext>()
+				.select(Collections.singletonList(idField))
+				.module(module)
+				.beanClass(ResourceContext.class)
+				.andCondition(CriteriaAPI.getIdCondition((Collection<Long>) dataPoint.getMetaData().get("parentIds"), module))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceType"), String.valueOf(ResourceContext.ResourceType.ASSET.getValue()), NumberOperators.EQUALS));
+		
+		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(FacilioConstants.ContextNames.ASSET);
+		if(scopeCriteria != null) {
+			builder.andCriteria(scopeCriteria);
+		}
+		
+		List<Map<String, Object>> assetList = builder.getAsProps();
+		if (assetList != null && !assetList.isEmpty()) {
+			return true;
+		}
+		else{
+			return false;
+		}
+	}
 }
 
+//
