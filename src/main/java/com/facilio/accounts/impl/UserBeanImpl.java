@@ -189,7 +189,7 @@ public class UserBeanImpl implements UserBean {
 
 		user.setOuid((long) props.get("ouid"));
 		if((long)props.get("ouid") > 0) {
-			if( boolean isEmailVerificationNeeded && !user.isUserVerified() && !user.isInviteAcceptStatus()) {
+			if(isEmailVerificationNeeded && !user.isUserVerified() && !user.isInviteAcceptStatus()) {
 				sendInvitation(user, false);
 			}
 		}
