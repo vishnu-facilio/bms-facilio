@@ -354,7 +354,7 @@ public class FacilioAuthAction extends FacilioAction {
 
 			} catch (Exception e) {
 				LOGGER.log(Level.INFO, "Exception while validating password, ", e);
-				setJsonresponse("message", "Error while validating user name and password");
+				setJsonresponse("message", e.getCause());
 				return ERROR;
 			}
 			return SUCCESS;

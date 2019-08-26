@@ -1179,7 +1179,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				}
 				return jwt;
 			}
-			throw new AccountException(ErrorCode.EMAIL_ALREADY_EXISTS, "User is deactivated, Please contact admin to activate.");
+			throw new AccountException(ErrorCode.USER_DEACTIVATED_FROM_THE_ORG, "User is deactivated, Please contact admin to activate.");
 
 		}
 		throw new AccountException(ErrorCode.EMAIL_ALREADY_EXISTS, "Invalid Password");

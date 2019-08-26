@@ -14,7 +14,6 @@ import java.util.Set;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.logging.log4j.util.Strings;
@@ -546,8 +545,7 @@ public class UserBeanImpl implements UserBean {
 
 		Map<String, Object> props = UserUtil.getUserFromPhone(phone);
 		if (props != null && !props.isEmpty()) {
-			User user = createUserFromProps(props, true, true, false);
-			return user;
+			return getAppUser(props, true, true, false);
 		}
 		return null;
 	}
@@ -561,8 +559,7 @@ public class UserBeanImpl implements UserBean {
 		
 		Map<String, Object> props = UserUtil.getUserFromEmailOrPhone(emailOrPhone, portalDomain);
 		if (props != null && !props.isEmpty()) {
-			User user = createUserFromProps(props, true, true, false);
-			return user;
+			return getAppUser(props, true, true, false);
 		}
 
 		return null;
@@ -575,7 +572,7 @@ public class UserBeanImpl implements UserBean {
 		
 		Map<String, Object> props = UserUtil.getUserFromEmailOrPhone(email, org.getDomain());
 		if (props != null && !props.isEmpty()) {
-			return createUserFromProps(props, true, false, true);
+			return getAppUser(props, true, false, true);
 		}
 		return null;
 	}
@@ -748,8 +745,7 @@ public class UserBeanImpl implements UserBean {
 
 		Map<String, Object> props = UserUtil.getUserFromEmailOrPhoneForOrg(email);
 		if (props != null && !props.isEmpty()) {
-			User user = createUserFromProps(props, true, true, false);
-			return user;
+			return getAppUser(props, true, true, false);
 		}
 		return null;
 	}
@@ -1152,6 +1148,20 @@ public class UserBeanImpl implements UserBean {
 		return IAMUserUtil.setDefaultOrg(userId, orgId);
 	}
 
+	private User getAppUser(Map<String, Object> props, boolean fetchRole, boolean fetchSpace, boolean isPortalUser) throws Exception {
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf((long)props.get("uid")), NumberOperators.EQUALS));
+		
+		GenericSelectRecordBuilder selectRecordBuilder = fetchUserSelectBuilder(criteria, (long)props.get("orgId"), null);
+		List<Map<String , Object>> mapList = selectRecordBuilder.get();
+		if(CollectionUtils.isNotEmpty(mapList)) {
+			mapList.get(0).putAll(props);
+			User user = createUserFromProps(mapList.get(0), fetchRole, fetchSpace, isPortalUser);
+			return user;
+		}
+		return null;
+
+	}
 	
 	
 }
