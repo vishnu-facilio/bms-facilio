@@ -12,7 +12,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -52,11 +51,9 @@ public class AddOrUpdateStateFlowCommand extends FacilioCommand {
 			if (stateFlow.getExecutionOrder() == -1) {
 				stateFlow.setExecutionOrder(0);
 			}
-			
-			WorkflowEventContext event = new WorkflowEventContext();
-			event.setActivityType(EventType.CREATE);
-			event.setModuleId(facilioModule.getModuleId());
-			stateFlow.setEvent(event);
+
+			stateFlow.setActivityType(EventType.CREATE);
+			stateFlow.setModuleId(facilioModule.getModuleId());
 			stateFlow.setRuleType(RuleType.STATE_FLOW);
 			stateFlow.setDefaltStateFlow(false);
 			

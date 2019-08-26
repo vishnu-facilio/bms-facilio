@@ -1317,7 +1317,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetV2EventDetailCommand());
 		return c;
 	}
-	
+
 	public static FacilioChain fetchMVWidgetResultChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new FetchMVWidgetResultCommand());
@@ -1384,7 +1384,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new FetchControlGroupsCommand());
 		return c;
 	}
-	
+
 	public static FacilioChain fetchMLSummaryDetailsChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetMLSummmaryDetail());
@@ -1399,6 +1399,12 @@ public class ReadOnlyChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetRelatedAssetCommand());
 		c.addCommand(new FetchAlarmInsightCommand());
+		return c;
+	}
+
+	public static Chain getCustomModuleWorkflowRulesChain() {
+		Chain c = getDefaultChain();
+		c.addCommand(new GetCustomModuleWorkflowRulesCommand());
 		return c;
 	}
 }

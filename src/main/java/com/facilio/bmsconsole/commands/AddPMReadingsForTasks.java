@@ -93,7 +93,7 @@ public class AddPMReadingsForTasks extends FacilioCommand {
 					rule.setReadingFieldId(id);
 					FacilioField f = t.getReadingField();
 					if (f != null) {
-						rule.getEvent().setModuleId(f.getModuleId());
+						rule.setModuleId(f.getModuleId());
 					}
 				});
 			}

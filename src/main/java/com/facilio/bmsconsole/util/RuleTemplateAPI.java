@@ -19,7 +19,6 @@ import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ThresholdType;
-import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.fw.BeanFactory;
@@ -155,78 +154,78 @@ public class RuleTemplateAPI {
 	}
 	@SuppressWarnings("unchecked")
 	public static AlarmRuleContext convertTemplateToRule (JSONObject ruleObj) throws Exception {
-			
-			AssetCategoryContext assetCategory = AssetsAPI.getCategory((String) ruleObj.get("category"));
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule module = modBean.getModule((String) ruleObj.get("moduleName"));
-			
-			AlarmRuleContext alarmRule = new AlarmRuleContext();
-			if (ruleObj.get("preRequsite") != null) {
-				alarmRule.setPreRequsite(convertByRuleType((JSONObject) ruleObj.get("preRequsite")));
-			}
-			else {
-				alarmRule.setPreRequsite(new ReadingRuleContext());
-			}
-			AlarmSeverityContext severity = AlarmAPI.getAlarmSeverity((String) ruleObj.get("severity"));
-			alarmRule.getPreRequsite().setAlarmSeverityId(severity.getId());
-			JSONObject selectionResource = (JSONObject) ruleObj.get("ASSET_SELECTION_CRITERIA");
-			if (!selectionResource.get("includeResource").toString().contains("${includeResource"))  {
-				System.out.println(selectionResource.get("includeResource"));
-				JSONParser parser = new JSONParser();
-				Object obj  = parser.parse((String) selectionResource.get("includeResource"));
-				JSONArray resourceList = (JSONArray) obj;
-				alarmRule.getPreRequsite().setIncludedResources(resourceList);
-			}
-			if (!selectionResource.get("excludeResource").toString().contains("${excludeResource}"))  {
-				alarmRule.getPreRequsite().setExcludedResources((List<Long>) selectionResource.get("excludeResource"));
-			}
-			alarmRule.setAlarmTriggerRule(convertByRuleType((JSONObject) ruleObj.get("alarmCondition")));
-			FacilioModule readingModule = modBean.getModule((String) ruleObj.get("moduleName"));
-			FacilioField readingfield = modBean.getField((String) ruleObj.get("threshold_metric"), readingModule.getName());
-			alarmRule.getAlarmTriggerRule().setReadingFieldId(readingfield.getId());
-			if ((JSONObject) ruleObj.get("alarmClear") != null) {
-				alarmRule.setAlarmClearRule(convertByRuleType((JSONObject) ruleObj.get("preRequsite")));
-			} else {
-				alarmRule.setIsAutoClear(true);
-			}
-			alarmRule.getAlarmTriggerRule().setName("Trigger Name");
-			alarmRule.getPreRequsite().setEvent(new WorkflowEventContext());
-			alarmRule.getPreRequsite().getEvent().setModuleId(module.getModuleId());
-			alarmRule.getPreRequsite().getEvent().setActivityType(EventType.CREATE.getValue());
-			
-			alarmRule.getPreRequsite().setName((String) ruleObj.get("name"));
-			alarmRule.getPreRequsite().setDescription((String) ruleObj.get("description"));
-			alarmRule.getPreRequsite().setAssetCategoryId(assetCategory.getId());
-			
-			ActionContext action = new ActionContext();
-			action.setActionType(ActionType.ADD_ALARM);
-			
-			JSONObject possible = new JSONObject();
-			JSONArray fieldMatcher = new JSONArray();
-			JSONObject content = new JSONObject();
-			content.put("field", "problem");
-			content.put("value", ruleObj.get("problem"));
-			fieldMatcher.add(content);
-			content = new JSONObject();
-			content.put("field", "message");
-			content.put("value", ruleObj.get("name"));
-			fieldMatcher.add(content);
-			content = new JSONObject();
-			content.put("field", "possibleCauses");
-			content.put("value", ruleObj.get("possible_causes"));
-			fieldMatcher.add(content);
-			content = new JSONObject();
-			content.put("field", "severity");
-			content.put("value", ruleObj.get("severity"));
-			fieldMatcher.add(content);
-			content = new JSONObject();
-			content.put("field", "recommendation");
-			content.put("value", ruleObj.get("possible_solution"));
-			fieldMatcher.add(content);
-			content = new JSONObject();
-			possible.put("fieldMatcher", fieldMatcher);
-			action.setTemplateJson(possible);
-			alarmRule.getAlarmTriggerRule().setActions(Collections.singletonList(action));
-			return alarmRule;
+
+		AssetCategoryContext assetCategory = AssetsAPI.getCategory((String) ruleObj.get("category"));
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule((String) ruleObj.get("moduleName"));
+
+		AlarmRuleContext alarmRule = new AlarmRuleContext();
+		if (ruleObj.get("preRequsite") != null) {
+			alarmRule.setPreRequsite(convertByRuleType((JSONObject) ruleObj.get("preRequsite")));
+		}
+		else {
+			alarmRule.setPreRequsite(new ReadingRuleContext());
+		}
+		AlarmSeverityContext severity = AlarmAPI.getAlarmSeverity((String) ruleObj.get("severity"));
+		ReadingRuleContext preRequsite = alarmRule.getPreRequsite();
+		preRequsite.setAlarmSeverityId(severity.getId());
+		JSONObject selectionResource = (JSONObject) ruleObj.get("ASSET_SELECTION_CRITERIA");
+		if (!selectionResource.get("includeResource").toString().contains("${includeResource"))  {
+			System.out.println(selectionResource.get("includeResource"));
+			JSONParser parser = new JSONParser();
+			Object obj  = parser.parse((String) selectionResource.get("includeResource"));
+			JSONArray resourceList = (JSONArray) obj;
+			preRequsite.setIncludedResources(resourceList);
+		}
+		if (!selectionResource.get("excludeResource").toString().contains("${excludeResource}"))  {
+			preRequsite.setExcludedResources((List<Long>) selectionResource.get("excludeResource"));
+		}
+		alarmRule.setAlarmTriggerRule(convertByRuleType((JSONObject) ruleObj.get("alarmCondition")));
+		FacilioModule readingModule = modBean.getModule((String) ruleObj.get("moduleName"));
+		FacilioField readingfield = modBean.getField((String) ruleObj.get("threshold_metric"), readingModule.getName());
+		alarmRule.getAlarmTriggerRule().setReadingFieldId(readingfield.getId());
+		if ((JSONObject) ruleObj.get("alarmClear") != null) {
+			alarmRule.setAlarmClearRule(convertByRuleType((JSONObject) ruleObj.get("preRequsite")));
+		} else {
+			alarmRule.setIsAutoClear(true);
+		}
+		alarmRule.getAlarmTriggerRule().setName("Trigger Name");
+		preRequsite.setModuleId(module.getModuleId());
+		preRequsite.setActivityType(EventType.CREATE.getValue());
+
+		preRequsite.setName((String) ruleObj.get("name"));
+		preRequsite.setDescription((String) ruleObj.get("description"));
+		preRequsite.setAssetCategoryId(assetCategory.getId());
+
+		ActionContext action = new ActionContext();
+		action.setActionType(ActionType.ADD_ALARM);
+
+		JSONObject possible = new JSONObject();
+		JSONArray fieldMatcher = new JSONArray();
+		JSONObject content = new JSONObject();
+		content.put("field", "problem");
+		content.put("value", ruleObj.get("problem"));
+		fieldMatcher.add(content);
+		content = new JSONObject();
+		content.put("field", "message");
+		content.put("value", ruleObj.get("name"));
+		fieldMatcher.add(content);
+		content = new JSONObject();
+		content.put("field", "possibleCauses");
+		content.put("value", ruleObj.get("possible_causes"));
+		fieldMatcher.add(content);
+		content = new JSONObject();
+		content.put("field", "severity");
+		content.put("value", ruleObj.get("severity"));
+		fieldMatcher.add(content);
+		content = new JSONObject();
+		content.put("field", "recommendation");
+		content.put("value", ruleObj.get("possible_solution"));
+		fieldMatcher.add(content);
+		content = new JSONObject();
+		possible.put("fieldMatcher", fieldMatcher);
+		action.setTemplateJson(possible);
+		alarmRule.getAlarmTriggerRule().setActions(Collections.singletonList(action));
+		return alarmRule;
 	}
 }

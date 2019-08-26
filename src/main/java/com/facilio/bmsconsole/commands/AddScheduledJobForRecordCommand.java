@@ -16,8 +16,8 @@ public class AddScheduledJobForRecordCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		WorkflowRuleContext recordRule = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.RECORD);
 		if (recordRule != null) {
-			if (recordRule.getEvent() != null) {
-				if (EventType.SCHEDULED.isPresent(recordRule.getEvent().getActivityType()) && recordRule.getRuleType() == RuleType.RECORD_SPECIFIC_RULE.getIntVal()) {
+			if (recordRule.getActivityTypeEnum() != null) {
+				if (EventType.SCHEDULED.isPresent(recordRule.getActivityType()) && recordRule.getRuleType() == RuleType.RECORD_SPECIFIC_RULE.getIntVal()) {
 					
 					FacilioTimer.deleteJob(recordRule.getId(), FacilioConstants.Job.RECORD_SPECIFIC_RULE_JOB_NAME);
 					SingleRecordRuleAPI.addJob(recordRule);

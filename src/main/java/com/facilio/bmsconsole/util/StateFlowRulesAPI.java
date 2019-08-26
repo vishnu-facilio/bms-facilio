@@ -392,9 +392,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 	}
 	
 	private static List<WorkflowRuleContext> getStateTransitions(FacilioModule stateModule, List<FacilioField> fields, Criteria criteria) throws Exception {
-//		FacilioModule stateRuleModule = ModuleFactory.getStateRuleTransitionModule();
-		fields.addAll(FieldFactory.getWorkflowRuleFields()); 
-		fields.addAll(FieldFactory.getWorkflowEventFields());
+		fields.addAll(FieldFactory.getWorkflowRuleFields());
 		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
 		
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
@@ -407,14 +405,9 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		if (criteria != null && !criteria.isEmpty()) {
 			builder.andCriteria(criteria);
 		}
-		
-		FacilioModule eventModule = ModuleFactory.getWorkflowEventModule();
-		builder.innerJoin(eventModule.getTableName())
-					.on(module.getTableName()+".EVENT_ID = "+eventModule.getTableName()+".ID");
-		
 
 		List<Map<String, Object>> list = builder.get();
-		List<WorkflowRuleContext> stateFlows = getWorkFlowsFromMapList(list, true, true, true);
+		List<WorkflowRuleContext> stateFlows = getWorkFlowsFromMapList(list, true, true);
 		return stateFlows;
 	}
 	
@@ -598,7 +591,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 				.andCondition(CriteriaAPI.getCondition("MODULEID", "moduleId", String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
 				.orderBy("EXECUTION_ORDER");
 		List<Map<String, Object>> list = builder.get();
-		List<WorkflowRuleContext> stateFlowList = WorkflowRuleAPI.getWorkFlowsFromMapList(list, false, true, true);
+		List<WorkflowRuleContext> stateFlowList = WorkflowRuleAPI.getWorkFlowsFromMapList(list, true, true);
 		return stateFlowList;
 	}
 

@@ -763,15 +763,12 @@ public enum ActionType {
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
 								  Object currentRecord) throws Exception {
 			// TODO Auto-generated method stub
-			if (currentRule.getEvent() == null) {
-				currentRule.setEvent(WorkflowRuleAPI.getWorkflowEvent(currentRule.getEventId()));
-			}
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			WorkflowEventContext event = currentRule.getEvent();
+//			WorkflowEventContext event = currentRule.getEvent();
 			List<FacilioField> fields = new ArrayList<>();
 			long currentTime = System.currentTimeMillis();
 			for (Object key : obj.keySet()) {
-				FacilioField field = modBean.getField((String) key, event.getModule().getName());
+				FacilioField field = modBean.getField((String) key, currentRule.getModule().getName());
 				if (field != null) {
 					Object val = obj.get(key);
 					if (val != null) {
@@ -807,8 +804,8 @@ public enum ActionType {
 
 			UpdateRecordBuilder<ModuleBaseWithCustomFields> updateBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
 					.fields(fields)
-					.module(event.getModule())
-					.andCondition(CriteriaAPI.getIdCondition(((ModuleBaseWithCustomFields) currentRecord).getId(), event.getModule()))
+					.module(currentRule.getModule())
+					.andCondition(CriteriaAPI.getIdCondition(((ModuleBaseWithCustomFields) currentRecord).getId(), currentRule.getModule()))
 					;
 			updateBuilder.updateViaMap(obj);
 
@@ -872,12 +869,12 @@ public enum ActionType {
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception {
 			// TODO Auto-generated method stub
-			if (currentRule.getEvent() == null) {
-				currentRule.setEvent(WorkflowRuleAPI.getWorkflowEvent(currentRule.getEventId()));
-			}
+//			if (currentRule.getEvent() == null) {
+//				currentRule.setEvent(WorkflowRuleAPI.getWorkflowEvent(currentRule.getEventId()));
+//			}
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			WorkflowEventContext event = currentRule.getEvent();
-			FacilioModule module = event.getModule();
+//			WorkflowEventContext event = currentRule.getEvent();
+			FacilioModule module = currentRule.getModule();
 
 			if (AccountUtil.getCurrentOrg().getId() == 186) {
 				LOGGER.info("Template JSON in FOrmula Field Change : "+obj.toJSONString());
@@ -947,11 +944,11 @@ public enum ActionType {
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception {
 			// TODO Auto-generated method stub
-			if (currentRule.getEvent() == null) {
-				currentRule.setEvent(WorkflowRuleAPI.getWorkflowEvent(currentRule.getEventId()));
-			}
+//			if (currentRule.getEvent() == null) {
+//				currentRule.setEvent(WorkflowRuleAPI.getWorkflowEvent(currentRule.getEventId()));
+//			}
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			WorkflowEventContext event = currentRule.getEvent();
+//			WorkflowEventContext event = currentRule.getEvent();
 			List<FacilioField> fields = new ArrayList<>();
 			Map<String, Object> props = new HashMap<String, Object>();
 
@@ -971,7 +968,7 @@ public enum ActionType {
 
 			JSONArray fieldsJsonArray = (JSONArray) obj.get("fields");
 			for (Object key : fieldsJsonArray) {
-				FacilioField field = modBean.getField((String) key, event.getModule().getName());
+				FacilioField field = modBean.getField((String) key, currentRule.getModule().getName());
 				if (field != null) {
 
 					fields.add(field);
@@ -1008,8 +1005,8 @@ public enum ActionType {
 
 			UpdateRecordBuilder<ModuleBaseWithCustomFields> updateBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
 					.fields(fields)
-					.module(event.getModule())
-					.andCondition(CriteriaAPI.getIdCondition(((ModuleBaseWithCustomFields) currentRecord).getId(), event.getModule()))
+					.module(currentRule.getModule())
+					.andCondition(CriteriaAPI.getIdCondition(((ModuleBaseWithCustomFields) currentRecord).getId(), currentRule.getModule()))
 					;
 			updateBuilder.updateViaMap(props);
 		}

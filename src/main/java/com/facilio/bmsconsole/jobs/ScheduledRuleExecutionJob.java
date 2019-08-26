@@ -20,7 +20,7 @@ public class ScheduledRuleExecutionJob extends FacilioJob {
 	public void execute(JobContext jc) {
 		// TODO Auto-generated method stub
 		try {
-			WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(jc.getJobId(), true);
+			WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(jc.getJobId());
 			
 			if (rule == null || !rule.isActive()) {
 				return;

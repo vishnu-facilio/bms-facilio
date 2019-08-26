@@ -7,9 +7,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -175,20 +179,78 @@ public class WorkflowRuleContext implements Serializable {
 		this.description = description;
 	}
 	
-	private long eventId = -1;
-	public long getEventId() {
-		return eventId;
+//	private long eventId = -1;
+//	public long getEventId() {
+//		return eventId;
+//	}
+//	public void setEventId(long eventId) {
+//		this.eventId = eventId;
+//	}
+//
+//	private WorkflowEventContext event;
+//	public WorkflowEventContext getEvent() {
+//		return event;
+//	}
+//	public void setEvent(WorkflowEventContext event) {
+//		this.event = event;
+//	}
+
+	private long moduleId = -1;
+	public long getModuleId() throws Exception {
+		if(moduleId == -1 && getModule() != null) {
+			moduleId = module.getModuleId();
+		}
+		return moduleId;
 	}
-	public void setEventId(long eventId) {
-		this.eventId = eventId;
+	public void setModuleId(long moduleId) {
+		this.moduleId = moduleId;
 	}
-	
-	private WorkflowEventContext event;
-	public WorkflowEventContext getEvent() {
-		return event;
+
+	private String moduleName;
+	public String getModuleName() throws Exception {
+		if(StringUtils.isEmpty(moduleName) && getModule() != null) {
+			moduleName = module.getName();
+		}
+		return moduleName;
 	}
-	public void setEvent(WorkflowEventContext event) {
-		this.event = event;
+	public void setModuleName(String moduleName) {
+		this.moduleName = moduleName;
+	}
+
+	private FacilioModule module;
+	public FacilioModule getModule() throws Exception {
+		if(module == null) {
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			if(moduleId > 0) {
+				return modBean.getModule(moduleId);
+			}
+			else if(moduleName != null) {
+				return modBean.getModule(moduleName);
+			}
+			return null;
+		}
+		return module;
+	}
+	public void setModule(FacilioModule module) {
+		this.module = module;
+	}
+
+	private int activity = -1;
+	public int getActivityType() {
+		return activity;
+	}
+	public void setActivityType(int activityType) {
+		this.activity = activityType;
+		this.activityType = EventType.valueOf(activityType);
+	}
+
+	private EventType activityType;
+	public void setActivityType(EventType activityType) {
+		this.activity = activityType.getValue();
+		this.activityType = activityType;
+	}
+	public EventType getActivityTypeEnum() {
+		return activityType;
 	}
 
 	private long criteriaId = -1;
@@ -486,7 +548,7 @@ public class WorkflowRuleContext implements Serializable {
 		RECORD_SPECIFIC_RULE, //34
 		CONTROL_ACTION_READING_ALARM_RULE,
 		CONTROL_ACTION_SCHEDULED_RULE,
-
+		CUSTOM_MODULE_RULE, // 37
 		;
 		//Always add at the end
 		

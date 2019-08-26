@@ -2,12 +2,10 @@ package com.facilio.bmsconsole.commands;
 
 import com.facilio.modules.FacilioModule;
 import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
@@ -39,10 +37,8 @@ public class ConstructStateFlowTransitionCommand extends FacilioCommand {
 //			fields.add(fieldChange);
 //			stateFlowRuleContext.setFields(fields);
 			
-			WorkflowEventContext event = new WorkflowEventContext();
-			event.setActivityType(EventType.STATE_TRANSITION);
-			event.setModuleName(module.getName());
-			stateFlowRuleContext.setEvent(event);
+			stateFlowRuleContext.setActivityType(EventType.STATE_TRANSITION);
+			stateFlowRuleContext.setModuleName(module.getName());
 		}
 		return false;
 	}

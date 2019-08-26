@@ -19,8 +19,8 @@ public class ExecuteJobChainCommand extends FacilioCommand{
 		String jobName = (String)context.get(FacilioConstants.ContextNames.JOB_NAME);
 		JobContext jc = JobStore.getJob(jobId, jobName);
 		if(jobName.equals("ScheduledRuleExecution")) {
-			WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(jc.getJobId(), true);
-			
+			WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(jc.getJobId());
+
 			if (!rule.isActive()) {
 				return false;
 			}

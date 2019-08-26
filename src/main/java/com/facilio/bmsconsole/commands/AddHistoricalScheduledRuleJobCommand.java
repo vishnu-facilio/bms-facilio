@@ -23,8 +23,8 @@ public class AddHistoricalScheduledRuleJobCommand extends FacilioCommand {
 			throw new IllegalArgumentException("In sufficient params for running Scheduled Rules for historical data");
 		}
 		
-		WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(id, true);
-		if (rule == null || rule.getEvent().getActivityTypeEnum() !=  EventType.SCHEDULED_READING_RULE) {
+		WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(id);
+		if (rule == null || rule.getActivityTypeEnum() !=  EventType.SCHEDULED_READING_RULE) {
 			throw new IllegalArgumentException("Invalid Scheduled rule id for running through historical data");
 		}
 		

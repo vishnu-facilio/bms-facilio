@@ -38,7 +38,7 @@ public class GetRulesForStoreCommand extends FacilioCommand{
 		if(CollectionUtils.isNotEmpty(result)){
 		 for(Map<String,Object> map : result) {
 			 Long ruleId = (Long)map.get("workflowRuleId");
-			 WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(ruleId, true);
+			 WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(ruleId);
 			 List<ActionContext> actions = ActionAPI.getAllActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), rule.getId());
 			 rule.setActions(actions);
 			 workFlowRuleList.add(rule);

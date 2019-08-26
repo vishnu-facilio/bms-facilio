@@ -34,7 +34,6 @@ import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -165,16 +164,16 @@ public class TemplateAction  extends FacilioAction {
 			AlarmRuleContext alarmRule = new AlarmRuleContext();
 			alarmRule.setPreRequsite(new ReadingRuleContext());
 			alarmRule.setAlarmTriggerRule(new ReadingRuleContext());
-			alarmRule.getPreRequsite().setName((String) obj.get("name"));
-			alarmRule.getPreRequsite().setDescription((String) obj.get("description"));
-			alarmRule.getPreRequsite().setAssetCategoryId(assetCategory.getId());
+			ReadingRuleContext preRequsiteRule = alarmRule.getPreRequsite();
+			preRequsiteRule.setName((String) obj.get("name"));
+			preRequsiteRule.setDescription((String) obj.get("description"));
+			preRequsiteRule.setAssetCategoryId(assetCategory.getId());
 			
 			FacilioField field = modBean.getField((String) obj.get("threshold_metric"), module.getName());
 			
 			alarmRule.getAlarmTriggerRule().setReadingFieldId(field.getFieldId());
-			alarmRule.getPreRequsite().setEvent(new WorkflowEventContext());
-			alarmRule.getPreRequsite().getEvent().setModuleId(module.getModuleId());
-			alarmRule.getPreRequsite().getEvent().setActivityType(EventType.CREATE.getValue());
+			preRequsiteRule.setModuleId(module.getModuleId());
+			preRequsiteRule.setActivityType(EventType.CREATE.getValue());
 			alarmRule.setIsAutoClear(true);
 			for (String key : ruleskeys) {
 				JSONObject rule = (JSONObject) rulesObj.get(key);
@@ -183,11 +182,11 @@ public class TemplateAction  extends FacilioAction {
 				long thresholdType = (long) rule.get("thresholdType");
 				List<WorkflowContext> list = mapper.readValue(JSONArray.toJSONString(fieldJsons), mapper.getTypeFactory().constructCollectionType(List.class, WorkflowContext.class));
 				if (((String)rule.get("action")).equals("PreRequsite")) {
-					alarmRule.getPreRequsite().setWorkflow(list.get(0));
+					preRequsiteRule.setWorkflow(list.get(0));
 					FacilioModule preModule = modBean.getModule((String) rule.get("moduleName"));
 					FacilioField preRequesitefield = modBean.getField((String) rule.get("threshold_metric"), preModule.getName());
-					alarmRule.getPreRequsite().setThresholdType((int) thresholdType);
-					alarmRule.getPreRequsite().setReadingFieldId(preRequesitefield.getId());
+					preRequsiteRule.setThresholdType((int) thresholdType);
+					preRequsiteRule.setReadingFieldId(preRequesitefield.getId());
 				} else if (((String)rule.get("action")).equals("TRIGGER_ALARM")) {
 					alarmRule.getAlarmTriggerRule().setName("TRIGGER_ALARM");
 					alarmRule.getAlarmTriggerRule().setWorkflow(list.get(0));

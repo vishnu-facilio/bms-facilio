@@ -28,7 +28,6 @@ import com.facilio.bmsconsole.workflow.rule.ReadingAlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.StateFlowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
@@ -149,15 +148,13 @@ public class WorkflowRuleAPI {
 				break;
 		}
 		
-		if (rule.getEvent() != null) {
-			if (EventType.FIELD_CHANGE.isPresent(rule.getEvent().getActivityType())) {
-				addFieldChangeFields(rule);
-			}
-			else if (EventType.SCHEDULED.isPresent(rule.getEvent().getActivityType()) && rule.getRuleType() != RuleType.RECORD_SPECIFIC_RULE.getIntVal()) {
-				ScheduledRuleAPI.addScheduledRuleJob(rule);
-			}
+		if (EventType.FIELD_CHANGE.isPresent(rule.getActivityType())) {
+			addFieldChangeFields(rule);
 		}
-		
+		else if (EventType.SCHEDULED.isPresent(rule.getActivityType()) && rule.getRuleType() != RuleType.RECORD_SPECIFIC_RULE.getIntVal()) {
+			ScheduledRuleAPI.addScheduledRuleJob(rule);
+		}
+
 		return rule.getId();
 	}
 	
@@ -183,14 +180,14 @@ public class WorkflowRuleAPI {
 		if (rule.getRuleTypeEnum() == null) {
 			throw new IllegalArgumentException("Rule Type cannot be null during addition for Workflow");
 		}
-		if (rule.getEventId() == -1 && !rule.getRuleTypeEnum().isChildType()) {
+		if ((rule.getActivityType() == -1 || rule.getModule() == null) && !rule.getRuleTypeEnum().isChildType()) {
 			throw new IllegalArgumentException("Event ID cannot be null during addition for Workflow");
 		}
 		
-		if (rule.getEvent() != null && rule.getRuleType() != RuleType.RECORD_SPECIFIC_RULE.getIntVal() && EventType.SCHEDULED.isPresent(rule.getEvent().getActivityType())) {
+		if ((rule.getActivityType() != -1 && rule.getModule() != null) && rule.getRuleType() != RuleType.RECORD_SPECIFIC_RULE.getIntVal() && EventType.SCHEDULED.isPresent(rule.getActivityType())) {
 			ScheduledRuleAPI.validateScheduledRule(rule, false);
 		}
-		if(rule.getEvent() != null && rule.getRuleType() == RuleType.RECORD_SPECIFIC_RULE.getIntVal() && EventType.SCHEDULED.isPresent(rule.getEvent().getActivityType())) {
+		if((rule.getActivityType() != -1 && rule.getModule() != null) && rule.getRuleType() == RuleType.RECORD_SPECIFIC_RULE.getIntVal() && EventType.SCHEDULED.isPresent(rule.getActivityType())) {
 			SingleRecordRuleAPI.validateRecordSpecificScheduledRule(rule, false);
 		}
 	}
@@ -214,67 +211,67 @@ public class WorkflowRuleAPI {
 			workflowRuleContext.setWorkflowId(workflowId);
 		}
 		
-		if(workflowRuleContext.getEventId() == -1 && workflowRuleContext.getEvent() != null) {
-			workflowRuleContext.setEventId(addOrGetWorkflowEvent(workflowRuleContext.getEvent()));
-		}
+//		if(workflowRuleContext.getEventId() == -1 && workflowRuleContext.getEvent() != null) {
+//			workflowRuleContext.setEventId(addOrGetWorkflowEvent(workflowRuleContext.getEvent()));
+//		}
 	}
 	
-	public static final WorkflowEventContext getWorkFlowEvent(EventType type, long moduleId) throws Exception {
-		FacilioModule module = ModuleFactory.getWorkflowEventModule();
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-														.select(FieldFactory.getWorkflowEventFields())
-														.table(module.getTableName())
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-														.andCustomWhere("MODULEID = ? AND ACTIVITY_TYPE = ?", moduleId, type.getValue());
-		
-		List<Map<String, Object>> eventProps = selectBuilder.get();
-		if (eventProps != null && !eventProps.isEmpty()) {
-			return FieldUtil.getAsBeanFromMap(eventProps.get(0), WorkflowEventContext.class);
-		}
-		return null;
-	}
-	
-	public static final long addOrGetWorkflowEvent(WorkflowEventContext event) throws Exception {
-		if(event.getActivityTypeEnum() == null) {
-			throw new IllegalArgumentException("Activity type cannot be null during addition of Workflow Event");
-		}
-		if(event.getModuleId() == -1 && event.getModuleName() != null && !event.getModuleName().isEmpty()) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			FacilioModule module = modBean.getModule(event.getModuleName());
-			event.setModuleId(module.getModuleId());
-		}
-		
-		if(event.getModuleId() == -1 && event.getModule() != null) {
-			event.setModuleId(event.getModule().getModuleId());
-		}
-		
-		if(event.getModuleId() == -1) {
-			throw new IllegalArgumentException("Module cannot be null while adding Workflow event");
-		}
-		
-		WorkflowEventContext existingEvent = getWorkFlowEvent(event.getActivityTypeEnum(), event.getModuleId());
-		if (existingEvent != null) {
-			return existingEvent.getId();
-		}
-		event.setOrgId(AccountUtil.getCurrentOrg().getId());
-		FacilioModule module = ModuleFactory.getWorkflowEventModule();
-		Map<String, Object> eventProps = FieldUtil.getAsProperties(event);
-		GenericInsertRecordBuilder eventBuilder = new GenericInsertRecordBuilder()
-														.fields(FieldFactory.getWorkflowEventFields())
-														.table(module.getTableName())
-														.addRecord(eventProps);
-		
-		eventBuilder.save();
-		return (long) eventProps.get("id");
-	}
+//	public static final WorkflowEventContext getWorkFlowEvent(EventType type, long moduleId) throws Exception {
+//		FacilioModule module = ModuleFactory.getWorkflowEventModule();
+//		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+//														.select(FieldFactory.getWorkflowEventFields())
+//														.table(module.getTableName())
+////														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//														.andCustomWhere("MODULEID = ? AND ACTIVITY_TYPE = ?", moduleId, type.getValue());
+//
+//		List<Map<String, Object>> eventProps = selectBuilder.get();
+//		if (eventProps != null && !eventProps.isEmpty()) {
+//			return FieldUtil.getAsBeanFromMap(eventProps.get(0), WorkflowEventContext.class);
+//		}
+//		return null;
+//	}
+
+//	public static final long addOrGetWorkflowEvent(WorkflowEventContext event) throws Exception {
+//		if(event.getActivityTypeEnum() == null) {
+//			throw new IllegalArgumentException("Activity type cannot be null during addition of Workflow Event");
+//		}
+//		if(event.getModuleId() == -1 && event.getModuleName() != null && !event.getModuleName().isEmpty()) {
+//			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+//			FacilioModule module = modBean.getModule(event.getModuleName());
+//			event.setModuleId(module.getModuleId());
+//		}
+//
+//		if(event.getModuleId() == -1 && event.getModule() != null) {
+//			event.setModuleId(event.getModule().getModuleId());
+//		}
+//
+//		if(event.getModuleId() == -1) {
+//			throw new IllegalArgumentException("Module cannot be null while adding Workflow event");
+//		}
+//
+//		WorkflowEventContext existingEvent = getWorkFlowEvent(event.getActivityTypeEnum(), event.getModuleId());
+//		if (existingEvent != null) {
+//			return existingEvent.getId();
+//		}
+//		event.setOrgId(AccountUtil.getCurrentOrg().getId());
+//		FacilioModule module = ModuleFactory.getWorkflowEventModule();
+//		Map<String, Object> eventProps = FieldUtil.getAsProperties(event);
+//		GenericInsertRecordBuilder eventBuilder = new GenericInsertRecordBuilder()
+//														.fields(FieldFactory.getWorkflowEventFields())
+//														.table(module.getTableName())
+//														.addRecord(eventProps);
+//
+//		eventBuilder.save();
+//		return (long) eventProps.get("id");
+//	}
 	
 	public static WorkflowRuleContext updateWorkflowRuleWithChildren(WorkflowRuleContext rule) throws Exception {
-		WorkflowRuleContext oldRule = getWorkflowRule(rule.getId(), true);
+		WorkflowRuleContext oldRule = getWorkflowRule(rule.getId());
 		updateWorkflowRuleChildIds(rule);
 		updateWorkflowRule(rule);
 		deleteChildIdsForWorkflow(oldRule, rule);
 		
-		if(EventType.SCHEDULED.isPresent(oldRule.getEvent().getActivityType()) && rule.getRuleTypeEnum() != RuleType.RECORD_SPECIFIC_RULE) {
+		if(EventType.SCHEDULED.isPresent(oldRule.getActivityType()) && rule.getRuleTypeEnum() != RuleType.RECORD_SPECIFIC_RULE) {
 			if (rule.getTimeObj() != null) {
 				ScheduledRuleAPI.validateScheduledRule(rule, true);
 				ScheduledRuleAPI.updateScheduledRuleJob(rule);
@@ -328,14 +325,10 @@ public class WorkflowRuleAPI {
 	}
 	
 	public static WorkflowRuleContext getWorkflowRule (long ruleId) throws Exception {
-		return getWorkflowRule(ruleId, false);
+		return getWorkflowRule(ruleId, true, true);
 	}
 	
-	public static WorkflowRuleContext getWorkflowRule (long ruleId, boolean fetchEvent) throws Exception {
-		return getWorkflowRule(ruleId, fetchEvent, true, true);
-	}
-	
-	public static WorkflowRuleContext getWorkflowRule (long ruleId, boolean fetchEvent, boolean fetchChildren, boolean fetchExtended) throws Exception {
+	public static WorkflowRuleContext getWorkflowRule (long ruleId, boolean fetchChildren, boolean fetchExtended) throws Exception {
 		if (ruleId <= 0) {
 			return null;
 		}
@@ -344,24 +337,17 @@ public class WorkflowRuleAPI {
 		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 													.table(module.getTableName())
-//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCondition(CriteriaAPI.getIdCondition(ruleId, module));
-		
-		if (fetchEvent) {
-			fields.addAll(FieldFactory.getWorkflowEventFields());
-			FacilioModule eventModule = ModuleFactory.getWorkflowEventModule();
-			ruleBuilder.innerJoin(eventModule.getTableName())
-						.on(module.getTableName()+".EVENT_ID = "+eventModule.getTableName()+".ID");
-		}
+
 		ruleBuilder.select(fields);
-		List<WorkflowRuleContext> rules = getWorkFlowsFromMapList(ruleBuilder.get(), fetchEvent, fetchChildren, fetchExtended);
+		List<WorkflowRuleContext> rules = getWorkFlowsFromMapList(ruleBuilder.get(), fetchChildren, fetchExtended);
 		if(rules != null && !rules.isEmpty()) {
 			return rules.get(0);
 		}
 		return null;
 	}
 	
-	public static List<WorkflowRuleContext> getAllWorkflowRuleContextOfType (WorkflowRuleContext.RuleType ruleType,boolean fetchEvent,boolean fetchAction,boolean fetchActiveRulesOnly) throws Exception {
+	public static List<WorkflowRuleContext> getAllWorkflowRuleContextOfType (WorkflowRuleContext.RuleType ruleType,boolean fetchAction,boolean fetchActiveRulesOnly) throws Exception {
 		
 		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -369,22 +355,14 @@ public class WorkflowRuleAPI {
 		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 													.table(module.getTableName())
-//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCondition(CriteriaAPI.getCondition("RULE_TYPE", "ruleType", ruleType.getIntVal()+"", StringOperators.IS));
 		
 		if(fetchActiveRulesOnly) {
 			ruleBuilder.andCondition(CriteriaAPI.getCondition("STATUS", "status", 1+"", StringOperators.IS));
 		}
-		
-		if (fetchEvent) {
-			fields.addAll(FieldFactory.getWorkflowEventFields());
-			FacilioModule eventModule = ModuleFactory.getWorkflowEventModule();
-			ruleBuilder.innerJoin(eventModule.getTableName())
-						.on(module.getTableName()+".EVENT_ID = "+eventModule.getTableName()+".ID");
-		}
-		
+
 		ruleBuilder.select(fields);
-		List<WorkflowRuleContext> rules = getWorkFlowsFromMapList(ruleBuilder.get(), fetchEvent, true, true);
+		List<WorkflowRuleContext> rules = getWorkFlowsFromMapList(ruleBuilder.get(), true, true);
 		
 		if(fetchAction && rules != null) {
 			for(WorkflowRuleContext rule :rules) {
@@ -411,37 +389,22 @@ public class WorkflowRuleAPI {
 		//to fetch the rules without parent id
 		ruleBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), CommonOperators.IS_EMPTY));
 
-		return getWorkFlowsFromMapList(ruleBuilder.get(), false, true, true);
+		return getWorkFlowsFromMapList(ruleBuilder.get(), true, true);
 	}
-
-	public static List<WorkflowRuleContext> getWorkflowRules(List<Long> ids, boolean fetchEvent, boolean fetchChildren, boolean fetchExtended) throws Exception {
+	
+	public static List<WorkflowRuleContext> getWorkflowRules(List<Long> ids) throws Exception {
 		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
 		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 				.table("Workflow_Rule")
 				.select(fields)
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getIdCondition(ids, module))
 				;
-		if (fetchEvent) {
-			fields.addAll(FieldFactory.getWorkflowEventFields());
-			FacilioModule eventModule = ModuleFactory.getWorkflowEventModule();
-			ruleBuilder.innerJoin(eventModule.getTableName())
-					.on(module.getTableName()+".EVENT_ID = "+eventModule.getTableName()+".ID");
-		}
 
-		return getWorkFlowsFromMapList(ruleBuilder.get(), fetchEvent, fetchChildren, fetchExtended);
+		return getWorkFlowsFromMapList(ruleBuilder.get(), true, true);
 	}
-	
-	public static List<WorkflowRuleContext> getWorkflowRules(List<Long> ids, boolean fetchEvent) throws Exception {
-		return getWorkflowRules(ids, fetchEvent, true, true);
-	}
-	
-	public static List<WorkflowRuleContext> getWorkflowRules(List<Long> ids) throws Exception {
-		return getWorkflowRules(ids, false);
-	}
-	
-	public static Map<Long, WorkflowRuleContext> getWorkflowRulesAsMap (List<Long> ids, boolean fetchEvent, boolean fetchChildren, boolean fetchExtended) throws Exception {
+
+	public static Map<Long, WorkflowRuleContext> getWorkflowRulesAsMap (List<Long> ids, boolean fetchChildren, boolean fetchExtended) throws Exception {
 		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 				.table("Workflow_Rule")
@@ -449,7 +412,7 @@ public class WorkflowRuleAPI {
 //				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getIdCondition(ids, module))
 				;
-		List<WorkflowRuleContext> rules = getWorkFlowsFromMapList(ruleBuilder.get(), fetchEvent, fetchChildren, fetchExtended);
+		List<WorkflowRuleContext> rules = getWorkFlowsFromMapList(ruleBuilder.get(), fetchChildren, fetchExtended);
 		if (rules != null && !rules.isEmpty()) {
 			return rules.stream()
 						.collect(Collectors.toMap(WorkflowRuleContext::getId, Function.identity()))
@@ -458,80 +421,69 @@ public class WorkflowRuleAPI {
 		return null;
 	}
 	
-	public static List<WorkflowEventContext> getWorkflowEvents(long orgId, long moduleId) throws Exception {
-		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getWorkflowEventFields())
-				.table("Workflow_Event")
-				.andCustomWhere("Workflow_Event.ORGID = ? AND Workflow_Event.MODULEID = ?", orgId, moduleId);
-		return getWorkFlowEventsFromMapList(ruleBuilder.get());
-	}
-	
-	public static WorkflowEventContext getWorkflowEvent(long id) throws Exception {
-		FacilioModule module = ModuleFactory.getWorkflowEventModule();
-		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getWorkflowEventFields())
-				.table(module.getTableName())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCondition(CriteriaAPI.getIdCondition(id, module))
-				;
-		
-		List<WorkflowEventContext> events = getWorkFlowEventsFromMapList(ruleBuilder.get());
-		if (events != null && !events.isEmpty()) {
-			return events.get(0);
-		}
-		return null;
-	}
+//	public static WorkflowEventContext getWorkflowEvent(long id) throws Exception {
+//		FacilioModule module = ModuleFactory.getWorkflowEventModule();
+//		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
+//				.select(FieldFactory.getWorkflowEventFields())
+//				.table(module.getTableName())
+////				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
+//				.andCondition(CriteriaAPI.getIdCondition(id, module))
+//				;
+//
+//		List<WorkflowEventContext> events = getWorkFlowEventsFromMapList(ruleBuilder.get());
+//		if (events != null && !events.isEmpty()) {
+//			return events.get(0);
+//		}
+//		return null;
+//	}
 	
 	public static List<WorkflowRuleContext> getWorkflowRules(long moduleId) throws Exception {
 		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getWorkflowRuleFields())
 				.table("Workflow_Rule")
-				.innerJoin("Workflow_Event")
-				.on("Workflow_Rule.EVENT_ID = Workflow_Event.ID")
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-				.andCustomWhere("Workflow_Event.MODULEID = ?", moduleId);
-		return getWorkFlowsFromMapList(ruleBuilder.get(), false, true, true);
+				.andCustomWhere("Workflow_Rule.MODULEID = ?", moduleId);
+		return getWorkFlowsFromMapList(ruleBuilder.get(), true, true);
 	}
 	
-	public static List<WorkflowRuleContext> getWorkflowRulesOfType(RuleType type, boolean fetchEvent, boolean fetchChildren) throws Exception{
+	public static List<WorkflowRuleContext> getWorkflowRulesOfType(RuleType type, boolean fetchChildren) throws Exception{
 		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
-		fields.addAll(FieldFactory.getWorkflowEventFields());
+//		fields.addAll(FieldFactory.getWorkflowEventFields());
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		FacilioField ruleTypeField = fieldMap.get("ruleType");
 		FacilioField latestVersionField = fieldMap.get("latestVersion");
 		
 		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
-		FacilioModule eventModule = ModuleFactory.getWorkflowEventModule();
+//		FacilioModule eventModule = ModuleFactory.getWorkflowEventModule();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(module.getTableName())
 				.select(fields)
-				.innerJoin(eventModule.getTableName())
-				.on(module.getTableName()+".EVENT_ID = "+ eventModule.getTableName() +".ID")
+//				.innerJoin(eventModule.getTableName())
+//				.on(module.getTableName()+".EVENT_ID = "+ eventModule.getTableName() +".ID")
 //				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(ruleTypeField, String.valueOf(type.getIntVal()), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(latestVersionField, String.valueOf(true), BooleanOperators.IS))
 				;
 		
-		return getWorkFlowsFromMapList(builder.get(), fetchEvent, fetchChildren, true);
+		return getWorkFlowsFromMapList(builder.get(), fetchChildren, true);
 	}
 	
 	
-	public static List<WorkflowRuleContext> getWorkflowRules(RuleType type, boolean fetchEvent, boolean fetchChildren, Criteria criteria, String searchQuery, JSONObject pagination) throws Exception{
+	public static List<WorkflowRuleContext> getWorkflowRules(RuleType type, boolean fetchChildren, Criteria criteria, String searchQuery, JSONObject pagination) throws Exception{
 		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
-		fields.addAll(FieldFactory.getWorkflowEventFields());
+//		fields.addAll(FieldFactory.getWorkflowEventFields());
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		FacilioField ruleTypeField = fieldMap.get("ruleType");
 		FacilioField latestVersionField = fieldMap.get("latestVersion");
 		FacilioField ruleNameField = FieldFactory.getAsMap(fields).get("name");
 		
 		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
-		FacilioModule eventModule = ModuleFactory.getWorkflowEventModule();
+//		FacilioModule eventModule = ModuleFactory.getWorkflowEventModule();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(module.getTableName())
 				.select(fields)
-				.innerJoin(eventModule.getTableName())
-				.on(module.getTableName()+".EVENT_ID = "+ eventModule.getTableName() +".ID")
+//				.innerJoin(eventModule.getTableName())
+//				.on(module.getTableName()+".EVENT_ID = "+ eventModule.getTableName() +".ID")
 //				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(ruleTypeField, String.valueOf(type.getIntVal()), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(latestVersionField, String.valueOf(true), BooleanOperators.IS))
@@ -556,21 +508,17 @@ public class WorkflowRuleAPI {
 			builder.andCriteria(criteria);
 		}
 	
-		return getWorkFlowsFromMapList(builder.get(), fetchEvent, fetchChildren, true);
+		return getWorkFlowsFromMapList(builder.get(), fetchChildren, true);
 	}
 	
 	public static List<WorkflowRuleContext> getActiveWorkflowRulesFromActivityAndRuleType(FacilioModule module, List<EventType> activityTypes,Criteria criteria, RuleType... ruleTypes) throws Exception {
 		FacilioModule ruleModule = ModuleFactory.getWorkflowRuleModule();
 		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
-		fields.addAll(FieldFactory.getWorkflowEventFields());
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 				.table(ruleModule.getTableName())
 				.select(fields)
-				.innerJoin("Workflow_Event")
-				.on("Workflow_Rule.EVENT_ID = Workflow_Event.ID")
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(ruleModule))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("moduleId"), module.getExtendedModuleIds(), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), Boolean.TRUE.toString(), BooleanOperators.IS))
 				.orderBy("EXECUTION_ORDER");
@@ -603,7 +551,7 @@ public class WorkflowRuleAPI {
 			else {
 				activityTypeWhere.append(" OR ");
 			}
-			activityTypeWhere.append("? & Workflow_Event.ACTIVITY_TYPE = ?");
+			activityTypeWhere.append("? & Workflow_Rule.ACTIVITY_TYPE = ?");
 			values.add(type.getValue());
 			values.add(type.getValue());
 		}
@@ -614,7 +562,7 @@ public class WorkflowRuleAPI {
 			LOGGER.error("wokrlfow rule propssss --- "+props);
 			LOGGER.error("wokrlfow rule querry --- "+ruleBuilder);
 		}
-		return getWorkFlowsFromMapList(props, true, true, true);
+		return getWorkFlowsFromMapList(props, true, true);
 	}
 	
 	protected static void deleteChildIdsForWorkflow(WorkflowRuleContext oldRule, WorkflowRuleContext newRule) throws Exception {
@@ -715,12 +663,11 @@ public class WorkflowRuleAPI {
 		return null;
 	}
 	
-	public static List<WorkflowRuleContext> getWorkFlowsFromMapList(List<Map<String, Object>> props, boolean fetchEvent, boolean fetchChildren, boolean fetchExtended) throws Exception {
+	public static List<WorkflowRuleContext> getWorkFlowsFromMapList(List<Map<String, Object>> props, boolean fetchChildren, boolean fetchExtended) throws Exception {
 		if(props != null && props.size() > 0) {
 			List<WorkflowRuleContext> workflows = new ArrayList<>();
 			List<Long> workflowIds = fetchChildren ? new ArrayList<>() : null;
 			List<Long> criteriaIds = fetchChildren ? new ArrayList<>() : null;
-			List<Long> fieldChangeRuleIds = fetchEvent ? new ArrayList<>() : null;
 			Map<RuleType, List<Long>> typeWiseIds = fetchExtended ? new HashMap<>() : null;
 			
 			for(Map<String, Object> prop : props) {
@@ -745,19 +692,11 @@ public class WorkflowRuleAPI {
 						criteriaIds.add(criteriaId);
 					}
 				}
-				
-				if (fetchEvent) {
-					int activity = (int) prop.get("activityType");
-					if (EventType.FIELD_CHANGE.isPresent(activity)) {
-						fieldChangeRuleIds.add((Long) prop.get("id"));
-					}
-				}
 			}
 			Map<RuleType, Map<Long, Map<String, Object>>> typeWiseExtendedProps = fetchExtended ? getTypeWiseExtendedProps(typeWiseIds) : null;
 			Map<Long, WorkflowContext> workflowMap = fetchChildren && !workflowIds.isEmpty() ? WorkflowUtil.getWorkflowsAsMap(workflowIds, true) : null;
 			Map<Long, Criteria> criteriaMap = fetchChildren && !criteriaIds.isEmpty() ? CriteriaAPI.getCriteriaAsMap(criteriaIds) : null;
-			Map<Long, List<FieldChangeFieldContext>> ruleFieldsMap = fetchEvent && !fieldChangeRuleIds.isEmpty() ? getFieldChangeFields(fieldChangeRuleIds) : null;
-			
+
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			for(Map<String, Object> prop : props) {
 				WorkflowRuleContext rule = null;
@@ -817,20 +756,7 @@ public class WorkflowRuleAPI {
 				if (fetchChildren && workflowId != -1) {
 					rule.setWorkflow(workflowMap.get(workflowId));
 				}
-				
-				if(fetchEvent) {
-					WorkflowEventContext event = FieldUtil.getAsBeanFromMap(prop, WorkflowEventContext.class);
-					event.setId(rule.getEventId());
-					event.setModule(modBean.getModule(event.getModuleId()));
-					rule.setEvent(event);
-					
-					if (EventType.FIELD_CHANGE.isPresent(event.getActivityType())) {
-						rule.setFields(ruleFieldsMap.get(rule.getId()));
-					}
-					else if (EventType.SCHEDULED.isPresent(event.getActivityType())) {
-						rule.setDateField(modBean.getField(rule.getDateFieldId()));
-					}
-				}
+
 				workflows.add(rule);
 			}
 
@@ -845,23 +771,23 @@ public class WorkflowRuleAPI {
 		return readingRule;
 	}
 	
-	private static List<WorkflowEventContext> getWorkFlowEventsFromMapList(List<Map<String, Object>> props) throws Exception {
-		if(props != null && props.size() > 0) {
-			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-			List<WorkflowEventContext> workflowEvents = new ArrayList<>();
-			for(Map<String, Object> prop : props) {
-				WorkflowEventContext workflowEvent = FieldUtil.getAsBeanFromMap(prop, WorkflowEventContext.class);
-				workflowEvent.setModule(modBean.getModule(workflowEvent.getModuleId()));
-				workflowEvents.add(workflowEvent);
-			}
-			return workflowEvents;
-		}
-		return null;
-	}
+//	private static List<WorkflowEventContext> getWorkFlowEventsFromMapList(List<Map<String, Object>> props) throws Exception {
+//		if(props != null && props.size() > 0) {
+//			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+//			List<WorkflowEventContext> workflowEvents = new ArrayList<>();
+//			for(Map<String, Object> prop : props) {
+//				WorkflowEventContext workflowEvent = FieldUtil.getAsBeanFromMap(prop, WorkflowEventContext.class);
+//				workflowEvent.setModule(modBean.getModule(workflowEvent.getModuleId()));
+//				workflowEvents.add(workflowEvent);
+//			}
+//			return workflowEvents;
+//		}
+//		return null;
+//	}
 	
 	public static void deleteWorkFlowRules(List<Long> workflowIds) throws Exception {
 		if (workflowIds != null && !workflowIds.isEmpty()) {
-			List<WorkflowRuleContext> rules = getWorkflowRules(workflowIds, true);
+			List<WorkflowRuleContext> rules = getWorkflowRules(workflowIds);
 			List<Long> deleteIds = new ArrayList<Long>();
 			List<Long> updateIds = new ArrayList<Long>();;
 			FacilioModule module = ModuleFactory.getWorkflowRuleModule();
@@ -874,13 +800,13 @@ public class WorkflowRuleAPI {
 					else {
 						deleteIds.add(rule.getId());
 					}
-					if (EventType.SCHEDULED.isPresent(rule.getEvent().getActivityType()) && rule.getRuleType() != RuleType.RECORD_SPECIFIC_RULE.getIntVal() ) {
+					if (EventType.SCHEDULED.isPresent(rule.getActivityType()) && rule.getRuleType() != RuleType.RECORD_SPECIFIC_RULE.getIntVal() ) {
 						ScheduledRuleAPI.deleteScheduledRuleJob(rule);
 					}
-					else if(EventType.SCHEDULED.isPresent(rule.getEvent().getActivityType()) && rule.getRuleType() == RuleType.RECORD_SPECIFIC_RULE.getIntVal()) {
+					else if(EventType.SCHEDULED.isPresent(rule.getActivityType()) && rule.getRuleType() == RuleType.RECORD_SPECIFIC_RULE.getIntVal()) {
 						SingleRecordRuleAPI.deleteRecordSpecificRuleJob(rule);
 					}
-					else if (EventType.SCHEDULED_READING_RULE.isPresent(rule.getEvent().getActivityType())) {
+					else if (EventType.SCHEDULED_READING_RULE.isPresent(rule.getActivityType())) {
 						FacilioTimer.deleteJob(rule.getId(), FacilioConstants.Job.SCHEDULED_READING_RULE_JOB_NAME);
 					}
 				}
@@ -930,7 +856,7 @@ public class WorkflowRuleAPI {
 	}
 	
 	private static boolean evalFieldChange(WorkflowRuleContext rule, List<UpdateChangeSet> changeSetList) {
-		if (rule.getEvent().getActivityTypeEnum() == EventType.FIELD_CHANGE) {
+		if (rule.getActivityTypeEnum() == EventType.FIELD_CHANGE) {
 			if (changeSetList != null && !changeSetList.isEmpty()) {
 				for (FieldChangeFieldContext field : rule.getFields()) {
 					for (UpdateChangeSet changeSet : changeSetList) {
@@ -1039,7 +965,7 @@ public class WorkflowRuleAPI {
 				currentCriteria.addAndCondition(CriteriaAPI.getCondition(parentRuleField, String.valueOf(workflowRule.getId()), NumberOperators.EQUALS));
 				currentCriteria.addAndCondition(CriteriaAPI.getCondition(onSuccessField, String.valueOf(result), BooleanOperators.IS));
 				
-				List<WorkflowRuleContext> currentWorkflows = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(workflowRule.getEvent().getModule(), eventTypes, currentCriteria, ruleTypes);
+				List<WorkflowRuleContext> currentWorkflows = WorkflowRuleAPI.getActiveWorkflowRulesFromActivityAndRuleType(workflowRule.getModule(), eventTypes, currentCriteria, ruleTypes);
 				executeWorkflowsAndGetChildRuleCriteria(currentWorkflows, module, record, changeSet, itr, recordPlaceHolders, context, propagateError, eventTypes, ruleTypes);
 				
 			}
@@ -1091,7 +1017,7 @@ public class WorkflowRuleAPI {
 		select.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), CommonOperators.IS_EMPTY));
 
 		List<Map<String, Object>> props = select.get();
-		List<WorkflowRuleContext> workflowRuleContexts = getWorkFlowsFromMapList(props, false, true, true);
+		List<WorkflowRuleContext> workflowRuleContexts = getWorkFlowsFromMapList(props, true, true);
 		return (workflowRuleContexts!=null) ? workflowRuleContexts.get(0) : null;
 	}
 	public static List<ReadingAlarmRuleContext> getReadingAlarmRulesFromReadingRuleGroupId(long readingGroupId) throws Exception {
@@ -1111,7 +1037,7 @@ public class WorkflowRuleAPI {
 			
 			if(props!= null && !props.isEmpty()) {
 				
-				List<WorkflowRuleContext> workflowRuleContexts = getWorkFlowsFromMapList(props, false, true, true);
+				List<WorkflowRuleContext> workflowRuleContexts = getWorkFlowsFromMapList(props, true, true);
 				List<ReadingAlarmRuleContext> readingAlarmRuleContexts = new ArrayList<>();
 				for(WorkflowRuleContext workflowRuleContext :workflowRuleContexts) {
 					workflowRuleContext.setActions(ActionAPI.getActiveActionsFromWorkflowRule(workflowRuleContext.getId()));
@@ -1124,28 +1050,28 @@ public class WorkflowRuleAPI {
 	}
 
 	public static void executeScheduledRule (WorkflowRuleContext rule, long executionTime, FacilioContext context) throws Exception {
-		WorkflowEventContext event = rule.getEvent();
-		FacilioModule module = event.getModule();
+		FacilioModule module = rule.getModule();
 		Map<String, Object> placeHolders = WorkflowRuleAPI.getOrgPlaceHolders();
 		Map<String, Object> recordPlaceHolders = WorkflowRuleAPI.getRecordPlaceHolders(module.getName(), null, placeHolders);
 		recordPlaceHolders.put("executionTime", executionTime);
 		context.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, executionTime);
-		WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(Collections.singletonList(rule), module, null, null, null, recordPlaceHolders, (FacilioContext)context,true, Collections.singletonList(rule.getEvent().getActivityTypeEnum()));
+		WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(Collections.singletonList(rule), module, null, null, null, recordPlaceHolders, (FacilioContext)context,true, Collections.singletonList(rule.getActivityTypeEnum()));
 	}
 	
-	public static void fillDefaultPropsForDowntimeRule(WorkflowRuleContext workFlowRule,ReadingRuleContext preRequsiteRule, WorkflowRuleContext.RuleType ruleType, Long parentId)throws Exception {
+	private static void fillDefaultPropsForDowntimeRule(WorkflowRuleContext workFlowRule, ReadingRuleContext preRequsiteRule, WorkflowRuleContext.RuleType ruleType, Long parentId)throws Exception {
 		workFlowRule.setCriteriaId(-1l);
 		workFlowRule.setWorkflowId(-1l);
 		workFlowRule.setRuleType(ruleType);
 		workFlowRule.setName("ReportDowntimeRule");
-		workFlowRule.setEventId(preRequsiteRule.getEventId());
+		workFlowRule.setModule(preRequsiteRule.getModule());
+		workFlowRule.setActivityType(preRequsiteRule.getActivityType());
 		workFlowRule.setStatus(true);
 		workFlowRule.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
 		workFlowRule.setParentRuleId(parentId);
 		workFlowRule.setOnSuccess(true);
 	}
 
-	public static void AddReportDowntimeRule(AlarmRuleContext alarmRule) throws Exception {
+	private static void addReportDowntimeRule(AlarmRuleContext alarmRule) throws Exception {
 		if (alarmRule.isReportBreakdown()) {
 			if (alarmRule.getReportDowntimeRule() == null) {
 				alarmRule.setReportDowntimeRule(new WorkflowRuleContext());
@@ -1159,7 +1085,7 @@ public class WorkflowRuleAPI {
 	public static void UpdateReportDowntimeRule(AlarmRuleContext alarmRule) throws Exception {
 		WorkflowRuleContext existingReportDowntimeRule = getWorkflowRuleByRuletype(alarmRule.getPreRequsite().getId(), RuleType.REPORT_DOWNTIME_RULE);
 		if (alarmRule.isReportBreakdown() && existingReportDowntimeRule == null ) {
-			AddReportDowntimeRule(alarmRule);
+			addReportDowntimeRule(alarmRule);
 		} else if ((!alarmRule.isReportBreakdown()) && existingReportDowntimeRule != null) {
 			deleteWorkFlowRules(Collections.singletonList(existingReportDowntimeRule.getId()));
 		}

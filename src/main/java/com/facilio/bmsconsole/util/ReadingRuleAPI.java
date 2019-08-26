@@ -493,7 +493,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		List<ReadingRuleContext> readingRuleContexts = null;
 		if(props != null && !props.isEmpty()) {
 			readingRuleContexts = new ArrayList<>();
-			List<WorkflowRuleContext> workflowRuleContexts = getWorkFlowsFromMapList(props, false, true, true);
+			List<WorkflowRuleContext> workflowRuleContexts = getWorkFlowsFromMapList(props, true, true);
 			for(WorkflowRuleContext workflowRuleContext :workflowRuleContexts) {
 				workflowRuleContext.setActions(ActionAPI.getActiveActionsFromWorkflowRule(workflowRuleContext.getId()));
 				readingRuleContexts.add((ReadingRuleContext)workflowRuleContext);
@@ -605,7 +605,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		
 	}
 	
-	public static void fillDefaultPropsForAlarmRule(ReadingRuleContext alarmRule,ReadingRuleContext preRequsiteRule,WorkflowRuleContext.RuleType ruleType,Long parentId) {
+	public static void fillDefaultPropsForAlarmRule(ReadingRuleContext alarmRule,ReadingRuleContext preRequsiteRule,WorkflowRuleContext.RuleType ruleType,Long parentId) throws Exception {
 		
 		alarmRule.setCriteriaId(-1l);
 		alarmRule.setWorkflowId(-1l);
@@ -613,7 +613,8 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		alarmRule.setExcludedResources(null);
 		
 		alarmRule.setRuleType(ruleType);
-		alarmRule.setEventId(preRequsiteRule.getEventId());
+		alarmRule.setModule(preRequsiteRule.getModule());
+		alarmRule.setActivityType(preRequsiteRule.getActivityTypeEnum());
 		alarmRule.setAssetCategoryId(preRequsiteRule.getAssetCategoryId());
 		alarmRule.setRuleGroupId(preRequsiteRule.getId());
 		alarmRule.setStatus(true);

@@ -10,7 +10,6 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
-import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
@@ -96,7 +95,6 @@ public class GetAllFieldsCommand extends FacilioCommand {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", orgId);
 		FacilioModule mod = modBean.getModule(moduleName);
 	
-		List<WorkflowEventContext> workflowEvents = WorkflowRuleAPI.getWorkflowEvents(orgId, mod.getModuleId());
 		if (isFilter != null) {
 			for(FacilioField fieldObject:allFields) {
 				if (moduleName.equals(ContextNames.ALARM)) {
@@ -147,8 +145,7 @@ public class GetAllFieldsCommand extends FacilioCommand {
 		meta.put("fields", fields);
 		meta.put("operators", operators);
 		meta.put("reportOperators", reportOperators);
-		meta.put("workflowEvents", workflowEvents);
-		context.put(FacilioConstants.ContextNames.META, meta);		
+		context.put(FacilioConstants.ContextNames.META, meta);
 		// TODO Auto-generated method stub
 		return false;
 	}

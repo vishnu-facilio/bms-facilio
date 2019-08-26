@@ -31,7 +31,6 @@ import com.facilio.bmsconsole.forms.FormSection;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.bmsconsole.workflow.rule.EventType;
-import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.ScheduledRuleType;
@@ -268,10 +267,8 @@ public class ContractsAPI {
 		workflowRuleContext.setName("Expiry Date Notification");
 		workflowRuleContext.setRuleType(RuleType.RECORD_SPECIFIC_RULE);
 		
-		WorkflowEventContext event = new WorkflowEventContext();
-		event.setModuleName(module.getName());
-		event.setActivityType(EventType.SCHEDULED);
-		workflowRuleContext.setEvent(event);
+		workflowRuleContext.setModuleName(module.getName());
+		workflowRuleContext.setActivityType(EventType.SCHEDULED);
 		workflowRuleContext.setScheduleType(ScheduledRuleType.BEFORE);
 		workflowRuleContext.setTime((String)map.get("time"));
 		

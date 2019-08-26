@@ -1083,23 +1083,23 @@ public class FieldFactory {
 		return fields;
 	}
 
-	public static List<FacilioField> getWorkflowEventFields() {
-		List<FacilioField> fields = new ArrayList<>();
-		FacilioModule module = ModuleFactory.getWorkflowEventModule();
-
-		fields.add(getIdField(module));
-		/*fields.add(getOrgIdField(module));*/
-		fields.add(getModuleIdField(module));
-
-		FacilioField field3 = new FacilioField();
-		field3.setName("activityType");
-		field3.setDataType(FieldType.NUMBER);
-		field3.setColumnName("ACTIVITY_TYPE");
-		field3.setModule(module);
-		fields.add(field3);
-
-		return fields;
-	}
+//	public static List<FacilioField> getWorkflowEventFields() {
+//		List<FacilioField> fields = new ArrayList<>();
+//		FacilioModule module = ModuleFactory.getWorkflowEventModule();
+//
+//		fields.add(getIdField(module));
+//		/*fields.add(getOrgIdField(module));*/
+//		fields.add(getModuleIdField(module));
+//
+//		FacilioField field3 = new FacilioField();
+//		field3.setName("activityType");
+//		field3.setDataType(FieldType.NUMBER);
+//		field3.setColumnName("ACTIVITY_TYPE");
+//		field3.setModule(module);
+//		fields.add(field3);
+//
+//		return fields;
+//	}
 
 	public static List<FacilioField> getDeviceDetailsFields() {
 		List<FacilioField> fields = new ArrayList<>();
@@ -1197,12 +1197,12 @@ public class FieldFactory {
 		description.setModule(module);
 		fields.add(description);
 
-		FacilioField eventId = new FacilioField();
-		eventId.setName("eventId");
-		eventId.setDataType(FieldType.NUMBER);
-		eventId.setColumnName("EVENT_ID");
-		eventId.setModule(module);
-		fields.add(eventId);
+//		FacilioField eventId = new FacilioField();
+//		eventId.setName("eventId");
+//		eventId.setDataType(FieldType.NUMBER);
+//		eventId.setColumnName("EVENT_ID");
+//		eventId.setModule(module);
+//		fields.add(eventId);
 
 		FacilioField criteriaId = new NumberField();
 		criteriaId.setName("criteriaId");
@@ -1247,7 +1247,15 @@ public class FieldFactory {
 		fields.add(getField("modifiedTime", "MODIFIED_TIME", module, FieldType.NUMBER));
 		fields.add(getField("time", "JOB_TIME", module, FieldType.STRING));
 		fields.add(getField("parentId", "PARENT_ID", module, FieldType.NUMBER));
-		
+
+		fields.add(getModuleIdField(module));
+
+		FacilioField field3 = new FacilioField();
+		field3.setName("activityType");
+		field3.setDataType(FieldType.NUMBER);
+		field3.setColumnName("ACTIVITY_TYPE");
+		field3.setModule(module);
+		fields.add(field3);
 
 		return fields;
 	}

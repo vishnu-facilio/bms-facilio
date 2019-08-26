@@ -64,7 +64,7 @@ public class MLForecastingJob extends FacilioJob
 	}
 
 	private void runRule(long ruleId, long currentExecutionTime) throws Exception {
-		WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(ruleId,true,true,true);
+		WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(ruleId,true,true);
 		if (rule != null && rule.isActive()) {
 			WorkflowRuleAPI.executeScheduledRule(rule, currentExecutionTime, new FacilioContext());
 		}

@@ -20,7 +20,7 @@ public class UpdateWorkflowRuleCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		WorkflowRuleContext rule = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
 		if (rule.getRuleTypeEnum() != null && rule.getRuleTypeEnum().versionSupported()) {
-			WorkflowRuleContext oldRule = WorkflowRuleAPI.getWorkflowRule(rule.getId(), false, false, false);
+			WorkflowRuleContext oldRule = WorkflowRuleAPI.getWorkflowRule(rule.getId(), false, false);
 			WorkflowRuleContext updateRule = new WorkflowRuleContext();
 			updateRule.setId(rule.getId());
 			updateRule.setLatestVersion(false);
