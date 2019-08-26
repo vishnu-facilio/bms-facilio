@@ -44,6 +44,7 @@ import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.templates.ControlActionTemplate;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.bmsconsole.util.NotificationAPI;
@@ -56,6 +57,7 @@ import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ReadingRuleType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.controlaction.context.ControlActionCommandContext;
@@ -1010,22 +1012,15 @@ public enum ActionType {
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule, Object currentRecord) throws Exception {
 			LOGGER.info("Performing Control action : "+obj.toJSONString());
-			long fieldId = FacilioUtil.parseLong(obj.get("metric"));
-			long resourceId = FacilioUtil.parseLong(obj.get("resource"));
 			String val = (String) obj.get("val");
 			if(AccountUtil.getCurrentOrg().getId() == 104l) {
+				long fieldId = FacilioUtil.parseLong(obj.get("metric"));
+				long resourceId = FacilioUtil.parseLong(obj.get("resource"));
 				TimeSeriesAPI.setControlValue(resourceId, fieldId, val);
 			}
 			else {
-				ResourceContext resourceContext = new ResourceContext();
-				resourceContext.setId(resourceId);
+				Integer actionType = (Integer) obj.get("actionType");
 				
-				ControlActionCommandContext controlActionCommand = new ControlActionCommandContext();
-				controlActionCommand.setResource(resourceContext);
-				controlActionCommand.setFieldId(fieldId);
-				controlActionCommand.setValue(val);
-				
-				context.put(ControlActionUtil.CONTROL_ACTION_COMMANDS, Collections.singletonList(controlActionCommand));
 				if(currentRule.getRuleTypeEnum() == RuleType.CONTROL_ACTION_SCHEDULED_RULE) {
 					context.put(ControlActionUtil.CONTROL_ACTION_COMMAND_EXECUTED_FROM, ControlActionCommandContext.Control_Action_Execute_Mode.SCHEDULE);
 				}
@@ -1036,8 +1031,35 @@ public enum ActionType {
 					context.put(ControlActionUtil.CONTROL_ACTION_COMMAND_EXECUTED_FROM, ControlActionCommandContext.Control_Action_Execute_Mode.RESERVATION_CONDITION);
 				}
 				
-				Chain executeControlActionCommandChain = TransactionChainFactory.getExecuteControlActionCommandChain();
-				executeControlActionCommandChain.execute(context);
+				if(actionType != null && actionType.equals(ControlActionTemplate.ActionType.GROUP.getIntVal())) {
+					
+					Long controlActionGroupId = (Long) obj.get("controlActionGroupId");
+					
+					Chain executeControlActionCommandChain = TransactionChainFactory.getExecuteControlActionCommandForControlGroupChain();
+					
+					
+					context.put(ControlActionUtil.CONTROL_ACTION_GROUP_ID, controlActionGroupId);
+					context.put(ControlActionUtil.VALUE, val);
+					
+					executeControlActionCommandChain.execute(context);
+				}
+				else {
+					long fieldId = FacilioUtil.parseLong(obj.get("metric"));
+					long resourceId = FacilioUtil.parseLong(obj.get("resource"));
+					
+					ResourceContext resourceContext = new ResourceContext();
+					resourceContext.setId(resourceId);
+					
+					ControlActionCommandContext controlActionCommand = new ControlActionCommandContext();
+					controlActionCommand.setResource(resourceContext);
+					controlActionCommand.setFieldId(fieldId);
+					controlActionCommand.setValue(val);
+					
+					context.put(ControlActionUtil.CONTROL_ACTION_COMMANDS, Collections.singletonList(controlActionCommand));
+					
+					Chain executeControlActionCommandChain = TransactionChainFactory.getExecuteControlActionCommandChain();
+					executeControlActionCommandChain.execute(context);
+				}
 			}
 		}
 	},

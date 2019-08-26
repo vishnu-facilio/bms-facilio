@@ -383,6 +383,9 @@
 			
 		<action name="getControlGroups"
 		class="com.facilio.controlaction.action.ControlActionAction" method="getControlGroups"></action>
+		
+		<action name="getControlGroupMeta"
+		class="com.facilio.controlaction.action.ControlActionAction" method="getControlGroupMeta"></action>
 			
 		<action name="getControlActionCommands"
 		class="com.facilio.controlaction.action.ControlActionAction" method="getControlActionCommands"></action>

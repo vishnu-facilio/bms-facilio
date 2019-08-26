@@ -150,6 +150,16 @@ public class ControlActionAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String getControlGroupMeta() throws Exception {
+		
+		if(controlGroupId > 0) {
+			List<ControlGroupContext> controls = ControlActionUtil.getControlActionGroups(Collections.singletonList(controlGroupId));
+			
+			setResult(ControlActionUtil.CONTROL_ACTION_GROUP_CONTEXT, controls.get(0));
+		}
+		return SUCCESS;
+	}
+	
 	
 	public String getControllableAssets() throws Exception {
 		

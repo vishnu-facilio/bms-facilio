@@ -2229,6 +2229,9 @@ public class FieldFactory {
 		fields.add(getField("metric", "METRIC", module, FieldType.STRING));
 		fields.add(getField("resource", "RESOURCE", module, FieldType.STRING));
 		fields.add(getField("val", "VAL", module, FieldType.STRING));
+		
+		fields.add(getField("actionType", "ACTION_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("controlActionGroupId", "CONTROL_ACTION_GROUP_ID", module, FieldType.LOOKUP));
 
 		return fields;
 	}
