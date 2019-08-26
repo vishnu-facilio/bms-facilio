@@ -540,21 +540,12 @@ public class NewAlarmAPI {
 				delAlarmOccurrenceIds.add((Long) alarmOccurrence.getId());
 			}
 
-		}
+			deleteAllAlarmOccurences(delAlarmOccurrenceIds);
+			
+			FacilioModule eventModule = modBean.getModule(FacilioConstants.ContextNames.BASE_EVENT);
+			List<FacilioField> allEventFields = modBean.getAllFields(eventModule.getName());
 
-		deleteAllAlarmOccurences(delAlarmOccurrenceIds);
-		FacilioModule eventModule = modBean.getModule(FacilioConstants.ContextNames.BASE_EVENT);
-		List<FacilioField> allEventFields = modBean.getAllFields(eventModule.getName());
-
-
-		if (initialEdgeCaseAlarmOccurrence != null) {
-			LOGGER.info("InitialEdgeCaseAlarmOccurrence Present "+initialEdgeCaseAlarmOccurrence.getId());
-
-		}
-
-		if (finalEdgeCaseAlarmOccurrence != null) {
-			LOGGER.info("finalEdgeCaseAlarmOccurrence Present "+finalEdgeCaseAlarmOccurrence.getId());
-		}
+		}	
 	}
 
 	public static void deleteAllAlarmOccurences(List<Long> delAlarmOccurrenceIds) throws Exception {
