@@ -37,7 +37,7 @@
 	 <job name='costCalculator' classname = 'com.facilio.bmsconsole.jobs.CostCalculatorJob' transactionTimeout='300000'/>
 	 <job name='DeleteControllerActivityRecords' classname = 'com.facilio.bmsconsole.jobs.DeleteControllerActivityRecordsJob' transactionTimeout='300000'/>
 	 
-	 <job name='HistoricalRunForReadingRule' classname = 'com.facilio.bmsconsole.jobs.HistoricalRunForReadingRule' transactionTimeout='72000000'/>
+	 <job name='HistoricalRunForReadingRule' classname = 'com.facilio.bmsconsole.jobs.HistoricalRunForReadingRule' transactionTimeout='14400000'/>
 	 <job name='ScheduledRuleExecution' classname = 'com.facilio.bmsconsole.jobs.ScheduledRuleExecutionJob' transactionTimeout='900000'/>
 	 <job name='ScheduledActionExecution' classname = 'com.facilio.bmsconsole.jobs.ScheduledActionExecutionJob' transactionTimeout='900000'/>
 	 
