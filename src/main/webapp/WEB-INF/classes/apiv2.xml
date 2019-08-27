@@ -228,6 +228,10 @@
 			class="com.facilio.bmsconsole.actions.MLAnomalyAction"
 			method="fetchSubMeterHierarchy">
 		</action>
+		<action name="rcaInsights"
+			class="com.facilio.bmsconsole.actions.MLAnomalyAction"
+			method="fetchInsight">
+		</action>
 	</package>
 	
 	<package name="state" namespace="/api/v2/state" extends="v2Api">
