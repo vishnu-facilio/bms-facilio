@@ -167,7 +167,9 @@ public class NewAlarmAPI {
 				.select(fields).andCondition(CriteriaAPI.getCondition("ALARM_ID", "alarm",
 						String.valueOf(baseAlarm.getId()), NumberOperators.EQUALS))
 				.orderBy("CREATED_TIME DESC, ID DESC").limit(1);
-		return builder.fetchFirst();
+		AlarmOccurrenceContext alarmOccurrenceContext = builder.fetchFirst();
+		updateAlarmObject(Collections.singletonList(alarmOccurrenceContext));
+		return alarmOccurrenceContext;
 	}
 
 	public static Map<Long, AlarmOccurrenceContext> getLatestAlarmOccuranceMap(List<BaseAlarmContext> baseAlarms) throws Exception {
@@ -187,6 +189,7 @@ public class NewAlarmAPI {
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("alarm"), ids, NumberOperators.EQUALS))
 				.orderBy("CREATED_TIME DESC, ID DESC");
 		List<AlarmOccurrenceContext> occurences = builder.get();
+		updateAlarmObject(occurences);
 		if (CollectionUtils.isNotEmpty(occurences)) {
 			return occurences.stream().collect(Collectors.toMap(AlarmOccurrenceContext::getId, Function.identity()));
 		}
@@ -204,14 +207,7 @@ public class NewAlarmAPI {
 				.orderBy("CREATED_TIME DESC, ID DESC").limit(1);
 		List<AlarmOccurrenceContext> list = builder.get();
 
-		List<Long> alarmIds = new ArrayList<>();
-		for (AlarmOccurrenceContext alarmOccurrence : list) {
-			alarmIds.add(alarmOccurrence.getAlarm().getId());
-		}
-		Map<Long, BaseAlarmContext> alarmMap = FieldUtil.getAsMap(getAlarms(alarmIds));
-		for (AlarmOccurrenceContext alarmOccurrence : list) {
-			alarmOccurrence.setAlarm(alarmMap.get(alarmOccurrence.getAlarm().getId()));
-		}
+		updateAlarmObject(list);
 		return list;
 	}
 
@@ -228,6 +224,7 @@ public class NewAlarmAPI {
 		if (alarmOccurance != null) {
 			AlarmSeverityContext clearAlarmSeverity = AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.CLEAR_SEVERITY);
 			if (!alarmOccurance.getSeverity().equals(clearAlarmSeverity)) {
+				updateAlarmObject(Collections.singletonList(alarmOccurance));
 				return alarmOccurance;
 			}
 		}
@@ -330,6 +327,11 @@ public class NewAlarmAPI {
 				.fetchLookups(fetchLookupFields)
 				.beanClass(AlarmOccurrenceContext.class).andCondition(CriteriaAPI.getIdCondition(recordIds, module));
 		List<AlarmOccurrenceContext> occurrenceContexts = builder.get();
+		updateAlarmObject(occurrenceContexts);
+		return occurrenceContexts;
+	}
+
+	private static void updateAlarmObject(List<AlarmOccurrenceContext> occurrenceContexts) throws Exception {
 		if (CollectionUtils.isNotEmpty(occurrenceContexts)) {
 			List<Long> alarmIds = new ArrayList<>();
 			for (AlarmOccurrenceContext alarmOccurrence: occurrenceContexts) {
@@ -340,12 +342,12 @@ public class NewAlarmAPI {
 				alarmOccurrence.setAlarm(alarmMap.get(alarmOccurrence.getAlarm().getId()));
 			}
 		}
-		return occurrenceContexts;
 	}
 
 	public static AlarmOccurrenceContext getAlarmOccurrence(long recordId) throws Exception {
 		List<AlarmOccurrenceContext> alarmOccurrences = getAlarmOccurrences(Collections.singletonList(recordId));
 		if (CollectionUtils.isNotEmpty(alarmOccurrences)) {
+			updateAlarmObject(Collections.singletonList(alarmOccurrences.get(0)));
 			return alarmOccurrences.get(0);
 		}
 		return null;
@@ -381,11 +383,9 @@ public class NewAlarmAPI {
 		if(fieldId > 0) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("readingFieldId"), String.valueOf(fieldId), NumberOperators.EQUALS));
 		}
-		List<AlarmOccurrenceContext> alarms = selectBuilder.get();
-		/*if (AccountUtil.getCurrentOrg().getId() == 75) {
-			LOGGER.info("Fetched Alarm Query : "+selectBuilder.toString());
-		}*/
-		return alarms;
+		List<AlarmOccurrenceContext> occurrenceContexts = selectBuilder.get();
+		updateAlarmObject(occurrenceContexts);
+		return occurrenceContexts;
 	}
 
 	public static List<AlarmOccurrenceContext> getReadingAlarmOccurrences(long entityId, long startTime, long endTime)
@@ -398,7 +398,9 @@ public class NewAlarmAPI {
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("alarm"), String.valueOf(entityId),
 						NumberOperators.EQUALS));
 
-		return selectBuilder.get();
+		List<AlarmOccurrenceContext> occurrenceContexts = selectBuilder.get();
+		updateAlarmObject(occurrenceContexts);
+		return occurrenceContexts;
 	}
 
 	private static SelectRecordsBuilder<AlarmOccurrenceContext> getAlarmBuilder(long startTime, long endTime,

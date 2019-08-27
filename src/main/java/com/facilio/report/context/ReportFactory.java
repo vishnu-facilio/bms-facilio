@@ -51,10 +51,14 @@ public class ReportFactory {
 		String FIRST_RESPONSE_TIME_COL = "al_firstresponsetime";
 		String ALARM_DURATION_COL = "al_duration";
 		String WO_ID = "al_wo_id";
+		String NEW_FIRST_RESPONSE_TIME_COL = "new_al_firstresponsetime";
+		String NEW_ALARM_DURATION_COL = "new_al_duration";
 		
 		int FIRST_RESPONSE_TIME = 8;
 		int ALARM_DURATION = 7;
 		int WORK_ORDER_ID = 9;
+		int NEW_FIRST_RESPONSE_TIME = 10;
+		int NEW_ALARM_DURATION = 11;
 	}
 
 	public static List<FacilioField> reportFields = new ArrayList<>();
@@ -97,6 +101,10 @@ public class ReportFactory {
 			wo_id.addGenericCondition("False", CriteriaAPI.getCondition("WOID", "woid", null, CommonOperators.IS_EMPTY));
 			wo_id.addGenericCondition("True", CriteriaAPI.getCondition("WOID", "woid", null, CommonOperators.IS_NOT_EMPTY));
 			reportFields.add(wo_id);
+
+			// alarm occurrence fields
+			reportFields.add(getField(Alarm.NEW_FIRST_RESPONSE_TIME_COL, "Response Time", ModuleFactory.getAlarmOccurenceModule(), " (AlarmOccurrence.ACKNOWLEDGED_TIME - AlarmOccurrence.CREATED_TIME) ", FieldType.NUMBER, Alarm.NEW_FIRST_RESPONSE_TIME));
+			reportFields.add(getField(Alarm.NEW_ALARM_DURATION_COL, "Alarm Duration", ModuleFactory.getAlarmOccurenceModule(), "(CASE WHEN AlarmOccurrence.CLEARED_TIME IS NOT NULL THEN AlarmOccurrence.CLEARED_TIME - AlarmOccurrence.CREATED_TIME ELSE ? - AlarmOccurrence.CREATED_TIME END) ", FieldType.NUMBER, Alarm.NEW_ALARM_DURATION));
 			
 			fieldMap = FieldFactory.getAsMap(reportFields);
 		} catch (Exception e) {
@@ -246,13 +254,14 @@ public class ReportFactory {
 					break;
 				}
 				case Alarm.ALARM_DURATION:
+				case Alarm.NEW_ALARM_DURATION:
 				{
 					String arguments = String.valueOf(System.currentTimeMillis());
 					setColumnName(getGenericColumnName().replace("?", arguments));
 					break;
 				}
 				
-				default: 
+				default:
 				{
 					setColumnName(getGenericColumnName());
 				}
