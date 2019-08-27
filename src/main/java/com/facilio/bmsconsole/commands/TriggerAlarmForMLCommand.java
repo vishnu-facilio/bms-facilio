@@ -99,11 +99,11 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
     	LOGGER.info("Inside check and Generate Event "+parentID+". actual value "+actualValue+" , upperBound "+adjustedUpperBound);
     	if(actualValue > adjustedUpperBound)
     	{
-    		return generateAnomalyEvent(actualValue,adjustedUpperBound,parentID,mlContext.getMLVariable().get(0).getFieldID(),mlContext.getPredictionTime(),Long.parseLong(mlContext.getMLModelVariable("energyfieldid")),Long.parseLong(mlContext.getMLModelVariable("adjustedupperboundfieldid")),mlContext.getId());
+    		return generateAnomalyEvent(actualValue,adjustedUpperBound,parentID,mlContext.getMLVariable().get(0).getFieldID(),getReadingTime(mlContext),Long.parseLong(mlContext.getMLModelVariable("energyfieldid")),Long.parseLong(mlContext.getMLModelVariable("adjustedupperboundfieldid")),mlContext.getId());
     	}
     	else
     	{
-			generateClearEvent(parentID,mlContext.getMLVariable().get(0).getFieldID(),mlContext.getPredictionTime(),parentID,mlContext.getId());
+			generateClearEvent(parentID,mlContext.getMLVariable().get(0).getFieldID(),getReadingTime(mlContext),parentID,mlContext.getId());
     	}
     	return -1;
 	}
@@ -122,12 +122,12 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 
     	if(actualValue > adjustedUpperBound)
     	{
-    		generateRCAAnomalyEvent(actualValue,adjustedUpperBound,assetID,mlContext.getMLVariable().get(0).getFieldID(),mlContext.getPredictionTime(),parentAlarmID,Long.parseLong(mlContext.getMLModelVariable("energyfieldid")),Long.parseLong(mlContext.getMLModelVariable("adjustedupperboundfieldid")),mlContext.getId(),mlContext.getAssetDetails());
+    		generateRCAAnomalyEvent(actualValue,adjustedUpperBound,assetID,mlContext.getMLVariable().get(0).getFieldID(),getReadingTime(mlContext),parentAlarmID,Long.parseLong(mlContext.getMLModelVariable("energyfieldid")),Long.parseLong(mlContext.getMLModelVariable("adjustedupperboundfieldid")),mlContext.getId(),mlContext.getAssetDetails());
     		return true;
     	}
     	else
     	{
-    		generateClearEvent(assetID,mlContext.getMLVariable().get(0).getFieldID(),mlContext.getPredictionTime(),parentAlarmID,mlContext.getId());
+    		generateClearEvent(assetID,mlContext.getMLVariable().get(0).getFieldID(),getReadingTime(mlContext),parentAlarmID,mlContext.getId());
     	}
     	return false;
 	}
@@ -321,6 +321,11 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 		{
 			e.printStackTrace();
 		}
+	}
+	
+	private long getReadingTime(MLContext mlContext)
+	{
+		return mlContext.isHistoric() ? mlContext.getExecutionEndTime() : mlContext.getPredictionTime();
 	}
 
 }
