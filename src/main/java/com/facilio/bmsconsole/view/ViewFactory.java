@@ -455,21 +455,21 @@ public class ViewFactory {
 		
 		order = 1;
 		views = new LinkedHashMap<>();
-		views.put("all", getAllReadingAlarmViews().setOrder(order++));
-		views.put("active", getReadingAlarmSeverity("active", "Active", FacilioConstants.Alarm.CLEAR_SEVERITY, false).setOrder(order++));
-		views.put("unacknowledged", getReadingAlarmUnacknowledged().setOrder(order++));
-		views.put("critical", getReadingAlarmSeverity("critical", "Critical Alarms", "Critical", true).setOrder(order++));
-		views.put("major", getReadingAlarmSeverity("major", "Major Alarms", "Major", true).setOrder(order++));
-		views.put("minor", getReadingAlarmSeverity("minor", "Minor Alarms", "Minor", true).setOrder(order++));
-		views.put("cleared", getReadingAlarmSeverity("cleared", "Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true)
+		views.put("all", getOccurrenceViews().setOrder(order++));
+		views.put("active", getAlarmOcccurrenceSeverity("active", "Active", FacilioConstants.Alarm.CLEAR_SEVERITY, false).setOrder(order++));
+		views.put("unacknowledged", getAlarmOccurrenceUnacknowledged().setOrder(order++));
+		views.put("critical", getAlarmOcccurrenceSeverity("critical", "Critical Alarms", "Critical", true).setOrder(order++));
+		views.put("major", getAlarmOcccurrenceSeverity("major", "Major Alarms", "Major", true).setOrder(order++));
+		views.put("minor", getAlarmOcccurrenceSeverity("minor", "Minor Alarms", "Minor", true).setOrder(order++));
+		views.put("cleared", getAlarmOcccurrenceSeverity("cleared", "Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true)
 				.setOrder(order++));
-		views.put("bmsAlarm", getBmsAlarm("bmsAlarm" , "All Bms Alarm", true).setOrder(order++));
-		views.put("bmsActive", getBmsAlarmSeverity("bmsActive", "Bms Active Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, false).setOrder(order++));
-		views.put("unacknowledgedbmsalarm", getBmsAlarmUnacknowledged().setOrder(order++));
-		views.put("bmsCritical", getBmsAlarmSeverity("bmsCritical", "Bms Critical Alarms", "Critical", true).setOrder(order++));
-		views.put("bmsMajor", getBmsAlarmSeverity("bmsMajor", "Bms Major Alarms", "Major", true).setOrder(order++));
-		views.put("bmsMinor", getBmsAlarmSeverity("bmsMinor", "Bms Minor Alarms", "Minor", true).setOrder(order++));
-		views.put("bmsCleared", getBmsAlarmSeverity("bmsCleared", "Bms Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true).setOrder(order++));
+		views.put("bmsAlarm", getBmsAlarmOccurrence("bmsAlarm" , "All Bms Alarm", true).setOrder(order++));
+		views.put("bmsActive", getBmsOccurrenceAlarmSeverity("bmsActive", "Bms Active Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, false).setOrder(order++));
+		views.put("unacknowledgedbmsalarm", getBmsAlarmOccurrenceUnacknowledged().setOrder(order++));
+		views.put("bmsCritical", getBmsOccurrenceAlarmSeverity("bmsCritical", "Bms Critical Alarms", "Critical", true).setOrder(order++));
+		views.put("bmsMajor", getBmsOccurrenceAlarmSeverity("bmsMajor", "Bms Major Alarms", "Major", true).setOrder(order++));
+		views.put("bmsMinor", getBmsOccurrenceAlarmSeverity("bmsMinor", "Bms Minor Alarms", "Minor", true).setOrder(order++));
+		views.put("bmsCleared", getBmsOccurrenceAlarmSeverity("bmsCleared", "Bms Cleared Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true).setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.ALARM_OCCURRENCE, views);
 
 
@@ -3935,6 +3935,20 @@ public class ViewFactory {
 		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 		return allView;
 	}
+	private static FacilioView getOccurrenceViews() {
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");	
+		createdTime.setDataType(FieldType.DATE_TIME);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(ModuleFactory.getAlarmOccurenceModule());
+
+		FacilioView allView = new FacilioView();
+		allView.setName("all");
+		allView.setDisplayName("All Alarms");
+		allView.setModuleName("newreadingalarm");
+		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		return allView;
+	}
 	private static FacilioView getReadingAlarmSeverity(String name, String displayName, String severity, boolean equals) {
 
 		Condition alarmCondition = getReadingAlarmSeverityCondition(severity, equals);
@@ -3956,6 +3970,43 @@ public class ViewFactory {
 		view.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 
 		return view;
+	}
+	private static FacilioView getAlarmOcccurrenceSeverity(String name, String displayName, String severity, boolean equals) {
+
+		Condition alarmCondition = getOccurrenceSeverityCondition(severity, equals);
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(alarmCondition);
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");	
+		createdTime.setDataType(FieldType.DATE_TIME);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(ModuleFactory.getAlarmOccurenceModule());
+
+		FacilioView view = new FacilioView();
+		view.setName(name);
+		view.setDisplayName(displayName);
+		view.setCriteria(criteria);
+		view.setModuleName("newreadingalarm");
+		view.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+
+		return view;
+	}
+	public static Condition getOccurrenceSeverityCondition(String severity, boolean equals) {
+		LookupField severityField = new LookupField();
+		severityField.setName("severity");
+		severityField.setColumnName("SEVERITY");
+		severityField.setDataType(FieldType.LOOKUP);
+		severityField.setModule(ModuleFactory.getAlarmOccurenceModule());
+		severityField.setLookupModule(ModuleFactory.getAlarmSeverityModule());
+
+		Condition alarmCondition = new Condition();
+		alarmCondition.setField(severityField);
+		alarmCondition.setOperator(LookupOperator.LOOKUP);
+		alarmCondition.setCriteriaValue(getSeverityAlarmCriteria(severity, equals));
+
+		return alarmCondition;
 	}
 	private static FacilioView getBmsAlarmSeverity(String name, String displayName, String severity, boolean equals) {
 
@@ -3979,6 +4030,29 @@ public class ViewFactory {
 
 		return view;
 	}
+	
+	private static FacilioView getBmsOccurrenceAlarmSeverity(String name, String displayName, String severity, boolean equals) {
+
+		Condition alarmCondition = getOccurrenceSeverityCondition(severity, equals);
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(alarmCondition);
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");	
+		createdTime.setDataType(FieldType.DATE_TIME);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(ModuleFactory.getAlarmOccurenceModule());
+
+		FacilioView view = new FacilioView();
+		view.setName(name);
+		view.setDisplayName(displayName);
+		view.setCriteria(criteria);
+		view.setModuleName("bmsAlarm");
+		view.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+
+		return view;
+	}
 	private static FacilioView getBmsAlarm(String name, String displayName, boolean equals) {
 
 		FacilioField createdTime = new FacilioField();
@@ -3986,6 +4060,22 @@ public class ViewFactory {
 		createdTime.setDataType(FieldType.DATE_TIME);
 		createdTime.setColumnName("LAST_OCCURRED_TIME");
 		createdTime.setModule(ModuleFactory.getBaseAlarmModule());
+
+		FacilioView view = new FacilioView();
+		view.setName(name);
+		view.setDisplayName(displayName);
+		view.setModuleName("bmsAlarm");
+		view.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+
+		return view;
+	}
+	private static FacilioView getBmsAlarmOccurrence(String name, String displayName, boolean equals) {
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");	
+		createdTime.setDataType(FieldType.DATE_TIME);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(ModuleFactory.getAlarmOccurenceModule());
 
 		FacilioView view = new FacilioView();
 		view.setName(name);
@@ -4043,6 +4133,24 @@ public class ViewFactory {
 
 		return typeAlarms;
 	}
+	private static FacilioView getAlarmOccurrenceUnacknowledged() {
+		Criteria criteria = getAlarmOccurrenceUnacknowledgedCriteria();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");	
+		createdTime.setDataType(FieldType.DATE_TIME);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(ModuleFactory.getBaseAlarmModule());
+
+		FacilioView typeAlarms = new FacilioView();
+		typeAlarms.setName("unacknowledged");
+		typeAlarms.setDisplayName("Unacknowledged");
+		typeAlarms.setCriteria(criteria);
+		typeAlarms.setModuleName("newreadingalarm");
+		typeAlarms.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+
+		return typeAlarms;
+	}
 	
 	private static FacilioView getBmsAlarmUnacknowledged() {
 		Criteria criteria = getReadingAlarmUnacknowledgedCriteria();
@@ -4063,6 +4171,24 @@ public class ViewFactory {
 		return typeAlarms;
 	}
 	
+	private static FacilioView getBmsAlarmOccurrenceUnacknowledged() {
+		Criteria criteria = getAlarmOccurrenceUnacknowledgedCriteria();
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");	
+		createdTime.setDataType(FieldType.DATE_TIME);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(ModuleFactory.getAlarmOccurenceModule());
+
+		FacilioView typeAlarms = new FacilioView();
+		typeAlarms.setName("unacknowledgedbmsalarm");
+		typeAlarms.setDisplayName("Unacknowledged");
+		typeAlarms.setCriteria(criteria);
+		typeAlarms.setModuleName("bmsAlarm");
+		typeAlarms.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+
+		return typeAlarms;
+	}
 	public static Criteria getReadingAlarmUnacknowledgedCriteria() {
 		Condition falseCondition = new Condition();
 		falseCondition.setColumnName("ACKNOWLEDGED");
@@ -4084,6 +4210,39 @@ public class ViewFactory {
 		severityField.setColumnName("SEVERITY");
 		severityField.setDataType(FieldType.LOOKUP);
 		severityField.setModule(ModuleFactory.getBaseAlarmModule());
+		severityField.setLookupModule(ModuleFactory.getAlarmSeverityModule());
+
+		Condition activeAlarm = new Condition();
+		activeAlarm.setField(severityField);
+		activeAlarm.setOperator(LookupOperator.LOOKUP);
+		activeAlarm.setCriteriaValue(getSeverityAlarmCriteria("Clear", false));
+
+		criteria.addAndCondition(activeAlarm);
+		return criteria;
+	}
+	
+	
+	public static Criteria getAlarmOccurrenceUnacknowledgedCriteria() {
+		Condition falseCondition = new Condition();
+		falseCondition.setColumnName("ACKNOWLEDGED");
+		falseCondition.setFieldName("acknowledged");
+		falseCondition.setOperator(BooleanOperators.IS);
+		falseCondition.setValue(String.valueOf(false));
+
+		Condition emptyCondition = new Condition();
+		emptyCondition.setColumnName("ACKNOWLEDGED");
+		emptyCondition.setFieldName("acknowledged");
+		emptyCondition.setOperator(CommonOperators.IS_EMPTY);
+
+		Criteria criteria = new Criteria();
+		criteria.addOrCondition(emptyCondition);
+		criteria.addOrCondition(falseCondition);
+
+		LookupField severityField = new LookupField();
+		severityField.setName("severity");
+		severityField.setColumnName("SEVERITY");
+		severityField.setDataType(FieldType.LOOKUP);
+		severityField.setModule(ModuleFactory.getAlarmOccurenceModule());
 		severityField.setLookupModule(ModuleFactory.getAlarmSeverityModule());
 
 		Condition activeAlarm = new Condition();
