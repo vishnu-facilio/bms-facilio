@@ -364,5 +364,111 @@ public class ContractsAPI {
 		};
 		
 	}
+	public static Preference getPaymentNotificationPref() {
+		FacilioForm form = new FacilioForm();
+		List<FormSection> sections = new ArrayList<FormSection>();
+		FormSection formSection = new FormSection();
+		formSection.setName("Payment Notification Preference");
+		List<FormField> fields = new ArrayList<FormField>();
+		fields.add(new FormField("days", FieldDisplayType.NUMBER, "How many days before the payment date has to be notified?", Required.REQUIRED, 1, 1));
+		fields.add(new FormField("to", FieldDisplayType.MULTI_USER_LIST, "Select User", Required.REQUIRED,"users", 1, 1));
+//		fields.add(new FormField("time", FieldDisplayType.TIME, "Enter Time", Required.REQUIRED,1, 1));
+		
+		formSection.setFields(fields);
+		sections.add(formSection);
+		form.setSections(sections);
+		form.setFields(fields);
+		form.setLabelPosition(LabelPosition.TOP);
+		return new Preference("paymentNotification", "Payment Notifications", form) {
+			@Override
+			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
+				Long ruleId = savePaymentPrefs(map, recordId);
+				PreferenceRuleUtil.addPreferenceRule(moduleId, recordId, ruleId, getName());
+			}
+
+			@Override
+			public void disable(Long recordId, Long moduleId) throws Exception {
+				// TODO Auto-generated method stub
+				PreferenceRuleUtil.disablePreferenceRule(moduleId, recordId, getName());
+			}
+
+		};
+		
+	}
+	
+	public static Long savePaymentPrefs (Map<String, Object> map, Long contractId) throws Exception {
+		ContractsContext contract = getContractDetails(contractId);
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.PURCHASE_CONTRACTS);
+		List<FacilioField> fields = modBean.getAllFields(module.getName());
+		Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
+		
+		
+		WorkflowRuleContext workflowRuleContext = new WorkflowRuleContext();
+		workflowRuleContext.setName("Payment Date Notification");
+		workflowRuleContext.setRuleType(RuleType.RECORD_SPECIFIC_RULE);
+		
+		WorkflowEventContext event = new WorkflowEventContext();
+		event.setModuleName(module.getName());
+		event.setActivityType(EventType.SCHEDULED);
+		workflowRuleContext.setEvent(event);
+		workflowRuleContext.setScheduleType(ScheduledRuleType.BEFORE);
+//		workflowRuleContext.setTime((String)map.get("time"));
+		
+		Condition condition = new Condition();
+		condition.setFieldName("status");
+		condition.setValue(String.valueOf(ContractsContext.Status.APPROVED.getValue()));
+		condition.setOperator(EnumOperators.IS);
+		condition.setColumnName("Contracts.STATUS");
+		
+		Criteria criteria = new Criteria();
+		criteria.addConditionMap(condition);
+		criteria.setPattern("(1)");
+		
+		workflowRuleContext.setCriteria(criteria);
+		
+		
+		ActionContext emailAction = new ActionContext();
+		emailAction.setActionType(ActionType.EMAIL_NOTIFICATION);
+		JSONObject json = new JSONObject();
+		List<String> ouIdList = (List<String>)map.get("to");
+		UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
+		
+		StringJoiner userEmailStr = new StringJoiner(",");
+		for(String ouId : ouIdList) {
+			User user = userBean.getUser(Long.parseLong(ouId));
+			if(user != null) {
+				userEmailStr.add(user.getEmail());
+			}
+		}
+		json.put("to", userEmailStr);
+		json.put("subject", "Payment notification");
+		json.put("name", "Payment template");
+		String message = "Hi,\n\nYour contract " + contract.getName() + " from the vendor "+ contract.getVendor().getName() +" Payment is scheduled on "+ DateTimeUtil.getFormattedTime(contract.getNextPaymentDate()) +"\nRegards,\nTeam Facilio";
+		json.put("message", message);
+		WorkflowContext workflow = new WorkflowContext();
+		ParameterContext param = new ParameterContext();
+		param.setName("org.domain");
+		param.setTypeString("String");
+		
+		workflow.setParameters(Collections.singletonList(param));
+		json.put("workflow", FieldUtil.getAsProperties(workflow));
+		emailAction.setTemplateJson(json);
+		
+		workflowRuleContext.setDateFieldId(fieldsMap.get("nextPaymentDate").getFieldId());
+		int days = ((Number) map.get("days")).intValue();
+		workflowRuleContext.setInterval(1 * days * 24 * 60 * 60);
+		workflowRuleContext.setParentId(contractId);
+	   
+		//add rule,action and job
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD, workflowRuleContext);
+		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(emailAction));
+		
+		Chain chain = TransactionChainFactory.getAddOrUpdateRecordRuleChain();
+		chain.execute(context);
+	
+		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
+	}
 	
 }

@@ -68,6 +68,7 @@ public class PreferenceFactory {
 		
 		List<Preference> contractPreference = new ArrayList<Preference>();
 		contractPreference.add(ContractsAPI.getExpiryNotificationPref());
+		contractPreference.add(ContractsAPI.getPaymentNotificationPref());
 		return contractPreference;
 	}
 	
