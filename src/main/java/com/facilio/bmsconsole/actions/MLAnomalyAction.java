@@ -4,7 +4,6 @@ import org.apache.commons.chain.Chain;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.MLContext;
-import com.facilio.bmsconsole.util.MLAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -33,7 +32,7 @@ public class MLAnomalyAction extends FacilioAction {
 	
 	public String fetchSubMeterHierarchy() throws Exception {
 		FacilioContext context = new FacilioContext();
-		MLAPI.getSubMeterDetails(mlAnomalyAlarmId);
+		//MLAPI.getSubMeterDetails(mlAnomalyAlarmId);
 		return SUCCESS;
 	}
 	
