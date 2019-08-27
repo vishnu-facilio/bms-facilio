@@ -290,8 +290,9 @@ public static List<InventoryVendorContext> getInventoryVendorList() throws Excep
 		criteria.setPattern("(1 AND 2)");
 		
 		workflowRuleContext.setCriteria(criteria);
-		workflowRuleContext.setSiteId(storeRoomDetails.getSite().getId());
-		
+		if (storeRoomDetails.getSite() != null && storeRoomDetails.getSite().getId() > 0) {
+			workflowRuleContext.setSiteId(storeRoomDetails.getSite().getId());
+		}		
 		
 		ActionContext emailAction = new ActionContext();
 		emailAction.setActionType(ActionType.BULK_EMAIL_NOTIFICATION);
@@ -434,8 +435,9 @@ public static List<InventoryVendorContext> getInventoryVendorList() throws Excep
 		criteria.setPattern("(1 AND 2)");
 		
 		workflowRuleContext.setCriteria(criteria);
-		workflowRuleContext.setSiteId(storeRoomDetails.getSite().getId());
-		
+		if (storeRoomDetails.getSite() != null && storeRoomDetails.getSite().getId() > 0) {
+			workflowRuleContext.setSiteId(storeRoomDetails.getSite().getId());
+		}
 		
 		ActionContext emailAction = new ActionContext();
 		emailAction.setActionType(ActionType.BULK_EMAIL_NOTIFICATION);
@@ -578,7 +580,9 @@ public static List<InventoryVendorContext> getInventoryVendorList() throws Excep
 		criteria.setPattern("(1 AND 2)");
 		
 		workflowRuleContext.setCriteria(criteria);
-		workflowRuleContext.setSiteId(storeRoomDetails.getSite().getId());
+		if (storeRoomDetails.getSite() != null && storeRoomDetails.getSite().getId() > 0) {
+			workflowRuleContext.setSiteId(storeRoomDetails.getSite().getId());
+		}
 		
 		
 		ActionContext emailAction = new ActionContext();
@@ -724,7 +728,9 @@ public static List<InventoryVendorContext> getInventoryVendorList() throws Excep
 		criteria.setPattern("(1 AND 2)");
 		
 		workflowRuleContext.setCriteria(criteria);
-		workflowRuleContext.setSiteId(storeRoomDetails.getSite().getId());
+		if (storeRoomDetails.getSite() != null && storeRoomDetails.getSite().getId() > 0) {
+			workflowRuleContext.setSiteId(storeRoomDetails.getSite().getId());
+		}
 		
 		
 		ActionContext emailAction = new ActionContext();
