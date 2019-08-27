@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -66,11 +67,13 @@ public class UserUtil {
 				userIds.add((long)map.get("uid"));
 			}
 			Map<Long, Map<String, Object>> iamUserMap = getIAMUserProps(userIds, orgId);
-			for(Map<String, Object> map : actualPropsList) {
-				long uId = (long)map.get("uid");
-				if(iamUserMap.containsKey(uId)) {
-					map.putAll(iamUserMap.get(uId));
-					finalMap.add(map);
+			if (MapUtils.isNotEmpty(iamUserMap)) {
+				for(Map<String, Object> map : actualPropsList) {
+					long uId = (long)map.get("uid");
+					if(iamUserMap.containsKey(uId)) {
+						map.putAll(iamUserMap.get(uId));
+						finalMap.add(map);
+					}
 				}
 			}
 			actualPropsList.clear();
