@@ -73,18 +73,19 @@ public class WorkflowRuleHistoricalLoggerUtil {
 		return null;
 	}
 	
-	public static WorkflowRuleHistoricalLoggerContext getActiveRuleHistoricalLogger(long ruleId) throws Exception {
+	public static List<WorkflowRuleHistoricalLoggerContext> getActiveRuleHistoricalLogger(long ruleId, List<Long> resourceIds) throws Exception {
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getWorkflowRuleHistoricalLoggerFields())
 				.table(ModuleFactory.getWorkflowRuleHistoricalLoggerModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition("RULE_ID", "ruleId", ""+ruleId, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getConditionFromList("RESOURCE_ID", "resourceId", resourceIds, NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition("STATUS", "status", ""+ WorkflowRuleHistoricalLoggerContext.Status.IN_PROGRESS.getIntVal(), NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLogger = FieldUtil.getAsBeanFromMap(props.get(0), WorkflowRuleHistoricalLoggerContext.class);
-			return workflowRuleHistoricalLogger;
+			List<WorkflowRuleHistoricalLoggerContext> workflowRuleHistoricalLoggerList = FieldUtil.getAsBeanListFromMapList(props, WorkflowRuleHistoricalLoggerContext.class);
+			return workflowRuleHistoricalLoggerList;
 		}
 		return null;
 	}

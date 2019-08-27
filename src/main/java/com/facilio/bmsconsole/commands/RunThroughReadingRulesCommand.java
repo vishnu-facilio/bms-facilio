@@ -53,12 +53,6 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 		if (rule == null || !(rule instanceof ReadingRuleContext)) {
 			throw new IllegalArgumentException("Invalid Alarm rule id for running through historical data");
 		}
-				
-		WorkflowRuleHistoricalLoggerContext currentRuleLogger = WorkflowRuleHistoricalLoggerUtil.getActiveRuleHistoricalLogger(rule.getId());
-		if(currentRuleLogger != null)
-		{
-			throw new Exception("Historical already In-Progress for the Current Rule "+ currentRuleLogger.getRuleId());
-		}
 		
 		List<Long> finalResourceIds = new ArrayList<Long>();
 		if(resourceIds == null || resourceIds.isEmpty())
@@ -90,10 +84,15 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 			throw new Exception("Not a valid Inclusion/Exclusion of Resources");
 		}
 		
+		List<WorkflowRuleHistoricalLoggerContext> currentRuleLoggerList = WorkflowRuleHistoricalLoggerUtil.getActiveRuleHistoricalLogger(rule.getId(), finalResourceIds);
+		if(currentRuleLoggerList != null && !currentRuleLoggerList.isEmpty())
+		{
+			throw new Exception("Historical already In-Progress for the Current Rule Logger with ruleId "+ rule.getId());
+		}
+		
 		long loggerGroupId = -1l;
 		boolean isFirst = true;
 		Map<Long,WorkflowRuleHistoricalLoggerContext> workflowRuleHistoricalLoggerMap = new HashMap<Long,WorkflowRuleHistoricalLoggerContext>();
-		
 		
 		for(Long finalResourceId:finalResourceIds)
 		{
