@@ -722,7 +722,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 	}
 	
 	private boolean handleUserScope(ReportDataPointContext dataPoint) throws Exception{
-		Collection<Long> parentIds = (Collection<Long>) dataPoint.getMetaData().get("parentIds");
+		Collection<Long> parentIds = dataPoint.getMetaData() != null ? (Collection<Long>) dataPoint.getMetaData().get("parentIds") : null;
 		if(parentIds != null){
 			ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = moduleBean.getModule(FacilioConstants.ContextNames.RESOURCE);
