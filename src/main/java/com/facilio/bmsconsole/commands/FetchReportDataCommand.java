@@ -124,15 +124,15 @@ public class FetchReportDataCommand extends FacilioCommand {
 		if (groupedDataPoints != null && !groupedDataPoints.isEmpty()) {
 			for (int i = 0; i < groupedDataPoints.size(); i++) {
 				List<ReportDataPointContext> dataPointList = groupedDataPoints.get(i);
-				if(handleUserScope(dataPointList.get(0))){
+//				if(ReportContext.ReportType.READING_REPORT.getValue() == report.getType() && !(handleUserScope(dataPointList.get(0)))){
+//					dataPoints.remove(dataPointList.get(0));
+//					report.setHasEdit(false);
+//				}else{
 					ReportDataContext data = fetchDataForGroupedDPList(dataPointList, report, sortPoint != null, sortPoint == null ? null : sortedData.getxValues());
 					reportData.add(data);
-				}else{
-					dataPoints.remove(dataPointList);
-					report.setHasEdit(false);
-				}
+//				}
 			}
-			report.setDataPoints(dataPoints);
+//			report.setDataPoints(dataPoints);
 		}
 		
 		if (AccountUtil.getCurrentOrg().getId() == 75 || AccountUtil.getCurrentOrg().getId() == 168) {
