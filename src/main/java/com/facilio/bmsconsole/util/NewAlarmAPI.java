@@ -353,7 +353,7 @@ public class NewAlarmAPI {
 		return null;
 	}
 
-	public static List<AlarmOccurrenceContext> getReadingAlarmOccurrences(List<Long> resourceId, Long ruleId, long fieldId, long startTime, long endTime) throws Exception {
+	public static List<AlarmOccurrenceContext> getReadingAlarmOccurrences(List<Long> resourceId, Long ruleId, long fieldId, long startTime, long endTime, Long alarmId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -372,6 +372,16 @@ public class NewAlarmAPI {
 			Map<String, FacilioField> readingAlarmFieldMap = FieldFactory.getAsMap(modBean.getAllFields(readingAlarmModule.getName()));
 			selectBuilder.andCondition(CriteriaAPI.getCondition(readingAlarmFieldMap.get("rule"), String.valueOf(ruleId), PickListOperators.IS));
 			ruleAvailable = true;
+		}
+		if (alarmId != null) {
+			FacilioModule baseAlarmModule = modBean.getModule(FacilioConstants.ContextNames.BASE_ALARM);
+			selectBuilder
+					.innerJoin(baseAlarmModule.getTableName())
+					.on("AlarmOccurrence.ALARM_ID = " + baseAlarmModule.getTableName() + ".ID");
+			Map<String, FacilioField> readingAlarmFieldMap = FieldFactory.getAsMap(modBean.getAllFields(baseAlarmModule.getName()));
+			selectBuilder.andCondition(CriteriaAPI.getCondition(readingAlarmFieldMap.get("alarm"), String.valueOf(alarmId), PickListOperators.IS));
+			ruleAvailable = true;
+			
 		}
 //		if (org.apache.commons.collections.CollectionUtils.isNotEmpty(resourceId)) {
 //			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), resourceId, PickListOperators.IS));

@@ -220,12 +220,13 @@ public class FetchCardDataCommand extends FacilioCommand {
 					paramsJson = widgetStaticContext.getParamsJson();
 					
 					Long parentId = (Long) paramsJson.get("parentId");
+					Long alarmId = (Long) paramsJson.get("alarmId");
 					int dateOperator = Integer.parseInt(paramsJson.get("dateOperator").toString());
 					String dateValue = (String) paramsJson.get("dateValue");
 					Long ruleId = (Long) paramsJson.get("ruleId");
 					
 					DateOperators operator = (DateOperators)Operator.getOperator(dateOperator);
-					result = getResourceAlarmBar(parentId, ruleId, operator.getRange(dateValue), isRca);
+					result = getResourceAlarmBar(parentId, ruleId, operator.getRange(dateValue), isRca, alarmId);
 					context.put(FacilioConstants.ContextNames.RESULT, result);
 					return false;
 				}
@@ -385,13 +386,13 @@ public class FetchCardDataCommand extends FacilioCommand {
 		}
 		return false;
 	}
-	private Map<String,Object> getResourceAlarmBar(Long resourceId,Long ruleId, DateRange dateRange, Boolean isRCA) throws Exception {
+	private Map<String,Object> getResourceAlarmBar(Long resourceId,Long ruleId, DateRange dateRange, Boolean isRCA, Long alarmId) throws Exception {
 		
 		Map<String,Object> result = new HashMap<>();
 		List<Long> resourceIds = resourceId != null && resourceId != -1 ? Collections.singletonList(resourceId) : null;
 
 		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
-			List<AlarmOccurrenceContext> readingAlarmOccurrences = NewAlarmAPI.getReadingAlarmOccurrences(resourceIds, ruleId, -1, dateRange.getStartTime(), dateRange.getEndTime());
+			List<AlarmOccurrenceContext> readingAlarmOccurrences = NewAlarmAPI.getReadingAlarmOccurrences(resourceIds, ruleId, -1, dateRange.getStartTime(), dateRange.getEndTime(), alarmId);
 			Map<Long, AlarmOccurrenceContext> alarmMap = new HashMap<>();
 			JSONArray json = FetchReportAdditionalInfoCommand.splitAlarmOccurrence(readingAlarmOccurrences, dateRange, alarmMap);
 			result.put("alarms", json);
