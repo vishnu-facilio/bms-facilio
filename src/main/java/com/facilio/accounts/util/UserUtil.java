@@ -73,7 +73,8 @@ public class UserUtil {
 					finalMap.add(map);
 				}
 			}
-			actualPropsList = finalMap;
+			actualPropsList.clear();
+			actualPropsList.addAll(finalMap);
 		}
 	}
 	
