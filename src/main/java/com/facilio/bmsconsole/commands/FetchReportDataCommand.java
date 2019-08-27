@@ -12,6 +12,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.Stack;
 import java.util.StringJoiner;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -722,6 +723,10 @@ public class FetchReportDataCommand extends FacilioCommand {
 	}
 	
 	private boolean handleUserScope(ReportDataPointContext dataPoint) throws Exception{
+		LOGGER.log(Level.FINE, "DataPoint ----------> "+dataPoint.toString());
+//		LOGGER.log(Level.FINE, "DataPoint Criteria----------> "+dataPoint.getAllCriteria().toString());
+//		LOGGER.log(Level.FINE, "DataPoint MetaData----------> "+dataPoint.getMetaData().toString());
+//		LOGGER.log(Level.FINE, "DataPoint ParentIds----------> "+dataPoint.getMetaData().get("parentIds").toString());
 		Collection<Long> parentIds = dataPoint.getMetaData() != null ? (Collection<Long>) dataPoint.getMetaData().get("parentIds") : null;
 		if(parentIds != null){
 			ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
