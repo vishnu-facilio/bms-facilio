@@ -413,10 +413,10 @@ public class WorkflowRuleAPI {
 
 		return getWorkFlowsFromMapList(ruleBuilder.get(), false, true, true);
 	}
-	
-	public static List<WorkflowRuleContext> getWorkflowRules(List<Long> ids, boolean fetchEvent) throws Exception {
+
+	public static List<WorkflowRuleContext> getWorkflowRules(List<Long> ids, boolean fetchEvent, boolean fetchChildren, boolean fetchExtended) throws Exception {
 		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
-		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields(); 
+		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 				.table("Workflow_Rule")
 				.select(fields)
@@ -427,10 +427,14 @@ public class WorkflowRuleAPI {
 			fields.addAll(FieldFactory.getWorkflowEventFields());
 			FacilioModule eventModule = ModuleFactory.getWorkflowEventModule();
 			ruleBuilder.innerJoin(eventModule.getTableName())
-						.on(module.getTableName()+".EVENT_ID = "+eventModule.getTableName()+".ID");
+					.on(module.getTableName()+".EVENT_ID = "+eventModule.getTableName()+".ID");
 		}
-		
-		return getWorkFlowsFromMapList(ruleBuilder.get(), fetchEvent, true, true);
+
+		return getWorkFlowsFromMapList(ruleBuilder.get(), fetchEvent, fetchChildren, fetchExtended);
+	}
+	
+	public static List<WorkflowRuleContext> getWorkflowRules(List<Long> ids, boolean fetchEvent) throws Exception {
+		return getWorkflowRules(ids, fetchEvent, true, true);
 	}
 	
 	public static List<WorkflowRuleContext> getWorkflowRules(List<Long> ids) throws Exception {
