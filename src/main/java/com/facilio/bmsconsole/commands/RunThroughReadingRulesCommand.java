@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -113,7 +114,7 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 			}
 		}	
 		
-		if(workflowRuleHistoricalLoggerMap != null && !workflowRuleHistoricalLoggerMap.isEmpty()) {
+		if (MapUtils.isNotEmpty(workflowRuleHistoricalLoggerMap)) {
 			
 			for(Long loggerId:workflowRuleHistoricalLoggerMap.keySet())
 			{
