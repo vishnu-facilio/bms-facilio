@@ -9,6 +9,7 @@ import org.apache.commons.chain.Command;
 import com.facilio.accounts.dto.Permissions;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.accounts.util.ModuleGroupFactory.ModuleGroupPermissionFactory;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.SetupLayout;
 import com.facilio.chain.FacilioContext;
@@ -113,6 +114,20 @@ public class RoleAction extends ActionSupport {
 		
 		return SUCCESS;
 	}
+	List<ModuleGroupPermissionFactory> modulePerms;
+	
+	public List<ModuleGroupPermissionFactory> getModulePerms() {
+		return modulePerms;
+	}
+
+	public void setModulePerms(List<ModuleGroupPermissionFactory> modulePerms) {
+		this.modulePerms = modulePerms;
+	}
+
+	public String getAllPermissions() {
+		modulePerms = ModuleGroupPermissionFactory.getModuleGroupPermissions();
+		return SUCCESS;
+	}
 	private List<Permissions> permissions;
 	public List<Permissions> getPermissions() {
 		return permissions;
@@ -121,4 +136,6 @@ public class RoleAction extends ActionSupport {
 	public void setPermissions(List<Permissions> permissions) {
 		this.permissions = permissions;
 	}
+	
+	
 }

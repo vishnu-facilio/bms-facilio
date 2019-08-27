@@ -169,6 +169,14 @@
             <result name="success" type="json">
 			<param name="includeProperties">groups.*,roles.*,users.*</param></result>
 		</action>
+		
+		<action name="getAllPermissions" class="com.facilio.bmsconsole.actions.RoleAction" method="getAllPermissions">
+		<result name="success" type="json">
+			<param name="enumAsBean">true</param>
+			<param name="includeProperties">modulePerms,modulePerms\[\d+\],modulePerms\[\d+\].*</param>
+		</result>
+		</action>
+		
 		<action name="downloadCertificate" class="com.facilio.bmsconsole.actions.DeviceAction" method="downloadCertificate">
 			<param name="moduleName">setup</param>
 			<param name="permission">CONTROLLER</param>

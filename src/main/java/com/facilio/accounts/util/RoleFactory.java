@@ -9,13 +9,18 @@ import com.facilio.constants.FacilioConstants;
 
 
 public class RoleFactory {
+	
+	private static final String SUPER_ADMIN = "Super Administrator";
+	private static final String ADMIN = "Administrator";
+	private static final String MANAGER = "Manager";
+	private static final String TECHNICIAN = "Technician";
 
 	public static enum Role {
 
-		SUPER_ADMIN(1,"Super Administrator"),
-		ADMIN(2,"Administrator"),
-		MANAGER(3,"Manager"),
-		TECHNICIAN(4,"Technician"),
+		SUPER_ADMIN(1,RoleFactory.SUPER_ADMIN),
+		ADMIN(2,RoleFactory.ADMIN),
+		MANAGER(3,RoleFactory.MANAGER),
+		TECHNICIAN(4,RoleFactory.TECHNICIAN),
 		;
 
 		int roleType;
@@ -47,7 +52,7 @@ public class RoleFactory {
 		List<PermissionInterface> workOrderPermissions = new ArrayList<PermissionInterface>();
 		
 		workOrderPermissions.add(PermissionFactory.WorkOrder_Permission.READ);
-		workOrderPermissions.add(PermissionFactory.WorkOrder_Permission.ASSIGN);
+//		workOrderPermissions.add(PermissionFactory.WorkOrder_Permission.ASSIGN);
 		workOrderPermissions.add(PermissionFactory.WorkOrder_Permission.CREATE);
 		
 		map.put(FacilioConstants.ContextNames.WORK_ORDER, workOrderPermissions);
@@ -70,10 +75,10 @@ public class RoleFactory {
 	
 	private static Map<String, List<PermissionInterface>> getPermissionMapForRole(String roleName) {
 		
-		if (roleName.equals("Manager")) {
+		if (roleName.equals(RoleFactory.MANAGER)) {
 			return getManagerPermissions();
 		}
-		else if (roleName.equals("Technician")) {
+		else if (roleName.equals(RoleFactory.TECHNICIAN)) {
 			return getTechnicianPermissions();
 		}
 		return null;
