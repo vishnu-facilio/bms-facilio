@@ -863,7 +863,6 @@ public class IAMUserBeanImpl implements IAMUserBean {
 					.on("Account_ORG_Users.ORGID=Organizations.ORGID");
 
 		
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.DELETED_TIME", "deletedTime", "-1", NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Organizations.DELETED_TIME", "orgDeletedTime", "-1", NumberOperators.EQUALS));
 		
 		if (includePortal) {
@@ -1072,7 +1071,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 
 	@Override
-	public Map<Long, Map<String, Object>> getUserData(Criteria criteria, long orgId) throws Exception {
+	public Map<Long, Map<String, Object>> getUserData(Criteria criteria, long orgId, boolean shouldFetchDeleted) throws Exception {
 		// TODO Auto-generated method stub
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(IAMAccountConstants.getAccountsUserFields());
@@ -1086,7 +1085,9 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		}
 		
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.DELETED_TIME", "deletedtime", String.valueOf(-1), NumberOperators.EQUALS));
+		if(!shouldFetchDeleted) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.DELETED_TIME", "deletedtime", String.valueOf(-1), NumberOperators.EQUALS));
+		}
 		
 		List<Map<String, Object>> list = selectBuilder.get();
 		if(CollectionUtils.isNotEmpty(list)) {
@@ -1101,23 +1102,16 @@ public class IAMUserBeanImpl implements IAMUserBean {
 
 
 	@Override
-	public Map<Long, Map<String, Object>> getUserDataForUids(List<Long> userIds, long orgId) throws Exception {
+	public Map<Long, Map<String, Object>> getUserDataForUids(List<Long> userIds, long orgId, boolean shouldFetchDeleted) throws Exception {
 		// TODO Auto-generated method stub
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(IAMAccountConstants.getAccountsUserFields());
 		
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("uid"), userIds, NumberOperators.EQUALS));
 		
-		return getUserData(criteria, orgId);
+		return getUserData(criteria, orgId, shouldFetchDeleted);
 		
 	}
-
-	@Override
-	public Map<Long, Map<String, Object>> getUserDataForOrg(long orgId) throws Exception {
-		// TODO Auto-generated method stub
-		return getUserData(null, orgId);
-	}
-
 
 	@Override
 	public boolean verifyPasswordv2(String emailAddress, String domain, String password) throws Exception {

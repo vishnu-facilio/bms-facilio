@@ -439,22 +439,24 @@ public enum ActionType {
 			// StringUtils.join(emails, ","), StringOperators.IS);
 
 			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields).table("ORG_Users")
-					.innerJoin("Users").on("Users.USERID = ORG_Users.USERID").innerJoin("User_Mobile_Setting")
+					.innerJoin("User_Mobile_Setting")
 					.on("ORG_Users.USERID = User_Mobile_Setting.USERID")
 //					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(AccountConstants.getOrgUserModule()))
 					.andCondition(CriteriaAPI.getCondition("ORG_Users.ORG_USERID", "ouid", idList, NumberOperators.EQUALS))
-					.andCustomWhere("ORG_Users.USER_STATUS = true")
 					.orderBy("USER_MOBILE_SETTING_ID");
 
 			List<Map<String, Object>> props = selectBuilder.get();
 			if (props != null && !props.isEmpty()) {
-				UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId());
+				UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId(), false);
 				for (Map<String, Object> prop : props) {
 					Boolean fromPortal = (Boolean)prop.get("fromPortal");
 					if (fromPortal == null) {
 						fromPortal = false;
 					}
-					mobileInstanceIds.add(Pair.of((String) prop.get("mobileInstanceId"), fromPortal));
+					Boolean userStatus = (Boolean)prop.get("userStatus");
+					if(userStatus != null && userStatus) {
+						mobileInstanceIds.add(Pair.of((String) prop.get("mobileInstanceId"), fromPortal));
+					}
 					// emailToMobileId.put((String) prop.get("email"), (String)
 					// prop.get("mobileInstanceId"));
 				}

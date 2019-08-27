@@ -159,7 +159,7 @@ public class OrgBeanImpl implements OrgBean {
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
-			UserUtil.setIAMUserProps(props, orgId);
+			UserUtil.setIAMUserProps(props, orgId, false);
 			for(Map<String, Object> prop : props) {
 				User user = UserBeanImpl.createUserFromProps(prop, true, true, false);
 				UserBean userBean = (UserBean) BeanFactory.lookup("UserBean", user.getOrgId());
@@ -191,7 +191,7 @@ public class OrgBeanImpl implements OrgBean {
 		List<Map<String, Object>> props = fetchOrgUserProps(orgId, criteria);
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
-			UserUtil.setIAMUserProps(props, orgId);
+			UserUtil.setIAMUserProps(props, orgId, false);
 			for(Map<String, Object> prop : props) {
 				User user = UserBeanImpl.createUserFromProps(prop, true, false, false);
 				if(user.getUserType() == UserType.USER.getValue()) {
@@ -208,7 +208,7 @@ public class OrgBeanImpl implements OrgBean {
 		List<Map<String, Object>> props = fetchOrgUserProps(orgId, criteria);
 		if (props != null && !props.isEmpty()) {
 			Map<Long, User> users = new HashMap<>();
-			UserUtil.setIAMUserProps(props, orgId);
+			UserUtil.setIAMUserProps(props, orgId, true);
 			for(Map<String, Object> prop : props) {
 				User user = UserBeanImpl.createUserFromProps(prop, true, false, false);
 				if(user.getUserType() == UserType.USER.getValue()) {
@@ -276,7 +276,7 @@ public class OrgBeanImpl implements OrgBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			UserUtil.setIAMUserProps(props, orgId);
+			UserUtil.setIAMUserProps(props, orgId, false);
 			return UserBeanImpl.createUserFromProps(props.get(0), true, false, false);
 		}
 		return null;
@@ -348,7 +348,7 @@ public class OrgBeanImpl implements OrgBean {
 		List<Map<String, Object>> props = fetchOrgUserProps(orgId, null);
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
-			UserUtil.setIAMUserProps(props, orgId);
+			UserUtil.setIAMUserProps(props, orgId, false);
 			for(Map<String, Object> prop : props) {
 				User user = UserBeanImpl.createUserFromProps(prop, true, false, false);
 				if(user.getUserType() == UserType.REQUESTER.getValue()) {

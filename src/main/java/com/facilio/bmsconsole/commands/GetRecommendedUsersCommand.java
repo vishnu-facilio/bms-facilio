@@ -140,7 +140,7 @@ public class GetRecommendedUsersCommand extends FacilioCommand {
         List<Map<String, Object>> userProps = selectRecordBuilder.get();
         List<User> usersWithRole = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(userProps)) {
-        	UserUtil.setIAMUserProps(userProps, AccountUtil.getCurrentOrg().getOrgId());
+        	UserUtil.setIAMUserProps(userProps, AccountUtil.getCurrentOrg().getOrgId(), false);
             for (Map<String, Object> prop : userProps) {
                 usersWithRole.add(UserBeanImpl.createUserFromProps(prop, false, false, false));
             }

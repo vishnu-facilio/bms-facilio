@@ -173,16 +173,12 @@ public class IAMUserUtil {
 	public static boolean setDefaultOrg(long uid, long orgId) throws Exception {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().setDefaultOrgv2(uid, orgId));
 	}
-	public static Map<Long, Map<String, Object>> getUserData(List<Long> uids, long orgId) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserDataForUids(uids, orgId));
+	public static Map<Long, Map<String, Object>> getUserData(List<Long> uids, long orgId, boolean shouldFetchDeleted) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserDataForUids(uids, orgId, shouldFetchDeleted));
 	}
 	
-	public static Map<Long, Map<String, Object>> getUserDataForOrg(long orgId) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserDataForOrg(orgId));
-	}
-	
-	public static Map<Long,Map<String, Object>> getIAMOrgUserData(Criteria criteria, long orgId) throws Exception {
-		return  FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserData(criteria, orgId));
+	public static Map<Long,Map<String, Object>> getIAMOrgUserData(Criteria criteria, long orgId, boolean shouldFetchDeleted) throws Exception {
+		return  FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getUserData(criteria, orgId, shouldFetchDeleted));
 	}
 	
 	public static boolean rollbackUserAdded(IAMUser user, long orgId) throws Exception {

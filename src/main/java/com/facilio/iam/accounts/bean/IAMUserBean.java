@@ -82,11 +82,9 @@ public interface IAMUserBean {
 
 	public IAMAccount getAccount(long userId, String orgDomain) throws Exception;
 
-	public Map<Long, Map<String, Object>> getUserData(Criteria criteria, long orgId) throws Exception;
+	public Map<Long, Map<String, Object>> getUserData(Criteria criteria, long orgId, boolean shouldFetchDeleted) throws Exception;
 
-	public Map<Long, Map<String, Object>> getUserDataForUids(List<Long> userIds, long orgId) throws Exception;
-	
-	public Map<Long, Map<String, Object>> getUserDataForOrg(long orgId) throws Exception;
+	public Map<Long, Map<String, Object>> getUserDataForUids(List<Long> userIds, long orgId, boolean shouldFetchDeleted) throws Exception;
 	
 	public String validateAndGenerateToken(String emailaddress, String password, String userAgent, String userType,
 			String ipAddress, String domain, boolean startUserSession) throws Exception ;

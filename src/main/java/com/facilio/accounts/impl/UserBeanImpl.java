@@ -352,7 +352,7 @@ public class UserBeanImpl implements UserBean {
 	
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId());
+			UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId(), false);
 			User user = createUserFromProps(props.get(0), true, true, false); // Giving as false because user cannot
 																				// accept invite via portal APIs
 			return user;
@@ -478,7 +478,7 @@ public class UserBeanImpl implements UserBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId());
+			UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId(), false);
 			User user = createUserFromProps(props.get(0), true, true, false);
 			return user;
 		}
@@ -499,7 +499,7 @@ public class UserBeanImpl implements UserBean {
 			
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			UserUtil.setIAMUserProps(props, orgId);
+			UserUtil.setIAMUserProps(props, orgId, false);
 			User user = createUserFromProps(props.get(0), true, true, false);
 			return user;
 		}
@@ -532,7 +532,7 @@ public class UserBeanImpl implements UserBean {
 		selectBuilder.andCriteria(criteria);
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId());
+			UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId(), false);
 			User user = createUserFromProps(props.get(0), withRole, true, false);
 			return user;
 		}
@@ -593,7 +593,7 @@ public class UserBeanImpl implements UserBean {
 
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId());
+			UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId(), false);
 			return createUserFromProps(props.get(0), true, false, true);
 		}
 
@@ -612,7 +612,7 @@ public class UserBeanImpl implements UserBean {
 		List<Map<String, Object>> props = fetchORGUserProps(criteria, AccountUtil.getCurrentOrg().getOrgId(), ouids);
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
-			UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId());
+			UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId(), false);
 			for (Map<String, Object> prop : props) {
 				User user = createUserFromProps(prop, true, true, false);
 				users.add(user);
@@ -629,7 +629,7 @@ public class UserBeanImpl implements UserBean {
 		criteria.addAndCondition(CriteriaAPI.getConditionFromList("ROLE_ID", "roleId", roleIds, PickListOperators.IS));
 		List<Map<String, Object>> props = fetchORGUserProps(criteria, AccountUtil.getCurrentOrg().getOrgId());
 		if (props != null && !props.isEmpty()) {
-			UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId());
+			UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId(), false);
 			Map<Long, List<User>> userMap = new HashMap<>();
 			for (Map<String, Object> prop : props) {
 				User user = createUserFromProps(prop, false, false, false);
@@ -654,7 +654,7 @@ public class UserBeanImpl implements UserBean {
 				CriteriaAPI.getCondition("ROLE_ID", "roleId", String.valueOf(roleId), PickListOperators.IS));
 		List<Map<String, Object>> props = fetchORGUserProps(criteria, AccountUtil.getCurrentOrg().getOrgId());
 		if (props != null && !props.isEmpty()) {
-			UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId());
+			UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId(), false);
 			List<User> users = new ArrayList<>();
 			for (Map<String, Object> prop : props) {
 				User user = createUserFromProps(prop, false, false, false);
@@ -678,7 +678,7 @@ public class UserBeanImpl implements UserBean {
 			List<Map<String, Object>> props = fetchORGUserProps(criteria, AccountUtil.getCurrentOrg().getOrgId());
 			if (props != null && !props.isEmpty()) {
 				List<User> users = new ArrayList<>();
-				UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId());
+				UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId(), false);
 				for (Map<String, Object> prop : props) {
 					User user = createUserFromProps(prop, false, true, false);
 					if (user.getAccessibleSpace() == null || user.getAccessibleSpace().isEmpty()
@@ -723,7 +723,7 @@ public class UserBeanImpl implements UserBean {
 	public Map<Long, User> getUsersAsMap(Criteria criteria, Collection<Long>... ouids) throws Exception {
 		List<Map<String, Object>> props = fetchORGUserProps(criteria, AccountUtil.getCurrentOrg().getOrgId(), ouids);
 		if (props != null && !props.isEmpty()) {
-			UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId());
+			UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId(), true);
 			Map<Long, User> users = new HashMap<>();
 			for (Map<String, Object> prop : props) {
 				User user = createUserFromProps(prop, true, true, false);

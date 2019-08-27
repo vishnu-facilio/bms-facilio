@@ -59,14 +59,14 @@ public class UserUtil {
 		
 	}
 	
-	public static void setIAMUserProps(List<Map<String, Object>> actualPropsList, long orgId) throws Exception {
+	public static void setIAMUserProps(List<Map<String, Object>> actualPropsList, long orgId, boolean shouldFetchDeleted) throws Exception {
 		if(CollectionUtils.isNotEmpty(actualPropsList)) {
 			List<Map<String, Object>> finalMap = new ArrayList<Map<String,Object>>();
 			List<Long> userIds = new ArrayList<Long>();
 			for(Map<String, Object> map : actualPropsList) {
 				userIds.add((long)map.get("uid"));
 			}
-			Map<Long, Map<String, Object>> iamUserMap = getIAMUserProps(userIds, orgId);
+			Map<Long, Map<String, Object>> iamUserMap = getIAMUserProps(userIds, orgId, shouldFetchDeleted);
 			if (MapUtils.isNotEmpty(iamUserMap)) {
 				for(Map<String, Object> map : actualPropsList) {
 					long uId = (long)map.get("uid");
@@ -93,27 +93,21 @@ public class UserUtil {
 		Criteria finalCriteira = new Criteria();
 		finalCriteira.andCriteria(userEmailCriteria);
 		
-		Map<Long, Map<String, Object>> userMap = IAMUserUtil.getIAMOrgUserData(finalCriteira, AccountUtil.getCurrentOrg().getOrgId());
+		Map<Long, Map<String, Object>> userMap = IAMUserUtil.getIAMOrgUserData(finalCriteira, AccountUtil.getCurrentOrg().getOrgId(), false);
 		if(userMap != null) {
 			return userMap.values().stream().findFirst().get();
 		}
 		return null;
 		
 	}
-	public static Map<Long, Map<String, Object>> getIAMUserProps(List<Long> userIds, long orgId) throws Exception {
-		Map<Long, Map<String, Object>> iamUserMap = IAMUserUtil.getUserData(userIds, orgId);
+	public static Map<Long, Map<String, Object>> getIAMUserProps(List<Long> userIds, long orgId, boolean shouldFetchDeleted) throws Exception {
+		Map<Long, Map<String, Object>> iamUserMap = IAMUserUtil.getUserData(userIds, orgId, shouldFetchDeleted);
 		return iamUserMap;
-	}
-	
-	public static Map<Long, Map<String, Object>> getIAMUsersMapForCurrentOrg() throws Exception {
-		return IAMUserUtil.getIAMOrgUserData(null, AccountUtil.getCurrentOrg().getOrgId());
-		
 	}
 	
 	public static Map<String, Object> getUserFromPhone(String phone) throws Exception {
 		Criteria criteria = new Criteria();
 		criteria.addAndCondition(CriteriaAPI.getCondition("ORGID", "orgId", String.valueOf(AccountUtil.getCurrentOrg().getId()), NumberOperators.EQUALS));
-		criteria.addAndCondition(CriteriaAPI.getCondition("DELETED_TIME", "deletedTime", String.valueOf(-1), NumberOperators.EQUALS));
 		criteria.addAndCondition(CriteriaAPI.getCondition("USER_STATUS", "userStatus", "1", NumberOperators.EQUALS));
 		
 		Criteria criteria2 = new Criteria();
@@ -123,7 +117,7 @@ public class UserUtil {
 		Criteria finalCriteria = new Criteria();
 		finalCriteria.andCriteria(criteria);
 		finalCriteria.andCriteria(criteria2);
-		Map<Long, Map<String, Object>> userMap = IAMUtil.getUserBean().getUserData(finalCriteria, AccountUtil.getCurrentOrg().getOrgId());
+		Map<Long, Map<String, Object>> userMap = IAMUtil.getUserBean().getUserData(finalCriteria, AccountUtil.getCurrentOrg().getOrgId(), false);
 		if(userMap != null) {
 			return userMap.values().stream().findFirst().get();
 		}
@@ -141,7 +135,7 @@ public class UserUtil {
 		finalCriteira.andCriteria(userEmailCriteria);
 		finalCriteira.andCriteria(criteria);
 		
-		Map<Long, Map<String, Object>> userMap = IAMUserUtil.getIAMOrgUserData(finalCriteira, AccountUtil.getCurrentOrg().getOrgId());
+		Map<Long, Map<String, Object>> userMap = IAMUserUtil.getIAMOrgUserData(finalCriteira, AccountUtil.getCurrentOrg().getOrgId(), false);
 		if(userMap != null) {
 			return userMap.values().stream().findFirst().get();
 		}
