@@ -124,15 +124,15 @@ public class FetchReportDataCommand extends FacilioCommand {
 		if (groupedDataPoints != null && !groupedDataPoints.isEmpty()) {
 			for (int i = 0; i < groupedDataPoints.size(); i++) {
 				List<ReportDataPointContext> dataPointList = groupedDataPoints.get(i);
-//				if(ReportContext.ReportType.READING_REPORT.getValue() == report.getType() && !(handleUserScope(dataPointList.get(0)))){
-//					dataPoints.remove(dataPointList.get(0));
-//					report.setHasEdit(false);
-//				}else{
+				if(ReportContext.ReportType.READING_REPORT.getValue() == report.getType() && !(handleUserScope(dataPointList.get(0)))){
+					dataPoints.remove(dataPointList.get(0));
+					report.setHasEdit(false);
+				}else{
 					ReportDataContext data = fetchDataForGroupedDPList(dataPointList, report, sortPoint != null, sortPoint == null ? null : sortedData.getxValues());
 					reportData.add(data);
-//				}
+				}
 			}
-//			report.setDataPoints(dataPoints);
+			report.setDataPoints(dataPoints);
 		}
 		
 		if (AccountUtil.getCurrentOrg().getId() == 75 || AccountUtil.getCurrentOrg().getId() == 168) {
@@ -722,31 +722,36 @@ public class FetchReportDataCommand extends FacilioCommand {
 	}
 	
 	private boolean handleUserScope(ReportDataPointContext dataPoint) throws Exception{
-		ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = moduleBean.getModule(FacilioConstants.ContextNames.RESOURCE);
-		List<FacilioField> fields = moduleBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		
-		FacilioField idField = FieldFactory.getIdField(module);
-		
-		SelectRecordsBuilder<ResourceContext> builder = new SelectRecordsBuilder<ResourceContext>()
-				.select(Collections.singletonList(idField))
-				.module(module)
-				.beanClass(ResourceContext.class)
-				.andCondition(CriteriaAPI.getIdCondition((Collection<Long>) dataPoint.getMetaData().get("parentIds"), module))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceType"), String.valueOf(ResourceContext.ResourceType.ASSET.getValue()), NumberOperators.EQUALS));
-		
-		Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(FacilioConstants.ContextNames.ASSET);
-		if(scopeCriteria != null) {
-			builder.andCriteria(scopeCriteria);
-		}
-		
-		List<Map<String, Object>> assetList = builder.getAsProps();
-		if (assetList != null && !assetList.isEmpty()) {
+		Collection<Long> parentIds = (Collection<Long>) dataPoint.getMetaData().get("parentIds");
+		if(parentIds != null){
+			ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = moduleBean.getModule(FacilioConstants.ContextNames.RESOURCE);
+			List<FacilioField> fields = moduleBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+			
+			FacilioField idField = FieldFactory.getIdField(module);
+			
+			SelectRecordsBuilder<ResourceContext> builder = new SelectRecordsBuilder<ResourceContext>()
+					.select(Collections.singletonList(idField))
+					.module(module)
+					.beanClass(ResourceContext.class)
+					.andCondition(CriteriaAPI.getIdCondition(parentIds, module))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceType"), String.valueOf(ResourceContext.ResourceType.ASSET.getValue()), NumberOperators.EQUALS));
+			
+			Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(FacilioConstants.ContextNames.ASSET);
+			if(scopeCriteria != null) {
+				builder.andCriteria(scopeCriteria);
+			}
+			
+			List<Map<String, Object>> assetList = builder.getAsProps();
+			if (assetList != null && !assetList.isEmpty()) {
+				return true;
+			}
+			else{
+				return false;
+			}
+		}else{
 			return true;
-		}
-		else{
-			return false;
 		}
 	}
 }
