@@ -56,24 +56,24 @@ public class MLAnomalyPageFactory extends PageFactory {
 	}
 	private static void addMlAnomalyDetailsWidget (Section section) {
 		PageWidget pageWidget = new PageWidget(WidgetType.ANOMALY_DETAILS_WIDGET);
-		pageWidget.addToLayoutParams(section, 24, 6);
+		pageWidget.addToLayoutParams(section, 24, 5);
 		section.addWidget(pageWidget);
 	}
 	private static void addNoOfAnomalies(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD, "noOfAnomalies");
-		cardWidget.addToLayoutParams(section, 8, 5);
+		cardWidget.addToLayoutParams(section, 8, 4);
 		cardWidget.addToWidgetParams("type", CardType.NO_OF_ANOMALIES.getName());
 		section.addWidget(cardWidget);
 	}
 	private static void addConspumstionDetails(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD, "energyCDD");
-		cardWidget.addToLayoutParams(section, 8, 5);
+		cardWidget.addToLayoutParams(section, 8, 4);
 		cardWidget.addToWidgetParams("type", CardType.ML_ALARM_ENERGY_CDD.getName());
 		section.addWidget(cardWidget);
 	}
 	private static void addEnergyWastage(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD, "energyWastageDetails");
-		cardWidget.addToLayoutParams(section, 8, 5);
+		cardWidget.addToLayoutParams(section, 8, 4);
 		cardWidget.addToWidgetParams("type", CardType.ENERGY_WASTAGE_DETAILS.getName());
 		section.addWidget(cardWidget);
 	}
@@ -86,7 +86,7 @@ public class MLAnomalyPageFactory extends PageFactory {
 	}
 	private static void addSubMeterDetails(Section section) {
 		PageWidget pageWidget = new PageWidget(WidgetType.ANOMALY_SUB_METER_WIDGET);
-		pageWidget.addToLayoutParams(section, 24, 11);
+		pageWidget.addToLayoutParams(section, 24, 9);
 		section.addWidget(pageWidget);
 		
 	}

@@ -586,11 +586,11 @@ public class ColumnFactory {
 		columns.add(new ViewField("resource", "Space / Asset"));
 		columns.add(new ViewField("source", "Source"));
 		columns.add(new ViewField("condition", "Condition"));
-		columns.add(new ViewField("lastOccurredTime", "Last Occurred Time"));
+		columns.add(new ViewField("lastOccurredTime", "Last Reported Time"));
 		columns.add(new ViewField("acknowledgedBy", "Acknowledged By"));
 		columns.add(new ViewField("acknowledged", "Acknowledged"));
 		columns.add(new ViewField("noOfOccurrences", "Occurrences"));
-		columns.add(new ViewField("lastCreatedTime", "Last Created Time"));
+		columns.add(new ViewField("lastCreatedTime", "Last Occurred Time"));
 		columns.add(new ViewField("readingalarmcategory", "Category" ));
 		return columns;
 	}
