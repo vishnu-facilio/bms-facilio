@@ -4,6 +4,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedMap;
 
@@ -93,6 +94,7 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 
     	SortedMap<Long,Object> adjustedUpperBoundMap = variablesData.get("adjustedUpperBound");
     	double adjustedUpperBound = (double) adjustedUpperBoundMap.get(adjustedUpperBoundMap.firstKey());
+    	
     	 
     	LOGGER.info("Inside check and Generate Event "+parentID+". actual value "+actualValue+" , upperBound "+adjustedUpperBound);
     	if(actualValue > adjustedUpperBound)
@@ -120,7 +122,7 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 
     	if(actualValue > adjustedUpperBound)
     	{
-    		generateRCAAnomalyEvent(actualValue,adjustedUpperBound,assetID,mlContext.getMLVariable().get(0).getFieldID(),mlContext.getPredictionTime(),parentAlarmID,Long.parseLong(mlContext.getMLModelVariable("energyfieldid")),Long.parseLong(mlContext.getMLModelVariable("adjustedupperboundfieldid")),mlContext.getId());
+    		generateRCAAnomalyEvent(actualValue,adjustedUpperBound,assetID,mlContext.getMLVariable().get(0).getFieldID(),mlContext.getPredictionTime(),parentAlarmID,Long.parseLong(mlContext.getMLModelVariable("energyfieldid")),Long.parseLong(mlContext.getMLModelVariable("adjustedupperboundfieldid")),mlContext.getId(),mlContext.getAssetDetails());
     		return true;
     	}
     	else
@@ -233,7 +235,7 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 	
 	}
 	
-	private void generateRCAAnomalyEvent(double actualValue,double adjustedUpperBound,long assetID,long fieldID,long ttime,long parentid,long energyDataFieldid,long upperAnomalyFieldid,long mlid) throws Exception
+	private void generateRCAAnomalyEvent(double actualValue,double adjustedUpperBound,long assetID,long fieldID,long ttime,long parentid,long energyDataFieldid,long upperAnomalyFieldid,long mlid,Hashtable<Long,Map<String,Object>> assetDetails) throws Exception
 	{   
 		LOGGER.info("Generating RCAAnomaly Event "+assetID);
 		String message = "Anomaly Detected. Actual Consumption :"+actualValue+", Expected Max Consumption :"+adjustedUpperBound;
@@ -248,6 +250,16 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
         event.setEnergyDataFieldid(energyDataFieldid);
         event.setUpperAnomalyFieldid(upperAnomalyFieldid);
         event.setparentid(parentid);
+        if(assetDetails.containsKey(assetID))
+        {
+        	Map<String,Object> details = assetDetails.get(assetID);
+        	if(details.containsKey("ratio"))
+        	{
+        		long ratio = (long) details.get("ratio");
+        		event.setRatio(ratio);
+        	}
+        }
+        
         event.setmlid(mlid);
         
         

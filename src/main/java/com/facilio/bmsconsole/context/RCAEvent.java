@@ -8,6 +8,7 @@ public class RCAEvent extends MLAnomalyEvent
 
 	private static final long serialVersionUID = 1L;
 	private long parentid;
+	private long ratio;
 	
 	public void setparentid(long parentid)
 	{
@@ -17,6 +18,17 @@ public class RCAEvent extends MLAnomalyEvent
 	{
 		return parentid;
 	}
+	
+	public void setRatio(long ratio)
+	{
+		this.ratio=ratio;
+	}
+	
+	public long getRatio()
+	{
+		return ratio;
+	}
+
 	
 	@Override
 	public String constructMessageKey() {
