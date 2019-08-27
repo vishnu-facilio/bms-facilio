@@ -25,6 +25,8 @@ import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
+import com.facilio.bmsconsole.context.MLAlarmContext;
+import com.facilio.bmsconsole.context.MLAnomalyAlarm;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
@@ -103,7 +105,7 @@ public class FetchReportAdditionalInfoCommand extends FacilioCommand {
 
 					if (showAlarms && !fetchEventBar) {
 						if (AccountUtil.isFeatureEnabled(FeatureLicense.NEW_ALARMS)) {
-							newAlarm(report, showAlarms, fetchEventBar, alarmId, (ReadingAlarm) currentAlarm, reportAggrData, context, csvData);
+							newAlarm(report, showAlarms, fetchEventBar, alarmId, (BaseAlarmContext) currentAlarm, reportAggrData, context, csvData);
 						}
 						else {
 							oldAlarm(report, showAlarms, fetchEventBar, alarmId, (ReadingAlarmContext) currentAlarm, reportAggrData, context, csvData);
@@ -143,7 +145,7 @@ public class FetchReportAdditionalInfoCommand extends FacilioCommand {
 		return false;
 	}
 	
-	private void newAlarm(ReportContext report, boolean showAlarms, boolean fetchEventBar, Long occurrenceId, ReadingAlarm currentAlarm,
+	private void newAlarm(ReportContext report, boolean showAlarms, boolean fetchEventBar, Long occurrenceId, BaseAlarmContext currentAlarm,
 			Map<String, Object> reportAggrData, Context context, Collection<Map<String, Object>> csvData) throws Exception {
 		Map<Long, AlarmOccurrenceContext> alarmMap = new HashMap<>();
 		List<AlarmOccurrenceContext> allAlarms = new ArrayList<>();
@@ -153,10 +155,19 @@ public class FetchReportAdditionalInfoCommand extends FacilioCommand {
 			
 			if (parentIds != null) {
 				List<AlarmOccurrenceContext> occurrences = null;
+				Long readingFieldId = null;
+				if (currentAlarm instanceof MLAnomalyAlarm) {
+					MLAnomalyAlarm alarm = (MLAnomalyAlarm) currentAlarm;
+					readingFieldId = alarm.getEnergyDataFieldid();
+				}
+				else if (currentAlarm instanceof ReadingAlarm) {
+					ReadingAlarm alarm = (ReadingAlarm) currentAlarm;
+					readingFieldId = alarm.getReadingFieldId();
+				}
 				if (occurrenceId == null || occurrenceId == -1) {
 					occurrences = NewAlarmAPI.getReadingAlarmOccurrences(parentIds, -1l, dp.getyAxis().getFieldId(), report.getDateRange().getStartTime(), report.getDateRange().getEndTime());
 				}
-				else if (currentAlarm != null && currentAlarm.getReadingFieldId() == dp.getyAxis().getFieldId() && parentIds.contains(currentAlarm.getResource().getId())) {
+				else if (currentAlarm != null && readingFieldId == dp.getyAxis().getFieldId() && parentIds.contains(currentAlarm.getResource().getId())) {
 					AlarmOccurrenceContext alarmOccurrence = NewAlarmAPI.getAlarmOccurrence(occurrenceId);
 					occurrences = NewAlarmAPI.getReadingAlarmOccurrences(alarmOccurrence.getAlarm().getId(), report.getDateRange().getStartTime(), report.getDateRange().getEndTime());
 				}

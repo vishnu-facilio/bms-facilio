@@ -643,6 +643,7 @@ public class AlarmAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.IS_RCA, getIsRca());
 		context.put(FacilioConstants.ContextNames.ASSET_ID, assetId);
 		context.put(FacilioConstants.ContextNames.READING_RULE_ID, ruleId);
+		context.put(FacilioConstants.ContextNames.ALARM_ID, alarmId);
 		context.put(FacilioConstants.ContextNames.DATE_RANGE, dateRange);
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateOperatorValue);
@@ -667,6 +668,15 @@ public class AlarmAction extends FacilioAction {
 		this.assetId = assetId;
 	}
 	
+	private long alarmId = -1;
+	
+	public long getAlarmId() {
+		return alarmId;
+	}
+	public void setAlarmId(long alarmId) {
+		this.alarmId = alarmId;
+	}
+
 	private int dateOperator = -1;
 	public int getDateOperator() {
 		return dateOperator;

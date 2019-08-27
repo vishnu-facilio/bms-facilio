@@ -42,6 +42,7 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 		long assetId = (long) context.get(ContextNames.ASSET_ID);
 		Boolean isRca = (Boolean) context.get(FacilioConstants.ContextNames.IS_RCA);
 		long readingRuleId = (long) context.get(ContextNames.READING_RULE_ID);
+		long alarmId = (long) context.get(ContextNames.ALARM_ID);
 		DateOperators operator = DateOperators.CURRENT_WEEK;
 		DateRange dateRange = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE);
 		if (dateRange == null) {
@@ -57,7 +58,7 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 
 		List<Map<String, Object>> props = null;
 		if ( AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
-			props = getNewAlarmProps(modBean, assetId, readingRuleId,  dateRange, operator);
+			props = getNewAlarmProps(modBean, assetId, readingRuleId,  dateRange, operator, alarmId);
 		}
 		else {
 			props = getAlarmProps(modBean, assetId, readingRuleId, isRca, dateRange, operator);
@@ -180,7 +181,7 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 		return props;
 	}
 
-	private List<Map<String, Object>> getNewAlarmProps(ModuleBean modBean, long assetId, long ruleId, DateRange dateRange, Operator operator) throws Exception {
+	private List<Map<String, Object>> getNewAlarmProps(ModuleBean modBean, long assetId, long ruleId, DateRange dateRange, Operator operator, long alarmId) throws Exception {
 		FacilioModule readingAlarmModule = modBean.getModule(ContextNames.NEW_READING_ALARM);
 		FacilioModule occurrenceModule = modBean.getModule(ContextNames.ALARM_OCCURRENCE);
 
@@ -205,7 +206,7 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 		selectFields.add(durationField);
 		selectFields.add(resourceFieldColumn);
 		selectFields.addAll(FieldFactory.getCountField(occurrenceModule));
-
+		FacilioField alarmField = fieldMap.get("alarmId");
 		SelectRecordsBuilder<AlarmOccurrenceContext> builder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
 				.select(selectFields)
 				.beanClass(AlarmOccurrenceContext.class)
@@ -221,6 +222,10 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 		if (ruleId > 0) {
 			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("rule"), String.valueOf(ruleId), NumberOperators.EQUALS))
 			.groupBy(ruleField.getCompleteColumnName());
+		}
+		if (alarmId > 0) {
+			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("alarm"), String.valueOf(alarmId), NumberOperators.EQUALS))
+			.groupBy(alarmField.getCompleteColumnName());
 		}
 
 		builder.andCondition(CriteriaAPI.getCondition(ruleField, CommonOperators.IS_NOT_EMPTY))
