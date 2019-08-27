@@ -31,6 +31,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 
@@ -521,30 +522,105 @@ public class NewAlarmAPI {
 		List<AlarmOccurrenceContext> AlarmOccurrenceList = selectbuilder.get();
 
 		List<Long> delAlarmOccurrenceIds = new ArrayList<Long>();
-		AlarmOccurrenceContext initialEdgeCaseAlarmOccurrence = new AlarmOccurrenceContext();
-		AlarmOccurrenceContext finalEdgeCaseAlarmOccurrence = new AlarmOccurrenceContext();
+		List<AlarmOccurrenceContext> initialEdgeCaseAlarmOccurrence = new ArrayList<AlarmOccurrenceContext>();
+		List<AlarmOccurrenceContext> finalEdgeCaseAlarmOccurrence = new ArrayList<AlarmOccurrenceContext>();
 
 		if (AlarmOccurrenceList != null && !AlarmOccurrenceList.isEmpty()){
 
 			if (AlarmOccurrenceList.get(0).getCreatedTime() < startTime) {
-				initialEdgeCaseAlarmOccurrence = AlarmOccurrenceList.get(0);
+				initialEdgeCaseAlarmOccurrence.add(AlarmOccurrenceList.get(0));
 			}
 			if (AlarmOccurrenceList.get(AlarmOccurrenceList.size() - 1).getClearedTime() > endTime) {
-				finalEdgeCaseAlarmOccurrence = AlarmOccurrenceList.get(AlarmOccurrenceList.size() - 1);
+				finalEdgeCaseAlarmOccurrence.add(AlarmOccurrenceList.get(AlarmOccurrenceList.size() - 1));
 			}
-
-			for (AlarmOccurrenceContext alarmOccurrence : AlarmOccurrenceList) {
-				if (alarmOccurrence.equals(initialEdgeCaseAlarmOccurrence) || alarmOccurrence.equals(finalEdgeCaseAlarmOccurrence)) {
-					continue;
+			
+			
+			if(initialEdgeCaseAlarmOccurrence.isEmpty() && finalEdgeCaseAlarmOccurrence.isEmpty()) 
+			{
+				for (AlarmOccurrenceContext alarmOccurrence : AlarmOccurrenceList) {
+					delAlarmOccurrenceIds.add((Long) alarmOccurrence.getId());
 				}
-				delAlarmOccurrenceIds.add((Long) alarmOccurrence.getId());
+			}
+			else
+			{
+				for (AlarmOccurrenceContext alarmOccurrence : AlarmOccurrenceList) {
+					if (initialEdgeCaseAlarmOccurrence.contains(alarmOccurrence) || finalEdgeCaseAlarmOccurrence.contains(alarmOccurrence)) {
+						continue;
+					}
+					delAlarmOccurrenceIds.add((Long) alarmOccurrence.getId());
+				}			
 			}
 
-			deleteAllAlarmOccurences(delAlarmOccurrenceIds);
+			if(delAlarmOccurrenceIds != null && !delAlarmOccurrenceIds.isEmpty()) {
+				deleteAllAlarmOccurences(delAlarmOccurrenceIds);
+			}
 			
 			FacilioModule eventModule = modBean.getModule(FacilioConstants.ContextNames.BASE_EVENT);
 			List<FacilioField> allEventFields = modBean.getAllFields(eventModule.getName());
 
+			if (initialEdgeCaseAlarmOccurrence != null && !initialEdgeCaseAlarmOccurrence.isEmpty()) {
+				BaseAlarmContext baseAlarm = initialEdgeCaseAlarmOccurrence.get(0).getAlarm();	
+				//if (baseAlarm.getTypeEnum() == BaseAlarmContext.Type.READING_ALARM) {
+					BaseEventContext clearEvent = new ReadingEventContext();
+					clearEvent.setSeverity(AlarmAPI.getAlarmSeverity("Clear"));
+					clearEvent.setSeverityString(AlarmAPI.getAlarmSeverity("Clear").getSeverity());
+					clearEvent.setComment("Automated event");
+					clearEvent.setEventMessage("Automated Clear Event");
+					clearEvent.setMessageKey(baseAlarm.getKey());
+					clearEvent.setCreatedTime(startTime - 1);
+					clearEvent.setResource(baseAlarm.getResource());
+					clearEvent.setAlarmOccurrence(initialEdgeCaseAlarmOccurrence.get(0)) ;
+		
+					InsertRecordBuilder<BaseEventContext> insertBuilder = new InsertRecordBuilder<BaseEventContext>()
+							.moduleName(FacilioConstants.ContextNames.BASE_EVENT).fields(allEventFields);
+		
+					insertBuilder.addRecord(clearEvent);
+					insertBuilder.save();
+		
+					DeleteRecordBuilder<BaseEventContext> deletebuilder = new DeleteRecordBuilder<BaseEventContext>()
+							.module(eventModule)
+							.andCondition(CriteriaAPI.getCondition("ALARM_OCCURRENCE_ID", "alarmOccurrence","" +initialEdgeCaseAlarmOccurrence.get(0).getId(), NumberOperators.EQUALS))
+							.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", "" + startTime, NumberOperators.GREATER_THAN_EQUAL));
+					deletebuilder.delete();
+		
+					initialEdgeCaseAlarmOccurrence.get(0).setClearedTime(startTime - 1);
+					
+					UpdateRecordBuilder<AlarmOccurrenceContext> updateBuilder = new UpdateRecordBuilder<AlarmOccurrenceContext>()
+							.moduleName(FacilioConstants.ContextNames.ALARM_OCCURRENCE)
+							.andCondition(CriteriaAPI.getIdCondition(initialEdgeCaseAlarmOccurrence.get(0).getId(), modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE)))
+							.fields(allFields);
+					updateBuilder.update(initialEdgeCaseAlarmOccurrence.get(0));
+				//}
+			}
+			
+
+			if (finalEdgeCaseAlarmOccurrence != null && !finalEdgeCaseAlarmOccurrence.isEmpty()) {
+				SelectRecordsBuilder<BaseEventContext> selectEventbuilder = new SelectRecordsBuilder<BaseEventContext>()
+						.select(allEventFields).module(eventModule).beanClass(BaseEventContext.class)
+						.andCondition(CriteriaAPI.getCondition("ALARM_OCCURRENCE_ID", "alarmOccurrence","" +finalEdgeCaseAlarmOccurrence.get(0).getId(), NumberOperators.EQUALS))
+						.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", "" +endTime, NumberOperators.GREATER_THAN_EQUAL))
+						.orderBy("CREATED_TIME").limit(1);
+
+				List<BaseEventContext> nextClosestEventList = selectEventbuilder.get();
+
+				if (nextClosestEventList != null && !nextClosestEventList.isEmpty()){
+					BaseEventContext nextClosestEvent = nextClosestEventList.get(0);
+					finalEdgeCaseAlarmOccurrence.get(0).setCreatedTime(nextClosestEvent.getCreatedTime());
+					
+					UpdateRecordBuilder<AlarmOccurrenceContext> updateBuilder = new UpdateRecordBuilder<AlarmOccurrenceContext>()
+							.moduleName(FacilioConstants.ContextNames.ALARM_OCCURRENCE)
+							.andCondition(CriteriaAPI.getIdCondition(finalEdgeCaseAlarmOccurrence.get(0).getId(), modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE)))
+							.fields(allFields);
+					updateBuilder.update(finalEdgeCaseAlarmOccurrence.get(0));
+				}
+
+				DeleteRecordBuilder<BaseEventContext> deletebuilder = new DeleteRecordBuilder<BaseEventContext>()
+						.module(eventModule)
+						.andCondition(CriteriaAPI.getCondition("ALARM_OCCURRENCE_ID", "alarmOccurrence",""+finalEdgeCaseAlarmOccurrence.get(0).getId(), NumberOperators.EQUALS))
+						.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", ""+endTime, NumberOperators.LESS_THAN_EQUAL));
+				deletebuilder.delete();
+			
+			}
 		}	
 	}
 
