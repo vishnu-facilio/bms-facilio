@@ -18,13 +18,12 @@ public class GetMLSummmaryDetail extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		long mlAnomalyId = (long) context.get(ContextNames.ALARM_ID);
-		// BaseAlarmContext alarm = NewAlarmAPI.getAlarm(14);
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule("RcaAlarm");
 		SelectRecordsBuilder<RCAAlarm> builder = new SelectRecordsBuilder<RCAAlarm>().module(module)
 				.beanClass(RCAAlarm.class).select(modBean.getAllFields(module.getName()))
-				.andCondition(CriteriaAPI.getCondition("PARENT_ID", "parentId",String.valueOf(14),  NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition("PARENT_ID", "parentId",String.valueOf(mlAnomalyId),  NumberOperators.EQUALS));
 		List<RCAAlarm> list = builder.get();
 		context.put(ContextNames.ML_RCA_ALARMS, list);
 		return false;
