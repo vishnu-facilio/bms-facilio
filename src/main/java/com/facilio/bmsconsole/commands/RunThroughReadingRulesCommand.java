@@ -6,6 +6,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.HistoricalLoggerContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.WorkflowRuleHistoricalLoggerContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
@@ -23,7 +24,9 @@ import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class RunThroughReadingRulesCommand extends FacilioCommand {
 	private static final Logger LOGGER = LogManager.getLogger(RunThroughReadingRulesCommand.class.getName());
@@ -89,6 +92,8 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 		
 		long loggerGroupId = -1l;
 		boolean isFirst = true;
+		Map<Long,WorkflowRuleHistoricalLoggerContext> workflowRuleHistoricalLoggerMap = new HashMap<Long,WorkflowRuleHistoricalLoggerContext>();
+		
 		
 		for(Long finalResourceId:finalResourceIds)
 		{
@@ -99,22 +104,34 @@ public class RunThroughReadingRulesCommand extends FacilioCommand {
 				loggerGroupId = workflowRuleHistoricalLoggerContext.getId();
 				workflowRuleHistoricalLoggerContext.setLoggerGroupId(loggerGroupId);
 				WorkflowRuleHistoricalLoggerUtil.updateWorkflowRuleHistoricalLogger(workflowRuleHistoricalLoggerContext);
+				workflowRuleHistoricalLoggerMap.put(workflowRuleHistoricalLoggerContext.getId(), workflowRuleHistoricalLoggerContext);
 				isFirst = false;
 			}
 			else {
 				WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLogger = getworkflowRuleHistoricalLoggerContext(rule.getId(), range, finalResourceId, loggerGroupId);	
 				WorkflowRuleHistoricalLoggerUtil.addWorkflowRuleHistoricalLogger(workflowRuleHistoricalLogger);
+				workflowRuleHistoricalLoggerMap.put(workflowRuleHistoricalLogger.getId(), workflowRuleHistoricalLogger);
 			}
 		}	
 		
-		if(finalResourceIds != null && !finalResourceIds.isEmpty()) {
-			JSONObject jobprop = new JSONObject();
-			jobprop.put("startTime", range.getStartTime());
-			jobprop.put("endTime", range.getEndTime());
-			jobprop.put("resourceIds", finalResourceIds);
+		if(workflowRuleHistoricalLoggerMap != null && !workflowRuleHistoricalLoggerMap.isEmpty()) {
 			
-			BmsJobUtil.deleteJobWithProps(rule.getId(), "HistoricalRunForReadingRule");
-			BmsJobUtil.scheduleOneTimeJobWithProps(rule.getId(), "HistoricalRunForReadingRule", 30, "priority", jobprop);
+			for(Long loggerId:workflowRuleHistoricalLoggerMap.keySet())
+			{
+				Long resourceId = workflowRuleHistoricalLoggerMap.get(loggerId).getResourceId();
+				if(resourceId != null) {
+					
+					JSONObject jobprop = new JSONObject();
+					jobprop.put("startTime", range.getStartTime());
+					jobprop.put("endTime", range.getEndTime());
+					jobprop.put("ruleId", rule.getId());
+					jobprop.put("resourceId", resourceId);
+
+					BmsJobUtil.deleteJobWithProps(loggerId, "HistoricalRunForReadingRule");
+					BmsJobUtil.scheduleOneTimeJobWithProps(loggerId, "HistoricalRunForReadingRule", 30, "priority", jobprop);
+					
+				}
+			}
 		}
 		
 		return false;

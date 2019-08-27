@@ -61,16 +61,19 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 		// TODO Auto-generated method stub
 		try {
 			long jobStartTime = System.currentTimeMillis();
-			ReadingRuleContext readingRule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(jc.getJobId(), true);
-			if (readingRule.getMatchedResources() == null || readingRule.getMatchedResources().isEmpty()) {
-				return;
-			}
 			
 			JSONObject props = BmsJobUtil.getJobProps(jc.getJobId(), jc.getJobName());
 		//	DateRange range = (DateRange) props.get("range");
 			Long startTime = (Long) props.get("startTime");
 			Long endTime = (Long) props.get("endTime");
-			List<Long> resourceIds = (List<Long>) props.get("resourceIds");
+			Long resourceId = (Long) props.get("resourceId");
+			Long ruleId = (Long) props.get("ruleId");
+			
+			
+			ReadingRuleContext readingRule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(ruleId, true);
+			if (readingRule.getMatchedResources() == null || readingRule.getMatchedResources().isEmpty()) {
+				return;
+			}
 			
 //			LOGGER.info("Historical execution of rule : "+readingRule.getId()+" for resources : "+readingRule.getMatchedResources().keySet());
 			Map<String, List<ReadingDataMeta>> supportFieldsRDM = null;
@@ -108,50 +111,45 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 			}
 
 			List<ReadingEventContext> events = new ArrayList<>();
-			for (long resourceId : readingRule.getMatchedResources().keySet())
-			{
-				if(resourceIds != null && !resourceIds.isEmpty() && !resourceIds.contains(resourceId)) {
-					continue;
-				}
 
-				if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) 
-				{
-					WorkflowRuleHistoricalLoggerUtil.deleteAlarmOccurrencesWithEdgeCases(readingRule.getId(), startTime, endTime, resourceId);
-				}
-				else 
-				{
-					WorkflowRuleHistoricalLoggerUtil.deleteReadingAlarm(readingRule.getId(), startTime, endTime, resourceId);
-				}
-				
-				Map<String, List<ReadingDataMeta>> currentFields = supportFieldsRDM;
-				Map<String, List<ReadingDataMeta>> currentRDMList = null;
-				if (fields != null) {
-					currentRDMList = getSupportingData(fields, startTime, endTime, resourceId);
-				}
-				if (currentRDMList != null && !currentRDMList.isEmpty()) {
-//					LOGGER.info("Current resource Support Fields RDM Values size : "+currentRDMList.size());
-					if (supportFieldsRDM == null) {
-						currentFields = currentRDMList;
-					}
-					else {
-						currentFields = new HashMap<>(supportFieldsRDM);
-						currentFields.putAll(currentRDMList);
-					}
-				}
-				
-				long processStartTime = System.currentTimeMillis();
-				long currentStartTime = startTime - (ReadingsAPI.getDataInterval(resourceId, readingRule.getReadingField()) * 60 * 1000);
-				List<ReadingContext> readings = fetchReadings(readingRule, resourceId, currentStartTime, endTime);
-				int alarmCount = executeWorkflows(readingRule, readings, currentFields, fields, events);
-				LOGGER.info("Time taken for Historical Run for Reading Rule : "+jc.getJobId()+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is "+(System.currentTimeMillis() - processStartTime));
-				
-				WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = WorkflowRuleHistoricalLoggerUtil.getActiveWorkflowRuleHistoricalLogger(resourceId,jc.getJobId());
-				workflowRuleHistoricalLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.RESOLVED.getIntVal());
-				workflowRuleHistoricalLoggerContext.setCalculationEndTime(DateTimeUtil.getCurrenTime());
-				workflowRuleHistoricalLoggerContext.setAlarmCount(alarmCount);
-				
-				WorkflowRuleHistoricalLoggerUtil.updateWorkflowRuleHistoricalLogger(workflowRuleHistoricalLoggerContext);
+			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) 
+			{
+				WorkflowRuleHistoricalLoggerUtil.deleteAlarmOccurrencesWithEdgeCases(readingRule.getId(), startTime, endTime, resourceId);
 			}
+			else 
+			{
+				WorkflowRuleHistoricalLoggerUtil.deleteReadingAlarm(readingRule.getId(), startTime, endTime, resourceId);
+			}
+			
+			Map<String, List<ReadingDataMeta>> currentFields = supportFieldsRDM;
+			Map<String, List<ReadingDataMeta>> currentRDMList = null;
+			if (fields != null) {
+				currentRDMList = getSupportingData(fields, startTime, endTime, resourceId);
+			}
+			if (currentRDMList != null && !currentRDMList.isEmpty()) {
+//					LOGGER.info("Current resource Support Fields RDM Values size : "+currentRDMList.size());
+				if (supportFieldsRDM == null) {
+					currentFields = currentRDMList;
+				}
+				else {
+					currentFields = new HashMap<>(supportFieldsRDM);
+					currentFields.putAll(currentRDMList);
+				}
+			}
+			
+			long processStartTime = System.currentTimeMillis();
+			long currentStartTime = startTime - (ReadingsAPI.getDataInterval(resourceId, readingRule.getReadingField()) * 60 * 1000);
+			List<ReadingContext> readings = fetchReadings(readingRule, resourceId, currentStartTime, endTime);
+			int alarmCount = executeWorkflows(readingRule, readings, currentFields, fields, events);
+			LOGGER.info("Time taken for Historical Run for RuleLogger: "+jc.getJobId()+" Reading Rule : "+ruleId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is "+(System.currentTimeMillis() - processStartTime));
+			
+			WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = WorkflowRuleHistoricalLoggerUtil.getActiveWorkflowRuleHistoricalLogger(resourceId,ruleId);
+			workflowRuleHistoricalLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.RESOLVED.getIntVal());
+			workflowRuleHistoricalLoggerContext.setCalculationEndTime(DateTimeUtil.getCurrenTime());
+			workflowRuleHistoricalLoggerContext.setAlarmCount(alarmCount);
+			
+			WorkflowRuleHistoricalLoggerUtil.updateWorkflowRuleHistoricalLogger(workflowRuleHistoricalLoggerContext);
+		
 
 			if (!events.isEmpty()) {
 				FacilioContext context = new FacilioContext();
@@ -160,21 +158,21 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 				addEvent.execute(context);
 			}
 			long timeTaken = (System.currentTimeMillis() - jobStartTime);
-			LOGGER.info("Total Time taken for Historical Run for Reading Rule : "+jc.getJobId()+" between "+startTime+" and "+endTime+" is "+timeTaken);
+			LOGGER.info("Total Time taken for Historical Run for RuleLogger: "+jc.getJobId()+" Reading Rule : "+ruleId+" between "+startTime+" and "+endTime+" is "+timeTaken);
 			
 //			if (AccountUtil.getCurrentOrg().getId() == 135 || AccountUtil.getCurrentOrg().getId() == 134) {
 				JSONObject json = new JSONObject();
 				json.put("to", "praveen@facilio.com, manthosh@facilio.com, shivaraj@facilio.com, vasanth@facilio.com");
 				json.put("sender", "noreply@facilio.com");
-				json.put("subject", "Historical Run completed for Rule : "+jc.getJobId());
-				json.put("message", "Total Time taken for Historical Run for Reading Rule : "+jc.getJobId()+" between "+startTime+" and "+endTime+" is "+timeTaken);
+				json.put("subject", "Historical Run completed for RuleLogger : "+jc.getJobId());
+				json.put("message", "Total Time taken for Historical Run for RuleLogger: "+jc.getJobId()+" Reading Rule : "+ruleId+" between "+startTime+" and "+endTime+" is "+timeTaken);
 				
 				AwsUtil.sendEmail(json);
 //			}
 		}
 		catch (Exception e) {
 			LOGGER.error(e.getMessage(), e);
-			CommonCommandUtil.emailException("HistoricalRunForReadingRule", "Historical Run failed for reading rule : "+jc.getJobId(), e);
+			CommonCommandUtil.emailException("HistoricalRunForReadingRule", "Historical Run failed for reading_rule_logger : "+jc.getJobId(), e);
 		}
 	}
 	
