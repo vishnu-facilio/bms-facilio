@@ -32,6 +32,7 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.BuildingOperator;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -125,7 +126,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 		if (groupedDataPoints != null && !groupedDataPoints.isEmpty()) {
 			for (int i = 0; i < groupedDataPoints.size(); i++) {
 				List<ReportDataPointContext> dataPointList = groupedDataPoints.get(i);
-				if(ReportContext.ReportType.READING_REPORT.getValue() == report.getType() && !(handleUserScope(dataPointList.get(0)))){
+				if(ReportContext.ReportType.READING_REPORT.getValue() == report.getType() && handleUserScope(dataPointList.get(0))){
 					dataPoints.remove(dataPointList.get(0));
 					report.setHasEdit(false);
 				}else{
@@ -732,8 +733,6 @@ public class FetchReportDataCommand extends FacilioCommand {
 		if(parentIds != null){
 			ModuleBean moduleBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = moduleBean.getModule(FacilioConstants.ContextNames.RESOURCE);
-			List<FacilioField> fields = moduleBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
-			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 			
 			FacilioField idField = FieldFactory.getIdField(module);
 			
@@ -741,25 +740,26 @@ public class FetchReportDataCommand extends FacilioCommand {
 					.select(Collections.singletonList(idField))
 					.module(module)
 					.beanClass(ResourceContext.class)
-					.andCondition(CriteriaAPI.getIdCondition(parentIds, module))
-					.andCondition(CriteriaAPI.getCondition(fieldMap.get("resourceType"), String.valueOf(ResourceContext.ResourceType.ASSET.getValue()), NumberOperators.EQUALS));
+					.andCondition(CriteriaAPI.getIdCondition(parentIds, module));
 			
-			Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(FacilioConstants.ContextNames.ASSET);
-			if(scopeCriteria != null) {
-				builder.andCriteria(scopeCriteria);
+			Criteria spaceCriteria = PermissionUtil.getCurrentUserScopeCriteria(FacilioConstants.ContextNames.ASSET);
+			if(spaceCriteria != null) {
+				Condition condition = new Condition();
+				condition.setColumnName("SITE_ID");
+				condition.setFieldName("siteId");
+				condition.setOperator(NumberOperators.EQUALS);
+				condition.setValue(StringUtils.join(parentIds, ","));
+				
+				spaceCriteria.addOrCondition(condition);
+				builder.andCriteria(spaceCriteria);
 			}else{
-				return true;
+				return false;
 			}
 			
 			List<Map<String, Object>> assetList = builder.getAsProps();
-			if (assetList != null && !assetList.isEmpty()) {
-				return true;
-			}
-			else{
-				return false;
-			}
+			return assetList.isEmpty();
 		}else{
-			return true;
+			return false;
 		}
 	}
 }
