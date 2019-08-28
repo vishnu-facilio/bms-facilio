@@ -487,11 +487,11 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getMLAnomalyViews().setOrder(order++));
-		views.put("activeAnomaly", getAnomalyAlarmSeverity("activeAnomaly", "Active Anomaly Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, false).setOrder(order++));
-		views.put("criticalAnomaly", getAnomalyAlarmSeverity("criticalAnomaly", "Critical Anomaly Alarms", "Critical", true).setOrder(order++));
-		views.put("majorAnomaly", getAnomalyAlarmSeverity("majorAnomaly", "Major Anomaly Alarms", "Major", true).setOrder(order++));
-		views.put("minorAnomaly", getAnomalyAlarmSeverity("minorAnomaly", "Minor Anomaly Alarms", "Minor", true).setOrder(order++));
-		views.put("clearedAnomaly", getAnomalyAlarmSeverity("clearedAnomaly", "Cleared Anomaly Alarms", FacilioConstants.Alarm.CLEAR_SEVERITY, true).setOrder(order++));
+		views.put("activeAnomaly", getAnomalyAlarmSeverity("activeAnomaly", "Active Anomalies", FacilioConstants.Alarm.CLEAR_SEVERITY, false).setOrder(order++));
+		views.put("criticalAnomaly", getAnomalyAlarmSeverity("criticalAnomaly", "Critical Anomalies", "Critical", true).setOrder(order++));
+		views.put("majorAnomaly", getAnomalyAlarmSeverity("majorAnomaly", "Major Anomalies", "Major", true).setOrder(order++));
+		views.put("minorAnomaly", getAnomalyAlarmSeverity("minorAnomaly", "Minor Anomalies", "Minor", true).setOrder(order++));
+		views.put("clearedAnomaly", getAnomalyAlarmSeverity("clearedAnomaly", "Cleared Anomalies", FacilioConstants.Alarm.CLEAR_SEVERITY, true).setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.ML_ANOMALY_ALARM, views);
 		
 		order = 1;
@@ -4307,7 +4307,7 @@ public class ViewFactory {
 
 		FacilioView allView = new FacilioView();
 		allView.setName("all");
-		allView.setDisplayName("All Alarms");
+		allView.setDisplayName("All Anomalies");
 		allView.setSortFields(Arrays.asList(new SortField(createdTime, false)));
 		return allView;
 	}
