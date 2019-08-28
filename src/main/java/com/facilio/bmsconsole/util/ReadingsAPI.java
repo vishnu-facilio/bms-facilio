@@ -430,7 +430,7 @@ public class ReadingsAPI {
 		if (meta.isCustom() && meta.getActualValue().equals("-1")) {
 			meta.setActualValue(null);
 			meta.setValue(null);
-			meta.setTtime(-1);
+//			meta.setTtime(-1);
 		}
 		FacilioField field;
 		if (fieldMap != null) {
