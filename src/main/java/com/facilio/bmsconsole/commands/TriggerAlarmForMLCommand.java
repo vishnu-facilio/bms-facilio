@@ -122,6 +122,7 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 
     	if(actualValue > adjustedUpperBound)
     	{
+    		LOGGER.info("Asset Details before generating RCA "+assetID+"::"+mlContext.getAssetDetails());
     		generateRCAAnomalyEvent(actualValue,adjustedUpperBound,assetID,mlContext.getMLVariable().get(0).getFieldID(),getReadingTime(mlContext),parentAlarmID,Long.parseLong(mlContext.getMLModelVariable("energyfieldid")),Long.parseLong(mlContext.getMLModelVariable("adjustedupperboundfieldid")),mlContext.getId(),mlContext.getAssetDetails());
     		return true;
     	}
@@ -253,9 +254,9 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
         if(assetDetails.containsKey(assetID))
         {
         	Map<String,Object> details = assetDetails.get(assetID);
-        	if(details.containsKey("ratio"))
+        	if(details.containsKey(assetID+"_ratio"))
         	{
-        		long ratio = (long) details.get("ratio");
+        		long ratio = (long) details.get(assetID+"_ratio");
         		event.setRatio(ratio);
         	}
         }
