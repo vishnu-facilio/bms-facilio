@@ -1143,7 +1143,9 @@ public class DashboardUtil {
 			for (Map<String, Object> prop : props) {
 				DashboardContext dashboard = FieldUtil.getAsBeanFromMap(prop, DashboardContext.class);
 				dashboard.setDashboardSharingContext(getDashboardSharing(dashboard.getId()));
-				dashboard.setModuleName(modBean.getModule(dashboard.getModuleId()).getName());
+				if(dashboard.getModuleId() > 0) {
+					dashboard.setModuleName(modBean.getModule(dashboard.getModuleId()).getName());
+				}
 				
 				if(dashboard.isTabEnabled()) {
 					dashboard.setDashboardTabContexts(getDashboardTabs(dashboard.getId()));

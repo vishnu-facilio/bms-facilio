@@ -75,6 +75,7 @@ import com.facilio.workflows.functions.FacilioAssetFunctions;
 import com.facilio.workflows.functions.FacilioConnectionFunctions;
 import com.facilio.workflows.functions.FacilioConsumptionFunctions;
 import com.facilio.workflows.functions.FacilioCostFunctions;
+import com.facilio.workflows.functions.FacilioCriteriaFunctions;
 import com.facilio.workflows.functions.FacilioDateFunction;
 import com.facilio.workflows.functions.FacilioDateRangeFunctions;
 import com.facilio.workflows.functions.FacilioDefaultFunction;
@@ -1718,6 +1719,9 @@ public class WorkflowUtil {
 				case CONNECTION:
 					facilioWorkflowFunction = FacilioConnectionFunctions.getFacilioConnectionFunctions(functionName);
 					break;
+				case CRITERIA:
+					facilioWorkflowFunction = FacilioCriteriaFunctions.getFacilioCriteriaFunction(functionName);
+					break;
 					
 			}
 		}
@@ -1795,6 +1799,9 @@ public class WorkflowUtil {
 					break;
 				case CONNECTION:
 					facilioWorkflowFunction = new ArrayList<>( FacilioConnectionFunctions.getAllFunctions().values());
+					break;
+				case CRITERIA:
+					facilioWorkflowFunction = new ArrayList<>( FacilioCriteriaFunctions.getAllFunctions().values());
 					break;
 			}
 		}

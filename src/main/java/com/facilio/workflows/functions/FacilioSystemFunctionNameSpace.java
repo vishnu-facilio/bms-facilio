@@ -27,7 +27,8 @@ public enum FacilioSystemFunctionNameSpace {
 	NOTIFICATION(19,"notification"),
 	DATE_RANGE(20,"dateRange"),
 	FIELD(21,"field"),
-	CONNECTION(21,"connection"),
+	CONNECTION(22,"connection"),
+	CRITERIA(23,"criteria"),
 	;
 	
 	

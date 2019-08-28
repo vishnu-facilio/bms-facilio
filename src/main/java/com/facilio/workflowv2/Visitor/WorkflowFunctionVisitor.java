@@ -98,47 +98,6 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     	return new Value(new ArrayList<>()); 
     }
     
-//    @Override 
-//    public Value visitListSymbolOperation(WorkflowV2Parser.ListSymbolOperationContext ctx)
-//	{
-//    	String varName = ctx.VAR().getText();
-//    	Value value = this.varMemoryMap.get(varName);
-//    	if(value.asObject() instanceof List ) {
-//    		Value listValue = this.visit(ctx.atom());
-//    		Integer index = listValue.asInt();
-//    		return new Value(value.asList().get(index));
-//    	}
-//    	else {
-//    		throw new RuntimeException("var "+varName+" is not of list type");
-//    	}
-//	}
-    
-//    @Override 
-//    public Value visitMapSymbolOperation(WorkflowV2Parser.MapSymbolOperationContext ctx)
-//	{
-//    	String mapVar = ctx.VAR(0).getText();
-//    	Value mapValue = this.varMemoryMap.get(mapVar);
-//    	if(mapValue.asObject() instanceof Map ) {
-//    		Map<Object, Object> map = mapValue.asMap();
-//    		
-//    		int length = ctx.VAR().size();
-//    		
-//    		for(int i=1;i<length;i++) {
-//    			String key = ctx.VAR(i).getText();
-//    			Object currentValue = map.get(key);
-//    			
-//    			if(i == length-1) {
-//    				return new Value(currentValue);
-//    			}
-//    			map = (Map<Object, Object>) currentValue;
-//    		}
-//    	}
-//    	else {
-//    		throw new RuntimeException("not a map " + mapVar);
-//    	}
-//    	return Value.VOID;
-//	}
-    
     @Override 
     public Value visitRecursive_expr(WorkflowV2Parser.Recursive_exprContext ctx) {
     	try {
@@ -206,6 +165,10 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
                     	}
                     	else if(value.asObject() instanceof ConnectionContext) {
                     		wfFunctionContext.setNameSpace(FacilioSystemFunctionNameSpace.CONNECTION.getName());
+                    		isDataTypeSpecificFunction = true;
+                    	}
+                    	else if(value.asObject() instanceof Criteria) {
+                    		wfFunctionContext.setNameSpace(FacilioSystemFunctionNameSpace.CRITERIA.getName());
                     		isDataTypeSpecificFunction = true;
                     	}
                     	else if (value.asObject() instanceof FacilioSystemFunctionNameSpace) {
