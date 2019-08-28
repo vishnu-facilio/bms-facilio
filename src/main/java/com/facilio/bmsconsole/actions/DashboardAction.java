@@ -7063,6 +7063,8 @@ public class DashboardAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.WIDGET_BASESPACE_ID, baseSpaceId);
 		context.put(FacilioConstants.ContextNames.WIDGET_WORKFLOW, workflow);
 		context.put(FacilioConstants.ContextNames.WIDGET_PARAMJSON, paramsJson);
+		context.put(FacilioConstants.ContextNames.START_TIME, startTime);
+		context.put(FacilioConstants.ContextNames.END_TIME, endTime);
 		context.put(FacilioConstants.ContextNames.WIDGET_REPORT_SPACE_FILTER_CONTEXT, reportSpaceFilterContext);
 		context.put(FacilioConstants.ContextNames.IS_RCA, getIsRca());
 		fetchCardData.execute(context);

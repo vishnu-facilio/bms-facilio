@@ -26,6 +26,7 @@ import com.facilio.cards.util.CardUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
@@ -104,6 +105,16 @@ public class FetchCardDataCommand extends FacilioCommand {
 				
 				Criteria criteria = (Criteria) context.get(FacilioConstants.ContextNames.CRITERIA);
 				
+				Long startTime = (Long) context.get(FacilioConstants.ContextNames.START_TIME);
+				Long endTime = (Long) context.get(FacilioConstants.ContextNames.END_TIME);
+				if(startTime != null && endTime != null && startTime >0 && endTime > 0) {
+					Condition dateCondition = CriteriaAPI.getCondition("TTIME", "ttime", startTime+","+endTime, DateOperators.BETWEEN);
+					if(criteria == null) {
+						criteria = new Criteria();
+					}
+					criteria.addAndCondition(dateCondition);
+				}
+				
 				CardType card = CardType.getCardType(widgetStaticContext.getStaticKey());
 				
 				boolean isNewWorkflowCard = false;
@@ -157,12 +168,7 @@ public class FetchCardDataCommand extends FacilioCommand {
 				else {
 					Map<String, Object> expResult = WorkflowUtil.getExpressionResultMap(workflowString, widgetStaticContext.getParamsJson(),criteria);
 					
-					if(widgetStaticContext.getId() == 7849 ||widgetStaticContext.getId() == 7848 ||widgetStaticContext.getId() ==7847 ||widgetStaticContext.getId() ==7846) {
-						
-						LOGGER.log(Level.SEVERE, "3.widgetStaticContext.getId() -- "+widgetStaticContext.getId()+" workflow == " +workflowString+"  res -- "+expResult + " params -- "+widgetStaticContext.getParamsJson());
-					}
-					
-					expResult = (Map<String, Object>) CardUtil.getWorkflowResultForClient(expResult, widgetStaticContext); // parsing data suitable for client
+					expResult = (Map<String, Object>) CardUtil.getWorkflowResultForClient(expResult, widgetStaticContext);
 					
 					result.put("result", expResult);
 				}
