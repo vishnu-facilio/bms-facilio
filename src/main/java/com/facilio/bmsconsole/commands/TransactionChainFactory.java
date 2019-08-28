@@ -2265,7 +2265,7 @@ public class TransactionChainFactory {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForPurchaseContract());
 			c.addCommand(new DeletePurchaseContractCommand());
-			c.addCommand(new DeleteRecordRuleJobOnRecordDeletionCommand());
+			c.addCommand(new DeletePreferenceRulesOnRecordDeletionCommand()); // changed the module name to contracts
 			return c;
 		}
 
@@ -2581,7 +2581,7 @@ public class TransactionChainFactory {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForWarrantyContract());
 			c.addCommand(new DeleteWarrantyContractCommand());
-			c.addCommand(new DeleteRecordRuleJobOnRecordDeletionCommand());
+			c.addCommand(new DeletePreferenceRulesOnRecordDeletionCommand());
 			return c;
 		}
 		public static FacilioChain getPMPlannerSettingsChain() {
@@ -3024,6 +3024,8 @@ public class TransactionChainFactory {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForRentalLeaseContract());
 			c.addCommand(new GenericDeleteModuleDataCommand());
+			c.addCommand(new DeleteRentalLeaseContractCommand());
+			c.addCommand(new DeletePreferenceRulesOnRecordDeletionCommand());
 			return c;
 		}
 

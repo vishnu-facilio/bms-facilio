@@ -896,6 +896,7 @@ public class FormFactory {
 		fields.add(new FormField("totalCost", FieldDisplayType.DECIMAL, "Total Cost", Required.OPTIONAL, 5, 2));
 		fields.add(new FormField("renewalDate", FieldDisplayType.DATE, "Renewal Date", Required.OPTIONAL, 5, 3));
 		fields.add(new FormField("lineItems", FieldDisplayType.LABOUR_LINE_ITEMS, "LABOUR RECORDS", Required.REQUIRED, 6, 1));
+		fields.add(new FormField("payment", FieldDisplayType.SCHEDULER_INFO, "SCHEDULER INFO", Required.REQUIRED, 7, 1));
 		
 		return fields;
 	}
@@ -1009,7 +1010,8 @@ public class FormFactory {
 		fields.add(new FormField("fromDate", FieldDisplayType.DATE, "From Date", Required.OPTIONAL, 5, 2));
 		fields.add(new FormField("endDate", FieldDisplayType.DATE, "End Date", Required.OPTIONAL, 5, 3));
 		fields.add(new FormField("lineItems", FieldDisplayType.LINEITEMS, "LINE ITEMS", Required.REQUIRED, 6, 1));
-		
+		fields.add(new FormField("payment", FieldDisplayType.SCHEDULER_INFO, "SCHEDULER INFO", Required.REQUIRED, 7, 1));
+
 		return fields;
 	}
 	public static FacilioForm getWarrantyContractForm() {
@@ -1032,7 +1034,8 @@ public class FormFactory {
 		fields.add(new FormField("fromDate", FieldDisplayType.DATE, "From Date", Required.OPTIONAL, 4, 2));
 		fields.add(new FormField("endDate", FieldDisplayType.DATE, "End Date", Required.OPTIONAL, 4, 3));
 		fields.add(new FormField("lineItems", FieldDisplayType.WARRANTY_LINE_ITEMS, "LINE ITEMS", Required.REQUIRED, 5, 1));
-		
+		fields.add(new FormField("payment", FieldDisplayType.SCHEDULER_INFO, "SCHEDULER INFO", Required.REQUIRED, 6, 1));
+
 		return fields;
 	}
 	

@@ -30,6 +30,9 @@ public class DeleteLabourContractCommand extends FacilioCommand{
 			int updatedCount = deleteRecordBuilder.markAsDelete();
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, updatedCount);
 		}
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.CONTRACTS);
+		context.put(FacilioConstants.ContextNames.PREFERENCE_NAMES, "expireDateNotification,paymentNotification");
+
 		return false;
 	}
 

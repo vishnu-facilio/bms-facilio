@@ -31,6 +31,10 @@ public class DeletePurchaseContractCommand extends FacilioCommand {
 			int updatedCount = deleteRecordBuilder.markAsDelete();
 			context.put(FacilioConstants.ContextNames.ROWS_UPDATED, updatedCount);
 		}
+		// Changing the Module Name for Updating Preference
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.CONTRACTS);
+		context.put(FacilioConstants.ContextNames.PREFERENCE_NAMES, "expireDateNotification,paymentNotification");
+
 		return false;
 	}
 
