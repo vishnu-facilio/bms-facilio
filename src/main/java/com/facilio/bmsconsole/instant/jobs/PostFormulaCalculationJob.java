@@ -79,12 +79,12 @@ public class PostFormulaCalculationJob extends InstantJob {
 	}
 	
 	private List<ReadingContext> calculateNewFormula(FormulaFieldContext formula, ReadingContext reading) throws Exception {
-		if (AccountUtil.getCurrentOrg().getId() == 135) {
+		if (AccountUtil.getCurrentOrg().getId() == 232) {
 			LOGGER.info("Calculating new formula for : "+formula.getName()+" for resource : "+reading.getParentId());
 			LOGGER.info("Reading : "+reading);
 		}
 		ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(reading.getParentId(), formula.getReadingField());
-		if (AccountUtil.getCurrentOrg().getId() == 135) {
+		if (AccountUtil.getCurrentOrg().getId() == 232) {
 			LOGGER.info("RDM : "+meta);
 		}
 		List<DateRange> intervals = DateTimeUtil.getTimeIntervals(meta.getTtime()+1, reading.getTtime(), formula.getInterval());
