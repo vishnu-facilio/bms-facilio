@@ -747,6 +747,8 @@ public class FetchReportDataCommand extends FacilioCommand {
 			Criteria scopeCriteria = PermissionUtil.getCurrentUserScopeCriteria(FacilioConstants.ContextNames.ASSET);
 			if(scopeCriteria != null) {
 				builder.andCriteria(scopeCriteria);
+			}else{
+				return true;
 			}
 			
 			List<Map<String, Object>> assetList = builder.getAsProps();
