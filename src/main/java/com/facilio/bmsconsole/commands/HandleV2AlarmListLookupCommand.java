@@ -17,7 +17,6 @@ public class HandleV2AlarmListLookupCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		List<BaseAlarmContext> alarms =  (List<BaseAlarmContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		if (CollectionUtils.isNotEmpty(alarms)) {
-			alarms = NewAlarmAPI.getExtendedAlarms(alarms);
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, alarms);
 			
 			NewAlarmAPI.loadAlarmLookups(alarms);
