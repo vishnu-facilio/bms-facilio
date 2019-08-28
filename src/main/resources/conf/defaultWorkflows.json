@@ -46,7 +46,7 @@
 		"2": {
 			"description" : "fetchGraphicsData",
 			"usage" : "graphics",
-			"workflow" : "Map fetchGraphicsData(List variables) 
+			"workflow" : "Map fetchGraphicsData(List variables,List conditionalFormattings) 
 							  {
 								  resultMap = {};
 								  if (variables == null) {
@@ -152,9 +152,35 @@
 								        }
 									  }
 								  }
+								  
+								if(conditionalFormattings != null) {
+   	 
+								    for each index,conditionalFormatting in conditionalFormattings {
+								      
+								      if(conditionalFormatting.conditionalFormattings != null) {
+								        
+								        formatings = conditionalFormatting.conditionalFormattings;
+								        
+								        for each index,formating in formatings {
+								          
+								          if(formating.criteria != null && formating.actions != null) {
+								             
+											 criteria1 = NameSpace(\"criteria\").get(json); 
+								             res = criteria1.evaluate(resultMap);
+								             if(res) {
+								               actionMap = formating.actions;
+								               for each key,value in actionMap {
+								                 conditionalFormatting[key] = value;
+								               }
+								             }
+								          }
+								        }
+								      }
+								    }
+								}
 									  
 								return resultMap; 
-				}"
+							}"
 		},
 		"3": {
 			"description" : "fetchConsumptionDetailsForMVSummary",

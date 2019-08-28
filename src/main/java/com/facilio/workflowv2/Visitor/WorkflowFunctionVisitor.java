@@ -284,7 +284,7 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
         String varName = ctx.getText();
         Value value = varMemoryMap.get(varName);
         if(value == null) {
-            throw new RuntimeException("no such variable: " + varName);
+            return Value.VOID;
         }
         return value;
     }
