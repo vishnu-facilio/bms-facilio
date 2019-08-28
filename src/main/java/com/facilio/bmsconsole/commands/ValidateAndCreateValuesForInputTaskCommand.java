@@ -70,9 +70,6 @@ public class ValidateAndCreateValuesForInputTaskCommand extends FacilioCommand {
 									break;
 								case NUMBER:
 									Double.parseDouble(task.getInputValue());
-									if (completeRecord.getReadingFieldId() != -1) {
-										addReading(task, completeRecord, completeRecord.getReadingField(), context, true);
-									}
 									break;
 								case RADIO:
 									if (completeRecord.getReadingFieldId() != -1) {
@@ -80,7 +77,6 @@ public class ValidateAndCreateValuesForInputTaskCommand extends FacilioCommand {
 										if(enumField.getIndex(task.getInputValue()) == -1) {
 											throw new IllegalArgumentException("Invalid input value");
 										}
-										addReading(task, completeRecord, enumField, context, true);
 									}
 									else {
 										List<String> options = TicketAPI.getTaskInputOptions(completeRecord.getId());
@@ -96,18 +92,12 @@ public class ValidateAndCreateValuesForInputTaskCommand extends FacilioCommand {
 //									}
 //									task.setInputValue(StringUtils.join(task.getInputValues(), ","));
 //									break;
-								case TEXT:
-									if (completeRecord.getReadingFieldId() != -1) {
-										addReading(task, completeRecord, completeRecord.getReadingField(), context, true);
-									}
-									break;
 								case BOOLEAN:
 									if (completeRecord.getReadingFieldId() != -1) {
 										BooleanField booleanField = (BooleanField) task.getReadingField();
 										if (!(task.getInputValue().equals("true") || task.getInputValue().equals("false") || task.getInputValue().equals(booleanField.getTrueVal()) || task.getInputValue().equals(booleanField.getFalseVal()))) {
 											throw new IllegalArgumentException("Invalid input value");
 										}
-										addReading(task, completeRecord, completeRecord.getReadingField(), context, true);
 									}
 									break;
 								case NONE:
