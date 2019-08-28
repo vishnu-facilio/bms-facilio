@@ -6,25 +6,38 @@ import java.util.List;
 
 public class PermissionFactory {
 	
+	public static enum Permission_Child_Type {
+		RADIO,
+		CHECKBOX,
+		;
+		
+		public int getValue() {
+			return ordinal() + 1;
+		}
+	}
+	
 	public static enum WorkOrder_Permission implements PermissionInterface {
 		
-		READ(-1,"Read",null),
-		READ_IN_ACCESSIBLE_SPACES(1,"All",WorkOrder_Permission.READ),
-		READ_TEAM(2,"Team",WorkOrder_Permission.READ),
-		READ_OWN(4,"Own",WorkOrder_Permission.READ),
+		READ(-1,"Read"),
+		READ_IN_ACCESSIBLE_SPACES(1,"All",WorkOrder_Permission.READ,Permission_Child_Type.RADIO),
+		READ_TEAM(2,"Team",WorkOrder_Permission.READ,Permission_Child_Type.RADIO),
+		READ_OWN(4,"Own",WorkOrder_Permission.READ,Permission_Child_Type.RADIO),
 		
-		CREATE(16,"Create",null),
-//		CREATE_IN_ACCESSIBLE_SPACES(32,""),
+		CREATE(16,"Create"),
+//		CREATE_IN_ACCESSIBLE_SPACES(32,"",WorkOrder_Permission.READ,Permission_Child_Type.RADIO),
 //		
-//		UPDATE(64,""),
-//		UPDATE_TEAM(128,""),
-//		UPDATE_OWN(256,""),
-//		UPDATE_IN_ACCESSIBLE_SPACES(512,""),
-//		
-//		DELETE(1024,""),
-//		DELETE_TEAM(2048,""),
-//		DELETE_OWN(4096,""),
-//		DELETE_IN_ACCESSIBLE_SPACES(8192,""),
+		UPDATE(64,"Update"),
+		UPDATE_IN_ACCESSIBLE_SPACES(512,"All",WorkOrder_Permission.UPDATE,Permission_Child_Type.RADIO),
+		UPDATE_TEAM(128,"Team",WorkOrder_Permission.UPDATE,Permission_Child_Type.RADIO),
+		UPDATE_OWN(256,"Own",WorkOrder_Permission.UPDATE,Permission_Child_Type.RADIO),
+		
+		CHANGE_OWNERSHIP(524288,"Change Ownership",WorkOrder_Permission.UPDATE,Permission_Child_Type.CHECKBOX),
+		CLOSE_WORK_ORDER(1048576,"Close Workorder",WorkOrder_Permission.UPDATE,Permission_Child_Type.CHECKBOX),
+		
+		DELETE(1024,"Delete"),
+		DELETE_IN_ACCESSIBLE_SPACES(8192,"All",WorkOrder_Permission.DELETE,Permission_Child_Type.RADIO),
+		DELETE_TEAM(2048,"Team",WorkOrder_Permission.DELETE,Permission_Child_Type.RADIO),
+		DELETE_OWN(4096,"Own",WorkOrder_Permission.DELETE,Permission_Child_Type.RADIO),
 //		
 //		ASSIGN(16384,""),
 //		ASSIGN_TEAM(32768,""),
@@ -62,11 +75,18 @@ public class PermissionFactory {
 		String moduleNameDisplayName="Work Order";
 		PermissionInterface parent;
 		List<PermissionInterface> childs;
+		Permission_Child_Type childType;
 
-		WorkOrder_Permission(long permission,String permissionName,WorkOrder_Permission parent) {
+		WorkOrder_Permission(long permission,String permissionName) {
+			this.permission = permission;
+			this.permissionName = permissionName;
+		}
+		
+		WorkOrder_Permission(long permission,String permissionName,WorkOrder_Permission parent,Permission_Child_Type childType) {
 			this.permission = permission;
 			this.permissionName = permissionName;
 			this.parent = parent;
+			this.childType = childType;
 		}
 
 		public long getPermission() {
@@ -86,6 +106,9 @@ public class PermissionFactory {
 		}
 		public List<PermissionInterface> getChilds() {
 			return childs;
+		}
+		public Permission_Child_Type getChildType() {
+			return this.childType;
 		}
 		public void addChild(PermissionInterface child) {
 			childs = childs == null ? new ArrayList<>() : childs;
