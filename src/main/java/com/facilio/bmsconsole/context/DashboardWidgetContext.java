@@ -6,11 +6,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.struts2.json.annotations.JSON;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.util.FacilioUtil;
 
 public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 
@@ -48,6 +50,41 @@ public abstract class DashboardWidgetContext extends ModuleBaseWithCustomFields{
 	private String metaJSONString;
 	private JSONObject metaJSON;
 	
+	String widgetSettings;
+	JSONObject widgetSettingsJson;
+		
+//send only JSON object to client 
+	@JSON(serialize = false)
+	public String getWidgetSettings() {
+		if(this.widgetSettingsJson!=null)
+		{		
+			return widgetSettingsJson.toJSONString();
+		}
+		else {
+			return null;
+		}
+	}
+
+	public void setWidgetSettings(String widgetSettings) {
+		if(widgetSettings!=null)
+		{
+			try {
+				this.widgetSettingsJson=FacilioUtil.parseJson(widgetSettings);
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public JSONObject getWidgetSettingsJson() {
+		return widgetSettingsJson;
+	}
+
+	public void setWidgetSettingsJson(JSONObject widgetSettingsJson) {
+		this.widgetSettingsJson = widgetSettingsJson;
+	}
+
 	public String getMetaJSONString() {
 		if(metaJSON != null) {
 			return metaJSON.toJSONString();

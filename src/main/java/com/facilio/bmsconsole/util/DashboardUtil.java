@@ -835,6 +835,8 @@ public class DashboardUtil {
 			}
 			dashboardJson.put("dashboardFolderId", dashboard.getDashboardFolderId());
 			dashboardJson.put("linkName", dashboard.getLinkName());
+			dashboardJson.put("dateOperator",dashboard.getDateOperator());
+			dashboardJson.put("dateValue",dashboard.getDateValue());
 			dashboardJson.put("children", childrenArray);
 			dashboardJson.put("tabs", dashboard.getDashboardTabContexts());
 			dashboardJson.put("tabEnabled", dashboard.isTabEnabled());
