@@ -49,6 +49,7 @@
 			"workflow" : "Map fetchGraphicsData(List variables,List conditionalFormattings) 
 							  {
 								  resultMap = {};
+								  resultMapValues = {};
 								  if (variables == null) {
 									  return resultMap;
 								  }
@@ -75,7 +76,7 @@
 									  	  	  
 								  	  	  valueMap = {};
 										  valueMap[\"value\"] = valueStr;
-                                          
+                                          resultMapValues[variableObj.key] = valueStr;
                                           resultMap[variableObj.key] = valueMap;
 									  }
 									  else if (variableObj.fetchType == \"space\") {
@@ -84,7 +85,7 @@
 									  	
 									  	valueMap = {};
 										valueMap[\"value\"] = recordObj;
-										
+										resultMapValues[variableObj.key] = recordObj;
 										resultMap[variableObj.key] = valueMap;
 									  }
 									  else if (variableObj.fetchType == \"liveValue\") {
@@ -105,12 +106,13 @@
 											  if (fieldMapInfo != null) {
 											  	valueMap[\"unit\"] = fieldMapInfo.get(\"unit\");
 											  }
-											  
+											  resultMapValues[variableObj.key] = lastVal;
 											  resultMap[variableObj.key] = valueMap;
 									     }
 									     else {
 									     	  valueMap = {};
 											  valueMap[\"value\"] = null;
+											  resultMapValues[variableObj.key] = null;
 									          resultMap[variableObj.key] = valueMap;
 									     }
 									  }
@@ -142,17 +144,17 @@
                                         
                                          fieldMapInfo = fieldObj.asMap();
                                          valueMap[\"unit\"] = fieldMapInfo.get(\"unit\");
-                                         
+                                         resultMapValues[variableObj.key] = res;
                                          resultMap[variableObj.key] = valueMap;
                                        }
                                        else {
 								     	  valueMap = {};
 										  valueMap[\"value\"] = null;
+										  resultMapValues[variableObj.key] = null;
 								          resultMap[variableObj.key] = valueMap;
 								        }
 									  }
 								  }
-								  
 								if(conditionalFormattings != null) {
    	 
 								    for each index,conditionalFormatting in conditionalFormattings {
@@ -166,7 +168,7 @@
 								          if(formating.criteria != null && formating.actions != null) {
 								             
 											 criteria1 = NameSpace(\"criteria\").get(json); 
-								             res = criteria1.evaluate(resultMap);
+								             res = criteria1.evaluate(resultMapValues);
 								             if(res) {
 								               actionMap = formating.actions;
 								               for each key,value in actionMap {
