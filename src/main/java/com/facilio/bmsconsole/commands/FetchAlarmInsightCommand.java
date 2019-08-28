@@ -77,7 +77,7 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 			}
 		}
 
-		if (readingRuleId > 0) {
+		if (readingRuleId > 0 || assetIds.size() > 0) {
 			if (isRca) {
 				List<FacilioField> eventFields = EventConstants.EventFieldFactory.getEventFields();
 				Map<String, FacilioField> eventFieldsMap = FieldFactory.getAsMap(eventFields);
@@ -115,7 +115,7 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 					prop.put("subject", resources.get((long) resourceId.get("id")).getName());
 				}
 			}
-		}
+		} 
 		context.put(ContextNames.ALARM_LIST, props);
 		
 		return false;
