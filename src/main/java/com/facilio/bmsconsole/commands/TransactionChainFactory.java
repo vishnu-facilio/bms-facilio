@@ -3401,6 +3401,13 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericAddModuleDataListCommand());
 			return c;
 		}
+		
+		public static FacilioChain getImportDataChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new ImportDataCommand());
+			
+			return c;
+		}
 }
 
 

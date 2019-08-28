@@ -183,6 +183,9 @@ public class FacilioChain extends ChainBase {
 					// clear rootChain to set transaction chain as root
 					rootChain.remove();
 				}
+				else {
+					root.addPostTransaction(postTransactionChains);
+				}
 			}
 			throw e;
 		} finally {

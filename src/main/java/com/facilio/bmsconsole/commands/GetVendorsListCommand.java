@@ -74,7 +74,7 @@ public class GetVendorsListCommand extends FacilioCommand {
 		if (filterCriteria != null) {
 			builder.andCriteria(filterCriteria);
 		}
-		if ((filters == null || includeParentCriteria) && view != null) {
+		if ((filters == null || includeParentCriteria) && view != null && view.getCriteria() != null && !view.getCriteria().isEmpty()) {
 			Criteria criteria = view.getCriteria();
 			builder.andCriteria(criteria);
 		}

@@ -762,6 +762,7 @@ public class ImportAPI {
 		public static final String PARSING_ERROR="parsingError";
 		public static final String PARSING_ERROR_MESSAGE="parsingErrorMessage";
 		public static final String MODULE_STATIC_FIELDS = "moduleStaticFields";
+		public static final String JOB_ID = "jobId";
 	}
 	
 	
