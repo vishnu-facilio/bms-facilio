@@ -532,7 +532,7 @@ public class UserBeanImpl implements UserBean {
 		selectBuilder.andCriteria(criteria);
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId(), false);
+			UserUtil.setIAMUserProps(props, (long)props.get(0).get("orgId"), false);
 			User user = createUserFromProps(props.get(0), withRole, true, false);
 			return user;
 		}
