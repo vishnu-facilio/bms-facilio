@@ -1,6 +1,7 @@
 package com.facilio.tasker.job;
 
 import java.sql.SQLException;
+import java.time.Instant;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -41,8 +42,9 @@ public abstract class FacilioJob implements Runnable {
 			}
 			startTime = System.currentTimeMillis();
 			LOGGER.debug("Starting job " + jc.getJobId()+"-"+ jc.getJobName());
-			AccountUtil.cleanCurrentAccount();
 			retryExecutionCount++;
+
+			jc.setNextExecutionTime(getNextExecutionTime());
 
 			long orgId = jc.getOrgId();
 			if(orgId != -1) {
@@ -62,12 +64,15 @@ public abstract class FacilioJob implements Runnable {
 			JobConstants.ChainFactory.jobExecutionChain(jc.getTransactionTimeout()).execute(context);
 			status = 1;
 			executor.jobEnd(jc.getJobKey());
+			AccountUtil.cleanCurrentAccount();
+			updateNextExecutionTime();
 		}
 		catch(Exception e) {
 			status = 2;
 			LOGGER.error("Job execution failed for Job :"+jc.getJobId()+" : "+ jc.getJobName(),e);
 			CommonCommandUtil.emailException("FacilioJob", "Job execution failed for Job : "+jc.getJobId()+" : "+ jc.getJobName(), e);
-			reschedule();
+			AccountUtil.cleanCurrentAccount();
+//			reschedule();
 		} finally {
 			long timeTaken = (System.currentTimeMillis()-startTime);
 			if(status == 0) {
@@ -76,6 +81,36 @@ public abstract class FacilioJob implements Runnable {
 			JobLogger.log(jc, timeTaken, status);
 			LOGGER.debug("Job completed " +jc.getJobId()+"-"+ jc.getJobName() + " time taken : " + timeTaken);
 			currentThread.setName(threadName);
+		}
+	}
+
+	private long getNextExecutionTime() {
+		if(jc.isPeriodic() && (jc.getMaxExecution() == -1 || jc.getCurrentExecutionCount()+1 < jc.getMaxExecution())) {
+			long nextExecutionTime = -1;
+			if(jc.getPeriod() != -1) {
+				nextExecutionTime = (Instant.now().getEpochSecond())+jc.getPeriod();
+			}
+			else if(jc.getSchedule() != null) {
+				nextExecutionTime = jc.getSchedule().nextExecutionTime(jc.getExecutionTime());
+				if(nextExecutionTime == jc.getExecutionTime()) {// One time job
+					return -1;
+				}
+				while(nextExecutionTime <= Instant.now().getEpochSecond()) {
+					nextExecutionTime = jc.getSchedule().nextExecutionTime(nextExecutionTime);
+				}
+			}
+			if(jc.getEndExecutionTime() == -1 || nextExecutionTime <= jc.getEndExecutionTime()) {
+				return nextExecutionTime;
+			}
+		}
+		return -1;
+	}
+
+	private void updateNextExecutionTime() throws SQLException {
+		if(jc.getNextExecutionTime() != -1) {
+			JobStore.updateNextExecutionTimeAndCount(jc.getJobId(), jc.getJobName(),  jc.getNextExecutionTime(), jc.getCurrentExecutionCount()+1);
+		} else {
+			JobStore.setInActiveAndUpdateCount(jc.getJobId(), jc.getJobName(), jc.getCurrentExecutionCount()+1);
 		}
 	}
 

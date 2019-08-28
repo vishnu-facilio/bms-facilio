@@ -18,9 +18,9 @@ class JobConstants {
     	
     	static FacilioChain jobExecutionChain(int timeout) {
     		FacilioChain c = FacilioChain.getTransactionChain(timeout);
-    		c.addCommand(new CalculateNextExecutionTimeCommand());
+//    		c.addCommand(new CalculateNextExecutionTimeCommand());
     		c.addCommand(new JobExecutionCommand());
-    		c.addCommand(new UpdateNextExecutionCommand());
+//    		c.addCommand(new UpdateNextExecutionCommand());
     		return c;
     	}
     	
