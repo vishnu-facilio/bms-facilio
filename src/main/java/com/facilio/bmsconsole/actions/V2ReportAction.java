@@ -1032,8 +1032,16 @@ public class V2ReportAction extends FacilioAction {
 			this.endTime = range.getEndTime();
 		}
 
-		if (xAggr == null) {
+		// for ML, aggr value is hourly
+		if (xAggr != null && xAggr != AggregateOperator.DateAggregateOperator.HOURSOFDAYONLY) {
 			setxAggr(0);
+		}
+		else {
+			for (int i = 0; i < dataPoints.size(); i++) {
+				JSONObject json = (JSONObject) dataPoints.get(i);
+				JSONObject yAxisJson = (JSONObject) json.get("yAxis");
+				yAxisJson.put("aggr", AggregateOperator.NumberAggregateOperator.SUM.getValue());
+			}
 		}
 		fields =  dataPoints.toJSONString();
 	}
