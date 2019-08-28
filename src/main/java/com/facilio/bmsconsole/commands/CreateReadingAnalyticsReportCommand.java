@@ -151,8 +151,10 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 				break;
 		}
 		if (aggr != null) {
-			if (report.getxAggrEnum() != null && report.getxAggrEnum() != CommonAggregateOperator.ACTUAL) {
-				throw new IllegalArgumentException("Report X Aggr cannot be specified explicitly for these modes");
+			if (report.getxAggrEnum() != null) {
+				if (report.getxAggrEnum() != CommonAggregateOperator.ACTUAL || report.getxAggrEnum() != AggregateOperator.DateAggregateOperator.HOURSOFDAYONLY) {
+					throw new IllegalArgumentException("Report X Aggr cannot be specified explicitly for these modes");
+				}
 			}
 			report.setxAggr(aggr);
 		}

@@ -1031,8 +1031,10 @@ public class V2ReportAction extends FacilioAction {
 			this.startTime = range.getStartTime();
 			this.endTime = range.getEndTime();
 		}
-		
-		setxAggr(0);
+
+		if (xAggr == null) {
+			setxAggr(0);
+		}
 		fields =  dataPoints.toJSONString();
 	}
 	
