@@ -32,7 +32,7 @@ public class ApiInterceptor  extends AbstractInterceptor {
 		if(record!=null)
 		{
 			Organization org = AccountUtil.getOrgBean().getOrg((Long) record.get("ORGID"));
-			User user = AccountUtil.getUserBean().getUser((Long) record.get("USERID"));
+			User user = AccountUtil.getUserBean().getUser((Long) record.get("USERID"), false);
 			
 			AccountUtil.setCurrentAccount(new Account(org, user));
 		

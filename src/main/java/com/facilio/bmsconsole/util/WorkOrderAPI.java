@@ -1838,7 +1838,7 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 				 avgTime = Math.round(avgTime*100.0)/100.0;
 				   
 				 resMap.put("avgResolutionTime",avgTime);
-				 User user = AccountUtil.getUserBean().getUser((Long)technicianMap.get("id"));
+				 User user = AccountUtil.getUserBean().getUser((Long)technicianMap.get("id"), true);
 				 resMap.put("technicianName",user.getName());
 				 finalResult.add(resMap);
 			 }
@@ -2050,7 +2050,7 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 		{
 		  Map<String, Object> map = new HashMap<String, Object>();
 		  Map<String, Object> techMap = (Map<String, Object>) totalClosedWoCountByTech.get(i).get("tech_id");
-		  User user = AccountUtil.getUserBean().getUser((Long)techMap.get("id"));
+		  User user = AccountUtil.getUserBean().getUser((Long)techMap.get("id"), true);
 		  map.put("technicianName", user.getName());
 		  map.put("closed", totalClosedWoCountByTech.get(i).get("count"));
 		  result.put((Long)techMap.get("id"), map);

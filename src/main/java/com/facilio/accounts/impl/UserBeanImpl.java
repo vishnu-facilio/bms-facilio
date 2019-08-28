@@ -298,7 +298,7 @@ public class UserBeanImpl implements UserBean {
 	@Override
 	public boolean resendInvite(long ouid) throws Exception {
 
-		User appUser = getUser(ouid);
+		User appUser = getUser(ouid, false);
 		FacilioField invitedTime = new FacilioField();
 		invitedTime.setName("invitedTime");
 		invitedTime.setDataType(FieldType.NUMBER);
@@ -353,9 +353,11 @@ public class UserBeanImpl implements UserBean {
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId(), false);
-			User user = createUserFromProps(props.get(0), true, true, false); // Giving as false because user cannot
-																				// accept invite via portal APIs
-			return user;
+			if(CollectionUtils.isNotEmpty(props)) {
+				User user = createUserFromProps(props.get(0), true, true, false); // Giving as false because user cannot
+																					// accept invite via portal APIs
+				return user;
+			}
 		}
 		return null;
 	}
@@ -446,24 +448,24 @@ public class UserBeanImpl implements UserBean {
 
 	@Override
 	public boolean deleteUser(long ouid) throws Exception {
-		User user = getUser(ouid);
+		User user = getUser(ouid, false);
 		return IAMUserUtil.deleteUser(user, AccountUtil.getCurrentOrg().getOrgId());
 	}
 	
 	@Override
 	public boolean disableUser(long ouid) throws Exception {
-		User user = getUser(ouid);
+		User user = getUser(ouid, false);
 		return IAMUserUtil.disableUser(user);
 	}
 
 	@Override
 	public boolean enableUser(long ouid) throws Exception {
-		User user = getUser(ouid);
+		User user = getUser(ouid, false);
 		return IAMUserUtil.enableUser(user);
 	}
 
 	@Override
-	public User getUser(long ouid) throws Exception {
+	public User getUser(long ouid, boolean fetchDeleted) throws Exception {
 
 		List<FacilioField> fields = new ArrayList<>();
 		fields.addAll(AccountConstants.getAppOrgUserFields());
@@ -478,9 +480,11 @@ public class UserBeanImpl implements UserBean {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
-			UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId(), false);
-			User user = createUserFromProps(props.get(0), true, true, false);
-			return user;
+			UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId(), fetchDeleted);
+			if(CollectionUtils.isNotEmpty(props)) {
+				User user = createUserFromProps(props.get(0), true, true, false);
+				return user;
+			}
 		}
 		return null;
 	}
@@ -500,8 +504,10 @@ public class UserBeanImpl implements UserBean {
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			UserUtil.setIAMUserProps(props, orgId, false);
-			User user = createUserFromProps(props.get(0), true, true, false);
-			return user;
+			if(CollectionUtils.isNotEmpty(props)) {
+				User user = createUserFromProps(props.get(0), true, true, false);
+				return user;
+			}
 		}
 		return null;
 	}
@@ -533,8 +539,10 @@ public class UserBeanImpl implements UserBean {
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			UserUtil.setIAMUserProps(props, (long)props.get(0).get("orgId"), false);
-			User user = createUserFromProps(props.get(0), withRole, true, false);
-			return user;
+			if(CollectionUtils.isNotEmpty(props)) {
+				User user = createUserFromProps(props.get(0), withRole, true, false);
+				return user;
+			}
 		}
 		return null;
 	}
@@ -594,7 +602,9 @@ public class UserBeanImpl implements UserBean {
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId(), false);
-			return createUserFromProps(props.get(0), true, false, true);
+			if(CollectionUtils.isNotEmpty(props)) {
+				return createUserFromProps(props.get(0), true, false, true);
+			}
 		}
 
 		return null;
@@ -607,12 +617,12 @@ public class UserBeanImpl implements UserBean {
 	}
 
 	@Override
-	public List<User> getUsers(Criteria criteria, Collection<Long>... ouids) throws Exception {
+	public List<User> getUsers(Criteria criteria, boolean fetchDeleted, Collection<Long>... ouids) throws Exception {
 
 		List<Map<String, Object>> props = fetchORGUserProps(criteria, AccountUtil.getCurrentOrg().getOrgId(), ouids);
 		if (props != null && !props.isEmpty()) {
 			List<User> users = new ArrayList<>();
-			UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId(), false);
+			UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId(), fetchDeleted);
 			for (Map<String, Object> prop : props) {
 				User user = createUserFromProps(prop, true, true, false);
 				users.add(user);

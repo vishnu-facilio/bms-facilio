@@ -45,7 +45,7 @@ public class AddRequesterCommand extends FacilioCommand {
 	}
 	
 	private void setRequesterAsCurrentUser(User requester) throws Exception {
-		Account acct = new Account(AccountUtil.getCurrentOrg(), AccountUtil.getUserBean().getUser(requester.getId()));
+		Account acct = new Account(AccountUtil.getCurrentOrg(), AccountUtil.getUserBean().getUser(requester.getId(), false));
 		AccountUtil.setCurrentAccount(acct);
 	}
 }

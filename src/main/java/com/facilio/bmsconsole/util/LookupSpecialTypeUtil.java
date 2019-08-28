@@ -125,7 +125,7 @@ public class LookupSpecialTypeUtil {
 	
 	public static Object getLookedupObject(String specialType, long id) throws Exception {
 		if(FacilioConstants.ContextNames.USERS.equals(specialType) || FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
-			return AccountUtil.getUserBean().getUser(id);
+			return AccountUtil.getUserBean().getUser(id, true);
 		}
 		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
 			return AccountUtil.getGroupBean().getGroup(id);
@@ -171,7 +171,7 @@ public class LookupSpecialTypeUtil {
 	
 	public static List getObjects(String specialType, Criteria criteria) throws Exception {
 		if(FacilioConstants.ContextNames.USERS.equals(specialType) || FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
-			return AccountUtil.getUserBean().getUsers(criteria);
+			return AccountUtil.getUserBean().getUsers(criteria, true);
 		}
 		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
 			return AccountUtil.getGroupBean().getGroups(criteria);
@@ -263,7 +263,7 @@ public class LookupSpecialTypeUtil {
 	
 	public static List<? extends Object> getRecords (String specialType, Collection<Long> ids) throws Exception {
 		if(FacilioConstants.ContextNames.USERS.equals(specialType) || FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
-			return AccountUtil.getUserBean().getUsers(null, ids);
+			return AccountUtil.getUserBean().getUsers(null, true, ids);
 		}
 		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
 			return AccountUtil.getGroupBean().getGroups(ids);
@@ -363,7 +363,7 @@ public class LookupSpecialTypeUtil {
 	
 	public static Object getPrimaryFieldValue(String specialType, long id) throws Exception {
 		if(FacilioConstants.ContextNames.USERS.equals(specialType) || FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
-			User user = AccountUtil.getUserBean().getUser(id);
+			User user = AccountUtil.getUserBean().getUser(id, true);
 			if(user != null) {
 				return user.getName();
 			}

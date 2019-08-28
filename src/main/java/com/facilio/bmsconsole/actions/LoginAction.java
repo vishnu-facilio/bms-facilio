@@ -206,8 +206,8 @@ public class LoginAction extends FacilioAction {
 
 		JSONObject invitation = new JSONObject();
 
-		User user = AccountUtil.getUserBean().getUser(ouid);
-		if ((System.currentTimeMillis() - user.getInvitedTime()) > inviteLinkExpireTime) {
+		User user = AccountUtil.getUserBean().getUser(ouid, false);
+		if (user == null || ((System.currentTimeMillis() - user.getInvitedTime()) > inviteLinkExpireTime)) {
 			invitation.put("error", "link_expired");
 		} else {
 			boolean acceptStatus = true;// AccountUtil.getUserBean().acceptInvite(ouid, null);

@@ -277,7 +277,9 @@ public class OrgBeanImpl implements OrgBean {
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
 			UserUtil.setIAMUserProps(props, orgId, false);
-			return UserBeanImpl.createUserFromProps(props.get(0), true, false, false);
+			if(CollectionUtils.isNotEmpty(props)) {
+				return UserBeanImpl.createUserFromProps(props.get(0), true, false, false);
+			}
 		}
 		return null;
 	}

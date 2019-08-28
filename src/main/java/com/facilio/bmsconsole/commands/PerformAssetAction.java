@@ -276,7 +276,7 @@ public class PerformAssetAction extends FacilioCommand {
 						workOrder.setDueDate(DateTimeUtil.getDayStartTime(1)-1000);
 						
 						if(AccountUtil.getCurrentOrg().getId() == 92l) {
-							User user = AccountUtil.getUserBean().getUser(848657l);		//suresh+spicinemas@facilio.com user id
+							User user = AccountUtil.getUserBean().getUser(848657l, true);		//suresh+spicinemas@facilio.com user id
 							workOrder.setAssignedTo(user);
 						}
 						

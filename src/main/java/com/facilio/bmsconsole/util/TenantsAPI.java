@@ -124,7 +124,7 @@ public class TenantsAPI {
 		if(props != null && !props.isEmpty()) {
 			for(Map<String, Object> prop :props) {
 				TenantUserContext tenantUser = FieldUtil.getAsBeanFromMap(prop, TenantUserContext.class);
-				User user = AccountUtil.getUserBean().getUser(tenantUser.getOuid());
+				User user = AccountUtil.getUserBean().getUser(tenantUser.getOuid(), true);
 				tenantUser.setOrgUser(user);
 				tenantUsers.add(tenantUser);
 			}
@@ -557,7 +557,7 @@ public class TenantsAPI {
 			Map<Long, List<TenantUserContext>> uMap = new HashMap<>();
 			for (Map<String, Object> prop : props) {
 				TenantUserContext tenantUser = FieldUtil.getAsBeanFromMap(prop, TenantUserContext.class);
-				User user = AccountUtil.getUserBean().getUser(tenantUser.getOuid());
+				User user = AccountUtil.getUserBean().getUser(tenantUser.getOuid(), true);
 				List<TenantUserContext> userList = uMap.get(tenantUser.getTenantId());
 				if (userList == null) {
 					userList = new ArrayList<>();
@@ -807,7 +807,7 @@ public class TenantsAPI {
 		String email = contact.getEmail();
 		String name = contact.getName();
 		long id = contact.getId();
-		User oldUser = AccountUtil.getUserBean().getUser(id);
+		User oldUser = AccountUtil.getUserBean().getUser(id, true);
 		if (oldUser.getName().contentEquals(name) == false && oldUser.getEmail().contentEquals(email)) {
 		  oldUser.setName(name);
 		  AccountUtil.getUserBean().updateUser(oldUser);
@@ -1077,7 +1077,7 @@ public class TenantsAPI {
 					FileStore fs = FileStoreFactory.getInstance().getFileStore();
 					tenant.setLogoUrl(fs.getPrivateUrl(tenant.getLogoId()));
 				}
-				tenant.setContact(AccountUtil.getUserBean().getUser(tenant.getContact().getId()));
+				tenant.setContact(AccountUtil.getUserBean().getUser(tenant.getContact().getId(), true));
 				
 			}
 			Map<Long, List<UtilityAsset>> utilMap = getUtilityAssets(ids);

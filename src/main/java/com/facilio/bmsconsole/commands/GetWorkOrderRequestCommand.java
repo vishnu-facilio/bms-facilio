@@ -49,7 +49,7 @@ public class GetWorkOrderRequestCommand extends FacilioCommand {
 				TicketAPI.loadRelatedModules(workOrderRequest);
 				TicketAPI.loadTicketLookups(Collections.singleton(workOrderRequest));
 				if (workOrderRequest.getRequester() != null) {
-					List<User> users = AccountUtil.getUserBean().getUsers(null, Collections.singletonList(workOrderRequest.getRequester().getId()));
+					List<User> users = AccountUtil.getUserBean().getUsers(null, true, Collections.singletonList(workOrderRequest.getRequester().getId()));
 					if (users != null && !users.isEmpty()) {
 						workOrderRequest.setRequester(users.get(0));
 					}

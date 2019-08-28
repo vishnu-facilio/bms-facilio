@@ -258,7 +258,7 @@ public class LocationAPI {
 		lc.setLng(rs.getDouble("LNG"));
 		
 		if(rs.getLong("CONTACT_ID") != 0) {
-			lc.setContact(AccountUtil.getUserBean().getUser(rs.getLong("CONTACT_ID")));
+			lc.setContact(AccountUtil.getUserBean().getUser(rs.getLong("CONTACT_ID"), true));
 		}
 		
 		lc.setPhone(rs.getString("PHONE"));

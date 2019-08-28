@@ -1284,7 +1284,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 			long groupSiteId = -1;
 			Set<Long> userSiteIds = new HashSet<>();
 			if (ticket.getAssignedTo() != null && assignedTo.getOuid() > 0) {
-				assignedTo = AccountUtil.getUserBean().getUser(assignedTo.getOuid());
+				assignedTo = AccountUtil.getUserBean().getUser(assignedTo.getOuid(), true);
 				List<Long> accessibleSpace = assignedTo.getAccessibleSpace();
 				Map<Long, BaseSpaceContext> idVsBaseSpace = SpaceAPI.getBaseSpaceMap(accessibleSpace);
 				if (accessibleSpace != null && !accessibleSpace.isEmpty()) {
@@ -1395,7 +1395,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 	
 		Set<Long> userSiteIds = new HashSet<>();
 		if (assignedTo != null && assignedTo.getOuid() > 0) {
-			assignedTo = AccountUtil.getUserBean().getUser(assignedTo.getOuid());
+			assignedTo = AccountUtil.getUserBean().getUser(assignedTo.getOuid(), true);
 			if (assignedTo != null) {
 				List<Long> accessibleSpace = assignedTo.getAccessibleSpace();
 				Map<Long, BaseSpaceContext> idVsBaseSpace = SpaceAPI.getBaseSpaceMap(accessibleSpace);

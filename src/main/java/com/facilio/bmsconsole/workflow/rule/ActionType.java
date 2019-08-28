@@ -1254,7 +1254,7 @@ public enum ActionType {
 
 	private static boolean checkIfActiveUserFromId(long ouid) throws Exception {
 		UserBean userBean = (UserBean) BeanFactory.lookup("UserBean");
-		User user = userBean.getUser(ouid);
+		User user = userBean.getUser(ouid, false);
 		return user != null && user.getUserStatus();
 	}
 

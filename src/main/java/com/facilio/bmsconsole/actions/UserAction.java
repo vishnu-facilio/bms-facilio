@@ -359,23 +359,27 @@ public class UserAction extends FacilioAction {
 	public String resendInvite() throws Exception {
 		ServletActionContext.getRequest().getParameter("portal");
 		
-		user = AccountUtil.getUserBean().getUser(getUserId());
+		user = AccountUtil.getUserBean().getUser(getUserId(), false);
 		System.out.println("##########userOrgid   :"+user.getOrgId());
-		if(user.getUserType() == AccountConstants.UserType.REQUESTER.getValue())
-		{
-			// requestore
-			PortalInfoContext portalInfo = AccountUtil.getOrgBean().getPortalInfo(AccountUtil.getCurrentOrg().getOrgId(), false);
-			long portalid = portalInfo.getPortalId();
-			user.setPortalId(portalid);
-			(new UserBeanImpl()).resendInvite(user.getOuid());
+		if(user != null) {
+			if(user.getUserType() == AccountConstants.UserType.REQUESTER.getValue())
+			{
+				// requestore
+				PortalInfoContext portalInfo = AccountUtil.getOrgBean().getPortalInfo(AccountUtil.getCurrentOrg().getOrgId(), false);
+				long portalid = portalInfo.getPortalId();
+				user.setPortalId(portalid);
+				(new UserBeanImpl()).resendInvite(user.getOuid());
+			}
+			else
+			{
+				long orgId=user.getOrgId();
+				// normal user 
+				AccountUtil.getTransactionalUserBean(orgId).resendInvite(getUserId());
+			}
+			return SUCCESS;
 		}
-		else
-		{
-			long orgId=user.getOrgId();
-			// normal user 
-			AccountUtil.getTransactionalUserBean(orgId).resendInvite(getUserId());
-		}
-		return SUCCESS;
+		return ERROR;
+		
 	}
 	
 	private User user;

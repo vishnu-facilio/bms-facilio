@@ -27,7 +27,7 @@ public class NotificationTemplate {
 		
 		Map<String, Object> placeholders = new HashMap<>();
 		if (notification.getActorId() > 0) {
-			CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(AccountUtil.getUserBean().getUser(notification.getActorId())), placeholders);
+			CommonCommandUtil.appendModuleNameInKey(null, "user", FieldUtil.getAsProperties(AccountUtil.getUserBean().getUser(notification.getActorId(), false)), placeholders);
 		}
 		CommonCommandUtil.appendModuleNameInKey(null, "info", notification.getInfoJson(), placeholders);
 		

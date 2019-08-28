@@ -107,7 +107,7 @@ public class WidgetAction extends ActionSupport {
 
 	public String getUserCardData() throws Exception {
 		
-		user = AccountUtil.getUserBean().getUser(ouid);
+		user = AccountUtil.getUserBean().getUser(ouid, true);
 		
 		List<WorkOrderContext> openWorkOrders = WorkOrderAPI.getOpenWorkOrderForUser(user.getOuid());
 		

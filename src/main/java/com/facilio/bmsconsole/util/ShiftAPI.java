@@ -513,8 +513,10 @@ public class ShiftAPI {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId(), false);
-		
-		return props.stream().map(x -> {return StringEscapeUtils.escapeHtml4((String) x.get("name"));}).collect(Collectors.toList());
+		if(CollectionUtils.isNotEmpty(props)) {
+			return props.stream().map(x -> {return StringEscapeUtils.escapeHtml4((String) x.get("name"));}).collect(Collectors.toList());
+		}
+		return null;
 	}
 
 	public static void deleteShift(long id) throws Exception {
