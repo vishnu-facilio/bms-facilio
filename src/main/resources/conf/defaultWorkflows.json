@@ -307,10 +307,10 @@
 			    lastMonthCdd = Module(\"cdd\").fetch(db);
 			    resultMap = {};
 			    resultMap[\"totalThisMonth\"] = 0;
-			    if (thisMonthCdd != null && thisMonthCdd > 0) {
+			    if (thisMonthCdd != null) {
 			        resultMap[\"totalThisMonth\"] = thisMonthActualConsumption/thisMonthCdd;
 			    }
-			    if (lastMonthCdd != null && lastMonthCdd > 0) {
+			    if (lastMonthCdd != null) {
 				    resultMap[\"totalLastMonth\"] = lastMonthActualConsumption/lastMonthCdd;
 			    }
 			    result[resourceId] = resultMap
