@@ -217,9 +217,9 @@ public class AccountUtil {
         NEW_ALARMS (2097152),
         DEVELOPER_SPACE (4194304),
 		SKIP_TRIGGERS (8388608),
-		RESOURCE_BOOKING (16777216)
+		RESOURCE_BOOKING (16777216),
+		ANOMALY(33554432)
 		;
-		
 		
 		private long license;
 
