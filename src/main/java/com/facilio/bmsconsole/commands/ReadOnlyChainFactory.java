@@ -1395,4 +1395,10 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetMLSummmaryDetail());
 		return c;
 	}
+	public static FacilioChain fetchAnomlayRelatedAsset () {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetRelatedAssetCommand());
+		c.addCommand(new FetchAlarmInsightCommand());
+		return c;
+	}
 }

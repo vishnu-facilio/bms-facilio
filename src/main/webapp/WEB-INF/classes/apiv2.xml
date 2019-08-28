@@ -232,6 +232,10 @@
 			class="com.facilio.bmsconsole.actions.MLAnomalyAction"
 			method="fetchInsight">
 		</action>
+		<action name="relatedAsset"
+			class="com.facilio.bmsconsole.actions.MLAnomalyAction"
+			method="fetchRelatedAsset">
+			</action>
 	</package>
 	
 	<package name="state" namespace="/api/v2/state" extends="v2Api">
