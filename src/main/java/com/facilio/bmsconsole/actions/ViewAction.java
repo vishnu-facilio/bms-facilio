@@ -177,7 +177,12 @@ public class ViewAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-
+	public String v2getViewDetail() throws Exception
+	{
+	getViewDetail();
+	setResult("viewDetail", view);
+	return SUCCESS;
+	}
 	public String getViewDetail() throws Exception
 	{
 		String moduleName = getModuleName();
