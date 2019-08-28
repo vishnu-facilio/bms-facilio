@@ -6,14 +6,15 @@ import java.util.List;
 
 public class ModuleGroupFactory {
 	
-	private static final String SPACE = "Space";
-	private static final String MAINTENACE = "Maintenance";
+	private static final String HOME = "Home";
+	private static final String MAINTENANCE = "Maintenance";
+	private static final String ASSETS = "Assets";
 
 	public enum ModuleGroupPermissionFactory {
 	
-		SPACE (1,"Space","Dashboard, Portfolio"),
-		CREATE(2,"",""),
-		MAINTENACE(3,ModuleGroupFactory.MAINTENACE,"maintance"),
+		HOME (1,ModuleGroupFactory.HOME,"Dashboard, Portfolio, Reservation"),
+		ASSETS(2,ModuleGroupFactory.ASSETS,"Assets, Inventory, Purchase Orders, Contracts, Reports"),
+		MAINTENANCE(3,ModuleGroupFactory.MAINTENANCE,"WorkOrders, Approvals"),
 		;
 	
 		int intValue;
@@ -62,11 +63,11 @@ public class ModuleGroupFactory {
 	private static List<ModulePermissionWrapper> getModulePermissionsWithGroupName(String moduleGroup) {
 		
 		switch(moduleGroup) {
-		case SPACE:
-			
-			break;
-		case MAINTENACE:
-			
+		case HOME:
+			return getHomeGroupModules();
+		case ASSETS:
+			return getAssetGroupModules(); 
+		case MAINTENANCE:
 			return getMaintanceGroupModules(); 
 		default :
 			break;
@@ -75,12 +76,35 @@ public class ModuleGroupFactory {
 		return null;
 	}
 
+	private static List<ModulePermissionWrapper> getHomeGroupModules() {
+		
+		List<ModulePermissionWrapper> modulePermissionWrappers = new ArrayList<ModulePermissionWrapper>();
+		
+		modulePermissionWrappers.add(new ModulePermissionWrapper(1,PermissionFactory.Dashboard_Permission.getModuleDisplayName(),PermissionFactory.Dashboard_Permission.getAllPermissions()));
+		modulePermissionWrappers.add(new ModulePermissionWrapper(2,PermissionFactory.Portfolio_Permission.getModuleDisplayName(),PermissionFactory.Portfolio_Permission.getAllPermissions()));
+		modulePermissionWrappers.add(new ModulePermissionWrapper(2,PermissionFactory.Reservation_Permission.getModuleDisplayName(),PermissionFactory.Reservation_Permission.getAllPermissions()));
+		
+		return modulePermissionWrappers;
+	}
+	
+	private static List<ModulePermissionWrapper> getAssetGroupModules() {
+		
+		List<ModulePermissionWrapper> modulePermissionWrappers = new ArrayList<ModulePermissionWrapper>();
+		
+		modulePermissionWrappers.add(new ModulePermissionWrapper(1,PermissionFactory.Asset_Permission.getModuleDisplayName(),PermissionFactory.Asset_Permission.getAllPermissions()));
+		modulePermissionWrappers.add(new ModulePermissionWrapper(2,PermissionFactory.Inventory_Permission.getModuleDisplayName(),PermissionFactory.Inventory_Permission.getAllPermissions()));
+		modulePermissionWrappers.add(new ModulePermissionWrapper(2,PermissionFactory.Purchase_Order_Permission.getModuleDisplayName(),PermissionFactory.Purchase_Order_Permission.getAllPermissions()));
+		modulePermissionWrappers.add(new ModulePermissionWrapper(2,PermissionFactory.Contract_Permission.getModuleDisplayName(),PermissionFactory.Contract_Permission.getAllPermissions()));
+		modulePermissionWrappers.add(new ModulePermissionWrapper(2,PermissionFactory.Asset_Reports_Permission.getModuleDisplayName(),PermissionFactory.Asset_Reports_Permission.getAllPermissions()));
+		
+		return modulePermissionWrappers;
+	}
 	private static List<ModulePermissionWrapper> getMaintanceGroupModules() {
 		
 		List<ModulePermissionWrapper> modulePermissionWrappers = new ArrayList<ModulePermissionWrapper>();
 		
 		modulePermissionWrappers.add(new ModulePermissionWrapper(1,PermissionFactory.WorkOrder_Permission.getModuleDisplayName(),PermissionFactory.WorkOrder_Permission.getAllPermissions()));
-//		modulePermissionWrappers.add(new ModulePermissionWrapper(2,PermissionFactory.PM_Permission.getModuleDisplayName(),PermissionFactory.PM_Permission.getAllPermissions()));
+		modulePermissionWrappers.add(new ModulePermissionWrapper(1,PermissionFactory.Approval_Permission.getModuleDisplayName(),PermissionFactory.Approval_Permission.getAllPermissions()));
 		
 		return modulePermissionWrappers;
 	}
