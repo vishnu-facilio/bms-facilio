@@ -185,8 +185,12 @@ public class FetchReportDataCommand extends FacilioCommand {
 																				;
 		Set<FacilioModule> addedModules = new HashSet<>();
 		addedModules.add(baseModule);
+
+		FacilioField marked = modBean.getField("marked", baseModule.getName());
+		if (marked != null) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(marked, "false", BooleanOperators.IS));
+		}
 		
-//		joinModuleIfRequred(dp.getxAxis(), selectBuilder, addedModules);
 		joinModuleIfRequred(dp.getyAxis(), selectBuilder, addedModules);
 		applyOrderByAndLimit(dp, selectBuilder);
 		List<FacilioField> fields = new ArrayList<>();
