@@ -171,6 +171,7 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 		        event.setResource(ResourceAPI.getResource(assetID));
 		        event.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
 		        event.setReadingTime(ttime);
+		        event.setCreatedTime(ttime);
 		        event.setmlid(mlid);
 		        
 		        List<BaseEventContext> eventList = new ArrayList<BaseEventContext>();
@@ -202,6 +203,7 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 		        event.setResource(ResourceAPI.getResource(assetID));
 		        event.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
 		        event.setReadingTime(ttime);
+		        event.setCreatedTime(ttime);
 		        event.setparentid(alarmOccuranceContext.getAlarm().getId());
 		        event.setmlid(mlid);
 		        
@@ -235,6 +237,7 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
         event.setAdjustedUpperBoundValue(adjustedUpperBound);
         event.setSeverityString("Minor");
         event.setReadingTime(ttime);
+        event.setCreatedTime(ttime);
         event.setEnergyDataFieldid(energyDataFieldid);
         event.setUpperAnomalyFieldid(upperAnomalyFieldid);
         event.setmlid(mlid);
@@ -255,6 +258,7 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
         event.setAdjustedUpperBoundValue(adjustedUpperBound);
         event.setSeverityString("Minor");
         event.setReadingTime(ttime);
+        event.setCreatedTime(ttime);
         event.setEnergyDataFieldid(energyDataFieldid);
         event.setUpperAnomalyFieldid(upperAnomalyFieldid);
         event.setParentID(parentid);
