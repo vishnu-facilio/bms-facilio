@@ -82,7 +82,7 @@ public class FetchReportAdditionalInfoCommand extends FacilioCommand {
 					Object currentAlarm = null;
 					if (showAlarms || fetchEventBar) {
 						alarmId = (Long) context.get(FacilioConstants.ContextNames.ALARM_ID);
-						if (alarmId != null) {
+						if (alarmId != null && alarmId > 0) {
 							if (AccountUtil.isFeatureEnabled(FeatureLicense.NEW_ALARMS)) {
 								AlarmOccurrenceContext alarmOccurrence = NewAlarmAPI.getAlarmOccurrence(alarmId);
 								currentAlarm = alarmOccurrence.getAlarm();
