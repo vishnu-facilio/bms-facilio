@@ -225,7 +225,7 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 				.on(occurrenceModule.getTableName() + ".ALARM_ID = " + readingAlarmModule.getTableName() + ".ID")
 				;
 
-		if (assetId > 0 || assetIds.size() > 0) {
+		if (assetId > 0 || (assetIds != null && assetIds.size() > 0)) {
 			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"),( assetId > 0 ? String.valueOf(assetId) : StringUtils.join(assetIds, ",") ), NumberOperators.EQUALS))
 					.groupBy(ruleField.getCompleteColumnName());
 		}
