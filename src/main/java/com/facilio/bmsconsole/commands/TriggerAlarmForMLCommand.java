@@ -265,9 +265,9 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
         event.setType(MLAlarmOccurenceContext.MLAnomalyType.RCA);
         if(assetDetails.containsKey(assetID+"_ratio"))
         {
-        	event.setRatio((double)assetDetails.get(assetID+"_ratio"));
-            event.setUpperAnomaly((double)assetDetails.get(assetID+"_upperAnomaly"));
-            event.setLowerAnomaly((double)assetDetails.get(assetID+"_lowerAnomaly"));
+        	event.setRatio(((Number)assetDetails.get(assetID+"_ratio")).doubleValue());
+            event.setUpperAnomaly(((Number) assetDetails.get(assetID+"_upperAnomaly")).doubleValue());
+            event.setLowerAnomaly(((Number)assetDetails.get(assetID+"_lowerAnomaly")).doubleValue());
         }
         
         event.setmlid(mlid);
