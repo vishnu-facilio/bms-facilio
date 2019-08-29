@@ -1,16 +1,13 @@
 package com.facilio.iam.accounts.util;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.logging.Logger;
 
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.db.criteria.Criteria;
-import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.service.FacilioService;
 
 public class IAMUserUtil {

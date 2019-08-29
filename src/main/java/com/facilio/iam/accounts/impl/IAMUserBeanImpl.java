@@ -1176,7 +1176,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			throw new AccountException(ErrorCode.USER_DEACTIVATED_FROM_THE_ORG, "User is deactivated, Please contact admin to activate.");
 
 		}
-		throw new AccountException(ErrorCode.EMAIL_ALREADY_EXISTS, "Invalid Password");
+		throw new AccountException(ErrorCode.ERROR_VALIDATING_CREDENTIALS, "Invalid Password");
 	}
 	
 	public static String createJWT(String id, String issuer, String subject, long ttlMillis) {

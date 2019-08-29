@@ -284,7 +284,7 @@ public class FacilioAuthAction extends FacilioAction {
 
 		if (getUsername() != null && getPassword() != null) {
 			try {
-				LOGGER.info("validateLogin() : username : " + getUsername() + "; password : " + getPassword()
+				LOGGER.info("validateLogin() : username : " + getUsername() 
 						+ " portal id : " + portalId());
 				String authtoken = null;
 				if(portalId() > 0) {
@@ -313,16 +313,10 @@ public class FacilioAuthAction extends FacilioAction {
 					userType = "mobile";
 				}
 
-				try {
-					authtoken = IAMUserUtil.verifyLoginPassword(getUsername(), getPassword(), userAgent, userType,
+				LOGGER.info("validateLogin() : domainName : " + domainName);
+		
+				authtoken = IAMUserUtil.verifyLoginPassword(getUsername(), getPassword(), userAgent, userType,
 							ipAddress, domainName);
-				} catch (AccountException ex) {
-					setJsonresponse("message", ex.getMessage()); // can be removed later
-					setJsonresponse("errorcode", "1");
-					return ERROR;
-				}
-
-				LOGGER.info("Response token is " + authtoken);
 				setJsonresponse("token", authtoken);
 				setJsonresponse("username", getUsername());
 
@@ -352,9 +346,18 @@ public class FacilioAuthAction extends FacilioAction {
 				LOGGER.info("#################### facilio.in::: " + request.getServerName());
 				response.addCookie(authmodel);
 
-			} catch (Exception e) {
+			} 
+			catch (Exception e) {
 				LOGGER.log(Level.INFO, "Exception while validating password, ", e);
-				setJsonresponse("message", e.getCause());
+				Exception ex = e;
+				while (ex != null) {
+					if (ex instanceof AccountException) {
+						setJsonresponse("message", ex.getMessage());
+						break;
+					}
+					ex = (Exception) ex.getCause();
+				}
+				setJsonresponse("errorcode", "1");
 				return ERROR;
 			}
 			return SUCCESS;
