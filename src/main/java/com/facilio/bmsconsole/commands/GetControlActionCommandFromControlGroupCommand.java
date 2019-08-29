@@ -36,6 +36,7 @@ public class GetControlActionCommandFromControlGroupCommand extends FacilioComma
 						controlActionCommand.setResource(resourceContext);
 						controlActionCommand.setFieldId(controlGroup.getFieldId());
 						controlActionCommand.setValue(value);
+						controlActionCommand.setControlActionMode(controlGroup.getMode());
 						
 						commands.add(controlActionCommand);
 					}
