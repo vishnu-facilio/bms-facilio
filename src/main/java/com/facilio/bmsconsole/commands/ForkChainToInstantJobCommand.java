@@ -27,7 +27,7 @@ public class ForkChainToInstantJobCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		if (!commands.isEmpty()) {
 			Context noSeriablable = new FacilioContext();
-			for (Object key : context.entrySet()) {
+			for (Object key : context.keySet()) {
 				Object object = context.get(key);
 				if (object != null && object instanceof Serializable) {
 					noSeriablable.put(key, object);
