@@ -607,7 +607,7 @@
 		"99":{
 			"description" : "mlpredictedEnergyWastage",
 			"usage" : "AnomalySummary",
-			"workflow": "Map calculateEnergyWastage(Number alarmId){
+			"workflow": "Map calculateEnergyWastage(List resourceIds, Number alarmId){
 			  resultMap = {};
 			  mlReadings = Module(\"anomalydetectionmllogreadings\");
 			  date = NameSpace(\"date\");
@@ -617,31 +617,35 @@
 			    criteria: [alarm == alarmId && createdTime == thisMonthRanges]
 			  };
 			  thismothoccurence =  Module(\"alarmoccurrence\").fetch(occurenceThisMonthCrit);
-			  energyWastage = 0
-			  if (thismothoccurence != null) {
-			    for each index,value in thismothoccurence {
-			      endTime = value.clearedTime
-				  if (endTime == null) {
-			        endTime = date.now();
-			      }
-			      ttimes = value.createdTime + \",\" + endTime
-			      thisMonthEnergy = {
-			      	criteria: [parentId == value.resource.id && ttime == ttimes],
-			      }
-			      currentMonthWastage =  mlReadings.fetch(thisMonthEnergy);
-			      if (currentMonthWastage != null) {
-			        for each index,value in currentMonthWastage {
-			          if (value.upperBound != 0) {
-			            diffConsu = value.actualValue - value.upperBound;
-			            if (diffConsu > 0) {
-			              energyWastage =  energyWastage + diffConsu
+			  result = {}
+			  for each rindex,resourceId in resourceIds {
+			    energyWastage = 0
+			    if (thismothoccurence != null) {
+			      for each index,value in thismothoccurence {
+			        endTime = value.clearedTime
+			        if (endTime == null) {
+			          endTime = date.now();
+			        }
+			        ttimes = value.createdTime + \",\" + endTime
+			        thisMonthEnergy = {
+			          criteria: [parentId == resourceId && ttime == ttimes],
+			        }
+			        currentMonthWastage =  mlReadings.fetch(thisMonthEnergy);
+			        if (currentMonthWastage != null) {
+			          for each index,value in currentMonthWastage {
+			            if (value.upperBound != 0) {
+			              diffConsu = value.actualValue - value.upperBound;
+			              if (diffConsu > 0) {
+			                energyWastage =  energyWastage + diffConsu
+			              }
 			            }
 			          }
 			        }
 			      }
-			    }
+			  	}
+			    result[resourceId] = energyWastage
 			  }
-			  resultMap[\"currentMonthWastage\"] = energyWastage;
+			  resultMap[\"currentMonthWastage\"] = result;
 			  return resultMap;
 			}"
 		},
