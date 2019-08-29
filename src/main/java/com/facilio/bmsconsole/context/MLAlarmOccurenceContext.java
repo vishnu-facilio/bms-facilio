@@ -60,5 +60,10 @@ public class MLAlarmOccurenceContext extends AlarmOccurrenceContext
 	{
 		return lowerAnomaly;
 	}
+	
+	@Override
+	public Type getTypeEnum() {
+		return Type.ANOMALY;
+	}
 
 }
