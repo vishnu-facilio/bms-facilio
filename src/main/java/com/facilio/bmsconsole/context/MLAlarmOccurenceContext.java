@@ -1,21 +1,49 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.bmsconsole.context.AlarmOccurrenceContext.Type;
+import com.facilio.modules.FacilioEnum;
+
 public class MLAlarmOccurenceContext extends AlarmOccurrenceContext 
 {
 	private static final long serialVersionUID = 1L;
 	
-	public static enum MLAnomalyType
+	public static enum MLAnomalyType implements FacilioEnum
 	{
 		Anomaly,
 		RCA;
+		
+		public int getIndex() {
+			return ordinal() + 1;
+		}
+
+		@Override
+		public String getValue() {
+			return name();
+		}
+
+		public static MLAnomalyType valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
 	}
 	
 	private MLAnomalyType type;
+	public void setMLAnomalyType(int type) {
+		this.type = MLAnomalyType.valueOf(type);
+	}
+	public int getMLAnomalyType() {
+		if (type != null) {
+			return type.getIndex();
+		}
+		return -1;
+	}
 	public void setMLAnomalyType(MLAnomalyType type)
 	{
 		this.type = type;
 	}
-	public MLAnomalyType getMLAnomalyType()
+	public MLAnomalyType getMLAnomalyTypeEnum()
 	{
 		return type;
 	}
