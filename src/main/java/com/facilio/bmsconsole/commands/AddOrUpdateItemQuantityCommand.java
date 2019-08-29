@@ -61,7 +61,7 @@ public class AddOrUpdateItemQuantityCommand extends FacilioCommand {
 										String.valueOf(itemId), PickListOperators.IS));
 
 						List<PurchasedItemContext> purchasedItems = selectBuilder.get();
-						int quantity = 0;
+						double quantity = 0;
 						long lastPurchasedDate = -1;
 						double lastPurchasedPrice = -1;
 						if (purchasedItems != null && !purchasedItems.isEmpty()) {

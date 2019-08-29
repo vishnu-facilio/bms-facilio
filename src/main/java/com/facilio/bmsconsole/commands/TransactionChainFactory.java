@@ -1737,6 +1737,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ToolQuantityRollUpCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.CUSTOM_STOREROOM_MINIMUM_QUANTITY_NOTIFICATION_RULE));
 			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.CUSTOM_STOREROOM_OUT_OF_STOCK_NOTIFICATION_RULE));
+			c.addCommand(getUpdateToolTypeQuantityRollupChain());
 			return c;
 		}
 
