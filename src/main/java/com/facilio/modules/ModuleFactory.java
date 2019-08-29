@@ -2552,6 +2552,14 @@ public class ModuleFactory {
 		return module;
 	}
 	
+	public static FacilioModule getBaseEventModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName(ContextNames.BASE_EVENT);
+		module.setDisplayName("Base Event");
+		module.setTableName("BaseEvent");
+		return module;
+	}
+	
 	public static FacilioModule getPreferenceMetaModule() {
 		FacilioModule module = new FacilioModule();
 		module.setName(ContextNames.PREFERENCE_META);

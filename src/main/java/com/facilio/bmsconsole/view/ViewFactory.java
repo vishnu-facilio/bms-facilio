@@ -11,6 +11,7 @@ import java.util.Map;
 import org.apache.commons.collections4.MapUtils;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.billing.context.BillContext.ContextNames;
 import com.facilio.bmsconsole.context.AlarmContext.AlarmType;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext.AssetState;
@@ -433,6 +434,14 @@ public class ViewFactory {
 		
 		order = 1;
 		views = new LinkedHashMap<>();
+		views.put("today", getBaseEvents(DateOperators.TODAY).setOrder(order++));
+		views.put("yesterday", getBaseEvents(DateOperators.YESTERDAY).setOrder(order++));
+		views.put("thisweek", getBaseEvents(DateOperators.CURRENT_WEEK).setOrder(order++));
+		views.put("lastweek", getBaseEvents(DateOperators.LAST_WEEK).setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.BASE_EVENT, views);
+		
+		order = 1;
+		views = new LinkedHashMap<>();
 		views.put("all", getAllReadingAlarmViews().setOrder(order++));
 		views.put("active", getReadingAlarmSeverity("active", "Active", FacilioConstants.Alarm.CLEAR_SEVERITY, false).setOrder(order++));
 		views.put("unacknowledged", getReadingAlarmUnacknowledged().setOrder(order++));
@@ -700,6 +709,30 @@ public class ViewFactory {
 		FacilioView eventsView = new FacilioView();
 		eventsView.setName("Created Time");
 		eventsView.setDisplayName("Event Time");
+		eventsView.setCriteria(criteria);
+
+		return eventsView;
+	}
+	
+	private static FacilioView getBaseEvents(DateOperators dateOperator) {
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("createdTime");
+		createdTime.setDataType(FieldType.DATE_TIME);
+		createdTime.setDisplayType(FacilioField.FieldDisplayType.DATETIME);
+		createdTime.setColumnName("CREATED_TIME");
+		createdTime.setModule(ModuleFactory.getBaseEventModule());
+
+		Condition dateCondition = new Condition();
+		dateCondition.setField(createdTime);
+		dateCondition.setOperator(dateOperator);
+		
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(dateCondition);
+
+		FacilioView eventsView = new FacilioView();
+		eventsView.setName(dateOperator.getOperator());
+		eventsView.setDisplayName(dateOperator.getOperator());
 		eventsView.setCriteria(criteria);
 
 		return eventsView;
