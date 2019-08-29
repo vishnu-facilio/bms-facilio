@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.bmsconsole.context.BaseEventContext;
+import com.facilio.bmsconsole.context.MLAlarmOccurenceContext;
 import com.facilio.bmsconsole.context.MLAnomalyEvent;
 import com.facilio.bmsconsole.context.MLContext;
 import com.facilio.bmsconsole.context.RCAEvent;
@@ -86,25 +87,31 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 	
 	private long checkAndGenerateEvent(MLContext mlContext, long parentID) throws Exception
 	{
-		
-		Hashtable<String,SortedMap<Long,Object>> variablesData = mlContext.getMlVariablesDataMap().get(parentID);
-		
-    	SortedMap<Long,Object> actualValueMap = variablesData.get("actualValue");
-    	double actualValue = (double) actualValueMap.get(actualValueMap.firstKey());
-
-    	SortedMap<Long,Object> adjustedUpperBoundMap = variablesData.get("adjustedUpperBound");
-    	double adjustedUpperBound = (double) adjustedUpperBoundMap.get(adjustedUpperBoundMap.firstKey());
-    	
-    	 
-    	LOGGER.info("Inside check and Generate Event "+parentID+". actual value "+actualValue+" , upperBound "+adjustedUpperBound);
-    	if(actualValue > adjustedUpperBound)
-    	{
-    		return generateAnomalyEvent(actualValue,adjustedUpperBound,parentID,mlContext.getMLVariable().get(0).getFieldID(),getReadingTime(mlContext),Long.parseLong(mlContext.getMLModelVariable("energyfieldid")),Long.parseLong(mlContext.getMLModelVariable("adjustedupperboundfieldid")),mlContext.getId());
-    	}
-    	else
-    	{
-			generateClearEvent(parentID,mlContext.getMLVariable().get(0).getFieldID(),getReadingTime(mlContext),parentID,mlContext.getId());
-    	}
+		try
+		{
+			Hashtable<String,SortedMap<Long,Object>> variablesData = mlContext.getMlVariablesDataMap().get(parentID);
+			
+	    	SortedMap<Long,Object> actualValueMap = variablesData.get("actualValue");
+	    	double actualValue = (double) actualValueMap.get(actualValueMap.firstKey());
+	
+	    	SortedMap<Long,Object> adjustedUpperBoundMap = variablesData.get("adjustedUpperBound");
+	    	double adjustedUpperBound = (double) adjustedUpperBoundMap.get(adjustedUpperBoundMap.firstKey());
+	    	
+	    	 
+	    	LOGGER.info("Inside check and Generate Event "+parentID+". actual value "+actualValue+" , upperBound "+adjustedUpperBound);
+	    	if(actualValue > adjustedUpperBound)
+	    	{
+	    		return generateAnomalyEvent(actualValue,adjustedUpperBound,parentID,mlContext.getMLVariable().get(0).getFieldID(),getReadingTime(mlContext),Long.parseLong(mlContext.getMLModelVariable("energyfieldid")),Long.parseLong(mlContext.getMLModelVariable("adjustedupperboundfieldid")),mlContext.getId());
+	    	}
+	    	else
+	    	{
+				generateClearMLAnomalyEvent(parentID,mlContext.getMLVariable().get(0).getFieldID(),parentID,mlContext.getId());
+	    	}
+		}
+		catch(Exception e)
+		{
+			LOGGER.error("Error while generating event "+parentID+"::"+mlContext.getMlVariablesDataMap().get(parentID), e);
+		}
     	return -1;
 	}
 	
@@ -128,11 +135,11 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
     	}
     	else
     	{
-    		generateClearEvent(assetID,mlContext.getMLVariable().get(0).getFieldID(),getReadingTime(mlContext),parentAlarmID,mlContext.getId());
+    		generateClearMLAnomalyEvent(assetID,mlContext.getMLVariable().get(0).getFieldID(),parentAlarmID,mlContext.getId());
     	}
     	return false;
 	}
-	
+	/*
 	private void generateClearEvent(long assetID,long fieldID,long ttime,long parentid,long mlid) {
 		try 
 		{
@@ -148,7 +155,7 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
+	}*/
 	
 	private void generateClearMLAnomalyEvent(long assetID,long fieldID,long ttime,long mlid)
 	{
@@ -236,12 +243,12 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 	
 	}
 	
-	private void generateRCAAnomalyEvent(double actualValue,double adjustedUpperBound,long assetID,long fieldID,long ttime,long parentid,long energyDataFieldid,long upperAnomalyFieldid,long mlid,Hashtable<Long,Map<String,Object>> assetDetails) throws Exception
+	private void generateRCAAnomalyEvent(double actualValue,double adjustedUpperBound,long assetID,long fieldID,long ttime,long parentid,long energyDataFieldid,long upperAnomalyFieldid,long mlid,Hashtable<String,Object> assetDetails) throws Exception
 	{   
 		LOGGER.info("Generating RCAAnomaly Event "+assetID);
 		String message = "Anomaly Detected. Actual Consumption :"+actualValue+", Expected Max Consumption :"+adjustedUpperBound;
 		
-		RCAEvent event = new RCAEvent();
+		MLAnomalyEvent event = new MLAnomalyEvent();
 		event.setEventMessage(message);
         event.setResource(ResourceAPI.getResource(assetID));
         event.setActualValue(actualValue);
@@ -250,15 +257,13 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
         event.setReadingTime(ttime);
         event.setEnergyDataFieldid(energyDataFieldid);
         event.setUpperAnomalyFieldid(upperAnomalyFieldid);
-        event.setparentid(parentid);
-        if(assetDetails.containsKey(assetID))
+        event.setParentID(parentid);
+        event.setType(MLAlarmOccurenceContext.MLAnomalyType.RCA);
+        if(assetDetails.containsKey(assetID+"_ratio"))
         {
-        	Map<String,Object> details = assetDetails.get(assetID);
-        	if(details.containsKey(assetID+"_ratio"))
-        	{
-        		long ratio = (long) details.get(assetID+"_ratio");
-        		event.setRatio(ratio);
-        	}
+        	event.setRatio((double)assetDetails.get(assetID+"_ratio"));
+            event.setUpperAnomaly((double)assetDetails.get(assetID+"_upperAnomaly"));
+            event.setLowerAnomaly((double)assetDetails.get(assetID+"_lowerAnomaly"));
         }
         
         event.setmlid(mlid);

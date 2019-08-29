@@ -69,12 +69,7 @@ public class AddReadingsForMLCommand extends FacilioCommand {
 					 {
 						 if(readingObj.has(field.getName()) && !field.getName().equalsIgnoreCase("ttime"))
 						 {
-							 if(field.getName().equalsIgnoreCase(parentID+"_ratio"))
-							 {
-								 Map<String,Object> assetMap = new HashMap<String,Object>(2);
-								 assetMap.put(parentID+"_ratio", readingObj.get(field.getName()));
-								 mlContext.getAssetDetails().put(parentID,assetMap);
-							 }
+							 mlContext.getAssetDetails().put(field.getName(),readingObj.get(field.getName()));
 							 newReading.addReading(field.getName(), readingObj.get(field.getName()));
 							 newUpdatedReading.addReading(field.getName(), readingObj.get(field.getName()));
 						 }

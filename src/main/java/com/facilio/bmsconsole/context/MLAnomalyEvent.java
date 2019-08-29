@@ -1,6 +1,9 @@
 package com.facilio.bmsconsole.context;
 
+import org.apache.commons.chain.Context;
+
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
+import com.facilio.constants.FacilioConstants;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 public class MLAnomalyEvent extends BaseEventContext{
@@ -14,13 +17,54 @@ public class MLAnomalyEvent extends BaseEventContext{
 		}
 		return null;
 	}
+	@Override
+	public AlarmOccurrenceContext updateAlarmOccurrenceContext(AlarmOccurrenceContext alarmOccurrence, Context context, boolean add) throws Exception {
+		if (add && alarmOccurrence == null) {
+			alarmOccurrence = new MLAlarmOccurenceContext();
+		}
+		MLAlarmOccurenceContext mlAlarmOccurence = (MLAlarmOccurenceContext)alarmOccurrence;
+		if(mlAnomalyType!=null)
+		{
+			mlAlarmOccurence.setMLAnomalyType(mlAnomalyType);
+			if(mlAnomalyType.equals(MLAlarmOccurenceContext.MLAnomalyType.RCA))
+			{
+				mlAlarmOccurence.setParentID(parentID);
+				mlAlarmOccurence.setRatio(ratio);
+				mlAlarmOccurence.setLowerAnomaly(lowerAnomaly);
+				mlAlarmOccurence.setUpperAnomaly(upperAnomaly);
+			}
+		}
+		return super.updateAlarmOccurrenceContext(alarmOccurrence, context, add);
+	}
+	
+	@Override
+    public BaseEventContext createAdditionClearEvent(AlarmOccurrenceContext alarmOccurrence) {
+        if (alarmOccurrence instanceof MLAlarmOccurenceContext) {
+        	MLAlarmOccurenceContext context =(MLAlarmOccurenceContext)alarmOccurrence;
+        	if(!context.getMLAnomalyType().equals(mlAnomalyType))
+        	{
+        		String message = "Anomaly Cleared";
+				MLAnomalyEvent event = new MLAnomalyEvent();
+				event.setEventMessage(message);
+		        event.setResource(this.getResource());
+		        event.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
+		        event.setReadingTime(this.getReadingTime());
+		        event.setmlid(mlid);
+		        return event;
+        	}
+        }
+        return null;
+    }
 	
 	@Override
 	public BaseAlarmContext updateAlarmContext(BaseAlarmContext baseAlarm, boolean add) throws Exception {
 		if (add && baseAlarm == null) {
 			baseAlarm = new MLAnomalyAlarm();
 		}
+		
 		super.updateAlarmContext(baseAlarm, add);
+		
+		
 		MLAnomalyAlarm anomalyAlarm = (MLAnomalyAlarm) baseAlarm;
 
 		if (energyDataFieldid != -1) {
@@ -56,6 +100,8 @@ public class MLAnomalyEvent extends BaseEventContext{
 	private double adjustedUpperBoundValue;
 	private long readingTime;
 	private long mlid;
+	
+	
 	
 	public void setEnergyDataFieldid(long energyDataFieldid)
 	{
@@ -101,7 +147,7 @@ public class MLAnomalyEvent extends BaseEventContext{
 		this.readingTime = readingTime;
 	}
 	
-	
+
 	@Override
 	@JsonSerialize
 	public Type getEventTypeEnum() {
@@ -115,5 +161,32 @@ public class MLAnomalyEvent extends BaseEventContext{
 	public void setmlid(long mlid) {
 		this.mlid = mlid;
 	}
+	
+	private MLAlarmOccurenceContext.MLAnomalyType mlAnomalyType;
+	public void setType(MLAlarmOccurenceContext.MLAnomalyType mlAnomalyType)
+	{
+		this.mlAnomalyType = mlAnomalyType;
+	}
+	private double ratio;
+	public  void setRatio(double ratio)
+	{
+		this.ratio=ratio;
+	}
+	private long parentID;
+	public void setParentID(long parentID)
+	{
+		this.parentID=parentID;
+	}
+	private double upperAnomaly;
+	public void setUpperAnomaly(double upperAnomaly)
+	{
+		this.upperAnomaly=upperAnomaly;
+	}
+	private double lowerAnomaly;
+	public void setLowerAnomaly(double lowerAnomaly)
+	{
+		this.lowerAnomaly = lowerAnomaly;
+	}
+	
 
 }

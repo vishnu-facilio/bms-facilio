@@ -15,7 +15,7 @@ public class MLContext extends ModuleBaseWithCustomFields
 {
 	private static final long serialVersionUID = 1L;
 	
-	private Hashtable<Long,Map<String,Object>> assetDetails=new Hashtable<Long,Map<String,Object>>(10);
+	private Hashtable<String,Object> assetDetails=new Hashtable<String,Object>(10);
 	private Map<Long,HashMap<String,String>> assetVariables;
 	private List<MLModelVariableContext> mlModelVariables;
 	private List<MLVariableContext> mlVariables;
@@ -100,9 +100,9 @@ public class MLContext extends ModuleBaseWithCustomFields
 	}
 	
 	@JSON(serialize=false)
-	public void setAssetDetails(long assetID,Map<String,Object> data)
+	public void setAssetDetails(String key,Object value)
 	{
-		assetDetails.put(assetID, data);
+		assetDetails.put(key,value);
 	}
 	
 	@JSON(serialize=false)
@@ -131,7 +131,7 @@ public class MLContext extends ModuleBaseWithCustomFields
 	}
 	
 	@JSON(serialize=false)
-	public Hashtable<Long,Map<String,Object>> getAssetDetails()
+	public Hashtable<String,Object> getAssetDetails()
 	{
 		return assetDetails;
 	}
