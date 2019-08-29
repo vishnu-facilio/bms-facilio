@@ -105,7 +105,7 @@ public class NewAlarmAPI {
 			case NORMAL:
 				return AlarmOccurrenceContext.class;
 			case ANOMALY:
-				return AnomalyOccurrenceContext.class;
+				return MLAlarmOccurenceContext.class;
 			default:
 				throw new IllegalArgumentException("Invalid type");
 		}
