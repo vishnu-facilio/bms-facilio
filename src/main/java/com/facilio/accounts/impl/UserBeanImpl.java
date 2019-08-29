@@ -243,16 +243,11 @@ public class UserBeanImpl implements UserBean {
 		if (user.getGroups() != null) {
 			addAccessibleTeam(user.getOuid(), user.getGroups());
 		}
-		if (AccountUtil.isFeatureEnabled(FeatureLicense.PEOPLE)) {
-			List<ShiftContext> orgShifts = ShiftAPI.getAllShifts();
-			if (CollectionUtils.isNotEmpty(orgShifts)) {
-				for (ShiftContext shift : orgShifts) {
-					if (shift.getDefaultShift()) {
-						ShiftAPI.insertShiftUserRel(shift.getId(), user.getOuid());
-						break;
-					}
-				}
-			}
+
+		// add user in shift relation table
+		ShiftContext defaultShift = ShiftAPI.getDefaultShift();
+		if (defaultShift != null) {
+			ShiftAPI.insertShiftUserRel(defaultShift.getId(), user.getOuid());
 		}
 	}
 
