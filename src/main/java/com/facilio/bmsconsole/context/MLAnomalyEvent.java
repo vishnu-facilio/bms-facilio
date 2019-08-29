@@ -1,14 +1,17 @@
 package com.facilio.bmsconsole.context;
 
 import org.apache.commons.chain.Context;
+import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FieldUtil;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 public class MLAnomalyEvent extends BaseEventContext{
 
 	private static final long serialVersionUID = 1L;
+	private static final Logger LOGGER = Logger.getLogger(MLAnomalyEvent.class.getName());
 	
 	@Override
 	public String constructMessageKey() {
@@ -34,7 +37,8 @@ public class MLAnomalyEvent extends BaseEventContext{
 				mlAlarmOccurence.setUpperAnomaly(upperAnomaly);
 			}
 		}
-		return super.updateAlarmOccurrenceContext(alarmOccurrence, context, add);
+		LOGGER.info("ML Alarm Occurence "+FieldUtil.getAsProperties(mlAlarmOccurence));
+		return super.updateAlarmOccurrenceContext(mlAlarmOccurence, context, add);
 	}
 	
 	@Override

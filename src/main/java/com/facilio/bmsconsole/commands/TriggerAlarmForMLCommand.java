@@ -231,7 +231,8 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 		String message = "Anomaly Detected. Actual Consumption :"+actualValue+", Expected Max Consumption :"+adjustedUpperBound;
 		
 		MLAnomalyEvent event = new MLAnomalyEvent();
-		event.setEventMessage(message);
+		event.setEventMessage("Anomaly Detected");
+		event.setDescription(message);
         event.setResource(ResourceAPI.getResource(assetID));
         event.setActualValue(actualValue);
         event.setAdjustedUpperBoundValue(adjustedUpperBound);
@@ -252,7 +253,8 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 		String message = "Anomaly Detected. Actual Consumption :"+actualValue+", Expected Max Consumption :"+adjustedUpperBound;
 		
 		MLAnomalyEvent event = new MLAnomalyEvent();
-		event.setEventMessage(message);
+		event.setEventMessage("Anomaly Detected");
+		event.setDescription(message);
         event.setResource(ResourceAPI.getResource(assetID));
         event.setActualValue(actualValue);
         event.setAdjustedUpperBoundValue(adjustedUpperBound);
