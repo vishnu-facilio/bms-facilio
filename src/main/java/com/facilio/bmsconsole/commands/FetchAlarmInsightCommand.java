@@ -71,7 +71,8 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 			props = getAlarmProps(modBean, assetId, readingRuleId, isRca, dateRange, operator);
 		}
 
-		if (assetId > 0) {
+		if (assetId > 0 || (assetIds != null && assetIds.size() > 0)) {
+			LOGGER.debug("subject" + assetIds.size());
 			if (CollectionUtils.isNotEmpty(props)) {
 				List<Long> ruleIds = props.stream().map(prop -> (long) prop.get("ruleId")).collect(Collectors.toList());
 				Map<Long, WorkflowRuleContext> rules = WorkflowRuleAPI.getWorkflowRulesAsMap(ruleIds, false, false, false);
@@ -81,7 +82,7 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 				}
 			}
 		}
-
+		LOGGER.debug("assetIds" + assetIds);
 		if (readingRuleId > 0 || (assetIds != null && assetIds.size() > 0)) {
 			if (isRca) {
 				List<FacilioField> eventFields = EventConstants.EventFieldFactory.getEventFields();
