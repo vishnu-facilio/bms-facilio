@@ -26,9 +26,12 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
+
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,6 +40,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class FetchAlarmInsightCommand extends FacilioCommand {
+	
+	private static final Logger LOGGER = LogManager.getLogger(FetchAlarmInsightCommand.class.getName());
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -77,7 +82,7 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 			}
 		}
 
-		if (readingRuleId > 0 || assetIds.size() > 0) {
+		if (readingRuleId > 0 || (assetIds != null && assetIds.size() > 0)) {
 			if (isRca) {
 				List<FacilioField> eventFields = EventConstants.EventFieldFactory.getEventFields();
 				Map<String, FacilioField> eventFieldsMap = FieldFactory.getAsMap(eventFields);
@@ -105,10 +110,12 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 				}
 			}
 			else if (CollectionUtils.isNotEmpty(props)) {
+				LOGGER.debug("props" + props);
 				List<Long> resourcesId = props.stream().map(prop -> {
 					HashMap<Object,Object> hsp = (HashMap<Object, Object>) prop.get("resource");
 					return (long) hsp.get("id");
 					}).collect(Collectors.toList());
+				LOGGER.debug("resourcesId" + resourcesId);
 				Map<Long, ResourceContext> resources = ResourceAPI.getResourceAsMapFromIds(resourcesId);
 				for (Map<String, Object> prop : props) {
 					HashMap<Object,Object> resourceId =  (HashMap<Object, Object>) prop.get("resource");
