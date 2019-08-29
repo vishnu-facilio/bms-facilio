@@ -9,6 +9,7 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.exceptions.importExceptions.ImportAssetMandatoryFieldsException;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportFieldValueMissingException;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.util.ImportAPI;
@@ -76,6 +77,9 @@ public class ImportDataCommand extends FacilioCommand implements PostTransaction
 			} else if (exception instanceof ImportFieldValueMissingException) {
 				ImportFieldValueMissingException importFieldValueMissingException = (ImportFieldValueMissingException) exception;
 				exceptionMessage = importFieldValueMissingException.getClientMessage();
+			} else if (exception instanceof ImportAssetMandatoryFieldsException) { 
+				ImportAssetMandatoryFieldsException importAssetMandExp = (ImportAssetMandatoryFieldsException) exception;
+				exceptionMessage = importAssetMandExp.getClientMessage();
 			} else {
 				exceptionMessage = exception.getMessage();
 			}

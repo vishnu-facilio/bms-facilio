@@ -61,7 +61,12 @@ public class ImportItemCommand extends FacilioCommand {
 						categoryNameVsIdMap.put(category.getName(), category.getId());
 					}
 					itemType.setCategory(category);
-					itemType.setId(insertItemType(modBean, itemType));
+					long insertItemTypeId = insertItemType(modBean, itemType);
+					if(itemNameVsIdMap == null) {
+						itemNameVsIdMap = new HashMap<String, Long>();
+					}
+					itemNameVsIdMap.put(itemType.getName(), insertItemTypeId);
+					itemType.setId(insertItemTypeId);
 				}
 				item.setItemType(itemType);
 				item.setStoreRoom(StoreroomApi.getStoreRoom(storeRoomId));
