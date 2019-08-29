@@ -66,7 +66,9 @@ public class ImportItemCommand extends FacilioCommand {
 				item.setItemType(itemType);
 				item.setStoreRoom(StoreroomApi.getStoreRoom(storeRoomId));
 				item.setPurchasedItems(Collections.singletonList(purchasedItem));
-				itemsList.add(item);
+				if (purchasedItem.getQuantity() > 0) {
+					itemsList.add(item);
+				}
 			}
 			context.put(FacilioConstants.ContextNames.ITEMS, itemsList);
 			context.put(FacilioConstants.ContextNames.STORE_ROOM, storeRoomId);
