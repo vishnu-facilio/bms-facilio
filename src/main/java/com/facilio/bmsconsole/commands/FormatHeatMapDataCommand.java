@@ -40,6 +40,7 @@ public class FormatHeatMapDataCommand extends FacilioCommand{
 	private static final Logger LOGGER = Logger.getLogger(FormatHeatMapDataCommand.class.getName());
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
+		long start=System.currentTimeMillis();
 		
 		JSONObject reportData = (JSONObject) context.get(FacilioConstants.ContextNames.REPORT_DATA);
 		ReportContext reportContext = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
@@ -60,6 +61,8 @@ public class FormatHeatMapDataCommand extends FacilioCommand{
 				sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
 				timeStep = 86400000;
 			}
+			
+			long loopstart=System.currentTimeMillis();
 				while(startTime<=endTime) {
 					HashMap mapData= new HashMap();
 					mapData.put("X", startTime);
@@ -77,6 +80,11 @@ public class FormatHeatMapDataCommand extends FacilioCommand{
 					}
 			reportData.put("heatMapData", heatMapData);
 			
+		long loopend=System.currentTimeMillis()- loopstart;
+		long commandend=System.currentTimeMillis()-start;
+		
+		LOGGER.info("time taken for loop  -->  "+loopend);
+		LOGGER.info("time taken for command  -->  "+commandend);
 			
 		}
 		
