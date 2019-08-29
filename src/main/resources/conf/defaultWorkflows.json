@@ -276,42 +276,53 @@
 			"description": "Energy By CDD",
 			"usage": "AnomalySummary",
 			"workflow": "Map energyByCDD(List resourceIds, Number siteId){
+			  resourceIds.sort()
 			  result = {}
 			  date = NameSpace(\"date\");
 			  thisMonthRanges = date.getDateRange(\"Current Month\");
-			  lastMonthRanges = date.getDateRange(\"Last Month\");
-			  for each index, resourceId in resourceIds {
-			    db = {
-			      criteria : [parentId == resourceId && ttime == thisMonthRanges],
-			      field : \"totalEnergyConsumptionDelta\",
-			      aggregation : \"sum\"
-			    }
-			    thisMonthActualConsumption = Module(\"energydata\").fetch(db);
-			    db = {
-			      criteria : [parentId == resourceId && ttime == lastMonthRanges],
-			      field : \"totalEnergyConsumptionDelta\",
-			      aggregation : \"sum\"
-			    }
-			    lastMonthActualConsumption = Module(\"energydata\").fetch(db);
-			    db = {
-			      criteria : [parentId == siteId && ttime == thisMonthRanges],
-			      field : \"cdd\",
-			      aggregation : \"sum\"
-			    }
-			    thisMonthCdd = Module(\"cdd\").fetch(db);
-			    db = {
-			      criteria : [parentId == siteId && ttime == lastMonthRanges],
-			      field : \"cdd\",
-			      aggregation : \"sum\"
-			    }
-			    lastMonthCdd = Module(\"cdd\").fetch(db);
+			  lastMonthRanges = date.getDateRange(\"Last Month\", \"Previous Month\", \"quaterly\");
+			  db = {
+			    criteria : [parentId == resourceIds && ttime == thisMonthRanges],
+			    field : \"totalEnergyConsumptionDelta\",
+				aggregation : \"sum, totalEnergyConsumptionDelta\",
+			    groupBy: \"parentId\",
+			    orderBy: \"parentId\" asc
+			  }
+			  thisMonthActualConsumption = Module(\"energydata\").fetch(db);
+			  log \"\"+thisMonthActualConsumption
+			  db = {
+			    criteria : [parentId == resourceIds && ttime == lastMonthRanges],
+			    field : \"totalEnergyConsumptionDelta\",
+			    aggregation : \"sum, totalEnergyConsumptionDelta\",
+			    groupBy: \"parentId\",
+			    orderBy: \"parentId\" asc
+			  }
+			  lastMonthActualConsumption = Module(\"energydata\").fetch(db);
+			    log \"\"+lastMonthActualConsumption
+			  db = {
+			    criteria : [parentId == siteId && ttime == thisMonthRanges],
+			    field : \"cdd\",
+			    aggregation : \"sum\"
+			  }
+			  thisMonthCdd = Module(\"cdd\").fetch(db);
+			  db = {
+			    criteria : [parentId == siteId && ttime == lastMonthRanges],
+			    field : \"cdd\",
+			    aggregation : \"sum\"
+			  }
+			  lastMonthCdd = Module(\"cdd\").fetch(db);
+			  for each index,resourceId in resourceIds {
 			    resultMap = {};
 			    resultMap[\"totalThisMonth\"] = 0;
 			    if (thisMonthCdd != null) {
-			        resultMap[\"totalThisMonth\"] = thisMonthActualConsumption/thisMonthCdd;
+			      consumption = thisMonthActualConsumption[index]
+			      consumption = consumption.totalEnergyConsumptionDelta
+			      resultMap[\"totalThisMonth\"] = consumption/thisMonthCdd;
 			    }
 			    if (lastMonthCdd != null) {
-				    resultMap[\"totalLastMonth\"] = lastMonthActualConsumption/lastMonthCdd;
+			      consumption = lastMonthActualConsumption[index]
+			      consumption = consumption.totalEnergyConsumptionDelta
+			      resultMap[\"totalLastMonth\"] = consumption/lastMonthCdd;
 			    }
 			    result[resourceId] = resultMap
 			  }
