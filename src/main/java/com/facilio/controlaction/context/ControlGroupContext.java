@@ -3,6 +3,7 @@ package com.facilio.controlaction.context;
 import java.util.List;
 
 import com.facilio.bmsconsole.context.AssetCategoryContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta.ControlActionMode;
 import com.facilio.modules.fields.FacilioField;
 
 public class ControlGroupContext {
@@ -17,8 +18,18 @@ public class ControlGroupContext {
 	List<ControlGroupSpace> controlGroupSpaces;
 	List<ControlGroupInclExclContext> controlGroupInclExclContexts;
 	List<Long> matchedResources;
+	ControlActionMode mode;
 	
 	
+	public int getMode() {
+		if(mode != null) {
+			return mode.getValue();
+		}
+		return -1;
+	}
+	public void setMode(int mode) {
+		this.mode = ControlActionMode.valueOf(mode);
+	}
 	public FacilioField getField() {
 		return field;
 	}
