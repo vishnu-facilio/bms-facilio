@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.EnumOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -74,7 +75,9 @@ public class AddOrUpdateItemStockTransactionsCommand extends FacilioCommand {
 							.select(fields).table(module.getTableName()).moduleName(module.getName())
 							.beanClass(ItemTransactionsContext.class)
 							.andCondition(CriteriaAPI.getCondition(fieldMap.get("transactionState"),
-									String.valueOf(TransactionState.ADDITION.getValue()), EnumOperators.IS));
+									String.valueOf(TransactionState.ADDITION.getValue()), EnumOperators.IS))
+							.andCondition(CriteriaAPI.getCondition(fieldMap.get("purchasedItem"),
+									String.valueOf(ic.getId()), PickListOperators.IS));
 					List<ItemTransactionsContext> transactions = transactionsselectBuilder.get();
 					if (transactions != null && !transactions.isEmpty()) {
 						ItemTransactionsContext it = transactions.get(0);

@@ -39,9 +39,9 @@ public class AddOrUpdateToolStockTransactionsCommand extends FacilioCommand {
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.TOOL_TRANSACTIONS);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		
+
 		List<Long> toolIds = (List<Long>) context.get(FacilioConstants.ContextNames.TOOL_IDS);
-		ShipmentContext shipment = (ShipmentContext)context.get(FacilioConstants.ContextNames.SHIPMENT);
+		ShipmentContext shipment = (ShipmentContext) context.get(FacilioConstants.ContextNames.SHIPMENT);
 
 		if (toolIds != null && !toolIds.isEmpty()) {
 			long toolTypeId = (long) context.get(FacilioConstants.ContextNames.TOOL_TYPES_ID);
@@ -91,11 +91,10 @@ public class AddOrUpdateToolStockTransactionsCommand extends FacilioCommand {
 						transaction.setQuantity(1);
 						transaction.setParentId(pt.getId());
 						transaction.setIsReturnable(false);
-						if(shipment == null) {
+						if (shipment == null) {
 							transaction.setTransactionType(TransactionType.STOCK.getValue());
 							transaction.setTransactionState(TransactionState.ADDITION.getValue());
-						}
-						else {
+						} else {
 							transaction.setTransactionType(TransactionType.SHIPMENT_STOCK.getValue());
 							transaction.setTransactionState(TransactionState.ADDITION.getValue());
 							transaction.setShipment(shipment.getId());
@@ -133,32 +132,38 @@ public class AddOrUpdateToolStockTransactionsCommand extends FacilioCommand {
 				transaction.setToolType(toolType);
 				transaction.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
 
-				if(shipment == null) {
+				if (shipment == null) {
 					transaction.setTransactionType(TransactionType.STOCK.getValue());
 					transaction.setTransactionState(TransactionState.ADDITION.getValue());
-				}
-				else {
+				} else {
 					transaction.setTransactionType(TransactionType.SHIPMENT_STOCK.getValue());
 					transaction.setTransactionState(TransactionState.ADDITION.getValue());
 					transaction.setShipment(shipment.getId());
 				}
+				toolTransaction.add(transaction);
 
-				SelectRecordsBuilder<ToolTransactionContext> transactionsselectBuilder = new SelectRecordsBuilder<ToolTransactionContext>()
-						.select(fields).table(module.getTableName()).moduleName(module.getName())
-						.beanClass(ToolTransactionContext.class)
-						.andCondition(CriteriaAPI.getCondition(fieldMap.get("transactionState"),
-								String.valueOf(TransactionState.ADDITION.getValue()), EnumOperators.IS));
-				List<ToolTransactionContext> transactions = transactionsselectBuilder.get();
-				if (transactions != null && !transactions.isEmpty()) {
-					ToolTransactionContext it = transactions.get(0);
-					it.setQuantity(1);
-					UpdateRecordBuilder<ToolTransactionContext> updateBuilder = new UpdateRecordBuilder<ToolTransactionContext>()
-							.module(module).fields(modBean.getAllFields(module.getName()))
-							.andCondition(CriteriaAPI.getIdCondition(it.getId(), module));
-					updateBuilder.update(it);
-				} else {
-					toolTransaction.add(transaction);
-				}
+				/*
+				 * SelectRecordsBuilder<ToolTransactionContext>
+				 * transactionsselectBuilder = new
+				 * SelectRecordsBuilder<ToolTransactionContext>()
+				 * .select(fields).table(module.getTableName()).moduleName(
+				 * module.getName()) .beanClass(ToolTransactionContext.class)
+				 * .andCondition(CriteriaAPI.getCondition(fieldMap.get(
+				 * "transactionState"),
+				 * String.valueOf(TransactionState.ADDITION.getValue()),
+				 * EnumOperators.IS)) ;
+				 * 
+				 * List<ToolTransactionContext> transactions =
+				 * transactionsselectBuilder.get(); if (transactions != null &&
+				 * !transactions.isEmpty()) { ToolTransactionContext it =
+				 * transactions.get(0); it.setQuantity(tool.getQuantity());
+				 * UpdateRecordBuilder<ToolTransactionContext> updateBuilder =
+				 * new UpdateRecordBuilder<ToolTransactionContext>()
+				 * .module(module).fields(modBean.getAllFields(module.getName())
+				 * ) .andCondition(CriteriaAPI.getIdCondition(it.getId(),
+				 * module)); updateBuilder.update(it); } else {
+				 * toolTransaction.add(transaction); }
+				 */
 			}
 			InsertRecordBuilder<ToolTransactionContext> readingBuilder = new InsertRecordBuilder<ToolTransactionContext>()
 					.module(module).fields(fields).addRecords(toolTransaction);
@@ -180,11 +185,10 @@ public class AddOrUpdateToolStockTransactionsCommand extends FacilioCommand {
 				transaction.setToolType(t.getToolType());
 				transaction.setApprovedState(ApprovalState.YET_TO_BE_REQUESTED);
 				transaction.setAsset(asset);
-				if(shipment == null) {
+				if (shipment == null) {
 					transaction.setTransactionType(TransactionType.STOCK.getValue());
 					transaction.setTransactionState(TransactionState.ADDITION.getValue());
-				}
-				else {
+				} else {
 					transaction.setTransactionType(TransactionType.SHIPMENT_STOCK.getValue());
 					transaction.setTransactionState(TransactionState.ADDITION.getValue());
 					transaction.setShipment(shipment.getId());
