@@ -41,7 +41,7 @@ public class MLAnomalyEvent extends BaseEventContext{
     public BaseEventContext createAdditionClearEvent(AlarmOccurrenceContext alarmOccurrence) {
         if (alarmOccurrence instanceof MLAlarmOccurenceContext) {
         	MLAlarmOccurenceContext context =(MLAlarmOccurenceContext)alarmOccurrence;
-        	if(mlAnomalyType!=null && context!=null && !context.getMLAnomalyTypeEnum().equals(mlAnomalyType))
+        	if(mlAnomalyType!=null && context!=null  && !(context.getMLAnomalyType()==mlAnomalyType.getIndex()))
         	{
         		String message = "Anomaly Cleared";
 				MLAnomalyEvent event = new MLAnomalyEvent();
