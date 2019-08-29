@@ -61,19 +61,19 @@ public class MLAnomalyPageFactory extends PageFactory {
 	}
 	private static void addNoOfAnomalies(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD, "noOfAnomalies");
-		cardWidget.addToLayoutParams(section, 8, 3);
+		cardWidget.addToLayoutParams(section, 8, 4);
 		cardWidget.addToWidgetParams("type", CardType.NO_OF_ANOMALIES.getName());
 		section.addWidget(cardWidget);
 	}
 	private static void addConspumstionDetails(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD, "energyCDD");
-		cardWidget.addToLayoutParams(section, 8, 3);
+		cardWidget.addToLayoutParams(section, 8, 4);
 		cardWidget.addToWidgetParams("type", CardType.ML_ALARM_ENERGY_CDD.getName());
 		section.addWidget(cardWidget);
 	}
 	private static void addEnergyWastage(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD, "energyWastageDetails");
-		cardWidget.addToLayoutParams(section, 8, 3);
+		cardWidget.addToLayoutParams(section, 8, 4);
 		cardWidget.addToWidgetParams("type", CardType.ENERGY_WASTAGE_DETAILS.getName());
 		section.addWidget(cardWidget);
 	}
