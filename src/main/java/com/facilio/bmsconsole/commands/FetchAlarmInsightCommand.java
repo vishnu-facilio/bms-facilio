@@ -72,7 +72,6 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 		}
 
 		if (assetId > 0 || (assetIds != null && assetIds.size() > 0)) {
-			LOGGER.debug("subject" + assetIds.size());
 			if (CollectionUtils.isNotEmpty(props)) {
 				List<Long> ruleIds = props.stream().map(prop -> (long) prop.get("ruleId")).collect(Collectors.toList());
 				Map<Long, WorkflowRuleContext> rules = WorkflowRuleAPI.getWorkflowRulesAsMap(ruleIds, false, false, false);
@@ -82,8 +81,7 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 				}
 			}
 		}
-		LOGGER.debug("assetIds" + assetIds);
-		if (readingRuleId > 0 || (assetIds != null && assetIds.size() > 0)) {
+		if (readingRuleId > 0) {
 			if (isRca) {
 				List<FacilioField> eventFields = EventConstants.EventFieldFactory.getEventFields();
 				Map<String, FacilioField> eventFieldsMap = FieldFactory.getAsMap(eventFields);
@@ -111,12 +109,10 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 				}
 			}
 			else if (CollectionUtils.isNotEmpty(props)) {
-				LOGGER.debug("props" + props);
 				List<Long> resourcesId = props.stream().map(prop -> {
 					HashMap<Object,Object> hsp = (HashMap<Object, Object>) prop.get("resource");
 					return (long) hsp.get("id");
 					}).collect(Collectors.toList());
-				LOGGER.debug("resourcesId" + resourcesId);
 				Map<Long, ResourceContext> resources = ResourceAPI.getResourceAsMapFromIds(resourcesId);
 				for (Map<String, Object> prop : props) {
 					HashMap<Object,Object> resourceId =  (HashMap<Object, Object>) prop.get("resource");
@@ -225,9 +221,13 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 				.on(occurrenceModule.getTableName() + ".ALARM_ID = " + readingAlarmModule.getTableName() + ".ID")
 				;
 
-		if (assetId > 0 || (assetIds != null && assetIds.size() > 0)) {
+		if (assetId > 0 ) {
 			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"),( assetId > 0 ? String.valueOf(assetId) : StringUtils.join(assetIds, ",") ), NumberOperators.EQUALS))
 					.groupBy(ruleField.getCompleteColumnName());
+		}
+		if ((assetIds != null && assetIds.size() > 0)) {
+			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), StringUtils.join(assetIds, ",") , NumberOperators.EQUALS))
+			.groupBy(fieldMap.get("resource").getCompleteColumnName());
 		}
 		if (ruleId > 0) {
 			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("rule"), String.valueOf(ruleId), NumberOperators.EQUALS))
