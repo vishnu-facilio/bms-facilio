@@ -60,8 +60,10 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 			
 			for (Map.Entry<String, List<BaseEventContext>> entry : eventsMap.entrySet()) {
 				List<BaseEventContext> baseEvents = entry.getValue();
+
+				List<BaseEventContext> additionEventsCreated = new ArrayList<>();
 				for (BaseEventContext baseEvent : baseEvents) {
-					processEventToAlarm(baseEvent, context);
+					processEventToAlarm(baseEvent, context, additionEventsCreated);
 				}
 				PointedList<AlarmOccurrenceContext> pointedList = alarmOccurrenceMap.get(entry.getKey());
 
@@ -76,7 +78,7 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 						BaseEventContext createdEvent = BaseEventContext.createNewEvent(alarm.getTypeEnum(), alarm.getResource(), AlarmAPI.getAlarmSeverity("Clear"), "Automated Clear Event", alarm.getKey(), alarmOccurrence.getCreatedTime());
 						baseEvents.add(createdEvent);
 						this.baseEvents.add(createdEvent);
-						processEventToAlarm(createdEvent, context);
+						processEventToAlarm(createdEvent, context, additionEventsCreated);
 					}
 				}
 			}
@@ -92,19 +94,19 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 		
 	}
 
-	private void processEventToAlarm(BaseEventContext baseEvent, Context context) throws Exception {
+	private void processEventToAlarm(BaseEventContext baseEvent, Context context, List<BaseEventContext> additionEventsCreated) throws Exception {
 		if (baseEvent.getEventStateEnum() != EventState.IGNORED) {
 			if(baseEvent.getSeverityString().equals(FacilioConstants.Alarm.INFO_SEVERITY)) {
 				baseEvent.setEventState(EventState.IGNORED);
 			}
 			else {
-				addOrUpdateAlarm(baseEvent, context);
+				addOrUpdateAlarm(baseEvent, context, additionEventsCreated);
 			}
 			baseEvent.setInternalState(EventInternalState.COMPLETED);
 		}
 	}
 
-	private void addOrUpdateAlarm(BaseEventContext baseEvent, Context context) throws Exception {
+	private void addOrUpdateAlarm(BaseEventContext baseEvent, Context context, List<BaseEventContext> additionEventsCreated) throws Exception {
 		PointedList<AlarmOccurrenceContext> pointedList = alarmOccurrenceMap.get(baseEvent.getMessageKey());
 		if (pointedList == null) {
 			pointedList = new PointedList<>();
@@ -137,32 +139,35 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 			}
 			baseEvent.setEventState(EventState.ALARM_CREATED);
 		}
-		else {
-			// if alarm is not cleared, only update in local object.
+		else { // if alarm is not cleared, only update in local object.
+
+			// for first historical event
 			if (baseEvent.getCreatedTime() < alarmOccurrence.getCreatedTime()) {
 				int oldObjectIndex = pointedList.indexOf(alarmOccurrence);
 				alarmOccurrence = NewAlarmAPI.createAlarmOccurrence(alarmOccurrence.getAlarm(), baseEvent, mostRecent, context);
 				pointedList.add(oldObjectIndex, alarmOccurrence);
 				pointedList.setPosition(oldObjectIndex);
 			}
-			
-			NewAlarmAPI.updateAlarmOccurrence(alarmOccurrence, baseEvent, mostRecent, context);
+
+			BaseEventContext additionClearEvent = baseEvent.createAdditionClearEvent(alarmOccurrence);
+			if (additionClearEvent != null) {
+				additionClearEvent.setSeverity(AlarmAPI.getAlarmSeverity("Clear"));
+				NewAlarmAPI.updateAlarmOccurrence(alarmOccurrence, additionClearEvent, mostRecent, context);
+				additionClearEvent.setEventState(EventState.ALARM_UPDATED);
+				additionEventsCreated.add(additionClearEvent);
+
+				alarmOccurrence = NewAlarmAPI.createAlarmOccurrence(alarmOccurrence.getAlarm(), baseEvent, mostRecent, context);
+				pointedList.add(alarmOccurrence);
+				pointedList.moveNext();
+			}
+			else {
+				NewAlarmAPI.updateAlarmOccurrence(alarmOccurrence, baseEvent, mostRecent, context);
+			}
 			baseEvent.setEventState(EventState.ALARM_UPDATED);
 		}
 		
 		alarmMap.put(baseEvent.getMessageKey(), alarmOccurrence.getAlarm());
 		baseEvent.setAlarmOccurrence(alarmOccurrence);
-	}
-
-	private void updateEvent(BaseEventContext baseEvent) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(NewEventAPI.getEventModuleName(baseEvent.getEventTypeEnum()));
-		UpdateRecordBuilder<BaseEventContext> builder = new UpdateRecordBuilder<BaseEventContext>()
-				.moduleName(module.getName())
-				.fields(modBean.getAllFields(module.getName()))
-				.andCondition(CriteriaAPI.getIdCondition(baseEvent.getId(), module))
-				;
-		builder.update(baseEvent);
 	}
 	
 	public static class PointedList<E> extends ArrayList<E> {

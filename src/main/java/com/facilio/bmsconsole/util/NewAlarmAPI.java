@@ -97,6 +97,34 @@ public class NewAlarmAPI {
 		return null;
 	}
 
+	public static Class getOccurrenceClass(AlarmOccurrenceContext.Type type) {
+		if (type == null) {
+			throw new IllegalArgumentException("Invalid type");
+		}
+		switch (type) {
+			case NORMAL:
+				return AlarmOccurrenceContext.class;
+			case ANOMALY:
+				return AnomalyOccurrenceContext.class;
+			default:
+				throw new IllegalArgumentException("Invalid type");
+		}
+	}
+
+	public static String getOccurrenceModuleName(AlarmOccurrenceContext.Type type) {
+		if (type == null) {
+			throw new IllegalArgumentException("Invalid type");
+		}
+		switch (type) {
+			case NORMAL:
+				return FacilioConstants.ContextNames.ALARM_OCCURRENCE;
+			case ANOMALY:
+				return FacilioConstants.ContextNames.ANOMALY_ALARM_OCCURRENCE;
+			default:
+				throw new IllegalArgumentException("Invalid type");
+		}
+	}
+
 	private static Class getAlarmClass(Type type) {
 		if (type == null) {
 			throw new IllegalArgumentException("Invalid alarm type");
@@ -168,8 +196,13 @@ public class NewAlarmAPI {
 						String.valueOf(baseAlarm.getId()), NumberOperators.EQUALS))
 				.orderBy("CREATED_TIME DESC, ID DESC").limit(1);
 		AlarmOccurrenceContext alarmOccurrenceContext = builder.fetchFirst();
-		updateAlarmObject(Collections.singletonList(alarmOccurrenceContext));
-		return alarmOccurrenceContext;
+		List<AlarmOccurrenceContext> extendedOccurrences = getExtendedOccurrence(Collections.singletonList(alarmOccurrenceContext));
+		if (CollectionUtils.isNotEmpty(extendedOccurrences)) {
+			alarmOccurrenceContext = extendedOccurrences.get(0);
+			updateAlarmObject(Collections.singletonList(alarmOccurrenceContext));
+			return alarmOccurrenceContext;
+		}
+		return null;
 	}
 
 	public static Map<Long, AlarmOccurrenceContext> getLatestAlarmOccuranceMap(List<BaseAlarmContext> baseAlarms) throws Exception {
@@ -189,6 +222,7 @@ public class NewAlarmAPI {
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("alarm"), ids, NumberOperators.EQUALS))
 				.orderBy("CREATED_TIME DESC, ID DESC");
 		List<AlarmOccurrenceContext> occurences = builder.get();
+		occurences = getExtendedOccurrence(occurences);
 		updateAlarmObject(occurences);
 		if (CollectionUtils.isNotEmpty(occurences)) {
 			return occurences.stream().collect(Collectors.toMap(AlarmOccurrenceContext::getId, Function.identity()));
@@ -206,7 +240,7 @@ public class NewAlarmAPI {
 						StringOperators.IS))
 				.orderBy("CREATED_TIME DESC, ID DESC").limit(1);
 		List<AlarmOccurrenceContext> list = builder.get();
-
+		list = getExtendedOccurrence(list);
 		updateAlarmObject(list);
 		return list;
 	}
@@ -232,8 +266,7 @@ public class NewAlarmAPI {
 	}
 
 	public static AlarmOccurrenceContext createAlarm(BaseEventContext baseEvent, Context context) throws Exception {
-		AlarmOccurrenceContext alarmOccurrence = new AlarmOccurrenceContext();
-		baseEvent.updateAlarmOccurrenceContext(alarmOccurrence, context,true);
+		AlarmOccurrenceContext alarmOccurrence = baseEvent.updateAlarmOccurrenceContext(null, context, true);
 
 		BaseAlarmContext baseAlarm = baseEvent.updateAlarmContext(null, true);
 		updateAlarmSystemFields(baseAlarm, alarmOccurrence);
@@ -249,8 +282,7 @@ public class NewAlarmAPI {
 
 	public static AlarmOccurrenceContext createAlarmOccurrence(BaseAlarmContext baseAlarm, BaseEventContext baseEvent,
 															   boolean mostRecent, Context context) throws Exception {
-		AlarmOccurrenceContext alarmOccurrence = new AlarmOccurrenceContext();
-		baseEvent.updateAlarmOccurrenceContext(alarmOccurrence, context,true);
+		AlarmOccurrenceContext alarmOccurrence = baseEvent.updateAlarmOccurrenceContext(null, context, true);
 		alarmOccurrence.setAlarm(baseAlarm);
 
 		addAlarmOccurrence(alarmOccurrence, baseEvent, mostRecent);
@@ -327,8 +359,41 @@ public class NewAlarmAPI {
 				.fetchLookups(fetchLookupFields)
 				.beanClass(AlarmOccurrenceContext.class).andCondition(CriteriaAPI.getIdCondition(recordIds, module));
 		List<AlarmOccurrenceContext> occurrenceContexts = builder.get();
+		occurrenceContexts = getExtendedOccurrence(occurrenceContexts);
 		updateAlarmObject(occurrenceContexts);
 		return occurrenceContexts;
+	}
+
+	private static List<AlarmOccurrenceContext> getExtendedOccurrence(List<AlarmOccurrenceContext> occurrenceContexts) throws Exception {
+		List<AlarmOccurrenceContext> newList = new ArrayList<>();
+		if (CollectionUtils.isNotEmpty(occurrenceContexts)) {
+			HashMap<AlarmOccurrenceContext.Type, List<Long>> occurrenceMap = new HashMap<>();
+
+			for (AlarmOccurrenceContext occurrenceContext : occurrenceContexts) {
+				if (occurrenceContext.getTypeEnum() == AlarmOccurrenceContext.Type.NORMAL) {
+					newList.add(occurrenceContext);
+					continue;
+				}
+
+				List<Long> list = occurrenceMap.get(occurrenceContext.getTypeEnum());
+				if (list == null) {
+					list = new ArrayList<>();
+					occurrenceMap.put(occurrenceContext.getTypeEnum(), list);
+				}
+				list.add(occurrenceContext.getId());
+			}
+
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			for (AlarmOccurrenceContext.Type type : occurrenceMap.keySet()) {
+				FacilioModule module = modBean.getModule(getOccurrenceModuleName(type));
+				SelectRecordsBuilder<AlarmOccurrenceContext> selectBuilder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
+						.moduleName(getOccurrenceModuleName(type)).beanClass(getOccurrenceClass(type))
+						.select(modBean.getAllFields(getOccurrenceModuleName(type)))
+						.andCondition(CriteriaAPI.getIdCondition(occurrenceMap.get(type), module));
+				newList.addAll(selectBuilder.get());
+			}
+		}
+		return newList;
 	}
 
 	private static void updateAlarmObject(List<AlarmOccurrenceContext> occurrenceContexts) throws Exception {
@@ -391,6 +456,7 @@ public class NewAlarmAPI {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("readingFieldId"), String.valueOf(fieldId), NumberOperators.EQUALS));
 		}
 		List<AlarmOccurrenceContext> occurrenceContexts = selectBuilder.get();
+		occurrenceContexts = getExtendedOccurrence(occurrenceContexts);
 		updateAlarmObject(occurrenceContexts);
 		return occurrenceContexts;
 	}
@@ -406,6 +472,7 @@ public class NewAlarmAPI {
 						NumberOperators.EQUALS));
 
 		List<AlarmOccurrenceContext> occurrenceContexts = selectBuilder.get();
+		occurrenceContexts = getExtendedOccurrence(occurrenceContexts);
 		updateAlarmObject(occurrenceContexts);
 		return occurrenceContexts;
 	}
@@ -431,9 +498,9 @@ public class NewAlarmAPI {
 		selectBuilder.andCriteria(criteria);
 		return selectBuilder;
 	}
+
 	public static Long getActiveAlarms(long spaceId) throws Exception
 	{
-		
 		FacilioField countFld = new FacilioField();
 		countFld.setName("active");
 		countFld.setColumnName("COUNT(*)");
@@ -642,10 +709,7 @@ public class NewAlarmAPI {
 				.table(module.getTableName())
 				.andCondition(CriteriaAPI.getIdCondition(delAlarmOccurrenceIds, module));
 		deletebuilder.delete();
-
 	}
-
-
 
 	public static List<ReadingAlarmCategoryContext> getReadingAlarmCategory(List<Long> readingCategoryIds) throws Exception {
 		if (CollectionUtils.isEmpty(readingCategoryIds)) {

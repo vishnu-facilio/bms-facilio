@@ -243,7 +243,10 @@ public class BaseEventContext extends ModuleBaseWithCustomFields {
 		return baseAlarm;
 	}
 	
-	public void updateAlarmOccurrenceContext(AlarmOccurrenceContext alarmOccurrence, Context context, boolean add) throws Exception {
+	public AlarmOccurrenceContext updateAlarmOccurrenceContext(AlarmOccurrenceContext alarmOccurrence, Context context, boolean add) throws Exception {
+	    if (alarmOccurrence == null && add) {
+	        alarmOccurrence = new AlarmOccurrenceContext();
+        }
 		AlarmSeverityContext previousSeverity = alarmOccurrence.getSeverity();
 		alarmOccurrence.setSeverity(getSeverity());
 		alarmOccurrence.setAutoClear(getAutoClear());
@@ -304,6 +307,7 @@ public class BaseEventContext extends ModuleBaseWithCustomFields {
 			}
 			alarmOccurrence.setRecommendation(recommendations);
 		}
+		return alarmOccurrence;
 	}
 	
 	public static BaseEventContext createNewEvent(Type typeEnum, ResourceContext resourceContext, AlarmSeverityContext alarmSeverity, String message, String messageKey, long createdTime) {
@@ -347,4 +351,8 @@ public class BaseEventContext extends ModuleBaseWithCustomFields {
 	public boolean isSuperCalled() {
 		return superCalled;
 	}
+
+    public BaseEventContext createAdditionClearEvent(AlarmOccurrenceContext alarmOccurrence) {
+        return null;
+    }
 }

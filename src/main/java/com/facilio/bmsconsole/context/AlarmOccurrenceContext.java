@@ -1,14 +1,19 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.accounts.dto.User;
+import com.facilio.modules.FacilioEnum;
 import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 	private static final long serialVersionUID = 1L;
-	
+
+	public AlarmOccurrenceContext() {
+	}
+
 	private String subject;					// for client,alarm bar handling
 	public String getSubject() {
 		return subject;
@@ -194,7 +199,28 @@ public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 		JSONParser parser = new JSONParser();
 		additionInfo = (JSONObject) parser.parse(jsonStr);
 	}
-	
+
+	private Type type;
+	@JsonInclude
+	public int getType() {
+		type = getTypeEnum();
+		if (type != null) {
+			return type.getIndex();
+		}
+		return -1;
+	}
+	// this will be used only to get data from database
+	public void setType(int type) {
+		this.type = Type.valueOf(type);
+	}
+	// this will be used only to get data from database
+	public Type getTypeEnum() {
+		if (type == null) {
+			return Type.NORMAL;
+		}
+		return type;
+	}
+
 	public void updateAlarm(BaseAlarmContext baseAlarm) {
 		baseAlarm.setSeverity(severity);
 		if (baseAlarm.isAcknowledged()) {
@@ -238,5 +264,27 @@ public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 			return super.equals(obj);
 		}
 		return false;
+	}
+
+	public enum Type implements FacilioEnum {
+		NORMAL,
+		ANOMALY,
+		;
+
+		public int getIndex() {
+			return ordinal() + 1;
+		}
+
+		@Override
+		public String getValue() {
+			return name();
+		}
+
+		public static Type valueOf(int value) {
+			if (value > 0 && value <= values().length) {
+				return values()[value - 1];
+			}
+			return null;
+		}
 	}
 }

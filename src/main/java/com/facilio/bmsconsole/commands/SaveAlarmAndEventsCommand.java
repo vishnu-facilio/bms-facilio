@@ -67,27 +67,40 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 		}
 		
 		if (MapUtils.isNotEmpty(alarmOccurrenceMap)) {
-			List<FacilioField> allFields = modBean.getAllFields(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
-			InsertRecordBuilder<AlarmOccurrenceContext> builder = new InsertRecordBuilder<AlarmOccurrenceContext>()
-					.moduleName(FacilioConstants.ContextNames.ALARM_OCCURRENCE)
-					.fields(allFields);
-			
-			List<AlarmOccurrenceContext> records = new ArrayList<>();
-			for (Map.Entry<String, PointedList<AlarmOccurrenceContext>> entry : alarmOccurrenceMap.entrySet()) {
-				for (AlarmOccurrenceContext alarmOccurrenceContext : entry.getValue()) {
+			Map<AlarmOccurrenceContext.Type, List<AlarmOccurrenceContext>> occurrenceMap = new HashMap<>();
+			for (PointedList<AlarmOccurrenceContext> occurrenceList : alarmOccurrenceMap.values()) {
+				for (AlarmOccurrenceContext occurrence : occurrenceList) {
+					List<AlarmOccurrenceContext> alarmOccurrenceContexts = occurrenceMap.get(occurrence.getTypeEnum());
+					if (alarmOccurrenceContexts == null) {
+						alarmOccurrenceContexts = new ArrayList<>();
+						occurrenceMap.put(occurrence.getTypeEnum(), alarmOccurrenceContexts);
+					}
+					alarmOccurrenceContexts.add(occurrence);
+				}
+			}
+
+			for (AlarmOccurrenceContext.Type type : occurrenceMap.keySet()) {
+				List<FacilioField> allFields = modBean.getAllFields(NewAlarmAPI.getOccurrenceModuleName(type));
+				InsertRecordBuilder<AlarmOccurrenceContext> builder = new InsertRecordBuilder<AlarmOccurrenceContext>()
+						.moduleName(NewAlarmAPI.getOccurrenceModuleName(type))
+						.fields(allFields);
+
+				List<AlarmOccurrenceContext> records = new ArrayList<>();
+				FacilioModule module = modBean.getModule(NewAlarmAPI.getOccurrenceModuleName(type));
+				for (AlarmOccurrenceContext alarmOccurrenceContext : occurrenceMap.get(type)) {
 					if (alarmOccurrenceContext.getId() > 0) {
 						UpdateRecordBuilder<AlarmOccurrenceContext> updateBuilder = new UpdateRecordBuilder<AlarmOccurrenceContext>()
-								.moduleName(FacilioConstants.ContextNames.ALARM_OCCURRENCE)
-								.andCondition(CriteriaAPI.getIdCondition(alarmOccurrenceContext.getId(), modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE)))
+								.moduleName(NewAlarmAPI.getOccurrenceModuleName(type))
+								.andCondition(CriteriaAPI.getIdCondition(alarmOccurrenceContext.getId(), module))
 								.fields(allFields);
 						updateBuilder.update(alarmOccurrenceContext);
 					} else {
 						records.add(alarmOccurrenceContext);
 					}
 				}
+				builder.addRecords(records);
+				builder.save();
 			}
-			builder.addRecords(records);
-			builder.save();
 		}
 		
 		if (MapUtils.isNotEmpty(alarmMap)) {
