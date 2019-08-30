@@ -391,8 +391,8 @@ public class WorkflowRuleAPI {
 
 		return getWorkFlowsFromMapList(ruleBuilder.get(), true, true);
 	}
-	
-	public static List<WorkflowRuleContext> getWorkflowRules(List<Long> ids) throws Exception {
+
+	public static List<WorkflowRuleContext> getWorkflowRules(List<Long> ids, boolean fetchChildren, boolean fetchExtended) throws Exception {
 		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
 		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
@@ -401,7 +401,11 @@ public class WorkflowRuleAPI {
 				.andCondition(CriteriaAPI.getIdCondition(ids, module))
 				;
 
-		return getWorkFlowsFromMapList(ruleBuilder.get(), true, true);
+		return getWorkFlowsFromMapList(ruleBuilder.get(), fetchChildren, fetchExtended);
+	}
+	
+	public static List<WorkflowRuleContext> getWorkflowRules(List<Long> ids) throws Exception {
+		return getWorkflowRules(ids, true, true);
 	}
 
 	public static Map<Long, WorkflowRuleContext> getWorkflowRulesAsMap (List<Long> ids, boolean fetchChildren, boolean fetchExtended) throws Exception {

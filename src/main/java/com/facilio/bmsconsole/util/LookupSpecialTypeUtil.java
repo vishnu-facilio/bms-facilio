@@ -293,7 +293,7 @@ public class LookupSpecialTypeUtil {
 			if (!(ids instanceof List)) {
 				ids = new ArrayList<>(ids);
 			}
-			return WorkflowRuleAPI.getWorkflowRules((List<Long>) ids, false, false, false);
+			return WorkflowRuleAPI.getWorkflowRules((List<Long>) ids, false, false);
 		}
 		return null;
 	}
