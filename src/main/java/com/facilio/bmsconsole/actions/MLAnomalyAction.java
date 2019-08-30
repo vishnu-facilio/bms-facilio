@@ -44,6 +44,9 @@ public class MLAnomalyAction extends FacilioAction {
 	public String fetchRcaAnomaly() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ALARM_ID, mlAnomalyAlarmId);
+		context.put(FacilioConstants.ContextNames.DATE_RANGE, dateRange);
+		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
+		context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateOperatorValue);
 		Chain mlDetailsChain = ReadOnlyChainFactory.fetchMLSummaryDetailsChain();
 		mlDetailsChain.execute(context);
 		setResult(FacilioConstants.ContextNames.ML_RCA_ALARMS, context.get(FacilioConstants.ContextNames.ML_RCA_ALARMS));
