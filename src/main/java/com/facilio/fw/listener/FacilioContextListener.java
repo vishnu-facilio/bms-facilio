@@ -127,17 +127,15 @@ public class FacilioContextListener implements ServletContextListener {
 			}*/
 
 			try {
-				if(AwsUtil.isProduction() && AwsUtil.isMessageProcessor()) {
-					new Thread(KinesisProcessor::startKinesis).start();
-				}
-				
-				if((!(AwsUtil.isProduction() || AwsUtil.isDevelopment())) && AwsUtil.isMessageProcessor()) {
-				    log.info("Starting kafka processor");
-					new Thread(KafkaProcessor::start).start();
-				}
-				if(AwsUtil.isDevelopment() && AwsUtil.isMessageProcessor()) {
-					log.info("Starting kafka processor");
-					new Thread(KafkaProcessor::start).start();
+
+				if(AwsUtil.isMessageProcessor()) {
+
+					if("kinesis".equals(AwsUtil.getMessageQueue())) {
+						new Thread(KinesisProcessor::startKinesis).start();
+					} else {
+						log.info("Starting kafka processor");
+						new Thread(KafkaProcessor::start).start();
+					}
 				}
 			} catch (Exception e){
 				log.info("Exception occurred ", e);
