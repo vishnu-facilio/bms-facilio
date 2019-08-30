@@ -34,9 +34,9 @@ public class GetMLSummmaryDetail extends FacilioCommand {
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ANOMALY_ALARM_OCCURRENCE);
 		LookupField resourceLookup = (LookupField) FieldFactory.getField("resource", "RESOURCE_ID", FieldType.LOOKUP);
 		resourceLookup.setLookupModule(ModuleFactory.getResourceModule());
-		FacilioModule occurrenceModule = modBean.getModule(ContextNames.ALARM_OCCURRENCE);
-		List<FacilioField> occurrenceFields = modBean.getAllFields(occurrenceModule.getName());
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(occurrenceFields);
+//		FacilioModule occurrenceModule = modBean.getModule(ContextNames.ALARM_OCCURRENCE);
+//		List<FacilioField> occurrenceFields = modBean.getAllFields(occurrenceModule.getName());
+//		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(occurrenceFields);
 		DateOperators operator = DateOperators.CURRENT_WEEK;
 		DateRange dateRange = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE);
 		if (dateRange == null) {
@@ -50,10 +50,8 @@ public class GetMLSummmaryDetail extends FacilioCommand {
 		SelectRecordsBuilder<MLAlarmOccurenceContext> builder = new SelectRecordsBuilder<MLAlarmOccurenceContext>().module(module)
 				.beanClass(MLAlarmOccurenceContext.class).select(modBean.getAllFields(module.getName()))
 				.fetchLookup(resourceLookup)
-				.innerJoin(occurrenceModule.getTableName())
-				.on(occurrenceModule.getTableName() + ".ID = " + module.getTableName() + ".ID")
-				.andCondition(CriteriaAPI.getCondition("PARENTID", "parentID",String.valueOf(mlAnomalyId),  NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), dateRange.toString(), DateOperators.BETWEEN));;
+				.andCondition(CriteriaAPI.getCondition("PARENTID", "parentID", String.valueOf(mlAnomalyId),  NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", dateRange.toString(), DateOperators.BETWEEN));
 		List<MLAlarmOccurenceContext> list = builder.get();
 		context.put(ContextNames.ML_RCA_ALARMS, list);
 		return false;
