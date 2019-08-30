@@ -362,7 +362,7 @@ public class WorkflowUtil {
 		paramMap = workflowContext.getVariableResultMap();
 		
 		workflowContext.setIgnoreNullParams(ignoreNullExpressions);
-		
+		log.debug("param" + (paramMap != null ? paramMap : ""));
 		Object result = workflowContext.executeWorkflow();
 		
 		if(workflowContext.isLogNeeded()) {
