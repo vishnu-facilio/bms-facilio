@@ -56,6 +56,22 @@ public class HistoricalLoggerUtil {
 		
 	}
 	
+	public static HistoricalLoggerContext getHistoricalLoggerById (long loggerId) throws Exception {
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getHistoricalLoggerFields())
+				.table(ModuleFactory.getHistoricalLoggerModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("ID", "id", ""+loggerId, NumberOperators.EQUALS));
+		
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {			
+			HistoricalLoggerContext historicalLogger = FieldUtil.getAsBeanFromMap(props.get(0), HistoricalLoggerContext.class);
+			return historicalLogger;
+		}
+		return null;
+	}
+	
 	
 	public static HistoricalLoggerContext getHistoricalLogger(long parentassetId) throws Exception {
 		

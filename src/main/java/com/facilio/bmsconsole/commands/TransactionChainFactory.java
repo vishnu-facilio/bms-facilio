@@ -3434,13 +3434,11 @@ public class TransactionChainFactory {
 			return c;
 		}
 
-
 		public static FacilioChain UploadImportPointsFileChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new UploadImportPointsDataCommand());
 			return c;
 		}
-		
 		
 		public static FacilioChain getImportReadingJobChain() {
 			FacilioChain c = getDefaultChain();
@@ -3448,7 +3446,13 @@ public class TransactionChainFactory {
 			
 			return c;
 		}
-		
+
+		public static FacilioChain getExecuteHistoricalVMCalculation() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new HistoricalVMCalculationCommand());
+			return c;
+		}
+
 }
 
 

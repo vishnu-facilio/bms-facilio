@@ -245,6 +245,7 @@ public class FacilioConstants {
 		public static final String BMS_EVENT = "bmsevent";
 		public static final String BMS_ALARM ="bmsalarm";
 		public static final String IS_INCLUDE = "isInclude";
+		public static final String ALARM_COUNT = "alarmCount";
 		
 		public static final String ML_ANOMALY_ALARM = "mlAnomalyAlarm";
 	
@@ -510,6 +511,8 @@ public class FacilioConstants {
 		public static final String INTERVAL = "interval";
 		public static final String VM_LIST = "vmList";
 		public static final String RUN_PARENT_METER = "runParentMeter";
+		public static final String HISTORICAL_VM_JOB_ID = "historicalVMJobId";
+		public static final String HISTORICAL_VM_JOB = "historicalVMJob";
 		
 		public static final String ASSET_BD_SOURCE_DETAILS = "assetbreakdownSourceDetails";
 		public static final String LAST_ASSET_BD_SOURCE_DETAILS_ID = "lastAssetBDSourceDetailId";
