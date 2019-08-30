@@ -441,7 +441,7 @@ public class NewAlarmAPI {
 		if (alarmId != null) {
 			FacilioModule alarmOccurence = modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
 			Map<String, FacilioField> alarmOccurenceFieldMap = FieldFactory.getAsMap(modBean.getAllFields(alarmOccurence.getName()));
-			selectBuilder.andCondition(CriteriaAPI.getCondition(alarmOccurenceFieldMap.get("alarm"), String.valueOf(alarmId), PickListOperators.IS));
+			selectBuilder.andCondition(CriteriaAPI.getCondition(alarmOccurenceFieldMap.get("id"), String.valueOf(alarmId), PickListOperators.IS));
 			ruleAvailable = true;
 			
 		}
