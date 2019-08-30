@@ -310,7 +310,7 @@ public class PreventiveMaintenanceAPI {
 	private static long getEndTime(FacilioFrequency frequency) throws Exception {
 		if (AccountUtil.getCurrentOrg().getOrgId() == 92L) {
 			if (frequency == FacilioFrequency.DAILY) {
-				return DateTimeUtil.getDayStartTime(10, true) - 1;
+				return DateTimeUtil.getDayStartTime(2, true) - 1;
 			} else if (frequency == FacilioFrequency.WEEKLY) {
 				return DateTimeUtil.getDayStartTime(26*7, true) - 1;
 			}
