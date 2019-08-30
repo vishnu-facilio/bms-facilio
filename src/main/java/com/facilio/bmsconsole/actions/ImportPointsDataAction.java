@@ -243,7 +243,7 @@ public class ImportPointsDataAction extends FacilioAction{
 		}
 				
 		pointsProcessContext.setStatus(PointsProcessContext.ImportStatus.IN_PROGRESS.getValue());
-		updateImportPoints(pointsProcessContext);
+		updateImportPoints(pointsProcessContext, ImportStatus.IN_PROGRESS);
 		FacilioTimer.scheduleOneTimeJob(pointsProcessContext.getId(), "importData" , 10, "priority");
 		
 		return SUCCESS;
