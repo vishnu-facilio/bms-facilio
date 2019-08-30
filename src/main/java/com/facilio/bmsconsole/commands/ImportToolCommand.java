@@ -65,7 +65,12 @@ public class ImportToolCommand extends FacilioCommand {
 						categoryNameVsIdMap.put(category.getName(), category.getId());
 					}
 					toolType.setCategory(category);
-					toolType.setId(insertToolType(modBean, toolType));
+					long insertToolTypeId = insertToolType(modBean, toolType);
+					if(toolNameVsIdMap == null) {
+						toolNameVsIdMap = new HashMap<String, Long>();
+					}
+					toolNameVsIdMap.put(toolType.getName(), insertToolTypeId);
+					toolType.setId(insertToolTypeId);
 				}
 				if ((purchasedTool.getSerialNumber() == null
 						|| purchasedTool.getSerialNumber().equalsIgnoreCase("null"))) {

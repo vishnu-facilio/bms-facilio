@@ -666,7 +666,7 @@ public static enum WorkOrder_Permission implements PermissionInterface {
 
 	DELETE_TEAM(16,"Team", WorkOrder_Permission.DELETE, Permission_Child_Type.RADIO),
 	DELETE_OWN(32,"Own",WorkOrder_Permission.DELETE,Permission_Child_Type.RADIO),
-	DELETE_IN_ACCESSIBLE_SPACES(64,"All",WorkOrder_Permission.UPDATE,Permission_Child_Type.RADIO),
+	DELETE_IN_ACCESSIBLE_SPACES(64,"All",WorkOrder_Permission.DELETE,Permission_Child_Type.RADIO),
 	;
 
 	long permission;

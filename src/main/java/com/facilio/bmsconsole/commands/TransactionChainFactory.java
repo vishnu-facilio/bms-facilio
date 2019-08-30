@@ -3441,6 +3441,14 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		
+		public static FacilioChain getImportReadingJobChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new ImportReadingCommand());
+			
+			return c;
+		}
+		
 }
 
 
