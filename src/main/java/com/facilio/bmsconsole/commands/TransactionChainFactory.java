@@ -507,6 +507,12 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+		public static FacilioChain getExportPointsChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new ExportPointsCommand());
+			return c;
+		}
+
 
 		public static FacilioChain sendModuleMailChain () {
 			FacilioChain c = getDefaultChain();
@@ -682,6 +688,14 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+
+		public static FacilioChain getImportPointsChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new ProcessImportPointsCommand());
+			c.addCommand(new SwitchToAddResourceChain());
+			return c;
+		}
+		
 		public static FacilioChain parseReadingDataForImport() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new ParseDataForReadingLogsCommand());
@@ -696,8 +710,17 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+
+		public static FacilioChain parseImportPointsData() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new PointsParseDataForImportCommand());
+			c.addCommand(new GenericImportDataIntoPointsLogCommand());
+			return c;
+		}
+		
 		public static FacilioChain getImportReadingChain() {
 			FacilioChain c = getDefaultChain();
+
 			c.addCommand(new ConstructVirtualSheetForReadingsImport());
 			c.addCommand(new InsertReadingCommand());
 			c.addCommand(new WriteSkippedToFileCommand());
@@ -3347,6 +3370,7 @@ public class TransactionChainFactory {
 			c.addCommand(new UploadImportFileCommand());
 			return c;
 		}
+
 		
 		public static FacilioChain getExecuteControlActionCommandChain() {
 			FacilioChain c = getDefaultChain();
@@ -3402,13 +3426,21 @@ public class TransactionChainFactory {
 			c.addCommand(new GenericAddModuleDataListCommand());
 			return c;
 		}
-		
+
 		public static FacilioChain getImportDataChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new ImportDataCommand());
 			
 			return c;
 		}
+
+
+		public static FacilioChain UploadImportPointsFileChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new UploadImportPointsDataCommand());
+			return c;
+		}
+		
 }
 
 

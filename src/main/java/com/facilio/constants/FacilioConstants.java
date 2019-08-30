@@ -1181,11 +1181,18 @@ public class FacilioConstants {
 		public static final String IMPORT_PROCESS_CONTEXT = "importProcessContext";
 
 		public static final String INCLUDE_SERVING_SITE = "includeServingSite";
+
 		public static final Object DEFAULT_DATE = "defaultDate";
 		public static final Object READING_RULE_ALARM_OCCURANCE = "readingRuleAlarmOccurance";
 
 		public static final String IS_EMAIL_VERIFICATION_NEEDED = "isEmailVerificationNeeded";
 
+		public static final String POINTS_PROCESS_CONTEXT = "pointsProcessContext";
+
+
+
+	
+		
 		private static Map<String, Class> classMap = Collections.unmodifiableMap(initClassMap());
 		private static Map<String, Class> initClassMap() {
 			Map<String, Class> classMap = new HashMap<>();

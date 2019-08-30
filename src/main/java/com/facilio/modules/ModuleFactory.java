@@ -1563,6 +1563,14 @@ public class ModuleFactory {
 		importProcessLogModule.setTableName("ImportProcessLog");
 		return importProcessLogModule;
 	}
+	
+	public static FacilioModule getImportPointsLogModule() {
+		FacilioModule importPointsLog = new FacilioModule();
+		importPointsLog.setName("importPointsLog");
+		importPointsLog.setDisplayName("Import Points Log");
+		importPointsLog.setTableName("ImportPointsLog");
+		return importPointsLog;
+	}
 
 	public static FacilioModule getAnalyticsAnomalyModule() {
 		FacilioModule analyticsAnomalyJob = new FacilioModule();
@@ -2575,6 +2583,7 @@ public class ModuleFactory {
 		module.setTableName("Preference_Rules");
 		return module;
 	}
+
 	
 	public static FacilioModule getReservationModule() {
 		FacilioModule module = new FacilioModule();
@@ -2615,4 +2624,15 @@ public class ModuleFactory {
 		module.setTableName("Control_Group_Include_Exclude_Resource");
 		return module;
 	}
+
+
+	public static FacilioModule getImportPointsModule() {
+		FacilioModule module = new FacilioModule();
+		module.setName("importPoints");
+		module.setDisplayName("Import Points");
+		module.setTableName("ImportPoints");
+		return module;
+	}
+
+
 }

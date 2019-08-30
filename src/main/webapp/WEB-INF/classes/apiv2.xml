@@ -4134,6 +4134,5 @@
 		<action name ="upload" class="com.facilio.bmsconsole.actions.ImportDataAction" method="upload">
 		</action>
 	</package>
-
 	
 </struts>
