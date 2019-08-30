@@ -321,7 +321,14 @@ public class PreventiveMaintenanceAPI {
 	public static BulkWorkOrderContext createBulkWoContextsFromPM(Context context, PreventiveMaintenance pm, PMTriggerContext pmTrigger, long startTime, WorkorderTemplate woTemplate) throws Exception {
 		Pair<Long, Integer> nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(Pair.of(startTime, 0));
 		int currentCount = pm.getCurrentExecutionCount();
-		long endTime = getEndTime(pmTrigger.getFrequencyEnum());
+		long endTime;
+		try {
+			endTime = getEndTime(pmTrigger.getFrequencyEnum());
+		} catch (Exception e) {
+			logIf(92L, "PmID " + 92L + "pmTrigger " + pmTrigger.getId());
+			throw e;
+		}
+
 		long currentTime = System.currentTimeMillis();
 		boolean isScheduled = false;
 		List<Long> nextExecutionTimes = new ArrayList<>();
@@ -2295,9 +2302,9 @@ public class PreventiveMaintenanceAPI {
 	}
 
 	public static void logIf(long orgId, String message) {
-		//if (AccountUtil.getCurrentOrg().getOrgId() == orgId) {
-		//	LOGGER.log(Level.SEVERE, message);
-		//}
+		if (AccountUtil.getCurrentOrg().getOrgId() == orgId) {
+			LOGGER.log(Level.SEVERE, message);
+		}
 	}
 
     private static List<Long> getScheduledWOIds(List<Long> pmIds) throws Exception {
