@@ -27,7 +27,8 @@ public class AddRequesterCommand extends FacilioCommand {
 		User requester = (User) context.get(FacilioConstants.ContextNames.REQUESTER);
 		if (requester != null && requester.getEmail() != null && !"".equals(requester.getEmail())) {
 			long orgid = AccountUtil.getCurrentOrg().getOrgId();
-			User portalUser = AccountUtil.getUserBean().getPortalUsers(requester.getEmail(), AccountUtil.getCurrentOrg().getPortalId());
+			PortalInfoContext portalInfo = AccountUtil.getOrgBean().getPortalInfo(orgid, false);
+			User portalUser = AccountUtil.getUserBean().getPortalUsers(requester.getEmail(),portalInfo.getPortalId());
 			Boolean isPublicRequest = (Boolean) context.get(FacilioConstants.ContextNames.IS_PUBLIC_REQUEST);
 			
 			if (portalUser != null) {

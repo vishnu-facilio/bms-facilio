@@ -423,12 +423,12 @@ public enum ActionType {
 			List<Pair<String, Boolean>> mobileInstanceIds = new ArrayList<>();
 			List<FacilioField> fields = new ArrayList<>();
 
-			FacilioField email = new FacilioField();
-			email.setName("email");
-			email.setColumnName("EMAIL");
-			email.setDataType(FieldType.STRING);
-			email.setModule(ModuleFactory.getUserModule());
-			fields.add(email);
+//			FacilioField email = new FacilioField();
+//			email.setName("email");
+//			email.setColumnName("EMAIL");
+//			email.setDataType(FieldType.STRING);
+//			email.setModule(ModuleFactory.getUserModule());
+//			fields.add(email);
 
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(AccountConstants.getUserMobileSettingFields());
 
