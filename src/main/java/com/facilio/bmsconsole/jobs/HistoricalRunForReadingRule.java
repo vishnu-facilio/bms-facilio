@@ -161,13 +161,13 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 			LOGGER.info("Total Time taken for Historical Run for RuleLogger: "+jc.getJobId()+" Reading Rule : "+ruleId+" between "+startTime+" and "+endTime+" is "+timeTaken);
 			
 //			if (AccountUtil.getCurrentOrg().getId() == 135 || AccountUtil.getCurrentOrg().getId() == 134) {
-				JSONObject json = new JSONObject();
-				json.put("to", "praveen@facilio.com, manthosh@facilio.com, shivaraj@facilio.com, vasanth@facilio.com");
-				json.put("sender", "noreply@facilio.com");
-				json.put("subject", "Historical Run completed for RuleLogger : "+jc.getJobId());
-				json.put("message", "Total Time taken for Historical Run for RuleLogger: "+jc.getJobId()+" Reading Rule : "+ruleId+" between "+startTime+" and "+endTime+" is "+timeTaken);
-				
-				AwsUtil.sendEmail(json);
+//				JSONObject json = new JSONObject();
+//				json.put("to", "praveen@facilio.com, manthosh@facilio.com, shivaraj@facilio.com, vasanth@facilio.com");
+//				json.put("sender", "noreply@facilio.com");
+//				json.put("subject", "Historical Run completed for RuleLogger : "+jc.getJobId());
+//				json.put("message", "Total Time taken for Historical Run for RuleLogger: "+jc.getJobId()+" Reading Rule : "+ruleId+" between "+startTime+" and "+endTime+" is "+timeTaken);
+//
+//				AwsUtil.sendEmail(json);
 //			}
 		}
 		catch (Exception e) {

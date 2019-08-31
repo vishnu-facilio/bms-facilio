@@ -105,7 +105,7 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 	    	}
 	    	else
 	    	{
-				generateClearMLAnomalyEvent(parentID,mlContext.getMLVariable().get(0).getFieldID(),parentID,mlContext.getId());
+				generateClearMLAnomalyEvent(parentID,mlContext.getMLVariable().get(0).getFieldID(),getReadingTime(mlContext),mlContext.getId());
 	    	}
 		}
 		catch(Exception e)
@@ -135,7 +135,7 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
     	}
     	else
     	{
-    		generateClearMLAnomalyEvent(assetID,mlContext.getMLVariable().get(0).getFieldID(),parentAlarmID,mlContext.getId());
+    		generateClearMLAnomalyEvent(assetID,mlContext.getMLVariable().get(0).getFieldID(),getReadingTime(mlContext),mlContext.getId());
     	}
     	return false;
 	}

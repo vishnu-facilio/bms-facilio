@@ -626,7 +626,7 @@
 			        if (endTime == null) {
 			          endTime = date.now();
 			        }
-			        ttimes = value.createdTime + \",\" + endTime
+			        ttimes = date.dateRange(value.createdTime, endTime)
 			        thisMonthEnergy = {
 			          criteria: [parentId == resourceId && ttime == ttimes],
 			        }
@@ -634,7 +634,7 @@
 			        if (currentMonthWastage != null) {
 			          for each index,value in currentMonthWastage {
 			            if (value.upperBound != 0) {
-			              diffConsu = value.actualValue - value.upperBound;
+			              diffConsu = value.actualValue - value.adjustedUpperBound;
 			              if (diffConsu > 0) {
 			                energyWastage =  energyWastage + diffConsu
 			              }

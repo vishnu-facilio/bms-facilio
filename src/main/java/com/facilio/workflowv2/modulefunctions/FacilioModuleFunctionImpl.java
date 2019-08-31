@@ -254,6 +254,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 							if(readingDataMeta == null) {
 								throw new Exception("readingDataMeta is null for FieldName - "+dbParamContext.getFieldName() +" moduleName - "+module.getName()+" parentId - "+parentIdString);
 							}
+							ReadingsAPI.convertUnitForRdmData(readingDataMeta);
 							long actualLastRecordedTime = CommonAPI.getActualLastRecordedTime(module);
 							if(actualLastRecordedTime > 0) {
 								if(readingDataMeta.getTtime() >= actualLastRecordedTime) {

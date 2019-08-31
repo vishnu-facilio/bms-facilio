@@ -111,6 +111,10 @@ public class CalculateAggregationCommand extends FacilioCommand {
 			EnumVal enumValue = calculateEnumAggr(report, dp.getyAxis().getEnumMap().keySet(), currentData.get(alias), alias, startTime, endTime, previousRecords, aggrData); //Starttime is included and endtime is excluded
 			if (enumValue != null) {
 				currentData.put(alias, enumValue);
+				// For derivation since enumval will be passed as value for the alias
+				if (CollectionUtils.isNotEmpty(enumValue.getTimeline())) {
+					currentData.put(alias+".value", enumValue.getTimeline().get(0).getValue());					
+				}
 			}
 		}
 	}

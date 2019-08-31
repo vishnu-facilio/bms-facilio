@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.List;
+
 import org.apache.commons.chain.Chain;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
@@ -42,6 +44,9 @@ public class MLAnomalyAction extends FacilioAction {
 	public String fetchRcaAnomaly() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ALARM_ID, mlAnomalyAlarmId);
+		context.put(FacilioConstants.ContextNames.DATE_RANGE, dateRange);
+		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
+		context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateOperatorValue);
 		Chain mlDetailsChain = ReadOnlyChainFactory.fetchMLSummaryDetailsChain();
 		mlDetailsChain.execute(context);
 		setResult(FacilioConstants.ContextNames.ML_RCA_ALARMS, context.get(FacilioConstants.ContextNames.ML_RCA_ALARMS));
@@ -133,7 +138,12 @@ private long ruleId = -1;
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateOperatorValue);
 		Chain rAssetChain = ReadOnlyChainFactory.fetchAnomlayRelatedAsset();
 		rAssetChain.execute(context);
-		setResult(ContextNames.ALARM_LIST, context.get(ContextNames.ALARM_LIST));
+		List<Long> relatedAsset = (List<Long>) context.get(FacilioConstants.ContextNames.RESOURCE_LIST);
+		if (relatedAsset != null && relatedAsset.size() > 0) {
+			setResult(ContextNames.ALARM_LIST, context.get(ContextNames.ALARM_LIST));
+		} else {
+			setResult(ContextNames.ALARM_LIST, context.get(FacilioConstants.ContextNames.RESOURCE_LIST));
+		}
 //		setResult(FacilioConstants.ContextNames.RESOURCE_LIST, context.get(FacilioConstants.ContextNames.RESOURCE_LIST));
 		return SUCCESS;
 	}

@@ -98,10 +98,15 @@ public class PMNewScheduler extends FacilioJob {
 
 				int i = 0;
 				for(PreventiveMaintenance pm : pmList) {
-					PreventiveMaintenanceAPI.logIf(92L,"pm: " + i + " Executing pm: "  + pm.getId());
-					List<BulkWorkOrderContext> bulkWo = createPMJobs(pm, triggerMap, maxNextExecutionTimesMap, endTime);
-					if (!bulkWo.isEmpty()) {
-						bulkWorkOrderContexts.addAll(bulkWo);
+					try{
+						PreventiveMaintenanceAPI.logIf(92L,"pm: " + i + " Executing pm: "  + pm.getId());
+						List<BulkWorkOrderContext> bulkWo = createPMJobs(pm, triggerMap, maxNextExecutionTimesMap, endTime);
+						if (!bulkWo.isEmpty()) {
+							bulkWorkOrderContexts.addAll(bulkWo);
+						}
+					} catch (Exception e) {
+						LOGGER.error("Exception occurred in PM Scheduler Job ID - "+jc.getJobId(), e);
+						CommonCommandUtil.emailException("PMScheduler", "Exception occurred in generating Schedule - orgId: "+jc.getJobId() + " pmId " + pm.getId(), e);
 					}
 					i++;
 				}

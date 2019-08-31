@@ -30,9 +30,7 @@ import com.facilio.time.DateRange;
 public class MLAPI {
 	public static MLContext getSubMeterDetails (long mlAnomalyAlarmId) throws Exception {
 		
-		
-		MLUtil.getMLContext(mlAnomalyAlarmId);
-		return null;
+			return null;
 		
 	}
 	

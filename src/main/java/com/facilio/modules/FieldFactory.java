@@ -5212,6 +5212,7 @@ public class FieldFactory {
 		
 		return getField("device", "DEVICE_NAME", module, FieldType.STRING);
 	}
+	
 
 	public static List<FacilioField> getWeatherStationsFields() {
 		
@@ -5418,12 +5419,49 @@ public class FieldFactory {
 
 		return fields;
 	}
+
+	public static List<FacilioField> getImportPointsFields() {
+		FacilioModule module = ModuleFactory.getImportPointsModule();
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getField("id", "ID", module, FieldType.NUMBER));
+		fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
+		fields.add(getField("columnHeadingString", "COLUMN_HEADING", module, FieldType.STRING));
+		fields.add(getField("filePath", "FILE_PATH", module, FieldType.STRING));
+		fields.add(getField("fileId", "FILEID", module, FieldType.NUMBER));
+		fields.add(getField("filePathFailed", "FILE_PATH_FAILED", module, FieldType.STRING));
+		fields.add(getField("fieldMappingString", "FIELD_MAPPING", module, FieldType.STRING));
+		fields.add(getField("importTime", "IMPORT_TIME", module, FieldType.NUMBER));
+		fields.add(getField("importType", "IMPORT_TYPE", module, FieldType.NUMBER));
+		fields.add(getField("importJobMeta", "IMPORT_JOB_META", module, FieldType.STRING));
+		fields.add(getField("importSetting","IMPORT_SETTING",module,FieldType.STRING));
+		fields.add(getField("importMode","IMPORT_MODE",module,FieldType.NUMBER));
+
+		return fields;
+	}
+	
+	
 	public static List<FacilioField> getImportProcessLogFields(){
 		FacilioModule module = ModuleFactory.getImportProcessLogModule();
 		List<FacilioField> fields = new ArrayList();
 		fields.add(getField("id" , "ID", module, FieldType.NUMBER));
 		//fields.add(getOrgIdField(module));
 		fields.add(getField("parentId", "PARENTID", module, FieldType.NUMBER));
+		fields.add(getField("ttime","TTIME", module, FieldType.NUMBER));
+		fields.add(getField("importId" , "IMPORTID", module, FieldType.NUMBER));
+		fields.add(getField("templateId" , "TEMPLATEID", module, FieldType.NUMBER));
+		fields.add(getField("total_rows" , "ROW_TOTAL", module, FieldType.NUMBER));
+		fields.add(getField("rowContextString" , "GROUPED_ROWS", module, FieldType.STRING));
+		fields.add(getField("error_resolved" , "ERROR_RESOLVED", module, FieldType.NUMBER));
+		fields.add(getField("correctedRowString","CORRECTED_ROW", module, FieldType.STRING));
+		fields.add(getField("importMode", "IMPORT_MODE", module, FieldType.NUMBER));
+		return fields;
+	}
+	
+	public static List<FacilioField> getImportPointsLogFields(){
+		FacilioModule module = ModuleFactory.getImportPointsLogModule();
+		List<FacilioField> fields = new ArrayList();
+		fields.add(getField("id" , "ID", module, FieldType.NUMBER));
 		fields.add(getField("ttime","TTIME", module, FieldType.NUMBER));
 		fields.add(getField("importId" , "IMPORTID", module, FieldType.NUMBER));
 		fields.add(getField("templateId" , "TEMPLATEID", module, FieldType.NUMBER));

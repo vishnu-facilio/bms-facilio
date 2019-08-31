@@ -85,4 +85,7 @@
 	<!-- M and V Jobs -->
 	 <job name='mvFormulaFieldCalulationJob' classname= 'com.facilio.bmsconsole.jobs.MVFormulaFieldCalulationJob' transactionTimeout='1800000'/>
 
+	<!-- Import Points Data -->
+	<job name = 'ImportPointsData' classname = 'com.facilio.bmsconsole.jobs.ImportPointsDataJob'  transactionTimeout='36000000'/>
+
 </scheduler>

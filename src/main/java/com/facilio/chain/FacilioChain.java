@@ -146,9 +146,11 @@ public class FacilioChain extends ChainBase {
 				}
 			}
 			boolean status = super.execute(context);
+			int transactionStatus = -1;
 			if (enableTransaction) {
 				if (istransaction) {
 					// LOGGER.info("commit transaction for " + method.getName());
+					transactionStatus = FacilioTransactionManager.INSTANCE.getTransactionManager().getStatus();
 					FacilioTransactionManager.INSTANCE.getTransactionManager().commit();
 					clearResponseCache();
 				}
@@ -157,7 +159,11 @@ public class FacilioChain extends ChainBase {
 			if (CollectionUtils.isNotEmpty(postTransactionChains)) {
 				FacilioChain root = rootChain.get();
 				if (this.equals(root)) {
-					handlePostTransaction(true);
+					boolean onSuccess = true;
+					if (enableTransaction) {
+						onSuccess = transactionStatus != Status.STATUS_MARKED_ROLLBACK;
+					}
+					handlePostTransaction(onSuccess);
 					// clear rootChain to set transaction chain as root
 					rootChain.remove();
 				}
@@ -202,9 +208,6 @@ public class FacilioChain extends ChainBase {
 			Transaction currenttrans = tm.getTransaction();
 			if (currenttrans == null) {
 				tm.begin();
-			}
-			if (onSuccess) {
-				onSuccess = FacilioTransactionManager.INSTANCE.getTransactionManager().getStatus() != Status.STATUS_MARKED_ROLLBACK;
 			}
 			for (PostTransactionCommand postTransactionCommand : postTransactionChains) {
 				if (onSuccess) {
