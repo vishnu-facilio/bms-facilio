@@ -149,11 +149,14 @@ public class AssetPageFactory extends PageFactory {
 			
 			addGraphicsWidget(tab6Sec1);
 		}
-		Tab tab8 = page.new Tab("assetMovement");
-		page.addTab(tab8);
-		Section tab8Sec1 = page.new Section();
-		tab8.addSection(tab8Sec1);
-		addAssetMovementsWidget(tab8Sec1);
+		
+		if(asset.isGeoLocationEnabled() && !asset.isConnected()) {
+			Tab tab8 = page.new Tab("assetMovement");
+			page.addTab(tab8);
+			Section tab8Sec1 = page.new Section();
+			tab8.addSection(tab8Sec1);
+			addAssetMovementsWidget(tab8Sec1);
+		}
 		
 		Tab tab5 = page.new Tab("history", "history");
 		page.addTab(tab5);

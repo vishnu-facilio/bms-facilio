@@ -18,6 +18,15 @@ public class AssetMovementContext extends ModuleBaseWithCustomFields{
 	private long toSpace;
 	private String fromGeoLocation;
 	private String toGeoLocation;
+	private String description;
+	
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
 	public Boolean approvalNeeded;
 

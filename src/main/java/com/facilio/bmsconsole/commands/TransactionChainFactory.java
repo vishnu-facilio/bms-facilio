@@ -3398,8 +3398,8 @@ public class TransactionChainFactory {
 			c.addCommand(new PublishIOTMessageControlActionCommand());
 			return c;
 		}
-		public static Chain getAddAssetMovementChain() {
-			Chain chain = getDefaultChain();
+		public static FacilioChain getAddAssetMovementChain() {
+			FacilioChain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForAssetMovement());
 			chain.addCommand(new AssetMovementPropsSetCommand());
 			chain.addCommand(new GenericAddModuleDataCommand());
@@ -3411,8 +3411,8 @@ public class TransactionChainFactory {
 			return chain;
 		}
 		
-		public static Chain getUpdateAssetMovementChain() {
-			Chain chain = getDefaultChain();
+		public static FacilioChain getUpdateAssetMovementChain() {
+			FacilioChain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForAssetMovement());
 			chain.addCommand(new GenericUpdateModuleDataCommand());
 			chain.addCommand(new GenericGetModuleDataListCommand());

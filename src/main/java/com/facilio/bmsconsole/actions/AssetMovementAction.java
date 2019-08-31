@@ -93,7 +93,7 @@ public class AssetMovementAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.FETCH_COUNT, getFetchCount());
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, "assetmovement");
-		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Asset_Movement.ID asc");
+		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Asset_Movement.ID desc");
  		
  		if(getFilters() != null)
  		{	
