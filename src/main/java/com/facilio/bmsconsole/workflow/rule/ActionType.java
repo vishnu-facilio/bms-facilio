@@ -434,6 +434,9 @@ public enum ActionType {
 
 			fields.add(fieldMap.get("mobileInstanceId"));
 			fields.add(fieldMap.get("fromPortal"));
+			fields.add(AccountConstants.getOrgIdField(AccountConstants.getAppOrgUserModule()));
+			fields.add(AccountConstants.getUserIdField(AccountConstants.getAppOrgUserModule()));
+
 
 			// Condition condition = CriteriaAPI.getCondition("EMAIL", "email",
 			// StringUtils.join(emails, ","), StringOperators.IS);
