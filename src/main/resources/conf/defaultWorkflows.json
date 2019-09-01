@@ -272,6 +272,33 @@
                 return resultMap;
 		    }"
 		},
+		"48": {
+			"description": "Sub Meter",
+			"usage": "AnomalySummary",
+			"workflow": "Map getSubMeterForAnomaly( Number alarmId){
+			  resultMap = {};
+			  mlReadings = Module(\"anomalyalarmoccurrence\");
+  			  resourceModule = Module(\"resource\");
+			  date = NameSpace(\"date\");			
+			  occurenceThisMonthCrit = {
+			    criteria: [parentId == alarmId]
+			  };
+			  thismothoccurence = Module(\"anomalyalarmoccurrence\").fetch(occurenceThisMonthCrit);
+  			subMeters =[]
+			  result = {}
+			    if (thismothoccurence != null) {
+			      for each index,value in thismothoccurence {
+			   		 subMeters.add(value.resource.id);
+			      }
+			  }
+  				if (subMeters.size() > 0 ) {
+                  resourceCriteria = {criteria: [id == subMeters] }
+                  submetereDetails = resourceModule.fetch(resourceCriteria);
+                }
+			  resultMap[\"subMeter\"] = submetereDetails;
+  				return resultMap;
+			}"
+		},
 		"49": {
 			"description": "Energy By CDD",
 			"usage": "AnomalySummary",
