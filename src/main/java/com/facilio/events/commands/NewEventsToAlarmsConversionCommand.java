@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.AlarmSeverityContext;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -31,6 +32,7 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 	private Map<String, PointedList<AlarmOccurrenceContext>> alarmOccurrenceMap = new HashMap<>();
 	private Map<String, BaseAlarmContext> alarmMap = new HashMap<>();
 	private List<BaseEventContext> baseEvents;
+	private AlarmSeverityContext clearSeverity;
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
@@ -45,7 +47,9 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 				}
 				list.add(baseEvent);
 			}
-			
+
+			clearSeverity = AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.CLEAR_SEVERITY);
+
 			List<AlarmOccurrenceContext> latestAlarmOccurance = NewAlarmAPI.getLatestAlarmOccurance(new ArrayList<>(eventsMap.keySet()));
 			for (AlarmOccurrenceContext alarmOccurrenceContext : latestAlarmOccurance) {
 				String key = alarmOccurrenceContext.getAlarm().getKey();
@@ -121,7 +125,11 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 			pointedList.add(alarmOccurrence);
 			baseEvent.setEventState(EventState.ALARM_CREATED);
 		}
-		else if (alarmOccurrence.getSeverity().equals(AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.CLEAR_SEVERITY))) {
+		else if (alarmOccurrence.getSeverity().equals(clearSeverity)) {
+			if (baseEvent.getSeverity().equals(clearSeverity)) {
+				baseEvent.setEventState(EventState.IGNORED);
+				return;
+			}
 			// create alarm occurrence
 			mostRecent = baseEvent.getCreatedTime() > pointedList.getLastRecord().getCreatedTime();
 			
