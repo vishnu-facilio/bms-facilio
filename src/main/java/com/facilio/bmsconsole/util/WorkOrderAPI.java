@@ -1583,13 +1583,12 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 
 			FacilioField assignedToField = workorderFieldMap.get("assignedTo");
 
-			FacilioField userIdField = AccountConstants.getUserIdField(orgUserModule);
-
+			
 			FacilioField resourceNameField = resourceFieldMap.get("name");
 			FacilioField resourceField = resourceNameField.clone();
 			resourceField.setName("site_name");
 			fields.add(resourceField);
-			fields.add(userIdField);
+			fields.add(assignedToField);
 
 			GenericSelectRecordBuilder selectRecordsBuilder = new GenericSelectRecordBuilder()
 					  													.table(workOrderModule.getTableName())
@@ -1603,7 +1602,7 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 					  													.andCondition(CriteriaAPI.getCondition(workOrderModule.getTableName()+".ORGID", "orgId", ""+AccountUtil.getCurrentOrg().getOrgId(), NumberOperators.EQUALS))
 																		.andCriteria(closedCriteria)
 																		.limit(Integer.parseInt(count))
-					  													.groupBy(assignedToField.getCompleteColumnName()+","+userIdField.getCompleteColumnName()+","+resourceField.getCompleteColumnName())
+					  													.groupBy(assignedToField.getCompleteColumnName()+","+resourceField.getCompleteColumnName())
 																		.orderBy(idCountField.getColumnName()+" DESC")
 			                                                            .andCustomWhere("ACTUAL_WORK_END <= DUE_DATE");
 
@@ -1614,7 +1613,7 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 		 if(CollectionUtils.isNotEmpty(topNTechnicians)) {
 			 Map<Long, User> orgUsers = AccountUtil.getOrgBean().getOrgUsersAsMap(AccountUtil.getCurrentOrg().getOrgId(), null);
 			 for(Map<String, Object> map : topNTechnicians) {
-				 long userId = (long)map.get("uid");
+				 long userId = (long)map.get("assignedTo");
 				 User techDetails = orgUsers.get(userId);
 				 map.put("user_name", techDetails.getName());
 			 }
