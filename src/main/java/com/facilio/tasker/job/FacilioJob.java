@@ -44,8 +44,6 @@ public abstract class FacilioJob implements Runnable {
 			LOGGER.debug("Starting job " + jc.getJobId()+"-"+ jc.getJobName());
 			retryExecutionCount++;
 
-			jc.setNextExecutionTime(getNextExecutionTime());
-
 			long orgId = jc.getOrgId();
 			if(orgId != -1) {
 				AccountUtil.setCurrentAccount(orgId);
@@ -57,7 +55,7 @@ public abstract class FacilioJob implements Runnable {
 			if (StringUtils.isNotEmpty(jc.getTimezone())) {
 				AccountUtil.setTimeZone(jc.getTimezone());
 			}
-
+			jc.setNextExecutionTime(getNextExecutionTime());
 			FacilioContext context = new FacilioContext();
 			context.put(JobConstants.JOB_CONTEXT, jc);
 			context.put(JobConstants.FACILIO_JOB, this);
