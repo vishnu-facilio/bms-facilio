@@ -8,11 +8,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import com.chargebee.internal.StringJoiner;
 import com.facilio.accounts.dto.Group;
@@ -1611,10 +1612,16 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 		 List<Map<String, Object>> topNTechnicians = selectRecordsBuilder.get();
 		 if(CollectionUtils.isNotEmpty(topNTechnicians)) {
 			 Map<Long, User> orgUsers = AccountUtil.getOrgBean().getOrgUsersAsMap(AccountUtil.getCurrentOrg().getOrgId(), null);
+			 LOGGER.log(Level.DEBUG, orgUsers.toString());
 			 for(Map<String, Object> map : topNTechnicians) {
 				 long userId = (long)map.get("uid");
+				 try {
 				 User techDetails = orgUsers.get(userId);
 				 map.put("user_name", techDetails.getName());
+				 } catch (NullPointerException ex) {
+					 LOGGER.log(Level.DEBUG, "userid----->" + userId);
+						 
+				 }
 			 }
 		 }
 		 return topNTechnicians;
