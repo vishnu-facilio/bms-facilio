@@ -1588,6 +1588,7 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 			FacilioField resourceField = resourceNameField.clone();
 			resourceField.setName("site_name");
 			fields.add(resourceField);
+			fields.add(userIdField);
 
 			GenericSelectRecordBuilder selectRecordsBuilder = new GenericSelectRecordBuilder()
 					  													.table(workOrderModule.getTableName())
