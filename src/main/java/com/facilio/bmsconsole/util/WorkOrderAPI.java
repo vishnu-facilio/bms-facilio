@@ -1610,18 +1610,13 @@ public static List<Map<String,Object>> getTotalClosedWoCountBySite(Long startTim
 
 
 		 List<Map<String, Object>> topNTechnicians = selectRecordsBuilder.get();
+			
 		 if(CollectionUtils.isNotEmpty(topNTechnicians)) {
 			 Map<Long, User> orgUsers = AccountUtil.getOrgBean().getOrgUsersAsMap(AccountUtil.getCurrentOrg().getOrgId(), null);
-			 LOGGER.log(Level.DEBUG, orgUsers.toString());
 			 for(Map<String, Object> map : topNTechnicians) {
 				 long userId = (long)map.get("uid");
-				 try {
 				 User techDetails = orgUsers.get(userId);
 				 map.put("user_name", techDetails.getName());
-				 } catch (NullPointerException ex) {
-					 LOGGER.log(Level.DEBUG, "userid----->" + userId);
-						 
-				 }
 			 }
 		 }
 		 return topNTechnicians;

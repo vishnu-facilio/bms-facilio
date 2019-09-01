@@ -212,7 +212,7 @@ public class OrgBeanImpl implements OrgBean {
 			for(Map<String, Object> prop : props) {
 				User user = UserBeanImpl.createUserFromProps(prop, true, false, false);
 				if(user.getUserType() == UserType.USER.getValue()) {
-					users.put(user.getId(), user);
+					users.put(user.getUid(), user);
 				}
 			}
 			return users;
