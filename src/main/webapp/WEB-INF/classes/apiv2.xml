@@ -35,6 +35,7 @@
 				<param name="namespace">/v2/cachedResponse</param>
 			</result>
 			<result name="success" type="json">
+				<param name="excludeNullProperties">true</param>
 				<param name="ignoreHierarchy">false</param>
 				<param name="includeProperties">responseCode, ^result.*</param>
 			</result>
