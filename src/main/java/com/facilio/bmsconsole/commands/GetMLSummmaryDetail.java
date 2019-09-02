@@ -52,7 +52,7 @@ public class GetMLSummmaryDetail extends FacilioCommand {
 				.fetchLookup(resourceLookup)
 				.andCondition(CriteriaAPI.getCondition("PARENTID", "parentID", String.valueOf(mlAnomalyId),  NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition("CREATED_TIME", "createdTime", dateRange.toString(), DateOperators.BETWEEN))
-				.groupBy("PARENTID");
+				.groupBy("RESOURCE_ID");
 		List<MLAlarmOccurenceContext> list = builder.get();
 		context.put(ContextNames.ML_RCA_ALARMS, list);
 		return false;
