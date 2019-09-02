@@ -186,19 +186,30 @@ public class WorkflowRuleContext implements Serializable {
 //	public void setEventId(long eventId) {
 //		this.eventId = eventId;
 //	}
-//
-//	private WorkflowEventContext event;
-//	public WorkflowEventContext getEvent() {
-//		return event;
-//	}
-//	public void setEvent(WorkflowEventContext event) {
-//		this.event = event;
-//	}
+
+	private WorkflowEventContext event;
+	public WorkflowEventContext getEvent() throws Exception {
+		if (event == null) {
+			event = new WorkflowEventContext();
+			event.setModuleId(getModuleId());
+			event.setModuleName(getModuleName());
+			event.setActivityType(getActivityType());
+		}
+		return event;
+	}
+	public void setEvent(WorkflowEventContext event) {
+		this.event = event;
+		if (event != null) {
+			setModuleName(event.getModuleName());
+			setModuleId(event.getModuleId());
+			setActivityType(event.getActivityType());
+		}
+	}
 
 	private long moduleId = -1;
 	public long getModuleId() throws Exception {
 		if(moduleId == -1 && getModule() != null) {
-			moduleId = module.getModuleId();
+			moduleId = getModule().getModuleId();
 		}
 		return moduleId;
 	}

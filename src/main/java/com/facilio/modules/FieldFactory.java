@@ -6346,7 +6346,7 @@ public class FieldFactory {
 		list.add(getField("toStateId", "TO_STATE_ID", stageRuleModule, FieldType.NUMBER));
 		list.add(getField("stateFlowId", "STATE_FLOW_ID", stageRuleModule, FieldType.NUMBER));
 		list.add(getField("formId", "FORM_ID", stageRuleModule, FieldType.NUMBER));
-		list.add(getField("moduleId", "MODULE_ID", stageRuleModule, FieldType.NUMBER));
+//		list.add(getField("moduleId", "MODULE_ID", stageRuleModule, FieldType.NUMBER));
 		list.add(getField("buttonType", "BUTTON_TYPE", stageRuleModule, FieldType.NUMBER));
 		list.add(getField("type", "TYPE", stageRuleModule, FieldType.NUMBER));
 		list.add(getField("scheduleTime", "SCHEDULE_TIME", stageRuleModule, FieldType.NUMBER));
@@ -6363,7 +6363,7 @@ public class FieldFactory {
 //		list.add(getField("description", "DESCRIPTION", stateFlowModule, FieldType.STRING));
 //		list.add(getField("criteriaId", "CRITERIA_ID", stateFlowModule, FieldType.NUMBER));
 //		list.add(getField("sequence", "SEQUENCE", stateFlowModule, FieldType.NUMBER));
-		list.add(getField("moduleId", "MODULEID", stateFlowModule, FieldType.NUMBER));
+//		list.add(getField("moduleId", "MODULEID", stateFlowModule, FieldType.NUMBER));
 		list.add(getField("defaultStateId", "DEFAULT_STATE_ID", stateFlowModule, FieldType.NUMBER));
 		list.add(getField("defaltStateFlow", "DEFAULT_STATE_FLOW", stateFlowModule, FieldType.BOOLEAN));
 		list.add(getField("diagramJson", "DIAGRAM_JSON", stateFlowModule, FieldType.STRING));

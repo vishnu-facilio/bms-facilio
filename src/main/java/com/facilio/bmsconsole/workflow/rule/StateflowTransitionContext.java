@@ -70,13 +70,13 @@ public class StateflowTransitionContext extends WorkflowRuleContext {
 		this.formId = formId;
 	}
 	
-	private long moduleId = -1;
-	public long getModuleId() {
-		return moduleId;
-	}
-	public void setModuleId(long moduleId) {
-		this.moduleId = moduleId;
-	}
+//	private long moduleId = -1;
+//	public long getModuleId() {
+//		return moduleId;
+//	}
+//	public void setModuleId(long moduleId) {
+//		this.moduleId = moduleId;
+//	}
 	
 	private SharingContext<ApproverContext> approvers;
 	public List<ApproverContext> getApprovers() {
