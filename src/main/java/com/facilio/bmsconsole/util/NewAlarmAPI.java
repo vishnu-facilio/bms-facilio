@@ -232,17 +232,21 @@ public class NewAlarmAPI {
 
 	public static List<AlarmOccurrenceContext> getLatestAlarmOccurance(List<String> messageKeys) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
-		SelectRecordsBuilder<AlarmOccurrenceContext> builder = new SelectRecordsBuilder<AlarmOccurrenceContext>()
-				.beanClass(AlarmOccurrenceContext.class).moduleName(FacilioConstants.ContextNames.ALARM_OCCURRENCE)
-				.select(fields).innerJoin("BaseAlarm").on("AlarmOccurrence.ALARM_ID = BaseAlarm.ID")
+		SelectRecordsBuilder<BaseAlarmContext> selectBuilder = new SelectRecordsBuilder<BaseAlarmContext>()
+				.beanClass(BaseAlarmContext.class)
+				.moduleName(FacilioConstants.ContextNames.BASE_ALARM)
+				.select(modBean.getAllFields(FacilioConstants.ContextNames.BASE_ALARM))
 				.andCondition(CriteriaAPI.getCondition("ALARM_KEY", "key", StringUtils.join(messageKeys, ','),
-						StringOperators.IS))
-				.orderBy("CREATED_TIME DESC, ID DESC").limit(1);
-		List<AlarmOccurrenceContext> list = builder.get();
-		list = getExtendedOccurrence(list);
-		updateAlarmObject(list);
-		return list;
+						StringOperators.IS));
+		List<BaseAlarmContext> baseAlarmContexts = selectBuilder.get();
+
+		List<Long> latestOccurrenceId = new ArrayList<>();
+		for (BaseAlarmContext baseAlarmContext : baseAlarmContexts) {
+			latestOccurrenceId.add(baseAlarmContext.getLastOccurrence().getId());
+		}
+
+		List<AlarmOccurrenceContext> alarmOccurrences = getAlarmOccurrences(latestOccurrenceId);
+		return alarmOccurrences;
 	}
 
 	public static AlarmOccurrenceContext getLatestAlarmOccurance(String messageKey) throws Exception {
@@ -345,6 +349,9 @@ public class NewAlarmAPI {
 	}
 
 	public static List<AlarmOccurrenceContext> getAlarmOccurrences(List<Long> recordIds) throws Exception {
+		if (CollectionUtils.isEmpty(recordIds)) {
+			return new ArrayList<>();
+		}
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
 		List<FacilioField> allFields = modBean.getAllFields(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
