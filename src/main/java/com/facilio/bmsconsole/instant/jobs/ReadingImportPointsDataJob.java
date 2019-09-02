@@ -1,7 +1,7 @@
 /**
  * 
  */
-package com.facilio.bmsconsole.jobs;
+package com.facilio.bmsconsole.instant.jobs;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
