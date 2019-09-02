@@ -281,7 +281,8 @@
   			  resourceModule = Module(\"resource\");
 			  date = NameSpace(\"date\");			
 			  occurenceThisMonthCrit = {
-			    criteria: [parentId == alarmId]
+			    criteria: [parentId == alarmId],
+			    groupBy: \"parentId\"
 			  };
 			  thismothoccurence = Module(\"anomalyalarmoccurrence\").fetch(occurenceThisMonthCrit);
   			subMeters =[]
