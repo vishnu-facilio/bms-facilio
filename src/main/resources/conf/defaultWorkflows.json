@@ -293,9 +293,9 @@
 			  }
   				if (subMeters.size() > 0 ) {
                   resourceCriteria = {criteria: [id == subMeters] }
-                  submetereDetails = resourceModule.fetch(resourceCriteria);
+                  subMeters = resourceModule.fetch(resourceCriteria);
                 }
-			  resultMap[\"subMeter\"] = submetereDetails;
+			  resultMap[\"subMeter\"] = subMeters;
   				return resultMap;
 			}"
 		},
@@ -679,35 +679,67 @@
 		"100" : {
         	"description" : "noOfAnomalies",
         	"usage" : "AnomalySummary",
-        	"workflow": "Map test(Number alarmId){ 
-			    mlAnomalyAlarmModule = Module(\"mlAnomalyAlarm\");
-			    date = NameSpace(\"date\");
-			   	thisMonthRanges = date.getDateRange(\"Current Month\");
-			    lastMonthRange = date.getDateRange(\"Last Month\");
-			  	anomaliesThisMonth = 0;
-			  	anomaliesLastMonth = 0;
-			    alarmoccurrenceModule = Module(\"alarmoccurrence\");
+        	"workflow": "Map test(List resourceIds, Number alarmId){
+			  date = NameSpace(\"date\");
+			  thisMonthRanges = date.getDateRange(\"Current Month\");
+			  lastMonthRanges = date.getDateRange(\"Last Month\");
+			  alarmoccurrenceModule = Module(\"anomalyalarmoccurrence\");
+			  occurenceThisMonthCrit = null
+			  occurenceLastMonthCrit = null
+			  resMap = {};
+			  if (resourceIds.size() == 1) {
 			    occurenceThisMonthCrit = {
-					criteria: [alarm == alarmId && createdTime == thisMonthRanges]
-			    };
-			    thismothoccurence =  alarmoccurrenceModule.fetch(occurenceThisMonthCrit);
-				if (thismothoccurence != null ) {
-			      anomaliesThisMonth = thismothoccurence.size();
+			      criteria: [alarm == alarmId && createdTime == thisMonthRanges],
+			      field: \"resource\",
+			      aggregation: \"count,id\",
+			      groupBy: \"resource\"
 			    }
 			    occurenceLastMonthCrit = {
-					criteria: [alarm == alarmId && createdTime == lastMonthRange]
-			    };
-			    lastmothoccurence =  alarmoccurrenceModule.fetch(occurenceLastMonthCrit);  
-			    if (lastmothoccurence != null) {
-			       anomaliesLastMonth = lastmothoccurence.size();
+			      criteria: [alarm == alarmId && createdTime == lastMonthRanges],
+			      field: \"resource\",
+			      aggregation: \"count, id\",
+			      groupBy: \"resource\"
 			    }
-			   	resMap = {};
-			  	resMap[\"anomaliesThisMonth\"] = anomaliesThisMonth;
-			    resMap[\"anomaliesLastMonth\"] = anomaliesLastMonth;
+			  }
+			  else {
+			    occurenceThisMonthCrit = {
+			      criteria: [parentID == alarmId && resource == resourceIds && type == 2 && createdTime == thisMonthRanges],
+			      field: \"resource\",
+			      aggregation: \"count,id\",
+			      groupBy: \"resource\"
+			    }
+			    occurenceLastMonthCrit = {
+			      criteria: [parentID == alarmId && resource == resourceIds && type == 2 && createdTime == lastMonthRanges],
+			      field: \"resource\",
+			      aggregation: \"count,id\",
+			      groupBy: \"resource\"
+			    }
+			  }
 			
-			  	log resMap
-			    return resMap
-			  
+			  thismothoccurence =  alarmoccurrenceModule.fetch(occurenceThisMonthCrit);
+			  if (thismothoccurence != null) {
+			    for each index,value in thismothoccurence {
+			      res = resMap.get(value.result.id])
+			      if (res == null) {
+			        res = {}
+			        resMap[value.result.id] = res
+			      }
+			      res[\"anomaliesThisMonth\"] = value.id
+			    }
+			  }
+			  lastmothoccurence =  alarmoccurrenceModule.fetch(occurenceLastMonthCrit);
+			  if (lastmothoccurence != null) {
+			    for each index,value in lastmothoccurence {
+			      res = resMap.get(value.result.id])
+			      if (res == null) {
+			        res = {}
+			        resMap[value.result.id] = res
+			      }
+			      res[\"anomaliesLastMonth\"] = value.id
+			    }
+			  }
+			  log resMap
+			  return resMap
 			}"
         },
         "101": {
