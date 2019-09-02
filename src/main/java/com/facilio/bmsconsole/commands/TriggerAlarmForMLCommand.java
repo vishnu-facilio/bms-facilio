@@ -273,11 +273,12 @@ public class TriggerAlarmForMLCommand extends FacilioCommand {
 	private void addEvent(MLContext mlContext,BaseEventContext event) throws Exception
 	{
 		
-        LOGGER.info("mlid: "+((MLAnomalyEvent) event).getmlid());
+        LOGGER.info("mlid: "+((MLAnomalyEvent) event).getmlid()+"::"+mlContext.isHistoric());
         LOGGER.info("map: " + FieldUtil.getAsProperties(event));
         
         if(mlContext.isHistoric())
         {
+        	LOGGER.info("Added to eventList");
         	mlContext.addToEventList(event);
         }
         else

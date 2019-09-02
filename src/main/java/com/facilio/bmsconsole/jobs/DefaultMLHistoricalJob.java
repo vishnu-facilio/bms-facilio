@@ -111,6 +111,10 @@ public class DefaultMLHistoricalJob extends FacilioJob
 		for(String MLID:mlid)
 		{
 			mlContextList.addAll(MLUtil.getMLContext(Long.parseLong(MLID)));
+			for(MLContext mlContext:mlContextList)
+			{
+				mlContext.setHistoric(true);
+			}
 		}
 		return mlContextList;
 	}
