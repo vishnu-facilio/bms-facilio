@@ -3405,6 +3405,7 @@ public class TransactionChainFactory {
 			chain.addCommand(new GenericAddModuleDataCommand());
 			chain.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
 			chain.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+			chain.addCommand(new AddDefaultChangeSetForCompleteMoveCommand());
 			chain.addCommand(new CompleteAssetMoveCommand());
 			chain.addCommand(new ConstructAddAssetMovementActivitiesCommand());
 			chain.addCommand(new AddActivitiesCommand());

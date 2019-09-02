@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -34,6 +35,10 @@ public class CompleteAssetMoveCommand extends FacilioCommand {
 		
 		Map<Long, List<UpdateChangeSet>> changeSet = (Map<Long, List<UpdateChangeSet>>)context.get(FacilioConstants.ContextNames.CHANGE_SET_MAP);
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
+		if(CollectionUtils.isEmpty(recordIds)) {
+			recordIds = new ArrayList<Long>();
+			recordIds.add((Long) context.get(FacilioConstants.ContextNames.RECORD_ID));
+		}
 		if(CollectionUtils.isNotEmpty(recordIds) && changeSet != null && !changeSet.isEmpty()) {
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			if(!changeSet.isEmpty()) {
