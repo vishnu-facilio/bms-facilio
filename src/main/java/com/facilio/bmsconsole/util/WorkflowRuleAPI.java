@@ -672,6 +672,7 @@ public class WorkflowRuleAPI {
 			List<WorkflowRuleContext> workflows = new ArrayList<>();
 			List<Long> workflowIds = fetchChildren ? new ArrayList<>() : null;
 			List<Long> criteriaIds = fetchChildren ? new ArrayList<>() : null;
+			List<Long> fieldChangeRuleIds = new ArrayList<>();
 			Map<RuleType, List<Long>> typeWiseIds = fetchExtended ? new HashMap<>() : null;
 			
 			for(Map<String, Object> prop : props) {
@@ -696,10 +697,16 @@ public class WorkflowRuleAPI {
 						criteriaIds.add(criteriaId);
 					}
 				}
+
+				int activity = (int) prop.get("activityType");
+				if (EventType.FIELD_CHANGE.isPresent(activity)) {
+					fieldChangeRuleIds.add((Long) prop.get("id"));
+				}
 			}
 			Map<RuleType, Map<Long, Map<String, Object>>> typeWiseExtendedProps = fetchExtended ? getTypeWiseExtendedProps(typeWiseIds) : null;
 			Map<Long, WorkflowContext> workflowMap = fetchChildren && !workflowIds.isEmpty() ? WorkflowUtil.getWorkflowsAsMap(workflowIds, true) : null;
 			Map<Long, Criteria> criteriaMap = fetchChildren && !criteriaIds.isEmpty() ? CriteriaAPI.getCriteriaAsMap(criteriaIds) : null;
+			Map<Long, List<FieldChangeFieldContext>> ruleFieldsMap = getFieldChangeFields(fieldChangeRuleIds);
 
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			for(Map<String, Object> prop : props) {
@@ -761,6 +768,12 @@ public class WorkflowRuleAPI {
 					rule.setWorkflow(workflowMap.get(workflowId));
 				}
 
+				if (EventType.FIELD_CHANGE.isPresent(rule.getActivityType())) {
+					rule.setFields(ruleFieldsMap.get(rule.getId()));
+				}
+				else if (EventType.SCHEDULED.isPresent(rule.getActivityType())) {
+					rule.setDateField(modBean.getField(rule.getDateFieldId()));
+				}
 				workflows.add(rule);
 			}
 

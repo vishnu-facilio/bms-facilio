@@ -209,7 +209,7 @@ public class WorkflowRuleContext implements Serializable {
 	private String moduleName;
 	public String getModuleName() throws Exception {
 		if(StringUtils.isEmpty(moduleName) && getModule() != null) {
-			moduleName = module.getName();
+			moduleName = getModule().getName();
 		}
 		return moduleName;
 	}
