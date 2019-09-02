@@ -316,11 +316,10 @@ public class NewAlarmAPI {
 
 	private static void updateAlarmSystemFields(BaseAlarmContext baseAlarm, AlarmOccurrenceContext alarmOccurrence)
 			throws Exception {
-		long currentTime = DateTimeUtil.getCurrenTime();
-		baseAlarm.setLastOccurredTime(currentTime);
+		baseAlarm.setLastOccurredTime(alarmOccurrence.getLastOccurredTime());
 		baseAlarm.setLastCreatedTime(alarmOccurrence.getCreatedTime());
 		if (alarmOccurrence.getSeverity().equals(AlarmAPI.getAlarmSeverity("Clear"))) {
-			baseAlarm.setLastClearedTime(currentTime);
+			baseAlarm.setLastClearedTime(alarmOccurrence.getLastOccurredTime());
 		}
 	}
 
