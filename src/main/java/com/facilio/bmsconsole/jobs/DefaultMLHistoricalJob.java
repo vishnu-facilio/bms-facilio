@@ -11,11 +11,13 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.GenerateMLModelCommand;
+import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.MLContext;
 import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.bmsconsole.util.MLUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.events.constants.EventConstants;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
 
@@ -68,6 +70,31 @@ public class DefaultMLHistoricalJob extends FacilioJob
 				}
 				startTime = startTime + executionTime;
 			}
+			
+			for(MLContext mlContext:childMlList)
+			{
+				if(!mlContext.getEventList().isEmpty())
+				{
+					LOGGER.info("Executing Events for ml"+mlContext.getId());
+					FacilioContext context = new FacilioContext();
+					context.put(EventConstants.EventContextNames.EVENT_LIST,mlContext.getEventList());
+					Chain chain = TransactionChainFactory.getV2AddEventChain();
+					chain.execute(context);
+				}
+			}
+			
+			for(MLContext mlContext:parentMlList)
+			{
+				if(!mlContext.getEventList().isEmpty())
+				{
+					LOGGER.info("Executing Events for ml"+mlContext.getId());
+					FacilioContext context = new FacilioContext();
+					context.put(EventConstants.EventContextNames.EVENT_LIST,mlContext.getEventList());
+					Chain chain = TransactionChainFactory.getV2AddEventChain();
+					chain.execute(context);
+				}
+			}
+			
 			LOGGER.info("finished HistoricalJob");
 		}
 		catch (Exception e)

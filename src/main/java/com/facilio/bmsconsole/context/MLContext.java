@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.context;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
@@ -23,6 +24,8 @@ public class MLContext extends ModuleBaseWithCustomFields
 	
 	private Hashtable<Long,Hashtable<String,SortedMap<Long,Object>>> mlVariablesDataMap; // AssetID => Attribute Name => ttime,Attribute Value
 	private SortedMap<Long,Hashtable<String,Object>> mlCriteriaVariablesDataMap;
+	
+
 	
 	private String modelPath;
 	private long predictionLogModuleID;
@@ -319,5 +322,17 @@ public class MLContext extends ModuleBaseWithCustomFields
 	public void setHistoric(boolean isHistoric) 
 	{
 		this.isHistoric = isHistoric;
+	}
+	
+	private List<BaseEventContext> eventList = new LinkedList<BaseEventContext>();
+	@JSON(serialize=false)
+	public void addToEventList(BaseEventContext event)
+	{
+		eventList.add(event);
+	}
+	@JSON(serialize=false)
+	public List<BaseEventContext> getEventList()
+	{
+		return eventList;
 	}
 }

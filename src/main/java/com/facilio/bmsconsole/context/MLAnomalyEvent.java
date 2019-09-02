@@ -31,7 +31,7 @@ public class MLAnomalyEvent extends BaseEventContext{
 			mlAlarmOccurence.setMLAnomalyType(mlAnomalyType);
 			if(mlAnomalyType.equals(MLAlarmOccurenceContext.MLAnomalyType.RCA))
 			{
-				mlAlarmOccurence.setParentID(parentID);
+				mlAlarmOccurence.setParentID(parentEvent.getAlarmOccurrence().getId());
 				mlAlarmOccurence.setRatio(ratio);
 				mlAlarmOccurence.setLowerAnomaly(lowerAnomaly);
 				mlAlarmOccurence.setUpperAnomaly(upperAnomaly);
@@ -193,5 +193,11 @@ public class MLAnomalyEvent extends BaseEventContext{
 		this.lowerAnomaly = lowerAnomaly;
 	}
 	
+	private MLAnomalyEvent parentEvent;
+	@JsonSerialize
+	public void setParentEvent(MLAnomalyEvent parentEvent)
+	{
+		this.parentEvent = parentEvent;
+	}
 
 }
