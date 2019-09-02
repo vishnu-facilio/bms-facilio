@@ -265,6 +265,12 @@ public class ModuleAction extends FacilioAction {
 		setMeta((JSONObject) context.get(FacilioConstants.ContextNames.META));
 		return SUCCESS;
 	}
+	public String v2metadata() throws Exception {
+		metadata();
+		setResult("meta", getMeta());
+		return SUCCESS;
+	}
+	
 	public String metaFilterFields() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());

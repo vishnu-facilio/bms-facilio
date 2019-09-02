@@ -3360,6 +3360,13 @@
 			method="v2updateField">
 		</action>
 	</package>
+	<package name="moduleMetaApiV2" namespace="/api/v2/modules/meta" extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.ModuleAction"
+			method="v2metadata">
+			<param name="moduleName">{1}</param>
+		</action>
+	</package>
 	
 	<package name="baseSpaceApiV2" namespace="/api/v2/basespaces" extends="v2Api">
 		<action name="*" class="com.facilio.bmsconsole.actions.BaseSpaceAction"
