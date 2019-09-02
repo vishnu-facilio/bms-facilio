@@ -36,6 +36,7 @@ import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.ToolContext;
+import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -57,6 +58,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
+import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.util.FacilioUtil;
@@ -1086,5 +1088,25 @@ public class AssetsAPI {
 		
    }
    
-  
+
+ public static boolean getPendingAssetMovementRecordForAsset(long assetId) throws Exception {
+	   
+	   ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET_MOVEMENT);
+		String statusTableName = modBean.getModule(FacilioConstants.ContextNames.TICKET_STATUS).getTableName();
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET_MOVEMENT);
+		SelectRecordsBuilder<AssetMovementContext> selectBuilder = new SelectRecordsBuilder<AssetMovementContext>().select(fields)
+				.table(module.getTableName()).moduleName(module.getName()).beanClass(AssetMovementContext.class)
+				.innerJoin(statusTableName)
+				.on("MODULE_STATE = "+ statusTableName+".ID")
+				.andCondition(CriteriaAPI.getCondition("ASSET_ID", "assetId", String.valueOf(assetId), NumberOperators.EQUALS))
+				.andCondition(ViewFactory.getPendingAssetMovementStateTypeCriteria());
+		;
+		
+		List<AssetMovementContext> assetMovementRecord = selectBuilder.get();
+		if(CollectionUtils.isNotEmpty(assetMovementRecord)) {
+			return false;
+		}
+        return true;
+   }
 }

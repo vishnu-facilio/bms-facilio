@@ -150,7 +150,7 @@ public class AssetPageFactory extends PageFactory {
 			addGraphicsWidget(tab6Sec1);
 		}
 		
-		if(asset.isGeoLocationEnabled() && !asset.isConnected()) {
+		if(asset.isGeoLocationEnabled() && !asset.isConnected() && AccountUtil.getCurrentOrg().getOrgId() == 155) {
 			Tab tab8 = page.new Tab("assetMovement");
 			page.addTab(tab8);
 			Section tab8Sec1 = page.new Section();
@@ -245,7 +245,7 @@ public class AssetPageFactory extends PageFactory {
 	
 	private static void addAssetMovementsWidget(Section section) {
 		PageWidget assetMovementsWidget = new PageWidget(WidgetType.LIST, "assetMovements");
-		assetMovementsWidget.addToLayoutParams(section, 24, 10);
+		assetMovementsWidget.addToLayoutParams(section, 24, 50);
 		section.addWidget(assetMovementsWidget);
 	}
 	

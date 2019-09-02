@@ -4444,5 +4444,22 @@ public class ViewFactory {
 
 		return view;
 	}
+	
+	public static Condition getPendingAssetMovementStateTypeCriteria() {
+		FacilioField statusTypeField = new FacilioField();
+		statusTypeField.setName("typeCode");
+		statusTypeField.setColumnName("STATUS_TYPE");
+		statusTypeField.setDataType(FieldType.NUMBER);
+		statusTypeField.setModule(ModuleFactory.getTicketStatusModule());
+
+		Condition status = new Condition();
+		status.setField(statusTypeField);
+		status.setOperator(NumberOperators.NOT_EQUALS);
+		status.setValue(String.valueOf(StatusType.CLOSED.getIntVal())+ "," +String.valueOf(StatusType.REJECTED.getIntVal()));
+
+		
+		return status;
+	}
+	
 
 }

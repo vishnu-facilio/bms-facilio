@@ -7,7 +7,9 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.AssetMovementContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Criteria;
 
 public class AssetMovementPropsSetCommand extends FacilioCommand{
 
@@ -15,9 +17,12 @@ public class AssetMovementPropsSetCommand extends FacilioCommand{
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
 		AssetMovementContext assetMovementContext = (AssetMovementContext) context.get(FacilioConstants.ContextNames.RECORD);
-		if(assetMovementContext!=null) {
+		if(assetMovementContext != null) {
 			if(assetMovementContext.getAssetId() <= 0) {
 				throw new IllegalArgumentException("Asset Id cannot be null");
+			}
+			if(!AssetsAPI.getPendingAssetMovementRecordForAsset(assetMovementContext.getAssetId())) {
+				throw new IllegalArgumentException("Only one movement request can be placed at a time");
 			}
 			AssetContext asset = AssetsAPI.getAssetInfo(assetMovementContext.getAssetId());
 			if(assetMovementContext.getRequestedBy() == null) {

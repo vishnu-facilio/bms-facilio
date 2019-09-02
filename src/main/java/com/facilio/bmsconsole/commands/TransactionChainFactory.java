@@ -3416,7 +3416,6 @@ public class TransactionChainFactory {
 			FacilioChain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForAssetMovement());
 			chain.addCommand(new GenericUpdateModuleDataCommand());
-			chain.addCommand(new GenericGetModuleDataListCommand());
 			chain.addCommand(new UpdateStateForModuleDataCommand());
 			chain.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
 			chain.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
