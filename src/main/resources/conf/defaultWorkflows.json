@@ -314,7 +314,7 @@
 			  result = {}
 			  date = NameSpace(\"date\");
 			  thisMonthRanges = date.getDateRange(\"Current Month\");
-			  lastMonthRanges = date.getDateRange(\"Current Month upto now\", \"Previous Month\", \"quaterly\");
+			  lastMonthRanges = date.getDateRange(\"Last Month\");
 			  db = {
 			    criteria : [parentId == resourceIds && ttime == thisMonthRanges],
 			    field : \"totalEnergyConsumptionDelta\",
@@ -710,13 +710,13 @@
 			  }
 			  else {
 			    occurenceThisMonthCrit = {
-			      criteria: [parentID == alarmId && resource == resourceIds && type == 2 && createdTime == thisMonthRanges],
+			      criteria: [parentAlarm == alarmId && resource == resourceIds && type == 2 && createdTime == thisMonthRanges],
 			      field: \"resource\",
 			      aggregation: \"count,id\",
 			      groupBy: \"resource\"
 			    }
 			    occurenceLastMonthCrit = {
-			      criteria: [parentID == alarmId && resource == resourceIds && type == 2 && createdTime == lastMonthRanges],
+			      criteria: [parentAlarm == alarmId && resource == resourceIds && type == 2 && createdTime == lastMonthRanges],
 			      field: \"resource\",
 			      aggregation: \"count,id\",
 			      groupBy: \"resource\"
