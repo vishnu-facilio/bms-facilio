@@ -68,6 +68,7 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 		
 		if (MapUtils.isNotEmpty(alarmOccurrenceMap)) {
 			Map<AlarmOccurrenceContext.Type, List<AlarmOccurrenceContext>> occurrenceMap = new HashMap<>();
+			
 			for (PointedList<AlarmOccurrenceContext> occurrenceList : alarmOccurrenceMap.values()) {
 				for (AlarmOccurrenceContext occurrence : occurrenceList) {
 					List<AlarmOccurrenceContext> alarmOccurrenceContexts = occurrenceMap.get(occurrence.getTypeEnum());
@@ -78,7 +79,16 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 					alarmOccurrenceContexts.add(occurrence);
 				}
 			}
-
+				
+			int alarmCount = 0;   //For HistoricalReadingRule
+			if(alarmOccurrenceMap.values() != null && !alarmOccurrenceMap.values().isEmpty() && alarmOccurrenceMap.size() == 1)
+			{
+				for (PointedList<AlarmOccurrenceContext> uniqueAlarmOccurrenceList : alarmOccurrenceMap.values()) {
+					alarmCount = uniqueAlarmOccurrenceList.size();
+				}
+				context.put(FacilioConstants.ContextNames.ALARM_COUNT, alarmCount);	
+			}	
+				
 			for (AlarmOccurrenceContext.Type type : occurrenceMap.keySet()) {
 				List<FacilioField> allFields = modBean.getAllFields(NewAlarmAPI.getOccurrenceModuleName(type));
 				InsertRecordBuilder<AlarmOccurrenceContext> builder = new InsertRecordBuilder<AlarmOccurrenceContext>()

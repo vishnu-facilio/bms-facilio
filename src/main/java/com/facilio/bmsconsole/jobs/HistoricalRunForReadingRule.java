@@ -111,6 +111,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 			}
 
 			List<ReadingEventContext> events = new ArrayList<>();
+			WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = WorkflowRuleHistoricalLoggerUtil.getActiveWorkflowRuleHistoricalLogger(resourceId,ruleId);
 
 			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS))
 			{
@@ -141,22 +142,30 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 			long currentStartTime = startTime - (ReadingsAPI.getDataInterval(resourceId, readingRule.getReadingField()) * 60 * 1000);
 			List<ReadingContext> readings = fetchReadings(readingRule, resourceId, currentStartTime, endTime);
 			int alarmCount = executeWorkflows(readingRule, readings, currentFields, fields, events);
+			if (!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) 
+			{
+				workflowRuleHistoricalLoggerContext.setAlarmCount(alarmCount);
+			}
 			LOGGER.info("Time taken for Historical Run for RuleLogger: "+jc.getJobId()+" Reading Rule : "+ruleId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is "+(System.currentTimeMillis() - processStartTime));
-
-			WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = WorkflowRuleHistoricalLoggerUtil.getActiveWorkflowRuleHistoricalLogger(resourceId,ruleId);
-			workflowRuleHistoricalLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.RESOLVED.getIntVal());
-			workflowRuleHistoricalLoggerContext.setCalculationEndTime(DateTimeUtil.getCurrenTime());
-			workflowRuleHistoricalLoggerContext.setAlarmCount(alarmCount);
-
-			WorkflowRuleHistoricalLoggerUtil.updateWorkflowRuleHistoricalLogger(workflowRuleHistoricalLoggerContext);
-
 
 			if (!events.isEmpty()) {
 				FacilioContext context = new FacilioContext();
 				context.put(EventConstants.EventContextNames.EVENT_LIST, events);
 				Chain addEvent = TransactionChainFactory.getV2AddEventChain();
 				addEvent.execute(context);
+				
+				
+				Integer alarmOccurrenceCount = (Integer) context.get(FacilioConstants.ContextNames.ALARM_COUNT);
+				if(alarmOccurrenceCount != null)
+				{
+					workflowRuleHistoricalLoggerContext.setAlarmCount(alarmOccurrenceCount);
+				}
 			}
+			
+			workflowRuleHistoricalLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.RESOLVED.getIntVal());
+			workflowRuleHistoricalLoggerContext.setCalculationEndTime(DateTimeUtil.getCurrenTime());
+			WorkflowRuleHistoricalLoggerUtil.updateWorkflowRuleHistoricalLogger(workflowRuleHistoricalLoggerContext);
+			
 			long timeTaken = (System.currentTimeMillis() - jobStartTime);
 			LOGGER.info("Total Time taken for Historical Run for RuleLogger: "+jc.getJobId()+" Reading Rule : "+ruleId+" between "+startTime+" and "+endTime+" is "+timeTaken);
 			
