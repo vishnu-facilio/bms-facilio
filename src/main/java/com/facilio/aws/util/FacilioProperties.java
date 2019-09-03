@@ -72,7 +72,7 @@ public class FacilioProperties {
                 PROPERTIES.load(stream);
                 PROPERTIES.forEach((k, v) -> PROPERTIES.put(k.toString().trim(), v.toString().trim()));
                 environment = PROPERTIES.getProperty("environment");
-                deployment = PROPERTIES.getProperty("deployment");
+                deployment = PROPERTIES.getProperty("deployment", "facilio");
                 HashMap<String, String> awsSecret = getPassword(environment +"-app.properties");
                 awsSecret.forEach((k,v) -> PROPERTIES.put(k.trim(), v.trim()));
                 productionEnvironment = "production".equalsIgnoreCase(environment);
