@@ -5,8 +5,8 @@
 		clientVersion = "/" + clientVersion;
 	}
 	
-	String staticUrl = com.facilio.aws.util.AwsUtil.getConfig("static.url") + clientVersion;
-	String servicePortalDomain = com.facilio.aws.util.AwsUtil.getConfig("portal.domain");
+	String staticUrl = com.facilio.aws.util.FacilioProperties.getConfig("static.url") + clientVersion;
+	String servicePortalDomain = com.facilio.aws.util.FacilioProperties.getConfig("portal.domain");
 %>
 <html>
 
