@@ -659,6 +659,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
 
 			if (form.getId() > 0) {
+				form.setName(null);
 				context.put(FacilioConstants.ContextNames.FORM, form);
 
 				Chain chain = TransactionChainFactory.getUpdateFormChain();
