@@ -172,8 +172,9 @@
 								             res = criteria1.evaluate(resultMapValues);
 								             if(res) {
 								               actionMap = formating.actions;
+								               replaceActionMap = conditionalFormatting.actions;
 								               for each key,value in actionMap {
-								                 conditionalFormatting[key] = value;
+								                 replaceActionMap[key] = value;
 								               }
 								             }
 								          }
