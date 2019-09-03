@@ -42,7 +42,7 @@ public class MLAnomalyPageFactory extends PageFactory {
 		page.addTab(tab2);
 		
 		Section tab2Sec1 = page.new Section();
-		tab3.addSection(tab2Sec1);
+		tab2.addSection(tab2Sec1);
 		
 		addOccurrenceHistoryWidget(tab2Sec1);
 //		Tab tab2 = page.new Tab("root_cause");
