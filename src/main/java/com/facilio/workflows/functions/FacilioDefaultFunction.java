@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
@@ -456,8 +457,35 @@ public enum FacilioDefaultFunction implements FacilioWorkflowFunctionInterface {
 
 		}
 		
+	},
+	MERGE_JSON(14, "mergeJson") {
+
+		@Override
+		public Object execute(Object... objects) throws Exception {
+			// TODO Auto-generated method stub
+			Map json1 = (Map) objects[0];
+			Map json2 = (Map) objects[1];
+			
+			if(json1 != null && json2 != null) {
+				for(Object key :json2.keySet()) {
+					if(json1.get(key) instanceof Map && json2.get(key) instanceof Map) {
+						
+						Map json3 = (Map) json1.get(key);
+						Map json4 = (Map) json2.get(key);
+						
+						for(Object key1 :json4.keySet()) {
+							json3.put(key1, json4.get(key1));
+						}
+					}
+					else {
+						json1.put(key, json2.get(key));
+					}
+				}
+			}
+			return null;
+		}
+		
 	}
-	
 
 	;
 	private Integer value;

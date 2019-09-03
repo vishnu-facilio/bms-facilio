@@ -173,9 +173,7 @@
 								             if(res) {
 								               actionMap = formating.actions;
 								               replaceActionMap = conditionalFormatting.actions;
-								               for each key,value in actionMap {
-								                 replaceActionMap[key] = value;
-								               }
+								               NameSpace(\"default\").mergeJson(replaceActionMap,actionMap);
 								             }
 								          }
 								        }
