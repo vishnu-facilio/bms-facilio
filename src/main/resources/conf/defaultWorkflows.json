@@ -164,9 +164,10 @@
 								        formatings = conditionalFormatting.conditionalFormatting;
 								        
 								        for each index,formating in formatings {
+								        
+								          if(formating.get(\"criteria\") != null && formating.get(\"actions\") != null) {
 								          
-								          if(formating.criteria != null && formating.actions != null) {
-								             json = formating.criteria;
+								             json = formating.get(\"criteria\");
 											 criteria1 = NameSpace(\"criteria\").get(json); 
 								             res = criteria1.evaluate(resultMapValues);
 								             if(res) {
