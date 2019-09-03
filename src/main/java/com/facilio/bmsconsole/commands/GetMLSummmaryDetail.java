@@ -70,6 +70,7 @@ public class GetMLSummmaryDetail extends FacilioCommand {
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), dateRange.toString(), DateOperators.BETWEEN))
 				.groupBy(fieldMap.get("resource").getCompleteColumnName());
 		List<Map<String, Object>> list = builder.getAsProps();
+		MLAPI.getRCALastOccurrence(20l, mlAnomalyId);
 		for (Map<String, Object> prop : list) {
 			Object alarmObject = prop.get("alarm");
 			prop.put(FacilioConstants.ContextNames.LATEST_ALARM_OCCURRENCE, MLAPI.getRCALastOccurrence((Long) ((Map) alarmObject).get("id"), mlAnomalyId));

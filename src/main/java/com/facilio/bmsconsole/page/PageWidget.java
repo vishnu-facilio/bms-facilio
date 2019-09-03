@@ -197,7 +197,8 @@ public class PageWidget {
  		ANOMALY_DETAILS_WIDGET("anomalyDetailsWidget"),
  		ANOMALIES_TREND_WIDGET("anomaliesTrendWidget"),
  		ANOMALY_SUB_METER_WIDGET("anomalySubMeterWidget"),
- 		ANOMALY_RCA("anomalyRca")
+ 		ANOMALY_RCA("anomalyRca"),
+ 		OCCURRENCE_HISTORY("occurrenceHistory"),
  		;
 		
 		private String name;

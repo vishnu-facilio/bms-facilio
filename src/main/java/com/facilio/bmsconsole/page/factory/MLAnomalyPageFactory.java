@@ -37,6 +37,14 @@ public class MLAnomalyPageFactory extends PageFactory {
 		tab3.addSection(tab3Sec1);
 		
 		addAnomalyRCAWidget(tab3Sec1);
+		
+		Tab tab2 = page.new Tab("occurrenceHistory", "occurrenceHistory");
+		page.addTab(tab2);
+		
+		Section tab2Sec1 = page.new Section();
+		tab3.addSection(tab2Sec1);
+		
+		addOccurrenceHistoryWidget(tab2Sec1);
 //		Tab tab2 = page.new Tab("root_cause");
 //		page.addTab(tab2);
 //		
@@ -93,5 +101,9 @@ public class MLAnomalyPageFactory extends PageFactory {
 	private static void addAnomalyRCAWidget(Section section) {
 		PageWidget rcaWidget = new PageWidget(WidgetType.ANOMALY_RCA);
 		section.addWidget(rcaWidget);
+	}
+	private static void addOccurrenceHistoryWidget(Section section) {
+		PageWidget occurrenceListWidget = new PageWidget(WidgetType.OCCURRENCE_HISTORY);
+		section.addWidget(occurrenceListWidget);
 	}
 }

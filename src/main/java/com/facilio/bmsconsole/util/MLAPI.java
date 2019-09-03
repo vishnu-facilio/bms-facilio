@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
@@ -42,9 +43,9 @@ public class MLAPI {
 		Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		SelectRecordsBuilder<MLAlarmOccurenceContext> builder = new SelectRecordsBuilder<MLAlarmOccurenceContext>()
 				.beanClass(MLAlarmOccurenceContext.class).moduleName(FacilioConstants.ContextNames.ANOMALY_ALARM_OCCURRENCE)
-				.select(fields).andCondition(CriteriaAPI.getCondition("ALARM_ID", "alarm",
+				.select(fields).andCondition(CriteriaAPI.getCondition(fieldMap.get("alarm"),
 						String.valueOf(alarmId), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentID"), String.valueOf(parentId),  NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentAlarm"), CommonOperators.IS_NOT_EMPTY))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("mlanomalyType"),
 						String.valueOf(MLAlarmOccurenceContext.MLAnomalyType.RCA.getIndex()), NumberOperators.EQUALS))
 				.orderBy("CREATED_TIME DESC, ID DESC").limit(1);
