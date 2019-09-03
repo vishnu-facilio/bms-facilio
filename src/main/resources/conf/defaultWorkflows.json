@@ -159,14 +159,14 @@
    	 
 								    for each index,conditionalFormatting in conditionalFormattings {
 								      
-								      if(conditionalFormatting.conditionalFormattings != null) {
+								      if(conditionalFormatting.conditionalFormatting != null) {
 								        
-								        formatings = conditionalFormatting.conditionalFormattings;
+								        formatings = conditionalFormatting.conditionalFormatting;
 								        
 								        for each index,formating in formatings {
 								          
 								          if(formating.criteria != null && formating.actions != null) {
-								             
+								             json = formating.criteria;
 											 criteria1 = NameSpace(\"criteria\").get(json); 
 								             res = criteria1.evaluate(resultMapValues);
 								             if(res) {
