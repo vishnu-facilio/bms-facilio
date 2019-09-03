@@ -304,7 +304,7 @@ public class ContractsAPI {
 		json.put("to", userEmailStr);
 		json.put("subject", "Expiry notification");
 		json.put("name", "Expiry template");
-		String message = "Hi,\n\nYour contract " + contract.getName() + " from the vendor "+ contract.getVendor().getName() +" expires on "+ DateTimeUtil.getFormattedTime(contract.getEndDate()) +"\nRegards,\nTeam Facilio";
+		String message = "Hi,\n\nYour contract " + contract.getName() + " from the vendor "+ contract.getVendor().getName() +" expires on "+ DateTimeUtil.getFormattedTime(contract.getEndDate()) +".\nRegards,\nTeam Facilio";
 		json.put("message", message);
 		WorkflowContext workflow = new WorkflowContext();
 		ParameterContext param = new ParameterContext();
@@ -450,7 +450,7 @@ public class ContractsAPI {
 		json.put("to", userEmailStr);
 		json.put("subject", "Payment notification");
 		json.put("name", "Payment template");
-		String message = "Hi,\n\nYour contract " + contract.getName() + " from the vendor "+ contract.getVendor().getName() +" Payment is scheduled on "+ DateTimeUtil.getFormattedTime(contract.getNextPaymentDate()) +"\nRegards,\nTeam Facilio";
+		String message = "Hi,\n\nThe next Payment for contract - " + contract.getName() + " from the vendor "+ contract.getVendor().getName() +" is scheduled on "+ DateTimeUtil.getFormattedTime(contract.getNextPaymentDate()) +".\nRegards,\nTeam Facilio";
 		json.put("message", message);
 		WorkflowContext workflow = new WorkflowContext();
 		ParameterContext param = new ParameterContext();
