@@ -37,6 +37,7 @@ import com.facilio.events.context.EventContext;
 import com.facilio.events.util.EventAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.BaseLineContext;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.BaseLineContext.AdjustType;
 import com.facilio.modules.BaseLineContext.RangeType;
 import com.facilio.modules.FieldFactory;
@@ -44,6 +45,7 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.unitconversion.Unit;
+import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.context.WorkflowContext;
 import com.facilio.workflows.util.WorkflowUtil;
 
@@ -109,11 +111,20 @@ public class FetchCardDataCommand extends FacilioCommand {
 				Criteria criteria = (Criteria) context.get(FacilioConstants.ContextNames.CRITERIA);
 				
 				if(startTime != null && endTime != null && startTime >0 && endTime > 0) {
-					Condition dateCondition = CriteriaAPI.getCondition("TTIME", "ttime", startTime+","+endTime, DateOperators.BETWEEN);
-					if(criteria == null) {
-						criteria = new Criteria();
+					if(widgetStaticContext.getParamsJson().get("moduleName") != null) {
+						FacilioModule module =  modBean.getModule((String) widgetStaticContext.getParamsJson().get("moduleName"));
+						boolean isReadingModule = FacilioUtil.isReadingModule(module);
+						
+						if(isReadingModule) {
+							
+							Condition dateCondition = CriteriaAPI.getCondition("TTIME", "ttime", startTime+","+endTime, DateOperators.BETWEEN);
+							if(criteria == null) {
+								criteria = new Criteria();
+							}
+							criteria.addAndCondition(dateCondition);
+						}
 					}
-					criteria.addAndCondition(dateCondition);
+					
 				}
 				
 				CardType card = CardType.getCardType(widgetStaticContext.getStaticKey());
