@@ -840,7 +840,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 		// TODO Auto-generated method stub
 		ReadingContext reading = (ReadingContext) record;
 		Object val = getMetric(reading);
-		if (val != null || getEvent().getActivityTypeEnum().isPresent(EventType.SCHEDULED_READING_RULE.getValue())) {
+		if (val != null || getActivityTypeEnum().isPresent(EventType.SCHEDULED_READING_RULE.getValue())) {
 			if (clearAlarm()) {
 				if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
 //					LOGGER.info("Clearing new alarm ");

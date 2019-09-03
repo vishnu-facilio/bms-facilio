@@ -14,7 +14,7 @@ public class FetchWorkflowRuleCommand extends FacilioCommand {
 		if (id == null || id == -1) {
 			throw new IllegalArgumentException("Invalid ID to fetch workflow");
 		}
-		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, WorkflowRuleAPI.getWorkflowRule(id, true));
+		context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, WorkflowRuleAPI.getWorkflowRule(id));
 		return false;
 	}
 

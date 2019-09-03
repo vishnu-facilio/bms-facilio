@@ -27,7 +27,7 @@ public class ModuleFactory {
 		moduleMap.put("assetcategoryreading", getAssetCategoryReadingRelModule());
 		moduleMap.put("requester", getRequesterModule());
 		moduleMap.put("emailsettings", getEmailSettingModule());
-		moduleMap.put("workflowevent", getWorkflowEventModule());
+//		moduleMap.put("workflowevent", getWorkflowEventModule());
 		moduleMap.put("workflowrule", getWorkflowRuleModule());
 		moduleMap.put("action", getActionModule());
 		moduleMap.put("supportemails", getSupportEmailsModule());
@@ -349,14 +349,6 @@ public class ModuleFactory {
 		emailSettingModule.setDisplayName("Email Settings");
 		emailSettingModule.setTableName("EmailSettings");
 		return emailSettingModule;
-	}
-
-	public static FacilioModule getWorkflowEventModule() {
-		FacilioModule workflowEventModule = new FacilioModule();
-		workflowEventModule.setName("workflowevent");
-		workflowEventModule.setDisplayName("Workflow Event");
-		workflowEventModule.setTableName("Workflow_Event");
-		return workflowEventModule;
 	}
 
 	public static FacilioModule getWorkflowRuleModule() {

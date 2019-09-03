@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -15,7 +16,6 @@ import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ActionType;
 import com.facilio.bmsconsole.workflow.rule.EventType;
-import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -58,47 +58,46 @@ public class AddPMTriggerCommand extends FacilioCommand {
 	private void addTriggersAndReadings(PreventiveMaintenance pm) throws Exception {
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getPMTriggersModule().getTableName()).fields(FieldFactory.getPMTriggerFields());
-		
+
 		for (PMTriggerContext trigger : pm.getTriggers()) {
 			trigger.setPmId(pm.getId());
 			trigger.setOrgId(AccountUtil.getCurrentOrg().getId());
 			long ruleId;
 			switch (trigger.getTriggerExecutionSourceEnum()) {
-			case ALARMRULE: {
-					trigger.getWorkFlowRule().setName("PM_" + pm.getId());
-					trigger.getWorkFlowRule().setRuleType(RuleType.PM_ALARM_RULE);
-					WorkflowEventContext event = new WorkflowEventContext();
-					event.setActivityType(EventType.CREATE);
-					event.setModuleName("alarm");
-					trigger.getWorkFlowRule().setEvent(event);
-					ruleId = WorkflowRuleAPI.addWorkflowRule(trigger.getWorkFlowRule());
+				case ALARMRULE: {
+					WorkflowRuleContext workFlowRule = trigger.getWorkFlowRule();
+					workFlowRule.setName("PM_" + pm.getId());
+					workFlowRule.setRuleType(RuleType.PM_ALARM_RULE);
+					workFlowRule.setActivityType(EventType.CREATE);
+					workFlowRule.setModuleName("alarm");
+					ruleId = WorkflowRuleAPI.addWorkflowRule(workFlowRule);
 					trigger.setRuleId(ruleId);
-					
+
 					ActionContext action = new ActionContext();
 					action.setActionType(ActionType.EXECUTE_PM);
 					action.setStatus(true);
-					
+
 					List<ActionContext> actions = Collections.singletonList(action);
 					ActionAPI.addActions(actions);
 					ActionAPI.addWorkflowRuleActionRel(ruleId, actions);
 				}
 				break;
-			case READING: {
+				case READING: {
 					trigger.getReadingRule().setName("PM_" + pm.getId());
 					trigger.getReadingRule().setRuleGroupId(-1);
 					ruleId = WorkflowRuleAPI.addWorkflowRule(trigger.getReadingRule());
 					trigger.setRuleId(ruleId);
-					
+
 					ActionContext action = new ActionContext();
 					action.setActionType(ActionType.EXECUTE_PM);
 					action.setStatus(true);
-					
+
 					List<ActionContext> actions = Collections.singletonList(action);
 					ActionAPI.addActions(actions);
 					ActionAPI.addWorkflowRuleActionRel(ruleId, actions);
 				}
 				break;
-			case SCHEDULE:
+				case SCHEDULE:
 //				trigger.setStartTime(System.currentTimeMillis());
 			}
 			insertBuilder.addRecord(FieldUtil.getAsProperties(trigger));

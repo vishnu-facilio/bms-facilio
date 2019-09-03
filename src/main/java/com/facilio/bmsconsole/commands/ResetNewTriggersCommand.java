@@ -22,7 +22,6 @@ import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
@@ -142,13 +141,12 @@ public class ResetNewTriggersCommand extends FacilioCommand implements Serializa
 
 
 	private long getLatestReading(long readingRuleId) throws Exception {
-		ReadingRuleContext rule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(readingRuleId, true);
-		WorkflowEventContext event = rule.getEvent();
-		
+		ReadingRuleContext rule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(readingRuleId);
+
 		Criteria criteria = rule.getCriteria();
 		Condition condition = criteria.getConditions().get("1");
 		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = bean.getModule(event.getModuleId());
+		FacilioModule module = bean.getModule(rule.getModuleId());
 		
 		SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
 																			.module(module)

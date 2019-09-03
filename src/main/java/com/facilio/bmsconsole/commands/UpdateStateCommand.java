@@ -50,7 +50,7 @@ public class UpdateStateCommand extends FacilioCommand {
 		} 
 		else {
 			if (currentTransitionId != null && currentTransitionId > 0) {
-				StateflowTransitionContext stateflowTransition = (StateflowTransitionContext) WorkflowRuleAPI.getWorkflowRule(currentTransitionId, true);
+				StateflowTransitionContext stateflowTransition = (StateflowTransitionContext) WorkflowRuleAPI.getWorkflowRule(currentTransitionId);
 				boolean shouldChangeState = WorkflowRuleAPI.evaluateWorkflowAndExecuteActions(stateflowTransition, moduleName, moduleData, StateFlowRulesAPI.getDefaultFieldChangeSet(moduleName, moduleData.getId()), recordPlaceHolders, (FacilioContext) context, false);
 				if (shouldChangeState) {
 					FacilioStatus newState = StateFlowRulesAPI.getStateContext(stateflowTransition.getToStateId());

@@ -414,7 +414,7 @@ public class ControlActionAction extends FacilioAction {
 	public String getControlActionRule() throws Exception {
 		
 		
-		WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(ruleId, true, true, true);
+		WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(ruleId, true, true);
 		
 		if(rule != null) {
 			List<ActionContext> actionList = ActionAPI.getAllActionsFromWorkflowRule(AccountUtil.getCurrentOrg().getId(), rule.getId());

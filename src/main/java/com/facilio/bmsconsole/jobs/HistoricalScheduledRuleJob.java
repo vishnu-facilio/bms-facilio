@@ -29,7 +29,7 @@ public class HistoricalScheduledRuleJob extends FacilioJob {
 	public void execute(JobContext jc) throws Exception {
 		// TODO Auto-generated method stub
 		long jobStartTime = System.currentTimeMillis();
-		WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(jc.getJobId(), true);
+		WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(jc.getJobId());
 		
 		JSONObject props = BmsJobUtil.getJobProps(jc.getJobId(), jc.getJobName());
 		long startTime = (long) props.get("startTime") / 1000;

@@ -23,7 +23,7 @@ public class ApplyRuleForMLCommand extends FacilioCommand {
 		MLContext mlContext = (MLContext) context.get(FacilioConstants.ContextNames.ML);
 		executeAnotherJob(mlContext);
 		
-		WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(mlContext.getRuleID(),true,true,true);
+		WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(mlContext.getRuleID(),true,true);
 		if (rule != null && rule.isActive()) 
 		{
 			FacilioContext ruleContext = new FacilioContext();

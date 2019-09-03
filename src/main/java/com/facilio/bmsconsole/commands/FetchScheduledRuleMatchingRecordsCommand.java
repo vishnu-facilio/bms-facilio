@@ -31,7 +31,7 @@ public class FetchScheduledRuleMatchingRecordsCommand extends FacilioCommand {
 		List<? extends ModuleBaseWithCustomFields> records = getRecords(rule, (JobContext) context.get(FacilioConstants.Job.JOB_CONTEXT));
 		// LOGGER.info("Matching records of rule : "+rule.getId()+" is : "+records);
 		
-		context.put(FacilioConstants.ContextNames.MODULE_NAME, rule.getEvent().getModule().getName());
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, rule.getModule().getName());
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, records);
 		
 		return false;
@@ -63,7 +63,7 @@ public class FetchScheduledRuleMatchingRecordsCommand extends FacilioCommand {
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private List<? extends ModuleBaseWithCustomFields> getRecords(WorkflowRuleContext rule, JobContext jc) throws Exception {
-		FacilioModule module = rule.getEvent().getModule();
+		FacilioModule module = rule.getModule();
 		FacilioField dateField = rule.getDateField();
 		DateRange range = getRange(rule, jc);
 		// LOGGER.info("Range for rule : "+rule.getId()+" is "+range.toString());

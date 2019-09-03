@@ -26,7 +26,6 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.FieldChangeFieldContext;
 import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
 import com.facilio.bmsconsole.workflow.rule.ValidationContext;
-import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
@@ -183,12 +182,10 @@ public class ApprovalRulesAPI extends WorkflowRuleAPI {
 	}
 	
 	private static void updateEventAndCriteria(WorkflowRuleContext rule, ApprovalRuleContext approvalRule, boolean isApproval, ModuleBean modBean) throws Exception {
-		WorkflowEventContext event = new WorkflowEventContext();
-		event.setModuleId(approvalRule.getEvent().getModuleId());
-		event.setActivityType(EventType.FIELD_CHANGE);
-		rule.setEvent(event);
-		
-		FacilioModule module = modBean.getModule(event.getModuleId());
+		rule.setModuleId(approvalRule.getModuleId());
+		rule.setActivityType(EventType.FIELD_CHANGE);
+
+		FacilioModule module = modBean.getModule(rule.getModuleId());
 		FieldChangeFieldContext field = new FieldChangeFieldContext(); //Field Change event from REQUESTED to APPROVED/ REJECTED
 		field.setField(modBean.getField(FacilioConstants.ApprovalRule.APPROVAL_STATE_FIELD_NAME, module.getName()));
 		field.setOldValue(String.valueOf(ApprovalState.REQUESTED.getValue()));

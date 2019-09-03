@@ -68,9 +68,9 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 			Long endTime = (Long) props.get("endTime");
 			Long resourceId = (Long) props.get("resourceId");
 			Long ruleId = (Long) props.get("ruleId");
-			
-			
-			ReadingRuleContext readingRule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(ruleId, true);
+
+
+			ReadingRuleContext readingRule = (ReadingRuleContext) WorkflowRuleAPI.getWorkflowRule(ruleId);
 			if (readingRule.getMatchedResources() == null || readingRule.getMatchedResources().isEmpty()) {
 				return;
 			}
@@ -112,15 +112,15 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 
 			List<ReadingEventContext> events = new ArrayList<>();
 
-			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) 
+			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS))
 			{
 				WorkflowRuleHistoricalLoggerUtil.deleteAlarmOccurrencesWithEdgeCases(readingRule.getId(), startTime, endTime, resourceId);
 			}
-			else 
+			else
 			{
 				WorkflowRuleHistoricalLoggerUtil.deleteReadingAlarm(readingRule.getId(), startTime, endTime, resourceId);
 			}
-			
+
 			Map<String, List<ReadingDataMeta>> currentFields = supportFieldsRDM;
 			Map<String, List<ReadingDataMeta>> currentRDMList = null;
 			if (fields != null) {
@@ -136,20 +136,20 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 					currentFields.putAll(currentRDMList);
 				}
 			}
-			
+
 			long processStartTime = System.currentTimeMillis();
 			long currentStartTime = startTime - (ReadingsAPI.getDataInterval(resourceId, readingRule.getReadingField()) * 60 * 1000);
 			List<ReadingContext> readings = fetchReadings(readingRule, resourceId, currentStartTime, endTime);
 			int alarmCount = executeWorkflows(readingRule, readings, currentFields, fields, events);
 			LOGGER.info("Time taken for Historical Run for RuleLogger: "+jc.getJobId()+" Reading Rule : "+ruleId+" for resource : "+resourceId+" between "+startTime+" and "+endTime+" is "+(System.currentTimeMillis() - processStartTime));
-			
+
 			WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = WorkflowRuleHistoricalLoggerUtil.getActiveWorkflowRuleHistoricalLogger(resourceId,ruleId);
 			workflowRuleHistoricalLoggerContext.setStatus(WorkflowRuleHistoricalLoggerContext.Status.RESOLVED.getIntVal());
 			workflowRuleHistoricalLoggerContext.setCalculationEndTime(DateTimeUtil.getCurrenTime());
 			workflowRuleHistoricalLoggerContext.setAlarmCount(alarmCount);
-			
+
 			WorkflowRuleHistoricalLoggerUtil.updateWorkflowRuleHistoricalLogger(workflowRuleHistoricalLoggerContext);
-		
+
 
 			if (!events.isEmpty()) {
 				FacilioContext context = new FacilioContext();
@@ -219,7 +219,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 						
 						RuleType[] ruleTypes = {RuleType.READING_RULE,RuleType.ALARM_TRIGGER_RULE,RuleType.ALARM_CLEAR_RULE,RuleType.ALARM_RCA_RULES};
 						
-						WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(Collections.singletonList(readingRule), readingRule.getReadingField().getModule(), reading, null, null, recordPlaceHolders, context, false, Collections.singletonList(readingRule.getEvent().getActivityTypeEnum()), ruleTypes);
+						WorkflowRuleAPI.executeWorkflowsAndGetChildRuleCriteria(Collections.singletonList(readingRule), readingRule.getReadingField().getModule(), reading, null, null, recordPlaceHolders, context, false, Collections.singletonList(readingRule.getActivityTypeEnum()), ruleTypes);
 						
 						prevRDM = currentRDM;
 						

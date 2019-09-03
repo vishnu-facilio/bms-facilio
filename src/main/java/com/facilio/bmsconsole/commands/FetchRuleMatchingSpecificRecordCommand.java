@@ -28,7 +28,7 @@ public boolean executeCommand(Context context) throws Exception {
 	List<? extends ModuleBaseWithCustomFields> records = getRecords(rule, (JobContext) context.get(FacilioConstants.Job.JOB_CONTEXT));
 	// LOGGER.info("Matching records of rule : "+rule.getId()+" is : "+records);
 	
-	context.put(FacilioConstants.ContextNames.MODULE_NAME, rule.getEvent().getModule().getName());
+	context.put(FacilioConstants.ContextNames.MODULE_NAME, rule.getModule().getName());
 	context.put(FacilioConstants.ContextNames.RECORD_LIST, records);
 	
 	return false;
@@ -37,7 +37,7 @@ public boolean executeCommand(Context context) throws Exception {
 
 @SuppressWarnings({ "unchecked", "rawtypes" })
 private List<? extends ModuleBaseWithCustomFields> getRecords(WorkflowRuleContext rule, JobContext jc) throws Exception {
-	FacilioModule module = rule.getEvent().getModule();
+	FacilioModule module = rule.getModule();
 	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 	
 	Class beanClassName = FacilioConstants.ContextNames.getClassFromModuleName(module.getName());

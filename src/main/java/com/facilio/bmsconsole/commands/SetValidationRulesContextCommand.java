@@ -41,7 +41,7 @@ public class SetValidationRulesContextCommand extends FacilioCommand {
 			long fieldId = fields.get(i).getFieldId();
 			readingRules.get(i).stream().forEach((r) -> {
 				r.setReadingFieldId(fieldId);
-				r.getEvent().setModuleId(modIdMap.get(fieldId));
+				r.setModuleId(modIdMap.get(fieldId));
 				actionContextList.add(r.getActions());
 			});
 		}

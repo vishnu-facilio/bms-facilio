@@ -12,7 +12,6 @@ import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ThresholdType;
-import com.facilio.bmsconsole.workflow.rule.WorkflowEventContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
@@ -127,11 +126,9 @@ public class ValidateNewPMTriggersCommand extends FacilioCommand {
 		criteria.addAndCondition(condition);
 		rule.setCriteria(criteria);
 		
-		WorkflowEventContext event = new WorkflowEventContext();
-		event.setModuleId(field.getModuleId());
-		event.setActivityType(EventType.CREATE);
-		rule.setEvent(event);
-		
+		rule.setModuleId(field.getModuleId());
+		rule.setActivityType(EventType.CREATE);
+
 		trigger.setReadingRule(rule);
 	}
 

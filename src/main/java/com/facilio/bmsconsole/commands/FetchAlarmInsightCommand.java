@@ -74,7 +74,7 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 		if (assetId > 0 || (assetIds != null && assetIds.size() > 0)) {
 			if (CollectionUtils.isNotEmpty(props)) {
 				List<Long> ruleIds = props.stream().map(prop -> (long) prop.get("ruleId")).collect(Collectors.toList());
-				Map<Long, WorkflowRuleContext> rules = WorkflowRuleAPI.getWorkflowRulesAsMap(ruleIds, false, false, false);
+				Map<Long, WorkflowRuleContext> rules = WorkflowRuleAPI.getWorkflowRulesAsMap(ruleIds, false, false);
 				for (Map<String, Object> prop : props) {
 					long ruleId = (long) prop.get("ruleId");
 					prop.put("subject", rules.get(ruleId).getName());

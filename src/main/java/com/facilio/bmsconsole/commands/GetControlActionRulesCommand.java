@@ -59,14 +59,7 @@ public class GetControlActionRulesCommand extends FacilioCommand {
 		Criteria rulesTypeToBeFetchedCriteria = getRuleTypesToBeFetched();
 		
 		ruleBuilder.andCriteria(rulesTypeToBeFetchedCriteria);
-		
-		if (!fetchCount) {
-			fields.addAll(FieldFactory.getWorkflowEventFields());
-			FacilioModule eventModule = ModuleFactory.getWorkflowEventModule();
-			ruleBuilder.innerJoin(eventModule.getTableName())
-						.on(module.getTableName()+".EVENT_ID = "+eventModule.getTableName()+".ID");
-		}
-		
+
 		ruleBuilder.select(fields);
 		
 		JSONObject filters = (JSONObject) context.get(FacilioConstants.ContextNames.FILTERS);
@@ -124,7 +117,7 @@ public class GetControlActionRulesCommand extends FacilioCommand {
 		
 		
 		if(fetchCount == null || !fetchCount) {
-			List<WorkflowRuleContext> rules = WorkflowRuleAPI.getWorkFlowsFromMapList(props, true, true, true);
+			List<WorkflowRuleContext> rules = WorkflowRuleAPI.getWorkFlowsFromMapList(props, true, true);
 			
 			if(rules != null) {
 				for(WorkflowRuleContext rule :rules) {

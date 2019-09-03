@@ -1891,10 +1891,8 @@ public class PreventiveMaintenanceAPI {
 	private static long addScheduleRule(FacilioField dateField, PreventiveMaintenance pm, PMReminder reminder, Criteria criteria, WorkflowRuleContext.ScheduledRuleType scheduledRuleType) throws Exception {
 		WorkflowRuleContext rule = new WorkflowRuleContext();
 		rule.setDateFieldId(dateField.getFieldId());
-		WorkflowEventContext eventContext = new WorkflowEventContext();
-		eventContext.setActivityType(EventType.SCHEDULED);
-		eventContext.setModuleName("workorder");
-		rule.setEvent(eventContext);
+		rule.setModuleName("workorder");
+		rule.setActivityType(EventType.SCHEDULED);
 		rule.setInterval(reminder.getDuration());
 		rule.setCriteria(criteria);
 		rule.setRuleType(WorkflowRuleContext.RuleType.PM_NOTIFICATION_RULE);

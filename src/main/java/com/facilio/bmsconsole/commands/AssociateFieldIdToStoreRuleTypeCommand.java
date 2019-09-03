@@ -23,7 +23,7 @@ public class AssociateFieldIdToStoreRuleTypeCommand extends FacilioCommand{
 		WorkflowRuleContext rule = (WorkflowRuleContext)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FieldChangeFieldContext> fieldsChanged = new ArrayList<FieldChangeFieldContext>();
-		String modName = rule.getEvent().getModuleName();
+		String modName = rule.getModuleName();
 		List<FacilioField> fields = modBean.getAllFields(modName);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
         

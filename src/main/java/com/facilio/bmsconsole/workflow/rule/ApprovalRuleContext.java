@@ -204,11 +204,11 @@ public class ApprovalRuleContext extends WorkflowRuleContext {
 	}
 	
 	private void updateRecordApprovalState(Object record, User approvalRequester) throws Exception {
-		if (getEvent() == null) {
-			setEvent(WorkflowRuleAPI.getWorkflowEvent(getEventId()));
-		}
+//		if (getEvent() == null) {
+//			setEvent(WorkflowRuleAPI.getWorkflowEvent(getEventId()));
+//		}
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		WorkflowEventContext event = getEvent();
+//		WorkflowEventContext event = getEvent();
 		Map<String, Object> prop = new HashMap<>();
 		prop.put(FacilioConstants.ApprovalRule.APPROVAL_STATE_FIELD_NAME, ApprovalState.REQUESTED.getValue());
 		prop.put(FacilioConstants.ApprovalRule.APPROVAL_RULE_ID_FIELD_NAME, getId());
@@ -223,14 +223,14 @@ public class ApprovalRuleContext extends WorkflowRuleContext {
 		}
 		
 		List<FacilioField> fields = new ArrayList<>();
-		fields.add(modBean.getField(FacilioConstants.ApprovalRule.APPROVAL_STATE_FIELD_NAME, event.getModule().getName()));
-		fields.add(modBean.getField(FacilioConstants.ApprovalRule.APPROVAL_RULE_ID_FIELD_NAME, event.getModule().getName()));
-		fields.add(modBean.getField(FacilioConstants.ApprovalRule.APPROVAL_REQUESTED_BY_FIELD_NAME, event.getModule().getName()));
+		fields.add(modBean.getField(FacilioConstants.ApprovalRule.APPROVAL_STATE_FIELD_NAME, getModule().getName()));
+		fields.add(modBean.getField(FacilioConstants.ApprovalRule.APPROVAL_RULE_ID_FIELD_NAME, getModule().getName()));
+		fields.add(modBean.getField(FacilioConstants.ApprovalRule.APPROVAL_REQUESTED_BY_FIELD_NAME, getModule().getName()));
 		
 		UpdateRecordBuilder<ModuleBaseWithCustomFields> updateBuilder = new UpdateRecordBuilder<ModuleBaseWithCustomFields>()
 																			.fields(fields)
-																			.module(event.getModule())
-																			.andCondition(CriteriaAPI.getIdCondition(((ModuleBaseWithCustomFields) record).getId(), event.getModule()))
+																			.module(getModule())
+																			.andCondition(CriteriaAPI.getIdCondition(((ModuleBaseWithCustomFields) record).getId(), getModule()))
 																			;
 		updateBuilder.updateViaMap(prop);
 	}

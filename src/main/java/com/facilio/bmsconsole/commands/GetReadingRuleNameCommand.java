@@ -27,7 +27,7 @@ public class GetReadingRuleNameCommand extends FacilioCommand {
 										;
 			
 			if (!ruleIds.isEmpty()) {
-				Map<Long, WorkflowRuleContext> rules = WorkflowRuleAPI.getWorkflowRulesAsMap(ruleIds, false, false, false);
+				Map<Long, WorkflowRuleContext> rules = WorkflowRuleAPI.getWorkflowRulesAsMap(ruleIds, false, false);
 				
 				for (AlarmContext alarm : alarms) {
 					if (alarm instanceof ReadingAlarmContext && ((ReadingAlarmContext) alarm).getRuleId() != -1) {

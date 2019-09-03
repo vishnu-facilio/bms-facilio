@@ -27,7 +27,7 @@ public class AddOrUpdateJobEntryForScheduledReadingRuleCommand extends FacilioCo
 			workflowRuleContext = (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.WORKFLOW_RULE);
 		}
 		
-		if(workflowRuleContext.getEvent() != null && workflowRuleContext.getEvent().getActivityTypeEnum().equals(EventType.SCHEDULED_READING_RULE)) {
+		if(workflowRuleContext.getActivityTypeEnum() != null && workflowRuleContext.getActivityTypeEnum().equals(EventType.SCHEDULED_READING_RULE)) {
 			
 			JobContext job = FacilioTimer.getJob(workflowRuleContext.getId(), FacilioConstants.Job.SCHEDULED_READING_RULE_JOB_NAME);
 			

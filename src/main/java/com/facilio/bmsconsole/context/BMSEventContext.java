@@ -39,6 +39,9 @@ public class BMSEventContext extends BaseEventContext {
 
     @Override
     public String constructMessageKey() {
+        if (StringUtils.isEmpty(condition)) {
+            condition = getEventMessage();
+        }
         return "BMSEvent_" + condition + "_" + source + "_" + (controller == -1 ? "empty_controller" : controller);
     }
 
