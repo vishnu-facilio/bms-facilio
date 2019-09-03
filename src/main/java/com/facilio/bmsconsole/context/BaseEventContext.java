@@ -111,6 +111,9 @@ public class BaseEventContext extends ModuleBaseWithCustomFields {
 	
 	private long createdTime = -1;
 	public long getCreatedTime() {
+		if (createdTime == -1) {
+			return DateTimeUtil.getCurrenTime();
+		}
 		return createdTime;
 	}
 	public void setCreatedTime(long createdTime) {

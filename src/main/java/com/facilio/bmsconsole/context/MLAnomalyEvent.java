@@ -55,6 +55,7 @@ public class MLAnomalyEvent extends BaseEventContext{
 		        event.setResource(this.getResource());
 		        event.setSeverityString(FacilioConstants.Alarm.CLEAR_SEVERITY);
 		        event.setReadingTime(this.getReadingTime());
+		        event.setCreatedTime(this.getReadingTime());
 		        event.setmlid(mlid);
 		        return event;
         	}

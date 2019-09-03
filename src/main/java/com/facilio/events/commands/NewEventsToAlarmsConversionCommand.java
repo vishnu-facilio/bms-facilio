@@ -85,6 +85,7 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 						processEventToAlarm(createdEvent, context, additionEventsCreated);
 					}
 				}
+				baseEvents.addAll(additionEventsCreated);
 			}
 			
 			saveRecords();
@@ -159,8 +160,9 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 
 			BaseEventContext additionClearEvent = baseEvent.createAdditionClearEvent(alarmOccurrence);
 			if (additionClearEvent != null) {
-				additionClearEvent.setSeverity(AlarmAPI.getAlarmSeverity("Clear"));
+				additionClearEvent.setSeverity(clearSeverity);
 				NewAlarmAPI.updateAlarmOccurrence(alarmOccurrence, additionClearEvent, mostRecent, context);
+				additionClearEvent.setAlarmOccurrence(alarmOccurrence);
 				additionClearEvent.setEventState(EventState.ALARM_UPDATED);
 				additionEventsCreated.add(additionClearEvent);
 
