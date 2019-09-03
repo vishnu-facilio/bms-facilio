@@ -73,23 +73,23 @@ public class GetFormMetaCommand extends FacilioCommand {
 				String moduleName = form.getModule().getName();
 				form.setModule(modBean.getModule(moduleName));
 				
-				if (form.getSections() != null) {
-					boolean isFirstSection = true;
-					for(FormSection section: form.getSections()) {
-						List<FormField> fields = section.getFields();
-						if (isFirstSection) {
-							setFields(form, modBean, fields, formModuleName, childModule);
-							isFirstSection = false;
-						}
-						else {
-							FormsAPI.setFieldDetails(modBean, fields, moduleName);
-						}
-					}
+				if (form.getSections() == null) {
+					List<FormSection> sections = new ArrayList<>();
+					form.setSections(sections);
+					FormSection section = new FormSection("Default", 1, form.getFields(), false);
+					sections.add(section);
 				}
-				else {
-					List<FormField> fields = new ArrayList<>(form.getFields());
-					form.setFields(fields);
-					setFields(form, modBean, fields, moduleName, childModule);
+				
+				boolean isFirstSection = true;
+				for(FormSection section: form.getSections()) {
+					List<FormField> fields = section.getFields();
+					if (isFirstSection) {
+						setFields(form, modBean, fields, formModuleName, childModule);
+						isFirstSection = false;
+					}
+					else {
+						FormsAPI.setFieldDetails(modBean, fields, moduleName);
+					}
 				}
 			}
 			else {
