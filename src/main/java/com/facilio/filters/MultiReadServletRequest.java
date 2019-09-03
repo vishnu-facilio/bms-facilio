@@ -13,10 +13,10 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.struts2.dispatcher.Parameter;
 
-import com.facilio.aws.util.AwsUtil;
 import com.opensymphony.xwork2.ActionContext;
 
 public class MultiReadServletRequest extends HttpServletRequestWrapper {
@@ -40,7 +40,7 @@ public class MultiReadServletRequest extends HttpServletRequestWrapper {
 	}
 	
 	private boolean shouldCacheRequest(HttpServletRequest request) {
-		if (AwsUtil.isDevelopment()) {
+		if (FacilioProperties.isDevelopment()) {
 			return false;
 		}
 		Parameter parameter = ActionContext.getContext().getParameters().get("cacheUrl");

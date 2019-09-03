@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 
 import javax.websocket.EncodeException;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.json.simple.JSONObject;
 
@@ -43,12 +44,12 @@ public class WmsApi
 	private static FacilioProducer producer;
 	
 	static {
-		if(! AwsUtil.isDevelopment()) {
-			String socketUrl = AwsUtil.getConfig("app.domain");
+		if(!FacilioProperties.isDevelopment()) {
+			String socketUrl = FacilioProperties.getConfig("app.domain");
 			if (socketUrl != null) {
 				WEBSOCKET_URL = "wss://"+socketUrl+"/websocket";
 			}
-			kinesisNotificationTopic = AwsUtil.getConfig("environment") + "-" + kinesisNotificationTopic;
+			kinesisNotificationTopic = FacilioProperties.getConfig("environment") + "-" + kinesisNotificationTopic;
 			producer = new FacilioKafkaProducer(kinesisNotificationTopic);
 			LOGGER.info("Initialized Kafka Producer");
 		}
@@ -72,7 +73,7 @@ public class WmsApi
 
 	private static Properties getKafkaProducerProperties() {
 		Properties props = new Properties();
-		props.put("bootstrap.servers", AwsUtil.getKafkaProducer());
+		props.put("bootstrap.servers", FacilioProperties.getKafkaProducer());
 		props.put("acks", "all");
 		props.put("retries", 0);
 		props.put("batch.size", 16384);
@@ -161,7 +162,7 @@ public class WmsApi
 			if (AccountUtil.getCurrentUser() != null) {
 				message.setFrom(AccountUtil.getCurrentUser().getId());
 			}
-			if (AwsUtil.isDevelopment()) {
+			if (FacilioProperties.isDevelopment()) {
 				SessionManager.getInstance().sendMessage(message);
 			} else {
 				sendToKafka(message.toJson());

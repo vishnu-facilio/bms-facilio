@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -71,7 +72,7 @@ public class AgentIntegrationUtil {
                 wattsenseAuthApi =  wattBasePath + PROPERTIES.getProperty(AgentIntegrationKeys.WATT_AUTH_API);
                 mqttConnectionApi = wattBasePath + wattMqttPath ;
                 wattsenseCertificateStoreApi = mqttConnectionApi + PROPERTIES.getProperty(AgentIntegrationKeys.WATT_CERTIFICATE_STORE_API);
-                awsMqttEndpoint = PROPERTIES.getProperty(AgentIntegrationKeys.WATT_AWS_MQTT_ENDPOINT_BASE) + AwsUtil.getIotEndPoint()+":8883";
+                awsMqttEndpoint = PROPERTIES.getProperty(AgentIntegrationKeys.WATT_AWS_MQTT_ENDPOINT_BASE) + FacilioProperties.getIotEndPoint()+":8883";
                 initiateMqttApi = PROPERTIES.getProperty(AgentIntegrationKeys.WATT_INITIATE_MQTT_API);
                 deleteCertificateStoreApi = wattsenseCertificateStoreApi;
                 deleteMqttConnectionApi = mqttConnectionApi;

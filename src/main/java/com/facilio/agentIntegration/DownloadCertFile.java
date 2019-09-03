@@ -18,6 +18,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -167,7 +168,7 @@ public class DownloadCertFile
         StringBuilder builder = new StringBuilder("clientId=").append(domainName).append(System.lineSeparator())
                 .append("privateKeyFile=facilio-private.key").append(System.lineSeparator())
                 .append("certificateFile=facilio.crt").append(System.lineSeparator())
-                .append("endpoint=").append(AwsUtil.getIotEndPoint()).append(System.lineSeparator())
+                .append("endpoint=").append(FacilioProperties.getIotEndPoint()).append(System.lineSeparator())
                 .append("topic=").append(domainName);
         return builder.toString();
     }

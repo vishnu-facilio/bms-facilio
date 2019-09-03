@@ -17,6 +17,7 @@ import java.util.zip.GZIPInputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.chain.Chain;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -26,7 +27,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.LocationContext;
@@ -55,11 +55,11 @@ import com.facilio.weather.context.WeatherStationContext;
 
 public class WeatherUtil {
 	private static final Logger LOGGER = LogManager.getLogger(WeatherUtil.class.getName());
-	private static String weatherURL=AwsUtil.getConfig("weather.url");
+	private static String weatherURL= FacilioProperties.getConfig("weather.url");
 	private static String weatherParams="?units=si&exclude=flags,alerts";
 
 
-	private static String[] apiKeys=AwsUtil.getConfig("weather.key").trim().split(",");
+	private static String[] apiKeys= FacilioProperties.getConfig("weather.key").trim().split(",");
 	
 	private static int currentKey=0;
 	private static int apiCallCount=0;

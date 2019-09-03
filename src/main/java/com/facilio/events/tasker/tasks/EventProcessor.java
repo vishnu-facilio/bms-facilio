@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -18,7 +19,6 @@ import com.amazonaws.services.kinesis.clientlibrary.types.InitializationInput;
 import com.amazonaws.services.kinesis.clientlibrary.types.ProcessRecordsInput;
 import com.amazonaws.services.kinesis.clientlibrary.types.ShutdownInput;
 import com.amazonaws.services.kinesis.model.Record;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.events.context.EventRuleContext;
@@ -88,7 +88,7 @@ public class EventProcessor implements IRecordProcessor {
                 }
             } catch (Exception e) {
                 try {
-                    if(AwsUtil.isProduction()) {
+                    if(FacilioProperties.isProduction()) {
                         sendToKafka(record, data);
                         /*PutRecordResult recordResult = AwsUtil.getKinesisClient().putRecord(errorStream, record.getData(), record.getPartitionKey());
                         int status = recordResult.getSdkHttpMetadata().getHttpStatusCode();

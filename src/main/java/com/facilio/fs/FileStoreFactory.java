@@ -1,7 +1,7 @@
 package com.facilio.fs;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 
 public class FileStoreFactory {
 
@@ -33,9 +33,9 @@ public class FileStoreFactory {
 	}
 	
 	public FileStore getFileStoreFromOrg(long orgId, long ouid) {
-		String environment = AwsUtil.getConfig("environment"); 
+		String environment = FacilioProperties.getConfig("environment");
 		
-		String filestoretype = AwsUtil.getConfig("files.store.type");  
+		String filestoretype = FacilioProperties.getConfig("files.store.type");
 		FileStore fs = null;
 		if ("local_filestore".equalsIgnoreCase(filestoretype)) {
 			// local store

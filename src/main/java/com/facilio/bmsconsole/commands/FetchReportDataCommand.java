@@ -14,15 +14,14 @@ import java.util.Stack;
 import java.util.StringJoiner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
@@ -32,7 +31,6 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
-import com.facilio.db.criteria.operators.BuildingOperator;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -48,7 +46,6 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
@@ -91,7 +88,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 		
 		calculateBaseLineRange(report);
 
-		if (AwsUtil.isProduction() && AccountUtil.getCurrentOrg().getOrgId() == 210) {
+		if (FacilioProperties.isProduction() && AccountUtil.getCurrentOrg().getOrgId() == 210) {
 			DateRange dateRange = report.getDateRange();
 			if (dateRange != null) {
 				long currentTimeMillis = System.currentTimeMillis();
@@ -342,7 +339,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 		 LOGGER.severe("SELECT BUILDER --- "+ newSelectBuilder);
 		
 		
-		 if(!AwsUtil.isProduction() && AccountUtil.getCurrentOrg().getId() == 75l) {
+		 if(!FacilioProperties.isProduction() && AccountUtil.getCurrentOrg().getId() == 75l) {
 			 LOGGER.info("DATE FROM QUERY : "+props);
 		}
 		return props;

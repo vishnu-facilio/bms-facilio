@@ -85,7 +85,6 @@ public  class DevicePointsUtil {
 				prop.put("agentId", agentId);
 				prop.put("lastDataReceivedTime", System.currentTimeMillis());
 				ControllerAPI.updateController(prop, Collections.singletonList(controller.getId()));
-
 			}
 		}
 		long controllerSettingsId = controller.getId();

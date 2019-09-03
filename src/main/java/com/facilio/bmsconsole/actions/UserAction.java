@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.log4j.LogManager;
@@ -33,7 +34,6 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountConstants.UserType;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.cookie.FacilioCookie;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -443,8 +443,8 @@ public class UserAction extends FacilioAction {
 		long orgId = AccountUtil.getCurrentOrg().getId();
         try{
 			
-		String site = AwsUtil.getConfig("chargebee.site");
-		String api =  AwsUtil.getConfig("chargebee.api"); 
+		String site = FacilioProperties.getConfig("chargebee.site");
+		String api =  FacilioProperties.getConfig("chargebee.api");
 		
 		Environment.configure(site, api);
 		
@@ -483,8 +483,8 @@ public class UserAction extends FacilioAction {
   private JSONObject card;
   
   public String updateCard() throws Exception{
-	  String site = AwsUtil.getConfig("chargebee.site");
-		String api =  AwsUtil.getConfig("chargebee.api"); 
+	  String site = FacilioProperties.getConfig("chargebee.site");
+		String api =  FacilioProperties.getConfig("chargebee.api");
 		long orgId = AccountUtil.getCurrentOrg().getId();
 		Map<String, Object> cusid = CommonCommandUtil.getOrgInfo(orgId, "Customer_id");
     // Environment.configure("payfacilio-test","test_AcdMBlnceZzwYhGeAX6dkxzocvglIkJjL");

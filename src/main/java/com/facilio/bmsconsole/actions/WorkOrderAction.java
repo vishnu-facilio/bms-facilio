@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.lang3.StringUtils;
@@ -1483,7 +1484,7 @@ public class WorkOrderAction extends FacilioAction {
 		// TODO Auto-generated method stub
 		String errorTrace = null;
 		StringBuilder body = new StringBuilder("\n\nDetails: \n");
-		if (e != null && AwsUtil.isProduction() ) {
+		if (e != null && FacilioProperties.isProduction() ) {
 			if (e instanceof IllegalArgumentException && AccountUtil.getCurrentOrg().getOrgId() != 155) {
 				if (e.getMessage().equals("Please close all tasks before closing/resolving the workorder") || e.getMessage().equals("Tasks should be completed before resolve")) {
 					return;

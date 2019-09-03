@@ -9,12 +9,11 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.constants.FacilioConstants;
@@ -316,7 +315,7 @@ public class GetExportReportDataCommand extends FacilioCommand {
 	
 	private StringBuilder getClientUrl(String moduleName, Long reportId, FileFormat fileFormat) {
 		moduleName = FacilioConstants.ContextNames.ENERGY_DATA_READING;	// Temp
-		StringBuilder url = new StringBuilder(AwsUtil.getConfig("clientapp.url")).append("/app/");
+		StringBuilder url = new StringBuilder(FacilioProperties.getConfig("clientapp.url")).append("/app/");
 		if (moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER)) {
 			url.append("wo");
 		}

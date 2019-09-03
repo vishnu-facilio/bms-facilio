@@ -3,7 +3,7 @@ package com.facilio.bmsconsole.context;
 import java.util.List;
 
 import com.facilio.accounts.dto.User;
-import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.util.ConnectionUtil;
 
 public class ConnectionContext {
@@ -287,13 +287,13 @@ public class ConnectionContext {
 	public String getCallBackURL() {
 		if(id > 0) {
 			String protocol = "";
-			if(AwsUtil.isDevelopment()) {
+			if(FacilioProperties.isDevelopment()) {
 				protocol = "http://";
 			}
 			else {
 				protocol = "https://";
 			}
-			String domain = AwsUtil.getAppDomain();
+			String domain = FacilioProperties.getAppDomain();
 			callBackURL = protocol+ domain +"/api/v2/connection/"+id;
 			return callBackURL;
 		}

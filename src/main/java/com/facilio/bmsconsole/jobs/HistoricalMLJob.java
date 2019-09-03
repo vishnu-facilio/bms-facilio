@@ -13,6 +13,7 @@ import java.util.StringJoiner;
 import java.util.TimeZone;
 import java.util.TreeMap;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.chain.Chain;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -147,7 +148,7 @@ public class HistoricalMLJob extends FacilioJob {
 		postObj.put("outputmetrics",op);
 		postObj.put("data", constructJSONArray(mlVariablesDataMap));
 		
-		String postURL=AwsUtil.getAnomalyPredictAPIURL() + "/"+modelPath;
+		String postURL= FacilioProperties.getAnomalyPredictAPIURL() + "/"+modelPath;
 		Map<String, String> headers = new HashMap<>();
 		headers.put("Content-Type", "application/json");
 		LOGGER.info(" Sending request to ML Server "+postURL);

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.List;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.io.IOUtils;
 
 import com.amazonaws.services.rekognition.model.DetectTextRequest;
@@ -32,7 +33,7 @@ public class ImageRecognitionUtil {
 	}
 	
 	public static List<TextDetection> getTexts (long fileId) throws Exception {
-		String environment = AwsUtil.getConfig("environment");
+		String environment = FacilioProperties.getConfig("environment");
 		if (!"development".equalsIgnoreCase(environment)) {
 			User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getOrgId());
 			S3FileStore fileStore = (S3FileStore) FileStoreFactory.getInstance().getFileStore(superAdmin.getId());
@@ -40,7 +41,7 @@ public class ImageRecognitionUtil {
 			return getText(new Image()
 							.withS3Object(new S3Object()
 							.withName(imageInfo.getFilePath())
-							.withBucket(AwsUtil.getConfig("s3.bucket.name"))));
+							.withBucket(FacilioProperties.getConfig("s3.bucket.name"))));
 		}
 		return null;
 	}

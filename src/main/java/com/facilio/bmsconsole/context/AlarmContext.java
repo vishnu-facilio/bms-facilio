@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -13,7 +14,6 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import com.facilio.accounts.dto.User;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.time.DateTimeUtil;
@@ -389,13 +389,13 @@ public class AlarmContext extends TicketContext {
 			return null;
 		}
 		else {
-			return AwsUtil.getConfig("clientapp.url")+"/app/fa/alarms/newsummary/"+super.getId();
+			return FacilioProperties.getConfig("clientapp.url")+"/app/fa/alarms/newsummary/"+super.getId();
 		}
 	}
 	
 	public String getMobileUrl() {
 		if(super.getId() != -1) {
-			return AwsUtil.getConfig("clientapp.url")+"/mobile/alarms/summary/"+getId();
+			return FacilioProperties.getConfig("clientapp.url")+"/mobile/alarms/summary/"+getId();
 		}
 		else {
 			return null;

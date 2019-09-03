@@ -5,7 +5,7 @@ import java.io.PrintStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 
 public class SysOutLogger extends PrintStream {
 
@@ -88,7 +88,7 @@ public class SysOutLogger extends PrintStream {
     }
 
     public void println(String x) {
-        if(AwsUtil.isSysLogEnabled()) {
+        if(FacilioProperties.isSysLogEnabled()) {
         		logger.log(Level.INFO, x);
         }
     }

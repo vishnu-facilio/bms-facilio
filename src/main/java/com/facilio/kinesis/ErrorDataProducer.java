@@ -4,14 +4,13 @@ import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-
-import com.facilio.aws.util.AwsUtil;
 
 public class ErrorDataProducer {
 
@@ -34,7 +33,7 @@ public class ErrorDataProducer {
 
     private static Properties getKafkaProducerProperties() {
         Properties props = new Properties();
-        props.put("bootstrap.servers", AwsUtil.getKafkaProducer());
+        props.put("bootstrap.servers", FacilioProperties.getKafkaProducer());
         props.put("acks", "all");
         props.put("retries", 0);
         props.put("batch.size", 16384);

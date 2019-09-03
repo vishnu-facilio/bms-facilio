@@ -19,11 +19,10 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
-
-import com.facilio.aws.util.AwsUtil;
 
 public class EmailUtil {
 
@@ -31,12 +30,12 @@ public class EmailUtil {
 
     private static Properties getSMTPProperties() {
         Properties props = new Properties();
-        props.put("mail.smtp.host", AwsUtil.getConfig("mail.smtp.host"));
-        props.put("mail.smtp.socketFactory.port", AwsUtil.getConfig("mail.smtp.socketFactory.port"));
+        props.put("mail.smtp.host", FacilioProperties.getConfig("mail.smtp.host"));
+        props.put("mail.smtp.socketFactory.port", FacilioProperties.getConfig("mail.smtp.socketFactory.port"));
         props.put("mail.smtp.socketFactory.class","javax.net.ssl.SSLSocketFactory");
         props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.port", AwsUtil.getConfig("mail.smtp.port"));
-        String startTls = AwsUtil.getConfig("mail.smtp.starttls.enable");
+        props.put("mail.smtp.port", FacilioProperties.getConfig("mail.smtp.port"));
+        String startTls = FacilioProperties.getConfig("mail.smtp.starttls.enable");
         if(startTls != null) {
             props.put("mail.smtp.starttls.enable", startTls);
         }
@@ -45,12 +44,12 @@ public class EmailUtil {
     }
 
     public static void sendEmail(JSONObject mailJson) throws Exception {
-        String sender = AwsUtil.getConfig("mail.username");
+        String sender = FacilioProperties.getConfig("mail.username");
 
         Session session = Session.getDefaultInstance(getSMTPProperties(),
                 new javax.mail.Authenticator() {
                     protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication(sender, AwsUtil.getConfig("mail.password"));
+                        return new PasswordAuthentication(sender, FacilioProperties.getConfig("mail.password"));
                     }
                 });
 
@@ -78,12 +77,12 @@ public class EmailUtil {
 
     public static void sendEmail(JSONObject mailJson, Map<String,String> files) throws Exception {
 
-        String user = AwsUtil.getConfig("mail.username");
+        String user = FacilioProperties.getConfig("mail.username");
 
         Session session = Session.getDefaultInstance(getSMTPProperties(),
                 new javax.mail.Authenticator() {
                     protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication(user, AwsUtil.getConfig("mail.password"));
+                        return new PasswordAuthentication(user, FacilioProperties.getConfig("mail.password"));
                     }
                 });
 
@@ -119,7 +118,7 @@ public class EmailUtil {
                     }
                     MimeBodyPart attachment = new MimeBodyPart();
                     DataSource fileDataSource = null;
-                    if (AwsUtil.isDevelopment()) {
+                    if (FacilioProperties.isDevelopment()) {
                         fileDataSource = new FileDataSource(fileUrl);
                     } else {
                         URL url = new URL(fileUrl);
@@ -131,8 +130,8 @@ public class EmailUtil {
                 }
 
                 message.setContent(messageContent);
-                if (AwsUtil.getServerName() != null) {
-                    message.addHeader("host", AwsUtil.getServerName());
+                if (FacilioProperties.getServerName() != null) {
+                    message.addHeader("host", FacilioProperties.getServerName());
                 }
                 Transport.send(message);
             }

@@ -2,10 +2,10 @@ package com.facilio.kafka;
 
 import java.util.Properties;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.kinesis.ErrorDataProducer;
 import com.facilio.procon.message.FacilioRecord;
 import com.facilio.procon.producer.FacilioProducer;
@@ -27,7 +27,7 @@ public class FacilioKafkaProducer implements FacilioProducer {
 
     private Properties getProducerProperties() {
         Properties props = new Properties();
-        props.put("bootstrap.servers", AwsUtil.getKafkaProducer());
+        props.put("bootstrap.servers", FacilioProperties.getKafkaProducer());
         props.put("acks", "all");
         props.put("retries", 0);
         props.put("batch.size", 16384);

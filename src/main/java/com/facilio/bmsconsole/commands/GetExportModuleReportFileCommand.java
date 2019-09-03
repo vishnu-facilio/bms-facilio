@@ -6,12 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.constants.FacilioConstants;
@@ -429,7 +428,7 @@ private static final String ALIAS = "alias";
 	
 	private StringBuilder getClientUrl(String moduleName, Long reportId, FileFormat fileFormat) {
 		// moduleName = FacilioConstants.ContextNames.ENERGY_DATA_READING;	// Temp
-		StringBuilder url = new StringBuilder(AwsUtil.getConfig("clientapp.url")).append("/app/");
+		StringBuilder url = new StringBuilder(FacilioProperties.getConfig("clientapp.url")).append("/app/");
 		if (moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER)) {
 			url.append("wo");
 		}

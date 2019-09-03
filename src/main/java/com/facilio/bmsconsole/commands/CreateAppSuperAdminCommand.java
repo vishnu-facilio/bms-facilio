@@ -1,12 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
 
 public class CreateAppSuperAdminCommand extends FacilioCommand{
 
@@ -21,7 +21,7 @@ public class CreateAppSuperAdminCommand extends FacilioCommand{
 		user.setInviteAcceptStatus(true);
 		user.setDefaultOrg(true);
 		user.setInvitedTime(System.currentTimeMillis());
-		if(AwsUtil.isDevelopment()) {
+		if(FacilioProperties.isDevelopment()) {
 			user.setUserVerified(true);
 		}
 		AccountUtil.getUserBean().createUserEntry(orgId, user, true);

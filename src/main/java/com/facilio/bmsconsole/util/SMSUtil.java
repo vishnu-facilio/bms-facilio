@@ -1,16 +1,14 @@
 package com.facilio.bmsconsole.util;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.User;
-import com.facilio.accounts.util.AccountConstants;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.google.i18n.phonenumbers.NumberParseException;
@@ -28,7 +26,7 @@ public class SMSUtil {
 	private final static String FROM = "facilio";
 	public static String sendSMS(JSONObject obj) {
 		
-		if(!AwsUtil.isProduction())
+		if(!FacilioProperties.isProduction())
 		{
 			LOGGER.info("SMS restricted in development/stage  ");
 			return "";

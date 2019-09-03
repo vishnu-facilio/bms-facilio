@@ -14,7 +14,7 @@ import java.util.Map;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -459,8 +459,8 @@ public abstract class FileStore {
 //				return fs.getOrgiFileUrl(fileId);
 //			}
 //		}
-		if (AwsUtil.isDevelopment()) {
-			url.append(AwsUtil.getServerName());
+		if (FacilioProperties.isDevelopment()) {
+			url.append(FacilioProperties.getServerName());
 		}
 		url.append("/api/v2/");
 		

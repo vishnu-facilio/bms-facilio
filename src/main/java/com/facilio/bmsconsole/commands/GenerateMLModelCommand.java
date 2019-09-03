@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TimeZone;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -93,7 +94,7 @@ public class GenerateMLModelCommand extends FacilioCommand {
 		postObj.put("outputmetrics",op);
 		postObj.put("data", constructJSONArray(mlContext.getMlVariablesDataMap()));
 		
-		String postURL=AwsUtil.getAnomalyPredictAPIURL() + "/"+mlContext.getModelPath();
+		String postURL= FacilioProperties.getAnomalyPredictAPIURL() + "/"+mlContext.getModelPath();
 		Map<String, String> headers = new HashMap<>();
 		headers.put("Content-Type", "application/json");
 		LOGGER.info(" Sending request to ML Server "+postURL+"::"+mlContext.getId());

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -15,7 +16,6 @@ import org.apache.log4j.Priority;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.WorkOrderAction;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -100,7 +100,7 @@ public class PerformAssetAction extends FacilioCommand {
 					
 					User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(AccountUtil.getCurrentOrg().getId());
 					List<String> assetNameList = new ArrayList<>();
-					String domain = AwsUtil.getConfig("clientapp.url");
+					String domain = FacilioProperties.getConfig("clientapp.url");
 					int i = 1;
 					
 					String table = "<table>"+

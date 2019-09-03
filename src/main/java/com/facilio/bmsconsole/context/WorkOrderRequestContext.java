@@ -5,11 +5,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.accounts.dto.User;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
@@ -129,7 +129,7 @@ public class WorkOrderRequestContext extends TicketContext {
 	
 	public String getUrl() {
 		if(super.getId() != -1) {
-			return AwsUtil.getConfig("clientapp.url")+"/app/wo/requests/all/summary/"+getId();
+			return FacilioProperties.getConfig("clientapp.url")+"/app/wo/requests/all/summary/"+getId();
 		}
 		else {
 			return null;
@@ -138,7 +138,7 @@ public class WorkOrderRequestContext extends TicketContext {
 	
 	public String getMobileUrl() {
 		if(super.getId() != -1) {
-			return   AwsUtil.getConfig("clientapp.url")+"/mobile/workrequest/summary/"+getId();
+			return   FacilioProperties.getConfig("clientapp.url")+"/mobile/workrequest/summary/"+getId();
 		}
 		else {
 			return null;

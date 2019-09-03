@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -20,7 +21,6 @@ import com.facilio.agent.ControllerCommand;
 import com.facilio.agent.FacilioAgent;
 import com.facilio.agent.MessageStatus;
 import com.facilio.agent.PublishType;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -44,7 +44,7 @@ public class Processor extends FacilioProcessor {
     private HashMap<String, HashMap<String, Long>> deviceMessageTime = new HashMap<>();
     private long orgId;
     private String orgDomainName;
-    private Boolean isStage = !AwsUtil.isProduction();
+    private Boolean isStage = !FacilioProperties.isProduction();
     private JSONParser parser = new JSONParser();
 
 
@@ -58,7 +58,7 @@ public class Processor extends FacilioProcessor {
         this.orgId = orgId;
         this.orgDomainName = orgDomainName;
         String clientName = orgDomainName + "-processor-";
-        String environment = AwsUtil.getConfig("environment");
+        String environment = FacilioProperties.getConfig("environment");
         String consumerGroup = clientName + environment;
         setConsumer(new FacilioKafkaConsumer(ServerInfo.getHostname(), consumerGroup, getTopic()));
         setProducer(new FacilioKafkaProducer(getTopic()));

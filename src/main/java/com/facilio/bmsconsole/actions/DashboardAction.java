@@ -16,6 +16,7 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.lang3.StringUtils;
@@ -26,7 +27,6 @@ import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
@@ -4287,7 +4287,7 @@ public class DashboardAction extends FacilioAction {
 				.andCondition(CriteriaAPI.getCondition(FieldFactory.getModuleIdField(module), String.valueOf(module.getModuleId()), NumberOperators.EQUALS))
 				;
 		
-		if(!"development".equals(AwsUtil.getConfig("environment"))) {
+		if(!"development".equals(FacilioProperties.getConfig("environment"))) {
 			builder.orderBy("TTIME");
 		}
 		if(module.getExtendModule() != null) {

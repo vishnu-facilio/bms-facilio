@@ -4,11 +4,11 @@ import java.io.File;
 import java.text.ParseException;
 import java.util.List;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.accounts.dto.User;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.workflow.rule.ApprovalRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.bmsconsole.workflow.rule.ApproverContext;
@@ -99,10 +99,10 @@ public class WorkOrderContext extends TicketContext {
 		if(super.getId() != -1) {
 			if (approvalState == ApprovalState.REQUESTED) {
 				// /app/wo/approvals/requested/summary/
-				return AwsUtil.getConfig("clientapp.url")+"/app/wo/approvals/summary/"+getId();
+				return FacilioProperties.getConfig("clientapp.url")+"/app/wo/approvals/summary/"+getId();
 			}
 			else {
-				return AwsUtil.getConfig("clientapp.url")+"/app/wo/orders/summary/"+getId();
+				return FacilioProperties.getConfig("clientapp.url")+"/app/wo/orders/summary/"+getId();
 			}
 		}
 		else {
@@ -114,10 +114,10 @@ public class WorkOrderContext extends TicketContext {
 		if(super.getId() != -1) {
 			if (approvalState == ApprovalState.REQUESTED) {
 				// /app/wo/approvals/requested/summary/
-				return AwsUtil.getConfig("clientapp.url")+"/mobile/approvals/summary/"+getId();
+				return FacilioProperties.getConfig("clientapp.url")+"/mobile/approvals/summary/"+getId();
 			}
 			else {
-				return   AwsUtil.getConfig("clientapp.url")+"/mobile/workorder/summary/"+getId();
+				return   FacilioProperties.getConfig("clientapp.url")+"/mobile/workorder/summary/"+getId();
 			}
 		}
 		else {

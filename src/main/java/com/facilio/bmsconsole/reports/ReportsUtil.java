@@ -13,11 +13,11 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BuildingContext;
@@ -510,7 +510,7 @@ public class ReportsUtil
 	
 	// Temporary
 	public static String getReportClientUrl(String moduleName, Long reportId, FileFormat fileFormat) {
-		StringBuilder url = new StringBuilder(AwsUtil.getConfig("clientapp.url")).append("/app/");
+		StringBuilder url = new StringBuilder(FacilioProperties.getConfig("clientapp.url")).append("/app/");
 		if (moduleName.equals(FacilioConstants.ContextNames.WORK_ORDER)) {
 			url.append("wo");
 		}

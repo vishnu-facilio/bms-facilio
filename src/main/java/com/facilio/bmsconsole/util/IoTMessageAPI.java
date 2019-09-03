@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -26,7 +27,6 @@ import com.facilio.agent.AgentKeys.AckMessageType;
 import com.facilio.agent.AgentUtil;
 import com.facilio.agent.FacilioAgent;
 import com.facilio.agent.protocol.ProtocolUtil;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ControllerContext;
@@ -345,11 +345,11 @@ public class IoTMessageAPI {
  	private static void publishIotMessage(String client, JSONObject object) throws Exception {
  		Long agentId = (Long) object.remove(AgentKeys.AGENT_ID);
 	    String topic = client+"/msgs";
-		LOGGER.info(AwsUtil.getConfig("iot.endpoint") +" " + client+"-facilio" + " " + topic + " " + object);
-		if (!AwsUtil.isProduction()) {
+		LOGGER.info(FacilioProperties.getConfig("iot.endpoint") +" " + client+"-facilio" + " " + topic + " " + object);
+		if (!FacilioProperties.isProduction()) {
  			return;
  		}
-		AWSIotMqttClient mqttClient = new AWSIotMqttClient(AwsUtil.getConfig("iot.endpoint"), client+"-facilio", AwsUtil.getConfig("iot.accessKeyId"), AwsUtil.getConfig("iot.secretKeyId"));
+		AWSIotMqttClient mqttClient = new AWSIotMqttClient(FacilioProperties.getConfig("iot.endpoint"), client+"-facilio", FacilioProperties.getConfig("iot.accessKeyId"), FacilioProperties.getConfig("iot.secretKeyId"));
 		try {
 			mqttClient.connect();
 			if(mqttClient.getConnectionStatus() == AWSIotConnectionStatus.CONNECTED) {

@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.context.AnalyticsAnomalyConfigContext;
 import com.facilio.bmsconsole.context.AnalyticsAnomalyContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
@@ -86,9 +87,9 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 		 public void buildEnergyAnomalyModel(List<EnergyMeterContext> subEnergyMeterContextList,
 				 Map<Long, AnalyticsAnomalyConfigContext> meterConfigurations, long endTime,long siteId, long orgID) throws Exception {
 			 
-			 String bucket = AwsUtil.getAnomalyBucket();
-			 String filePath = AwsUtil.getAnomalyBucketDir();
- 			 String tempDir =  AwsUtil.getAnomalyTempDir();
+			 String bucket = FacilioProperties.getAnomalyBucket();
+			 String filePath = FacilioProperties.getAnomalyBucketDir();
+ 			 String tempDir = FacilioProperties.getAnomalyTempDir();
              Map<Long, String> siteIdToWeatherMapping = new HashMap<>();
  			
 			 for (EnergyMeterContext eachEnergyMeterContext: subEnergyMeterContextList) {
@@ -156,7 +157,7 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 	    			doRefreshAnomalyModel(meterID, orgID, s3EnergyFileUrl, s3WeatherFileUrl,meterConfigContext);
 	    			
 	    			try {
-	    				int waitTimeInSecs = Integer.parseInt(AwsUtil.getAnomalyRefreshWaitTimeInSeconds());
+	    				int waitTimeInSecs = Integer.parseInt(FacilioProperties.getAnomalyRefreshWaitTimeInSeconds());
 	    				
 	    				if(waitTimeInSecs > 0) {
 	    					Thread.sleep(1000 * waitTimeInSecs);
@@ -194,7 +195,7 @@ public class RefreshAnomalyModelJob extends FacilioJob {
 		
 		Map<String, String> headers = new HashMap<>();
 		headers.put("Content-Type","application/json");
-		String postURL = AwsUtil.getAnomalyCheckServiceURL() + "/refreshAnomalyModel";
+		String postURL = FacilioProperties.getAnomalyCheckServiceURL() + "/refreshAnomalyModel";
 		String result=AwsUtil.doHttpPost(postURL, headers, null, jsonInString);
 		logger.log(Level.INFO, " result is " + result);
 	}

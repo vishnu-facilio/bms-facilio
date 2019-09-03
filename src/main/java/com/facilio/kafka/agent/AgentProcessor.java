@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -13,7 +14,6 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.agent.AgentKeys;
 import com.facilio.agent.AgentUtil;
 import com.facilio.agent.PublishType;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -67,7 +67,7 @@ public class AgentProcessor extends FacilioProcessor
 
         super(orgId, orgDomainName);
         String clientName = orgDomainName +"-agent-";
-        String environment = AwsUtil.getConfig("environment");
+        String environment = FacilioProperties.getConfig("environment");
         String consumerGroup = clientName + environment;
         setConsumer(new FacilioKafkaConsumer(ServerInfo.getHostname(), consumerGroup, getTopic()));
         setProducer(new FacilioKafkaProducer(getTopic()));

@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.chain.Chain;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -75,7 +76,7 @@ public class MLForecastingJob extends FacilioJob
 		{	
 			//get Reading from Readings Table for this time stamp	
 			long currentTime = System.currentTimeMillis();
-			if( AwsUtil.getConfig("environment").equals("development")) 
+			if( FacilioProperties.isDevelopment())
 			{
 				// for dev testing purpose time is moved back 
 				currentTime = 1538677800000L + (60 * 60 * 1000);
@@ -336,7 +337,7 @@ public class MLForecastingJob extends FacilioJob
 		 postObj.put("meterInterval",pc.getDatainterval());
 		 postObj.put("data", pc.getPyData());
 		 
-		 String postURL=AwsUtil.getAnomalyPredictAPIURL() + "/timeseriesmodel";
+		 String postURL= FacilioProperties.getAnomalyPredictAPIURL() + "/timeseriesmodel";
 		 Map<String, String> headers = new HashMap<>();
 		 headers.put("Content-Type", "application/json");
 		 String result = AwsUtil.doHttpPost(postURL, headers, null, postObj.toString());
@@ -346,7 +347,7 @@ public class MLForecastingJob extends FacilioJob
 	private void getReadings(MlForecastingContext pc) throws Exception
 	{
 		long currentTime = System.currentTimeMillis();
-		if( AwsUtil.getConfig("environment").equals("development")) 
+		if( FacilioProperties.isDevelopment())
 		{
 			// for dev testing purpose time is moved back 
 			currentTime = 1538677800000L;

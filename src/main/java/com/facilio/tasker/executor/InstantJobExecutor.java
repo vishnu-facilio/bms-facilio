@@ -10,10 +10,10 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.queue.ObjectMessage;
 import com.facilio.queue.ObjectQueue;
@@ -43,7 +43,7 @@ public enum InstantJobExecutor implements Runnable {
 	}
 	
 	public void startExecutor() {
-		if (Boolean.parseBoolean(AwsUtil.getConfig("instantJobServer")) && !isRunning) {
+		if (Boolean.parseBoolean(FacilioProperties.getConfig("instantJobServer")) && !isRunning) {
 			executorThread = new Thread(this, "instantJobExecutor");
 			isRunning = true;
 			executorThread.start();

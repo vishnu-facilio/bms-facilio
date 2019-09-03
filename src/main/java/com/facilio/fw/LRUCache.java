@@ -5,12 +5,12 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.cache.RedisManager;
 
 import redis.clients.jedis.Jedis;
@@ -59,7 +59,7 @@ public class LRUCache<K, V>{
 	private int maxSize;
 
 	private LRUCache(String name, int maxSize){
-		this.name = AwsUtil.getConfig("environment")+'_'+name;
+		this.name = FacilioProperties.getConfig("environment")+'_'+name;
 		this.maxSize = maxSize;
 		cache = new ConcurrentHashMap<K, Node<K, V>>();
 		redis = RedisManager.getInstance();

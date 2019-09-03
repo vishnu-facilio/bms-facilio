@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -31,9 +32,7 @@ import com.facilio.accounts.util.AccountConstants.GroupMemberRole;
 import com.facilio.accounts.util.AccountConstants.UserType;
 import com.facilio.accounts.util.AccountEmailTemplate;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.accounts.util.UserUtil;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -1072,7 +1071,7 @@ public class UserBeanImpl implements UserBean {
 		Map<String, Object> placeholders = new HashMap<>();
 		CommonCommandUtil.appendModuleNameInKey(null, "toUser", FieldUtil.getAsProperties(user), placeholders);
 		placeholders.put("invitelink", inviteLink);
-		if (user.getEmail().contains("@facilio.com") || AwsUtil.disableCSP()) {
+		if (user.getEmail().contains("@facilio.com") || FacilioProperties.isOnpremise()) {
 			AccountEmailTemplate.EMAIL_VERIFICATION.send(placeholders);
 		} else {
 			AccountEmailTemplate.ALERT_EMAIL_VERIFICATION.send(placeholders);
@@ -1095,7 +1094,7 @@ public class UserBeanImpl implements UserBean {
 
 		} else {
 			// hostname="https://app."+user.getServerName();
-			return AwsUtil.getConfig("clientapp.url") + "/app" + url + inviteToken;
+			return FacilioProperties.getConfig("clientapp.url") + "/app" + url + inviteToken;
 		}
 		return hostname + url + inviteToken;
 	}

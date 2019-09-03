@@ -5,14 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.chain.Chain;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.dto.User;
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.ResourceContext;
@@ -712,7 +711,7 @@ private Map<String, Double> readingData;
 	public String generateBill() throws Exception {
 		
 		if (getConvertToPdf()) {
-			StringBuilder url = new StringBuilder(AwsUtil.getConfig("clientapp.url")).append("/app/pdf/billing?")
+			StringBuilder url = new StringBuilder(FacilioProperties.getConfig("clientapp.url")).append("/app/pdf/billing?")
 					.append("tenantId=").append(tenantId).append("&rateCardId=").append(rateCardId)
 					.append("&startTime=").append(startTime).append("&endTime=").append(endTime);
 			fileUrl = PdfUtil.exportUrlAsPdf(url.toString());

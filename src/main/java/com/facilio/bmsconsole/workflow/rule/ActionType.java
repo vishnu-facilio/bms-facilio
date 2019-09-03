@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
@@ -58,7 +59,6 @@ import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ReadingRuleType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
-import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.controlaction.context.ControlActionCommandContext;
@@ -120,7 +120,7 @@ public enum ActionType {
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
 								  Object currentRecord) {
 			// TODO Auto-generated method stub
-			if (obj != null && AwsUtil.isProduction()) {
+			if (obj != null && FacilioProperties.isProduction()) {
 				try {
 					String to = (String) obj.get("to");
 					if (to != null && !to.isEmpty() && checkIfActiveUserFromPhone(to)) {
@@ -186,7 +186,7 @@ public enum ActionType {
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
 								  Object currentRecord) {
 			// TODO Auto-generated method stub
-			if (obj != null && AwsUtil.isProduction()) {
+			if (obj != null && FacilioProperties.isProduction()) {
 				try {
 					JSONArray tos = null;
 					Object toNums = obj.remove("to");
@@ -386,7 +386,7 @@ public enum ActionType {
 								  Object currentRecord) {
 			// TODO Auto-generated method stub
 			try {
-				if (obj != null && AwsUtil.isProduction()) {
+				if (obj != null && FacilioProperties.isProduction()) {
 					String ids = (String) obj.get("id");
 
 					if (!StringUtils.isEmpty(ids)) {
@@ -402,7 +402,7 @@ public enum ActionType {
 
 									Map<String, String> headers = new HashMap<>();
 									headers.put("Content-Type", "application/json");
-									headers.put("Authorization", "key="+ (mobileInstanceSetting.getRight() ? AwsUtil.getPortalPushNotificationKey() : AwsUtil.getPushNotificationKey()));
+									headers.put("Authorization", "key="+ (mobileInstanceSetting.getRight() ? FacilioProperties.getPortalPushNotificationKey() : FacilioProperties.getPushNotificationKey()));
 
 									String url = "https://fcm.googleapis.com/fcm/send";
 

@@ -1,6 +1,7 @@
 package com.facilio.accounts.util;
 
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.util.TemplateAPI;
@@ -77,11 +78,11 @@ public enum AccountEmailTemplate {
 		return typeMap;
 	}
 	
-	private static String SUPPORTEMAIL=com.facilio.aws.util.AwsUtil.getConfig("rebrand.supportemail");//"support@facilio.com"
+	private static String SUPPORTEMAIL= FacilioProperties.getConfig("rebrand.supportemail");//"support@facilio.com"
 	
-	private static String ALERTEMAIL=com.facilio.aws.util.AwsUtil.getConfig("rebrand.alertemail");//alerts@facilio.com
+	private static String ALERTEMAIL= FacilioProperties.getConfig("rebrand.alertemail");//alerts@facilio.com
 	
-	private static String BRAND=com.facilio.aws.util.AwsUtil.getConfig("rebrand.brand");//Facilio
+	private static String BRAND= FacilioProperties.getConfig("rebrand.brand");//Facilio
 	
 	
 	
@@ -89,13 +90,13 @@ public enum AccountEmailTemplate {
 	@SuppressWarnings("unchecked")
 	private static JSONObject getTemplateJson(int templateVal) {
 		if (SUPPORTEMAIL == null) {
-			SUPPORTEMAIL = com.facilio.aws.util.AwsUtil.getConfig("rebrand.supportemail");//"support@facilio.com"
+			SUPPORTEMAIL = FacilioProperties.getConfig("rebrand.supportemail");//"support@facilio.com"
 		}
 		if (ALERTEMAIL == null) {
-			ALERTEMAIL = com.facilio.aws.util.AwsUtil.getConfig("rebrand.alertemail");//"alerts@facilio.com"
+			ALERTEMAIL = FacilioProperties.getConfig("rebrand.alertemail");//"alerts@facilio.com"
 		}
 		if (BRAND == null) {
-			BRAND = com.facilio.aws.util.AwsUtil.getConfig("rebrand.brand");//Facilio
+			BRAND = FacilioProperties.getConfig("rebrand.brand");//Facilio
 		}
 		
 		JSONObject json = new JSONObject();

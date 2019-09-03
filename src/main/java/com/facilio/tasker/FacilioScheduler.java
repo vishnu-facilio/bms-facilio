@@ -10,10 +10,10 @@ import java.util.Map;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.tasker.config.ExecutorsConf;
 import com.facilio.tasker.config.InstantJobConf;
 import com.facilio.tasker.config.SchedulerJobConf;
@@ -40,7 +40,7 @@ public class FacilioScheduler {
 		LOGGER.info(INSTANT_JOBS_MAP);
 		
 //		Executor executor = new Executor("facilio", 15, 600);
-		if(AwsUtil.isScheduleServer()) {
+		if(FacilioProperties.isScheduleServer()) {
 			startExecutors();
 		}
 	}
@@ -50,8 +50,8 @@ public class FacilioScheduler {
 		//Get file from resources folder
 		ClassLoader classLoader = FacilioScheduler.class.getClassLoader();
 		String scheduleJobFile = "schedulerJobs";
-		if(AwsUtil.getConfig("schedulejobfile") != null) {
-			scheduleJobFile = AwsUtil.getConfig("schedulejobfile");
+		if(FacilioProperties.getConfig("schedulejobfile") != null) {
+			scheduleJobFile = FacilioProperties.getConfig("schedulejobfile");
 		}
 		File schedulerXml = new File(classLoader.getResource("conf/" + scheduleJobFile + ".xml").getFile());
 		
@@ -107,8 +107,8 @@ public class FacilioScheduler {
 	private static void startExecutors() throws JAXBException {
 		ClassLoader classLoader = FacilioScheduler.class.getClassLoader();
 		String executorFile = "executors";
-		if(AwsUtil.getConfig("scheduleexecutorsfile") != null) {
-			executorFile = AwsUtil.getConfig("scheduleexecutorsfile");
+		if(FacilioProperties.getConfig("scheduleexecutorsfile") != null) {
+			executorFile = FacilioProperties.getConfig("scheduleexecutorsfile");
 		}
 		File executorsXml = new File(classLoader.getResource("conf/" + executorFile + ".xml").getFile());
 		

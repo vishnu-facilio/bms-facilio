@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.chain.Chain;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -137,7 +138,7 @@ public class MLForecastingLifetimePredictionJob extends FacilioJob
 	private void getReadings(MlForecastingContext pc) throws Exception
 	{
 		long currentTime = System.currentTimeMillis();
-		if( AwsUtil.getConfig("environment").equals("development")) 
+		if( FacilioProperties.getConfig("environment").equals("development"))
 		{
 			// for dev testing purpose time is moved back 
 			currentTime = 1538677800000L;
@@ -277,7 +278,7 @@ public class MLForecastingLifetimePredictionJob extends FacilioJob
 		 postObj.put("meterInterval",pc.getDatainterval());
 		 postObj.put("AssetDetails", pc.getPyData());
 		 
-		 String postURL=AwsUtil.getAnomalyPredictAPIURL() + "/predictlifetime";
+		 String postURL= FacilioProperties.getAnomalyPredictAPIURL() + "/predictlifetime";
 		 Map<String, String> headers = new HashMap<>();
 		 headers.put("Content-Type", "application/json");
 		 String result = AwsUtil.doHttpPost(postURL, headers, null, postObj.toString());

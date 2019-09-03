@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -17,7 +18,6 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.procon.consumer.FacilioConsumer;
 import com.facilio.procon.message.FacilioRecord;
 
@@ -35,7 +35,7 @@ public class FacilioKafkaConsumer implements FacilioConsumer {
 
     private Properties getConsumerProperties(String client, String consumerGroup) {
         Properties props = new Properties();
-        props.put("bootstrap.servers", AwsUtil.getKafkaConsumer());
+        props.put("bootstrap.servers", FacilioProperties.getKafkaConsumer());
         props.put("group.id", consumerGroup);
         props.put("enable.auto.commit", "false");
         props.put("key.deserializer", StringDeserializer.class.getName());

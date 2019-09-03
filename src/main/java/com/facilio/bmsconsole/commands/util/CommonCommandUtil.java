@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -239,7 +240,7 @@ public class CommonCommandUtil {
 	public static void emailAlert (String subject, String msg) {
 		try {
 			
-			if (AwsUtil.isProduction()) {
+			if (FacilioProperties.isProduction()) {
 				Organization org = AccountUtil.getCurrentOrg();
 				
 				JSONObject json = new JSONObject();
@@ -255,7 +256,7 @@ public class CommonCommandUtil {
 										.append("\n\nMsg : ")
 										.append(msg)
 										.append("\n\nApp Url : ")
-										.append(AwsUtil.getConfig("clientapp.url"))
+										.append(FacilioProperties.getConfig("clientapp.url"))
 										.append("\n\nOrg Info : \n--------\n")
 										.append(org.toString())
 										;
@@ -285,7 +286,7 @@ public class CommonCommandUtil {
 			json.put("sender", "error@facilio.com");
 			json.put("to", "error@facilio.com");
 			StringBuilder subject = new StringBuilder();
-			String environment = AwsUtil.getConfig("environment");
+			String environment = FacilioProperties.getConfig("environment");
 			if(environment == null) {
 				subject.append("Local - ");
 			}
@@ -350,7 +351,7 @@ public class CommonCommandUtil {
 			String message = body.toString();
 			json.put("message", message);
 			//AwsUtil.sendEmail(json);
-			if(AwsUtil.isProduction()) {
+			if(FacilioProperties.isProduction()) {
 				FAWSQueue.sendMessage("Exception", message);
 			}
 		} catch (Exception e1) {

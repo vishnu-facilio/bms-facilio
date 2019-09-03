@@ -3,8 +3,7 @@ package com.facilio.cache;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.facilio.aws.util.AwsUtil;
-
+import com.facilio.aws.util.FacilioProperties;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -21,7 +20,7 @@ public class RedisManager {
 	private RedisManager() {}
 
 	static {
-		isRedisEnabled = Boolean.parseBoolean(AwsUtil.getConfig("redis.enabled"));
+		isRedisEnabled = Boolean.parseBoolean(FacilioProperties.getConfig("redis.enabled"));
 	}
 	
 	public static RedisManager getInstance() {
@@ -33,7 +32,7 @@ public class RedisManager {
 	}
 	
 	private boolean isRedisEnabled() {
-		return Boolean.parseBoolean(AwsUtil.getConfig("redis.enabled"));
+		return Boolean.parseBoolean(FacilioProperties.getConfig("redis.enabled"));
 	}
 	
 	public void connect() {
@@ -67,7 +66,7 @@ public class RedisManager {
 		// Idle connection checking period
 		poolConfig.setTimeBetweenEvictionRunsMillis(60000);
 		// Create the jedisPool
-		pool = new JedisPool(poolConfig, AwsUtil.getConfig("redis.host"), Integer.parseInt(AwsUtil.getConfig("redis.port")), 2000, (String) null, Integer.parseInt(AwsUtil.getConfig("redis.db")));
+		pool = new JedisPool(poolConfig, FacilioProperties.getConfig("redis.host"), Integer.parseInt(FacilioProperties.getConfig("redis.port")), 2000, (String) null, Integer.parseInt(FacilioProperties.getConfig("redis.db")));
 		LOGGER.log(Level.INFO, "Redis connection pool successfully initilized..");
 	}
 	

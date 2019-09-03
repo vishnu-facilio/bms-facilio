@@ -17,6 +17,7 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -54,7 +55,7 @@ public class S3FileStore extends FileStore {
 
 	private String getBucketName() {
 		if (this.bucketName == null) {
-			this.bucketName = AwsUtil.getConfig("s3.bucket.name");
+			this.bucketName = FacilioProperties.getConfig("s3.bucket.name");
 		}
 		return this.bucketName;
 	}
@@ -283,7 +284,7 @@ public class S3FileStore extends FileStore {
 
 	private String fetchUrl(FileInfo fileInfo, long expiration, boolean isDownloadable) {
 
-		if (AwsUtil.isDevelopment()) {
+		if (FacilioProperties.isDevelopment()) {
 
 			GeneratePresignedUrlRequest generatePresignedUrlRequest =
 					new GeneratePresignedUrlRequest(getBucketName(), fileInfo.getFilePath());
@@ -309,8 +310,8 @@ public class S3FileStore extends FileStore {
 				if(isDownloadable) {
 					s3ObjectKey = s3ObjectKey +"&response-content-disposition="+URLEncoder.encode("attachment; filename="+fileInfo.getFileName(),"UTF-8");
 				}
-				String keyPairId = AwsUtil.getConfig("key.pair.id");
-				return CloudFrontUrlSigner.getSignedURLWithCannedPolicy(SignerUtils.Protocol.https, AwsUtil.getConfig("files.url"), new File(PRIVATE_KEY_FILE_PATH), s3ObjectKey, keyPairId, new Date(System.currentTimeMillis()+getExpiration()));
+				String keyPairId = FacilioProperties.getConfig("key.pair.id");
+				return CloudFrontUrlSigner.getSignedURLWithCannedPolicy(SignerUtils.Protocol.https, FacilioProperties.getConfig("files.url"), new File(PRIVATE_KEY_FILE_PATH), s3ObjectKey, keyPairId, new Date(System.currentTimeMillis()+getExpiration()));
 			} catch (IOException | InvalidKeySpecException e) {
 				log.info("Exception while creating signed Url", e);
 			}

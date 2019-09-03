@@ -7,6 +7,7 @@ import javax.transaction.Status;
 import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.db.util.DBConf;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
@@ -17,7 +18,6 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.PostTransactionCommand;
 import com.facilio.bmsconsole.db.ResponseCacheUtil;
@@ -63,7 +63,7 @@ public class FacilioChain extends ChainBase {
 
 	@Override
 	public void addCommand(Command command) {
-		if (!AwsUtil.isProduction()) {
+		if (!FacilioProperties.isProduction()) {
 			if (command instanceof Command && !(command instanceof Chain)) {
 				if (!(command instanceof FacilioCommand) && !("ScheduleNewPMCommand".equalsIgnoreCase(command.getClass().getSimpleName()))) {
 					throw new IllegalArgumentException("Only FacilioCommand is accepted");

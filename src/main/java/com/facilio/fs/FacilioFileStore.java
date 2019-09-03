@@ -18,7 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 
 public class FacilioFileStore extends FileStore {
 
@@ -66,7 +66,7 @@ public class FacilioFileStore extends FileStore {
 
 	private long addFile(long fileId, String fileName, byte[] content, String contentType) throws Exception {
 
-		String request = AwsUtil.getConfig("files.url") + "/api/file/put";
+		String request = FacilioProperties.getConfig("files.url") + "/api/file/put";
 		
 		HttpUtil httpConn = new HttpUtil(request);
 		httpConn.addFormField("orgId", getOrgId() + "");
@@ -99,7 +99,7 @@ public class FacilioFileStore extends FileStore {
 	@Override
 	public InputStream readFile(FileInfo fileInfo) throws Exception {
 		// TODO Auto-generated method stub
-		String url = AwsUtil.getConfig("files.url")+"/api/file/get?orgId="+getOrgId()+"&fileName="+URLEncoder.encode(fileInfo.getFileName(), "UTF-8")+"&fileId="+fileInfo.getFileId()+"&contentType="+fileInfo.getContentType();
+		String url = FacilioProperties.getConfig("files.url")+"/api/file/get?orgId="+getOrgId()+"&fileName="+URLEncoder.encode(fileInfo.getFileName(), "UTF-8")+"&fileId="+fileInfo.getFileId()+"&contentType="+fileInfo.getContentType();
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
 
@@ -137,7 +137,7 @@ public class FacilioFileStore extends FileStore {
 	
 	private String getFileUrl(long fileId, String mode) throws Exception {
 		FileInfo fileInfo = getFileInfo(fileId);
-		return AwsUtil.getConfig("files.url") + "/api/file/get?orgId=" + getOrgId() + "&fileName=" + URLEncoder.encode(fileInfo.getFileName(), "UTF-8") + "&mode=" + mode + "&fileId=" + fileId + "&contentType=" + fileInfo.getContentType();
+		return FacilioProperties.getConfig("files.url") + "/api/file/get?orgId=" + getOrgId() + "&fileName=" + URLEncoder.encode(fileInfo.getFileName(), "UTF-8") + "&mode=" + mode + "&fileId=" + fileId + "&contentType=" + fileInfo.getContentType();
 	}
 
 	public static class HttpUtil {

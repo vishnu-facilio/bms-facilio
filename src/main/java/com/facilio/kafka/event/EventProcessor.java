@@ -5,11 +5,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.events.context.EventRuleContext;
@@ -33,7 +33,7 @@ public class EventProcessor extends FacilioProcessor {
     public EventProcessor(long orgId, String orgDomainName, String type) {
         super(orgId, orgDomainName);
         String clientName = orgDomainName +"-event-";
-        String environment = AwsUtil.getConfig("environment");
+        String environment = FacilioProperties.getConfig("environment");
         String consumerGroup = clientName + environment;
         setConsumer(new FacilioKafkaConsumer(ServerInfo.getHostname(), consumerGroup, getTopic()));
         setProducer(new FacilioKafkaProducer(getTopic()));

@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -18,7 +19,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.server.ServerInfo;
 import com.facilio.wms.endpoints.SessionManager;
 import com.facilio.wms.message.Message;
@@ -33,7 +33,7 @@ public class NotificationProcessor implements Runnable {
 
     public NotificationProcessor() {
         String streamName =  WmsApi.getKinesisNotificationTopic();
-        String environment = AwsUtil.getConfig("environment");
+        String environment = FacilioProperties.getConfig("environment");
         String applicationName = environment+"-"+ ServerInfo.getHostname();
 
         consumer = new KafkaConsumer<>(getProperties(applicationName));
@@ -47,7 +47,7 @@ public class NotificationProcessor implements Runnable {
 
     private Properties getProperties(String groupId) {
         Properties props = new Properties();
-        props.put("bootstrap.servers", AwsUtil.getKafkaConsumer());
+        props.put("bootstrap.servers", FacilioProperties.getKafkaConsumer());
         props.put("group.id", groupId);
         props.put("enable.auto.commit", "false");
         props.put("auto.offset.reset", "latest");

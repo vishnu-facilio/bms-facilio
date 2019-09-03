@@ -5,9 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BMSAlarmContext;
-import com.facilio.bmsconsole.context.BMSEventContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -60,7 +60,7 @@ public class UpdateAlarmAssetMappingCommand extends FacilioCommand {
 
 			Map<String, String> headers = new HashMap<>();
 			headers.put("Content-Type", "application/json");
-			String server = AwsUtil.getConfig("clientapp.url");
+			String server = FacilioProperties.getConfig("clientapp.url");
 			String url = server + "/internal/updateAlarmResource";
 			AwsUtil.doHttpPost(url, headers, null, json.toJSONString());
 		}

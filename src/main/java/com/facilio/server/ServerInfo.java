@@ -14,10 +14,10 @@ import javax.transaction.NotSupportedException;
 import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.transaction.FTransactionManager;
 import com.facilio.db.transaction.FacilioConnectionPool;
@@ -97,7 +97,7 @@ public class ServerInfo extends TimerTask {
         try (PreparedStatement insertQuery = connection.prepareStatement(INSERT_IP)){
             LOGGER.info("Server id is empty ");
             String environment = "user";
-            if (AwsUtil.isScheduleServer()) {
+            if (FacilioProperties.isScheduleServer()) {
                environment = "scheduler";
             }
 

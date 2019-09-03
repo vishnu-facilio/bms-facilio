@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -973,7 +974,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 
 	public static boolean isStage() {	
 
-		return !AwsUtil.isProduction();
+		return !FacilioProperties.isProduction();
 	}
 
 }

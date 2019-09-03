@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.logging.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.util.CommonAPI;
@@ -378,7 +378,7 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 			criteria = (Criteria)objects.get(2);
 		}
 		boolean isS3Value = true; 
-		if(AwsUtil.isDevelopment()) {
+		if(FacilioProperties.isDevelopment()) {
 			isS3Value = false;
 		}
 		String fileUrl = ExportUtil.exportModule(FileInfo.FileFormat.XLS, module.getName(), viewName, null,criteria, isS3Value, false, 2000);

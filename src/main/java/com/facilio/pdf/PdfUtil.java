@@ -3,16 +3,14 @@ package com.facilio.pdf;
 import java.io.File;
 import java.io.IOException;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.UserUtil;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.executor.CommandExecutor;
 import com.facilio.fs.FileInfo.FileFormat;
-import com.facilio.iam.accounts.util.IAMUserUtil;
-import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 
@@ -20,8 +18,8 @@ public class PdfUtil {
 
     private static final String PDF_CMD = System.getProperty("user.home")+"/pdf/slimerjs/slimerjs";
     private static final String NODE = "/usr/bin/node";
-    private static final String RENDER_JS = AwsUtil.getPdfjsLocation()+"/render.js";
-    private static final String RENDER_PUPETTEER_JS = AwsUtil.getPdfjsLocation() + "/puppeteer-render.js";
+    private static final String RENDER_JS = FacilioProperties.getPdfjsLocation()+"/render.js";
+    private static final String RENDER_PUPETTEER_JS = FacilioProperties.getPdfjsLocation() + "/puppeteer-render.js";
     private static final Logger LOGGER = LogManager.getLogger(PdfUtil.class.getName());
 
     public static String convertUrlToPdf(long orgId, String username, String url, FileFormat... formats) {
@@ -41,7 +39,7 @@ public class PdfUtil {
                 String token = UserUtil.createJWT("id", "auth0", String.valueOf(AccountUtil.getCurrentUser().getUid()), System.currentTimeMillis()+60*60000);
                 File pdfFile = File.createTempFile("report-", format.getExtention(), pdfDirectory);
                 pdfFileLocation = pdfFile.getAbsolutePath();
-                String serverName = AwsUtil.getAppDomain();
+                String serverName = FacilioProperties.getAppDomain();
                 if(serverName != null) {
                     String[] server = serverName.split(":");
                     serverName = server[0];
@@ -73,7 +71,7 @@ public class PdfUtil {
         		  String token = UserUtil.createJWT("id", "auth0", String.valueOf(AccountUtil.getCurrentUser().getUid()), System.currentTimeMillis()+60*60000);
         		  File pdfFile = File.createTempFile("report-", format.getExtention(), pdfDirectory);
                   pdfFileLocation = pdfFile.getAbsolutePath();
-                  String serverName = AwsUtil.getAppDomain();
+                  String serverName = FacilioProperties.getAppDomain();
                   if(serverName != null) {
                       String[] server = serverName.split(":");
                       serverName = server[0];

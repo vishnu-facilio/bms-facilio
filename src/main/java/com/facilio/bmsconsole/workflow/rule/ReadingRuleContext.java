@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -20,12 +21,10 @@ import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.BaseEventContext;
-import com.facilio.bmsconsole.context.RCAEvent;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ReadingEventContext;
@@ -460,7 +459,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 			boolean workflowFlag = true;
 			if (getWorkflow() != null) {
 				WorkflowContext workflowContext = getWorkflow();
-				if(AwsUtil.isDevelopment()) {
+				if(FacilioProperties.isDevelopment()) {
 					workflowContext.setLogNeeded(true);
 				}
 				if(workflowContext.getId() == 5391l || workflowContext.getId() == 5739l) { 

@@ -2,6 +2,7 @@ package com.facilio.kinesis;
 
 import java.net.InetAddress;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -22,7 +23,7 @@ public class StreamProcessor {
             AccountUtil.setCurrentAccount(orgId);
             String streamName = AwsUtil.getIotKinesisTopic(orgDomainName);
             String clientName = orgDomainName +"-" + eventType + "-";
-            String environment = AwsUtil.getConfig("environment");
+            String environment = FacilioProperties.getConfig("environment");
             String applicationName = clientName + environment;
             java.security.Security.setProperty("networkaddress.cache.ttl", "60");
 
@@ -30,7 +31,7 @@ public class StreamProcessor {
             KinesisClientLibConfiguration kinesisClientLibConfiguration =
                         new KinesisClientLibConfiguration(applicationName, streamName, AwsUtil.getAWSCredentialsProvider(), workerId)
                                 .withRegionName(AwsUtil.getRegion())
-                                .withKinesisEndpoint(AwsUtil.getConfig("kinesisEndpoint"))
+                                .withKinesisEndpoint(FacilioProperties.getConfig("kinesisEndpoint"))
                                 .withMaxLeaseRenewalThreads(3)
                                 .withInitialLeaseTableReadCapacity(1)
                                 .withInitialLeaseTableWriteCapacity(1)

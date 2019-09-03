@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.chain.Chain;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONArray;
@@ -37,7 +38,6 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.cookie.FacilioCookie;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.actions.PortalInfoAction;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -328,7 +328,7 @@ public class FacilioAuthAction extends FacilioAction {
 				cookie.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
 				cookie.setPath("/");
 				cookie.setHttpOnly(true);
-				if (!(AwsUtil.isDevelopment() || AwsUtil.disableCSP())) {
+				if (!(FacilioProperties.isDevelopment() || FacilioProperties.isOnpremise())) {
 					cookie.setSecure(true);
 				}
 				cookie.setDomain(parentdomain);
@@ -338,7 +338,7 @@ public class FacilioAuthAction extends FacilioAction {
 				authmodel.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
 				authmodel.setPath("/");
 				authmodel.setHttpOnly(false);
-				if (!(AwsUtil.isDevelopment() || AwsUtil.disableCSP())) {
+				if (!(FacilioProperties.isDevelopment() || FacilioProperties.isOnpremise())) {
 					authmodel.setSecure(true);
 				}
 
@@ -377,7 +377,7 @@ public class FacilioAuthAction extends FacilioAction {
 		cookie.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
 		cookie.setPath("/");
 		cookie.setHttpOnly(true);
-		if (!(AwsUtil.isDevelopment() || AwsUtil.disableCSP())) {
+		if (!(FacilioProperties.isDevelopment() || FacilioProperties.isOnpremise())) {
 			cookie.setSecure(true);
 		}
 		cookie.setDomain(parentdomain);
@@ -387,7 +387,7 @@ public class FacilioAuthAction extends FacilioAction {
 		authmodel.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
 		authmodel.setPath("/");
 		authmodel.setHttpOnly(false);
-		if (!(AwsUtil.isDevelopment() || AwsUtil.disableCSP())) {
+		if (!(FacilioProperties.isDevelopment() || FacilioProperties.isOnpremise())) {
 			authmodel.setSecure(true);
 		}
 		authmodel.setDomain(parentdomain);
@@ -398,7 +398,7 @@ public class FacilioAuthAction extends FacilioAction {
 		token.setMaxAge(60 * 60 * 24 * 30); // Make the cookie last a year
 		token.setPath("/");
 		token.setHttpOnly(false);
-		if (!(AwsUtil.isDevelopment() || AwsUtil.disableCSP())) {
+		if (!(FacilioProperties.isDevelopment() || FacilioProperties.isOnpremise())) {
 			token.setSecure(true);
 		}
 		token.setDomain(request.getServerName());

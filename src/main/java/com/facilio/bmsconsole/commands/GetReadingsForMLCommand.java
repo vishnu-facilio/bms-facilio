@@ -7,10 +7,10 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
 
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.MLContext;
 import com.facilio.bmsconsole.context.MLVariableContext;
@@ -33,7 +33,7 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 		List<MLVariableContext> mlVariable = mlContext.getMLVariable();
 		
 		long currentTime = mlContext.isHistoric() ? mlContext.getExecutionEndTime() : System.currentTimeMillis();
-		if( AwsUtil.getConfig("environment").equals("development") && !mlContext.isHistoric()) 
+		if( FacilioProperties.isDevelopment() && !mlContext.isHistoric())
 		{
 			// for dev testing purpose time is moved back 
 			currentTime = 1536300000000L;

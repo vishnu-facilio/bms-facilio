@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
@@ -15,7 +16,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.ActionAPI;
 import com.facilio.chain.FacilioContext;
@@ -385,7 +385,7 @@ public class WorkflowRuleContext implements Serializable {
 		try {
 			boolean workflowFlag = true;
 			if (workflow != null) {
-				if(AwsUtil.isDevelopment()) {
+				if(FacilioProperties.isDevelopment()) {
 					workflow.setLogNeeded(true);
 				}
 				if(workflow.getId() == 5391l || workflow.getId() == 5739l) {

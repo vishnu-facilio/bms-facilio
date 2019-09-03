@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.chain.Chain;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -128,7 +129,7 @@ public class MLHistoricalForecastingJob extends FacilioJob
 					postObj.put("meterInterval",60);
 					postObj.put("AssetDetails", array);
 					 
-					 String postURL=AwsUtil.getAnomalyPredictAPIURL() + "/predictlifetime";
+					 String postURL= FacilioProperties.getAnomalyPredictAPIURL() + "/predictlifetime";
 					 Map<String, String> headers = new HashMap<>();
 					 headers.put("Content-Type", "application/json");
 					 String result = AwsUtil.doHttpPost(postURL, headers, null, postObj.toString());
@@ -192,7 +193,7 @@ public class MLHistoricalForecastingJob extends FacilioJob
 					postObj.put("meterInterval",dataInterval);
 					postObj.put("data", array);
 					 
-					 String postURL=AwsUtil.getAnomalyPredictAPIURL() + "/timeseriesmodel";
+					 String postURL= FacilioProperties.getAnomalyPredictAPIURL() + "/timeseriesmodel";
 					 Map<String, String> headers = new HashMap<>();
 					 headers.put("Content-Type", "application/json");
 					 String result = AwsUtil.doHttpPost(postURL, headers, null, postObj.toString());

@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 
@@ -52,12 +53,12 @@ public class V1AnomalyDetectorJob extends FacilioJob {
 				logger.log(Level.INFO, "Feature Bit is enabled");
 			}
 
-			Integer anomalyPeriodicity = Integer.parseInt(AwsUtil.getAnomalyPeriodicity());
+			Integer anomalyPeriodicity = Integer.parseInt(FacilioProperties.getAnomalyPeriodicity());
 			// get the list of all sub meters
 
 			long correction = 0;
 
-			if (AwsUtil.isDevelopment()) { // for dev testing purpose time is moved back
+			if (FacilioProperties.isDevelopment()) { // for dev testing purpose time is moved back
 				correction = System.currentTimeMillis() - 1529948963000L;
 			}
 
@@ -220,7 +221,7 @@ public class V1AnomalyDetectorJob extends FacilioJob {
 					masterAnomalyMap.put(energyMeterContext, anomalyList.getAnomalyDetails());
 				}
 				
-				int waitTimeInSecs = Integer.parseInt(AwsUtil.getAnomalyDetectWaitTimeInSeconds());
+				int waitTimeInSecs = Integer.parseInt(FacilioProperties.getAnomalyDetectWaitTimeInSeconds());
 				
 				if(waitTimeInSecs > 0) {
 						Thread.sleep(1000 * waitTimeInSecs);
@@ -280,7 +281,7 @@ public class V1AnomalyDetectorJob extends FacilioJob {
 					throws IOException {
 		CheckAnomalyModelPostData postData = new CheckAnomalyModelPostData();
 
-		String postURL = AwsUtil.getAnomalyCheckServiceURL() + "/checkGam";
+		String postURL = FacilioProperties.getAnomalyCheckServiceURL() + "/checkGam";
 		postData.meterID = meterID;
 		postData.orgId=orgId;
 		postData.dimension1 = configContext.getDimension1Buckets();
@@ -304,7 +305,7 @@ public class V1AnomalyDetectorJob extends FacilioJob {
 	void rootCauseAnalysisApi(long meterid,long orgid,long ttimestart,long ttimeend,String timezone) throws IOException
 	{
 		AnomalyData anomalydata = new AnomalyData();
-		String postURL = AwsUtil.getAnomalyCheckServiceURL() + "/ratioCheck";
+		String postURL = FacilioProperties.getAnomalyCheckServiceURL() + "/ratioCheck";
 		anomalydata.meterId = meterid;
 		anomalydata.orgId = orgid;
 		anomalydata.ttimeStart = ttimestart;

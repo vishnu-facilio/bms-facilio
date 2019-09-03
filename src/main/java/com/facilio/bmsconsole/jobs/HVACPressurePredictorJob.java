@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -42,7 +43,7 @@ public class HVACPressurePredictorJob extends FacilioJob
 	{
 		LOGGER.info("Job started");
 		long currentTime = System.currentTimeMillis();
-		if( AwsUtil.isDevelopment()) 
+		if(FacilioProperties.isDevelopment())
 		{ // for dev testing purpose time is moved back 
 			currentTime = 1538677800000L;
 		}
@@ -178,7 +179,7 @@ public class HVACPressurePredictorJob extends FacilioJob
 			 postObj.put("meterInterval",dataInterval);
 			 postObj.put("data", jsonArray);
 			 
-			 String postURL = AwsUtil.getConfig("anomalyCheckServiceURL") + "/timeseriesmodel";
+			 String postURL = FacilioProperties.getConfig("anomalyCheckServiceURL") + "/timeseriesmodel";
 			 Map<String, String> headers = new HashMap<>();
 			 headers.put("Content-Type", "application/json");	
 			 String result = AwsUtil.doHttpPost(postURL, headers, null, postObj.toString());

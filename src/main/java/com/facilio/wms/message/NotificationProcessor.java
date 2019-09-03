@@ -3,6 +3,7 @@ package com.facilio.wms.message;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -75,7 +76,7 @@ public class NotificationProcessor implements IRecordProcessor {
 
         try {
             String streamName =  WmsApi.getKinesisNotificationTopic();
-            String environment = AwsUtil.getConfig("environment");
+            String environment = FacilioProperties.getConfig("environment");
             String applicationName = environment+"-"+ ServerInfo.getHostname();
             java.security.Security.setProperty("networkaddress.cache.ttl", "60");
 
@@ -83,7 +84,7 @@ public class NotificationProcessor implements IRecordProcessor {
             KinesisClientLibConfiguration kinesisClientLibConfiguration =
                     new KinesisClientLibConfiguration(applicationName, streamName, AwsUtil.getAWSCredentialsProvider(), workerId)
                             .withRegionName(AwsUtil.getRegion())
-                            .withKinesisEndpoint(AwsUtil.getConfig("kinesisEndpoint"))
+                            .withKinesisEndpoint(FacilioProperties.getConfig("kinesisEndpoint"))
                             .withMaxRecords(500)
                             .withMaxLeaseRenewalThreads(3)
                             .withIdleMillisBetweenCalls(200L)

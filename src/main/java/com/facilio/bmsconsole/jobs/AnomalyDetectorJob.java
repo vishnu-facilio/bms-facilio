@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 
@@ -59,12 +60,12 @@ public class AnomalyDetectorJob extends FacilioJob {
 				logger.log(Level.INFO, "Feature Bit is enabled");
 			}
 
-			Integer anomalyPeriodicity = Integer.parseInt(AwsUtil.getAnomalyPeriodicity());
+			Integer anomalyPeriodicity = Integer.parseInt(FacilioProperties.getAnomalyPeriodicity());
 			// get the list of all sub meters
 
 			long correction = 0;
 			
-			if( AwsUtil.isDevelopment()) { // for dev testing purpose time is moved back 
+			if(FacilioProperties.isDevelopment()) { // for dev testing purpose time is moved back
 				correction = System.currentTimeMillis() - 1529948963000L;
 			}
 			
@@ -208,7 +209,7 @@ public class AnomalyDetectorJob extends FacilioJob {
 				}
 				
 				insertAnomalyIDs(anomalyIDs, validAnomalyContext, DateTimeUtil.getCurrenTime(), endTime);
-				int waitTimeInSecs = Integer.parseInt(AwsUtil.getAnomalyDetectWaitTimeInSeconds());
+				int waitTimeInSecs = Integer.parseInt(FacilioProperties.getAnomalyDetectWaitTimeInSeconds());
 				
 				if(waitTimeInSecs > 0) {
 						Thread.sleep(1000 * waitTimeInSecs);
@@ -225,7 +226,7 @@ public class AnomalyDetectorJob extends FacilioJob {
 			throws IOException {
 		CheckAnomalyModelPostData postData = new CheckAnomalyModelPostData();
 
-		String postURL = AwsUtil.getAnomalyCheckServiceURL() + "/checkAnomaly";
+		String postURL = FacilioProperties.getAnomalyCheckServiceURL() + "/checkAnomaly";
 		postData.meterID = meterID;
 		postData.constant1 = configContext.getConstant1();
 		postData.constant2 = configContext.getConstant2();

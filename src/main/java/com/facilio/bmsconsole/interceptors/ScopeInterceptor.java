@@ -10,6 +10,7 @@ import java.util.TimeZone;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -22,7 +23,6 @@ import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.PortalInfoContext;
 import com.facilio.bmsconsole.context.SiteContext;
@@ -186,7 +186,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
 			if (request.getRequestURL().indexOf("/admin") != -1) {
 				if (currentAccount != null) {
 					String useremail = currentAccount.getUser().getEmail();
-					if (! useremail.endsWith(AwsUtil.getConfig("admin.domain"))) {
+					if (! useremail.endsWith(FacilioProperties.getConfig("admin.domain"))) {
 						LOGGER.log(Level.FATAL, "you are not allowed to access this page from");
 						return Action.LOGIN;
 					}

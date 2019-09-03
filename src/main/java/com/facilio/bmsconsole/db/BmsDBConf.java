@@ -12,6 +12,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -19,9 +20,7 @@ import org.apache.log4j.Logger;
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.AccountsInterface;
 import com.facilio.accounts.dto.Organization;
-import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.db.util.DBConf;
 import com.facilio.fs.FileInfo;
@@ -95,22 +94,22 @@ public class BmsDBConf extends DBConf {
 
     @Override
     public boolean isProduction() {
-        return AwsUtil.isProduction();
+        return FacilioProperties.isProduction();
     }
 
     @Override
     public boolean isDevelopment() {
-        return AwsUtil.isDevelopment();
+        return FacilioProperties.isDevelopment();
     }
 
     @Override
     public String getDefaultDataSource() {
-        return AwsUtil.getDefaultDataSource();
+        return FacilioProperties.getDefaultDataSource();
     }
 
     @Override
     public String getDefaultDB() {
-        return AwsUtil.getDefaultDB();
+        return FacilioProperties.getDefaultDB();
     }
 
     @Override
@@ -134,11 +133,11 @@ public class BmsDBConf extends DBConf {
 
     @Override
     public Set<String> getDBIdentifiers() {
-        return AwsUtil.getDBIdentifiers();
+        return FacilioProperties.getDBIdentifiers();
     }
 
     public HashMap<String, String> getSecret(String secretKey) {
-        HashMap<String, String> password = AwsUtil.getPassword(secretKey);
+        HashMap<String, String> password = FacilioProperties.getPassword(secretKey);
         String url = String.format("jdbc:mysql://%s:%s/bms", password.get("host"), password.get("port"));
         password.put("url", url);
         return password;

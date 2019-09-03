@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -19,7 +20,6 @@ import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountConstants.UserType;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.UserUtil;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
@@ -80,7 +80,7 @@ public class OrgBeanImpl implements OrgBean {
         if(portalInfo.getCustomDomain() != null) { 
             org.setDomain(portalInfo.getCustomDomain()); 
         } else { 
-            org.setDomain(org.getDomain() + "." + AwsUtil.getConfig("portal.domain")); 
+            org.setDomain(org.getDomain() + "." + FacilioProperties.getConfig("portal.domain"));
         } 
 	             
 	   return org;

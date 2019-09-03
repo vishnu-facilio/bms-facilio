@@ -42,6 +42,7 @@ import javax.xml.crypto.dsig.keyinfo.X509Data;
 import javax.xml.crypto.dsig.spec.C14NMethodParameterSpec;
 import javax.xml.crypto.dsig.spec.TransformParameterSpec;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
@@ -58,7 +59,6 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.cookie.FacilioCookie;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.forms.FacilioForm;
 import com.facilio.bmsconsole.forms.FacilioForm.FormType;
@@ -76,7 +76,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.auth.SAMLAttribute;
 import com.facilio.fw.auth.SAMLUtil;
 import com.facilio.iam.accounts.util.IAMUserUtil;
-import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.screen.context.RemoteScreenContext;
 import com.facilio.screen.util.ScreenUtil;
@@ -505,7 +504,7 @@ public class LoginAction extends FacilioAction {
 	}
 
 	public static Map<String, Object> getPaymentEndpoint() {
-		String BaseUrl = AwsUtil.getConfig("payment.url");
+		String BaseUrl = FacilioProperties.getConfig("payment.url");
 		String Standard = BaseUrl
 				+ "facil-blossom?addons[id][0]=staff-basic&addons[quantity][0]=10&addons[id][1]=buildings&addons[quantity][1]=5";
 		String Professional = BaseUrl

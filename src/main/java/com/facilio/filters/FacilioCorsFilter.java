@@ -13,10 +13,10 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.fw.listener.FacilioContextListener;
 
 public class FacilioCorsFilter implements Filter {
@@ -61,7 +61,7 @@ public class FacilioCorsFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        String originValues = AwsUtil.getConfig("cors.allowed.origins");
+        String originValues = FacilioProperties.getConfig("cors.allowed.origins");
         if(originValues == null) {
             originValues = "https://facilio.ae,https://fazilio.com,https://facilio.com,https://facilio.in,https://facilstack.com,https://facilioportal.com";
         }
@@ -283,7 +283,7 @@ public class FacilioCorsFilter implements Filter {
         }
 
         String[] originHeaderdomain = originHeader.split("://");
-        if (AwsUtil.isDevelopment() && originHeaderdomain[0].equalsIgnoreCase("chrome-extension")) {
+        if (FacilioProperties.isDevelopment() && originHeaderdomain[0].equalsIgnoreCase("chrome-extension")) {
             return true;
         }
         if (customdomains != null) {

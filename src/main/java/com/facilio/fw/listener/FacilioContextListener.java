@@ -21,6 +21,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.service.FacilioService;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -87,7 +88,7 @@ public class FacilioContextListener implements ServletContextListener {
 		timer.schedule(new TransactionMonitor(), 0L, 3000L);
 
 
-		if(AwsUtil.isScheduleServer() && AwsUtil.isProduction()) {
+		if(FacilioProperties.isScheduleServer() && FacilioProperties.isProduction()) {
 			timer.schedule(new FacilioExceptionProcessor(), 0L, 900000L); // 30 minutes
 		}
 
@@ -103,7 +104,7 @@ public class FacilioContextListener implements ServletContextListener {
 			// ServerInfo.registerServer();
 			//timer.schedule(new ServerInfo(), 30000L, 30000L);
 
-			if( ! AwsUtil.isDevelopment()) {
+			if( !FacilioProperties.isDevelopment()) {
 				new Thread(new com.facilio.kafka.notification.NotificationProcessor()).start();
 			}
 
@@ -128,9 +129,9 @@ public class FacilioContextListener implements ServletContextListener {
 
 			try {
 
-				if(AwsUtil.isMessageProcessor()) {
+				if(FacilioProperties.isMessageProcessor()) {
 
-					if("kinesis".equals(AwsUtil.getMessageQueue())) {
+					if("kinesis".equals(FacilioProperties.getMessageQueue())) {
 						new Thread(KinesisProcessor::startKinesis).start();
 					} else {
 						log.info("Starting kafka processor");
@@ -152,7 +153,7 @@ public class FacilioContextListener implements ServletContextListener {
 				log.info("Exception occurred ", e);
 			}
 
-			PortalAuthInterceptor.setPortalDomain(AwsUtil.getConfig("portal.domain"));// event.getServletContext().getInitParameter("SERVICEPORTAL_DOMAIN");
+			PortalAuthInterceptor.setPortalDomain(FacilioProperties.getConfig("portal.domain"));// event.getServletContext().getInitParameter("SERVICEPORTAL_DOMAIN");
 			log.info("Loading the domain name as ######"+PortalAuthInterceptor.getPortalDomain());
 			initLocalHostName();
 			HealthCheckFilter.setStatus(200);
@@ -185,7 +186,7 @@ public class FacilioContextListener implements ServletContextListener {
 	}
 
 	private void sendFailureEmail(Exception e) {
-		if(AwsUtil.isDevelopment()) {
+		if(FacilioProperties.isDevelopment()) {
 			return;
 		}
 		JSONObject json = new JSONObject();

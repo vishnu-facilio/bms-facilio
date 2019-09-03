@@ -6,6 +6,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.lang.exception.ExceptionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -14,7 +15,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.db.ResponseCacheUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -111,7 +111,7 @@ public class FacilioAction extends ActionSupport {
 	}
 	public void setStackTrace(Exception e) {
 		if (e != null) {
-			if(!"production".equals(AwsUtil.getConfig("environment")) || fetchStackTrace) {
+			if(!FacilioProperties.isProduction() || fetchStackTrace) {
 				this.stackTrace = ExceptionUtils.getStackTrace(e);
 			}
 			LogManager.getLogger(this.getClass().getName()).error("Exception occured: - ", e);

@@ -8,12 +8,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -27,12 +27,10 @@ import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
 import com.facilio.iam.accounts.util.IAMAccountConstants;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
-import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.iam.accounts.util.IAMUtil;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 
 public class IAMOrgBeanImpl implements IAMOrgBean {
@@ -342,7 +340,7 @@ public class IAMOrgBeanImpl implements IAMOrgBean {
 		user.setDefaultOrg(true);
 		user.setUserStatus(true);
 		user.setPassword(password);
-		if (AwsUtil.isDevelopment()) {
+		if (FacilioProperties.isDevelopment()) {
 			user.setUserVerified(true);
 		}
 		IAMUtil.getUserBean().signUpSuperAdminUserv2(orgId, user);

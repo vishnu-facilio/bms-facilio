@@ -1,6 +1,6 @@
 package com.facilio.queue;
 
-import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 
 public class QueueFactory {
 
@@ -13,7 +13,7 @@ public class QueueFactory {
     }
 
     public static FacilioQueue getQueue() {
-        if(AwsUtil.isProduction() && ! AwsUtil.disableCSP()) {
+        if(FacilioProperties.isProduction() && !FacilioProperties.isOnpremise()) {
             return getSqsQueue();
         } else {
             return getInMemoryQueue();

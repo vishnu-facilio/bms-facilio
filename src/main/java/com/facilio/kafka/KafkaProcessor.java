@@ -7,14 +7,13 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.KafkaAdminClient;
 import org.apache.kafka.clients.admin.ListTopicsResult;
 import org.apache.kafka.common.KafkaFuture;
 import org.apache.log4j.LogManager;
 
-import com.facilio.accounts.util.AccountConstants;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.iam.accounts.util.IAMAccountConstants;
@@ -51,7 +50,7 @@ public class KafkaProcessor {
 
     private static Properties getKafkaProperties() {
         Properties properties = new Properties();
-        properties.put("bootstrap.servers", AwsUtil.getKafkaConsumer());
+        properties.put("bootstrap.servers", FacilioProperties.getKafkaConsumer());
         properties.put("connections.max.idle.ms", 300000);
         properties.put("receive.buffer.bytes", 65536);
         properties.put("request.timeout.ms", 120000);

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.chain.Chain;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.LogManager;
@@ -29,7 +30,6 @@ import com.facilio.agent.FacilioAgent;
 import com.facilio.agent.MessageStatus;
 import com.facilio.agent.PublishType;
 import com.facilio.agentIntegration.wattsense.WattsenseUtil;
-import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -56,7 +56,7 @@ public class Processor implements IRecordProcessor {
         private DevicePointsUtil devicePointsUtil;
         private AckUtil ackUtil;
         private EventUtil eventUtil;
-        private Boolean isStage = !AwsUtil.isProduction();
+        private Boolean isStage = !FacilioProperties.isProduction();
         private  boolean isRestarted = true;
 
         public static final String DATA_TYPE = "PUBLISH_TYPE";
@@ -260,7 +260,7 @@ public class Processor implements IRecordProcessor {
                     agentUtil.updateAgentMessage(recordId,MessageStatus.PROCESSED);
                 } catch (Exception e) {
                     try {
-                        if(AwsUtil.isProduction()) {
+                        if(FacilioProperties.isProduction()) {
                             LOGGER.info("Sending data to " + errorStream);
                             sendToKafka(record, data);
                         }
