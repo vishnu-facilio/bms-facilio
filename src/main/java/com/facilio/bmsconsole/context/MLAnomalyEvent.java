@@ -31,7 +31,8 @@ public class MLAnomalyEvent extends BaseEventContext{
 			mlAlarmOccurence.setMLAnomalyType(mlAnomalyType);
 			if(mlAnomalyType.equals(MLAlarmOccurenceContext.MLAnomalyType.RCA))
 			{
-				mlAlarmOccurence.setParentID(parentEvent.getAlarmOccurrence().getId());
+				mlAlarmOccurence.setParentAlarm((MLAnomalyAlarm) parentEvent.getAlarmOccurrence().getAlarm());
+				mlAlarmOccurence.setParentOccurrence((MLAlarmOccurenceContext) parentEvent.getAlarmOccurrence());
 				mlAlarmOccurence.setRatio(ratio);
 				mlAlarmOccurence.setLowerAnomaly(lowerAnomaly);
 				mlAlarmOccurence.setUpperAnomaly(upperAnomaly);

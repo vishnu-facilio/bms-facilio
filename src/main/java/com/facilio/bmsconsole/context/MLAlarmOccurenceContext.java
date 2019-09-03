@@ -47,17 +47,23 @@ public class MLAlarmOccurenceContext extends AlarmOccurrenceContext
 	{
 		return type;
 	}
-	
-	private long parentID;
-	public void setParentID(long parentID)
-	{
-		this.parentID = parentID;
+
+	private MLAnomalyAlarm parentAlarm;
+	public MLAnomalyAlarm getParentAlarm() {
+		return parentAlarm;
 	}
-	public long getParentID()
-	{
-		return parentID;
+	public void setParentAlarm(MLAnomalyAlarm parentAlarm) {
+		this.parentAlarm = parentAlarm;
 	}
-	
+
+	private MLAlarmOccurenceContext parentOccurrence;
+	public MLAlarmOccurenceContext getParentOccurrence() {
+		return parentOccurrence;
+	}
+	public void setParentOccurrence(MLAlarmOccurenceContext parentOccurrence) {
+		this.parentOccurrence = parentOccurrence;
+	}
+
 	private double ratio;
 	public void setRatio(double ratio)
 	{

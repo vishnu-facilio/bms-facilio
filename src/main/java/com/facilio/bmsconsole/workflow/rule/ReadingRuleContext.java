@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.chain.FacilioChain;
 import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
@@ -949,8 +950,11 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 //			LOGGER.info("Clear event : "+FieldUtil.getAsJSON(event).toJSONString()+"\n Alarm Meta : "+alarmMeta);
 			context.put(EventConstants.EventContextNames.EVENT_LIST, Collections.singletonList(event));
 			if (!isHistorical) {
-				Chain addEvent = TransactionChainFactory.getV2AddEventChain();
-				addEvent.execute(context);
+				FacilioChain addEvent = TransactionChainFactory.getV2AddEventChain();
+				FacilioContext addEventContext = addEvent.getContext();
+				addEventContext.put(EventConstants.EventContextNames.EVENT_LIST, context.get(EventConstants.EventContextNames.EVENT_LIST));
+				addEventContext.put(EventConstants.EventContextNames.EVENT_RULE_LIST, context.get(EventConstants.EventContextNames.EVENT_RULE_LIST));
+				addEvent.execute();
 			}
 			return event;
 		}
