@@ -1055,7 +1055,20 @@ public enum ActionType {
 					long resourceId = FacilioUtil.parseLong(obj.get("resource"));
 					
 					ResourceContext resourceContext = new ResourceContext();
-					resourceContext.setId(resourceId);
+					if(resourceId > 0) {
+						resourceContext.setId(resourceId);
+					}
+					else {
+						if (currentRecord instanceof ReadingAlarmContext) {
+							ReadingAlarmContext alarm = (ReadingAlarmContext) currentRecord;
+							resourceContext = alarm.getResource();
+						}
+						else if (currentRecord instanceof ReadingAlarm) {
+							// new alarm
+							ReadingAlarm readingAlarm = (ReadingAlarm) currentRecord;
+							resourceContext = readingAlarm.getResource();
+						}
+					}
 					
 					ControlActionCommandContext controlActionCommand = new ControlActionCommandContext();
 					controlActionCommand.setResource(resourceContext);

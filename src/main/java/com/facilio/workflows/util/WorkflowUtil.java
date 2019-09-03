@@ -50,6 +50,7 @@ import com.facilio.db.criteria.operators.LookupOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.BaseLineContext;
 import com.facilio.modules.BaseLineContext.AdjustType;
@@ -662,14 +663,80 @@ public class WorkflowUtil {
 			
 			code = code + "log "+exp.getPrintStatement()+";\n";
 		}
+		else {
+			String moduleName = exp.getModuleName().trim();
+			Criteria criteria = exp.getCriteria();
+			String field = exp.getFieldName();
+			String aggregate = exp.getAggregateString();
+			String orderBy = exp.getOrderByFieldName();
+			
+			String pattern = criteria.getPattern();
+			
+			pattern = pattern.replace("or", " || ");
+			pattern = pattern.replace("and", " && ");
+			pattern = pattern.substring(1, pattern.length()-1);
+			
+			for(String key :criteria.getConditions().keySet()) {
+				Condition condition = criteria.getConditions().get(key);
+				String conditionFieldName = condition.getFieldName();
+				Operator opp = condition.getOperator();
+				String value = condition.getValue();
+				
+				String operatorStringValue = opp.getOperator().trim();
+				
+				String conditionString = null;
+				if(operatorStringValue.equals("between")) {
+					String[] values = getMultipleValueStringFromValue(value);
+					conditionString = conditionFieldName +" > "+ values[0] +" && "+conditionFieldName +" < "+ values[1];
+				}
+				else {
+					value = getValueStringFromValue(value);
+					if(operatorStringValue.equals("=")) {
+						operatorStringValue = "==";
+					}
+					conditionString = conditionFieldName +" "+ operatorStringValue +" "+ value;
+				}
+				pattern = pattern.replace(key, conditionString);
+			}
+			
+			String db = "criteria : ["+pattern +"],";
+			db = db + "field : \""+field+"\",";
+			db = db + "aggregation : \""+aggregate+"\",";
+			if(orderBy != null) {
+				db = db + "order by : \""+orderBy+"\"";
+			}
+			
+			code = code + "Module(\""+moduleName+"\").fetch({"+db+"});\n";
+		}
 		
 		return code;
+	}
+	
+	static String getValueStringFromValue(String value) {
+		
+		if(value.contains("${") && value.contains("}")) {
+			value = value.substring(2, value.length() - 1);
+		}
+		return value;
+	}
+	static String[] getMultipleValueStringFromValue(String value) {
+		
+		String[] values = value.split(",");
+		for(int i=0;i<values.length;i++) {
+			String value1 = values[i];
+			if(value1.contains("${") && value1.contains("}")) {
+				value1 = value1.substring(2, value1.length() - 1);
+			}
+			values[i] = value1;
+		}
+		
+		return values;
 	}
 	
 	public static String test() throws Exception {
 		// TODO Auto-generated method stub
 		
-		WorkflowContext workflow = WorkflowUtil.getWorkflowContext(10l, true);
+		WorkflowContext workflow = WorkflowUtil.getWorkflowContext(3l, true);
 		
 		List<ParameterContext> params = workflow.getParameters();
 		String paramString = "";
