@@ -10,7 +10,7 @@ import com.facilio.time.DateRange;
 
 public class Value {
 
-    public static Value VOID = new Value(new Object());
+    public static Value VOID = new Value(null);
 
     final Object value;
 
