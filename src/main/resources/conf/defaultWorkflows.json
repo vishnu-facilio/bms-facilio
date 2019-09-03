@@ -182,7 +182,7 @@
 								    
 								    resultWithCF = {};
 								    resultWithCF[\"data\"] = resultMap;
-								    resultWithCF[\"conditionalFormatting\"] = conditionalFormatting;
+								    resultWithCF[\"conditionalFormatting\"] = conditionalFormattings;
 								    
 								    return resultWithCF;
 								}
