@@ -179,9 +179,16 @@
 								        }
 								      }
 								    }
+								    
+								    resultWithCF = {};
+								    resultWithCF[\"data\"] = resultMap;
+								    resultWithCF[\"conditionalFormatting\"] = conditionalFormatting;
+								    
+								    return resultWithCF;
 								}
-									  
-								return resultMap; 
+								else {
+									return resultMap;
+								} 
 							}"
 		},
 		"3": {
