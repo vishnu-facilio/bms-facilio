@@ -633,7 +633,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		FacilioField moduleIdField = new FacilioField();
 		moduleIdField.setName("moduleId");
 		moduleIdField.setColumnName("MODULEID");
-		moduleIdField.setModule(ModuleFactory.getStateFlowModule());
+		moduleIdField.setModule(ModuleFactory.getWorkflowRuleModule());
 		criteria.addAndCondition(CriteriaAPI.getCondition(moduleIdField, String.valueOf(module.getModuleId()), NumberOperators.EQUALS));
 		
 		List<WorkflowRuleContext> stateTransitions = getStateTransitions(ModuleFactory.getStateFlowModule(), FieldFactory.getStateFlowFields(), criteria);
