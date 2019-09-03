@@ -67,6 +67,9 @@ public class FetchCardDataCommand extends FacilioCommand {
 		Boolean isRca = (Boolean) context.get(FacilioConstants.ContextNames.IS_RCA);
 		ReportSpaceFilterContext reportSpaceFilterContext = (ReportSpaceFilterContext)  context.get(FacilioConstants.ContextNames.WIDGET_REPORT_SPACE_FILTER_CONTEXT);
 		
+		Long startTime = (Long) context.get(FacilioConstants.ContextNames.START_TIME);
+		Long endTime = (Long) context.get(FacilioConstants.ContextNames.END_TIME);
+		
 		if(widgetId != null) {
 			DashboardWidgetContext dashboardWidgetContext =  DashboardUtil.getWidget(widgetId);
 			widgetStaticContext = (WidgetStaticContext) dashboardWidgetContext;
@@ -105,8 +108,6 @@ public class FetchCardDataCommand extends FacilioCommand {
 				
 				Criteria criteria = (Criteria) context.get(FacilioConstants.ContextNames.CRITERIA);
 				
-				Long startTime = (Long) context.get(FacilioConstants.ContextNames.START_TIME);
-				Long endTime = (Long) context.get(FacilioConstants.ContextNames.END_TIME);
 				if(startTime != null && endTime != null && startTime >0 && endTime > 0) {
 					Condition dateCondition = CriteriaAPI.getCondition("TTIME", "ttime", startTime+","+endTime, DateOperators.BETWEEN);
 					if(criteria == null) {
@@ -190,6 +191,12 @@ public class FetchCardDataCommand extends FacilioCommand {
 					else {
 						reportAction.setCardParamJson(widgetStaticContext.getParamsJson());
 					}
+					
+					if(startTime != null && endTime != null && startTime >0 && endTime > 0) {
+						reportAction.setStartTime(startTime);
+						reportAction.setEndTime(endTime);
+					}
+					
 					reportAction.fetchReadingsFromCard();
 					
 					FacilioContext context1 = reportAction.getResultContext();

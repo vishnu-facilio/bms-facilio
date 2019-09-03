@@ -485,8 +485,17 @@ public class V2ReportAction extends FacilioAction {
 			
 			metrics.add(readingAnalysisContext);
 			
-			context.put(FacilioConstants.ContextNames.START_TIME, dateOperator.getRange(null).getStartTime());
-			context.put(FacilioConstants.ContextNames.END_TIME, dateOperator.getRange(null).getEndTime());
+			if(startTime >0 && endTime > 0) {
+				
+				context.put(FacilioConstants.ContextNames.START_TIME, startTime);
+				context.put(FacilioConstants.ContextNames.END_TIME, endTime);
+			}
+			else {
+				
+				context.put(FacilioConstants.ContextNames.START_TIME, dateOperator.getRange(null).getStartTime());
+				context.put(FacilioConstants.ContextNames.END_TIME, dateOperator.getRange(null).getEndTime());
+			}
+			
 			context.put(FacilioConstants.ContextNames.REPORT_X_AGGR, xAggr);
 			context.put(FacilioConstants.ContextNames.REPORT_Y_FIELDS, metrics);
 			context.put(FacilioConstants.ContextNames.REPORT_MODE, mode);
