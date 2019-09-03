@@ -24,7 +24,10 @@ public class PreferenceFactory {
 	private static void initializeMap() {
 		
 		map.put(FacilioConstants.ContextNames.STORE_ROOM, getStoreRoomPrefList());
-		map.put(FacilioConstants.ContextNames.CONTRACTS, getContractsPrefList());
+		map.put(FacilioConstants.ContextNames.PURCHASE_CONTRACTS, getContractsPrefList());
+		map.put(FacilioConstants.ContextNames.LABOUR_CONTRACTS, getContractsPrefList());
+		map.put(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS, getContractsPrefList());
+		map.put(FacilioConstants.ContextNames.WARRANTY_CONTRACTS, getContractsPrefList());
 	}
 	
 	private static void initializeModuleMap() {

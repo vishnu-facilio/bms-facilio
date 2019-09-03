@@ -100,6 +100,9 @@ public class AddOrUpdateRentalLeaseContractCommand extends FacilioCommand{
 				context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 				
 			}
+			
+			context.put(FacilioConstants.ContextNames.RECORD_ID, rentalLeaseContractContext.getId());
+			
 		}
 		return false;
 	}

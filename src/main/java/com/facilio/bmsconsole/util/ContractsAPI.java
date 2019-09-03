@@ -256,10 +256,10 @@ public class ContractsAPI {
 		}
 	}
 		
-	public static Long saveExpiryPrefs (Map<String, Object> map, Long contractId) throws Exception {
+	public static Long saveExpiryPrefs (Map<String, Object> map, Long contractId, String moduleName) throws Exception {
 		ContractsContext contract = getContractDetails(contractId);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTRACTS);
+		FacilioModule module = modBean.getModule(moduleName);
 		List<FacilioField> fields = modBean.getAllFields(module.getName());
 		Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
 		
@@ -349,7 +349,9 @@ public class ContractsAPI {
 		return new Preference("expireDateNotification", "Expiry Date Notifications", form) {
 			@Override
 			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
-				Long ruleId = saveExpiryPrefs(map, recordId);
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule module = modBean.getModule(moduleId);
+				Long ruleId = saveExpiryPrefs(map, recordId, module.getName());
 				List<Long> ruleIdList = new ArrayList<>();
 				ruleIdList.add(ruleId);
 				PreferenceRuleUtil.addPreferenceRule(moduleId, recordId, ruleIdList, getName());
@@ -382,7 +384,9 @@ public class ContractsAPI {
 		return new Preference("paymentNotification", "Payment Notifications", form) {
 			@Override
 			public void subsituteAndEnable(Map<String, Object> map, Long recordId, Long moduleId) throws Exception {
-				Long ruleId = savePaymentPrefs(map, recordId);
+				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+				FacilioModule module = modBean.getModule(moduleId);
+				Long ruleId = savePaymentPrefs(map, recordId, module.getName());
 				List<Long> ruleIdList = new ArrayList<>();
 				ruleIdList.add(ruleId);
 				PreferenceRuleUtil.addPreferenceRule(moduleId, recordId, ruleIdList, getName());
@@ -398,10 +402,10 @@ public class ContractsAPI {
 		
 	}
 	
-	public static Long savePaymentPrefs (Map<String, Object> map, Long contractId) throws Exception {
+	public static Long savePaymentPrefs (Map<String, Object> map, Long contractId, String moduleName) throws Exception {
 		ContractsContext contract = getContractDetails(contractId);
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.CONTRACTS);
+		FacilioModule module = modBean.getModule(moduleName);
 		List<FacilioField> fields = modBean.getAllFields(module.getName());
 		Map<String,FacilioField> fieldsMap = FieldFactory.getAsMap(fields);
 		

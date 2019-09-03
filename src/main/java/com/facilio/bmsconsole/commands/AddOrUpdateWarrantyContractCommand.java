@@ -127,6 +127,7 @@ public class AddOrUpdateWarrantyContractCommand extends FacilioCommand{
 			}
 			
 			
+			context.put(FacilioConstants.ContextNames.RECORD_ID, warrantyContractContext.getId());
 			
 		}
 		return false;

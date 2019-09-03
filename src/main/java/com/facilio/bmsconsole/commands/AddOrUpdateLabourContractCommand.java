@@ -109,6 +109,8 @@ public class AddOrUpdateLabourContractCommand extends FacilioCommand{
 
 
 			}
+			context.put(FacilioConstants.ContextNames.RECORD_ID, labourContractContext.getId());
+			
 			
 		}
 		return false;
