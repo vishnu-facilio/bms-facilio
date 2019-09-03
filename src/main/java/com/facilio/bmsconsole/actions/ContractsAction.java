@@ -103,7 +103,7 @@ public class ContractsAction extends FacilioAction{
 		Chain chain = TransactionChainFactory.getChangeContractPaymentStatusChain();
 		chain.execute(context);
 		
-		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
+		setResult(FacilioConstants.ContextNames.NEXT_PAYMENT_DATE, context.get(FacilioConstants.ContextNames.NEXT_PAYMENT_DATE));
 		
 		return SUCCESS;
 	}

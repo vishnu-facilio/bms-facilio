@@ -9,7 +9,9 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ContractsContext;
+import com.facilio.bmsconsole.context.ContractsContext.ContractType;
 import com.facilio.bmsconsole.util.ContractsAPI;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
@@ -22,26 +24,34 @@ public class ChangeContractPaymentStatusCommand extends FacilioCommand{
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		// TODO Auto-generated method stub
-		Long recordId = (Long)context.get(FacilioConstants.ContextNames.RECORD_ID);
-		if(recordId != null && recordId > 0) {
-			ContractsContext contract = ContractsAPI.getContractDetails(recordId);
-			if(contract != null) {
-				Map<String, Object> updateMap = new HashMap<>();
-				ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-				FacilioModule contractsModule = modBean.getModule(FacilioConstants.ContextNames.CONTRACTS);
-				FacilioField nextPaymentDateField = modBean.getField("nextPaymentDate", contractsModule.getName() );
-				updateMap.put("nextPaymentDate", contract.computeNextPaymentDate());
-				List<FacilioField> updatedfields = new ArrayList<FacilioField>();
-				updatedfields.add(nextPaymentDateField);
-				UpdateRecordBuilder<ContractsContext> updateBuilder = new UpdateRecordBuilder<ContractsContext>()
-								.module(contractsModule)
-								.fields(updatedfields)
-								.andCondition(CriteriaAPI.getIdCondition(contract.getId(),contractsModule));
-			     int rowsUpdated = updateBuilder.updateViaMap(updateMap);
-			     context.put(FacilioConstants.ContextNames.ROWS_UPDATED, rowsUpdated);
+		long recordId = (long)context.get(FacilioConstants.ContextNames.RECORD_ID);
+		String moduleName = null;
+		if(recordId > 0) {
+			ContractsContext contracts = ContractsAPI.getContractDetails(recordId);
+			contracts.computeNextPaymentDate();
+			if(contracts.getContractType() == ContractType.PURCHASE.getValue()) {
+				moduleName = FacilioConstants.ContextNames.PURCHASE_CONTRACTS;
 			}
+			else if(contracts.getContractType() == ContractType.LABOUR.getValue()) {
+				moduleName = FacilioConstants.ContextNames.LABOUR_CONTRACTS;
+			}
+			else if(contracts.getContractType() == ContractType.RENTAL_LEASE.getValue()) {
+				moduleName = FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS;
+			}
+			else if(contracts.getContractType() == ContractType.WARRANTY.getValue()) {
+				moduleName = FacilioConstants.ContextNames.WARRANTY_CONTRACTS;
+			}
+			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			FacilioModule module = modBean.getModule(moduleName);
+			List<FacilioField> fields = modBean.getAllFields(moduleName);
+			
+			ContractsAPI.updateRecord(contracts, module, fields, true, (FacilioContext) context);
+			
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+			context.put(FacilioConstants.ContextNames.NEXT_PAYMENT_DATE, contracts.getNextPaymentDate());
+			
+					
 		}
-		
 		return false;
 	}
 

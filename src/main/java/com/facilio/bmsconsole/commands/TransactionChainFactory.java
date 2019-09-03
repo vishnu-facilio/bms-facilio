@@ -3163,6 +3163,7 @@ public class TransactionChainFactory {
 		public static FacilioChain getChangeContractPaymentStatusChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new ChangeContractPaymentStatusCommand());
+			c.addCommand(new UpdateRecordRuleJobOnRecordUpdationCommand());
 			return c;
 		}
 		

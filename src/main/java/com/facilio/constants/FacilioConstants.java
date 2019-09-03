@@ -1192,6 +1192,9 @@ public class FacilioConstants {
 		public static final String IS_EMAIL_VERIFICATION_NEEDED = "isEmailVerificationNeeded";
 
 		public static final String POINTS_PROCESS_CONTEXT = "pointsProcessContext";
+		
+		public static final String NEXT_PAYMENT_DATE = "nextPaymentDate";
+		
 
 
 
