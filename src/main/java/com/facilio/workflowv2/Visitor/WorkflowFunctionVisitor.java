@@ -529,6 +529,7 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     public Value visitLog(WorkflowV2Parser.LogContext ctx) {
         Value value = this.visit(ctx.expr());
         workflowContext.getLogStringBuilder().append(value.asString()+"\n");
+        LOGGER.log(Level.INFO, workflowContext.getId()+" - "+value.asString());
         return value;
     }
     
