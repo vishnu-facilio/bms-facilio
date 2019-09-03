@@ -11,6 +11,8 @@ import org.apache.commons.collections.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
+import com.facilio.bmsconsole.context.BaseAlarmContext;
+import com.facilio.bmsconsole.context.MLAlarmOccurenceContext;
 import com.facilio.bmsconsole.context.MLContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.constants.FacilioConstants;
@@ -31,6 +33,23 @@ public class MLAPI {
 	public static MLContext getSubMeterDetails (long mlAnomalyAlarmId) throws Exception {
 		
 			return null;
+		
+	}
+	
+	public static MLAlarmOccurenceContext getRCALastOccurrence (Long alarmId, Long parentId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ANOMALY_ALARM_OCCURRENCE);
+		SelectRecordsBuilder<MLAlarmOccurenceContext> builder = new SelectRecordsBuilder<MLAlarmOccurenceContext>()
+				.beanClass(MLAlarmOccurenceContext.class).moduleName(FacilioConstants.ContextNames.ANOMALY_ALARM_OCCURRENCE)
+				.select(fields).andCondition(CriteriaAPI.getCondition("ALARM_ID", "alarm",
+						String.valueOf(alarmId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("PARENTID", "parentID", String.valueOf(parentId),  NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition("MLANOMALYTYPE", "mlanomalyType",
+						String.valueOf(MLAlarmOccurenceContext.MLAnomalyType.RCA.getIndex()), NumberOperators.EQUALS))
+				.orderBy("CREATED_TIME DESC, ID DESC").limit(1);
+		MLAlarmOccurenceContext alarmOccurrenceContext = builder.fetchFirst();
+		
+		return alarmOccurrenceContext;
 		
 	}
 	
