@@ -26,6 +26,7 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -114,6 +115,8 @@ public class FetchControlGroupsCommand extends FacilioCommand {
 			ruleBuilder.offset(offset);
 			ruleBuilder.limit(perPage);
 		}
+		
+		ruleBuilder.andCondition(CriteriaAPI.getCondition("IS_DELETED", "isDeleted", Boolean.FALSE.toString(), BooleanOperators.IS));
 		
 		List<Map<String, Object>> props = ruleBuilder.get();
 		

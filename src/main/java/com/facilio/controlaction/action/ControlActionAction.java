@@ -130,13 +130,6 @@ public class ControlActionAction extends FacilioAction {
 	
 	public String getControlGroups() throws Exception {
 		
-		if(getPerPage() < 0) {
-			setPerPage(50);
-		}
-		if(getPage() < 0) {
-			setPage(1);
-		}
-		
 		FacilioContext constructListContext = constructListContext();
 		
 		constructListContext.put(FacilioConstants.ContextNames.MODULE_NAME, ModuleFactory.getControlGroupModule().getName());

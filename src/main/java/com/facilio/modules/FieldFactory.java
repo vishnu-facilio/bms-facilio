@@ -6542,6 +6542,7 @@ public class FieldFactory {
 		fields.add(getField("assetCategoryId", "ASSET_CATEGORY_ID", module, FieldType.LOOKUP));
 		fields.add(getField("fieldId", "FIELD_ID", module, FieldType.NUMBER));
 		fields.add(getField("mode", "MODE", module, FieldType.NUMBER));
+		fields.add(getField("isDeleted", "IS_DELETED", module, FieldType.BOOLEAN));
 		
 		return fields;
 	}

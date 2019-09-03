@@ -19,8 +19,21 @@ public class ControlGroupContext {
 	List<ControlGroupInclExclContext> controlGroupInclExclContexts;
 	List<Long> matchedResources;
 	ControlActionMode mode;
+	Boolean isDeleted;
 	
 	
+	public boolean isDeleted() {
+		if(isDeleted != null) {
+			return isDeleted.booleanValue();
+		}
+		return false;
+	}
+	public Boolean getIsDeleted() {
+		return isDeleted;
+	}
+	public void setIsDeleted(Boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
 	public int getMode() {
 		if(mode != null) {
 			return mode.getValue();
