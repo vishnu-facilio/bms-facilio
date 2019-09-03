@@ -38,9 +38,6 @@ public class GetMLSummmaryDetail extends FacilioCommand {
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ANOMALY_ALARM_OCCURRENCE);
 		LookupField resourceLookup = (LookupField) FieldFactory.getField("resource", "RESOURCE_ID", FieldType.LOOKUP);
 		resourceLookup.setLookupModule(ModuleFactory.getResourceModule());
-//		FacilioModule occurrenceModule = modBean.getModule(ContextNames.ALARM_OCCURRENCE);
-//		List<FacilioField> occurrenceFields = modBean.getAllFields(occurrenceModule.getName());
-//		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(occurrenceFields);
 		DateOperators operator = DateOperators.CURRENT_WEEK;
 		DateRange dateRange = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE);
 		if (dateRange == null) {
@@ -64,7 +61,6 @@ public class GetMLSummmaryDetail extends FacilioCommand {
 		List<FacilioField> selectFields = new ArrayList<>();
 		FacilioField durationField = FieldFactory.getField("duration", durationAggrColumn.toString(), FieldType.NUMBER);
 		selectFields.add(durationField);
-//		selectFields.add(resourceFieldColumn);
 		selectFields.add(alarmId);
 		selectFields.addAll(FieldFactory.getCountField(module));
 		SelectRecordsBuilder<MLAlarmOccurenceContext> builder = new SelectRecordsBuilder<MLAlarmOccurenceContext>().module(module)

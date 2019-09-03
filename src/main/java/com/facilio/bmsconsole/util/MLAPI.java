@@ -36,15 +36,16 @@ public class MLAPI {
 		
 	}
 	
-	public static MLAlarmOccurenceContext getRCALastOccurrence (Long alarmId, Long parentId) throws Exception {
+	public static MLAlarmOccurenceContext getRCALastOccurrence (Long alarmId, Long parentId ) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ANOMALY_ALARM_OCCURRENCE);
+		Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		SelectRecordsBuilder<MLAlarmOccurenceContext> builder = new SelectRecordsBuilder<MLAlarmOccurenceContext>()
 				.beanClass(MLAlarmOccurenceContext.class).moduleName(FacilioConstants.ContextNames.ANOMALY_ALARM_OCCURRENCE)
 				.select(fields).andCondition(CriteriaAPI.getCondition("ALARM_ID", "alarm",
 						String.valueOf(alarmId), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("PARENTID", "parentID", String.valueOf(parentId),  NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("MLANOMALYTYPE", "mlanomalyType",
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentID"), String.valueOf(parentId),  NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("mlanomalyType"),
 						String.valueOf(MLAlarmOccurenceContext.MLAnomalyType.RCA.getIndex()), NumberOperators.EQUALS))
 				.orderBy("CREATED_TIME DESC, ID DESC").limit(1);
 		MLAlarmOccurenceContext alarmOccurrenceContext = builder.fetchFirst();
