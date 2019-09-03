@@ -280,6 +280,7 @@ public class FacilioProperties {
             secret.put("port", PROPERTIES.getProperty("db.port"));
             secret.put("username", PROPERTIES.getProperty("db.username"));
             secret.put("password", PROPERTIES.getProperty("db.password"));
+            secret.put("db.default.db", PROPERTIES.getProperty("db.default.db"));
         }
         return secret;
 

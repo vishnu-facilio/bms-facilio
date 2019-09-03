@@ -138,7 +138,7 @@ public class BmsDBConf extends DBConf {
 
     public HashMap<String, String> getSecret(String secretKey) {
         HashMap<String, String> password = FacilioProperties.getPassword(secretKey);
-        String url = String.format("jdbc:mysql://%s:%s/bms", password.get("host"), password.get("port"));
+        String url = String.format("jdbc:mysql://%s:%s/%s", password.get("host"), password.get("port"), password.getOrDefault("db.default.db", "bms"));
         password.put("url", url);
         return password;
     }
