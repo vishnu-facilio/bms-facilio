@@ -302,7 +302,7 @@ public static List<InventoryVendorContext> getInventoryVendorList() throws Excep
 		
 		StringJoiner userEmailStr = new StringJoiner(",");
 		for(String ouId : ouIdList) {
-			User user = userBean.getUser(Long.parseLong(ouId));
+			User user = userBean.getUser(Long.parseLong(ouId), false);
 			if(user != null) {
 				userEmailStr.add(user.getEmail());
 			}
@@ -447,7 +447,7 @@ public static List<InventoryVendorContext> getInventoryVendorList() throws Excep
 		
 		StringJoiner userEmailStr = new StringJoiner(",");
 		for(String ouId : ouIdList) {
-			User user = userBean.getUser(Long.parseLong(ouId));
+			User user = userBean.getUser(Long.parseLong(ouId), false);
 			if(user != null) {
 				userEmailStr.add(user.getEmail());
 			}
@@ -593,7 +593,7 @@ public static List<InventoryVendorContext> getInventoryVendorList() throws Excep
 		
 		StringJoiner userEmailStr = new StringJoiner(",");
 		for(String ouId : ouIdList) {
-			User user = userBean.getUser(Long.parseLong(ouId));
+			User user = userBean.getUser(Long.parseLong(ouId), false);
 			if(user != null) {
 				userEmailStr.add(user.getEmail());
 			}
@@ -741,7 +741,7 @@ public static List<InventoryVendorContext> getInventoryVendorList() throws Excep
 		
 		StringJoiner userEmailStr = new StringJoiner(",");
 		for(String ouId : ouIdList) {
-			User user = userBean.getUser(Long.parseLong(ouId));
+			User user = userBean.getUser(Long.parseLong(ouId), false);
 			if(user != null) {
 				userEmailStr.add(user.getEmail());
 			}
