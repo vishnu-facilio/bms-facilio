@@ -1,9 +1,6 @@
 package com.facilio.events.commands;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import com.facilio.bmsconsole.context.AlarmSeverityContext;
 import org.apache.commons.chain.Context;
@@ -28,7 +25,7 @@ import com.facilio.modules.UpdateRecordBuilder;
 
 public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 
-	private Map<String, List<BaseEventContext>> eventsMap = new HashMap<>();
+	private Set<String> eventKeys = new HashSet<>();
 	private Map<String, PointedList<AlarmOccurrenceContext>> alarmOccurrenceMap = new HashMap<>();
 	private Map<String, BaseAlarmContext> alarmMap = new HashMap<>();
 	private List<BaseEventContext> baseEvents;
@@ -40,17 +37,12 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 		if (CollectionUtils.isNotEmpty(baseEvents)) {
 			for (BaseEventContext baseEvent : baseEvents) {
 				String messageKey = baseEvent.getMessageKey();
-				List<BaseEventContext> list = eventsMap.get(messageKey);
-				if (list == null) {
-					list = new ArrayList<>();
-					eventsMap.put(messageKey, list);
-				}
-				list.add(baseEvent);
+				eventKeys.add(messageKey);
 			}
 
 			clearSeverity = AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.CLEAR_SEVERITY);
 
-			List<AlarmOccurrenceContext> latestAlarmOccurance = NewAlarmAPI.getLatestAlarmOccurance(new ArrayList<>(eventsMap.keySet()));
+			List<AlarmOccurrenceContext> latestAlarmOccurance = NewAlarmAPI.getLatestAlarmOccurance(new ArrayList<>(eventKeys));
 			for (AlarmOccurrenceContext alarmOccurrenceContext : latestAlarmOccurance) {
 				String key = alarmOccurrenceContext.getAlarm().getKey();
 				PointedList<AlarmOccurrenceContext> pointedList = alarmOccurrenceMap.get(key);
@@ -62,33 +54,30 @@ public class NewEventsToAlarmsConversionCommand extends FacilioCommand {
 				pointedList.add(alarmOccurrenceContext);
 			}
 			
-			for (Map.Entry<String, List<BaseEventContext>> entry : eventsMap.entrySet()) {
-				List<BaseEventContext> baseEvents = entry.getValue();
+			List<BaseEventContext> additionEventsCreated = new ArrayList<>();
+			for (BaseEventContext baseEvent : baseEvents) {
+				processEventToAlarm(baseEvent, context, additionEventsCreated);
+			}
+			baseEvents.addAll(additionEventsCreated);
 
-				List<BaseEventContext> additionEventsCreated = new ArrayList<>();
-				for (BaseEventContext baseEvent : baseEvents) {
-					processEventToAlarm(baseEvent, context, additionEventsCreated);
-				}
-				PointedList<AlarmOccurrenceContext> pointedList = alarmOccurrenceMap.get(entry.getKey());
-
+			for (String key : eventKeys) {
+				PointedList<AlarmOccurrenceContext> pointedList = alarmOccurrenceMap.get(key);
 				if (CollectionUtils.isEmpty(pointedList)) {
-				    continue;
-                }
+					continue;
+				}
 
 				List<AlarmOccurrenceContext> list = new ArrayList<>(pointedList);
 				for (AlarmOccurrenceContext alarmOccurrence : list) {
 					if (!alarmOccurrence.equals(pointedList.getLastRecord()) && !alarmOccurrence.getSeverity().equals(AlarmAPI.getAlarmSeverity("Clear"))) {
 						BaseAlarmContext alarm = alarmOccurrence.getAlarm();
-						BaseEventContext createdEvent = BaseEventContext.createNewEvent(alarm.getTypeEnum(), alarm.getResource(), AlarmAPI.getAlarmSeverity("Clear"), "Automated Clear Event", alarm.getKey(), alarmOccurrence.getCreatedTime());
+						BaseEventContext createdEvent = BaseEventContext.createNewEvent(alarm.getTypeEnum(), alarm.getResource(),
+								AlarmAPI.getAlarmSeverity("Clear"), "Automated Clear Event", alarm.getKey(), alarmOccurrence.getCreatedTime());
 						baseEvents.add(createdEvent);
-						this.baseEvents.add(createdEvent);
 						processEventToAlarm(createdEvent, context, additionEventsCreated);
 					}
 				}
-				baseEvents.addAll(additionEventsCreated);
 			}
-			
-			saveRecords();
+
 			context.put("alarmOccurrenceMap", alarmOccurrenceMap);
 			context.put("alarmMap", alarmMap);
 		}
