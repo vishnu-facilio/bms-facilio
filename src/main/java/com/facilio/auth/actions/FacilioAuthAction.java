@@ -300,7 +300,11 @@ public class FacilioAuthAction extends FacilioAction {
 				
 				String domainName = "app";
 				if (domainNameArray.length > 2) {
-					if(!domainNameArray[1].equals("facilio") ) {
+					String awsDomain = FacilioProperties.getDomain();
+					if(StringUtils.isNullOrEmpty(awsDomain)) {
+						awsDomain = "facilio";
+					}
+					if(!domainNameArray[1].equals(awsDomain) ) {
 						domainName = domainNameArray[0];
 					}
 				}

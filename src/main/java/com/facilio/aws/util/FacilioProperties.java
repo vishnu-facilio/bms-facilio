@@ -60,6 +60,7 @@ public class FacilioProperties {
     private static boolean sysLogEnabled;
     private static HashSet<String> dbIdentifiers = new HashSet<String>();
     private static Long messageReprocessInterval;
+    private static String domain;
 
     static {
         loadProperties();
@@ -104,6 +105,8 @@ public class FacilioProperties {
                 defaultDataSource = PROPERTIES.getProperty("db.default.ds");
                 defaultDB = PROPERTIES.getProperty("db.default.db");
                 messageQueue = PROPERTIES.getProperty("messageQueue");
+                domain = PROPERTIES.getProperty("domain");
+                
                 PROPERTIES.put("clientapp.url", clientAppUrl);
                 URL resourceDir = AwsUtil.class.getClassLoader().getResource("");
                 if(resourceDir != null) {
@@ -251,6 +254,10 @@ public class FacilioProperties {
 
     public static String getConfig(String name) {
         return PROPERTIES.getProperty(name);
+    }
+
+    public static String getDomain() {
+        return domain;
     }
 
     public static HashMap<String, String> getPassword(String secretKey) {
