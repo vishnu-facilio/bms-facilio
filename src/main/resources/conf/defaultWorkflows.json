@@ -642,17 +642,24 @@
 			"usage" : "AnomalySummary",
 			"workflow": "Map calculateEnergyWastage(List resourceIds, Number alarmId){
 			  resultMap = {};
+              lsMnRs = {};
 			  mlReadings = Module(\"anomalydetectionmllogreadings\");
 			  date = NameSpace(\"date\");
 			  thisMonthRanges = date.getDateRange(\"Current Month\");
+  			  lastMonthRanges = date.getDateRange(\"Last Month\");
 			
 			  occurenceThisMonthCrit = {
 			    criteria: [alarm == alarmId && createdTime == thisMonthRanges]
 			  };
+ 			 occurenceLastMonthCrit = {
+			    criteria: [alarm == alarmId && createdTime == lastMonthRanges]
+			  };
 			  thismothoccurence =  Module(\"alarmoccurrence\").fetch(occurenceThisMonthCrit);
+  			  lastmonthoccurrence = Module(\"alarmoccurrence\").fetch(occurenceLastMonthCrit);
 			  result = {}
 			  for each rindex,resourceId in resourceIds {
 			    energyWastage = 0
+                lstMntWastage= 0
 			    if (thismothoccurence != null) {
 			      for each index,value in thismothoccurence {
 			        endTime = value.clearedTime
@@ -676,9 +683,33 @@
 			        }
 			      }
 			  	}
-			    result[resourceId] = energyWastage
+                result[resourceId] = energyWastage
+                if (lastmonthoccurrence != null) {
+			      for each index,value in lastmonthoccurrence {
+			        endTime = value.clearedTime
+			        if (endTime == null) {
+			          endTime = date.now();
+			        }
+			        ttimes = date.dateRange(value.createdTime, endTime)
+			        lastMonthEnergy = {
+			          criteria: [parentId == resourceId && ttime == lastMonthRanges],
+			        }
+			        lastMonthWastage =  mlReadings.fetch(lastMonthEnergy);
+			        if (lastMonthWastage != null) {
+			          for each index,value in lastMonthWastage {
+			            if (value.upperBound != 0) {
+			              diffConsu = value.actualValue - value.adjustedUpperBound;
+			              if (diffConsu > 0) {
+			                lstMntWastage =  lstMntWastage + diffConsu
+			              }
+			            }
+			          }
+			        }
+			      }			   
 			  }
+              lsMnRs[resourceId] = lstMntWastage
 			  resultMap[\"currentMonthWastage\"] = result;
+              resultMap[\"lastMonthWastage\"] = lsMnRs;
 			  return resultMap;
 			}"
 		},
