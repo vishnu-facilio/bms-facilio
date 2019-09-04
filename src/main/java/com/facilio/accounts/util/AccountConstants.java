@@ -949,6 +949,14 @@ public class AccountConstants {
 		portal_verified.setColumnName("PORTAL_VERIFIED");
 		portal_verified.setModule(module);
 		fields.add(portal_verified);
+		
+		FacilioField iamOrgUserIdField = new FacilioField();
+		iamOrgUserIdField.setName("iamOrgUserId");
+		iamOrgUserIdField.setDataType(FieldType.NUMBER);
+		iamOrgUserIdField.setColumnName("IAM_ORG_USERID");
+		iamOrgUserIdField.setModule(module);
+		fields.add(iamOrgUserIdField);
+
 
 		return fields;
 	}

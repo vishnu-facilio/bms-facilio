@@ -18,7 +18,7 @@ public interface UserBean {
 	
 //	public long inviteAdminConsoleUser(long orgId, User user) throws Exception;
 	
-	public long inviteRequester(long orgId, User user, boolean isEmailVerificationNeeded) throws Exception;
+	public long inviteRequester(long orgId, User user, boolean isEmailVerificationNeeded, boolean shouldThrowExistingUserError) throws Exception;
 
 	User verifyEmail(String token) throws Exception;
 
@@ -69,8 +69,6 @@ public interface UserBean {
     public User getUser(String email, String portalDomain) throws Exception;
     
     public User getUser(String email) throws Exception;
-    
-    public User getPortalUsers(String email, long portalId) throws Exception;
     
     public User getPortalUser(long uid) throws Exception;
     

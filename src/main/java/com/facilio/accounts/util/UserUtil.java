@@ -64,14 +64,14 @@ public class UserUtil {
 			List<Map<String, Object>> finalMap = new ArrayList<Map<String,Object>>();
 			List<Long> userIds = new ArrayList<Long>();
 			for(Map<String, Object> map : actualPropsList) {
-				userIds.add((long)map.get("uid"));
+				userIds.add((long)map.get("iamOrgUserId"));
 			}
 			Map<Long, Map<String, Object>> iamUserMap = getIAMUserProps(userIds, orgId, shouldFetchDeleted);
 			if (MapUtils.isNotEmpty(iamUserMap)) {
 				for(Map<String, Object> map : actualPropsList) {
-					long uId = (long)map.get("uid");
-					if(iamUserMap.containsKey(uId)) {
-						map.putAll(iamUserMap.get(uId));
+					long iamOrgUserId = (long)map.get("iamOrgUserId");
+					if(iamUserMap.containsKey(iamOrgUserId)) {
+						map.putAll(iamUserMap.get(iamOrgUserId));
 						finalMap.add(map);
 					}
 				}
@@ -92,14 +92,20 @@ public class UserUtil {
 		
 		Criteria finalCriteira = new Criteria();
 		finalCriteira.andCriteria(userEmailCriteria);
+		finalCriteira.andCriteria(criteria);
+		long orgId = -1;
+		if(AccountUtil.getCurrentOrg() != null && AccountUtil.getCurrentOrg().getOrgId() > 0) {
+			orgId = AccountUtil.getCurrentOrg().getOrgId();
+		}
+		Map<Long, Map<String, Object>> userMap = IAMUserUtil.getIAMOrgUserData(finalCriteira, orgId ,false);
 		
-		Map<Long, Map<String, Object>> userMap = IAMUserUtil.getIAMOrgUserData(finalCriteira, AccountUtil.getCurrentOrg().getOrgId(), false);
 		if(userMap != null) {
 			return userMap.values().stream().findFirst().get();
 		}
 		return null;
 		
 	}
+	
 	public static Map<Long, Map<String, Object>> getIAMUserProps(List<Long> userIds, long orgId, boolean shouldFetchDeleted) throws Exception {
 		Map<Long, Map<String, Object>> iamUserMap = IAMUserUtil.getUserData(userIds, orgId, shouldFetchDeleted);
 		return iamUserMap;

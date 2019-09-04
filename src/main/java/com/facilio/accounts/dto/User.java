@@ -26,6 +26,7 @@ public class User extends IAMUser {
 		setCountry(user.getCountry());
 		setDomainName(user.getDomainName());
 		setOrgId(user.getOrgId());
+		setIamOrgUserId(user.getIamOrgUserId());
 	}
 
 	
@@ -160,5 +161,15 @@ public class User extends IAMUser {
 		return false;
 	}
 
+	private long iamOrgUserId;
+
+	public long getIamOrgUserId() {
+		return iamOrgUserId;
+	}
+
+	public void setIamOrgUserId(long iamOrgUserId) {
+		this.iamOrgUserId = iamOrgUserId;
+	}
+	
 	
 }

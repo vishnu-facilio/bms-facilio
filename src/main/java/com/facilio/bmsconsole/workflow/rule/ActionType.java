@@ -431,11 +431,13 @@ public enum ActionType {
 //			fields.add(email);
 
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(AccountConstants.getUserMobileSettingFields());
+			Map<String, FacilioField> orgUserfieldMap = FieldFactory.getAsMap(AccountConstants.getAppOrgUserFields());
 
 			fields.add(fieldMap.get("mobileInstanceId"));
 			fields.add(fieldMap.get("fromPortal"));
 			fields.add(AccountConstants.getOrgIdField(AccountConstants.getAppOrgUserModule()));
 			fields.add(AccountConstants.getUserIdField(AccountConstants.getAppOrgUserModule()));
+			fields.add(orgUserfieldMap.get("iamOrgUserId"));
 
 
 			// Condition condition = CriteriaAPI.getCondition("EMAIL", "email",

@@ -31,6 +31,9 @@ public class IAMUserUtil {
 
 	public static boolean changePassword(String password, String newPassword, long uId, long orgId) throws Exception {
 		IAMUser user = IAMUtil.getUserBean().getFacilioUser(orgId, uId);
+		if(user == null) {
+			return false;
+		}
 		Boolean verifyOldPassword = verifyPasswordv2(user.getEmail(), user.getDomainName(), password);
 		if (verifyOldPassword != null && verifyOldPassword) {
 			user.setPassword(newPassword);

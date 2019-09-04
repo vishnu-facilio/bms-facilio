@@ -370,12 +370,12 @@ public class IAMAccountConstants {
 			FacilioModule module = getAccountsOrgUserModule();
 			List<FacilioField> fields = new ArrayList<>();
 
-//			FacilioField ouid = new FacilioField();
-//			ouid.setName("ouid");
-//			ouid.setDataType(FieldType.ID);
-//			ouid.setColumnName("ORG_USERID");
-//			ouid.setModule(module);
-//			fields.add(ouid);
+			FacilioField iamOrgUserid = new FacilioField();
+			iamOrgUserid.setName("iamOrgUserId");
+			iamOrgUserid.setDataType(FieldType.NUMBER);
+			iamOrgUserid.setColumnName("ORG_USERID");
+			iamOrgUserid.setModule(module);
+			fields.add(iamOrgUserid);
 
 			fields.add(getUserIdField(module));
 

@@ -615,7 +615,7 @@ public class FacilioAuthAction extends FacilioAction {
 				portalDomain = (String)request.getAttribute("portalDomain");
 			}
 			if (portalId() > 0) {
-				user = AccountUtil.getUserBean().getPortalUsers(getEmailaddress(), portalId());
+				user = AccountUtil.getUserBean().getUser(getEmailaddress(), portalDomain);
 			} else if(AccountUtil.getCurrentOrg() != null){
 				user = AccountUtil.getUserBean().getUser(getEmailaddress());
 			}
@@ -628,6 +628,7 @@ public class FacilioAuthAction extends FacilioAction {
 				invitation.put("status", "success");
 			} else {
 				invitation.put("status", "failed");
+				invitation.put("message", "Invalid user");
 			}
 		}
 		ActionContext.getContext().getValueStack().set("invitation", invitation);
@@ -780,7 +781,7 @@ public class FacilioAuthAction extends FacilioAction {
 		}
 		if (anydomain_allowedforsignup || opensignup || whitelisteddomain) {
 			try {
-				AccountUtil.getTransactionalUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, true);
+				AccountUtil.getTransactionalUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, true, true);
 				LOGGER.info("user signup done " + user);
 			} catch (InvocationTargetException ie) {
 				Throwable e = ie.getTargetException();

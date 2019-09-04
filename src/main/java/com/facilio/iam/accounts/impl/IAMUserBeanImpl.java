@@ -123,15 +123,15 @@ public class IAMUserBeanImpl implements IAMUserBean {
 			throw new AccountException(AccountException.ErrorCode.EMAIL_ALREADY_EXISTS, "This user already exists in your organization.");
 		}
 		else {
-			IAMUser userExistsForAnyOrg = getFacilioUser(user.getEmail());
-			if(userExistsForAnyOrg != null) {
-				user.setDefaultOrg(false);
-			}
-			else {
-				user.setDefaultOrg(true);
-			}
 			long uid = addUserEntryv2(user, emailRegRequired);
 			user.setUid(uid);
+		}
+		IAMUser userExistsForAnyOrg = getFacilioUserFromUserId(user.getUid(), null);
+		if(userExistsForAnyOrg != null) {
+			user.setDefaultOrg(false);
+		}
+		else {
+			user.setDefaultOrg(true);
 		}
 		user.setUserStatus(true);
 		user.setOrgId(orgId);
@@ -339,6 +339,9 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	public boolean disableUserv2(long orgId, long uId) throws Exception {
 		
 		IAMUser user = getFacilioUser(orgId, uId);
+		if(user == null) {
+			return false;
+		}
 		if(user.isDefaultOrg()) {
 			updateDefaultOrgForUser(user.getUid(), user.getOrgId());
 		}
@@ -445,6 +448,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		GenericSelectRecordBuilder selectBuilder = getFacilioUserBuilder(null,false);
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
 		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.USERID", "userId", String.valueOf(userId), NumberOperators.EQUALS));
+		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.DELETED_TIME", "deletedtime", String.valueOf(-1), NumberOperators.EQUALS));
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
@@ -837,6 +841,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, props.get("id"));
+		user.setIamOrgUserId((Long)props.get("id"));
 //		user.setOuid((Long)props.get("id"));
 		return (Long)props.get("id");
 	}
@@ -844,7 +849,10 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	@Override
 	public String getEncodedTokenv2(IAMUser user) throws Exception {
 		IAMUser iamUser = getFacilioUser(user.getOrgId(), user.getUid());
-		return EncryptionUtil.encode(iamUser.getOrgId()+ USER_TOKEN_REGEX + iamUser.getUid()+ USER_TOKEN_REGEX + iamUser.getEmail() + USER_TOKEN_REGEX + System.currentTimeMillis());
+		if(iamUser != null) {
+			return EncryptionUtil.encode(iamUser.getOrgId()+ USER_TOKEN_REGEX + iamUser.getUid()+ USER_TOKEN_REGEX + iamUser.getEmail() + USER_TOKEN_REGEX + System.currentTimeMillis());
+		}
+		return "";
 	}
 
 	
@@ -1083,8 +1091,9 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		if(criteria != null) {
 			selectBuilder.andCriteria(criteria);
 		}
-		
-		selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+		if(orgId > 0) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.ORGID", "orgId", String.valueOf(orgId), NumberOperators.EQUALS));
+		}
 		if(!shouldFetchDeleted) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition("Account_ORG_Users.DELETED_TIME", "deletedtime", String.valueOf(-1), NumberOperators.EQUALS));
 		}
@@ -1093,21 +1102,20 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		if(CollectionUtils.isNotEmpty(list)) {
 			Map<Long, Map<String, Object>> userMap = new HashMap<>();
 			for (Map<String, Object> prop : list) {
-				userMap.put((long)prop.get("uid"), prop);
+				userMap.put((long)prop.get("iamOrgUserId"), prop);
 			}
 			return userMap;
 		}
 		return null;
 	}
 
-
 	@Override
 	public Map<Long, Map<String, Object>> getUserDataForUids(List<Long> userIds, long orgId, boolean shouldFetchDeleted) throws Exception {
 		// TODO Auto-generated method stub
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(IAMAccountConstants.getAccountsUserFields());
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(IAMAccountConstants.getAccountsOrgUserFields());
 		
 		Criteria criteria = new Criteria();
-		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("uid"), userIds, NumberOperators.EQUALS));
+		criteria.addAndCondition(CriteriaAPI.getCondition(fieldMap.get("iamOrgUserId"), userIds, NumberOperators.EQUALS));
 		
 		return getUserData(criteria, orgId, shouldFetchDeleted);
 		

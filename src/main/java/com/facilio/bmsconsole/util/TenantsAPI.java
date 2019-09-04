@@ -581,7 +581,7 @@ public class TenantsAPI {
 		}
 
 		try {
-			AccountUtil.getUserBean().inviteRequester(orgid, user, true);
+			AccountUtil.getUserBean().inviteRequester(orgid, user, true, false);
 		}
 		catch (Exception e) {
 			e.printStackTrace();
@@ -818,7 +818,7 @@ public class TenantsAPI {
 			if(contact.getEmail() == null || contact.getEmail().isEmpty()) {
 				contact.setEmail(contact.getMobile());
 			}
-			long userId = AccountUtil.getUserBean().inviteRequester(orgid, contact, true);
+			long userId = AccountUtil.getUserBean().inviteRequester(orgid, contact, true, false);
 			addTenantContact(contact, tenantId);
 		}
 	}

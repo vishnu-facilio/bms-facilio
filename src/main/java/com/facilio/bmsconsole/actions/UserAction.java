@@ -133,8 +133,8 @@ public class UserAction extends FacilioAction {
 			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.TENANTS)) {
 			  checkforTenantPrimaryContact(user.getEmail());
 			}
-			PortalInfoContext portalInfo = AccountUtil.getOrgBean().getPortalInfo(AccountUtil.getCurrentOrg().getOrgId(), false);
-			User userTobeDeleted = AccountUtil.getUserBean().getPortalUsers(user.getEmail(), portalInfo.getPortalId());
+			
+			User userTobeDeleted = AccountUtil.getUserBean().getUser(user.getEmail(), AccountUtil.getCurrentOrg().getDomain());
 			if(AccountUtil.getUserBean().deleteUser(userTobeDeleted.getOuid())) {
 				setUserId(userTobeDeleted.getOuid());
 			    return SUCCESS;
@@ -258,7 +258,7 @@ public class UserAction extends FacilioAction {
 //		}
 		
 		try {
-			if(AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, true) > 0) {
+			if(AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, true, true) > 0) {
 				setUserId(user.getId());
 			}
 			else {

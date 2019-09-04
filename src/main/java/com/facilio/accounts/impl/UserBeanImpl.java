@@ -61,6 +61,7 @@ import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.iam.accounts.exceptions.AccountException;
+import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
 import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -161,8 +162,8 @@ public class UserBeanImpl implements UserBean {
 		
 	}
 	
-
 	private void addToAppORGUsers(User user, boolean isEmailVerificationNeeded) throws Exception {
+		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
 		InsertRecordBuilder<ResourceContext> insertRecordBuilder = new InsertRecordBuilder<ResourceContext>()
@@ -567,18 +568,6 @@ public class UserBeanImpl implements UserBean {
 		return null;
 	}
 
-	@Override
-	public User getPortalUsers(String email, long portalId) throws Exception {
-		
-		Organization org = AccountUtil.getOrgBean().getPortalOrg(portalId);
-		
-		Map<String, Object> props = UserUtil.getUserFromEmailOrPhone(email, org.getDomain());
-		if (props != null && !props.isEmpty()) {
-			return getAppUser(props, true, false, true);
-		}
-		return null;
-	}
-
 	private User getPortalUser(long uid, long portalId) throws Exception {
 		FacilioModule portalInfoModule = AccountConstants.getPortalInfoModule();
 		List<FacilioField> fields = new ArrayList<>();
@@ -765,7 +754,7 @@ public class UserBeanImpl implements UserBean {
 	}
 
 	@Override
-	public long inviteRequester(long orgId, User user, boolean isEmailVerificationNeeded) throws Exception {
+	public long inviteRequester(long orgId, User user, boolean isEmailVerificationNeeded, boolean shouldThrowExistingUserError) throws Exception {
 		try {
 			if (AccountUtil.getCurrentOrg() != null) {
 				Organization org = AccountUtil.getOrgBean().getOrg(AccountUtil.getCurrentOrg().getDomain());
@@ -774,9 +763,16 @@ public class UserBeanImpl implements UserBean {
 				user.setOrgId(org.getOrgId());
 				user.setDomainName(org.getDomain());
 				user.setPortalId(org.getPortalId());
-				user.setId(addRequester(orgId, user, isEmailVerificationNeeded, true));
+				user.setId(addRequester(orgId, user, isEmailVerificationNeeded, shouldThrowExistingUserError));
 				return user.getOuid();
 			}
+		}
+		catch(AccountException ex) {
+			if(ex.getErrorCode() == ErrorCode.USER_ALREADY_EXISTS_IN_ORG_PORTAL) {
+				throw ex;
+			}
+			IAMUserUtil.rollbackUserAdded(user, AccountUtil.getCurrentOrg().getOrgId());
+			throw ex;
 		}
 		catch(Exception e) {
 			IAMUserUtil.rollbackUserAdded(user, AccountUtil.getCurrentOrg().getOrgId());
@@ -785,12 +781,15 @@ public class UserBeanImpl implements UserBean {
 		return 0L;
 	}
 
-	private long addRequester(long orgId, User user, boolean emailVerification, boolean updateifexist)
+	private long addRequester(long orgId, User user, boolean emailVerification, boolean shouldThrowExistingUserError)
 			throws Exception {
 		IAMUser iamUser = IAMUserUtil.getUser(user.getEmail(), user.getDomainName(), user.getDomainName());
 		if (iamUser != null) {
 			User portalUser = new User(iamUser);
 			log.info("Requester email " + iamUser.getEmail() +" already exists in the portal for org: " + orgId);
+			if(shouldThrowExistingUserError) {
+				throw new AccountException(ErrorCode.USER_ALREADY_EXISTS_IN_ORG_PORTAL, "This user already exists in the org portal");
+			}
 			return getUser(portalUser.getEmail(), iamUser.getDomainName()).getOuid();
 		}
 		if(IAMUserUtil.addUser(user, orgId) > 0) {
@@ -1154,7 +1153,7 @@ public class UserBeanImpl implements UserBean {
 
 	private User getAppUser(Map<String, Object> props, boolean fetchRole, boolean fetchSpace, boolean isPortalUser) throws Exception {
 		Criteria criteria = new Criteria();
-		criteria.addAndCondition(CriteriaAPI.getCondition("USERID", "userId", String.valueOf((long)props.get("uid")), NumberOperators.EQUALS));
+		criteria.addAndCondition(CriteriaAPI.getCondition("IAM_ORG_USERID", "iamOrgUserId", String.valueOf((long)props.get("iamOrgUserId")), NumberOperators.EQUALS));
 		
 		GenericSelectRecordBuilder selectRecordBuilder = fetchUserSelectBuilder(criteria, (long)props.get("orgId"), null);
 		List<Map<String , Object>> mapList = selectRecordBuilder.get();
