@@ -13,6 +13,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.BaseEventContext;
+import com.facilio.bmsconsole.context.HistoricalLoggerContext;
 import com.facilio.bmsconsole.context.ReadingAlarm;
 import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.ReadingEventContext;
@@ -67,6 +68,21 @@ public class WorkflowRuleHistoricalLoggerUtil {
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
+			WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLogger = FieldUtil.getAsBeanFromMap(props.get(0), WorkflowRuleHistoricalLoggerContext.class);
+			return workflowRuleHistoricalLogger;
+		}
+		return null;
+	}
+	
+	public static WorkflowRuleHistoricalLoggerContext getWorkflowRuleHistoricalLoggerById (long loggerRuleId) throws Exception {
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
+				.select(FieldFactory.getWorkflowRuleHistoricalLoggerFields())
+				.table(ModuleFactory.getWorkflowRuleHistoricalLoggerModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition("ID", "id", ""+loggerRuleId, NumberOperators.EQUALS));
+		
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {			
 			WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLogger = FieldUtil.getAsBeanFromMap(props.get(0), WorkflowRuleHistoricalLoggerContext.class);
 			return workflowRuleHistoricalLogger;
 		}

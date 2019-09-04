@@ -111,7 +111,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 			}
 
 			List<ReadingEventContext> events = new ArrayList<>();
-			WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = WorkflowRuleHistoricalLoggerUtil.getActiveWorkflowRuleHistoricalLogger(resourceId,ruleId);
+			WorkflowRuleHistoricalLoggerContext workflowRuleHistoricalLoggerContext = WorkflowRuleHistoricalLoggerUtil.getWorkflowRuleHistoricalLoggerById(jc.getJobId());
 
 			if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS))
 			{
