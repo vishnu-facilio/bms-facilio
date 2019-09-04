@@ -57,19 +57,26 @@ public class EnergyAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	public String insertVirtualMeterReadings() throws Exception {
-		FacilioContext context = new FacilioContext();
-		
-		if(startTime >= endTime)
+	public String insertVirtualMeterReadings() throws Exception {	
+		try 
 		{
-			throw new Exception("Start time should be less than the Endtime");
+			FacilioContext context = new FacilioContext();
+			
+			if(startTime >= endTime)
+			{
+				throw new Exception("Start time should be less than the Endtime");
+			}
+			context.put(FacilioConstants.ContextNames.STARTTIME, startTime);
+			context.put(FacilioConstants.ContextNames.ENDTIME, endTime);
+			context.put(FacilioConstants.ContextNames.VM_LIST, vmList);
+			
+			Chain insertVMChain = TransactionChainFactory.getAddHistoricalVMCalculationChain();
+			insertVMChain.execute(context);	
 		}
-		context.put(FacilioConstants.ContextNames.STARTTIME, startTime);
-		context.put(FacilioConstants.ContextNames.ENDTIME, endTime);
-		context.put(FacilioConstants.ContextNames.VM_LIST, vmList);
-		
-		Chain insertVMChain = TransactionChainFactory.getAddHistoricalVMCalculationChain();
-		insertVMChain.execute(context);
+		catch (Exception e) 
+		{
+			LOGGER.severe("Historical VM Run failed in action for vmlist: " +vmList+ " Exception "+e.getMessage());
+		}
 		
 		return SUCCESS;
 	}

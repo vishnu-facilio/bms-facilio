@@ -110,13 +110,11 @@ public class HistoricalVMCalculationCommand extends FacilioCommand implements Po
 			else
 			{
 				LOGGER.severe("NO DEPENDENT LOGGERS DATA IN VM HISTORICAL JOB POST EXECUTE -- " + jobId);
-				constructErrorMessage();
 			}
 		}
 		else
 		{
 			LOGGER.severe("NO MAIN LOGGER DATA IN VM HISTORICAL JOB POST EXECUTE -- " + jobId);
-			constructErrorMessage();
 		}			
 		return false;
 	}
@@ -126,6 +124,7 @@ public class HistoricalVMCalculationCommand extends FacilioCommand implements Po
 	public void constructErrorMessage() throws Exception 
 	{
 		try {
+			
 			Exception mailExp = new Exception(exceptionMessage);
 			if (stack != null) 
 			{
