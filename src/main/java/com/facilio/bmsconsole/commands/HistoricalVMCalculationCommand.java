@@ -107,10 +107,6 @@ public class HistoricalVMCalculationCommand extends FacilioCommand implements Po
 					HistoricalLoggerUtil.updateHistoricalLogger(historicalLoggerContext);	
 				}	
 			}
-			else
-			{
-				LOGGER.severe("NO DEPENDENT LOGGERS DATA IN VM HISTORICAL JOB POST EXECUTE -- " + jobId);
-			}
 		}
 		else
 		{
@@ -135,6 +131,8 @@ public class HistoricalVMCalculationCommand extends FacilioCommand implements Po
 					"Historical VM Calculation failed - orgid -- " + AccountUtil.getCurrentOrg().getId()+ ", VM Logger Id -- " +jobId, mailExp);
 			LOGGER.log(Level.SEVERE, exceptionMessage);
 			
+			LOGGER.severe("HISTORICAL VM JOB COMMAND FAILED, LOGGER ID -- " + jobId);
+			
 			if(historicalLogger != null )
 			{
 				historicalLogger.setStatus(HistoricalLoggerContext.Status.FAILED.getIntVal());
@@ -150,9 +148,11 @@ public class HistoricalVMCalculationCommand extends FacilioCommand implements Po
 					HistoricalLoggerUtil.updateHistoricalLogger(historicalLoggerContext);	
 				}
 			}
-					
+			else
+			{
+				LOGGER.severe("NO MAIN LOGGER DATA IN VM HISTORICAL JOB IN CONSTRUCT ERROR MESSAGE -- " + jobId);
+			}	
 			
-			LOGGER.severe("HISTORICAL VM JOB COMMAND FAILED, LOGGER ID -- " + jobId);
 		}
 		catch (Exception e) 
 		{
