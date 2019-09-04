@@ -49,8 +49,15 @@ public class ImportProcessContext implements Serializable
 	Integer importMode;
 	Long templateId;
 	String fileName;
+	Integer totalRows;
 	
 	
+	public Integer getTotalRows() {
+		return totalRows;
+	}
+	public void setTotalRows(Integer totalRows) {
+		this.totalRows = totalRows;
+	}
 	public String getFileName() throws Exception{
 		if(fileId != null) {
 			FileStore fs = FacilioFactory.getFileStore();
@@ -280,6 +287,14 @@ public class ImportProcessContext implements Serializable
 	{
 		if(getModule() != null) {
 			return ImportAPI.getFields(getModule().getName(), getImportMode());
+		}
+		return null;
+	}
+	
+	public JSONArray getIgnoreFields() throws Exception
+	{
+		if(getModule() != null) {
+			return ImportAPI.getIgnoreFields(getModule().getName(), getImportMode());
 		}
 		return null;
 	}

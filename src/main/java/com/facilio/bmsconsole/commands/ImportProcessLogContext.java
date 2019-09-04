@@ -32,7 +32,6 @@ public class ImportProcessLogContext {
 	public void setAssetName(String assetName){
 		this.assetName = assetName;
 	}
-	Integer total_rows;
 	Integer error_resolved;
 	public Long getTtime() {
 		return ttime;
@@ -132,12 +131,6 @@ public class ImportProcessLogContext {
 	}
 	public void setTemplateId(Long templateId) {
 		this.templateId = templateId;
-	}
-	public Integer getTotal_rows() {
-		return total_rows;
-	}
-	public void setTotal_rows(Integer total_rows) {
-		this.total_rows = total_rows;
 	}
 	
 	public Integer getError_resolved() {

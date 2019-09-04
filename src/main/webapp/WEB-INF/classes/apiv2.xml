@@ -4264,6 +4264,13 @@
 		<action name="*" class="com.facilio.bmsconsole.actions.PhotosAction"
 			method="v2getPhotosList">
 			<param name="module">{1}</param>
+			</action>
+	</package>
+		
+	<package name="import" namespace="/api/v2/import" extends="v2Api">
+		<action name ="importHistoryList" class="com.facilio.bmsconsole.actions.ImportDataAction" method="fetchImportHistoryList">
+		</action>
+		<action name ="upload" class="com.facilio.bmsconsole.actions.ImportDataAction" method="upload">
 		</action>
 	</package>
 

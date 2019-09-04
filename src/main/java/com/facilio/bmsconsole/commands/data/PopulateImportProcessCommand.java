@@ -23,17 +23,20 @@ import com.facilio.bmsconsole.util.ModuleLocalIdUtil;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.services.filestore.FileStore;
-import com.facilio.services.factory.FacilioFactory;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
 import com.google.common.collect.ArrayListMultimap;
 
 ;
@@ -257,6 +260,7 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 			bean.getModule(importProcessContext.getModuleId());
 			ArrayList<String> updateFields = new ArrayList();
 			JSONObject meta = importProcessContext.getImportJobMetaJson();
+			FacilioField siteField = FieldFactory.getSiteIdField(importProcessContext.getModule());
 			
 			if(meta.get(ImportAPI.ImportProcessConstants.UPDATE_FIELDS) != null) {
 				updateFields = (ArrayList<String>) meta.get(ImportAPI.ImportProcessConstants.UPDATE_FIELDS);
@@ -270,6 +274,18 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 						.table(moduleName)
 						.moduleName(moduleName).
 						fields(bean.getAllFields(moduleName));
+				if (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) || (importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
+					JSONObject importMeta = importProcessContext.getImportJobMetaJson();
+					JSONObject moduleStaticFields = (JSONObject) importMeta.get(ImportAPI.ImportProcessConstants.MODULE_STATIC_FIELDS);
+					Long siteId = null;
+					if(moduleStaticFields != null && !moduleStaticFields.isEmpty()) {
+						siteId = (Long)moduleStaticFields.get(FacilioConstants.ContextNames.SITE);
+					}
+					if (siteId != null) {
+//						updateBuilder.andCustomWhere("SITE_ID = ?", siteId);
+						updateBuilder.andCondition(CriteriaAPI.getCondition(siteField, siteId.toString(), NumberOperators.EQUALS));
+					}
+				}
 				for(String updateField : updateFields) {
 					String modulePlusFields[] = updateField.split("__");
 					FacilioField facilioField = bean.getField(modulePlusFields[modulePlusFields.length - 1], moduleName);

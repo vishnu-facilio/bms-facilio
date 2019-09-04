@@ -46,7 +46,7 @@ public class InsertImportDataIntoLogCommand extends FacilioCommand {
 			
 			logContext.setImportId(importProcessContext.getId());
 			logContext.setOrgId(importProcessContext.getOrgId());
-			logContext.setTotal_rows(row_count);
+			importProcessContext.setTotalRows(row_count);
 			
 			
 			if(importProcessContext.getImportMode() == ImportProcessContext.ImportMode.NORMAL.getValue()) {

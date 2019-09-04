@@ -48,9 +48,10 @@ public class GenericImportDataLogJob extends InstantJob{
 				ImportAPI.updateImportProcess(importProcessContext);
 			}
 			else {
-				importProcessContext.setStatus(ImportProcessContext.ImportStatus.IN_PROGRESS.getValue());
+				importProcessContext.setStatus(ImportProcessContext.ImportStatus.VALIDATION_COMPLETE.getValue());
+				importProcessContext = ImportAPI.updateTotalRows(importProcessContext);
 				ImportAPI.updateImportProcess(importProcessContext);
-				FacilioTimer.scheduleOneTimeJobWithDelay(importProcessContext.getId(), "importData" , 10, "priority");
+//				FacilioTimer.scheduleOneTimeJobWithDelay(importProcessContext.getId(), "importData" , 10, "priority");	
 			}
 			
 			LOGGER.severe("GENERIC IMPORT DATA LOG JOB COMPLETED -- ");

@@ -1480,5 +1480,12 @@ public class ReadOnlyChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new PerformConditionalFormatting());
 		return c;
+		}
+
+	public static FacilioChain getImportHistoryListChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForImportProcess());
+		c.addCommand(new GetImportHistoryListCommand());
+		return c;
 	}
 }

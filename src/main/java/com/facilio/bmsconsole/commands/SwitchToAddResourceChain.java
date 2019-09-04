@@ -40,6 +40,13 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 				(facilioModule.getExtendModule() != null &&  facilioModule.getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))
 				) {
 			FacilioChain c = TransactionChainFactory.getGenericImportChain();
+			JSONObject importMeta = importProcessContext.getImportJobMetaJson();
+			Long siteId;
+			JSONObject moduleStaticFields = (JSONObject) importMeta.get(ImportAPI.ImportProcessConstants.MODULE_STATIC_FIELDS);
+			if(moduleStaticFields != null && !moduleStaticFields.isEmpty()) {
+				siteId = (Long)moduleStaticFields.get(FacilioConstants.ContextNames.SITE);
+				context.put(FacilioConstants.ContextNames.SITE, siteId);
+			}
 			c.execute(context);	
 		}
 		
@@ -55,11 +62,11 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 		
 		else if(facilioModule.getName().equals(FacilioConstants.ContextNames.PURCHASED_ITEM)) {
 			JSONObject importMeta = importProcessContext.getImportJobMetaJson();
-			Long StoreRoom;
+			Long storeRoom;
 			JSONObject moduleStaticFields = (JSONObject) importMeta.get(ImportAPI.ImportProcessConstants.MODULE_STATIC_FIELDS);
 			if(moduleStaticFields != null && !moduleStaticFields.isEmpty()) {
-				StoreRoom = (Long)moduleStaticFields.get(FacilioConstants.ContextNames.STORE_ROOM);
-				context.put(FacilioConstants.ContextNames.STORE_ROOM, StoreRoom);
+				storeRoom = (Long)moduleStaticFields.get(FacilioConstants.ContextNames.STORE_ROOM);
+				context.put(FacilioConstants.ContextNames.STORE_ROOM, storeRoom);
 			}
 			
 			
@@ -77,11 +84,11 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 		
 		else if(facilioModule.getName().equals(FacilioConstants.ContextNames.PURCHASED_TOOL)) {
 			JSONObject importMeta = importProcessContext.getImportJobMetaJson();
-			Long StoreRoom;
+			Long storeRoom;
 			JSONObject moduleStaticFields = (JSONObject) importMeta.get(ImportAPI.ImportProcessConstants.MODULE_STATIC_FIELDS);
 			if(moduleStaticFields != null && !moduleStaticFields.isEmpty()) {
-				StoreRoom = (Long)moduleStaticFields.get(FacilioConstants.ContextNames.STORE_ROOM);
-				context.put(FacilioConstants.ContextNames.STORE_ROOM, StoreRoom);
+				storeRoom = (Long)moduleStaticFields.get(FacilioConstants.ContextNames.STORE_ROOM);
+				context.put(FacilioConstants.ContextNames.STORE_ROOM, storeRoom);
 			}
 		
 			List<PurchasedToolContext> tools = new ArrayList<PurchasedToolContext>();

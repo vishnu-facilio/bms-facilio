@@ -17,6 +17,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
@@ -54,16 +55,23 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		int row_no = 0;
-	
+		
+		JSONObject importMeta = importProcessContext.getImportJobMetaJson();
+		Long siteId = null;
+		JSONObject moduleStaticFields = (JSONObject) importMeta.get(ImportAPI.ImportProcessConstants.MODULE_STATIC_FIELDS);
+		if(moduleStaticFields != null && !moduleStaticFields.isEmpty()) {
+			siteId = (Long)moduleStaticFields.get(FacilioConstants.ContextNames.SITE);
+		}
+		
 		if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) ||
 				(importProcessContext.getModule().getExtendModule()!= null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
-			if(!fieldMapping.containsKey("resource__name") || !fieldMapping.containsKey(importProcessContext.getModule().getName() + "__site")) {
+			if(!fieldMapping.containsKey("resource__name") || (siteId == null)) {
 				ArrayList<String> columns = new ArrayList<String>();
-				if(!fieldMapping.containsKey("resource__name") &&!fieldMapping.containsKey(importProcessContext.getModule().getName() + "__site") ) {
+				if(!fieldMapping.containsKey("resource__name") && (siteId == null) ) {
 					columns.add("Asset Name");
 					columns.add("Site");	
 				}
-				else if(!fieldMapping.containsKey(importProcessContext.getModule().getName() + "__site")) {
+				else if(siteId == null) {
 					columns.add("Site");
 				}
 				else {
@@ -182,15 +190,16 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 				if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) ||
 						(importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
 					String name = fieldMapping.get("resource__name");
-					String site = fieldMapping.get(importProcessContext.getModule().getName() + "__site");
+//					String site = fieldMapping.get(importProcessContext.getModule().getName() + "__site");
 					
-					if(colVal.get(name) == null || colVal.get(site) == null) {
+					
+					if(colVal.get(name) == null || siteId == null) {
 						ArrayList<String> columns = new ArrayList<String>();
-						if((colVal.get(name) == null || !colVal.containsKey(name)) && (colVal.get(site) == null || !colVal.containsKey(site))) {
+						if((colVal.get(name) == null || !colVal.containsKey(name)) && (siteId == null)) {
 							columns.add("Name");
 							columns.add("Site");	
 						}
-						else if(colVal.get(site) == null || !colVal.containsKey(site)) {
+						else if(siteId == null) {
 							columns.add("Site");
 						}
 						else {
@@ -200,7 +209,7 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 						throw new ImportAssetMandatoryFieldsException(row_no,columns, new Exception());
 					}
 					else {
-						uniqueString.append(colVal.get(name) + "__" + colVal.get(site));
+						uniqueString.append(colVal.get(name) + "__" + siteId);
 					}
 				}
 				else if(requiredFields.size() != 0) {

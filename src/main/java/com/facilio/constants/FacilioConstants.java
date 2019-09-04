@@ -1223,6 +1223,8 @@ public class FacilioConstants {
 		public static final String DATA = "data";
 		public static final String CONDITIONAL_FORMATTING_RESULT = "conditionalFormattingResult";
 		public static final String CONDITIONAL_FORMATTINGS = "conditionalFormattings";
+		public static final String IMPORT_PROCESS_CONTEXT_LIST = "importProcessContextList";
+		
 
 
 	

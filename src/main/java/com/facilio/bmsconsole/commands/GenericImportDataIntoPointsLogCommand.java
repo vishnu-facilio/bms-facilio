@@ -61,7 +61,7 @@ public class GenericImportDataIntoPointsLogCommand implements Command {
 			
 			logContext.setImportId(importProcessContext.getId());
 			logContext.setOrgId(importProcessContext.getOrgId());
-			logContext.setTotal_rows(row_count);
+			importProcessContext.setTotalRows(row_count);
 			
 			
 			if(importProcessContext.getImportMode() == PointsProcessContext.ImportMode.NORMAL.getValue()) {

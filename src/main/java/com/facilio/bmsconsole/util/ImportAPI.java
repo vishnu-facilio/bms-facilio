@@ -44,6 +44,8 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
+import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
@@ -629,7 +631,7 @@ public class ImportAPI {
 						fields.remove("purposeSpace");
 					}
 					
-					fields.add("site");
+//					fields.add("site");
 					fields.add("building");
 					fields.add("floor");
 					fields.add("spaceName");
@@ -675,7 +677,11 @@ public class ImportAPI {
 					}
 				}
 		}
-			if (!fields.contains("site") && FieldUtil.isSiteIdFieldPresent(facilioModule) && AccountUtil.getCurrentSiteId() == -1) {
+			if (!(facilioModule.getName().equals(FacilioConstants.ContextNames.ASSET)
+					|| (facilioModule.getExtendModule() != null
+							&& facilioModule.getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET)))
+					&& !fields.contains("site") && FieldUtil.isSiteIdFieldPresent(facilioModule)
+					&& AccountUtil.getCurrentSiteId() == -1) {
 				fields.add("site");
 			}
 		}
@@ -684,6 +690,36 @@ public class ImportAPI {
 			log.info("Exception occurred ", e);
 		}
 		return fields;
+	}
+	
+	public static JSONArray getIgnoreFields(String module, Integer importMode) throws Exception
+	{
+		JSONArray fields = new JSONArray();
+		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule facilioModule =  bean.getModule(module);
+		
+		if(facilioModule.getName().equals(FacilioConstants.ContextNames.ASSET) ||
+				(facilioModule.getExtendModule() != null && facilioModule.getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
+			if(importMode == 1 || importMode == null) {
+				fields.add("category");
+			}
+		}
+		return fields;
+		
+	}
+	
+	public static ImportProcessContext updateTotalRows (ImportProcessContext importProcessContext) throws Exception {
+		
+		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
+				.table(ModuleFactory.getImportProcessLogModule().getTableName())
+				.select(FieldFactory.getImportProcessLogFields())
+				.andCondition(CriteriaAPI.getCondition("IMPORTID", "importId", importProcessContext.getId().toString() ,NumberOperators.EQUALS));
+		List<Map<String,Object>> result = selectRecordBuilder.get();
+		if (!result.isEmpty()) {
+			importProcessContext.setTotalRows(result.size());
+		}
+		return importProcessContext;
+		
 	}
 	
 	public static boolean isRemovableFieldOnImport(String name) {

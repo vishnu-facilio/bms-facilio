@@ -12,6 +12,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.ImportProcessLogContext;
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
@@ -63,14 +64,10 @@ public class ImportDataAction extends FacilioAction {
 		
 		FacilioChain uploadFile = TransactionChainFactory.uploadImportFileChain();
 		uploadFile.execute(context);
-		
+
 		ImportProcessContext imp = (ImportProcessContext) context.get(FacilioConstants.ContextNames.IMPORT_PROCESS_CONTEXT);
 		setResult(FacilioConstants.ContextNames.IMPORT_PROCESS_CONTEXT ,imp);
         
-		return SUCCESS;
-	}
-	public String displayColumnFieldMapping()
-	{
 		return SUCCESS;
 	}
 	
@@ -216,6 +213,7 @@ public class ImportDataAction extends FacilioAction {
 		}
 		
 		importProcessContext.setStatus(ImportProcessContext.ImportStatus.VALIDATION_COMPLETE.getValue());
+		importProcessContext = ImportAPI.updateTotalRows(importProcessContext);
 		ImportAPI.updateImportProcess(importProcessContext);
 		return SUCCESS;
 	}
@@ -227,12 +225,26 @@ public class ImportDataAction extends FacilioAction {
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getImportProcessModule().getTableName())
 				.select(FieldFactory.getImportProcessFields())
-				.andCustomWhere("ORGID = ?", orgId)
 				.orderBy("IMPORT_TIME desc")
 				.limit(10);
 		
 		List<Map<String, Object>> temp = selectRecordBuilder.get();
 		importHistory = FieldUtil.getAsBeanListFromMapList(temp, ImportProcessContext.class);
+		return SUCCESS;
+	}
+	
+	public String fetchImportHistoryList() throws Exception{
+		
+		FacilioChain chain = ReadOnlyChainFactory.getImportHistoryListChain();
+
+		chain.getContext().put(FacilioConstants.ContextNames.COUNT, count);
+		chain.getContext().put(FacilioConstants.ContextNames.IMPORT_MODE, importMode);
+		
+		chain.execute();
+		List<ImportProcessContext> historyDetailsList;
+		historyDetailsList = (List<ImportProcessContext>) chain.getContext().get(FacilioConstants.ContextNames.RECORD_LIST);
+		setResult(FacilioConstants.ContextNames.IMPORT_PROCESS_CONTEXT_LIST, historyDetailsList);
+
 		return SUCCESS;
 	}
 	
@@ -499,6 +511,13 @@ public class ImportDataAction extends FacilioAction {
 	private List<AssetContext> chillerAssets;
 	public List<AssetContext> getChillerAssets() {
 		return chillerAssets;
+	}
+	private int count;
+	public int getCount() {
+		return count;
+	}
+	public void setCount(int count) {
+		this.count = count;
 	}
 	
 }

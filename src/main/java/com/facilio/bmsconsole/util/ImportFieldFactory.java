@@ -174,7 +174,9 @@ public class ImportFieldFactory {
 
 		if(module.getName().equals(FacilioConstants.ContextNames.ASSET)) {
 			for(ImportSetting setting : ImportProcessContext.ImportSetting.values()) {
-				options.put(setting.toString(), setting.getValue());
+				if (setting.toString() != ImportSetting.BOTH.toString()) {
+					options.put(setting.toString(), setting.getValue());
+				}
 			}
 		}
 		else if(
