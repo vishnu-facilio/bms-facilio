@@ -141,9 +141,6 @@ public class WorkflowRuleAPI {
 			case STATE_FLOW:
 				addExtendedProps(ModuleFactory.getStateFlowModule(), FieldFactory.getStateFlowFields(), ruleProps);
 				break;
-			case RECORD_SPECIFIC_RULE:
-				//addExtendedProps(ModuleFactory.getRecordSpecificRuleModule(), FieldFactory.getRecordSpecificRuleFields(), ruleProps);
-				break;
 			default:
 				break;
 		}
@@ -210,60 +207,7 @@ public class WorkflowRuleAPI {
 			long workflowId = WorkflowUtil.addWorkflow(workflowRuleContext.getWorkflow());
 			workflowRuleContext.setWorkflowId(workflowId);
 		}
-		
-//		if(workflowRuleContext.getEventId() == -1 && workflowRuleContext.getEvent() != null) {
-//			workflowRuleContext.setEventId(addOrGetWorkflowEvent(workflowRuleContext.getEvent()));
-//		}
 	}
-	
-//	public static final WorkflowEventContext getWorkFlowEvent(EventType type, long moduleId) throws Exception {
-//		FacilioModule module = ModuleFactory.getWorkflowEventModule();
-//		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
-//														.select(FieldFactory.getWorkflowEventFields())
-//														.table(module.getTableName())
-////														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-//														.andCustomWhere("MODULEID = ? AND ACTIVITY_TYPE = ?", moduleId, type.getValue());
-//
-//		List<Map<String, Object>> eventProps = selectBuilder.get();
-//		if (eventProps != null && !eventProps.isEmpty()) {
-//			return FieldUtil.getAsBeanFromMap(eventProps.get(0), WorkflowEventContext.class);
-//		}
-//		return null;
-//	}
-
-//	public static final long addOrGetWorkflowEvent(WorkflowEventContext event) throws Exception {
-//		if(event.getActivityTypeEnum() == null) {
-//			throw new IllegalArgumentException("Activity type cannot be null during addition of Workflow Event");
-//		}
-//		if(event.getModuleId() == -1 && event.getModuleName() != null && !event.getModuleName().isEmpty()) {
-//			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-//			FacilioModule module = modBean.getModule(event.getModuleName());
-//			event.setModuleId(module.getModuleId());
-//		}
-//
-//		if(event.getModuleId() == -1 && event.getModule() != null) {
-//			event.setModuleId(event.getModule().getModuleId());
-//		}
-//
-//		if(event.getModuleId() == -1) {
-//			throw new IllegalArgumentException("Module cannot be null while adding Workflow event");
-//		}
-//
-//		WorkflowEventContext existingEvent = getWorkFlowEvent(event.getActivityTypeEnum(), event.getModuleId());
-//		if (existingEvent != null) {
-//			return existingEvent.getId();
-//		}
-//		event.setOrgId(AccountUtil.getCurrentOrg().getId());
-//		FacilioModule module = ModuleFactory.getWorkflowEventModule();
-//		Map<String, Object> eventProps = FieldUtil.getAsProperties(event);
-//		GenericInsertRecordBuilder eventBuilder = new GenericInsertRecordBuilder()
-//														.fields(FieldFactory.getWorkflowEventFields())
-//														.table(module.getTableName())
-//														.addRecord(eventProps);
-//
-//		eventBuilder.save();
-//		return (long) eventProps.get("id");
-//	}
 	
 	public static WorkflowRuleContext updateWorkflowRuleWithChildren(WorkflowRuleContext rule) throws Exception {
 		WorkflowRuleContext oldRule = getWorkflowRule(rule.getId());
@@ -302,7 +246,6 @@ public class WorkflowRuleAPI {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 													.table(module.getTableName())
 													.fields(FieldFactory.getWorkflowRuleFields())
-//													.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 													.andCondition(CriteriaAPI.getIdCondition(rule.getId(), module));
 		return updateBuilder.update(ruleProps);
 	}
@@ -318,7 +261,6 @@ public class WorkflowRuleAPI {
 														.table(extendedModule.getTableName())
 														.innerJoin(workflowModule.getTableName())
 														.on(extendedModule.getTableName()+".ID = "+workflowModule.getTableName()+".ID")
-//														.andCondition(CriteriaAPI.getCurrentOrgIdCondition(workflowModule))
 														.andCondition(CriteriaAPI.getIdCondition(extendedRule.getId(), extendedModule));
 		
 		return updateBuilder.update(FieldUtil.getAsProperties(extendedRule));
@@ -413,7 +355,6 @@ public class WorkflowRuleAPI {
 		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
 				.table("Workflow_Rule")
 				.select(FieldFactory.getWorkflowRuleFields())
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getIdCondition(ids, module))
 				;
 		List<WorkflowRuleContext> rules = getWorkFlowsFromMapList(ruleBuilder.get(), fetchChildren, fetchExtended);
@@ -424,22 +365,6 @@ public class WorkflowRuleAPI {
 		}
 		return null;
 	}
-	
-//	public static WorkflowEventContext getWorkflowEvent(long id) throws Exception {
-//		FacilioModule module = ModuleFactory.getWorkflowEventModule();
-//		GenericSelectRecordBuilder ruleBuilder = new GenericSelectRecordBuilder()
-//				.select(FieldFactory.getWorkflowEventFields())
-//				.table(module.getTableName())
-////				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
-//				.andCondition(CriteriaAPI.getIdCondition(id, module))
-//				;
-//
-//		List<WorkflowEventContext> events = getWorkFlowEventsFromMapList(ruleBuilder.get());
-//		if (events != null && !events.isEmpty()) {
-//			return events.get(0);
-//		}
-//		return null;
-//	}
 	
 	public static List<WorkflowRuleContext> getWorkflowRules(long moduleId) throws Exception {
 		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
@@ -452,19 +377,14 @@ public class WorkflowRuleAPI {
 	
 	public static List<WorkflowRuleContext> getWorkflowRulesOfType(RuleType type, boolean fetchChildren) throws Exception{
 		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
-//		fields.addAll(FieldFactory.getWorkflowEventFields());
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		FacilioField ruleTypeField = fieldMap.get("ruleType");
 		FacilioField latestVersionField = fieldMap.get("latestVersion");
 		
 		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
-//		FacilioModule eventModule = ModuleFactory.getWorkflowEventModule();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(module.getTableName())
 				.select(fields)
-//				.innerJoin(eventModule.getTableName())
-//				.on(module.getTableName()+".EVENT_ID = "+ eventModule.getTableName() +".ID")
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(ruleTypeField, String.valueOf(type.getIntVal()), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(latestVersionField, String.valueOf(true), BooleanOperators.IS))
 				;
@@ -475,20 +395,15 @@ public class WorkflowRuleAPI {
 	
 	public static List<WorkflowRuleContext> getWorkflowRules(RuleType type, boolean fetchChildren, Criteria criteria, String searchQuery, JSONObject pagination) throws Exception{
 		List<FacilioField> fields = FieldFactory.getWorkflowRuleFields();
-//		fields.addAll(FieldFactory.getWorkflowEventFields());
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
 		FacilioField ruleTypeField = fieldMap.get("ruleType");
 		FacilioField latestVersionField = fieldMap.get("latestVersion");
 		FacilioField ruleNameField = FieldFactory.getAsMap(fields).get("name");
 		
 		FacilioModule module = ModuleFactory.getWorkflowRuleModule();
-//		FacilioModule eventModule = ModuleFactory.getWorkflowEventModule();
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
 				.table(module.getTableName())
 				.select(fields)
-//				.innerJoin(eventModule.getTableName())
-//				.on(module.getTableName()+".EVENT_ID = "+ eventModule.getTableName() +".ID")
-//				.andCondition(CriteriaAPI.getCurrentOrgIdCondition(module))
 				.andCondition(CriteriaAPI.getCondition(ruleTypeField, String.valueOf(type.getIntVal()), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(latestVersionField, String.valueOf(true), BooleanOperators.IS))
 				;
@@ -788,20 +703,6 @@ public class WorkflowRuleAPI {
 		return readingRule;
 	}
 	
-//	private static List<WorkflowEventContext> getWorkFlowEventsFromMapList(List<Map<String, Object>> props) throws Exception {
-//		if(props != null && props.size() > 0) {
-//			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-//			List<WorkflowEventContext> workflowEvents = new ArrayList<>();
-//			for(Map<String, Object> prop : props) {
-//				WorkflowEventContext workflowEvent = FieldUtil.getAsBeanFromMap(prop, WorkflowEventContext.class);
-//				workflowEvent.setModule(modBean.getModule(workflowEvent.getModuleId()));
-//				workflowEvents.add(workflowEvent);
-//			}
-//			return workflowEvents;
-//		}
-//		return null;
-//	}
-	
 	public static void deleteWorkFlowRules(List<Long> workflowIds) throws Exception {
 		if (workflowIds != null && !workflowIds.isEmpty()) {
 			List<WorkflowRuleContext> rules = getWorkflowRules(workflowIds);
@@ -899,25 +800,15 @@ public class WorkflowRuleAPI {
 		Map<String, Object> rulePlaceHolders = workflowRule.constructPlaceHolders(moduleName, record, recordPlaceHolders, context);
 		boolean fieldChangeFlag = false, miscFlag = false, criteriaFlag = false, workflowFlag = false , siteId = false;
 
-		long currentTime = System.currentTimeMillis();
 		siteId = workflowRule.evaluateSite(moduleName, record, rulePlaceHolders, context);
-		LOGGER.debug("Time taken for site: " + (System.currentTimeMillis() - currentTime));
-//		currentTime = System.currentTimeMillis();
 		if (siteId) {
 			fieldChangeFlag = evalFieldChange(workflowRule, changeSet);
-			LOGGER.debug("Time taken for fieldchange: " + (System.currentTimeMillis() - currentTime));
-//			currentTime = System.currentTimeMillis();
 			if (fieldChangeFlag) {
 				miscFlag = workflowRule.evaluateMisc(moduleName, record, rulePlaceHolders, context);
-				LOGGER.debug("Time taken for misc: " + (System.currentTimeMillis() - currentTime));
-//				currentTime = System.currentTimeMillis();
 				if (miscFlag) {
 					criteriaFlag = workflowRule.evaluateCriteria(moduleName, record, rulePlaceHolders, context);
-					LOGGER.debug("Time taken for criteria: " + (System.currentTimeMillis() - currentTime));
-//					currentTime = System.currentTimeMillis();
 					if (criteriaFlag) {
 						workflowFlag = workflowRule.evaluateWorkflowExpression(moduleName, record, rulePlaceHolders, context);
-						LOGGER.debug("Time taken for workflow: " + (System.currentTimeMillis() - currentTime));
 					}
 				}
 			}
@@ -936,14 +827,12 @@ public class WorkflowRuleAPI {
 		
 		boolean result = fieldChangeFlag && miscFlag && criteriaFlag && workflowFlag && siteId ;
 		if (shouldExecute) {
-//			currentTime = System.currentTimeMillis();
 			if(result) {
 				workflowRule.executeTrueActions(record, context, rulePlaceHolders);
 			}
 			else {
 				workflowRule.executeFalseActions(record, context, rulePlaceHolders);
 			}
-			LOGGER.debug("Workflow Execute time: " + (System.currentTimeMillis() - currentTime));
 		}
 		return result;
 	}

@@ -3367,6 +3367,17 @@
 			<param name="moduleName">{1}</param>
 		</action>
 	</package>
+
+	<package name="moduleWorkflowRule" namespace="/api/v2/modules/rules" extends="v2Api">
+		<action name="list" class="com.facilio.bmsconsole.actions.ModuleWorkflowRuleAction"
+				method="fetchWorkflowRules" />
+		<action name="add" class="com.facilio.bmsconsole.actions.ModuleWorkflowRuleAction"
+				method="addRule" />
+		<action name="update" class="com.facilio.bmsconsole.actions.ModuleWorkflowRuleAction"
+				method="updateRule" />
+		<action name="delete" class="com.facilio.bmsconsole.actions.ModuleWorkflowRuleAction"
+				method="deleteRule" />
+	</package>
 	
 	<package name="baseSpaceApiV2" namespace="/api/v2/basespaces" extends="v2Api">
 		<action name="*" class="com.facilio.bmsconsole.actions.BaseSpaceAction"

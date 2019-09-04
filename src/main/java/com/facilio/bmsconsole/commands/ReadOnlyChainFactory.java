@@ -1402,8 +1402,8 @@ public class ReadOnlyChainFactory {
 		return c;
 	}
 
-	public static Chain getCustomModuleWorkflowRulesChain() {
-		Chain c = getDefaultChain();
+	public static FacilioChain getCustomModuleWorkflowRulesChain() {
+		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetCustomModuleWorkflowRulesCommand());
 		return c;
 	}

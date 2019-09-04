@@ -3456,6 +3456,19 @@ public class TransactionChainFactory {
 			return c;
 		}
 
+	public static FacilioChain getAddModuleWorkflowRuleChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new ModuleWorkflowRuleCommand());
+		chain.addCommand(addWorkflowRuleChain());
+		return chain;
+	}
+
+	public static FacilioChain getUpdateModuleWorkflowRuleChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(new ModuleWorkflowRuleCommand());
+		chain.addCommand(updateWorkflowRuleChain());
+		return chain;
+	}
 }
 
 
