@@ -194,7 +194,9 @@ public class GroupBeanImpl implements GroupBean {
 				.table("ORG_Users")
 				.innerJoin("GroupMembers")
 				.on("GroupMembers.ORG_USERID = ORG_Users.ORG_USERID")
-				.andCustomWhere("GroupMembers.GROUPID = ?", groupId);
+				.andCustomWhere("GroupMembers.GROUPID = ?", groupId)
+				.andCondition(CriteriaAPI.getCondition("ORG_Users.ORGID", "orgId", String.valueOf(AccountUtil.getCurrentOrg().getOrgId()), NumberOperators.EQUALS))
+				;
 		
 		List<Map<String, Object>> props = selectBuilder.get();
 		if (props != null && !props.isEmpty()) {
