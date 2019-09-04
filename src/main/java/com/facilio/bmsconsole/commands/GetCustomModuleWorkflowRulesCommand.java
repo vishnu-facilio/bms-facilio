@@ -23,7 +23,7 @@ public class GetCustomModuleWorkflowRulesCommand extends FacilioCommand {
             }
 
             Criteria criteria = new Criteria();
-            WorkflowRuleAPI.getWorkflowRules(WorkflowRuleContext.RuleType.CUSTOM_MODULE_RULE, false, criteria, null, null);
+            WorkflowRuleAPI.getWorkflowRules(WorkflowRuleContext.RuleType.MODULE_RULE, false, criteria, null, null);
         }
         return false;
     }

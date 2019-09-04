@@ -559,7 +559,7 @@ public class WorkflowRuleContext implements Serializable {
 		RECORD_SPECIFIC_RULE, //34
 		CONTROL_ACTION_READING_ALARM_RULE,
 		CONTROL_ACTION_SCHEDULED_RULE,
-		CUSTOM_MODULE_RULE, // 37
+		MODULE_RULE, // 37
 		;
 		//Always add at the end
 		
