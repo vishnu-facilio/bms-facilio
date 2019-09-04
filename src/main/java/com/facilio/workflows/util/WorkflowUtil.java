@@ -363,9 +363,6 @@ public class WorkflowUtil {
 		paramMap = workflowContext.getVariableResultMap();
 		
 		workflowContext.setIgnoreNullParams(ignoreNullExpressions);
-		if(AccountUtil.getCurrentOrg().getId() == 232l && (workflowContext.getId() == 9136l || workflowContext.getId() == 9081l)) {
-			log.error(workflowContext.getId() +" -- param map - "+paramMap);
-		}
 		log.debug("param" + (paramMap != null ? paramMap : ""));
 		Object result = workflowContext.executeWorkflow();
 		
