@@ -38,7 +38,14 @@ public class ControlActionAction extends FacilioAction {
 	String value;
 	long controlGroupId = -1l;
 	ControlGroupContext controlGroup;
+	long assetCategoryId;
 	
+	public long getAssetCategoryId() {
+		return assetCategoryId;
+	}
+	public void setAssetCategoryId(long assetCategoryId) {
+		this.assetCategoryId = assetCategoryId;
+	}
 	public ControlGroupContext getControlGroup() {
 		return controlGroup;
 	}
@@ -172,6 +179,7 @@ public class ControlActionAction extends FacilioAction {
 		FacilioContext constructListContext = new FacilioContext();
 		
 		constructListContext.put(FacilioConstants.ContextNames.RESOURCE_ID, resourceId);
+		constructListContext.put(FacilioConstants.ContextNames.ASSET_CATEGORY, assetCategoryId);
 		
 		Chain commandChain = ReadOnlyChainFactory.getControllableFieldsChain();
 		
