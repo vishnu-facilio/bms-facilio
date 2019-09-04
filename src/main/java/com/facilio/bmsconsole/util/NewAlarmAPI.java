@@ -424,7 +424,7 @@ public class NewAlarmAPI {
 		return null;
 	}
 
-	public static List<AlarmOccurrenceContext> getReadingAlarmOccurrences(List<Long> resourceId, Long ruleId, long fieldId, long startTime, long endTime, Long alarmId) throws Exception {
+	public static List<AlarmOccurrenceContext> getReadingAlarmOccurrences(List<Long> resourceId, Long ruleId, long fieldId, long startTime, long endTime, Long alarmId, Long parentAlarmId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -443,6 +443,16 @@ public class NewAlarmAPI {
 			Map<String, FacilioField> readingAlarmFieldMap = FieldFactory.getAsMap(modBean.getAllFields(readingAlarmModule.getName()));
 			selectBuilder.andCondition(CriteriaAPI.getCondition(readingAlarmFieldMap.get("rule"), String.valueOf(ruleId), PickListOperators.IS));
 			ruleAvailable = true;
+		}
+		if (parentAlarmId != null && parentAlarmId != -1) {
+			FacilioModule anomalyOccurrence = modBean.getModule(FacilioConstants.ContextNames.ANOMALY_ALARM_OCCURRENCE);
+			Map<String, FacilioField> anomalyOccurrenceFields = FieldFactory.getAsMap(modBean.getAllFields(anomalyOccurrence.getName()));
+			selectBuilder
+				.innerJoin(anomalyOccurrence.getTableName())
+				.on("AlarmOccurrence.ID = " + anomalyOccurrence.getTableName() + ".ID");
+			selectBuilder.andCondition(CriteriaAPI.getCondition(anomalyOccurrenceFields.get("parentAlarm"), String.valueOf(parentAlarmId), PickListOperators.IS));
+			selectBuilder.andCondition(CriteriaAPI.getCondition(anomalyOccurrenceFields.get("mlanomalyType"),
+					String.valueOf(MLAlarmOccurenceContext.MLAnomalyType.RCA.getIndex()), NumberOperators.EQUALS));
 		}
 		if (alarmId != null) {
 			FacilioModule alarmOccurence = modBean.getModule(FacilioConstants.ContextNames.ALARM_OCCURRENCE);
