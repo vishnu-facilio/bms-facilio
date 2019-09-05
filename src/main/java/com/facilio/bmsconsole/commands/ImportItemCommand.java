@@ -47,20 +47,23 @@ public class ImportItemCommand extends FacilioCommand {
 					else if(purchasedItem.getSerialNumber() != null && !purchasedItem.getSerialNumber().equalsIgnoreCase("null")) {
 						itemType.setIsRotating(true);
 					}
-					InventoryCategoryContext category = new InventoryCategoryContext();;
-					if(categoryNameVsIdMap != null && categoryNameVsIdMap.containsKey(itemType.getCategory().getName())) {
-						category.setId(categoryNameVsIdMap.get(itemType.getCategory().getName()));
-						itemType.setCategory(category);
-					} else {
-						category.setName(itemType.getCategory().getName());
-						category.setDisplayName(itemType.getCategory().getName());
-						category.setId(InventoryCategoryApi.insertInventoryCategory(category));
-						if(categoryNameVsIdMap == null) {
-							categoryNameVsIdMap = new HashMap<String, Long>();
+					InventoryCategoryContext category = new InventoryCategoryContext();
+					if (itemType.getCategory() != null) {
+						if (categoryNameVsIdMap != null
+								&& categoryNameVsIdMap.containsKey(itemType.getCategory().getName())) {
+							category.setId(categoryNameVsIdMap.get(itemType.getCategory().getName()));
+							itemType.setCategory(category);
+						} else {
+							category.setName(itemType.getCategory().getName());
+							category.setDisplayName(itemType.getCategory().getName());
+							category.setId(InventoryCategoryApi.insertInventoryCategory(category));
+							if (categoryNameVsIdMap == null) {
+								categoryNameVsIdMap = new HashMap<String, Long>();
+							}
+							categoryNameVsIdMap.put(category.getName(), category.getId());
 						}
-						categoryNameVsIdMap.put(category.getName(), category.getId());
+						itemType.setCategory(category);
 					}
-					itemType.setCategory(category);
 					long insertItemTypeId = insertItemType(modBean, itemType);
 					if(itemNameVsIdMap == null) {
 						itemNameVsIdMap = new HashMap<String, Long>();
