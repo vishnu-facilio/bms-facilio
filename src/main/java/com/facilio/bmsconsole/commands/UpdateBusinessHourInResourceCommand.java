@@ -36,6 +36,9 @@ public class UpdateBusinessHourInResourceCommand extends FacilioCommand {
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.RESOURCE);
 		long businesshoursId =(long) context.get(FacilioConstants.ContextNames.ID);
 		long resourceid =(long) context.get(FacilioConstants.ContextNames.RESOURCE_ID);
+		if (resourceid <= 0) {
+			return false;
+		}
 		BusinessHoursContext businessHours = (BusinessHoursContext) context
 				.get(FacilioConstants.ContextNames.BUSINESS_HOUR);
 		ResourceContext resource = ResourceAPI.getResource(resourceid);
