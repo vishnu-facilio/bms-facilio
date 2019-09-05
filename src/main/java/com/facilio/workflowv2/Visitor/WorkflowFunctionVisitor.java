@@ -23,6 +23,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
+import com.facilio.db.criteria.operators.FieldOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.db.criteria.operators.StringOperators;
@@ -561,6 +562,9 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     		else if (operatorValue.asObject() instanceof List) {
     			operator = StringOperators.IS;
     		}
+    		else if (operatorValue.asObject() instanceof FacilioField) {
+    			operator = FieldOperator.EQUAL;
+    		}
     		else {
     			operator = NumberOperators.EQUALS;
     		}
@@ -575,12 +579,20 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     		else if (operatorValue.asObject() instanceof List) {
     			operator = StringOperators.ISN_T;
     		}
+    		else if (operatorValue.asObject() instanceof FacilioField) {
+    			operator = FieldOperator.NOT_EQUAL;
+    		}
     		else {
     			operator = NumberOperators.NOT_EQUALS;
     		}
     		break;
     	default:
-    		operator = NumberOperators.getAllOperators().get(ctx.op.getText());
+    		if (operatorValue.asObject() instanceof FacilioField) {
+    			operator = FieldOperator.getAllOperators().get(ctx.op.getText());
+    		}
+    		else {
+    			operator = NumberOperators.getAllOperators().get(ctx.op.getText());
+    		}
     		break;
     	}
     	condition.setOperator(operator);
@@ -589,6 +601,10 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     	
     	if (operatorValue.asObject() instanceof List) {
     		value = StringUtils.join(operatorValue.asList(), ",");
+		}
+    	if (operatorValue.asObject() instanceof FacilioField) {
+    		FacilioField field = operatorValue.asField();
+    		value = field.getModule().getName()+"."+field.getName();
 		}
     	
     	condition.setValue(value);

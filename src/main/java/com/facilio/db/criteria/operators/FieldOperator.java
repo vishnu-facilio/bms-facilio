@@ -1,6 +1,9 @@
 package com.facilio.db.criteria.operators;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.collections.Predicate;
 import org.apache.commons.lang3.StringUtils;
@@ -184,5 +187,16 @@ public enum FieldOperator implements Operator<Object> {
 	public List<Object> computeValues(Object value) {
 		return null;
 	}
-
+	
+	private static final Map<String, Operator> operatorMap = Collections.unmodifiableMap(initOperatorMap());
+	private static Map<String, Operator> initOperatorMap() {
+		Map<String, Operator> operatorMap = new HashMap<>();
+		for(Operator operator : values()) {
+			operatorMap.put(operator.getOperator().trim(), operator);
+		}
+		return operatorMap;
+	}
+	public static Map<String, Operator> getAllOperators() {
+		return operatorMap;
+	}
 }
