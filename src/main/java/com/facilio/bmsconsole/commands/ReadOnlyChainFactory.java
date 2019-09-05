@@ -118,6 +118,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GenerateSearchConditionCommand());
 		c.addCommand(new GenericGetModuleDataListCommand());
 		c.addCommand(new SpecialHandlingToGetModuleDataListCommand());
+		c.addCommand(new LookupPrimaryFieldHandlingCommand());
 		return c;
 	}
 	
@@ -125,6 +126,7 @@ public class ReadOnlyChainFactory {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new AddLookupFieldMetaList());
 		c.addCommand(new GenericGetModuleDataDetailCommand());
+		c.addCommand(new LookupPrimaryFieldHandlingCommand());
 		return c;
 	}
 	

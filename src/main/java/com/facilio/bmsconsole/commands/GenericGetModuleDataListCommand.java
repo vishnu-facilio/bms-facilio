@@ -44,6 +44,7 @@ public class GenericGetModuleDataListCommand extends FacilioCommand {
 			fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
 			if (CollectionUtils.isEmpty(fields)) {
 				fields = modBean.getAllFields(moduleName);
+				context.put(FacilioConstants.ContextNames.EXISTING_FIELD_LIST, fields);
 			}
 		}
 		FacilioView view = (FacilioView) context.get(FacilioConstants.ContextNames.CUSTOM_VIEW);
