@@ -53,6 +53,7 @@ public class ControlActionUtil {
 	
 	public static List<ControlGroupContext> getControlActionGroups(List<Long> ids) throws Exception {
 		
+		ModuleBean modbean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getControlGroupFields())
@@ -86,6 +87,8 @@ public class ControlActionUtil {
 				
 				ControlGroupContext controlGroup =  FieldUtil.getAsBeanFromMap(controlGroupProp, ControlGroupContext.class);
 				
+				FacilioField field = modbean.getField(controlGroup.getFieldId());
+				controlGroup.setField(field);
 				controlGroup.setControlGroupInclExclContexts(controlGroupInclExclMap.get(controlGroup.getId()));
 				controlGroup.setControlGroupSpaces(controlSpaceMap.get(controlGroup.getId()));
 				controlGroupContexts.add(controlGroup);

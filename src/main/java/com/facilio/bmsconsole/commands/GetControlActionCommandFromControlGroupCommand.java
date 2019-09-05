@@ -6,7 +6,9 @@ import java.util.List;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.controlaction.context.ControlActionCommandContext;
 import com.facilio.controlaction.context.ControlGroupContext;
 import com.facilio.controlaction.util.ControlActionUtil;
@@ -30,15 +32,22 @@ public class GetControlActionCommandFromControlGroupCommand extends FacilioComma
 					
 					for(Long resourceId : controlGroup.getMatchedResources()) {
 						
-						ControlActionCommandContext controlActionCommand = new ControlActionCommandContext();
-						ResourceContext resourceContext = new ResourceContext();
-						resourceContext.setId(resourceId);
-						controlActionCommand.setResource(resourceContext);
-						controlActionCommand.setFieldId(controlGroup.getFieldId());
-						controlActionCommand.setValue(value);
-						controlActionCommand.setControlActionMode(controlGroup.getMode());
+						ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(resourceId, controlGroup.getField());
 						
-						commands.add(controlActionCommand);
+						if(rdm != null && rdm.isControllable() && rdm.getReadingTypeEnum() == ReadingDataMeta.ReadingType.WRITE) {
+							
+							ControlActionCommandContext controlActionCommand = new ControlActionCommandContext();
+							ResourceContext resourceContext = new ResourceContext();
+							resourceContext.setId(resourceId);
+							controlActionCommand.setResource(resourceContext);
+							controlActionCommand.setFieldId(controlGroup.getFieldId());
+							controlActionCommand.setValue(value);
+							controlActionCommand.setControlActionMode(controlGroup.getMode());
+							controlActionCommand.setRdm(rdm);
+							
+							commands.add(controlActionCommand);
+						}
+						
 					}
 				}
 			}
