@@ -188,6 +188,8 @@
 	</package>
 	
 	<package name="alarmOccurrence" namespace="/api/v2/alarmOccurrence" extends="v2Api">
+		<action name="occurrenceList" 
+			class="com.facilio.events.actions.V2AlarmAction" method="occurrenceList"></action>
 		<action name="list"
 			class="com.facilio.events.actions.V2AlarmAction" method="getAlarmOccurrenceList" />
 		<action name="eventList"
@@ -196,6 +198,10 @@
 			class="com.facilio.events.actions.V2AlarmAction" method="createWO" />
 		<action name="delete"
 			class="com.facilio.events.actions.V2AlarmAction" method="deleteAlarmOccurrence" />
+	</package>
+	<package name="baseEvent" namespace="/api/v2/baseEvent" extends="v2Api">
+		<action name="eventList" 
+			class="com.facilio.events.actions.V2AlarmAction" method="eventList"></action>
 	</package>
 	<package name="newModuleAlarms" namespace="/api/v2/newAlarms/view" extends="v2Api">
 		<action name="*" class="com.facilio.events.actions.V2AlarmAction" method="alarmList">

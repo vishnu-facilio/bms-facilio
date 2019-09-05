@@ -93,6 +93,41 @@ public class V2AlarmAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
+	public String occurrenceList() throws Exception {
+		
+		FacilioContext context = constructListContext();
+ 		context.put(ContextNames.MODULE_NAME, FacilioConstants.ContextNames.ALARM_OCCURRENCE);
+ 		context.put(ContextNames.RECORD_ID, getId());
+ 		Chain occurrenceListChain = ReadOnlyChainFactory.getV2OccurrenceListChain();
+ 		occurrenceListChain.execute(context);
+		
+		if (isFetchCount()) {
+			setResult(ContextNames.COUNT, context.get(ContextNames.RECORD_COUNT));
+		}
+		else {
+			setResult(ContextNames.RECORD_LIST, context.get(ContextNames.RECORD_LIST));
+		}
+ 		
+		return SUCCESS;
+	}
+	
+	
+	public String eventList () throws Exception {
+		FacilioContext context = constructListContext();
+ 		context.put(ContextNames.MODULE_NAME, FacilioConstants.ContextNames.BASE_EVENT);
+ 		context.put(ContextNames.RECORD_ID, getId());
+ 		Chain occurrenceListChain = ReadOnlyChainFactory.getV2EventListChain();
+ 		occurrenceListChain.execute(context);
+		
+		if (isFetchCount()) {
+			setResult(ContextNames.COUNT, context.get(ContextNames.RECORD_COUNT));
+		}
+		else {
+			setResult(ContextNames.RECORD_LIST, context.get(ContextNames.RECORD_LIST));
+		}
+ 		
+		return SUCCESS;
+	}
 	public String getAlarmOccurrenceList() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(ContextNames.RECORD_ID, getId());
