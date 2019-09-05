@@ -3,5 +3,5 @@
 <%@ page import ="java.util.List"%>
 <%
 List<Long> orgs = PreventiveMaintenanceAPI.getOrg();
-PreventiveMaintenanceAPI.migrateScheduleGeneration(orgs);
+PreventiveMaintenanceAPI.verifyScheduleGeneration(orgs);
 %>
