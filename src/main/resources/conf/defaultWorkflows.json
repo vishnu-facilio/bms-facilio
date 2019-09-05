@@ -278,6 +278,173 @@
                 return resultMap;
 		    }"
 		},
+		"46": {
+			"description" : "ML Deviation",
+			"usage" : "AnomalySummary",
+			"workflow" : "Map calculateDeviation(List resourceIds, Number alarmId){
+			  resultMap = {};
+			  mlReadings = Module(\"anomalydetectionmllogreadings\");
+			  date = NameSpace(\"date\");
+			  thisMonthRanges = date.getDateRange(\"Current Month\");
+			  lastMonthRanges = date.getDateRange(\"Last Month\");
+			
+			  occurenceThisMonthCrit = {
+			    criteria: [alarm == alarmId && createdTime == thisMonthRanges]
+			  };
+			  occurenceLastMonthCrit = {
+			    criteria: [alarm == alarmId && createdTime == lastMonthRanges]
+			  };
+			  thismothoccurence =  Module(\"alarmoccurrence\").fetch(occurenceThisMonthCrit);
+			  lastmonthoccurrence = Module(\"alarmoccurrence\").fetch(occurenceLastMonthCrit);
+			  for each rindex,resourceId in resourceIds {
+			    result = {}
+			    deviation = 0
+			    deviationCount = 0
+			    if (thismothoccurence != null) {
+			      for each index,value in thismothoccurence {
+			        endTime = value.clearedTime
+			        if (endTime == null) {
+			          endTime = date.now();
+			        }
+			        ttimes = date.dateRange(value.createdTime, endTime)
+			        thisMonthEnergy = {
+			          criteria: [parentId == resourceId && ttime == ttimes],
+			        }
+			        currentMonthReadings =  mlReadings.fetch(thisMonthEnergy);
+			        if (currentMonthReadings != null) {
+			          for each index,value in currentMonthReadings {
+			            if (value.adjustedUpperBound != 0) {
+			              diffConsu = value.actualValue - value.adjustedUpperBound;
+			              if (diffConsu > 0) {
+			                deviation = deviation + (diffConsu / value.adjustedUpperBound) * 100;
+			                deviationCount = deviationCount + 1
+			              }
+			            }
+			          }
+			        }
+			      }
+			      if (deviationCount > 0) {
+			        deviation = deviation / deviationCount;
+			      }
+			    }
+			    result[\"deviation\"] = deviation
+			    
+			    deviation = 0;
+			    deviationCount = 0;
+			    if (lastmonthoccurrence != null) {
+			      for each index,value in lastmonthoccurrence {
+			        endTime = value.clearedTime
+			        if (endTime == null) {
+			          endTime = date.now();
+			        }
+			        ttimes = date.dateRange(value.createdTime, endTime)
+			        lastMonthEnergy = {
+			          criteria: [parentId == resourceId && ttime == lastMonthRanges],
+			        }
+			        lastMonthReadings =  mlReadings.fetch(lastMonthEnergy);
+			        if (lastMonthReadings != null) {
+			          for each index,value in lastMonthReadings {
+			            if (value.adjustedUpperBound != 0) {
+			              diffConsu = value.actualValue - value.adjustedUpperBound;
+			              if (diffConsu > 0) {
+			                
+			                deviation = deviation + (diffConsu / value.adjustedUpperBound) * 100;
+			                deviationCount = deviationCount + 1
+			              }
+			            }
+			          }
+			        }
+			      }
+			      if (deviationCount > 0) {
+			        deviation = deviation / deviationCount;
+			      }
+			    }
+			    result[\"deviationLastMonth\"] = deviation
+			    
+			    resultMap[resourceId] = result;
+			  }
+			  return resultMap;
+			}"
+		},
+		"47": {
+			"description" : "Mean Time Anomaly Metrics",
+			"usage" : "AnomalySummary",
+			"workflow" : "Map anomalyMeanMetrics(Number alarmId){
+			  date = NameSpace(\"date\");
+			  thisMonthRanges = date.getDateRange(\"Current Month\");
+			  lastMonthRanges = date.getDateRange(\"Last Month\");
+			  alarmoccurrenceModule = Module(\"anomalyalarmoccurrence\");
+			  occurenceThisMonthCrit = null
+			  occurenceLastMonthCrit = null
+			  resMap = {};
+			  occurenceThisMonthCrit = {
+			    criteria: [alarm == alarmId && clearedTime != null && createdTime == thisMonthRanges],
+			    orderBy : \"createdTime\" asc
+			  }
+			  occurenceLastMonthCrit = {
+			    criteria: [alarm == alarmId && clearedTime != null && createdTime == lastMonthRanges],
+			    orderBy : \"createdTime\" asc
+			  }
+			  mtba = 0;
+			  mtbaCount=0;
+			  mttc = 0;
+			  mttcCount=0;
+			  previousClearedTime = 0;
+			  thisMonthOccurence =  alarmoccurrenceModule.fetch(occurenceThisMonthCrit);
+			  if (thisMonthOccurence != null) {
+			    for each index,value in thisMonthOccurence {
+			      createdTime = value.createdTime
+			      if (previousClearedTime != 0) {
+			        mtba = mtba+(createdTime - previousClearedTime)
+			        mtbaCount = mtbaCount+1
+			      }
+			      if (value.clearedTime != null) {
+			        previousClearedTime = value.clearedTime
+			        mttc = mttc + (previousClearedTime - createdTime)
+					mttcCount = mttcCount+1
+			      }
+			    }
+			  }
+			  if (mtbaCount > 0) {
+			      mtba = mtba / (mtbaCount * 1000)
+			  }
+			  if (mttcCount > 0) {
+			      mttc = mttc / (mttcCount * 1000)
+			  }
+			  resMap[\"mtba\"] = mtba
+			  resMap[\"mttc\"] = mttc
+			  
+			  mtba = 0;
+			  mtbaCount=0;
+			  mttc = 0;
+			  mttcCount=0;
+			  previousClearedTime = 0;
+			  lastMonthOccurence =  alarmoccurrenceModule.fetch(occurenceLastMonthCrit);
+			  if (lastMonthOccurence != null) {
+			    for each index,value in lastMonthOccurence {
+			      createdTime = value.createdTime
+			      if (previousClearedTime != 0) {
+			        mtba = mtba+(createdTime - previousClearedTime)
+			        mtbaCount = mtbaCount+1
+			      }
+			      if (value.clearedTime != null) {
+			        previousClearedTime = value.clearedTime
+			        mttc = mttc + (previousClearedTime - createdTime)
+					mttcCount = mttcCount+1
+			      }
+			    }
+			  }
+			  if (mtbaCount > 0) {
+			      mtba = mtba / (mtbaCount * 1000)
+			  }
+			  if (mttcCount > 0) {
+			      mttc = mttc / (mttcCount * 1000)
+			  }
+			  resMap[\"mtbaLastMonth\"] = mtba
+			  resMap[\"mttcLastMonth\"] = mttc
+			  return resMap
+			}"
+		},
 		"48": {
 			"description": "Sub Meter",
 			"usage": "AnomalySummary",

@@ -258,6 +258,9 @@ public class PageWidget {
  		COST_BREAKUP("costBreakup"),
  		DEPRECIATION_SCHEDULE("depreciationSchedule"),
  		DEPRECIATION_COST_TREND("depreciationCostTrend"),
+ 		ML_MTBA("mlMtba"),
+ 		ML_MTTC("mlMttc"),
+ 		ML_DEVIATION("mlDeviation"),
  		;
 		private String name;
 		

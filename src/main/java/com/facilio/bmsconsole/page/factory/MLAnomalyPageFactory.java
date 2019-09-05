@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.page.factory;
 
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;
@@ -27,6 +29,11 @@ public class MLAnomalyPageFactory extends PageFactory {
 		addNoOfAnomalies(tab1Sec1);
 		addConspumstionDetails(tab1Sec1);
 		addEnergyWastage(tab1Sec1);
+		if (!FacilioProperties.isProduction()) {
+			addMeanTimeBetweenAnomalyCard(tab1Sec1);
+			addMeanTimeToClearCard(tab1Sec1);
+			addDeviationCard(tab1Sec1);			
+		}
 		addAnomaliesTrends(tab1Sec1);
 		addSubMeterDetails(tab1Sec1);
 		
@@ -83,6 +90,25 @@ public class MLAnomalyPageFactory extends PageFactory {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD, "energyWastageDetails");
 		cardWidget.addToLayoutParams(section, 8, 4);
 		cardWidget.addToWidgetParams("type", CardType.ENERGY_WASTAGE_DETAILS.getName());
+		section.addWidget(cardWidget);
+	}
+	
+	private static void addMeanTimeBetweenAnomalyCard(Section section) {
+		PageWidget cardWidget = new PageWidget(WidgetType.CARD, "mtba");
+		cardWidget.addToLayoutParams(section, 8, 4);
+		cardWidget.addToWidgetParams("type", CardType.ML_MTBA.getName());
+		section.addWidget(cardWidget);
+	}
+	private static void addMeanTimeToClearCard(Section section) {
+		PageWidget cardWidget = new PageWidget(WidgetType.CARD, "mttc");
+		cardWidget.addToLayoutParams(section, 8, 4);
+		cardWidget.addToWidgetParams("type", CardType.ML_MTTC.getName());
+		section.addWidget(cardWidget);
+	}
+	private static void addDeviationCard(Section section) {
+		PageWidget cardWidget = new PageWidget(WidgetType.CARD, "devation");
+		cardWidget.addToLayoutParams(section, 8, 4);
+		cardWidget.addToWidgetParams("type", CardType.ML_DEVIATION.getName());
 		section.addWidget(cardWidget);
 	}
 	
