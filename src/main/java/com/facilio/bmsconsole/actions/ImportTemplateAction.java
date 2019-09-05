@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -22,7 +23,16 @@ public class ImportTemplateAction extends FacilioAction {
 	 */
 	private static final long serialVersionUID = 1L;
 	ImportTemplateContext importTemplateContext;
+	private long templateId;
 	
+	public long getTemplateId() {
+		return templateId;
+	}
+
+	public void setTemplateId(long templateId) {
+		this.templateId = templateId;
+	}
+
 	public String saveImportTemplate() throws Exception{
 		GenericInsertRecordBuilder insertRecordBuilder = new GenericInsertRecordBuilder();
 		FacilioModule module = ModuleFactory.getImportTemplateModule();
@@ -86,6 +96,7 @@ public class ImportTemplateAction extends FacilioAction {
 		return SUCCESS;
 	}
 	public ImportTemplateContext fetchTemplate(Long templateID) throws Exception {
+		
 		FacilioModule module = ModuleFactory.getImportTemplateModule();
 		List<FacilioField> fields = FieldFactory.getImportTemplateFields();
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder();
@@ -110,6 +121,14 @@ public class ImportTemplateAction extends FacilioAction {
 			return importTemplateContext;
 			
 		}
+		
+	}
+	public String fetchTemplateforId() throws Exception{
+		
+		importTemplateContext = fetchTemplate(templateId);
+		setResult(ImportAPI.ImportProcessConstants.IMPORT_TEMPLATE_CONTEXT, importTemplateContext);
+		
+		return SUCCESS;
 		
 	}
 

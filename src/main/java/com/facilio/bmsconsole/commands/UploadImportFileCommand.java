@@ -7,6 +7,7 @@ import org.apache.commons.chain.Context;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
@@ -42,10 +43,14 @@ public class UploadImportFileCommand extends FacilioCommand {
 		workbook.close();
 		
 		importProcessContext.setfirstRow(firstRow);
+		importProcessContext.setFirstRowString(firstRow.toString());
 		
 		Integer importMode = (Integer) context.get(FacilioConstants.ContextNames.IMPORT_MODE);
 		
 		importProcessContext.setImportMode(importMode);
+		if (importMode == ImportProcessContext.ImportMode.READING.getValue()) {
+			importProcessContext.setImportSetting(ImportProcessContext.ImportSetting.INSERT.getValue());
+		}
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
         FacilioModule facilioModule = modBean.getModule(moduleName);
@@ -80,6 +85,29 @@ public class UploadImportFileCommand extends FacilioCommand {
         if(assetId > 0) {
         	importProcessContext.setAssetId(assetId);
         }
+        
+        long templateId = (long) context.get(FacilioConstants.ContextNames.TEMPLATE_ID);
+        
+        if(templateId > 0) {
+        	importProcessContext.setTemplateId(templateId);
+        }
+		String moduleMeta = (String) context.get(ImportAPI.ImportProcessConstants.MODULE_META);
+		if (moduleMeta != null) {
+
+			JSONParser parser = new JSONParser();
+			JSONObject json = (JSONObject) parser.parse(moduleMeta);
+			String baseModule = (String) json.get("baseModule");
+			if (baseModule == "asset") {
+				Long parentId = (Long) json.get("parentId");
+				Map<String, String> moduleInfo = AssetsAPI.getAssetModuleName(parentId);
+				String modName = moduleInfo.get(FacilioConstants.ContextNames.MODULE_NAME);
+				json.put("module", modName);
+				importProcessContext.setImportJobMeta(json.toString());
+			} else {
+				json.put("module", moduleName);
+				importProcessContext.setImportJobMeta(json.toString());
+			}
+		}
         
         ImportAPI.addImportProcess(importProcessContext);
 		

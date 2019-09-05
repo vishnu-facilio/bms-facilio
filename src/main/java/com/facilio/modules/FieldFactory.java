@@ -5432,6 +5432,7 @@ public class FieldFactory {
 		fields.add(getField("importMode","IMPORT_MODE",module,FieldType.NUMBER));
 		fields.add(getField("templateId","TEMPLATE_ID",module,FieldType.NUMBER));
 		fields.add(getField("totalRows", "ROW_TOTAL", module, FieldType.NUMBER));
+		fields.add(getField("firstRowString","FIRST_ROW_STRING",module,FieldType.STRING));
 
 		return fields;
 	}

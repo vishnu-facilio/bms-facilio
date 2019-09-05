@@ -61,6 +61,8 @@ public class ImportDataAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.IMPORT_MODE, importMode);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.ASSET_ID, assetId);
+		context.put(FacilioConstants.ContextNames.TEMPLATE_ID, templateId);
+		context.put(ImportAPI.ImportProcessConstants.MODULE_META, moduleMeta);
 		
 		FacilioChain uploadFile = TransactionChainFactory.uploadImportFileChain();
 		uploadFile.execute(context);
@@ -487,7 +489,16 @@ public class ImportDataAction extends FacilioAction {
 	private Long fileId;
 	private long orgId;
 	private JSONObject moduleExists;
+	private long templateId;
 	
+	public long getTemplateId() {
+		return templateId;
+	}
+
+	public void setTemplateId(long templateId) {
+		this.templateId = templateId;
+	}
+
 	public JSONObject getModuleExists() {
 		return moduleExists;
 	}
@@ -519,5 +530,13 @@ public class ImportDataAction extends FacilioAction {
 	public void setCount(int count) {
 		this.count = count;
 	}
+	private String moduleMeta;
+	public String getModuleMeta() {
+		return moduleMeta;
+	}
+	public void setModuleMeta(String moduleMeta) {
+		this.moduleMeta = moduleMeta;
+	}
+
 	
 }

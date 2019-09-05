@@ -50,7 +50,15 @@ public class ImportProcessContext implements Serializable
 	Long templateId;
 	String fileName;
 	Integer totalRows;
+	String firstRowString;
 	
+	
+	public String getFirstRowString() {
+		return firstRowString;
+	}
+	public void setFirstRowString(String firstRowString) {
+		this.firstRowString = firstRowString;
+	}
 	
 	public Integer getTotalRows() {
 		return totalRows;

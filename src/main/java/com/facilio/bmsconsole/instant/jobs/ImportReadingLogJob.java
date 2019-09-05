@@ -39,6 +39,8 @@ public class ImportReadingLogJob extends InstantJob{
 			JSONObject hasDuplicates = new JSONObject();
 			if((boolean)context.get(ImportAPI.ImportProcessConstants.HAS_DUPLICATE_ENTRIES)) {
 				hasDuplicates.put("hasDuplicates",true);
+				importProcessContext.setStatus(ImportProcessContext.ImportStatus.RESOLVE_VALIDATION.getValue());
+				ImportAPI.updateImportProcess(importProcessContext);
 			}
 			else {
 				hasDuplicates.put("hasDuplicates", false);
