@@ -16,7 +16,6 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.PMReminder;
-import com.facilio.bmsconsole.context.PMResourcePlannerContext;
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
@@ -26,7 +25,6 @@ import com.facilio.bmsconsole.templates.Template.Type;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
 import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
-import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
@@ -73,31 +71,7 @@ public class NewPreventiveMaintenanceSummaryCommand extends FacilioCommand {
 		
 		if(pm.getPmCreationTypeEnum() == PreventiveMaintenance.PMCreationType.MULTIPLE) {
 			pm.setPmIncludeExcludeResourceContexts(TemplateAPI.getPMIncludeExcludeList(pm.getId(), null, null));
-			Map<Long, PMResourcePlannerContext> resourcePlanners = PreventiveMaintenanceAPI.getPMResourcesPlanner(pm.getId());
-			Long baseSpaceId = pm.getBaseSpaceId();
-			if (baseSpaceId == null || baseSpaceId < 0) {
-				baseSpaceId = pm.getSiteId();
-			}
-			List<Long> resourceIds = PreventiveMaintenanceAPI.getMultipleResourceToBeAddedFromPM(pm.getAssignmentTypeEnum(),baseSpaceId,pm.getSpaceCategoryId(),pm.getAssetCategoryId(),null,pm.getPmIncludeExcludeResourceContexts());
-			for(Long resourceId :resourceIds) {					// construct resource planner for default cases
-				if(!resourcePlanners.containsKey(resourceId)) {
-					PMResourcePlannerContext pmResourcePlannerContext = new PMResourcePlannerContext();
-					pmResourcePlannerContext.setResourceId(resourceId);
-					if(pmResourcePlannerContext.getResourceId() != null && pmResourcePlannerContext.getResourceId() > 0) {
-						pmResourcePlannerContext.setResource(ResourceAPI.getResource(pmResourcePlannerContext.getResourceId()));
-					}
-					pmResourcePlannerContext.setPmId(pm.getId());
-					pmResourcePlannerContext.setAssignedToId(-1l);
-					pmResourcePlannerContext.setTriggerContexts(new ArrayList<>());
-					pmResourcePlannerContext.setPmResourcePlannerReminderContexts(Collections.emptyList());
-					
-					resourcePlanners.put(resourceId, pmResourcePlannerContext);
-				}
-			}
-			
-			if(resourcePlanners != null) {
-				pm.setResourcePlanners(new ArrayList<>(resourcePlanners.values()));
-			}
+			PreventiveMaintenanceAPI.populateResourcePlanner(pm);
 		}
 		
 		WorkorderTemplate template = (WorkorderTemplate) TemplateAPI.getTemplate(pm.getTemplateId());
@@ -206,7 +180,7 @@ public class NewPreventiveMaintenanceSummaryCommand extends FacilioCommand {
 		
 		return false;
 	}
-	
+
 	private List<TaskSectionTemplate> fillSectionTemplate(WorkorderTemplate template,List<TaskSectionTemplate> sectionTemplate) {
 		
 		TaskSectionTemplate taskSectionTemplate = new TaskSectionTemplate();

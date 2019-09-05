@@ -325,6 +325,15 @@ public class PreventiveMaintenance extends ResourceContext {
 	}
 
 	private static final TriggerType[] TRIGGER_TYPES = TriggerType.values();
+
+	public long getWoGeneratedUpto() {
+		return woGeneratedUpto;
+	}
+
+	public void setWoGeneratedUpto(long woGeneratedUpto) {
+		this.woGeneratedUpto = woGeneratedUpto;
+	}
+
 	public static enum TriggerType {
 		ONLY_SCHEDULE_TRIGGER, 
 		FLOATING, 
@@ -474,6 +483,8 @@ public class PreventiveMaintenance extends ResourceContext {
 			return null;
 		}
 	}
+
+	private long woGeneratedUpto = -1;
 	
 	@Override
 	public String toString() {

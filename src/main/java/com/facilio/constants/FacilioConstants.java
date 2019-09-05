@@ -75,7 +75,9 @@ public class FacilioConstants {
 
 	public static class ContextNames {
 
-		public static class Reservation {
+        public static final String SCHEDULE_GENERATION_TIME = "scheduleGenerationTime";
+
+        public static class Reservation {
 			public static final String RESERVATION = "reservation";
 			public static final String RESERVATION_LIST = "reservations";
 			public static final String RESERVATIONS_INTERNAL_ATTENDEE = "reservationInternalAttendee";

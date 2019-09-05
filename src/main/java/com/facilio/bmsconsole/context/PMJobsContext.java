@@ -92,7 +92,7 @@ public class PMJobsContext implements Serializable {
 		this.status = PMJobsStatus.valueOf(status);
 	}
 
-	public static enum PMJobsStatus {
+	public enum PMJobsStatus {
 		ACTIVE,
 		SCHEDULED,
 		COMPLETED,

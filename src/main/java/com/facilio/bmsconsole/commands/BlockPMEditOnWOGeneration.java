@@ -23,9 +23,13 @@ public class BlockPMEditOnWOGeneration extends FacilioCommand {
     private boolean isStatusChange;
 
     private boolean isBulkUpdate;
-    BlockPMEditOnWOGeneration(boolean b, boolean isStatusChange) {
+
+    private boolean isWoGeneration;
+
+    BlockPMEditOnWOGeneration(boolean b, boolean isStatusChange, boolean isWoGeneration) {
         this.isBulkUpdate = b;
         this.isStatusChange = isStatusChange;
+        this.isWoGeneration = isWoGeneration;
     }
 
     BlockPMEditOnWOGeneration() {}
@@ -35,12 +39,17 @@ public class BlockPMEditOnWOGeneration extends FacilioCommand {
         List<PreventiveMaintenance> pms =  (List<PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST);
         PreventiveMaintenance pm = (PreventiveMaintenance)  context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
         List<Long> pmIds = new ArrayList<>();
-        if (isStatusChange) {
+        if (this.isStatusChange) {
             if (context.get(FacilioConstants.ContextNames.RECORD_ID_LIST) != null) {
                 pmIds.addAll((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
             }
+        } else if (this.isWoGeneration) {
+            long pmId = (Long) context.get(FacilioConstants.ContextNames.PM_ID);
+            if (pmId != -1) {
+                pmIds.add(pmId);
+            }
         } else {
-            if (isBulkUpdate) {
+            if (this.isBulkUpdate) {
                 if (CollectionUtils.isNotEmpty(pms)) {
                     pms.forEach(i -> pmIds.add(i.getId()));
                 }

@@ -1043,7 +1043,7 @@ public class TransactionChainFactory {
 			c.addCommand(new SetMissingRelInResourcePlannersCommand());
 			c.addCommand(new CreateTaskSectionTriggerRelCommand());
 			c.addCommand(new AddPMRelFieldsCommand(true));
-			c.addCommand(new BlockPMEditOnWOGeneration(true, true));
+			c.addCommand(new BlockPMEditOnWOGeneration(true, true, false));
 			c.addCommand(new SchedulePreOpenWOCreateCommand(true, true));
 			c.addCommand(new SchedulePreOpenWODeleteCommand(true));
 			return c;
@@ -3469,6 +3469,12 @@ public class TransactionChainFactory {
 		chain.addCommand(updateWorkflowRuleChain());
 		return chain;
 	}
+		public static FacilioChain generateScheduleChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new BlockPMEditOnWOGeneration(false, false, true));
+			c.addCommand(new SchedulePMWorkOrderGenerationCommand());
+			return c;
+		}
 }
 
 

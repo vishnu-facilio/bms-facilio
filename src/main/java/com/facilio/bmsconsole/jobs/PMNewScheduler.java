@@ -89,18 +89,15 @@ public class PMNewScheduler extends FacilioJob {
 				});
 				
 				List<PreventiveMaintenance> pmList = groupPmAndTriggers(pms,triggers);
-				Map<Long, Long> maxNextExecutionTimesMap = getMaxExecutionTimes(ids.substring(", ".length()));		// gives max scheduled date 
-				long endTime = DateTimeUtil.getDayStartTime(PreventiveMaintenanceAPI.PM_CALCULATION_DAYS+1, true) - 1;
 				List<BulkWorkOrderContext> bulkWorkOrderContexts = new ArrayList<>();
 				if (pmList != null && !pmList.isEmpty()) {
 					PreventiveMaintenanceAPI.logIf(92L,"No of pms " + pmList.size());
 				}
 
-				int i = 0;
 				for(PreventiveMaintenance pm : pmList) {
 					try{
-						PreventiveMaintenanceAPI.logIf(92L,"pm: " + i + " Executing pm: "  + pm.getId());
-						List<BulkWorkOrderContext> bulkWo = createPMJobs(pm, triggerMap, maxNextExecutionTimesMap, endTime);
+						// PreventiveMaintenanceAPI.logIf(92L,"pm: " + i + " Executing pm: "  + pm.getId());
+						List<BulkWorkOrderContext> bulkWo = createPMJobs(pm, triggerMap);
 						if (!bulkWo.isEmpty()) {
 							bulkWorkOrderContexts.addAll(bulkWo);
 						}
@@ -108,7 +105,6 @@ public class PMNewScheduler extends FacilioJob {
 						LOGGER.error("Exception occurred in PM Scheduler Job ID - "+jc.getJobId(), e);
 						CommonCommandUtil.emailException("PMScheduler", "Exception occurred in generating Schedule - orgId: "+jc.getJobId() + " pmId " + pm.getId(), e);
 					}
-					i++;
 				}
 
 				if (!bulkWorkOrderContexts.isEmpty()) {
@@ -121,6 +117,10 @@ public class PMNewScheduler extends FacilioJob {
 					Chain addWOChain = TransactionChainFactory.getTempAddPreOpenedWorkOrderChain();
 					addWOChain.execute(context);
 				}
+
+				for(PreventiveMaintenance pm : pmList) {
+					PreventiveMaintenanceAPI.incrementGenerationTime(pm.getId(), getEndTime(pm));
+				}
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -129,7 +129,7 @@ public class PMNewScheduler extends FacilioJob {
 		}
 	}
 		
-	private List<BulkWorkOrderContext>  createPMJobs(PreventiveMaintenance pm, Map<Long,PMTriggerContext> triggerMap, Map<Long, Long> maxNextExecutionTimesMap, long endTime) throws Exception {
+	private List<BulkWorkOrderContext>  createPMJobs(PreventiveMaintenance pm, Map<Long,PMTriggerContext> triggerMap) throws Exception {
 	    List<BulkWorkOrderContext> bulkWorkOrderContexts = new ArrayList<>();
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RESOURCE_MAP, new HashMap<Long, ResourceContext>());
@@ -157,24 +157,7 @@ public class PMNewScheduler extends FacilioJob {
 				}
 
 				for(Long resourceId :resourceIds) {
-					List<PMTriggerContext> triggers = null;
-					if(pmResourcePlanner.get(resourceId) != null) {
-						PMResourcePlannerContext currentResourcePlanner = pmResourcePlanner.get(resourceId);
-						List<PMTriggerContext> trigs = new ArrayList<>();
-						if (currentResourcePlanner.getTriggerContexts() != null) {
-							for (PMTriggerContext t: currentResourcePlanner.getTriggerContexts()) {
-								if (triggerMap.get(t.getId()) != null) {
-									trigs.add(triggerMap.get(t.getId()));
-								}
-							}
-						}
-						if (currentResourcePlanner.getAssignedToId() != null && currentResourcePlanner.getAssignedToId() > 0 ) {
-							workorderTemplate.setAssignedToId(currentResourcePlanner.getAssignedToId());
-						}
-						currentResourcePlanner.setTriggerContexts(trigs);
-						triggers = trigs;
-					}
-
+					List<PMTriggerContext> triggers = getResourceTriggers(triggerMap, workorderTemplate, pmResourcePlanner, resourceId);
 					if(triggers == null) {
 						triggers = new ArrayList<>();
 						triggers.add(PreventiveMaintenanceAPI.getDefaultTrigger(pm.getTriggers()));
@@ -188,37 +171,54 @@ public class PMNewScheduler extends FacilioJob {
 						CommonCommandUtil.emailAlert("work order not generated", "PMID: " + pm.getId() + "ResourceId: " + resourceId);
 					}
 
-					bulkWorkOrderContexts.addAll(generateBulkWoContext(pm, maxNextExecutionTimesMap, endTime, context, workorderTemplate, triggers));
+					bulkWorkOrderContexts.addAll(generateBulkWoContext(pm, context, workorderTemplate, triggers));
 				}
 			}
 		}
 		else {
 			long templateId = pm.getTemplateId();
 			WorkorderTemplate workorderTemplate = (WorkorderTemplate) TemplateAPI.getTemplate(templateId);
-			bulkWorkOrderContexts.addAll(generateBulkWoContext(pm, maxNextExecutionTimesMap, endTime, context, workorderTemplate, pm.getTriggers()));
+			bulkWorkOrderContexts.addAll(generateBulkWoContext(pm, context, workorderTemplate, pm.getTriggers()));
 		}
 
 		return bulkWorkOrderContexts;
 	}
 
-	private List<BulkWorkOrderContext> generateBulkWoContext(PreventiveMaintenance pm, Map<Long, Long> maxNextExecutionTimesMap, long endTime, FacilioContext context, WorkorderTemplate workorderTemplate, List<PMTriggerContext> triggers) throws Exception {
-		List<BulkWorkOrderContext> bulkWorkOrderContexts = new ArrayList<>();
-		for (PMTriggerContext trigger: triggers) {
-			if (trigger.getSchedule() != null) {
-				Long maxTime = maxNextExecutionTimesMap.get(trigger.getId());
-				if (maxTime != null) {
-					if ((maxTime/1000)  < endTime) {
-						BulkWorkOrderContext bulkWoContextsFromTrigger = PreventiveMaintenanceAPI.createBulkWoContextsFromPM(context, pm, trigger, maxTime / 1000, workorderTemplate);
-						bulkWorkOrderContexts.add(bulkWoContextsFromTrigger);
-					}
-				} else {
-					long startTime = trigger.getStartTime();
-					BulkWorkOrderContext bulkWoContextsFromTrigger = PreventiveMaintenanceAPI.createBulkWoContextsFromPM(context, pm, trigger, startTime / 1000, workorderTemplate);
-					bulkWorkOrderContexts.add(bulkWoContextsFromTrigger);
+	private List<PMTriggerContext> getResourceTriggers(Map<Long, PMTriggerContext> triggerMap, WorkorderTemplate workorderTemplate, Map<Long, PMResourcePlannerContext> pmResourcePlanner, Long resourceId) {
+		if(pmResourcePlanner.get(resourceId) == null) {
+			return null;
+		}
+		PMResourcePlannerContext currentResourcePlanner = pmResourcePlanner.get(resourceId);
+		List<PMTriggerContext> trigs = new ArrayList<>();
+		if (currentResourcePlanner.getTriggerContexts() != null) {
+			for (PMTriggerContext t: currentResourcePlanner.getTriggerContexts()) {
+				if (triggerMap.get(t.getId()) != null) {
+					trigs.add(triggerMap.get(t.getId()));
 				}
 			}
 		}
+		if (currentResourcePlanner.getAssignedToId() != null && currentResourcePlanner.getAssignedToId() > 0 ) {
+			workorderTemplate.setAssignedToId(currentResourcePlanner.getAssignedToId());
+		}
+		currentResourcePlanner.setTriggerContexts(trigs);
+		return trigs;
+	}
+
+	private List<BulkWorkOrderContext> generateBulkWoContext(PreventiveMaintenance pm, FacilioContext context, WorkorderTemplate workorderTemplate, List<PMTriggerContext> triggers) throws Exception {
+		List<BulkWorkOrderContext> bulkWorkOrderContexts = new ArrayList<>();
+		long endTime = getEndTime(pm);
+		long maxTime = pm.getWoGeneratedUpto();
+		for (PMTriggerContext trigger: triggers) {
+			if (trigger.getSchedule() != null) {
+				BulkWorkOrderContext bulkWoContextsFromTrigger = PreventiveMaintenanceAPI.createBulkWoContextsFromPM(context, pm, trigger, maxTime, endTime, workorderTemplate);
+				bulkWorkOrderContexts.add(bulkWoContextsFromTrigger);
+			}
+		}
 		return bulkWorkOrderContexts;
+	}
+
+	private long getEndTime(PreventiveMaintenance pm) {
+		return pm.getWoGeneratedUpto() + (24 * 60 * 60);
 	}
 
 	private List<PreventiveMaintenance> groupPmAndTriggers(Map<Long, PreventiveMaintenance> pms, List<PMTriggerContext> triggers) throws Exception {

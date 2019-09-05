@@ -1198,7 +1198,7 @@ public class FacilioChainFactory {
 		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new GetPreventiveMaintenanceCommand());
 		c.addCommand(new DeletePMAndDependenciesCommand(true));
-		c.addCommand(new BlockPMEditOnWOGeneration(true, false));
+		c.addCommand(new BlockPMEditOnWOGeneration(true, false, false));
 		c.addCommand(new DeletePMCommand());
 		return c;
 	}

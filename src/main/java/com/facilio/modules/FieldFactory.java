@@ -2401,6 +2401,7 @@ public class FieldFactory {
 		fields.add(getField("assignmentType", "ASSIGNMENT_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("pmCreationType", "PM_CREARTION_TYPE", module, FieldType.NUMBER));
 		fields.add(getField("woGenerationStatus", "WO_GENERATION_STATUS", module, FieldType.BOOLEAN));
+		fields.add(getField("woGeneratedUpto","WO_GENERATED_UPTO", module, FieldType.NUMBER));
 
 		return fields;
 	}

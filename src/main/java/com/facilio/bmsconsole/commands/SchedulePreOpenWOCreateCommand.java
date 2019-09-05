@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.bmsconsole.util.BmsJobUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -26,6 +28,7 @@ public class SchedulePreOpenWOCreateCommand extends FacilioCommand {
         List<PreventiveMaintenance> pms =  (List<PreventiveMaintenance>) context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE_LIST);
         PreventiveMaintenance pm = (PreventiveMaintenance)  context.get(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE);
         List<Long> pmIds = new ArrayList<>();
+
         if (isStatusChange) {
             if (context.get(FacilioConstants.ContextNames.RECORD_ID_LIST) != null) {
                 if (pm != null && pm.isActive()) { //allows only active
@@ -43,13 +46,20 @@ public class SchedulePreOpenWOCreateCommand extends FacilioCommand {
                 }
             }
         }
+
         if (context.get(FacilioConstants.ContextNames.SKIP_WO_CREATION) != null && (Boolean) context.get(FacilioConstants.ContextNames.SKIP_WO_CREATION)) {
             return false;
         }
+
+        long delay = 300;
+        if (AwsUtil.isDevelopment()) {
+            delay = 1;
+        }
+
         for (Long id: pmIds) {
             FacilioTimer.deleteJob(id, "SchedulePMBackgroundJob");
-            FacilioTimer.deleteJob(id, "ScheduleNewPM");
-            FacilioTimer.scheduleOneTimeJob(id, "SchedulePMBackgroundJob", 300, "priority");
+            BmsJobUtil.deleteJobWithProps(id, "ScheduleNewPM");
+            FacilioTimer.scheduleOneTimeJob(id, "SchedulePMBackgroundJob", delay, "priority");
         }
         return false;
     }

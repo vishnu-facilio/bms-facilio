@@ -47,7 +47,7 @@ public class GetWorkOrderListCommand extends FacilioCommand {
 		String count = (String) context.get(FacilioConstants.ContextNames.WO_LIST_COUNT);
 		boolean isApproval = (Boolean) context.get(FacilioConstants.ContextNames.IS_APPROVAL);
 		
-		List<FacilioField> fields = null;
+		List<FacilioField> fields;
 		
 		 List<Map<String, Object>> subViewsCount = null;
 		if (count != null) {
@@ -73,7 +73,7 @@ public class GetWorkOrderListCommand extends FacilioCommand {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule("workorder");
-		List<WorkOrderContext> workOrders = new ArrayList<WorkOrderContext>();
+		List<WorkOrderContext> workOrders;
 		if (woIds != null && !woIds.isEmpty()) {
 			SelectRecordsBuilder<WorkOrderContext> selectBuilder = new SelectRecordsBuilder<WorkOrderContext>()
 					.table(dataTableName)
@@ -182,7 +182,6 @@ public class GetWorkOrderListCommand extends FacilioCommand {
 			}
 		}
 		 workOrders = selectBuilder.get();
-		 System.out.println("hi");
 	}
 
 		if (count != null) {

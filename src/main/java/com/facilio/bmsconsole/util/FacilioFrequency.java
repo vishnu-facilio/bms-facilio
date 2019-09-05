@@ -2,7 +2,7 @@ package com.facilio.bmsconsole.util;
 
 public enum FacilioFrequency {
 	DO_NOT_REPEAT(-1, "Do Not Repeat"),
-	DAILY(8 * 2, "Daily"),
+	DAILY(21, "Daily"),
 	WEEKLY(8 * 2, "Weekly"),
 	MONTHLY(366, "Monthly"),
 	QUARTERTLY(366, "Quarterly"),
