@@ -85,6 +85,17 @@ public class PageWidget {
 		this.section = section;
 	}
 	
+	private JSONObject relatedList;
+	
+	public JSONObject getRelatedList() {
+		return relatedList;
+	}
+
+	public void setRelatedList(JSONObject relatedList) {
+		this.relatedList = relatedList;
+	}
+
+	
 	private JSONObject widgetParams;
 	public JSONObject getWidgetParams() {
 		return widgetParams;
@@ -186,6 +197,7 @@ public class PageWidget {
  		COUNT("count"),
  		COMMENT("comment"),
  		ATTACHMENT("attachment"),
+ 		RELATED_LIST("relatedList"),
  		ACTIVITY("activity"),
  		GROUP("group"),
  		HISTORY("history"),
