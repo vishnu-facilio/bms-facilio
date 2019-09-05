@@ -29,11 +29,9 @@ public class MLAnomalyPageFactory extends PageFactory {
 		addNoOfAnomalies(tab1Sec1);
 		addConspumstionDetails(tab1Sec1);
 		addEnergyWastage(tab1Sec1);
-		if (!FacilioProperties.isProduction()) {
-			addMeanTimeBetweenAnomalyCard(tab1Sec1);
-			addMeanTimeToClearCard(tab1Sec1);
-			addDeviationCard(tab1Sec1);			
-		}
+		addMeanTimeBetweenAnomalyCard(tab1Sec1);
+		addMeanTimeToClearCard(tab1Sec1);
+		addDeviationCard(tab1Sec1);
 		addAnomaliesTrends(tab1Sec1);
 		addSubMeterDetails(tab1Sec1);
 		
@@ -106,7 +104,7 @@ public class MLAnomalyPageFactory extends PageFactory {
 		section.addWidget(cardWidget);
 	}
 	private static void addDeviationCard(Section section) {
-		PageWidget cardWidget = new PageWidget(WidgetType.CARD, "devation");
+		PageWidget cardWidget = new PageWidget(WidgetType.CARD, "deviation");
 		cardWidget.addToLayoutParams(section, 8, 4);
 		cardWidget.addToWidgetParams("type", CardType.ML_DEVIATION.getName());
 		section.addWidget(cardWidget);

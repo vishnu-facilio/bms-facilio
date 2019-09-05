@@ -378,11 +378,11 @@
 			  occurenceLastMonthCrit = null
 			  resMap = {};
 			  occurenceThisMonthCrit = {
-			    criteria: [alarm == alarmId && clearedTime != null && createdTime == thisMonthRanges],
+			    criteria: [alarm == alarmId && createdTime == thisMonthRanges],
 			    orderBy : \"createdTime\" asc
 			  }
 			  occurenceLastMonthCrit = {
-			    criteria: [alarm == alarmId && clearedTime != null && createdTime == lastMonthRanges],
+			    criteria: [alarm == alarmId && createdTime == lastMonthRanges],
 			    orderBy : \"createdTime\" asc
 			  }
 			  mtba = 0;
