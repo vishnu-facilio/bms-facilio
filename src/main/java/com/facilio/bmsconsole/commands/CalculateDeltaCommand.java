@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
@@ -51,7 +52,7 @@ public class CalculateDeltaCommand extends FacilioCommand {
 						if (counterFields != null && !counterFields.isEmpty()) {
 							for (ReadingContext reading : readings) {
 								for (FacilioField field : counterFields) {
-									Object val = FieldUtil.castOrParseValueAsPerType(field, reading.getReading(field.getName()));
+									Object val = FacilioUtil.castOrParseValueAsPerType(field, reading.getReading(field.getName()));
 									if (AccountUtil.getCurrentOrg().getId() == 78) {
 										LOGGER.info("Value for "+field.getName()+" is : "+val);
 									}
@@ -65,7 +66,7 @@ public class CalculateDeltaCommand extends FacilioCommand {
 
 										Object deltaVal = null;
 										if (field.getDataTypeEnum() == FieldType.DECIMAL) {
-											Double prevVal = (Double) FieldUtil.castOrParseValueAsPerType(field, rdm.getValue());
+											Double prevVal = (Double) FacilioUtil.castOrParseValueAsPerType(field, rdm.getValue());
 											if (prevVal != -1) {
 												if (AccountUtil.getCurrentOrg().getId() == 78) {
 													LOGGER.info("Pre Value for "+field.getName()+" is : "+prevVal);
@@ -74,7 +75,7 @@ public class CalculateDeltaCommand extends FacilioCommand {
 											}
 										}
 										else {
-											Long prevVal = (Long) FieldUtil.castOrParseValueAsPerType(field, rdm.getValue());
+											Long prevVal = (Long) FacilioUtil.castOrParseValueAsPerType(field, rdm.getValue());
 											if (prevVal != -1) {
 												if (AccountUtil.getCurrentOrg().getId() == 78) {
 													LOGGER.info("Pre Value for "+field.getName()+" is : "+prevVal);

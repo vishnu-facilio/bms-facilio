@@ -14,6 +14,7 @@ import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.InsertBuilderIfc;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.util.FacilioUtil;
 
 public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implements InsertBuilderIfc<E> {
 	
@@ -286,7 +287,7 @@ public class InsertRecordBuilder<E extends ModuleBaseWithCustomFields> implement
 					if (!field.isDefault()) {
 						val = moduleProps.get(field.getName());
 						if (val != null) {
-							val = FieldUtil.castOrParseValueAsPerType(field, val);
+							val = FacilioUtil.castOrParseValueAsPerType(field, val);
 							moduleProps.put(field.getName(), val);
 							bean.setDatum(field.getName(), val); //This is for workflow rules to work
 						}

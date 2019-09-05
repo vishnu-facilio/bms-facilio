@@ -1,6 +1,5 @@
 package com.facilio.db.criteria;
 
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -28,7 +27,7 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 
-public class CriteriaAPI {
+public class CriteriaAPI extends BaseCriteriaAPI {
 	
 	public static long addCriteria(Criteria criteria, long orgId) throws Exception {
 		if(criteria != null) {
@@ -230,115 +229,26 @@ public class CriteriaAPI {
 	}
 	
 	public static Condition getOrgIdCondition(long orgId, FacilioModule module) {
-		Condition idCondition = new Condition();
-		idCondition.setField(AccountConstants.getOrgIdField(module));
-		idCondition.setOperator(NumberOperators.EQUALS);
-		idCondition.setValue(String.valueOf(orgId));
-		
-		return idCondition;
+		return getCondition(AccountConstants.getOrgIdField(module), String.valueOf(orgId), NumberOperators.EQUALS);
 	}
 	
-//	public static Condition getCurrentOrgIdCondition(FacilioModule module) {
-//		Condition idCondition = new Condition();
-//		idCondition.setField(FieldFactory.getOrgIdField(module));
-//		idCondition.setOperator(NumberOperators.EQUALS);
-//		idCondition.setValue(String.valueOf(AccountUtil.getCurrentOrg().getOrgId()));
-//		
-//		return idCondition;
-//	}
-	
 	public static Condition getCurrentSiteIdCondition(FacilioModule module) {
-		Condition idCondition = new Condition();
-		idCondition.setField(FieldFactory.getSiteIdField(module));
-		idCondition.setOperator(NumberOperators.EQUALS);
-		idCondition.setValue(String.valueOf(AccountUtil.getCurrentSiteId()));
-		
-		return idCondition;
+		return getCondition(FieldFactory.getSiteIdField(module), String.valueOf(AccountUtil.getCurrentSiteId()), NumberOperators.EQUALS);
 	}
 	
 	public static Condition getIdCondition(long id, FacilioModule module) {
-		Condition idCondition = new Condition();
-		idCondition.setField(FieldFactory.getIdField(module));
-		idCondition.setOperator(NumberOperators.EQUALS);
-		idCondition.setValue(String.valueOf(id));
-		
-		return idCondition;
+		return getIdCondition(String.valueOf(id), module);
 	}
 	
 	public static Condition getIdCondition(Collection<Long> ids, FacilioModule module) {
-		String id = StringUtils.join(ids, ",");
-		Condition idCondition = new Condition();
-		idCondition.setField(FieldFactory.getIdField(module));
-		idCondition.setOperator(NumberOperators.EQUALS);
-		idCondition.setValue(id);
-		
-		return idCondition;
-	}
-	
-	public static Condition getNameCondition(String name, FacilioModule module) {
-		Condition idCondition = new Condition();
-		idCondition.setField(FieldFactory.getNameField(module));
-		idCondition.setOperator(StringOperators.IS);
-		idCondition.setValue(name);
-		
-		return idCondition;
+		return getIdCondition(StringUtils.join(ids, ","), module);
 	}
 	
 	public static Condition getIdCondition(String idList, FacilioModule module) {
-		Condition idCondition = new Condition();
-		idCondition.setField(FieldFactory.getIdField(module));
-		idCondition.setOperator(NumberOperators.EQUALS);
-		idCondition.setValue(idList);
-		return idCondition;
+		return getCondition(FieldFactory.getIdField(module), idList, NumberOperators.EQUALS);
 	}
-	
-	public static Condition getCondition( FacilioField field,Operator operator) {
-		Condition condition = new Condition();
-		condition.setField(field);
-		condition.setOperator(operator);
-		return condition;
-	}
-	
-	public static Condition getCondition(FacilioField field, Collection<Long> values, Operator operator) {
-		if (values != null && !values.isEmpty()) {
-			String val = StringUtils.join(values, ",");
-			return getCondition(field, val, operator);
-		}
-		return null;
-	}
-	
-	@SuppressWarnings("rawtypes")
-	public static Condition getCondition (FacilioField field,String valueList,Operator operator) {
-		Condition condition = new Condition();
-		condition.setField(field);
-		condition.setOperator(operator);
-		condition.setValue(valueList);
-		return condition;
-	}
-	
-	@SuppressWarnings("rawtypes")
-	public static Condition getCondition (String colName,String fieldName,String valueList,Operator operator)
-	{
-		Condition condition = new Condition();
-		condition.setFieldName(fieldName);
-		condition.setColumnName(colName);
-		condition.setOperator(operator);
-		condition.setValue(valueList);
-		return condition;
-	}
-	
-	@SuppressWarnings("rawtypes")
-	public static Condition getConditionFromList (String colName,String fieldName,Collection<Long> values,Operator operator)
-	{
-		String val = StringUtils.join(values, ",");
-		return getCondition(colName, fieldName, val, operator);
-	}
-	
-	public static Condition getCondition (FacilioField field,Criteria value,Operator operator) {
-		Condition condition = new Condition();
-		condition.setField(field);
-		condition.setOperator(operator);
-		condition.setCriteriaValue(value);
-		return condition;
+
+	public static Condition getNameCondition(String name, FacilioModule module) {
+		return getCondition(FieldFactory.getNameField(module), name, StringOperators.IS);
 	}
 }

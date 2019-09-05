@@ -892,7 +892,7 @@ public enum ActionType {
 			long id = -1l;
 			Object parentId = obj.get("parentId");
 			if(parentId != null) {
-				id = (long) FieldUtil.castOrParseValueAsPerType(FieldType.NUMBER, parentId);
+				id = (long) FacilioUtil.castOrParseValueAsPerType(FieldType.NUMBER, parentId);
 				sameRecord = false;
 			}
 			else {

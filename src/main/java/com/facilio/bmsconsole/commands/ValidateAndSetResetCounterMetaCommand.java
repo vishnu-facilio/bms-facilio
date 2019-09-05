@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -58,10 +59,10 @@ public class ValidateAndSetResetCounterMetaCommand extends FacilioCommand {
 						boolean resetvalidation;
 						if (isCounterField){
 							if (field.getDataTypeEnum() == FieldType.DECIMAL) {
-								Double readingVal = (Double) FieldUtil.castOrParseValueAsPerType(field,readingEntry.getValue());
+								Double readingVal = (Double) FacilioUtil.castOrParseValueAsPerType(field,readingEntry.getValue());
 								resetvalidation = (Double) rdm.getValue() > readingVal;
 							} else {
-								Long readingVal = (Long) FieldUtil.castOrParseValueAsPerType(field,readingEntry.getValue());
+								Long readingVal = (Long) FacilioUtil.castOrParseValueAsPerType(field,readingEntry.getValue());
 								resetvalidation = (Long) rdm.getValue() > readingVal;
 							}
 

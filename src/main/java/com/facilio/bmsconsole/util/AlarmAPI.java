@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -822,7 +823,7 @@ public class AlarmAPI {
 	
 	private static Object formatValue (ReadingContext reading, FacilioField field) {
 		if (field.getDataTypeEnum() == FieldType.DECIMAL) {
-			return DECIMAL_FORMAT.format(FieldUtil.castOrParseValueAsPerType(field, reading.getReading(field.getName())));
+			return DECIMAL_FORMAT.format(FacilioUtil.castOrParseValueAsPerType(field, reading.getReading(field.getName())));
 		}
 		else {
 			return reading.getReading(field.getName());

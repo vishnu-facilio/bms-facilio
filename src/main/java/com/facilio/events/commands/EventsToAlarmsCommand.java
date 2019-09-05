@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
@@ -177,7 +178,7 @@ public class EventsToAlarmsCommand extends FacilioCommand {
 	}
 	
 	private void setMessageKey (EventContext event) {
-		Long sourceType = (Long) FieldUtil.castOrParseValueAsPerType(FieldType.NUMBER, event.getAdditionInfo().get("sourceType"));
+		Long sourceType = (Long) FacilioUtil.castOrParseValueAsPerType(FieldType.NUMBER, event.getAdditionInfo().get("sourceType"));
 		if (sourceType != null) {
 			SourceType type = SourceType.getType(sourceType.intValue());
 			String msgKey = null;
@@ -213,7 +214,7 @@ public class EventsToAlarmsCommand extends FacilioCommand {
 		}
 		
 		if (event.getAdditionInfo() != null) {
-			Long sourceType = (Long) FieldUtil.castOrParseValueAsPerType(FieldType.NUMBER, event.getAdditionInfo().get("sourceType"));
+			Long sourceType = (Long) FacilioUtil.castOrParseValueAsPerType(FieldType.NUMBER, event.getAdditionInfo().get("sourceType"));
 			if (sourceType != null) {
 				SourceType type = SourceType.getType(sourceType.intValue());
 				switch (type) {

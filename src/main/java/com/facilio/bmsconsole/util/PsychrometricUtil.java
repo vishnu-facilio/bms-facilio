@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
+import com.facilio.util.FacilioUtil;
 
 public class PsychrometricUtil {
 	
@@ -35,9 +36,9 @@ public class PsychrometricUtil {
 	
 	public static Double getMoistAirEnthalpy(Map<String,Object> weatherReading) {
 		
-		Double dryBulbTemperature = (Double) FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("temperature"));
-		Double pressure = ((Double) FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("pressure"))) * 100;
-		Double relativeHumidity = (Double) FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("humidity"));
+		Double dryBulbTemperature = (Double) FacilioUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("temperature"));
+		Double pressure = ((Double) FacilioUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("pressure"))) * 100;
+		Double relativeHumidity = (Double) FacilioUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("humidity"));
 		
 		Double humidityRatio = getHumidityRatioFromRelativeHumidity(dryBulbTemperature, relativeHumidity, pressure);
 		
@@ -58,9 +59,9 @@ public class PsychrometricUtil {
 	
 	public static Double getDewPointTemperatureFromRelativeHumudity(Map<String,Object> weatherReading) {
 		
-		Double dryBulbTemperature = (Double) FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("temperature"));
-		Double pressure = ((Double) FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("pressure"))) * 100;
-		Double relativeHumidity = (Double) FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("humidity"));
+		Double dryBulbTemperature = (Double) FacilioUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("temperature"));
+		Double pressure = ((Double) FacilioUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("pressure"))) * 100;
+		Double relativeHumidity = (Double) FacilioUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("humidity"));
 		
 		Double humidityRatio = getHumidityRatioFromRelativeHumidity(dryBulbTemperature, relativeHumidity, pressure);
 		return getDewPointTemperatureFromHumidityRatio(dryBulbTemperature, humidityRatio, pressure);
@@ -73,9 +74,9 @@ public class PsychrometricUtil {
 	
 	public static Double getWetBulbTemperatureFromRelativeHumidity(Map<String,Object> weatherReading) {
 		
-		Double dryBulbTemperature = (Double) FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("temperature"));
-		Double pressure = ((Double) FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("pressure"))) * 100;
-		Double relativeHumidity = (Double) FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("humidity"));
+		Double dryBulbTemperature = (Double) FacilioUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("temperature"));
+		Double pressure = ((Double) FacilioUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("pressure"))) * 100;
+		Double relativeHumidity = (Double) FacilioUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("humidity"));
 		
 		Double humidityRatio = getHumidityRatioFromRelativeHumidity(dryBulbTemperature, relativeHumidity, pressure);
 		return getWetBulbTemperatureFromHumidityRatio(dryBulbTemperature, humidityRatio, pressure);
@@ -87,7 +88,7 @@ public class PsychrometricUtil {
 	}
 	
 	public static Double getEnthalpy(Map<String,Object> weatherReading) {
-		double dryBulbTemperature = (Double) FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("temperature"));
+		double dryBulbTemperature = (Double) FacilioUtil.castOrParseValueAsPerType(FieldType.DECIMAL, weatherReading.get("temperature"));
 		return getEnthalpy(dryBulbTemperature);
 	}
 	

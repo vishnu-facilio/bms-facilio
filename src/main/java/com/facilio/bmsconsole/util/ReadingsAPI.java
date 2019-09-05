@@ -5,18 +5,11 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
-import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -456,7 +449,7 @@ public class ReadingsAPI {
 		catch(Exception e) {
 			LOGGER.info("Error on future rdm date change", e);
 		}
-		meta.setValue(FieldUtil.castOrParseValueAsPerType(field, value));
+		meta.setValue(FacilioUtil.castOrParseValueAsPerType(field, value));
 		meta.setField(field);
 		return meta;
 	}
@@ -610,7 +603,7 @@ public class ReadingsAPI {
 			rdm.setTtime(reading.getTtime());
 			FacilioField fField = fieldMap.get(fieldName);
 			if (fField != null) {
-				Object val = FieldUtil.castOrParseValueAsPerType(fField, reading.getReadings().entrySet().stream().filter(x->x.getKey().equalsIgnoreCase(fieldName)).findFirst().get().getValue());
+				Object val = FacilioUtil.castOrParseValueAsPerType(fField, reading.getReadings().entrySet().stream().filter(x->x.getKey().equalsIgnoreCase(fieldName)).findFirst().get().getValue());
 				if (val != null) {
 					rdm.setValue(val.toString());
 					rdm.setReadingDataId(reading.getId());
@@ -659,96 +652,133 @@ public class ReadingsAPI {
 		if(readingList == null || readingList.isEmpty()) {
 			return null;
 		}
-		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
-			Map<String,FacilioField>  fieldMap = FieldFactory.getAsMap(fieldsList);
-			Map<String, ReadingDataMeta> uniqueRDMs = new HashMap<>();
-			for(ReadingContext readingContext:readingList) {
-				long resourceId=readingContext.getParentId();
-				long timeStamp=readingContext.getTtime();
-				long readingId = readingContext.getId();
-				Map<String,Object> readings=  readingContext.getReadings();
-				for(Map.Entry<String, Object> reading :readings.entrySet()) {
-					FacilioField fField = fieldMap.get(reading.getKey());
-					if (fField != null) {
-						Object val = FieldUtil.castOrParseValueAsPerType(fField, reading.getValue());
+//		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+		Map<String,FacilioField>  fieldMap = FieldFactory.getAsMap(fieldsList);
+		Map<String, ReadingDataMeta> uniqueRDMs = new HashMap<>();
+		for(ReadingContext readingContext:readingList) {
+			long resourceId=readingContext.getParentId();
+			long timeStamp=readingContext.getTtime();
+			long readingId = readingContext.getId();
+			Map<String,Object> readings=  readingContext.getReadings();
+			for(Map.Entry<String, Object> reading :readings.entrySet()) {
+				FacilioField fField = fieldMap.get(reading.getKey());
+				if (fField != null) {
+					Object val = FacilioUtil.castOrParseValueAsPerType(fField, reading.getValue());
 //						if ((AccountUtil.getCurrentOrg().getId() == 104 && fField.getFieldId() == 490437) || (AccountUtil.getCurrentOrg().getId() == 134)) {
 //							LOGGER.info("resourceId: " + resourceId + ", ttime: " + timeStamp + ", current: " + System.currentTimeMillis() + ", value: " + val);
 //						}
-						if (val != null) {
-							long fieldId = fField.getFieldId();
-							String uniqueKey = getRDMKey(resourceId, fField);
-							if (metaMap != null) {
-								ReadingDataMeta meta = metaMap.get(uniqueKey);
-								if(meta != null)
-								{
-									Object lastReading = meta.getValue();
-									long lastTimeStamp = meta.getTtime();
-									long currentTime = System.currentTimeMillis();
-									if (timeStamp > currentTime
-											|| (lastReading != null 
-											&& lastTimeStamp != -1 
-											&& !"-1".equals(meta.getActualValue()) 
-											&& timeStamp < lastTimeStamp)) {
-										if (AccountUtil.getCurrentOrg().getId() == 154l) {
-											LOGGER.info("Not updating: time" + timeStamp + ", current: " + currentTime + ", readingId: " + readingId + ", resourceId: "+ resourceId);
-										}
-										continue;
+					if (val != null) {
+						long fieldId = fField.getFieldId();
+						String uniqueKey = getRDMKey(resourceId, fField);
+						if (metaMap != null) {
+							ReadingDataMeta meta = metaMap.get(uniqueKey);
+							if(meta != null)
+							{
+								Object lastReading = meta.getValue();
+								long lastTimeStamp = meta.getTtime();
+								long currentTime = System.currentTimeMillis();
+								if (timeStamp > currentTime
+										|| (lastReading != null
+										&& lastTimeStamp != -1
+										&& !"-1".equals(meta.getActualValue())
+										&& timeStamp < lastTimeStamp)) {
+									if (AccountUtil.getCurrentOrg().getId() == 154l) {
+										LOGGER.info("Not updating: time" + timeStamp + ", current: " + currentTime + ", readingId: " + readingId + ", resourceId: "+ resourceId);
 									}
+									continue;
 								}
 							}
-							String value = val.toString();
-							
-							ReadingDataMeta rdm = uniqueRDMs.get(uniqueKey);
-							if (rdm == null || (rdm.getTtime() <= System.currentTimeMillis() && rdm.getTtime() < timeStamp) ) {
-								rdm = new ReadingDataMeta();
-								rdm.setFieldId(fieldId);
-								rdm.setField(fField);
-								rdm.setTtime(timeStamp);
-								rdm.setValue(value);
-								rdm.setReadingDataId(readingId);
-								rdm.setResourceId(resourceId);
-								
-								uniqueRDMs.put(uniqueKey, rdm);
-							}
 						}
+						String value = val.toString();
+
+						ReadingDataMeta rdm = uniqueRDMs.get(uniqueKey);
+						if (rdm == null || (rdm.getTtime() <= System.currentTimeMillis() && rdm.getTtime() < timeStamp) ) {
+							rdm = new ReadingDataMeta();
+							rdm.setFieldId(fieldId);
+							rdm.setField(fField);
+							rdm.setTtime(timeStamp);
+							rdm.setValue(value);
+							rdm.setReadingDataId(readingId);
+							rdm.setResourceId(resourceId);
+
+							uniqueRDMs.put(uniqueKey, rdm);
+						}
+					}
 //						else {
 //							LOGGER.debug("Not updating RDM for "+fField.getName()+" from "+readingContext+" because after parsing, value is null");
 //						}
-					}
 				}
 			}
-			
+		}
+
 //			LOGGER.debug("Unique RDMs : "+uniqueRDMs);
 //			if (AccountUtil.getCurrentOrg().getOrgId() == 104 || AccountUtil.getCurrentOrg().getOrgId() == 134) {
 //				LOGGER.info("Unique RDMs : "+uniqueRDMs);
 //			}
-			if (uniqueRDMs.size() == 0) {
-				return null;
-			}
-			StringBuilder timeBuilder= new StringBuilder();
-			StringBuilder valueBuilder= new StringBuilder();
-			StringBuilder idBuilder= new StringBuilder();
-			StringJoiner whereClause = new StringJoiner(" OR ");
-			int cycle = 0;
-			long orgId=AccountUtil.getCurrentOrg().getOrgId();
+		if (uniqueRDMs.size() == 0) {
+			return null;
+		}
+//		caseUpdateRDM(uniqueRDMs.values());
+		batchUpdateRDM(uniqueRDMs.values());
+		return uniqueRDMs;
+//		}
+	}
 
-			for (ReadingDataMeta rdm : uniqueRDMs.values()) {
-				
-				timeBuilder.append(getCase(rdm.getResourceId(),rdm.getFieldId(),rdm.getTtime(),false));
-				valueBuilder.append(getCase(rdm.getResourceId(),rdm.getFieldId(),rdm.getValue(),true));
-				idBuilder.append(getCase(rdm.getResourceId(),rdm.getFieldId(),rdm.getReadingDataId(),false));
-				
+	private static void batchUpdateRDM(Collection<ReadingDataMeta> uniqueRDMs) throws SQLException {
+		FacilioModule module = ModuleFactory.getReadingDataMetaModule();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getReadingDataMetaFields());
+		List<FacilioField> updateFields = new ArrayList<>();
+		updateFields.add(fieldMap.get("ttime"));
+		updateFields.add(fieldMap.get("value"));
+		updateFields.add(fieldMap.get("readingDataId"));
+
+		List<FacilioField> whereFields = new ArrayList<>();
+		whereFields.add(fieldMap.get("resourceId"));
+		whereFields.add(fieldMap.get("fieldId"));
+
+		List<GenericUpdateRecordBuilder.BatchUpdateContext> batchUpdateList = uniqueRDMs.stream().map(rdm -> {
+			GenericUpdateRecordBuilder.BatchUpdateContext updateVal = new GenericUpdateRecordBuilder.BatchUpdateContext();
+			updateVal.addUpdateValue("ttime", rdm.getTtime());
+			updateVal.addUpdateValue("value", rdm.getValue());
+			updateVal.addUpdateValue("readingDataId", rdm.getReadingDataId());
+
+			updateVal.addWhereValue("resourceId", rdm.getResourceId());
+			updateVal.addWhereValue("fieldId", rdm.getFieldId());
+			return updateVal;
+		}).collect(Collectors.toList());
+
+		new GenericUpdateRecordBuilder()
+				.table(module.getTableName())
+				.fields(updateFields)
+				.batchUpdate(whereFields, batchUpdateList)
+				;
+	}
+
+	private static void caseUpdateRDM(Collection<ReadingDataMeta> uniqueRDMs) throws SQLException {
+		StringBuilder timeBuilder= new StringBuilder();
+		StringBuilder valueBuilder= new StringBuilder();
+		StringBuilder idBuilder= new StringBuilder();
+		StringJoiner whereClause = new StringJoiner(" OR ");
+		int cycle = 0;
+		long orgId=AccountUtil.getCurrentOrg().getOrgId();
+
+		try(Connection conn = FacilioConnectionPool.INSTANCE.getConnection()) {
+			for (ReadingDataMeta rdm : uniqueRDMs) {
+				timeBuilder.append(getCase(rdm.getResourceId(), rdm.getFieldId(), rdm.getTtime(), false));
+				valueBuilder.append(getCase(rdm.getResourceId(), rdm.getFieldId(), rdm.getValue(), true));
+				idBuilder.append(getCase(rdm.getResourceId(), rdm.getFieldId(), rdm.getReadingDataId(), false));
+
 				StringBuilder builder = new StringBuilder();
 				builder.append("(RESOURCE_ID = ")
 						.append(rdm.getResourceId())
 						.append(" AND FIELD_ID = ")
 						.append(rdm.getFieldId())
 						.append(")")
-						;
+				;
 				whereClause.add(builder.toString());
 				cycle++;
-				if(cycle == BATCH_SIZE) {
-					updateRDM(timeBuilder, valueBuilder,idBuilder, whereClause, orgId,conn);
+				if (cycle == BATCH_SIZE) {
+					updateRDM(timeBuilder, valueBuilder, idBuilder, whereClause, orgId, conn);
 					timeBuilder = new StringBuilder();
 					idBuilder = new StringBuilder();
 					valueBuilder = new StringBuilder();
@@ -756,12 +786,10 @@ public class ReadingsAPI {
 					cycle = 0;
 				}
 			}
-			if(cycle > 0) {
-				updateRDM(timeBuilder, valueBuilder,idBuilder, whereClause, orgId,conn);
+			if (cycle > 0) {
+				updateRDM(timeBuilder, valueBuilder, idBuilder, whereClause, orgId, conn);
 			}
-			return uniqueRDMs;
 		}
-		
 	}
 	
 	private static void updateRDM(StringBuilder timeBuilder, StringBuilder valueBuilder, 
@@ -1232,17 +1260,17 @@ public class ReadingsAPI {
 	private static void calculateDeltaBtwReadingsAndUpdate(FacilioModule module, List<FacilioField> fields,FacilioField field,ReadingContext firstReading,ReadingContext secondReading)throws Exception{
 		if (secondReading != null) {
 			if (field.getDataTypeEnum() == FieldType.DECIMAL) {
-				Double secondReadingVal = (Double) FieldUtil.castOrParseValueAsPerType(field,secondReading.getReadings().entrySet().stream().filter(rd -> rd.getKey().equalsIgnoreCase(field.getName())).findFirst().get().getValue());
+				Double secondReadingVal = (Double) FacilioUtil.castOrParseValueAsPerType(field,secondReading.getReadings().entrySet().stream().filter(rd -> rd.getKey().equalsIgnoreCase(field.getName())).findFirst().get().getValue());
 				if (firstReading != null) {
-					Double firstReadingVal = (Double) FieldUtil.castOrParseValueAsPerType(field,firstReading.getReadings().entrySet().stream().filter(rd -> rd.getKey().equalsIgnoreCase(field.getName())).findFirst().get().getValue());
+					Double firstReadingVal = (Double) FacilioUtil.castOrParseValueAsPerType(field,firstReading.getReadings().entrySet().stream().filter(rd -> rd.getKey().equalsIgnoreCase(field.getName())).findFirst().get().getValue());
 					addDeltaValue(secondReading, field.getName(),(secondReadingVal - firstReadingVal) > 0 ? (secondReadingVal - firstReadingVal) : 0.0);
 				} else {
 					addDeltaValue(secondReading, field.getName(), 0.0);
 				}
 			}else{
-				Long secondReadingVal = (Long) FieldUtil.castOrParseValueAsPerType(field,secondReading.getReadings().entrySet().stream().filter(rd -> rd.getKey().equalsIgnoreCase(field.getName())).findFirst().get().getValue());
+				Long secondReadingVal = (Long) FacilioUtil.castOrParseValueAsPerType(field,secondReading.getReadings().entrySet().stream().filter(rd -> rd.getKey().equalsIgnoreCase(field.getName())).findFirst().get().getValue());
 				if (firstReading != null) {
-					Long firstReadingVal = (Long) FieldUtil.castOrParseValueAsPerType(field,firstReading.getReadings().entrySet().stream().filter(rd -> rd.getKey().equalsIgnoreCase(field.getName())).findFirst().get().getValue());
+					Long firstReadingVal = (Long) FacilioUtil.castOrParseValueAsPerType(field,firstReading.getReadings().entrySet().stream().filter(rd -> rd.getKey().equalsIgnoreCase(field.getName())).findFirst().get().getValue());
 					addDeltaValue(secondReading, field.getName(),(secondReadingVal - firstReadingVal) > 0 ? (secondReadingVal - firstReadingVal) : 0l);
 				} else {
 					addDeltaValue(secondReading, field.getName(), 0l);

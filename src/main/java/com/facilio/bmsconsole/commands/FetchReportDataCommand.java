@@ -252,7 +252,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 					selectBuilder.andCondition(CriteriaAPI.getCondition(filterField, filter.getFilterValue(), filter.getFilterOperatorEnum()));
 				}
 				else {
-					selectBuilder.andCondition(getEqualsCondition(filterField, filter.getFilterValue()));
+					selectBuilder.andCondition(CriteriaAPI.getEqualsCondition(filterField, filter.getFilterValue()));
 				}
 			}
 		}
@@ -314,7 +314,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 				}
 			}
 			else {
-				newSelectBuilder.andCondition(getEqualsCondition(xAggrField, xValues));
+				newSelectBuilder.andCondition(CriteriaAPI.getEqualsCondition(xAggrField, xValues));
 			}
 		}
 		
@@ -431,26 +431,6 @@ public class FetchReportDataCommand extends FacilioCommand {
 			else {
 				selectBuilder.andCondition(CriteriaAPI.getCondition(dp.getDateField().getField(), report.getDateRange().toString(), DateOperators.BETWEEN));
 			}
-		}
-	}
-	
-	private Condition getEqualsCondition(FacilioField field, String value) {
-		switch (field.getDataTypeEnum()) {
-			case STRING:
-				return CriteriaAPI.getCondition(field, value, StringOperators.IS);
-			case BOOLEAN:
-				return CriteriaAPI.getCondition(field, value, BooleanOperators.IS);
-			case NUMBER:
-			case DECIMAL:
-			case DATE_TIME:
-			case DATE:
-				return CriteriaAPI.getCondition(field, value, NumberOperators.EQUALS);
-			case LOOKUP:
-				return CriteriaAPI.getCondition(field, value, PickListOperators.IS);
-			case ENUM:
-				return CriteriaAPI.getCondition(field, value, EnumOperators.IS);
-			default:
-				return null;
 		}
 	}
 	

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
@@ -176,7 +177,7 @@ public class EnergyDataDeltaCalculationCommand extends FacilioCommand {
 			long deltaFieldId=deltaField.getFieldId();
 			
 			
-			Double currentReading = (Double) FieldUtil.castOrParseValueAsPerType(dataType, readingVal);
+			Double currentReading = (Double) FacilioUtil.castOrParseValueAsPerType(dataType, readingVal);
 			
 			long moduleId=module.getModuleId();
 			MarkType type = MarkType.NEGATIVE_VALUE;

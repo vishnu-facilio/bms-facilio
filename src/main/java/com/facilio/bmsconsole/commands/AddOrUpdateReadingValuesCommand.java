@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -167,7 +168,7 @@ public class AddOrUpdateReadingValuesCommand extends FacilioCommand {
 			for (Map.Entry<String, Object> rd : reading.getReadings().entrySet()) {
 				FacilioField fField = fieldMap.get(rd.getKey());
 				if (fField != null) {
-					Object val = FieldUtil.castOrParseValueAsPerType(fField, rd.getValue());
+					Object val = FacilioUtil.castOrParseValueAsPerType(fField, rd.getValue());
 					if (val != null && metaMap != null) {
 						String uniqueKey = ReadingsAPI.getRDMKey(reading.getParentId(), fField);
 						ReadingDataMeta meta = metaMap.get(uniqueKey);

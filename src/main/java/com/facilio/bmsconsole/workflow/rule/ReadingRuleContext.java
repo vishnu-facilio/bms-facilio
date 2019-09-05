@@ -12,6 +12,7 @@ import java.util.Map;
 
 import com.facilio.chain.FacilioChain;
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -608,7 +609,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 			if(readingField == null) {
 				return null;
 			}
-			Object currentMetric = FieldUtil.castOrParseValueAsPerType(readingField, reading.getReading(readingField.getName()));
+			Object currentMetric = FacilioUtil.castOrParseValueAsPerType(readingField, reading.getReading(readingField.getName()));
 			return currentMetric;
 		}
 		return null;
@@ -801,7 +802,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 			ReadingDataMeta meta = metaMap.get(ReadingsAPI.getRDMKey(((ReadingContext)record).getParentId(), readingField));
 			if (meta != null) {
 				Object prevValue = meta.getValue();
-				rulePlaceHolders.put("previousValue", FieldUtil.castOrParseValueAsPerType(readingField, prevValue));
+				rulePlaceHolders.put("previousValue", FacilioUtil.castOrParseValueAsPerType(readingField, prevValue));
 			}
 			rulePlaceHolders.put("resourceId", ((ReadingContext) record).getParentId());
 			rulePlaceHolders.put("inputValue", ((ReadingContext) record).getReading(readingField.getName()));
@@ -1199,7 +1200,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 
 	private static Object formatValue (ReadingContext reading, FacilioField field) {
 		if (field.getDataTypeEnum() == FieldType.DECIMAL) {
-			return DECIMAL_FORMAT.format(FieldUtil.castOrParseValueAsPerType(field, reading.getReading(field.getName())));
+			return DECIMAL_FORMAT.format(FacilioUtil.castOrParseValueAsPerType(field, reading.getReading(field.getName())));
 		}
 		else {
 			return reading.getReading(field.getName());

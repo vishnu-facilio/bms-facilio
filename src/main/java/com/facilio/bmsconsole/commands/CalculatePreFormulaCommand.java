@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import com.facilio.util.FacilioUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
@@ -101,7 +102,7 @@ public class CalculatePreFormulaCommand extends FacilioCommand {
 						Object resultVal = WorkflowUtil.getWorkflowExpressionResult(formula.getWorkflow(), params, null, false, false);
 						if (resultVal != null) {
 							isChanged = true;
-							resultVal = FieldUtil.castOrParseValueAsPerType(formula.getReadingField(), resultVal);
+							resultVal = FacilioUtil.castOrParseValueAsPerType(formula.getReadingField(), resultVal);
 							readingProps.put(formula.getReadingField().getName(), resultVal);
 							params.put(formula.getReadingField().getName(), resultVal);
 							

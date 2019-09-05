@@ -108,7 +108,7 @@ public class UnitsUtil {
 	}
 
 	private static Number parseNumber (Object value, NumberField numberField) {
-		return value instanceof Number ? (Number) value : (Number) (numberField.getDataTypeEnum() == null ? FieldUtil.castOrParseValueAsPerType(FieldType.DECIMAL, value) : FieldUtil.castOrParseValueAsPerType(numberField.getDataTypeEnum(), value));
+		return value instanceof Number ? (Number) value : (Number) (numberField.getDataTypeEnum() == null ? FacilioUtil.castOrParseValueAsPerType(FieldType.DECIMAL, value) : FacilioUtil.castOrParseValueAsPerType(numberField.getDataTypeEnum(), value));
 	}
 	
 	public static Double convertToOrgDisplayUnitFromSi(Object value,int metricId) throws Exception {
