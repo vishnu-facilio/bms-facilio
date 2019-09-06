@@ -62,14 +62,11 @@ public abstract class FacilioJob implements Runnable {
 			JobConstants.ChainFactory.jobExecutionChain(jc.getTransactionTimeout()).execute(context);
 			status = 1;
 			executor.jobEnd(jc.getJobKey());
-			AccountUtil.cleanCurrentAccount();
-			updateNextExecutionTime();
 		}
 		catch(Exception e) {
 			status = 2;
 			LOGGER.error("Job execution failed for Job :"+jc.getJobId()+" : "+ jc.getJobName(),e);
 			CommonCommandUtil.emailException("FacilioJob", "Job execution failed for Job : "+jc.getJobId()+" : "+ jc.getJobName(), e);
-			AccountUtil.cleanCurrentAccount();
 //			reschedule();
 		} finally {
 			long timeTaken = (System.currentTimeMillis()-startTime);
@@ -77,6 +74,10 @@ public abstract class FacilioJob implements Runnable {
 				timeTaken = 1;
 			}
 			JobLogger.log(jc, timeTaken, status);
+			AccountUtil.cleanCurrentAccount();
+			if(status == 1) {
+				updateNextExecutionTime();
+			}
 			LOGGER.debug("Job completed " +jc.getJobId()+"-"+ jc.getJobName() + " time taken : " + timeTaken);
 			currentThread.setName(threadName);
 		}
@@ -104,11 +105,15 @@ public abstract class FacilioJob implements Runnable {
 		return -1;
 	}
 
-	private void updateNextExecutionTime() throws SQLException {
-		if(jc.getNextExecutionTime() != -1) {
-			JobStore.updateNextExecutionTimeAndCount(jc.getJobId(), jc.getJobName(),  jc.getNextExecutionTime(), jc.getCurrentExecutionCount()+1);
-		} else {
-			JobStore.setInActiveAndUpdateCount(jc.getJobId(), jc.getJobName(), jc.getCurrentExecutionCount()+1);
+	private void updateNextExecutionTime() {
+		try {
+			if (jc.getNextExecutionTime() != -1) {
+				JobStore.updateNextExecutionTimeAndCount(jc.getJobId(), jc.getJobName(), jc.getNextExecutionTime(), jc.getCurrentExecutionCount() + 1);
+			} else {
+				JobStore.setInActiveAndUpdateCount(jc.getJobId(), jc.getJobName(), jc.getCurrentExecutionCount() + 1);
+			}
+		} catch (SQLException e) {
+			LOGGER.error("Exception while updating next execution time ", e);
 		}
 	}
 
