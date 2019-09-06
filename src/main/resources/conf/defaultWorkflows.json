@@ -831,7 +831,7 @@
 			  };
 			  thismothoccurence =  Module(\"alarmoccurrence\").fetch(occurenceThisMonthCrit);
   			  lastmonthoccurrence = Module(\"alarmoccurrence\").fetch(occurenceLastMonthCrit);
-  			  adjustedUpperBoundField = NameSpace("module").getField("adjustedUpperBound", "anomalydetectionmllogreadings");
+  			  adjustedUpperBoundField = NameSpace(\"module\").getField(\"adjustedUpperBound\", \"anomalydetectionmllogreadings\");
 			  result = {}
 			  for each rindex,resourceId in resourceIds {
 			    energyWastage = 0
