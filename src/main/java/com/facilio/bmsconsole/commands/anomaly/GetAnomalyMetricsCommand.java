@@ -81,12 +81,16 @@ public class GetAnomalyMetricsCommand extends FacilioCommand {
 		if (dateRange != null) {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(createdTimeField, dateRange.toString(), DateOperators.BETWEEN));
 		}
-		else {
-			selectBuilder.andCondition(CriteriaAPI.getCondition(createdTimeField, operator));
-		}
 		
-		if (resourceId > 0) {
-			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), String.valueOf(resourceId), NumberOperators.EQUALS));
+		if (isRCA) {
+			FacilioModule anomalyOccurrence = modBean.getModule(FacilioConstants.ContextNames.ANOMALY_ALARM_OCCURRENCE);
+			Map<String, FacilioField> anomalyOccurrenceFields = FieldFactory.getAsMap(modBean.getAllFields(anomalyOccurrence.getName()));
+			selectBuilder.innerJoin(anomalyOccurrence.getTableName())
+						 .on("AlarmOccurrence.ID = " + anomalyOccurrence.getTableName() + ".ID")
+						 .andCondition(CriteriaAPI.getCondition(anomalyOccurrenceFields.get("parentAlarm"), String.valueOf(alarmId), PickListOperators.IS))
+						 .andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), String.valueOf(resourceId), NumberOperators.EQUALS))
+						 .andCondition(CriteriaAPI.getCondition(anomalyOccurrenceFields.get("mlanomalyType"),
+									String.valueOf(MLAlarmOccurenceContext.MLAnomalyType.RCA.getIndex()), NumberOperators.EQUALS));
 		}
 		
 		List<Map<String, Object>> props = selectBuilder.getAsProps();
@@ -97,22 +101,10 @@ public class GetAnomalyMetricsCommand extends FacilioCommand {
 		selectFields.add(createdTimeField);
 		selectFields.add(clearedTimeField);
 		
-		NewAlarmAPI.getAlarmBuilder(alarmId, dateRange.getStartTime(), dateRange.getEndTime(), selectFields, fieldMap);
+		selectBuilder = NewAlarmAPI.getAlarmBuilder(alarmId, dateRange.getStartTime(), dateRange.getEndTime(), selectFields, fieldMap);
 		
 		List<Map<String, Object>> ranges = selectBuilder.getAsProps();
 		context.put("anomalyDateRanges", ranges);
-		
-		
-		/*if (parentAlarmId != null && parentAlarmId != -1) {
-			FacilioModule anomalyOccurrence = modBean.getModule(FacilioConstants.ContextNames.ANOMALY_ALARM_OCCURRENCE);
-			Map<String, FacilioField> anomalyOccurrenceFields = FieldFactory.getAsMap(modBean.getAllFields(anomalyOccurrence.getName()));
-			selectBuilder
-				.innerJoin(anomalyOccurrence.getTableName())
-				.on("AlarmOccurrence.ID = " + anomalyOccurrence.getTableName() + ".ID");
-			selectBuilder.andCondition(CriteriaAPI.getCondition(anomalyOccurrenceFields.get("parentAlarm"), String.valueOf(alarmId), PickListOperators.IS));
-			selectBuilder.andCondition(CriteriaAPI.getCondition(anomalyOccurrenceFields.get("mlanomalyType"),
-					String.valueOf(MLAlarmOccurenceContext.MLAnomalyType.RCA.getIndex()), NumberOperators.EQUALS));
-		}*/
 		
 		return false;
 	}
