@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
+import com.facilio.service.FacilioService;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.parser.ParseException;
@@ -88,8 +89,7 @@ public class FacilioTimer {
 		if (AccountUtil.getCurrentAccount() != null) {
 			jc.setTimezone(AccountUtil.getCurrentAccount().getTimeZone());
 		}
-
-		JobStore.addJob(jc);
+		FacilioService.runAsService(() -> JobStore.addJob(jc));
 	}
 
 	public static void scheduleInstantJob(String jobName, FacilioContext context){
@@ -126,23 +126,23 @@ public class FacilioTimer {
 		if (AccountUtil.getCurrentAccount() != null) {
 			jc.setTimezone(AccountUtil.getCurrentAccount().getTimeZone());
 		}
-		JobStore.addJob(jc);
+		FacilioService.runAsService(() -> JobStore.addJob(jc));
 	}
 	
 	public static void deleteJob(long jobId, String jobName) throws Exception {
-		JobStore.deleteJob(jobId, jobName);
+		FacilioService.runAsService(() -> JobStore.deleteJob(jobId, jobName));
 	}
 	
 	public static void deleteJobs(List<Long> jobIds, String jobName) throws Exception {
-		JobStore.deleteJobs(jobIds, jobName);
+		FacilioService.runAsService(() -> JobStore.deleteJobs(jobIds, jobName));
 	}
 	
-	public static JobContext getJob(long jobId, String jobName) throws JsonParseException, JsonMappingException, SQLException, IOException, ParseException {
-		return JobStore.getJob(jobId, jobName);
+	public static JobContext getJob(long jobId, String jobName) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> JobStore.getJob(jobId, jobName));
 	}
 	
-	public static List<JobContext> getJobs(List<Long> jobIds, String jobName) throws JsonParseException, JsonMappingException, SQLException, IOException, ParseException {
-		return JobStore.getJobs(jobIds, jobName);
+	public static List<JobContext> getJobs(List<Long> jobIds, String jobName) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> JobStore.getJobs(jobIds, jobName));
 	}
 	
 	private static long getCurrentOrgId() {
