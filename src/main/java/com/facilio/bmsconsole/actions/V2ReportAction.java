@@ -212,7 +212,11 @@ public class V2ReportAction extends FacilioAction {
 		if (showSafeLimit != null) {
 			reportContext.addToReportState(FacilioConstants.ContextNames.REPORT_SHOW_SAFE_LIMIT, showSafeLimit);
 		}
-
+		
+		if(hmAggr!= null) {
+			reportContext.addToReportState(FacilioConstants.ContextNames.HEATMAP_AGGR, hmAggr);
+		}
+		
 		if (xAggr != null) {
 			reportContext.setxAggr(xAggr);
 		}
@@ -318,6 +322,10 @@ public class V2ReportAction extends FacilioAction {
 		if(regressionConfig != null && !regressionConfig.isEmpty()) {
 			context.put(FacilioConstants.ContextNames.REGRESSION_CONFIG, regressionConfig);
 		}
+		
+		if(hmAggr != null) {
+			context.put(FacilioConstants.ContextNames.HEATMAP_AGGR, hmAggr);
+		}
 		context.put(FacilioConstants.ContextNames.ALARM_ID, alarmId);
 	}
 	
@@ -353,6 +361,19 @@ public class V2ReportAction extends FacilioAction {
 			reportContext.setReportState(reportState);
 			context.put(FacilioConstants.ContextNames.REGRESSION_CONFIG, regressionConfig);
 		}
+		if(reportContext != null && hmAggr != null) {
+			JSONObject reportState;
+			if(reportContext.getReportState() != null && !reportContext.getReportState().isEmpty()) {
+				reportState = reportContext.getReportState();
+			}
+			else {
+				reportState = new JSONObject();
+			}
+			reportState.put("hmAggr", hmAggr);
+			reportContext.setReportState(reportState);
+			context.put(FacilioConstants.ContextNames.HEATMAP_AGGR, hmAggr);
+		}
+		
 		context.put(FacilioConstants.ContextNames.REPORT_TEMPLATE, template);
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateOperatorValue);
@@ -877,6 +898,14 @@ public class V2ReportAction extends FacilioAction {
 	}
 	public void setShowSafeLimit(boolean showSafeLimit) {
 		this.showSafeLimit = showSafeLimit;
+	}
+	
+	private String hmAggr=null;
+	public String hmAggr() {
+		return hmAggr;
+	}
+	public void sethmAggr(String hmAggr) {
+		this.hmAggr = hmAggr;
 	}
 	
 	private int analyticsType = -1;

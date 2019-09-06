@@ -113,6 +113,12 @@ public class ReportUtil {
 			report.setAnalyticsType(analyticsType);
 		}
 		
+		String hmAggr=(String) context.get(FacilioConstants.ContextNames.HEATMAP_AGGR);
+		
+		if(hmAggr!= null) {
+			report.sethmAggr(hmAggr);
+		}
+		
 		WorkflowContext transformWorkflow = (WorkflowContext)context.get(FacilioConstants.Workflow.WORKFLOW);
 		if (transformWorkflow != null) {
 			report.setTransformWorkflow(transformWorkflow);
