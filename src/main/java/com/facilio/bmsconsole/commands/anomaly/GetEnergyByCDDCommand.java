@@ -33,11 +33,12 @@ public class GetEnergyByCDDCommand extends FacilioCommand {
 		
 		DateRange dateRange = (DateRange) context.get(FacilioConstants.ContextNames.DATE_RANGE);
 		long resourceId = (long) context.get(ContextNames.RESOURCE_ID);
+		long siteId = (long) context.get(ContextNames.SITE_ID);
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		List<Map<String, Object>> energy = getReadings("energydata", modBean, resourceId, dateRange, "totalEnergyConsumptionDelta");
-		List<Map<String, Object>> cdd = getReadings("cdd", modBean, resourceId, dateRange, "cdd");
+		List<Map<String, Object>> cdd = getReadings("cdd", modBean, siteId, dateRange, "cdd");
 		JSONObject obj = new JSONObject();
 		obj.put("energy", energy);
 		obj.put("cdd", cdd);

@@ -148,10 +148,19 @@ private long ruleId = -1;
 		return SUCCESS;
 	}
 	
+	long siteId = -1;
+	public long getSiteId() {
+		return siteId;
+	}
+	public void setSiteId(long siteId) {
+		this.siteId = siteId;
+	}
+
 	public String fetchMetrics() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ALARM_ID, alarmId);
 		context.put(FacilioConstants.ContextNames.RESOURCE_ID, resourceId);
+		context.put(FacilioConstants.ContextNames.SITE_ID, siteId);
 		context.put(FacilioConstants.ContextNames.IS_RCA, isRca());
 		context.put(FacilioConstants.ContextNames.DATE_RANGE, dateRange);
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
