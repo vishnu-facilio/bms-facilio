@@ -43,6 +43,17 @@ public class MLAnomalyPageFactory extends PageFactory {
 		
 		addAnomalyRCAWidget(tab3Sec1);
 		
+//		if (!FacilioProperties.isProduction()) {
+			Tab tab4 = page.new Tab("anomalyMetrics", "anomalyMetrics");
+			page.addTab(tab4);
+			
+			Section tab4Sec1 = page.new Section();
+			tab4.addSection(tab4Sec1);
+			
+			addAnomalyMetricsWidget(tab4Sec1);
+//		}
+		
+		
 		Tab tab2 = page.new Tab("occurrenceHistory", "occurrenceHistory");
 		page.addTab(tab2);
 		
@@ -128,6 +139,11 @@ public class MLAnomalyPageFactory extends PageFactory {
 	}
 	private static void addOccurrenceHistoryWidget(Section section) {
 		PageWidget occurrenceListWidget = new PageWidget(WidgetType.OCCURRENCE_HISTORY);
+		section.addWidget(occurrenceListWidget);
+	}
+	
+	private static void addAnomalyMetricsWidget(Section section) {
+		PageWidget occurrenceListWidget = new PageWidget(WidgetType.ANOMALY_METRICS);
 		section.addWidget(occurrenceListWidget);
 	}
 }

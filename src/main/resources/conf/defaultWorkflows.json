@@ -304,7 +304,7 @@
 			      for each index,value in thismothoccurence {
 			        endTime = value.clearedTime
 			        if (endTime == null) {
-			          endTime = date.now();
+			          endTime = dateRange().getEndTime(thisMonthRanges);
 			        }
 			        ttimes = date.dateRange(value.createdTime, endTime)
 			        thisMonthEnergy = {
@@ -335,7 +335,7 @@
 			      for each index,value in lastmonthoccurrence {
 			        endTime = value.clearedTime
 			        if (endTime == null) {
-			          endTime = date.now();
+			           endTime = dateRange().getEndTime(lastMonthRanges);
 			        }
 			        ttimes = date.dateRange(value.createdTime, endTime)
 			        lastMonthEnergy = {
@@ -831,7 +831,7 @@
 			      for each index,value in thismothoccurence {
 			        endTime = value.clearedTime
 			        if (endTime == null) {
-			          endTime = date.now();
+			          endTime = dateRange().getEndTime(thisMonthRanges);
 			        }
 			        ttimes = date.dateRange(value.createdTime, endTime)
 			        thisMonthEnergy = {
@@ -855,7 +855,7 @@
 			      for each index,value in lastmonthoccurrence {
 			        endTime = value.clearedTime
 			        if (endTime == null) {
-			          endTime = date.now();
+			          endTime = dateRange().getEndTime(lastMonthRanges);
 			        }
 			        ttimes = date.dateRange(value.createdTime, endTime)
 			        lastMonthEnergy = {

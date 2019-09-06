@@ -243,6 +243,10 @@
 			class="com.facilio.bmsconsole.actions.MLAnomalyAction"
 			method="fetchRelatedAsset">
 			</action>
+			<action name="metrics"
+			class="com.facilio.bmsconsole.actions.MLAnomalyAction"
+			method="fetchMetrics">
+			</action>
 	</package>
 	
 	<package name="state" namespace="/api/v2/state" extends="v2Api">

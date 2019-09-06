@@ -147,4 +147,17 @@ private long ruleId = -1;
 //		setResult(FacilioConstants.ContextNames.RESOURCE_LIST, context.get(FacilioConstants.ContextNames.RESOURCE_LIST));
 		return SUCCESS;
 	}
+	
+	public String fetchMetrics() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ALARM_ID, alarmId);
+		context.put(FacilioConstants.ContextNames.RESOURCE_ID, resourceId);
+		context.put(FacilioConstants.ContextNames.DATE_RANGE, dateRange);
+		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
+		context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateOperatorValue);
+		ReadOnlyChainFactory.fetchAnomalyMetricsChain().execute(context);
+		
+		setResult("metrics", context.get(ContextNames.RESULT));
+		return SUCCESS;
+	}
 }
