@@ -462,16 +462,6 @@ public class WorkflowUtil {
 		}
 	}
 	
-	public static int updateWorkflow(WorkflowContext workflowContext) throws Exception {
-		GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder();
-		update.table(ModuleFactory.getWorkflowModule().getTableName());
-		update.fields(FieldFactory.getWorkflowFields())
-		.andCondition(CriteriaAPI.getIdCondition(workflowContext.getId(), ModuleFactory.getWorkflowModule()));
-		
-		Map<String, Object> prop = FieldUtil.getAsProperties(workflowContext);
-		return update.update(prop);
-	}
-	
 	public static Long addWorkflow(WorkflowContext workflowContext) throws Exception {
 
 		WorkflowContext workflow = new WorkflowContext();
