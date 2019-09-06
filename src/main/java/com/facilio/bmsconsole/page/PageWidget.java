@@ -199,6 +199,7 @@ public class PageWidget {
  		ANOMALY_SUB_METER_WIDGET("anomalySubMeterWidget"),
  		ANOMALY_RCA("anomalyRca"),
  		OCCURRENCE_HISTORY("occurrenceHistory"),
+ 		ANOMALY_METRICS("anomalyMetrics"),
  		;
 		
 		private String name;
