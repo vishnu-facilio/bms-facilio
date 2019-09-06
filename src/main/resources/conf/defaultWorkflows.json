@@ -774,7 +774,9 @@
 				           }
 				         }
 				    mOverAllDuration = sumMttc;
-				     mttc = sumMttc /countOfClearedOccurence;
+				     if (countOfClearedOccurence > 0 ) {
+				       mttc = sumMttc /countOfClearedOccurence;
+				     }
 				    mtbt = sumMtbt / alarmMonthOccurenceList.size();
 				  }	
 				  if (alarmOccurenceTillLMonthList != null) {
@@ -792,7 +794,9 @@
 				         }
 				     pmtbt = sumPmtbt / alarmOccurenceTillLMonthList.size();
 				 	mOverAllDuration = sumPmttc;
-				     pmttc = sumPmttc /countOfClearedOccurence;
+				 	 if (countOfClearedOccurence > 0 ) {
+				       pmttc = sumPmttc /countOfClearedOccurence;
+				     }
 				  }	
 				  resMap = {};
 					resMap[\"mtbt\"] = mtbt;
