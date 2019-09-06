@@ -60,7 +60,7 @@ public class GetAnomalyMetricsCommand extends FacilioCommand {
 		FacilioField clearedTimeField = fieldMap.get("clearedTime");
 		String clearedTimeFieldColumn = clearedTimeField.getColumnName();
 		
-		String durationColumn = clearedTimeFieldColumn + "-" + createdTimeFieldColumn;
+		String durationColumn = "("+clearedTimeFieldColumn + "-" + createdTimeFieldColumn+")/1000";
 		FacilioField durationField = FieldFactory.getField("duration", durationColumn, FieldType.NUMBER);
 		
 		

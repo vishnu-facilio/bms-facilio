@@ -218,6 +218,15 @@
 			<param name="viewName">{1}</param>
 		</action>
 	</package>
+	<package name="alarmrelatedasset" namespace="/api/v2/alarms/relatedassets" extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.RelatedAssetsAction"
+			method="fetchRelatedAssets">
+			<param name="moduleName">alarm</param>
+			<param name="permission">READ,READ_OWN,READ_TEAM</param>
+			<param name="id">{1}</param>
+		</action>
+	</package>
 	<package name="mlAnomalyAlarmList" namespace="/api/v2/mlAnomalyAlarm/view" extends="v2Api">
 		<action name="*" class="com.facilio.events.actions.V2AlarmAction" method="alarmList">
 			<param name="moduleName">alarm</param>
@@ -241,7 +250,7 @@
 		</action>
 		<action name="relatedAsset"
 			class="com.facilio.bmsconsole.actions.MLAnomalyAction"
-			method="fetchRelatedAsset">
+			method="fetchRelatedAssetAlarms">
 			</action>
 			<action name="metrics"
 			class="com.facilio.bmsconsole.actions.MLAnomalyAction"
@@ -1791,7 +1800,7 @@
 		</action>
 	</package>
 
-   <package name="relatedAssetsApiV2" namespace="/api/v2/relatedAssets"
+   <package name="relatedAssetsApiV2" namespace="/api/v2/assets/related"
 		extends="v2Api">
 
 		<action name="addOrUpdate"
@@ -1801,6 +1810,14 @@
 		<action name="delete"
 			class="com.facilio.bmsconsole.actions.RelatedAssetsAction"
 			method="deleteRelatedAsset">
+		</action>
+		
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.RelatedAssetsAction"
+			method="fetchRelatedAssets">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+			<param name="id">{1}</param>
 		</action>
 	</package>
 

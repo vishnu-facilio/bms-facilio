@@ -1412,10 +1412,16 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetMLSummmaryDetail());
 		return c;
 	}
-	public static FacilioChain fetchAnomlayRelatedAsset () {
+	public static FacilioChain fetchRelatedAssetAlarms () {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetRelatedAssetCommand());
 		c.addCommand(new FetchAlarmInsightCommand());
+		return c;
+	}
+	
+	public static FacilioChain fetchRelatedAssetChain () {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetRelatedAssetCommand());
 		return c;
 	}
 

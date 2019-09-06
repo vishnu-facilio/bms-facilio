@@ -65,7 +65,7 @@ public class FormatAnomalyMetricsCommand extends FacilioCommand {
 			}
 			
 			JSONObject obj = (JSONObject) context.get("energyCdd");
-			List<Map<String, Object>> energyReadings =  (List<Map<String, Object>>) context.get("energy");
+			List<Map<String, Object>> energyReadings =  (List<Map<String, Object>>) obj.get("energy");
 			if (CollectionUtils.isNotEmpty(energyReadings)) {
 				for(Map<String, Object> energy: energyReadings) {
 					JSONObject jsonObj = new JSONObject();
@@ -75,7 +75,7 @@ public class FormatAnomalyMetricsCommand extends FacilioCommand {
 					energyByCdd.put(month, jsonObj);
 				}
 			}
-			List<Map<String, Object>> cddReadings =  (List<Map<String, Object>>) context.get("cdd");
+			List<Map<String, Object>> cddReadings =  (List<Map<String, Object>>) obj.get("cdd");
 			if (CollectionUtils.isNotEmpty(cddReadings)) {
 				for(Map<String, Object> cddReading: cddReadings) {
 					String month = getMonth((long) cddReading.get("ttime"));
