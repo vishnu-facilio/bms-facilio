@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -650,7 +651,11 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 	
 	@Override
 	public void processTimeSeries(FacilioConsumer consumer, FacilioRecord record) throws Exception {
-        TimeSeriesAPI.processFacilioRecord(consumer, record);
+		try {
+			TimeSeriesAPI.processFacilioRecord(consumer, record);
+		} catch (AmazonS3Exception e) {
+			LOGGER.info("s3 exception " + e.getLocalizedMessage());
+		}
 	}
 
 	@Override
@@ -660,7 +665,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 			ControllerContext controller = ControllerAPI.getActiveController(partitionKey);
 			long siteId = -1l;
 			if (controller != null) {
-				siteId = controller.getSiteId(); 
+				siteId = controller.getSiteId();
 				payLoad.put("controllerId", controller.getId());
 			}
 			if (siteId != -1) {
