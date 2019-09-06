@@ -152,6 +152,7 @@ private long ruleId = -1;
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ALARM_ID, alarmId);
 		context.put(FacilioConstants.ContextNames.RESOURCE_ID, resourceId);
+		context.put(FacilioConstants.ContextNames.IS_RCA, isRca());
 		context.put(FacilioConstants.ContextNames.DATE_RANGE, dateRange);
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateOperatorValue);
@@ -159,5 +160,16 @@ private long ruleId = -1;
 		
 		setResult("metrics", context.get(ContextNames.RESULT));
 		return SUCCESS;
+	}
+	
+	private Boolean rca;
+	public boolean isRca() {
+		if (rca == null) {
+			return false;
+		}
+		return rca;
+	}
+	public void setRca(boolean rca) {
+		this.rca = rca;
 	}
 }

@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.time.DateTimeUtil;
+import com.facilio.util.FacilioUtil;
 
 public class FormatAnomalyMetricsCommand extends FacilioCommand {
 
@@ -50,46 +51,45 @@ public class FormatAnomalyMetricsCommand extends FacilioCommand {
 			}
 		}
 		if (!rows.isEmpty()) {
-			List<ReadingContext> projections = (List<ReadingContext>) context.get("projections");
+			List<Map<String, Object>> projections = (List<Map<String, Object>>) context.get("projections");
 			if (CollectionUtils.isNotEmpty(projections)) {
-				for(ReadingContext projection: projections) {
-					String month = getMonth((long) projection.getTtime());
-					Map<String, Object> data = projection.getData();
-					if (data.containsKey("deviation")) {
-						deviation.put(month, data.get("deviation"));
+				for(Map<String, Object> projection: projections) {
+					String month = getMonth((long) projection.get("ttime"));
+					if (projection.get("deviation") != null) {
+						deviation.put(month, projection.get("deviation"));
 					}
-					if (data.containsKey("wastage")) {
-						deviation.put(month, data.get("wastage"));
+					if (projection.get("wastage") != null) {
+						wastage.put(month, projection.get("wastage"));
+					}
+				}
+			}
+			
+			JSONObject obj = (JSONObject) context.get("energyCdd");
+			List<Map<String, Object>> energyReadings =  (List<Map<String, Object>>) context.get("energy");
+			if (CollectionUtils.isNotEmpty(energyReadings)) {
+				for(Map<String, Object> energy: energyReadings) {
+					JSONObject jsonObj = new JSONObject();
+					jsonObj.put("energy", energy.get("totalEnergyConsumptionDelta"));
+					
+					String month = getMonth((long) energy.get("ttime"));
+					energyByCdd.put(month, jsonObj);
+				}
+			}
+			List<Map<String, Object>> cddReadings =  (List<Map<String, Object>>) context.get("cdd");
+			if (CollectionUtils.isNotEmpty(cddReadings)) {
+				for(Map<String, Object> cddReading: cddReadings) {
+					String month = getMonth((long) cddReading.get("ttime"));
+					if (energyByCdd.get(month) != null) {
+						JSONObject jsonObj = (JSONObject) energyByCdd.get(month);
+						Double energy = (Double) jsonObj.get("energy");
+						Double cdd = (Double) cddReading.get("cdd");
+						if (cdd > 0) {
+							jsonObj.put("value", FacilioUtil.decimalClientFormat(energy/cdd));
+						}
 					}
 				}
 			}
 		}
-		
-		
-		/*JSONObject energyCdd = (JSONObject) context.get("energyCdd");
-		if (energyCdd != null) {
-			List<ReadingContext> energyReadings = (List<ReadingContext>) energyCdd.get("energy");
-			if (CollectionUtils.isNotEmpty(energyReadings)) {
-				for(ReadingContext energy: energyReadings) {
-					String month = DateTimeUtil.getFormattedTime((long) energy.getTtime(), "M");
-					Map<String, Object> data = energy.getData();
-					if (data.containsKey("energy")) {
-						energy.put(month, data.get("energy"));
-					}
-					if (data.containsKey("wastage")) {
-						deviation.put(month, data.get("wastage"));
-					}
-				}
-			}
-			String month = DateTimeUtil.getFormattedTime((long) energy.getTtime(), "M");
-			Map<String, Object> data = projection.getData();
-			if (data.containsKey("deviation")) {
-				deviation.put(month, data.get("deviation"));
-			}
-			if (data.containsKey("wastage")) {
-				deviation.put(month, data.get("wastage"));
-			}
-		} */
 		
 		context.put(ContextNames.RESULT, result);
 		return false;

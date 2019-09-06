@@ -6,8 +6,8 @@ import java.util.Map;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 
-import com.chargebee.org.json.JSONObject;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -15,14 +15,12 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.db.criteria.operators.FieldOperator;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.AggregateOperator.DateAggregateOperator;
 import com.facilio.modules.AggregateOperator.NumberAggregateOperator;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
 
@@ -38,8 +36,8 @@ public class GetEnergyByCDDCommand extends FacilioCommand {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		List<ReadingContext> energy = getReadings("energydata", modBean, resourceId, dateRange, "totalEnergyConsumptionDelta");
-		List<ReadingContext> cdd = getReadings("cdd", modBean, resourceId, dateRange, "cdd");
+		List<Map<String, Object>> energy = getReadings("energydata", modBean, resourceId, dateRange, "totalEnergyConsumptionDelta");
+		List<Map<String, Object>> cdd = getReadings("cdd", modBean, resourceId, dateRange, "cdd");
 		JSONObject obj = new JSONObject();
 		obj.put("energy", energy);
 		obj.put("cdd", cdd);
@@ -51,7 +49,7 @@ public class GetEnergyByCDDCommand extends FacilioCommand {
 		return false;
 	}
 	
-	private List<ReadingContext> getReadings(String moduleName, ModuleBean modBean, long resourceId, DateRange dateRange, String fieldName) throws Exception {
+	private List<Map<String, Object>> getReadings(String moduleName, ModuleBean modBean, long resourceId, DateRange dateRange, String fieldName) throws Exception {
 		List<FacilioField> fields = modBean.getAllFields(moduleName);
 		Map<String, FacilioField> fieldMap= FieldFactory.getAsMap(fields);
 		
@@ -61,10 +59,11 @@ public class GetEnergyByCDDCommand extends FacilioCommand {
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(resourceId), NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("ttime"), dateRange.getStartTime()+","+dateRange.getEndTime(), DateOperators.BETWEEN))
 				.aggregate(NumberAggregateOperator.SUM, fieldMap.get(fieldName))
+				.aggregate(NumberAggregateOperator.MIN, fieldMap.get("ttime"))
 				.groupBy(DateAggregateOperator.MONTH.getSelectField(fieldMap.get("ttime")).getCompleteColumnName())
 				;
 		
-		return selectRecordBuilder.get();
+		return selectRecordBuilder.getAsProps();
 	}
 
 }

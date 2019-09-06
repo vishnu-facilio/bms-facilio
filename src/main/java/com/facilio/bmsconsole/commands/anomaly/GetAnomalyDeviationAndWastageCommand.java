@@ -58,7 +58,7 @@ public class GetAnomalyDeviationAndWastageCommand extends FacilioCommand {
 		FacilioField adjustedUpperBound = fieldMap.get("adjustedUpperBound");
 		String upperBoundColumn = fieldMap.get("adjustedUpperBound").getCompleteColumnName();
 		
-		String diff = fieldMap.get("actualValue").getCompleteColumnName()+"-"+upperBoundColumn;
+		String diff = "("+fieldMap.get("actualValue").getCompleteColumnName()+"-"+upperBoundColumn+")";
 		FacilioField wastage = FieldFactory.getField("wastage", diff, FieldType.NUMBER); 
 		FacilioField deviation = FieldFactory.getField("deviation", diff+"/"+upperBoundColumn+"*100", FieldType.NUMBER); 
 
@@ -89,7 +89,7 @@ public class GetAnomalyDeviationAndWastageCommand extends FacilioCommand {
 			criteria.addOrCondition(CriteriaAPI.getCondition(fieldMap.get("ttime"), startTime+","+clearedTime, DateOperators.BETWEEN));
 		}
 		selectRecordBuilder.andCriteria(criteria);
-		List<ReadingContext> readings = selectRecordBuilder.get();
+		List<Map<String, Object>> readings = selectRecordBuilder.getAsProps();
 		LOGGER.debug("projections: " + (readings != null ? readings : ""));
 		context.put("projections", readings);
 		
