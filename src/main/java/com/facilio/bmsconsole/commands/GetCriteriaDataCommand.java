@@ -74,6 +74,7 @@ public class GetCriteriaDataCommand extends FacilioCommand {
 			String[] name = condition.getFieldName().split("\\.");
 			String fieldName = name.length > 1 ? name[1] : name[0];
 			
+			conditionObj.put("key", entry.getKey());
 			conditionObj.put("field", fieldName);
 			conditionObj.put("operator", condition.getOperator());
 			if(condition.getOperator() instanceof DateOperators){
