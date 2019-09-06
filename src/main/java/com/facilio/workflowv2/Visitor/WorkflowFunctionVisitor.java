@@ -70,9 +70,6 @@ public class WorkflowFunctionVisitor extends WorkflowV2BaseVisitor<Value> {
     boolean isFunctionHeaderVisitor;
     public void setParams(List<Object> parmasObjects) throws Exception {
     	if(parmasObjects != null && parmasObjects.size() > 0) {
-//    		if(parmasObjects.size() < workflowContext.getParameters().size()) {
-//        		throw new RuntimeException("param count mismatched");
-//        	}
         	
         	for(int i = 0;i<parmasObjects.size(); i++) {
         		ParameterContext param = workflowContext.getParameters().get(i);

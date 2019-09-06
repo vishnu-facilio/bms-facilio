@@ -97,15 +97,18 @@ public class GetReadingsForMLCommand extends FacilioCommand {
 				for(Map<String,Object> prop : props)
 				{
 					long ttime = (long)prop.get(ttimeField.getName());
-					if(criteriavariableData.containsKey(ttime))
+					if(prop.get(variableField.getName())!=null)
 					{
-						criteriavariableData.get(ttime).put(variableField.getName(), prop.get(variableField.getName()));
-					}
-					else
-					{
-						Hashtable<String,Object> data = new Hashtable<String,Object>();
-						data.put(variableField.getName(), prop.get(variableField.getName()));
-						criteriavariableData.put(ttime, data);
+						if(criteriavariableData.containsKey(ttime))
+						{
+							criteriavariableData.get(ttime).put(variableField.getName(), prop.get(variableField.getName()));
+						}
+						else
+						{
+							Hashtable<String,Object> data = new Hashtable<String,Object>();
+							data.put(variableField.getName(), prop.get(variableField.getName()));
+							criteriavariableData.put(ttime, data);
+						}
 					}
 				}
 				

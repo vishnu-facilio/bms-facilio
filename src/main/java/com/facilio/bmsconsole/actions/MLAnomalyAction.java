@@ -7,6 +7,7 @@ import org.apache.commons.chain.Chain;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.MLContext;
 import com.facilio.bmsconsole.util.MLAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -126,7 +127,7 @@ private long ruleId = -1;
 	}
 
 
-	public String fetchRelatedAsset() throws Exception {
+	public String fetchRelatedAssetAlarms() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RESOURCE_ID, resourceId);
 		context.put(FacilioConstants.ContextNames.IS_RCA, false);
@@ -136,7 +137,7 @@ private long ruleId = -1;
 		context.put(FacilioConstants.ContextNames.DATE_RANGE, dateRange);
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateOperatorValue);
-		Chain rAssetChain = ReadOnlyChainFactory.fetchAnomlayRelatedAsset();
+		Chain rAssetChain = ReadOnlyChainFactory.fetchRelatedAssetAlarms();
 		rAssetChain.execute(context);
 		List<Long> relatedAsset = (List<Long>) context.get(FacilioConstants.ContextNames.RESOURCE_LIST);
 		if (relatedAsset != null && relatedAsset.size() > 0) {
@@ -146,5 +147,41 @@ private long ruleId = -1;
 		}
 //		setResult(FacilioConstants.ContextNames.RESOURCE_LIST, context.get(FacilioConstants.ContextNames.RESOURCE_LIST));
 		return SUCCESS;
+	}
+	
+	long siteId = -1;
+	public long getSiteId() {
+		return siteId;
+	}
+	public void setSiteId(long siteId) {
+		this.siteId = siteId;
+	}
+
+	public String fetchMetrics() throws Exception {
+		FacilioChain chain = ReadOnlyChainFactory.fetchAnomalyMetricsChain();
+		
+		FacilioContext context = chain.getContext();
+		context.put(FacilioConstants.ContextNames.ALARM_ID, alarmId);
+		context.put(FacilioConstants.ContextNames.RESOURCE_ID, resourceId);
+		context.put(FacilioConstants.ContextNames.SITE_ID, siteId);
+		context.put(FacilioConstants.ContextNames.IS_RCA, isRca());
+		context.put(FacilioConstants.ContextNames.DATE_RANGE, dateRange);
+		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
+		context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateOperatorValue);
+		chain.execute();
+		
+		setResult("metrics", context.get(ContextNames.RESULT));
+		return SUCCESS;
+	}
+	
+	private Boolean rca;
+	public boolean isRca() {
+		if (rca == null) {
+			return false;
+		}
+		return rca;
+	}
+	public void setRca(boolean rca) {
+		this.rca = rca;
 	}
 }

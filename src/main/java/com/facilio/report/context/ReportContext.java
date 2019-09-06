@@ -360,6 +360,14 @@ public class ReportContext {
 		this.xAggr = xAggr;
 	}
 	
+	private String hmAggr;
+	public String gethmAggr() {
+		return hmAggr;
+	}
+	public void sethmAggr(String hmAggr) {
+		this.hmAggr = hmAggr;
+	}
+	
 	private AnalyticsType analyticsType;
 	public int getAnalyticsType() {
 		if(analyticsType != null) {

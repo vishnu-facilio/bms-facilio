@@ -363,7 +363,7 @@ public class WorkflowUtil {
 		paramMap = workflowContext.getVariableResultMap();
 		
 		workflowContext.setIgnoreNullParams(ignoreNullExpressions);
-		log.debug("param" + (paramMap != null ? paramMap : ""));
+		log.debug("param -- " + paramMap);
 		Object result = workflowContext.executeWorkflow();
 		
 		if(workflowContext.isLogNeeded()) {
@@ -460,16 +460,6 @@ public class WorkflowUtil {
 				}
 			}
 		}
-	}
-	
-	public static int updateWorkflow(WorkflowContext workflowContext) throws Exception {
-		GenericUpdateRecordBuilder update = new GenericUpdateRecordBuilder();
-		update.table(ModuleFactory.getWorkflowModule().getTableName());
-		update.fields(FieldFactory.getWorkflowFields())
-		.andCondition(CriteriaAPI.getIdCondition(workflowContext.getId(), ModuleFactory.getWorkflowModule()));
-		
-		Map<String, Object> prop = FieldUtil.getAsProperties(workflowContext);
-		return update.update(prop);
 	}
 	
 	public static Long addWorkflow(WorkflowContext workflowContext) throws Exception {

@@ -304,7 +304,7 @@
 			      for each index,value in thismothoccurence {
 			        endTime = value.clearedTime
 			        if (endTime == null) {
-			          endTime = date.now();
+			          endTime = dateRange().getEndTime(thisMonthRanges);
 			        }
 			        ttimes = date.dateRange(value.createdTime, endTime)
 			        thisMonthEnergy = {
@@ -335,7 +335,7 @@
 			      for each index,value in lastmonthoccurrence {
 			        endTime = value.clearedTime
 			        if (endTime == null) {
-			          endTime = date.now();
+			           endTime = dateRange().getEndTime(lastMonthRanges);
 			        }
 			        ttimes = date.dateRange(value.createdTime, endTime)
 			        lastMonthEnergy = {
@@ -774,7 +774,9 @@
 				           }
 				         }
 				    mOverAllDuration = sumMttc;
-				     mttc = sumMttc /countOfClearedOccurence;
+				     if (countOfClearedOccurence > 0 ) {
+				       mttc = sumMttc /countOfClearedOccurence;
+				     }
 				    mtbt = sumMtbt / alarmMonthOccurenceList.size();
 				  }	
 				  if (alarmOccurenceTillLMonthList != null) {
@@ -792,7 +794,9 @@
 				         }
 				     pmtbt = sumPmtbt / alarmOccurenceTillLMonthList.size();
 				 	mOverAllDuration = sumPmttc;
-				     pmttc = sumPmttc /countOfClearedOccurence;
+				 	 if (countOfClearedOccurence > 0 ) {
+				       pmttc = sumPmttc /countOfClearedOccurence;
+				     }
 				  }	
 				  resMap = {};
 					resMap[\"mtbt\"] = mtbt;
@@ -813,16 +817,21 @@
 			  mlReadings = Module(\"anomalydetectionmllogreadings\");
 			  date = NameSpace(\"date\");
 			  thisMonthRanges = date.getDateRange(\"Current Month\");
+			  thisMonthStartTime = dateRange().getStartTime(thisMonthRanges);
+			  thisMonthEndTime = dateRange().getEndTime(thisMonthRanges);
   			  lastMonthRanges = date.getDateRange(\"Last Month\");
+  			  lastMonthStartTime = dateRange().getStartTime(lastMonthRanges);
+			  lastMonthEndTime = dateRange().getEndTime(lastMonthRanges);
 			
 			  occurenceThisMonthCrit = {
-			    criteria: [alarm == alarmId && createdTime == thisMonthRanges]
+			    criteria: [alarm == alarmId && createdTime < thisMonthEndTime && (clearedTime == null || clearedTime > thisMonthStartTime)]
 			  };
  			 occurenceLastMonthCrit = {
-			    criteria: [alarm == alarmId && createdTime == lastMonthRanges]
+			    criteria: [alarm == alarmId && createdTime < lastMonthEndTime && (clearedTime == null || clearedTime > lastMonthStartTime)]
 			  };
 			  thismothoccurence =  Module(\"alarmoccurrence\").fetch(occurenceThisMonthCrit);
   			  lastmonthoccurrence = Module(\"alarmoccurrence\").fetch(occurenceLastMonthCrit);
+  			  adjustedUpperBoundField = NameSpace(\"module\").getField(\"adjustedUpperBound\", \"anomalydetectionmllogreadings\");
 			  result = {}
 			  for each rindex,resourceId in resourceIds {
 			    energyWastage = 0
@@ -831,21 +840,16 @@
 			      for each index,value in thismothoccurence {
 			        endTime = value.clearedTime
 			        if (endTime == null) {
-			          endTime = date.now();
+			          endTime = thisMonthEndTime;
 			        }
 			        ttimes = date.dateRange(value.createdTime, endTime)
 			        thisMonthEnergy = {
-			          criteria: [parentId == resourceId && ttime == ttimes],
+			          criteria: [parentId == resourceId && ttime == ttimes && adjustedUpperBound > 0 && actualValue > adjustedUpperBoundField],
 			        }
 			        currentMonthWastage =  mlReadings.fetch(thisMonthEnergy);
 			        if (currentMonthWastage != null) {
 			          for each index,value in currentMonthWastage {
-			            if (value.upperBound != 0) {
-			              diffConsu = value.actualValue - value.adjustedUpperBound;
-			              if (diffConsu > 0) {
-			                energyWastage =  energyWastage + diffConsu
-			              }
-			            }
+			            energyWastage =  energyWastage + value.actualValue - value.adjustedUpperBound
 			          }
 			        }
 			      }
@@ -855,21 +859,16 @@
 			      for each index,value in lastmonthoccurrence {
 			        endTime = value.clearedTime
 			        if (endTime == null) {
-			          endTime = date.now();
+			          endTime = lastMonthEndTime;
 			        }
 			        ttimes = date.dateRange(value.createdTime, endTime)
 			        lastMonthEnergy = {
-			          criteria: [parentId == resourceId && ttime == lastMonthRanges],
+			          criteria: [parentId == resourceId && ttime == ttimes && adjustedUpperBound > 0 && actualValue > adjustedUpperBoundField],
 			        }
 			        lastMonthWastage =  mlReadings.fetch(lastMonthEnergy);
 			        if (lastMonthWastage != null) {
 			          for each index,value in lastMonthWastage {
-			            if (value.upperBound != 0) {
-			              diffConsu = value.actualValue - value.adjustedUpperBound;
-			              if (diffConsu > 0) {
-			                lstMntWastage =  lstMntWastage + diffConsu
-			              }
-			            }
+			            lstMntWastage =  lstMntWastage + value.actualValue - value.adjustedUpperBound
 			          }
 			        }
 			      }			   

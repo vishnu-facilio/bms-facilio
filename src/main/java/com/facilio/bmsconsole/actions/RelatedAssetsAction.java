@@ -2,10 +2,13 @@ package com.facilio.bmsconsole.actions;
 
 import org.apache.commons.chain.Chain;
 
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.RelatedAssetsContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 
 public class RelatedAssetsAction extends FacilioAction {
 
@@ -54,6 +57,16 @@ public class RelatedAssetsAction extends FacilioAction {
 		
 		Chain chain = TransactionChainFactory.getDeleteRelatedAssetsChain();
 		chain.execute(context);
+		return SUCCESS;
+	}
+	
+	public String fetchRelatedAssets() throws Exception {
+		FacilioChain chain = ReadOnlyChainFactory.fetchRelatedAssetChain();
+		chain.getContext().put(ContextNames.RESOURCE_ID, id);
+		chain.execute();
+		
+		setResult(ContextNames.RELATED_ASSETS, chain.getContext().get(ContextNames.RESOURCE_LIST));
+		
 		return SUCCESS;
 	}
 

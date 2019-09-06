@@ -1,5 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.bmsconsole.commands.anomaly.FormatAnomalyMetricsCommand;
+import com.facilio.bmsconsole.commands.anomaly.GetAnomalyDeviationAndWastageCommand;
+import com.facilio.bmsconsole.commands.anomaly.GetAnomalyMetricsCommand;
+import com.facilio.bmsconsole.commands.anomaly.GetEnergyByCDDCommand;
 import com.facilio.bmsconsole.commands.reservation.FetchAttendeesCommand;
 
 import org.apache.commons.chain.Chain;
@@ -1409,16 +1413,31 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetMLSummmaryDetail());
 		return c;
 	}
-	public static FacilioChain fetchAnomlayRelatedAsset () {
+	public static FacilioChain fetchRelatedAssetAlarms () {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetRelatedAssetCommand());
 		c.addCommand(new FetchAlarmInsightCommand());
+		return c;
+	}
+	
+	public static FacilioChain fetchRelatedAssetChain () {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetRelatedAssetCommand());
 		return c;
 	}
 
 	public static FacilioChain getCustomModuleWorkflowRulesChain() {
 		FacilioChain c = getDefaultChain();
 		c.addCommand(new GetCustomModuleWorkflowRulesCommand());
+		return c;
+	}
+	
+	public static FacilioChain fetchAnomalyMetricsChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetAnomalyMetricsCommand());
+		c.addCommand(new GetAnomalyDeviationAndWastageCommand());
+		c.addCommand(new GetEnergyByCDDCommand());
+		c.addCommand(new FormatAnomalyMetricsCommand());
 		return c;
 	}
 }

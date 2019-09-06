@@ -494,6 +494,13 @@ public class NewAlarmAPI {
 		updateAlarmObject(occurrenceContexts);
 		return occurrenceContexts;
 	}
+	
+	public static SelectRecordsBuilder<AlarmOccurrenceContext> getAlarmBuilder(long alarmId, long startTime, long endTime,
+			List<FacilioField> fields, Map<String, FacilioField> fieldMap) {
+		SelectRecordsBuilder<AlarmOccurrenceContext> builder = getAlarmBuilder(startTime, endTime, fields, fieldMap);
+		builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("alarm"), String.valueOf(alarmId), NumberOperators.EQUALS));
+		return builder;
+	}
 
 	private static SelectRecordsBuilder<AlarmOccurrenceContext> getAlarmBuilder(long startTime, long endTime,
 																				List<FacilioField> fields, Map<String, FacilioField> fieldMap) {
