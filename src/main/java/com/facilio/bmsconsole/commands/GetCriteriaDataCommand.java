@@ -36,7 +36,7 @@ public class GetCriteriaDataCommand extends FacilioCommand {
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
 		List<ReportDataPointContext> dataPoints = new ArrayList<>(report.getDataPoints());
 		Criteria customCriteria = dataPoints.get(0).getCriteria();
-		if(customCriteria != null) {
+		if(customCriteria != null && !customCriteria.isEmpty()) {
 			String moduleName = (String)context.get("moduleName");
 			context.put("criteriaData", getAsJSON(moduleName, customCriteria));
 		}

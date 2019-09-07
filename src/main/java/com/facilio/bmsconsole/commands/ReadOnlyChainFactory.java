@@ -1,16 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.commands.anomaly.FormatAnomalyMetricsCommand;
-import com.facilio.bmsconsole.commands.anomaly.GetAnomalyDeviationAndWastageCommand;
-import com.facilio.bmsconsole.commands.anomaly.GetAnomalyMetricsCommand;
-import com.facilio.bmsconsole.commands.anomaly.GetEnergyByCDDCommand;
-import com.facilio.bmsconsole.commands.reservation.FetchAttendeesCommand;
-
 import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.actions.GetToolTransactionsListCommand;
+import com.facilio.bmsconsole.commands.anomaly.FormatAnomalyMetricsCommand;
+import com.facilio.bmsconsole.commands.anomaly.GetAnomalyDeviationAndWastageCommand;
+import com.facilio.bmsconsole.commands.anomaly.GetAnomalyMetricsCommand;
+import com.facilio.bmsconsole.commands.anomaly.GetEnergyByCDDCommand;
+import com.facilio.bmsconsole.commands.reservation.FetchAttendeesCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.mv.command.FetchMVWidgetResultCommand;
@@ -89,7 +88,6 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new HandleGroupByDataCommand());
 		c.addCommand(new AddRegressionPointsCommand());
 		c.addCommand(new FormatHeatMapDataCommand());
-		c.addCommand(new GetCriteriaDataCommand());
 		return c;
 	}
 	

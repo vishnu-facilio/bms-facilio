@@ -23,6 +23,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.AddOrUpdateReportCommand;
 import com.facilio.bmsconsole.commands.ConstructReportData;
 import com.facilio.bmsconsole.commands.GenerateCriteriaFromFilterCommand;
+import com.facilio.bmsconsole.commands.GetCriteriaDataCommand;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AlarmContext;
@@ -855,6 +856,7 @@ public class V2ReportAction extends FacilioAction {
 		
 		chain.addCommand(ReadOnlyChainFactory.constructAndFetchReportDataChain());
 		chain.addCommand(new GetModuleFromReportContextCommand());
+		chain.addCommand(new GetCriteriaDataCommand());
 		chain.execute(context);
 
 		return setReportResult(context);
