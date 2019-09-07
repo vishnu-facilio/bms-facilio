@@ -101,15 +101,17 @@ public class GetCriteriaDataCommand extends FacilioCommand {
 					if(!LookupSpecialTypeUtil.isSpecialType((fieldModuleName))){
 						fieldModuleName = lookupField.getLookupModule().getName();
 					}
-					Map<Long,Object> idMap = null;
-					if(LookupSpecialTypeUtil.isSpecialType(fieldModuleName)) {
-						idMap = LookupSpecialTypeUtil.getPickList(fieldModuleName,fieldIds);
-					}
-					else {
-						idMap = CommonCommandUtil.getPickList(fieldIds, modBean.getModule(fieldModuleName));
-					}
-					if(idMap!=null) {
-						conditionObj.put("value",idMap.values());
+					if(fieldModuleName != null){
+						Map<Long,Object> idMap = null;
+						if(LookupSpecialTypeUtil.isSpecialType(fieldModuleName)) {
+							idMap = LookupSpecialTypeUtil.getPickList(fieldModuleName,fieldIds);
+						}
+						else {
+							idMap = CommonCommandUtil.getPickList(fieldIds, modBean.getModule(fieldModuleName));
+						}
+						if(idMap!=null) {
+							conditionObj.put("value",idMap.values());
+						}
 					}
 				}
 				else if(fieldName.equals("siteId")){
