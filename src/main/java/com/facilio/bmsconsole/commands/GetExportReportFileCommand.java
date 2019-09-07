@@ -8,14 +8,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
-import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.chain.Context;
+import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.CalculateAggregationCommand.EnumVal;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.ExportUtil;
@@ -38,7 +38,7 @@ import com.facilio.time.DateTimeUtil;
 public class GetExportReportFileCommand extends FacilioCommand {
 	
 	private static final String ALIAS = "alias";
-	private static final Logger LOGGER = Logger.getLogger(GetExportReportFileCommand.class.getName());
+	private static final org.apache.log4j.Logger LOGGER = LogManager.getLogger(GetExportReportFileCommand.class.getName());
 	private ReportContext report;
 	private ReportMode mode;
 	private Map<String, Object> dataMap = new HashMap<>();
@@ -99,8 +99,14 @@ public class GetExportReportFileCommand extends FacilioCommand {
 			if (chartType != null) {
 				url.append("&charttype=").append(chartType);
 			}
+			Map<String, Object> params = (Map<String, Object>) context.get("exportParams");
+			if (params != null) {
+				for(Map.Entry<String, Object> param: params.entrySet()) {
+					url.append("&").append(param.getKey()).append("=").append(param.getValue());
+				}
+			}
 			
-			LOGGER.severe("pdf url --- "+ url);
+			LOGGER.debug("pdf url --- "+ url);
 			fileUrl = PdfUtil.exportUrlAsPdf(url.toString(), isS3Url, fileFormat);
 		}
 		

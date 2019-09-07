@@ -6,11 +6,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.json.simple.JSONObject;
 
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.constants.FacilioConstants;
@@ -63,6 +63,12 @@ private static final String ALIAS = "alias";
 			String chartType = (String) context.get("chartType");
 			if (chartType != null) {
 				url.append("&charttype=").append(chartType);
+			}
+			Map<String, Object> params = (Map<String, Object>) context.get("exportParams");
+			if (params != null) {
+				for(Map.Entry<String, Object> param: params.entrySet()) {
+					url.append("&").append(param.getKey()).append("=").append(param.getValue());
+				}
 			}
 			
 			fileUrl = PdfUtil.exportUrlAsPdf(url.toString(), isS3Url, fileFormat);
