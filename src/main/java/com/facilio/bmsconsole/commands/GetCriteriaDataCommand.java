@@ -81,9 +81,9 @@ public class GetCriteriaDataCommand extends FacilioCommand {
 			FacilioField field = modBean.getField(fieldName, moduleName);
 			String fieldType = FieldType.getCFType(field.getDataType()).getTypeAsString();
 			conditionObj.put("key", entry.getKey());
-			conditionObj.put("field", fieldName);
+			conditionObj.put("field", field.getDisplayName());
 			conditionObj.put("fieldType", fieldType);
-			conditionObj.put("operator", condition.getOperator());
+			conditionObj.put("operator", condition.getOperator().getOperator());
 			if(condition.getOperator() instanceof DateOperators){
 				DateOperators operator = (DateOperators)condition.getOperator();
 				DateRange range = operator.getRange(condition.getValue());
