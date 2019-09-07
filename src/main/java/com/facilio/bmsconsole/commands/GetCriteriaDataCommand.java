@@ -111,6 +111,10 @@ public class GetCriteriaDataCommand extends FacilioCommand {
 					if(idMap!=null) {
 						conditionObj.put("value",idMap.values());
 					}
+				}
+				else if(fieldName.equals("siteId")){
+					List<Long> fieldIds = (List<Long>)value;
+					conditionObj.put("value", CommonCommandUtil.getPickList(fieldIds, modBean.getModule("Site")).values());
 				}else{
 					conditionObj.put("value", value);
 				}

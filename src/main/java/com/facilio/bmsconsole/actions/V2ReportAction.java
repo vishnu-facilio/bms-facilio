@@ -1685,6 +1685,9 @@ public class V2ReportAction extends FacilioAction {
 		if(moduleType != -1 || reportContext.getModuleType() != -1) {
 			setResult("moduleTypes", ReportFactoryFields.addModuleTypes(module.getName()));
 		}
+		if(context.containsKey("criteriaData")){
+			setResult("criteriaData", context.get("criteriaData"));
+		}
 		
 		resultContext = context;
 		
