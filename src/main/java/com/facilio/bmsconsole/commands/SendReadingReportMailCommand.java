@@ -25,7 +25,8 @@ public class SendReadingReportMailCommand extends FacilioCommand {
 		Map<String, String> files = new HashMap<>();
 		String fileUrl = (String) context.get(FacilioConstants.ContextNames.FILE_URL);
 		FileFormat fileFormat = (FileFormat) context.get(FacilioConstants.ContextNames.FILE_FORMAT);
-		files.put("Report Data" + fileFormat.getExtention(), fileUrl);
+		String fileName = (String) context.get(FacilioConstants.ContextNames.FILE_NAME);
+		files.put((StringUtils.isNotEmpty(fileName) ? fileName : "Report Data") + fileFormat.getExtention(), fileUrl);
 		String emailFrom;
 		String viewName = (String) context.get(FacilioConstants.ContextNames.SUB_VIEW);
 		if (viewName != null) {

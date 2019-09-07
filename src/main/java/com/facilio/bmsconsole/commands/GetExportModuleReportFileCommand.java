@@ -8,6 +8,7 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.aws.util.FacilioProperties;
@@ -47,6 +48,11 @@ private static final String ALIAS = "alias";
 		report = (com.facilio.report.context.ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
 		FileFormat fileFormat = (FileFormat) context.get(FacilioConstants.ContextNames.FILE_FORMAT);
 		String fileUrl = null;
+		String fileName = "Report Data";
+		if (StringUtils.isNotEmpty(report.getName())) {
+			fileName = report.getName();
+		}
+		fileName += " - " + DateTimeUtil.getFormattedTime(System.currentTimeMillis());
 		if(fileFormat != FileFormat.PDF && fileFormat != FileFormat.IMAGE) {
 			List<String> headers = new ArrayList<>();
 			
@@ -56,7 +62,7 @@ private static final String ALIAS = "alias";
 			Map<String, Object> table = new HashMap<String, Object>();
 			table.put("headers", headers);
 			table.put("records", records);
-			fileUrl = ExportUtil.exportData(fileFormat, "Report Data", table, isS3Url);
+			fileUrl = ExportUtil.exportData(fileFormat, fileName, table, isS3Url);
 		}
 		else {
 			StringBuilder url = getClientUrl(report.getDataPoints().get(0).getxAxis().getModule().getName(), report.getId(), fileFormat);
@@ -71,10 +77,11 @@ private static final String ALIAS = "alias";
 				}
 			}
 			
-			fileUrl = PdfUtil.exportUrlAsPdf(url.toString(), isS3Url, fileFormat);
+			fileUrl = PdfUtil.exportUrlAsPdf(url.toString(), isS3Url, fileName, fileFormat);
 		}
 		
 		context.put(FacilioConstants.ContextNames.FILE_URL, fileUrl);
+		context.put(FacilioConstants.ContextNames.FILE_NAME, fileName);
 		
 		return false;
 	}

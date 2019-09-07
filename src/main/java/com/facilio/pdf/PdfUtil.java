@@ -3,12 +3,12 @@ package com.facilio.pdf;
 import java.io.File;
 import java.io.IOException;
 
-import com.facilio.aws.util.FacilioProperties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.UserUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.executor.CommandExecutor;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fs.FileStore;
@@ -89,10 +89,10 @@ public class PdfUtil {
     }
     
     public static String exportUrlAsPdf(String url, FileFormat... formats){
-    		return exportUrlAsPdf(url, false, formats);
+    		return exportUrlAsPdf(url, false, null, formats);
     }
     
-    public static String exportUrlAsPdf(String url, boolean isS3Url, FileFormat... formats){
+    public static String exportUrlAsPdf(String url, boolean isS3Url, String name, FileFormat... formats){
         FileFormat format = FileFormat.PDF;
         if (formats != null && formats.length > 0) {
             format = formats[0];
@@ -103,7 +103,7 @@ public class PdfUtil {
             FileStore fs = FileStoreFactory.getInstance().getFileStore();
             long fileId = 0;
             try {
-                fileId = fs.addFile(pdfFile.getName(), pdfFile, format.getContentType());
+                fileId = fs.addFile(name != null ? name : pdfFile.getName(), pdfFile, format.getContentType());
                 if (isS3Url) {
                 		return fs.getOrgiDownloadUrl(fileId);
                 }
