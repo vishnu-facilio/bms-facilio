@@ -52,7 +52,7 @@ private static final String ALIAS = "alias";
 		if (StringUtils.isNotEmpty(report.getName())) {
 			fileName = report.getName();
 		}
-		fileName += " - " + DateTimeUtil.getFormattedTime(System.currentTimeMillis());
+		fileName += " - " + DateTimeUtil.getFormattedTime(System.currentTimeMillis(), "dd/MM/yyyy HH-mm");
 		if(fileFormat != FileFormat.PDF && fileFormat != FileFormat.IMAGE) {
 			List<String> headers = new ArrayList<>();
 			
