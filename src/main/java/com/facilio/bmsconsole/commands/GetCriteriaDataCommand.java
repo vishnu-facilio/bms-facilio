@@ -24,6 +24,8 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.report.context.ReportContext;
+import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.time.DateRange;
 
 public class GetCriteriaDataCommand extends FacilioCommand {
@@ -31,11 +33,14 @@ public class GetCriteriaDataCommand extends FacilioCommand {
 	
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		Criteria customCriteria = (Criteria) context.get("criteria");
-		String moduleName = (String)context.get("moduleName");
+		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
+		List<ReportDataPointContext> dataPoints = new ArrayList<>(report.getDataPoints());
+		Criteria customCriteria = dataPoints.get(0).getCriteria();
 		if(customCriteria != null) {
+			String moduleName = (String)context.get("moduleName");
 			context.put("criteriaData", getAsJSON(moduleName, customCriteria));
 		}
+		
 		return false;
 	}
 	private JSONObject getAsJSON(String moduleName, Criteria customCriteria) throws Exception{
@@ -73,9 +78,11 @@ public class GetCriteriaDataCommand extends FacilioCommand {
 			}
 			String[] name = condition.getFieldName().split("\\.");
 			String fieldName = name.length > 1 ? name[1] : name[0];
-			
+			FacilioField field = modBean.getField(fieldName, moduleName);
+			String fieldType = FieldType.getCFType(field.getDataType()).getTypeAsString();
 			conditionObj.put("key", entry.getKey());
 			conditionObj.put("field", fieldName);
+			conditionObj.put("fieldType", fieldType);
 			conditionObj.put("operator", condition.getOperator());
 			if(condition.getOperator() instanceof DateOperators){
 				DateOperators operator = (DateOperators)condition.getOperator();
@@ -86,7 +93,6 @@ public class GetCriteriaDataCommand extends FacilioCommand {
 				rangeArray.add(range.getEndTime());
 				conditionObj.put("value", rangeArray);
 			}else{
-				FacilioField field = modBean.getField(fieldName, moduleName);
 				if (field.getDataTypeEnum()==FieldType.LOOKUP) {
 					List<Long> fieldIds = (List<Long>)value;
 
@@ -105,12 +111,15 @@ public class GetCriteriaDataCommand extends FacilioCommand {
 					if(idMap!=null) {
 						conditionObj.put("value",idMap.values());
 					}
+				}else{
+					conditionObj.put("value", value);
 				}
 			}
 			
 			conditionArray.add(conditionObj);
 		}
 		criteriaObj.put("conditions", conditionArray);
+		criteriaObj.put("pattern", customCriteria.getPattern());
 		return criteriaObj;
 	}
 //	private JSONObject getMetaData(String moduleName, Criteria customCriteria) throws Exception{
