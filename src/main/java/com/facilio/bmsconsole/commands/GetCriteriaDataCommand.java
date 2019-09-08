@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -95,13 +96,12 @@ public class GetCriteriaDataCommand extends FacilioCommand {
 			}else{
 				if (field.getDataTypeEnum()==FieldType.LOOKUP) {
 					List<Long> fieldIds = (List<Long>)value;
-
-					LookupField lookupField= (LookupField)field;
-					String fieldModuleName = lookupField.getSpecialType();
-					if(!LookupSpecialTypeUtil.isSpecialType((fieldModuleName))){
-						fieldModuleName = lookupField.getLookupModule().getName();
-					}
-					if(fieldIds != null && fieldIds.isEmpty()){
+					if(CollectionUtils.isNotEmpty(fieldIds)){
+						LookupField lookupField= (LookupField)field;
+						String fieldModuleName = lookupField.getSpecialType();
+						if(!LookupSpecialTypeUtil.isSpecialType((fieldModuleName))){
+							fieldModuleName = lookupField.getLookupModule().getName();
+						}
 						Map<Long,Object> idMap = null;
 						if(LookupSpecialTypeUtil.isSpecialType(fieldModuleName)) {
 							idMap = LookupSpecialTypeUtil.getPickList(fieldModuleName,fieldIds);
