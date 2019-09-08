@@ -340,7 +340,8 @@ public class ReadOnlyChainFactory {
 	
 	public static FacilioChain getV2EventListChain() {
 		FacilioChain c = getDefaultChain();
-		c.addCommand(fetchModuleDataListChain());
+		c.addCommand(getV2OccurrenceListChain());
+		c.addCommand(new GetV2EventListCommand());
 		return c;
 	}
 	

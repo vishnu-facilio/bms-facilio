@@ -114,7 +114,7 @@ public class V2AlarmAction extends FacilioAction {
 	
 	public String eventList () throws Exception {
 		FacilioContext context = constructListContext();
- 		context.put(ContextNames.MODULE_NAME, FacilioConstants.ContextNames.BASE_EVENT);
+ 		context.put(ContextNames.MODULE_NAME, FacilioConstants.ContextNames.ALARM_OCCURRENCE);
  		context.put(ContextNames.RECORD_ID, getId());
  		Chain occurrenceListChain = ReadOnlyChainFactory.getV2EventListChain();
  		occurrenceListChain.execute(context);
