@@ -922,7 +922,7 @@
 			  thismothoccurence =  alarmoccurrenceModule.fetch(occurenceThisMonthCrit);
 			  if (thismothoccurence != null) {
 			    for each index,value in thismothoccurence {
-			      res = resMap.get(value.result.id]);
+			      res = resMap.get(value.result.id);
 			      if (res == null) {
 			        res = {};
 			        resMap[value.result.id] = res;
