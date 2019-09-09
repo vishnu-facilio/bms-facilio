@@ -225,7 +225,7 @@ public class NewAlarmAPI {
 				.orderBy("CREATED_TIME DESC, ID DESC");
 		List<AlarmOccurrenceContext> occurences = builder.get();
 		occurences = getExtendedOccurrence(occurences);
-		updateAlarmObject(occurences);
+//		updateAlarmObject(occurences);
 		if (CollectionUtils.isNotEmpty(occurences)) {
 			return occurences.stream().collect(Collectors.toMap(AlarmOccurrenceContext::getId, Function.identity()));
 		}

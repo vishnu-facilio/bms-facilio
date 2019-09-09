@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.bmsconsole.context.ReadingAlarm;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -22,8 +23,18 @@ public class HandleV2AlarmListLookupCommand extends FacilioCommand {
 			NewAlarmAPI.loadAlarmLookups(alarms);
 			
 			Map<Long, AlarmOccurrenceContext> occurencesMap = NewAlarmAPI.getLatestAlarmOccuranceMap(alarms);
+			for (AlarmOccurrenceContext occurrence : occurencesMap.values()) {
+				occurrence.setAlarm(null);
+				occurrence.setResource(null);
+			}
 			for(BaseAlarmContext alarm: alarms) {
-				alarm.setLastOccurrence(occurencesMap.get(alarm.getLastOccurrenceId()));
+				if (alarm instanceof ReadingAlarm) {
+					ReadingAlarm readingAlarm = (ReadingAlarm) alarm;
+					readingAlarm.setRule(null);
+					readingAlarm.setSubRule(null);
+				}
+				AlarmOccurrenceContext occurrenceContext = occurencesMap.get(alarm.getLastOccurrenceId());
+				alarm.setLastOccurrence(occurrenceContext);
 			}
 		}
 		return false;
