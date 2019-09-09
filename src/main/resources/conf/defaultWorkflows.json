@@ -286,16 +286,21 @@
 			  mlReadings = Module(\"anomalydetectionmllogreadings\");
 			  date = NameSpace(\"date\");
 			  thisMonthRanges = date.getDateRange(\"Current Month\");
+			  thisMonthStartTime = dateRange().getStartTime(thisMonthRanges);
+			  thisMonthEndTime = dateRange().getEndTime(thisMonthRanges);
 			  lastMonthRanges = date.getDateRange(\"Last Month\");
+			  lastMonthStartTime = dateRange().getStartTime(lastMonthRanges);
+			  lastMonthEndTime = dateRange().getEndTime(lastMonthRanges);
 			
 			  occurenceThisMonthCrit = {
-			    criteria: [alarm == alarmId && createdTime == thisMonthRanges]
+			    criteria: [alarm == alarmId && createdTime < thisMonthEndTime && (clearedTime == null || clearedTime > thisMonthStartTime)]
 			  };
 			  occurenceLastMonthCrit = {
-			    criteria: [alarm == alarmId && createdTime == lastMonthRanges]
+			    criteria: [alarm == alarmId && createdTime < lastMonthEndTime && (clearedTime == null || clearedTime > lastMonthStartTime)]
 			  };
 			  thismothoccurence =  Module(\"alarmoccurrence\").fetch(occurenceThisMonthCrit);
 			  lastmonthoccurrence = Module(\"alarmoccurrence\").fetch(occurenceLastMonthCrit);
+			  adjustedUpperBoundField = NameSpace(\"module\").getField(\"adjustedUpperBound\", \"anomalydetectionmllogreadings\");
 			  for each rindex,resourceId in resourceIds {
 			    result = {};
 			    deviation = 0;
@@ -304,22 +309,18 @@
 			      for each index,value in thismothoccurence {
 			        endTime = value.clearedTime;
 			        if (endTime == null) {
-			          endTime = dateRange().getEndTime(thisMonthRanges);
+			          endTime = thisMonthEndTime;
 			        }
 			        ttimes = date.dateRange(value.createdTime, endTime);
 			        thisMonthEnergy = {
-			          criteria: [parentId == resourceId && ttime == ttimes],
+			          criteria: [parentId == resourceId && ttime == ttimes && adjustedUpperBound > 0 && actualValue > adjustedUpperBoundField]
 			        };
 			        currentMonthReadings =  mlReadings.fetch(thisMonthEnergy);
 			        if (currentMonthReadings != null) {
 			          for each index,value in currentMonthReadings {
-			            if (value.adjustedUpperBound != 0) {
-			              diffConsu = value.actualValue - value.adjustedUpperBound;
-			              if (diffConsu > 0) {
-			                deviation = deviation + (diffConsu / value.adjustedUpperBound) * 100;
-			                deviationCount = deviationCount + 1;
-			              }
-			            }
+			            diff =  value.actualValue - value.adjustedUpperBound;
+			            deviation = deviation + (diff / value.adjustedUpperBound) * 100;
+			            deviationCount = deviationCount + 1;
 			          }
 			        }
 			      }
@@ -328,30 +329,25 @@
 			      }
 			    }
 			    result[\"deviation\"] = deviation;
-			    
+			
 			    deviation = 0;
 			    deviationCount = 0;
 			    if (lastmonthoccurrence != null) {
 			      for each index,value in lastmonthoccurrence {
 			        endTime = value.clearedTime;
 			        if (endTime == null) {
-			           endTime = dateRange().getEndTime(lastMonthRanges);
+			          endTime = lastMonthEndTime;
 			        }
 			        ttimes = date.dateRange(value.createdTime, endTime);
 			        lastMonthEnergy = {
-			          criteria: [parentId == resourceId && ttime == lastMonthRanges],
+			          criteria: [parentId == resourceId && ttime == ttimes && adjustedUpperBound > 0 && actualValue > adjustedUpperBoundField],
 			        };
 			        lastMonthReadings =  mlReadings.fetch(lastMonthEnergy);
 			        if (lastMonthReadings != null) {
 			          for each index,value in lastMonthReadings {
-			            if (value.adjustedUpperBound != 0) {
-			              diffConsu = value.actualValue - value.adjustedUpperBound;
-			              if (diffConsu > 0) {
-			                
-			                deviation = deviation + (diffConsu / value.adjustedUpperBound) * 100;
-			                deviationCount = deviationCount + 1;
-			              }
-			            }
+			            diff =  value.actualValue - value.adjustedUpperBound;
+			            deviation = deviation + (diff / value.adjustedUpperBound) * 100;
+			            deviationCount = deviationCount + 1;
 			          }
 			        }
 			      }
@@ -360,7 +356,7 @@
 			      }
 			    }
 			    result[\"deviationLastMonth\"] = deviation;
-			    
+			
 			    resultMap[resourceId] = result;
 			  }
 			  return resultMap;
