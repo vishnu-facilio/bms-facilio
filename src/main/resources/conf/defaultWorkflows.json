@@ -876,6 +876,7 @@
 			  resultMap[\"currentMonthWastage\"] = result;
               resultMap[\"lastMonthWastage\"] = lsMnRs;
 			  return resultMap;
+			  }
 			}"
 		},
 		"100" : {
@@ -941,7 +942,7 @@
 			    }
 			  }
 			  log resMap;
-			  return resMap
+			  return resMap;
 			}"
         },
         "101": {
