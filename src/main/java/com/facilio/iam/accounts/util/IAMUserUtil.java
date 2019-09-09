@@ -1,5 +1,6 @@
 package com.facilio.iam.accounts.util;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -8,6 +9,8 @@ import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.db.criteria.Criteria;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.fields.FacilioField;
 import com.facilio.service.FacilioService;
 
 public class IAMUserUtil {
@@ -37,7 +40,12 @@ public class IAMUserUtil {
 		Boolean verifyOldPassword = verifyPasswordv2(user.getEmail(), user.getDomainName(), password);
 		if (verifyOldPassword != null && verifyOldPassword) {
 			user.setPassword(newPassword);
-			FacilioService.runAsService(() -> IAMUtil.getUserBean().updateUserv2(user));
+			
+			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(IAMAccountConstants.getAccountsUserFields());
+			List<FacilioField> fieldsToBeUpdated = new ArrayList<FacilioField>();
+			fieldsToBeUpdated.add(IAMAccountConstants.getUserPasswordField());
+			
+			FacilioService.runAsService(() -> IAMUtil.getUserBean().updateUserv2(user, fieldsToBeUpdated));
 			return true;
 		} else {
 			return false;
@@ -58,7 +66,11 @@ public class IAMUserUtil {
 	}
 
 	public static boolean updateUser(IAMUser user, long orgId) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().updateUserv2(user));
+		List<FacilioField> fieldsToBeUpdated = new ArrayList<FacilioField>();
+		fieldsToBeUpdated.addAll(IAMAccountConstants.getAccountsUserFields());
+		fieldsToBeUpdated.add(IAMAccountConstants.getUserPasswordField());
+		
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().updateUserv2(user, fieldsToBeUpdated));
 	}
 
 	public static boolean deleteUser(IAMUser user, long orgId) throws Exception {

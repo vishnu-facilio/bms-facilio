@@ -96,13 +96,11 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	
-	public boolean updateUserv2(IAMUser user) throws Exception {
-		return updateUserEntryv2(user);
+	public boolean updateUserv2(IAMUser user, List<FacilioField> fields) throws Exception {
+		return updateUserEntryv2(user, fields);
 	}
 
-	private boolean updateUserEntryv2(IAMUser user) throws Exception {
-		List<FacilioField> fields = IAMAccountConstants.getAccountsUserFields();
-		fields.add(IAMAccountConstants.getUserPasswordField());
+	private boolean updateUserEntryv2(IAMUser user, List<FacilioField> fields) throws Exception {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(IAMAccountConstants.getAccountsUserModule().getTableName())
 				.fields(fields);
@@ -149,7 +147,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return  addUserv2(orgId, user, false);
 	}
 
-	public IAMUser getUserFromToken(String userToken){
+	public IAMUser getUserFromToken(String userToken) throws Exception{
 		String[] tokenPortal = userToken.split("&");
 		String token = EncryptionUtil.decode(tokenPortal[0]);
 		String[] userObj = token.split(USER_TOKEN_REGEX);
@@ -157,17 +155,8 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		if(userObj.length == 4) {
 			user = new IAMUser();
 			user.setOrgId(Long.parseLong(userObj[0]));
-//			user.setOuid(Long.parseLong(userObj[1]));
 			user.setUid(Long.parseLong(userObj[1]));
 			user.setEmail(userObj[2]);
-//			user.setInvitedTime(Long.parseLong(userObj[4]));
-//			if(tokenPortal.length > 1) {
-//				String[] portalIdString = tokenPortal[1].split("=");
-//				if(portalIdString.length > 1){
-//					int portalId = Integer.parseInt(portalIdString[1].trim());
-//					user.setPortalId(portalId);
-//				}
-//			}
 		}
 		return user;
 	}
@@ -175,26 +164,36 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	public static void main(String []args)
 	{
 		IAMUserBeanImpl us = new IAMUserBeanImpl();
-		IAMUser s = us.getUserFromToken("xSb_ezHQ_udcFU8l5P67wq_z809tlkMMIZxMbHAV0hbs9TKfyRniDoVCfmvVGF3wl4nuHLJ53Ho=");
-		System.out.println(s.getEmail());
-		System.out.println(s.getUid());
-//		System.out.println(s.getOuid());
-//		System.out.println(s.getPortalId());
-		System.out.println(s.getOrgId());
+		IAMUser s;
+		try {
+			s = us.getUserFromToken("xSb_ezHQ_udcFU8l5P67wq_z809tlkMMIZxMbHAV0hbs9TKfyRniDoVCfmvVGF3wl4nuHLJ53Ho=");System.out.println(s.getEmail());
+			System.out.println(s.getUid());
+//			System.out.println(s.getOuid());
+//			System.out.println(s.getPortalId());
+			System.out.println(s.getOrgId());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 
 		
 	}
 	
 	
 	@Override
-	public IAMUser verifyEmailv2(String token){
+	public IAMUser verifyEmailv2(String token) throws Exception{
 		IAMUser user = getUserFromToken(token);
 
 		if(user != null) {
 //			if((System.currentTimeMillis() - user.getInvitedTime()) < INVITE_LINK_EXPIRE_TIME) {
 				try {
 					user.setUserVerified(true);
-					updateUserv2(user);
+					Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(IAMAccountConstants.getAccountsUserFields());
+					List<FacilioField> fields = new ArrayList<FacilioField>();
+					fields.add(fieldMap.get("userVerified"));
+					
+					updateUserv2(user, fields);
 				} catch (Exception e) {
 					log.info("Exception occurred ", e);
 				}
@@ -205,7 +204,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public IAMUser resetPasswordv2(String token, String password){
+	public IAMUser resetPasswordv2(String token, String password) throws Exception{
 		IAMUser user = getUserFromToken(token);
 
 		if(user != null) {
@@ -214,7 +213,12 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				try {
 					user.setPassword(password);
 					user.setUserVerified(true);
-					IAMUtil.getTransactionalUserBean(orgId).updateUserv2(user);
+					Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(IAMAccountConstants.getAccountsUserFields());
+					List<FacilioField> fields = new ArrayList<FacilioField>();
+					fields.add(fieldMap.get("userVerified"));
+					fields.add(IAMAccountConstants.getUserPasswordField());
+					
+					IAMUtil.getTransactionalUserBean(orgId).updateUserv2(user, fields);
 				} catch (Exception e) {
 					log.info("Exception occurred ", e);
 				}
@@ -225,7 +229,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public IAMUser validateUserInvitev2(String token){
+	public IAMUser validateUserInvitev2(String token) throws  Exception{
 		IAMUser user = getUserFromToken(token);
 		return user;
 	}
@@ -275,7 +279,11 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				if(user != null) {
 					user.setUserVerified(true);
 					user.setPassword(password);
-					updateUserv2(user);
+					Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(IAMAccountConstants.getAccountsUserFields());
+					List<FacilioField> fieldsToBeUpdated = new ArrayList<FacilioField>();
+					fieldsToBeUpdated.add(fieldMap.get("userVerified"));
+					fieldsToBeUpdated.add(IAMAccountConstants.getUserPasswordField());
+					updateUserv2(user, fieldsToBeUpdated);
 					return true;
 				}
 			}

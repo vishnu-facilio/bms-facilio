@@ -59,6 +59,9 @@ public class ScopeInterceptor extends AbstractInterceptor {
 				LOGGER.log(Level.FATAL, "User seems to have been deactivated");
 				return Action.LOGIN;
 			}
+			Account tempAccount = new Account(iamAccount.getOrg(), user);
+			AccountUtil.setCurrentAccount(tempAccount);
+		
 			if(iamAccount.getUser() != null) {
 				user = AccountUtil.getUserBean().getUser(iamAccount.getOrg().getOrgId(), iamAccount.getUser().getUid());
 				if (user == null) {

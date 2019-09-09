@@ -8,6 +8,7 @@ import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.iam.accounts.exceptions.AccountException;
+import com.facilio.modules.fields.FacilioField;
 
 public interface IAMUserBean {
 	
@@ -15,17 +16,17 @@ public interface IAMUserBean {
 	
 //	public long inviteAdminConsoleUserv2(long orgId, User user) throws Exception;
 	
-	IAMUser verifyEmailv2(String token);
+	IAMUser verifyEmailv2(String token) throws Exception;
 
-	IAMUser resetPasswordv2(String token, String password);
+	IAMUser resetPasswordv2(String token, String password) throws Exception;
 	
 	public boolean verifyPasswordv2(String email, String domain, String password) throws Exception;
 
-	IAMUser validateUserInvitev2(String token);
+	IAMUser validateUserInvitev2(String token) throws Exception;
 
 	public IAMUser acceptInvitev2(String token, String password) throws Exception;
 	
-	public boolean updateUserv2(IAMUser user) throws Exception;
+	public boolean updateUserv2(IAMUser user, List<FacilioField> fields) throws Exception;
 	
 	public boolean deleteUserv2(IAMUser user) throws Exception;
 
