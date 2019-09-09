@@ -231,7 +231,7 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 		}
 		if (ruleId > 0) {
 			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("rule"), String.valueOf(ruleId), NumberOperators.EQUALS))
-			.groupBy(ruleField.getCompleteColumnName());
+			.groupBy(fieldMap.get("resource").getCompleteColumnName());
 		}
 		if (alarmId > 0) {
 			builder.andCondition(CriteriaAPI.getCondition(fieldMap.get("alarm"), String.valueOf(alarmId), NumberOperators.EQUALS))
