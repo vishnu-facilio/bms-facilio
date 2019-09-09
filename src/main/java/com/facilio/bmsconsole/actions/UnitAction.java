@@ -2,6 +2,7 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,8 +10,10 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.OrgUnitsContext;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
@@ -25,7 +28,7 @@ import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 import com.opensymphony.xwork2.ActionSupport;
 
-public class UnitAction extends ActionSupport {
+public class UnitAction extends FacilioAction {
 
 	/**
 	 * 
@@ -152,6 +155,19 @@ public class UnitAction extends ActionSupport {
 		
 		return SUCCESS;
 	}
+
+	public String getReadingFieldUnits() throws Exception {
+		
+		HashMap<String, Object> readingFieldUnits = new HashMap<String, Object>();
+		readingFieldUnits.put(FacilioConstants.ContextNames.ALL_METRICS, CommonCommandUtil.getAllMetrics());
+		readingFieldUnits.put(FacilioConstants.ContextNames.ORGUNITS_LIST, CommonCommandUtil.orgUnitsList());
+		readingFieldUnits.put(FacilioConstants.ContextNames.METRICS_WITH_UNITS, CommonCommandUtil.metricWithUnits());
+		
+		setResult("readingFieldUnits", readingFieldUnits);
+		
+		return SUCCESS;
+	}
+	
 
 	public String getDefaultMetricUnits() throws Exception {
 		

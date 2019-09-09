@@ -80,6 +80,15 @@
 			method="fetchCurrentAccount">
 		</action>
 		
+		
+		<action name="getReadingFieldUnits"
+			class="com.facilio.bmsconsole.actions.UnitAction"
+			method="getReadingFieldUnits">
+			<result name="success" type="json">
+				<param name="enumAsBean">true</param>
+			</result>
+		</action>
+		
 		<action name="getSite" class="com.facilio.bmsconsole.actions.LoginAction"
 			method="getMySiteList">
 		</action>
