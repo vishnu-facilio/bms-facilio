@@ -71,6 +71,10 @@ import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.NumberField;
+import com.facilio.unitconversion.Metric;
+import com.facilio.unitconversion.Unit;
+import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class TicketAPI {
@@ -1195,6 +1199,34 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 			case TEXT:
 			case READING:
 				task.setReadingField(modBean.getField(task.getReadingFieldId()));
+				Unit readingFieldUnit = null;
+					
+				if(task.getReadingField() != null && task.getReadingField() instanceof NumberField)
+				{
+					NumberField readingNumberField = (NumberField) task.getReadingField();
+						
+					if(readingNumberField.getMetricEnum() != null && task.getResource() != null) {
+						
+						ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(task.getResource().getId(), task.getReadingField());
+						if(rdm != null && rdm.getUnitEnum() != null)
+						{
+							readingFieldUnit = rdm.getUnitEnum();
+						}
+					
+						else if(readingNumberField.getUnitEnum() != null)
+						{
+							readingFieldUnit = readingNumberField.getUnitEnum();	
+						}
+						else
+						{
+							Metric metric = readingNumberField.getMetricEnum();
+							readingFieldUnit = UnitsUtil.getOrgDisplayUnit(AccountUtil.getCurrentOrg().getId(), metric.getMetricId());
+						}
+						
+						task.setReadingFieldUnit(readingFieldUnit);
+					}
+				}	
+					
 				break;
 			case BOOLEAN:
 				BooleanField field = (BooleanField) modBean.getField(task.getReadingFieldId());

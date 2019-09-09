@@ -13,6 +13,7 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.unitconversion.Unit;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
 public class TaskContext extends ModuleBaseWithCustomFields {
@@ -175,7 +176,19 @@ public class TaskContext extends ModuleBaseWithCustomFields {
 	public void setReadingField(FacilioField readingField) {
 		this.readingField = readingField;
 	}
+	
+	private Unit readingFieldUnit;
 
+	public int getReadingFieldUnit() {
+		if (readingFieldUnit != null) {
+			return readingFieldUnit.getUnitId();
+		}
+		return -1;
+	}
+
+	public void setReadingFieldUnit(Unit readingFieldUnit) {
+		this.readingFieldUnit = readingFieldUnit;
+	}
 	private long readingDataId = -1;
 	public long getReadingDataId() {
 		return readingDataId;
