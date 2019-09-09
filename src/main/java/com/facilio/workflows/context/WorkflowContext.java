@@ -522,6 +522,9 @@ public class WorkflowContext implements Serializable {
         
 		WorkflowV2Parser parser = new WorkflowV2Parser(new CommonTokenStream(lexer));
 		
+		if(this.errorListener == null) {
+			this.errorListener = new ErrorListener();
+		}
 		parser.addErrorListener(this.getErrorListener());
 		
 		return parser;

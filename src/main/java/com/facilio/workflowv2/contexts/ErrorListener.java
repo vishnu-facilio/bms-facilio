@@ -1,5 +1,6 @@
 package com.facilio.workflowv2.contexts;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
@@ -13,8 +14,13 @@ import org.antlr.v4.runtime.Recognizer;
 import org.antlr.v4.runtime.atn.ATNConfigSet;
 import org.antlr.v4.runtime.dfa.DFA;
 
-public class ErrorListener implements ANTLRErrorListener{
+public class ErrorListener implements ANTLRErrorListener,Serializable{
 	
+	/**
+	 * 
+	 */
+	
+	private static final long serialVersionUID = 1L;
 	List<String> errors = null;
 
 	public List<String> getErrors() {
