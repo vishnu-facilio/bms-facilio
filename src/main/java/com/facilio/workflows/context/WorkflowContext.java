@@ -25,21 +25,34 @@ import com.facilio.workflows.util.WorkflowUtil;
 import com.facilio.workflowv2.Visitor.WorkflowFunctionVisitor;
 import com.facilio.workflowv2.autogens.WorkflowV2Lexer;
 import com.facilio.workflowv2.autogens.WorkflowV2Parser;
+import com.facilio.workflowv2.contexts.ErrorListener;
 
 public class WorkflowContext implements Serializable {
 	
 	/**
 	 * 
 	 */
-	public WorkflowContext() {
-		
-	}
-	public WorkflowContext(String workflowString) {
-		this.workflowString = workflowString;
-	}
+	
 	private static final long serialVersionUID = 1L;
 
 	private static final Logger LOGGER = Logger.getLogger(WorkflowContext.class.getName());
+	
+	public WorkflowContext() {
+		this.setErrorListener(new ErrorListener());
+	}
+	public WorkflowContext(String workflowString) {
+		this();
+		this.workflowString = workflowString;
+	}
+	
+	boolean throwExceptionForSyntaxError = false;
+
+	public boolean isThrowExceptionForSyntaxError() {
+		return throwExceptionForSyntaxError;
+	}
+	public void setThrowExceptionForSyntaxError(boolean throwExceptionForSyntaxError) {
+		this.throwExceptionForSyntaxError = throwExceptionForSyntaxError;
+	}
 	
 	private Map<String,List<Map<String,Object>>> cachedData = null;
 
@@ -53,7 +66,7 @@ public class WorkflowContext implements Serializable {
 	}
 	Boolean isV2Script;
 	
-	Criteria criteria;
+	Criteria criteria;					// apply this criteria to all select query
 	
 	public Criteria getCriteria() {
 		return criteria;
@@ -97,6 +110,15 @@ public class WorkflowContext implements Serializable {
 	
 	WorkflowFieldType returnType;
 	
+	
+	ErrorListener errorListener;
+	
+	public ErrorListener getErrorListener() {
+		return errorListener;
+	}
+	public void setErrorListener(ErrorListener errorListener) {
+		this.errorListener = errorListener;
+	}
 	public WorkflowFieldType getReturnTypeEnum() {
 		return returnType;
 	}
@@ -338,26 +360,45 @@ public class WorkflowContext implements Serializable {
         visitor.visitFunctionHeader(tree);
 	}
 	
+	/**
+	 * @return True if there is no validation error
+	 * @throws Exception
+	 */
+	public boolean validateWorkflow() throws Exception {
+		if(isV2Script()) {
+			WorkflowV2Parser parser = getParser(this.getWorkflowV2String());
+			parser.parse();
+			return !this.getErrorListener().hasErrors();
+		}
+		return true;
+	}
+	
+	
 	public Object executeWorkflow() throws Exception {
 		
 		Object result = null;
 		
 		if(isV2Script()) {
 			
-			WorkflowFunctionVisitor visitor = null;
 			try {
-				InputStream stream = new ByteArrayInputStream(workflowV2String.getBytes(StandardCharsets.UTF_8));
-				
-				WorkflowV2Lexer lexer = new WorkflowV2Lexer(CharStreams.fromStream(stream, StandardCharsets.UTF_8));
-		        
-				WorkflowV2Parser parser = new WorkflowV2Parser(new CommonTokenStream(lexer));
+				WorkflowV2Parser parser = getParser(this.getWorkflowV2String());
 		        ParseTree tree = parser.parse();
 		        
-		        visitor = new WorkflowFunctionVisitor();
-		        visitor.setWorkflowContext(this);
-		        visitor.visitFunctionHeader(tree);
-		        visitor.setParams(params);
-		        visitor.visit(tree);
+		        if(!getErrorListener().hasErrors()) {
+		        	WorkflowFunctionVisitor visitor = new WorkflowFunctionVisitor();
+			        visitor.setWorkflowContext(this);
+			        visitor.visitFunctionHeader(tree);
+			        visitor.setParams(params);
+			        visitor.visit(tree);
+		        }
+		        else {
+		        	if(isThrowExceptionForSyntaxError()) {
+		        		throw new Exception(getErrorListener().getErrorsAsString());
+		        	}
+		        	else {
+		        		LOGGER.log(Level.SEVERE, "Workflow - "+id+" has syntax errors - "+getErrorListener().getErrorsAsString());
+		        	}
+		        }
 		        
 		        return this.getReturnValue();
 			}
@@ -474,7 +515,17 @@ public class WorkflowContext implements Serializable {
 		return false;
 	}
 	
-//	old workflow methods ends
+	private WorkflowV2Parser getParser(String script) throws Exception {
+		InputStream stream = new ByteArrayInputStream(script.getBytes(StandardCharsets.UTF_8));
+		
+		WorkflowV2Lexer lexer = new WorkflowV2Lexer(CharStreams.fromStream(stream, StandardCharsets.UTF_8));
+        
+		WorkflowV2Parser parser = new WorkflowV2Parser(new CommonTokenStream(lexer));
+		
+		parser.addErrorListener(this.getErrorListener());
+		
+		return parser;
+	}
 	
 	public enum WorkflowUIMode {
 		GUI,

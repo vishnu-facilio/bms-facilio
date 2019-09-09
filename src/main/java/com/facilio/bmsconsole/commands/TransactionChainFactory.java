@@ -2767,11 +2767,13 @@ public class TransactionChainFactory {
 
 		public static FacilioChain getAddWorkflowChain() {
 			FacilioChain c = getDefaultChain();
+			c.addCommand(new ValidateWorkflowCommand());
 			c.addCommand(new AddWorkflowCommand());
 			return c;
 		}
 		public static FacilioChain getUpdateWorkflowChain() {
 			FacilioChain c = getDefaultChain();
+			c.addCommand(new ValidateWorkflowCommand());
 			c.addCommand(new UpdateWorkflowCommand());
 			return c;
 		}
@@ -2799,13 +2801,13 @@ public class TransactionChainFactory {
 
 		public static FacilioChain getAddWorkflowUserFunctionChain() {
 			FacilioChain c = getDefaultChain();
-			c.addCommand(new AddWorkflowCommand());
+			c.addCommand(getAddWorkflowChain());
 			c.addCommand(new AddUserFunctionCommand());
 			return c;
 		}
 		public static FacilioChain getUpdateWorkflowUserFunctionChain() {
 			FacilioChain c = getDefaultChain();
-			c.addCommand(new UpdateWorkflowCommand());
+			c.addCommand(getUpdateWorkflowChain());
 			c.addCommand(new UpdateUserFunctionCommand());
 			return c;
 		}
@@ -2818,12 +2820,13 @@ public class TransactionChainFactory {
 		public static FacilioChain getExecuteDefaultWorkflowChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new GetDefaultWorkflowContext());
-			c.addCommand(new ExecuteWorkflowCommand());
+			c.addCommand(getExecuteWorkflowChain());
 			return c;
 		}
 
 		public static FacilioChain getExecuteWorkflowChain() {
 			FacilioChain c = getDefaultChain();
+			c.addCommand(new ValidateWorkflowCommand());
 			c.addCommand(new ExecuteWorkflowCommand());
 			return c;
 		}
@@ -2872,13 +2875,13 @@ public class TransactionChainFactory {
 
 		public static FacilioChain getAddScheduledWorkflowChain() {
 			FacilioChain c = getDefaultChain();
-			c.addCommand(new AddWorkflowCommand());
+			c.addCommand(getAddWorkflowChain());
 			c.addCommand(new AddScheduledWorkflowCommand());
 			return c;
 		}
 		public static FacilioChain getUpdateScheduledWorkflowChain() {
 			FacilioChain c = getDefaultChain();
-			c.addCommand(new UpdateWorkflowCommand());
+			c.addCommand(getUpdateWorkflowChain());
 			c.addCommand(new updateScheduledWorkflowCommand());
 			return c;
 		}

@@ -17,6 +17,7 @@ public class GetDefaultWorkflowContext extends FacilioCommand {
 		String workflowString = (String) workflowJson.get("workflow");
 		WorkflowContext workflow = new WorkflowContext();
 		workflow.setWorkflowV2String(workflowString);
+		workflow.setIsV2Script(true);
 		
 		context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
 		return false;
