@@ -148,7 +148,7 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 								val = date1.getEpochSecond()*1000;
 							} 
 							else if(cell.getCellTypeEnum() == CellType.FORMULA) {
-								val = cell.getStringCellValue();
+								val = cell.getNumericCellValue();
 							}
 							else {
 								val = cell.getNumericCellValue();

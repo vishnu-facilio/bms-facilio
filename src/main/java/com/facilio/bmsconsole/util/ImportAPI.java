@@ -334,13 +334,19 @@ public class ImportAPI {
 					CellType type = cell.getCellTypeEnum();
 					if(type == CellType.NUMERIC || type == CellType.FORMULA) {
 	        			if(cell.getCellTypeEnum() == CellType.NUMERIC && HSSFDateUtil.isCellDateFormatted(cell)) {
-	        				DataFormatter df = new DataFormatter();
-	        				String cellValueString = df.formatCellValue(cell);
-	        				firstRow.put(columnHeadings.get(i),cellValueString);
+//	        				DataFormatter df = new DataFormatter();
+//	        				String cellValueString = df.formatCellValue(cell);
+//	        				firstRow.put(columnHeadings.get(i),cellValueString);
+	        				throw new IllegalArgumentException("Unsupported Date/Time Formatted Field under column " + columnHeadings.get(i) + " Kindly Use Plain text");
 	        			}
 	        			else if(type== CellType.FORMULA) {
-	        				Double cellValue = cell.getNumericCellValue();
-	        				firstRow.put(columnHeadings.get(i), cellValue);
+	        				try {
+	        					Double cellValue = cell.getNumericCellValue();
+	        					firstRow.put(columnHeadings.get(i), cellValue);
+	        				}
+	        				catch(Exception e) {
+	        					throw new IllegalArgumentException("Unsupported Formula Field under column " + columnHeadings.get(i));
+	        				}
 	        			}
 	        			else {
 	        				Double cellValue = cell.getNumericCellValue();

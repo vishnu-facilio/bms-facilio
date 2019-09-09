@@ -37,6 +37,9 @@ public class UploadImportFileCommand extends FacilioCommand {
 		long fileId = fs.addFile(fileUploadFileName, fileUpload, fileUploadContentType);
 				
 		Workbook workbook = WorkbookFactory.create(fileUpload);
+		if (workbook.getNumberOfSheets() > 1) {
+			throw new IllegalArgumentException("Uploaded File contains more than one Sheet");
+		}
 		importProcessContext = ImportAPI.getColumnHeadings(workbook, importProcessContext);
 		
 		JSONObject firstRow = ImportAPI.getFirstRow(workbook);	
