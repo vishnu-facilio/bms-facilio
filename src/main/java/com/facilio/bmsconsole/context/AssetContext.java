@@ -4,7 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -291,7 +291,7 @@ public class AssetContext extends ResourceContext {
 	
 	
 	public String getUrl() {
-		return AwsUtil.getConfig("clientapp.url") + "/app/at/asset/all/" + getId() + "/overview";
+		return FacilioProperties.getConfig("clientapp.url") + "/app/at/asset/all/" + getId() + "/overview";
 	}
 
 
