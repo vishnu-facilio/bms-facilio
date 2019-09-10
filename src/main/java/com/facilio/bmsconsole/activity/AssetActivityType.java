@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.activity;
 import org.json.simple.JSONObject;
 
 import com.facilio.activity.ActivityType;
+import com.facilio.bmsconsole.util.StateFlowRulesAPI;
+import com.facilio.modules.FacilioStatus;
 
 public enum AssetActivityType implements ActivityType {
 	LOCATION(1) {
@@ -59,6 +61,26 @@ public enum AssetActivityType implements ActivityType {
 		public String constructMessage(JSONObject json) {
 			// TODO Auto-generated method stub
 			return " updated the asset";
+		}
+	},
+	CREATE_MOVEMENT(40) {
+		@Override
+		public String constructMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return " initiated a move request #" + json.get("movementId");
+		}
+	},
+	UPDATE_MOVEMENT(41) {
+		@Override
+		public String constructMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			try {
+				FacilioStatus status = StateFlowRulesAPI.getStateContext((long)json.get("newStatus"));
+				return " updated the move request #" + json.get("movementId") +" status to " + status.getDisplayName();
+			}
+			catch(Exception e) {
+				return " updated the move request #" + json.get("movementId") ;
+			}
 		}
 	},
 	;

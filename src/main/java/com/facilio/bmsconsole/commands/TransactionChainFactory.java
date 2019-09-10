@@ -963,6 +963,7 @@ public class TransactionChainFactory {
 		public static FacilioChain getUpdateTaskChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new ValidatePrerequisiteStatusForTaskUpdateCommnad());
+//			c.addCommand(new ValidateReadingInputForTask());
 			c.addCommand(new ValidateAndCreateValuesForInputTaskCommand());
 			c.addCommand(ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain());
 			c.addCommand(SetTableNamesCommand.getForTask());
@@ -3396,6 +3397,31 @@ public class TransactionChainFactory {
 			c.addCommand(new AddControlActionCommand());
 			c.addCommand(new PublishIOTMessageControlActionCommand());
 			return c;
+		}
+		public static FacilioChain getAddAssetMovementChain() {
+			FacilioChain chain = getDefaultChain();
+			chain.addCommand(SetTableNamesCommand.getForAssetMovement());
+			chain.addCommand(new AssetMovementPropsSetCommand());
+			chain.addCommand(new GenericAddModuleDataCommand());
+			chain.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
+			chain.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+			chain.addCommand(new AddDefaultChangeSetForCompleteMoveCommand());
+			chain.addCommand(new CompleteAssetMoveCommand());
+			chain.addCommand(new ConstructAddAssetMovementActivitiesCommand());
+			chain.addCommand(new AddActivitiesCommand());
+			return chain;
+		}
+		
+		public static FacilioChain getUpdateAssetMovementChain() {
+			FacilioChain chain = getDefaultChain();
+			chain.addCommand(SetTableNamesCommand.getForAssetMovement());
+			chain.addCommand(new GenericUpdateModuleDataCommand());
+			chain.addCommand(new UpdateStateForModuleDataCommand());
+			chain.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
+			chain.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+			chain.addCommand(new CompleteAssetMoveCommand());
+			chain.addCommand(new AddActivitiesCommand());
+			return chain;
 		}
 
 		public static FacilioChain addReservationChain() {

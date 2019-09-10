@@ -222,6 +222,10 @@ public class EnergyDataDeltaCalculationCommand extends FacilioCommand {
 			
 			Double delta= currentReading-lastReading;
 			delta = (delta < 0) ? 0:delta;
+			if (skipLastReadingCheck) {
+				reading.addReading(deltaFieldName, ReportsUtil.roundOff(delta,4));
+				return;
+			}
 			
 			long currentTime=(reading.getTtime()!=-1)? reading.getTtime():System.currentTimeMillis() ;
 			long lastDataTime=consumptionMeta.getTtime();

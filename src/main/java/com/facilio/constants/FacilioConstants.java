@@ -1191,6 +1191,13 @@ public class FacilioConstants {
 
 		public static final Object DEFAULT_DATE = "defaultDate";
 		public static final Object READING_RULE_ALARM_OCCURANCE = "readingRuleAlarmOccurance";
+		
+		public static final String ASSET_MOVEMENT = "assetmovement";
+		public static final String ASSET_MOVEMENT_RECORDS = "assetmovementrecords";
+		
+		public static final int SITE_BOUNDARY_RADIUS = 1000; //meter 
+		public static final int ASSET_BOUNDARY_RADIUS = 10; //meter 
+		
 
 		public static final String IS_EMAIL_VERIFICATION_NEEDED = "isEmailVerificationNeeded";
 
@@ -1239,6 +1246,7 @@ public class FacilioConstants {
 			classMap.put(ASSET_DEPARTMENT, AssetDepartmentContext.class);
 			classMap.put(ASSET_PHOTOS, PhotosContext.class);
 			classMap.put(ASSET_ACTIVITY, ActivityContext.class);
+			classMap.put(ASSET_MOVEMENT, AssetMovementContext.class);
 			classMap.put(WORKORDER_ACTIVITY, ActivityContext.class);
 			classMap.put(ENERGY_METER, EnergyMeterContext.class);
 			classMap.put(CHILLER, ChillerContext.class);

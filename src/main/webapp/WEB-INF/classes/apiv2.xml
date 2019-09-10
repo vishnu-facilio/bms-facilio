@@ -4190,4 +4190,13 @@
 		</action>
 	</package>
 	
+	<package name="assetMovement" namespace="/api/v2/assetMovement"
+		extends="v2Api">
+		<action name="create"
+			class="com.facilio.bmsconsole.actions.AssetMovementAction" method="addAssetMovement" />
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.AssetMovementAction" method="updateAssetMovement" />
+		<action name="list"
+			class="com.facilio.bmsconsole.actions.AssetMovementAction" method="listAssetMovement" />
+	</package>
 </struts>

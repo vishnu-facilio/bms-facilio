@@ -20,13 +20,18 @@ public class FillRDMForControlActionCommand extends FacilioCommand {
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
-		for(ControlActionCommandContext command :commands) {
-			FacilioField field = modBean.getField(command.getFieldId());
-			if(command.getRdm() == null) {
-				ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(command.getResource().getId(), field);
-				command.setRdm(rdm);
+		if(commands != null) {
+			for(ControlActionCommandContext command :commands) {
+				FacilioField field = modBean.getField(command.getFieldId());
+				if(command.getRdm() == null) {
+					ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(command.getResource().getId(), field);
+					command.setRdm(rdm);
+				}
+				
 			}
-			
+		}
+		else {
+			return true;
 		}
 		
 		return false;

@@ -125,6 +125,14 @@ public class SiteContext extends BaseSpaceContext {
 	public void setTimeZone(String timeZone) {
 		this.timeZone = timeZone;
 	}
+	
+	private int boundaryRadius = -1;
+	public int getBoundaryRadius() {
+		return boundaryRadius;
+	}
+	public void setBoundaryRadius(int boundaryRadius) {
+		this.boundaryRadius = boundaryRadius;
+	}
 
 	public enum SiteType {
 		COMMON(1, "Common"), 

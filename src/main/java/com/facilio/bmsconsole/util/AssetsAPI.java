@@ -27,13 +27,16 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.AssetDepartmentContext;
+import com.facilio.bmsconsole.context.AssetMovementContext;
 import com.facilio.bmsconsole.context.AssetTypeContext;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.EnergyMeterContext;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.context.ToolContext;
+import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.DBUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -55,7 +58,10 @@ import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.UpdateRecordBuilder;
+import com.facilio.modules.FacilioStatus.StatusType;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
+import com.facilio.util.FacilioUtil;
 
 public class AssetsAPI {
 	
@@ -952,6 +958,155 @@ public class AssetsAPI {
 
 	}
 
+   public static void updateAssetMovement(long movementId) throws Exception {
+	   
+	   ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET_MOVEMENT);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET_MOVEMENT);
+		SelectRecordsBuilder<AssetMovementContext> selectBuilder = new SelectRecordsBuilder<AssetMovementContext>().select(fields)
+				.table(module.getTableName()).moduleName(module.getName()).beanClass(AssetMovementContext.class)
+				.andCondition(CriteriaAPI.getIdCondition(movementId, module));
+				;
+		AssetMovementContext assetMovementRecord = selectBuilder.fetchFirst();
+	
+		
+		if(assetMovementRecord != null) {
+			AssetContext asset = new AssetContext();
+			if(assetMovementRecord.getToSite() > 0 && assetMovementRecord.getToSpace() > 0) {
+				SiteContext newsite = SpaceAPI.getSiteSpace(assetMovementRecord.getToSite());
+				asset.setIdentifiedLocation(newsite);
+				asset.setCurrentSpaceId(assetMovementRecord.getToSpace());
+				updateAsset(asset, assetMovementRecord.getAssetId());
+			}
+			else if(StringUtils.isNotEmpty(assetMovementRecord.getToGeoLocation())) {
+				AssetContext assetContext = AssetsAPI.getAssetInfo(assetMovementRecord.getAssetId());
+				String[] latLng = assetMovementRecord.getToGeoLocation().trim().split("\\s*,\\s*");
+				double newLat = Double.parseDouble(latLng[0]);
+				double newLng = Double.parseDouble(latLng[1]);
+		    	SiteContext assetSite = SpaceAPI.getSiteSpace(assetContext.getIdentifiedLocation().getSiteId());
+		      	if(isWithinSiteLocation(assetSite, newLat, newLng)) {
+			  		asset.setCurrentLocation(assetMovementRecord.getToGeoLocation());
+			  		asset.setCurrentSpaceId(-99);
+		    		updateAsset(asset, assetMovementRecord.getAssetId());
+			  		return;
+			  	}
+				List<SiteContext> sites = SpaceAPI.getAllSites(Collections.singletonList((LookupField) modBean.getField("location", FacilioConstants.ContextNames.SITE)));
+				
+				boolean isWithinAnySite = false;
+			    for(SiteContext site : sites) {
+			    	if(asset.getIdentifiedLocation().getSiteId() == site.getSiteId()) {
+			    		continue;
+			    	}
+			    	if(isWithinSiteLocation(site, newLat, newLng)) {
+			    		isWithinAnySite = true;
+			    		asset.setCurrentLocation(assetMovementRecord.getToGeoLocation());
+			    		asset.setIdentifiedLocation(site);
+			    		asset.setCurrentSpaceId(-99);
+			    		updateAsset(asset, assetMovementRecord.getAssetId());
+			    		break;
+		    		}
+			    }
+			    
+				if(!isWithinAnySite) {
+					throw new IllegalArgumentException("Invalid geolocation.Not present in any of the sites");
+				}
+			}
+			
+		}
+   }
+   
+   private static void updateAsset(AssetContext asset, long assetId) throws Exception {
+	   	ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule assetModule = modBean.getModule(FacilioConstants.ContextNames.ASSET);
+		List<FacilioField> assetFields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET);
+
+	   UpdateRecordBuilder<AssetContext> updateBuilder = new UpdateRecordBuilder<AssetContext>()
+				.module(assetModule)
+				.fields(assetFields)
+				.andCondition(CriteriaAPI.getIdCondition(assetId, assetModule));
+
+		updateBuilder.update(asset);
+
+   }
+   public static boolean isWithInLocation (String location, double lat, double lng, int boundaryRadius) {
+		if (StringUtils.isEmpty(location)) {
+			return false;
+		}
+		return getDistance(location, lat, lng) <= boundaryRadius;
+	}
+	
+   public static boolean isWithinSiteLocation (SiteContext site, double lat, double lng) {
+		if(site.getBoundaryRadius() <= 0) {
+    		site.setBoundaryRadius(FacilioConstants.ContextNames.SITE_BOUNDARY_RADIUS);//meters
+    	}
+	
+		if (site == null || site.getLocation() == null || site.getLocation().getLat() == -1 || site.getLocation().getLng() == -1) {
+			return false;
+		}
+		return FacilioUtil.calculateHaversineDistance(site.getLocation().getLat(), site.getLocation().getLng(), lat, lng) <= site.getBoundaryRadius();
+	}
+	
+	public static double getDistance (String location, double lat, double lng) {
+		if (StringUtils.isEmpty(location)) {
+			return 0;
+		}
+		String[] latLng = location.trim().split("\\s*,\\s*");
+		double prevLat = Double.parseDouble(latLng[0]);
+		double prevLng = Double.parseDouble(latLng[1]);
+		
+		double distance = FacilioUtil.calculateHaversineDistance(prevLat, prevLng, lat, lng);
+		return distance;
+	}
+   public static AssetMovementContext getAssetMovementContext(long id) throws Exception {
+	   
+	   ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET_MOVEMENT);
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET_MOVEMENT);
+		SelectRecordsBuilder<AssetMovementContext> selectBuilder = new SelectRecordsBuilder<AssetMovementContext>().select(fields)
+				.table(module.getTableName()).moduleName(module.getName()).beanClass(AssetMovementContext.class)
+				.andCondition(CriteriaAPI.getIdCondition(id, module));
+				;
+		AssetMovementContext assetMovementRecord = selectBuilder.fetchFirst();
+        return assetMovementRecord;
+   }
+   
+   public static boolean checkIfAssetMovementNecessary(String toLocation, String currentLocation, long assetId) throws Exception {
+	   if(StringUtils.isNotEmpty(toLocation) && StringUtils.isNotEmpty(currentLocation)) {
+			String[] latLng = toLocation.trim().split("\\s*,\\s*");
+			double newLat = Double.parseDouble(latLng[0]);
+			double newLng = Double.parseDouble(latLng[1]);
+			AssetContext asset = getAssetInfo(assetId);
+			if(asset.getBoundaryRadius() <= 0) {
+				asset.setBoundaryRadius(FacilioConstants.ContextNames.ASSET_BOUNDARY_RADIUS);
+			}
+			if(AssetsAPI.isWithInLocation(currentLocation, newLat, newLng, asset.getBoundaryRadius())) {
+				return false;
+			}
+			return true;
+		}
+	   return false;
+		
+   }
    
 
+ public static boolean getPendingAssetMovementRecordForAsset(long assetId) throws Exception {
+	   
+	   ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.ASSET_MOVEMENT);
+		String statusTableName = modBean.getModule(FacilioConstants.ContextNames.TICKET_STATUS).getTableName();
+		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.ASSET_MOVEMENT);
+		SelectRecordsBuilder<AssetMovementContext> selectBuilder = new SelectRecordsBuilder<AssetMovementContext>().select(fields)
+				.table(module.getTableName()).moduleName(module.getName()).beanClass(AssetMovementContext.class)
+				.innerJoin(statusTableName)
+				.on("MODULE_STATE = "+ statusTableName+".ID")
+				.andCondition(CriteriaAPI.getCondition("ASSET_ID", "assetId", String.valueOf(assetId), NumberOperators.EQUALS))
+				.andCondition(ViewFactory.getPendingAssetMovementStateTypeCriteria());
+		;
+		
+		List<AssetMovementContext> assetMovementRecord = selectBuilder.get();
+		if(CollectionUtils.isNotEmpty(assetMovementRecord)) {
+			return false;
+		}
+        return true;
+   }
 }

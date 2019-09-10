@@ -386,4 +386,26 @@ public class AssetContext extends ResourceContext {
 		}
 		return false;
 	}
+	
+	public Boolean moveApprovalNeeded;
+
+	public Boolean getMoveApprovalNeeded() {
+		return moveApprovalNeeded;
+	}
+
+	public void setMoveApprovalNeeded(Boolean moveApprovalNeeded) {
+		this.moveApprovalNeeded = moveApprovalNeeded;
+	}
+
+	private long currentSpaceId;
+
+	public long getCurrentSpaceId() {
+		return currentSpaceId;
+	}
+
+	public void setCurrentSpaceId(long currentSpaceId) {
+		this.currentSpaceId = currentSpaceId;
+	}
+	
+	
 }
