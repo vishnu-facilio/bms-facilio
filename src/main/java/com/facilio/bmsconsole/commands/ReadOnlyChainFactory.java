@@ -816,6 +816,18 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetReceivablesListCommand());
 		return c;
 	}
+	public static Chain getContractListChain() {
+		Chain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForContract());
+		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new GetContractListCommand());
+		chain.addCommand(new GenericGetModuleDataListCommand());
+		return chain;
+	}
+
 	
 	public static FacilioChain getPurchaseContractListChain() {
 		FacilioChain chain = getDefaultChain();
@@ -1457,6 +1469,11 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetAnomalyDeviationAndWastageCommand());
 		c.addCommand(new GetEnergyByCDDCommand());
 		c.addCommand(new FormatAnomalyMetricsCommand());
+		return c; 
+	}
+	public static FacilioChain getAssetAssociatedActiveContractsChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetAssetAssociatedActiveContractsCommand());
 		return c;
 	}
 }

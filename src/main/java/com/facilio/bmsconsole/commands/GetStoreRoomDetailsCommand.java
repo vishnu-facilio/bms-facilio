@@ -34,11 +34,17 @@ public class GetStoreRoomDetailsCommand extends FacilioCommand{
 		return false;
 	}
 	
-	public List<Long> getSitesList (long storeRoomId) throws Exception {
+	public List<Long> getSitesList (long storeRoomId) throws Exception { 
+		
         GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder()
                 .select(FieldFactory.getSitesForStoreRoomFields())
                 .table(ModuleFactory.getSitesForStoreRoomModule().getTableName())
-                .andCustomWhere("STORE_ROOM_ID = ?", storeRoomId);
+                .innerJoin(ModuleFactory.getResourceModule().getTableName())
+                .on(ModuleFactory.getResourceModule().getTableName() + ".ID = " +  ModuleFactory.getSitesForStoreRoomModule().getTableName() + ".SITE_ID")
+                .andCustomWhere("(" + ModuleFactory.getResourceModule().getTableName() + ".SYS_DELETED IS NULL") 
+                .orCustomWhere(ModuleFactory.getResourceModule().getTableName() + ".SYS_DELETED = 0" + ")")
+                .andCustomWhere(ModuleFactory.getSitesForStoreRoomModule().getTableName() + ".STORE_ROOM_ID = ?", storeRoomId);
+        		
 
         List<Map<String, Object>> props = selectBuilder.get();
         if (props != null && !props.isEmpty()) {

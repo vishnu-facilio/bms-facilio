@@ -713,4 +713,14 @@ public class AssetAction extends FacilioAction {
 	public void setFilterCriteria(String filterCriteria) {
 		this.filterCriteria = filterCriteria;
 	}
+	public String getAssetAssociatedActiveContracts() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.ID, getAssetId());
+		Chain chain =ReadOnlyChainFactory.getAssetAssociatedActiveContractsChain();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.CONTRACTS, context.get(FacilioConstants.ContextNames.CONTRACTS));
+		
+		return SUCCESS;
+	}
 }

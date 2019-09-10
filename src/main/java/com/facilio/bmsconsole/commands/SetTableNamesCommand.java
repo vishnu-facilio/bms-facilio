@@ -274,6 +274,9 @@ public class SetTableNamesCommand extends FacilioCommand {
 	public static SetTableNamesCommand getForReceivables() {
 		return new SetTableNamesCommand("receivable", "Receivables");
 	}
+	public static SetTableNamesCommand getForContract() {
+		return new SetTableNamesCommand("contracts", "Contracts");
+	}
 	
 	public static SetTableNamesCommand getForPurchaseContract() {
 		return new SetTableNamesCommand("purchasecontracts", "Purchase_Contracts");

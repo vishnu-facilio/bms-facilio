@@ -1802,6 +1802,14 @@
 			class="com.facilio.bmsconsole.actions.AssetAction"
 			method="fetchAssetDowntimeMetrics">
 		</action>
+		
+		<action name="assetAssociatedActiveContracts"
+			class="com.facilio.bmsconsole.actions.AssetAction"
+			method="getAssetAssociatedActiveContracts">
+			<param name="moduleName">asset</param>
+			<param name="permission">READ</param>
+		</action>
+		
 
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.AssetAction"
@@ -3206,8 +3214,7 @@
 		</action>
 
 	</package>
-
-
+	
 	<package name="labourApi" namespace="/api/v2/labour"
 		extends="v2Api">
 		<action name="add"
@@ -4130,6 +4137,14 @@
 			method="disAssociateAssets">
 			<param name="moduleName">contract</param>
 			<param name="permission">CREATE,UPDATE</param>
+		</action>
+		
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.ContractsAction"
+			method="getContractList">
+			<param name="viewName">{1}</param>
+			<param name="moduleName">contract</param>
+			<param name="permission">READ</param>
 		</action>
 
 	</package>

@@ -3,11 +3,15 @@ package com.facilio.bmsconsole.actions;
 import java.util.List;
 
 import org.apache.commons.chain.Chain;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 
+import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ContractAssociatedAssetsContext;
 import com.facilio.bmsconsole.context.ContractAssociatedTermsContext;
 import com.facilio.bmsconsole.context.ContractsContext;
+import com.facilio.bmsconsole.context.LabourContractContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -75,6 +79,58 @@ public class ContractsAction extends FacilioAction{
 	public void setRecordIds(List<Long> recordIds) {
 		this.recordIds = recordIds;
 	}
+	private Boolean fetchCount;
+	public Boolean getFetchCount() {
+		if (fetchCount == null) {
+			return false;
+		}
+		return fetchCount;
+	}
+	public void setFetchCount(Boolean fetchCount) {
+		this.fetchCount = fetchCount;
+	}
+	
+	public String getContractList() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.FETCH_COUNT, getFetchCount());
+		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
+		context.put(FacilioConstants.ContextNames.MODULE_NAME, "contracts");
+		context.put(FacilioConstants.ContextNames.SORTING_QUERY, "Contracts.ID asc");
+ 		
+ 		if(getFilters() != null)
+ 		{	
+	 		JSONParser parser = new JSONParser();
+	 		JSONObject json = (JSONObject) parser.parse(getFilters());
+	 		context.put(FacilioConstants.ContextNames.FILTERS, json);
+	 		context.put(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA, getIncludeParentFilter());
+	 		
+		}
+ 		if (getSearch() != null) {
+ 			JSONObject searchObj = new JSONObject();
+ 			searchObj.put("fields", "contracts.name");
+ 			searchObj.put("query", getSearch());
+	 		context.put(FacilioConstants.ContextNames.SEARCH, searchObj);
+ 		}
+ 		JSONObject pagination = new JSONObject();
+ 	 	pagination.put("page", getPage());
+ 	 	pagination.put("perPage", getPerPage());
+ 	 	if (getPerPage() < 0) {
+ 	 		pagination.put("perPage", 5000);
+ 	 	}
+ 	 	
+		Chain chain = ReadOnlyChainFactory.getContractListChain();
+		chain.execute(context);
+		
+		if (getFetchCount()) {
+			setResult(FacilioConstants.ContextNames.RECORD_COUNT,(Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
+		}
+		else {
+			List<ContractsContext> contracts = (List<ContractsContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
+			setResult(FacilioConstants.ContextNames.CONTRACTS, contracts);
+		}
+		return SUCCESS;
+	}
+
 	public String addOrUpdateLineItem() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CONTRACT_TYPE, getContractType());
