@@ -821,7 +821,9 @@ public class PreventiveMaintenanceAPI {
 		woSelectBuilder.module(module)
 				.select(Arrays.asList(minCreatedTime))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), String.valueOf(preopen.getId()), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("pm"), String.valueOf(pmId), NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("pm"), String.valueOf(pmId), NumberOperators.EQUALS))
+				.setAggregation()
+				;
 		List<Map<String, Object>> props = woSelectBuilder.getAsProps();
 		if (props == null || props.isEmpty()) {
 			return null;
