@@ -1,3 +1,4 @@
+
 package com.facilio.bmsconsole.page.factory;
 
 import java.lang.reflect.InvocationTargetException;
@@ -158,15 +159,23 @@ public class AssetPageFactory extends PageFactory {
 			addAssetMovementsWidget(tab8Sec1);
 		}
 		
-		Tab tab5 = page.new Tab("history", "history");
+		
+		Tab tab5 = page.new Tab("contracts", "contracts");
 		page.addTab(tab5);
 		
 		Section tab5Sec1 = page.new Section();
 		tab5.addSection(tab5Sec1);
 		
-		addHistoryWidget(tab5Sec1);
-		
+		addContractWidget(tab5Sec1);
 
+		Tab tab9 = page.new Tab("history", "history");
+		page.addTab(tab9);
+		
+		Section tab9Sec1 = page.new Section();
+		tab9.addSection(tab9Sec1);
+		
+		addHistoryWidget(tab9Sec1);
+		
 		return page;
 	}
 	
@@ -374,6 +383,12 @@ public class AssetPageFactory extends PageFactory {
 		PageWidget widget = new PageWidget(WidgetType.GRAPHICS);
 		widget.addToLayoutParams(section, 24, 3);
 		section.addWidget(widget);
+	}
+	
+	private static void addContractWidget(Section section) {
+		PageWidget contractsWidget = new PageWidget(WidgetType.LIST);
+		contractsWidget.addToLayoutParams(section, 24, 10);
+		section.addWidget(contractsWidget);
 	}
 	
 }
