@@ -18,12 +18,12 @@ public enum ThermoPhysicalR134aFunctions implements FacilioWorkflowFunctionInter
 			if(objects[0] == null) {
 				return null;
 			}
-			double presure = Double.parseDouble(objects[0].toString());
+			double pressure = Double.parseDouble(objects[0].toString());
 			
 			Map<Double, Double> chillerMap = WorkflowUtil.getChillerTempVsPressureMap();
 			
-			if(chillerMap.get(presure) != null ) {
-				return chillerMap.get(presure);
+			if(chillerMap.get(pressure) != null ) {
+				return chillerMap.get(pressure);
 			}
 			else {
 				TreeSet<Double> keySet = new TreeSet<Double>();
@@ -37,8 +37,8 @@ public enum ThermoPhysicalR134aFunctions implements FacilioWorkflowFunctionInter
 				
 				for(int i=0;i<keysetArray.length;i++) {
 					double key = (double) keysetArray[i];
-					if(presure < key) {
-						if( i== 0) {
+					if(pressure < key) {
+						if( i== 0) {										// pressure value is lesser than the first value in sheet
 							return null;
 						}
 						greaterValue = key;
@@ -46,8 +46,12 @@ public enum ThermoPhysicalR134aFunctions implements FacilioWorkflowFunctionInter
 						break;
 					}
 				}
-				lesserValueDelta = presure - lesserValue;
-				greaterValueDelta = greaterValue - presure;
+				
+				if(greaterValue == null || lesserValue == null) {			// pressure value is higher than the last value in sheet
+					return null;
+				}
+				lesserValueDelta = pressure - lesserValue;
+				greaterValueDelta = greaterValue - pressure;
 				
 				if(lesserValueDelta > greaterValueDelta) {
 					return chillerMap.get(greaterValue);
