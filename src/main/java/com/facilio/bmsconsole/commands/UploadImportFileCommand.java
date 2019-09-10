@@ -99,16 +99,19 @@ public class UploadImportFileCommand extends FacilioCommand {
 
 			JSONParser parser = new JSONParser();
 			JSONObject json = (JSONObject) parser.parse(moduleMeta);
+			JSONObject moduleMetaJson = new JSONObject();
 			String baseModule = (String) json.get("baseModule");
 			if (baseModule == "asset") {
 				Long parentId = (Long) json.get("parentId");
 				Map<String, String> moduleInfo = AssetsAPI.getAssetModuleName(parentId);
 				String modName = moduleInfo.get(FacilioConstants.ContextNames.MODULE_NAME);
 				json.put("module", modName);
-				importProcessContext.setImportJobMeta(json.toString());
+				moduleMetaJson.put("moduleInfo", json);
+				importProcessContext.setImportJobMeta(moduleMetaJson.toString());
 			} else {
 				json.put("module", moduleName);
-				importProcessContext.setImportJobMeta(json.toString());
+				moduleMetaJson.put("moduleInfo", json);
+				importProcessContext.setImportJobMeta(moduleMetaJson.toString());
 			}
 		}
         

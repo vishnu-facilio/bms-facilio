@@ -36,21 +36,23 @@ public class ImportReadingLogJob extends InstantJob{
 			importProcessContext.setStatus(ImportProcessContext.ImportStatus.BEGIN_VALIDATION.getValue());
 			ImportAPI.updateImportProcess(importProcessContext);
 			
-			JSONObject hasDuplicates = new JSONObject();
+			JSONObject pubsubInfo = new JSONObject();
 			if((boolean)context.get(ImportAPI.ImportProcessConstants.HAS_DUPLICATE_ENTRIES)) {
-				hasDuplicates.put("hasDuplicates",true);
+				pubsubInfo.put("hasDuplicates",true);
 				importProcessContext.setStatus(ImportProcessContext.ImportStatus.RESOLVE_VALIDATION.getValue());
 				ImportAPI.updateImportProcess(importProcessContext);
 			}
 			else {
-				hasDuplicates.put("hasDuplicates", false);
+				pubsubInfo.put("hasDuplicates", false);
+				ImportAPI.updateTotalRows(importProcessContext);
+				pubsubInfo.put("totalRows", importProcessContext.getTotalRows());
 				
-				importProcessContext.setStatus(ImportProcessContext.ImportStatus.IN_PROGRESS.getValue());
+				importProcessContext.setStatus(ImportProcessContext.ImportStatus.VALIDATION_COMPLETE.getValue());
 				ImportAPI.updateImportProcess(importProcessContext);
-				FacilioTimer.scheduleOneTimeJobWithDelay(importProcessContext.getId(), "importReading", 5, "priority");
+//				FacilioTimer.scheduleOneTimeJobWithDelay(importProcessContext.getId(), "importReading", 5, "priority");
 
 			}
-			pubsub.publishImportStatusChange(importProcessContext.getOrgId(), importProcessContext.getId(), hasDuplicates);
+			pubsub.publishImportStatusChange(importProcessContext.getOrgId(), importProcessContext.getId(), pubsubInfo);
 			
 			LOGGER.severe("------Import Log Job Finished------");
 			
