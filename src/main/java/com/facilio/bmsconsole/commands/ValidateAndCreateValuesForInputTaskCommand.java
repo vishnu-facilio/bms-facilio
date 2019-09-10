@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.util.DBConf;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.SelectRecordsBuilder;
@@ -130,6 +131,10 @@ public class ValidateAndCreateValuesForInputTaskCommand extends FacilioCommand {
 			ReadingContext reading = new ReadingContext();
 			reading.setId(oldTask.getReadingDataId());
 			reading.addReading(field.getName(), newTask.getInputValue());
+			if(newTask.getReadingFieldUnit() != -1)
+			{
+				reading.addReading(field.getName()+DBConf.NUMBER_FIELD_UNIT_SUFFIX, newTask.getReadingFieldUnit());	
+			}
 			reading.setTtime(newTask.getInputTime());
 			long resourceId = isPMReading ? pmId : oldTask.getResource().getId();
 			reading.setParentId(resourceId);
