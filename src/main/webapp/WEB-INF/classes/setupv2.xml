@@ -13,6 +13,10 @@
 			<!-- <param name="moduleName">setup</param>
 			<param name="permission">USER_MANAGEMENT</param> -->
 		</action>
+		<action name="userlist"  class="com.facilio.bmsconsole.actions.UserAction" method="v2userList">
+			<param name="moduleName">setup</param>
+			<param name="permission">USER_MANAGEMENT</param>
+		</action>
 		
 		<action name="controllers" class="com.facilio.bmsconsole.actions.ControllerAction" method="controllerList">
 			<param name="moduleName">setup</param>

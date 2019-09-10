@@ -119,6 +119,13 @@ public class UserAction extends FacilioAction {
 		
 		return SUCCESS;
 	}
+	
+	public String v2userList() throws Exception {
+		setSetup(SetupLayout.getUsersListLayout());
+		setUsers(AccountUtil.getOrgBean().getAllOrgUsers(AccountUtil.getCurrentOrg().getOrgId()));
+		setResult("users", getUsers());
+		return SUCCESS;
+	}
 
 	public String portalUserList() throws Exception {
 		setSetup(SetupLayout.getUsersListLayout());
