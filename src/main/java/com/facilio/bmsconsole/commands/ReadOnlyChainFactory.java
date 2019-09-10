@@ -162,6 +162,7 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new GetTaskInputDataCommand());
 		c.addCommand(new FetchApprovalRulesCommand());
 		c.addCommand(new FetchSourceTypeDetailsForWorkorderCommand());
+		c.addCommand(new GetNextWorkOrder());
 		return c;
 	}
 	
