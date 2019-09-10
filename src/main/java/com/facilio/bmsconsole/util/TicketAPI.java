@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -89,6 +90,28 @@ public class TicketAPI {
 	
 	public static int deleteTickets(FacilioModule module, Collection<Long> recordIds) throws Exception {
 		return deleteTickets(module, recordIds, -1);
+	}
+	
+	public static Map<Long, TaskContext> getTaskMap(List<Long> id) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TASK);
+		SelectRecordsBuilder<TaskContext> builder = new SelectRecordsBuilder<TaskContext>()
+														.module(module)
+														.beanClass(TaskContext.class)
+														.select(modBean.getAllFields(FacilioConstants.ContextNames.TASK))
+														.andCondition(CriteriaAPI.getIdCondition(id, module));
+		
+		Map<Long, TaskContext> tasks = builder.getAsMap();
+		if(tasks != null && !tasks.isEmpty()) {
+			for (Entry<Long, TaskContext> entry : tasks.entrySet()) {
+				TaskContext task = entry.getValue();
+				if (task.getReadingFieldId() != -1) {
+					task.setReadingField(modBean.getField(task.getReadingFieldId()));
+				}
+			}
+			return tasks;
+		}
+		return null;
 	}
 	
 	public static int deleteTickets(FacilioModule module, Collection<Long> recordIds, int level) throws Exception {
