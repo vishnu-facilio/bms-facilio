@@ -2213,6 +2213,15 @@ public class ModuleFactory {
 		return controlActionTemplate;
 	}
 	
+	public static FacilioModule getFormTemplatesModule() {
+		FacilioModule formTemplate = new FacilioModule();
+		formTemplate.setName("formTemplate");
+		formTemplate.setDisplayName("Form Template");
+		formTemplate.setTableName("Form_Template");
+		formTemplate.setExtendModule(getTemplatesModule());
+		return formTemplate;
+	}
+	
 	public static FacilioModule getMLModule() 
 	{
 		FacilioModule mlModule = new FacilioModule();

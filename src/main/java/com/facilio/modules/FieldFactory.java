@@ -2247,6 +2247,18 @@ public class FieldFactory {
 
 		return fields;
 	}
+	
+	public static List<FacilioField> getFormTemplateFields() {
+		FacilioModule module = ModuleFactory.getFormTemplatesModule();
+
+		List<FacilioField> fields = new ArrayList<>();
+
+		fields.add(getIdField(module));
+		fields.add(getField("formId", "FORM_ID", module, FieldType.NUMBER));
+
+		return fields;
+	}
+
 
 	public static List<FacilioField> getTenantFields() {
 		List<FacilioField> fields = new ArrayList<>();

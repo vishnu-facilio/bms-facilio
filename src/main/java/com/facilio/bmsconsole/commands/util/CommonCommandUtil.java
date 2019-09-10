@@ -811,4 +811,16 @@ public class CommonCommandUtil {
 		eventTypes.add(type);
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE_LIST, eventTypes);
 	}
+	
+	public static List<EventType> getEventTypes(Context context) {
+		List<EventType> eventTypes = (List<EventType>) context.get(FacilioConstants.ContextNames.EVENT_TYPE_LIST);
+		if (eventTypes == null) {
+			EventType eventType = (EventType) context.get(FacilioConstants.ContextNames.EVENT_TYPE);
+			if (eventType != null) {
+				eventTypes = new ArrayList<>();
+				eventTypes.add(eventType);
+			}
+		}
+		return eventTypes;
+	}
 }

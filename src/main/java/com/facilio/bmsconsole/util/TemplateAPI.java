@@ -53,6 +53,7 @@ import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
 import com.facilio.bmsconsole.templates.DefaultTemplateWorkflowsConf;
 import com.facilio.bmsconsole.templates.DefaultTemplateWorkflowsConf.TemplateWorkflowConf;
 import com.facilio.bmsconsole.templates.EMailTemplate;
+import com.facilio.bmsconsole.templates.FormTemplate;
 import com.facilio.bmsconsole.templates.JSONTemplate;
 import com.facilio.bmsconsole.templates.PrerequisiteApproversTemplate;
 import com.facilio.bmsconsole.templates.PrerequisiteApproversTemplate.SharingType;
@@ -238,6 +239,10 @@ public class TemplateAPI {
 		}
 		else if (template instanceof  ControlActionTemplate) {
 			id = addControlActionTemplate((ControlActionTemplate) template);
+		}
+		else if (template instanceof FormTemplate) {
+			id = addFormTemplate((FormTemplate) template);
+			template.setId(id);
 		}
 		return id;
 	}
@@ -1277,6 +1282,10 @@ public class TemplateAPI {
 		return insertTemplateWithExtendedProps(ModuleFactory.getControlActionTemplateModule(), FieldFactory.getControlActionTemplateFields(), FieldUtil.getAsProperties(template));
 	}
 	
+	public static long addFormTemplate (FormTemplate template) throws Exception {
+		return insertTemplateWithExtendedProps(ModuleFactory.getFormTemplatesModule(), FieldFactory.getFormTemplateFields(), FieldUtil.getAsProperties(template));
+	}
+	
 	private static long addWorkOrderTemplate(WorkorderTemplate template, Type woType, Type taskType, Type sectionType) throws Exception {
 		addDefaultProps(template);
 		template.setType(woType);
@@ -1542,6 +1551,10 @@ public class TemplateAPI {
 	
 	public static long addAlarmTemplate(long orgId, JSONTemplate template) throws Exception {
 		return addJsonTemplate(orgId, template, Template.Type.ALARM);
+	}
+	
+	public static long addFormTemplate(long orgId, JSONTemplate template) throws Exception {
+		return addJsonTemplate(orgId, template, Template.Type.FORM);
 	}
 	
 	private static long addJsonTemplate(long orgId, JSONTemplate template, Template.Type type) throws Exception {

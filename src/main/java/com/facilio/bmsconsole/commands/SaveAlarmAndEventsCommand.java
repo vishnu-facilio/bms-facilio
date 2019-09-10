@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -8,15 +9,21 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
+import org.json.simple.JSONObject;
 
+import com.facilio.accounts.dto.User;
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.bmsconsole.context.BaseEventContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.bmsconsole.util.NewEventAPI;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -33,15 +40,20 @@ import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.wms.message.WmsEvent;
+import com.facilio.wms.util.WmsApi;
 
 public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTransactionCommand {
 
 	private static final Logger LOGGER = LogManager.getLogger(SaveAlarmAndEventsCommand.class.getName());
 
 	private Map<String, PointedList<AlarmOccurrenceContext>> alarmOccurrenceMap;
+	List<EventType> eventTypes;
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
+		eventTypes = CommonCommandUtil.getEventTypes(context);
+		
 		List<BaseEventContext> eventList = (List<BaseEventContext>) context.get(EventConstants.EventContextNames.EVENT_LIST);
 		Map<String, BaseAlarmContext> alarmMap = (Map<String, BaseAlarmContext>) context.get("alarmMap");
 		alarmOccurrenceMap = (Map<String, PointedList<AlarmOccurrenceContext>>) context.get("alarmOccurrenceMap");
@@ -215,11 +227,14 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 				updateRecordBuilder.updateViaMap(updateMap);
 			}
 
-
 			Set<Long> alarmIds = new HashSet<>();
+			List<BaseAlarmContext> alarms = new ArrayList<BaseAlarmContext>();
 			for (String key : alarmOccurrenceMap.keySet()) {
 				for (AlarmOccurrenceContext alarmOccurrence : alarmOccurrenceMap.get(key)) {
-					alarmIds.add(alarmOccurrence.getAlarm().getId());
+					if (!alarmIds.contains(alarmOccurrence.getAlarm().getId())) {
+						alarmIds.add(alarmOccurrence.getAlarm().getId());
+						alarms.add(alarmOccurrence.getAlarm());
+					}
 				}
 			}
 
@@ -249,6 +264,31 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 						.andCondition(CriteriaAPI.getIdCondition(id, alarmModule));
 
 				updateRecordBuilder.updateViaMap(updateMap);
+			}
+			try {
+				if ((eventTypes.contains(EventType.CREATE) || eventTypes.contains(EventType.UPDATED_ALARM_SEVERITY)) && 
+					(AccountUtil.getCurrentOrg().getOrgId() != 88 || (alarms.size() == 1 && alarms.get(0).getSeverity().getId() == AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.CRITICAL_SEVERITY).getId()))) {
+					WmsEvent event = new WmsEvent();
+					event.setNamespace("newAlarm");
+					event.setEventType(WmsEvent.WmsEventType.RECORD_UPDATE);
+					if (alarms.size() == 1) {
+						JSONObject record = new JSONObject();
+						record.put("id", alarms.get(0).getId());
+						event.setAction("refetch");
+						event.addData("record", record);
+					}
+					else {
+						event.setAction("refresh");
+					}
+					event.addData("sound", true);
+					
+					List<User> users = AccountUtil.getOrgBean().getActiveOrgUsers(AccountUtil.getCurrentOrg().getId());
+					List<Long> recipients = users.stream().map(user -> user.getId()).collect(Collectors.toList());
+					WmsApi.sendEvent(recipients, event);
+				}
+			}
+			catch (Exception e) {
+				LOGGER.info("Exception occcurred while pushing Web notification during alarm updation ", e);
 			}
 		}
 		return false;
