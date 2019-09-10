@@ -1,32 +1,22 @@
 package com.facilio.bmsconsole.commands;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.util.DemoRollUpUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
-import com.facilio.db.builder.DBUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
-import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.transaction.FacilioConnectionPool;
-import com.facilio.db.transaction.FacilioTransactionManager;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
@@ -53,6 +43,20 @@ public class DemoRollUpCommand extends FacilioCommand {
 					List<FacilioField> fields = new ArrayList<>();
 					for(String columns:valueList) {
 						fields.add(FieldFactory.getField(columns, columns, FieldType.DATE_TIME));
+						
+					}
+					if(moduleName.equalsIgnoreCase("Groups")) {
+						fields.add(FieldFactory.getField("GROUPID", "GROUPID", FieldType.ID));
+					}
+					else if(moduleName.equalsIgnoreCase("Task_Section_Template_Triggers")) {
+						fields.add(FieldFactory.getField("SECTION_ID", "SECTION_ID", FieldType.ID));
+					}
+					else if(moduleName.equalsIgnoreCase("FacilioFile")) {
+						fields.add(FieldFactory.getField("FILE_ID", "FILE_ID", FieldType.ID));
+					}
+					else if(moduleName.equalsIgnoreCase("Role")) {
+						fields.add(FieldFactory.getField("ROLE_ID", "ROLE_ID", FieldType.ID));
+					}else {
 						fields.add(FieldFactory.getField("ID", "ID", FieldType.ID));
 					}
 					List<Map<String, Object>> columnData = getColumnDataValue(fields,moduleName);
@@ -95,7 +99,7 @@ public class DemoRollUpCommand extends FacilioCommand {
 		// TODO Auto-generated method stub
 		List<FacilioField> idFields = new ArrayList<>();
 		for (FacilioField id : fields) {
-	        if (id.getName().equals("ID")) {
+	        if (id.getName().equals("ID")||id.getName().equals("GROUPID")|| id.getName().equals("FILE_ID")||id.getName().equals("ROLE_ID") || id.getName().equals("SECTION_ID")) {
 	            idFields.add(id);
 	        }
 	    }
@@ -112,7 +116,7 @@ public class DemoRollUpCommand extends FacilioCommand {
 		for(Map<String,Object> map:columnData) {
 			for (Map.Entry<String, Object> entry : map.entrySet()) {
 		        String key = entry.getKey();
-		        if(key!=null && key.equalsIgnoreCase("ID")) {
+		        if(key!=null && key.equalsIgnoreCase("ID")|| key.equalsIgnoreCase("GROUPID") || key.equalsIgnoreCase("ROLE_ID")||key.equalsIgnoreCase("FILE_ID")||key.equalsIgnoreCase("SECTION_ID")) {
 		        	 long value = (long) entry.getValue();
 		        	 if(value!=0) {
 		        		 fieldValue.put(key,value);
@@ -134,7 +138,7 @@ public class DemoRollUpCommand extends FacilioCommand {
 		for(Map<String,Object> map:columnData) {
 			for (Map.Entry<String, Object> entry : map.entrySet()) {
 		        String key = entry.getKey();
-		        if(key!=null && !key.equalsIgnoreCase("ID") && !key.equalsIgnoreCase("ORGID")) {
+		        if(key!=null && !key.equalsIgnoreCase("ID") && !key.equalsIgnoreCase("ORGID") && !key.equalsIgnoreCase("GROUPID") && !key.equalsIgnoreCase("ROLE_ID") &&  !key.equalsIgnoreCase("FILE_ID") && !key.equalsIgnoreCase("SECTION_ID")) {
 		        	 long value = (long) entry.getValue();
 		        	 value=value + daysToMillisec;
 		        	 fieldValue.put(key,value);

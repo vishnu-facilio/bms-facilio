@@ -14,12 +14,12 @@ public class DemoRollUpUtil {
 		Map<String, List<String>> tablesContainsDateField = new HashMap<String, List<String>>();
 
 //		tablesContainsDateField.put("Organizations" , Arrays.asList("CREATED_TIME"));
-//		tablesContainsDateField.put("FacilioFile" ,Arrays.asList("UPLOADED_TIME"));
-//		tablesContainsDateField.put("Role" , Arrays.asList("CREATED_TIME"));
+		tablesContainsDateField.put("FacilioFile" ,Arrays.asList("UPLOADED_TIME"));
+		tablesContainsDateField.put("Role" , Arrays.asList("CREATED_TIME"));
 //		tablesContainsDateField.put("ORG_Users" , Arrays.asList("INVITEDTIME"));
 		tablesContainsDateField.put("Site" , Arrays.asList("DATE_CF1","DATE_CF2","DATE_CF3","DATE_CF4","DATE_CF5","DATETIME_CF1","DATETIME_CF2","DATETIME_CF3","DATETIME_CF4","DATETIME_CF5"));
 //		tablesContainsDateField.put("System_Jobs" , Arrays.asList("LAST_EXECUTION_TIME"));
-//		tablesContainsDateField.put("Groups" , Arrays.asList("CREATED_TIME"));
+		tablesContainsDateField.put("Groups" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("Shift_Readings" , Arrays.asList("ACTUAL_TTIME","TTIME"));
 		tablesContainsDateField.put("ResizedFile" , Arrays.asList("GENERATED_TIME","EXPIRY_TIME"));
 		tablesContainsDateField.put("Workflow_Log" , Arrays.asList("EXECUTION_TIME"));
@@ -123,7 +123,7 @@ public class DemoRollUpUtil {
 		tablesContainsDateField.put("ML_Alarm_Occurrences" , Arrays.asList("TTIME"));
 		tablesContainsDateField.put("Reading_Rule_Flaps" , Arrays.asList("FLAP_TIME"));
 		tablesContainsDateField.put("Scheduled_Actions" , Arrays.asList("JOB_TIME"));
-//		tablesContainsDateField.put("Task_Section_Template_Triggers" , Arrays.asList("EXECUTE_IF_NOT_IN_TIME"));
+		tablesContainsDateField.put("Task_Section_Template_Triggers" , Arrays.asList("EXECUTE_IF_NOT_IN_TIME"));
 		tablesContainsDateField.put("PM_Jobs" , Arrays.asList("NEXT_EXECUTION_TIME"));
 		tablesContainsDateField.put("Reading_Data_Meta" , Arrays.asList("TTIME"));
 		tablesContainsDateField.put("Marked_Reading" , Arrays.asList("TTIME"));
