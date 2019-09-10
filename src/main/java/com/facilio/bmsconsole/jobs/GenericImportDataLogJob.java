@@ -12,10 +12,10 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportAssetMandatoryFieldsException;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportFieldValueMissingException;
+import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
-import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.job.InstantJob;
 
 public class GenericImportDataLogJob extends InstantJob{
@@ -65,6 +65,9 @@ public class GenericImportDataLogJob extends InstantJob{
 			else if(e instanceof ImportFieldValueMissingException) {
 				ImportFieldValueMissingException importFieldException = (ImportFieldValueMissingException) e;
 				message = importFieldException.getClientMessage();
+			} else if (e instanceof ImportParseException) {
+				ImportParseException importParseException = (ImportParseException) e;
+				message = importParseException.getClientMessage();
 			}
 			else {
 				message = e.getMessage();

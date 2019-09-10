@@ -1,18 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
 import java.io.InputStream;
-import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Context;
-import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.CellValue;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -125,7 +123,7 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 				}
 
 				HashMap<String, Object> colVal = new HashMap<>();
-
+				FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
 				Iterator<Cell> cellItr = row.cellIterator();
 				while (cellItr.hasNext()) {
 					Cell cell = cellItr.next();
@@ -134,31 +132,11 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 					if (cellName == null || cellName == "") {
 						continue;
 					}
-
 					Object val = 0.0;
 					try {
-						if (cell.getCellTypeEnum() == CellType.STRING) {
-
-							val = cell.getStringCellValue().trim();
-						} else if (cell.getCellTypeEnum() == CellType.NUMERIC
-								|| cell.getCellTypeEnum() == CellType.FORMULA) {
-							if (cell.getCellTypeEnum() == CellType.NUMERIC && HSSFDateUtil.isCellDateFormatted(cell)) {
-								Date date = cell.getDateCellValue();
-								Instant date1 = date.toInstant();
-								val = date1.getEpochSecond()*1000;
-							} 
-							else if(cell.getCellTypeEnum() == CellType.FORMULA) {
-								val = cell.getNumericCellValue();
-							}
-							else {
-								val = cell.getNumericCellValue();
-							}
-						} else if (cell.getCellTypeEnum() == CellType.BOOLEAN) {
-							val = cell.getBooleanCellValue();
-						} else {
-							val = null;
-						}
-					}catch(Exception e) {
+						CellValue cellValue = evaluator.evaluate(cell);
+						val = ImportAPI.getValueFromCell(cell, cellValue);
+					} catch(Exception e) {
 						throw new ImportParseException(row_no, cellName, e);
 					}
 					

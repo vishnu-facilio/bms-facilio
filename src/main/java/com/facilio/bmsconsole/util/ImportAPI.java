@@ -14,7 +14,8 @@ import org.apache.log4j.LogManager;
 import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.CellValue;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -312,61 +313,67 @@ public class ImportAPI {
 		}
 		ProcessXLS.populateData(importProcessContext, readingsList);
 	}
-	public static JSONObject getFirstRow (Workbook workbook)throws Exception {
+	public static JSONObject getFirstRow (Workbook workbook) throws Exception {
 		JSONObject firstRow = new JSONObject();
 		JSONArray columnHeadings = getColumnHeadings(workbook);
-//		Workbook workbook = WorkbookFactory.create(excelfile);
 		Sheet datatypeSheet = workbook.getSheetAt(0);
 		Row row = datatypeSheet.getRow(1);
 		int lastCellNum = row.getLastCellNum();
-		
-		
-		for(int i =0; i< lastCellNum; i++) {
+		FormulaEvaluator evaluator = workbook.getCreationHelper().createFormulaEvaluator();
+
+		for (int i = 0; i < lastCellNum; i++) {
 			Cell cell = row.getCell(i);
-			if(columnHeadings.get(i) == null || columnHeadings.get(i) == "null") {
+			if (columnHeadings.get(i) == null || columnHeadings.get(i) == "null") {
 				continue;
-			}
-			else {
-				if(cell == null || (cell.getCellType() == Cell.CELL_TYPE_BLANK)) {
-					firstRow.put(columnHeadings.get(i), null);
-				}
-				else {
-					CellType type = cell.getCellTypeEnum();
-					if(type == CellType.NUMERIC || type == CellType.FORMULA) {
-	        			if(cell.getCellTypeEnum() == CellType.NUMERIC && HSSFDateUtil.isCellDateFormatted(cell)) {
-//	        				DataFormatter df = new DataFormatter();
-//	        				String cellValueString = df.formatCellValue(cell);
-//	        				firstRow.put(columnHeadings.get(i),cellValueString);
-	        				throw new IllegalArgumentException("Unsupported Date/Time Formatted Field under column " + columnHeadings.get(i) + " Kindly Use Plain text");
-	        			}
-	        			else if(type== CellType.FORMULA) {
-	        				try {
-	        					Double cellValue = cell.getNumericCellValue();
-	        					firstRow.put(columnHeadings.get(i), cellValue);
-	        				}
-	        				catch(Exception e) {
-	        					throw new IllegalArgumentException("Unsupported Formula Field under column " + columnHeadings.get(i));
-	        				}
-	        			}
-	        			else {
-	        				Double cellValue = cell.getNumericCellValue();
-	        				firstRow.put(columnHeadings.get(i),cellValue);
-	        			}
-	        		}
-	        		else if(type== CellType.BOOLEAN) {
-	        			Boolean cellValue = cell.getBooleanCellValue();
-	        			firstRow.put(columnHeadings.get(i), cellValue);
-	        		}
-	        		else if(type == CellType.STRING)
-	        		{
-	        			String cellValue = cell.getStringCellValue();
-	        			firstRow.put(columnHeadings.get(i), cellValue);
-	        		}
+			} else {
+				if (cell.getCellType() == Cell.CELL_TYPE_NUMERIC && HSSFDateUtil.isCellDateFormatted(cell)) {
+					throw new IllegalArgumentException("Unsupported Date/Time Formatted Field under column "
+							+ columnHeadings.get(i) + " Kindly Use Plain text");
+				} else {
+					Object obj = 0.0;
+					try {
+						CellValue cellValue = evaluator.evaluate(cell);
+						obj = getValueFromCell(cell, cellValue);
+						firstRow.put(columnHeadings.get(i), obj);
+					} catch (Exception e) {
+						throw new IllegalArgumentException("Unable To Read Value under column " + columnHeadings.get(i));
+					}
 				}
 			}
 		}
 //		workbook.close();
 		return firstRow;
+	}
+	
+	public static Object getValueFromCell(Cell cell, CellValue cellValue) throws Exception {
+		
+		Object val = 0.0;
+		
+		// Here we get CellValue after evaluating the formula So CellType FORMULA will never occur
+		// todo add Date Time Format Handling 
+		if (cell.getCellType() == Cell.CELL_TYPE_BLANK || cellValue.getCellTypeEnum() == CellType.BLANK) {
+			val = null;
+		}
+		else if (cellValue.getCellTypeEnum() == CellType.STRING) {
+			if (cellValue.getStringValue().trim().length() == 0) {
+				val = null;
+			} else {
+				val = cellValue.getStringValue().trim();
+			}
+
+		} else if (cellValue.getCellTypeEnum() == CellType.NUMERIC) {
+			val = cellValue.getNumberValue();
+			
+		} else if (cellValue.getCellTypeEnum() == CellType.BOOLEAN) {
+			val = cellValue.getBooleanValue();
+		} else if (cell.getCellType() == Cell.CELL_TYPE_ERROR || cellValue.getCellTypeEnum() == CellType.ERROR) {
+			throw new Exception("Error Evaulating Cell");
+		} else {
+			val = null;
+		}
+		
+			
+		return val;
 	}
 	
 	public static Long getSpaceID(ImportProcessContext importProcessContext, HashMap<String, Object> colVal, HashMap<String,String> fieldMapping) throws Exception {
