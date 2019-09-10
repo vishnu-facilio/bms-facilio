@@ -58,7 +58,7 @@ public class ReadingToolCommand extends FacilioCommand {
 
 			}
 
-			FacilioTimer.scheduleOneTimeJob(readingToolsjobId, FacilioConstants.ContextNames.ADMIN_DELTA_CALCULATION, 30,"priority");
+			FacilioTimer.scheduleOneTimeJobWithDelay(readingToolsjobId, FacilioConstants.ContextNames.ADMIN_DELTA_CALCULATION, 30,"priority");
 
 		}
 		catch(Exception e) {

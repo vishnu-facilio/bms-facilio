@@ -271,7 +271,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		builder.save();
 		
 		StateflowTransitionContext stateFlow = (StateflowTransitionContext) ruleContext;
-		FacilioTimer.scheduleOneTimeJob((long) prop.get("id"), "StateFlowScheduledRule", stateFlow.getScheduleTime(), "priority");
+		FacilioTimer.scheduleOneTimeJobWithDelay((long) prop.get("id"), "StateFlowScheduledRule", stateFlow.getScheduleTime(), "priority");
 	}
 
 	private static FacilioModule getTimeLogModule(FacilioModule module) throws Exception {

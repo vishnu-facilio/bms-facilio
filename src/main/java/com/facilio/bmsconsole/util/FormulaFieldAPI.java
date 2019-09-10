@@ -445,7 +445,7 @@ public class FormulaFieldAPI {
 			updateFormulaFieldResourceJob(id, range.getStartTime(), range.getEndTime(), historicalAlarm);
 			FacilioTimer.deleteJob(id, "SingleResourceHistoricalFormulaFieldCalculator");
 		}
-		FacilioTimer.scheduleOneTimeJob(id, "SingleResourceHistoricalFormulaFieldCalculator", 30, "priority");
+		FacilioTimer.scheduleOneTimeJobWithDelay(id, "SingleResourceHistoricalFormulaFieldCalculator", 30, "priority");
 	}
 	
 	private static long addFormulaFieldResourceJob(Map<String, Object> prop) throws Exception {

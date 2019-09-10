@@ -23,7 +23,7 @@ public class SchedulePreOpenWODeleteCommand extends FacilioCommand {
             PreventiveMaintenanceAPI.updateWorkOrderCreationStatus(recordIds, 1);
             for (long recordId: recordIds) {
                 FacilioTimer.deleteJob(recordId, "ScheduleDeletePreOpenJob");
-                FacilioTimer.scheduleOneTimeJob(recordId, "ScheduleDeletePreOpenJob", 1, "priority");
+                FacilioTimer.scheduleOneTimeJobWithDelay(recordId, "ScheduleDeletePreOpenJob", 1, "priority");
             }
         }
 

@@ -18,14 +18,8 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext.ImportStatus;
 import com.facilio.bmsconsole.commands.ImportProcessLogContext;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.EnergyMeterContext;
-import com.facilio.bmsconsole.context.SiteContext;
-import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.bmsconsole.util.DeviceAPI;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsole.util.ImportPointsAPI;
-import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -244,7 +238,7 @@ public class ImportPointsDataAction extends FacilioAction{
 				
 		pointsProcessContext.setStatus(PointsProcessContext.ImportStatus.IN_PROGRESS.getValue());
 		updateImportPoints(pointsProcessContext, ImportStatus.IN_PROGRESS);
-		FacilioTimer.scheduleOneTimeJob(pointsProcessContext.getId(), "importData" , 10, "priority");
+		FacilioTimer.scheduleOneTimeJobWithDelay(pointsProcessContext.getId(), "importData" , 10, "priority");
 		
 		return SUCCESS;
 	}

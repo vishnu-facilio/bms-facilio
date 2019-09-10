@@ -136,7 +136,7 @@ public class SingleRecordRuleAPI extends WorkflowRuleAPI{
 				else {
 					nextExecutionTime = fieldVal ; 
 				}
-			   FacilioTimer.scheduleOneTimeJob(rule.getId(), FacilioConstants.Job.RECORD_SPECIFIC_RULE_JOB_NAME, nextExecutionTime, "priority");
+			   FacilioTimer.scheduleOneTimeJobWithTimestampInSec(rule.getId(), FacilioConstants.Job.RECORD_SPECIFIC_RULE_JOB_NAME, nextExecutionTime, "priority");
 			}
 		}
 		else {

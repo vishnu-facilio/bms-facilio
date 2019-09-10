@@ -6,7 +6,6 @@ package com.facilio.bmsconsole.commands;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -64,7 +63,7 @@ public class ReadingToolsDuplicateRemoveCommand extends FacilioCommand {
 
 			}
 
-			FacilioTimer.scheduleOneTimeJob(readingToolsjobId, FacilioConstants.ContextNames.ADMIN_DUPLICATES_REMOVE, 30,"priority");
+			FacilioTimer.scheduleOneTimeJobWithDelay(readingToolsjobId, FacilioConstants.ContextNames.ADMIN_DUPLICATES_REMOVE, 30,"priority");
 
 		}
 		catch(Exception e) {

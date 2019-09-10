@@ -13,7 +13,6 @@ import java.util.Map;
 import com.facilio.chain.FacilioChain;
 import com.facilio.aws.util.FacilioProperties;
 import com.facilio.util.FacilioUtil;
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -660,7 +659,7 @@ public class ReadingRuleContext extends WorkflowRuleContext implements Cloneable
 			}
 		}
 		else if(this.getTriggerExecutePeriod() > 0) {
-			FacilioTimer.scheduleOneTimeJob(this.getId(), FacilioConstants.Job.SCHEDULED_ALARM_TRIGGER_RULE_JOB_NAME, this.getTriggerExecutePeriod(), FacilioConstants.Job.EXECUTER_NAME_FACILIO);
+			FacilioTimer.scheduleOneTimeJobWithDelay(this.getId(), FacilioConstants.Job.SCHEDULED_ALARM_TRIGGER_RULE_JOB_NAME, this.getTriggerExecutePeriod(), FacilioConstants.Job.EXECUTER_NAME_FACILIO);
 			this.setTerminateExecution(true);
 			return false;
 		}

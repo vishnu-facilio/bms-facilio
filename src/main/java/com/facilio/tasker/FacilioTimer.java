@@ -1,13 +1,10 @@
 package com.facilio.tasker;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 
 import com.facilio.service.FacilioService;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.json.simple.parser.ParseException;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.chain.FacilioContext;
@@ -16,8 +13,6 @@ import com.facilio.tasker.ScheduleInfo.FrequencyType;
 import com.facilio.tasker.config.InstantJobConf;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.tasker.job.JobStore;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 
 public class FacilioTimer {
 	
@@ -108,12 +103,12 @@ public class FacilioTimer {
 		
 	}
 
-	public static void scheduleOneTimeJob(long jobId, String jobName, int delayInSec, String executorName) throws Exception {
+	public static void scheduleOneTimeJobWithDelay(long jobId, String jobName, int delayInSec, String executorName) throws Exception {
 		long nextExecutionTime = (System.currentTimeMillis()/1000)+delayInSec;
-		scheduleOneTimeJob(jobId, jobName, nextExecutionTime, executorName);
+		scheduleOneTimeJobWithTimestampInSec(jobId, jobName, nextExecutionTime, executorName);
 	}
 	
-	public static void scheduleOneTimeJob(long jobId, String jobName, long nextExecutionTime, String executorName) throws Exception {
+	public static void scheduleOneTimeJobWithTimestampInSec(long jobId, String jobName, long nextExecutionTime, String executorName) throws Exception {
 		
 		JobContext jc = new JobContext();
 		jc.setJobId(jobId);

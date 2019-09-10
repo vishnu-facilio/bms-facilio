@@ -47,7 +47,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Level;
-import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -1540,7 +1539,7 @@ public class PreventiveMaintenanceAPI {
 	public static void schedulePrePMReminder(PMReminder reminder, long nextExecutionTime, long triggerId,long resourceId) throws Exception {
 		if(reminder.getTypeEnum() == ReminderType.BEFORE_EXECUTION && nextExecutionTime != -1 && triggerId != -1) {
 			long id = deleteOrAddPreviousBeforeRemindersRel(reminder.getId(), triggerId,resourceId);
-			FacilioTimer.scheduleOneTimeJob(id, "PrePMReminder", nextExecutionTime-reminder.getDuration(), "facilio");
+			FacilioTimer.scheduleOneTimeJobWithTimestampInSec(id, "PrePMReminder", nextExecutionTime-reminder.getDuration(), "facilio");
 		}
 		else {
 			throw new IllegalArgumentException("Invalid parameters for scheduling Before PMReminder job"+reminder.getId());
@@ -1588,7 +1587,7 @@ public class PreventiveMaintenanceAPI {
 	
 	public static void schedulePostPMReminder(PMReminder reminder, long remindTime, long woId) throws SQLException, RuntimeException, Exception {
 		if((reminder.getTypeEnum() == ReminderType.AFTER_EXECUTION || reminder.getTypeEnum() == ReminderType.BEFORE_DUE || reminder.getTypeEnum() == ReminderType.AFTER_DUE) && remindTime != -1 && woId != -1) {
-			FacilioTimer.scheduleOneTimeJob(addPMReminderToWORel(reminder.getId(), woId), "PostPMReminder", remindTime, "facilio");
+			FacilioTimer.scheduleOneTimeJobWithTimestampInSec(addPMReminderToWORel(reminder.getId(), woId), "PostPMReminder", remindTime, "facilio");
 		}
 		else {
 			throw new IllegalArgumentException("Invalid parameters for scheduling After PMReminder job"+reminder.getId());
