@@ -46,6 +46,7 @@ public class ImportItemCommand extends FacilioCommand {
 					itemType = purchasedItem.getItemType();
 					if (purchasedItem.getQuantity() > 0 && (purchasedItem.getSerialNumber() == null || purchasedItem.getSerialNumber().equalsIgnoreCase("null"))) {
 						itemType.setIsRotating(false);
+						itemType.setIsConsumable(true);
 					}
 					else if(purchasedItem.getSerialNumber() != null && !purchasedItem.getSerialNumber().equalsIgnoreCase("null")) {
 						itemType.setIsRotating(true);
