@@ -878,7 +878,17 @@ public class WorkOrderAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	
+	public String getPreventiveMaintenanceReadings() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID, pmId);
+		context.put(FacilioConstants.ContextNames.RESOURCE_ID, resourceId);
+		context.put(FacilioConstants.ContextNames.START_TIME, startTime);
+		context.put(FacilioConstants.ContextNames.END_TIME, endTime);
+		Chain pmReadings = FacilioChainFactory.getPreventiveMaintenanceReadingsChain();
+		pmReadings.execute(context);
+		return SUCCESS;
+
+	}
 	
 	public static List<Long> getAssetExcludeList(List<Long> assetList, Long categoryId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
