@@ -76,7 +76,7 @@ public class AssetPageFactory extends PageFactory {
 		Section tab2Sec3 = page.new Section("unplannedWorkorder");
 		tab2.addSection(tab2Sec3);
 		addUnPlannedWoWidget(tab2Sec3);
-
+		
 		Tab tab3 = page.new Tab("readings");
 		page.addTab(tab3);
 		
@@ -93,7 +93,6 @@ public class AssetPageFactory extends PageFactory {
 				tab3.addSection(tab3Sec2);
 			}
 		}
-		
 		
 		Tab tab4 = page.new Tab("performance");
 		page.addTab(tab4);
@@ -160,13 +159,15 @@ public class AssetPageFactory extends PageFactory {
 		}
 		
 		
-		Tab tab5 = page.new Tab("contracts", "contracts");
-		page.addTab(tab5);
-		
-		Section tab5Sec1 = page.new Section();
-		tab5.addSection(tab5Sec1);
-		
-		addContractWidget(tab5Sec1);
+		if (AccountUtil.isFeatureEnabled(FeatureLicense.CONTRACT)) {
+			Tab tab5 = page.new Tab("contracts", "contracts");
+			page.addTab(tab5);
+			
+			Section tab5Sec1 = page.new Section();
+			tab5.addSection(tab5Sec1);
+			
+			addContractWidget(tab5Sec1);
+		}
 
 		Tab tab9 = page.new Tab("history", "history");
 		page.addTab(tab9);
