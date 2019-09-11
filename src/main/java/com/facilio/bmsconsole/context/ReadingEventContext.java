@@ -5,6 +5,7 @@ import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.apache.commons.chain.Context;
 import org.apache.struts2.json.annotations.JSON;
 
 public class ReadingEventContext extends BaseEventContext {
@@ -39,6 +40,28 @@ public class ReadingEventContext extends BaseEventContext {
 			readingAlarm.setReadingFieldId(readingFieldId);
 		}
 		return baseAlarm;
+	}
+
+	@Override
+	public AlarmOccurrenceContext updateAlarmOccurrenceContext(AlarmOccurrenceContext alarmOccurrence, Context context, boolean add) throws Exception {
+		if (add && alarmOccurrence == null) {
+			alarmOccurrence = new ReadingAlarmOccurrenceContext();
+		}
+
+		ReadingAlarmOccurrenceContext readingOccurrence = (ReadingAlarmOccurrenceContext) alarmOccurrence;
+		if (readingAlarmCategory == null) {
+			if (getResource() != null) {
+				readingAlarmCategory = NewAlarmAPI.getReadingAlarmCategory(getResource().getId());
+			}
+		}
+		readingOccurrence.setReadingAlarmCategory(readingAlarmCategory);
+
+		readingOccurrence.setRule(rule);
+		readingOccurrence.setSubRule(subRule);
+		if (readingFieldId != -1) {
+			readingOccurrence.setReadingFieldId(readingFieldId);
+		}
+		return super.updateAlarmOccurrenceContext(alarmOccurrence, context, add);
 	}
 
 	private ReadingAlarmCategoryContext readingAlarmCategory;

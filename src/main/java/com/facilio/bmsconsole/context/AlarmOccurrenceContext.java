@@ -269,6 +269,7 @@ public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 	public enum Type implements FacilioEnum {
 		NORMAL,
 		ANOMALY,
+		READING,
 		;
 
 		public int getIndex() {

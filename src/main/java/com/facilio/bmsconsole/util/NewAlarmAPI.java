@@ -108,6 +108,8 @@ public class NewAlarmAPI {
 				return AlarmOccurrenceContext.class;
 			case ANOMALY:
 				return MLAlarmOccurenceContext.class;
+			case READING:
+				return ReadingAlarmOccurrenceContext.class;
 			default:
 				throw new IllegalArgumentException("Invalid type");
 		}
@@ -122,6 +124,8 @@ public class NewAlarmAPI {
 				return FacilioConstants.ContextNames.ALARM_OCCURRENCE;
 			case ANOMALY:
 				return FacilioConstants.ContextNames.ANOMALY_ALARM_OCCURRENCE;
+			case READING:
+				return FacilioConstants.ContextNames.READING_ALARM_OCCURRENCE;
 			default:
 				throw new IllegalArgumentException("Invalid type");
 		}
