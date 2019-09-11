@@ -95,6 +95,7 @@ public class FieldFactory {
 			newAlarmsFieldsInclude.add("lastCreatedTime");
 			newAlarmsFieldsInclude.add("lastOccurredTime");
 			newAlarmsFieldsInclude.add("resource");
+//			newAlarmsFieldsInclude.add("rule");
 			newAlarmsFieldsInclude.add("readingAlarmCategory");
 		}
 		public static List<String> workOrderFieldsInclude = new ArrayList<String>();
