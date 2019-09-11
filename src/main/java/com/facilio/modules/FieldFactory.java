@@ -108,6 +108,7 @@ public class FieldFactory {
 			workOrderFieldsInclude.add("category");
 			workOrderFieldsInclude.add("createdBy");
 			workOrderFieldsInclude.add("createdTime");
+			workOrderFieldsInclude.add("totalCost");
 			workOrderFieldsInclude.add("dueDate");
 			workOrderFieldsInclude.add("trigger");
 			workOrderFieldsInclude.add("modifiedTime");
