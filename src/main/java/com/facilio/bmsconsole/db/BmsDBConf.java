@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.Set;
 
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.modules.AggregateOperator;
+import com.facilio.modules.BmsAggregateOperators;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -270,6 +272,16 @@ public class BmsDBConf extends DBConf {
     public void markFilesAsDeleted(List<Long> fileIds) throws Exception {
         FileStore fs = FileStoreFactory.getInstance().getFileStore();
         fs.markAsDeleted(fileIds);
+    }
+
+    @Override
+    public AggregateOperator getAggregateOperator(int value) {
+        return BmsAggregateOperators.getAggregateOperator(value);
+    }
+
+    @Override
+    public AggregateOperator getAggregateOperator(String value) {
+        return BmsAggregateOperators.getAggregateOperator(value);
     }
 
     private static final Map<Long, Map<String, Map<String, SelectQueryCache>>> QUERY_CACHE = new HashMap<>();

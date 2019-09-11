@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.modules.BmsAggregateOperators;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -51,7 +52,7 @@ public class ConstructReportDataForPM extends FacilioCommand {
 		
 		context.put(FacilioConstants.ContextNames.MODULE, pmModule);
 		
-		reportContext.setxAggr(AggregateOperator.DateAggregateOperator.MONTHANDYEAR.getValue());
+		reportContext.setxAggr(BmsAggregateOperators.DateAggregateOperator.MONTHANDYEAR.getValue());
 		reportContext.setxAlias("X");
 		reportContext.setModule(pmModule);
 		reportContext.setType(ReportType.WORKORDER_REPORT);
@@ -128,7 +129,7 @@ public class ConstructReportDataForPM extends FacilioCommand {
 		
 		xAxis.setField(module, tTimeField);
 		yAxis.setField(module, readingField);
-		yAxis.setAggr(AggregateOperator.NumberAggregateOperator.SUM.getValue());
+		yAxis.setAggr(BmsAggregateOperators.NumberAggregateOperator.SUM.getValue());
 		dataPointContext.setxAxis(xAxis);
 		dataPointContext.setyAxis(yAxis);
 		

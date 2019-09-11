@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.facilio.modules.*;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -64,10 +65,6 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.AggregateOperator;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.report.context.ReadingAnalysisContext;
 import com.facilio.report.context.ReadingAnalysisContext.AnalyticsType;
@@ -1073,14 +1070,14 @@ public class V2ReportAction extends FacilioAction {
 		}
 
 		// for ML, aggr value is hourly
-		if (xAggr != null && xAggr != AggregateOperator.DateAggregateOperator.HOURSOFDAYONLY) {
+		if (xAggr != null && xAggr != BmsAggregateOperators.DateAggregateOperator.HOURSOFDAYONLY) {
 			setxAggr(0);
 		}
 		else {
 			for (int i = 0; i < dataPoints.size(); i++) {
 				JSONObject json = (JSONObject) dataPoints.get(i);
 				JSONObject yAxisJson = (JSONObject) json.get("yAxis");
-				yAxisJson.put("aggr", AggregateOperator.NumberAggregateOperator.SUM.getValue());
+				yAxisJson.put("aggr", BmsAggregateOperators.NumberAggregateOperator.SUM.getValue());
 			}
 		}
 		fields =  dataPoints.toJSONString();

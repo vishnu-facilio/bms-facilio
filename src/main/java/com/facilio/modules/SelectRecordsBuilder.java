@@ -263,6 +263,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		return this;
 	}
 
+	@Override
 	public SelectRecordsBuilder<E> aggregate (AggregateOperator aggr, FacilioField field) throws Exception {
 		FacilioField aggrField = aggr.getSelectField(field);
 		if (aggrFields == null) {

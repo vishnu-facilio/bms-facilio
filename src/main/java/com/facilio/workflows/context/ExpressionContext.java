@@ -22,12 +22,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.FacilioModulePredicate;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.AggregateOperator;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.SelectRecordsBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -327,10 +322,10 @@ public class ExpressionContext implements WorkflowExpression {
 				if(aggregateString != null && !aggregateString.isEmpty()) {
 					AggregateOperator expAggregateOpp = getAggregateOpperator();
 					selectBuilder.aggregate(expAggregateOpp, select);
-					if(expAggregateOpp.equals(AggregateOperator.SpecialAggregateOperator.FIRST_VALUE)) {
+					if(expAggregateOpp.equals(BmsAggregateOperators.SpecialAggregateOperator.FIRST_VALUE)) {
 						selectBuilder.limit(1);
 					}
-					else if(expAggregateOpp.equals(AggregateOperator.SpecialAggregateOperator.LAST_VALUE)) {
+					else if(expAggregateOpp.equals(BmsAggregateOperators.SpecialAggregateOperator.LAST_VALUE)) {
 						boolean isLastValueWithTimeRange = false;
 						
 						Map<String, Condition> conditions = criteria.getConditions();
@@ -421,7 +416,7 @@ public class ExpressionContext implements WorkflowExpression {
 				List<FacilioField> fields = new ArrayList<>(modBean.getAllFields(moduleName));
 				fields.add(FieldFactory.getIdField(module));
 				selectBuilder.select(fields);
-				if(getAggregateOpperator() != null && getAggregateOpperator().equals(AggregateOperator.SpecialAggregateOperator.COUNT_RUNNING_TIME)) {
+				if(getAggregateOpperator() != null && getAggregateOpperator().equals(BmsAggregateOperators.SpecialAggregateOperator.COUNT_RUNNING_TIME)) {
 					selectBuilder.orderBy("TTIME");
 				}
 			}
@@ -479,7 +474,7 @@ public class ExpressionContext implements WorkflowExpression {
 						}
 					}
 					if(isPassedData) {
-						if(getAggregateOpperator().equals(AggregateOperator.SpecialAggregateOperator.COUNT_RUNNING_TIME)) {
+						if(getAggregateOpperator().equals(BmsAggregateOperators.SpecialAggregateOperator.COUNT_RUNNING_TIME)) {
 							if(i < props.size()-1) {
 								Long ss = (Long)props.get(i+1).get("ttime") - (Long)prop.get("ttime");
 								ttimeCount = ttimeCount + ss;
@@ -488,10 +483,10 @@ public class ExpressionContext implements WorkflowExpression {
 						passedData.add(prop);
 					}
 				}
-				if(getAggregateOpperator() != null && !getAggregateOpperator().equals(AggregateOperator.SpecialAggregateOperator.COUNT_RUNNING_TIME)) {
+				if(getAggregateOpperator() != null && !getAggregateOpperator().equals(BmsAggregateOperators.SpecialAggregateOperator.COUNT_RUNNING_TIME)) {
 					return getAggregateOpperator().getAggregateResult(passedData, fieldName);
 				}
-				else if (getAggregateOpperator() != null && getAggregateOpperator().equals(AggregateOperator.SpecialAggregateOperator.COUNT_RUNNING_TIME)) {
+				else if (getAggregateOpperator() != null && getAggregateOpperator().equals(BmsAggregateOperators.SpecialAggregateOperator.COUNT_RUNNING_TIME)) {
 					return ttimeCount;
 				}
 				else {

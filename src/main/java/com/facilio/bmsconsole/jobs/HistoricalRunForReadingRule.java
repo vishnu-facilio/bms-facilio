@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.modules.*;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Level;
@@ -41,10 +42,6 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.AggregateOperator;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
@@ -308,7 +305,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 	private void getOtherRDMs(long resourceId, long ttime, Map<String, List<ReadingDataMeta>> rdmMap, Map<String, ReadingDataMeta> rdmCache, Map<String, Integer> lastItr, List<WorkflowFieldContext> fields) {
 		if (rdmMap != null && !rdmMap.isEmpty() && fields != null && !fields.isEmpty()) {
 			for (WorkflowFieldContext field : fields) {
-				if (field.getAggregationEnum() == AggregateOperator.SpecialAggregateOperator.LAST_VALUE) {
+				if (field.getAggregationEnum() == BmsAggregateOperators.SpecialAggregateOperator.LAST_VALUE) {
 					long parentId = field.getResourceId() == -1 ? resourceId : field.getResourceId();
 					String rdmKey = ReadingsAPI.getRDMKey(parentId, field.getField());
 					List<ReadingDataMeta> rdmList = rdmMap.get(ReadingsAPI.getRDMKey(parentId, field.getField()));
@@ -355,7 +352,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		Map<String, List<ReadingDataMeta>> supportingValues = new HashMap<>();
 		for (WorkflowFieldContext field : fields) {
-			if (field.getAggregationEnum() == AggregateOperator.SpecialAggregateOperator.LAST_VALUE) {
+			if (field.getAggregationEnum() == BmsAggregateOperators.SpecialAggregateOperator.LAST_VALUE) {
 				if (resourceId == -1 && field.getResourceId() == -1) {
 					continue;
 				}

@@ -1,30 +1,19 @@
 package com.facilio.bmsconsole.commands;
 
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.math3.util.FastMath;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.MarkedReadingContext;
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.actions.*;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
@@ -32,20 +21,11 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.Operator;
 import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
 import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.AggregateOperator.DateAggregateOperator;
-import com.facilio.modules.AggregateOperator.NumberAggregateOperator;
-import com.facilio.modules.fields.FacilioField;
-import com.facilio.report.context.ReadingAnalysisContext;
+import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
 import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
-import com.facilio.report.context.ReportFieldContext;
-import com.facilio.report.context.ReportYAxisContext;
-import com.facilio.report.context.ReadingAnalysisContext.AnalyticsType;
 import com.facilio.time.DateRange;
 
 

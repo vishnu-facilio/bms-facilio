@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringJoiner;
 
+import com.facilio.modules.BmsAggregateOperators;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
@@ -26,8 +27,8 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.AggregateOperator;
-import com.facilio.modules.AggregateOperator.CommonAggregateOperator;
-import com.facilio.modules.AggregateOperator.SpaceAggregateOperator;
+import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
+import com.facilio.modules.BmsAggregateOperators.SpaceAggregateOperator;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
@@ -152,7 +153,7 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 		}
 		if (aggr != null) {
 			if (report.getxAggrEnum() != null) {
-				if (report.getxAggrEnum() != CommonAggregateOperator.ACTUAL || report.getxAggrEnum() != AggregateOperator.DateAggregateOperator.HOURSOFDAYONLY) {
+				if (report.getxAggrEnum() != CommonAggregateOperator.ACTUAL || report.getxAggrEnum() != BmsAggregateOperators.DateAggregateOperator.HOURSOFDAYONLY) {
 					throw new IllegalArgumentException("Report X Aggr cannot be specified explicitly for these modes");
 				}
 			}

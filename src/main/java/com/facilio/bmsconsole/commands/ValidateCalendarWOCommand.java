@@ -6,7 +6,7 @@ import org.apache.commons.lang3.StringUtils;
 import com.facilio.beans.ModuleBean;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.AggregateOperator.DateAggregateOperator;
+import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
 import com.facilio.modules.fields.FacilioField;
 
 public class ValidateCalendarWOCommand extends FacilioCommand {

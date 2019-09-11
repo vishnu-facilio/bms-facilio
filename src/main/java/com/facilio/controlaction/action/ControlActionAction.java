@@ -3,6 +3,7 @@ package com.facilio.controlaction.action;
 import java.util.Collections;
 import java.util.List;
 
+import com.facilio.modules.*;
 import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 
@@ -24,10 +25,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.controlaction.context.ControlActionCommandContext;
 import com.facilio.controlaction.context.ControlGroupContext;
 import com.facilio.controlaction.util.ControlActionUtil;
-import com.facilio.modules.AggregateOperator;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.ModuleFactory;
 
 public class ControlActionAction extends FacilioAction {
 
@@ -352,11 +349,11 @@ public class ControlActionAction extends FacilioAction {
 			meta.put("operators", operators);
 			
 			JSONObject reportOperators = new JSONObject();
-			reportOperators.put("DateAggregateOperator", AggregateOperator.DateAggregateOperator.values());
-			reportOperators.put("NumberAggregateOperator", AggregateOperator.NumberAggregateOperator.values());
-			reportOperators.put("StringAggregateOperator", AggregateOperator.StringAggregateOperator.values());
-			reportOperators.put("SpaceAggregateOperator", AggregateOperator.SpaceAggregateOperator.values());
-			reportOperators.put("EnergyPurposeAggregateOperator", AggregateOperator.EnergyPurposeAggregateOperator.values());
+			reportOperators.put("DateAggregateOperator", BmsAggregateOperators.DateAggregateOperator.values());
+			reportOperators.put("NumberAggregateOperator", BmsAggregateOperators.NumberAggregateOperator.values());
+			reportOperators.put("StringAggregateOperator", BmsAggregateOperators.StringAggregateOperator.values());
+			reportOperators.put("SpaceAggregateOperator", BmsAggregateOperators.SpaceAggregateOperator.values());
+			reportOperators.put("EnergyPurposeAggregateOperator", BmsAggregateOperators.EnergyPurposeAggregateOperator.values());
 			meta.put("reportOperators", reportOperators);
 			
 			setMeta(meta);

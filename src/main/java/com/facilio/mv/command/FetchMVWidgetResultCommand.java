@@ -2,6 +2,7 @@ package com.facilio.mv.command;
 
 import java.util.regex.Pattern;
 
+import com.facilio.modules.BmsAggregateOperators;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -55,7 +56,7 @@ public class FetchMVWidgetResultCommand extends FacilioCommand {
 			
 			JSONObject yAxisJson = new JSONObject();
 			yAxisJson.put("label", project.getMeter().getName() +" (Adjusted Baseline)");
-			yAxisJson.put("aggr", AggregateOperator.NumberAggregateOperator.SUM.getValue());
+			yAxisJson.put("aggr", BmsAggregateOperators.NumberAggregateOperator.SUM.getValue());
 			yAxisJson.put("fieldId", baseline.getFormulaFieldWithAjustment().getReadingFieldId());
 			dataPointJson.put("yAxis", yAxisJson);
 			
@@ -74,7 +75,7 @@ public class FetchMVWidgetResultCommand extends FacilioCommand {
 			
 			yAxisJson = new JSONObject();
 			yAxisJson.put("label", project.getMeter().getName() +" (Actual)");
-			yAxisJson.put("aggr", AggregateOperator.NumberAggregateOperator.SUM.getValue());
+			yAxisJson.put("aggr", BmsAggregateOperators.NumberAggregateOperator.SUM.getValue());
 			yAxisJson.put("fieldId", energyField.getFieldId());
 			dataPointJson.put("yAxis", yAxisJson);
 			
@@ -102,7 +103,7 @@ public class FetchMVWidgetResultCommand extends FacilioCommand {
 			reportAction.setStartTime(baseline.getStartTime());
 			reportAction.setEndTime(project.getReportingPeriodEndTime());
 			reportAction.setNewFormat(true);
-			reportAction.setxAggr(AggregateOperator.DateAggregateOperator.FULLDATE.getValue());		// need to be handled
+			reportAction.setxAggr(BmsAggregateOperators.DateAggregateOperator.FULLDATE.getValue());		// need to be handled
 			reportAction.setMode(ReadingAnalysisContext.ReportMode.TIME_CONSOLIDATED.getValue());
 			reportAction.setFields(fieldArray.toJSONString());
 			
@@ -140,7 +141,7 @@ public class FetchMVWidgetResultCommand extends FacilioCommand {
 			dataPointJson.put("aliases", aliaseJson);
 			
 			yAxisJson = new JSONObject();
-			yAxisJson.put("aggr", AggregateOperator.NumberAggregateOperator.SUM.getValue());
+			yAxisJson.put("aggr", BmsAggregateOperators.NumberAggregateOperator.SUM.getValue());
 			yAxisJson.put("fieldId", energyField.getFieldId());
 			dataPointJson.put("yAxis", yAxisJson);
 			
@@ -157,7 +158,7 @@ public class FetchMVWidgetResultCommand extends FacilioCommand {
 			dataPointJson.put("aliases", aliaseJson);
 			
 			yAxisJson = new JSONObject();
-			yAxisJson.put("aggr", AggregateOperator.NumberAggregateOperator.SUM.getValue());
+			yAxisJson.put("aggr", BmsAggregateOperators.NumberAggregateOperator.SUM.getValue());
 			yAxisJson.put("fieldId", baseline.getFormulaFieldWithAjustment().getReadingFieldId());
 			dataPointJson.put("yAxis", yAxisJson);
 			
@@ -184,7 +185,7 @@ public class FetchMVWidgetResultCommand extends FacilioCommand {
 			reportAction.setStartTime(project.getReportingPeriodStartTime());
 			reportAction.setEndTime(project.getReportingPeriodEndTime());
 			reportAction.setNewFormat(true);
-			reportAction.setxAggr(AggregateOperator.DateAggregateOperator.FULLDATE.getValue());		// need to be handled
+			reportAction.setxAggr(BmsAggregateOperators.DateAggregateOperator.FULLDATE.getValue());		// need to be handled
 			reportAction.setMode(ReadingAnalysisContext.ReportMode.TIME_CONSOLIDATED.getValue());
 			reportAction.setFields(fieldArray.toJSONString());
 			

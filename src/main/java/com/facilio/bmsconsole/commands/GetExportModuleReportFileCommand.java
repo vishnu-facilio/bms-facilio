@@ -17,7 +17,7 @@ import com.facilio.bmsconsole.util.ExportUtil;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.modules.AggregateOperator;
-import com.facilio.modules.AggregateOperator.DateAggregateOperator;
+import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;

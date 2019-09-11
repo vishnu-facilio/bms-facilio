@@ -12,7 +12,7 @@ import com.facilio.bmsconsole.context.BenchmarkContext;
 import com.facilio.bmsconsole.context.BenchmarkUnit;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.modules.AggregateOperator.DateAggregateOperator;
+import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;

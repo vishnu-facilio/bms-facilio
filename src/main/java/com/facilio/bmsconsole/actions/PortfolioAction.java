@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+import com.facilio.modules.*;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -32,12 +33,6 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.AggregateOperator;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import com.opensymphony.xwork2.ActionSupport;
@@ -208,7 +203,7 @@ public class PortfolioAction extends ActionSupport {
 			
 			SelectRecordsBuilder<ModuleBaseWithCustomFields> select1 = new SelectRecordsBuilder<>();
 			select1.select(selectfields);
-			select1.aggregate(AggregateOperator.NumberAggregateOperator.SUM, energyField);
+			select1.aggregate(BmsAggregateOperators.NumberAggregateOperator.SUM, energyField);
 			select1.module(energyDataModule)
 			.andCondition(CriteriaAPI.getCondition(energyDataFieldMap.get("parentId"), mainMeterList, NumberOperators.EQUALS))
 			.andCondition(CriteriaAPI.getCondition(energyDataFieldMap.get("ttime"), DateOperators.CURRENT_MONTH_UPTO_NOW))
@@ -225,7 +220,7 @@ public class PortfolioAction extends ActionSupport {
 			
 			select1 = new SelectRecordsBuilder<>();
 			select1.select(selectfields);
-			select1.aggregate(AggregateOperator.NumberAggregateOperator.SUM, energyField);
+			select1.aggregate(BmsAggregateOperators.NumberAggregateOperator.SUM, energyField);
 			select1.module(energyDataModule)
 			.andCondition(CriteriaAPI.getCondition(energyDataFieldMap.get("parentId"), mainMeterList, NumberOperators.EQUALS))
 			.andCondition(CriteriaAPI.getCondition(energyDataFieldMap.get("ttime"),prevMonthStartTime+","+previousEndTime ,DateOperators.BETWEEN))
