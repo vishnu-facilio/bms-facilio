@@ -178,7 +178,11 @@ public class TaskContext extends ModuleBaseWithCustomFields {
 	}
 	
 	private Unit readingFieldUnit;
-
+	
+	public Unit getReadingFieldUnitEnum() {
+		return readingFieldUnit;
+	}
+	
 	public int getReadingFieldUnit() {
 		if (readingFieldUnit != null) {
 			return readingFieldUnit.getUnitId();

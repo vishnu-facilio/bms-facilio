@@ -1222,9 +1222,8 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 			case TEXT:
 			case READING:
 				task.setReadingField(modBean.getField(task.getReadingFieldId()));
-				Unit readingFieldUnit = null;
-					
-				if(task.getReadingField() != null && task.getReadingField() instanceof NumberField)
+				Unit readingFieldUnit = null;		
+				if(task.getReadingFieldUnit() == -1 && task.getReadingField() != null && task.getReadingField() instanceof NumberField)
 				{
 					NumberField readingNumberField = (NumberField) task.getReadingField();
 						
@@ -1238,7 +1237,7 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 					
 						else if(readingNumberField.getUnitEnum() != null)
 						{
-							readingFieldUnit = readingNumberField.getUnitEnum();	
+							readingFieldUnit = readingNumberField.getUnitEnum();							
 						}
 						else
 						{
@@ -1247,8 +1246,9 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 						}
 						
 						task.setReadingFieldUnit(readingFieldUnit);
+												
 					}
-				}	
+				}
 					
 				break;
 			case BOOLEAN:
