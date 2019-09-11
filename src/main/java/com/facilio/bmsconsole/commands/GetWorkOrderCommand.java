@@ -18,8 +18,10 @@ import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 
 public class GetWorkOrderCommand extends FacilioCommand {
 
@@ -47,6 +49,12 @@ public class GetWorkOrderCommand extends FacilioCommand {
 																.select(fields)
 																.andCustomWhere(module.getTableName()+".ID = ?", workOrderId)
 																.orderBy("ID");
+			
+			boolean fetchTriggers = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_TRIGGERS, false);
+			if (fetchTriggers) {
+				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+				builder.fetchLookup((LookupField) fieldMap.get("trigger"));
+			}
 			
 			List<WorkOrderContext> workOrders = builder.get();
 			if(workOrders.size() > 0) {

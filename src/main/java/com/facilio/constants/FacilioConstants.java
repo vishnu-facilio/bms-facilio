@@ -6,17 +6,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.facilio.bmsconsole.context.reservation.ExternalAttendeeContext;
-import com.facilio.bmsconsole.context.reservation.InternalAttendeeContext;
-import com.facilio.bmsconsole.context.reservation.ReservationContext;
-import com.facilio.bmsconsole.view.CustomModuleData;
-import com.facilio.controlaction.util.ControlActionUtil;
-
 import org.json.simple.JSONObject;
 
 import com.facilio.activity.ActivityContext;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.reservation.ExternalAttendeeContext;
+import com.facilio.bmsconsole.context.reservation.InternalAttendeeContext;
+import com.facilio.bmsconsole.context.reservation.ReservationContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsole.view.CustomModuleData;
+import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.mv.context.MVAdjustment;
@@ -609,6 +608,7 @@ public class FacilioConstants {
 		public static final String ONLY_POST_REMINDER_TYPE = "onlyPostReminder";
 		public static final String PM_REMINDER_TYPE = "pmReminderType";
 		public static final String PM_TRIGGERS = "pmtriggers";
+		public static final String FETCH_TRIGGERS = "fetchtriggers";
 		public static final String PM_JOB = "pmjob";
 		public static final String PM_RESOURCE_ID = "pmresourceid";
 		public static final String MULTI_PM_RESOURCE_IDS = "multipmresourceIds";

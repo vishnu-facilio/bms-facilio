@@ -6,11 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.SelectRecordsBuilder;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -21,7 +16,6 @@ import com.facilio.accounts.util.PermissionUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.TicketAPI;
-import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
@@ -31,7 +25,13 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
 
 public class GetWorkOrderListCommand extends FacilioCommand {
 
@@ -64,6 +64,7 @@ public class GetWorkOrderListCommand extends FacilioCommand {
 				context.put(FacilioConstants.ContextNames.SUB_VIEW_COUNT, subViewsCount);
 			}
 			fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
+			
 			List<String> selectFields = (List<String>) context.get(FacilioConstants.ContextNames.FETCH_SELECTED_FIELDS);
 			if (CollectionUtils.isNotEmpty(selectFields)) {
 				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -91,7 +92,7 @@ public class GetWorkOrderListCommand extends FacilioCommand {
 				.beanClass(WorkOrderContext.class)
 				.select(fields)
 				.maxLevel(0);
-
+		
 		JSONObject filters = (JSONObject) context.get(FacilioConstants.ContextNames.FILTERS);
 		Criteria filterCriteria = (Criteria) context.get(FacilioConstants.ContextNames.FILTER_CRITERIA);
 		Boolean includeParentCriteria = (Boolean) context.get(FacilioConstants.ContextNames.INCLUDE_PARENT_CRITERIA);
@@ -180,6 +181,11 @@ public class GetWorkOrderListCommand extends FacilioCommand {
 					throw new IllegalArgumentException("createdTime filter is mandatory");
 				}
 			}
+			boolean fetchTriggers = (boolean) context.getOrDefault(FacilioConstants.ContextNames.FETCH_TRIGGERS, false);
+			if (fetchTriggers) {
+				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+				selectBuilder.fetchLookup((LookupField) fieldMap.get("trigger"));
+			}
 		}
 		 workOrders = selectBuilder.get();
 	}
@@ -191,7 +197,6 @@ public class GetWorkOrderListCommand extends FacilioCommand {
 		}
 		else {
 			TicketAPI.loadWorkOrderLookups(workOrders);
-			WorkOrderAPI.setPrerequisiteApprover(workOrders);
 			context.put(FacilioConstants.ContextNames.WORK_ORDER_LIST, workOrders);
 		}		
 		return false;
