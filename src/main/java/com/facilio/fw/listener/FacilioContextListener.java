@@ -10,9 +10,7 @@ import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Properties;
-import java.util.Timer;
+import java.util.*;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -168,18 +166,18 @@ public class FacilioContextListener implements ServletContextListener {
 
 	private void initializeDB() {
 		if (FacilioProperties.isDevelopment()) {
-			createTables("conf/db/" + DBConf.getInstance().getDBName() + "/PublicDB.sql");
-			createTables("conf/db/" + DBConf.getInstance().getDBName() + "/AppDB.sql");
+			createTables("conf/db/" + DBConf.getInstance().getDBName() + "/PublicDB.sql", null);
+			createTables("conf/db/" + DBConf.getInstance().getDBName() + "/AppDB.sql", Collections.singletonMap("defaultAppDB", FacilioProperties.getDefaultAppDB()));
 		}
 //		createTables("conf/leedconsole.sql");
 		//createTables("conf/db/" + DBConf.getInstance().getDBName() + "/eventconsole.sql");
 	}
 
-	private void createTables(String fileName) {
+	private void createTables(String fileName, Map<String, String> paramValues) {
 		URL url = SQLScriptRunner.class.getClassLoader().getResource(fileName);
 		if(url != null) {
 			File file = new File(url.getFile());
-			SQLScriptRunner scriptRunner = new SQLScriptRunner(file, true, null, DBUtil.getDBSQLScriptRunnerMode());
+			SQLScriptRunner scriptRunner = new SQLScriptRunner(file, true, paramValues, DBUtil.getDBSQLScriptRunnerMode());
 			try {
 				scriptRunner.runScript();
 			} catch (Exception e) {

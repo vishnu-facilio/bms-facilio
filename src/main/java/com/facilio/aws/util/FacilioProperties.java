@@ -8,6 +8,7 @@ import com.amazonaws.services.secretsmanager.model.GetSecretValueRequest;
 import com.amazonaws.services.secretsmanager.model.GetSecretValueResult;
 import com.facilio.agent.AgentKeys;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -54,6 +55,7 @@ public class FacilioProperties {
     private static String anomalyPredictAPIURL;
     private static String iotEndPoint;
     private static String defaultDB;
+    private static String defaultAppDB;
     private static String defaultDataSource;
     private static String messageQueue;
     private static boolean isOnpremise = false;
@@ -104,6 +106,7 @@ public class FacilioProperties {
                 messageReprocessInterval = Long.parseLong(PROPERTIES.getProperty(AgentKeys.MESSAGE_REPROCESS_INTERVAL,"300000"));
                 defaultDataSource = PROPERTIES.getProperty("db.default.ds");
                 defaultDB = PROPERTIES.getProperty("db.default.db");
+                defaultAppDB = PROPERTIES.getProperty("db.default.app.db");
                 messageQueue = PROPERTIES.getProperty("messageQueue");
                 domain = PROPERTIES.getProperty("domain");
                 
@@ -240,6 +243,13 @@ public class FacilioProperties {
 
     public static String getDefaultDB() {
         return defaultDB;
+    }
+
+    public static String getDefaultAppDB() {
+        if (StringUtils.isEmpty(defaultAppDB)) {
+            return getDefaultDB();
+        }
+        return defaultAppDB;
     }
 
     public static String getMessageQueue() {

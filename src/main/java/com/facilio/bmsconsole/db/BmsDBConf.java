@@ -113,6 +113,11 @@ public class BmsDBConf extends DBConf {
     }
 
     @Override
+    public String getDefaultAppDB() {
+        return FacilioProperties.getDefaultAppDB();
+    }
+
+    @Override
     public Number convertToDisplayUnit(Object val, NumberField field) throws Exception {
         return UnitsUtil.convertToDisplayUnit(val, field);
     }
