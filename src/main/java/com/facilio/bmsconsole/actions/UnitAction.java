@@ -26,7 +26,6 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.unitconversion.Metric;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
-import com.opensymphony.xwork2.ActionSupport;
 
 public class UnitAction extends FacilioAction {
 
