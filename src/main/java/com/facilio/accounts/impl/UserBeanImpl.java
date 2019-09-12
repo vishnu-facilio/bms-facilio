@@ -359,86 +359,16 @@ public class UserBeanImpl implements UserBean {
 
 	@Override
 	public void addUserMobileSetting(UserMobileSetting userMobileSetting) throws Exception {
-
-		if (userMobileSetting.getUserId() == -1) {
-			userMobileSetting.setUserId(getUid(userMobileSetting.getEmail()));
-		}
-		if (userMobileSetting.getCreatedTime() == -1) {
-			userMobileSetting.setCreatedTime(System.currentTimeMillis());
-		}
 		userMobileSetting.setFromPortal(AccountUtil.getCurrentAccount().getUser().isPortalUser());
-
-		// Fetching and adding only if it's not present already
-		FacilioModule module = AccountConstants.getUserMobileSettingModule();
-		List<FacilioField> fields = AccountConstants.getUserMobileSettingFields();
-
-		UserMobileSetting currentSetting = getUserMobileSetting(userMobileSetting.getUserId(),
-				userMobileSetting.getMobileInstanceId(), module, fields);
-		if (currentSetting == null) {
-			addUserMobileSetting(userMobileSetting, module, fields);
-		} else {
-			userMobileSetting.setUserMobileSettingId(currentSetting.getUserMobileSettingId());
-			userMobileSetting.setUserId(-1);
-			userMobileSetting.setMobileInstanceId(null);
-			updateUserMobileSetting(userMobileSetting, module, fields);
-		}
+		IAMUserUtil.addUserMobileSettings(userMobileSetting);
 	}
 
-	private UserMobileSetting getUserMobileSetting(long userId, String instance, FacilioModule module,
-			List<FacilioField> fields) throws Exception {
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		FacilioField userIdField = fieldMap.get("userId");
-		FacilioField instanceField = fieldMap.get("mobileInstanceId");
-		boolean isPortal = AccountUtil.getCurrentAccount().getUser().isPortalUser();
-
-		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().table(module.getTableName())
-				.select(fields)
-				.andCondition(CriteriaAPI.getCondition(userIdField, String.valueOf(userId), PickListOperators.IS))
-				.andCondition(CriteriaAPI.getCondition(instanceField, instance, StringOperators.IS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("fromPortal"), String.valueOf(isPortal),
-						BooleanOperators.IS));
-		List<Map<String, Object>> props = selectBuilder.get();
-		if (props != null && !props.isEmpty()) {
-			return FieldUtil.getAsBeanFromMap(props.get(0), UserMobileSetting.class);
-		}
-		return null;
-	}
-
-	private long addUserMobileSetting(UserMobileSetting userMobileSetting, FacilioModule module,
-			List<FacilioField> fields) throws Exception {
-		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder().table(module.getTableName())
-				.fields(fields);
-
-		return insertBuilder.insert(FieldUtil.getAsProperties(userMobileSetting));
-	}
-
-	private void updateUserMobileSetting(UserMobileSetting userMobileSetting, FacilioModule module,
-			List<FacilioField> fields) throws Exception {
-		FacilioField idField = FieldFactory.getAsMap(fields).get("userMobileSettingId");
-		long id = userMobileSetting.getUserMobileSettingId();
-		userMobileSetting.setUserMobileSettingId(-1);
-
-		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder().table(module.getTableName())
-				.fields(fields)
-				.andCondition(CriteriaAPI.getCondition(idField, String.valueOf(id), PickListOperators.IS));
-		updateBuilder.update(FieldUtil.getAsProperties(userMobileSetting));
-	}
-
+	
 	@Override
 	public void removeUserMobileSetting(String mobileInstanceId) throws Exception {
-
 		boolean isPortal = AccountUtil.getCurrentAccount().getUser().isPortalUser();
+		IAMUserUtil.removeUserMobileSettings(mobileInstanceId, isPortal);
 
-		List<FacilioField> fields = AccountConstants.getUserMobileSettingFields();
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
-		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
-				.table(AccountConstants.getUserMobileSettingModule().getTableName())
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("mobileInstanceId"), mobileInstanceId,
-						StringOperators.IS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("fromPortal"), String.valueOf(isPortal),
-						BooleanOperators.IS));
-
-		builder.delete();
 	}
 
 	@Override
@@ -600,7 +530,7 @@ public class UserBeanImpl implements UserBean {
 	}
 
 	@Override
-	public List<User> getUsers(Criteria criteria, boolean fetchDeleted, Collection<Long>... ouids) throws Exception {
+	public List<User> getUsers(Criteria criteria, boolean fetchOnlyActiveUsers, boolean fetchDeleted, Collection<Long>... ouids) throws Exception {
 
 		List<Map<String, Object>> props = fetchORGUserProps(criteria, AccountUtil.getCurrentOrg().getOrgId(), ouids);
 		if (props != null && !props.isEmpty()) {
@@ -608,6 +538,12 @@ public class UserBeanImpl implements UserBean {
 			UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId(), fetchDeleted);
 			for (Map<String, Object> prop : props) {
 				User user = createUserFromProps(prop, true, true, false);
+				if(fetchOnlyActiveUsers) {
+					if(user.isActive()) {
+						users.add(user);
+					}
+					continue;
+				}
 				users.add(user);
 			}
 			return users;

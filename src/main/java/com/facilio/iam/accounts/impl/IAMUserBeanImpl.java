@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -32,7 +31,8 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
-import com.facilio.aws.util.AwsUtil;
+import com.facilio.accounts.dto.UserMobileSetting;
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.bmsconsole.util.EncryptionUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -42,7 +42,9 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.db.transaction.FacilioTransactionManager;
 import com.facilio.fw.LRUCache;
@@ -51,13 +53,12 @@ import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
 import com.facilio.iam.accounts.util.IAMAccountConstants;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
-import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.iam.accounts.util.IAMUtil;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.service.FacilioService;
 
 ;
 
@@ -1286,6 +1287,116 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		else {
 			return false;
 		}
+	}
+
+
+	@Override
+	public boolean addUserMobileSetting(UserMobileSetting userMobileSetting) throws Exception {
+		// TODO Auto-generated method stub
+		if (userMobileSetting.getUserId() == -1) {
+			userMobileSetting.setUserId(getFacilioUser(userMobileSetting.getEmail()).getUid());
+		}
+		if (userMobileSetting.getCreatedTime() == -1) {
+			userMobileSetting.setCreatedTime(System.currentTimeMillis());
+		}
+		
+		// Fetching and adding only if it's not present already
+		FacilioModule module = IAMAccountConstants.getUserMobileSettingModule();
+		List<FacilioField> fields = IAMAccountConstants.getUserMobileSettingFields();
+
+		UserMobileSetting currentSetting = getUserMobileSetting(userMobileSetting.getUserId(),
+				userMobileSetting.getMobileInstanceId(), module, fields, userMobileSetting.getFromPortal());
+		if (currentSetting == null) {
+			long id = addUserMobileSetting(userMobileSetting, module, fields);
+			if(id > 0) {
+				return true;
+			}
+		} else {
+			userMobileSetting.setUserMobileSettingId(currentSetting.getUserMobileSettingId());
+			userMobileSetting.setUserId(-1);
+			userMobileSetting.setMobileInstanceId(null);
+			if(updateUserMobileSetting(userMobileSetting, module, fields) > 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private long addUserMobileSetting(UserMobileSetting userMobileSetting, FacilioModule module,
+			List<FacilioField> fields) throws Exception {
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder().table(module.getTableName())
+				.fields(fields);
+
+		return insertBuilder.insert(FieldUtil.getAsProperties(userMobileSetting));
+	}
+
+	private int updateUserMobileSetting(UserMobileSetting userMobileSetting, FacilioModule module,
+			List<FacilioField> fields) throws Exception {
+		FacilioField idField = FieldFactory.getAsMap(fields).get("userMobileSettingId");
+		long id = userMobileSetting.getUserMobileSettingId();
+		userMobileSetting.setUserMobileSettingId(-1);
+
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder().table(module.getTableName())
+				.fields(fields)
+				.andCondition(CriteriaAPI.getCondition(idField, String.valueOf(id), PickListOperators.IS));
+		return updateBuilder.update(FieldUtil.getAsProperties(userMobileSetting));
+	}
+	
+	private UserMobileSetting getUserMobileSetting(long userId, String instance, FacilioModule module,
+			List<FacilioField> fields, boolean isPortal) throws Exception {
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField userIdField = fieldMap.get("userId");
+		FacilioField instanceField = fieldMap.get("mobileInstanceId");
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().table(module.getTableName())
+				.select(fields)
+				.andCondition(CriteriaAPI.getCondition(userIdField, String.valueOf(userId), PickListOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(instanceField, instance, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("fromPortal"), String.valueOf(isPortal),
+						BooleanOperators.IS));
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			return FieldUtil.getAsBeanFromMap(props.get(0), UserMobileSetting.class);
+		}
+		return null;
+	}
+
+
+	@Override
+	public boolean removeUserMobileSetting(String mobileInstanceId, boolean isPortal) throws Exception {
+		// TODO Auto-generated method stub
+		
+		List<FacilioField> fields = IAMAccountConstants.getUserMobileSettingFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(IAMAccountConstants.getUserMobileSettingModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("mobileInstanceId"), mobileInstanceId,
+						StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("fromPortal"), String.valueOf(isPortal),
+						BooleanOperators.IS));
+
+		if(builder.delete() > 0) {
+			return true;
+		}
+		return false;
+	}
+
+
+	@Override
+	public List<Map<String, Object>> getMobileInstanceIds(List<Long> uIds) throws Exception {
+		// TODO Auto-generated method stub
+		List<FacilioField> fields = new ArrayList<>();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(IAMAccountConstants.getUserMobileSettingFields());
+		
+		fields.add(fieldMap.get("mobileInstanceId"));
+		fields.add(fieldMap.get("fromPortal"));
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields).table("User_Mobile_Setting")
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("userId"), uIds, NumberOperators.EQUALS))
+				.orderBy("USER_MOBILE_SETTING_ID");
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		return props;
 	}
 	
 	

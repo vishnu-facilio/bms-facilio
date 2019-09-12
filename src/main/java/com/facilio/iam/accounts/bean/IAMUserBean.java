@@ -6,6 +6,7 @@ import java.util.Map;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.dto.UserMobileSetting;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.modules.fields.FacilioField;
@@ -93,5 +94,12 @@ public interface IAMUserBean {
 	public IAMAccount verifyFacilioToken(String idToken, boolean overrideSessionCheck, String orgDomain, String portalDomain) throws Exception;
 	
 	public boolean verifyUser(long userId) throws Exception;
+	
+	public boolean addUserMobileSetting(UserMobileSetting userMobileSetting) throws Exception;
+	
+	public boolean removeUserMobileSetting(String mobileInstanceId, boolean isPortal) throws Exception;
+	
+	public List<Map<String, Object>> getMobileInstanceIds(List<Long> uIds) throws Exception;
+	
 
 }

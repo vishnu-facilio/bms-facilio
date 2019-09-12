@@ -585,14 +585,6 @@ public class AccountConstants {
 //		return userModule;
 //	}
 
-	public static FacilioModule getUserMobileSettingModule() {
-		FacilioModule userModule = new FacilioModule();
-		userModule.setName("userMobileSetting");
-		userModule.setDisplayName("User Mobile Setting");
-		userModule.setTableName("User_Mobile_Setting");
-
-		return userModule;
-	}
 
 	public static FacilioModule getAppOrgUserModule() {
 		FacilioModule orgModule = new FacilioModule();
@@ -838,38 +830,7 @@ public class AccountConstants {
 		return fields;
 	}
 
-	public static List<FacilioField> getUserMobileSettingFields() {
-		FacilioModule module = getUserMobileSettingModule();
-		List<FacilioField> fields = new ArrayList<>();
-
-		FacilioField uid = new FacilioField();
-		uid.setName("userId");
-		uid.setDataType(FieldType.NUMBER);
-		uid.setColumnName("USERID");
-		uid.setModule(module);
-		fields.add(uid);
-
-		FacilioField userMobileSettingId = new FacilioField();
-		userMobileSettingId.setName("userMobileSettingId");
-		userMobileSettingId.setDataType(FieldType.ID);
-		userMobileSettingId.setColumnName("USER_MOBILE_SETTING_ID");
-		userMobileSettingId.setModule(module);
-		fields.add(userMobileSettingId);
-
-		FacilioField mobileInstanceId = new FacilioField();
-		mobileInstanceId.setName("mobileInstanceId");
-		mobileInstanceId.setDataType(FieldType.STRING);
-		mobileInstanceId.setColumnName("MOBILE_INSTANCE_ID");
-		mobileInstanceId.setModule(module);
-		fields.add(mobileInstanceId);
-
-		fields.add(FieldFactory.getField("createdTime", "CREATED_TIME", module, FieldType.DATE_TIME));
-
-		fields.add(FieldFactory.getField("fromPortal", "IS_FROM_PORTAL", module, FieldType.BOOLEAN));
-
-		return fields;
-	}
-
+	
 	public static List<FacilioField> getAppOrgUserFields() {
 		FacilioModule module = getAppOrgUserModule();
 		module.setExtendModule(ModuleFactory.getResourceModule());

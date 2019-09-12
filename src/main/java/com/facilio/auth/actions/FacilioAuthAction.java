@@ -312,7 +312,7 @@ public class FacilioAuthAction extends FacilioAction {
 				ipAddress = (ipAddress == null || "".equals(ipAddress.trim())) ? request.getRemoteAddr() : ipAddress;
                 String userType = "web";
 				String deviceType = request.getHeader("X-Device-Type");
-				if (StringUtils.isNullOrEmpty(deviceType)
+				if (!StringUtils.isNullOrEmpty(deviceType)
 						&& ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType))) {
 					userType = "mobile";
 				}

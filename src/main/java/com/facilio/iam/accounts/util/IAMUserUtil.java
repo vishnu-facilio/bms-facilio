@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.dto.UserMobileSetting;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
@@ -196,7 +197,18 @@ public class IAMUserUtil {
 	public static boolean rollbackUserAdded(IAMUser user, long orgId) throws Exception {
 		user.setOrgId(orgId);
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().deleteUserv2(user));
+	}
 	
+	public static boolean addUserMobileSettings(UserMobileSetting userMobileSetting) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().addUserMobileSetting(userMobileSetting));
+	}
+	
+	public static boolean removeUserMobileSettings(String mobileInstanceId, boolean isFromPortal) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().removeUserMobileSetting(mobileInstanceId, isFromPortal));
+	}
+	
+	public static List<Map<String, Object>> getUserMobileSettingInstanceIds(List<Long> uIds) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getUserBean().getMobileInstanceIds(uIds));
 	}
 	
 }
