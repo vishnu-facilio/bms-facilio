@@ -31,6 +31,9 @@
 			<!-- <param name="moduleName">setup</param>
 			<param name="permission">USER_MANAGEMENT</param> -->
 		</action>
+		<action name="logout" class="com.facilio.bmsconsole.actions.LoginAction" method="apiLogout">
+		</action>
+		
 	</package>
 	
 	<package name="pdfApiV2" namespace="/api/v2/integ/pdf" extends="attachmentPreviewApi">
