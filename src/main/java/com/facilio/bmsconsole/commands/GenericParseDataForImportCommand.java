@@ -187,7 +187,7 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 						throw new ImportAssetMandatoryFieldsException(row_no,columns, new Exception());
 					}
 					else {
-						uniqueString.append(colVal.get(name) + "__" + siteId);
+						uniqueString.append(colVal.get(name));
 					}
 				}
 				else if(requiredFields.size() != 0) {
@@ -212,7 +212,7 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 					
 					if(requiredFields.size() == 0) {
 						List<Integer> keys= new ArrayList(groupedContext.keySet());
-						Integer lastKey = new Integer(0);
+						Integer lastKey = 0;
 						if(keys.size() == 0) {
 							lastKey = 1;
 						}

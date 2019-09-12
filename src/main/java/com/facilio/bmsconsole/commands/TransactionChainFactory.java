@@ -707,6 +707,7 @@ public class TransactionChainFactory {
 		public static FacilioChain parseImportData() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new GenericParseDataForImportCommand());
+			c.addCommand(new SpecificValidationCheckForImportCommand());
 			c.addCommand(new InsertImportDataIntoLogCommand());
 			return c;
 		}

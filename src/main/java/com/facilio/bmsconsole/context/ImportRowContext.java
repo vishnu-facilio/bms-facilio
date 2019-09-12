@@ -10,6 +10,14 @@ public class ImportRowContext {
 	
 	HashMap<String, Object> colVal = new HashMap<String, Object>();
 	Integer error_code;
+	Integer error_resolved;
+	
+	public Integer getError_resolved() {
+		return error_resolved;
+	}
+	public void setError_resolved(Integer error_resolved) {
+		this.error_resolved = error_resolved;
+	}
 
 	public Integer getError_code() {
 		return error_code;

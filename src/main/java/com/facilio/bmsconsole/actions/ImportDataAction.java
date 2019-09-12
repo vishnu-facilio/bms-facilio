@@ -252,11 +252,12 @@ public class ImportDataAction extends FacilioAction {
 	
 	public String fetchDataForValidation() throws Exception{
 		List<FacilioField> fields = FieldFactory.getImportProcessLogFields();
+		String errorConditions = ImportProcessContext.ImportLogErrorStatus.UNRESOLVED.getStringValue() + "," + ImportProcessContext.ImportLogErrorStatus.FOUND_IN_DB.getStringValue();
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 				.select(FieldFactory.getImportProcessLogFields())
 				.table(ModuleFactory.getImportProcessLogModule().getTableName())
 				.andCondition(CriteriaAPI.getCondition("IMPORTID","importId", importProcessContext.getId().toString(), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition("ERROR_RESOLVED", "error_resolved", ImportProcessContext.ImportLogErrorStatus.UNRESOLVED.getStringValue(), NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition("ERROR_RESOLVED", "error_resolved", errorConditions, NumberOperators.EQUALS));
 		
 		records = selectRecordBuilder.get();
 		if(importProcessContext.importMode == ImportProcessContext.ImportMode.NORMAL.getValue()) {
