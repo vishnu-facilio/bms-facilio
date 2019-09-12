@@ -28,6 +28,7 @@ public class ValidatePrerequisiteStatusForTaskUpdateCommnad extends FacilioComma
 				List<TaskContext> oldTasks = getTasks(recordIds);
 				long parentId = oldTasks.get(0).getParentTicketId();
 			    WorkOrderContext wo = WorkOrderAPI.getWorkOrder(parentId);
+			    context.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
 				if((AllowNegativePreRequisite.YES_WITH_APPROVAL.equals(wo.getAllowNegativePreRequisiteEnum()) && !PreRequisiteStatus.COMPLETED.equals(wo.getPreRequestStatusEnum()))
 						||(AllowNegativePreRequisite.YES_WITH_WARNING.equals(wo.getAllowNegativePreRequisiteEnum()) && !(PreRequisiteStatus.COMPLETED_WITH_NEGATIVE.equals(wo.getPreRequestStatusEnum()) || PreRequisiteStatus.COMPLETED.equals(wo.getPreRequestStatusEnum()) ) )){
 					throw new IllegalArgumentException("Prerequisite has to be completed before task updation");

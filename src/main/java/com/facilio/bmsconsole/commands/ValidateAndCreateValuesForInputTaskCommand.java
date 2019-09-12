@@ -1,11 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.apache.commons.chain.Context;
-
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -15,6 +9,7 @@ import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.AttachmentsAPI;
+import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -27,6 +22,11 @@ import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.time.DateTimeUtil;
+import org.apache.commons.chain.Context;
+
+import java.util.List;
+import java.util.Map;
 
 
 
@@ -66,6 +66,7 @@ public class ValidateAndCreateValuesForInputTaskCommand extends FacilioCommand {
 							switch(completeRecord.getInputTypeEnum()) {
 								case READING:
 									if (completeRecord.getReadingFieldId() != -1) {
+										validateReading(context, task);
 										addReading(task, completeRecord, completeRecord.getReadingField(), context, false);
 									}
 									break;
@@ -117,7 +118,30 @@ public class ValidateAndCreateValuesForInputTaskCommand extends FacilioCommand {
 //		}
 		return false;
 	}
-	
+
+	private void validateReading(Context context, TaskContext task) throws Exception {
+		WorkOrderContext workOrderContext = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
+		if (workOrderContext == null) {
+			return;
+		}
+
+		long nextExec = PreventiveMaintenanceAPI.getNextExecutionTimeForWorkOrder(workOrderContext.getId());
+
+		if (nextExec == -1L) {
+			return;
+		}
+
+		long inputTime = task.getInputTime();
+		long createdTime = workOrderContext.getCreatedTime();
+
+		String createdTimeFmt = DateTimeUtil.getFormattedTime(createdTime, "MMM dd, h:mm a");
+		String nextExecFmt = DateTimeUtil.getFormattedTime(nextExec, "MMM dd, h:mm a");
+
+		if (inputTime < createdTime || inputTime >= nextExec) {
+			throw new IllegalArgumentException("Remember to choose a time between " + createdTimeFmt + " and " + nextExecFmt);
+		}
+	}
+
 	private void addReading(TaskContext newTask, TaskContext oldTask, FacilioField field, Context context, boolean isPMReading) throws Exception {
 		
 		long pmId = -1;
