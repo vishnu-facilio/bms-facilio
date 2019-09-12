@@ -281,6 +281,8 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
 
             context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pms.get(0));
             execute(context);
+        } else {
+            PreventiveMaintenanceAPI.updateWorkOrderCreationStatus(recordIds, 0);
         }
     }
 }
