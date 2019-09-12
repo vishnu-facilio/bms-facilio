@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
-import com.twilio.taskrouter.WorkflowRule;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.accounts.dto.Group;
@@ -155,6 +154,9 @@ public class LookupSpecialTypeUtil {
 		else if(FacilioConstants.Workflow.WORKFLOW.equals(specialType)) {
 			return WorkflowUtil.getWorkflowContext(id);
 		}
+		else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
+			return WorkflowRuleAPI.getWorkflowRule(id);
+		}
 		else if("trigger".equals(specialType)) {
 			Map<Long, List<PMTriggerContext>> pmMap = PreventiveMaintenanceAPI.getPMTriggers(Arrays.asList(id));
 			if (pmMap != null && !pmMap.isEmpty()) {
@@ -296,11 +298,8 @@ public class LookupSpecialTypeUtil {
 		else if ("trigger".equals(specialType)) {
 			return PreventiveMaintenanceAPI.getPMTriggersByTriggerIds(ids);
 		}
-		else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
-			if (!(ids instanceof List)) {
-				ids = new ArrayList<>(ids);
-			}
-			return WorkflowRuleAPI.getWorkflowRules((List<Long>) ids, false, false);
+		else if ((FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType))) {
+			return WorkflowRuleAPI.getWorkflowRules((List<Long>) ids);
 		}
 		return null;
 	}
