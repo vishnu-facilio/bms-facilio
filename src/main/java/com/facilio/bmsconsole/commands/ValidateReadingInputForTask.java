@@ -1,18 +1,21 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Map;
+import java.util.List;
 
 import org.apache.commons.chain.Context;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TaskErrorContext;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.NumberField;
+import com.facilio.unitconversion.Unit;
+import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.util.FacilioUtil;
 
 public class ValidateReadingInputForTask extends FacilioCommand {
@@ -22,6 +25,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		
 		
 		TaskContext currentTask = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
+		List<TaskErrorContext> errors = new ArrayList<>();
 		if(currentTask != null) {
 			TaskContext taskContext = TicketAPI.getTaskMap(Collections.singletonList(currentTask.getId())).get(currentTask.getId());
 			
@@ -31,27 +35,46 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 					
 					switch(taskContext.getReadingField().getDataTypeEnum()) {
 					case NUMBER:
+					case DECIMAL:
 						
 						ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(taskContext.getResource().getId(), taskContext.getReadingField());
 						NumberField numberField = (NumberField) taskContext.getReadingField();
 						
+						Double currentValue = FacilioUtil.parseDouble(currentTask.getInputValue());
+						
+						Double currentValueInSiUnit = currentValue;
+						if(taskContext.getReadingFieldUnit() > 0) {
+							currentValueInSiUnit = UnitsUtil.convertToSiUnit(currentValue, Unit.valueOf(taskContext.getReadingFieldUnit()));
+						}
+						else if (rdm.getUnit() > 0) {
+							currentValueInSiUnit = UnitsUtil.convertToSiUnit(currentValue, Unit.valueOf(rdm.getUnit()));
+						}
+						
 						if(numberField.isCounterField()) {
-							checkIncremental(currentTask,numberField,rdm);		// to check whether the value is incemental
-							checkValueCorrectness(currentTask,numberField,rdm);
+							TaskErrorContext taskError = checkIncremental(currentTask,numberField,rdm,currentValueInSiUnit);
+							if(taskError!= null) {
+								errors.add(taskError);
+							}
+//							checkValueCorrectness(currentTask,numberField,rdm,currentValueInSiUnit);
 						}
-						else {
-							checkValueCorrectness(currentTask,numberField,rdm);
-						}
+//						else {
+//							checkValueCorrectness(currentTask,numberField,rdm,currentValueInSiUnit);
+//						}
 					}
 				}
 				break;
 				
 			}
 		}
+		
+		if(!errors.isEmpty()) {
+			context.put(FacilioConstants.ContextNames.TASK_ERRORS, errors);
+			return true;
+		}
 		return false;
 	}
 
-	private String checkValueCorrectness(TaskContext currentTask, NumberField numberField, ReadingDataMeta rdm) {
+	private String checkValueCorrectness(TaskContext currentTask, NumberField numberField, ReadingDataMeta rdm, Double currentValueInSiUnit) {
 		
 		double value = FacilioUtil.parseDouble(rdm.getValue());
 		double currentvalue = FacilioUtil.parseDouble(currentTask.getInputValue());
@@ -67,13 +90,45 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		return "";
 	}
 
-	private String checkIncremental(TaskContext currentTask, NumberField numberField, ReadingDataMeta rdm) {
+	private TaskErrorContext checkIncremental(TaskContext currentTask, NumberField numberField, ReadingDataMeta rdm, Double currentValueInSiUnit) throws Exception {
 		
-		// if not incremental
-		// case 1. unit error
-		// case 2. mannual error
-//		/case 3. meter reset
-		return "";
+		double previousValue = FacilioUtil.parseDouble(rdm.getValue());
+		if(currentValueInSiUnit < previousValue) {
+			TaskErrorContext error = new TaskErrorContext();
+			error.setMode(TaskErrorContext.Mode.ERROR.getValue());
+			error.setFailType(TaskErrorContext.FailType.NON_INCREMENTAL_VALUE.getValue());
+			error.setMessage("Entered value is less than previous value");
+			
+			String previousValueString = previousValue+"";
+			if(numberField.getMetric() > 0) {
+				previousValue = (double) UnitsUtil.convertToDisplayUnit(previousValue, numberField);
+				previousValueString  = previousValue + " " + UnitsUtil.getDisplayUnit(numberField).getSymbol();
+			} 
+			
+			error.setPreviousValue(previousValueString);
+			
+			String currentValueString = currentTask.getInputValue()+"";
+			
+			Unit unit = getCurrentInputUnit(rdm, currentTask, numberField);
+			
+			if(unit != null) {
+				currentValueString = currentValueString + " "+unit.getSymbol();
+			}
+			
+			error.setCurrentValue(currentValueString);
+			
+			return error;
+		}
+		return null;
 	}
-
+	
+	Unit getCurrentInputUnit(ReadingDataMeta rdm,TaskContext currentTask,NumberField numberField) throws Exception {
+		if(currentTask.getReadingFieldUnit() > 0) {
+			return Unit.valueOf(currentTask.getReadingFieldUnit());
+		}
+		else if(rdm.getUnit() > 0) {
+			return Unit.valueOf(rdm.getUnit());
+		}
+		return UnitsUtil.getOrgDisplayUnit(AccountUtil.getCurrentOrg().getId(), numberField.getMetric());
+	}
 }

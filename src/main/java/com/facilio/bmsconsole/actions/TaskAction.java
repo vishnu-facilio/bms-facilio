@@ -25,6 +25,7 @@ import com.facilio.bmsconsole.context.FormLayout;
 import com.facilio.bmsconsole.context.RecordSummaryLayout;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.TaskStatus;
+import com.facilio.bmsconsole.context.TaskErrorContext;
 import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.context.ViewLayout;
 import com.facilio.bmsconsole.util.ResourceAPI;
@@ -243,6 +244,12 @@ public class TaskAction extends FacilioAction {
 		}
 		try {
 			updateTask.execute(context);
+			
+			if(context.get(FacilioConstants.ContextNames.TASK_ERRORS) != null) {
+				List<TaskErrorContext> errors = (List<TaskErrorContext>) context.get(FacilioConstants.ContextNames.TASK_ERRORS);
+				setResult(FacilioConstants.ContextNames.TASK_ERRORS, errors);
+			}
+			
 		} catch (ReadingValidationException ex) {
 			Map<String, String> msgMap = new HashMap<>();
 			msgMap.put("message", ex.getMessage());
@@ -337,6 +344,10 @@ public class TaskAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.WORKORDER_ACTIVITY);
 			Chain updateTask = TransactionChainFactory.getUpdateTaskChain();
 			updateTask.execute(context);
+			if(context.get(FacilioConstants.ContextNames.TASK_ERRORS) != null) {
+				List<TaskErrorContext> errors = (List<TaskErrorContext>) context.get(FacilioConstants.ContextNames.TASK_ERRORS);
+				setResult(FacilioConstants.ContextNames.TASK_ERRORS, errors);
+			}
 			rowsUpdated += (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 			setModifiedTime(defaultClosedTaskObj.getModifiedTime());
 		}
@@ -373,6 +384,10 @@ public class TaskAction extends FacilioAction {
 						updateTask = TransactionChainFactory.getUpdateTaskChain();
 					}
 				updateTask.execute(context);
+				if(context.get(FacilioConstants.ContextNames.TASK_ERRORS) != null) {
+					List<TaskErrorContext> errors = (List<TaskErrorContext>) context.get(FacilioConstants.ContextNames.TASK_ERRORS);
+					setResult(FacilioConstants.ContextNames.TASK_ERRORS, errors);
+				}
 			} catch (ReadingValidationException ex) {
 				Map<String, String> msgMap = new HashMap<>();
 				msgMap.put("message", ex.getMessage());

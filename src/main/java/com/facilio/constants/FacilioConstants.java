@@ -262,6 +262,7 @@ public class FacilioConstants {
 		public static final String INVENTORY_CATEGORY = "inventoryCategory";
 		
 		public static final String TASK = "task";
+		public static final String TASK_ERRORS = "taskErrors";
 		public static final String TASK_LIST = "tasks";
 		public static final String TASK_MAP = "taskMap";
 		public static final String TASK_SECTIONS = "taskSections";
