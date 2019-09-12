@@ -281,7 +281,7 @@
 		"5" : {
 			"description" : "Most Common Alarm for asset",
 			"usage" : "AssetSummary",
-			"workflow" : "Map test(resourceId) {
+			"workflow" : "Map test(Number resourceId) {
 				date = NameSpace(\"date\");
 				thisCurrentYear = date.getDateRange(\"Current Year\");
 				readingAlarmOccurrence = Module(\"readingalarmoccurrence\");
