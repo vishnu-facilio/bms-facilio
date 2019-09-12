@@ -14,28 +14,38 @@ public class AddRotatingItemToolCommand extends FacilioCommand {
 	public boolean executeCommand(Context context) throws Exception {
 		AssetContext asset = (AssetContext) context.get(FacilioConstants.ContextNames.RECORD);
 		context.put(FacilioConstants.ContextNames.PURCHASED_TOOL, null);
-
-		if (asset != null) {
+		
+		if (asset != null)
+		{
+			if(asset.getRotatingItem() != null && asset.getRotatingTool() != null)
+			{
+				throw new IllegalArgumentException("An asset can be either a \"Rotating Item\" or a \"Rotating Tool\". Can't be both");
+			}
+			else
+			{
 			context.put(FacilioConstants.ContextNames.ROTATING_ASSET, asset);
 			context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, false);
-			if (asset.getRotatingItem() != null) {
-				if (asset.getRotatingItem().getId() > 0) {
-				ItemContext item = asset.getRotatingItem();
-				context.put(FacilioConstants.ContextNames.ITEM, item);
-				Chain c = TransactionChainFactory.getAddOrUpdateItemStockTransactionChain();
-				c.execute(context);
+				if (asset.getRotatingItem() != null) {
+					if (asset.getRotatingItem().getId() > 0) 
+						{
+							ItemContext item = asset.getRotatingItem();
+							context.put(FacilioConstants.ContextNames.ITEM, item);
+							Chain c = TransactionChainFactory.getAddOrUpdateItemStockTransactionChain();
+							c.execute(context);
+						}
 				}
-			}
-			if (asset.getRotatingTool() != null) {
-				if (asset.getRotatingTool().getId() > 0) {
-					ToolContext tool = asset.getRotatingTool();
-					context.put(FacilioConstants.ContextNames.TOOL, tool);
-					Chain c = TransactionChainFactory.getAddOrUpdateToolStockTransactionChain();
-					c.execute(context);
+				if (asset.getRotatingTool() != null) {
+					if (asset.getRotatingTool().getId() > 0)
+						{
+							ToolContext tool = asset.getRotatingTool();
+							context.put(FacilioConstants.ContextNames.TOOL, tool);
+							Chain c = TransactionChainFactory.getAddOrUpdateToolStockTransactionChain();
+							c.execute(context);
+						}
 				}
 			}
 		}
-		return false;
+	return false;
 	}
 
 }
