@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Context;
@@ -21,6 +23,8 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.Operator;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
@@ -44,7 +48,8 @@ public class FormatHeatMapDataCommand extends FacilioCommand{
 			Collection<Map<String, Object>> data = (Collection<Map<String, Object>>) reportData.get(FacilioConstants.ContextNames.DATA_KEY);
 			
 			DateRange range = reportContext.getDateRange();
-			SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH");
+			SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy MM dd HH");
+			sdf.setTimeZone(TimeZone.getTimeZone(AccountUtil.getCurrentAccount().getTimeZone()));
 			Long startTime=range.getStartTime();
 			Long endTime=range.getEndTime();
 			List<Map<String, Object>> violatedReadings = getViolatedReadings(reportContext,startTime,endTime);
@@ -54,7 +59,7 @@ public class FormatHeatMapDataCommand extends FacilioCommand{
 				timeStep = 3600000;
 			}
 			else if(reportContext.getxAggr() == 12) {
-				sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
+				sdf = new java.text.SimpleDateFormat("yyyy MM dd");
 				timeStep = 86400000;
 			}
 			
@@ -70,8 +75,8 @@ public class FormatHeatMapDataCommand extends FacilioCommand{
 				Date recordDate = new java.util.Date(((long) record.get("ttime")));
 				record.put("X", record.get("ttime"));
 				record.put("Y", record.get("ttime"));
-				record.put("violated_value",record.get("actualValue"));
-				markedDataMap.put(sdf.format(recordDate), record);
+				record.put("violated_value",record.get("value"));
+				markedDataMap.put(record.get("label"), record);
 				}
 			
 			long loopstart=System.currentTimeMillis();
@@ -94,7 +99,7 @@ public class FormatHeatMapDataCommand extends FacilioCommand{
 			
 			long loopend=System.currentTimeMillis()- loopstart;
 			long commandend=System.currentTimeMillis()-start;
-		
+
 			LOGGER.info("time taken for loop  -->  "+loopend);
 			LOGGER.info("time taken for command  -->  "+commandend);
 			
@@ -169,12 +174,31 @@ public class FormatHeatMapDataCommand extends FacilioCommand{
 					StringUtils.join(moduleList,","), NumberOperators.EQUALS));
 			}
 		
+		FacilioField label = new FacilioField();
+		label.setColumnName("TTIME");
+		label.setName("label");
+		label = reportContext.getxAggrEnum().getSelectField(label);
+		
+		FacilioField value = new FacilioField();
+		value.setColumnName("ACTUAL_VALUE");
+		value.setName("value");
+		value = NumberAggregateOperator.SUM.getSelectField(value);
+		
+		List<FacilioField> selectFields = new ArrayList<>();
+		selectFields.add(label);
+		selectFields.add(value);
+		
+		FacilioModule module = ModuleFactory.getMarkedReadingModule();
+		
+		selectFields.add(NumberAggregateOperator.MAX.getSelectField(FieldFactory.getField("ttime", "TTIME", module, FieldType.NUMBER)));
+		
 		GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder()
-				.select(FieldFactory.getMarkedReadingFields())
+				.select(selectFields)
 				.table(ModuleFactory.getMarkedReadingModule().getTableName());
 		if(!criteria.isEmpty()) {
 			builder.andCriteria(criteria);
 		}
+		builder.groupBy("label");
 		
 		List<Map<String, Object>> markedReadings = builder.get();
 		
