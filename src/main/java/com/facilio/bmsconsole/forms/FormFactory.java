@@ -401,7 +401,7 @@ public class FormFactory {
 		FacilioForm form = new FacilioForm();
 		form.setDisplayName("NEW VENDOR");
 		form.setName("web_default");
-		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.TOOL_TYPES));
+		form.setModule(ModuleFactory.getModule(FacilioConstants.ContextNames.VENDORS));
 		form.setLabelPosition(LabelPosition.TOP);
 		form.setFields(getVendorsFormField());
 		form.setFormType(FormType.WEB);
