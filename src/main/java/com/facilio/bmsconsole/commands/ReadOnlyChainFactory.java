@@ -179,6 +179,13 @@ public class ReadOnlyChainFactory {
 		c.addCommand(new FetchApprovalRulesCommand());
 		return c;
 	}
+
+	public static FacilioChain getNextWorkOrder() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new GetNextWorkOrder());
+		return c;
+	}
+
 	
 	public static FacilioChain getCalendarWorkOrdersChain() {
 		FacilioChain c = getDefaultChain();

@@ -852,6 +852,61 @@ public class PreventiveMaintenanceAPI {
 		return pmWos;
 	}
 
+	public static long getNextExecutionTimeForWorkOrder(long workOrderId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule("workorder");
+		List<FacilioField> fields = modBean.getAllFields("workorder");
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField minCreatedTime = FieldFactory.getField("minCreatedTime", "MIN(WorkOrders.CREATED_TIME)", FieldType.NUMBER);
+
+		SelectRecordsBuilder<WorkOrderContext> workOrderBuilder = new SelectRecordsBuilder<>();
+		workOrderBuilder.module(module)
+				.beanClass(WorkOrderContext.class)
+				.select(Arrays.asList(fieldMap.get("pm"), fieldMap.get("createdTime"), fieldMap.get("resource")))
+				.andCondition(CriteriaAPI.getIdCondition(workOrderId, module));
+		List<WorkOrderContext> workOrders = workOrderBuilder.get();
+
+		if (CollectionUtils.isEmpty(workOrders)) {
+			return -1L;
+		}
+
+		WorkOrderContext workOrderContext = workOrders.get(0);
+		if (workOrderContext.getPm() == null) {
+			return -1L;
+		}
+
+		long pmId = workOrderContext.getPm().getId();
+		long previousTime = workOrderContext.getCreatedTime();
+		long resourceId = workOrderContext.getResource().getId();
+		long triggerId = -1L;
+
+		if (workOrderContext.getTrigger() != null) {
+			triggerId = workOrderContext.getTrigger().getId();
+		}
+
+		SelectRecordsBuilder woSelectBuilder = new SelectRecordsBuilder();
+		woSelectBuilder.module(module)
+				.select(Arrays.asList(minCreatedTime))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("pm"), String.valueOf(pmId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), String.valueOf(previousTime), NumberOperators.GREATER_THAN))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), String.valueOf(resourceId), NumberOperators.EQUALS));
+
+		if (triggerId != -1) {
+			woSelectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("trigger"), String.valueOf(triggerId), NumberOperators.EQUALS));
+		}
+
+		List<Map<String, Object>> props = woSelectBuilder.getAsProps();
+		if (props == null || props.isEmpty()) {
+			return -1L;
+		}
+
+		if (props.get(0).get("minCreatedTime") == null) {
+			return -1L;
+		}
+
+		return (Long) props.get(0).get("minCreatedTime");
+	}
+
 	public static Long getNextExecutionTime(long pmId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule("workorder");
