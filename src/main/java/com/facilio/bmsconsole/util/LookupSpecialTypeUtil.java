@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.twilio.taskrouter.WorkflowRule;
 import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.accounts.dto.Group;
@@ -107,6 +108,12 @@ public class LookupSpecialTypeUtil {
 		else if (FacilioConstants.ContextNames.ROLE.equals(specialType)) {
 			List<Role> roles = AccountUtil.getRoleBean(AccountUtil.getCurrentOrg().getId()).getRoles();
 			return roles.stream().collect(Collectors.toMap(Role::getRoleId, Role::getName));
+		}
+		else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)){
+			List<WorkflowRuleContext> workflowRules = WorkflowRuleAPI.getAllWorkflowRuleContextOfType(WorkflowRuleContext.RuleType.READING_RULE, false,false);
+			if (workflowRules != null){
+				return workflowRules.stream().collect(Collectors.toMap(WorkflowRuleContext::getId, WorkflowRuleContext::getName));
+			}
 		}
 		return null;
 	}
