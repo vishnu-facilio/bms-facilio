@@ -26,7 +26,7 @@ public class InsertImportDataIntoLogCommand extends FacilioCommand {
 		HashMap<String, List<ImportRowContext>> groupedContext = 
 				(HashMap<String, List<ImportRowContext>>) context.get(ImportAPI.ImportProcessConstants.GROUPED_ROW_CONTEXT);
 		ImportProcessContext importProcessContext = (ImportProcessContext) context.get(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT);
-		Integer row_count = (Integer) context.get(ImportAPI.ImportProcessConstants.ROW_COUNT);
+		Long row_count = (Long) context.get(ImportAPI.ImportProcessConstants.ROW_COUNT);
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getImportProcessLogModule().getTableName())

@@ -42,7 +42,7 @@ public class GenericImportDataIntoPointsLogCommand implements Command {
 		HashMap<String, List<ImportRowContext>> groupedContext = 
 				(HashMap<String, List<ImportRowContext>>) context.get(ImportAPI.ImportProcessConstants.GROUPED_ROW_CONTEXT);
 		PointsProcessContext importProcessContext = (PointsProcessContext) context.get(ImportPointsAPI.ImportPointsConstants.POINTS_PROCESS_CONTEXT);
-		Integer row_count = (Integer) context.get(ImportPointsAPI.ImportPointsConstants.ROW_COUNT);
+		Long row_count = (Long) context.get(ImportPointsAPI.ImportPointsConstants.ROW_COUNT);
 		
 		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder()
 				.table(ModuleFactory.getImportPointsLogModule().getTableName())

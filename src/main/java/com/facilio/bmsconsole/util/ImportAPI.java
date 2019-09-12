@@ -4,6 +4,7 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -48,6 +49,7 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
@@ -723,13 +725,16 @@ public class ImportAPI {
 	
 	public static ImportProcessContext updateTotalRows (ImportProcessContext importProcessContext) throws Exception {
 		
+		FacilioField idField = FieldFactory.getField("id", "ID", FieldType.NUMBER);
+		
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getImportProcessLogModule().getTableName())
-				.select(FieldFactory.getImportProcessLogFields())
-				.andCondition(CriteriaAPI.getCondition("IMPORTID", "importId", importProcessContext.getId().toString() ,NumberOperators.EQUALS));
+				.select(new HashSet<>())
+				.andCondition(CriteriaAPI.getCondition("IMPORTID", "importId", importProcessContext.getId().toString() ,NumberOperators.EQUALS))
+				.aggregate(CommonAggregateOperator.COUNT, idField);
 		List<Map<String,Object>> result = selectRecordBuilder.get();
 		if (!result.isEmpty()) {
-			importProcessContext.setTotalRows(result.size());
+			importProcessContext.setTotalRows((Long) result.get(0).get("id"));
 		}
 		return importProcessContext;
 		

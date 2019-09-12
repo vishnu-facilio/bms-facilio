@@ -49,7 +49,7 @@ public class ImportProcessContext implements Serializable
 	Integer importMode;
 	Long templateId;
 	String fileName;
-	Integer totalRows;
+	Long totalRows;
 	String firstRowString;
 	
 	
@@ -60,10 +60,10 @@ public class ImportProcessContext implements Serializable
 		this.firstRowString = firstRowString;
 	}
 	
-	public Integer getTotalRows() {
+	public Long getTotalRows() {
 		return totalRows;
 	}
-	public void setTotalRows(Integer totalRows) {
+	public void setTotalRows(Long totalRows) {
 		this.totalRows = totalRows;
 	}
 	public String getFileName() throws Exception{
