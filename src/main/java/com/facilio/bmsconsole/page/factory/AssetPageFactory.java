@@ -150,6 +150,14 @@ public class AssetPageFactory extends PageFactory {
 			addGraphicsWidget(tab6Sec1);
 		}
 		
+		if(asset.isGeoLocationEnabled() && !asset.isConnected() && AccountUtil.getCurrentOrg().getOrgId() == 155) {
+			Tab tab8 = page.new Tab("assetMovement");
+			page.addTab(tab8);
+			Section tab8Sec1 = page.new Section();
+			tab8.addSection(tab8Sec1);
+			addAssetMovementsWidget(tab8Sec1);
+		}
+		
 		Tab tab5 = page.new Tab("history", "history");
 		page.addTab(tab5);
 		
@@ -233,6 +241,12 @@ public class AssetPageFactory extends PageFactory {
 		PageWidget readingsWidget = new PageWidget(WidgetType.LIST, "readings");
 		readingsWidget.addToLayoutParams(section, 24, 10);
 		section.addWidget(readingsWidget);
+	}
+	
+	private static void addAssetMovementsWidget(Section section) {
+		PageWidget assetMovementsWidget = new PageWidget(WidgetType.LIST, "assetMovements");
+		assetMovementsWidget.addToLayoutParams(section, 24, 50);
+		section.addWidget(assetMovementsWidget);
 	}
 	
 	private static void addCommandWidget(Section section, long assetId) {

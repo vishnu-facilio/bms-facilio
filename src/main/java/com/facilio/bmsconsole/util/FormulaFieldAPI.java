@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import com.facilio.modules.*;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Level;
@@ -44,14 +45,7 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.AggregateOperator;
-import com.facilio.modules.DeleteRecordBuilder;
-import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.ScheduleInfo;
@@ -445,7 +439,7 @@ public class FormulaFieldAPI {
 			updateFormulaFieldResourceJob(id, range.getStartTime(), range.getEndTime(), historicalAlarm);
 			FacilioTimer.deleteJob(id, "SingleResourceHistoricalFormulaFieldCalculator");
 		}
-		FacilioTimer.scheduleOneTimeJob(id, "SingleResourceHistoricalFormulaFieldCalculator", 30, "priority");
+		FacilioTimer.scheduleOneTimeJobWithDelay(id, "SingleResourceHistoricalFormulaFieldCalculator", 30, "priority");
 	}
 	
 	private static long addFormulaFieldResourceJob(Map<String, Object> prop) throws Exception {
@@ -742,7 +736,7 @@ public class FormulaFieldAPI {
 		
 		if (fields != null) {
 			for (WorkflowFieldContext field : fields) {
-				if (field.getAggregationEnum() != AggregateOperator.SpecialAggregateOperator.LAST_VALUE) {
+				if (field.getAggregationEnum() != BmsAggregateOperators.SpecialAggregateOperator.LAST_VALUE) {
 					return false;
 				}
 			}

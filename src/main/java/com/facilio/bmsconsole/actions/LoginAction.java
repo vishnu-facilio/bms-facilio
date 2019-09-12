@@ -51,6 +51,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
+import com.amazonaws.util.StringUtils;
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.Organization;
@@ -122,6 +123,15 @@ public class LoginAction extends FacilioAction {
 	public void setAccessToken(String accessToken) {
 		this.accessToken = accessToken;
 	}
+	
+	private String mobileInstanceId;
+	public String getMobileInstanceId() {
+		return mobileInstanceId;
+	}
+	public void setMobileInstanceId(String mobileInstanceId) {
+		this.mobileInstanceId = mobileInstanceId;
+	}
+
 
 	private HashMap<String, String> signupinfo = new HashMap<String, String>();
 
@@ -164,11 +174,23 @@ public class LoginAction extends FacilioAction {
 		// end user session
 		try {
 			String facilioToken = FacilioCookie.getUserCookie(request, "fc.idToken.facilio");
+			String deviceType = request.getHeader("X-Device-Type");
+			if (!StringUtils.isNullOrEmpty(deviceType)
+					&& ("android".equalsIgnoreCase(deviceType) || "ios".equalsIgnoreCase(deviceType))) {
+				if(mobileInstanceId == null) {
+					throw new IllegalArgumentException("Mobile Instance Id cannot be null");
+				}
+			}
+
 			if (facilioToken != null) {
 				User currentUser = AccountUtil.getCurrentUser();
 				if (currentUser != null) {
-					IAMUserUtil.logOut(currentUser.getUid(), facilioToken, currentUser.getEmail()
-							);
+					if(IAMUserUtil.logOut(currentUser.getUid(), facilioToken, currentUser.getEmail())) {
+						if(mobileInstanceId != null) {
+							AccountUtil.getUserBean().removeUserMobileSetting(mobileInstanceId);
+						}
+					}
+							
 				}
 			}
 		} catch (Exception e) {

@@ -26,6 +26,7 @@ public class AddDefaultModulesCommand extends FacilioCommand {
 		if(orgId > 0) {
 			Map<String, String> paramValues = new HashMap<>(); 
 			paramValues.put("orgId", String.valueOf(orgId));
+			paramValues.put("publicDb", DBConf.getInstance().getDefaultDB());
 		
 			SQLScriptRunner scriptRunner = new SQLScriptRunner(INSERT_MODULES_SQL, true, paramValues, DBUtil.getDBSQLScriptRunnerMode());
 			scriptRunner.runScript();

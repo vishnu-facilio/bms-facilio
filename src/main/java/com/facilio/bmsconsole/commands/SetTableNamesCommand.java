@@ -392,6 +392,10 @@ public class SetTableNamesCommand extends FacilioCommand {
 		return new SetTableNamesCommand("contractassets", "Contracts_Associated_Assets");
 	}
 	
+	public static SetTableNamesCommand getForAssetMovement() {
+		return new SetTableNamesCommand("assetmovement", "Asset_Movement");
+	}
+	
 	public static void setForModule (Context context, String moduleName) {
 		//TODO handle all module and get from map
 		String tableName = "";

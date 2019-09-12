@@ -12,7 +12,6 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.PointsProcessContext;
-import com.facilio.bmsconsole.actions.PointsProcessContext;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportAssetMandatoryFieldsException;
@@ -60,7 +59,7 @@ public class ReadingImportPointsDataJob extends InstantJob{
 			else {
 				importProcessContext.setStatus(PointsProcessContext.ImportStatus.IN_PROGRESS.getValue());
 				ImportPointsAPI.updateImportProcess(importProcessContext);
-				FacilioTimer.scheduleOneTimeJob(importProcessContext.getId(), "importData" , 10, "priority");	
+				FacilioTimer.scheduleOneTimeJobWithDelay(importProcessContext.getId(), "importData" , 10, "priority");
 			}
 			
 			LOGGER.severe("IMPORT POINTS DATA LOG JOB COMPLETED -- ");

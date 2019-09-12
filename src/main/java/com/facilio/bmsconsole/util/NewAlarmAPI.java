@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.context.*;
 import com.facilio.db.criteria.operators.*;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.LookupField;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -24,16 +25,6 @@ import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.AggregateOperator;
-import com.facilio.modules.DeleteRecordBuilder;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.InsertRecordBuilder;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 
@@ -108,6 +99,8 @@ public class NewAlarmAPI {
 				return AlarmOccurrenceContext.class;
 			case ANOMALY:
 				return MLAlarmOccurenceContext.class;
+			case READING:
+				return ReadingAlarmOccurrenceContext.class;
 			default:
 				throw new IllegalArgumentException("Invalid type");
 		}
@@ -122,6 +115,8 @@ public class NewAlarmAPI {
 				return FacilioConstants.ContextNames.ALARM_OCCURRENCE;
 			case ANOMALY:
 				return FacilioConstants.ContextNames.ANOMALY_ALARM_OCCURRENCE;
+			case READING:
+				return FacilioConstants.ContextNames.READING_ALARM_OCCURRENCE;
 			default:
 				throw new IllegalArgumentException("Invalid type");
 		}
@@ -225,7 +220,7 @@ public class NewAlarmAPI {
 				.orderBy("CREATED_TIME DESC, ID DESC");
 		List<AlarmOccurrenceContext> occurences = builder.get();
 		occurences = getExtendedOccurrence(occurences);
-		updateAlarmObject(occurences);
+//		updateAlarmObject(occurences);
 		if (CollectionUtils.isNotEmpty(occurences)) {
 			return occurences.stream().collect(Collectors.toMap(AlarmOccurrenceContext::getId, Function.identity()));
 		}
@@ -820,7 +815,7 @@ public class NewAlarmAPI {
 		List<FacilioField> alarmOccurrenceFields = modBean.getAllFields(module.getName());;
 		
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allEventFields);
-		FacilioField countField = AggregateOperator.CommonAggregateOperator.COUNT.getSelectField(fieldMap.get("alarmOccurrence"));
+		FacilioField countField = BmsAggregateOperators.CommonAggregateOperator.COUNT.getSelectField(fieldMap.get("alarmOccurrence"));
 		countField.setName("count");
 		List<FacilioField> selectFields = new ArrayList<FacilioField>();
 		selectFields.add(countField);
@@ -857,7 +852,7 @@ public class NewAlarmAPI {
 		List<FacilioField> allFields = modBean.getAllFields(module.getName());	
 		
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(allFields);
-		FacilioField countField = AggregateOperator.CommonAggregateOperator.COUNT.getSelectField(fieldMap.get("alarm"));
+		FacilioField countField = BmsAggregateOperators.CommonAggregateOperator.COUNT.getSelectField(fieldMap.get("alarm"));
 		countField.setName("count");
 		List<FacilioField> selectFields = new ArrayList<FacilioField>();
 		selectFields.add(countField);

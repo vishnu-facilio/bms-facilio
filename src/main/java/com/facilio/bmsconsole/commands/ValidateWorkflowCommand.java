@@ -17,11 +17,11 @@ public class ValidateWorkflowCommand extends FacilioCommand {
 			workflow = (WorkflowUserFunctionContext) context.get(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT);
 		}
 		
-//		boolean validationResult = workflow.validateWorkflow();
-//		if(!validationResult) {
-//			context.put(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, workflow.getErrorListener());
-//			return true;
-//		}
+		boolean validationResult = workflow.validateWorkflow();
+		if(!validationResult) {
+			context.put(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, workflow.getErrorListener());
+			return true;
+		}
 		return false;
 	}
 

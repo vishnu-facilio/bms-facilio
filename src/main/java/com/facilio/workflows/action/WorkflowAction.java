@@ -156,8 +156,8 @@ public class WorkflowAction extends FacilioAction {
 	}
 
 	public String runWorkflow() throws Exception {
+		FacilioContext context = new FacilioContext();
 		try {
-			FacilioContext context = new FacilioContext();
 			context.put(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
 			context.put(WorkflowV2Util.WORKFLOW_PARAMS, paramList);
 			
@@ -169,6 +169,7 @@ public class WorkflowAction extends FacilioAction {
 	    	log.log(Priority.ERROR, e);
 	    }
 	    setResult(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
+	    setResult(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));
 		return SUCCESS;
 	}
 	
@@ -180,6 +181,7 @@ public class WorkflowAction extends FacilioAction {
 		Chain addWorkflowChain =  TransactionChainFactory.getAddWorkflowChain(); 
 		addWorkflowChain.execute(context);
 		setResult(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
+		setResult(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));
 		return SUCCESS;
 	}
 	public String updateWorkflow() throws Exception {
@@ -189,6 +191,7 @@ public class WorkflowAction extends FacilioAction {
 		Chain addWorkflowChain =  TransactionChainFactory.getUpdateWorkflowChain(); 
 		addWorkflowChain.execute(context);
 		setResult(WorkflowV2Util.WORKFLOW_CONTEXT, workflow);
+		setResult(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));
 		return SUCCESS;
 	}
 	public String deleteWorkflow() throws Exception {
@@ -239,6 +242,7 @@ public class WorkflowAction extends FacilioAction {
 		Chain addWorkflowChain =  TransactionChainFactory.getAddWorkflowUserFunctionChain(); 
 		addWorkflowChain.execute(context);
 		setResult(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT, userFunction);
+		setResult(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));
 		return SUCCESS;
 	}
 	
@@ -249,6 +253,7 @@ public class WorkflowAction extends FacilioAction {
 		Chain addWorkflowChain =  TransactionChainFactory.getUpdateWorkflowUserFunctionChain(); 
 		addWorkflowChain.execute(context);
 		setResult(WorkflowV2Util.WORKFLOW_USER_FUNCTION_CONTEXT, userFunction);
+		setResult(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));
 		return SUCCESS;
 	}
 	public String deleteUserFunction() throws Exception {
@@ -287,6 +292,7 @@ public class WorkflowAction extends FacilioAction {
 			chain.execute(context);
 			
 			setResult(WorkflowV2Util.WORKFLOW_CONTEXT, context.get(WorkflowV2Util.WORKFLOW_CONTEXT));
+			setResult(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));
 		}
 		return SUCCESS;
 	}
@@ -300,6 +306,7 @@ public class WorkflowAction extends FacilioAction {
 		Chain addWorkflowChain =  TransactionChainFactory.getAddScheduledWorkflowChain(); 
 		addWorkflowChain.execute(context);
 		setResult(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT, scheduledWorkflow);
+		setResult(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));
 		return SUCCESS;
 	}
 	
@@ -311,6 +318,7 @@ public class WorkflowAction extends FacilioAction {
 		Chain addWorkflowChain =  TransactionChainFactory.getUpdateScheduledWorkflowChain(); 
 		addWorkflowChain.execute(context);
 		setResult(WorkflowV2Util.SCHEDULED_WORKFLOW_CONTEXT, scheduledWorkflow);
+		setResult(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR, context.get(WorkflowV2Util.WORKFLOW_SYNTAX_ERROR));
 		return SUCCESS;
 	}
 	public String deleteScheduledWorkflow() throws Exception {

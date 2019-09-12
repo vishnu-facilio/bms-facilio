@@ -12,7 +12,7 @@ public class DeletePMCommand extends FacilioCommand {
         for (long recordId: recordIds) {
             FacilioTimer.deleteJob(recordId, "SchedulePMBackgroundJob");
             FacilioTimer.deleteJob(recordId, "DeletePMJob");
-            FacilioTimer.scheduleOneTimeJob(recordId, "DeletePMJob", 1, "priority");
+            FacilioTimer.scheduleOneTimeJobWithDelay(recordId, "DeletePMJob", 1, "priority");
         }
         return false;
     }

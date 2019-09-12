@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Map.Entry;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -71,6 +72,10 @@ import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.BooleanField;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.NumberField;
+import com.facilio.unitconversion.Metric;
+import com.facilio.unitconversion.Unit;
+import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.workflows.util.WorkflowUtil;
 
 public class TicketAPI {
@@ -85,6 +90,28 @@ public class TicketAPI {
 	
 	public static int deleteTickets(FacilioModule module, Collection<Long> recordIds) throws Exception {
 		return deleteTickets(module, recordIds, -1);
+	}
+	
+	public static Map<Long, TaskContext> getTaskMap(List<Long> id) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TASK);
+		SelectRecordsBuilder<TaskContext> builder = new SelectRecordsBuilder<TaskContext>()
+														.module(module)
+														.beanClass(TaskContext.class)
+														.select(modBean.getAllFields(FacilioConstants.ContextNames.TASK))
+														.andCondition(CriteriaAPI.getIdCondition(id, module));
+		
+		Map<Long, TaskContext> tasks = builder.getAsMap();
+		if(tasks != null && !tasks.isEmpty()) {
+			for (Entry<Long, TaskContext> entry : tasks.entrySet()) {
+				TaskContext task = entry.getValue();
+				if (task.getReadingFieldId() != -1) {
+					task.setReadingField(modBean.getField(task.getReadingFieldId()));
+				}
+			}
+			return tasks;
+		}
+		return null;
 	}
 	
 	public static int deleteTickets(FacilioModule module, Collection<Long> recordIds, int level) throws Exception {
@@ -1195,6 +1222,34 @@ public static Map<Long, TicketContext> getTickets(String ids) throws Exception {
 			case TEXT:
 			case READING:
 				task.setReadingField(modBean.getField(task.getReadingFieldId()));
+				Unit readingFieldUnit = null;		
+				if(task.getReadingFieldUnit() == -1 && task.getReadingField() != null && task.getReadingField() instanceof NumberField)
+				{
+					NumberField readingNumberField = (NumberField) task.getReadingField();
+						
+					if(readingNumberField.getMetricEnum() != null && task.getResource() != null) {
+						
+						ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(task.getResource().getId(), task.getReadingField());
+						if(rdm != null && rdm.getUnitEnum() != null)
+						{
+							readingFieldUnit = rdm.getUnitEnum();
+						}
+					
+						else if(readingNumberField.getUnitEnum() != null)
+						{
+							readingFieldUnit = readingNumberField.getUnitEnum();							
+						}
+						else
+						{
+							Metric metric = readingNumberField.getMetricEnum();
+							readingFieldUnit = UnitsUtil.getOrgDisplayUnit(AccountUtil.getCurrentOrg().getId(), metric.getMetricId());
+						}
+						
+						task.setReadingFieldUnit(readingFieldUnit);
+												
+					}
+				}
+					
 				break;
 			case BOOLEAN:
 				BooleanField field = (BooleanField) modBean.getField(task.getReadingFieldId());

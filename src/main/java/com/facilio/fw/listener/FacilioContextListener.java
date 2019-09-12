@@ -10,9 +10,7 @@ import java.net.UnknownHostException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Properties;
-import java.util.Timer;
+import java.util.*;
 
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -59,7 +57,7 @@ import com.facilio.tasker.executor.InstantJobExecutor;
 public class FacilioContextListener implements ServletContextListener {
 
 	private Timer timer = new Timer();
-	private static final Logger log = LogManager.getLogger(FacilioContextListener.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(FacilioContextListener.class.getName());
 	private static String instanceId = null;
 
 	public void contextDestroyed(ServletContextEvent event) {
@@ -70,6 +68,7 @@ public class FacilioContextListener implements ServletContextListener {
 		InstantJobExecutor.INSTANCE.stopExecutor();
 		FacilioService.shutDown();
 		timer.cancel();
+		FacilioConnectionPool.INSTANCE.close();
 	}
 
 	public void contextInitialized(ServletContextEvent event) {
@@ -77,12 +76,12 @@ public class FacilioContextListener implements ServletContextListener {
 		try {
 			System.setOut(new SysOutLogger("SysOut"));
 		} catch (FileNotFoundException e1) {
-			log.info("Exception occurred ", e1);
+			LOGGER.info("Exception occurred ", e1);
 		}
 		try {
 			System.setErr(new SysOutLogger("SysErr"));
 		} catch (FileNotFoundException e1) {
-			log.info("Exception occurred ", e1);
+			LOGGER.info("Exception occurred ", e1);
 		}
 
 		timer.schedule(new TransactionMonitor(), 0L, 3000L);
@@ -100,10 +99,10 @@ public class FacilioContextListener implements ServletContextListener {
 		FacilioEnum.getEnumValues("CostType");
 
 		try {
-			migrateSchemaChanges();
+//			migrateSchemaChanges();
 			// ServerInfo.registerServer();
 			//timer.schedule(new ServerInfo(), 30000L, 30000L);
-
+			initializeDB();
 			if( !FacilioProperties.isDevelopment()) {
 				new Thread(new com.facilio.kafka.notification.NotificationProcessor()).start();
 			}
@@ -120,7 +119,7 @@ public class FacilioContextListener implements ServletContextListener {
 			HashMap customDomains = getCustomDomains();
 			if(customDomains!=null) {
 				event.getServletContext().setAttribute("custom domains", customDomains);
-				log.info("Custom domains loaded " + customDomains);
+				LOGGER.info("Custom domains loaded " + customDomains);
 			}
 			
 			/*if(AwsUtil.isDevelopment() || AwsUtil.disableCSP()) {
@@ -134,12 +133,12 @@ public class FacilioContextListener implements ServletContextListener {
 					if("kinesis".equals(FacilioProperties.getMessageQueue())) {
 						new Thread(KinesisProcessor::startKinesis).start();
 					} else {
-						log.info("Starting kafka processor");
+						LOGGER.info("Starting kafka processor");
 						new Thread(KafkaProcessor::start).start();
 					}
 				}
 			} catch (Exception e){
-				log.info("Exception occurred ", e);
+				LOGGER.info("Exception occurred ", e);
 			}
 			InputStream versionFile;
 			try {
@@ -147,41 +146,45 @@ public class FacilioContextListener implements ServletContextListener {
 				Properties prop = new Properties();
 				prop.load(versionFile);
 				event.getServletContext().setAttribute("buildinfo", prop);
-				log.info("Loaded build properties "+prop);
+				LOGGER.info("Loaded build properties "+prop);
 
 			} catch (Exception e) {
-				log.info("Exception occurred ", e);
+				LOGGER.info("Exception occurred ", e);
 			}
 
 			PortalAuthInterceptor.setPortalDomain(FacilioProperties.getConfig("portal.domain"));// event.getServletContext().getInitParameter("SERVICEPORTAL_DOMAIN");
-			log.info("Loading the domain name as ######"+PortalAuthInterceptor.getPortalDomain());
+			LOGGER.info("Loading the domain name as ######"+PortalAuthInterceptor.getPortalDomain());
 			initLocalHostName();
 			HealthCheckFilter.setStatus(200);
 			
 		} catch (Exception e) {
 			sendFailureEmail(e);
-			log.info("Exception occurred ", e);
+			LOGGER.info("Exception occurred ", e);
 		}
 		
 	}
 
-	/*private void initializeDB() {
+	private void initializeDB() {
+		if (FacilioProperties.isDevelopment()) {
+			createTables("conf/db/" + DBConf.getInstance().getDBName() + "/PublicDB.sql", null);
+			createTables("conf/db/" + DBConf.getInstance().getDBName() + "/AppDB.sql", Collections.singletonMap("defaultAppDB", FacilioProperties.getDefaultAppDB()));
+		}
 //		createTables("conf/leedconsole.sql");
 		//createTables("conf/db/" + DBConf.getInstance().getDBName() + "/eventconsole.sql");
-	}*/
+	}
 
-	private void createTables(String fileName) {
+	private void createTables(String fileName, Map<String, String> paramValues) {
 		URL url = SQLScriptRunner.class.getClassLoader().getResource(fileName);
 		if(url != null) {
 			File file = new File(url.getFile());
-			SQLScriptRunner scriptRunner = new SQLScriptRunner(file, true, null, DBUtil.getDBSQLScriptRunnerMode());
+			SQLScriptRunner scriptRunner = new SQLScriptRunner(file, true, paramValues, DBUtil.getDBSQLScriptRunnerMode());
 			try {
 				scriptRunner.runScript();
 			} catch (Exception e) {
-				log.info("Error while executing script " + fileName);
+				LOGGER.info("Error while executing script " + fileName);
 			}
 		} else {
-			log.warn("Couldn't find : " + fileName);
+			LOGGER.warn("Couldn't find : " + fileName);
 		}
 	}
 
@@ -197,13 +200,13 @@ public class FacilioContextListener implements ServletContextListener {
 		try {
 			AwsUtil.sendEmail(json);
 		} catch (Exception e1) {
-			log.info("Exception while sending email ", e1);
+			LOGGER.info("Exception while sending email ", e1);
 		}
 
 	}
 	
 	private void migrateSchemaChanges() {
-		log.info("Flyway migration handler started...");
+		LOGGER.info("Flyway migration handler started...");
 		try {
 			DataSource ds = FacilioConnectionPool.getInstance().getDataSource();
 			long startTime = System.currentTimeMillis();
@@ -213,9 +216,9 @@ public class FacilioContextListener implements ServletContextListener {
 			flyway.setBaselineOnMigrate(true);
 			int mig_status = flyway.migrate();
 
-			log.info("Flyway migration status: " + mig_status + " time taken in ms : " + (System.currentTimeMillis() - startTime));
+			LOGGER.info("Flyway migration status: " + mig_status + " time taken in ms : " + (System.currentTimeMillis() - startTime));
 		} catch (Exception e) {
-			log.info("Exception occurred ", e);
+			LOGGER.info("Exception occurred ", e);
 		}
 	}
 	
@@ -230,10 +233,10 @@ public class FacilioContextListener implements ServletContextListener {
 			rs = stmt.executeQuery("select 1"); //Test Connection
 			
 			while(rs.next()) {
-				log.info("testing connection : " + rs.getInt(1));
+				LOGGER.info("testing connection : " + rs.getInt(1));
 			}
 		} catch(Exception e) {
-			log.info("Exception occurred ", e);
+			LOGGER.info("Exception occurred ", e);
 		}
 		finally {
 			DBUtil.closeAll(conn, stmt, rs);
@@ -264,10 +267,10 @@ public class FacilioContextListener implements ServletContextListener {
 				return customdomains;
 
 			} catch (SAXException | IOException | ParserConfigurationException e) {
-				log.info("Exception occurred ", e);
+				LOGGER.info("Exception occurred ", e);
 			}
 		} else {
-			log.info("Couldn't find custom domains file.");
+			LOGGER.info("Couldn't find custom domains file.");
 		}
 		return null;
 	}
@@ -276,7 +279,7 @@ public class FacilioContextListener implements ServletContextListener {
 		try {
 			instanceId = InetAddress.getLocalHost().getHostName();
 		} catch (UnknownHostException e) {
-			log.info("Exception occurred ", e);
+			LOGGER.info("Exception occurred ", e);
 		}
 	}
 

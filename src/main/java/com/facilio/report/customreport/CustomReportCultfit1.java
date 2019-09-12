@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.modules.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
@@ -17,11 +18,6 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.AggregateOperator;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FacilioStatus;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 
 ;
@@ -47,7 +43,7 @@ public class CustomReportCultfit1 implements CustomReport {
 		
 		List<FacilioField> selectFields = new ArrayList<>();
 		
-		FacilioField countField = AggregateOperator.CommonAggregateOperator.COUNT.getSelectField(statusField);
+		FacilioField countField = BmsAggregateOperators.CommonAggregateOperator.COUNT.getSelectField(statusField);
 		countField.setName("value");
 		
 		ReportFieldContext reportFieldContext = new ReportFieldContext();

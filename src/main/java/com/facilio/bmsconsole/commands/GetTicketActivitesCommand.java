@@ -78,7 +78,7 @@ public class GetTicketActivitesCommand extends FacilioCommand {
 				}
 				List<Long> ids = activities.stream().map(activity -> activity.getModifiedBy()).collect(Collectors.toList());
 				if (ids.size() > 0) {
-					List<User> userList = AccountUtil.getUserBean().getUsers(null, true, ids);
+					List<User> userList = AccountUtil.getUserBean().getUsers(null, false, true, ids);
 					Map<Long, User> userMap = userList.stream().collect(Collectors.toMap(User::getId, Function.identity(), 
 													(prevValue, curValue) -> { return prevValue; }));
 					if (userList != null) {

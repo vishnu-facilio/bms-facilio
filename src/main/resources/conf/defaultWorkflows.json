@@ -257,7 +257,7 @@
                    criteria :[severity == \"Clear\" ],
                  }
                  alarmSevrityModule = Module(\"alarmseverity\");
-                 AlarmSeverityContext clearSeverityContext = alarmSevrityModule.fetch(clearCondition);
+                 clearSeverityContext = alarmSevrityModule.fetch(clearCondition);
                  clearId = clearSeverityContext.get(0).get(\"id\");
                  activeAssetcri = {
 					criteria : [severity != clearId  ],
@@ -278,6 +278,48 @@
                 return resultMap;
 		    }"
 		},
+		"5" : {
+			"description" : "Most Common Alarm for asset",
+			"usage" : "AssetSummary",
+			"workflow" : "Map test(Number resourceId) {
+				date = NameSpace(\"date\");
+				thisCurrentYear = date.getDateRange(\"Current Year\");
+				readingAlarmOccurrence = Module(\"readingalarmoccurrence\");
+				occurenceThisMonthCrit = null;
+				resMap = {};
+				occurenceThisYearCrit = {
+					criteria: [resource == resourceId],
+					field: \"rule\",
+					aggregation: \"count, rule\",
+					groupBy: \"rule\"
+				};
+				thisYearOccurrence = readingAlarmOccurrence.fetch(occurenceThisYearCrit);
+				occurrenceCount = 0;
+				ruleId = 0;
+				mcName = null;
+				if (thisYearOccurrence != null) {
+					for each index, value in thisYearOccurrence {
+						if (occurrenceCount < value.rule) {
+							ruleId = value.result.id;
+							occurrenceCount = value.rule;
+						}
+					}
+				}
+				if (ruleId > 0) {
+					readingRuleModule = Module(\"workflowrule\");
+					readingRuleCrite = {
+						criteria: [id == ruleId]
+					};
+					ruleObj = readingRuleModule.fetch(readingRuleCrite);
+					if (ruleObj != null) {
+						commonRule = ruleObj.name;
+					}
+				}
+				resMap[\"commonRule\"] = commonRule;
+				resMap[\"duration\"] = commonRule;
+				return resMap;
+			}"
+		},
 		"46": {
 			"description" : "ML Deviation",
 			"usage" : "AnomalySummary",
@@ -286,40 +328,41 @@
 			  mlReadings = Module(\"anomalydetectionmllogreadings\");
 			  date = NameSpace(\"date\");
 			  thisMonthRanges = date.getDateRange(\"Current Month\");
+			  thisMonthStartTime = dateRange().getStartTime(thisMonthRanges);
+			  thisMonthEndTime = dateRange().getEndTime(thisMonthRanges);
 			  lastMonthRanges = date.getDateRange(\"Last Month\");
+			  lastMonthStartTime = dateRange().getStartTime(lastMonthRanges);
+			  lastMonthEndTime = dateRange().getEndTime(lastMonthRanges);
 			
 			  occurenceThisMonthCrit = {
-			    criteria: [alarm == alarmId && createdTime == thisMonthRanges]
+			    criteria: [alarm == alarmId && createdTime < thisMonthEndTime && (clearedTime == null || clearedTime > thisMonthStartTime)]
 			  };
 			  occurenceLastMonthCrit = {
-			    criteria: [alarm == alarmId && createdTime == lastMonthRanges]
+			    criteria: [alarm == alarmId && createdTime < lastMonthEndTime && (clearedTime == null || clearedTime > lastMonthStartTime)]
 			  };
 			  thismothoccurence =  Module(\"alarmoccurrence\").fetch(occurenceThisMonthCrit);
 			  lastmonthoccurrence = Module(\"alarmoccurrence\").fetch(occurenceLastMonthCrit);
+			  adjustedUpperBoundField = NameSpace(\"module\").getField(\"adjustedUpperBound\", \"anomalydetectionmllogreadings\");
 			  for each rindex,resourceId in resourceIds {
-			    result = {}
-			    deviation = 0
-			    deviationCount = 0
+			    result = {};
+			    deviation = 0;
+			    deviationCount = 0;
 			    if (thismothoccurence != null) {
 			      for each index,value in thismothoccurence {
-			        endTime = value.clearedTime
+			        endTime = value.clearedTime;
 			        if (endTime == null) {
-			          endTime = dateRange().getEndTime(thisMonthRanges);
+			          endTime = thisMonthEndTime;
 			        }
-			        ttimes = date.dateRange(value.createdTime, endTime)
+			        ttimes = date.dateRange(value.createdTime, endTime);
 			        thisMonthEnergy = {
-			          criteria: [parentId == resourceId && ttime == ttimes],
-			        }
+			          criteria: [parentId == resourceId && ttime == ttimes && adjustedUpperBound > 0 && actualValue > adjustedUpperBoundField]
+			        };
 			        currentMonthReadings =  mlReadings.fetch(thisMonthEnergy);
 			        if (currentMonthReadings != null) {
 			          for each index,value in currentMonthReadings {
-			            if (value.adjustedUpperBound != 0) {
-			              diffConsu = value.actualValue - value.adjustedUpperBound;
-			              if (diffConsu > 0) {
-			                deviation = deviation + (diffConsu / value.adjustedUpperBound) * 100;
-			                deviationCount = deviationCount + 1
-			              }
-			            }
+			            diff =  value.actualValue - value.adjustedUpperBound;
+			            deviation = deviation + (diff / value.adjustedUpperBound) * 100;
+			            deviationCount = deviationCount + 1;
 			          }
 			        }
 			      }
@@ -327,31 +370,26 @@
 			        deviation = deviation / deviationCount;
 			      }
 			    }
-			    result[\"deviation\"] = deviation
-			    
+			    result[\"deviation\"] = deviation;
+			
 			    deviation = 0;
 			    deviationCount = 0;
 			    if (lastmonthoccurrence != null) {
 			      for each index,value in lastmonthoccurrence {
-			        endTime = value.clearedTime
+			        endTime = value.clearedTime;
 			        if (endTime == null) {
-			           endTime = dateRange().getEndTime(lastMonthRanges);
+			          endTime = lastMonthEndTime;
 			        }
-			        ttimes = date.dateRange(value.createdTime, endTime)
+			        ttimes = date.dateRange(value.createdTime, endTime);
 			        lastMonthEnergy = {
-			          criteria: [parentId == resourceId && ttime == lastMonthRanges],
-			        }
+			          criteria: [parentId == resourceId && ttime == ttimes && adjustedUpperBound > 0 && actualValue > adjustedUpperBoundField],
+			        };
 			        lastMonthReadings =  mlReadings.fetch(lastMonthEnergy);
 			        if (lastMonthReadings != null) {
 			          for each index,value in lastMonthReadings {
-			            if (value.adjustedUpperBound != 0) {
-			              diffConsu = value.actualValue - value.adjustedUpperBound;
-			              if (diffConsu > 0) {
-			                
-			                deviation = deviation + (diffConsu / value.adjustedUpperBound) * 100;
-			                deviationCount = deviationCount + 1
-			              }
-			            }
+			            diff =  value.actualValue - value.adjustedUpperBound;
+			            deviation = deviation + (diff / value.adjustedUpperBound) * 100;
+			            deviationCount = deviationCount + 1;
 			          }
 			        }
 			      }
@@ -359,8 +397,8 @@
 			        deviation = deviation / deviationCount;
 			      }
 			    }
-			    result[\"deviationLastMonth\"] = deviation
-			    
+			    result[\"deviationLastMonth\"] = deviation;
+			
 			    resultMap[resourceId] = result;
 			  }
 			  return resultMap;
@@ -374,17 +412,17 @@
 			  thisMonthRanges = date.getDateRange(\"Current Month\");
 			  lastMonthRanges = date.getDateRange(\"Last Month\");
 			  alarmoccurrenceModule = Module(\"anomalyalarmoccurrence\");
-			  occurenceThisMonthCrit = null
-			  occurenceLastMonthCrit = null
+			  occurenceThisMonthCrit = null;
+			  occurenceLastMonthCrit = null;
 			  resMap = {};
 			  occurenceThisMonthCrit = {
 			    criteria: [alarm == alarmId && createdTime == thisMonthRanges],
 			    orderBy : \"createdTime\" asc
-			  }
+			  };
 			  occurenceLastMonthCrit = {
 			    criteria: [alarm == alarmId && createdTime == lastMonthRanges],
 			    orderBy : \"createdTime\" asc
-			  }
+			  };
 			  mtba = 0;
 			  mtbaCount=0;
 			  mttc = 0;
@@ -393,26 +431,26 @@
 			  thisMonthOccurence =  alarmoccurrenceModule.fetch(occurenceThisMonthCrit);
 			  if (thisMonthOccurence != null) {
 			    for each index,value in thisMonthOccurence {
-			      createdTime = value.createdTime
+			      createdTime = value.createdTime;
 			      if (previousClearedTime != 0) {
-			        mtba = mtba+(createdTime - previousClearedTime)
-			        mtbaCount = mtbaCount+1
+			        mtba = mtba+(createdTime - previousClearedTime);
+			        mtbaCount = mtbaCount+1;
 			      }
 			      if (value.clearedTime != null) {
-			        previousClearedTime = value.clearedTime
-			        mttc = mttc + (previousClearedTime - createdTime)
-					mttcCount = mttcCount+1
+			        previousClearedTime = value.clearedTime;
+			        mttc = mttc + (previousClearedTime - createdTime);
+					mttcCount = mttcCount+1;
 			      }
 			    }
 			  }
 			  if (mtbaCount > 0) {
-			      mtba = mtba / (mtbaCount * 1000)
+			      mtba = mtba / (mtbaCount * 1000);
 			  }
 			  if (mttcCount > 0) {
-			      mttc = mttc / (mttcCount * 1000)
+			      mttc = mttc / (mttcCount * 1000);
 			  }
-			  resMap[\"mtba\"] = mtba
-			  resMap[\"mttc\"] = mttc
+			  resMap[\"mtba\"] = mtba;
+			  resMap[\"mttc\"] = mttc;
 			  
 			  mtba = 0;
 			  mtbaCount=0;
@@ -422,27 +460,27 @@
 			  lastMonthOccurence =  alarmoccurrenceModule.fetch(occurenceLastMonthCrit);
 			  if (lastMonthOccurence != null) {
 			    for each index,value in lastMonthOccurence {
-			      createdTime = value.createdTime
+			      createdTime = value.createdTime;
 			      if (previousClearedTime != 0) {
-			        mtba = mtba+(createdTime - previousClearedTime)
-			        mtbaCount = mtbaCount+1
+			        mtba = mtba+(createdTime - previousClearedTime);
+			        mtbaCount = mtbaCount+1;
 			      }
 			      if (value.clearedTime != null) {
-			        previousClearedTime = value.clearedTime
-			        mttc = mttc + (previousClearedTime - createdTime)
-					mttcCount = mttcCount+1
+			        previousClearedTime = value.clearedTime;
+			        mttc = mttc + (previousClearedTime - createdTime);
+					mttcCount = mttcCount+1;
 			      }
 			    }
 			  }
 			  if (mtbaCount > 0) {
-			      mtba = mtba / (mtbaCount * 1000)
+			      mtba = mtba / (mtbaCount * 1000);
 			  }
 			  if (mttcCount > 0) {
-			      mttc = mttc / (mttcCount * 1000)
+			      mttc = mttc / (mttcCount * 1000);
 			  }
-			  resMap[\"mtbaLastMonth\"] = mtba
-			  resMap[\"mttcLastMonth\"] = mttc
-			  return resMap
+			  resMap[\"mtbaLastMonth\"] = mtba;
+			  resMap[\"mttcLastMonth\"] = mttc;
+			  return resMap;
 			}"
 		},
 		"48": {
@@ -457,15 +495,15 @@
 			    criteria: [parentAlarm == alarmId]
 			  };
 			  thismothoccurence = Module(\"anomalyalarmoccurrence\").fetch(occurenceThisMonthCrit);
-  			subMeters =[]
-			  result = {}
+  			subMeters =[];
+			  result = {};
 			    if (thismothoccurence != null) {
 			      for each index,value in thismothoccurence {
 			   		 subMeters.add(value.resource.id);
 			      }
 			  }
   				if (subMeters.size() > 0 ) {
-                  resourceCriteria = {criteria: [id == subMeters] }
+                  resourceCriteria = {criteria: [id == subMeters] };
                   subMeters = resourceModule.fetch(resourceCriteria);
                 }
 			  resultMap[\"subMeter\"] = subMeters;
@@ -476,8 +514,8 @@
 			"description": "Energy By CDD",
 			"usage": "AnomalySummary",
 			"workflow": "Map energyByCDD(List resourceIds, Number siteId){
-			  resourceIds.sort()
-			  result = {}
+			  resourceIds.sort();
+			  result = {};
 			  date = NameSpace(\"date\");
 			  thisMonthRanges = date.getDateRange(\"Current Month\");
 			  lastMonthRanges = date.getDateRange(\"Last Month\");
@@ -487,44 +525,43 @@
 				aggregation : \"sum, totalEnergyConsumptionDelta\",
 			    groupBy: \"parentId\",
 			    orderBy: \"parentId\" asc
-			  }
+			  };
 			  thisMonthActualConsumption = Module(\"energydata\").fetch(db);
-			  log \"\"+thisMonthActualConsumption
 			  db = {
 			    criteria : [parentId == resourceIds && ttime == lastMonthRanges],
 			    field : \"totalEnergyConsumptionDelta\",
 			    aggregation : \"sum, totalEnergyConsumptionDelta\",
 			    groupBy: \"parentId\",
 			    orderBy: \"parentId\" asc
-			  }
+			  };
 			  lastMonthActualConsumption = Module(\"energydata\").fetch(db);
-			    log \"\"+lastMonthActualConsumption
+			    log \"\"+lastMonthActualConsumption;
 			  db = {
 			    criteria : [parentId == siteId && ttime == thisMonthRanges],
 			    field : \"cdd\",
 			    aggregation : \"sum\"
-			  }
+			  };
 			  thisMonthCdd = Module(\"cdd\").fetch(db);
 			  db = {
 			    criteria : [parentId == siteId && ttime == lastMonthRanges],
 			    field : \"cdd\",
 			    aggregation : \"sum\"
-			  }
+			  };
 			  lastMonthCdd = Module(\"cdd\").fetch(db);
 			  for each index,resourceId in resourceIds {
 			    resultMap = {};
 			    resultMap[\"totalThisMonth\"] = 0;
 			    if (thisMonthCdd != null) {
-			      consumption = thisMonthActualConsumption[index]
-			      consumption = consumption.totalEnergyConsumptionDelta
+			      consumption = thisMonthActualConsumption[index];
+			      consumption = consumption.totalEnergyConsumptionDelta;
 			      resultMap[\"totalThisMonth\"] = consumption/thisMonthCdd;
 			    }
 			    if (lastMonthCdd != null) {
-			      consumption = lastMonthActualConsumption[index]
-			      consumption = consumption.totalEnergyConsumptionDelta
+			      consumption = lastMonthActualConsumption[index];
+			      consumption = consumption.totalEnergyConsumptionDelta;
 			      resultMap[\"totalLastMonth\"] = consumption/lastMonthCdd;
 			    }
-			    result[resourceId] = resultMap
+			    result[resourceId] = resultMap;
 			  }
 			  return result;
 			}"
@@ -536,7 +573,7 @@
 		     {
                   clearCondition = {
                     criteria :[severity == \"Clear\" ]
-                  }
+                  };
             	date = NameSpace(\"date\");
             	ranges = date.getDateRange(\"Current Week\");
                 monthRanges = date.getDateRange(\"Current Month\");
@@ -544,7 +581,7 @@
               		criteria : [rule == ruleId && lastOccurredTime == ranges ]
             	};
                   alarmSevrityModule = Module(\"alarmseverity\");
-                  AlarmSeverityContext clearSeverityContext = alarmSevrityModule.fetch(clearCondition);
+                  clearSeverityContext = alarmSevrityModule.fetch(clearCondition);
                   clearId = clearSeverityContext.get(0).get(\"id\");
                   activeAssetcri = {
 					criteria : [rule == ruleId && severity != clearId  ]
@@ -605,7 +642,7 @@
 				    criteria: [rule == ruleId && lastOccurredTime == monthRanges]
 				  };
 				  currWeekOccurence = readingAlarmModule.fetch(woThisWeek);
-				  occurencesID = []
+				  occurencesID = [];
 				  if (currWeekOccurence != null) {
 				    for each index, value in currWeekOccurence {
 				      occurencesID.add(value.lastOccurrenceId);
@@ -613,9 +650,9 @@
 				  }
 				  alarmOccurrencesCri = {
 				    criteria: [id == occurencesID && woId != null]
-				  }
+				  };
 				  currenWeekAlarmOccurrences = alarmoccurrenceModule.fetch(alarmOccurrencesCri);
-				  currentWeekWo = 0 currentWeekWoId = []
+				  currentWeekWo = 0; currentWeekWoId = [];
 				  if (currenWeekAlarmOccurrences != null) {
 				    currentWeekWo = currenWeekAlarmOccurrences.size();
 				    for each index, value in currenWeekAlarmOccurrences {
@@ -628,7 +665,7 @@
 				    criteria: [rule == ruleId && lastOccurredTime == monthRanges]
 				  };
 				  currMonthOccurence = readingAlarmModule.fetch(woThisMonth);
-				  occurencesMonthID = []
+				  occurencesMonthID = [];
 				  if (currMonthOccurence != null) {
 				    for each index, value in currMonthOccurence {
 				      occurencesMonthID.add(value.lastOccurrenceId);
@@ -636,9 +673,9 @@
 				  }
 				  alarmMonthOccurrencesCri = {
 				    criteria: [id == occurencesMonthID && woId != null]
-				  }
+				  };
 				  currenMonthAlarmOccurrences = alarmoccurrenceModule.fetch(alarmMonthOccurrencesCri);
-				  currentMonthWo = 0 currentMonthWoId = []
+				  currentMonthWo = 0; currentMonthWoId = [];
 				  if (currenMonthAlarmOccurrences != null) {
 				    currentMonthWo = currenMonthAlarmOccurrences.size();
 				    for each index, value in currenMonthAlarmOccurrences {
@@ -733,7 +770,7 @@
 				    criteria : [rule == ruleId && lastOccurredTime == currentMonthranges ],
 				        orderBy : \"lastOccurredTime\" asc
 				  };
-				  currentMonthAlarmId = [],
+				  currentMonthAlarmId = [];
 				  readingAlarmModule = Module(\"newreadingalarm\");
 				  alarmoccurrenceModule = Module(\"alarmoccurrence\");
 				  currentMonthresult = readingAlarmModule.fetch(currentMonthCri);
@@ -741,14 +778,14 @@
 				
 				  if (currentMonthresult != null) {
 				    for each index,value in currentMonthresult {
-				      currentMonthAlarmId.add(value.id)
+				      currentMonthAlarmId.add(value.id);
 				    }
 				  }
-				  tillLastMonthAlarmId = []
+				  tillLastMonthAlarmId = [];
 				  if (tillLastMonthMonthresult != null) {
 				    
 				    for each index,value in tillLastMonthMonthresult {
-				      tillLastMonthAlarmId.add(value.id)
+				      tillLastMonthAlarmId.add(value.id);
 				    }
 				  }
 				  alarmMonthOccurenceList = alarmoccurrenceModule.fetch([alarm == currentMonthAlarmId ]);
@@ -761,12 +798,12 @@
 				  pmttc = 0;
 				  pmOverAllDuration = 0;
 				  if (alarmMonthOccurenceList != null) {
-				    perivousTriggerTime = 0
+				    perivousTriggerTime = 0;
 				     sumMtbt = 0;
 				    sumMttc = 0;
-				    countOfClearedOccurence = 0
+				    countOfClearedOccurence = 0;
 				    	 for each index,occurrence in alarmMonthOccurenceList {
-				           sumMtbt = occurrence.createdTime - perivousTriggerTime
+				           sumMtbt = occurrence.createdTime - perivousTriggerTime;
 				           perivousTriggerTime = occurrence.createdTime ;
 				           if (occurrence.clearedTime != null) {
 				             countOfClearedOccurence = countOfClearedOccurence + 1;
@@ -780,12 +817,12 @@
 				    mtbt = sumMtbt / alarmMonthOccurenceList.size();
 				  }	
 				  if (alarmOccurenceTillLMonthList != null) {
-				    perivousTriggerTime = 0
+				    perivousTriggerTime = 0;
 				      sumPmtbt = 0;
 				    sumPmttc = 0;
-				    countOfClearedOccurence = 0
+				    countOfClearedOccurence = 0;
 				    	 for each index,occurrence in alarmOccurenceTillLMonthList {
-				    	 sumPmtbt = occurrence.createdTime - perivousTriggerTime
+				    	 sumPmtbt = occurrence.createdTime - perivousTriggerTime;
 				           perivousTriggerTime = occurrence.createdTime ;
 							if (occurrence.clearedTime != null) {
 				             countOfClearedOccurence = countOfClearedOccurence + 1;
@@ -832,51 +869,52 @@
 			  thismothoccurence =  Module(\"alarmoccurrence\").fetch(occurenceThisMonthCrit);
   			  lastmonthoccurrence = Module(\"alarmoccurrence\").fetch(occurenceLastMonthCrit);
   			  adjustedUpperBoundField = NameSpace(\"module\").getField(\"adjustedUpperBound\", \"anomalydetectionmllogreadings\");
-			  result = {}
+			  result = {};
 			  for each rindex,resourceId in resourceIds {
-			    energyWastage = 0
-                lstMntWastage= 0
+			    energyWastage = 0;
+                lstMntWastage= 0;
 			    if (thismothoccurence != null) {
 			      for each index,value in thismothoccurence {
-			        endTime = value.clearedTime
+			        endTime = value.clearedTime;
 			        if (endTime == null) {
 			          endTime = thisMonthEndTime;
 			        }
-			        ttimes = date.dateRange(value.createdTime, endTime)
+			        ttimes = date.dateRange(value.createdTime, endTime);
 			        thisMonthEnergy = {
 			          criteria: [parentId == resourceId && ttime == ttimes && adjustedUpperBound > 0 && actualValue > adjustedUpperBoundField],
-			        }
+			        };
 			        currentMonthWastage =  mlReadings.fetch(thisMonthEnergy);
 			        if (currentMonthWastage != null) {
 			          for each index,value in currentMonthWastage {
-			            energyWastage =  energyWastage + value.actualValue - value.adjustedUpperBound
+			            energyWastage =  energyWastage + value.actualValue - value.adjustedUpperBound;
 			          }
 			        }
 			      }
 			  	}
-                result[resourceId] = energyWastage
+                result[resourceId] = energyWastage;
                 if (lastmonthoccurrence != null) {
 			      for each index,value in lastmonthoccurrence {
-			        endTime = value.clearedTime
+			        endTime = value.clearedTime;
 			        if (endTime == null) {
 			          endTime = lastMonthEndTime;
 			        }
-			        ttimes = date.dateRange(value.createdTime, endTime)
+			        ttimes = date.dateRange(value.createdTime, endTime);
 			        lastMonthEnergy = {
 			          criteria: [parentId == resourceId && ttime == ttimes && adjustedUpperBound > 0 && actualValue > adjustedUpperBoundField],
-			        }
+			        };
 			        lastMonthWastage =  mlReadings.fetch(lastMonthEnergy);
 			        if (lastMonthWastage != null) {
 			          for each index,value in lastMonthWastage {
-			            lstMntWastage =  lstMntWastage + value.actualValue - value.adjustedUpperBound
+			            lstMntWastage =  lstMntWastage + value.actualValue - value.adjustedUpperBound;
 			          }
 			        }
 			      }			   
 			  }
-              lsMnRs[resourceId] = lstMntWastage
+              lsMnRs[resourceId] = lstMntWastage;
 			  resultMap[\"currentMonthWastage\"] = result;
               resultMap[\"lastMonthWastage\"] = lsMnRs;
 			  return resultMap;
+			  }
 			}"
 		},
 		"100" : {
@@ -887,8 +925,8 @@
 			  thisMonthRanges = date.getDateRange(\"Current Month\");
 			  lastMonthRanges = date.getDateRange(\"Last Month\");
 			  alarmoccurrenceModule = Module(\"anomalyalarmoccurrence\");
-			  occurenceThisMonthCrit = null
-			  occurenceLastMonthCrit = null
+			  occurenceThisMonthCrit = null;
+			  occurenceLastMonthCrit = null;
 			  resMap = {};
 			  if (!isRCA) {
 			    occurenceThisMonthCrit = {
@@ -896,13 +934,13 @@
 			      field: \"resource\",
 			      aggregation: \"count,id\",
 			      groupBy: \"resource\"
-			    }
+			    };
 			    occurenceLastMonthCrit = {
 			      criteria: [alarm == alarmId && createdTime == lastMonthRanges],
 			      field: \"resource\",
 			      aggregation: \"count, id\",
 			      groupBy: \"resource\"
-			    }
+			    };
 			  }
 			  else {
 			    occurenceThisMonthCrit = {
@@ -910,39 +948,39 @@
 			      field: \"resource\",
 			      aggregation: \"count,id\",
 			      groupBy: \"resource\"
-			    }
+			    };
 			    occurenceLastMonthCrit = {
 			      criteria: [parentAlarm == alarmId && resource == resourceIds && type == 2 && createdTime == lastMonthRanges],
 			      field: \"resource\",
 			      aggregation: \"count,id\",
 			      groupBy: \"resource\"
-			    }
+			    };
 			  }
 			
 			  thismothoccurence =  alarmoccurrenceModule.fetch(occurenceThisMonthCrit);
 			  if (thismothoccurence != null) {
 			    for each index,value in thismothoccurence {
-			      res = resMap.get(value.result.id])
+			      res = resMap.get(value.result.id);
 			      if (res == null) {
-			        res = {}
-			        resMap[value.result.id] = res
+			        res = {};
+			        resMap[value.result.id] = res;
 			      }
-			      res[\"anomaliesThisMonth\"] = value.id
+			      res[\"anomaliesThisMonth\"] = value.id;
 			    }
 			  }
 			  lastmothoccurence =  alarmoccurrenceModule.fetch(occurenceLastMonthCrit);
 			  if (lastmothoccurence != null) {
 			    for each index,value in lastmothoccurence {
-			      res = resMap.get(value.result.id])
+			      res = resMap.get(value.result.id);
 			      if (res == null) {
-			        res = {}
-			        resMap[value.result.id] = res
+			        res = {};
+			        resMap[value.result.id] = res;
 			      }
-			      res[\"anomaliesLastMonth\"] = value.id
+			      res[\"anomaliesLastMonth\"] = value.id;
 			    }
 			  }
-			  log resMap
-			  return resMap
+			  log resMap;
+			  return resMap;
 			}"
         },
         "101": {
@@ -964,17 +1002,17 @@
 		            meanTimeToClear = 0;
 		            if (res != null) {
 		                firstRes =res[0];
-		                previousClearedTime = 0 
+		                previousClearedTime = 0 ;
 		                if (firstRes.clearedTime != null ) {
 		                  previousClearedTime = firstRes.createdTime;
 		                }
-		                meanTimeToTriggerSize = 0
+		                meanTimeToTriggerSize = 0;
 		                for each index,value in res {
 							if(index > 0) {
 		                        if (value != null) {
 		                            createdTime = value.createdTime;
                                   if (createdTime > previousClearedTime) {
-                                  		meanTimeToTriggerSize  = meanTimeToTriggerSize + 1
+                                  		meanTimeToTriggerSize  = meanTimeToTriggerSize + 1;
                                    		meanTimeBetweenTigger = meanTimeBetweenTigger + (createdTime - previousClearedTime); 
                                   }
 		      						if (value.createdTime != null) {
@@ -1001,7 +1039,7 @@
 		            if (previousMonthDetails != null ) {
 		                previousRes =previousMonthDetails[0];
                       if (previousRes.clearedTime != null ) {
-                        previousMonthClearedTime = previousRes.clearedTime
+                        previousMonthClearedTime = previousRes.clearedTime;
                       }
 		                for each index,value in previousMonthDetails {
 						    if(index > 0) {
@@ -1021,10 +1059,10 @@
                                   previousCreatedTime = 0;
                                   previousClearedTime = 0;
                                   if (value.clearedTime != null) {
-                                    previousClearedTime = value.clearedTime
+                                    previousClearedTime = value.clearedTime;
                                   } 
                                   if (value.createdTime != null) {
-                                    previousCreatedTime = value.createdTime
+                                    previousCreatedTime = value.createdTime;
 
                                   }
 		      						previousMonthTimeToClear = previousMonthTimeToClear + (previousClearedTime - previousCreatedTime); 
@@ -1052,7 +1090,7 @@
 		    	{
                   clearCondition = {
                     criteria :[severity == \"Clear\" ]
-                  }
+                  };
             	date = NameSpace(\"date\");
             	ranges = date.getDateRange(\"Current Week\");
                 monthRanges = date.getDateRange(\"Current Month\");
@@ -1060,7 +1098,7 @@
               		criteria : [ruleId == ruleId && createdTime == ranges ]
             	};
                   alarmSevrityModule = Module(\"alarmseverity\");
-                  AlarmSeverityContext clearSeverityContext = alarmSevrityModule.fetch(clearCondition);
+                  clearSeverityContext = alarmSevrityModule.fetch(clearCondition);
                   clearId = clearSeverityContext.get(0).get(\"id\");
                   activeAssetcri = {
 					criteria : [ruleId == ruleId && severity != clearId  ]
@@ -1117,7 +1155,7 @@
 		                  groupBy: \"woId\",
 		                };
 		
-		                currWeekWo = readingAlarmModule.fetch(woThisWeek); currentWeekWo = 0 currentWeekWoId = []
+		                currWeekWo = readingAlarmModule.fetch(woThisWeek); currentWeekWo = 0; currentWeekWoId = [];
 		                if (currWeekWo != null) {
 		                  currentWeekWo = currWeekWo.size();
 		                  for each index, value in currWeekWo {

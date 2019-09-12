@@ -60,7 +60,15 @@ public class BaseEventContext extends ModuleBaseWithCustomFields {
 	public void setAlarmOccurrence(AlarmOccurrenceContext alarmOccurrence) {
 		this.alarmOccurrence = alarmOccurrence;
 	}
-	
+
+	private BaseAlarmContext baseAlarm;
+	public BaseAlarmContext getBaseAlarm() {
+		return baseAlarm;
+	}
+	public void setBaseAlarm(BaseAlarmContext baseAlarm) {
+		this.baseAlarm = baseAlarm;
+	}
+
 	private String messageKey;
 	public String getMessageKey() {
 		if (StringUtils.isEmpty(messageKey)) {
@@ -243,6 +251,7 @@ public class BaseEventContext extends ModuleBaseWithCustomFields {
 			baseAlarm.setResource(getResource());
 			baseAlarm.setKey(getMessageKey());
 		}
+		setBaseAlarm(baseAlarm);
 		return baseAlarm;
 	}
 	

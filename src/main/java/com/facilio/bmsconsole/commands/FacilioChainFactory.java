@@ -1185,7 +1185,11 @@ public class FacilioChainFactory {
 		c.addCommand(new UpdateNewPreventiveMaintenanceJobCommand());
 		return c;
 	}
-	
+	public static FacilioChain getPreventiveMaintenanceReadingsChain() {
+		FacilioChain c = FacilioChain.getNonTransactionChain();
+		c.addCommand(new PreventiveMaintenanceReadingsCommand());
+		return c;
+	}
 	public static FacilioChain getNewPreventiveMaintenanceSummaryChain() {
 		FacilioChain c = FacilioChain.getNonTransactionChain();
 		c.addCommand(new NewPreventiveMaintenanceSummaryCommand());

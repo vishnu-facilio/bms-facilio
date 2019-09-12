@@ -50,7 +50,7 @@ public class GenericImportDataLogJob extends InstantJob{
 			else {
 				importProcessContext.setStatus(ImportProcessContext.ImportStatus.IN_PROGRESS.getValue());
 				ImportAPI.updateImportProcess(importProcessContext);
-				FacilioTimer.scheduleOneTimeJob(importProcessContext.getId(), "importData" , 10, "priority");	
+				FacilioTimer.scheduleOneTimeJobWithDelay(importProcessContext.getId(), "importData" , 10, "priority");
 			}
 			
 			LOGGER.severe("GENERIC IMPORT DATA LOG JOB COMPLETED -- ");

@@ -1,23 +1,73 @@
 package com.facilio.bmsconsole.util;
 
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Chain;
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.BulkWorkOrderContext;
+import com.facilio.bmsconsole.context.PMIncludeExcludeResourceContext;
 import com.facilio.bmsconsole.context.PMJobsContext.PMJobsStatus;
+import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.PMReminder.ReminderType;
+import com.facilio.bmsconsole.context.PMReminderAction;
+import com.facilio.bmsconsole.context.PMResourcePlannerContext;
+import com.facilio.bmsconsole.context.PMResourcePlannerReminderContext;
+import com.facilio.bmsconsole.context.PMTaskSectionTemplateTriggers;
+import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PMTriggerContext.TriggerExectionSource;
 import com.facilio.bmsconsole.context.PMTriggerContext.TriggerType;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.SpaceContext;
+import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
+import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderContext.PreRequisiteStatus;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.TaskTemplate;
 import com.facilio.bmsconsole.templates.TaskTemplate.AttachmentRequiredEnum;
 import com.facilio.bmsconsole.templates.Template;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
-import com.facilio.bmsconsole.workflow.rule.*;
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
+import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
+import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -27,9 +77,21 @@ import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.*;
+import com.facilio.db.criteria.operators.BooleanOperators;
+import com.facilio.db.criteria.operators.CommonOperators;
+import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
+import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.*;
+import com.facilio.modules.DeleteRecordBuilder;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioStatus;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleBaseWithCustomFields;
+import com.facilio.modules.ModuleFactory;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.ScheduleInfo;
@@ -40,26 +102,6 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.time.LocalTime;
-import java.time.ZonedDateTime;
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 public class PreventiveMaintenanceAPI {
 	
@@ -406,7 +448,7 @@ public class PreventiveMaintenanceAPI {
 		}
 
 		if (!isScheduled && pmTrigger.getFrequencyEnum() != FacilioFrequency.ANNUALLY) {
-			LOGGER.log(Level.SEVERE, "No Work orders generated for PM "+ pm.getId() + " PM Trigger ID: "+pmTrigger.getId());
+			LOGGER.log(Level.WARN, "No Work orders generated for PM "+ pm.getId() + " PM Trigger ID: "+pmTrigger.getId());
 			CommonCommandUtil.emailAlert("No Work orders generated for pm", "PM "+ pm.getId() + " PM Trigger ID: "+pmTrigger.getId());
 		}
 		return createBulkContextFromPM(context, pm, pmTrigger, woTemplate, nextExecutionTimes);
@@ -587,7 +629,7 @@ public class PreventiveMaintenanceAPI {
 			PreventiveMaintenanceAPI.updateResourceDetails(wo, taskMap);
 
 			if (taskMap == null || taskMap.isEmpty()) {
-				LOGGER.log(Level.SEVERE, "task map is empty " + wo.getPm().getId());
+				LOGGER.log(Level.WARN, "task map is empty " + wo.getPm().getId());
 			}
 
 			bulkWorkOrderContext.addContexts(wo, taskMap, preRequestMap, wo.getAttachments());
@@ -642,7 +684,7 @@ public class PreventiveMaintenanceAPI {
 		}
 
 		if (AccountUtil.getCurrentOrg().getOrgId() == 92 && (pm.getId() == 15831 || pm.getId() == 16191)) {
-			LOGGER.log(Level.SEVERE, "isNewPmType: "+ isNewPmType + "has sections: " + (woTemplate.getSectionTemplates() != null && !woTemplate.getSectionTemplates().isEmpty()) + "has tasks: "+ (woTemplate.getTasks() != null && !woTemplate.getTasks().isEmpty()));
+			LOGGER.log(Level.WARN, "isNewPmType: "+ isNewPmType + "has sections: " + (woTemplate.getSectionTemplates() != null && !woTemplate.getSectionTemplates().isEmpty()) + "has tasks: "+ (woTemplate.getTasks() != null && !woTemplate.getTasks().isEmpty()));
 		}
 
 		if(taskMapForNewPmExecution != null) {
@@ -810,6 +852,61 @@ public class PreventiveMaintenanceAPI {
 		return pmWos;
 	}
 
+	public static long getNextExecutionTimeForWorkOrder(long workOrderId) throws Exception {
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		FacilioModule module = modBean.getModule("workorder");
+		List<FacilioField> fields = modBean.getAllFields("workorder");
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField minCreatedTime = FieldFactory.getField("minCreatedTime", "MIN(WorkOrders.CREATED_TIME)", FieldType.NUMBER);
+
+		SelectRecordsBuilder<WorkOrderContext> workOrderBuilder = new SelectRecordsBuilder<>();
+		workOrderBuilder.module(module)
+				.beanClass(WorkOrderContext.class)
+				.select(Arrays.asList(fieldMap.get("pm"), fieldMap.get("createdTime"), fieldMap.get("resource")))
+				.andCondition(CriteriaAPI.getIdCondition(workOrderId, module));
+		List<WorkOrderContext> workOrders = workOrderBuilder.get();
+
+		if (CollectionUtils.isEmpty(workOrders)) {
+			return -1L;
+		}
+
+		WorkOrderContext workOrderContext = workOrders.get(0);
+		if (workOrderContext.getPm() == null) {
+			return -1L;
+		}
+
+		long pmId = workOrderContext.getPm().getId();
+		long previousTime = workOrderContext.getCreatedTime();
+		long resourceId = workOrderContext.getResource().getId();
+		long triggerId = -1L;
+
+		if (workOrderContext.getTrigger() != null) {
+			triggerId = workOrderContext.getTrigger().getId();
+		}
+
+		SelectRecordsBuilder woSelectBuilder = new SelectRecordsBuilder();
+		woSelectBuilder.module(module)
+				.select(Arrays.asList(minCreatedTime))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("pm"), String.valueOf(pmId), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("createdTime"), String.valueOf(previousTime), NumberOperators.GREATER_THAN))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), String.valueOf(resourceId), NumberOperators.EQUALS));
+
+		if (triggerId != -1) {
+			woSelectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("trigger"), String.valueOf(triggerId), NumberOperators.EQUALS));
+		}
+
+		List<Map<String, Object>> props = woSelectBuilder.getAsProps();
+		if (props == null || props.isEmpty()) {
+			return -1L;
+		}
+
+		if (props.get(0).get("minCreatedTime") == null) {
+			return -1L;
+		}
+
+		return (Long) props.get(0).get("minCreatedTime");
+	}
+
 	public static Long getNextExecutionTime(long pmId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		FacilioModule module = modBean.getModule("workorder");
@@ -821,7 +918,9 @@ public class PreventiveMaintenanceAPI {
 		woSelectBuilder.module(module)
 				.select(Arrays.asList(minCreatedTime))
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("status"), String.valueOf(preopen.getId()), NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(fieldMap.get("pm"), String.valueOf(pmId), NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("pm"), String.valueOf(pmId), NumberOperators.EQUALS))
+				.setAggregation()
+				;
 		List<Map<String, Object>> props = woSelectBuilder.getAsProps();
 		if (props == null || props.isEmpty()) {
 			return null;
@@ -848,9 +947,9 @@ public class PreventiveMaintenanceAPI {
 				Chain migrationChain = TransactionChainFactory.getPMMigration(activePm.getId());
 				migrationChain.execute(context);
 
-				// LOGGER.log(Level.SEVERE, "Migrated " + activePm.getId());
+				// LOGGER.log(Level.WARN, "Migrated " + activePm.getId());
 			} catch (Exception e) {
-				// LOGGER.log(Level.SEVERE, "Failed to migrate PM: " + activePm.getId(), e);
+				// LOGGER.log(Level.WARN, "Failed to migrate PM: " + activePm.getId(), e);
 				skippedPms.add(activePm.getId());
 			}
 		}
@@ -862,7 +961,7 @@ public class PreventiveMaintenanceAPI {
 		for (PreventiveMaintenance activePm: pms) {
 			try {
 				if (skipList.contains(activePm.getId())) {
-					LOGGER.log(Level.SEVERE, "Skipping activation: " + activePm.getId());
+					LOGGER.log(Level.WARN, "Skipping activation: " + activePm.getId());
 					continue;
 				}
 				PreventiveMaintenance pm = new PreventiveMaintenance();
@@ -875,9 +974,9 @@ public class PreventiveMaintenanceAPI {
 				Chain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChainForMig();
 				addTemplate.execute(context);
 
-				// LOGGER.log(Level.SEVERE, "Activated: " + activePm.getId());
+				// LOGGER.log(Level.WARN, "Activated: " + activePm.getId());
 			} catch (Exception e) {
-				LOGGER.log(Level.SEVERE, "Failed to activate PM: " + activePm.getId(), e);
+				LOGGER.log(Level.WARN, "Failed to activate PM: " + activePm.getId(), e);
 				activateSkipList.add(activePm.getId());
 			}
 		}
@@ -897,9 +996,9 @@ public class PreventiveMaintenanceAPI {
 				Chain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChainForMig();
 				addTemplate.execute(context);
 
-				// LOGGER.log(Level.SEVERE, "Deactivated: " + activePm.getId());
+				// LOGGER.log(Level.WARN, "Deactivated: " + activePm.getId());
 			} catch (Exception e) {
-				LOGGER.log(Level.SEVERE, "Failed to deactivate PM: " + activePm.getId(), e);
+				LOGGER.log(Level.WARN, "Failed to deactivate PM: " + activePm.getId(), e);
 				skipList.add(activePm.getId());
 			}
 		}
@@ -1168,9 +1267,7 @@ public class PreventiveMaintenanceAPI {
 		List<Map<String, Object>> props = getPMTriggers(idCriteria);
 		List<PMTriggerContext> pmTriggerContexts = new ArrayList<>();
 		if (props != null && !props.isEmpty()) {
-			for (Map<String, Object> triggerProp: props) {
-				pmTriggerContexts.add(FieldUtil.getAsBeanFromMap(triggerProp, PMTriggerContext.class));
-			}
+			pmTriggerContexts = FieldUtil.getAsBeanListFromMapList(props, PMTriggerContext.class);
 		}
 		return pmTriggerContexts;
 	}
@@ -1539,7 +1636,7 @@ public class PreventiveMaintenanceAPI {
 	public static void schedulePrePMReminder(PMReminder reminder, long nextExecutionTime, long triggerId,long resourceId) throws Exception {
 		if(reminder.getTypeEnum() == ReminderType.BEFORE_EXECUTION && nextExecutionTime != -1 && triggerId != -1) {
 			long id = deleteOrAddPreviousBeforeRemindersRel(reminder.getId(), triggerId,resourceId);
-			FacilioTimer.scheduleOneTimeJob(id, "PrePMReminder", nextExecutionTime-reminder.getDuration(), "facilio");
+			FacilioTimer.scheduleOneTimeJobWithTimestampInSec(id, "PrePMReminder", nextExecutionTime-reminder.getDuration(), "facilio");
 		}
 		else {
 			throw new IllegalArgumentException("Invalid parameters for scheduling Before PMReminder job"+reminder.getId());
@@ -1587,7 +1684,7 @@ public class PreventiveMaintenanceAPI {
 	
 	public static void schedulePostPMReminder(PMReminder reminder, long remindTime, long woId) throws SQLException, RuntimeException, Exception {
 		if((reminder.getTypeEnum() == ReminderType.AFTER_EXECUTION || reminder.getTypeEnum() == ReminderType.BEFORE_DUE || reminder.getTypeEnum() == ReminderType.AFTER_DUE) && remindTime != -1 && woId != -1) {
-			FacilioTimer.scheduleOneTimeJob(addPMReminderToWORel(reminder.getId(), woId), "PostPMReminder", remindTime, "facilio");
+			FacilioTimer.scheduleOneTimeJobWithTimestampInSec(addPMReminderToWORel(reminder.getId(), woId), "PostPMReminder", remindTime, "facilio");
 		}
 		else {
 			throw new IllegalArgumentException("Invalid parameters for scheduling After PMReminder job"+reminder.getId());
@@ -2076,13 +2173,13 @@ public class PreventiveMaintenanceAPI {
 
 
 	public static void migrateNewPMMigration (List<Long> orgs) throws Exception {
-		LOGGER.log(Level.SEVERE, "Starting PM Trigger migration");
+		LOGGER.log(Level.WARN, "Starting PM Trigger migration");
 		for (long i : orgs) {
 			try {
-				LOGGER.log(Level.SEVERE, "org id " + i);
+				LOGGER.log(Level.WARN, "org id " + i);
 				AccountUtil.setCurrentAccount(i);
 				if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
-					LOGGER.log(Level.SEVERE, "org is missing");
+					LOGGER.log(Level.WARN, "org is missing");
 					continue;
 				}
 
@@ -2098,7 +2195,7 @@ public class PreventiveMaintenanceAPI {
 					ScheduleInfo sinfo = pmt.getSchedule();
 					long startTime = pmt.getStartTime();
 
-					LOGGER.log(Level.SEVERE, "Migrating PM: " + pmt.getPmId() + " Trigger: " + pmt.getId() + " Frequency Type: " + sinfo.getFrequencyTypeEnum());
+					LOGGER.log(Level.WARN, "Migrating PM: " + pmt.getPmId() + " Trigger: " + pmt.getId() + " Frequency Type: " + sinfo.getFrequencyTypeEnum());
 					try {
 						ZonedDateTime zonedStartTime = DateTimeUtil.getDateTime(startTime, false).with(LocalTime.of(0, 0)).withDayOfMonth(1);
 						ZonedDateTime calculated = DateTimeUtil.getDateTime(sinfo.nextExecutionTime(zonedStartTime.toEpochSecond()), true);
@@ -2122,17 +2219,17 @@ public class PreventiveMaintenanceAPI {
 							updatePMTriggers(pmt, update);
 						}
 					} catch (Exception e) {
-						LOGGER.log(Level.SEVERE, "===> Execption Migrating PM: " + pmt.getPmId() + " Trigger: " + pmt.getId() + " Frequency Type: " + sinfo.getFrequencyTypeEnum(), e);
+						LOGGER.log(Level.WARN, "===> Execption Migrating PM: " + pmt.getPmId() + " Trigger: " + pmt.getId() + " Frequency Type: " + sinfo.getFrequencyTypeEnum(), e);
 					}
 				}
 			} catch (Exception e) {
-				LOGGER.log(Level.SEVERE, "Exception migrating org " + i, e);
+				LOGGER.log(Level.WARN, "Exception migrating org " + i, e);
 				throw e;
 			} finally {
 				AccountUtil.cleanCurrentAccount();
 			}
 		}
-		LOGGER.log(Level.SEVERE, "Completing migration");
+		LOGGER.log(Level.WARN, "Completing migration");
 	}
 
 	private static HashMap<String, Object> transformScheduleInfo(PMTriggerContext pmt, long newStartTime) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
@@ -2239,7 +2336,7 @@ public class PreventiveMaintenanceAPI {
 		try {
 			AccountUtil.setCurrentAccount(orgId);
 			if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
-				LOGGER.log(Level.SEVERE, "Org is missing");
+				LOGGER.log(Level.WARN, "Org is missing");
 				return;
 			}
 			for (long pmId: pmIds) {
@@ -2260,22 +2357,22 @@ public class PreventiveMaintenanceAPI {
 				addTemplate.execute(context);
 			}
 		} catch (Exception e) {
-			LOGGER.log(Level.SEVERE, "Exception verifying org " + orgId, e);
+			LOGGER.log(Level.WARN, "Exception verifying org " + orgId, e);
 			throw e;
 		} finally {
 			AccountUtil.cleanCurrentAccount();
-			LOGGER.log(Level.SEVERE, "Migration completed orgId: " + orgId);
+			LOGGER.log(Level.WARN, "Migration completed orgId: " + orgId);
 		}
 	}
 
 
 	public static void verifyNewPMMigration (List<Long> orgs) throws Exception {
-		LOGGER.log(Level.SEVERE, "Verifying orgs");
+		LOGGER.log(Level.WARN, "Verifying orgs");
 		for (long i : orgs) {
 			try {
 				AccountUtil.setCurrentAccount(i);
 				if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
-					LOGGER.log(Level.SEVERE, "Org is missing");
+					LOGGER.log(Level.WARN, "Org is missing");
 					continue;
 				}
 
@@ -2289,7 +2386,7 @@ public class PreventiveMaintenanceAPI {
 
 				Set<Long> inactivePms = getInactivePMs();
 				long currentTime = System.currentTimeMillis();
-				LOGGER.log(Level.SEVERE, "Verifying orgs");
+				LOGGER.log(Level.WARN, "Verifying orgs");
 				for (Map<String, Object> trigger: triggersToBeMigrated) {
 					PMTriggerContext pmt = FieldUtil.getAsBeanFromMap(trigger, PMTriggerContext.class);
 
@@ -2301,9 +2398,9 @@ public class PreventiveMaintenanceAPI {
 					long startTime = pmt.getStartTime();
 
 
-					LOGGER.log(Level.SEVERE, "PM ID " + pmt.getPmId());
-					LOGGER.log(Level.SEVERE, "TRIGGER ID " + pmt.getId());
-					LOGGER.log(Level.SEVERE, "Frequency type "+ sinfo.getFrequencyTypeEnum());
+					LOGGER.log(Level.WARN, "PM ID " + pmt.getPmId());
+					LOGGER.log(Level.WARN, "TRIGGER ID " + pmt.getId());
+					LOGGER.log(Level.WARN, "Frequency type "+ sinfo.getFrequencyTypeEnum());
 
 					ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 
@@ -2355,22 +2452,22 @@ public class PreventiveMaintenanceAPI {
 
 					if (res == null || res.isEmpty()) {
 
-						LOGGER.log(Level.SEVERE, "===> No work order found for PM ID: " + pmt.getPmId() + " Trigger Id: " + pmt.getId() + " isSame: " + isSame + " checkTime: " + checkTime);
+						LOGGER.log(Level.WARN, "===> No work order found for PM ID: " + pmt.getPmId() + " Trigger Id: " + pmt.getId() + " isSame: " + isSame + " checkTime: " + checkTime);
 					}
 				}
 			} catch (Exception e) {
-				LOGGER.log(Level.SEVERE, "Exception verifying org " + i, e);
+				LOGGER.log(Level.WARN, "Exception verifying org " + i, e);
 				throw e;
 			} finally {
 				AccountUtil.cleanCurrentAccount();
-				LOGGER.log(Level.SEVERE, "Migration completed orgId: " + i);
+				LOGGER.log(Level.WARN, "Migration completed orgId: " + i);
 			}
 		}
 	}
 
 	public static void logIf(long orgId, String message) {
 		if (AccountUtil.getCurrentOrg().getOrgId() == orgId) {
-			LOGGER.log(Level.SEVERE, message);
+			LOGGER.log(Level.WARN, message);
 		}
 	}
 
@@ -2610,13 +2707,13 @@ public class PreventiveMaintenanceAPI {
 			try {
 				AccountUtil.setCurrentAccount(i);
 				if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
-					LOGGER.log(Level.SEVERE, "Org is missing");
+					LOGGER.log(Level.WARN, "Org is missing");
 					continue;
 				}
-				LOGGER.log(Level.SEVERE, "migrating org " + i);
+				LOGGER.log(Level.WARN, "migrating org " + i);
 				List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getActivePMs(null, statusCriteria, null);
 				if (pms == null || pms.isEmpty()) {
-					LOGGER.log(Level.SEVERE, "no Pms in this org");
+					LOGGER.log(Level.WARN, "no Pms in this org");
 					continue;
 				}
 
@@ -2636,18 +2733,18 @@ public class PreventiveMaintenanceAPI {
 				Set<Map.Entry<Long, Long>> endTimes = endTimeMap.entrySet().stream().filter(m -> m.getValue() > 0).collect(Collectors.toSet());
 				adjustToEndtime(endTimes);
 
-				LOGGER.log(Level.SEVERE, "pm valid end time map " + Arrays.toString(endTimeMap.entrySet().stream().filter(m -> m.getValue() > 0).collect(Collectors.toSet()).toArray()));
-				LOGGER.log(Level.SEVERE, "pm map size " + endTimeMap.keySet().size());
-				LOGGER.log(Level.SEVERE, "pm map no end time " + Arrays.toString(endTimeMap.entrySet().stream().filter(m -> m.getValue() < 0).collect(Collectors.toSet()).toArray()));
-				LOGGER.log(Level.SEVERE, "pm map no trigger " + Arrays.toString(endTimeMap.entrySet().stream().filter(m -> m.getValue() == -1).collect(Collectors.toSet()).toArray()));
-				LOGGER.log(Level.SEVERE, "pm map not used " + Arrays.toString(endTimeMap.entrySet().stream().filter(m -> m.getValue() == -2).collect(Collectors.toSet()).toArray()));
-				LOGGER.log(Level.SEVERE, "pm map no workorder " + Arrays.toString(endTimeMap.entrySet().stream().filter(m -> m.getValue() == -3).collect(Collectors.toSet()).toArray()));
+				LOGGER.log(Level.WARN, "pm valid end time map " + Arrays.toString(endTimeMap.entrySet().stream().filter(m -> m.getValue() > 0).collect(Collectors.toSet()).toArray()));
+				LOGGER.log(Level.WARN, "pm map size " + endTimeMap.keySet().size());
+				LOGGER.log(Level.WARN, "pm map no end time " + Arrays.toString(endTimeMap.entrySet().stream().filter(m -> m.getValue() < 0).collect(Collectors.toSet()).toArray()));
+				LOGGER.log(Level.WARN, "pm map no trigger " + Arrays.toString(endTimeMap.entrySet().stream().filter(m -> m.getValue() == -1).collect(Collectors.toSet()).toArray()));
+				LOGGER.log(Level.WARN, "pm map not used " + Arrays.toString(endTimeMap.entrySet().stream().filter(m -> m.getValue() == -2).collect(Collectors.toSet()).toArray()));
+				LOGGER.log(Level.WARN, "pm map no workorder " + Arrays.toString(endTimeMap.entrySet().stream().filter(m -> m.getValue() == -3).collect(Collectors.toSet()).toArray()));
 			} catch (Exception e) {
-				LOGGER.log(Level.SEVERE, "Exception migrating org " + i, e);
+				LOGGER.log(Level.WARN, "Exception migrating org " + i, e);
 				throw e;
 			} finally {
 				AccountUtil.cleanCurrentAccount();
-				LOGGER.log(Level.SEVERE, "Migration completed orgId: " + i);
+				LOGGER.log(Level.WARN, "Migration completed orgId: " + i);
 			}
 		}
 	}
@@ -2749,14 +2846,14 @@ public class PreventiveMaintenanceAPI {
 			try {
 				AccountUtil.setCurrentAccount(i);
 				if (AccountUtil.getCurrentOrg() == null || AccountUtil.getCurrentOrg().getOrgId() <= 0) {
-					LOGGER.log(Level.SEVERE, "Org is missing");
+					LOGGER.log(Level.WARN, "Org is missing");
 					continue;
 				}
 
-				LOGGER.log(Level.SEVERE, "Verifying org " + i);
+				LOGGER.log(Level.WARN, "Verifying org " + i);
 				List<PreventiveMaintenance> pms = PreventiveMaintenanceAPI.getActivePMs(null, statusCriteria, null);
 				if (pms == null || pms.isEmpty()) {
-					LOGGER.log(Level.SEVERE, "no Pms in this org");
+					LOGGER.log(Level.WARN, "no Pms in this org");
 					continue;
 				}
 
@@ -2772,13 +2869,13 @@ public class PreventiveMaintenanceAPI {
 					boolean isSuccess = verifyEndTime(preventiveMaintenance.getId(), preventiveMaintenance.getWoGeneratedUpto());
 					successMap.put(pmId, isSuccess);
 				}
-				LOGGER.log(Level.SEVERE, "PMs with wrong end time: " + Arrays.toString(successMap.entrySet().stream().filter(k -> !k.getValue()).distinct().toArray()));
+				LOGGER.log(Level.WARN, "PMs with wrong end time: " + Arrays.toString(successMap.entrySet().stream().filter(k -> !k.getValue()).distinct().toArray()));
 			} catch (Exception e) {
-				LOGGER.log(Level.SEVERE, "Exception verifying org " + i, e);
+				LOGGER.log(Level.WARN, "Exception verifying org " + i, e);
 				throw e;
 			} finally {
 				AccountUtil.cleanCurrentAccount();
-				LOGGER.log(Level.SEVERE, "Migration completed orgId: " + i);
+				LOGGER.log(Level.WARN, "Migration completed orgId: " + i);
 			}
 		}
 	}

@@ -48,7 +48,7 @@ public interface UserBean {
 	
 	public User getUserFromPhone(String phone) throws Exception;
 	
-	public List<User> getUsers(Criteria criteria, boolean fetchDeleted, Collection<Long>... ouids) throws Exception;
+	public List<User> getUsers(Criteria criteria, boolean fetchOnlyActiveUsers, boolean fetchDeleted, Collection<Long>... ouids) throws Exception;
 	
 	public Map<Long, List<User>> getUsersWithRoleAsMap(Collection<Long> roleIds) throws Exception;
 	

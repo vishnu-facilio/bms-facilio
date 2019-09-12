@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.modules.*;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 
@@ -23,12 +24,7 @@ import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.AggregateOperator;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FacilioStatus.StatusType;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 
 ;
@@ -201,7 +197,7 @@ public class FetchExtraMetaForAlarmRuleCommand extends FacilioCommand {
 		 FacilioModule ticketModule = modBean.getModule(FacilioConstants.ContextNames.TICKET);
 		
 		List<FacilioField> fetchFields = new ArrayList<>();
-		FacilioField countField = AggregateOperator.CommonAggregateOperator.COUNT.getSelectField(fieldMap.get("resource"));
+		FacilioField countField = BmsAggregateOperators.CommonAggregateOperator.COUNT.getSelectField(fieldMap.get("resource"));
 		countField.setName("count");
 		fetchFields.add(countField);
 		fetchFields.add(fieldMap.get("resource"));

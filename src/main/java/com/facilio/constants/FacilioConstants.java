@@ -6,17 +6,16 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.facilio.bmsconsole.context.reservation.ExternalAttendeeContext;
-import com.facilio.bmsconsole.context.reservation.InternalAttendeeContext;
-import com.facilio.bmsconsole.context.reservation.ReservationContext;
-import com.facilio.bmsconsole.view.CustomModuleData;
-import com.facilio.controlaction.util.ControlActionUtil;
-
 import org.json.simple.JSONObject;
 
 import com.facilio.activity.ActivityContext;
 import com.facilio.bmsconsole.context.*;
+import com.facilio.bmsconsole.context.reservation.ExternalAttendeeContext;
+import com.facilio.bmsconsole.context.reservation.InternalAttendeeContext;
+import com.facilio.bmsconsole.context.reservation.ReservationContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
+import com.facilio.bmsconsole.view.CustomModuleData;
+import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.mv.context.MVAdjustment;
@@ -237,6 +236,7 @@ public class FacilioConstants {
 		public static final String ALARM_ENTITY_ID = "alarmentityid";
 		public static final String ALARM_OCCURRENCE = "alarmoccurrence";
 		public static final String ANOMALY_ALARM_OCCURRENCE = "anomalyalarmoccurrence";
+		public static final String READING_ALARM_OCCURRENCE = "readingalarmoccurrence";
 		public static final String LATEST_ALARM_OCCURRENCE = "latestAlarmOccurrence";
 		public static final String BASE_ALARM = "basealarm";
 		public static final String BASE_EVENT = "baseevent";
@@ -262,6 +262,7 @@ public class FacilioConstants {
 		public static final String INVENTORY_CATEGORY = "inventoryCategory";
 		
 		public static final String TASK = "task";
+		public static final String TASK_ERRORS = "taskErrors";
 		public static final String TASK_LIST = "tasks";
 		public static final String TASK_MAP = "taskMap";
 		public static final String TASK_SECTIONS = "taskSections";
@@ -608,6 +609,7 @@ public class FacilioConstants {
 		public static final String ONLY_POST_REMINDER_TYPE = "onlyPostReminder";
 		public static final String PM_REMINDER_TYPE = "pmReminderType";
 		public static final String PM_TRIGGERS = "pmtriggers";
+		public static final String FETCH_TRIGGERS = "fetchtriggers";
 		public static final String PM_JOB = "pmjob";
 		public static final String PM_RESOURCE_ID = "pmresourceid";
 		public static final String MULTI_PM_RESOURCE_IDS = "multipmresourceIds";
@@ -1191,6 +1193,13 @@ public class FacilioConstants {
 
 		public static final Object DEFAULT_DATE = "defaultDate";
 		public static final Object READING_RULE_ALARM_OCCURANCE = "readingRuleAlarmOccurance";
+		
+		public static final String ASSET_MOVEMENT = "assetmovement";
+		public static final String ASSET_MOVEMENT_RECORDS = "assetmovementrecords";
+		
+		public static final int SITE_BOUNDARY_RADIUS = 1000; //meter 
+		public static final int ASSET_BOUNDARY_RADIUS = 10; //meter 
+		
 
 		public static final String IS_EMAIL_VERIFICATION_NEEDED = "isEmailVerificationNeeded";
 
@@ -1239,6 +1248,7 @@ public class FacilioConstants {
 			classMap.put(ASSET_DEPARTMENT, AssetDepartmentContext.class);
 			classMap.put(ASSET_PHOTOS, PhotosContext.class);
 			classMap.put(ASSET_ACTIVITY, ActivityContext.class);
+			classMap.put(ASSET_MOVEMENT, AssetMovementContext.class);
 			classMap.put(WORKORDER_ACTIVITY, ActivityContext.class);
 			classMap.put(ENERGY_METER, EnergyMeterContext.class);
 			classMap.put(CHILLER, ChillerContext.class);

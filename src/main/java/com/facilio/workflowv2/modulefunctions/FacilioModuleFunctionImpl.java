@@ -22,15 +22,7 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fs.FileInfo;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.AggregateOperator;
-import com.facilio.modules.DeleteRecordBuilder;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.InsertRecordBuilder;
-import com.facilio.modules.ModuleBaseWithCustomFields;
-import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.UpdateRecordBuilder;
+import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.workflows.util.WorkflowUtil;
@@ -211,10 +203,10 @@ public class FacilioModuleFunctionImpl implements FacilioModuleFunction {
 					
 					selectBuilder.aggregate(expAggregateOpp, aggrField);
 					
-					if(expAggregateOpp.equals(AggregateOperator.SpecialAggregateOperator.FIRST_VALUE)) {
+					if(expAggregateOpp.equals(BmsAggregateOperators.SpecialAggregateOperator.FIRST_VALUE)) {
 						selectBuilder.limit(1);
 					}
-					else if(expAggregateOpp.equals(AggregateOperator.SpecialAggregateOperator.LAST_VALUE)) {
+					else if(expAggregateOpp.equals(BmsAggregateOperators.SpecialAggregateOperator.LAST_VALUE)) {
 						boolean isLastValueWithTimeRange = false;
 						
 						Map<String, Condition> conditions = dbParamContext.getCriteria().getConditions();

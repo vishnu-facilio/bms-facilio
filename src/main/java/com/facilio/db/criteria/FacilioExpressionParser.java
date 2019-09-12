@@ -16,6 +16,7 @@ import com.facilio.db.criteria.operators.Operator;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.BaseLineContext;
+import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.udojava.evalex.Expression;
@@ -289,7 +290,7 @@ public class FacilioExpressionParser {
 					AggregateOperator expAggregateOpp = AggregateOperator.getAggregateOperator(aggregateFunctionString);
 					select = expAggregateOpp.getSelectField(select);
 
-					if(expAggregateOpp.equals(AggregateOperator.SpecialAggregateOperator.FIRST_VALUE)) {
+					if(expAggregateOpp.equals(BmsAggregateOperators.SpecialAggregateOperator.FIRST_VALUE)) {
 						selectBuilder.limit(1);
 					}
 				}

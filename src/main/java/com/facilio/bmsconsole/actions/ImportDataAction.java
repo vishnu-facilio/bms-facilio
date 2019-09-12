@@ -265,7 +265,7 @@ public class ImportDataAction extends FacilioAction {
 	public String importReading() throws Exception{
 		importProcessContext.setStatus(ImportProcessContext.ImportStatus.IN_PROGRESS.getValue());
 		ImportAPI.updateImportProcess(importProcessContext);
-		FacilioTimer.scheduleOneTimeJob(importProcessContext.getId(), "importReading", 10, "priority");
+		FacilioTimer.scheduleOneTimeJobWithTimestampInSec(importProcessContext.getId(), "importReading", 10, "priority");
 		return SUCCESS;
 	}
 	
@@ -282,7 +282,7 @@ public class ImportDataAction extends FacilioAction {
 				
 		importProcessContext.setStatus(ImportProcessContext.ImportStatus.IN_PROGRESS.getValue());
 		ImportAPI.updateImportProcess(importProcessContext);
-		FacilioTimer.scheduleOneTimeJob(importProcessContext.getId(), "importData" , 10, "priority");
+		FacilioTimer.scheduleOneTimeJobWithTimestampInSec(importProcessContext.getId(), "importData" , 10, "priority");
 		
 		return SUCCESS;
 	}

@@ -184,7 +184,9 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 				.module(module)
 				.fields(fields)
 				.andCondition(CriteriaAPI.getIdCondition(record.getId(), module));
+		updateBuilder.withChangeSet(ModuleBaseWithCustomFields.class);
 		updateBuilder.updateViaMap(prop);
+		context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, updateBuilder.getChangeSet());
 		
 		if ((module.getName().contains("workorder")) && oldState != null && oldState.getDisplayName() != null && facilioStatus != null && facilioStatus.getDisplayName() != null) {
 			JSONObject info = new JSONObject();
@@ -200,6 +202,16 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 			info.put("newValue", facilioStatus.getDisplayName());
 			CommonCommandUtil.addActivityToContext(record.getId(), -1, AssetActivityType.UPDATE_STATUS, info, (FacilioContext) context);
 		}
+		
+		if ((module.getName().contains("assetmovement")) && oldState != null && oldState.getDisplayName() != null && facilioStatus != null && facilioStatus.getDisplayName() != null) {
+			JSONObject info = new JSONObject();
+			info.put("status", facilioStatus.getDisplayName());
+			info.put("oldValue", oldState.getDisplayName());
+			info.put("newValue", facilioStatus.getDisplayName());
+			CommonCommandUtil.addActivityToContext(record.getId(), -1, AssetActivityType.LOCATION, info, (FacilioContext) context);
+		}
+		
+		
 		checkAutomatedCondition(facilioStatus, module, record, context);
 		addScheduledJobIfAny(facilioStatus.getId(), module.getName(), record, (FacilioContext) context);
 	}
@@ -259,7 +271,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 		builder.save();
 		
 		StateflowTransitionContext stateFlow = (StateflowTransitionContext) ruleContext;
-		FacilioTimer.scheduleOneTimeJob((long) prop.get("id"), "StateFlowScheduledRule", stateFlow.getScheduleTime(), "priority");
+		FacilioTimer.scheduleOneTimeJobWithDelay((long) prop.get("id"), "StateFlowScheduledRule", stateFlow.getScheduleTime(), "priority");
 	}
 
 	private static FacilioModule getTimeLogModule(FacilioModule module) throws Exception {

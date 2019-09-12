@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.Set;
 
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.modules.AggregateOperator;
+import com.facilio.modules.BmsAggregateOperators;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -113,6 +115,11 @@ public class BmsDBConf extends DBConf {
     }
 
     @Override
+    public String getDefaultAppDB() {
+        return FacilioProperties.getDefaultAppDB();
+    }
+
+    @Override
     public Number convertToDisplayUnit(Object val, NumberField field) throws Exception {
         return UnitsUtil.convertToDisplayUnit(val, field);
     }
@@ -138,7 +145,7 @@ public class BmsDBConf extends DBConf {
 
     public HashMap<String, String> getSecret(String secretKey) {
         HashMap<String, String> password = FacilioProperties.getPassword(secretKey);
-        String url = String.format("jdbc:mysql://%s:%s/%s", password.get("host"), password.get("port"), password.getOrDefault("db.default.db", "bms"));
+        String url = String.format("jdbc:mysql://%s:%s/", password.get("host"), password.get("port"));
         password.put("url", url);
         return password;
     }
@@ -165,6 +172,22 @@ public class BmsDBConf extends DBConf {
             return new Locale("en", AccountUtil.getCurrentOrg().getCountry());
         }
         return Locale.US;
+    }
+
+    @Override
+    public String getCurrentDataSource() {
+        if (AccountUtil.getCurrentOrg() != null) {
+            return AccountUtil.getCurrentOrg().getDatasource();
+        }
+        return null;
+    }
+
+    @Override
+    public String getCurrentDBName() {
+        if (AccountUtil.getCurrentOrg() != null) {
+            return AccountUtil.getCurrentOrg().getDbName();
+        }
+        return null;
     }
 
     /**
@@ -249,6 +272,16 @@ public class BmsDBConf extends DBConf {
     public void markFilesAsDeleted(List<Long> fileIds) throws Exception {
         FileStore fs = FileStoreFactory.getInstance().getFileStore();
         fs.markAsDeleted(fileIds);
+    }
+
+    @Override
+    public AggregateOperator getAggregateOperator(int value) {
+        return BmsAggregateOperators.getAggregateOperator(value);
+    }
+
+    @Override
+    public AggregateOperator getAggregateOperator(String value) {
+        return BmsAggregateOperators.getAggregateOperator(value);
     }
 
     private static final Map<Long, Map<String, Map<String, SelectQueryCache>>> QUERY_CACHE = new HashMap<>();

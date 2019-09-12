@@ -10,6 +10,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import com.facilio.accounts.util.AccountUtil;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -56,6 +57,7 @@ public class Executor implements Runnable {
 		String threadName = currentThread.getName();
 		currentThread.setName("Executor-"+this.name);
 		try {
+			AccountUtil.cleanCurrentAccount();
 			handleTimeOut();
 			long startTime = System.currentTimeMillis()/1000;
 			long endTime = startTime+bufferPeriod;

@@ -71,7 +71,7 @@ public class ScheduleWOStatusChange extends FacilioJob {
 //            	if(wo.getTasks() == null || wo.getTasks().isEmpty()) {
 //            		continue;
 //            	}
-                FacilioTimer.scheduleOneTimeJob(wo.getId(), "OpenScheduledWO", wo.getScheduledStart()/1000, "priority");
+                FacilioTimer.scheduleOneTimeJobWithTimestampInSec(wo.getId(), "OpenScheduledWO", wo.getScheduledStart()/1000, "priority");
             }
 
             updateJobStatus(wos);

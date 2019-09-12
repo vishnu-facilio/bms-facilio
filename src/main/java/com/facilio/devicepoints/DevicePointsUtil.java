@@ -58,6 +58,10 @@ public  class DevicePointsUtil {
 		if(payLoad.containsKey(DevicePointsKeys.CONTROLLER_TYPE)){
 			controllerType = Integer.parseInt(payLoad.get(DevicePointsKeys.CONTROLLER_TYPE).toString());
 		}
+
+		if(deviceName == null || deviceName.trim().isEmpty()) {
+			deviceName = String.valueOf(instanceNumber);
+		}
 		
 		JSONObject properties=(JSONObject) payLoad.get(DevicePointsKeys.PROPERTIES);
 		

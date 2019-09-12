@@ -1,12 +1,10 @@
 package com.facilio.tasker;
 
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 
+import com.facilio.service.FacilioService;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.json.simple.parser.ParseException;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.chain.FacilioContext;
@@ -15,8 +13,6 @@ import com.facilio.tasker.ScheduleInfo.FrequencyType;
 import com.facilio.tasker.config.InstantJobConf;
 import com.facilio.tasker.job.JobContext;
 import com.facilio.tasker.job.JobStore;
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 
 public class FacilioTimer {
 	
@@ -88,8 +84,7 @@ public class FacilioTimer {
 		if (AccountUtil.getCurrentAccount() != null) {
 			jc.setTimezone(AccountUtil.getCurrentAccount().getTimeZone());
 		}
-
-		JobStore.addJob(jc);
+		FacilioService.runAsService(() -> JobStore.addJob(jc));
 	}
 
 	public static void scheduleInstantJob(String jobName, FacilioContext context){
@@ -108,12 +103,12 @@ public class FacilioTimer {
 		
 	}
 
-	public static void scheduleOneTimeJob(long jobId, String jobName, int delayInSec, String executorName) throws Exception {
+	public static void scheduleOneTimeJobWithDelay(long jobId, String jobName, int delayInSec, String executorName) throws Exception {
 		long nextExecutionTime = (System.currentTimeMillis()/1000)+delayInSec;
-		scheduleOneTimeJob(jobId, jobName, nextExecutionTime, executorName);
+		scheduleOneTimeJobWithTimestampInSec(jobId, jobName, nextExecutionTime, executorName);
 	}
 	
-	public static void scheduleOneTimeJob(long jobId, String jobName, long nextExecutionTime, String executorName) throws Exception {
+	public static void scheduleOneTimeJobWithTimestampInSec(long jobId, String jobName, long nextExecutionTime, String executorName) throws Exception {
 		
 		JobContext jc = new JobContext();
 		jc.setJobId(jobId);
@@ -126,23 +121,23 @@ public class FacilioTimer {
 		if (AccountUtil.getCurrentAccount() != null) {
 			jc.setTimezone(AccountUtil.getCurrentAccount().getTimeZone());
 		}
-		JobStore.addJob(jc);
+		FacilioService.runAsService(() -> JobStore.addJob(jc));
 	}
 	
 	public static void deleteJob(long jobId, String jobName) throws Exception {
-		JobStore.deleteJob(jobId, jobName);
+		FacilioService.runAsService(() -> JobStore.deleteJob(jobId, jobName));
 	}
 	
 	public static void deleteJobs(List<Long> jobIds, String jobName) throws Exception {
-		JobStore.deleteJobs(jobIds, jobName);
+		FacilioService.runAsService(() -> JobStore.deleteJobs(jobIds, jobName));
 	}
 	
-	public static JobContext getJob(long jobId, String jobName) throws JsonParseException, JsonMappingException, SQLException, IOException, ParseException {
-		return JobStore.getJob(jobId, jobName);
+	public static JobContext getJob(long jobId, String jobName) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> JobStore.getJob(jobId, jobName));
 	}
 	
-	public static List<JobContext> getJobs(List<Long> jobIds, String jobName) throws JsonParseException, JsonMappingException, SQLException, IOException, ParseException {
-		return JobStore.getJobs(jobIds, jobName);
+	public static List<JobContext> getJobs(List<Long> jobIds, String jobName) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> JobStore.getJobs(jobIds, jobName));
 	}
 	
 	private static long getCurrentOrgId() {

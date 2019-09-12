@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
@@ -40,7 +41,8 @@ public class BulkAddWorkOrderCommand extends FacilioCommand{
 
         List<WorkOrderContext> workOrders = bulkWorkOrderContext.getWorkOrderContexts();
         if (workOrders == null || workOrders.isEmpty()) {
-            throw new IllegalArgumentException("WorkOrder list Object cannot be null");
+            LOGGER.log(Level.SEVERE, "WorkOrder list Object cannot be null");
+            return false;
         }
 
         TicketAPI.associateTenant(workOrders);

@@ -24,9 +24,9 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.SelectRecordsBuilder;
-import com.facilio.modules.AggregateOperator.CommonAggregateOperator;
-import com.facilio.modules.AggregateOperator.DateAggregateOperator;
-import com.facilio.modules.AggregateOperator.NumberAggregateOperator;
+import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
+import com.facilio.modules.BmsAggregateOperators.DateAggregateOperator;
+import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.time.DateRange;
 

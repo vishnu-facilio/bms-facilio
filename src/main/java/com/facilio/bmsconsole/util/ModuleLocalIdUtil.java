@@ -59,7 +59,7 @@ public class ModuleLocalIdUtil {
 		modulesWithLocalId.add(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS_LINE_ITEMS);
 		modulesWithLocalId.add(FacilioConstants.ContextNames.TERMS_AND_CONDITIONS);
-	
+		
 		modulesWithLocalId.add(FacilioConstants.ContextNames.SHIPMENT);
 
 		return modulesWithLocalId;
@@ -91,7 +91,7 @@ public class ModuleLocalIdUtil {
 		Connection conn = null;
 		boolean olderCommit = false;
 		try {
-			conn = FacilioConnectionPool.getInstance().getConnectionFromPool();//Getting connection directly from pool because this should be done outside transaction. Should be used with caution
+			conn = FacilioConnectionPool.getInstance().getDirectConnection();//Getting connection directly from pool because this should be done outside transaction. Should be used with caution
 			olderCommit = conn.getAutoCommit();
 			conn.setAutoCommit(false);
 //			if (AccountUtil.getCurrentOrg().getId() == 155 || AccountUtil.getCurrentOrg().getId() == 151 || AccountUtil.getCurrentOrg().getId() == 92) {

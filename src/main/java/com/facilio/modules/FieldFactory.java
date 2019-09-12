@@ -11,7 +11,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.facilio.modules.fields.*;
 import org.apache.commons.lang3.tuple.Pair;
 
 import com.facilio.accounts.util.AccountConstants;
@@ -20,6 +19,12 @@ import com.facilio.agent.AgentKeys;
 import com.facilio.agentIntegration.AgentIntegrationKeys;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.tasker.tasks.EventUtil;
+import com.facilio.modules.fields.BooleanField;
+import com.facilio.modules.fields.EnumField;
+import com.facilio.modules.fields.FacilioField;
+import com.facilio.modules.fields.LookupField;
+import com.facilio.modules.fields.NumberField;
+import com.facilio.modules.fields.SystemEnumField;
 
 public class FieldFactory {
 
@@ -90,6 +95,7 @@ public class FieldFactory {
 			newAlarmsFieldsInclude.add("lastCreatedTime");
 			newAlarmsFieldsInclude.add("lastOccurredTime");
 			newAlarmsFieldsInclude.add("resource");
+//			newAlarmsFieldsInclude.add("rule");
 			newAlarmsFieldsInclude.add("readingAlarmCategory");
 		}
 		public static List<String> workOrderFieldsInclude = new ArrayList<String>();
@@ -103,11 +109,9 @@ public class FieldFactory {
 			workOrderFieldsInclude.add("category");
 			workOrderFieldsInclude.add("createdBy");
 			workOrderFieldsInclude.add("createdTime");
+			workOrderFieldsInclude.add("totalCost");
 			workOrderFieldsInclude.add("dueDate");
 			workOrderFieldsInclude.add("trigger");
-//			workOrderFieldsInclude.add("estimatedEnd");
-//			workOrderFieldsInclude.add("estimatedStart");
-			workOrderFieldsInclude.add("estimatedWorkDuration");
 			workOrderFieldsInclude.add("modifiedTime");
 			workOrderFieldsInclude.add("noOfClosedTasks");
 			workOrderFieldsInclude.add("priority");

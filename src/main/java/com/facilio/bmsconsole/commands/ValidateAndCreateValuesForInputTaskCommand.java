@@ -20,6 +20,7 @@ import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.util.DBConf;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.SelectRecordsBuilder;
@@ -39,7 +40,7 @@ public class ValidateAndCreateValuesForInputTaskCommand extends FacilioCommand {
 		if(task != null) {
 			List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 			if(recordIds != null && !recordIds.isEmpty()) {
-				Map<Long, TaskContext> oldTasks = getTask(recordIds);
+				Map<Long, TaskContext> oldTasks = TicketAPI.getTaskMap(recordIds);
 				// Bulk operation for closing multiple tasks check only.
 				for(int i = 0; i < recordIds.size(); i++) {
 					TaskContext completeRecord = oldTasks.get(recordIds.get(i));
@@ -130,6 +131,10 @@ public class ValidateAndCreateValuesForInputTaskCommand extends FacilioCommand {
 			ReadingContext reading = new ReadingContext();
 			reading.setId(oldTask.getReadingDataId());
 			reading.addReading(field.getName(), newTask.getInputValue());
+			if(newTask.getReadingFieldUnit() != -1)
+			{
+				reading.addReading(field.getName()+DBConf.NUMBER_FIELD_UNIT_SUFFIX, newTask.getReadingFieldUnit());	
+			}
 			reading.setTtime(newTask.getInputTime());
 			long resourceId = isPMReading ? pmId : oldTask.getResource().getId();
 			reading.setParentId(resourceId);
@@ -148,28 +153,6 @@ public class ValidateAndCreateValuesForInputTaskCommand extends FacilioCommand {
 			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 			context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
 		}
-	}
-	
-	private Map<Long, TaskContext> getTask(List<Long> id) throws Exception {
-		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.TASK);
-		SelectRecordsBuilder<TaskContext> builder = new SelectRecordsBuilder<TaskContext>()
-														.module(module)
-														.beanClass(TaskContext.class)
-														.select(modBean.getAllFields(FacilioConstants.ContextNames.TASK))
-														.andCondition(CriteriaAPI.getIdCondition(id, module));
-		
-		Map<Long, TaskContext> tasks = builder.getAsMap();
-		if(tasks != null && !tasks.isEmpty()) {
-			for (Entry<Long, TaskContext> entry : tasks.entrySet()) {
-				TaskContext task = entry.getValue();
-				if (task.getReadingFieldId() != -1) {
-					task.setReadingField(modBean.getField(task.getReadingFieldId()));
-				}
-			}
-			return tasks;
-		}
-		return null;
 	}
 	
 	private WorkOrderContext getWO(long id) throws Exception {

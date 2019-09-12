@@ -125,6 +125,8 @@ public class GetToolTransactionsListCommand extends FacilioCommand {
 			finalCriteria.andCriteria(criteria);
 			finalCriteria.orCriteria(criteriaIssue);
 			builder.andCriteria(finalCriteria);
+			builder.andCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("remainingQuantity"),
+					String.valueOf(0), NumberOperators.GREATER_THAN));
 
 		}
 		else if(getShowToolsForIssue != null && getShowToolsForIssue) {
@@ -135,6 +137,8 @@ public class GetToolTransactionsListCommand extends FacilioCommand {
 
 			builder.andCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("issuedTo"),
 					String.valueOf(AccountUtil.getCurrentUser().getOuid()), NumberOperators.EQUALS));
+			builder.andCondition(CriteriaAPI.getCondition(toolTransactionsFieldsMap.get("remainingQuantity"),
+					String.valueOf(0), NumberOperators.GREATER_THAN));
 
 		}
 

@@ -6,19 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.accounts.dto.Permissions;
-import com.facilio.accounts.dto.Role;
-import com.facilio.accounts.util.AccountConstants.CommonPermission;
-import com.facilio.accounts.util.AccountConstants.GroupMemberRole;
-import com.facilio.accounts.util.AccountConstants.ModulePermission;
-import com.facilio.accounts.util.AccountConstants.Permission;
-import com.facilio.accounts.util.AccountConstants.PermissionGroup;
-import com.facilio.accounts.util.AccountConstants.SessionType;
-import com.facilio.accounts.util.AccountConstants.UserType;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 
 public class IAMAccountConstants {
@@ -518,6 +508,48 @@ public class IAMAccountConstants {
 			return field;
 		}
 		
+		public static FacilioModule getUserMobileSettingModule() {
+			FacilioModule userModule = new FacilioModule();
+			userModule.setName("userMobileSetting");
+			userModule.setDisplayName("User Mobile Setting");
+			userModule.setTableName("User_Mobile_Setting");
+
+			return userModule;
+		}
+		
+		public static List<FacilioField> getUserMobileSettingFields() {
+			FacilioModule module = getUserMobileSettingModule();
+			List<FacilioField> fields = new ArrayList<>();
+
+			FacilioField uid = new FacilioField();
+			uid.setName("userId");
+			uid.setDataType(FieldType.NUMBER);
+			uid.setColumnName("USERID");
+			uid.setModule(module);
+			fields.add(uid);
+
+			FacilioField userMobileSettingId = new FacilioField();
+			userMobileSettingId.setName("userMobileSettingId");
+			userMobileSettingId.setDataType(FieldType.ID);
+			userMobileSettingId.setColumnName("USER_MOBILE_SETTING_ID");
+			userMobileSettingId.setModule(module);
+			fields.add(userMobileSettingId);
+
+			FacilioField mobileInstanceId = new FacilioField();
+			mobileInstanceId.setName("mobileInstanceId");
+			mobileInstanceId.setDataType(FieldType.STRING);
+			mobileInstanceId.setColumnName("MOBILE_INSTANCE_ID");
+			mobileInstanceId.setModule(module);
+			fields.add(mobileInstanceId);
+
+			fields.add(FieldFactory.getField("createdTime", "CREATED_TIME", module, FieldType.DATE_TIME));
+
+			fields.add(FieldFactory.getField("fromPortal", "IS_FROM_PORTAL", module, FieldType.BOOLEAN));
+
+			return fields;
+		}
+
+
 		
 		
 

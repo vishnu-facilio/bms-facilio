@@ -50,12 +50,12 @@ public class SchedulePreOpenWOCreateCommand extends FacilioCommand {
             return false;
         }
 
-        long delay = 300;
+        int delay = 300;
 
         for (Long id: pmIds) {
             FacilioTimer.deleteJob(id, "SchedulePMBackgroundJob");
             BmsJobUtil.deleteJobWithProps(id, "ScheduleNewPM");
-            FacilioTimer.scheduleOneTimeJob(id, "SchedulePMBackgroundJob", delay, "priority");
+            FacilioTimer.scheduleOneTimeJobWithDelay(id, "SchedulePMBackgroundJob", delay, "priority");
         }
         return false;
     }

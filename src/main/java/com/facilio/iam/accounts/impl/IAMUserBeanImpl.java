@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -32,7 +31,8 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.IAMUser;
 import com.facilio.accounts.dto.Organization;
-import com.facilio.aws.util.AwsUtil;
+import com.facilio.accounts.dto.UserMobileSetting;
+import com.facilio.accounts.util.AccountConstants;
 import com.facilio.bmsconsole.util.EncryptionUtil;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -42,7 +42,9 @@ import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
+import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.db.transaction.FacilioTransactionManager;
 import com.facilio.fw.LRUCache;
@@ -51,13 +53,12 @@ import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
 import com.facilio.iam.accounts.util.IAMAccountConstants;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
-import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.iam.accounts.util.IAMUtil;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.service.FacilioService;
 
 ;
 
@@ -96,13 +97,11 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	
-	public boolean updateUserv2(IAMUser user) throws Exception {
-		return updateUserEntryv2(user);
+	public boolean updateUserv2(IAMUser user, List<FacilioField> fields) throws Exception {
+		return updateUserEntryv2(user, fields);
 	}
 
-	private boolean updateUserEntryv2(IAMUser user) throws Exception {
-		List<FacilioField> fields = IAMAccountConstants.getAccountsUserFields();
-		fields.add(IAMAccountConstants.getUserPasswordField());
+	private boolean updateUserEntryv2(IAMUser user, List<FacilioField> fields) throws Exception {
 		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder()
 				.table(IAMAccountConstants.getAccountsUserModule().getTableName())
 				.fields(fields);
@@ -149,7 +148,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		return  addUserv2(orgId, user, false);
 	}
 
-	public IAMUser getUserFromToken(String userToken){
+	public IAMUser getUserFromToken(String userToken) throws Exception{
 		String[] tokenPortal = userToken.split("&");
 		String token = EncryptionUtil.decode(tokenPortal[0]);
 		String[] userObj = token.split(USER_TOKEN_REGEX);
@@ -157,17 +156,8 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		if(userObj.length == 4) {
 			user = new IAMUser();
 			user.setOrgId(Long.parseLong(userObj[0]));
-//			user.setOuid(Long.parseLong(userObj[1]));
 			user.setUid(Long.parseLong(userObj[1]));
 			user.setEmail(userObj[2]);
-//			user.setInvitedTime(Long.parseLong(userObj[4]));
-//			if(tokenPortal.length > 1) {
-//				String[] portalIdString = tokenPortal[1].split("=");
-//				if(portalIdString.length > 1){
-//					int portalId = Integer.parseInt(portalIdString[1].trim());
-//					user.setPortalId(portalId);
-//				}
-//			}
 		}
 		return user;
 	}
@@ -175,26 +165,36 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	public static void main(String []args)
 	{
 		IAMUserBeanImpl us = new IAMUserBeanImpl();
-		IAMUser s = us.getUserFromToken("xSb_ezHQ_udcFU8l5P67wq_z809tlkMMIZxMbHAV0hbs9TKfyRniDoVCfmvVGF3wl4nuHLJ53Ho=");
-		System.out.println(s.getEmail());
-		System.out.println(s.getUid());
-//		System.out.println(s.getOuid());
-//		System.out.println(s.getPortalId());
-		System.out.println(s.getOrgId());
+		IAMUser s;
+		try {
+			s = us.getUserFromToken("xSb_ezHQ_udcFU8l5P67wq_z809tlkMMIZxMbHAV0hbs9TKfyRniDoVCfmvVGF3wl4nuHLJ53Ho=");System.out.println(s.getEmail());
+			System.out.println(s.getUid());
+//			System.out.println(s.getOuid());
+//			System.out.println(s.getPortalId());
+			System.out.println(s.getOrgId());
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 
 		
 	}
 	
 	
 	@Override
-	public IAMUser verifyEmailv2(String token){
+	public IAMUser verifyEmailv2(String token) throws Exception{
 		IAMUser user = getUserFromToken(token);
 
 		if(user != null) {
 //			if((System.currentTimeMillis() - user.getInvitedTime()) < INVITE_LINK_EXPIRE_TIME) {
 				try {
 					user.setUserVerified(true);
-					updateUserv2(user);
+					Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(IAMAccountConstants.getAccountsUserFields());
+					List<FacilioField> fields = new ArrayList<FacilioField>();
+					fields.add(fieldMap.get("userVerified"));
+					
+					updateUserv2(user, fields);
 				} catch (Exception e) {
 					log.info("Exception occurred ", e);
 				}
@@ -205,7 +205,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public IAMUser resetPasswordv2(String token, String password){
+	public IAMUser resetPasswordv2(String token, String password) throws Exception{
 		IAMUser user = getUserFromToken(token);
 
 		if(user != null) {
@@ -214,7 +214,12 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				try {
 					user.setPassword(password);
 					user.setUserVerified(true);
-					IAMUtil.getTransactionalUserBean(orgId).updateUserv2(user);
+					Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(IAMAccountConstants.getAccountsUserFields());
+					List<FacilioField> fields = new ArrayList<FacilioField>();
+					fields.add(fieldMap.get("userVerified"));
+					fields.add(IAMAccountConstants.getUserPasswordField());
+					
+					IAMUtil.getTransactionalUserBean(orgId).updateUserv2(user, fields);
 				} catch (Exception e) {
 					log.info("Exception occurred ", e);
 				}
@@ -225,7 +230,7 @@ public class IAMUserBeanImpl implements IAMUserBean {
 	}
 
 	@Override
-	public IAMUser validateUserInvitev2(String token){
+	public IAMUser validateUserInvitev2(String token) throws  Exception{
 		IAMUser user = getUserFromToken(token);
 		return user;
 	}
@@ -275,7 +280,11 @@ public class IAMUserBeanImpl implements IAMUserBean {
 				if(user != null) {
 					user.setUserVerified(true);
 					user.setPassword(password);
-					updateUserv2(user);
+					Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(IAMAccountConstants.getAccountsUserFields());
+					List<FacilioField> fieldsToBeUpdated = new ArrayList<FacilioField>();
+					fieldsToBeUpdated.add(fieldMap.get("userVerified"));
+					fieldsToBeUpdated.add(IAMAccountConstants.getUserPasswordField());
+					updateUserv2(user, fieldsToBeUpdated);
 					return true;
 				}
 			}
@@ -1278,6 +1287,116 @@ public class IAMUserBeanImpl implements IAMUserBean {
 		else {
 			return false;
 		}
+	}
+
+
+	@Override
+	public boolean addUserMobileSetting(UserMobileSetting userMobileSetting) throws Exception {
+		// TODO Auto-generated method stub
+		if (userMobileSetting.getUserId() == -1) {
+			userMobileSetting.setUserId(getFacilioUser(userMobileSetting.getEmail()).getUid());
+		}
+		if (userMobileSetting.getCreatedTime() == -1) {
+			userMobileSetting.setCreatedTime(System.currentTimeMillis());
+		}
+		
+		// Fetching and adding only if it's not present already
+		FacilioModule module = IAMAccountConstants.getUserMobileSettingModule();
+		List<FacilioField> fields = IAMAccountConstants.getUserMobileSettingFields();
+
+		UserMobileSetting currentSetting = getUserMobileSetting(userMobileSetting.getUserId(),
+				userMobileSetting.getMobileInstanceId(), module, fields, userMobileSetting.getFromPortal());
+		if (currentSetting == null) {
+			long id = addUserMobileSetting(userMobileSetting, module, fields);
+			if(id > 0) {
+				return true;
+			}
+		} else {
+			userMobileSetting.setUserMobileSettingId(currentSetting.getUserMobileSettingId());
+			userMobileSetting.setUserId(-1);
+			userMobileSetting.setMobileInstanceId(null);
+			if(updateUserMobileSetting(userMobileSetting, module, fields) > 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private long addUserMobileSetting(UserMobileSetting userMobileSetting, FacilioModule module,
+			List<FacilioField> fields) throws Exception {
+		GenericInsertRecordBuilder insertBuilder = new GenericInsertRecordBuilder().table(module.getTableName())
+				.fields(fields);
+
+		return insertBuilder.insert(FieldUtil.getAsProperties(userMobileSetting));
+	}
+
+	private int updateUserMobileSetting(UserMobileSetting userMobileSetting, FacilioModule module,
+			List<FacilioField> fields) throws Exception {
+		FacilioField idField = FieldFactory.getAsMap(fields).get("userMobileSettingId");
+		long id = userMobileSetting.getUserMobileSettingId();
+		userMobileSetting.setUserMobileSettingId(-1);
+
+		GenericUpdateRecordBuilder updateBuilder = new GenericUpdateRecordBuilder().table(module.getTableName())
+				.fields(fields)
+				.andCondition(CriteriaAPI.getCondition(idField, String.valueOf(id), PickListOperators.IS));
+		return updateBuilder.update(FieldUtil.getAsProperties(userMobileSetting));
+	}
+	
+	private UserMobileSetting getUserMobileSetting(long userId, String instance, FacilioModule module,
+			List<FacilioField> fields, boolean isPortal) throws Exception {
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		FacilioField userIdField = fieldMap.get("userId");
+		FacilioField instanceField = fieldMap.get("mobileInstanceId");
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().table(module.getTableName())
+				.select(fields)
+				.andCondition(CriteriaAPI.getCondition(userIdField, String.valueOf(userId), PickListOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(instanceField, instance, StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("fromPortal"), String.valueOf(isPortal),
+						BooleanOperators.IS));
+		List<Map<String, Object>> props = selectBuilder.get();
+		if (props != null && !props.isEmpty()) {
+			return FieldUtil.getAsBeanFromMap(props.get(0), UserMobileSetting.class);
+		}
+		return null;
+	}
+
+
+	@Override
+	public boolean removeUserMobileSetting(String mobileInstanceId, boolean isPortal) throws Exception {
+		// TODO Auto-generated method stub
+		
+		List<FacilioField> fields = IAMAccountConstants.getUserMobileSettingFields();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(fields);
+		GenericDeleteRecordBuilder builder = new GenericDeleteRecordBuilder()
+				.table(IAMAccountConstants.getUserMobileSettingModule().getTableName())
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("mobileInstanceId"), mobileInstanceId,
+						StringOperators.IS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("fromPortal"), String.valueOf(isPortal),
+						BooleanOperators.IS));
+
+		if(builder.delete() > 0) {
+			return true;
+		}
+		return false;
+	}
+
+
+	@Override
+	public List<Map<String, Object>> getMobileInstanceIds(List<Long> uIds) throws Exception {
+		// TODO Auto-generated method stub
+		List<FacilioField> fields = new ArrayList<>();
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(IAMAccountConstants.getUserMobileSettingFields());
+		
+		fields.add(fieldMap.get("mobileInstanceId"));
+		fields.add(fieldMap.get("fromPortal"));
+		
+		GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields).table("User_Mobile_Setting")
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("userId"), uIds, NumberOperators.EQUALS))
+				.orderBy("USER_MOBILE_SETTING_ID");
+
+		List<Map<String, Object>> props = selectBuilder.get();
+		return props;
 	}
 	
 	

@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.facilio.modules.*;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
@@ -13,11 +14,6 @@ import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.AggregateOperator;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldType;
-import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 
 public class GetAllFieldsCommand extends FacilioCommand {
@@ -85,11 +81,11 @@ public class GetAllFieldsCommand extends FacilioCommand {
 		}
 		
 		JSONObject reportOperators = new JSONObject();
-		reportOperators.put("DateAggregateOperator", AggregateOperator.DateAggregateOperator.values());
-		reportOperators.put("NumberAggregateOperator", AggregateOperator.NumberAggregateOperator.values());
-		reportOperators.put("StringAggregateOperator", AggregateOperator.StringAggregateOperator.values());
-		reportOperators.put("SpaceAggregateOperator", AggregateOperator.SpaceAggregateOperator.values());
-		reportOperators.put("EnergyPurposeAggregateOperator", AggregateOperator.EnergyPurposeAggregateOperator.values());
+		reportOperators.put("DateAggregateOperator", BmsAggregateOperators.DateAggregateOperator.values());
+		reportOperators.put("NumberAggregateOperator", BmsAggregateOperators.NumberAggregateOperator.values());
+		reportOperators.put("StringAggregateOperator", BmsAggregateOperators.StringAggregateOperator.values());
+		reportOperators.put("SpaceAggregateOperator", BmsAggregateOperators.SpaceAggregateOperator.values());
+		reportOperators.put("EnergyPurposeAggregateOperator", BmsAggregateOperators.EnergyPurposeAggregateOperator.values());
 		
 		long orgId = AccountUtil.getCurrentOrg().getOrgId();
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean", orgId);

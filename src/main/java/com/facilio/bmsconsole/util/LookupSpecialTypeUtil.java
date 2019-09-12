@@ -171,7 +171,7 @@ public class LookupSpecialTypeUtil {
 	
 	public static List getObjects(String specialType, Criteria criteria) throws Exception {
 		if(FacilioConstants.ContextNames.USERS.equals(specialType) || FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
-			return AccountUtil.getUserBean().getUsers(criteria, true);
+			return AccountUtil.getUserBean().getUsers(criteria, false, true);
 		}
 		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
 			return AccountUtil.getGroupBean().getGroups(criteria);
@@ -263,7 +263,7 @@ public class LookupSpecialTypeUtil {
 	
 	public static List<? extends Object> getRecords (String specialType, Collection<Long> ids) throws Exception {
 		if(FacilioConstants.ContextNames.USERS.equals(specialType) || FacilioConstants.ContextNames.REQUESTER.equals(specialType)) {
-			return AccountUtil.getUserBean().getUsers(null, true, ids);
+			return AccountUtil.getUserBean().getUsers(null, false, true, ids);
 		}
 		else if(FacilioConstants.ContextNames.GROUPS.equals(specialType)) {
 			return AccountUtil.getGroupBean().getGroups(ids);

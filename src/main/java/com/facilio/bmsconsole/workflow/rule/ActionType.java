@@ -8,11 +8,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
@@ -23,10 +24,9 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.bean.UserBean;
 import com.facilio.accounts.dto.Group;
 import com.facilio.accounts.dto.User;
-import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.accounts.util.UserUtil;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
@@ -56,7 +56,6 @@ import com.facilio.bmsconsole.util.SMSUtil;
 import com.facilio.bmsconsole.util.StateFlowRulesAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkOrderAPI;
-import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ReadingRuleType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
@@ -65,12 +64,12 @@ import com.facilio.controlaction.context.ControlActionCommandContext;
 import com.facilio.controlaction.util.ControlActionUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
-import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.events.commands.NewEventsToAlarmsConversionCommand.PointedList;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.fw.BeanFactory;
+import com.facilio.iam.accounts.util.IAMUserUtil;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.FieldFactory;
@@ -421,51 +420,21 @@ public enum ActionType {
 
 		private List<Pair<String, Boolean>> getMobileInstanceIDs(String idList) throws Exception {
 			List<Pair<String, Boolean>> mobileInstanceIds = new ArrayList<>();
-			List<FacilioField> fields = new ArrayList<>();
-
-//			FacilioField email = new FacilioField();
-//			email.setName("email");
-//			email.setColumnName("EMAIL");
-//			email.setDataType(FieldType.STRING);
-//			email.setModule(ModuleFactory.getUserModule());
-//			fields.add(email);
-
-			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(AccountConstants.getUserMobileSettingFields());
-			Map<String, FacilioField> orgUserfieldMap = FieldFactory.getAsMap(AccountConstants.getAppOrgUserFields());
-
-			fields.add(fieldMap.get("mobileInstanceId"));
-			fields.add(fieldMap.get("fromPortal"));
-			fields.add(AccountConstants.getOrgIdField(AccountConstants.getAppOrgUserModule()));
-			fields.add(AccountConstants.getUserIdField(AccountConstants.getAppOrgUserModule()));
-			fields.add(orgUserfieldMap.get("iamOrgUserId"));
-
-
-			// Condition condition = CriteriaAPI.getCondition("EMAIL", "email",
-			// StringUtils.join(emails, ","), StringOperators.IS);
-
-			GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fields).table("ORG_Users")
-					.innerJoin("User_Mobile_Setting")
-					.on("ORG_Users.USERID = User_Mobile_Setting.USERID")
-//					.andCondition(CriteriaAPI.getCurrentOrgIdCondition(AccountConstants.getOrgUserModule()))
-					.andCondition(CriteriaAPI.getCondition("ORG_Users.ORG_USERID", "ouid", idList, NumberOperators.EQUALS))
-					.orderBy("USER_MOBILE_SETTING_ID");
-
-			List<Map<String, Object>> props = selectBuilder.get();
-			if (props != null && !props.isEmpty()) {
-				UserUtil.setIAMUserProps(props, AccountUtil.getCurrentOrg().getOrgId(), false);
-				for (Map<String, Object> prop : props) {
-					Boolean fromPortal = (Boolean)prop.get("fromPortal");
+			List<Long> idLongList = Stream.of(idList.split(",")).map(Long::valueOf).collect(Collectors.toList());
+			List<User> userList = AccountUtil.getUserBean().getUsers(null, true, false, idLongList);
+			List<Long> userIdList = new ArrayList<Long>();
+			if (CollectionUtils.isNotEmpty(userList)) {
+				userIdList = userList.stream().map(User::getUid).collect(Collectors.toList());
+				List<Map<String, Object>> instanceIdList = IAMUserUtil.getUserMobileSettingInstanceIds(userIdList);
+				for (Map<String, Object> instance : instanceIdList) {
+					Boolean fromPortal = (Boolean)instance.get("fromPortal");
 					if (fromPortal == null) {
 						fromPortal = false;
 					}
-					Boolean userStatus = (Boolean)prop.get("userStatus");
-					if(userStatus != null && userStatus) {
-						mobileInstanceIds.add(Pair.of((String) prop.get("mobileInstanceId"), fromPortal));
-					}
-					// emailToMobileId.put((String) prop.get("email"), (String)
-					// prop.get("mobileInstanceId"));
+					mobileInstanceIds.add(Pair.of((String) instance.get("mobileInstanceId"), fromPortal));
 				}
 			}
+			
 			return mobileInstanceIds;
 		}
 	},
@@ -1103,7 +1072,7 @@ public enum ActionType {
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,Object currentRecord) throws Exception
 		{
-			FacilioTimer.scheduleOneTimeJob(FacilioUtil.parseLong(context.get("jobid")), "DefaultMLJob", System.currentTimeMillis(), "ml");
+			FacilioTimer.scheduleOneTimeJobWithTimestampInSec(FacilioUtil.parseLong(context.get("jobid")), "DefaultMLJob", System.currentTimeMillis(), "ml");
 		}
 
 		@Override

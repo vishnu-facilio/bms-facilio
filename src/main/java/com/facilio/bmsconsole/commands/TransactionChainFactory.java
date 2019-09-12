@@ -963,6 +963,7 @@ public class TransactionChainFactory {
 		public static FacilioChain getUpdateTaskChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new ValidatePrerequisiteStatusForTaskUpdateCommnad());
+//			c.addCommand(new ValidateReadingInputForTask());
 			c.addCommand(new ValidateAndCreateValuesForInputTaskCommand());
 			c.addCommand(ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain());
 			c.addCommand(SetTableNamesCommand.getForTask());
@@ -2767,11 +2768,13 @@ public class TransactionChainFactory {
 
 		public static FacilioChain getAddWorkflowChain() {
 			FacilioChain c = getDefaultChain();
+			c.addCommand(new ValidateWorkflowCommand());
 			c.addCommand(new AddWorkflowCommand());
 			return c;
 		}
 		public static FacilioChain getUpdateWorkflowChain() {
 			FacilioChain c = getDefaultChain();
+			c.addCommand(new ValidateWorkflowCommand());
 			c.addCommand(new UpdateWorkflowCommand());
 			return c;
 		}
@@ -2799,13 +2802,13 @@ public class TransactionChainFactory {
 
 		public static FacilioChain getAddWorkflowUserFunctionChain() {
 			FacilioChain c = getDefaultChain();
-			c.addCommand(new AddWorkflowCommand());
+			c.addCommand(getAddWorkflowChain());
 			c.addCommand(new AddUserFunctionCommand());
 			return c;
 		}
 		public static FacilioChain getUpdateWorkflowUserFunctionChain() {
 			FacilioChain c = getDefaultChain();
-			c.addCommand(new UpdateWorkflowCommand());
+			c.addCommand(getUpdateWorkflowChain());
 			c.addCommand(new UpdateUserFunctionCommand());
 			return c;
 		}
@@ -2818,12 +2821,13 @@ public class TransactionChainFactory {
 		public static FacilioChain getExecuteDefaultWorkflowChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new GetDefaultWorkflowContext());
-			c.addCommand(new ExecuteWorkflowCommand());
+			c.addCommand(getExecuteWorkflowChain());
 			return c;
 		}
 
 		public static FacilioChain getExecuteWorkflowChain() {
 			FacilioChain c = getDefaultChain();
+			c.addCommand(new ValidateWorkflowCommand());
 			c.addCommand(new ExecuteWorkflowCommand());
 			return c;
 		}
@@ -2872,13 +2876,13 @@ public class TransactionChainFactory {
 
 		public static FacilioChain getAddScheduledWorkflowChain() {
 			FacilioChain c = getDefaultChain();
-			c.addCommand(new AddWorkflowCommand());
+			c.addCommand(getAddWorkflowChain());
 			c.addCommand(new AddScheduledWorkflowCommand());
 			return c;
 		}
 		public static FacilioChain getUpdateScheduledWorkflowChain() {
 			FacilioChain c = getDefaultChain();
-			c.addCommand(new UpdateWorkflowCommand());
+			c.addCommand(getUpdateWorkflowChain());
 			c.addCommand(new updateScheduledWorkflowCommand());
 			return c;
 		}
@@ -3393,6 +3397,31 @@ public class TransactionChainFactory {
 			c.addCommand(new AddControlActionCommand());
 			c.addCommand(new PublishIOTMessageControlActionCommand());
 			return c;
+		}
+		public static FacilioChain getAddAssetMovementChain() {
+			FacilioChain chain = getDefaultChain();
+			chain.addCommand(SetTableNamesCommand.getForAssetMovement());
+			chain.addCommand(new AssetMovementPropsSetCommand());
+			chain.addCommand(new GenericAddModuleDataCommand());
+			chain.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
+			chain.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+			chain.addCommand(new AddDefaultChangeSetForCompleteMoveCommand());
+			chain.addCommand(new CompleteAssetMoveCommand());
+			chain.addCommand(new ConstructAddAssetMovementActivitiesCommand());
+			chain.addCommand(new AddActivitiesCommand());
+			return chain;
+		}
+		
+		public static FacilioChain getUpdateAssetMovementChain() {
+			FacilioChain chain = getDefaultChain();
+			chain.addCommand(SetTableNamesCommand.getForAssetMovement());
+			chain.addCommand(new GenericUpdateModuleDataCommand());
+			chain.addCommand(new UpdateStateForModuleDataCommand());
+			chain.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
+			chain.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+			chain.addCommand(new CompleteAssetMoveCommand());
+			chain.addCommand(new AddActivitiesCommand());
+			return chain;
 		}
 
 		public static FacilioChain addReservationChain() {

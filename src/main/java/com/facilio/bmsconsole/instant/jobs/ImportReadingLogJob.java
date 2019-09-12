@@ -45,7 +45,7 @@ public class ImportReadingLogJob extends InstantJob{
 				
 				importProcessContext.setStatus(ImportProcessContext.ImportStatus.IN_PROGRESS.getValue());
 				ImportAPI.updateImportProcess(importProcessContext);
-				FacilioTimer.scheduleOneTimeJob(importProcessContext.getId(), "importReading", 5, "priority");
+				FacilioTimer.scheduleOneTimeJobWithDelay(importProcessContext.getId(), "importReading", 5, "priority");
 
 			}
 			pubsub.publishImportStatusChange(importProcessContext.getOrgId(), importProcessContext.getId(), hasDuplicates);

@@ -57,12 +57,12 @@ public class BmsJobUtil {
 	
 	public static void scheduleOneTimeJobWithProps(long jobId, String jobName, int delayInSec, String executorName, JSONObject props) throws Exception {
 		addJobProps(jobId, jobName, props);
-		FacilioTimer.scheduleOneTimeJob(jobId, jobName, delayInSec, executorName);
+		FacilioTimer.scheduleOneTimeJobWithDelay(jobId, jobName, delayInSec, executorName);
 	}
 	
 	public static void scheduleOneTimeJobWithProps(long jobId, String jobName, long nextExecutionTime, String executorName, JSONObject props) throws Exception {
 		addJobProps(jobId, jobName, props);
-		FacilioTimer.scheduleOneTimeJob(jobId, jobName, nextExecutionTime, executorName);
+		FacilioTimer.scheduleOneTimeJobWithTimestampInSec(jobId, jobName, nextExecutionTime, executorName);
 	}
 	
 	public static void deleteJobWithProps(long jobId, String jobName) throws Exception {

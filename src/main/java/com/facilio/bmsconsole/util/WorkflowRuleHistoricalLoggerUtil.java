@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.modules.*;
 import org.apache.commons.collections4.MapUtils;
 
 import com.facilio.beans.ModuleBean;
@@ -30,14 +31,6 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.events.context.EventContext;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.AggregateOperator;
-import com.facilio.modules.DeleteRecordBuilder;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.FieldUtil;
-import com.facilio.modules.InsertRecordBuilder;
-import com.facilio.modules.ModuleFactory;
-import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 
 public class WorkflowRuleHistoricalLoggerUtil {
@@ -175,7 +168,7 @@ public class WorkflowRuleHistoricalLoggerUtil {
 				
 				Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getWorkflowRuleHistoricalLoggerFields());
 				
-				FacilioField countField = AggregateOperator.CommonAggregateOperator.COUNT.getSelectField(fieldMap.get("loggerGroupId"));
+				FacilioField countField = BmsAggregateOperators.CommonAggregateOperator.COUNT.getSelectField(fieldMap.get("loggerGroupId"));
 				countField.setName("count");
 				List<FacilioField> selectFields = new ArrayList<FacilioField>();
 				selectFields.add(countField);

@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
-import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.lang3.StringUtils;
@@ -31,6 +30,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.ActivityContext;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
@@ -878,7 +878,17 @@ public class WorkOrderAction extends FacilioAction {
 		return SUCCESS;
 	}
 	
-	
+	public String getPreventiveMaintenanceReadings() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID, pmId);
+		context.put(FacilioConstants.ContextNames.RESOURCE_ID, resourceId);
+		context.put(FacilioConstants.ContextNames.START_TIME, startTime);
+		context.put(FacilioConstants.ContextNames.END_TIME, endTime);
+		Chain pmReadings = FacilioChainFactory.getPreventiveMaintenanceReadingsChain();
+		pmReadings.execute(context);
+		return SUCCESS;
+
+	}
 	
 	public static List<Long> getAssetExcludeList(List<Long> assetList, Long categoryId) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -1535,6 +1545,17 @@ public class WorkOrderAction extends FacilioAction {
 	public void setSubViewsCount(List<Map<String, Object>> subViewsCount) {
 		this.subViewsCount = subViewsCount;
 	}
+	
+	private Boolean fetchTriggers;
+	public boolean isFetchTriggers() {
+		if (fetchTriggers == null) {
+			return false;
+		}
+		return fetchTriggers;
+	}
+	public void setFetchTriggers(boolean fetchTriggers) {
+		this.fetchTriggers = fetchTriggers;
+	}
 
 	private List<File> attachedFiles;
 	private List<String> attachedFilesFileName;
@@ -1805,6 +1826,7 @@ public class WorkOrderAction extends FacilioAction {
 		if (getCount() != null) {	// only count
 			context.put(FacilioConstants.ContextNames.WO_LIST_COUNT, getCount());
 		}
+		context.put(FacilioConstants.ContextNames.FETCH_TRIGGERS, isFetchTriggers());
 		if(getShowViewsCount()) {
 			context.put(FacilioConstants.ContextNames.WO_VIEW_COUNT, true);
 		}

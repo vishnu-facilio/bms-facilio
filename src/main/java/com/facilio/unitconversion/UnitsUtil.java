@@ -86,6 +86,21 @@ public class UnitsUtil {
 		}
 		return convertedValue;
 	}
+	
+	public static Unit getDisplayUnit(NumberField numberField) throws Exception {
+		
+		if(numberField.getMetric() > 0) {
+			Unit displayUnit;
+			if(numberField.getUnitId() > 0) {
+				displayUnit = Unit.valueOf(numberField.getUnitId());
+			}
+			else {
+				displayUnit = getOrgDisplayUnit(AccountUtil.getCurrentOrg().getId(), numberField.getMetric());
+			}
+			return displayUnit;
+		}
+		return null;
+	}
 
 	public static Number convertToDisplayUnit(Object value,NumberField numberField) throws Exception {
 

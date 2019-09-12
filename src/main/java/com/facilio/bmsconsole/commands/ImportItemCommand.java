@@ -34,6 +34,9 @@ public class ImportItemCommand extends FacilioCommand {
 			Map<String, Long> itemNameVsIdMap = ItemsApi.getAllItemTypes();
 			Map<String, Long> categoryNameVsIdMap = InventoryCategoryApi.getAllInventoryCategories();
 			List<ItemContext> itemsList = new ArrayList<>();
+			Map<String, Long> itemNameVsIndexMap = new HashMap<>();
+			Long itemIndexCounter;
+			itemIndexCounter = (long) 0;
 			for (PurchasedItemContext purchasedItem : purchasedItemList) {
 				ItemTypesContext itemType = new ItemTypesContext();
 				ItemContext item = new ItemContext();
@@ -43,6 +46,7 @@ public class ImportItemCommand extends FacilioCommand {
 					itemType = purchasedItem.getItemType();
 					if (purchasedItem.getQuantity() > 0 && (purchasedItem.getSerialNumber() == null || purchasedItem.getSerialNumber().equalsIgnoreCase("null"))) {
 						itemType.setIsRotating(false);
+						itemType.setIsConsumable(true);
 					}
 					else if(purchasedItem.getSerialNumber() != null && !purchasedItem.getSerialNumber().equalsIgnoreCase("null")) {
 						itemType.setIsRotating(true);
@@ -73,9 +77,28 @@ public class ImportItemCommand extends FacilioCommand {
 				}
 				item.setItemType(itemType);
 				item.setStoreRoom(StoreroomApi.getStoreRoom(storeRoomId));
-				item.setPurchasedItems(Collections.singletonList(purchasedItem));
+				List<PurchasedItemContext> purItem = new ArrayList<>();
+				purItem.add(purchasedItem);
+				item.setPurchasedItems(purItem);
 				if (purchasedItem.getQuantity() > 0) {
-					itemsList.add(item);
+					if (itemNameVsIndexMap.containsKey(purchasedItem.getItemType().getName())) {
+						int itemIndex = itemNameVsIndexMap.get(purchasedItem.getItemType().getName()).intValue();
+						ItemContext exisItem = new ItemContext();
+						exisItem = itemsList.get(itemIndex);
+						List<PurchasedItemContext> curPurchasedItem = exisItem.getPurchasedItems();
+						if (curPurchasedItem == null) {
+							curPurchasedItem = new ArrayList<>();
+							curPurchasedItem.add(purchasedItem);
+						} else {
+							curPurchasedItem.add(purchasedItem);
+						}
+						exisItem.setPurchasedItems(curPurchasedItem);
+						itemsList.set(itemIndex, exisItem);
+					} else {
+						itemsList.add(item);
+						itemNameVsIndexMap.put(item.getItemType().getName(), itemIndexCounter);
+						itemIndexCounter++;
+					}
 				}
 			}
 			context.put(FacilioConstants.ContextNames.ITEMS, itemsList);

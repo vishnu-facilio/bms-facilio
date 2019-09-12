@@ -37,7 +37,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.AggregateOperator;
-import com.facilio.modules.AggregateOperator.CommonAggregateOperator;
+import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
 import com.facilio.modules.BaseLineContext;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;

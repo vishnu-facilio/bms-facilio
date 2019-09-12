@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.activity.AssetActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.SiteContext;
+import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -50,11 +51,11 @@ public class UpdateGeoLocationCommand extends FacilioCommand {
 				double lat = Double.parseDouble(latLng[0]);
 				double lng = Double.parseDouble(latLng[1]);
 	
-				if (!asset.isDesignatedLocation() && !isWithInLocation(asset.getCurrentLocation(), lat, lng, asset.getBoundaryRadius())) {
+				if (!asset.isDesignatedLocation() && !AssetsAPI.isWithInLocation(asset.getCurrentLocation(), lat, lng, asset.getBoundaryRadius())) {
 					newLocation = location;
 				}
 				
-				distanceMoved = getDistance(asset.getGeoLocation(), lat, lng);
+				distanceMoved = AssetsAPI.getDistance(asset.getGeoLocation(), lat, lng);
 				boolean isWithinGeoLocation = StringUtils.isNoneEmpty(asset.getGeoLocation()) && distanceMoved <= asset.getBoundaryRadius();
 				if (!asset.isDesignatedLocation()) {
 					if (isWithinGeoLocation) {
@@ -88,25 +89,6 @@ public class UpdateGeoLocationCommand extends FacilioCommand {
 		return false;
 	}
 	
-	private boolean isWithInLocation (String location, double lat, double lng, int boundaryRadius) {
-		if (StringUtils.isEmpty(location)) {
-			return false;
-		}
-		return getDistance(location, lat, lng) <= boundaryRadius;
-	}
-	
-	private double getDistance (String location, double lat, double lng) {
-		if (StringUtils.isEmpty(location)) {
-			return 0;
-		}
-		String[] latLng = location.trim().split("\\s*,\\s*");
-		double prevLat = Double.parseDouble(latLng[0]);
-		double prevLng = Double.parseDouble(latLng[1]);
-		
-		double distance = FacilioUtil.calculateHaversineDistance(prevLat, prevLng, lat, lng);
-		LOGGER.info("Distance between ("+location+") and ("+lat+", "+lng+") is "+distance);
-		return distance;
-	}
 	
 	private SiteContext getNearestLocation(double lat, double lng) throws Exception {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -114,21 +96,13 @@ public class UpdateGeoLocationCommand extends FacilioCommand {
 		
 		if (CollectionUtils.isNotEmpty(sites)) {
 			for (SiteContext site : sites) {
-				if (isWithinLocation(site, lat, lng)) {
+				if (AssetsAPI.isWithinSiteLocation(site, lat, lng)) {
 					return site;
 				}
 			}
 		}
 		
 		return null;
-	}
-	
-	private static final int MAX_DISTANCE = 1000; //meter 
-	private boolean isWithinLocation (SiteContext site, double lat, double lng) {
-		if (site == null || site.getLocation() == null || site.getLocation().getLat() == -1 || site.getLocation().getLng() == -1) {
-			return false;
-		}
-		return FacilioUtil.calculateHaversineDistance(site.getLocation().getLat(), site.getLocation().getLng(), lat, lng) <= MAX_DISTANCE;
 	}
 	
 	private void updateAsset(AssetContext asset, String geoLocation, String newLocation, Boolean isDesignatedLocation, double distanceMoved) throws Exception {
