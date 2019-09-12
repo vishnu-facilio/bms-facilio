@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -26,7 +27,7 @@ import com.facilio.modules.FieldType;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
 import com.facilio.report.context.ReportContext;
-import com.facilio.report.context.ReportDataPointContext;
+import com.facilio.report.context.ReportUserFilterContext;
 import com.facilio.time.DateRange;
 
 public class GetCriteriaDataCommand extends FacilioCommand {
@@ -34,19 +35,34 @@ public class GetCriteriaDataCommand extends FacilioCommand {
 	
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
+		Criteria customCriteria = new Criteria();
+				
 		ReportContext report = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
-		List<ReportDataPointContext> dataPoints = new ArrayList<>(report.getDataPoints());
-		Criteria customCriteria = dataPoints.get(0).getCriteria();
-		if(customCriteria != null && !customCriteria.isEmpty()) {
+		
+		if (CollectionUtils.isNotEmpty(report.getUserFilters())) {
+			for (ReportUserFilterContext userFilter: report.getUserFilters()) {
+				Criteria criteria = userFilter.getCriteria();
+				if (criteria != null) {
+					customCriteria.andCriteria(criteria);
+				}
+			}
+		}
+		customCriteria.andCriteria(report.getDataPoints().get(0).getCriteria());
+		
+		if(!customCriteria.isEmpty()) {
 			String moduleName = (String)context.get("moduleName");
 			context.put("criteriaData", getAsJSON(moduleName, customCriteria));
 		}
 		
 		return false;
 	}
+	
 	private JSONObject getAsJSON(String moduleName, Criteria customCriteria) throws Exception{
 		JSONObject criteriaObj = new JSONObject();
 		JSONArray conditionArray = new JSONArray();
+		
+		String pattern = customCriteria.getPattern();
+		String alias = null;
 		
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
@@ -57,42 +73,20 @@ public class GetCriteriaDataCommand extends FacilioCommand {
 			Condition condition = entry.getValue();
 			
 			String conditionValue = condition.getValue();
-			Object value = null;
-			if(conditionValue != null) {
-				value = new JSONArray();
-				String[] values = conditionValue.trim().split("\\s*,\\s*");
-				for(String val : values) {
-					if(val.equals(FacilioConstants.Criteria.LOGGED_IN_USER)) {
-						val = String.valueOf(AccountUtil.getCurrentUser().getId());
-						((JSONArray) value).add(val);
-					}
-					else if(val.equals(FacilioConstants.Criteria.LOGGED_IN_USER_GROUP)) {
-						List<Long> ids = getLoggedInUserGroupIds();
-						for(Long id: ids) {
-							((JSONArray) value).add(id);
-						}
-					}
-					else {
-						((JSONArray) value).add(val);
-					}
-				}
-			}
+			JSONArray value = getMetaData(conditionValue);
+			
 			String[] name = condition.getFieldName().split("\\.");
 			String fieldName = name.length > 1 ? name[1] : name[0];
 			FacilioField field = modBean.getField(fieldName, moduleName);
 			String fieldType = FieldType.getCFType(field.getDataType()).getTypeAsString();
-			conditionObj.put("key", entry.getKey());
+			alias = getAlias(alias);
+			pattern = pattern.replace(entry.getKey(), alias);
+			conditionObj.put("key", alias);
 			conditionObj.put("field", field.getDisplayName());
 			conditionObj.put("fieldType", fieldType);
 			conditionObj.put("operator", condition.getOperator().getOperator());
 			if(condition.getOperator() instanceof DateOperators){
-				DateOperators operator = (DateOperators)condition.getOperator();
-				DateRange range = operator.getRange(condition.getValue());
-				conditionObj.put("operator", "Between");
-				JSONArray rangeArray = new JSONArray();
-				rangeArray.add(range.getStartTime());
-				rangeArray.add(range.getEndTime());
-				conditionObj.put("value", rangeArray);
+				handleDateOperators(conditionObj, condition);
 			}else{
 				if (field.getDataTypeEnum()==FieldType.LOOKUP) {
 					List<Long> fieldIds = (List<Long>)value;
@@ -112,6 +106,8 @@ public class GetCriteriaDataCommand extends FacilioCommand {
 						if(idMap!=null) {
 							conditionObj.put("value",idMap.values());
 						}
+					}else{
+						conditionObj.put("value", value);
 					}
 				}
 				else if(fieldName.equals("siteId")){
@@ -125,16 +121,41 @@ public class GetCriteriaDataCommand extends FacilioCommand {
 			conditionArray.add(conditionObj);
 		}
 		criteriaObj.put("conditions", conditionArray);
-		criteriaObj.put("pattern", customCriteria.getPattern());
+		criteriaObj.put("pattern", pattern);
+		
 		return criteriaObj;
 	}
-//	private JSONObject getMetaData(String moduleName, Criteria customCriteria) throws Exception{
-//		
-//	}
-//	private JSONObject getRawData(JSONObject metaData){
-//		JSONObject rawData = new JSONObject();
-//		return rawData;
-//	}
+	private JSONArray getMetaData(String conditionValue) throws Exception{
+		JSONArray value = new JSONArray();
+		if(conditionValue != null) {
+			String[] values = conditionValue.trim().split("\\s*,\\s*");
+			for(String val : values) {
+				if(val.equals(FacilioConstants.Criteria.LOGGED_IN_USER)) {
+					val = String.valueOf(AccountUtil.getCurrentUser().getId());
+					value.add(val);
+				}
+				else if(val.equals(FacilioConstants.Criteria.LOGGED_IN_USER_GROUP)) {
+					List<Long> ids = getLoggedInUserGroupIds();
+					for(Long id: ids) {
+						value.add(id);
+					}
+				}
+				else {
+					value.add(val);
+				}
+			}
+		}
+		return value;
+	}
+	private void handleDateOperators(JSONObject conditionObj, Condition condition){
+		DateOperators operator = (DateOperators)condition.getOperator();
+		DateRange range = operator.getRange(condition.getValue());
+		conditionObj.put("operator", "Between");
+		JSONArray rangeArray = new JSONArray();
+		rangeArray.add(range.getStartTime());
+		rangeArray.add(range.getEndTime());
+		conditionObj.put("value", rangeArray);
+	}
 	
 	private static List<Long> getLoggedInUserGroupIds () {
 		List<Long> objs = new ArrayList<Long>();
@@ -147,5 +168,24 @@ public class GetCriteriaDataCommand extends FacilioCommand {
 			log.info("Exception occurred ", e);
 		}
 		return objs;
+	}
+	
+	private String getAlias(String previous){
+		String alias = "A";
+		if(StringUtils.isAlpha(previous)){
+			int preIndex = previous.length()-1;
+			char preChar = previous.charAt(preIndex);
+			if(preChar == 'Z'){
+				previous = previous.substring(0, preIndex);
+				if(StringUtils.isNotEmpty(previous)){
+					alias = getAlias(previous)+alias;
+				}else{
+            	    alias+=alias;				    
+				}
+			}else{
+				alias = previous.substring(0, preIndex)+Character.toString(++preChar);
+			}
+		}
+		return alias;
 	}
 }
