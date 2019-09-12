@@ -206,7 +206,7 @@
 							    criteria : [parentId == (mvProject.meter.id) && ttime >= (mvProject.reportingPeriodStartTime) && ttime < lastMonthEndTime],
 							    field : \"totalEnergyConsumptionDelta\",
 							    aggregation : \"sum\"
-							  }
+							  };
 							  thisMonthActualConsumption = Module(\"energydata\").fetch(db);
 							  if(thisMonthActualConsumption == null) {
 							    thisMonthActualConsumption = 0;
@@ -216,7 +216,7 @@
 							    criteria : [parentId == (mvProject.meter.id) && ttime >= (mvProject.reportingPeriodStartTime) && ttime < lastMonthEndTime],
 							    field : (formulaFieldWithAdj.readingField.name),
 							    aggregation : \"sum\"
-							  }
+							  };
 							  thisMonthBaselineConsumption = Module(formulaFieldWithAdj.moduleName).fetch(db);
 							  if(thisMonthBaselineConsumption == null) {
 							    thisMonthBaselineConsumption = 0;
@@ -239,7 +239,7 @@
 							    	criteria : [parentId == (mvProject.meter.id) && ttime >= (mvProject.reportingPeriodStartTime) && ttime < lastMonthEndTime],
 							    	field : (saveGoalFormulaField.readingField.name),
 							    	aggregation : \"sum\"
-							  	}
+							  	};
 							    thisMonthTargetConsumption = Module(saveGoalFormulaField.moduleName).fetch(db);
 							    targetSavedConsumption = thisMonthBaselineConsumption - thisMonthTargetConsumption;
 							  }
