@@ -23,16 +23,16 @@ public class ReadingUnitConversionToSiUnit extends FacilioCommand {
 		TaskContext currentTask = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
 		ReadingContext reading = (ReadingContext) context.get(FacilioConstants.ContextNames.READING);
 		
-		if(currentTask != null && reading != null) {
+		if(currentTask != null && reading != null && currentTask.getReadingFieldUnitEnum() != null) {
 			TaskContext taskContext = TicketAPI.getTaskMap(Collections.singletonList(currentTask.getId())).get(currentTask.getId());
 			if(taskContext.getInputTypeEnum() != null)
 			{
 				switch(taskContext.getInputTypeEnum()) {
 				case READING:
-					if (taskContext.getReadingField() != null && taskContext.getReadingFieldUnitEnum() != null && taskContext.getResource() != null && taskContext.getReadingField() instanceof NumberField) 
+					if (taskContext.getReadingField() != null && taskContext.getResource() != null && taskContext.getReadingField() instanceof NumberField) 
 					{			
 						NumberField readingNumberField = (NumberField) taskContext.getReadingField();
-						if(readingNumberField.getMetricEnum() != null && reading!= null && currentTask.getReadingFieldUnitEnum() != null)
+						if(readingNumberField.getMetricEnum() != null && reading!= null)
 						{								
 							Unit displayUnit = UnitsUtil.getDisplayUnit(readingNumberField);
 							Double convertedreading = UnitsUtil.convertToSiUnit(reading.getReading(readingNumberField.getName()), displayUnit);

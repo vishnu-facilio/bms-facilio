@@ -25,7 +25,7 @@ public class ReadingUnitConversionToRdmOrSiUnit extends FacilioCommand {
 		TaskContext currentTask = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
 		ReadingContext reading = (ReadingContext) context.get(FacilioConstants.ContextNames.READING);
 		
-		if(currentTask != null && reading != null) {
+		if(currentTask != null && reading != null && currentTask.getReadingFieldUnitEnum() != null) {
 			TaskContext taskContext = TicketAPI.getTaskMap(Collections.singletonList(currentTask.getId())).get(currentTask.getId());
 			if(taskContext.getInputTypeEnum() != null)
 			{
@@ -33,7 +33,7 @@ public class ReadingUnitConversionToRdmOrSiUnit extends FacilioCommand {
 				case READING:
 					if (taskContext.getReadingField() != null && taskContext.getResource() != null && taskContext.getReadingField() instanceof NumberField) 
 					{
-						if(currentTask.getInputValue() != null && currentTask.getReadingFieldUnitEnum() != null)
+						if(currentTask.getInputValue() != null)
 						{
 							
 							ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(taskContext.getResource().getId(), taskContext.getReadingField());

@@ -28,7 +28,7 @@ public class SiUnitConversionToSelectedReadingUnit extends FacilioCommand {
 		{
 			for(TaskContext task: tasks)
 			{
-				if (task.getReadingField() != null && task.getReadingFieldUnit() != -1 && task.getResource() != null && task.getReadingField() instanceof NumberField) 
+				if (task.getReadingField() != null && task.getReadingFieldUnit() > 0 && task.getResource() != null && task.getReadingField() instanceof NumberField) 
 				{
 					NumberField numberField = (NumberField) task.getReadingField();
 					if(numberField.getMetricEnum() != null && task.getInputValue() != null)
