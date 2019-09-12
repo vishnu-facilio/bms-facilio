@@ -398,6 +398,7 @@ public class FacilioChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new GetTaskListCommand());
 		c.addCommand(new GetTaskInputDataCommand());
+		c.addCommand(new SiUnitConversionToSelectedReadingUnit());
 		return c;
 	}
 	
@@ -406,6 +407,7 @@ public class FacilioChainFactory {
 		c.addCommand(SetTableNamesCommand.getForTask());
 		c.addCommand(new GetRelatedTasksCommand());
 		c.addCommand(new GetTaskInputDataCommand());
+		c.addCommand(new SiUnitConversionToSelectedReadingUnit());
 		return c;
 	}
 	
@@ -414,6 +416,7 @@ public class FacilioChainFactory {
 		c.addCommand(SetTableNamesCommand.getForTask());
 		c.addCommand(new GetMultipleRelatedTasksCommand());
 		c.addCommand(new GetTaskInputDataCommand());
+		c.addCommand(new SiUnitConversionToSelectedReadingUnit());
 		return c;
 	}
 	

@@ -965,7 +965,9 @@ public class TransactionChainFactory {
 			c.addCommand(new ValidatePrerequisiteStatusForTaskUpdateCommnad());
 //			c.addCommand(new ValidateReadingInputForTask());
 			c.addCommand(new ValidateAndCreateValuesForInputTaskCommand());
+			c.addCommand(new ReadingUnitConversionToRdmOrSiUnit());
 			c.addCommand(ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain());
+			c.addCommand(new ReadingUnitConversionToSiUnit());
 			c.addCommand(SetTableNamesCommand.getForTask());
 			c.addCommand(new LoadAllFieldsCommand());
 			c.addCommand(new UpdateTaskCommand());

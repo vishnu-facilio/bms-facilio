@@ -131,10 +131,6 @@ public class ValidateAndCreateValuesForInputTaskCommand extends FacilioCommand {
 			ReadingContext reading = new ReadingContext();
 			reading.setId(oldTask.getReadingDataId());
 			reading.addReading(field.getName(), newTask.getInputValue());
-			if(newTask.getReadingFieldUnit() != -1)
-			{
-				reading.addReading(field.getName()+DBConf.NUMBER_FIELD_UNIT_SUFFIX, newTask.getReadingFieldUnit());	
-			}
 			reading.setTtime(newTask.getInputTime());
 			long resourceId = isPMReading ? pmId : oldTask.getResource().getId();
 			reading.setParentId(resourceId);
