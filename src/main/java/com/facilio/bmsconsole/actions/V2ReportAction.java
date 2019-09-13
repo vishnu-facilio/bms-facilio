@@ -767,12 +767,12 @@ public class V2ReportAction extends FacilioAction {
 //	}
 	
 	public String fetchReportData() throws Exception {
-		FacilioContext context = new FacilioContext();
-		Chain c = FacilioChain.getNonTransactionChain();
+		FacilioChain c = FacilioChain.getNonTransactionChain();
+		FacilioContext context = c.getContext();
 		updateContext(context);
 		c.addCommand(new ConstructReportData());
 		c.addCommand(ReadOnlyChainFactory.constructAndFetchReportDataChain());
-		c.execute(context);
+		c.execute();
 
 		return setReportResult(context);
 	}

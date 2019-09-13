@@ -13,6 +13,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.util.LookupSpecialTypeUtil;
+import com.facilio.db.criteria.operators.CommonOperators;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.log4j.LogManager;
@@ -56,6 +57,9 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 	private StringBuilder joinBuilder = new StringBuilder();
 	private boolean isAggregation = false;
 	private Map<String, LookupField> lookupFields;
+	private boolean includeNullOrgAndModule;
+
+	private Set<String> criteriaJoinTables;
 	//Need where condition builder for custom field
 	
 	public SelectRecordsBuilder() {
@@ -82,6 +86,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 			this.where = new WhereBuilder(selectBuilder.where);
 		}
 		this.joinBuilder = new StringBuilder(selectBuilder.joinBuilder);
+		this.includeNullOrgAndModule = selectBuilder.includeNullOrgAndModule;
 	}
 	
 	public SelectRecordsBuilder (int level) {
@@ -123,6 +128,9 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		joinBuilder.append(" LEFT JOIN ")
 				.append(tableName)
 				.append(" ");
+		addCriteriaTableName(tableName);
+		includeNullOrgAndModule = true;
+//		builder.includeNullOrgAndModule();
 		return new JoinRecordBuilder<E>(this);
 	}
 	
@@ -131,6 +139,9 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		joinBuilder.append(" RIGHT JOIN ")
 				.append(tableName)
 				.append(" ");
+		addCriteriaTableName(tableName);
+		includeNullOrgAndModule = true;
+//		builder.includeNullOrgAndModule();
 		return new JoinRecordBuilder<E>(this);
 	}
 	
@@ -139,6 +150,9 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		joinBuilder.append(" FULL JOIN ")
 				.append(tableName)
 				.append(" ");
+		addCriteriaTableName(tableName);
+//		builder.includeNullOrgAndModule();
+		includeNullOrgAndModule = true;
 		return new JoinRecordBuilder<E>(this);
 	}
 	
@@ -261,6 +275,13 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		}
 		this.fetchLookup.addAll(fields);
 		return this;
+	}
+
+	private void addCriteriaTableName(String tableName) {
+		if (criteriaJoinTables == null) {
+			criteriaJoinTables = new HashSet<>();
+		}
+		criteriaJoinTables.add(tableName);
 	}
 
 	@Override
@@ -396,13 +417,29 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		return selectFields;
 	}
 
-	private WhereBuilder computeWhere (FacilioField orgIdField, FacilioField moduleIdField, FacilioField siteIdField, FacilioField isDeletedField) {
+	private WhereBuilder computeWhere (FacilioField orgIdField, FacilioField moduleIdField, FacilioField siteIdField, FacilioField isDeletedField, boolean includeNullOrgAndModule) {
 		WhereBuilder whereCondition = new WhereBuilder();
 		Condition orgCondition = CriteriaAPI.getCondition(orgIdField, String.valueOf(AccountUtil.getCurrentOrg().getOrgId()), NumberOperators.EQUALS);
-		whereCondition.andCondition(orgCondition);
+		if (includeNullOrgAndModule) {
+			Criteria c = new Criteria();
+			c.addOrCondition(orgCondition);
+			c.addOrCondition(CriteriaAPI.getCondition(orgIdField, CommonOperators.IS_EMPTY));
+			whereCondition.andCriteria(c);
+		}
+		else {
+			whereCondition.andCondition(orgCondition);
+		}
 
 		Condition moduleCondition = CriteriaAPI.getCondition(moduleIdField, String.valueOf(module.getModuleId()), NumberOperators.EQUALS);
-		whereCondition.andCondition(moduleCondition);
+		if (includeNullOrgAndModule) {
+			Criteria c = new Criteria();
+			c.addOrCondition(moduleCondition);
+			c.addOrCondition(CriteriaAPI.getCondition(moduleIdField, CommonOperators.IS_EMPTY));
+			whereCondition.andCriteria(c);
+		}
+		else {
+			whereCondition.andCondition(moduleCondition);
+		}
 
 		long currentSiteId = AccountUtil.getCurrentSiteId();
 		if (FieldUtil.isSiteIdFieldPresent(module) && currentSiteId > 0) {
@@ -416,6 +453,16 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 //			} else {
 //				whereCondition.andCondition(CriteriaAPI.getCondition("SYS_DELETED", "deleted", String.valueOf(false), BooleanOperators.IS));
 //			}
+		}
+
+		if (CollectionUtils.isNotEmpty(criteriaJoinTables)) {
+			for (String tableName : criteriaJoinTables) {
+				Criteria c = new Criteria();
+				String orgIdColumnName = tableName + ".ORGID";
+				c.addOrCondition(CriteriaAPI.getCondition(orgIdColumnName, "orgId", String.valueOf(AccountUtil.getCurrentOrg().getOrgId()), NumberOperators.EQUALS));
+				c.addOrCondition(CriteriaAPI.getCondition(orgIdColumnName, "orgId", "", CommonOperators.IS_EMPTY));
+				whereCondition.andCriteria(c);
+			}
 		}
 
 		whereCondition.andCustomWhere(where.getWhereClause(), where.getValues());
@@ -466,7 +513,7 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 
 		builder.table(module.getTableName());
 
-		WhereBuilder whereCondition = computeWhere(orgIdField, moduleIdField, siteIdField, isDeletedField);
+		WhereBuilder whereCondition = computeWhere(orgIdField, moduleIdField, siteIdField, isDeletedField, includeNullOrgAndModule);
 		builder.andCustomWhere(whereCondition.getWhereClause(), whereCondition.getValues());
 		handlePermissionAndScope();
 		

@@ -1,6 +1,7 @@
 package com.facilio.report.context;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -15,6 +16,7 @@ import com.facilio.modules.fields.NumberField;
 import com.facilio.unitconversion.Metric;
 import com.facilio.unitconversion.Unit;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.apache.commons.collections4.CollectionUtils;
 
 public class ReportFieldContext {
 
@@ -88,7 +90,15 @@ public class ReportFieldContext {
 	public void setFieldId(long fieldId) {
 		this.fieldId = fieldId;
 	}
-	
+
+	private FacilioField outerJoinField;
+	public FacilioField getOuterJoinField() {
+		return outerJoinField == null ? field : outerJoinField;
+	}
+	public void setOuterJoinField(FacilioField outerJoinField) {
+		this.outerJoinField = outerJoinField;
+	}
+
 	private FacilioField field;
 	
 	@JsonIgnore
@@ -252,7 +262,18 @@ public class ReportFieldContext {
 	public void setPredicted(boolean predicted) {
 		this.predicted = predicted;
 	}
-	
+
+	private List<Long> selectValuesOnly;
+	public void setSelectValuesOnly(List<Long> selectValuesOnly) {
+		this.selectValuesOnly = selectValuesOnly;
+	}
+	public List<Long> getSelectValuesOnly() {
+		return selectValuesOnly;
+	}
+	public boolean isOuterJoin() {
+		return CollectionUtils.isNotEmpty(selectValuesOnly);
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		// TODO Auto-generated method stub

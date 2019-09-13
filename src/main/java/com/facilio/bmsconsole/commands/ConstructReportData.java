@@ -122,6 +122,10 @@ public class ConstructReportData extends FacilioCommand {
 			Object fieldId = xAxisJSON.get("field_id");
 			xField = getField(modBean, fieldId);
 		}
+
+		if (xAxisJSON.containsKey("selectedIds")) {
+			xAxis.setSelectValuesOnly((List<Long>) xAxisJSON.get("selectedIds"));
+		}
  		
 		if (xAxisJSON.containsKey("aggr")) {
 			Integer xAggr = ((Number) xAxisJSON.get("aggr")).intValue();
