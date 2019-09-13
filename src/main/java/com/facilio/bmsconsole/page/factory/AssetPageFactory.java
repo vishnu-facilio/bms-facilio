@@ -159,8 +159,8 @@ public class AssetPageFactory extends PageFactory {
 		}
 		
 		
-		if (AccountUtil.isFeatureEnabled(FeatureLicense.CONTRACT)) {
-			Tab tab5 = page.new Tab("contracts", "contracts");
+		if (AccountUtil.isFeatureEnabled(FeatureLicense.CONTRACT) && AccountUtil.getCurrentOrg().getOrgId() == 155) {
+			Tab tab5 = page.new Tab("contracts");
 			page.addTab(tab5);
 			
 			Section tab5Sec1 = page.new Section();
@@ -387,7 +387,7 @@ public class AssetPageFactory extends PageFactory {
 	}
 	
 	private static void addContractWidget(Section section) {
-		PageWidget contractsWidget = new PageWidget(WidgetType.LIST);
+		PageWidget contractsWidget = new PageWidget(WidgetType.LIST, "contracts");
 		contractsWidget.addToLayoutParams(section, 24, 10);
 		section.addWidget(contractsWidget);
 	}
