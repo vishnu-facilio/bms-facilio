@@ -91,14 +91,6 @@ public class ReportFieldContext {
 		this.fieldId = fieldId;
 	}
 
-	private FacilioField outerJoinField;
-	public FacilioField getOuterJoinField() {
-		return outerJoinField == null ? field : outerJoinField;
-	}
-	public void setOuterJoinField(FacilioField outerJoinField) {
-		this.outerJoinField = outerJoinField;
-	}
-
 	private FacilioField field;
 	
 	@JsonIgnore

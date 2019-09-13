@@ -1,17 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.Stack;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -166,12 +155,10 @@ public class FetchReportDataCommand extends FacilioCommand {
 		
 		ReportDataPointContext dp = dataPointList.get(0); //Since order by, criteria are same for all dataPoints in a group, we can consider only one for the builder
 
-
 		if (report.getTypeEnum() == ReportType.WORKORDER_REPORT) {
 			if (report.getModuleId() > 0) {
 				baseModule = modBean.getModule(report.getModuleId());
-			}
-			else {
+			} else {
 				baseModule = dp.getxAxis().getModule();
 			}
 		} else {
@@ -179,10 +166,9 @@ public class FetchReportDataCommand extends FacilioCommand {
 		}
 
 		SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
-				.module(baseModule) //Assuming X to be the base module
-				.setAggregation()
-				;
-
+																				.module(baseModule) //Assuming X to be the base module
+																				.setAggregation()
+																				;
 		Set<FacilioModule> addedModules = new HashSet<>();
 		addedModules.add(baseModule);
 
@@ -278,7 +264,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 
 	private void applyJoin (String on, FacilioModule joinModule, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder) {
 		selectBuilder.innerJoin(joinModule.getTableName())
-					.on(on);
+									.on(on);
 
 		FacilioModule prevModule = joinModule;
 		FacilioModule extendedModule = prevModule.getExtendModule();
@@ -291,7 +277,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 	}
 
 	private List<Map<String, Object>> fetchReportData(ReportContext report, ReportDataPointContext dp, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, ReportBaseLineContext reportBaseLine, FacilioField xAggrField, String xValues) throws Exception {
-		SelectRecordsBuilder<ModuleBaseWithCustomFields> newSelectBuilder = new SelectRecordsBuilder<>(selectBuilder);
+		SelectRecordsBuilder<ModuleBaseWithCustomFields> newSelectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>(selectBuilder);
 		applyDateCondition(report, dp, newSelectBuilder, reportBaseLine);
 
 
@@ -329,6 +315,9 @@ public class FetchReportDataCommand extends FacilioCommand {
 				}
 			}
 		}
+
+
+
 		if(report.getCriteria() != null) {
 			newSelectBuilder.andCriteria(report.getCriteria());
 		}
@@ -336,12 +325,30 @@ public class FetchReportDataCommand extends FacilioCommand {
 		ReportFieldContext reportFieldContext = dp.getxAxis();
 		boolean outerJoin = reportFieldContext.isOuterJoin();
 		if (outerJoin) {
-			FacilioField outerJoinField = dp.getxAxis().getOuterJoinField();
-			FacilioField field = dp.getxAxis().getField();
-			newSelectBuilder.rightJoin(outerJoinField.getModule().getTableName())
-					.on(outerJoinField.getModule().getTableName() + ".ID = " + field.getModule().getTableName() + "." + field.getColumnName());
+			FacilioField outerJoinField = dp.getxAxis().getField();
+			if (!(outerJoinField instanceof LookupField)) {
+				throw new IllegalArgumentException("Invalid configuration");
+			}
 
-			newSelectBuilder.andCondition(CriteriaAPI.getIdCondition(dp.getxAxis().getSelectValuesOnly(), outerJoinField.getModule()));
+			String aggrFieldName = ReportUtil.getAggrFieldName(dp.getyAxis().getField(), dp.getyAxis().getAggrEnum());
+			FacilioModule lookupModule = ((LookupField) outerJoinField).getLookupModule();
+
+			FacilioField idField = FieldFactory.getIdField(lookupModule);
+			FacilioField countField = new FacilioField();
+			countField.setColumnName("count(inn." + aggrFieldName + ")");
+			countField.setName(aggrFieldName);
+
+			idField.setName(outerJoinField.getName());
+			SelectRecordsBuilder newSelect = new SelectRecordsBuilder()
+					.module(lookupModule)
+					.select(Arrays.asList(idField, countField))
+					.leftJoinQuery(newSelectBuilder.constructQueryString(), "inn")
+						.on(lookupModule.getTableName() + ".ID = inn." + outerJoinField.getName())
+					.andCondition(CriteriaAPI.getIdCondition(dp.getxAxis().getSelectValuesOnly(), lookupModule))
+					.groupBy(idField.getCompleteColumnName())
+					;
+
+			newSelectBuilder = newSelect;
 		}
 
 		List<Map<String, Object>> props = newSelectBuilder.getAsProps();
@@ -607,34 +614,21 @@ public class FetchReportDataCommand extends FacilioCommand {
 	private FacilioField applyXAggregation(ReportDataPointContext dp, AggregateOperator xAggr, StringJoiner groupBy, SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder, List<FacilioField> fields, Set<FacilioModule> addedModules) throws Exception {
 		FacilioField xAggrField = null;
 		if (dp.getyAxis().getAggrEnum() != null && dp.getyAxis().getAggr() != 0) {
-			FacilioField xField = dp.getxAxis().getOuterJoinField();
-			if (dp.getxAxis().isOuterJoin()) {
-				if (xField instanceof LookupField) {
-					FacilioModule lookupModule = ((LookupField) xField).getLookupModule();
-					FacilioField idField = FieldFactory.getIdField(lookupModule);
-					idField.setName(xField.getName());
-					dp.getxAxis().setOuterJoinField(idField);
-					xField = idField;
-				}
-				else {
-					throw new IllegalArgumentException("Invalid outer join configuration");
-				}
-			}
 			if (xAggr != null) {
 				if (xAggr instanceof SpaceAggregateOperator) {
-					xAggrField = applySpaceAggregation(dp, xAggr, selectBuilder, addedModules, xField);
+					xAggrField = applySpaceAggregation(dp, xAggr, selectBuilder, addedModules, dp.getxAxis().getField());
 				}
 				else {
-					xAggrField = xAggr.getSelectField(xField);
+					xAggrField = xAggr.getSelectField(dp.getxAxis().getField());
 				}
 			}
 			else {
-				xAggrField = xField;
+				xAggrField = dp.getxAxis().getField();
 			}
 			groupBy.add(xAggrField.getCompleteColumnName());
 
 			if (xAggr instanceof DateAggregateOperator) {
-				fields.add(((DateAggregateOperator)xAggr).getTimestampField(xField));
+				fields.add(((DateAggregateOperator)xAggr).getTimestampField(dp.getxAxis().getField()));
 			}
 			else {
 				fields.add(xAggrField);
@@ -697,10 +691,10 @@ public class FetchReportDataCommand extends FacilioCommand {
 
 			String orderBy = null;
 			if(dataPoint.getyAxis().getAggr() < 1) {
-				orderBy = dataPoint.getxAxis().getOuterJoinField().getCompleteColumnName();
+				orderBy = dataPoint.getxAxis().getField().getCompleteColumnName();
 			}
 			else {
-				orderBy = "MIN(" + dataPoint.getxAxis().getOuterJoinField().getCompleteColumnName() + ")";
+				orderBy = "MIN(" + dataPoint.getxAxis().getField().getCompleteColumnName() + ")";
 			}
 			selectBuilder.orderBy(orderBy);
 		}
