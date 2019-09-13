@@ -248,6 +248,13 @@ public class TaskAction extends FacilioAction {
 			if(context.get(FacilioConstants.ContextNames.TASK_ERRORS) != null) {
 				List<TaskErrorContext> errors = (List<TaskErrorContext>) context.get(FacilioConstants.ContextNames.TASK_ERRORS);
 				setResult(FacilioConstants.ContextNames.TASK_ERRORS, errors);
+				
+				if(context.get(FacilioConstants.ContextNames.HAS_TASK_ERRORS) != null) {
+					Boolean hasTaskErrors = (Boolean) context.get(FacilioConstants.ContextNames.HAS_TASK_ERRORS);
+					if(hasTaskErrors != null && hasTaskErrors) {
+						setResponseCode(1);
+					}
+				}
 			}
 			
 		} catch (ReadingValidationException ex) {
@@ -347,6 +354,13 @@ public class TaskAction extends FacilioAction {
 			if(context.get(FacilioConstants.ContextNames.TASK_ERRORS) != null) {
 				List<TaskErrorContext> errors = (List<TaskErrorContext>) context.get(FacilioConstants.ContextNames.TASK_ERRORS);
 				setResult(FacilioConstants.ContextNames.TASK_ERRORS, errors);
+				
+				if(context.get(FacilioConstants.ContextNames.HAS_TASK_ERRORS) != null) {
+					Boolean hasTaskErrors = (Boolean) context.get(FacilioConstants.ContextNames.HAS_TASK_ERRORS);
+					if(hasTaskErrors != null && hasTaskErrors) {
+						setResponseCode(1);
+					}
+				}
 			}
 			rowsUpdated += (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 			setModifiedTime(defaultClosedTaskObj.getModifiedTime());
@@ -387,6 +401,13 @@ public class TaskAction extends FacilioAction {
 				if(context.get(FacilioConstants.ContextNames.TASK_ERRORS) != null) {
 					List<TaskErrorContext> errors = (List<TaskErrorContext>) context.get(FacilioConstants.ContextNames.TASK_ERRORS);
 					setResult(FacilioConstants.ContextNames.TASK_ERRORS, errors);
+					
+					if(context.get(FacilioConstants.ContextNames.HAS_TASK_ERRORS) != null) {
+						Boolean hasTaskErrors = (Boolean) context.get(FacilioConstants.ContextNames.HAS_TASK_ERRORS);
+						if(hasTaskErrors != null && hasTaskErrors) {
+							setResponseCode(1);
+						}
+					}
 				}
 			} catch (ReadingValidationException ex) {
 				Map<String, String> msgMap = new HashMap<>();

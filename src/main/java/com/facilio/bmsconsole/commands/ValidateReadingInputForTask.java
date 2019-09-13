@@ -48,8 +48,6 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
-		
-		
 		try {
 			
 			if(AccountUtil.getCurrentOrg().getId() != 155l) {
@@ -118,9 +116,10 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			}
 			if(!errors.isEmpty()) {
 				context.put(FacilioConstants.ContextNames.TASK_ERRORS, errors);
-				if(hasErrors) {
+				context.put(FacilioConstants.ContextNames.HAS_TASK_ERRORS, hasErrors);
+//				if(hasErrors) {
 					return true;
-				}
+//				}
 			}
 		}
 		catch(Exception e) {
