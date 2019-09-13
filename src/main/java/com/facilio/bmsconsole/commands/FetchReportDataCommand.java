@@ -335,7 +335,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 
 			FacilioField idField = FieldFactory.getIdField(lookupModule);
 			FacilioField countField = new FacilioField();
-			countField.setColumnName("inn." + aggrFieldName);
+			countField.setColumnName("COALESCE(inn." + aggrFieldName + ", 0)");
 			countField.setName(aggrFieldName);
 
 			idField.setName(outerJoinField.getName());
@@ -346,8 +346,10 @@ public class FetchReportDataCommand extends FacilioCommand {
 						.on(lookupModule.getTableName() + ".ID = inn." + outerJoinField.getName())
 					.andCondition(CriteriaAPI.getIdCondition(dp.getxAxis().getSelectValuesOnly(), lookupModule))
 //					.groupBy(idField.getCompleteColumnName())
-//					.orderBy()
 					;
+			if (CollectionUtils.isNotEmpty(dp.getOrderBy()) && (dp.getOrderByFuncEnum() != null && dp.getOrderByFuncEnum() != OrderByFunction.NONE)) {
+				newSelect.orderBy(countField.getCompleteColumnName() + " " + dp.getOrderByFuncEnum().getStringValue());
+			}
 
 			newSelectBuilder = newSelect;
 		}
