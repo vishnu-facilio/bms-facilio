@@ -1,3 +1,4 @@
+<%@page import="com.facilio.aws.util.FacilioProperties"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
@@ -204,8 +205,7 @@ function signup(frm)
     {
     		//alert(JSON.stringify(response))
     		console.log("$$$$$$$ response "+response)
-    		console.log("££££££££££££££££££ redirecting to " + '<%= com.facilio.aws.util.AwsUtil.getConfig("clientapp.url")%>');
-    		location.href = '<%= com.facilio.aws.util.AwsUtil.getConfig("clientapp.url")%>/app/wo';
+    		location.href = '<%= FacilioProperties.getConfig("clientapp.url")%>/app/wo';
     		
     }
 </script>
