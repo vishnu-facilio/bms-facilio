@@ -9,8 +9,11 @@ public class TaskErrorContext {
 	SuggestionType suggestionType;
 	Unit suggestedUnit;
 	
-	public Unit getSuggestedUnit() {
-		return suggestedUnit;
+	public int getSuggestedUnit() {
+		if(suggestedUnit != null) {
+			return suggestedUnit.getUnitId();
+		}
+		return -1;
 	}
 
 	public void setSuggestedUnit(Unit suggestedUnit) {
