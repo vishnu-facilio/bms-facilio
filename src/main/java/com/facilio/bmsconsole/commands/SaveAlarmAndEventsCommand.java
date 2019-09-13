@@ -1,7 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -9,10 +15,7 @@ import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.json.simple.JSONObject;
 
-import com.facilio.accounts.dto.User;
-import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
@@ -20,7 +23,6 @@ import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext.Type;
 import com.facilio.bmsconsole.context.BaseEventContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
-import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.bmsconsole.util.NewEventAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
@@ -40,8 +42,6 @@ import com.facilio.modules.InsertRecordBuilder;
 import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.UpdateRecordBuilder;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.wms.message.WmsEvent;
-import com.facilio.wms.util.WmsApi;
 
 public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTransactionCommand {
 
@@ -265,7 +265,7 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 
 				updateRecordBuilder.updateViaMap(updateMap);
 			}
-			try {
+			/*try {
 				if ((eventTypes.contains(EventType.CREATE) || eventTypes.contains(EventType.UPDATED_ALARM_SEVERITY)) && 
 					(AccountUtil.getCurrentOrg().getOrgId() != 88 || (alarms.size() == 1 && alarms.get(0).getSeverity().getId() == AlarmAPI.getAlarmSeverity(FacilioConstants.Alarm.CRITICAL_SEVERITY).getId()))) {
 					WmsEvent event = new WmsEvent();
@@ -289,7 +289,7 @@ public class SaveAlarmAndEventsCommand extends FacilioCommand implements PostTra
 			}
 			catch (Exception e) {
 				LOGGER.info("Exception occcurred while pushing Web notification during alarm updation ", e);
-			}
+			}*/
 		}
 		return false;
 	}
