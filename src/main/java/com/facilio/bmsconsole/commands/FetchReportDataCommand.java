@@ -345,7 +345,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 					.leftJoinQuery(newSelectBuilder.constructQueryString(), "inn")
 						.on(lookupModule.getTableName() + ".ID = inn." + outerJoinField.getName())
 					.andCondition(CriteriaAPI.getIdCondition(dp.getxAxis().getSelectValuesOnly(), lookupModule))
-					.groupBy(idField.getCompleteColumnName())
+//					.groupBy(idField.getCompleteColumnName())
 //					.orderBy()
 					;
 
