@@ -388,7 +388,14 @@ public class TaskContext extends ModuleBaseWithCustomFields {
 	public void setWoCreateTemplateId(long woCreateTemplateId) {
 		this.woCreateTemplateId = woCreateTemplateId;
 	}
-
+	
+	private long woCreateFormId = -1;
+	public long getWoCreateFormId() {
+		return woCreateFormId;
+	}
+	public void setWoCreateFormId(long woCreateFormId) {
+		this.woCreateFormId = woCreateFormId;
+	}
 	private ActionContext action;
 	public ActionContext getAction() {
 		return action;

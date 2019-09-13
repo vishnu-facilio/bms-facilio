@@ -14,7 +14,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -158,6 +157,16 @@ public class FieldUtil {
 		if(beans != null) {
 			ObjectMapper mapper = getMapper(beanClass);
 			array = mapper.convertValue(beans, JSONArray.class);
+		}
+		return array;
+	}
+	
+	public static List<Map<String, Object>> getAsMapList(List<?> beans, Class<?> beanClass) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+		List<Map<String, Object>> array = null;
+		if(beans != null) {
+			ObjectMapper mapper = getMapper(beanClass);
+//			array = mapper.convertValue(beans, List.class);
+			return mapper.convertValue(beans, mapper.getTypeFactory().constructCollectionType(List.class, Map.class));
 		}
 		return array;
 	}

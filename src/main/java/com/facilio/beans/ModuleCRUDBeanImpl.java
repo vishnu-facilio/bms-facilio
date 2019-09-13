@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
-import com.amazonaws.services.s3.model.AmazonS3Exception;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -21,6 +20,7 @@ import org.json.simple.JSONObject;
 
 import com.amazonaws.services.kinesis.clientlibrary.interfaces.IRecordProcessorCheckpointer;
 import com.amazonaws.services.kinesis.model.Record;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.agent.AgentKeys;
@@ -999,11 +999,11 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				if (wo.getDueDate() > 0) {
 					newWo.setDueDate(wo.getDueDate());
 				}
-				if (wo.getAssignedTo() != null && wo.getAssignedTo().getId() > 0) {
+				if (wo.getAssignedTo() != null && wo.getAssignedTo().getId() != -1) {
 					newWo.setAssignedTo(wo.getAssignedTo());
 					newWo.setAssignedBy(AccountUtil.getCurrentUser());
 				}
-				if (wo.getAssignmentGroup() != null && wo.getAssignmentGroup().getId() > 0) {
+				if (wo.getAssignmentGroup() != null && wo.getAssignmentGroup().getId() != -1) {
 					newWo.setAssignmentGroup(wo.getAssignmentGroup());
 					newWo.setAssignedBy(AccountUtil.getCurrentUser());
 				}
@@ -1027,7 +1027,7 @@ public class ModuleCRUDBeanImpl implements ModuleCRUDBean {
 				
 				EventType activityType = EventType.EDIT;
 				// Temp
-				if((wo.getAssignedTo() != null && wo.getAssignedTo().getId() > 0) || (wo.getAssignmentGroup() != null && wo.getAssignmentGroup().getId() > 0)) {
+				if((wo.getAssignedTo() != null && wo.getAssignedTo().getId() != -1) || (wo.getAssignmentGroup() != null && wo.getAssignmentGroup().getId() != -1)) {
 					activityType = EventType.ASSIGN_TICKET;
 				}
 				
