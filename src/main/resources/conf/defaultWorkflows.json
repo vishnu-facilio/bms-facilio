@@ -300,7 +300,7 @@
 				if (thisYearOccurrence != null) {
 					for each index, value in thisYearOccurrence {
 						if (occurrenceCount < value.rule) {
-						ruleId = value.result;
+						ruleId = value.result.id;
 						occurrenceCount = value.rule;
 						}
 					}
@@ -322,6 +322,68 @@
 				log resMap;
 				return resMap;
 			}"
+		},
+		"6": {
+			"description": "",
+			"usage": "",
+			"workflow": "Map assetAlarmDetails(Number resourceId) {
+				// resourceId = 896318 ;
+				date = NameSpace(\"date\");
+				thisCurrentYear = date.getDateRange(\"Current Year\");
+				readingAlarmOccurrence = Module(\"readingalarm\");
+				occurenceThisMonthCrit = null;
+				resMap = {};
+				durationForYear =0;
+				occurenceThisYearCrit = {
+					criteria: [resource == resourceId && createdTime ==  thisCurrentYear],
+					field: \"ruleId\",
+					aggregation: \"count, ruleId\",
+					groupBy: \"ruleId\"
+				};
+				thisYearOccurrence = readingAlarmOccurrence.fetch(occurenceThisYearCrit);
+				occurrenceCount = 0;
+				ruleId = 0;
+				mcName = null;
+				if (thisYearOccurrence != null) {
+					for each index, value in thisYearOccurrence {
+						if (occurrenceCount < value.ruleId) {
+							ruleId = value.result;
+							occurrenceCount = value.ruleId;
+						}
+					}
+				}
+				if (ruleId > 0) {
+					readingRuleModule = Module(\"workflowrule\");
+					readingRuleCrite = {
+						criteria: [id == ruleId]
+					};
+					ruleObj = readingRuleModule.fetch(readingRuleCrite);
+
+					if (ruleObj != null) {
+						firstRes =ruleObj[0];
+						commonRule = firstRes.name;
+					}
+					sumOfCreatedTime = {
+						criteria : [ createdTime == thisCurrentYear && ruleId == ruleId ],
+						aggregation : \"sum, createdTime\",
+						field: \"createdTime\"
+					};
+
+					createdTimeSum = readingAlarmOccurrence.fetch(sumOfCreatedTime);
+					sumClearedTime = {
+						criteria : [ createdTime == thisCurrentYear && ruleId == ruleId ],
+						aggregation : \"sum, clearedTime\",
+						field: \"clearedTime\"
+					};
+
+					clearedTimeSum = readingAlarmOccurrence.fetch(sumClearedTime);
+					durationForYear = (clearedTimeSum - createdTimeSum);
+					log durationForYear;
+				}
+				resMap[\"commonRule\"] = commonRule;
+				resMap[\"duration\"] = durationForYear;
+				return resMap;
+				}"
 		},
 		"46": {
 			"description" : "ML Deviation",
