@@ -1,10 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -13,7 +11,6 @@ import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.util.DBConf;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
@@ -28,10 +25,10 @@ public class ReadingUnitConversionToRdmOrSiUnit extends FacilioCommand {
 		ReadingContext reading = (ReadingContext) context.get(FacilioConstants.ContextNames.READING);
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		
-		if(recordIds != null && !recordIds.isEmpty()) 
+		if(recordIds != null && !recordIds.isEmpty() && currentTask.getReadingFieldUnitEnum() != null) 
 		{
 			Map<Long, TaskContext> tasks = TicketAPI.getTaskMap(recordIds);		
-			if(tasks != null && currentTask != null && reading != null && currentTask.getReadingFieldUnitEnum() != null) 
+			if(tasks != null && currentTask != null && reading != null) 
 			{
 				TaskContext taskContext= tasks.get(recordIds.get(0));
 				if(taskContext.getInputTypeEnum() != null)
