@@ -203,6 +203,12 @@ public class LookupSpecialTypeUtil {
 		else if(EventConstants.EventContextNames.EVENT.equals(specialType)) {
 			return EventAPI.getEvent(criteria);
 		}
+        else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
+            return WorkflowRuleAPI.getWorkflowRules(WorkflowRuleContext.RuleType.READING_RULE, true ,criteria, null, null);
+        }
+        else if (FacilioConstants.ContextNames.WORKFLOW_RULE_MODULE.equals(specialType)) {
+            return WorkflowRuleAPI.getWorkflowRules(WorkflowRuleContext.RuleType.READING_RULE, true ,criteria, null, null);
+        }
 		else if ("trigger".equals(specialType)) {
 			return PreventiveMaintenanceAPI.getPMTriggers(criteria);
 		}
@@ -410,6 +416,12 @@ public class LookupSpecialTypeUtil {
 				return event.toString();
 			}
 		}
+        else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
+            WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(id);
+            if (rule != null) {
+                return  rule.toString();
+            }
+        }
 		return null;
 	}
 	
@@ -478,6 +490,15 @@ public class LookupSpecialTypeUtil {
 				}
 			}
 		}
+        else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
+            for(Object obj:listObjects) {
+
+                WorkflowRuleContext workflowRule = (WorkflowRuleContext)obj;
+                if (workflowRule != null) {
+                    idVsKey.put(workflowRule.getId(), workflowRule.toString());
+                }
+            }
+        }
 		return idVsKey;
 	}
 	
@@ -523,6 +544,9 @@ public class LookupSpecialTypeUtil {
 		else if(FacilioConstants.Workflow.WORKFLOW.equals(specialType)) {
 			return ModuleFactory.getWorkflowModule();
 		}
+		else if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
+            return ModuleFactory.getReadingRuleModule();
+        }
 		else if("trigger".equals(specialType)) {
 			return ModuleFactory.getPMTriggersModule();
 		}
@@ -575,6 +599,9 @@ public class LookupSpecialTypeUtil {
 		else if(FacilioConstants.Workflow.WORKFLOW.equals(specialType)) {
 			return FieldFactory.getWorkflowFields();
 		}
+		else  if (FacilioConstants.ContextNames.READING_RULE_MODULE.equals(specialType)) {
+		    return  FieldFactory.getReadingRuleFields();
+        }
 		else if("trigger".equals(specialType)) {
 			return FieldFactory.getPMTriggerFields();
 		}

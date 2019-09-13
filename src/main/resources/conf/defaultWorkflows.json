@@ -281,7 +281,7 @@
 		"5" : {
 			"description" : "Most Common Alarm for asset",
 			"usage" : "AssetSummary",
-			"workflow" : "Map test(Number resourceId) {
+			"workflow" : "Map assetAlarmDetails(Number resourceId) {
 				date = NameSpace(\"date\");
 				thisCurrentYear = date.getDateRange(\"Current Year\");
 				readingAlarmOccurrence = Module(\"readingalarmoccurrence\");
@@ -300,23 +300,26 @@
 				if (thisYearOccurrence != null) {
 					for each index, value in thisYearOccurrence {
 						if (occurrenceCount < value.rule) {
-							ruleId = value.result.id;
-							occurrenceCount = value.rule;
+						ruleId = value.result;
+						occurrenceCount = value.rule;
 						}
 					}
 				}
 				if (ruleId > 0) {
 					readingRuleModule = Module(\"workflowrule\");
 					readingRuleCrite = {
-						criteria: [id == ruleId]
-					};
-					ruleObj = readingRuleModule.fetch(readingRuleCrite);
+					criteria: [id == ruleId]
+				};
+				ruleObj = readingRuleModule.fetch(readingRuleCrite);
+
 					if (ruleObj != null) {
-						commonRule = ruleObj.name;
+					firstRes =ruleObj[0];
+					commonRule = firstRes.name;
 					}
 				}
 				resMap[\"commonRule\"] = commonRule;
-				resMap[\"duration\"] = commonRule;
+				resMap[\"duration\"] = 0;
+				log resMap;
 				return resMap;
 			}"
 		},
