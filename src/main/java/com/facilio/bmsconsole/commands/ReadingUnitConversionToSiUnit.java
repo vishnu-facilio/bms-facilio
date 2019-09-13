@@ -1,6 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
@@ -22,32 +24,38 @@ public class ReadingUnitConversionToSiUnit extends FacilioCommand {
 			
 		TaskContext currentTask = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
 		ReadingContext reading = (ReadingContext) context.get(FacilioConstants.ContextNames.READING);
+		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		
-		if(currentTask != null && reading != null && currentTask.getReadingFieldUnitEnum() != null) {
-			TaskContext taskContext = TicketAPI.getTaskMap(Collections.singletonList(currentTask.getId())).get(currentTask.getId());
-			if(taskContext.getInputTypeEnum() != null)
+		
+		if(recordIds != null && !recordIds.isEmpty()) 
+		{
+			Map<Long, TaskContext> tasks = TicketAPI.getTaskMap(recordIds);		
+			if(tasks != null && currentTask != null && reading != null && currentTask.getReadingFieldUnitEnum() != null) 
 			{
-				switch(taskContext.getInputTypeEnum()) {
-				case READING:
-					if (taskContext.getReadingField() != null && taskContext.getResource() != null && taskContext.getReadingField() instanceof NumberField) 
-					{			
-						NumberField readingNumberField = (NumberField) taskContext.getReadingField();
-						if(readingNumberField.getMetricEnum() != null && reading!= null)
-						{								
-							Unit displayUnit = UnitsUtil.getDisplayUnit(readingNumberField);
-							Double convertedreading = UnitsUtil.convertToSiUnit(reading.getReading(readingNumberField.getName()), displayUnit);
-							reading.addReading(readingNumberField.getName(), convertedreading);
-							context.put(FacilioConstants.ContextNames.READING, reading);
-							
-							currentTask.setInputValue(String.valueOf(convertedreading));
-							context.put(FacilioConstants.ContextNames.TASK, currentTask);									
+				TaskContext taskContext= tasks.get(recordIds.get(0));
+				if(taskContext.getInputTypeEnum() != null)
+				{
+					switch(taskContext.getInputTypeEnum()) {
+					case READING:
+						if (taskContext.getReadingField() != null && taskContext.getResource() != null && taskContext.getReadingField() instanceof NumberField) 
+						{			
+							NumberField readingNumberField = (NumberField) taskContext.getReadingField();
+							if(readingNumberField.getMetricEnum() != null && reading!= null)
+							{								
+								Unit displayUnit = UnitsUtil.getDisplayUnit(readingNumberField);
+								Double convertedreading = UnitsUtil.convertToSiUnit(reading.getReading(readingNumberField.getName()), displayUnit);
+								reading.addReading(readingNumberField.getName(), convertedreading);
+								context.put(FacilioConstants.ContextNames.READING, reading);
+								
+								currentTask.setInputValue(String.valueOf(convertedreading));
+								context.put(FacilioConstants.ContextNames.TASK, currentTask);									
+							}
 						}
+						break;		
 					}
-					break;		
 				}
 			}
 		}
-		
 		return false;
 	}
 
