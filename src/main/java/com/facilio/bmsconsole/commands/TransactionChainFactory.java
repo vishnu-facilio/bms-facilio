@@ -233,8 +233,8 @@ public class TransactionChainFactory {
 		public static FacilioChain getAddWorkOrderChain() {
 			FacilioChain c = getDefaultChain(); 
 			c.addCommand(new PMSettingsCommand());
-			c.addCommand(new GetFormMetaCommand());
-			c.addCommand(new ValidateFormCommand());
+			//c.addCommand(new GetFormMetaCommand());
+			//c.addCommand(new ValidateFormCommand());
 			c.addCommand(new AddRequesterCommand());
 			c.addCommand(SetTableNamesCommand.getForWorkOrder());
 			c.addCommand(new ValidateWorkOrderFieldsCommand());
