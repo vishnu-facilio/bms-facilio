@@ -1,6 +1,7 @@
 package com.facilio.unitconversion;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,7 @@ import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.OrgUnitsContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -25,6 +27,27 @@ public class UnitsUtil {
 
 	public final static String FORMULA_SI_PLACE_HOLDER_STRING = "si";
 	public final static String FORMULA_THIS_PLACE_HOLDER_STRING = "this";
+	
+	public final static int unitMultiplierboundPercentage = 20; 
+	
+	
+	public static Unit getUnitMultiplierResult(Unit currentUnit,double multiplier) {
+		double currentUnitMultiplerTimes = currentUnit.getMultiplierTimes();
+		double neededUnitMultiplier = currentUnitMultiplerTimes * multiplier;
+		
+		double neededUnitMultiplierLowerLimit = neededUnitMultiplier - (neededUnitMultiplier * unitMultiplierboundPercentage /100);
+		double neededUnitMultiplierUpperLimit = neededUnitMultiplier + (neededUnitMultiplier * unitMultiplierboundPercentage /100);
+		
+		Collection<Unit> units = Unit.getUnitsForMetric(currentUnit.getMetric());
+		
+		for(Unit unit :units) {
+			double multiplerTimes = unit.getMultiplierTimes();
+			if(currentUnit != unit && multiplerTimes > 0 && multiplerTimes > neededUnitMultiplierLowerLimit && multiplerTimes < neededUnitMultiplierUpperLimit) {
+				return unit;
+			}
+		}
+		return null;
+	}
 	
 	public static Double convert(Object value,Unit from,Unit to) {
 		if(value == null ) {

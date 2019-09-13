@@ -963,7 +963,7 @@ public class TransactionChainFactory {
 		public static FacilioChain getUpdateTaskChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new ValidatePrerequisiteStatusForTaskUpdateCommnad());
-//			c.addCommand(new ValidateReadingInputForTask());
+			c.addCommand(new ValidateReadingInputForTask());
 			c.addCommand(new ValidateAndCreateValuesForInputTaskCommand());
 			c.addCommand(new ReadingUnitConversionToRdmOrSiUnit());
 			c.addCommand(ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain());

@@ -1,12 +1,46 @@
 package com.facilio.bmsconsole.context;
 
+import com.facilio.unitconversion.Unit;
+
 public class TaskErrorContext {
 
 	Mode mode;
 	FailType failType;
+	SuggestionType suggestionType;
+	Unit suggestedUnit;
 	
+	public Unit getSuggestedUnit() {
+		return suggestedUnit;
+	}
+
+	public void setSuggestedUnit(Unit suggestedUnit) {
+		this.suggestedUnit = suggestedUnit;
+	}
+
+	public int getSuggestionType() {
+		if(suggestionType != null) {
+			return suggestionType.getValue();
+		}
+		return -1;
+	}
+
+	public void setSuggestionType(int suggestionType) {
+		if(suggestionType > 0) {
+			this.suggestionType = SuggestionType.valueOf(suggestionType);
+		}
+	}
+
 	String previousValue;
 	String currentValue;
+	String averageValue;
+
+	public String getAverageValue() {
+		return averageValue;
+	}
+
+	public void setAverageValue(String averageValue) {
+		this.averageValue = averageValue;
+	}
 
 	public String getPreviousValue() {
 		return previousValue;
@@ -64,6 +98,24 @@ public class TaskErrorContext {
 			return ordinal() + 1;
 		}
 		public static FailType valueOf (int value) {
+			if (value > 0 && value <= values().length) {
+				return values() [value - 1];
+			}
+			return null;
+		}
+	}
+	
+	public enum SuggestionType {
+		
+		UNIT_CHANGE,
+		LESS_THAN_AVG_VALUE,
+		GREATER_THAN_AVG_VALUE,
+		;
+		
+		public int getValue() {
+			return ordinal() + 1;
+		}
+		public static SuggestionType valueOf (int value) {
 			if (value > 0 && value <= values().length) {
 				return values() [value - 1];
 			}
