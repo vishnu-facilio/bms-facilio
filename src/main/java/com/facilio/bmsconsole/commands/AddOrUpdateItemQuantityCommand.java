@@ -69,8 +69,8 @@ public class AddOrUpdateItemQuantityCommand extends FacilioCommand {
 								quantity += purchaseditem.getCurrentQuantity();
 							}
 						}
-						
-						selectBuilder = new SelectRecordsBuilder<PurchasedItemContext>(selectBuilder);
+
+						selectBuilder = new SelectRecordsBuilder<>(selectBuilder);
 						selectBuilder.orderBy("COST_DATE DESC");
 						List<PurchasedItemContext> pItems = selectBuilder.get();
 						if (pItems != null && !pItems.isEmpty()) {
