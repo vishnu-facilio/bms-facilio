@@ -23,7 +23,7 @@ public class ReadingUnitConversionToSiUnit extends FacilioCommand {
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		
 		
-		if(recordIds != null && !recordIds.isEmpty() && currentTask.getReadingFieldUnitEnum() != null) 
+		if(recordIds != null && !recordIds.isEmpty() && currentTask != null && currentTask.getReadingFieldUnitEnum() != null) 
 		{
 			Map<Long, TaskContext> tasks = TicketAPI.getTaskMap(recordIds);		
 			if(tasks != null && currentTask != null && reading != null) 
