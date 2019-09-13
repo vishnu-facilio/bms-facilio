@@ -1087,58 +1087,64 @@
         	"description" : "ruleAlarmsDetails",
         	"usage" : "rulesSummary",
         	"workflow": "Map alarmDetails(Number ruleId)
-		    	{
-                  clearCondition = {
-                    criteria :[severity == \"Clear\" ]
-                  };
-            	date = NameSpace(\"date\");
-            	ranges = date.getDateRange(\"Current Week\");
-                monthRanges = date.getDateRange(\"Current Month\");
-		    	alarmsCurrWeekCri = {
-              		criteria : [ruleId == ruleId && createdTime == ranges ],
-					groupBy: \"resource\"
-            	};
-                  alarmSevrityModule = Module(\"alarmseverity\");
-                  clearSeverityContext = alarmSevrityModule.fetch(clearCondition);
-                  clearId = clearSeverityContext.get(0).get(\"id\");
-                  activeAssetcri = {
-					criteria : [ruleId == ruleId && severity != clearId  ]
-				};
-		        readingAlarmModule = Module(\"readingalarm\");
-                workOrderModule = Module(\"ticket\");
-		        activeRecord = readingAlarmModule.fetch(activeAssetcri);
-              	activeAlarms = 0;
-                  activeAlarmResources = [];
-              	if (activeRecord != null) {
-                  for each index,value in activeRecord {
-		                        if (value != null) {
-                                  if (value.get(\"resource\") != null) {
-                                    activeAlarmResources.add(value.get(\"resource\").get(\"id\"));
-                                  }
-		                        }                                
-		                }
-                      activeAlarms = activeRecord.size();
-                 }
-              	currWeekAlarmRec = readingAlarmModule.fetch(alarmsCurrWeekCri);
-              	currWeekAlarms = 0;
-              	alarmThisWeekResources = [];
-              	if (currWeekAlarmRec != null) {
-              		for each index,value in currWeekAlarmRec {
-		                        if (value != null) {
-                                  if (value.get(\"resource\") != null) {
-                                    alarmThisWeekResources.add(value.get(\"resource\").get(\"id\"));
-                                  }
-		                        }                                
-		                }
-                	currWeekAlarms = currWeekAlarmRec.size();
-             	}
-                  resultMap = {};
-                  resultMap[\"activeAlarms\"] = activeAlarms;
-                  resultMap[\"alarmRuleThisWeek\"] = currWeekAlarms;
-                  resultMap[\"activeAlarmResources\"] = activeAlarmResources;
-                  resultMap[\"alarmThisWeekResources\"] = alarmThisWeekResources;
-                  return resultMap;
-		    }"
+				{
+					clearCondition = {
+						criteria :[severity == \"Clear\" ]
+					};
+					date = NameSpace(\"date\");
+					ranges = date.getDateRange(\"Current Week\");
+					monthRanges = date.getDateRange(\"Current Month\");
+					alarmsCurrWeekCri = {
+						criteria : [ruleId == ruleId && createdTime == ranges ]
+					};
+					alarmCurrentWeekResourceCri = {
+						criteria : [ruleId == ruleId && createdTime == ranges ],
+						groupBy: \"resource\"
+					};
+					alarmSevrityModule = Module(\"alarmseverity\");
+					clearSeverityContext = alarmSevrityModule.fetch(clearCondition);
+					clearId = clearSeverityContext.get(0).get(\"id\");
+					activeAssetcri = {
+						criteria : [ruleId == ruleId && severity != clearId  ]
+					};
+					readingAlarmModule = Module(\"readingalarm\");
+					workOrderModule = Module(\"ticket\");
+					activeRecord = readingAlarmModule.fetch(activeAssetcri);
+					activeAlarms = 0;
+					activeAlarmResources = [];
+					if (activeRecord != null) {
+						for each index,value in activeRecord {
+						if (value != null) {
+							if (value.get(\"resource\") != null) {
+ 								activeAlarmResources.add(value.get(\"resource\").get(\"id\"));
+							}
+						}
+					}
+					activeAlarms = activeRecord.size();
+					}
+					currWeekAlarmRec = readingAlarmModule.fetch(alarmsCurrWeekCri);
+					currWeekAlarms = 0;
+					alarmThisWeekResources = [];
+					if (currWeekAlarmRec != null) {
+						currWeekAlarms = currWeekAlarmRec.size();
+					}
+					curretweekResourceRec = readingAlarmModule.fetch(alarmCurrentWeekResourceCri);
+					if (curretweekResourceRec != null) {
+						for each index,value in curretweekResourceRec {
+							if (value != null) {
+								if (value.get(\"resource\") != null) {
+								alarmThisWeekResources.add(value.get(\"resource\").get(\"id\"));
+								}
+							}
+						}
+					}
+					resultMap = {};
+					resultMap[\"activeAlarms\"] = activeAlarms;
+					resultMap[\"alarmRuleThisWeek\"] = currWeekAlarms;
+					resultMap[\"activeAlarmResources\"] = activeAlarmResources;
+					resultMap[\"alarmThisWeekResources\"] = alarmThisWeekResources;
+					return resultMap;
+				}"
         },
           "103" : {
         	"description" : "ruleWoDetails",

@@ -30,7 +30,7 @@ public class HandleV2AlarmListLookupCommand extends FacilioCommand {
 			for(BaseAlarmContext alarm: alarms) {
 				if (alarm instanceof ReadingAlarm) {
 					ReadingAlarm readingAlarm = (ReadingAlarm) alarm;
-					readingAlarm.setRule(null);
+//					readingAlarm.setRule(null);
 					readingAlarm.setSubRule(null);
 				}
 				AlarmOccurrenceContext occurrenceContext = occurencesMap.get(alarm.getLastOccurrenceId());
