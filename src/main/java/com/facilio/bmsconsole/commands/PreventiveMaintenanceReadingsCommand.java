@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.commands;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.modules.FieldUtil;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -41,17 +41,61 @@ public class PreventiveMaintenanceReadingsCommand extends FacilioCommand {
 		
 		SelectRecordsBuilder<WorkOrderContext> selectBuilder = new SelectRecordsBuilder<WorkOrderContext>();
 				selectBuilder.module(workorderModule)
-				.select(selectFields)
+				.select(selectFields).beanClass(WorkOrderContext.class)
 				.innerJoin(taskModule.getTableName())
-				.on(workorderModule.getTableName() + ".ID = " + taskModule.getTableName() + ".PARENT_TICKET_ID")
-				.andCondition(CriteriaAPI.getCondition(workorderFieldMap.get("createdTime"),startTime + "," + endTime, DateOperators.BETWEEN))
+				.on(workorderModule.getTableName() + ".ID = " + taskModule.getTableName() + ".PARENT_TICKET_ID");
+				if (startTime != -1) {
+					selectBuilder.andCondition(CriteriaAPI.getCondition(workorderFieldMap.get("createdTime"),startTime + "," + endTime, DateOperators.BETWEEN));
+				} else {
+					selectBuilder.limit(100);
+				}
+				selectBuilder
 				.andCondition(CriteriaAPI.getCondition(workorderFieldMap.get("resource"), resourceId + "" , NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(workorderFieldMap.get("pm"), pmId + "" , NumberOperators.EQUALS));
-				
-		//workorderFieldMap.get("resource")
-				selectBuilder.getAsProps();
-				
+				.andCondition(CriteriaAPI.getCondition(workorderFieldMap.get("pm"), pmId + "" , NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(taskFieldMap.get("inputType"), TaskContext.InputType.READING.getVal() + "", NumberOperators.EQUALS));
 
+
+		Map<Long, WorkOrderContext> woMap = new HashMap<>();
+		Map<Long, List<TaskContext>> taskMap = new HashMap<>();
+
+		List<Map<String, Object>> props = selectBuilder.getAsProps();
+
+		for (Map<String, Object> prop: props) {
+			WorkOrderContext workOrderContext = FieldUtil.getAsBeanFromMap(prop, WorkOrderContext.class);
+			TaskContext task = FieldUtil.getAsBeanFromMap(prop, TaskContext.class);
+
+			if (woMap.get(workOrderContext.getId()) == null) {
+				woMap.put(workOrderContext.getId(), workOrderContext);
+			}
+
+			if (taskMap.get(task.getParentTicketId()) == null) {
+				taskMap.put(task.getParentTicketId(), new ArrayList<>());
+			}
+			taskMap.get(task.getParentTicketId()).add(task);
+		}
+
+		Collection<WorkOrderContext> workOrderContexts = woMap.values();
+
+		Iterator<WorkOrderContext> iterator = workOrderContexts.iterator();
+
+		while (iterator.hasNext()) {
+			WorkOrderContext workOrder = iterator.next();
+			List<TaskContext> taskContexts = taskMap.get(workOrder.getId());
+
+			Map<Long, List<TaskContext>> woTasksMap = new HashMap<>();
+			workOrder.setTasks(woTasksMap);
+			for (TaskContext taskContext: taskContexts) {
+				long sectionId = taskContext.getSectionId();
+
+				if (woTasksMap.get(sectionId) == null) {
+					woTasksMap.put(sectionId, new ArrayList<>());
+				}
+
+				woTasksMap.get(sectionId).add(taskContext);
+			}
+		}
+
+		context.put(FacilioConstants.ContextNames.RESULT, workOrderContexts);
 		return false;
 	}
 	

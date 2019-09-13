@@ -524,12 +524,25 @@
 
 	<package name="workOrderApiV2" namespace="/api/v2/workorders"
 		extends="v2Api">
+
+		<action name="getPreventiveMaintenanceReadings"
+				class="com.facilio.bmsconsole.actions.WorkOrderAction"
+				method="getPreventiveMaintenanceReadings">
+			<param name="moduleName">workorder</param>
+			<param name="permission">READ,READ_TEAM,READ_OWN</param>
+			<result name="success" type="json">
+				<param name="ignoreHierarchy">false</param>
+				<param name="includeProperties">responseCode, ^result.*</param>
+			</result>
+		</action>
+
 		<action name="getNextWorkOrderTime"
 				class="com.facilio.bmsconsole.actions.PMAction"
 				method="getNextWorkOrderTime">
 			<param name="moduleName">workorder</param>
 			<param name="permission">READ,READ_TEAM,READ_OWN</param>
 		</action>
+
 		<action name="add"
 			class="com.facilio.bmsconsole.actions.WorkOrderAction"
 			method="v2addWorkOrder">

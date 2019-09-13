@@ -3,13 +3,7 @@ package com.facilio.bmsconsole.actions;
 import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
@@ -884,10 +878,15 @@ public class WorkOrderAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RESOURCE_ID, resourceId);
 		context.put(FacilioConstants.ContextNames.START_TIME, startTime);
 		context.put(FacilioConstants.ContextNames.END_TIME, endTime);
+
 		Chain pmReadings = FacilioChainFactory.getPreventiveMaintenanceReadingsChain();
 		pmReadings.execute(context);
-		return SUCCESS;
 
+		Collection<WorkOrderContext> workOrderContexts = (Collection<WorkOrderContext>) context.get(ContextNames.RESULT);
+
+		setResult("workorders", workOrderContexts);
+
+		return SUCCESS;
 	}
 	
 	public static List<Long> getAssetExcludeList(List<Long> assetList, Long categoryId) throws Exception {
