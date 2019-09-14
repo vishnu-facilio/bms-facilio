@@ -322,6 +322,8 @@ public class FetchReportDataCommand extends FacilioCommand {
 			newSelectBuilder.andCriteria(report.getCriteria());
 		}
 
+		List<Map<String, Object>> props;
+
 		ReportFieldContext reportFieldContext = dp.getxAxis();
 		boolean outerJoin = reportFieldContext.isOuterJoin();
 		if (outerJoin) {
@@ -333,29 +335,34 @@ public class FetchReportDataCommand extends FacilioCommand {
 			String aggrFieldName = ReportUtil.getAggrFieldName(dp.getyAxis().getField(), dp.getyAxis().getAggrEnum());
 			FacilioModule lookupModule = ((LookupField) outerJoinField).getLookupModule();
 
-			FacilioField idField = FieldFactory.getIdField(lookupModule);
+			FacilioField idField;
+			if (LookupSpecialTypeUtil.isSpecialType(lookupModule.getName())) {
+				idField = LookupSpecialTypeUtil.getIdField(lookupModule.getName());
+			}
+			else {
+				idField = FieldFactory.getIdField(lookupModule);
+			}
 			FacilioField countField = new FacilioField();
 			countField.setColumnName("COALESCE(inn." + aggrFieldName + ", 0)");
 			countField.setName(aggrFieldName);
 
 			idField.setName(outerJoinField.getName());
-			SelectRecordsBuilder newSelect = new SelectRecordsBuilder()
-					.module(lookupModule)
+			GenericSelectRecordBuilder newSelect = new GenericSelectRecordBuilder()
+					.table(lookupModule.getTableName())
 					.select(Arrays.asList(idField, countField))
 					.leftJoinQuery(newSelectBuilder.constructQueryString(), "inn")
-						.on(lookupModule.getTableName() + ".ID = inn." + outerJoinField.getName())
-					.andCondition(CriteriaAPI.getIdCondition(dp.getxAxis().getSelectValuesOnly(), lookupModule))
-//					.groupBy(idField.getCompleteColumnName())
+						.on(lookupModule.getTableName() + "." + idField.getColumnName() + " = inn." + outerJoinField.getName())
+					.andCondition(CriteriaAPI.getCondition(idField.getCompleteColumnName(), idField.getName(), StringUtils.join(dp.getxAxis().getSelectValuesOnly(), ","), NumberOperators.EQUALS))
 					;
 			if (CollectionUtils.isNotEmpty(dp.getOrderBy()) && (dp.getOrderByFuncEnum() != null && dp.getOrderByFuncEnum() != OrderByFunction.NONE)) {
 				newSelect.orderBy(countField.getCompleteColumnName() + " " + dp.getOrderByFuncEnum().getStringValue());
 			}
 
-			newSelectBuilder = newSelect;
+			props = newSelect.get();
 		}
-
-		List<Map<String, Object>> props = newSelectBuilder.getAsProps();
-
+		else {
+			props = newSelectBuilder.getAsProps();
+		}
 
 		 LOGGER.severe("SELECT BUILDER --- "+ newSelectBuilder);
 
