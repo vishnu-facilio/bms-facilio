@@ -144,5 +144,15 @@ public class InventoryRequestContext extends ModuleBaseWithCustomFields {
 		this.storeRoom = storeRoom;
 	}
 	
+	private long workOrderLocalId;
+	public long getWorkOrderLocalId() {
+		return workOrderLocalId;
+	}
+	public void setWorkOrderLocalId(long workOrderLocalId) {
+		this.workOrderLocalId = workOrderLocalId;
+	}
+	
+	
+	
 	
 }
