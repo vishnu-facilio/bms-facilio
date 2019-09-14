@@ -2826,6 +2826,19 @@
 		</action>
 
 	</package>
+	
+	<package name="purchaseRequestViewApi"
+		namespace="/api/v2/purchaserequest/view" extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.PurchaseRequestAction"
+			method="getPurchaseRequestList">
+			<param name="viewName">{1}</param>
+			<param name="moduleName">purchaseorder</param>
+			<param name="permission">READ</param>
+		</action>
+	</package>
+		
+	
 
 	<package name="purchaseRequestApi"
 		namespace="/api/v2/purchaserequest" extends="v2Api">
@@ -2883,6 +2896,7 @@
 			<param name="moduleName">purchaseorder</param>
 			<param name="permission">READ</param>
 		</action>
+		
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.PurchaseRequestAction"
 			method="getPurchaseRequestList">
@@ -2892,9 +2906,19 @@
 		</action>
 
 	</package>
-
-
-
+	<package name="purchaseOrderViewApi"
+		namespace="/api/v2/purchaseorder/view" extends="v2Api">
+	
+		<action name="view"
+			class="com.facilio.bmsconsole.actions.PurchaseOrderAction"
+			method="getPurchaseOrderList">
+			<param name="viewName">{1}</param>
+			<param name="moduleName">purchaseorder</param>
+			<param name="permission">READ</param>
+		</action>
+		</package>
+		
+	
 	<package name="purchaseOrderApi"
 		namespace="/api/v2/purchaseorder" extends="v2Api">
 		<action name="addOrUpdate"
@@ -4138,7 +4162,6 @@
 			<param name="moduleName">contract</param>
 			<param name="permission">CREATE,UPDATE</param>
 		</action>
-		
 		<action name="*"
 			class="com.facilio.bmsconsole.actions.ContractsAction"
 			method="getContractList">
@@ -4149,6 +4172,17 @@
 
 	</package>
 
+	<package name="contractsViewApi" namespace="/api/v2/contracts/view"
+		extends="v2Api">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.ContractsAction"
+			method="getContractList">
+			<param name="viewName">{1}</param>
+			<param name="moduleName">contract</param>
+			<param name="permission">READ</param>
+		</action>
+		</package>
+	
 	<package name="recordRule" namespace="/api/v2/recordrule"
 		extends="v2Api">
 		<action name="addOrUpdate"
