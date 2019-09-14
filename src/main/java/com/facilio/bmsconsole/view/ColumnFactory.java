@@ -72,6 +72,7 @@ public class ColumnFactory {
 		columnMap.put("bmsAlarm-default", getDefaultBmsAlarmColumns());
 		columnMap.put("mlAnomalyAlarm-default", getDefaultMlAnomalyAlarmColumns());
 		columnMap.put("service-default", getDefaultServiceColumns());
+		columnMap.put("contracts-default", getDefaultContractColumns());
 
 		columnMap.put("rentalleasecontracts-default", getDefaultRentalLeaseContractColumns());
 		columnMap.put("warrantycontracts-default", getDefaultWarrantyContractColumns());
@@ -417,6 +418,7 @@ public class ColumnFactory {
 		return columns;
 	}
 	
+	
 	private static List<ViewField> getDefaultReceivableColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 //		columns.add(new ViewField("localId", "Receivable Id"));
@@ -427,6 +429,7 @@ public class ColumnFactory {
 	}
 	private static List<ViewField> getDefaultContractColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("parentId", "ID"));
 		columns.add(new ViewField("vendor", "Vendor"));
 		columns.add(new ViewField("status", "Status"));
 		columns.add(new ViewField("fromDate", "Valid From"));

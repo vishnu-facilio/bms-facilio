@@ -3580,18 +3580,9 @@ public class ViewFactory {
 		parentId.setDataType(FieldType.NUMBER);
 		parentId.setModule(ModuleFactory.getContractsModule());
 		
-		List<ViewField> fields = new ArrayList<ViewField>();
-		fields.add(new ViewField("parentId", "ID"));
-		fields.add(new ViewField("name", "Name"));
-		fields.add(new ViewField("vendor", "Vendor"));
-		fields.add(new ViewField("contractType", "Type"));
-		fields.add(new ViewField("endDate", "Valid Till"));
-		fields.add(new ViewField("totalCost", "Total Cost"));
-		
 		FacilioView allView = new FacilioView();
 		allView.setName("expiring");
 		allView.setDisplayName("Contracts Expiring This Month");
-		allView.setFields(fields);
 		allView.setCriteria(getExpiringContractListCriteria());
 		allView.setSortFields(Arrays.asList(new SortField(parentId, false)));
 		return allView;
