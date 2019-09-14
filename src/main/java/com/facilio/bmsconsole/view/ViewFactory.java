@@ -2664,13 +2664,13 @@ public class ViewFactory {
 
 	private static FacilioView getStalePartsView() {
 
-		Criteria criteria = getStalePartsCriteria(ModuleFactory.getInventoryModule());
+		Criteria criteria = getStalePartsCriteria(ModuleFactory.getInventryModule());
 
 		FacilioField createdTime = new FacilioField();
 		createdTime.setName("createdTime");
 		createdTime.setDataType(FieldType.NUMBER);
 		createdTime.setColumnName("CREATED_TIME");
-		createdTime.setModule(ModuleFactory.getInventoryModule());
+		createdTime.setModule(ModuleFactory.getInventryModule());
 
 		FacilioView staleParts = new FacilioView();
 		staleParts.setName("stale");
