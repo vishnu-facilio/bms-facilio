@@ -346,8 +346,10 @@ public class ViewFactory {
 		views.put("pending", getPurchaseOrderForStatus("pending", "Pending", 1).setOrder(order++));
 		views.put("overdue", getOverDuePurchaseOrder().setOrder(order++));
 		views.put("approved", getPurchaseOrderForStatus("approved", "Approved", 2).setOrder(order++));
+		views.put("ongoing", getOnGoingPurchaseOrder().setOrder(order++));
 		views.put("rejected", getPurchaseOrderForStatus("rejected", "Rejected", 3).setOrder(order++));
 		views.put("completed", getPurchaseOrderForStatus("completed", "Completed", 7).setOrder(order++));
+		
 		viewsMap.put(FacilioConstants.ContextNames.PURCHASE_ORDER, views);
 
 		order = 1;
@@ -3405,6 +3407,23 @@ public class ViewFactory {
 		return overDueOrder;
 		
 	}
+	private static FacilioView getOnGoingPurchaseOrder() {
+		Criteria criteria = getOngoingPurchaseOrderCriteria(ModuleFactory.getPurchaseOrderModule());
+
+		FacilioField createdTime = new FacilioField();
+		createdTime.setName("orderedTime");
+		createdTime.setDataType(FieldType.NUMBER);
+		createdTime.setColumnName("ORDERED_TIME");
+		createdTime.setModule(ModuleFactory.getPurchaseOrderModule());
+
+		FacilioView ongoingPurchaseOrder = new FacilioView();
+		ongoingPurchaseOrder.setName("ongoing");
+		ongoingPurchaseOrder.setDisplayName("Ongoing");
+		ongoingPurchaseOrder.setCriteria(criteria);
+		ongoingPurchaseOrder.setSortFields(Arrays.asList(new SortField(createdTime, false)));
+		return ongoingPurchaseOrder;
+		
+	}
 	
 	private static Criteria getOverDuePurchaseOrderCriteria (FacilioModule module) {
 		NumberField requiredTime = new NumberField();
@@ -3440,6 +3459,35 @@ public class ViewFactory {
 		criteria.addAndCondition(overDueOrder);
 		criteria.addAndCondition(statusCond);
 		criteria.addAndCondition(rejCond);
+		return criteria;
+	}
+
+	
+	private static Criteria getOngoingPurchaseOrderCriteria (FacilioModule module) {
+		NumberField requestedTime = new NumberField();
+		requestedTime.setName("orderedTime");
+		requestedTime.setColumnName("ORDERED_TIME");
+		requestedTime.setDataType(FieldType.NUMBER);
+		requestedTime.setModule(module);
+
+		Condition requestedTimeCond = new Condition();
+		requestedTimeCond.setField(requestedTime);
+		requestedTimeCond.setOperator(DateOperators.CURRENT_MONTH);
+		
+		FacilioField poStatusField = new FacilioField();
+		poStatusField.setName("status");
+		poStatusField.setColumnName("STATUS");
+		poStatusField.setDataType(FieldType.NUMBER);
+		poStatusField.setModule(ModuleFactory.getPurchaseOrderModule());
+		
+		Condition statusCond = new Condition();
+		statusCond.setField(poStatusField);
+		statusCond.setOperator(NumberOperators.EQUALS);
+		statusCond.setValue(String.valueOf("2,5"));
+
+		Criteria criteria = new Criteria();
+		criteria.addAndCondition(requestedTimeCond);
+		criteria.addAndCondition(statusCond);
 		return criteria;
 	}
 
