@@ -292,6 +292,7 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllInventry().setOrder(order++));
+		views.put("stale", getStalePartsView().setOrder(order++));
 		views.put("understocked", getUnderStockedItemView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.ITEM, views);
 		
@@ -3578,10 +3579,19 @@ public class ViewFactory {
 		parentId.setColumnName("PARENT_ID");
 		parentId.setDataType(FieldType.NUMBER);
 		parentId.setModule(ModuleFactory.getContractsModule());
-
+		
+		List<ViewField> fields = new ArrayList<ViewField>();
+		fields.add(new ViewField("parentId", "ID"));
+		fields.add(new ViewField("name", "Name"));
+		fields.add(new ViewField("vendor", "Vendor"));
+		fields.add(new ViewField("contractType", "Type"));
+		fields.add(new ViewField("endDate", "Valid Till"));
+		fields.add(new ViewField("totalCost", "Total Cost"));
+		
 		FacilioView allView = new FacilioView();
 		allView.setName("expiring");
-		allView.setDisplayName("Expiring This Month");
+		allView.setDisplayName("Contracts Expiring This Month");
+		allView.setFields(fields);
 		allView.setCriteria(getExpiringContractListCriteria());
 		allView.setSortFields(Arrays.asList(new SortField(parentId, false)));
 		return allView;
@@ -3748,6 +3758,14 @@ public class ViewFactory {
 		statusView.setDisplayName(viewDisplayName);
 		statusView.setSortFields(sortFields);
 		statusView.setCriteria(criteria);
+		List<ViewField> fields = new ArrayList<ViewField>();
+		fields.add(new ViewField("id", "ID"));
+		fields.add(new ViewField("name", "Name"));
+		fields.add(new ViewField("requestedBy", "Requested By"));
+		fields.add(new ViewField("requestedTime", "Requested Time"));
+		fields.add(new ViewField("status", "Valid Till"));
+		fields.add(new ViewField("totalCost", "Total Cost"));
+		
 
 		return statusView;
 	}
