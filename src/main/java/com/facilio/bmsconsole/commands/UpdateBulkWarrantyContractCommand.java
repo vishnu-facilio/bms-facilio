@@ -36,9 +36,10 @@ public class UpdateBulkWarrantyContractCommand extends FacilioCommand{
 						.fields(updatedfields)
 						.andCondition(CriteriaAPI.getIdCondition(warrantyContractIds,warrantyContractModule));
 		updateBuilder.withChangeSet(WarrantyContractContext.class);
-		context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, updateBuilder.getChangeSet());
-
+		
 	     context.put(FacilioConstants.ContextNames.ROWS_UPDATED, updateBuilder.updateViaMap(updateMap));
+	     context.put(FacilioConstants.ContextNames.CHANGE_SET_MAP, updateBuilder.getChangeSet());
+
 		return false;
 	}
 

@@ -27,6 +27,7 @@ import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.accounts.util.PermissionUtil;
+import com.facilio.accounts.util.AccountUtil.FeatureLicense;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
@@ -6289,8 +6290,18 @@ public class DashboardAction extends FacilioAction {
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		
 		String[] mods = new String[]{"workorder", "alarm", "energydata"};
+		
 		for (String mod : mods) {
 			supportedModules.add(modBean.getModule(mod));
+		}
+		if(AccountUtil.isFeatureEnabled(FeatureLicense.INVENTORY)) {
+			String[] inventorySupportedModules = new String[] {"item", "inventoryrequest", "purchaseorder", "purchaserequest"};
+			for (String mod : inventorySupportedModules) {
+				supportedModules.add(modBean.getModule(mod));
+			}
+		}
+		if(AccountUtil.isFeatureEnabled(FeatureLicense.CONTRACT)) {
+			supportedModules.add(modBean.getModule("contracts"));
 		}
 		setModules(supportedModules);
 		return SUCCESS;
