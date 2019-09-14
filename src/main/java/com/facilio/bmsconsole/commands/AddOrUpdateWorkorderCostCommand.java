@@ -7,11 +7,13 @@ import java.util.Map;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderLabourContext;
 import com.facilio.bmsconsole.context.WorkorderCostContext;
 import com.facilio.bmsconsole.context.WorkorderCostContext.CostType;
 import com.facilio.bmsconsole.context.WorkorderItemContext;
 import com.facilio.bmsconsole.context.WorkorderToolsContext;
+import com.facilio.bmsconsole.util.WorkOrderAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.EnumOperators;
@@ -88,7 +90,9 @@ public class AddOrUpdateWorkorderCostCommand extends FacilioCommand {
 					// }
 				} else {
 					workorderCost.setCost(cost);
-					workorderCost.setParentId(parentId);
+					WorkOrderContext wo = new WorkOrderContext();
+					wo.setId(parentId);
+					workorderCost.setParentId(wo);
 					workorderCost.setCostType(costType);
 					workorderCost.setQuantity(qty);
 					workorderCost.setTtime(System.currentTimeMillis());
