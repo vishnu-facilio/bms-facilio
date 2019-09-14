@@ -61,6 +61,13 @@ public class ReportFactory {
 		int NEW_ALARM_DURATION = 11;
 	}
 
+	// integer between 21-25
+	public interface AssetBreakDown {
+		String TIME_TO_REPAIR_COL = "asset_breakdown_time_to_repair";
+
+		int TIME_TO_REPAIR = 21;
+	}
+
 	public static List<FacilioField> reportFields = new ArrayList<>();
 	private static Map<String, FacilioField> fieldMap;
 	
@@ -105,6 +112,9 @@ public class ReportFactory {
 			// alarm occurrence fields
 			reportFields.add(getField(Alarm.NEW_FIRST_RESPONSE_TIME_COL, "Response Time", ModuleFactory.getAlarmOccurenceModule(), " (AlarmOccurrence.ACKNOWLEDGED_TIME - AlarmOccurrence.CREATED_TIME) ", FieldType.NUMBER, Alarm.NEW_FIRST_RESPONSE_TIME));
 			reportFields.add(getField(Alarm.NEW_ALARM_DURATION_COL, "Alarm Duration", ModuleFactory.getAlarmOccurenceModule(), "(CASE WHEN AlarmOccurrence.CLEARED_TIME IS NOT NULL THEN AlarmOccurrence.CLEARED_TIME - AlarmOccurrence.CREATED_TIME ELSE ? - AlarmOccurrence.CREATED_TIME END) ", FieldType.NUMBER, Alarm.NEW_ALARM_DURATION));
+
+			// Asset Breakdown fields
+			reportFields.add(getField(AssetBreakDown.TIME_TO_REPAIR_COL, "Time to Repair", ModuleFactory.getAssetBreakdownModule(), "((TO_TIME - FROM_TIME) / 1000)", FieldType.NUMBER, AssetBreakDown.TIME_TO_REPAIR));
 			
 			fieldMap = FieldFactory.getAsMap(reportFields);
 		} catch (Exception e) {
