@@ -362,6 +362,12 @@ public class ViewFactory {
 
 		order = 1;
 		views = new LinkedHashMap<>();
+		views.put("expiring", getExpiringContractView().setOrder(order++));
+		viewsMap.put(FacilioConstants.ContextNames.CONTRACTS, views);
+
+		
+		order = 1;
+		views = new LinkedHashMap<>();
 		views.put("all", getAllPurchaseContractView().setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.PURCHASE_CONTRACTS, views);
 
@@ -3566,6 +3572,21 @@ public class ViewFactory {
 		return receivableStatusCriteria;
 	}
 
+	private static FacilioView getExpiringContractView() {
+		FacilioField parentId = new FacilioField();
+		parentId.setName("parentId");
+		parentId.setColumnName("PARENT_ID");
+		parentId.setDataType(FieldType.NUMBER);
+		parentId.setModule(ModuleFactory.getContractsModule());
+
+		FacilioView allView = new FacilioView();
+		allView.setName("expiring");
+		allView.setDisplayName("Expiring This Month");
+		allView.setCriteria(getExpiringContractListCriteria());
+		allView.setSortFields(Arrays.asList(new SortField(parentId, false)));
+		return allView;
+	}
+
 	private static FacilioView getAllPurchaseContractView() {
 		FacilioField localId = new FacilioField();
 		localId.setName("localId");
@@ -4364,6 +4385,37 @@ public class ViewFactory {
 
 		Criteria criteria = new Criteria ();
 		criteria.addAndCondition(statusCond);
+
+		return criteria;
+	}
+	
+	private static Criteria getExpiringContractListCriteria() {
+
+		FacilioField statusField = new FacilioField();
+		statusField.setName("status");
+		statusField.setColumnName("STATUS");
+		statusField.setDataType(FieldType.NUMBER);
+		FacilioModule contract = ModuleFactory.getContractsModule();
+		statusField.setModule(contract);
+
+		FacilioField endDateField = new FacilioField();
+		endDateField.setName("endDate");
+		endDateField.setColumnName("END_DATE");
+		endDateField.setDataType(FieldType.DATE);
+		endDateField.setModule(contract);
+
+		Condition expiryCond = new Condition();
+		expiryCond.setField(endDateField);
+		expiryCond.setOperator(DateOperators.CURRENT_MONTH);
+		
+		Condition statusCond = new Condition();
+		statusCond.setField(statusField);
+		statusCond.setOperator(NumberOperators.EQUALS);
+		statusCond.setValue(String.valueOf(ContractsContext.Status.APPROVED.getValue()));
+
+		Criteria criteria = new Criteria ();
+		criteria.addAndCondition(statusCond);
+		criteria.addAndCondition(expiryCond);
 
 		return criteria;
 	}
