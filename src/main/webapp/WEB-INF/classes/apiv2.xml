@@ -2909,7 +2909,7 @@
 	<package name="purchaseOrderViewApi"
 		namespace="/api/v2/purchaseorder/view" extends="v2Api">
 	
-		<action name="view"
+		<action name="*"
 			class="com.facilio.bmsconsole.actions.PurchaseOrderAction"
 			method="getPurchaseOrderList">
 			<param name="viewName">{1}</param>
