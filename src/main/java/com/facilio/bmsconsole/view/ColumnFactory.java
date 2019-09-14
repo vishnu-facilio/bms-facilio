@@ -79,6 +79,8 @@ public class ColumnFactory {
 		columnMap.put("termsandconditions-default", getDefaultTermsAndConditionColumns());
 		columnMap.put("reservation-default", getDefaultReservationColumns());
 
+		columnMap.put("inventoryrequest-pendingapproval", getDefaultInventoryRequestColumns());
+
 		// Default report columns
 		columnMap.put("workorder-report", getWorkOrderReportColumns());
 		columnMap.put("alarm-report", getAlarmReportColumns());
@@ -392,8 +394,8 @@ public class ColumnFactory {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
 //		columns.add(new ViewField("localId", "Purchase Request Id"));
-//		columns.add(new ViewField("name", "Purchase Request Name"));
-		columns.add(new ViewField("description", "Description"));
+		columns.add(new ViewField("name", "Purchase Request Name"));
+	//	columns.add(new ViewField("description", "Description"));
 //		columns.add(new ViewField("vendor", "Vendor"));
 		columns.add(new ViewField("requestedTime", "Requested Date"));
 		columns.add(new ViewField("requiredTime", "Required Date"));
@@ -581,6 +583,16 @@ public class ColumnFactory {
 		columns.add(new ViewField("noOfAttendees", "No. Of Attendees"));
 //		columns.add(new ViewField("status", "Status"));
 		columns.add(new ViewField("reservedFor", "Reserved For"));
+		return columns;
+	}
+	
+	private static List<ViewField> getDefaultInventoryRequestColumns() {
+		List<ViewField> columns = new ArrayList<ViewField>();
+		columns.add(new ViewField("localId", "ID"));
+		columns.add(new ViewField("name", "Name"));
+		columns.add(new ViewField("requestedTime", "Requested Time"));
+		columns.add(new ViewField("requiredTime", "Required Time"));
+		columns.add(new ViewField("status", "Status"));
 		return columns;
 	}
 	
