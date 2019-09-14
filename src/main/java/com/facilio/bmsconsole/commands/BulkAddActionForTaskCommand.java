@@ -1,28 +1,28 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.context.BulkWorkOrderContext;
-import com.facilio.bmsconsole.context.TaskContext;
-import com.facilio.bmsconsole.templates.Template;
-import com.facilio.bmsconsole.templates.WorkorderTemplate;
-import com.facilio.bmsconsole.util.ActionAPI;
-import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
-import com.facilio.bmsconsole.util.TemplateAPI;
-import com.facilio.bmsconsole.workflow.rule.ActionContext;
-import com.facilio.bmsconsole.workflow.rule.ActionType;
-import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
+
+import org.apache.commons.chain.Context;
+
+import com.facilio.bmsconsole.context.BulkWorkOrderContext;
+import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.forms.FacilioForm;
+import com.facilio.bmsconsole.forms.FormField;
+import com.facilio.bmsconsole.templates.FormTemplate;
+import com.facilio.bmsconsole.util.ActionAPI;
+import com.facilio.bmsconsole.util.FormsAPI;
+import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
+import com.facilio.bmsconsole.util.TemplateAPI;
+import com.facilio.bmsconsole.workflow.rule.ActionContext;
+import com.facilio.bmsconsole.workflow.rule.ActionType;
+import com.facilio.constants.FacilioConstants;
 
 public class BulkAddActionForTaskCommand extends FacilioCommand {
 
@@ -36,59 +36,91 @@ public class BulkAddActionForTaskCommand extends FacilioCommand {
 		if (bulkWorkOrderContext.getTaskMaps() == null || bulkWorkOrderContext.getTaskMaps().isEmpty()) {
 			return false;
 		}
-
-		List<Long> templateIds = bulkWorkOrderContext.getTaskMaps()
-				.stream()
-				.filter(Objects::nonNull)
-				.flatMap(i -> i.values().stream())
-				.flatMap(Collection::stream)
-				.map(TaskContext::getWoCreateTemplateId)
-				.filter(i -> i > 0)
-				.collect(Collectors.toList());
-
-		Map<Long, Template> templateMap = new HashMap<>();
-
-		if (templateIds != null && !templateIds.isEmpty()) {
-			List<Template> templates = TemplateAPI.getTemplates(templateIds);
-			templates.forEach(i -> templateMap.put(i.getId(), i));
+		
+		Map<Long, FormTemplate> formMap;
+		List<Long> formIds = new ArrayList<>();
+		List<TaskContext> formTasks = new ArrayList<>();
+		
+		bulkWorkOrderContext.getTaskMaps()
+		.stream()
+		.filter(Objects::nonNull)
+		.flatMap(i -> i.values().stream()).flatMap(List::stream).forEach(task -> {
+			if (task.getWoCreateFormId() > 0) {
+				formIds.add(task.getWoCreateFormId());
+				formTasks.add(task);
+			}
+		});
+		
+		if (formTasks.isEmpty()) {
+			return false;
+		}
+		
+		formMap = TemplateAPI.getFormTemplateMap(formIds);
+		if (formMap == null) {
+			formMap = new HashMap<>();
 		}
 
-		List<Map<String, List<TaskContext>>> taskMaps = bulkWorkOrderContext.getTaskMaps();
 		List<ActionContext> actions = new ArrayList<>();
 
-		for (Map<String, List<TaskContext>> taskMap: taskMaps) {
-			if (taskMap == null) {
-				continue;
-			}
-			for (Entry<String, List<TaskContext>> entry: taskMap.entrySet()) {
-				for(TaskContext task : entry.getValue()) {
-					long templateId = task.getWoCreateTemplateId();
-					if (templateId > 0) {
-						WorkorderTemplate template = (WorkorderTemplate) templateMap.get(templateId);
-						if (template.getSubject() == null || StringUtils.isEmpty(template.getResourceId())) {
-							WorkorderTemplate newTemplate = new WorkorderTemplate();
-							if(template.getSubject() == null) {
-								newTemplate.setSubject("${task.subject}");
-							}
-							newTemplate.setResourceId("${task.resource.id:-}");
-							newTemplate.setName(template.getName());
-							newTemplate.setWorkflow(TemplateAPI.getWorkflow(newTemplate));
-							TemplateAPI.updateWorkorderTemplate(newTemplate, template);
-						}
-
-						ActionContext action = new ActionContext();
-						action.setTemplateId(template.getId());
-						action.setActionType(ActionType.CREATE_WORK_ORDER);
-
-						task.setAction(action);
-						actions.add(action);
+		List<FormField> formFields = new ArrayList<>();
+		for(TaskContext task : formTasks) {
+			long formId = task.getWoCreateFormId();
+			FormTemplate formTemplate = formMap.get(formId);
+			if (formTemplate == null) {
+				formTemplate = new FormTemplate();
+				formTemplate.setName("formTemplate_"+formId);
+				formTemplate.setFormId(formId);
+				
+				TemplateAPI.setFormInTemplate(formTemplate);
+				FacilioForm form = formTemplate.getForm();
+				Map<String, FormField> fieldMap = form.getFieldsMap();
+				
+				FormField subjectField = fieldMap.get("subject");
+//				Map<Long, String> values = new HashMap<>();
+				if (subjectField.getValue() == null) {
+					FormField field = new FormField();
+					field.setId(subjectField.getId());
+					field.setValue("${task.subject}");
+					subjectField.setValue("${task.subject}");
+					if (formTemplate.getOriginalTemplate() != null) {
+						formTemplate.getOriginalTemplate().put("subject", "${task.subject}");
 					}
+					formFields.add(field);
 				}
+				
+				FormField resourceField = fieldMap.get("resource");
+				if (resourceField != null && resourceField.getValue() == null) {
+					FormField field = new FormField();
+					field.setId(resourceField.getId());
+					field.setValue("${task.resource.id:-}");
+					resourceField.setValue("${task.resource.id:-}");
+					if (formTemplate.getOriginalTemplate() != null) {
+						formTemplate.getOriginalTemplate().put("resource", Collections.singletonMap("id", "${task.resource.id:-}"));
+					}
+					formFields.add(field);
+				}
+				
+				formTemplate.setWorkflow(TemplateAPI.getWorkflow(formTemplate));
+				TemplateAPI.addTemplate(formTemplate);
+				
+				formMap.put(formId, formTemplate);
 			}
+			
+			ActionContext action = new ActionContext();
+			action.setTemplateId(formTemplate.getId());
+			action.setActionType(ActionType.CREATE_WORK_ORDER);
+			
+			task.setAction(action);
+			actions.add(action);
 		}
-
+		
+		if (!formFields.isEmpty()) {
+			FormsAPI.updateFormFields(formFields, Collections.singletonList("value"));
+		}
+		
 		if (!actions.isEmpty()) {
 			ActionAPI.addActions(actions);
+			List<Map<String, List<TaskContext>>> taskMaps = bulkWorkOrderContext.getTaskMaps();
 			for (Map<String, List<TaskContext>> taskMap: taskMaps) {
 				for( Entry<String, List<TaskContext>> entry : taskMap.entrySet()) {
 					for(TaskContext task : entry.getValue()) {
