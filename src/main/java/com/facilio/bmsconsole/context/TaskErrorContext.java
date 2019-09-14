@@ -92,7 +92,7 @@ public class TaskErrorContext {
 		this.mode = Mode.valueOf(mode);
 	}
 	
-	public enum FailType {
+	public enum FailType {	
 		
 		NON_INCREMENTAL_VALUE,
 		;

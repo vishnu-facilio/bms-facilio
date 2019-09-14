@@ -210,7 +210,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		
 		Double averageValue = getAverageValue(rdm, (NumberField)modBean.getField(numberField.getName()+"Delta", numberField.getModule().getName()));
 		
-		if(averageValue != null) {
+		if(averageValue != null && averageValue > 0) {
 			
 			Double averageLowerLimit = averageValue - (averageValue * averageboundPercentage /100);
 			Double averageHigherLimit = averageValue + (averageValue * averageboundPercentage /100);
