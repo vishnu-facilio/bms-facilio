@@ -310,6 +310,8 @@ public class ColumnFactory {
 	private static List<ViewField> getDefaultItemColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
+		
+		columns.add(new ViewField("itemType", "Item"));
 		columns.add(new ViewField("storeRoom", "Storeroom"));
 		columns.add(new ViewField("quantity", "Current Balance"));
 		columns.add(new ViewField("minimumQuantity", "Mininum Quantity"));
@@ -408,7 +410,7 @@ public class ColumnFactory {
 	private static List<ViewField> getDefaultPurchaseOrderColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
 		
-//		columns.add(new ViewField("localId", "Purchase Order Id"));
+		columns.add(new ViewField("localId", "Purchase Order Id"));
 //		columns.add(new ViewField("name", "Purchase Order Name"));
 //		columns.add(new ViewField("description", "Description"));
 		columns.add(new ViewField("vendor", "Vendor"));
@@ -431,8 +433,9 @@ public class ColumnFactory {
 	}
 	private static List<ViewField> getDefaultContractColumns() {
 		List<ViewField> columns = new ArrayList<ViewField>();
-		columns.add(new ViewField("parentId", "ID"));
+	//	columns.add(new ViewField("parentId", "ID"));
 		columns.add(new ViewField("vendor", "Vendor"));
+		columns.add(new ViewField("contractType", "Type"));
 		columns.add(new ViewField("status", "Status"));
 		columns.add(new ViewField("fromDate", "Valid From"));
 		columns.add(new ViewField("endDate", "Valid Till"));
