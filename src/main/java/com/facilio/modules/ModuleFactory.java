@@ -761,6 +761,14 @@ public class ModuleFactory {
 		alarmModule.setExtendModule(getTicketsModule());
 		return alarmModule;
 	}
+
+	public static FacilioModule getAssetBreakdownModule() {
+		FacilioModule alarmModule = new FacilioModule();
+		alarmModule.setName(ContextNames.ASSET_BREAKDOWN);
+		alarmModule.setDisplayName("Asset Breakdown");
+		alarmModule.setTableName("Asset_Breakdown");
+		return alarmModule;
+	}
 	
 	public static FacilioModule getAlarmOccurenceModule() {
 		FacilioModule alarmModule = new FacilioModule();
