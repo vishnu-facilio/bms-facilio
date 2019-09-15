@@ -58,9 +58,9 @@ public class WorkorderCostAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		context.put(FacilioConstants.ContextNames.RECORD, workorderCost);
-		context.put(FacilioConstants.ContextNames.PARENT_ID, workorderCost.getParentId());
+		context.put(FacilioConstants.ContextNames.PARENT_ID, workorderCost.getParentId().getId());
 		context.put(FacilioConstants.ContextNames.WORKORDER_COST_TYPE, 5);
-		context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, Collections.singletonList(workorderCost.getParentId()));
+		context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, Collections.singletonList(workorderCost.getParentId().getId()));
 		Chain addWorkorderPartChain = TransactionChainFactory.getAddWorkorderCostChain();
 		addWorkorderPartChain.execute(context);
 		setWorkordercostId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
@@ -76,8 +76,8 @@ public class WorkorderCostAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RECORD, workorderCost);
 		context.put(FacilioConstants.ContextNames.RECORD_ID, workorderCost.getId());
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(workorderCost.getId()));
-		context.put(FacilioConstants.ContextNames.PARENT_ID, workorderCost.getParentId());
-		context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, Collections.singletonList(workorderCost.getParentId()));
+		context.put(FacilioConstants.ContextNames.PARENT_ID, workorderCost.getParentId().getId());
+		context.put(FacilioConstants.ContextNames.PARENT_ID_LIST, Collections.singletonList(workorderCost.getParentId().getId()));
 		context.put(FacilioConstants.ContextNames.WORKORDER_COST_TYPE, 5);
 		
 		Chain addWorkorderPartChain = TransactionChainFactory.getUpdateWorkorderCostChain();
