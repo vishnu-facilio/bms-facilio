@@ -363,14 +363,14 @@ public class ViewFactory {
 
 		order = 1;
 		views = new LinkedHashMap<>();
-		views.put("expiring", getExpiringContractView(ModuleFactory.getContractsModule()).setOrder(order++));
+		views.put("expiring", getExpiringContractView(ModuleFactory.getContractsModule(), -1).setOrder(order++));
 		viewsMap.put(FacilioConstants.ContextNames.CONTRACTS, views);
 
 		
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllPurchaseContractView().setOrder(order++));
-		views.put("expiring", getExpiringContractView(ModuleFactory.getPurchaseContractModule()).setOrder(order++));
+		views.put("expiring", getExpiringContractView(ModuleFactory.getContractsModule(), 1).setOrder(order++));
 		
 		viewsMap.put(FacilioConstants.ContextNames.PURCHASE_CONTRACTS, views);
 
@@ -378,21 +378,21 @@ public class ViewFactory {
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllLabourContractView().setOrder(order++));
-		views.put("expiring", getExpiringContractView(ModuleFactory.getLabourContractModule()).setOrder(order++));
+		views.put("expiring", getExpiringContractView(ModuleFactory.getContractsModule(), 2).setOrder(order++));
 		
 		viewsMap.put(FacilioConstants.ContextNames.LABOUR_CONTRACTS, views);
 		
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllRentalLeaseContractView().setOrder(order++));
-		views.put("expiring", getExpiringContractView(ModuleFactory.getRentalLeaseContractModule()).setOrder(order++));
+		views.put("expiring", getExpiringContractView(ModuleFactory.getContractsModule(), 4).setOrder(order++));
 		
 		viewsMap.put(FacilioConstants.ContextNames.RENTAL_LEASE_CONTRACTS, views);
 		
 		order = 1;
 		views = new LinkedHashMap<>();
 		views.put("all", getAllWarrantyContractView().setOrder(order++));
-		views.put("expiring", getExpiringContractView(ModuleFactory.getWarrantyContractModule()).setOrder(order++));
+		views.put("expiring", getExpiringContractView(ModuleFactory.getContractsModule(), 3).setOrder(order++));
 		
 		viewsMap.put(FacilioConstants.ContextNames.WARRANTY_CONTRACTS, views);
 
@@ -3583,7 +3583,7 @@ public class ViewFactory {
 	}
 	
 	
-	private static FacilioView getExpiringContractView(FacilioModule module) {
+	private static FacilioView getExpiringContractView(FacilioModule module, int type) {
 		FacilioField endDateField = new FacilioField();
 		endDateField.setName("endDate");
 		endDateField.setColumnName("END_DATE");
@@ -3593,7 +3593,7 @@ public class ViewFactory {
 		FacilioView allView = new FacilioView();
 		allView.setName("expiring");
 		allView.setDisplayName("Expiring This Month");
-		allView.setCriteria(getExpiringContractListCriteria(module));
+		allView.setCriteria(getExpiringContractListCriteria(module, type));
 		allView.setSortFields(Arrays.asList(new SortField(endDateField, false)));
 		return allView;
 	}
@@ -4408,7 +4408,7 @@ public class ViewFactory {
 		return criteria;
 	}
 	
-	private static Criteria getExpiringContractListCriteria(FacilioModule module) {
+	private static Criteria getExpiringContractListCriteria(FacilioModule module, int type) {
 
 		FacilioField statusField = new FacilioField();
 		statusField.setName("status");
@@ -4435,6 +4435,21 @@ public class ViewFactory {
 		Criteria criteria = new Criteria ();
 		criteria.addAndCondition(statusCond);
 		criteria.addAndCondition(expiryCond);
+		
+		if(type > 0) {
+			FacilioField typeField = new FacilioField();
+			typeField.setName("contractType");
+			typeField.setColumnName("CONTRACT_TYPE");
+			typeField.setDataType(FieldType.ENUM);
+			typeField.setModule(contract);
+			
+			Condition typeCond = new Condition();
+			typeCond.setField(typeField);
+			typeCond.setValue(String.valueOf(type));
+			typeCond.setOperator(EnumOperators.IS);
+			criteria.addAndCondition(typeCond);
+			
+		}
 
 		return criteria;
 	}
