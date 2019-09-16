@@ -10,6 +10,8 @@ import java.util.Set;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.FacilioProperties;
+
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.KafkaAdminClient;
 import org.apache.kafka.clients.admin.ListTopicsResult;
@@ -67,24 +69,26 @@ public class KafkaProcessor {
 
           try {
             List<Organization> orgs = AccountUtil.getOrgBean().getOrgs();
-           
-            for (Organization org : orgs) {
-                Long orgId = org.getOrgId();
-                String orgDomainName = org.getDomain();
-                if( ! EXISTING_ORGS.contains(orgDomainName)) {
-                    try {
-                        startProcessor(orgId, orgDomainName);
-                    } catch (Exception e) {
-                        try {
-                            CommonCommandUtil.emailException("KafkaProcessor", "Exception while starting stream " + orgDomainName, new Exception("Exception while starting stream will retry after 10 sec"));
-                            Thread.sleep(10000L);
-                            startProcessor(orgId, orgDomainName);
-                        } catch (InterruptedException interrupted) {
-                            log.info("Exception occurred ", interrupted);
-                            CommonCommandUtil.emailException("KafkaProcessor", "Exception while starting stream " + orgDomainName, interrupted);
-                        }
-                    }
-                }
+            if(CollectionUtils.isNotEmpty(orgs)) {
+	           
+	            for (Organization org : orgs) {
+	                Long orgId = org.getOrgId();
+	                String orgDomainName = org.getDomain();
+	                if( ! EXISTING_ORGS.contains(orgDomainName)) {
+	                    try {
+	                        startProcessor(orgId, orgDomainName);
+	                    } catch (Exception e) {
+	                        try {
+	                            CommonCommandUtil.emailException("KafkaProcessor", "Exception while starting stream " + orgDomainName, new Exception("Exception while starting stream will retry after 10 sec"));
+	                            Thread.sleep(10000L);
+	                            startProcessor(orgId, orgDomainName);
+	                        } catch (InterruptedException interrupted) {
+	                            log.info("Exception occurred ", interrupted);
+	                            CommonCommandUtil.emailException("KafkaProcessor", "Exception while starting stream " + orgDomainName, interrupted);
+	                        }
+	                    }
+	                }
+	            }
             }
         } catch (Exception e){
             log.info("Exception occurred ", e);

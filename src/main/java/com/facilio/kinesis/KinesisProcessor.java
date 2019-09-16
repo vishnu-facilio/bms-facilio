@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.LogManager;
 
 import com.amazonaws.services.kinesis.AmazonKinesis;
@@ -65,24 +66,26 @@ public class KinesisProcessor {
     	
         try {
         	 List<Organization> orgs = IAMOrgUtil.getOrgs();
-             for (Organization org : orgs) {
-                Long orgId = org.getOrgId();
-                String orgDomainName = org.getDomain();
-                if( ! EXISTING_ORGS.contains(orgDomainName)) {
-                    try {
-                        startProcessor(orgId, orgDomainName);
-                    } catch (Exception e) {
-                        try {
-                            CommonCommandUtil.emailException("KinesisProcessor", "Exception while starting stream " + orgDomainName, new Exception("Exception while starting stream will retry after 10 sec"));
-                            Thread.sleep(10000L);
-                            startProcessor(orgId, orgDomainName);
-                        } catch (InterruptedException | LimitExceededException interrupted) {
-                            log.info("Exception occurred ", interrupted);
-                            CommonCommandUtil.emailException("KinesisProcessor", "Exception while starting stream " + orgDomainName, interrupted);
-                        }
-                    }
-                }
-            }
+        	 if(CollectionUtils.isNotEmpty(orgs)) {
+	        	 for (Organization org : orgs) {
+	                Long orgId = org.getOrgId();
+	                String orgDomainName = org.getDomain();
+	                if( ! EXISTING_ORGS.contains(orgDomainName)) {
+	                    try {
+	                        startProcessor(orgId, orgDomainName);
+	                    } catch (Exception e) {
+	                        try {
+	                            CommonCommandUtil.emailException("KinesisProcessor", "Exception while starting stream " + orgDomainName, new Exception("Exception while starting stream will retry after 10 sec"));
+	                            Thread.sleep(10000L);
+	                            startProcessor(orgId, orgDomainName);
+	                        } catch (InterruptedException | LimitExceededException interrupted) {
+	                            log.info("Exception occurred ", interrupted);
+	                            CommonCommandUtil.emailException("KinesisProcessor", "Exception while starting stream " + orgDomainName, interrupted);
+	                        }
+	                    }
+	                }
+	            }
+        	 }
         } catch (Exception e){
             log.info("Exception occurred ", e);
         }
