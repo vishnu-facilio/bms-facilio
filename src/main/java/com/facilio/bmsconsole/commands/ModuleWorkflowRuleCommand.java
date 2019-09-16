@@ -16,7 +16,9 @@ public class ModuleWorkflowRuleCommand extends FacilioCommand {
         String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 
         if (workflowRule != null && StringUtils.isNotEmpty(moduleName)) {
-            workflowRule.setRuleType(WorkflowRuleContext.RuleType.MODULE_RULE);
+            if (workflowRule.getRuleTypeEnum() == null) {
+                workflowRule.setRuleType(WorkflowRuleContext.RuleType.MODULE_RULE);
+            }
             ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
             FacilioModule module = modBean.getModule(moduleName);
             if (module == null) {

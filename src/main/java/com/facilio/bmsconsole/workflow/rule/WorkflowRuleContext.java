@@ -560,6 +560,7 @@ public class WorkflowRuleContext implements Serializable {
 		CONTROL_ACTION_READING_ALARM_RULE,
 		CONTROL_ACTION_SCHEDULED_RULE,
 		MODULE_RULE, // 37
+		MODULE_RULE_NOTIFICATION,
 		;
 		//Always add at the end
 		

@@ -20,11 +20,19 @@ public class ModuleWorkflowRuleAction extends FacilioAction {
         this.moduleName = moduleName;
     }
 
-    public String fetchWorkflowRules() throws Exception {
+    private int ruleType;
+    public int getRuleType() {
+        return ruleType;
+    }
+    public void setRuleType(int ruleType) {
+        this.ruleType = ruleType;
+    }
 
+    public String fetchWorkflowRules() throws Exception {
         FacilioChain c = ReadOnlyChainFactory.getCustomModuleWorkflowRulesChain();
         FacilioContext context = c.getContext();
         context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
+        context.put(FacilioConstants.ContextNames.RULE_TYPE, ruleType);
         c.execute();
 
         setResult(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST, context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_LIST));
