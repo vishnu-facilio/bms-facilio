@@ -54,7 +54,9 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 				return false;
 			}
 			
-			boolean skipValidation = (boolean) context.get(FacilioConstants.ContextNames.SKIP_VALIDATION);
+			Boolean skipValidation = (Boolean) context.get(FacilioConstants.ContextNames.SKIP_VALIDATION);
+			
+			skipValidation = skipValidation == null ? Boolean.FALSE : skipValidation;  
 			
 			if(!skipValidation)
 			{

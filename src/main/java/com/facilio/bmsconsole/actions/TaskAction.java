@@ -391,12 +391,12 @@ public class TaskAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		Map<Long, Map<String, String>> errorMap = new HashMap<>();
 		
-		context.clear();
-		context.put(FacilioConstants.ContextNames.SKIP_VALIDATION, skipValidation);
 		
 		try {
 		for (TaskContext singleTask :taskContextList)
 		{
+			context.clear();
+			context.put(FacilioConstants.ContextNames.SKIP_VALIDATION, skipValidation);
 			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 			context.put(FacilioConstants.ContextNames.TASK, singleTask);
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(singleTask.getId()));
