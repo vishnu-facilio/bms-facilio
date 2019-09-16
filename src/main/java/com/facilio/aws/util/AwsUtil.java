@@ -147,6 +147,10 @@ public class AwsUtil
 	private static String region = null;
 	private static final Object LOCK = new Object();
 
+	public static Map<String, Object> getClientInfoAsService() throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> getClientInfo());
+	}
+
 	public static Map<String, Object> getClientInfo() {
 		Connection conn = null;
 		PreparedStatement pstmt = null;
