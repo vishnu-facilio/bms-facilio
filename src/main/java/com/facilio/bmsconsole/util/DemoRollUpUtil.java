@@ -9,14 +9,16 @@ import java.util.Map;
 public class DemoRollUpUtil {
 
 	public static final Map<String, List<String>> TABLES_WITH_COLUMN = Collections.unmodifiableMap(dateFieldModified());
-	public static final Map<String, List<String>> TABLES_WITH_ID_COLUMN = Collections.unmodifiableMap(idFieldModified());
 	private static Map<String,List<String>> dateFieldModified()  {
 
 		Map<String, List<String>> tablesContainsDateField = new HashMap<String, List<String>>();
 
+//		tablesContainsDateField.put("Organizations" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("FacilioFile" ,Arrays.asList("UPLOADED_TIME"));
 		tablesContainsDateField.put("Role" , Arrays.asList("CREATED_TIME"));
+//		tablesContainsDateField.put("ORG_Users" , Arrays.asList("INVITEDTIME"));
 		tablesContainsDateField.put("Site" , Arrays.asList("DATE_CF1","DATE_CF2","DATE_CF3","DATE_CF4","DATE_CF5","DATETIME_CF1","DATETIME_CF2","DATETIME_CF3","DATETIME_CF4","DATETIME_CF5"));
+//		tablesContainsDateField.put("System_Jobs" , Arrays.asList("LAST_EXECUTION_TIME"));
 		tablesContainsDateField.put("Groups" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("Shift_Readings" , Arrays.asList("ACTUAL_TTIME","TTIME"));
 		tablesContainsDateField.put("ResizedFile" , Arrays.asList("GENERATED_TIME","EXPIRY_TIME"));
@@ -97,7 +99,7 @@ public class DemoRollUpUtil {
 		tablesContainsDateField.put("Energy_Data" , Arrays.asList("ACTUAL_TTIME","TTIME"));
 		tablesContainsDateField.put("ImportProcessLog" , Arrays.asList("TTIME"));
 		tablesContainsDateField.put("Formula_Field_Resource_Jobs" , Arrays.asList("START_TIME","END_TIME"));
-		tablesContainsDateField.put("Workflow_Rule" , Arrays.asList("CREATED_TIME","MODIFIED_TIME"));
+		tablesContainsDateField.put("Workflow_Rule" , Arrays.asList("JOB_TIME","CREATED_TIME","MODIFIED_TIME"));
 		tablesContainsDateField.put("Preventive_Maintenance" , Arrays.asList("CREATION_TIME","LAST_MODIFIED_TIME","END_TIME"));
 		tablesContainsDateField.put("Approval_Steps" , Arrays.asList("ACTION_TIME"));
 		tablesContainsDateField.put("PM_Triggers" , Arrays.asList("START_TIME"));
@@ -121,7 +123,7 @@ public class DemoRollUpUtil {
 		tablesContainsDateField.put("ML_Alarm_Occurrences" , Arrays.asList("TTIME"));
 		tablesContainsDateField.put("Reading_Rule_Flaps" , Arrays.asList("FLAP_TIME"));
 		tablesContainsDateField.put("Scheduled_Actions" , Arrays.asList("JOB_TIME"));
-//		tablesContainsDateField.put("Task_Section_Template_Triggers" , Arrays.asList("EXECUTE_IF_NOT_IN_TIME"));
+		tablesContainsDateField.put("Task_Section_Template_Triggers" , Arrays.asList("EXECUTE_IF_NOT_IN_TIME"));
 		tablesContainsDateField.put("PM_Jobs" , Arrays.asList("NEXT_EXECUTION_TIME"));
 		tablesContainsDateField.put("Reading_Data_Meta" , Arrays.asList("TTIME"));
 		tablesContainsDateField.put("Marked_Reading" , Arrays.asList("TTIME"));
@@ -129,6 +131,7 @@ public class DemoRollUpUtil {
 		tablesContainsDateField.put("Tenant_Notes" , Arrays.asList("CREATED_TIME"));
 		tablesContainsDateField.put("Cost_Assets" , Arrays.asList("FIRST_BILL_TIME"));
 		tablesContainsDateField.put("Cost_Readings" , Arrays.asList("ACTUAL_TTIME"));
+//		tablesContainsDateField.put("Sync_Errors" , Arrays.asList("CREATED_TIME","LAST_SYNC_TIME"));
 		tablesContainsDateField.put("DeviceDetails" , Arrays.asList("LAST_UPDATED_TIME","LAST_ALERTED_TIME"));
 		tablesContainsDateField.put("Workorder_cost" , Arrays.asList("TTIME","MODIFIED_TIME"));
 		tablesContainsDateField.put("Gate_Pass" , Arrays.asList("SYS_CREATED_TIME","SYS_MODIFIED_TIME","SYS_DELETED_TIME"));
@@ -179,21 +182,9 @@ public class DemoRollUpUtil {
 		tablesContainsDateField.put("ML_Log_Readings" , Arrays.asList("ACTUAL_TTIME","TTIME"));
 		tablesContainsDateField.put("FAHU_Readings" , Arrays.asList("ACTUAL_TTIME","TTIME"));
 		tablesContainsDateField.put("Chiller_Readings2" , Arrays.asList("ACTUAL_TTIME","TTIME"));
-		tablesContainsDateField.put("Formula_Readings" , Arrays.asList("ACTUAL_TTIME","TTIME"));
-		
 		return tablesContainsDateField;
 		
 	}
 
-	private static Map<String,List<String>> idFieldModified()  {
-
-		Map<String, List<String>> tablesContainsIdField = new HashMap<String, List<String>>();
-		tablesContainsIdField.put("Role" , Arrays.asList("ROLE_ID"));
-		tablesContainsIdField.put("Groups" , Arrays.asList("GROUPID"));
-		tablesContainsIdField.put("FacilioFile" ,Arrays.asList("FILE_ID"));
-		tablesContainsIdField.put("Task_Section_Template_Triggers" , Arrays.asList("SECTION_ID"));
-
-		return tablesContainsIdField;
-		
-	}
+	
 }
