@@ -182,10 +182,16 @@ public class AwsUtil
 	}
 
 	public static int updateClientVersion(String newVersion, boolean isNewClientBuild) throws Exception {
-		return FacilioService.runAsServiceWihReturn(() -> updateClientVersionervice(newVersion, isNewClientBuild));
+		com.facilio.accounts.dto.User currentUser = AccountUtil.getCurrentUser();
+		if (currentUser != null) {
+			return FacilioService.runAsServiceWihReturn(() -> updateClientVersionervice(newVersion, isNewClientBuild, currentUser.getId()));
+		}
+		else {
+			throw new IllegalArgumentException("Current User cannot be null while updating Client Version");
+		}
 	}
 
-	private static int updateClientVersionervice(String newVersion,boolean isNewClientBuild) throws SystemException {
+	private static int updateClientVersionervice(String newVersion,boolean isNewClientBuild, long userId) throws SystemException {
 		int updatedRows = 0;
 		if(newVersion != null) {
 			newVersion = newVersion.trim();
@@ -194,14 +200,13 @@ public class AwsUtil
 			PreparedStatement pstmt = null;
 			try {
 				if(checkIfVersionExistsInS3(newVersion)) {
-					com.facilio.accounts.dto.User currentUser = AccountUtil.getCurrentUser();
-					if (FacilioProperties.environment != null && currentUser != null) {
+					if (FacilioProperties.environment != null && userId != -1) {
 						FacilioTransactionManager.INSTANCE.getTransactionManager().begin();
 						conn = FacilioConnectionPool.INSTANCE.getConnection();
 						pstmt = conn.prepareStatement("Update ClientApp set version=?, updatedTime=?, updatedBy=?, is_new_client_build=?  WHERE environment=?");
 						pstmt.setString(1, newVersion);
 						pstmt.setLong(2, System.currentTimeMillis());
-						pstmt.setLong(3, currentUser.getId());
+						pstmt.setLong(3, userId);
 						pstmt.setBoolean(4, isNewClientBuild);
 						pstmt.setString(5, FacilioProperties.environment);
 
@@ -223,6 +228,9 @@ public class AwsUtil
 	}
 
 	private static boolean checkIfVersionExistsInS3(String newVersion) {
+		if (FacilioProperties.isDevelopment()) {
+			return true;
+		}
 		boolean objectExists = false;
 		String staticBucket = FacilioProperties.getConfig("static.bucket");
 		if(staticBucket != null) {
