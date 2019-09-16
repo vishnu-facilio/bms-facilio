@@ -115,7 +115,15 @@ public class AlarmOccurrenceContext extends ModuleBaseWithCustomFields {
 	public void setClearedTime(long clearedTime) {
 		this.clearedTime = clearedTime;
 	}
-	
+
+	@JsonInclude
+	public long getDuration() {
+		if (clearedTime != -1) {
+			return (clearedTime - createdTime) / 1000;
+		}
+		return -1;
+	}
+
 	private long woId = -1;
 	public long getWoId() {
 		return woId;
