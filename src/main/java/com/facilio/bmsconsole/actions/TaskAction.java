@@ -301,11 +301,12 @@ public class TaskAction extends FacilioAction {
 	
 	private boolean skipValidation = false;
 
-	public boolean isskipValidation() {
+
+	public boolean isSkipValidation() {
 		return skipValidation;
 	}
 
-	public void setskipValidation(boolean skipValidation) {
+	public void setSkipValidation(boolean skipValidation) {
 		this.skipValidation = skipValidation;
 	}
 
