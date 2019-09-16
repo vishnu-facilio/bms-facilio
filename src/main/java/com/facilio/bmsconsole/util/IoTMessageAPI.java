@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.util;
 
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,7 +9,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.aws.util.AwsUtil;
 import com.facilio.aws.util.FacilioProperties;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -343,20 +348,55 @@ public class IoTMessageAPI {
 	}
 	
  	private static void publishIotMessage(String client, JSONObject object) throws Exception {
- 		Long agentId = (Long) object.remove(AgentKeys.AGENT_ID);
-	    String topic = client+"/msgs";
-		LOGGER.info(FacilioProperties.getConfig("iot.endpoint") +" " + client+"-facilio" + " " + topic + " " + object);
 		if (!FacilioProperties.isProduction()) {
- 			return;
- 		}
-		AWSIotMqttClient mqttClient = new AWSIotMqttClient(FacilioProperties.getConfig("iot.endpoint"), client+"-facilio", FacilioProperties.getConfig("iot.accessKeyId"), FacilioProperties.getConfig("iot.secretKeyId"));
+			return;
+		}
+
+		Long agentId = (Long) object.remove(AgentKeys.AGENT_ID);
+		if( FacilioProperties.isOnpremise()) {
+			publishToRabbitMQ(client, object);
+		} else {
+			publishToAwsIot(client, object);
+		}
+		if(agentId != null && agentId > 0) {
+			AgentUtil.putLog(object, AccountUtil.getCurrentOrg().getOrgId(), agentId, true);
+		}
+
+	}
+
+
+	private static void publishToRabbitMQ(String client, JSONObject object) throws Exception {
+
+		String topic = client+".msgs";
+		LOGGER.info(FacilioProperties.getIotEndPoint() +" " + client+"-facilio" + " " + topic + " " + object);
+		ConnectionFactory factory = new ConnectionFactory();
+		factory.setHost(FacilioProperties.getIotEndPoint());
+		factory.setUsername(FacilioProperties.getIotUser());
+		factory.setPassword(FacilioProperties.getIotPassword());
+		factory.setVirtualHost(FacilioProperties.getIotVirtualHost());
+		factory.setPort(FacilioProperties.getIotEndPointPort());
+		factory.setChannelRpcTimeout(10000);
+		factory.setAutomaticRecoveryEnabled(false);
+		factory.setChannelShouldCheckRpcResponseType(false);
+		try (Connection connection = factory.newConnection();
+			 Channel channel = connection.createChannel()) {
+			String message = object.toString();
+			channel.basicPublish(FacilioProperties.getIotExchange(), topic, null, message.getBytes(StandardCharsets.UTF_8));
+		} catch (Exception e) {
+			LOGGER.info("Exception while publishing to rabbitmq, ", e);
+			throw e;
+		}
+	}
+
+
+	private static void publishToAwsIot(String client, JSONObject object) throws Exception {
+		String topic = client+"/msgs";
+		LOGGER.info(FacilioProperties.getIotEndPoint() +" " + client+"-facilio" + " " + topic + " " + object);
+		AWSIotMqttClient mqttClient = new AWSIotMqttClient(FacilioProperties.getIotEndPoint(), client+"-facilio", FacilioProperties.getIotUser(), FacilioProperties.getIotPassword());
 		try {
 			mqttClient.connect();
 			if(mqttClient.getConnectionStatus() == AWSIotConnectionStatus.CONNECTED) {
 				mqttClient.publish(new AWSIotMessage(topic, AWSIotQos.QOS0, object.toJSONString()));
-				if(agentId != null && agentId > 0) {
-					AgentUtil.putLog(object, AccountUtil.getCurrentOrg().getOrgId(), agentId, true);
-				}
 			}
 		} catch (AWSIotException e) {
 			LOGGER.error("Exception while publishing message ", e);
@@ -371,9 +411,9 @@ public class IoTMessageAPI {
 			}
 		}
 	}
- 	
+
  	public static void sendPublishNotification(PublishData publishData, JSONObject info) {
-		
+
 		try {
 			WmsPublishResponse data = new WmsPublishResponse();
 			data.publish(publishData, info);
@@ -382,9 +422,9 @@ public class IoTMessageAPI {
 			LOGGER.error("Error occurred while sending publish notification", e);
 		}
 	}
- 	
+
  	public static void sendFailureNotification(PublishData publishData) {
-		
+
 		try {
 			WmsPublishResponse data = new WmsPublishResponse();
 			data.publishFailure(publishData);

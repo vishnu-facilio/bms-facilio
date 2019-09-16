@@ -1,7 +1,6 @@
 package com.facilio.aws.util;
 
 import com.amazonaws.regions.Regions;
-import com.amazonaws.services.dynamodbv2.xspec.S;
 import com.amazonaws.services.secretsmanager.AWSSecretsManager;
 import com.amazonaws.services.secretsmanager.AWSSecretsManagerClientBuilder;
 import com.amazonaws.services.secretsmanager.model.GetSecretValueRequest;
@@ -63,6 +62,11 @@ public class FacilioProperties {
     private static HashSet<String> dbIdentifiers = new HashSet<String>();
     private static Long messageReprocessInterval;
     private static String domain;
+    private static String iotUser;
+    private static String iotPassword;
+    private static String iotVirtualHost;
+    private static int iotEndPointPort;
+    private static String iotExchange;
 
     static {
         loadProperties();
@@ -109,6 +113,17 @@ public class FacilioProperties {
                 defaultAppDB = PROPERTIES.getProperty("db.default.app.db");
                 messageQueue = PROPERTIES.getProperty("messageQueue");
                 domain = PROPERTIES.getProperty("domain");
+                iotUser = PROPERTIES.getProperty("iot.accessKeyId");
+                iotPassword = PROPERTIES.getProperty("iot.secretKeyId");
+                iotVirtualHost = PROPERTIES.getProperty("iot.virtual.host");
+                iotExchange = PROPERTIES.getProperty("iot.exchange");
+                if(PROPERTIES.containsKey("iot.endpoint.port")) {
+                    try {
+                        iotEndPointPort = Integer.parseInt(PROPERTIES.getProperty("iot.endpoint.port"));
+                    } catch (NumberFormatException e) {
+                        LOGGER.info("Exception while parsing iot.endpoint.port, " + PROPERTIES.getProperty("iot.endpoint.port"));
+                    }
+                }
                 
                 PROPERTIES.put("clientapp.url", clientAppUrl);
                 URL resourceDir = AwsUtil.class.getClassLoader().getResource("");
@@ -323,5 +338,25 @@ public class FacilioProperties {
             }
         }
         return secretMap;
+    }
+
+    public static String getIotUser() {
+        return iotUser;
+    }
+
+    public static String getIotPassword() {
+        return iotPassword;
+    }
+
+    public static String getIotVirtualHost() {
+        return iotVirtualHost;
+    }
+
+    public static int getIotEndPointPort() {
+        return iotEndPointPort;
+    }
+
+    public static String getIotExchange() {
+        return iotExchange;
     }
 }
