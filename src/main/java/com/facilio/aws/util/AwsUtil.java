@@ -39,6 +39,7 @@ import javax.transaction.SystemException;
 
 import com.amazon.sqs.javamessaging.AmazonSQSExtendedClient;
 import com.amazon.sqs.javamessaging.ExtendedClientConfiguration;
+import com.facilio.service.FacilioService;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
@@ -176,7 +177,11 @@ public class AwsUtil
 		return clientInfo;
 	}
 
-	public static int updateClientVersion(String newVersion,boolean isNewClientBuild) throws SystemException {
+	public static int updateClientVersion(String newVersion, boolean isNewClientBuild) throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> updateClientVersionervice(newVersion, isNewClientBuild));
+	}
+
+	private static int updateClientVersionervice(String newVersion,boolean isNewClientBuild) throws SystemException {
 		int updatedRows = 0;
 		if(newVersion != null) {
 			newVersion = newVersion.trim();
