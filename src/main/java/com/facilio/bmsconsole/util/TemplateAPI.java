@@ -94,7 +94,7 @@ import com.facilio.workflows.util.WorkflowUtil;
 
 public class TemplateAPI {
 	private static Logger log = LogManager.getLogger(TemplateAPI.class.getName());
-	private static final String[] RULE_CATEGORY = new String[] {"Ahu", "Fahu", "Ohu", "Fcu"};
+	private static final String[] RULE_CATEGORY = new String[] {"Ahu", "Fahu", "Fcu"};
 	private static final String DEFAULT_TEMPLATES_FILE_PATH = "conf/templates/defaultTemplates";
 	private static final String[] LANG = new String[]{"en"};
 	private static final Map<DefaultTemplateType, Map<String, Map<Integer,DefaultTemplate>>> DEFAULT_TEMPLATES = Collections.unmodifiableMap(loadDefaultTemplates());
