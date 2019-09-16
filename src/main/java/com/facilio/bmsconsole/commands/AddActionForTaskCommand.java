@@ -66,7 +66,7 @@ public class AddActionForTaskCommand extends FacilioCommand {
 					if (subjectField.getValue() == null) {
 						FormField field = new FormField();
 						field.setId(subjectField.getId());
-						String value = "Deviation Work Order - ${task.resource.id:-}";
+						String value = "Deviation Work Order - ${task.resource.name:-}";
 						field.setValue(value);
 						subjectField.setValue(value);
 						if (formTemplate.getOriginalTemplate() != null) {
