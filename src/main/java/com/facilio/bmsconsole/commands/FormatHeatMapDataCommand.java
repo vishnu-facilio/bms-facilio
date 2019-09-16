@@ -36,6 +36,8 @@ import com.facilio.report.context.ReportContext;
 import com.facilio.report.context.ReportDataPointContext;
 import com.facilio.time.DateRange;
 
+import org.json.simple.parser.JSONParser;
+
 
 public class FormatHeatMapDataCommand extends FacilioCommand{
 	
@@ -46,9 +48,15 @@ public class FormatHeatMapDataCommand extends FacilioCommand{
 		
 		JSONObject reportData = (JSONObject) context.get(FacilioConstants.ContextNames.REPORT_DATA);
 		ReportContext reportContext = (ReportContext) context.get(FacilioConstants.ContextNames.REPORT);
- 
+
+		String chartType = null; 
+		if (reportContext.getChartState() != null && !"".equals(reportContext.getChartState())) {
+			JSONObject jobj = (JSONObject) new JSONParser().parse(reportContext.getChartState());
+			chartType = (String) jobj.get("type");
+		}
 		
-		if(reportContext.getAnalyticsType() == 3 && reportContext.getType() == 1) {
+		
+		if((reportContext.getAnalyticsType() == 3 && reportContext.getType() == 1)|| ("heatmap".equalsIgnoreCase(chartType))) {
 			Collection<Map<String, Object>> data = (Collection<Map<String, Object>>) reportData.get(FacilioConstants.ContextNames.DATA_KEY);
 			
 			DateRange range = reportContext.getDateRange();
@@ -56,7 +64,10 @@ public class FormatHeatMapDataCommand extends FacilioCommand{
 			sdf.setTimeZone(TimeZone.getTimeZone(AccountUtil.getCurrentAccount().getTimeZone()));
 			Long startTime=range.getStartTime();
 			Long endTime=range.getEndTime();
-			List<Map<String, Object>> violatedReadings = getViolatedReadings(reportContext,startTime,endTime);
+			List<Map<String, Object>>  violatedReadings = new ArrayList<>();
+			if(reportContext.getAnalyticsType() == 3 && reportContext.getType() == 1) {
+			violatedReadings = getViolatedReadings(reportContext,startTime,endTime);
+			}
 			List<Map<String, Object>> heatMapData = new ArrayList<>();
 			long timeStep = endTime-startTime;
 			if(reportContext.getxAggr() == 20) {
@@ -75,6 +86,7 @@ public class FormatHeatMapDataCommand extends FacilioCommand{
 				}
 			
 			HashMap markedDataMap= new HashMap();
+			if(reportContext.getAnalyticsType() == 3 && reportContext.getType() == 1) {
 			for(Map<String, Object> record : violatedReadings) {
 				Date recordDate = new java.util.Date(((long) record.get("ttime")));
 				record.put("X", record.get("ttime"));
@@ -82,7 +94,7 @@ public class FormatHeatMapDataCommand extends FacilioCommand{
 				record.put("violated_value",record.get("value"));
 				markedDataMap.put(record.get("label"), record);
 				}
-			
+			}
 			long loopstart=System.currentTimeMillis();
 			
 			while(startTime<=endTime) {
@@ -90,11 +102,18 @@ public class FormatHeatMapDataCommand extends FacilioCommand{
 				mapData.put("X", startTime);
 				mapData.put("Y",startTime);
 				Date date = new java.util.Date(startTime);
+				if(reportContext.getAnalyticsType() == 3 && reportContext.getType() == 1) {
 				if(reportDataMap.containsKey(sdf.format(date)) && !markedDataMap.containsKey(sdf.format(date))) {
 					mapData=(HashMap) reportDataMap.get(sdf.format(date));
 				}
 				else if(markedDataMap.containsKey(sdf.format(date))) {
 					mapData=(HashMap) markedDataMap.get(sdf.format(date));
+				}
+				}
+				else if(reportContext.getType() == 2){
+					if(reportDataMap.containsKey(sdf.format(date))) {
+						mapData=(HashMap) reportDataMap.get(sdf.format(date));
+					}
 				}
 				startTime=startTime+timeStep;
 				heatMapData.add(mapData);

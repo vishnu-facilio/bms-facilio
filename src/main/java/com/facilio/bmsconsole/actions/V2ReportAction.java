@@ -800,6 +800,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put("sort_order", sortOrder);
 		context.put("limit", limit);
 		context.put("user-filters", userFilters);
+		context.put("chartState", chartState);
 		
 		context.put(FacilioConstants.Reports.MODULE_TYPE, moduleType);
 		
