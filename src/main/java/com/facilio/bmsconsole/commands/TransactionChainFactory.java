@@ -975,6 +975,7 @@ public class TransactionChainFactory {
 			c.addCommand(new AddTaskTicketActivityCommand());
 			c.addCommand(new ExecuteAllWorkflowsCommand());
 			c.addCommand(new AddActivitiesCommand());
+			c.addCommand(new SiUnitConversionToEnteredReadingUnit());
 //			c.addCommand(getAddOrUpdateReadingValuesChain());
 			return c;
 		}
@@ -985,6 +986,7 @@ public class TransactionChainFactory {
 		c.addCommand(new LoadAllFieldsCommand());
 		c.addCommand(new UpdateTaskCommand());
 		c.addCommand(new AddActivitiesCommand());
+		c.addCommand(new SiUnitConversionToEnteredReadingUnit());
 		return c;
 	}
 		public static FacilioChain getProcessDataChain() {

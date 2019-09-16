@@ -54,73 +54,81 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 				return false;
 			}
 			
-			TaskContext currentTask = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
-			List<TaskErrorContext> errors = new ArrayList<>();
-			boolean hasErrors = false;
-			if(currentTask != null) {
-				List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
-				if(recordIds != null && !recordIds.isEmpty()) {
-					Map<Long, TaskContext> oldTasks = TicketAPI.getTaskMap(recordIds);
-					for(int i = 0; i < recordIds.size(); i++) {
-						TaskContext taskContext = oldTasks.get(recordIds.get(i));
-						
-						switch(taskContext.getInputTypeEnum()) {
-						case READING:
-							if (taskContext.getReadingField() != null && taskContext.getResource() != null) {
-								
-								switch(taskContext.getReadingField().getDataTypeEnum()) {
-								case NUMBER:
-								case DECIMAL:
+			boolean skipValidation = (boolean) context.get(FacilioConstants.ContextNames.SKIP_VALIDATION);
+			
+			if(!skipValidation)
+			{
+				
+				TaskContext currentTask = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
+				List<TaskErrorContext> errors = new ArrayList<>();
+				boolean hasErrors = false;
+				if(currentTask != null) {
+					List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
+					if(recordIds != null && !recordIds.isEmpty()) {
+						Map<Long, TaskContext> oldTasks = TicketAPI.getTaskMap(recordIds);
+						for(int i = 0; i < recordIds.size(); i++) {
+							TaskContext taskContext = oldTasks.get(recordIds.get(i));
+							
+							switch(taskContext.getInputTypeEnum()) {
+							case READING:
+								if (taskContext.getReadingField() != null && taskContext.getResource() != null) {
 									
-									ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(taskContext.getResource().getId(), taskContext.getReadingField());
-									NumberField numberField = (NumberField) taskContext.getReadingField();
-									
-									if(rdm.getValue() != null && rdm.getValue().equals("-1.0")) {
-										return true;
-									}
-									
-									Double currentValue = FacilioUtil.parseDouble(currentTask.getInputValue());
-									
-									Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);
-									
-									Double currentValueInSiUnit = UnitsUtil.convertToSiUnit(currentValue, currentInputUnit);
-									
-									if(numberField.isCounterField()) {
-										TaskErrorContext taskError = checkIncremental(currentTask,numberField,rdm,currentValueInSiUnit);
-										if(taskError!= null) {
-											hasErrors = true;
-											errors.add(taskError);
-											TaskErrorContext unitSuggetion = checkUnitForValueError(currentTask,numberField,rdm,currentValueInSiUnit);
-											if(unitSuggetion != null) {
-												errors.add(unitSuggetion);
-											}
+									switch(taskContext.getReadingField().getDataTypeEnum()) {
+									case NUMBER:
+									case DECIMAL:
+										
+										ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(taskContext.getResource().getId(), taskContext.getReadingField());
+										NumberField numberField = (NumberField) taskContext.getReadingField();
+										
+										if(rdm.getValue() != null && rdm.getValue().equals("-1.0")) {
+											return true;
 										}
-										else {
-											taskError = checkValueRangeForCounterField(currentTask,numberField,rdm,currentValueInSiUnit);
+										
+										Double currentValue = FacilioUtil.parseDouble(currentTask.getInputValue());
+										
+										Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);
+										
+										Double currentValueInSiUnit = UnitsUtil.convertToSiUnit(currentValue, currentInputUnit);
+										
+										if(numberField.isCounterField()) {
+											TaskErrorContext taskError = checkIncremental(currentTask,numberField,rdm,currentValueInSiUnit);
 											if(taskError!= null) {
+												hasErrors = true;
 												errors.add(taskError);
 												TaskErrorContext unitSuggetion = checkUnitForValueError(currentTask,numberField,rdm,currentValueInSiUnit);
 												if(unitSuggetion != null) {
 													errors.add(unitSuggetion);
 												}
 											}
+											else {
+												taskError = checkValueRangeForCounterField(currentTask,numberField,rdm,currentValueInSiUnit);
+												if(taskError!= null) {
+													errors.add(taskError);
+													TaskErrorContext unitSuggetion = checkUnitForValueError(currentTask,numberField,rdm,currentValueInSiUnit);
+													if(unitSuggetion != null) {
+														errors.add(unitSuggetion);
+													}
+												}
+											}
+											
 										}
-										
 									}
 								}
+								break;
 							}
-							break;
 						}
 					}
 				}
+				if(!errors.isEmpty()) {
+					context.put(FacilioConstants.ContextNames.TASK_ERRORS, errors);
+					context.put(FacilioConstants.ContextNames.HAS_TASK_ERRORS, hasErrors);
+//					if(hasErrors) {
+						return true;
+//					}
+				}
+				
 			}
-			if(!errors.isEmpty()) {
-				context.put(FacilioConstants.ContextNames.TASK_ERRORS, errors);
-				context.put(FacilioConstants.ContextNames.HAS_TASK_ERRORS, hasErrors);
-//				if(hasErrors) {
-					return true;
-//				}
-			}
+
 		}
 		catch(Exception e) {
 			LOGGER.log(Level.SEVERE, e.getMessage(), e);
