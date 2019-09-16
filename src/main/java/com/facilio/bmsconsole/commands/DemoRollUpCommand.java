@@ -40,6 +40,7 @@ public class DemoRollUpCommand extends FacilioCommand {
 
 		for (Map.Entry<String, List<String>> tableList : tableName.entrySet()) {
 			String moduleName = tableList.getKey();
+			LOGGER.info("###DemoRollUp executing table  is"+"  "+moduleName);
 			List<String> valueList = tableList.getValue();
 			List<FacilioField> fields = new ArrayList<>();
 			FacilioField idField = null;
@@ -81,7 +82,7 @@ public class DemoRollUpCommand extends FacilioCommand {
 				.batchUpdate(Collections.singletonList(idField), batchUpdate)
 				;
 //				System.out.println("###DemoRoleUp"+" "+" "+"of rows updated in"+moduleName+"successfully");
-//				LOGGER.info("###DemoRollUp"+" "+" "+"of rows updated in"+moduleName+"successfully");
+				LOGGER.info("###DemoRollUp updated "+moduleName+"successfully");
 			}
 			catch(Exception e) {
 				System.out.println("Exception occurred### in  DemoRollUpJob... TableName is.. "+ moduleName+ e);
