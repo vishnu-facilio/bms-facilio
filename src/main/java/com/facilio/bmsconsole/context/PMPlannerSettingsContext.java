@@ -18,6 +18,24 @@ public class PMPlannerSettingsContext implements Serializable {
 	private JSONArray timeMetricSettings;
 	private String moveType;
 	private JSONArray legendSettings;
+	private PlannerType plannerType;
+
+	public PlannerType getPlannerTypeEnum() {
+		return plannerType;
+	}
+	public void setPlannerType(PlannerType type) {
+		this.plannerType = type;
+	}
+	public int getPlannerType() {
+		if (plannerType != null) {
+			return plannerType.getValue();
+		}
+		return -1;
+	}
+	public void setPlannerType(int type) {
+		this.plannerType = PlannerType.valueOf(type);
+	}
+	
 	
 	public JSONArray getLegendSettings() {
 		return legendSettings;
@@ -139,6 +157,22 @@ public void setLegendSettingsJson(String legendSettingsJson) {
 	}
 }
 
+
+public enum PlannerType {
+	ASSET_PLANNER,
+	STAFF_PLANNER	
+	;
+	
+	public int getValue() {
+		return ordinal() + 1;
+	}
+	public static PlannerType valueOf (int value) {
+		if (value > 0 && value <= values().length) {
+			return values() [value - 1];
+		}
+		return null;
+	}
+}
 
 }
 

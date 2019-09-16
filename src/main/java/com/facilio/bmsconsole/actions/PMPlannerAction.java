@@ -36,6 +36,7 @@ public class PMPlannerAction extends FacilioAction{
 	public String getPMPlannerSettings()
 	{
 		FacilioContext context=new FacilioContext();
+		context.put(FacilioConstants.ContextNames.PM_PLANNER_SETTINGS, this.settings);
 			try {
 				ReadOnlyChainFactory.getPMPlannerSettingschain().execute(context);
 				setResult("settings", context.get(FacilioConstants.ContextNames.PM_PLANNER_SETTINGS));
@@ -72,11 +73,17 @@ public class PMPlannerAction extends FacilioAction{
 		context.put(ContextNames.SITE_ID, siteId);
 		context.put(ContextNames.BUILDING_ID, buildingId);
 		context.put(ContextNames.CATEGORY_ID, categoryId);
+      
+		PMPlannerSettingsContext assetSettings=new PMPlannerSettingsContext();
+        assetSettings.setPlannerType(PMPlannerSettingsContext.PlannerType.ASSET_PLANNER);
+		
+		
 		if (filterJson != null) {
 			filterJson = FacilioUtil.parseJson(filterJson.toJSONString());
 			context.put(FacilioConstants.ContextNames.FILTERS, filterJson);
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, ContextNames.WORK_ORDER);
 		}
+		context.put(ContextNames.PM_PLANNER_SETTINGS,assetSettings);
 		context.put(FacilioConstants.ContextNames.DATE_RANGE, dateRange);
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateOperatorValue);

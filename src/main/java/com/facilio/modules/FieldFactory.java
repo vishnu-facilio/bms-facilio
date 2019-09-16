@@ -5068,6 +5068,7 @@ public class FieldFactory {
 		fields.add(getField("timeMetricSettingsJson", "TIME_METRIC_SETTINGS", module, FieldType.STRING));
 		fields.add(getField("moveType", "MOVE_TYPE", module,FieldType.STRING));
 		fields.add(getField("legendSettingsJson", "LEGEND_SETTINGS", module,FieldType.STRING));
+		fields.add(getField("plannerType", "PLANNER_TYPE", FieldType.NUMBER));
 		
 
 		return fields;
