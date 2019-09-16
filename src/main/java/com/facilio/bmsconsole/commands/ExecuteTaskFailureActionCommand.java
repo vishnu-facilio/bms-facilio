@@ -3,6 +3,8 @@ package com.facilio.bmsconsole.commands;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
 
@@ -26,8 +28,10 @@ public class ExecuteTaskFailureActionCommand extends FacilioCommand implements S
 	public boolean executeCommand(Context context) throws Exception {
 		WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
+		List<WorkOrderContext> workorders = (List<WorkOrderContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		EventType eventType = (EventType)context.get(FacilioConstants.ContextNames.EVENT_TYPE);
-		if (eventType == EventType.CLOSE_WORK_ORDER && workOrder != null && recordIds != null && !recordIds.isEmpty()) {
+		if (eventType == EventType.CLOSE_WORK_ORDER && recordIds != null && !recordIds.isEmpty() && workorders != null) {
+			Map<Long, WorkOrderContext> woMap = workorders.stream().collect(Collectors.toMap(WorkOrderContext::getId, Function.identity()));
 			List<TaskContext> tasks = TicketAPI.getRelatedTasks(recordIds, false);
 			if (tasks != null && !tasks.isEmpty()) {
 				for(TaskContext task: tasks) {
@@ -35,6 +39,7 @@ public class ExecuteTaskFailureActionCommand extends FacilioCommand implements S
 						ActionContext action = ActionAPI.getAction(task.getActionId());
 						Map<String, Object> placeHolders = WorkflowRuleAPI.getOrgPlaceHolders();
 						CommonCommandUtil.appendModuleNameInKey(ContextNames.TASK, ContextNames.TASK, FieldUtil.getAsProperties(task), placeHolders);
+						CommonCommandUtil.appendModuleNameInKey(ContextNames.WORK_ORDER, ContextNames.WORK_ORDER, FieldUtil.getAsProperties(woMap.get(task.getParentTicketId())), placeHolders);
 						action.executeAction(placeHolders, null, null, null);
 					}
 				}

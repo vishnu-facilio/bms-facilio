@@ -66,10 +66,37 @@ public class AddActionForTaskCommand extends FacilioCommand {
 					if (subjectField.getValue() == null) {
 						FormField field = new FormField();
 						field.setId(subjectField.getId());
-						field.setValue("${task.subject}");
-						subjectField.setValue("${task.subject}");
+						String value = "Deviation Work Order - ${task.resource.id:-}";
+						field.setValue(value);
+						subjectField.setValue(value);
 						if (formTemplate.getOriginalTemplate() != null) {
-							formTemplate.getOriginalTemplate().put("subject", "${task.subject}");
+							formTemplate.getOriginalTemplate().put("subject", value);
+						}
+						formFields.add(field);
+					}
+					
+					FormField siteField = fieldMap.get("siteId");
+					if (siteField.getValue() == null) {
+						FormField field = new FormField();
+						field.setId(siteField.getId());
+						String value = "${workorder.siteId}";
+						field.setValue(value);
+						siteField.setValue(value);
+						if (formTemplate.getOriginalTemplate() != null) {
+							formTemplate.getOriginalTemplate().put("siteId", value);
+						}
+						formFields.add(field);
+					}
+					
+					FormField descriptionField = fieldMap.get("description");
+					if (descriptionField.getValue() == null) {
+						FormField field = new FormField();
+						field.setId(descriptionField.getId());
+						String value = "Deviation work order created from the task ${task.subject} of ${workorder.subject} work order. \n\n Task Value - ${task.inputValue}";
+						field.setValue(value);
+						descriptionField.setValue(value);
+						if (formTemplate.getOriginalTemplate() != null) {
+							formTemplate.getOriginalTemplate().put("description", value);
 						}
 						formFields.add(field);
 					}
@@ -94,7 +121,7 @@ public class AddActionForTaskCommand extends FacilioCommand {
 				
 				ActionContext action = new ActionContext();
 				action.setTemplateId(formTemplate.getId());
-				action.setActionType(ActionType.CREATE_WORK_ORDER);
+				action.setActionType(ActionType.CREATE_DEVIATION_WORK_ORDER);
 				
 				task.setAction(action);
 				actions.add(action);

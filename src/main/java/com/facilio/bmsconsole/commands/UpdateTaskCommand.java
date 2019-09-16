@@ -18,6 +18,7 @@ import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.TaskContext;
+import com.facilio.bmsconsole.context.TaskContext.InputType;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderContext.PreRequisiteStatus;
@@ -31,6 +32,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.FacilioModulePredicate;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -74,8 +76,14 @@ public class UpdateTaskCommand extends FacilioCommand {
 				if(task.getInputValue() != null) {
 					long newTaskId = recordIds.get(0);
 					TaskContext oldTask = taskMap.get(newTaskId);
-					if(StringUtils.isNotEmpty(oldTask.getFailureValue()) && oldTask.getFailureValue().equals(task.getInputValue())) {
-						task.setFailed(true);
+					if(StringUtils.isNotEmpty(oldTask.getFailureValue())) {
+						if (oldTask.getInputTypeEnum() == InputType.NUMBER) {
+							FacilioModulePredicate predicate = oldTask.getDeviationOperator().getPredicate("inputValue", oldTask.getFailureValue());
+            	   				task.setFailed(predicate.evaluate(task));
+	            	   		}
+	            	   		else if (oldTask.getFailureValue().equals(task.getInputValue())) {
+	            	   			task.setFailed(true);
+	            	   		}
 					}
 					
 					JSONObject info = new JSONObject();

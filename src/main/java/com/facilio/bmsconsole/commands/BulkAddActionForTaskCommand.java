@@ -67,48 +67,13 @@ public class BulkAddActionForTaskCommand extends FacilioCommand {
 			long formId = task.getWoCreateFormId();
 			FormTemplate formTemplate = formMap.get(formId);
 			if (formTemplate == null) {
-				formTemplate = new FormTemplate();
-				formTemplate.setName("formTemplate_"+formId);
-				formTemplate.setFormId(formId);
-				
-				TemplateAPI.setFormInTemplate(formTemplate);
-				FacilioForm form = formTemplate.getForm();
-				Map<String, FormField> fieldMap = form.getFieldsMap();
-				
-				FormField subjectField = fieldMap.get("subject");
-//				Map<Long, String> values = new HashMap<>();
-				if (subjectField.getValue() == null) {
-					FormField field = new FormField();
-					field.setId(subjectField.getId());
-					field.setValue("${task.subject}");
-					subjectField.setValue("${task.subject}");
-					if (formTemplate.getOriginalTemplate() != null) {
-						formTemplate.getOriginalTemplate().put("subject", "${task.subject}");
-					}
-					formFields.add(field);
-				}
-				
-				FormField resourceField = fieldMap.get("resource");
-				if (resourceField != null && resourceField.getValue() == null) {
-					FormField field = new FormField();
-					field.setId(resourceField.getId());
-					field.setValue("${task.resource.id:-}");
-					resourceField.setValue("${task.resource.id:-}");
-					if (formTemplate.getOriginalTemplate() != null) {
-						formTemplate.getOriginalTemplate().put("resource", Collections.singletonMap("id", "${task.resource.id:-}"));
-					}
-					formFields.add(field);
-				}
-				
-				formTemplate.setWorkflow(TemplateAPI.getWorkflow(formTemplate));
-				TemplateAPI.addTemplate(formTemplate);
-				
+				formTemplate = addFormTemplate(formId, formFields);
 				formMap.put(formId, formTemplate);
 			}
 			
 			ActionContext action = new ActionContext();
 			action.setTemplateId(formTemplate.getId());
-			action.setActionType(ActionType.CREATE_WORK_ORDER);
+			action.setActionType(ActionType.CREATE_DEVIATION_WORK_ORDER);
 			
 			task.setAction(action);
 			actions.add(action);
@@ -133,6 +98,72 @@ public class BulkAddActionForTaskCommand extends FacilioCommand {
 		}
 		PreventiveMaintenanceAPI.logIf(92L, "Done BulkAddActionForTaskCommand");
 		return false;
+	}
+	
+	private FormTemplate addFormTemplate (long formId, List<FormField> formFields) throws Exception {
+		FormTemplate formTemplate = new FormTemplate();
+		formTemplate.setName("formTemplate_"+formId);
+		formTemplate.setFormId(formId);
+		
+		TemplateAPI.setFormInTemplate(formTemplate);
+		FacilioForm form = formTemplate.getForm();
+		Map<String, FormField> fieldMap = form.getFieldsMap();
+		
+		FormField subjectField = fieldMap.get("subject");
+//		Map<Long, String> values = new HashMap<>();
+		if (subjectField.getValue() == null) {
+			FormField field = new FormField();
+			field.setId(subjectField.getId());
+			String value = "Deviation Work Order - ${task.resource.id:-}";
+			field.setValue(value);
+			subjectField.setValue(value);
+			if (formTemplate.getOriginalTemplate() != null) {
+				formTemplate.getOriginalTemplate().put("subject", value);
+			}
+			formFields.add(field);
+		}
+		
+		FormField siteField = fieldMap.get("siteId");
+		if (siteField.getValue() == null) {
+			FormField field = new FormField();
+			field.setId(siteField.getId());
+			String value = "${workorder.siteId}";
+			field.setValue(value);
+			siteField.setValue(value);
+			if (formTemplate.getOriginalTemplate() != null) {
+				formTemplate.getOriginalTemplate().put("siteId", value);
+			}
+			formFields.add(field);
+		}
+		
+		FormField descriptionField = fieldMap.get("description");
+		if (descriptionField != null && descriptionField.getValue() == null) {
+			FormField field = new FormField();
+			field.setId(descriptionField.getId());
+			String value = "Deviation work order created from the task ${task.subject} of ${workorder.subject} work order. \n\n Task Value - ${task.inputValue}";
+			field.setValue(value);
+			descriptionField.setValue(value);
+			if (formTemplate.getOriginalTemplate() != null) {
+				formTemplate.getOriginalTemplate().put("description", value);
+			}
+			formFields.add(field);
+		}
+		
+		FormField resourceField = fieldMap.get("resource");
+		if (resourceField != null && resourceField.getValue() == null) {
+			FormField field = new FormField();
+			field.setId(resourceField.getId());
+			field.setValue("${task.resource.id:-}");
+			resourceField.setValue("${task.resource.id:-}");
+			if (formTemplate.getOriginalTemplate() != null) {
+				formTemplate.getOriginalTemplate().put("resource", Collections.singletonMap("id", "${task.resource.id:-}"));
+			}
+			formFields.add(field);
+		}
+		
+		formTemplate.setWorkflow(TemplateAPI.getWorkflow(formTemplate));
+		TemplateAPI.addTemplate(formTemplate);
+		return formTemplate;
 	}
 	
 }

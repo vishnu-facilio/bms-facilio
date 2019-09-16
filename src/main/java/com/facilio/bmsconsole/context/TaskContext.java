@@ -10,10 +10,12 @@ import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.operators.Operator;
 import com.facilio.modules.FacilioStatus;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.unitconversion.Unit;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.opensymphony.xwork2.conversion.annotations.TypeConversion;
 
 public class TaskContext extends ModuleBaseWithCustomFields {
@@ -443,6 +445,28 @@ public class TaskContext extends ModuleBaseWithCustomFields {
 	}
 	public void setFailureValue(String failureValue) {
 		this.failureValue = failureValue;
+	}
+	
+	private int deviationOperatorId = -1;
+	public int getDeviationOperatorId() {
+		if(deviationOperator != null) {
+			return deviationOperator.getOperatorId();
+		}
+		return deviationOperatorId;
+	}
+	public void setDeviationOperatorId(int operatorId) {
+		this.deviationOperatorId = operatorId;
+		this.deviationOperator = operatorId > 0 ? Operator.getOperator(operatorId) : null;
+	}
+
+	private Operator deviationOperator;
+	@JsonIgnore
+	public Operator getDeviationOperator() {
+		return deviationOperator;
+	}
+	public void setDeviationOperator(Operator operator) {
+		this.deviationOperatorId = operator.getOperatorId();
+		this.deviationOperator = operator;
 	}
 	
 	private long offlineModifiedTime = -1;

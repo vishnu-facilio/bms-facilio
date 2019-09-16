@@ -788,19 +788,7 @@ public enum ActionType {
 		@Override
 		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
 								  Object currentRecord) throws Exception {
-			// TODO Auto-generated method stub
-
-			LOGGER.info("Action::Add Workorder::"+obj);
-
-			WorkOrderContext wo = FieldUtil.getAsBeanFromJson(obj, WorkOrderContext.class);
-			wo.setSourceType(SourceType.WORKFLOW_RULE);
-			FacilioContext woContext = new FacilioContext();
-			woContext.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
-			woContext.put(FacilioConstants.ContextNames.TASK_MAP, wo.getTaskList());
-
-			Chain addWorkOrder = TransactionChainFactory.getAddWorkOrderChain();
-			addWorkOrder.execute(woContext);
-
+			addWorkOrder(obj, context, currentRecord, SourceType.WORKFLOW_RULE);
 		}
 
 	},
@@ -1169,6 +1157,15 @@ public enum ActionType {
 			return false;
 		}
 	},
+	CREATE_DEVIATION_WORK_ORDER(24) {
+
+		@Override
+		public void performAction(JSONObject obj, Context context, WorkflowRuleContext currentRule,
+								  Object currentRecord) throws Exception {
+			addWorkOrder(obj, context, currentRecord, SourceType.TASK_DEVIATION);
+		}
+
+	},
 	;
 
 	private static AlarmOccurrenceContext getAlarmOccurrenceFromAlarm(BaseAlarmContext baseAlarm) throws Exception {
@@ -1331,5 +1328,20 @@ public enum ActionType {
 			return;
 		}
 		StateFlowRulesAPI.updateState(moduleData, module, status, false, context);
+	}
+	
+	private static void addWorkOrder (JSONObject obj, Context context, Object currentRecord, SourceType sourceType) throws Exception {
+		// TODO Auto-generated method stub
+
+		LOGGER.debug("Action::Add Workorder::"+obj);
+
+		WorkOrderContext wo = FieldUtil.getAsBeanFromJson(obj, WorkOrderContext.class);
+		wo.setSourceType(sourceType);
+		FacilioContext woContext = new FacilioContext();
+		woContext.put(FacilioConstants.ContextNames.WORK_ORDER, wo);
+		woContext.put(FacilioConstants.ContextNames.TASK_MAP, wo.getTaskList());
+
+		Chain addWorkOrder = TransactionChainFactory.getAddWorkOrderChain();
+		addWorkOrder.execute(woContext);
 	}
 }
