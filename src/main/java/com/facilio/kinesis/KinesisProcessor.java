@@ -12,11 +12,13 @@ import com.amazonaws.services.kinesis.clientlibrary.interfaces.v2.IRecordProcess
 import com.amazonaws.services.kinesis.model.LimitExceededException;
 import com.amazonaws.services.kinesis.model.ListStreamsResult;
 import com.amazonaws.services.kinesis.model.ResourceNotFoundException;
+import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
 import com.facilio.iam.accounts.util.IAMAccountConstants;
+import com.facilio.iam.accounts.util.IAMOrgUtil;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.processor.ProcessorFactory;
 
@@ -59,16 +61,13 @@ public class KinesisProcessor {
 
 //        PropertyConfigurator.configure(getLoggingProps());
 
-        List<FacilioField> columnList = IAMAccountConstants.getOrgFields();
-
-        GenericSelectRecordBuilder builder = new GenericSelectRecordBuilder().table("Organizations")
-                .select(columnList);
-
+       
+    	
         try {
-            List<Map<String, Object>> props = builder.get();
-            for (Map<String, Object> prop : props) {
-                Long orgId = (Long) prop.get("orgId");
-                String orgDomainName = (String) prop.get("domain");
+        	 List<Organization> orgs = IAMOrgUtil.getOrgs();
+             for (Organization org : orgs) {
+                Long orgId = org.getOrgId();
+                String orgDomainName = org.getDomain();
                 if( ! EXISTING_ORGS.contains(orgDomainName)) {
                     try {
                         startProcessor(orgId, orgDomainName);

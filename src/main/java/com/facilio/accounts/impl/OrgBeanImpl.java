@@ -63,6 +63,11 @@ public class OrgBeanImpl implements OrgBean {
 	}
 	
 	@Override
+	public List<Organization> getOrgs() throws Exception {
+		return IAMOrgUtil.getOrgs();
+	}
+	
+	@Override
 	public Organization getPortalOrg(long portalId) throws Exception {
 		
 		PortalInfoContext portalInfo = getPortalInfo(portalId, true);

@@ -1,5 +1,6 @@
 package com.facilio.iam.accounts.util;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -34,6 +35,10 @@ public class IAMOrgUtil {
 	
 	public static Organization getOrg(String orgDomain) throws Exception {
 		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getOrgBean().getOrgv2(orgDomain));
+	}
+	
+	public static List<Organization> getOrgs() throws Exception {
+		return FacilioService.runAsServiceWihReturn(() -> IAMUtil.getOrgBean().getOrgs());
 	}
 	
 	public static void updateLoggerLevel(int level, long orgId) throws Exception {

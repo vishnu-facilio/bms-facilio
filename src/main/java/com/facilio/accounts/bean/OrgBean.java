@@ -53,4 +53,7 @@ public interface OrgBean {
 	public JSONObject orgInfo() throws Exception;
 	
 	public void updateLoggerLevel (int level, long orgId) throws Exception;
+	
+	public List<Organization> getOrgs() throws Exception;
+	
 }
