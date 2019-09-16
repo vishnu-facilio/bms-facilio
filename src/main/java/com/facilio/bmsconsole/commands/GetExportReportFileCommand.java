@@ -60,7 +60,7 @@ public class GetExportReportFileCommand extends FacilioCommand {
 		if (StringUtils.isNotEmpty(report.getName())) {
 			fileName = report.getName();
 		}
-		fileName += " - " + DateTimeUtil.getFormattedTime(System.currentTimeMillis(), "dd/MM/yyyy HH-mm");
+		fileName += " - " + DateTimeUtil.getFormattedTime(System.currentTimeMillis(), "dd-MM-yyyy HH-mm");
 		if(fileFormat != FileFormat.PDF && fileFormat != FileFormat.IMAGE) {
 			
 			mode = (ReportMode)context.get(FacilioConstants.ContextNames.REPORT_MODE);
