@@ -351,7 +351,7 @@ public class CommonCommandUtil {
 			String message = body.toString();
 			json.put("message", message);
 			//AwsUtil.sendEmail(json);
-			if(FacilioProperties.isProduction()) {
+			if(FacilioProperties.isProduction() && !FacilioProperties.isOnpremise()) {
 				FAWSQueue.sendMessage("Exception", message);
 			}
 		} catch (Exception e1) {

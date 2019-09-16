@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.TimerTask;
 
+import com.facilio.aws.util.FacilioProperties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -25,8 +26,11 @@ public class FacilioExceptionProcessor extends TimerTask {
 
 
     public void run() {
-        List<Message> messageList = FAWSQueue.receiveMessages(QUEUE);
+        if(FacilioProperties.isOnpremise() || !FacilioProperties.isProduction()) {
+            return;
+        }
 
+        List<Message> messageList = FAWSQueue.receiveMessages(QUEUE);
 
         while(messageList.size() > 0 && EXCEPTION_MESSAGES.size() < 20) {
             processMessages(messageList);
