@@ -20,6 +20,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.facilio.bmsconsole.context.*;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -36,28 +37,12 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.AssetContext;
-import com.facilio.bmsconsole.context.BaseSpaceContext;
-import com.facilio.bmsconsole.context.BulkWorkOrderContext;
-import com.facilio.bmsconsole.context.PMIncludeExcludeResourceContext;
 import com.facilio.bmsconsole.context.PMJobsContext.PMJobsStatus;
-import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.PMReminder.ReminderType;
-import com.facilio.bmsconsole.context.PMReminderAction;
-import com.facilio.bmsconsole.context.PMResourcePlannerContext;
-import com.facilio.bmsconsole.context.PMResourcePlannerReminderContext;
-import com.facilio.bmsconsole.context.PMTaskSectionTemplateTriggers;
-import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PMTriggerContext.TriggerExectionSource;
 import com.facilio.bmsconsole.context.PMTriggerContext.TriggerType;
-import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
-import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.SpaceContext;
-import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
-import com.facilio.bmsconsole.context.TicketContext;
-import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderContext.PreRequisiteStatus;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.TaskTemplate;
@@ -144,6 +129,26 @@ public class PreventiveMaintenanceAPI {
 		if(resourcePlanners != null) {
 			pm.setResourcePlanners(new ArrayList<>(resourcePlanners.values()));
 		}
+	}
+
+	public static void addReading(TaskContext newTask, TaskContext oldTask, FacilioField field, Context context) throws Exception {
+			FacilioModule readingModule = field.getModule();
+			ReadingContext reading = new ReadingContext();
+			reading.setId(oldTask.getReadingDataId());
+			reading.addReading(field.getName(), newTask.getInputValue());
+			reading.setTtime(newTask.getInputTime());
+			long resourceId = oldTask.getResource().getId();
+			reading.setParentId(resourceId);
+			if (oldTask.getLastReading() == null) {
+				ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(resourceId, field);
+				newTask.setLastReading(meta.getValue() != null ? meta.getValue() : -1);
+			}
+
+			context.put(FacilioConstants.ContextNames.MODULE_NAME, readingModule.getName());
+			context.put(FacilioConstants.ContextNames.READING, reading);
+			context.put(FacilioConstants.ContextNames.RECORD, reading);
+			context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
+			context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, false);
 	}
 
 	public enum ScheduleActions {
@@ -863,6 +868,7 @@ public class PreventiveMaintenanceAPI {
 		workOrderBuilder.module(module)
 				.beanClass(WorkOrderContext.class)
 				.select(Arrays.asList(fieldMap.get("pm"), fieldMap.get("createdTime"), fieldMap.get("resource")))
+				.setAggregation()
 				.andCondition(CriteriaAPI.getIdCondition(workOrderId, module));
 		List<WorkOrderContext> workOrders = workOrderBuilder.get();
 

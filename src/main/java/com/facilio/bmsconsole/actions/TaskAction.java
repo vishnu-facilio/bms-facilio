@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.facilio.aws.util.FacilioProperties;
+import com.facilio.chain.FacilioChain;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections.CollectionUtils;
@@ -388,6 +389,15 @@ public class TaskAction extends FacilioAction {
 		}
 		return SUCCESS;
 	}
+
+	public String correctPMReadings() throws Exception {
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.TASKS, taskContextList);
+		FacilioChain pmReadingCorrectionChain = TransactionChainFactory.getPMReadingCorrectionChain();
+		pmReadingCorrectionChain.execute(context);
+		return SUCCESS;
+	}
+
 	public String updateAllTask() throws Exception {
 		FacilioContext context = new FacilioContext();
 		Map<Long, Map<String, String>> errorMap = new HashMap<>();

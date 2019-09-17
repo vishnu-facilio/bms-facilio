@@ -1,8 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import com.facilio.beans.ModuleBean;
+import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.ReadingContext;
@@ -15,57 +18,72 @@ import com.facilio.modules.fields.NumberField;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.util.FacilioUtil;
+import org.apache.commons.collections4.CollectionUtils;
 
 public class ReadingUnitConversionToRdmOrSiUnit extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		
-		TaskContext currentTask = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
-		ReadingContext reading = (ReadingContext) context.get(FacilioConstants.ContextNames.READING);
-		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
-		
-		if(recordIds != null && !recordIds.isEmpty() && currentTask != null && currentTask.getReadingFieldUnitEnum() != null) 
-		{
-			Map<Long, TaskContext> tasks = TicketAPI.getTaskMap(recordIds);		
-			if(tasks != null && currentTask != null && reading != null) 
-			{
-				TaskContext taskContext= tasks.get(recordIds.get(0));
-				if(taskContext.getInputTypeEnum() != null)
-				{
+
+		List<TaskContext> taskContexts = (List<TaskContext>) context.get(FacilioConstants.ContextNames.TASKS);
+		Map<TaskContext, ReadingContext> taskReadingsMap = (Map<TaskContext, ReadingContext>) context.get(FacilioConstants.ContextNames.TASK_READINGS);
+
+		List<Long> recordIds;
+		if (CollectionUtils.isEmpty(taskContexts)) {
+			taskContexts = Collections.singletonList((TaskContext) context.get(FacilioConstants.ContextNames.TASK));
+			ReadingContext reading = (ReadingContext) context.get(FacilioConstants.ContextNames.READING);
+
+			taskReadingsMap = new HashMap<>();
+			taskReadingsMap.put(taskContexts.get(0), reading);
+
+			recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
+		} else {
+			recordIds = taskContexts.stream().map(TaskContext::getId).collect(Collectors.toList());
+		}
+
+		if (CollectionUtils.isEmpty(recordIds)) {
+			return false;
+		}
+
+		for (TaskContext currentTask: taskContexts) {
+			if (currentTask == null) {
+				continue;
+			}
+
+			if (currentTask.getReadingFieldUnitEnum() == null) {
+				continue;
+			}
+
+			ReadingContext reading = taskReadingsMap.get(currentTask);
+
+			Map<Long, TaskContext> tasks = TicketAPI.getTaskMap(recordIds);
+			if(tasks != null && currentTask != null && reading != null) {
+				TaskContext taskContext = tasks.get(recordIds.get(0));
+				if(taskContext.getInputTypeEnum() != null) {
 					switch(taskContext.getInputTypeEnum()) {
-					case READING:
-						if (taskContext.getReadingField() != null && taskContext.getResource() != null && taskContext.getReadingField() instanceof NumberField) 
-						{
-							if(currentTask.getInputValue() != null)
-							{
-								
-								ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(taskContext.getResource().getId(), taskContext.getReadingField());
-								Double currentTaskValue = FacilioUtil.parseDouble(currentTask.getInputValue());
-								Double convertedInputReading = null;
-								
-								if(rdm != null && rdm.getUnitEnum() != null)
-								{
-									Unit rdmUnit = rdm.getUnitEnum();
-									convertedInputReading = UnitsUtil.convert(currentTaskValue, currentTask.getReadingFieldUnitEnum(), rdmUnit);
+						case READING:
+							if (taskContext.getReadingField() != null && taskContext.getResource() != null && taskContext.getReadingField() instanceof NumberField) {
+								if(currentTask.getInputValue() != null) {
+									ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(taskContext.getResource().getId(), taskContext.getReadingField());
+									Double currentTaskValue = FacilioUtil.parseDouble(currentTask.getInputValue());
+									Double convertedInputReading;
+
+									if(rdm != null && rdm.getUnitEnum() != null) {
+										Unit rdmUnit = rdm.getUnitEnum();
+										convertedInputReading = UnitsUtil.convert(currentTaskValue, currentTask.getReadingFieldUnitEnum(), rdmUnit);
+									} else {
+										convertedInputReading = UnitsUtil.convertToSiUnit(currentTaskValue, currentTask.getReadingFieldUnitEnum());
+									}
+
+									reading.addReading(taskContext.getReadingField().getName(), convertedInputReading);
 								}
-							
-								else 
-								{	
-									convertedInputReading = UnitsUtil.convertToSiUnit(currentTaskValue, currentTask.getReadingFieldUnitEnum());
-								}
-								
-								reading.addReading(taskContext.getReadingField().getName(), convertedInputReading);
-								context.put(FacilioConstants.ContextNames.READING, reading);			
 							}
-						}
-						break;		
+						break;
 					}
 				}
-			}		
-		
+			}
 		}
+
 		return false;
 	}
-
 }

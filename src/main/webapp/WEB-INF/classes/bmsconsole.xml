@@ -604,6 +604,10 @@
 				<param name="includeProperties">rowsUpdated,preRequestStatus,^error.*</param>
 			</result>
 		</action>
+		<action name="correctPMReadings" class="com.facilio.bmsconsole.actions.TaskAction" method="correctPMReadings">
+			<param name="moduleName">workorder</param>
+			<param name="permission">ADD_UPDATE_DELETE_TASK</param>
+		</action>
 		<action name="addorupdatetaskinput" class="com.facilio.bmsconsole.actions.TaskAction"
 			method="addTaskInput">
 			<param name="moduleName">workorder</param>

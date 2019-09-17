@@ -959,6 +959,19 @@ public class TransactionChainFactory {
 			c.addCommand(new ReadingUnitConversionToDisplayUnit());
 			return c;
 		}
+
+
+		public static FacilioChain getPMReadingCorrectionChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new ValidatePMReadingCorrection());
+			c.addCommand(new AddPMCorrectiveReadingsContext());
+			c.addCommand(new ReadingUnitConversionToRdmOrSiUnit());
+			c.addCommand(TransactionChainFactory.onlyAddOrUpdateReadingsChain());
+			c.addCommand(new AddTaskReadingCorrectionActivityCommand());
+			c.addCommand(new AddActivitiesCommand());
+			return c;
+		}
+
 		
 		public static FacilioChain getUpdateTaskChain() {
 			FacilioChain c = getDefaultChain();
