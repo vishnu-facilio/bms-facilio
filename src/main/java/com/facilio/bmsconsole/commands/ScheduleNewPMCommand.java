@@ -228,6 +228,10 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
             context.put(FacilioConstants.ContextNames.BULK_WORK_ORDER_CONTEXT, bulkWorkOrderContext);
             context.put(FacilioConstants.ContextNames.ATTACHMENT_MODULE_NAME, FacilioConstants.ContextNames.TICKET_ATTACHMENTS);
 
+            if (bulkWorkOrderContext.getWorkOrderContexts().isEmpty()) {
+                LOGGER.log(Level.SEVERE,"Work orders are empty before sending it to chain");
+            }
+
             Chain addWOChain = TransactionChainFactory.getTempAddPreOpenedWorkOrderChain();
             addWOChain.addCommand(new PMEditBlockRemovalCommand(pm.getId()));
             addWOChain.execute(context);
