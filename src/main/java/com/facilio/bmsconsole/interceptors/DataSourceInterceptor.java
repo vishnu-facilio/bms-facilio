@@ -62,7 +62,7 @@ public class DataSourceInterceptor extends AbstractInterceptor {
             }
 		}
 		//remote screen handling
-		else if(request.getAttribute("remoteScreen") != null) {
+		else if(request.getAttribute("remoteScreen") != null && request.getAttribute("remoteScreen") instanceof RemoteScreenContext) {
 			RemoteScreenContext remoteScreen = (RemoteScreenContext) request.getAttribute("remoteScreen");
 			Organization org = IAMOrgUtil.getOrg(remoteScreen.getOrgId());
 			if(org != null) {

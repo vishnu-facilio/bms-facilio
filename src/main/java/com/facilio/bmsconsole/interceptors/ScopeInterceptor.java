@@ -54,7 +54,7 @@ public class ScopeInterceptor extends AbstractInterceptor {
 		HttpServletRequest request = ServletActionContext.getRequest();
 		IAMAccount iamAccount = (IAMAccount) request.getAttribute("iamAccount");
 		if (iamAccount != null) {
-			if(request.getAttribute("remoteScreen") != null) {
+			if(request.getAttribute("remoteScreen") != null && request.getAttribute("remoteScreen") instanceof RemoteScreenContext) {
 				RemoteScreenContext remoteScreenContext = (RemoteScreenContext) request.getAttribute("remoteScreen");
 				if(iamAccount.getOrg() != null) {
 					Account tempAccount = new Account(iamAccount.getOrg(), null);
