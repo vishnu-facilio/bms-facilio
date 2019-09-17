@@ -637,7 +637,15 @@ public class AlarmAction extends FacilioAction {
 		setResult("workorderId", woId);
 		return SUCCESS;
 	}
-	
+	private List<Long> resourceList;
+
+	public List<Long> getResourceList() {
+		return resourceList;
+	}
+	public void setResourceList(List<Long> resourceList) {
+		this.resourceList = resourceList;
+	}
+
 	public String fetchAlarmInsightsForResource() throws Exception{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.IS_RCA, getIsRca());
@@ -647,6 +655,7 @@ public class AlarmAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.DATE_RANGE, dateRange);
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR, dateOperator);
 		context.put(FacilioConstants.ContextNames.DATE_OPERATOR_VALUE, dateOperatorValue);
+		context.put(FacilioConstants.ContextNames.RESOURCE_LIST, resourceList);
 		ReadOnlyChainFactory.getAlarmInsightChain().execute(context);
 		setResult(ContextNames.ALARM_LIST, context.get(ContextNames.ALARM_LIST));
 		return SUCCESS;

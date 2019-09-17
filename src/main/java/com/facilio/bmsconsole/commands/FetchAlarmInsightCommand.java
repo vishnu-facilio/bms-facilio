@@ -68,7 +68,7 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 			props = getNewAlarmProps(modBean, assetId, readingRuleId,  dateRange, operator, alarmId, assetIds);
 		}
 		else {
-			props = getAlarmProps(modBean, assetId, readingRuleId, isRca, dateRange, operator);
+			props = getAlarmProps(modBean, assetId, readingRuleId, isRca, dateRange, operator, assetIds);
 		}
 
 		if (assetId > 0) {
@@ -125,7 +125,7 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 		return false;
 	}
 
-	private List<Map<String, Object>> getAlarmProps(ModuleBean modBean, long assetId, long readingRuleId, boolean isRca, DateRange dateRange, Operator operator) throws Exception {
+	private List<Map<String, Object>> getAlarmProps(ModuleBean modBean, long assetId, long readingRuleId, boolean isRca, DateRange dateRange, Operator operator, List<Long> assetIds) throws Exception {
 		FacilioModule module = modBean.getModule(FacilioConstants.ContextNames.READING_ALARM);
 		List<FacilioField> fields = modBean.getAllFields(FacilioConstants.ContextNames.READING_ALARM);
 		Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(fields);
@@ -160,6 +160,10 @@ public class FetchAlarmInsightCommand extends FacilioCommand {
 			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), String.valueOf(assetId), NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("sourceType"), String.valueOf(TicketContext.SourceType.ANOMALY_ALARM.getIntVal()), NumberOperators.NOT_EQUALS))
 					.groupBy(ruleField.getCompleteColumnName());
+		}
+		if ((assetIds != null && assetIds.size() > 0)) {
+			selectBuilder.andCondition(CriteriaAPI.getCondition(fieldMap.get("resource"), StringUtils.join(assetIds, ",") , NumberOperators.EQUALS))
+					.groupBy(fieldMap.get("resource").getCompleteColumnName());
 		}
 		List<Map<String, Object>> rcaProps = new ArrayList<Map<String, Object>>();
 

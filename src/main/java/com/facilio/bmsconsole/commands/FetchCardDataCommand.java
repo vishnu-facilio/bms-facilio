@@ -235,6 +235,12 @@ public class FetchCardDataCommand extends FacilioCommand {
 					return false;
 					
 				}
+				else if (widgetStaticContext.getStaticKey().contains("alarmbarwidget") ) {
+
+					paramsJson = widgetStaticContext.getParamsJson();
+					context.put(FacilioConstants.ContextNames.RESULT, widgetStaticContext);
+					return false;
+				}
 				else if(widgetStaticContext.getStaticKey().equals("resourceAlarmBar")) {
 					
 //					paramsJson = new JSONObject();
