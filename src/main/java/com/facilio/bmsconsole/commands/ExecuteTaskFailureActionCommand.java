@@ -26,13 +26,12 @@ public class ExecuteTaskFailureActionCommand extends FacilioCommand implements S
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		WorkOrderContext workOrder = (WorkOrderContext) context.get(FacilioConstants.ContextNames.WORK_ORDER);
 		List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 		List<WorkOrderContext> workorders = (List<WorkOrderContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		EventType eventType = (EventType)context.get(FacilioConstants.ContextNames.EVENT_TYPE);
 		if (eventType == EventType.CLOSE_WORK_ORDER && recordIds != null && !recordIds.isEmpty() && workorders != null) {
 			Map<Long, WorkOrderContext> woMap = workorders.stream().collect(Collectors.toMap(WorkOrderContext::getId, Function.identity()));
-			List<TaskContext> tasks = TicketAPI.getRelatedTasks(recordIds, false);
+			List<TaskContext> tasks = TicketAPI.getRelatedTasks(recordIds, false, true);
 			if (tasks != null && !tasks.isEmpty()) {
 				for(TaskContext task: tasks) {
 					if (task.isFailed() && task.getActionId() != -1) {

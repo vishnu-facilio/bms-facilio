@@ -8,8 +8,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -532,10 +532,10 @@ public class TicketAPI {
 	}
 	
 	public static List<TaskContext> getRelatedTasks(List<Long> ticketIds) throws Exception {
-		return getRelatedTasks(ticketIds, true);
+		return getRelatedTasks(ticketIds, true, false);
 	}
 	
-	public static List<TaskContext> getRelatedTasks(List<Long> ticketIds, boolean fetchChildren) throws Exception 
+	public static List<TaskContext> getRelatedTasks(List<Long> ticketIds, boolean fetchChildren, boolean fetchResources) throws Exception 
 	{
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 		List<FacilioField> fields = modBean.getAllFields("task");
@@ -550,6 +550,9 @@ public class TicketAPI {
 				.orderBy("ID");
 
 		List<TaskContext> tasks = builder.get();
+		if (CollectionUtils.isEmpty(tasks)) {
+			return tasks;
+		}
 		
 		if (fetchChildren) {
 			for(TaskContext task: tasks) {
@@ -558,6 +561,19 @@ public class TicketAPI {
 					ReadingDataMeta meta = ReadingsAPI.getReadingDataMeta(task.getResource().getId(), readingField);
 					task.setLastReading(meta.getValue());
 				}
+			}
+		}
+		
+		if (fetchResources) {
+			List<Long> resourceIds = tasks.stream().filter(task -> task.getResource() != null && task.getResource().getId() > 0)
+					.map(task -> task.getResource().getId()).collect(Collectors.toList());
+			if (!resourceIds.isEmpty()) {
+				 Map<Long, ResourceContext> resources = ResourceAPI.getResourceAsMapFromIds(resourceIds);
+				 for(TaskContext task: tasks) {
+					 if (task.getResource() != null && task.getResource().getId() > 0 && resources.containsKey(task.getResource().getId())) {
+						 task.setResource(resources.get(task.getResource().getId()));
+					 }
+				 }
 			}
 		}
 		return tasks;
