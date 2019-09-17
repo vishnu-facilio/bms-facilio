@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AttachmentContext;
 import com.facilio.bmsconsole.context.TaskContext;
@@ -132,7 +133,9 @@ public class ValidateAndCreateValuesForInputTaskCommand extends FacilioCommand {
 		String nextExecFmt = DateTimeUtil.getFormattedTime(nextExec, "MMM dd, h:mm a");
 
 		if (inputTime < createdTime || inputTime >= nextExec) {
-			throw new IllegalArgumentException("Remember to choose a time between " + createdTimeFmt + " and " + nextExecFmt);
+			if (!AccountUtil.getCurrentAccount().isFromIos()) { //temporary
+				throw new IllegalArgumentException("Remember to choose a time between " + createdTimeFmt + " and " + nextExecFmt);
+			}
 		}
 	}
 
