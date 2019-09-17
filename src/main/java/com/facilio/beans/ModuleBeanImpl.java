@@ -880,6 +880,8 @@ public class ModuleBeanImpl implements ModuleBean {
 							}
 							lookupField.setLookupModule(module);
 							fieldProps.put("lookupModuleId", module.getModuleId());
+
+							addSubModule(module.getModuleId(), lookupField.getModuleId());
 						}
 						else if (StringUtils.isNotEmpty(lookupField.getSpecialType())) {
 							FacilioModule module = getMod(lookupField.getSpecialType());
