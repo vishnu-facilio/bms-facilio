@@ -133,15 +133,7 @@ public class AuthInterceptor extends AbstractInterceptor {
 				long connectedScreenId = Long.parseLong(IAMUserBeanImpl.validateJWT(deviceToken, "auth0").getSubject().split(IAMUserBeanImpl.JWT_DELIMITER)[0]);
 				RemoteScreenContext remoteScreen = ScreenUtil.getRemoteScreen(connectedScreenId);
 				if (remoteScreen != null) {
-					// TODO - check here
-					Account currentAccount = new Account(AccountUtil.getOrgBean().getOrg(remoteScreen.getOrgId()), null /*AccountUtil.getOrgBean().getSuperAdmin(remoteScreen.getOrgId())*/);
-					currentAccount.setRemoteScreen(remoteScreen);
-					
-					AccountUtil.cleanCurrentAccount();
-					AccountUtil.setCurrentAccount(currentAccount);
-					request.setAttribute("ORGID", currentAccount.getOrg().getOrgId());
-					request.setAttribute("USERID", currentAccount.getUser().getOuid());
-					
+					request.setAttribute("remoteScreen", remoteScreen);
 					return true;
 				}
 			}

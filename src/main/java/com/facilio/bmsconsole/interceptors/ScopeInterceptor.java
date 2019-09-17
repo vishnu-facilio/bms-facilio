@@ -29,6 +29,7 @@ import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.iam.accounts.exceptions.AccountException;
 import com.facilio.iam.accounts.exceptions.AccountException.ErrorCode;
+import com.facilio.screen.context.RemoteScreenContext;
 import com.opensymphony.xwork2.Action;
 import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionInvocation;
@@ -52,36 +53,53 @@ public class ScopeInterceptor extends AbstractInterceptor {
 		
 		HttpServletRequest request = ServletActionContext.getRequest();
 		IAMAccount iamAccount = (IAMAccount) request.getAttribute("iamAccount");
-		
 		if (iamAccount != null) {
-			User user = null;
-			if(iamAccount.getOrg() == null) {
-				LOGGER.log(Level.FATAL, "User seems to have been deactivated");
-				return Action.LOGIN;
-			}
-			Account tempAccount = new Account(iamAccount.getOrg(), user);
-			AccountUtil.setCurrentAccount(tempAccount);
-		
-			if(iamAccount.getUser() != null) {
-				LOGGER.log(Level.FATAL, "orgid: " + iamAccount.getOrg().getOrgId() + " : " + iamAccount.getUser().getUid());
-				user = AccountUtil.getUserBean().getUser(iamAccount.getOrg().getOrgId(), iamAccount.getUser().getUid());
-				if (user == null) {
-					Organization org = AccountUtil.getUserBean().getDefaultOrg(iamAccount.getUser().getUid());
-					if(org != null) {
-						user = AccountUtil.getUserBean().getUser(org.getOrgId(), iamAccount.getUser().getUid());
-						if(user == null) {
-							throw new AccountException(ErrorCode.USER_DOESNT_EXIST_IN_ORG, "User doesn't exists in org");
-						}
-						iamAccount.setOrg(org);
-					}
-					else {
-						throw new AccountException(ErrorCode.USER_DOESNT_EXIST_IN_ORG, "User doesn't exists in org");
-					}
+			if(request.getAttribute("remoteScreen") != null) {
+				RemoteScreenContext remoteScreenContext = (RemoteScreenContext) request.getAttribute("remoteScreen");
+				if(iamAccount.getOrg() != null) {
+					Account tempAccount = new Account(iamAccount.getOrg(), null);
+					AccountUtil.setCurrentAccount(tempAccount);
+					User superAdmin = AccountUtil.getOrgBean().getSuperAdmin(iamAccount.getOrg().getOrgId());
+					Account account = new Account(iamAccount.getOrg(), superAdmin);
+					account.setRemoteScreen(remoteScreenContext);
+					AccountUtil.cleanCurrentAccount();
+					AccountUtil.setCurrentAccount(account);
+				}
+				else {
+					LOGGER.log(Level.FATAL, "Invalid remote Screen");
+					return Action.LOGIN;
 				}
 			}
-			Account account = new Account(iamAccount.getOrg(), user);
-			AccountUtil.cleanCurrentAccount();
-			AccountUtil.setCurrentAccount(account);
+			else {
+				User user = null;
+				if(iamAccount.getOrg() == null) {
+					LOGGER.log(Level.FATAL, "User seems to have been deactivated");
+					return Action.LOGIN;
+				}
+				Account tempAccount = new Account(iamAccount.getOrg(), user);
+				AccountUtil.setCurrentAccount(tempAccount);
+			
+				if(iamAccount.getUser() != null) {
+					LOGGER.log(Level.FATAL, "orgid: " + iamAccount.getOrg().getOrgId() + " : " + iamAccount.getUser().getUid());
+					user = AccountUtil.getUserBean().getUser(iamAccount.getOrg().getOrgId(), iamAccount.getUser().getUid());
+					if (user == null) {
+						Organization org = AccountUtil.getUserBean().getDefaultOrg(iamAccount.getUser().getUid());
+						if(org != null) {
+							user = AccountUtil.getUserBean().getUser(org.getOrgId(), iamAccount.getUser().getUid());
+							if(user == null) {
+								throw new AccountException(ErrorCode.USER_DOESNT_EXIST_IN_ORG, "User doesn't exists in org");
+							}
+							iamAccount.setOrg(org);
+						}
+						else {
+							throw new AccountException(ErrorCode.USER_DOESNT_EXIST_IN_ORG, "User doesn't exists in org");
+						}
+					}
+				}
+				Account account = new Account(iamAccount.getOrg(), user);
+				AccountUtil.cleanCurrentAccount();
+				AccountUtil.setCurrentAccount(account);
+			}
 		}
 
 		HttpServletResponse response = ServletActionContext.getResponse();
