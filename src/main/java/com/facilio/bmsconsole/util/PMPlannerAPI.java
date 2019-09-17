@@ -211,6 +211,8 @@ public class PMPlannerAPI {
 		
 		JSONObject none=new JSONObject();
 		none.put("name","none");
+		none.put("displayName","NONE");
+		
 		legendSettings.add(none);
 				
 		return legendSettings;
