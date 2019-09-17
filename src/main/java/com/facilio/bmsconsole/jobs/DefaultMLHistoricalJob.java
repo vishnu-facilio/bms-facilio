@@ -70,7 +70,7 @@ public class DefaultMLHistoricalJob extends FacilioJob
 				}
 				startTime = startTime + executionTime;
 			}
-			
+			/*
 			for(MLContext mlContext:childMlList)
 			{
 				if(!mlContext.getEventList().isEmpty())
@@ -94,7 +94,7 @@ public class DefaultMLHistoricalJob extends FacilioJob
 					chain.execute(context);
 				}
 			}
-			
+			*/
 			LOGGER.info("finished HistoricalJob");
 		}
 		catch (Exception e)
