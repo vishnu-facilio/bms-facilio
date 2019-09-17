@@ -119,6 +119,7 @@ public class FacilioConstants {
 		public static final String IS_BULK_EXECUTE_COMMAND = "isbulkExecuteCommand";
 		public static final String FETCH_COUNT = "fetchCount";
 		public static final String FETCH_SELECTED_FIELDS = "fetchSelectedFields";
+		public static final String FETCH_CUSTOM_FIELDS = "fetchCustomFields";
 		public static final String RECORD_COUNT = "recordCount";
 		public static final String ROWS_UPDATED = "rowsUpdated";
 		public static final String EVENT_TYPE = "eventType";
@@ -347,6 +348,7 @@ public class FacilioConstants {
 		public static final String PREVIOUS_VALUE = "previousValue";
 		public static final String ONLY_READING = "onylyReading";
 		public static final String ADJUST_READING_TTIME = "adjustReadingTtime";
+		public static final String KPI = "kpi";
 		
 		public static final String DASHBOARD = "dashboard";
 		public static final String DASHBOARD_TAB = "dashboardTab";

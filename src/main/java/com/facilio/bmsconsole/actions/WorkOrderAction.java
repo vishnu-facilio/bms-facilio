@@ -1865,6 +1865,7 @@ public class WorkOrderAction extends FacilioAction {
 		
 		if (isCalendarApi()) {
 			context.put(FacilioConstants.ContextNames.FETCH_SELECTED_FIELDS, getCalendarSelectFields());
+			context.put(FacilioConstants.ContextNames.FETCH_CUSTOM_FIELDS, true);
 		}
 		else if (getSelectFields() != null) {
  			context.put(FacilioConstants.ContextNames.FETCH_SELECTED_FIELDS, getSelectFields());			
@@ -2635,7 +2636,7 @@ public class WorkOrderAction extends FacilioAction {
 	}
 	
 	private List<String> getCalendarSelectFields() {
-		return Arrays.asList("createdTime", "subject", "assignedTo", "assignmentGroup", "trigger", "resource", "category", "priority", "type");
+		return Arrays.asList("createdTime", "subject", "assignedTo", "assignmentGroup", "trigger", "resource", "category", "priority", "type", "moduleState");
 	}
 
 

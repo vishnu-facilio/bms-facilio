@@ -656,7 +656,7 @@
 			<param name="fetchTriggers">true</param>
 			<result name="success" type="json">
 				<param name="ignoreHierarchy">false</param>
-				<param name="includeProperties">^result\.workorders\[\d+\]\.(id|createdTime|subject|assignedTo|trigger|resource|category|priority|type)\..*</param>
+				<param name="includeProperties">^result\.workorders\[\d+\]\.(id|createdTime|subject|assignedTo|moduleState|assignmentGroup|trigger|resource|category|priority|type|data)\..*</param>
 			</result>
 		</action>
 	</package>
