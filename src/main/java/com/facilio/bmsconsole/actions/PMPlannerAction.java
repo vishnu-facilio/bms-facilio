@@ -12,6 +12,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.PMPlannerSettingsContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -182,6 +183,16 @@ public class PMPlannerAction extends FacilioAction{
 			workorders.add(workorder);
 		}
 		crudBean.updatePMJob(workorders);
+		
+		if (workorders.size() == 1) {
+			
+			FacilioChain getWorkOrderChain = ReadOnlyChainFactory.getWorkOrderDetailsChain();
+			FacilioContext context = getWorkOrderChain.getContext();
+			context.put(FacilioConstants.ContextNames.ID, workorders.get(0).getId());
+			getWorkOrderChain.execute();
+			
+			setResult(ContextNames.WORK_ORDER, context.get(ContextNames.WORK_ORDER));
+		}
 
 		setResult(ContextNames.RESULT, "success");
 		return SUCCESS;
