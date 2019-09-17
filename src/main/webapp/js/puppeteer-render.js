@@ -37,16 +37,20 @@ const pupeteer = require('/home/ubuntu/.npm-global/lib/node_modules/puppeteer');
             path: '/'
         }
     ]
-    try{
-    await page.setCookie(... cookies)
-    await page.emulateMedia('print');
-    await page.setViewport({width: 800, height: 768});
 
-    await page.goto(pageUrl, {
-        waitUntil: 'networkidle0'
-    });
-    await page.pdf({path: output, format: 'A4'})
-    await browser.close()
+    try{
+        await page.setCookie(... cookies)
+        await page.emulateMedia('print');
+        await page.setViewport({width: 800, height: 768});
+        await page.setExtraHTTPHeaders({
+            'X-Is-Export': 'true',
+        })
+
+        await page.goto(pageUrl, {
+            waitUntil: 'networkidle0'
+        });
+        await page.pdf({path: output, format: 'A4'})
+        await browser.close()
 
     }catch(e){
         console.log(e)
