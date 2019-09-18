@@ -1,8 +1,10 @@
 package com.facilio.bmsconsole.commands;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import com.facilio.bmsconsole.context.TaskContext;
-import com.facilio.modules.FieldUtil;
+import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.modules.*;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -12,9 +14,6 @@ import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
-import com.facilio.modules.FieldFactory;
-import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 
 public class PreventiveMaintenanceReadingsCommand extends FacilioCommand {
@@ -33,17 +32,16 @@ public class PreventiveMaintenanceReadingsCommand extends FacilioCommand {
 		List<FacilioField> workorderFields = modBean.getAllFields("workorder"); 
 		List<FacilioField> taskFields = modBean.getAllFields("task");
 		
-		List<FacilioField> selectFields = new ArrayList<FacilioField>(workorderFields);
-		selectFields.addAll(taskFields);
-		
 		Map<String, FacilioField> taskFieldMap = FieldFactory.getAsMap(taskFields);
 		Map<String, FacilioField> workorderFieldMap = FieldFactory.getAsMap(workorderFields);
-		
-		SelectRecordsBuilder<WorkOrderContext> selectBuilder = new SelectRecordsBuilder<WorkOrderContext>();
+
+		FacilioStatus preopen = TicketAPI.getStatus("preopen");
+		long statusId = preopen.getId();
+
+		SelectRecordsBuilder<WorkOrderContext> selectBuilder = new SelectRecordsBuilder<>();
 				selectBuilder.module(workorderModule)
-				.select(selectFields).beanClass(WorkOrderContext.class)
-				.innerJoin(taskModule.getTableName())
-				.on(workorderModule.getTableName() + ".ID = " + taskModule.getTableName() + ".PARENT_TICKET_ID");
+				.select(workorderFields)
+				.beanClass(WorkOrderContext.class);
 				if (startTime != -1) {
 					selectBuilder.andCondition(CriteriaAPI.getCondition(workorderFieldMap.get("createdTime"),startTime + "," + endTime, DateOperators.BETWEEN));
 				} else {
@@ -52,34 +50,36 @@ public class PreventiveMaintenanceReadingsCommand extends FacilioCommand {
 				selectBuilder
 				.andCondition(CriteriaAPI.getCondition(workorderFieldMap.get("resource"), resourceId + "" , NumberOperators.EQUALS))
 				.andCondition(CriteriaAPI.getCondition(workorderFieldMap.get("pm"), pmId + "" , NumberOperators.EQUALS))
-				.andCondition(CriteriaAPI.getCondition(taskFieldMap.get("inputType"), TaskContext.InputType.READING.getVal() + "", NumberOperators.EQUALS));
+				.andCondition(CriteriaAPI.getCondition(workorderFieldMap.get("status"), statusId+"", NumberOperators.NOT_EQUALS));
 
-
-		Map<Long, WorkOrderContext> woMap = new HashMap<>();
 		Map<Long, List<TaskContext>> taskMap = new HashMap<>();
 
-		List<Map<String, Object>> props = selectBuilder.getAsProps();
-
-		for (Map<String, Object> prop: props) {
-			WorkOrderContext workOrderContext = FieldUtil.getAsBeanFromMap(prop, WorkOrderContext.class);
-			TaskContext task = FieldUtil.getAsBeanFromMap(prop, TaskContext.class);
-
-			if (woMap.get(workOrderContext.getId()) == null) {
-				woMap.put(workOrderContext.getId(), workOrderContext);
-			}
-
-			if (taskMap.get(task.getParentTicketId()) == null) {
-				taskMap.put(task.getParentTicketId(), new ArrayList<>());
-			}
-			taskMap.get(task.getParentTicketId()).add(task);
+		List<WorkOrderContext> workOrderContextList = selectBuilder.get();
+		if (workOrderContextList.isEmpty()) {
+			return false;
 		}
 
-		Collection<WorkOrderContext> workOrderContexts = woMap.values();
+		List<Long> parentTicketIds = workOrderContextList.stream().map(ModuleBaseWithCustomFields::getId).collect(Collectors.toList());
 
-		Iterator<WorkOrderContext> iterator = workOrderContexts.iterator();
+		List<Long> inputTypes = Arrays.asList(new Long(TaskContext.InputType.READING.getVal()), new Long (TaskContext.InputType.NUMBER.getVal()));
 
-		while (iterator.hasNext()) {
-			WorkOrderContext workOrder = iterator.next();
+		SelectRecordsBuilder<TaskContext> taskSelectBuilder = new SelectRecordsBuilder<>();
+		taskSelectBuilder.module(taskModule)
+				.select(taskFields)
+				.beanClass(TaskContext.class)
+				.andCondition(CriteriaAPI.getCondition(taskFieldMap.get("parentTicketId"), parentTicketIds, NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(taskFieldMap.get("inputType"), inputTypes, NumberOperators.EQUALS));
+
+		List<TaskContext> taskContextList = taskSelectBuilder.get();
+
+		for (TaskContext taskContext: taskContextList) {
+			if (!taskMap.containsKey(taskContext.getParentTicketId())) {
+				taskMap.put(taskContext.getParentTicketId(), new ArrayList<>());
+			}
+			taskMap.get(taskContext.getParentTicketId()).add(taskContext);
+		}
+
+		for (WorkOrderContext workOrder : workOrderContextList) {
 			List<TaskContext> taskContexts = taskMap.get(workOrder.getId());
 
 			Map<Long, List<TaskContext>> woTasksMap = new HashMap<>();
@@ -95,7 +95,7 @@ public class PreventiveMaintenanceReadingsCommand extends FacilioCommand {
 			}
 		}
 
-		context.put(FacilioConstants.ContextNames.RESULT, workOrderContexts);
+		context.put(FacilioConstants.ContextNames.RESULT, workOrderContextList);
 		return false;
 	}
 	
