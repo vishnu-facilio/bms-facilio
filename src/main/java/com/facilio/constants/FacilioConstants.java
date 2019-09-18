@@ -444,6 +444,7 @@ public class FacilioConstants {
 		public static final String FIELD_NAME_LIST = "fieldList";
 		public static final String DEFAULT_FIELD = "defaultField";
 		public static final String MODULE_FIELD_IDS = "moduleFieldIds";
+		public static final String CHECK_FIELD_DISPLAY_NAME_DUPLICATION= "avoidFieldDisplayNameDuplication";
 		public static final String FIELD_ID = "fieldId";
 		public static final String LOOKUP_FIELD_META_LIST = "lookupFieldMetaList";
 		public static final String FETCH_FIELD_DISPLAY_NAMES = "fetchFieldDisplayNames";
