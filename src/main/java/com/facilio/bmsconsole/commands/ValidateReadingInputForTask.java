@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -59,7 +60,6 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			
 			if(!skipValidation)
 			{
-				
 				TaskContext currentTask = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
 				List<TaskErrorContext> errors = new ArrayList<>();
 				boolean hasErrors = false;
@@ -387,7 +387,10 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 	}
 	
 	public ReadingContext getLatestInputReading(NumberField numberField, ReadingDataMeta rdm, TaskContext currentTask) throws Exception{
-		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(numberField.getModule().getFields());
+		
+		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(numberField.getModule().getName()));
+		
 		SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
 				.select(Collections.singletonList(numberField))
 				.module(numberField.getModule())
