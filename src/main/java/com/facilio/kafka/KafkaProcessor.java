@@ -3,7 +3,6 @@ package com.facilio.kafka;
 import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
@@ -19,10 +18,6 @@ import org.apache.kafka.common.KafkaFuture;
 import org.apache.log4j.LogManager;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.iam.accounts.util.IAMAccountConstants;
-import com.facilio.iam.accounts.util.IAMOrgUtil;
-import com.facilio.modules.fields.FacilioField;
 import com.facilio.procon.processor.FacilioProcessor;
 
 public class KafkaProcessor {

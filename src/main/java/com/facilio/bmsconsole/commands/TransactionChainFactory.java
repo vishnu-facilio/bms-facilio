@@ -76,7 +76,7 @@ public class TransactionChainFactory {
 		}
 
 		public static FacilioChain getAddNotesChain() {
-			FacilioChain c = (FacilioChain) getDefaultChain();
+			FacilioChain c = getDefaultChain();
 			c.addCommand(new LoadAllFieldsCommand());
 			c.addCommand(new AddNotesCommand());
 			c.addCommand(new ExecuteNoteWorkflowCommand());
@@ -253,7 +253,7 @@ public class TransactionChainFactory {
 		}
 
 		public static FacilioChain getAddNewTasksChain() {
-			FacilioChain c = (FacilioChain) getDefaultChain();
+			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForTask());
 			c.addCommand(new ValidateNewTasksCommand());
 			c.addCommand(new LoadAllFieldsCommand());
@@ -271,7 +271,7 @@ public class TransactionChainFactory {
 		}
 
 		public static FacilioChain getAddTasksChain() {
-			FacilioChain c = (FacilioChain) getDefaultChain();
+			FacilioChain c = getDefaultChain();
 			c.addCommand(SetTableNamesCommand.getForTask());
 			c.addCommand(new ValidateTasksCommand());
 			c.addCommand(new LoadAllFieldsCommand());

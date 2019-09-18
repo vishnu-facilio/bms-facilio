@@ -80,7 +80,7 @@ public class GetAllCategoryReadingsCommand extends FacilioCommand {
 					for(Map<String, Object> prop : props) {
 						FacilioModule readingModule = modBean.getModule((long) prop.get("childModuleId"));
 						readings.add(readingModule);
-						Long categoryId = (Long)moduleIds.get(prop.get("parentModuleId"));
+						Long categoryId = moduleIds.get(prop.get("parentModuleId"));
 						List<FacilioModule> modList = moduleMap.get(categoryId);
 						if(modList == null) {
 							modList = new ArrayList<>();

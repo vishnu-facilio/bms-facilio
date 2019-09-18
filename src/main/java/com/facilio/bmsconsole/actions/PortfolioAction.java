@@ -236,8 +236,8 @@ public class PortfolioAction extends ActionSupport {
 				
 				ResourceContext resourceContext = ResourceAPI.getResource(buildingId);
 				Long meterId = (Long) prop.get("meterId");
-				Double thisMonthKwh = (Double) thisMeterVsConsumption.get(meterId);
-				Double lastMonthKwh = (Double) prevMeterVsConsumption.get(meterId);
+				Double thisMonthKwh = thisMeterVsConsumption.get(meterId);
+				Double lastMonthKwh = prevMeterVsConsumption.get(meterId);
 				
 				prop.put("thisMonthKwh", thisMonthKwh);
 				prop.put("lastMonthKwh", lastMonthKwh);

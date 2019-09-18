@@ -31,7 +31,7 @@ public class FetchResourcesCommand extends FacilioCommand {
 				
 				for (Map<String, Object> data : csvData) {
 					resourceAliases.forEach(alias -> {
-						Long id = (Long) data.get((String) alias);
+						Long id = (Long) data.get(alias);
 						if (id != null) {
 							resourceIds.add(id);
 						}

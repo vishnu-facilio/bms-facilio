@@ -101,7 +101,7 @@ public class AddOrUpdateItemQuantityCommand extends FacilioCommand {
 						updateBuilder.withChangeSet(ItemContext.class);
 						updateBuilder.update(item);
 						Map<Long, List<UpdateChangeSet>> recordChanges = updateBuilder.getChangeSet();
-						changes.put(itemContext.getId(), (List<UpdateChangeSet>)recordChanges.get(itemContext.getId()));
+						changes.put(itemContext.getId(), recordChanges.get(itemContext.getId()));
 						itemRecords.add(item);
                         
 						context.put(FacilioConstants.ContextNames.ITEM_TYPES_ID, itemTypesId);
@@ -124,7 +124,7 @@ public class AddOrUpdateItemQuantityCommand extends FacilioCommand {
 						
 						Map<Long, List<UpdateChangeSet>> recordChanges = updateBuilder.getChangeSet();
 						itemRecords.add(itemContext);
-						changes.put(itemContext.getId(), (List<UpdateChangeSet>)recordChanges.get(itemContext.getId()));
+						changes.put(itemContext.getId(), recordChanges.get(itemContext.getId()));
 
 					}
 				}

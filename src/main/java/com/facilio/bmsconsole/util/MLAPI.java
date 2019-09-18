@@ -11,7 +11,6 @@ import org.apache.commons.collections.CollectionUtils;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
-import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.MLAlarmOccurenceContext;
 import com.facilio.bmsconsole.context.MLContext;
 import com.facilio.bmsconsole.context.ResourceContext;

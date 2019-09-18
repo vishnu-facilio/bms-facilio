@@ -20,6 +20,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class FormTemplate extends Template {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long formId = -1;
 	public long getFormId() {
 		return formId;

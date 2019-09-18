@@ -3,8 +3,6 @@ package com.facilio.bmsconsole.context;
 import java.io.File;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.interceptors.DataSourceInterceptor;
-import com.facilio.bmsconsole.interceptors.ScopeInterceptor;
 import com.facilio.serviceportal.actions.PortalAuthInterceptor;
 
 public class PortalInfoContext  {

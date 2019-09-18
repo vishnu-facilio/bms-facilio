@@ -8,7 +8,6 @@ import java.util.Map;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.context.PurchaseContractContext;
 import com.facilio.bmsconsole.context.RentalLeaseContractContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;

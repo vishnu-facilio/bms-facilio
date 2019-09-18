@@ -116,7 +116,7 @@ public class OpenScheduledWO extends FacilioJob {
             }
 			if (!changeSets.isEmpty()) {
 				context.put(FacilioConstants.ContextNames.CHANGE_SET, changeSets);
-				Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = CommonCommandUtil.getChangeSetMap((FacilioContext) context);
+				Map<String, Map<Long, List<UpdateChangeSet>>> changeSetMap = CommonCommandUtil.getChangeSetMap(context);
 				Map<Long, List<UpdateChangeSet>> currentChangeSet = changeSetMap.get(FacilioConstants.ContextNames.WORK_ORDER);
 				
 				List<UpdateChangeSet> changeSetList = currentChangeSet.get(wo.getId());
@@ -144,7 +144,7 @@ public class OpenScheduledWO extends FacilioJob {
 
 				addWO.put("addPMWO", wolist);
 
-				CommonCommandUtil.addActivityToContext(wo.getId(), -1, WorkOrderActivityType.ADD_PM_WO, addWO, (FacilioContext) context);
+				CommonCommandUtil.addActivityToContext(wo.getId(), -1, WorkOrderActivityType.ADD_PM_WO, addWO, context);
                 
 
 			}

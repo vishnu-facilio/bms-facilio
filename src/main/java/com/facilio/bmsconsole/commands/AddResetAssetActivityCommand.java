@@ -6,9 +6,7 @@ import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
-import com.facilio.bmsconsole.actions.AssetAction;
 import com.facilio.bmsconsole.activity.AssetActivityType;
-import com.facilio.bmsconsole.activity.WorkOrderActivityType;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.ResetCounterMetaContext;
 import com.facilio.chain.FacilioContext;

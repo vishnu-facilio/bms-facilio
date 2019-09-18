@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.context;
 
-import com.facilio.bmsconsole.context.AlarmOccurrenceContext.Type;
 import com.facilio.modules.FacilioEnum;
 
 public class MLAlarmOccurenceContext extends AlarmOccurrenceContext 

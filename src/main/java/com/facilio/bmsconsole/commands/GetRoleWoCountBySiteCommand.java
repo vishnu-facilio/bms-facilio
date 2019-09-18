@@ -113,7 +113,7 @@ public class GetRoleWoCountBySiteCommand extends FacilioCommand{
         	        
             	}
 	            Object totalCount = woTotalCount.get(siteId);
-	            siteCount.put("totalCount",(Long)totalCount);
+	            siteCount.put("totalCount",totalCount);
 	            Map<String,Object> teamCountBySite = (Map<String, Object>) teamCount.get(siteId);
 				
 	            if(teamCountBySite!=null) {

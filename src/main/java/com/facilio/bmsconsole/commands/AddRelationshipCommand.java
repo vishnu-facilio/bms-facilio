@@ -4,7 +4,6 @@ import java.util.Map;
 
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.context.RelatedAssetsContext;
 import com.facilio.bmsconsole.context.RelationshipContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;

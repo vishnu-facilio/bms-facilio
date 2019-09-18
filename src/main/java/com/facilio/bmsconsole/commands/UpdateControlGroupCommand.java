@@ -7,7 +7,6 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.controlaction.context.ControlGroupContext;
 import com.facilio.controlaction.util.ControlActionUtil;
-import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.modules.FieldFactory;

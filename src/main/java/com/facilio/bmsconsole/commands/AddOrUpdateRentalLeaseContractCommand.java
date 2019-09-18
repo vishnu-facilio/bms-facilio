@@ -67,7 +67,7 @@ public class AddOrUpdateRentalLeaseContractCommand extends FacilioCommand{
 			} 
 			else if (isContractRevised && rentalLeaseContractContext.getId() > 0) {
 				if(rentalLeaseContractContext.getStatusEnum() == Status.APPROVED) {
-					RentalLeaseContractContext revisedContract = (RentalLeaseContractContext)rentalLeaseContractContext.clone();
+					RentalLeaseContractContext revisedContract = rentalLeaseContractContext.clone();
 					ContractsAPI.addRecord(true,Collections.singletonList(revisedContract), module, fields);
 					rentalLeaseContractContext.setStatus(Status.REVISED);
 					ContractsAPI.updateRecord(rentalLeaseContractContext, module, fields, true, (FacilioContext) context);

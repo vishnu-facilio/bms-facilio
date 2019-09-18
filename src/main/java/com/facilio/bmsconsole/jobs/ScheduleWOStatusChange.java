@@ -111,7 +111,7 @@ public class ScheduleWOStatusChange extends FacilioJob {
     					if(pmTaskSectionTemplateTriggers.getExecuteIfNotInTime() <= 0) {
     						continue;
     					}
-    					Long executionTimeInSec = (Long) pmTaskSectionTemplateTriggers.getExecuteIfNotInTime();
+    					Long executionTimeInSec = pmTaskSectionTemplateTriggers.getExecuteIfNotInTime();
     					
     					executionTimeInSec = DateTimeUtil.getCurrenTime() - (executionTimeInSec * 1000);
 

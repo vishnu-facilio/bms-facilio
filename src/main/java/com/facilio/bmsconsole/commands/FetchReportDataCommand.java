@@ -21,10 +21,7 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.BooleanOperators;
 import com.facilio.db.criteria.operators.DateOperators;
-import com.facilio.db.criteria.operators.EnumOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.PickListOperators;
-import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.AggregateOperator;
 import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
@@ -714,7 +711,7 @@ public class FetchReportDataCommand extends FacilioCommand {
 		if (report.getDateOperatorEnum() != null) {
 			DateRange actualRange = null;
 			if(report.getDateRange() == null) {
-				actualRange = ((DateOperators) report.getDateOperatorEnum()).getRange(report.getDateValue());
+				actualRange = report.getDateOperatorEnum().getRange(report.getDateValue());
 				report.setDateRange(actualRange);
 			}
 			else {

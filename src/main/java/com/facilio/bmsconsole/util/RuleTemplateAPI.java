@@ -66,7 +66,7 @@ public class RuleTemplateAPI {
 	public static ReadingRuleContext convertByRuleType (JSONObject rulesObject) throws Exception {
 		ReadingRuleContext rule = new ReadingRuleContext();
 		ObjectMapper mapper = FieldUtil.getMapper(WorkflowContext.class);
-		JSONArray fieldJsons = FacilioUtil.getSingleTonJsonArray((JSONObject) rulesObject.get("workflow"));
+		JSONArray fieldJsons = FacilioUtil.getSingleTonJsonArray(rulesObject.get("workflow"));
 		long thresholdType = (long) rulesObject.get("thresholdType");
 		List<WorkflowContext> list = mapper.readValue(JSONArray.toJSONString(fieldJsons), mapper.getTypeFactory().constructCollectionType(List.class, WorkflowContext.class));
 		rule.setWorkflow(list.get(0));

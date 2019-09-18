@@ -453,7 +453,7 @@ public class ReportFactoryFields {
 		
 	}
 	private static void addFieldInList(Map<String, List<FacilioField>> map, String name, FacilioField field) {
-		List<FacilioField> list = (List<FacilioField>) map.get(name);
+		List<FacilioField> list = map.get(name);
 		if (list == null) {
 			list = new ArrayList<>();
 			map.put(name, list);

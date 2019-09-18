@@ -15,7 +15,7 @@ public class CreateAppSuperAdminCommand extends FacilioCommand{
 		// TODO Auto-generated method stub
 		long orgId = (long) context.get("orgId");
 		Role superAdminRole = AccountUtil.getRoleBean(orgId).getRole(orgId, AccountConstants.DefaultRole.SUPER_ADMIN, false);
-		User user = (User) AccountUtil.getCurrentUser();
+		User user = AccountUtil.getCurrentUser();
 		
 		user.setRoleId(superAdminRole.getRoleId());
 		user.setInviteAcceptStatus(true);

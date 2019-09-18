@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.context;
 import java.io.Serializable;
 import java.util.Map;
 
-import com.facilio.bmsconsole.context.ReadingDataMeta.ControlActionMode;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.unitconversion.Unit;
 

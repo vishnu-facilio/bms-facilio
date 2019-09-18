@@ -30,7 +30,7 @@ public class UpdateFieldDataCommand extends FacilioCommand {
 			switch (moduleName) {
 			case "workorder":
 				FacilioContext updateContext = new FacilioContext();
-				WorkOrderContext workorder = (WorkOrderContext) FieldUtil.getAsBeanFromMap((Map<String, Object>) data.get("workorder"), WorkOrderContext.class);
+				WorkOrderContext workorder = FieldUtil.getAsBeanFromMap((Map<String, Object>) data.get("workorder"), WorkOrderContext.class);
 				workorder.setId(moduleData.getId());
 				updateContext.put(FacilioConstants.ContextNames.WORK_ORDER, workorder);
 				updateContext.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(moduleData.getId()));

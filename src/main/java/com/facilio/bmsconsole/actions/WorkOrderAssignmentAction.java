@@ -7,7 +7,11 @@ import org.apache.commons.chain.Chain;
 
 public class WorkOrderAssignmentAction extends FacilioAction {
 
-    private Long woId;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Long woId;
     public Long getWoId() {
         return woId;
     }

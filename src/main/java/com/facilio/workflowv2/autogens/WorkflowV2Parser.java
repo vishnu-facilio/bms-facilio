@@ -3,11 +3,8 @@ package com.facilio.workflowv2.autogens;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.misc.*;
 import org.antlr.v4.runtime.tree.*;
 import java.util.List;
-import java.util.Iterator;
-import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class WorkflowV2Parser extends Parser {
@@ -408,10 +405,10 @@ public class WorkflowV2Parser extends Parser {
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(97);
-			((Data_typeContext)_localctx).op = _input.LT(1);
+			_localctx.op = _input.LT(1);
 			_la = _input.LA(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << VOID) | (1L << DATA_TYPE_STRING) | (1L << DATA_TYPE_NUMBER) | (1L << DATA_TYPE_DECIMAL) | (1L << DATA_TYPE_BOOLEAN) | (1L << DATA_TYPE_MAP) | (1L << DATA_TYPE_LIST))) != 0)) ) {
-				((Data_typeContext)_localctx).op = (Token)_errHandler.recoverInline(this);
+				_localctx.op = _errHandler.recoverInline(this);
 			}
 			else {
 				if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
@@ -587,8 +584,8 @@ public class WorkflowV2Parser extends Parser {
 				enterOuterAlt(_localctx, 7);
 				{
 				setState(113);
-				((StatementContext)_localctx).OTHER = match(OTHER);
-				System.err.println("unknown char: " + (((StatementContext)_localctx).OTHER!=null?((StatementContext)_localctx).OTHER.getText():null));
+				_localctx.OTHER = match(OTHER);
+				System.err.println("unknown char: " + (_localctx.OTHER!=null?_localctx.OTHER.getText():null));
 				}
 				break;
 			}
@@ -1264,7 +1261,7 @@ public class WorkflowV2Parser extends Parser {
 					((BooleanExprCalculationContext)_localctx).op = _input.LT(1);
 					_la = _input.LA(1);
 					if ( !(_la==OR || _la==AND) ) {
-						((BooleanExprCalculationContext)_localctx).op = (Token)_errHandler.recoverInline(this);
+						((BooleanExprCalculationContext)_localctx).op = _errHandler.recoverInline(this);
 					}
 					else {
 						if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
@@ -1602,7 +1599,7 @@ public class WorkflowV2Parser extends Parser {
 						((ArithmeticFirstPrecedenceExprContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
 						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << MULT) | (1L << DIV) | (1L << MOD))) != 0)) ) {
-							((ArithmeticFirstPrecedenceExprContext)_localctx).op = (Token)_errHandler.recoverInline(this);
+							((ArithmeticFirstPrecedenceExprContext)_localctx).op = _errHandler.recoverInline(this);
 						}
 						else {
 							if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
@@ -1623,7 +1620,7 @@ public class WorkflowV2Parser extends Parser {
 						((ArithmeticSecondPrecedenceExprContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
 						if ( !(_la==PLUS || _la==MINUS) ) {
-							((ArithmeticSecondPrecedenceExprContext)_localctx).op = (Token)_errHandler.recoverInline(this);
+							((ArithmeticSecondPrecedenceExprContext)_localctx).op = _errHandler.recoverInline(this);
 						}
 						else {
 							if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
@@ -1644,7 +1641,7 @@ public class WorkflowV2Parser extends Parser {
 						((RelationalExprContext)_localctx).op = _input.LT(1);
 						_la = _input.LA(1);
 						if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << EQ) | (1L << NEQ) | (1L << GT) | (1L << LT) | (1L << GTEQ) | (1L << LTEQ))) != 0)) ) {
-							((RelationalExprContext)_localctx).op = (Token)_errHandler.recoverInline(this);
+							((RelationalExprContext)_localctx).op = _errHandler.recoverInline(this);
 						}
 						else {
 							if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
@@ -3137,10 +3134,10 @@ public class WorkflowV2Parser extends Parser {
 			setState(382);
 			expr(0);
 			setState(383);
-			((Db_param_sortContext)_localctx).op = _input.LT(1);
+			_localctx.op = _input.LT(1);
 			_la = _input.LA(1);
 			if ( !(_la==T__13 || _la==T__14) ) {
-				((Db_param_sortContext)_localctx).op = (Token)_errHandler.recoverInline(this);
+				_localctx.op = _errHandler.recoverInline(this);
 			}
 			else {
 				if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
@@ -3311,10 +3308,10 @@ public class WorkflowV2Parser extends Parser {
 					setState(402);
 					if (!(precpred(_ctx, 2))) throw new FailedPredicateException(this, "precpred(_ctx, 2)");
 					setState(403);
-					((ConditionContext)_localctx).op = _input.LT(1);
+					_localctx.op = _input.LT(1);
 					_la = _input.LA(1);
 					if ( !(_la==OR || _la==AND) ) {
-						((ConditionContext)_localctx).op = (Token)_errHandler.recoverInline(this);
+						_localctx.op = _errHandler.recoverInline(this);
 					}
 					else {
 						if ( _input.LA(1)==Token.EOF ) matchedEOF = true;
@@ -3384,10 +3381,10 @@ public class WorkflowV2Parser extends Parser {
 			setState(410);
 			match(VAR);
 			setState(411);
-			((Condition_atomContext)_localctx).op = _input.LT(1);
+			_localctx.op = _input.LT(1);
 			_la = _input.LA(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << EQ) | (1L << NEQ) | (1L << GT) | (1L << LT) | (1L << GTEQ) | (1L << LTEQ))) != 0)) ) {
-				((Condition_atomContext)_localctx).op = (Token)_errHandler.recoverInline(this);
+				_localctx.op = _errHandler.recoverInline(this);
 			}
 			else {
 				if ( _input.LA(1)==Token.EOF ) matchedEOF = true;

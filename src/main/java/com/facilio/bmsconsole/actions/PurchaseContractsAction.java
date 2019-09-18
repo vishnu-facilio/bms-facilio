@@ -149,7 +149,7 @@ public class PurchaseContractsAction extends FacilioAction {
 		chain.execute(context);
 		
 		if (getFetchCount()) {
-			setResult(FacilioConstants.ContextNames.RECORD_COUNT,(Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
+			setResult(FacilioConstants.ContextNames.RECORD_COUNT,context.get(FacilioConstants.ContextNames.RECORD_COUNT));
 		}
 		else {
 			List<PurchaseContractContext> purchaseContracts = (List<PurchaseContractContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);

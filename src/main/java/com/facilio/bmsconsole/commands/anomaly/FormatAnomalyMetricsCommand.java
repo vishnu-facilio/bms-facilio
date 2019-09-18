@@ -9,7 +9,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioCommand;
-import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.time.DateTimeUtil;
 import com.facilio.util.FacilioUtil;

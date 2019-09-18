@@ -1,7 +1,6 @@
 package com.facilio.events.commands;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BMSEventContext;
@@ -10,7 +9,6 @@ import com.facilio.bmsconsole.util.NewEventAPI;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.events.context.EventContext;
 import com.facilio.events.context.EventRuleContext;
-import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FieldUtil;
 import com.facilio.workflows.util.WorkflowUtil;
 import org.apache.commons.chain.Context;
@@ -19,11 +17,9 @@ import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class NewExecuteEventRulesCommand extends FacilioCommand {
 

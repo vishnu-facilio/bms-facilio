@@ -9,7 +9,12 @@ import org.apache.commons.chain.Chain;
 
 public class PMAction extends FacilioAction {
 
-    private long pmId = -1;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private long pmId = -1;
 
     private long endTime = -1;
 

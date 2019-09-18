@@ -72,7 +72,7 @@ public class AddOrUpdateLabourContractCommand extends FacilioCommand{
 			}
 			else if (isContractRevised && labourContractContext.getId() > 0) {
 				if(labourContractContext.getStatusEnum() == Status.APPROVED) {
-					LabourContractContext revisedContract = (LabourContractContext)labourContractContext.clone();
+					LabourContractContext revisedContract = labourContractContext.clone();
 					ContractsAPI.addRecord(true,Collections.singletonList(revisedContract), module, fields);
 					labourContractContext.setStatus(Status.REVISED);
 					ContractsAPI.updateRecord(labourContractContext, module, fields, true, (FacilioContext) context);

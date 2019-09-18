@@ -1,7 +1,6 @@
 package com.facilio.bmsconsole.context;
 
 import com.facilio.accounts.dto.User;
-import com.facilio.bmsconsole.workflow.rule.ApprovalState;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class AssetMovementContext extends ModuleBaseWithCustomFields{

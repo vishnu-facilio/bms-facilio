@@ -2,18 +2,13 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
-import org.json.JSONException;
-import org.json.simple.JSONObject;
-
 import com.facilio.bmsconsole.actions.AssetAction;
 import com.facilio.bmsconsole.actions.AutoCommissionAction;
 import com.facilio.bmsconsole.context.AssetCategoryContext;

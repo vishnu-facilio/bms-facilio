@@ -21,7 +21,7 @@ public class SingleRecordJob extends FacilioJob{
 	public void execute(JobContext jc) throws Exception {
 		// TODO Auto-generated method stub
 		try {
-			WorkflowRuleContext rule = (WorkflowRuleContext) WorkflowRuleAPI.getWorkflowRule(jc.getJobId());
+			WorkflowRuleContext rule = WorkflowRuleAPI.getWorkflowRule(jc.getJobId());
 			
 			if (!rule.isActive()) {
 				return;

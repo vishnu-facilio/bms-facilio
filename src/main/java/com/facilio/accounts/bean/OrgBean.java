@@ -1,12 +1,10 @@
 package com.facilio.accounts.bean;
 
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 
 import org.json.simple.JSONObject;
 
-import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.User;
 import com.facilio.bmsconsole.context.PortalInfoContext;

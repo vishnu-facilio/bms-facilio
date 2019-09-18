@@ -921,7 +921,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static FacilioChain getAddAttachmentChain() {
-		FacilioChain c = (FacilioChain) FacilioChain.getTransactionChain();
+		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new AddAttachmentCommand());
 		c.addCommand(new AttachmentContextCommand());
 		c.addCommand(new AddAttachmentRelationshipCommand());
@@ -932,7 +932,7 @@ public class FacilioChainFactory {
 	}
 	
 	public static FacilioChain getAddFileChain() {
-		FacilioChain c = (FacilioChain) FacilioChain.getTransactionChain();
+		FacilioChain c = FacilioChain.getTransactionChain();
 		c.addCommand(new AddFileCommand());
 		c.addCommand(new FileContextCommand());
 		return c;

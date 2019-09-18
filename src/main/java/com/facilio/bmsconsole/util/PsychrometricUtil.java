@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.facilio.modules.FieldType;
-import com.facilio.modules.FieldUtil;
 import com.facilio.util.FacilioUtil;
 
 public class PsychrometricUtil {

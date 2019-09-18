@@ -20,7 +20,7 @@ public class GetSpecialModuleDataDetailCommand extends FacilioCommand  {
 				case FacilioConstants.ContextNames.READING_RULE_MODULE:
 					Chain fetchAlarmChain = ReadOnlyChainFactory.fetchAlarmRuleWithActionsChain();
 					fetchAlarmChain.execute(context);
-					context.put(FacilioConstants.ContextNames.RECORD, (AlarmRuleContext) context.get(FacilioConstants.ContextNames.ALARM_RULE));
+					context.put(FacilioConstants.ContextNames.RECORD, context.get(FacilioConstants.ContextNames.ALARM_RULE));
 				default:
 					break;
 			}

@@ -1,7 +1,5 @@
 package com.facilio.bmsconsole.page.factory;
 
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.PageWidget;

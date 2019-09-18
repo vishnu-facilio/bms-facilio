@@ -26,7 +26,6 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.fields.FacilioField;
-import com.facilio.time.DateTimeUtil;
 
 public class NewAlarmAPI {
 
@@ -54,13 +53,13 @@ public class NewAlarmAPI {
 
 		Map<Type, List<Long>> alarmMap = new HashMap<>();
 		for (BaseAlarmContext map : list) {
-			Type type = Type.valueOf((int) map.getType());
+			Type type = Type.valueOf(map.getType());
 			List<Long> alarmIds = alarmMap.get(type);
 			if (CollectionUtils.isEmpty(alarmIds)) {
 				alarmIds = new ArrayList<>();
 				alarmMap.put(type, alarmIds);
 			}
-			alarmIds.add((Long) map.getId());
+			alarmIds.add(map.getId());
 		}
 
 		ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
@@ -631,7 +630,7 @@ public class NewAlarmAPI {
 				if (alarmOccurrence.equals(initialEdgeCaseAlarmOccurrence) || alarmOccurrence.equals(finalEdgeCaseAlarmOccurrence)) {
 					continue;
 				}
-				delAlarmOccurrencesMap.put((Long) alarmOccurrence.getId(), alarmOccurrence);
+				delAlarmOccurrencesMap.put(alarmOccurrence.getId(), alarmOccurrence);
 			}
 						
 			if(MapUtils.isNotEmpty(delAlarmOccurrencesMap))

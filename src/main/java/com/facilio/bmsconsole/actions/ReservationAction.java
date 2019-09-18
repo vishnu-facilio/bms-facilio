@@ -16,7 +16,11 @@ import java.util.Collections;
 import java.util.List;
 
 public class ReservationAction extends FacilioAction {
-    private ReservationContext reservation;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private ReservationContext reservation;
     public ReservationContext getReservation() {
         return reservation;
     }
@@ -52,7 +56,7 @@ public class ReservationAction extends FacilioAction {
             setResult(FacilioConstants.ContextNames.COUNT, context.get(FacilioConstants.ContextNames.RECORD_COUNT));
         }
         else {
-            setResult(FacilioConstants.ContextNames.Reservation.RESERVATION_LIST, (List<ReservationContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST));
+            setResult(FacilioConstants.ContextNames.Reservation.RESERVATION_LIST, context.get(FacilioConstants.ContextNames.RECORD_LIST));
         }
         return SUCCESS;
     }

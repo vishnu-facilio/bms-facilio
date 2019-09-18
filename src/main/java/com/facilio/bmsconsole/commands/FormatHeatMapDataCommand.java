@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Context;
@@ -24,7 +23,6 @@ import com.facilio.db.criteria.Criteria;
 import com.facilio.db.criteria.CriteriaAPI;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
-import com.facilio.db.criteria.operators.Operator;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
@@ -184,14 +182,14 @@ public class FormatHeatMapDataCommand extends FacilioCommand{
 		}
 		
 		List<Long> fieldList = new ArrayList<>();
-		fieldList.add((Long) dp.getyAxis().getFieldId());
+		fieldList.add(dp.getyAxis().getFieldId());
 		if(fieldList!=null && !fieldList.isEmpty()) {
 			criteria.addAndCondition(CriteriaAPI.getCondition("FIELD_ID","FIELD_ID", 
 					StringUtils.join(fieldList,","), NumberOperators.EQUALS));
 			}
 		
 		List<Long> moduleList = new ArrayList<>();
-		moduleList.add((Long) dp.getyAxis().getModuleId());
+		moduleList.add(dp.getyAxis().getModuleId());
 		if(moduleList!=null && !moduleList.isEmpty()) {
 			criteria.addAndCondition(CriteriaAPI.getCondition("MODULEID","MODULEID", 
 					StringUtils.join(moduleList,","), NumberOperators.EQUALS));

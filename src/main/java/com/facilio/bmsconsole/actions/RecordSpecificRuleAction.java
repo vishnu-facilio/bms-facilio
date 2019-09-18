@@ -102,7 +102,7 @@ public class RecordSpecificRuleAction extends FacilioAction {
 		Chain chain = ReadOnlyChainFactory.viewRecordRule();
 		chain.execute(context);
 		
-		setResult(FacilioConstants.ContextNames.RECORD_RULE, (WorkflowRuleContext) context.get(FacilioConstants.ContextNames.RECORD));
+		setResult(FacilioConstants.ContextNames.RECORD_RULE, context.get(FacilioConstants.ContextNames.RECORD));
 		return SUCCESS;
 	}
 	

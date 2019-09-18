@@ -103,7 +103,7 @@ public class ReceivableAction extends FacilioAction {
 		Chain chain = ReadOnlyChainFactory.getAllReceivablesChain();
 		chain.execute(context);
 		if (getFetchCount()) {
-			setResult(FacilioConstants.ContextNames.RECORD_COUNT,(Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
+			setResult(FacilioConstants.ContextNames.RECORD_COUNT,context.get(FacilioConstants.ContextNames.RECORD_COUNT));
 		}
 		else {
 		  setResult(FacilioConstants.ContextNames.RECEIVABLES, context.get(FacilioConstants.ContextNames.RECORD_LIST));

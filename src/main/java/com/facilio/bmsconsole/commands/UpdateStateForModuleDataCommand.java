@@ -20,7 +20,7 @@ public class UpdateStateForModuleDataCommand extends FacilioCommand {
 
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
-		Map<String, List> recordMap = (Map<String, List>) CommonCommandUtil.getRecordMap((FacilioContext) context);
+		Map<String, List> recordMap = CommonCommandUtil.getRecordMap((FacilioContext) context);
 		Long currentTransitionId = (Long) context.get(FacilioConstants.ContextNames.TRANSITION_ID);
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		

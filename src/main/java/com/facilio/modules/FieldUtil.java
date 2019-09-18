@@ -326,7 +326,7 @@ public class FieldUtil {
 		if(field.getDataType() == FieldType.BOOLEAN.getTypeAsInt() && field instanceof BooleanField) {
 			BooleanField booleanField = (BooleanField) field;
 			String result = null;
-			if((Boolean)value.equals(Boolean.TRUE)) {
+			if(value.equals(Boolean.TRUE)) {
 				result = booleanField.getTrueVal() != null ?  booleanField.getTrueVal() : "1";
 			}
 			else {

@@ -3,9 +3,6 @@ package com.facilio.bmsconsole.commands;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import com.facilio.beans.ModuleBean;
-import com.facilio.fw.BeanFactory;
-import com.facilio.modules.FacilioModule;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.ReadingContext;

@@ -13,11 +13,7 @@ import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
-
-import java.util.List;
-import java.util.Map;
 
 public class StateFlowAction extends FacilioAction {
 	private static final long serialVersionUID = 1L;
@@ -146,7 +142,7 @@ public class StateFlowAction extends FacilioAction {
 		Chain chain = ReadOnlyChainFactory.viewStateFlow();
 		chain.execute(context);
 		
-		setResult(FacilioConstants.ContextNames.STATE_FLOW, (StateFlowRuleContext) context.get(FacilioConstants.ContextNames.RECORD));
+		setResult(FacilioConstants.ContextNames.STATE_FLOW, context.get(FacilioConstants.ContextNames.RECORD));
 		return SUCCESS;
 	}
 	

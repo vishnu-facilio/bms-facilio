@@ -255,7 +255,7 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 			checkForInputType(assetId, fieldId, instanceName, metaMap);
 
 //			if(isStage()) {
-				Map<String, Object> pointsRecord = (Map<String, Object>) getNewPointsData(assetId,categoryId,fieldId);
+				Map<String, Object> pointsRecord = getNewPointsData(assetId,categoryId,fieldId);
 //				pointsRecord.put("unit", unit);
 				updatePointsData(deviceName, instanceName, pointsRecord);
 
@@ -336,8 +336,8 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		if (meta.getActualValue() != null && !meta.getActualValue().equals("-1") && ((meta.getTtime()-lastMappedTime) > (30 * 24 * 60 * 60000L) ) ) {
 			throw new IllegalArgumentException("Field cannot be changed. Please contact the support");
 		}
-		Map<String, Object> prop=(Map<String, Object>) getNewPointsData(assetId,categoryId,fieldId);
-		Map<String, Object> props=(Map<String, Object>) getUpdateMappedData(assetId,categoryId,fieldId);
+		Map<String, Object> prop=getNewPointsData(assetId,categoryId,fieldId);
+		Map<String, Object> props=getUpdateMappedData(assetId,categoryId,fieldId);
 		
 		FacilioModule module = ModuleFactory.getInstanceMappingModule();
 		List<FacilioField> fields = FieldFactory.getInstanceMappingFields();

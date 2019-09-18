@@ -1,6 +1,5 @@
 package com.facilio.events.actions;
 
-import java.util.Collections;
 import java.util.List;
 
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;

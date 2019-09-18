@@ -302,7 +302,7 @@ public class ReportUtil {
 		ReportContext report = FieldUtil.getAsBeanFromMap(prop, ReportContext.class);
 		DateRange actualRange = null;
 		if(report.getDateRange() == null && report.getDateOperatorEnum() != null) {
-			actualRange = ((DateOperators) report.getDateOperatorEnum()).getRange(report.getDateValue());
+			actualRange = report.getDateOperatorEnum().getRange(report.getDateValue());
 			report.setDateRange(actualRange);
 		}
 		return report;
@@ -462,7 +462,7 @@ public class ReportUtil {
 		reportFolderContext.setId(id);
 		if (!reportFolderContext.getReportSharing().isEmpty() && reportFolderContext.getReportSharing() != null) {
 //		SharingAPI.deleteSharing(reportFolderContext.getReportSharing().stream().map(SingleSharingContext::getId).collect(Collectors.toList()), ModuleFactory.getReportSharingModule());
-		SharingAPI.addSharing((SharingContext<SingleSharingContext>) reportFolderContext.getReportSharing(), id, ModuleFactory.getReportSharingModule());
+		SharingAPI.addSharing(reportFolderContext.getReportSharing(), id, ModuleFactory.getReportSharingModule());
 		reportFolderContext.setReportSharing(SharingAPI.getSharing(id, ModuleFactory.getReportSharingModule(), SingleSharingContext.class));
 		}
 		return reportFolderContext;
@@ -643,7 +643,7 @@ public class ReportUtil {
 	}
 	
 	private static void addFieldInList(Map<String, List<FacilioField>> map, String name, FacilioField field) {
-		List<FacilioField> list = (List<FacilioField>) map.get(name);
+		List<FacilioField> list = map.get(name);
 		if (list == null) {
 			list = new ArrayList<>();
 			map.put(name, list);

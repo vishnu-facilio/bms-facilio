@@ -55,7 +55,7 @@ public class FormsAPI {
 				Iterator<FacilioForm> iterator = entry.getValue().iterator();
 				List<FacilioForm> formsList = new ArrayList<>();
 				while (iterator.hasNext()) {
-					FacilioForm form = (FacilioForm) iterator.next();
+					FacilioForm form = iterator.next();
 					FacilioForm mutatedForm = new FacilioForm(form);
 					formsList.add(mutatedForm);
 					

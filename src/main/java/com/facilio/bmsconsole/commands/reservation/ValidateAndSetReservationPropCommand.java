@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.commands.reservation;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.context.reservation.InternalAttendeeContext;
 import com.facilio.bmsconsole.context.reservation.ReservationContext;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;

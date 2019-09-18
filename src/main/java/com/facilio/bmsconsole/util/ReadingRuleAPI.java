@@ -120,7 +120,7 @@ public class ReadingRuleAPI extends WorkflowRuleAPI {
 		deleteChildIdsForWorkflow(oldRule, rule);
 		deleteInclusionsExclusions(oldRule);
 		deleteRuleMetrics(rule);
-		ReadingRuleAPI.addReadingRuleInclusionsExlusions((ReadingRuleContext) rule);
+		ReadingRuleAPI.addReadingRuleInclusionsExlusions(rule);
 		ReadingRuleAPI.addReadingRuleMetrics(rule);
 		if (rule.getName() == null) {
 			rule.setName(oldRule.getName());

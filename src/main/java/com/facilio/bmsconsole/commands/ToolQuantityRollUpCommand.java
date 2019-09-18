@@ -129,7 +129,7 @@ public class ToolQuantityRollUpCommand extends FacilioCommand {
 				updateBuilder.withChangeSet(ToolContext.class);
 				updateBuilder.update(tool);
 				Map<Long, List<UpdateChangeSet>> recordChanges = updateBuilder.getChangeSet();
-				changes.put(tool.getId(), (List<UpdateChangeSet>)recordChanges.get(tool.getId()));
+				changes.put(tool.getId(), recordChanges.get(tool.getId()));
 				toolRecords.add(tool);
             
 				

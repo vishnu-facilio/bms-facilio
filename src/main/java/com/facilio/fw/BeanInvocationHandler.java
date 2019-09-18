@@ -9,7 +9,6 @@ import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
 import com.facilio.accounts.dto.AccountsInterface;
-import com.facilio.accounts.dto.IAMUser;
 //import com.facilio.bmsconsole.db.ResponseCacheUtil;
 import com.facilio.db.transaction.FacilioTransactionManager;
 import com.facilio.db.util.DBConf;

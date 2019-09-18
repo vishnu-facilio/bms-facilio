@@ -6,6 +6,10 @@ import com.facilio.accounts.dto.User;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class ShipmentContext extends ModuleBaseWithCustomFields{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private User transferredBy;
 	public User getTransferredBy() {
 		return transferredBy;

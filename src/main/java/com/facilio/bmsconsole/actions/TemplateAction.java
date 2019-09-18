@@ -178,7 +178,7 @@ public class TemplateAction  extends FacilioAction {
 			for (String key : ruleskeys) {
 				JSONObject rule = (JSONObject) rulesObj.get(key);
 				ObjectMapper mapper = FieldUtil.getMapper(WorkflowContext.class);
-				JSONArray fieldJsons = FacilioUtil.getSingleTonJsonArray((JSONObject) rule.get("workflow"));
+				JSONArray fieldJsons = FacilioUtil.getSingleTonJsonArray(rule.get("workflow"));
 				long thresholdType = (long) rule.get("thresholdType");
 				List<WorkflowContext> list = mapper.readValue(JSONArray.toJSONString(fieldJsons), mapper.getTypeFactory().constructCollectionType(List.class, WorkflowContext.class));
 				if (((String)rule.get("action")).equals("PreRequsite")) {

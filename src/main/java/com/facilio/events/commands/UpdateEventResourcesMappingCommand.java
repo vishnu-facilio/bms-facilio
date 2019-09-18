@@ -2,7 +2,6 @@ package com.facilio.events.commands;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.BMSEventContext;
-import com.facilio.bmsconsole.context.BaseEventContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.constants.FacilioConstants;
@@ -23,7 +22,6 @@ import com.facilio.events.context.EventContext;
 import com.facilio.modules.FieldUtil;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

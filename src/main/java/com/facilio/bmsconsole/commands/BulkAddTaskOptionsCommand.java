@@ -10,7 +10,6 @@ import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleFactory;
 import org.apache.commons.chain.Context;
 
-import java.util.logging.Level;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

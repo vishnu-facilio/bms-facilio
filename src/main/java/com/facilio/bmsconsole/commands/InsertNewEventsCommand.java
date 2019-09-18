@@ -3,14 +3,10 @@ package com.facilio.bmsconsole.commands;
 import java.util.List;
 
 import com.facilio.accounts.util.AccountUtil;
-import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.context.BMSEventContext;
-import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.events.context.EventContext;
-import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.util.EventAPI;
-import com.facilio.fw.BeanFactory;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 

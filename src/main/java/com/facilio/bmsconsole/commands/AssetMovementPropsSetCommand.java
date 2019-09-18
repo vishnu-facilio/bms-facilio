@@ -1,15 +1,11 @@
 package com.facilio.bmsconsole.commands;
 
 import org.apache.commons.chain.Context;
-import org.apache.commons.lang3.StringUtils;
-
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.AssetMovementContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
-import com.facilio.bmsconsole.view.ViewFactory;
 import com.facilio.constants.FacilioConstants;
-import com.facilio.db.criteria.Criteria;
 
 public class AssetMovementPropsSetCommand extends FacilioCommand{
 

@@ -16,6 +16,10 @@ import com.facilio.time.DateRange;
 public class MLAnomalyAction extends FacilioAction {
 
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private MLContext mlContext;
 	
 	public MLContext getMlContext() {

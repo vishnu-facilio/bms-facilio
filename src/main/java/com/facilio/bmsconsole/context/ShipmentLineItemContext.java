@@ -10,6 +10,10 @@ import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class ShipmentLineItemContext extends ModuleBaseWithCustomFields{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private long shipment;
 	public long getShipment() {
 		return shipment;

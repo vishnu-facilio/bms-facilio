@@ -9,7 +9,6 @@ import org.apache.log4j.spi.LoggingEvent;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Organization;
-import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.tasker.job.JobContext;
 

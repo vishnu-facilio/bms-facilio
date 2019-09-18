@@ -48,7 +48,7 @@ public class ShiftAction extends FacilioAction {
 		Chain c = FacilioChainFactory.getAllShiftsCommand();
 		c.execute(context);
 		
-		setResult(FacilioConstants.ContextNames.SHIFTS, (List<ShiftContext>) context.get(FacilioConstants.ContextNames.SHIFTS));
+		setResult(FacilioConstants.ContextNames.SHIFTS, context.get(FacilioConstants.ContextNames.SHIFTS));
 
 			
 		return SUCCESS;

@@ -77,7 +77,7 @@ public class ExportPointsDataAPI {
 			if(props!=null && !props.isEmpty()) {
 				for(Map<String,Object> map : props) {
 					Map<String, Object> n =new HashMap<>();
-					String id = (String) map.get("id").toString();
+					String id = map.get("id").toString();
 					String name = (String) map.get("name");
 					n.put("id",id);
 					n.put("name", name);

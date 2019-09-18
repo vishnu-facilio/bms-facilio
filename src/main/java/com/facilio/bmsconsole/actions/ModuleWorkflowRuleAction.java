@@ -6,13 +6,15 @@ import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Chain;
-
 import java.util.List;
 
 public class ModuleWorkflowRuleAction extends FacilioAction {
 
-    private String moduleName;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private String moduleName;
     public String getModuleName() {
         return moduleName;
     }

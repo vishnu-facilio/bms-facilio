@@ -86,7 +86,7 @@ public class AddOrUpdateWarrantyContractCommand extends FacilioCommand{
 			} 
 			else if (isContractRevised && warrantyContractContext.getId() > 0) {
 				if(warrantyContractContext.getStatusEnum() == Status.APPROVED) {
-					WarrantyContractContext revisedContract = (WarrantyContractContext)warrantyContractContext.clone();
+					WarrantyContractContext revisedContract = warrantyContractContext.clone();
 					ContractsAPI.addRecord(true,Collections.singletonList(revisedContract), module, fields);
 					warrantyContractContext.setStatus(Status.REVISED);
 					ContractsAPI.updateRecord(warrantyContractContext, module, fields, true, (FacilioContext) context);

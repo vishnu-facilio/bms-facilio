@@ -12,7 +12,7 @@ public class GetRecordRuleCommand extends FacilioCommand{
 		public boolean executeCommand(Context context) throws Exception {
 			Long recordRuleId = (Long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 			if (recordRuleId != null && recordRuleId > 0) {
-				WorkflowRuleContext ruleContext = (WorkflowRuleContext) WorkflowRuleAPI.getWorkflowRule(recordRuleId);
+				WorkflowRuleContext ruleContext = WorkflowRuleAPI.getWorkflowRule(recordRuleId);
 				if (ruleContext == null) {
 					throw new IllegalArgumentException("Invalid id");
 				}

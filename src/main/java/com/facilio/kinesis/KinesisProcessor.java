@@ -2,7 +2,6 @@ package com.facilio.kinesis;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -14,13 +13,9 @@ import com.amazonaws.services.kinesis.model.LimitExceededException;
 import com.amazonaws.services.kinesis.model.ListStreamsResult;
 import com.amazonaws.services.kinesis.model.ResourceNotFoundException;
 import com.facilio.accounts.dto.Organization;
-import com.facilio.accounts.util.AccountConstants;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.iam.accounts.util.IAMAccountConstants;
 import com.facilio.iam.accounts.util.IAMOrgUtil;
-import com.facilio.modules.fields.FacilioField;
 import com.facilio.processor.ProcessorFactory;
 
 public class KinesisProcessor {

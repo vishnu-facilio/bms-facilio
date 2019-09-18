@@ -4,7 +4,11 @@ import org.apache.commons.lang3.StringUtils;
 
 public class BMSEventContext extends BaseEventContext {
 
-    private String condition;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private String condition;
     public String getCondition() {
         return condition;
     }

@@ -8,7 +8,6 @@ import javax.transaction.Transaction;
 import javax.transaction.TransactionManager;
 
 import com.facilio.aws.util.FacilioProperties;
-import com.facilio.db.util.DBConf;
 import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
