@@ -24,17 +24,8 @@ public class IAMUtil {
 		return userBean;
 	}
 
-	public static IAMUserBean getUserBean(long orgId) throws Exception {
-		IAMUserBean userBean = (IAMUserBean) BeanFactory.lookup("IAMUserBean", orgId);
-		return userBean;
-	}
-
 	public static IAMUserBean getTransactionalUserBean() throws Exception {
 		return (IAMUserBean) TransactionBeanFactory.lookup("IAMUserBean");
-	}
-
-	public static IAMUserBean getTransactionalUserBean(long orgId) throws Exception {
-		return (IAMUserBean) TransactionBeanFactory.lookup("IAMUserBean", orgId);
 	}
 
 	public static IAMOrgBean getOrgBean() throws Exception {
@@ -43,18 +34,6 @@ public class IAMUtil {
 		return orgBean;
 	}
 
-	public static IAMOrgBean getOrgBean(long orgId) throws Exception {
-		IAMOrgBean orgBean = (IAMOrgBean) BeanFactory.lookup("IAMOrgBean", orgId);
-		return orgBean;
-	}
-
-	public static IAMOrgBean getTransactionalOrgBean(long orgId) throws Exception {
-		IAMOrgBean orgBean = (IAMOrgBean) TransactionBeanFactory.lookup("IAMOrgBean", orgId);
-		return orgBean;
-	}
-
-
-	
 	public static void appendModuleNameInKey(String moduleName, String prefix, Map<String, Object> beanMap,
 			Map<String, Object> placeHolders) throws Exception {
 		if (beanMap != null) {

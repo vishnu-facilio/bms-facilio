@@ -39,7 +39,7 @@
                                            browser window.
                                           </div>
                                           <div style="padding-top: 20px;padding-bottom: 20px;">
-                                          <a href="${invitelink}" style="padding-left: 5px;font-size: 14px; font-weight: 500; font-style: normal; font-stretch: normal; line-height: 20px; letter-spacing: 0.4px; color: #396dc2;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;">
+                                          <a href="${invitelink}" style="font-size: 14px; font-weight: 500; font-style: normal; font-stretch: normal; line-height: 20px; letter-spacing: 0.4px; color: #396dc2;font-family:'Open Sans',Ubuntu, Helvetica,Arial, sans-serif,Times New Roman, Times, serif;">
                                           ${invitelink}
                                           </a>
                                           </div>

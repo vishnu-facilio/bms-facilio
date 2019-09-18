@@ -253,16 +253,16 @@ public class UserAction extends FacilioAction {
 		}
 
 		user.setUserType(UserType.REQUESTER.getValue());
-		//if(emailVerificationNeeded) {
+		if(emailVerificationNeeded) {
 			user.setUserVerified(false);
 			user.setInviteAcceptStatus(false);
 			user.setInvitedTime(System.currentTimeMillis());
-//		}
-//		else {
-//			user.setUserVerified(true);
-//			user.setInviteAcceptStatus(true);
-//			user.setInvitedTime(System.currentTimeMillis());
-//		}
+		}
+		else {
+			user.setUserVerified(true);
+			user.setInviteAcceptStatus(true);
+			user.setInvitedTime(System.currentTimeMillis());
+		}
 		
 		try {
 			if(AccountUtil.getUserBean().inviteRequester(AccountUtil.getCurrentOrg().getId(), user, true, true) > 0) {
@@ -313,17 +313,17 @@ public class UserAction extends FacilioAction {
 		user.setFacilioAuth("facilio".equals(value));
 		user.setDomainName("app");
 		
-		//if(emailVerificationNeeded) {
+		if(emailVerificationNeeded) {
 			user.setUserVerified(false);
 			user.setInviteAcceptStatus(false);
 			user.setInvitedTime(System.currentTimeMillis());
-//		}
-//		else {
-//			user.setUserVerified(true);
-//			user.setInviteAcceptStatus(true);
-//			user.setInvitedTime(System.currentTimeMillis());
-//
-//		}
+		}
+		else {
+			user.setUserVerified(true);
+			user.setInviteAcceptStatus(true);
+			user.setInvitedTime(System.currentTimeMillis());
+
+		}
 
 
 		FacilioContext context = new FacilioContext();

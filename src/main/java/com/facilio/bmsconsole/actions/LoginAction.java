@@ -53,6 +53,7 @@ import org.w3c.dom.NodeList;
 import com.amazonaws.util.StringUtils;
 import com.facilio.accounts.dto.Account;
 import com.facilio.accounts.dto.Group;
+import com.facilio.accounts.dto.IAMAccount;
 import com.facilio.accounts.dto.Organization;
 import com.facilio.accounts.dto.Role;
 import com.facilio.accounts.dto.User;
@@ -802,14 +803,17 @@ public class LoginAction extends FacilioAction {
 	}
 	
 	public String validatePermalink() throws Exception {
-		Account permalinkAccount = AccountUtil.getUserBean().getPermalinkAccount(getPermalink(), null);
-		if(permalinkAccount != null) {
-			
-			AccountUtil.setCurrentAccount(permalinkAccount);
-			account = new HashMap<>();
-			account.put("org", permalinkAccount.getOrg());
-			account.put("user", permalinkAccount.getUser());
-			return SUCCESS;
+		IAMAccount iamAccount = IAMUserUtil.getPermalinkAccount(getPermalink(), null);
+		if(iamAccount != null) {
+			Account permalinkAccount = AccountUtil.getUserBean(iamAccount.getOrg().getOrgId()).getPermalinkAccount(iamAccount);
+			if(permalinkAccount != null) {
+				
+				AccountUtil.setCurrentAccount(permalinkAccount);
+				account = new HashMap<>();
+				account.put("org", permalinkAccount.getOrg());
+				account.put("user", permalinkAccount.getUser());
+				return SUCCESS;
+			}
 		}
 		account = null;
 		return ERROR;

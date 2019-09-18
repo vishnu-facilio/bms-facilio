@@ -430,7 +430,7 @@ public class FacilioAuthAction extends FacilioAction {
 		JSONObject invitation = new JSONObject();
 		User user = AccountUtil.getUserBean().validateUserInvite(getInviteToken());
 		if(user != null) {
-			User us = AccountUtil.getUserBean().getUser(user.getOrgId(), user.getUid());
+			User us = AccountUtil.getUserBean(user.getOrgId()).getUser(user.getOrgId(), user.getUid());
 			Organization org = AccountUtil.getOrgBean().getOrg(user.getOrgId());
 			AccountUtil.cleanCurrentAccount();
 			AccountUtil.setCurrentAccount(new Account(org, us));

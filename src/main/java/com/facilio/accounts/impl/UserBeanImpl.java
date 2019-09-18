@@ -323,7 +323,7 @@ public class UserBeanImpl implements UserBean {
 	public boolean acceptInvite(String token, String password) throws Exception {
 		IAMUser iamUser = IAMUserUtil.acceptInvite(token, password);
 		if(iamUser != null) {
-		   return AccountUtil.getTransactionalUserBean().acceptUser(new User(iamUser));	
+		   return AccountUtil.getTransactionalUserBean(iamUser.getOrgId()).acceptUser(new User(iamUser));	
 		}
 		return false;
 	}
@@ -984,12 +984,14 @@ public class UserBeanImpl implements UserBean {
 	}
 
 	@Override
-	public Account getPermalinkAccount(String token, List<String> urls) throws Exception {
+	public Account getPermalinkAccount(IAMAccount iamAccount) throws Exception {
 		// TODO Auto-generated method stub
-      IAMAccount iamAccount = IAMUserUtil.getPermalinkAccount(token, urls);
-      User user = getUser(iamAccount.getUser().getOrgId(), iamAccount.getUser().getUid());
-      Account account = new Account(iamAccount.getOrg(), user);
-      return account;
+	  if(iamAccount != null) {
+	      User user = getUser(iamAccount.getUser().getOrgId(), iamAccount.getUser().getUid());
+	      Account account = new Account(iamAccount.getOrg(), user);
+	      return account;
+	  }
+	  return null;
 	}
 
 	@Override
