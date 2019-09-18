@@ -5,7 +5,10 @@ import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.TicketActivity;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.builder.GenericInsertRecordBuilder;
+import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONArray;
@@ -43,6 +46,10 @@ public class AddTaskReadingCorrectionActivityCommand extends FacilioCommand {
             }
             workOrderMap.get(oldTaskContext.getParentTicketId()).add(oldTaskContext);
         }
+
+        GenericInsertRecordBuilder insertActivityBuilder = new GenericInsertRecordBuilder()
+                .table(ModuleFactory.getTicketActivityModule().getTableName())
+                .fields(FieldFactory.getTicketActivityFields());
 
         for (Map.Entry<Long, List<TaskContext>> entry: workOrderMap.entrySet()) {
             List<TaskContext> oldTaskContexts = entry.getValue();
@@ -85,9 +92,11 @@ public class AddTaskReadingCorrectionActivityCommand extends FacilioCommand {
 
                 info.put("updatedFields", updatedFields);
                 activity.setInfo(info);
+                insertActivityBuilder.addRecord(FieldUtil.getAsProperties(activity));
             }
         }
 
+        insertActivityBuilder.save();
         return false;
     }
 }
