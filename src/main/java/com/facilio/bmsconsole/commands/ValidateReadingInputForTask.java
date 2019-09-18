@@ -10,13 +10,16 @@ import org.apache.commons.chain.Context;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
+import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskErrorContext;
 import com.facilio.bmsconsole.util.ReadingsAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.db.criteria.Condition;
 import com.facilio.db.criteria.CriteriaAPI;
+import com.facilio.db.criteria.operators.CommonOperators;
 import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.fw.BeanFactory;
@@ -110,6 +113,8 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 											}
 											
 										}
+										
+										
 									}
 								}
 								break;
@@ -207,7 +212,13 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 
 	private TaskErrorContext checkValueRangeForCounterField(TaskContext currentTask, NumberField numberField, ReadingDataMeta rdm,Double currentValueInSiUnit) throws Exception {
 
-		double value = FacilioUtil.parseDouble(rdm.getValue());
+		double value =  getLatestPreviousReading (numberField, rdm, currentTask);	
+		
+		if(value < 0)
+		{
+			return null;
+		}
+		
 		double currentvalue = FacilioUtil.parseDouble(currentTask.getInputValue());
 		
 		double currentDelta = currentvalue-value;
@@ -280,7 +291,14 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 	}
 
 	private TaskErrorContext checkUnitForValueError(TaskContext currentTask, NumberField numberField, ReadingDataMeta rdm,Double currentValueInSiUnit) throws Exception {
-		double value = FacilioUtil.parseDouble(rdm.getValue());
+
+		double value =  getLatestPreviousReading (numberField, rdm, currentTask);	
+		
+		if(value < 0)
+		{
+			return null;
+		}
+		
 		double currentvalue = FacilioUtil.parseDouble(currentTask.getInputValue());
 		
 		double diff = value / currentvalue;
@@ -321,8 +339,14 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 	}
 
 	private TaskErrorContext checkIncremental(TaskContext currentTask, NumberField numberField, ReadingDataMeta rdm, Double currentValueInSiUnit) throws Exception {
+	
+
+		double previousValue =  getLatestPreviousReading (numberField, rdm, currentTask);	
 		
-		double previousValue = FacilioUtil.parseDouble(rdm.getValue());
+		if(previousValue < 0)
+		{
+			return null;
+		}
 		if(currentValueInSiUnit < previousValue) {
 			TaskErrorContext error = new TaskErrorContext();
 			error.setMode(TaskErrorContext.Mode.ERROR.getValue());
@@ -361,4 +385,36 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		}
 		return UnitsUtil.getOrgDisplayUnit(AccountUtil.getCurrentOrg().getId(), numberField.getMetric());
 	}
+	
+	public ReadingContext getLatestInputReading(NumberField numberField, ReadingDataMeta rdm, TaskContext currentTask) throws Exception{
+		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(numberField.getModule().getFields());
+		SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
+				.select(Collections.singletonList(numberField))
+				.module(numberField.getModule())
+				.beanClass(ReadingContext.class)
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get(numberField.getName()),CommonOperators.IS_NOT_EMPTY))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), String.valueOf(rdm.getResourceId()), NumberOperators.EQUALS))
+				.andCondition(CriteriaAPI.getCondition(fieldMap.get("ttime"), String.valueOf(currentTask.getInputTime()), NumberOperators.LESS_THAN_EQUAL))
+				.orderBy("TTIME DESC").limit(1);
+			
+		return selectBuilder.fetchFirst();
+	}
+	
+	public Double getLatestPreviousReading (NumberField numberField, ReadingDataMeta rdm, TaskContext currentTask) throws Exception {	
+		double value = -1;
+		if(currentTask.getInputTime() >= rdm.getTtime()) 
+		{
+			value = FacilioUtil.parseDouble(rdm.getValue());
+		}
+		else 
+		{
+			ReadingContext reading = getLatestInputReading(numberField, rdm, currentTask);
+			if (reading != null) {
+				value = (double) reading.getReading(numberField.getName());
+			}
+		}		
+		return value;
+	}
+	
+	
 }
