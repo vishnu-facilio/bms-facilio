@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -20,6 +19,7 @@ import com.facilio.agent.PublishType;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -66,7 +66,7 @@ public class ControllerAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.CONTROLLER_ID, id);
 		context.put(FacilioConstants.ContextNames.DEL_READING_RULE, deleteReading);
 
-		Chain deleteControllerSettings = TransactionChainFactory.getDeleteControllerChain();
+		FacilioChain deleteControllerSettings = TransactionChainFactory.getDeleteControllerChain();
 		if(deleteControllerSettings.execute(context)) {
 			setResult("result", "success");
 			return SUCCESS;
@@ -102,7 +102,7 @@ public class ControllerAction extends FacilioAction {
 	public String editAgent() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(PublishType.agent.getValue(), getAgentContext());
-		Chain createAgentChain = TransactionChainFactory.editAgent();
+		FacilioChain createAgentChain = TransactionChainFactory.editAgent();
 		if (createAgentChain.execute(context)) {
 			 setResult("msg", SUCCESS);
 			return SUCCESS;
@@ -227,7 +227,7 @@ public class ControllerAction extends FacilioAction {
 	public String deleteAgent() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(AgentKeys.ID, getAgentId());
-		Chain deleteAgentChain = TransactionChainFactory.deleteAgent();
+		FacilioChain deleteAgentChain = TransactionChainFactory.deleteAgent();
 		if (deleteAgentChain.execute(context)) {
 			setResult("msg", SUCCESS);
 			return SUCCESS;
@@ -254,7 +254,7 @@ public class ControllerAction extends FacilioAction {
 	public String controllerEdit() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(AgentKeys.CONTROLLER_TABLE, getControllerContext());
-		Chain editController = TransactionChainFactory.controllerEdit();
+		FacilioChain editController = TransactionChainFactory.controllerEdit();
 		if (editController.execute(context)) {
 			setResult("msg", SUCCESS);
 			return SUCCESS;

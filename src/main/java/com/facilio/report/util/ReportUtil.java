@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -37,8 +36,8 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.StringOperators;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.AggregateOperator;
-import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
 import com.facilio.modules.BaseLineContext;
+import com.facilio.modules.BmsAggregateOperators.CommonAggregateOperator;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
@@ -595,7 +594,7 @@ public class ReportUtil {
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, -1l);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		
-		Chain c = FacilioChain.getNonTransactionChain();
+		FacilioChain c = FacilioChain.getNonTransactionChain();
 		c.addCommand(new GetAllFieldsCommand());
 		c.execute(context);
 		

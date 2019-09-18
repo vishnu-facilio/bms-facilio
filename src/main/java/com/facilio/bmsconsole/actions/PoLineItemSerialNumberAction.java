@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -12,6 +11,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.PoLineItemsSerialNumberContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -48,7 +48,7 @@ public class PoLineItemSerialNumberAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.RECORD, poLineItemSerialNumber);
 		context.put(FacilioConstants.ContextNames.SERIAL_NUMBERS, poLineItemSerialNumber.getSerialNumbers());
 		context.put(FacilioConstants.ContextNames.ASSETS, poLineItemSerialNumber.getAssets());
-		Chain addInventry = TransactionChainFactory.getAddPoLineItemSerialNumbersChain();
+		FacilioChain addInventry = TransactionChainFactory.getAddPoLineItemSerialNumbersChain();
 		addInventry.execute(context);
 		poLineItemSerialNumbers = (List<PoLineItemsSerialNumberContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
 		setResult(FacilioConstants.ContextNames.PO_LINE_ITEMS_SERIAL_NUMBERS, poLineItemSerialNumbers);
@@ -60,7 +60,7 @@ public class PoLineItemSerialNumberAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		context.put(FacilioConstants.ContextNames.RECORD, poLineItemSerialNumber);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(poLineItemSerialNumber.getId()));
-		Chain addInventry = TransactionChainFactory.getUpdatePoLineItemSerialNumbersChain();
+		FacilioChain addInventry = TransactionChainFactory.getUpdatePoLineItemSerialNumbersChain();
 		addInventry.execute(context);
 		poLineItemSerialNumber = (PoLineItemsSerialNumberContext) context.get(FacilioConstants.ContextNames.RECORD);
 		setResult(FacilioConstants.ContextNames.PO_LINE_ITEMS_SERIAL_NUMBERS, poLineItemSerialNumber);
@@ -73,7 +73,7 @@ public class PoLineItemSerialNumberAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
 
-		Chain deleteInventoryChain = TransactionChainFactory.getDeletePoLineItemSerialNumbersChain();
+		FacilioChain deleteInventoryChain = TransactionChainFactory.getDeletePoLineItemSerialNumbersChain();
 		deleteInventoryChain.execute(context);
 		setRecordIds((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
 		setResult("recordIds", recordIds);
@@ -108,7 +108,7 @@ public class PoLineItemSerialNumberAction extends FacilioAction{
 			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 		}
 	
-		Chain itemsListChain = ReadOnlyChainFactory.getPoLineItemsSerialNumberList();
+		FacilioChain itemsListChain = ReadOnlyChainFactory.getPoLineItemsSerialNumberList();
 		itemsListChain.execute(context);
 		if (getCount()) {
 			setItemsCount((Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));

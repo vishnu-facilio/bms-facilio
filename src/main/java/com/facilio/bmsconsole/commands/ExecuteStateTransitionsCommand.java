@@ -1,14 +1,14 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.db.criteria.Criteria;
-import com.facilio.modules.ModuleBaseWithCustomFields;
+import java.util.List;
+
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.collections4.CollectionUtils;
-
-import java.util.List;
+import com.facilio.db.criteria.Criteria;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 
 public class ExecuteStateTransitionsCommand extends ExecuteAllWorkflowsCommand {
 	private static final long serialVersionUID = 1L;

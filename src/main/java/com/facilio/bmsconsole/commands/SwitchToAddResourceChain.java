@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -15,6 +14,7 @@ import com.facilio.bmsconsole.context.PurchasedItemContext;
 import com.facilio.bmsconsole.context.PurchasedToolContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.util.ImportAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -39,7 +39,7 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 		if(facilioModule.getName().equals(FacilioConstants.ContextNames.ASSET) ||
 				(facilioModule.getExtendModule() != null &&  facilioModule.getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))
 				) {
-			Chain c = TransactionChainFactory.getGenericImportChain();
+			FacilioChain c = TransactionChainFactory.getGenericImportChain();
 			c.execute(context);	
 		}
 		
@@ -49,7 +49,7 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 				|| facilioModule.getName().equals(FacilioConstants.ContextNames.SPACE) 
 				|| facilioModule.getExtendModule() != null && facilioModule.getExtendModule().getName().equals(FacilioConstants.ContextNames.BASE_SPACE)) {
 			
-				Chain c = TransactionChainFactory.getGenericImportChain();
+				FacilioChain c = TransactionChainFactory.getGenericImportChain();
 				c.execute(context);
 		}
 		
@@ -70,7 +70,7 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 				
 			}
 			
-			Chain c = TransactionChainFactory.getImportItemChain();
+			FacilioChain c = TransactionChainFactory.getImportItemChain();
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, items);
 			c.execute(context);
 		}
@@ -90,7 +90,7 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 				tools.add(FieldUtil.getAsBeanFromMap(temp, PurchasedToolContext.class));
 			}
 			
-			Chain c = TransactionChainFactory.getImportToolChain();
+			FacilioChain c = TransactionChainFactory.getImportToolChain();
 			context.put(FacilioConstants.ContextNames.RECORD_LIST, tools);
 			c.execute(context);
 		} 
@@ -98,7 +98,7 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 			
 			context.put(ImportAPI.ImportProcessConstants.READINGS_CONTEXT_LIST, readingsContext);
 			
-			Chain c = TransactionChainFactory.getBulkWorkOrderImportChain();
+			FacilioChain c = TransactionChainFactory.getBulkWorkOrderImportChain();
 			c.execute(context);
 			
 			

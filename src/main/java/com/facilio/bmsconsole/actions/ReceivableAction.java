@@ -2,13 +2,13 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ReceivableContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -100,7 +100,7 @@ public class ReceivableAction extends FacilioAction {
  	 		pagination.put("perPage", 5000);
  	 	}
  	 	
-		Chain chain = ReadOnlyChainFactory.getAllReceivablesChain();
+		FacilioChain chain = ReadOnlyChainFactory.getAllReceivablesChain();
 		chain.execute(context);
 		if (getFetchCount()) {
 			setResult(FacilioConstants.ContextNames.RECORD_COUNT,context.get(FacilioConstants.ContextNames.RECORD_COUNT));
@@ -116,7 +116,7 @@ public class ReceivableAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PO_ID,poId );
 		
-		Chain chain = ReadOnlyChainFactory.getAllReceivablesChain();
+		FacilioChain chain = ReadOnlyChainFactory.getAllReceivablesChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECEIVABLES, context.get(FacilioConstants.ContextNames.RECORD_LIST));
@@ -128,7 +128,7 @@ public class ReceivableAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, receivableId);
 		
-		Chain chain = ReadOnlyChainFactory.getAllReceivablesChain();
+		FacilioChain chain = ReadOnlyChainFactory.getAllReceivablesChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECEIVABLES, context.get(FacilioConstants.ContextNames.RECORD_LIST));
@@ -140,7 +140,7 @@ public class ReceivableAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, receivables);
 		
-		Chain chain = TransactionChainFactory.getAddOrUpdateReceivablesChain();
+		FacilioChain chain = TransactionChainFactory.getAddOrUpdateReceivablesChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECEIVABLES, context.get(FacilioConstants.ContextNames.RECORD_LIST));

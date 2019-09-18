@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.commands;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
@@ -24,6 +23,7 @@ import com.facilio.bmsconsole.util.AssetBreakdownAPI;
 import com.facilio.bmsconsole.util.ReadingRuleAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
@@ -144,7 +144,7 @@ public class UpdateAlarmCommand extends FacilioCommand {
 						assetBreakdown.setSourceId(id);
 						assetBreakdown.setSourceType(SourceType.ALARM.getValue());
 						context.put(FacilioConstants.ContextNames.ASSET_BD_SOURCE_DETAILS, assetBreakdown);
-						Chain newAssetBreakdown = TransactionChainFactory.getAddAssetDowntimeChain();
+						FacilioChain newAssetBreakdown = TransactionChainFactory.getAddAssetDowntimeChain();
 						newAssetBreakdown.execute(context);
 					}
 				}

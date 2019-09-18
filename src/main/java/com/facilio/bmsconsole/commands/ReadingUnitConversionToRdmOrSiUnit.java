@@ -1,9 +1,13 @@
 package com.facilio.bmsconsole.commands;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingDataMeta;
@@ -15,7 +19,6 @@ import com.facilio.modules.fields.NumberField;
 import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.util.FacilioUtil;
-import org.apache.commons.collections4.CollectionUtils;
 
 public class ReadingUnitConversionToRdmOrSiUnit extends FacilioCommand {
 

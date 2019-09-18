@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -11,6 +10,7 @@ import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.SetupLayout;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
@@ -25,7 +25,7 @@ public class TicketStatusAction extends FacilioAction {
 	public String statusList() throws Exception {
 		FacilioContext context = new FacilioContext();
 		
-		Chain statusListChain = FacilioChainFactory.getTicketStatusListChain();
+		FacilioChain statusListChain = FacilioChainFactory.getTicketStatusListChain();
 		statusListChain.execute(context);
 		
 		setStatuses((List<FacilioStatus>) context.get(FacilioConstants.ContextNames.TICKET_STATUS_LIST));
@@ -45,7 +45,7 @@ public class TicketStatusAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PARENT_MODULE, parentModuleName);
 		
-		Chain statusListChain = FacilioChainFactory.getTicketStatusListChain();
+		FacilioChain statusListChain = FacilioChainFactory.getTicketStatusListChain();
 		statusListChain.execute(context);
 		
 		setResult("status", context.get(FacilioConstants.ContextNames.TICKET_STATUS_LIST));
@@ -66,7 +66,7 @@ public class TicketStatusAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.TICKET_STATUS, facilioStatus);
 		context.put(FacilioConstants.ContextNames.PARENT_MODULE, parentModuleName);
 		
-		Chain chain = TransactionChainFactory.getAddOrUpdateTicketStatusChain();
+		FacilioChain chain = TransactionChainFactory.getAddOrUpdateTicketStatusChain();
 		chain.execute(context);
 		
 		setResult("status", context.get(FacilioConstants.ContextNames.TICKET_STATUS));
@@ -77,7 +77,7 @@ public class TicketStatusAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TICKET_STATUS, facilioStatus);
 		
-		Chain chain = TransactionChainFactory.getAddOrUpdateTicketStatusChain();
+		FacilioChain chain = TransactionChainFactory.getAddOrUpdateTicketStatusChain();
 		chain.execute(context);
 		
 		setResult("status", context.get(FacilioConstants.ContextNames.TICKET_STATUS));

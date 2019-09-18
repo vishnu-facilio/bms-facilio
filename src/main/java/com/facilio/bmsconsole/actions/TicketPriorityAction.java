@@ -2,11 +2,10 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
-
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.SetupLayout;
 import com.facilio.bmsconsole.context.TicketPriorityContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
@@ -19,7 +18,7 @@ public class TicketPriorityAction extends ActionSupport {
 	public String priorityList() throws Exception {
 		FacilioContext context = new FacilioContext();
 		
-		Chain statusListChain = FacilioChainFactory.getTicketPriorityListChain();
+		FacilioChain statusListChain = FacilioChainFactory.getTicketPriorityListChain();
 		statusListChain.execute(context);
 		
 		setPriorities((List<TicketPriorityContext>) context.get(FacilioConstants.ContextNames.TICKET_PRIORITY_LIST));

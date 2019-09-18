@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -21,6 +20,7 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsole.util.ModuleLocalIdUtil;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileStore;
@@ -390,7 +390,7 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 			context.put(FacilioConstants.ContextNames.UPDATE_LAST_READINGS,false);
 			context.put(FacilioConstants.ContextNames.READINGS_MAP , readingMap);
 			context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.IMPORT);
-			Chain importDataChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
+			FacilioChain importDataChain = ReadOnlyChainFactory.getAddOrUpdateReadingValuesChain();
 			importDataChain.execute(context);	
 		}
 		else {

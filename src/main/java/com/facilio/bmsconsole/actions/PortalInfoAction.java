@@ -7,13 +7,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.apache.struts2.json.JSONException;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.PortalInfoContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.opensymphony.xwork2.ActionSupport;
@@ -31,7 +31,7 @@ public class PortalInfoAction extends ActionSupport
 	public String getPortalInfo() throws Exception
 	{
 		FacilioContext context = new FacilioContext();
-		Chain getPortalInfoChain = FacilioChainFactory.getPortalInfoChain();
+		FacilioChain getPortalInfoChain = FacilioChainFactory.getPortalInfoChain();
 		getPortalInfoChain.execute(context);
 		setProtalInfo((PortalInfoContext)context.get(FacilioConstants.ContextNames.PORTALINFO));
 		return SUCCESS;
@@ -53,7 +53,7 @@ public class PortalInfoAction extends ActionSupport
 		context.put(FacilioConstants.ContextNames.PUBLICKEYFILE, publicKeyFile);
 		context.put(FacilioConstants.ContextNames.PUBLICKEYFILETYPE, publicKeyFileContentType);
 		context.put(FacilioConstants.ContextNames.PUBLICKEYFILENAME, publicKeyFileFileName);
-		Chain updatePortalInfoChain = FacilioChainFactory.updatePortalSSOChain();
+		FacilioChain updatePortalInfoChain = FacilioChainFactory.updatePortalSSOChain();
 		updatePortalInfoChain.execute(context);
 		
 		return SUCCESS;
@@ -66,7 +66,7 @@ public class PortalInfoAction extends ActionSupport
 		// portalInfoMap.put("signup_allowed",signup_allowed);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, "serviceportal");
 		context.put(FacilioConstants.ContextNames.PORTALINFO, portalInfoMap);
-		Chain updatePortalInfoChain = FacilioChainFactory.updatePortalInfoChain();
+		FacilioChain updatePortalInfoChain = FacilioChainFactory.updatePortalInfoChain();
 		updatePortalInfoChain.execute(context);
 		
 		return SUCCESS;

@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.commands;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -15,6 +14,7 @@ import com.facilio.bmsconsole.context.PurchaseRequestContext.Status;
 import com.facilio.bmsconsole.context.PurchaseRequestLineItemContext;
 import com.facilio.bmsconsole.util.LocationAPI;
 import com.facilio.bmsconsole.util.RecordAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -103,7 +103,7 @@ public class AddOrUpdatePurchaseRequestCommand extends FacilioCommand {
 				location.setName(locationName);
 				context.put(FacilioConstants.ContextNames.RECORD, location);
 				if (location.getId() > 0) {
-					Chain editLocation = FacilioChainFactory.updateLocationChain();
+					FacilioChain editLocation = FacilioChainFactory.updateLocationChain();
 					editLocation.execute(context);
 				}
 				else {
@@ -134,7 +134,7 @@ public class AddOrUpdatePurchaseRequestCommand extends FacilioCommand {
 		    				location.setLng(1.1);
 		    			}
 						
-						Chain addLocation = FacilioChainFactory.addLocationChain();
+						FacilioChain addLocation = FacilioChainFactory.addLocationChain();
 						addLocation.execute(context);
 						long locationId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 						location.setId(locationId);

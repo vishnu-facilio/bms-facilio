@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import org.apache.commons.chain.Chain;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
@@ -47,6 +46,7 @@ import com.facilio.agentIntegration.MultipartHttpPost;
 import com.facilio.aws.util.AwsUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
@@ -348,7 +348,7 @@ public class WattsenseUtil
     }
 
     private static boolean makeWattsenseEntry(String propKey,String propValue,Wattsense wattsense) {
-        Chain chain = TransactionChainFactory.createWattChain();
+        FacilioChain chain = TransactionChainFactory.createWattChain();
         Map<String,Object> row = new HashMap<>();
         List<Map<String,Object>> toInsert = new ArrayList<>();
             row.put(AgentIntegrationKeys.PROP_KEY, propKey);
@@ -440,7 +440,7 @@ public class WattsenseUtil
     }
 
     private static boolean updateStatus(Wattsense wattsense,String status){ // working good
-        Chain chain = TransactionChainFactory.updateWattStatusChain();
+        FacilioChain chain = TransactionChainFactory.updateWattStatusChain();
         Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getAgentIntegrationFields());
         FacilioContext context = new FacilioContext();
         context.put(FacilioConstants.ContextNames.TABLE_NAME, AgentIntegrationKeys.TABLE_NAME);
@@ -500,7 +500,7 @@ public class WattsenseUtil
     }
 
     private static boolean deleteWattsense(String clientId){
-        Chain chain = TransactionChainFactory.deleteWattsenseChain();
+        FacilioChain chain = TransactionChainFactory.deleteWattsenseChain();
         Map<String,FacilioField> fieldMap = FieldFactory.getAsMap(FieldFactory.getAgentIntegrationFields());
         FacilioContext context = new FacilioContext();
         context.put(FacilioConstants.ContextNames.TABLE_NAME, AgentIntegrationKeys.TABLE_NAME);

@@ -1,19 +1,20 @@
 package com.facilio.bmsconsole.actions;
 
+import java.util.Collections;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.reservation.ReservationContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.Collections;
-import java.util.List;
 
 public class ReservationAction extends FacilioAction {
     /**
@@ -32,7 +33,7 @@ public class ReservationAction extends FacilioAction {
         FacilioContext context = new FacilioContext();
         context.put(FacilioConstants.ContextNames.Reservation.RESERVATION, reservation);
 
-        Chain addReservation = TransactionChainFactory.addReservationChain();
+        FacilioChain addReservation = TransactionChainFactory.addReservationChain();
         addReservation.execute(context);
 
         setResult(FacilioConstants.ContextNames.Reservation.RESERVATION, reservation);
@@ -49,7 +50,7 @@ public class ReservationAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.Reservation.RESERVATION);
         context.put(FacilioConstants.ContextNames.LOOKUP_FIELD_META_LIST, Collections.singletonList(modBean.getField("reservedFor", FacilioConstants.ContextNames.Reservation.RESERVATION)));
 
-        Chain fetchList = ReadOnlyChainFactory.fetchModuleDataListChain();
+        FacilioChain fetchList = ReadOnlyChainFactory.fetchModuleDataListChain();
         fetchList.execute(context);
 
         if (isFetchCount()) {
@@ -73,7 +74,7 @@ public class ReservationAction extends FacilioAction {
         FacilioContext context = new FacilioContext();
         context.put(FacilioConstants.ContextNames.ID, recordId);
         context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.Reservation.RESERVATION);
-        Chain fetchDetail = ReadOnlyChainFactory.fetchReservationDetailsChain();
+        FacilioChain fetchDetail = ReadOnlyChainFactory.fetchReservationDetailsChain();
         fetchDetail.execute(context);
 
         reservation = (ReservationContext) context.get(FacilioConstants.ContextNames.RECORD);
@@ -95,7 +96,7 @@ public class ReservationAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.Reservation.RESERVATION);
         context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 
-        Chain deleteReservation = FacilioChainFactory.deleteModuleDataChain();
+        FacilioChain deleteReservation = FacilioChainFactory.deleteModuleDataChain();
         deleteReservation.execute(context);
 
         setResult(FacilioConstants.ContextNames.ROWS_UPDATED, context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
@@ -107,7 +108,7 @@ public class ReservationAction extends FacilioAction {
         context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
         context.put(FacilioConstants.ContextNames.Reservation.RESERVATION, reservation);
 
-        Chain updateReservation = TransactionChainFactory.updateReservationChain();
+        FacilioChain updateReservation = TransactionChainFactory.updateReservationChain();
         updateReservation.execute(context);
 
         setResult(FacilioConstants.ContextNames.ROWS_UPDATED, context.get(FacilioConstants.ContextNames.ROWS_UPDATED));

@@ -1,11 +1,11 @@
 package com.facilio.mv.command;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.mv.context.MVProjectContext;
 import com.facilio.mv.context.MVProjectWrapper;
@@ -30,14 +30,14 @@ public class UpdateMVProjectCommand extends FacilioCommand {
 				context.put(FacilioConstants.ContextNames.FORMULA_FIELD, mvProjectContext.getSaveGoalFormulaField());
 				MVUtil.fillFormulaFieldDetailsForUpdate(mvProjectContext.getSaveGoalFormulaField(), mvProjectWrapper.getMvProject(),null,null,context);
 				
-				Chain updateEnPIChain = FacilioChainFactory.updateFormulaChain();
+				FacilioChain updateEnPIChain = FacilioChainFactory.updateFormulaChain();
 				updateEnPIChain.execute(context);
 			}
 			else {
 				MVUtil.fillFormulaFieldDetailsForAdd(mvProjectContext.getSaveGoalFormulaField(), mvProjectWrapper.getMvProject(),null,null,context);
 				context.put(FacilioConstants.ContextNames.FORMULA_FIELD, mvProjectContext.getSaveGoalFormulaField());
 
-				Chain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
+				FacilioChain addEnpiChain = TransactionChainFactory.addFormulaFieldChain();
 				addEnpiChain.execute(context);
 			}
 		}
@@ -45,7 +45,7 @@ public class UpdateMVProjectCommand extends FacilioCommand {
 			if(mvProjectContextOld.getSaveGoalFormulaField() != null) {
 				context.put(FacilioConstants.ContextNames.RECORD_ID, mvProjectContextOld.getSaveGoalFormulaField().getId());
 				
-				Chain deleteEnPIChain = FacilioChainFactory.deleteFormulaChain();
+				FacilioChain deleteEnPIChain = FacilioChainFactory.deleteFormulaChain();
 				deleteEnPIChain.execute(context);
 			}
 		}

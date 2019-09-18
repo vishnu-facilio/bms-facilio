@@ -1,10 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 
-import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 
 public class GetSpecialModuleDataDetailCommand extends FacilioCommand  {
@@ -18,7 +17,7 @@ public class GetSpecialModuleDataDetailCommand extends FacilioCommand  {
 			String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 			switch (moduleName) {
 				case FacilioConstants.ContextNames.READING_RULE_MODULE:
-					Chain fetchAlarmChain = ReadOnlyChainFactory.fetchAlarmRuleWithActionsChain();
+					FacilioChain fetchAlarmChain = ReadOnlyChainFactory.fetchAlarmRuleWithActionsChain();
 					fetchAlarmChain.execute(context);
 					context.put(FacilioConstants.ContextNames.RECORD, context.get(FacilioConstants.ContextNames.ALARM_RULE));
 				default:

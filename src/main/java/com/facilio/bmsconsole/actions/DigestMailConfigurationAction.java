@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONArray;
 
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -10,6 +9,7 @@ import com.facilio.bmsconsole.context.DigestConfigContext;
 import com.facilio.bmsconsole.context.DigestMailTemplateMapContext;
 import com.facilio.bmsconsole.util.DigestConfigAPI;
 import com.facilio.bmsconsole.workflow.rule.ActionContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.ScheduleInfo;
@@ -104,7 +104,7 @@ public class DigestMailConfigurationAction extends FacilioAction{
 		facilioContext.put(FacilioConstants.ContextNames.SCHEDULE_INFO, scheduleInfo);
 		facilioContext.put(FacilioConstants.ContextNames.CONFIG, config);
 		
-		Chain addAction = TransactionChainFactory.getAddOrUpdateDigestMailConfigChain();
+		FacilioChain addAction = TransactionChainFactory.getAddOrUpdateDigestMailConfigChain();
 		addAction.execute(facilioContext);
 		setResult(SUCCESS,  "success");
 		return SUCCESS;
@@ -116,7 +116,7 @@ public class DigestMailConfigurationAction extends FacilioAction{
 		facilioContext.put(FacilioConstants.ContextNames.DIGEST_CONFIG_ID, configId);
 		facilioContext.put(FacilioConstants.ContextNames.STATUS, status);
 		
-		Chain addAction = TransactionChainFactory.getActivateDigestConfigChain();
+		FacilioChain addAction = TransactionChainFactory.getActivateDigestConfigChain();
 		addAction.execute(facilioContext);
 		setResult(FacilioConstants.ContextNames.DIGEST_CONFIG,  configId);
 		return SUCCESS;
@@ -127,7 +127,7 @@ public class DigestMailConfigurationAction extends FacilioAction{
 		FacilioContext facilioContext = new FacilioContext();
 		facilioContext.put(FacilioConstants.ContextNames.DIGEST_CONFIG_ID, configId);
 		
-		Chain addAction = TransactionChainFactory.getDeleteDigestConfigChain();
+		FacilioChain addAction = TransactionChainFactory.getDeleteDigestConfigChain();
 		addAction.execute(facilioContext);
 		setResult(FacilioConstants.ContextNames.DIGEST_CONFIG,  configId);
 		return SUCCESS;
@@ -137,7 +137,7 @@ public class DigestMailConfigurationAction extends FacilioAction{
 	public String getAllDigestConfigs() throws Exception {
 		FacilioContext facilioContext = new FacilioContext();
 		
-		Chain getConfigChain = TransactionChainFactory.getAllDigestConfigChain();
+		FacilioChain getConfigChain = TransactionChainFactory.getAllDigestConfigChain();
 		getConfigChain.execute(facilioContext);
 		 
 		setResult(FacilioConstants.ContextNames.DIGEST_CONFIG_LIST, facilioContext.get(FacilioConstants.ContextNames.DIGEST_CONFIG_LIST) );
@@ -148,7 +148,7 @@ public class DigestMailConfigurationAction extends FacilioAction{
 	public String getEnabledDigestConfigs() throws Exception {
 		FacilioContext facilioContext = new FacilioContext();
 		
-		Chain getConfigChain = TransactionChainFactory.getAllEnabledDigestConfigChain();
+		FacilioChain getConfigChain = TransactionChainFactory.getAllEnabledDigestConfigChain();
 		getConfigChain.execute(facilioContext);
 		 
 		setResult(FacilioConstants.ContextNames.DIGEST_CONFIG_LIST, facilioContext.get(FacilioConstants.ContextNames.DIGEST_CONFIG_LIST) );
@@ -165,7 +165,7 @@ public class DigestMailConfigurationAction extends FacilioAction{
 	public String viewEnabledDigestConfig() throws Exception {
 		FacilioContext facilioContext = new FacilioContext();
 		facilioContext.put(FacilioConstants.ContextNames.DIGEST_CONFIG_ID, configId);
-		Chain getConfigChain = TransactionChainFactory.getAllEnabledDigestConfigChain();
+		FacilioChain getConfigChain = TransactionChainFactory.getAllEnabledDigestConfigChain();
 		getConfigChain.execute(facilioContext);
 		 
 		setResult(FacilioConstants.ContextNames.DIGEST_CONFIG_LIST, facilioContext.get(FacilioConstants.ContextNames.DIGEST_CONFIG_LIST) );

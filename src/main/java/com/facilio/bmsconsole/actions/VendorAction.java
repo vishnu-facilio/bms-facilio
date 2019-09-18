@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -14,6 +13,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.LocationContext;
 import com.facilio.bmsconsole.context.VendorContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -50,7 +50,7 @@ public class VendorAction extends FacilioAction{
 		{	
 			location.setName(vendor.getName()+"_location");
 			context.put(FacilioConstants.ContextNames.RECORD, location);
-			Chain addLocation = FacilioChainFactory.addLocationChain();
+			FacilioChain addLocation = FacilioChainFactory.addLocationChain();
 			addLocation.execute(context);
 			long locationId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 			location.setId(locationId);
@@ -60,7 +60,7 @@ public class VendorAction extends FacilioAction{
 		vendor.setSysCreatedTime(System.currentTimeMillis());
 		FacilioContext context1 = new FacilioContext();
 		context1.put(FacilioConstants.ContextNames.RECORD, vendor);
-		Chain addVendorChain = TransactionChainFactory.getAddVendorChain();
+		FacilioChain addVendorChain = TransactionChainFactory.getAddVendorChain();
 		addVendorChain.execute(context1);
 		
 		setResult(FacilioConstants.ContextNames.VENDOR, vendor);
@@ -80,12 +80,12 @@ public class VendorAction extends FacilioAction{
 			if (location.getId() > 0) {
 				context.put(FacilioConstants.ContextNames.RECORD_ID, location.getId());
 				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, java.util.Collections.singletonList(location.getId()));
-				Chain editLocation = FacilioChainFactory.updateLocationChain();
+				FacilioChain editLocation = FacilioChainFactory.updateLocationChain();
 				editLocation.execute(context);
 				vendor.setAddress(location);
 			}
 			else {
-				Chain addLocation = FacilioChainFactory.addLocationChain();
+				FacilioChain addLocation = FacilioChainFactory.addLocationChain();
 				addLocation.execute(context);
 				long locationId = (long) context.get(FacilioConstants.ContextNames.RECORD_ID);
 				location.setId(locationId);
@@ -102,7 +102,7 @@ public class VendorAction extends FacilioAction{
 		context1.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(vendor.getId()));
 		context1.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 
-		Chain updateVendorChain = TransactionChainFactory.getUpdateVendorChain();
+		FacilioChain updateVendorChain = TransactionChainFactory.getUpdateVendorChain();
 		updateVendorChain.execute(context1);
 		setVendorId(vendor.getId());
 		vendorDetails();
@@ -114,7 +114,7 @@ public class VendorAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getVendorId());
 
-		Chain storeRoomDetailsChain = ReadOnlyChainFactory.fetchVendorDetails();
+		FacilioChain storeRoomDetailsChain = ReadOnlyChainFactory.fetchVendorDetails();
 		storeRoomDetailsChain.execute(context);
 
 		setVendor((VendorContext) context.get(FacilioConstants.ContextNames.VENDOR));
@@ -150,7 +150,7 @@ public class VendorAction extends FacilioAction{
 			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 		}
 
-		Chain vendorListChain = ReadOnlyChainFactory.getVendorsList();
+		FacilioChain vendorListChain = ReadOnlyChainFactory.getVendorsList();
 		vendorListChain.execute(context);
 		if (getCount()) {
 			setVendorsCount((Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));

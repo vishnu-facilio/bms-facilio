@@ -6,7 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.chain.Chain;
+
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -15,6 +15,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.MLContext;
 import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.bmsconsole.util.MLUtil;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -159,7 +160,7 @@ public class DefaultMLSplitHistoricalJob extends FacilioJob
 			Context context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.ML, mlContext);
 			
-			Chain c = FacilioChainFactory.getMLModelBuildingChain();
+			FacilioChain c = FacilioChainFactory.getMLModelBuildingChain();
 			c.execute(context);
 		}
 	}

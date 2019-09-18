@@ -6,7 +6,6 @@ package com.facilio.bmsconsole.jobs;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -16,6 +15,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportParseException;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsole.util.ImportPointsAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.transaction.FacilioTransactionManager;
@@ -53,7 +53,7 @@ public class ImportPointsDataJob extends FacilioJob{
 			if(!importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET)) {
 				FacilioContext context = new FacilioContext();
 				context.put(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT, importProcessContext);
-				Chain importChain = TransactionChainFactory.getImportPointsChain();
+				FacilioChain importChain = TransactionChainFactory.getImportPointsChain();
 				importChain.execute(context);
 			}
 			else {
@@ -62,13 +62,13 @@ public class ImportPointsDataJob extends FacilioJob{
 						|| importProcessContext.getImportSetting() == PointsProcessContext.ImportSetting.BOTH.getValue() || importProcessContext.getImportSetting() == PointsProcessContext.ImportSetting.BOTH_NOT_NULL.getValue() ) {
 					FacilioContext context = new FacilioContext();
 					context.put(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT, importProcessContext);
-					Chain importChain = TransactionChainFactory.getImportChain();
+					FacilioChain importChain = TransactionChainFactory.getImportChain();
 					importChain.execute(context);
 				}
 				else {
 					FacilioContext context = new FacilioContext();
 					context.put(ImportAPI.ImportProcessConstants.IMPORT_PROCESS_CONTEXT, importProcessContext);
-					Chain bulkAssetImportChain = TransactionChainFactory.getBulkAssertImportChain();
+					FacilioChain bulkAssetImportChain = TransactionChainFactory.getBulkAssertImportChain();
 					bulkAssetImportChain.execute(context);
 				}
 			}

@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.actions;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -13,6 +12,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.BreakContext;
 import com.facilio.bmsconsole.context.ShiftContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -25,7 +25,7 @@ public class ShiftAction extends FacilioAction {
 	public String add() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.SHIFT, this.shift);
-		Chain c = FacilioChainFactory.getAddShiftCommand();
+		FacilioChain c = FacilioChainFactory.getAddShiftCommand();
 		c.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.SHIFT, context.get(FacilioConstants.ContextNames.SHIFT));
@@ -36,7 +36,7 @@ public class ShiftAction extends FacilioAction {
 	public String update() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.SHIFT, this.shift);
-		Chain c = FacilioChainFactory.getUpdateShiftCommand();
+		FacilioChain c = FacilioChainFactory.getUpdateShiftCommand();
 		c.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.SHIFT, context.get(FacilioConstants.ContextNames.SHIFT));
@@ -45,7 +45,7 @@ public class ShiftAction extends FacilioAction {
 	
 	public String all() throws Exception {		
 		FacilioContext context = new FacilioContext();
-		Chain c = FacilioChainFactory.getAllShiftsCommand();
+		FacilioChain c = FacilioChainFactory.getAllShiftsCommand();
 		c.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.SHIFTS, context.get(FacilioConstants.ContextNames.SHIFTS));
@@ -85,7 +85,7 @@ public class ShiftAction extends FacilioAction {
 		}
 		
 		
-		Chain c = ReadOnlyChainFactory.getShiftList();
+		FacilioChain c = ReadOnlyChainFactory.getShiftList();
 		c.execute(context);
 		
 		if (getCount()) {
@@ -107,7 +107,7 @@ public class ShiftAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.ID, this.id);
 		context.put(FacilioConstants.ContextNames.DO_VALIDTION, this.doValidation);
 		
-		Chain c = FacilioChainFactory.getDeleteShiftCommand();
+		FacilioChain c = FacilioChainFactory.getDeleteShiftCommand();
 		c.execute(context);
 		
 		this.users = (List<String>) context.get(FacilioConstants.ContextNames.USERS);
@@ -119,7 +119,7 @@ public class ShiftAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.SHIFT_ID, id);
 		
-		Chain chain = TransactionChainFactory.markAbsentChain();
+		FacilioChain chain = TransactionChainFactory.markAbsentChain();
 		chain.execute(context);
 		
 		return SUCCESS;
@@ -137,7 +137,7 @@ public class ShiftAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.BREAK, breakContext);
 		
-		Chain chain = TransactionChainFactory.addOrUpdateBreakChain();
+		FacilioChain chain = TransactionChainFactory.addOrUpdateBreakChain();
 		chain.execute(context);
 		return SUCCESS;
 	}
@@ -145,7 +145,7 @@ public class ShiftAction extends FacilioAction {
 	public String getAllBreak() throws Exception {
 		FacilioContext context = new FacilioContext();
 		
-		Chain c = ReadOnlyChainFactory.getAllBreakChain();
+		FacilioChain c = ReadOnlyChainFactory.getAllBreakChain();
 		c.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.BREAK_LIST, context.get(FacilioConstants.ContextNames.BREAK_LIST));
@@ -181,7 +181,7 @@ public class ShiftAction extends FacilioAction {
 		}
 		
 		
-		Chain c = ReadOnlyChainFactory.getBreakList();
+		FacilioChain c = ReadOnlyChainFactory.getBreakList();
 		c.execute(context);
 		
 		if (getCount()) {
@@ -202,7 +202,7 @@ public class ShiftAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, id);
 		
-		Chain c = ReadOnlyChainFactory.getBreakChain();
+		FacilioChain c = ReadOnlyChainFactory.getBreakChain();
 		c.execute(context);
 		
 		setResult("breakContext", context.get(FacilioConstants.ContextNames.BREAK));
@@ -214,7 +214,7 @@ public class ShiftAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, id);
 		
-		Chain c = TransactionChainFactory.deleteBreakChain();
+		FacilioChain c = TransactionChainFactory.deleteBreakChain();
 		c.execute(context);
 		
 		return SUCCESS;
@@ -241,7 +241,7 @@ public class ShiftAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.START_TIME, startDate);
 		context.put(FacilioConstants.ContextNames.END_TIME, endDate);
 		
-		Chain c = ReadOnlyChainFactory.getShiftUserMappingChain();
+		FacilioChain c = ReadOnlyChainFactory.getShiftUserMappingChain();
 		c.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.SHIFT_USER_MAPPING, context.get(FacilioConstants.ContextNames.SHIFT_USER_MAPPING));
@@ -255,7 +255,7 @@ public class ShiftAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.END_TIME, endDate);
 		context.put(FacilioConstants.ContextNames.SHIFT_ID, id);
 		
-		Chain c = TransactionChainFactory.addShiftUserMappingChain();
+		FacilioChain c = TransactionChainFactory.addShiftUserMappingChain();
 		c.execute(context);
 		
 		return SUCCESS;

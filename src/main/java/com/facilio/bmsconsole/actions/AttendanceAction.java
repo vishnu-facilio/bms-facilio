@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.actions;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -13,6 +12,7 @@ import com.facilio.bmsconsole.context.AttendanceContext;
 import com.facilio.bmsconsole.context.AttendanceStateContext;
 import com.facilio.bmsconsole.context.AttendanceTransactionContext;
 import com.facilio.bmsconsole.context.ShiftContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -71,7 +71,7 @@ public class AttendanceAction extends ModuleAction{
 	public String addAttendanceTransaction() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, attendanceTransaction);
-		Chain addItem = TransactionChainFactory.getAddAttendanceTransactionChain();
+		FacilioChain addItem = TransactionChainFactory.getAddAttendanceTransactionChain();
 		addItem.execute(context);
 		setResult(FacilioConstants.ContextNames.ATTENDANCE_TRANSACTIONS, attendanceTransaction);
 		return SUCCESS;
@@ -105,7 +105,7 @@ public class AttendanceAction extends ModuleAction{
 			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 		}
 
-		Chain itemsListChain = ReadOnlyChainFactory.getAttendanceList();
+		FacilioChain itemsListChain = ReadOnlyChainFactory.getAttendanceList();
 		itemsListChain.execute(context);
 		if (getCount()) {
 			setAttendanceCount((Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
@@ -178,7 +178,7 @@ public class AttendanceAction extends ModuleAction{
 			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 		}
 
-		Chain itemsListChain = ReadOnlyChainFactory.getAttendanceTransactionsList();
+		FacilioChain itemsListChain = ReadOnlyChainFactory.getAttendanceTransactionsList();
 		itemsListChain.execute(context);
 		if (getCount()) {
 			setAttendanceCount((Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
@@ -228,7 +228,7 @@ public class AttendanceAction extends ModuleAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.USER_ID, getUserId());
 		context.put(FacilioConstants.ContextNames.TIMESTAMP, getTime());
-		Chain chain = TransactionChainFactory.getAttendanceTransitionState();
+		FacilioChain chain = TransactionChainFactory.getAttendanceTransitionState();
 		chain.execute(context);
 		attendanceTransitions = (List<AttendanceStateContext>) context.get(FacilioConstants.ContextNames.RECORD);
 		shift =  (ShiftContext) context.get(FacilioConstants.ContextNames.SHIFT);
@@ -241,7 +241,7 @@ public class AttendanceAction extends ModuleAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, attendanceId);
 		
-		Chain chain = ReadOnlyChainFactory.getAttendanceDetailsChain();
+		FacilioChain chain = ReadOnlyChainFactory.getAttendanceDetailsChain();
 		chain.execute(context);
 		
 		AttendanceContext attendance = (AttendanceContext) context.get(FacilioConstants.ContextNames.RECORD);

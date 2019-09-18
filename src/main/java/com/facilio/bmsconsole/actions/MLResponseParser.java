@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.actions;
 import java.time.ZoneId;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
@@ -13,6 +12,7 @@ import com.facilio.aws.util.AwsUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.MLContext;
 import com.facilio.bmsconsole.util.MLUtil;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.time.DateTimeUtil;
@@ -48,7 +48,7 @@ public class MLResponseParser extends ActionSupport
 				
 				Context context = new FacilioContext();
 				context.put(FacilioConstants.ContextNames.ML, mlContext);
-				Chain c = FacilioChainFactory.addMLReadingChain();
+				FacilioChain c = FacilioChainFactory.addMLReadingChain();
 				c.execute(context);
 			}
 			else

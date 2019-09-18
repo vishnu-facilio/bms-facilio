@@ -2,15 +2,14 @@ package com.facilio.events.actions;
 
 import java.util.List;
 
-import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
-import com.facilio.bmsconsole.workflow.rule.EventType;
-import org.apache.commons.chain.Chain;
-
 import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
+import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -38,7 +37,7 @@ public class V2AlarmAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, getId());
 		
-		Chain chain = ReadOnlyChainFactory.getV2AlarmDetailsChain();
+		FacilioChain chain = ReadOnlyChainFactory.getV2AlarmDetailsChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECORD, context.get(FacilioConstants.ContextNames.RECORD));
@@ -60,7 +59,7 @@ public class V2AlarmAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, getIds());
 		context.put(FacilioConstants.ContextNames.ALARM_OCCURRENCE, getAlarmOccurrence());
 		
-		Chain c = TransactionChainFactory.getV2UpdateAlarmChain();
+		FacilioChain c = TransactionChainFactory.getV2UpdateAlarmChain();
 		c.execute(context);
 		
 		return SUCCESS;
@@ -78,7 +77,7 @@ public class V2AlarmAction extends FacilioAction {
  		FacilioContext context = constructListContext();
  		context.put(ContextNames.MODULE_NAME, alarmModule);
  		
- 		Chain alarmListChain = ReadOnlyChainFactory.getV2AlarmListChain();
+ 		FacilioChain alarmListChain = ReadOnlyChainFactory.getV2AlarmListChain();
 		alarmListChain.execute(context);
 		
 		if (isFetchCount()) {
@@ -97,7 +96,7 @@ public class V2AlarmAction extends FacilioAction {
 		FacilioContext context = constructListContext();
  		context.put(ContextNames.MODULE_NAME, FacilioConstants.ContextNames.ALARM_OCCURRENCE);
  		context.put(ContextNames.RECORD_ID, getId());
- 		Chain occurrenceListChain = ReadOnlyChainFactory.getV2OccurrenceListChain();
+ 		FacilioChain occurrenceListChain = ReadOnlyChainFactory.getV2OccurrenceListChain();
  		occurrenceListChain.execute(context);
 		
 		if (isFetchCount()) {
@@ -115,7 +114,7 @@ public class V2AlarmAction extends FacilioAction {
 		FacilioContext context = constructListContext();
  		context.put(ContextNames.MODULE_NAME, FacilioConstants.ContextNames.ALARM_OCCURRENCE);
  		context.put(ContextNames.RECORD_ID, getId());
- 		Chain occurrenceListChain = ReadOnlyChainFactory.getV2EventListChain();
+ 		FacilioChain occurrenceListChain = ReadOnlyChainFactory.getV2EventListChain();
  		occurrenceListChain.execute(context);
 		
 		if (isFetchCount()) {
@@ -131,7 +130,7 @@ public class V2AlarmAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(ContextNames.RECORD_ID, getId());
 		
-		Chain c = ReadOnlyChainFactory.getAlarmOccurrenceListChain();
+		FacilioChain c = ReadOnlyChainFactory.getAlarmOccurrenceListChain();
 		c.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECORD_LIST, context.get(FacilioConstants.ContextNames.RECORD_LIST));
@@ -143,7 +142,7 @@ public class V2AlarmAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, getId());
 		
-		Chain c = ReadOnlyChainFactory.getEventListChain();
+		FacilioChain c = ReadOnlyChainFactory.getEventListChain();
 		c.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECORD_LIST, context.get(FacilioConstants.ContextNames.RECORD_LIST));
@@ -155,7 +154,7 @@ public class V2AlarmAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, getId());
 		
-		Chain c = TransactionChainFactory.getDeleteAlarmChain();
+		FacilioChain c = TransactionChainFactory.getDeleteAlarmChain();
 		c.execute(context);
 		
 		return SUCCESS;
@@ -166,7 +165,7 @@ public class V2AlarmAction extends FacilioAction {
 		CommonCommandUtil.addEventType(EventType.DELETE, context);
 		context.put(FacilioConstants.ContextNames.RECORD_ID, getId());
 		
-		Chain c = TransactionChainFactory.getDeleteAlarmOccurrenceChain();
+		FacilioChain c = TransactionChainFactory.getDeleteAlarmOccurrenceChain();
 		c.execute(context);
 		
 		return SUCCESS;
@@ -185,7 +184,7 @@ public class V2AlarmAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RECORD_ID, getId());
 		context.put(FacilioConstants.ContextNames.WORK_ORDER, getWorkorder());
 		
-		Chain c = TransactionChainFactory.getV2AlarmOccurrenceCreateWO();
+		FacilioChain c = TransactionChainFactory.getV2AlarmOccurrenceCreateWO();
 		c.execute(context);
 		
 		return SUCCESS;

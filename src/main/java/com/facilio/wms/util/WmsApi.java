@@ -15,13 +15,13 @@ import java.util.logging.Logger;
 
 import javax.websocket.EncodeException;
 
-import com.facilio.aws.util.FacilioProperties;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.json.simple.JSONObject;
 
 import com.amazonaws.services.kinesis.model.PutRecordResult;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.kafka.FacilioKafkaProducer;
 import com.facilio.procon.message.FacilioRecord;
 import com.facilio.procon.producer.FacilioProducer;

@@ -1,7 +1,5 @@
 package com.facilio.bmsconsole.actions;
 
-import org.apache.commons.chain.Chain;
-
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.RelatedAssetsContext;
@@ -40,7 +38,7 @@ public class RelatedAssetsAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RELATED_ASSETS, relatedAssets);
 		
-		Chain chain;
+		FacilioChain chain;
 		if (relatedAssets.getId() > 0) {
 			chain = TransactionChainFactory.getUpdateRelatedAssetsChain();
 		} else {
@@ -55,7 +53,7 @@ public class RelatedAssetsAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, id);
 		
-		Chain chain = TransactionChainFactory.getDeleteRelatedAssetsChain();
+		FacilioChain chain = TransactionChainFactory.getDeleteRelatedAssetsChain();
 		chain.execute(context);
 		return SUCCESS;
 	}

@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 
 import com.amazonaws.services.rekognition.model.TextDetection;
@@ -13,6 +12,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.context.PhotosContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -49,7 +49,7 @@ public class PhotosAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.PHOTOS, getPhotos());
 		
-		Chain addPhotosChain = FacilioChainFactory.getAddPhotosChain();
+		FacilioChain addPhotosChain = FacilioChainFactory.getAddPhotosChain();
 		addPhotosChain.execute(context);
 		
 		return SUCCESS;
@@ -82,7 +82,7 @@ public class PhotosAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.PARENT_ID, parentId);
 		
-		Chain getPhotosChain = FacilioChainFactory.getPhotosChain();
+		FacilioChain getPhotosChain = FacilioChainFactory.getPhotosChain();
 		getPhotosChain.execute(context);
 		
 		setPhotos((List<PhotosContext>) context.get(FacilioConstants.ContextNames.PHOTOS));
@@ -148,7 +148,7 @@ public class PhotosAction extends FacilioAction {
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, this.fileFileName);
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.fileContentType);
  		
- 		Chain justUpload = FacilioChainFactory.justUploadPhotosChain();
+ 		FacilioChain justUpload = FacilioChainFactory.justUploadPhotosChain();
  		justUpload.execute(context);
  		
  		setPhotos((List<PhotosContext>) context.get(FacilioConstants.ContextNames.PHOTOS));
@@ -187,7 +187,7 @@ public class PhotosAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.PREVIOUS_VALUE, previousValue);
 		context.put(FacilioConstants.ContextNames.FILTERS, filterValues);
 		
-		Chain getTexts = FacilioChainFactory.getReadingFromImageChain();
+		FacilioChain getTexts = FacilioChainFactory.getReadingFromImageChain();
 		getTexts.execute(context);
 		
 		detectedTexts = (List<TextDetection>) context.get(FacilioConstants.ContextNames.PHOTO_TEXTS);
@@ -201,7 +201,7 @@ public class PhotosAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.PREVIOUS_VALUE, previousValue);
 		context.put(FacilioConstants.ContextNames.FILTERS, filterValues);
 		
-		Chain getTexts = FacilioChainFactory.getReadingFromImageChain();
+		FacilioChain getTexts = FacilioChainFactory.getReadingFromImageChain();
 		getTexts.execute(context);
 		
 		detectedTexts = (List<TextDetection>) context.get(FacilioConstants.ContextNames.PHOTO_TEXTS);
@@ -233,7 +233,7 @@ public class PhotosAction extends FacilioAction {
 		FileInfo file = fs.getFileInfo(photoId);
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_FILE_NAME, Collections.singletonList(file.getFileName()));
 		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, Collections.singletonList(file.getContentType()));
-		Chain addPhotosChain = FacilioChainFactory.getDeletePhtotosChain();
+		FacilioChain addPhotosChain = FacilioChainFactory.getDeletePhtotosChain();
 		addPhotosChain.execute(context);
 		return SUCCESS;
 	}
@@ -248,7 +248,7 @@ public class PhotosAction extends FacilioAction {
  		context.put(FacilioConstants.ContextNames.ATTACHMENT_CONTENT_TYPE, this.fileContentType);
  		context.put(FacilioConstants.ContextNames.CURRENT_WO_ACTIVITY ,WorkOrderActivityType.ADD_PREERQUISITE_PHOTO);
  		
-		Chain addPhotosChain = FacilioChainFactory.getUploadPhotosChain();
+		FacilioChain addPhotosChain = FacilioChainFactory.getUploadPhotosChain();
 		addPhotosChain.execute(context);
 		
 		setPhotos((List<PhotosContext>) context.get(FacilioConstants.ContextNames.PHOTOS));
@@ -262,7 +262,7 @@ public class PhotosAction extends FacilioAction {
 					updateContext.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.BASE_SPACE_PHOTOS);
 					updateContext.put(FacilioConstants.ContextNames.RECORD_ID, parentId);
 					
-					Chain updateDefaultPhotoChain = FacilioChainFactory.getUpdateDefaultSpacePhotoChain();
+					FacilioChain updateDefaultPhotoChain = FacilioChainFactory.getUpdateDefaultSpacePhotoChain();
 					updateDefaultPhotoChain.execute(updateContext);
 				}
 			}

@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -29,6 +28,7 @@ import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
 import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext.TransitionType;
 import com.facilio.bmsconsole.workflow.rule.ValidationContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -675,7 +675,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 				form.setName(null);
 				context.put(FacilioConstants.ContextNames.FORM, form);
 
-				Chain chain = TransactionChainFactory.getUpdateFormChain();
+				FacilioChain chain = TransactionChainFactory.getUpdateFormChain();
 				chain.execute(context);
 			}
 			else {
@@ -685,7 +685,7 @@ public class StateFlowRulesAPI extends WorkflowRuleAPI {
 				form.setName(form.getName() + "_" + rule.getId());
 				context.put(FacilioConstants.ContextNames.FORM, form);
 
-				Chain chain = TransactionChainFactory.getAddFormCommand();
+				FacilioChain chain = TransactionChainFactory.getAddFormCommand();
 				chain.execute(context);
 			}
 

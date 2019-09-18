@@ -4,7 +4,6 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -15,6 +14,7 @@ import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.util.AlarmAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
@@ -64,7 +64,7 @@ public class ClearAlarmOnWOCloseCommand extends FacilioCommand implements Serial
 						FacilioContext addEventContext = new FacilioContext();
 						addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, AlarmAPI.constructClearEvent(alarm, "System auto cleared Alarm because associated Workorder was closed"));
 						
-						Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
+						FacilioChain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
 						getAddEventChain.execute(addEventContext);
 					}
 				}

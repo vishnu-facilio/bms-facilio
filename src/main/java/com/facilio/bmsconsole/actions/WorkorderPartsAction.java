@@ -2,13 +2,13 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.WorkorderPartsContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -43,7 +43,7 @@ public class WorkorderPartsAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, workorderPartsList);
-		Chain addWorkorderPartChain = TransactionChainFactory.getAddOrUdpateWorkorderPartChain();
+		FacilioChain addWorkorderPartChain = TransactionChainFactory.getAddOrUdpateWorkorderPartChain();
 		addWorkorderPartChain.execute(context);
 		setWorkorderPartsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
 		setResult("workorderPartsId", workorderPartsId);
@@ -59,7 +59,7 @@ public class WorkorderPartsAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.RECORD, workorderPart);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, workorderPartsId);
 
-		Chain deleteInventoryChain = TransactionChainFactory.getDeleteWorkorderPartChain();
+		FacilioChain deleteInventoryChain = TransactionChainFactory.getDeleteWorkorderPartChain();
 		deleteInventoryChain.execute(context);
 		setWorkorderPartsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
 		setResult("workorderPartsId", workorderPartsId);

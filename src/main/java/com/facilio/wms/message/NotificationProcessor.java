@@ -3,7 +3,6 @@ package com.facilio.wms.message;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 
-import com.facilio.aws.util.FacilioProperties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -19,6 +18,7 @@ import com.amazonaws.services.kinesis.clientlibrary.types.ShutdownInput;
 import com.amazonaws.services.kinesis.metrics.interfaces.MetricsLevel;
 import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.server.ServerInfo;
 import com.facilio.wms.endpoints.SessionManager;
 import com.facilio.wms.util.WmsApi;

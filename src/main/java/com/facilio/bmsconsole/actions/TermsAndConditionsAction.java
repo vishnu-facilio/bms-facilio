@@ -3,13 +3,13 @@ package com.facilio.bmsconsole.actions;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.TermsAndConditionContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -81,7 +81,7 @@ public class TermsAndConditionsAction extends FacilioAction{
 	public String addTermsAndConditions() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, termsAndCondition);
-		Chain addTermsAndConditions = TransactionChainFactory.getAddTermsAndConditionsChain();
+		FacilioChain addTermsAndConditions = TransactionChainFactory.getAddTermsAndConditionsChain();
 		addTermsAndConditions.execute(context);
 		setResult(FacilioConstants.ContextNames.TERMS_AND_CONDITIONS, termsAndCondition);
 		return SUCCESS;
@@ -92,7 +92,7 @@ public class TermsAndConditionsAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
 		context.put(FacilioConstants.ContextNames.IS_MARK_AS_DELETE, true);
 		
-		Chain deleteTerms = TransactionChainFactory.getDeleteTermsAndConditionsChain();
+		FacilioChain deleteTerms = TransactionChainFactory.getDeleteTermsAndConditionsChain();
 		deleteTerms.execute(context);
 		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
 		return SUCCESS;
@@ -103,7 +103,7 @@ public class TermsAndConditionsAction extends FacilioAction{
 		
 		context.put(FacilioConstants.ContextNames.RECORD, termsAndCondition);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(termsAndCondition.getId()));
-		Chain updateTermsAndConditionsChain = TransactionChainFactory.getUpdateTermsAndConditionsChain();
+		FacilioChain updateTermsAndConditionsChain = TransactionChainFactory.getUpdateTermsAndConditionsChain();
 		updateTermsAndConditionsChain.execute(context);
 		setResult(FacilioConstants.ContextNames.TERMS_AND_CONDITIONS, termsAndCondition);
 
@@ -114,7 +114,7 @@ public class TermsAndConditionsAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getRecordId());
 
-		Chain termsAndConditionsDetailsChain = ReadOnlyChainFactory.fetchTermsAndConditionsDetails();
+		FacilioChain termsAndConditionsDetailsChain = ReadOnlyChainFactory.fetchTermsAndConditionsDetails();
 		termsAndConditionsDetailsChain.execute(context);
 
 		setTermsAndCondition((TermsAndConditionContext) context.get(FacilioConstants.ContextNames.RECORD));
@@ -150,7 +150,7 @@ public class TermsAndConditionsAction extends FacilioAction{
  	 		pagination.put("perPage", 5000);
  	 	}
  	 	
-		Chain chain = ReadOnlyChainFactory.getTermsAndConditionsList();
+		FacilioChain chain = ReadOnlyChainFactory.getTermsAndConditionsList();
 		chain.execute(context);
 		
 		if (getFetchCount()) {

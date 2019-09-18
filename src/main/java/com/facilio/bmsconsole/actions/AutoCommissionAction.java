@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -21,6 +20,7 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
@@ -62,7 +62,7 @@ public class AutoCommissionAction extends FacilioAction {
 		if (!pointsData.isEmpty() && pointsData.size() < MAX_FIELDS) {
 
 			if (markedData != null && controllerId != -1) {
-				Chain mappingChain = TransactionChainFactory.updateAutoCommissionCommand();
+				FacilioChain mappingChain = TransactionChainFactory.updateAutoCommissionCommand();
 				mappingChain.execute(context);
 			}
 		} else {

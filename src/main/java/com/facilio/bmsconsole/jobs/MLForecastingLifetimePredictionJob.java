@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.aws.util.FacilioProperties;
-import org.apache.commons.chain.Chain;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,6 +13,7 @@ import org.json.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetContext;
@@ -22,6 +21,7 @@ import com.facilio.bmsconsole.context.MlForecastingContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -319,7 +319,7 @@ public class MLForecastingLifetimePredictionJob extends FacilioJob
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
 		context.put(FacilioConstants.ContextNames.READINGS, readings);
 		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.ML);
-		Chain chain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
+		FacilioChain chain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
 		chain.execute(context);
 	}
 	
@@ -337,7 +337,7 @@ public class MLForecastingLifetimePredictionJob extends FacilioJob
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(asset.getId()));
 			context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 			
-			Chain updateAssetChain = TransactionChainFactory.getUpdateAssetChain();
+			FacilioChain updateAssetChain = TransactionChainFactory.getUpdateAssetChain();
 			updateAssetChain.execute(context);
 		}
 		catch(Exception e)

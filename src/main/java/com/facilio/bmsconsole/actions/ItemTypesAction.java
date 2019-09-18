@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -12,6 +11,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ItemTypesContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -52,7 +52,7 @@ public class ItemTypesAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, itemTypes);
 		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
-		Chain addItem = TransactionChainFactory.getAddItemTypesChain();
+		FacilioChain addItem = TransactionChainFactory.getAddItemTypesChain();
 		addItem.execute(context);
 		setResult(FacilioConstants.ContextNames.ITEM_TYPES, itemTypes);
 		return SUCCESS;
@@ -67,7 +67,7 @@ public class ItemTypesAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ITEM_ACTIVITY);
 
-		Chain updateItemChain = TransactionChainFactory.getUpdateItemTypesChain();
+		FacilioChain updateItemChain = TransactionChainFactory.getUpdateItemTypesChain();
 		updateItemChain.execute(context);
 		setItemTypesId(itemTypes.getId());
 		itemTypesDetails();
@@ -79,7 +79,7 @@ public class ItemTypesAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getItemTypesId());
 
-		Chain itemDetailsChain = ReadOnlyChainFactory.fetchItemTypesDetails();
+		FacilioChain itemDetailsChain = ReadOnlyChainFactory.fetchItemTypesDetails();
 		itemDetailsChain.execute(context);
 
 		setItemTypes((ItemTypesContext) context.get(FacilioConstants.ContextNames.RECORD));
@@ -115,7 +115,7 @@ public class ItemTypesAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 		}
 
-		Chain itemsListChain = ReadOnlyChainFactory.getItemTypessList();
+		FacilioChain itemsListChain = ReadOnlyChainFactory.getItemTypessList();
 		itemsListChain.execute(context);
 		if (getCount()) {
 			setItemTypesCount((Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));

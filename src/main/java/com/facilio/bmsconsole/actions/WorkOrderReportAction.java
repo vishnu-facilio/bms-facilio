@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -29,6 +28,7 @@ import com.facilio.bmsconsole.context.TicketPriorityContext;
 import com.facilio.bmsconsole.util.DashboardUtil;
 import com.facilio.bmsconsole.util.SpaceAPI;
 import com.facilio.bmsconsole.util.TicketAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -299,7 +299,7 @@ public class WorkOrderReportAction extends ActionSupport {
 	public String map() throws Exception {
 		JSONArray woStats = new JSONArray();
 		FacilioContext context = new FacilioContext();
-		Chain buildChain = FacilioChainFactory.getAllBuildingChain();
+		FacilioChain buildChain = FacilioChainFactory.getAllBuildingChain();
 		buildChain.execute(context);
 		List<BuildingContext> buildings = (List<BuildingContext>) context.get(FacilioConstants.ContextNames.BUILDING_LIST);
 		if(buildings != null && !buildings.isEmpty()) {
@@ -360,7 +360,7 @@ public class WorkOrderReportAction extends ActionSupport {
 		repContext.setFilters(filterObj);
 		repContext.setReportType(FacilioConstants.Reports.SUMMARY_REPORT_TYPE);
 		repContext.put(FacilioConstants.ContextNames.CV_NAME, "open");
-		Chain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
+		FacilioChain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
 	 	summaryReportChain.execute(repContext);
 	 	List<Map<String, Object>> rs = (List<Map<String, Object>>) repContext.get(FacilioConstants.Reports.RESULT_SET);
 		
@@ -393,7 +393,7 @@ public class WorkOrderReportAction extends ActionSupport {
 	 		repContext.put(FacilioConstants.ContextNames.FILTER_CRITERIA, getCriteria());
  		}
 		
-		Chain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
+		FacilioChain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
  		summaryReportChain.execute(repContext);
  		Map<String, Object> rs = (Map<String, Object>) repContext.get(FacilioConstants.Reports.RESULT_SET);
 		
@@ -427,7 +427,7 @@ public class WorkOrderReportAction extends ActionSupport {
 	 		repContext.put(FacilioConstants.ContextNames.FILTER_CRITERIA, getCriteria());
  		}
 		
-		Chain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
+		FacilioChain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
  		summaryReportChain.execute(repContext);
  		Map<String, Object> rs = (Map<String, Object>) repContext.get(FacilioConstants.Reports.RESULT_SET);
 		
@@ -455,7 +455,7 @@ public class WorkOrderReportAction extends ActionSupport {
 	 		repContext.put(FacilioConstants.ContextNames.FILTER_CRITERIA, getCriteria());
  		}
 		
-		Chain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
+		FacilioChain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
  		summaryReportChain.execute(repContext);
  		Map<String, Object> rs = (Map<String, Object>) repContext.get(FacilioConstants.Reports.RESULT_SET);
 		
@@ -529,7 +529,7 @@ public class WorkOrderReportAction extends ActionSupport {
 	 		repContext.put(FacilioConstants.ContextNames.FILTER_CRITERIA, getCriteria());
  		}
 		
-		Chain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
+		FacilioChain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
  		summaryReportChain.execute(repContext);
  		Map<String, Object> rs = (Map<String, Object>) repContext.get(FacilioConstants.Reports.RESULT_SET);
 		
@@ -554,7 +554,7 @@ public class WorkOrderReportAction extends ActionSupport {
 		JSONObject filterObj = (JSONObject) parser.parse(filters);
 		repContext.setFilters(filterObj);
 		repContext.setReportType(FacilioConstants.Reports.SUMMARY_REPORT_TYPE);
-		Chain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
+		FacilioChain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
  		summaryReportChain.execute(repContext);
  		List<Map<String, Object>> rs = (List<Map<String, Object>>) repContext.get(FacilioConstants.Reports.RESULT_SET);
 		
@@ -591,7 +591,7 @@ public class WorkOrderReportAction extends ActionSupport {
 		repContext.setFilters(filterObj);
 		repContext.setReportType(FacilioConstants.Reports.SUMMARY_REPORT_TYPE);
 		repContext.put(FacilioConstants.ContextNames.CV_NAME, "closed");
-		Chain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
+		FacilioChain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
  		summaryReportChain.execute(repContext);
  		List<Map<String, Object>> rs = (List<Map<String, Object>>) repContext.get(FacilioConstants.Reports.RESULT_SET);
 		
@@ -723,7 +723,7 @@ public class WorkOrderReportAction extends ActionSupport {
 	 		repContext.put(FacilioConstants.ContextNames.FILTER_CRITERIA, getCriteria());
  		}
 		
-		Chain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
+		FacilioChain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
 	 	summaryReportChain.execute(repContext);
 	 	List<Map<String, Object>> rs = (List<Map<String, Object>>) repContext.get(FacilioConstants.Reports.RESULT_SET);
 		
@@ -756,7 +756,7 @@ public class WorkOrderReportAction extends ActionSupport {
 		repContext.setFilters(filterObj);
 		repContext.setReportType(FacilioConstants.Reports.SUMMARY_REPORT_TYPE);
 		repContext.put(FacilioConstants.ContextNames.CV_NAME, "closed");
-		Chain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
+		FacilioChain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
  		summaryReportChain.execute(repContext);
  		List<Map<String, Object>> result = (List<Map<String, Object>>) repContext.get(FacilioConstants.Reports.RESULT_SET);
  		
@@ -783,7 +783,7 @@ public class WorkOrderReportAction extends ActionSupport {
 			repContext.setGroupByCols(groupByCols);
 			repContext.setReportType(FacilioConstants.Reports.SUMMARY_REPORT_TYPE);
 			repContext.put(FacilioConstants.ContextNames.CV_NAME, "open");
-			Chain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
+			FacilioChain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
  	 		summaryReportChain.execute(repContext);
  	 		List<Map<String, Object>> rs = (List<Map<String, Object>>) repContext.get(FacilioConstants.Reports.RESULT_SET);
  	 		
@@ -811,7 +811,7 @@ public class WorkOrderReportAction extends ActionSupport {
 		repContext.setFilters(filterObj);
 		repContext.setReportType(FacilioConstants.Reports.SUMMARY_REPORT_TYPE);
 		repContext.put(FacilioConstants.ContextNames.CV_NAME, "open");
-		Chain summaryReportChain = ReportsChainFactory.getWorkOrderRequestReportChain();
+		FacilioChain summaryReportChain = ReportsChainFactory.getWorkOrderRequestReportChain();
  		summaryReportChain.execute(repContext);
  		List<Map<String, Object>> rs = (List<Map<String, Object>>) repContext.get(FacilioConstants.Reports.RESULT_SET);
 	 		
@@ -836,7 +836,7 @@ public class WorkOrderReportAction extends ActionSupport {
 		repContext.setGroupByCols(groupByCols);
 		repContext.setReportType(FacilioConstants.Reports.SUMMARY_REPORT_TYPE);
 		repContext.put(FacilioConstants.ContextNames.CV_NAME, "open");
-		Chain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
+		FacilioChain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
 	 	summaryReportChain.execute(repContext);
 	 	List<Map<String, Object>> rs = (List<Map<String, Object>>) repContext.get(FacilioConstants.Reports.RESULT_SET);
 		
@@ -864,7 +864,7 @@ public class WorkOrderReportAction extends ActionSupport {
 		repContext.put(FacilioConstants.Reports.TOP_N_DATA, topNData);
 		repContext.setReportType(FacilioConstants.Reports.TOP_N_TABULAR_REPORT_TYPE);
 		repContext.put(FacilioConstants.ContextNames.CV_NAME, "open");
-		Chain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
+		FacilioChain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
  		summaryReportChain.execute(repContext);
  		List<Map<String, Object>> rs = (List<Map<String, Object>>) repContext.get(FacilioConstants.Reports.RESULT_SET);
 		
@@ -890,7 +890,7 @@ public class WorkOrderReportAction extends ActionSupport {
 		repContext.put(FacilioConstants.Reports.TOP_N_DATA, topNData);
 		repContext.setReportType(FacilioConstants.Reports.TOP_N_SUMMARY_REPORT_TYPE);
 		repContext.put(FacilioConstants.ContextNames.CV_NAME, "open");
-		Chain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
+		FacilioChain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
  		summaryReportChain.execute(repContext);
  		List<Map<String, Object>> rs = (List<Map<String, Object>>) repContext.get(FacilioConstants.Reports.RESULT_SET);
 		
@@ -918,7 +918,7 @@ public class WorkOrderReportAction extends ActionSupport {
 		repContext.setFilters(filterObj);
 		repContext.put(FacilioConstants.Reports.TOP_N_DATA, topNData);
 		repContext.setReportType(FacilioConstants.Reports.TOP_N_SUMMARY_REPORT_TYPE);
-		Chain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
+		FacilioChain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
  		summaryReportChain.execute(repContext);
  		List<Map<String, Object>> rs = (List<Map<String, Object>>) repContext.get(FacilioConstants.Reports.RESULT_SET);
 		
@@ -946,7 +946,7 @@ public class WorkOrderReportAction extends ActionSupport {
 		repContext.put(FacilioConstants.Reports.TOP_N_DATA, topNData);
 		repContext.setReportType(FacilioConstants.Reports.TOP_N_SUMMARY_REPORT_TYPE);
 		repContext.put(FacilioConstants.ContextNames.CV_NAME, "open");
-		Chain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
+		FacilioChain summaryReportChain = ReportsChainFactory.getWorkOrderReportChain();
  		summaryReportChain.execute(repContext);
  		List<Map<String, Object>> rs = (List<Map<String, Object>>) repContext.get(FacilioConstants.Reports.RESULT_SET);
 		

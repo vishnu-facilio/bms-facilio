@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -12,6 +11,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.PurchasedItemContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -64,7 +64,7 @@ public class PurchasedItemAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.RECORD_ID, itemId);
 		context.put(FacilioConstants.ContextNames.PURCHASED_ITEM, purchasedItems);
 //		context.put(FacilioConstants.ContextNames.PURCHASED_ITEM, Collections.singletonList(purchasedItems));
-		Chain addItem = TransactionChainFactory.getAddPurchasedItemChain();
+		FacilioChain addItem = TransactionChainFactory.getAddPurchasedItemChain();
 		addItem.execute(context);
 		setResult(FacilioConstants.ContextNames.PURCHASED_ITEM, purchasedItem);
 		return SUCCESS;
@@ -83,7 +83,7 @@ public class PurchasedItemAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(purchasedItem.getId()));
 		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 
-		Chain updateInventryChain = TransactionChainFactory.getUpdateInventoryCostChain();
+		FacilioChain updateInventryChain = TransactionChainFactory.getUpdateInventoryCostChain();
 		updateInventryChain.execute(context);
 		setPurchasedItemId(purchasedItem.getId());
 		purchasedItemDetails();
@@ -95,7 +95,7 @@ public class PurchasedItemAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getPurchasedItemId());
 
-		Chain inventryDetailsChain = ReadOnlyChainFactory.fetchPurchasesItemDetails();
+		FacilioChain inventryDetailsChain = ReadOnlyChainFactory.fetchPurchasesItemDetails();
 		inventryDetailsChain.execute(context);
 
 		setPurchasedItem((PurchasedItemContext) context.get(FacilioConstants.ContextNames.PURCHASED_ITEM));
@@ -114,7 +114,7 @@ public class PurchasedItemAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.ITEM_IDS, Collections.singletonList(itemId));
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, purchasedItemsId);
 
-		Chain deleteInventoryChain = TransactionChainFactory.getDeleteInventoryCostChain();
+		FacilioChain deleteInventoryChain = TransactionChainFactory.getDeleteInventoryCostChain();
 		deleteInventoryChain.execute(context);
 		setPurchasedItemsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
 		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
@@ -126,7 +126,7 @@ public class PurchasedItemAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PARENT_ID, itemId);
 		context.put(FacilioConstants.ContextNames.PURCHASED_ITEM_IS_USED, true);
-		Chain purchasedItemsListChain = ReadOnlyChainFactory.getPurchasdItemsList();
+		FacilioChain purchasedItemsListChain = ReadOnlyChainFactory.getPurchasdItemsList();
 		purchasedItemsListChain.execute(context);
 		purchasedItems = ((List<PurchasedItemContext>) context.get(FacilioConstants.ContextNames.PURCHASED_ITEM));
 		setResult(FacilioConstants.ContextNames.PURCHASED_ITEM, purchasedItems);
@@ -137,7 +137,7 @@ public class PurchasedItemAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PARENT_ID, itemIds);
 		context.put(FacilioConstants.ContextNames.PURCHASED_ITEM_IS_USED, false);
-		Chain purchasedItemsListChain = ReadOnlyChainFactory.getUnusedPurchasdItemsList();
+		FacilioChain purchasedItemsListChain = ReadOnlyChainFactory.getUnusedPurchasdItemsList();
 		purchasedItemsListChain.execute(context);
 		purchasedItems = ((List<PurchasedItemContext>) context.get(FacilioConstants.ContextNames.PURCHASED_ITEM));
 		setResult(FacilioConstants.ContextNames.PURCHASED_ITEM, purchasedItems);
@@ -171,7 +171,7 @@ public class PurchasedItemAction extends FacilioAction{
 			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 		}
 
-		Chain itemsListChain = ReadOnlyChainFactory.getPurchasedItemsViewsList();
+		FacilioChain itemsListChain = ReadOnlyChainFactory.getPurchasedItemsViewsList();
 		itemsListChain.execute(context);
 		if (getCount()) {
 			setPurchasedItemCount((Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));

@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -11,6 +10,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.BaseSpaceContext;
 import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -53,7 +53,7 @@ public class BaseSpaceAction extends FacilioAction {
  		context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.BASE_SPACE);
 		context.put(FacilioConstants.ContextNames.WITH_READINGS, withReadings);
-		Chain getAllSpace = FacilioChainFactory.getAllAreaChain();
+		FacilioChain getAllSpace = FacilioChainFactory.getAllAreaChain();
 		getAllSpace.execute(context);
 		
 		setModuleName("Base Space");
@@ -75,7 +75,7 @@ public class BaseSpaceAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.SPACE_TYPE, getSpaceType());
 		context.put(FacilioConstants.ContextNames.IS_ZONE, getIsZone());
 		
-		Chain getAllSpace = FacilioChainFactory.getBaseSpaceChildrenChain();
+		FacilioChain getAllSpace = FacilioChainFactory.getBaseSpaceChildrenChain();
 		getAllSpace.execute(context);
 		
 		setBasespaces((List<BaseSpaceContext>) context.get(FacilioConstants.ContextNames.BASE_SPACE_LIST));
@@ -224,7 +224,7 @@ public class BaseSpaceAction extends FacilioAction {
 	public String basespaceDetailsWithHierarchy() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.SPACE_ID, spaceId);
-		Chain chain = ReadOnlyChainFactory.getBasespaceWithHierarchy();
+		FacilioChain chain = ReadOnlyChainFactory.getBasespaceWithHierarchy();
 		chain.execute(context);
 		basespace = (BaseSpaceContext) context.get(FacilioConstants.ContextNames.BASE_SPACE);
 		setResult(FacilioConstants.ContextNames.BASE_SPACE, basespace);

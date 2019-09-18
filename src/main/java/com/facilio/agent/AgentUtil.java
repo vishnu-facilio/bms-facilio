@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -19,6 +18,7 @@ import org.json.simple.JSONObject;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -184,7 +184,7 @@ public  class AgentUtil
                FacilioContext context = new FacilioContext();
                context.put(FacilioConstants.ContextNames.CRITERIA,agentNameCondition);
 
-           Chain updateAgentChain = TransactionChainFactory.updateAgent();
+           FacilioChain updateAgentChain = TransactionChainFactory.updateAgent();
 
            try {
 
@@ -305,7 +305,7 @@ public  class AgentUtil
         payload.put(AgentKeys.CREATED_TIME, currTime);
         payload.put(AgentKeys.LAST_MODIFIED_TIME, currTime);
         payload.put(AgentKeys.LAST_DATA_RECEIVED_TIME, currTime);
-        Chain chain = TransactionChainFactory.getAddAgentChain();
+        FacilioChain chain = TransactionChainFactory.getAddAgentChain();
         FacilioContext context = new FacilioContext();
         context.put(FacilioConstants.ContextNames.PAY_LOAD,payload);
         try {
@@ -404,7 +404,7 @@ public  class AgentUtil
     static boolean agentEdit(JSONObject payload) throws SQLException {
         boolean status = false;
         if(AccountUtil.getCurrentOrg() != null && payload.containsKey(AgentKeys.ID)) {
-            Chain agentEditChain = TransactionChainFactory.getAgentEditChain();
+            FacilioChain agentEditChain = TransactionChainFactory.getAgentEditChain();
             FacilioContext context = new FacilioContext();
             context.put(FacilioConstants.ContextNames.PAY_LOAD,payload);
             try {
@@ -424,7 +424,7 @@ public  class AgentUtil
      * @param sent
      */
     public static void putLog(JSONObject payLoad, Long orgId,Long agentId,boolean sent) {
-        Chain addLogChain = TransactionChainFactory.addLogChain();
+        FacilioChain addLogChain = TransactionChainFactory.addLogChain();
         FacilioContext context = new FacilioContext();
         context.put(AgentKeys.ORG_ID,orgId);
             Map<String, Object> toUpdate = new HashMap<>();
@@ -503,8 +503,8 @@ public  class AgentUtil
             map.put(AgentKeys.MSG_STATUS,messageStatus.getStatusKey());
             map.put(AgentKeys.START_TIME,System.currentTimeMillis());
 
-            Chain updateAgentMessageChain = TransactionChainFactory.getUpdateAgentMessageChain();
-            Chain addAgentMessageChain = TransactionChainFactory.getAddAgentMessageChain();
+            FacilioChain updateAgentMessageChain = TransactionChainFactory.getUpdateAgentMessageChain();
+            FacilioChain addAgentMessageChain = TransactionChainFactory.getAddAgentMessageChain();
 
             FacilioContext context = new FacilioContext();
             context.put(AgentKeys.ORG_ID,orgId);
@@ -575,8 +575,8 @@ public  class AgentUtil
         ModuleCRUDBean bean;
         Map<String, Object> metrics = new HashMap<>();
         Map<String, Object> record;
-        Chain addAgentMetricsChain = TransactionChainFactory.getAddAgentMetricsChain();
-        Chain updateAgentMetricsChain = TransactionChainFactory.getUpdateAgentMetricsChain();
+        FacilioChain addAgentMetricsChain = TransactionChainFactory.getAddAgentMetricsChain();
+        FacilioChain updateAgentMetricsChain = TransactionChainFactory.getUpdateAgentMetricsChain();
         FacilioContext context = new FacilioContext();
         context.put(AgentKeys.ORG_ID,orgId);
         try {

@@ -2,7 +2,6 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -16,6 +15,7 @@ import com.facilio.bmsconsole.templates.EMailTemplate;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.view.SortField;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.ScheduleInfo;
@@ -30,7 +30,7 @@ public class ViewAction extends FacilioAction {
 	{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-		Chain getViewListChain = FacilioChainFactory.getViewListChain();
+		FacilioChain getViewListChain = FacilioChainFactory.getViewListChain();
 		getViewListChain.execute(context);
 		
 		setViews((List<FacilioView>) context.get(FacilioConstants.ContextNames.VIEW_LIST));
@@ -107,7 +107,7 @@ public class ViewAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MAX_COUNT, maxCount);
 		context.put(FacilioConstants.ContextNames.SCHEDULE_INFO, scheduleInfo);
  		
-		Chain mailReportChain = ReportsChainFactory.getWoViewScheduleChain();
+		FacilioChain mailReportChain = ReportsChainFactory.getWoViewScheduleChain();
 		mailReportChain.execute(context);
  		
  		return SUCCESS;
@@ -116,7 +116,7 @@ public class ViewAction extends FacilioAction {
 		
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-		Chain mailReportChain = ReportsChainFactory.getWoScheduledViewListChain();
+		FacilioChain mailReportChain = ReportsChainFactory.getWoScheduledViewListChain();
 		mailReportChain.execute(context);
 		setScheduledReports((List<ReportInfo>) context.get(FacilioConstants.ContextNames.REPORT_LIST));
 		
@@ -139,7 +139,7 @@ public class ViewAction extends FacilioAction {
 		
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
-		Chain mailReportChain = ReportsChainFactory.updateWoScheduledViewChain();
+		FacilioChain mailReportChain = ReportsChainFactory.updateWoScheduledViewChain();
 		mailReportChain.execute(context);
 		
 //		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
@@ -150,7 +150,7 @@ public class ViewAction extends FacilioAction {
 	public String deleteScheduledView () throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
-		Chain mailReportChain = ReportsChainFactory.deleteWoScheduledViewChain();
+		FacilioChain mailReportChain = ReportsChainFactory.deleteWoScheduledViewChain();
 		mailReportChain.execute(context);
 		
 //		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
@@ -167,7 +167,7 @@ public class ViewAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.GROUP_STATUS, getGroupStatus());
 
-		Chain getViewListsChain = FacilioChainFactory.getViewListChain();
+		FacilioChain getViewListsChain = FacilioChainFactory.getViewListChain();
 		getViewListsChain.execute(context);
 
 		setResult("views", context.get(FacilioConstants.ContextNames.VIEW_LIST));
@@ -198,7 +198,7 @@ public class ViewAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.PARENT_VIEW, parentView);
 		context.put(FacilioConstants.ContextNames.FETCH_FIELD_DISPLAY_NAMES, true);
 		
-		Chain getViewChain = FacilioChainFactory.getViewDetailsChain();
+		FacilioChain getViewChain = FacilioChainFactory.getViewDetailsChain();
 		getViewChain.execute(context);
 		
 		setView((FacilioView)context.get(FacilioConstants.ContextNames.CUSTOM_VIEW));
@@ -225,7 +225,7 @@ public class ViewAction extends FacilioAction {
 		if (view.getIncludeParentCriteria()) {
 			context.put(FacilioConstants.ContextNames.CV_NAME, parentView);
 		}
-		Chain addView = FacilioChainFactory.getAddViewChain();
+		FacilioChain addView = FacilioChainFactory.getAddViewChain();
 		addView.execute(context);
 		
 		this.viewId = view.getId();
@@ -246,7 +246,7 @@ public class ViewAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.CV_NAME, parentView);
 		}
 		
-		Chain editView = TransactionChainFactory.editViewChain();
+		FacilioChain editView = TransactionChainFactory.editViewChain();
 		editView.execute(context);
 		
 		setViewName(view.getName());
@@ -259,7 +259,7 @@ public class ViewAction extends FacilioAction {
 	public String deleteView() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.VIEWID, id);
-		Chain deleteView = TransactionChainFactory.deleteViewChain();
+		FacilioChain deleteView = TransactionChainFactory.deleteViewChain();
 		deleteView.execute(context);
 		return SUCCESS;
 		
@@ -271,7 +271,7 @@ public class ViewAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.VIEW_LIST, views);
 		
-		Chain addView = FacilioChainFactory.getViewsCustomizeChain();
+		FacilioChain addView = FacilioChainFactory.getViewsCustomizeChain();
 		addView.execute(context);
 		
 		setViews((List<FacilioView>) context.get(FacilioConstants.ContextNames.VIEW_LIST));
@@ -290,7 +290,7 @@ public class ViewAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.VIEWID, viewId);
 		}
 		context.put(FacilioConstants.ContextNames.VIEWCOLUMNS, fields);
-		Chain customizeColumnChain = FacilioChainFactory.getViewCustomizeColumnChain();
+		FacilioChain customizeColumnChain = FacilioChainFactory.getViewCustomizeColumnChain();
 		customizeColumnChain.execute(context);
 
 		setFields((List<ViewField>) context.put(FacilioConstants.ContextNames.VIEWCOLUMNS, fields));
@@ -310,7 +310,7 @@ public class ViewAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.VIEWID, viewId);
 		context.put(FacilioConstants.ContextNames.SORTING, sortObject);
 		
-		Chain customizeSortColumnsChain = FacilioChainFactory.getViewCustomizeSortColumnsChain();
+		FacilioChain customizeSortColumnsChain = FacilioChainFactory.getViewCustomizeSortColumnsChain();
 		customizeSortColumnsChain.execute(context);
 		
 		this.sortFields = (List<SortField>) context.get(FacilioConstants.ContextNames.SORT_FIELDS_OBJECT);

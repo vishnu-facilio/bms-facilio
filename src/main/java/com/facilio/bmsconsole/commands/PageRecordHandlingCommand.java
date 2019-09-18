@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.mv.context.MVProjectWrapper;
@@ -23,7 +23,7 @@ public class PageRecordHandlingCommand extends FacilioCommand {
 				break;
 				
 			case FacilioConstants.ContextNames.READING_RULE_MODULE:
-				Chain fetchAlarmChain = ReadOnlyChainFactory.fetchAlarmRuleWithActionsChain();
+				FacilioChain fetchAlarmChain = ReadOnlyChainFactory.fetchAlarmRuleWithActionsChain();
 				fetchAlarmChain.execute(context);
 				context.put(ContextNames.RECORD, context.get(ContextNames.ALARM_RULE));
 		}

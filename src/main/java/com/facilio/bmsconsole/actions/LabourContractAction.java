@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.actions;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -11,6 +10,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.LabourContractContext;
 import com.facilio.bmsconsole.context.LabourContractLineItemContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -110,7 +110,7 @@ public class LabourContractAction extends FacilioAction{
  	 		pagination.put("perPage", 5000);
  	 	}
  	 	
-		Chain chain = ReadOnlyChainFactory.getLabourContractListChain();
+		FacilioChain chain = ReadOnlyChainFactory.getLabourContractListChain();
 		chain.execute(context);
 		
 		if (getFetchCount()) {
@@ -144,7 +144,7 @@ public class LabourContractAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, getLineItems());
 		
-		Chain chain = TransactionChainFactory.getAddLabourContractLineItem();
+		FacilioChain chain = TransactionChainFactory.getAddLabourContractLineItem();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECORD_LIST, context.get(FacilioConstants.ContextNames.RECORD_LIST));
@@ -157,7 +157,7 @@ public class LabourContractAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
 		context.put(FacilioConstants.ContextNames.STATUS, getStatus());
 		
-		Chain chain = TransactionChainFactory.getUpdateLabourContractStatusChain();
+		FacilioChain chain = TransactionChainFactory.getUpdateLabourContractStatusChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
@@ -171,7 +171,7 @@ public class LabourContractAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.IS_CONTRACT_REVISED, false );
 		
 		
-		Chain chain = TransactionChainFactory.getAddLabourContractChain();
+		FacilioChain chain = TransactionChainFactory.getAddLabourContractChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.LABOUR_CONTRACTS, context.get(FacilioConstants.ContextNames.RECORD));
@@ -182,7 +182,7 @@ public class LabourContractAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, recordId);
 		
-		Chain chain = ReadOnlyChainFactory.getLabourContractDetailsChain();
+		FacilioChain chain = ReadOnlyChainFactory.getLabourContractDetailsChain();
 		chain.execute(context);
 		
 		LabourContractContext labourContractContext = (LabourContractContext) context.get(FacilioConstants.ContextNames.RECORD);
@@ -194,7 +194,7 @@ public class LabourContractAction extends FacilioAction{
 	public String deleteLabourContract() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordId != -1 ? Collections.singletonList(recordId) : recordIds);
-		Chain chain = TransactionChainFactory.getLabourContractDeleteChain();
+		FacilioChain chain = TransactionChainFactory.getLabourContractDeleteChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, recordId != -1 ? Collections.singletonList(recordId) : recordIds);
@@ -209,7 +209,7 @@ public class LabourContractAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
 		
-		Chain chain = TransactionChainFactory.getDeleteLabourContractLineItemChain();
+		FacilioChain chain = TransactionChainFactory.getDeleteLabourContractLineItemChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds);
@@ -223,7 +223,7 @@ public class LabourContractAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.RECORD, labourContract );
 		context.put(FacilioConstants.ContextNames.IS_CONTRACT_REVISED, true );
 		
-		Chain chain = TransactionChainFactory.getAddLabourContractChain();
+		FacilioChain chain = TransactionChainFactory.getAddLabourContractChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.REVISED_RECORD, context.get(FacilioConstants.ContextNames.REVISED_RECORD));
@@ -236,7 +236,7 @@ public class LabourContractAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, labourContract );
 		
-		Chain chain = TransactionChainFactory.getDuplicateLabourContract();
+		FacilioChain chain = TransactionChainFactory.getDuplicateLabourContract();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.LABOUR_CONTRACTS, context.get(FacilioConstants.ContextNames.RECORD));

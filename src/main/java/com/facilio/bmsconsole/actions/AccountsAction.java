@@ -1,8 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
-import org.apache.commons.chain.Chain;
-
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -46,7 +45,7 @@ public class AccountsAction extends FacilioAction{
 	    FacilioContext context = new FacilioContext();
 	    context.put(FacilioConstants.ContextNames.PERMALINK_FOR_URL, getUrl());
 	    context.put(FacilioConstants.ContextNames.USER_EMAIL, getEmail());
-		Chain permaLinkTokenChain = FacilioChainFactory.getPermaLinkTokenChain();
+		FacilioChain permaLinkTokenChain = FacilioChainFactory.getPermaLinkTokenChain();
 		permaLinkTokenChain.execute(context);
 		
 		setPermaLinkUrlToken((String)context.get(FacilioConstants.ContextNames.PERMALINK_TOKEN_FOR_URL));

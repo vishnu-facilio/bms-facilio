@@ -3,8 +3,6 @@ package com.facilio.bmsconsole.actions;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
-
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.ActionForm;
 import com.facilio.bmsconsole.context.FormLayout;
@@ -13,6 +11,7 @@ import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskSectionContext;
 import com.facilio.bmsconsole.context.TicketContext;
 import com.facilio.bmsconsole.context.ViewLayout;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.fields.FacilioField;
@@ -23,7 +22,7 @@ public class TicketAction extends ActionSupport {
 	//New Ticket props
 	/*public String newTicket() throws Exception {
 		FacilioContext context = new FacilioContext();
-		Chain newTicket = FacilioChainFactory.getNewTicketChain();
+		FacilioChain newTicket = FacilioChainFactory.getNewTicketChain();
 		newTicket.execute(context);
 		
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
@@ -98,7 +97,7 @@ public class TicketAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TICKET, ticket);
 		
-		Chain updateTicket = FacilioChainFactory.getUpdateTicketChain();
+		FacilioChain updateTicket = FacilioChainFactory.getUpdateTicketChain();
 		updateTicket.execute(context);
 		return SUCCESS;
 	}
@@ -109,7 +108,7 @@ public class TicketAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getTicketId());
 		
-		Chain getTicketChain = FacilioChainFactory.getTicketDetailsChain();
+		FacilioChain getTicketChain = FacilioChainFactory.getTicketDetailsChain();
 		getTicketChain.execute(context);
 		
 		setTicket((TicketContext) context.get(FacilioConstants.ContextNames.TICKET));
@@ -127,7 +126,7 @@ public class TicketAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.TICKET_ID, getTicketId());
 		context.put(FacilioConstants.ContextNames.ASSIGNED_TO_ID, getAssignedTo());
 
-		Chain assignTicketChain = FacilioChainFactory.getAssignTicketChain();
+		FacilioChain assignTicketChain = FacilioChainFactory.getAssignTicketChain();
 		assignTicketChain.execute(context);
 
 		return SUCCESS;
@@ -190,7 +189,7 @@ public class TicketAction extends ActionSupport {
 // 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
 //		
 //		System.out.println("View Name : "+getViewName());
-// 		Chain ticketListChain = FacilioChainFactory.getTicketListChain();
+// 		FacilioChain ticketListChain = FacilioChainFactory.getTicketListChain();
 // 		ticketListChain.execute(context);
 // 		
 //		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));

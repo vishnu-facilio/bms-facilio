@@ -1,15 +1,21 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.context.*;
-import com.facilio.bmsconsole.util.NewAlarmAPI;
-import com.facilio.constants.FacilioConstants;
-import com.facilio.modules.FieldUtil;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+
+import com.facilio.bmsconsole.context.AlarmContext;
+import com.facilio.bmsconsole.context.AlarmOccurrenceContext;
+import com.facilio.bmsconsole.context.BaseAlarmContext;
+import com.facilio.bmsconsole.context.ReadingAlarm;
+import com.facilio.bmsconsole.context.ReadingAlarmCategoryContext;
+import com.facilio.bmsconsole.context.TicketCategoryContext;
+import com.facilio.bmsconsole.util.NewAlarmAPI;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.modules.FieldUtil;
 
 public class FetchAlarmFromOccurrenceCommand extends FacilioCommand {
 

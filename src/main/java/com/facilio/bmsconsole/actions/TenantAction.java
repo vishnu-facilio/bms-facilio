@@ -5,13 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.aws.util.FacilioProperties;
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.accounts.dto.User;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.ResourceContext;
@@ -20,6 +19,7 @@ import com.facilio.bmsconsole.tenant.RateCardContext;
 import com.facilio.bmsconsole.tenant.TenantContext;
 import com.facilio.bmsconsole.tenant.TenantUserContext;
 import com.facilio.bmsconsole.util.TenantsAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.pdf.PdfUtil;
@@ -395,7 +395,7 @@ private Map<String, Double> readingData;
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, "tenant");
 			tenant.setZone(zone);
 			
-			Chain addZone = FacilioChainFactory.getAddZoneChain();
+			FacilioChain addZone = FacilioChainFactory.getAddZoneChain();
 			addZone.addCommand(FacilioChainFactory.addTenantChain());
 			addZone.execute(context);
 			tenant = (TenantContext)context.get(FacilioConstants.ContextNames.TENANT);
@@ -427,7 +427,7 @@ private Map<String, Double> readingData;
 			tenant.setZone(zone);
 		
 			context.put(TenantsAPI.TENANT_CONTEXT, tenant);
-			Chain updateZone = FacilioChainFactory.getUpdateZoneChain();
+			FacilioChain updateZone = FacilioChainFactory.getUpdateZoneChain();
 			updateZone.addCommand(FacilioChainFactory.updateTenantChain());
 			updateZone.execute(context);
 			setResult("rowsUpdated", context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
@@ -444,7 +444,7 @@ private Map<String, Double> readingData;
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.RECORD_ID, tenantId);
 			context.put(FacilioConstants.ContextNames.USER, user);
-			Chain updatePrimaryContact = FacilioChainFactory.updateTenantPrimaryContactChain();
+			FacilioChain updatePrimaryContact = FacilioChainFactory.updateTenantPrimaryContactChain();
 			updatePrimaryContact.execute(context);
 			setResult("rowsUpdated", context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
 			return SUCCESS;
@@ -459,7 +459,7 @@ private Map<String, Double> readingData;
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.RECORD_ID, tenantId);
 			context.put(FacilioConstants.ContextNames.TENANT_STATUS, status);
-			Chain updateTnantStatusChain = FacilioChainFactory.toggleStatusChain();
+			FacilioChain updateTnantStatusChain = FacilioChainFactory.toggleStatusChain();
 			updateTnantStatusChain.execute(context);
 			setResult("rowsUpdated", context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
 			return SUCCESS;
@@ -477,7 +477,7 @@ private Map<String, Double> readingData;
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getId());
 	
-		Chain tenantDetailChain = ReadOnlyChainFactory.fetchTenantDetails();
+		FacilioChain tenantDetailChain = ReadOnlyChainFactory.fetchTenantDetails();
 		tenantDetailChain.execute(context);
 		tenant = (TenantContext )context.get(FacilioConstants.ContextNames.TENANT);
 		setResult("tenant", tenant);
@@ -495,7 +495,7 @@ private Map<String, Double> readingData;
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, tenantsId);
 			context.put(FacilioConstants.ContextNames.MODULE_NAME, "tenant");
-			Chain deleteTenant = FacilioChainFactory.deleteTenantChain();
+			FacilioChain deleteTenant = FacilioChainFactory.deleteTenantChain();
 			deleteTenant.execute(context);
 			setResult("rowsUpdated", context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
 			return SUCCESS;
@@ -537,7 +537,7 @@ private Map<String, Double> readingData;
  	 			pagination.put("perPage", 5000);
  	 		}
  	 		context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
- 		    Chain fetchTenants = FacilioChainFactory.getTenantListChain();
+ 		    FacilioChain fetchTenants = FacilioChainFactory.getTenantListChain();
 		    fetchTenants.execute(context);
 		    if (getCount()) {
 				setTenantCount((Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
@@ -579,7 +579,7 @@ private Map<String, Double> readingData;
 	public String addRateCard() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(TenantsAPI.RATECARD_CONTEXT, rateCard);
-		Chain updateTenant = FacilioChainFactory.addRateCardChain();
+		FacilioChain updateTenant = FacilioChainFactory.addRateCardChain();
 		updateTenant.execute(context);
 		return SUCCESS;
 	}
@@ -587,7 +587,7 @@ private Map<String, Double> readingData;
 	public String updateRateCard() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(TenantsAPI.RATECARD_CONTEXT, rateCard);
-		Chain updateTenant = FacilioChainFactory.updateRateCardChain();
+		FacilioChain updateTenant = FacilioChainFactory.updateRateCardChain();
 		updateTenant.execute(context);
 		
 		return SUCCESS;
@@ -604,7 +604,7 @@ private Map<String, Double> readingData;
 		context.put(FacilioConstants.ContextNames.ID, id);
 		context.put(FacilioConstants.ContextNames.ZONE_ID, zoneId);
 	    	
-		Chain getReportCardsChain = FacilioChainFactory.getTenantReportCardsChain();
+		FacilioChain getReportCardsChain = FacilioChainFactory.getTenantReportCardsChain();
 		getReportCardsChain.execute(context);
 		
 		setReports((JSONObject) context.get(FacilioConstants.ContextNames.REPORTS));
@@ -618,7 +618,7 @@ private Map<String, Double> readingData;
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TENANT_UTILITY_IDS, meterId);
 			
-		Chain getReportCardsChain = FacilioChainFactory.getTenantReadingCardsChain();
+		FacilioChain getReportCardsChain = FacilioChainFactory.getTenantReadingCardsChain();
 		getReportCardsChain.execute(context);
 		
 		setReports((JSONObject) context.get(FacilioConstants.ContextNames.REPORT));
@@ -691,7 +691,7 @@ private Map<String, Double> readingData;
 	
 	public String addTenantUser() throws Exception {
 		
-	    Chain addTenantUser = FacilioChainFactory.addTenantUserChain();
+	    FacilioChain addTenantUser = FacilioChainFactory.addTenantUserChain();
 	    FacilioContext context = new FacilioContext();
 	    context.put(FacilioConstants.ContextNames.USER, user);
 	    context.put(FacilioConstants.ContextNames.RECORD_ID, id);
@@ -723,7 +723,7 @@ private Map<String, Double> readingData;
 		
 		FacilioContext context = new FacilioContext();
 		
-		Chain chain = FacilioChainFactory.calculateTenantBill();
+		FacilioChain chain = FacilioChainFactory.calculateTenantBill();
 		
 		context.put(TenantsAPI.TENANT_CONTEXT, tenant);
 		context.put(TenantsAPI.RATECARD_CONTEXT, rateCard);

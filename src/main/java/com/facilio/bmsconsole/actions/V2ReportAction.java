@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.facilio.modules.*;
-import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -38,8 +36,6 @@ import com.facilio.bmsconsole.context.ReadingAlarmContext;
 import com.facilio.bmsconsole.context.RegressionContext;
 import com.facilio.bmsconsole.context.ReportInfo;
 import com.facilio.bmsconsole.context.ResourceContext;
-import com.facilio.bmsconsole.context.SharingContext;
-import com.facilio.bmsconsole.context.SingleSharingContext;
 import com.facilio.bmsconsole.context.WidgetChartContext;
 import com.facilio.bmsconsole.context.WidgetStaticContext;
 import com.facilio.bmsconsole.templates.EMailTemplate;
@@ -65,6 +61,11 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.AggregateOperator;
+import com.facilio.modules.BmsAggregateOperators;
+import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleFactory;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.report.context.ReadingAnalysisContext;
 import com.facilio.report.context.ReadingAnalysisContext.AnalyticsType;
@@ -176,7 +177,7 @@ public class V2ReportAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		setReportWithDataContext(context); //This could be moved to a command
 		
-		Chain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReportDataChain() : ReadOnlyChainFactory.fetchReportDataChain(); 
+		FacilioChain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReportDataChain() : ReadOnlyChainFactory.fetchReportDataChain();
 		fetchReadingDataChain.execute(context);
 		
 		return setReportResult(context);
@@ -380,7 +381,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		
-		Chain addReadingReport = TransactionChainFactory.addOrUpdateReadingReportChain();
+		FacilioChain addReadingReport = TransactionChainFactory.addOrUpdateReadingReportChain();
 		addReadingReport.execute(context);
 		
 		return setReportResult(context);
@@ -403,7 +404,7 @@ public class V2ReportAction extends FacilioAction {
 			
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.REPORT, reportContext);
-			Chain addReport = TransactionChainFactory.addOrUpdateReportChain();
+			FacilioChain addReport = TransactionChainFactory.addOrUpdateReportChain();
 			addReport.execute(context);
 			return setReportResult(context);
 		}
@@ -523,7 +524,7 @@ public class V2ReportAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.ANALYTICS_TYPE, AnalyticsType.READINGS.getIntVal());
 			
 			newFormat = true;
-			Chain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReadingReportChain() : ReadOnlyChainFactory.fetchReadingReportChain();
+			FacilioChain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReadingReportChain() : ReadOnlyChainFactory.fetchReadingReportChain();
 			fetchReadingDataChain.execute(context);
 			
 			return setReportResult(context);
@@ -553,7 +554,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.TABULAR_STATE, tabularState);
 		context.put(FacilioConstants.ContextNames.REPORT, reportContext);
 		
-		Chain addWorkOrderChain = TransactionChainFactory.addWorkOrderReportChain();
+		FacilioChain addWorkOrderChain = TransactionChainFactory.addWorkOrderReportChain();
 		addWorkOrderChain.execute(context);
 		
 		return setReportResult(context);
@@ -584,7 +585,7 @@ public class V2ReportAction extends FacilioAction {
 		}
 		setReadingsDataContext(context);
 		
-		Chain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReadingReportChain() : ReadOnlyChainFactory.fetchReadingReportChain();
+		FacilioChain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReadingReportChain() : ReadOnlyChainFactory.fetchReadingReportChain();
 		fetchReadingDataChain.execute(context);
 		
 		return setReportResult(context);
@@ -605,7 +606,7 @@ public class V2ReportAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.REPORT_TEMPLATE, template);
 		}
 		
-		Chain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReadingReportChain() : ReadOnlyChainFactory.fetchReadingReportChain();
+		FacilioChain fetchReadingDataChain = newFormat ? ReadOnlyChainFactory.newFetchReadingReportChain() : ReadOnlyChainFactory.fetchReadingReportChain();
 		fetchReadingDataChain.execute(context);
 		
 		return setReportResult(context);
@@ -620,7 +621,7 @@ public class V2ReportAction extends FacilioAction {
 			return SUCCESS;
 		}
 		else {
-			Chain c = ReadOnlyChainFactory.fetchRegressionReportChain();
+			FacilioChain c = ReadOnlyChainFactory.fetchRegressionReportChain();
 			c.execute(context);
 			return setReportResult(context);
 		}
@@ -754,7 +755,7 @@ public class V2ReportAction extends FacilioAction {
 	
 //	public String fetchReportDataFromPm() throws Exception{
 //		FacilioContext context = new FacilioContext();
-//		Chain c = FacilioChain.getNonTransactionChain();
+//		FacilioChain c = FacilioChain.getNonTransactionChain();
 //		if(pmId != -1) {
 //			context.put("pmId", pmId);
 //			context.put("resourceId", resourceId);
@@ -808,7 +809,7 @@ public class V2ReportAction extends FacilioAction {
 	}
 
 	public String saveReport() throws Exception {
-		Chain chain = FacilioChain.getTransactionChain();
+		FacilioChain chain = FacilioChain.getTransactionChain();
 		FacilioContext context = new FacilioContext();
 		
 		if (reportContext == null) {
@@ -841,7 +842,7 @@ public class V2ReportAction extends FacilioAction {
 	}
 	
 	public String executeReport() throws Exception {
-		Chain chain = FacilioChain.getNonTransactionChain();
+		FacilioChain chain = FacilioChain.getNonTransactionChain();
 		FacilioContext context = new FacilioContext();
 
 		if(getFilters() != null) {
@@ -1656,7 +1657,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.REPORT_FIELDS, FieldUtil.getAsBeanListFromJsonArray(fieldArray, WorkorderAnalysisContext.class));
 		context.put(FacilioConstants.ContextNames.BASE_LINE_LIST, FieldUtil.getAsBeanListFromJsonArray(baseLineList, ReportBaseLineContext.class));
 		
-		Chain fetchReadingDataChain = ReadOnlyChainFactory.fetchWorkorderReportChain();
+		FacilioChain fetchReadingDataChain = ReadOnlyChainFactory.fetchWorkorderReportChain();
 		fetchReadingDataChain.execute(context);
 		
 		return setReportResult(context);
@@ -1811,7 +1812,7 @@ public class V2ReportAction extends FacilioAction {
 		
 		FacilioContext context = new FacilioContext();
 		
-		Chain exportChain;
+		FacilioChain exportChain;
 		if (reportId != -1) {
 			exportChain = TransactionChainFactory.getExportReportFileChain();
 			setReportWithDataContext(context);
@@ -1840,7 +1841,7 @@ public class V2ReportAction extends FacilioAction {
 	
 	public String exportModuleReport() throws Exception {
 		FacilioContext context = new FacilioContext();
-		Chain exportChain = null;
+		FacilioChain exportChain = null;
 		if (reportId != -1) {
 			exportChain = TransactionChainFactory.getExportModuleReportFileChain();
 			getReport(context);
@@ -1869,7 +1870,7 @@ public class V2ReportAction extends FacilioAction {
 	public String sendReportMail() throws Exception{
 
 		FacilioContext context = new FacilioContext();
-		Chain mailReportChain;
+		FacilioChain mailReportChain;
 		if (reportId != -1) {
 			mailReportChain = TransactionChainFactory.sendReportMailChain();
 			setReportWithDataContext(context);
@@ -1898,7 +1899,7 @@ public class V2ReportAction extends FacilioAction {
 	
 	public String sendModuleReportMail() throws Exception {
 		FacilioContext context = new FacilioContext();
-		Chain mailReportChain = FacilioChain.getNonTransactionChain();
+		FacilioChain mailReportChain = FacilioChain.getNonTransactionChain();
 		
 		if (reportId != -1) {
 			getReport(context);
@@ -1935,7 +1936,7 @@ public class V2ReportAction extends FacilioAction {
 		context.put(FacilioConstants.Workflow.TEMPLATE, reportInfo.getEmailTemplate());
 		context.put(FacilioConstants.ContextNames.SCHEDULE_INFO, reportInfo);
  		
-		Chain scheduleReportChain = TransactionChainFactory.scheduleReportChain();
+		FacilioChain scheduleReportChain = TransactionChainFactory.scheduleReportChain();
 		scheduleReportChain.execute(context);
 		
 		setResult("id", context.get(FacilioConstants.ContextNames.RECORD_ID));
@@ -1948,7 +1949,7 @@ public class V2ReportAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
-		Chain scheduleReportListChain = ReadOnlyChainFactory.fetchScheduledReportsChain();
+		FacilioChain scheduleReportListChain = ReadOnlyChainFactory.fetchScheduledReportsChain();
 		scheduleReportListChain.execute(context);
 		setResult("scheduledReports", context.get(FacilioConstants.ContextNames.REPORT_LIST));
 		
@@ -1958,7 +1959,7 @@ public class V2ReportAction extends FacilioAction {
 	public String deleteScheduledReport () throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
-		Chain delteScheduleChain = TransactionChainFactory.deleteScheduledReportsChain();
+		FacilioChain delteScheduleChain = TransactionChainFactory.deleteScheduledReportsChain();
 		delteScheduleChain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.ROWS_UPDATED, context.get(FacilioConstants.ContextNames.ROWS_UPDATED));
@@ -1974,7 +1975,7 @@ public class V2ReportAction extends FacilioAction {
 		
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
-		Chain mailReportChain = TransactionChainFactory.updateScheduledReportsChain();
+		FacilioChain mailReportChain = TransactionChainFactory.updateScheduledReportsChain();
 		mailReportChain.execute(context);
 		
 		setModuleName(reportInfo.getModuleName());

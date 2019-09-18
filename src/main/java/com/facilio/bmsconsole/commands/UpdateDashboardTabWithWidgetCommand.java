@@ -2,7 +2,7 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
 import java.util.List;
-import org.apache.commons.chain.Chain;
+
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -10,6 +10,7 @@ import org.json.simple.JSONObject;
 import com.facilio.bmsconsole.context.DashboardTabContext;
 import com.facilio.bmsconsole.context.DashboardWidgetContext;
 import com.facilio.bmsconsole.util.DashboardUtil;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -42,7 +43,7 @@ public class UpdateDashboardTabWithWidgetCommand extends FacilioCommand {
 					if(widget.getId() <= 0) {
 						
 						
-						Chain addWidgetChain = TransactionChainFactory.getAddWidgetChain();
+						FacilioChain addWidgetChain = TransactionChainFactory.getAddWidgetChain();
 
 						widget.setDashboardTabId(dashboardTabContext.getId());
 						context.put(FacilioConstants.ContextNames.WIDGET, widget);
@@ -57,7 +58,7 @@ public class UpdateDashboardTabWithWidgetCommand extends FacilioCommand {
 			
 			List<DashboardWidgetContext> updatedWidgets = dashboardTabContext.getDashboardWidgets();
 			
-			Chain updateWidgetChain = TransactionChainFactory.getUpdateWidgetsChain();
+			FacilioChain updateWidgetChain = TransactionChainFactory.getUpdateWidgetsChain();
 			
 			context.put(FacilioConstants.ContextNames.WIDGET_UPDATE_LIST,updatedWidgets);
 

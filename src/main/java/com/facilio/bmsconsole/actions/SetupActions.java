@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 
 import com.facilio.accounts.dto.Organization;
@@ -21,6 +20,7 @@ import com.facilio.bmsconsole.context.SupportEmailContext;
 import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo;
@@ -232,7 +232,7 @@ public String importData() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.WORKFLOW_UPDATE, workflowRule);
 		System.out.println("........ notification----->  " + workflowRule);
-		Chain updateNotification= FacilioChainFactory.getUpdateNotificationSettingChain();
+		FacilioChain updateNotification= FacilioChainFactory.getUpdateNotificationSettingChain();
 		updateNotification.execute(context);
 		result = (String) context.get(FacilioConstants.ContextNames.RESULT);
 		return SUCCESS;
@@ -240,7 +240,7 @@ public String importData() throws Exception {
 	
 	public String showEmailSettings() throws Exception {
 		FacilioContext context  = new FacilioContext();
-		Chain emailSetting = FacilioChainFactory.getEmailSettingChain();
+		FacilioChain emailSetting = FacilioChainFactory.getEmailSettingChain();
 		emailSetting.execute(context);
 		
 		setSetup(SetupLayout.getEmailSettingsLayout());
@@ -253,7 +253,7 @@ public String importData() throws Exception {
 		FacilioContext context  = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EMAIL_SETTING, emailSetting);
 		
-		Chain emailSetting = FacilioChainFactory.getUpdateEmailSettingChain();
+		FacilioChain emailSetting = FacilioChainFactory.getUpdateEmailSettingChain();
 		emailSetting.execute(context);
 		result = (String) context.get(FacilioConstants.ContextNames.RESULT);
 		return SUCCESS;
@@ -296,7 +296,7 @@ public String importData() throws Exception {
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.ID, supportEmailId);
 			
-			Chain getSupportEmail = FacilioChainFactory.getSupportEmailChain();
+			FacilioChain getSupportEmail = FacilioChainFactory.getSupportEmailChain();
 			getSupportEmail.execute(context);
 			
 			setSupportEmail((SupportEmailContext) context.get(FacilioConstants.ContextNames.SUPPORT_EMAIL));
@@ -310,7 +310,7 @@ public String importData() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.SUPPORT_EMAIL, supportEmail);
 		
-		Chain addSupportEmail = FacilioChainFactory.getAddSupportEmailChain();
+		FacilioChain addSupportEmail = FacilioChainFactory.getAddSupportEmailChain();
 		addSupportEmail.execute(context);
 		
 		supportEmailId = supportEmail.getId();
@@ -321,7 +321,7 @@ public String importData() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CONTROLLER_SETTINGS, controllerSettings);
 		
-		Chain addcontrollerSettings = FacilioChainFactory.getAddControllerChain();
+		FacilioChain addcontrollerSettings = FacilioChainFactory.getAddControllerChain();
 		addcontrollerSettings.execute(context);
 		
 		controllerSettingsId = controllerSettings.getId();
@@ -332,7 +332,7 @@ public String importData() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CONTROLLER_SETTINGS, controllerSettings);
 		
-		Chain editControllerSettings = TransactionChainFactory.getEditControllerChain();
+		FacilioChain editControllerSettings = TransactionChainFactory.getEditControllerChain();
 		editControllerSettings.execute(context);
 		
 		controllerSettingsId = controllerSettings.getId();
@@ -343,7 +343,7 @@ public String importData() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.SUPPORT_EMAIL, supportEmail);
 		System.out.println("........ update" + supportEmail);
-		Chain updateSupportEmail = FacilioChainFactory.getUpdateSupportEmailChain();
+		FacilioChain updateSupportEmail = FacilioChainFactory.getUpdateSupportEmailChain();
 		updateSupportEmail.execute(context);
 		
 		result = (String) context.get(FacilioConstants.ContextNames.RESULT);
@@ -358,7 +358,7 @@ public String importData() throws Exception {
 			FacilioContext context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.ID, supportEmailId);
 			
-			Chain deleteSupportEmail = FacilioChainFactory.getDeleteSupportEmailChain();
+			FacilioChain deleteSupportEmail = FacilioChainFactory.getDeleteSupportEmailChain();
 			deleteSupportEmail.execute(context);
 			
 			result = (String) context.get(FacilioConstants.ContextNames.RESULT);

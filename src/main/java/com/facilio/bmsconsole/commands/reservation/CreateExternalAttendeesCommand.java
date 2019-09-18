@@ -1,13 +1,14 @@
 package com.facilio.bmsconsole.commands.reservation;
 
+import java.util.Collections;
+
+import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
+
 import com.facilio.bmsconsole.commands.FacilioCommand;
 import com.facilio.bmsconsole.context.reservation.ExternalAttendeeContext;
 import com.facilio.bmsconsole.context.reservation.ReservationContext;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Context;
-import org.apache.commons.collections4.CollectionUtils;
-
-import java.util.Collections;
 
 public class CreateExternalAttendeesCommand extends FacilioCommand {
     @Override

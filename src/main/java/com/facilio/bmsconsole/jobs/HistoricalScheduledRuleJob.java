@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.jobs;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -15,6 +14,7 @@ import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.job.FacilioJob;
@@ -48,7 +48,7 @@ public class HistoricalScheduledRuleJob extends FacilioJob {
 			}
 			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE_ID, rule.getId());
 			context.put(FacilioConstants.ContextNames.CURRENT_EXECUTION_TIME, DateTimeUtil.getHourStartTimeOf(currentStartTime * 1000)); //TODO hourStartTime should be changed to direct execution time later
-			Chain scheduledChain = TransactionChainFactory.executeScheduledReadingRuleChain();
+			FacilioChain scheduledChain = TransactionChainFactory.executeScheduledReadingRuleChain();
 			scheduledChain.execute(context);
 			
 			currentStartTime = rule.getSchedule().nextExecutionTime(currentStartTime);

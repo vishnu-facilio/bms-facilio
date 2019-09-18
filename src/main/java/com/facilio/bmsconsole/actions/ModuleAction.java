@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -18,6 +17,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.view.CustomModuleData;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -40,7 +40,7 @@ public class ModuleAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_TYPE, moduleType);
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
 		
-		Chain addModulesChain = TransactionChainFactory.getAddModuleChain();
+		FacilioChain addModulesChain = TransactionChainFactory.getAddModuleChain();
 		addModulesChain.execute(context);
 		
 		FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
@@ -66,7 +66,7 @@ public class ModuleAction extends FacilioAction {
 		
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
 		
-		Chain addModulesChain = TransactionChainFactory.getAddModuleChain();
+		FacilioChain addModulesChain = TransactionChainFactory.getAddModuleChain();
 		addModulesChain.execute(context);
 		
 		FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
@@ -88,7 +88,7 @@ public class ModuleAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_TYPE, moduleType);
 		context.put(FacilioConstants.ContextNames.FETCH_DEFAULT_MODULES, defaultModules);
 		
-		Chain chain = ReadOnlyChainFactory.getModuleList();
+		FacilioChain chain = ReadOnlyChainFactory.getModuleList();
 		chain.execute(context);
 		
 		setResult("moduleList", context.get(FacilioConstants.ContextNames.MODULE_LIST));
@@ -99,7 +99,7 @@ public class ModuleAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(ContextNames.MODULE_NAME, moduleName);
 
-		Chain c = ReadOnlyChainFactory.getModuleDetails();
+		FacilioChain c = ReadOnlyChainFactory.getModuleDetails();
 		c.execute(context);
 
 		setResult(ContextNames.MODULE, context.get(ContextNames.MODULE));
@@ -121,7 +121,7 @@ public class ModuleAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME, moduleDisplayName);
 		context.put(FacilioConstants.ContextNames.MODULE_DESCRIPTION, description);
 		
-		Chain chain = TransactionChainFactory.getUpdateModuleChain();
+		FacilioChain chain = TransactionChainFactory.getUpdateModuleChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.MODULE, context.get(FacilioConstants.ContextNames.MODULE));
@@ -139,7 +139,7 @@ public class ModuleAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
 		
-		Chain addFieldsChain = TransactionChainFactory.getAddFieldsChain();
+		FacilioChain addFieldsChain = TransactionChainFactory.getAddFieldsChain();
 		addFieldsChain.execute(context);
 		
 		setFieldIds((List<Long>) context.get(FacilioConstants.ContextNames.MODULE_FIELD_IDS));
@@ -170,7 +170,7 @@ public class ModuleAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
 		
-		Chain getFieldsChain = FacilioChainFactory.getGetFieldsChain();
+		FacilioChain getFieldsChain = FacilioChainFactory.getGetFieldsChain();
 		getFieldsChain.execute(context);
 		
 		setFields((List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST));
@@ -198,7 +198,7 @@ public class ModuleAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD, field);
 		
-		Chain updateFieldChain = FacilioChainFactory.getUpdateFieldChain();
+		FacilioChain updateFieldChain = FacilioChainFactory.getUpdateFieldChain();
 		updateFieldChain.execute(context);
 		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 		
@@ -219,7 +219,7 @@ public class ModuleAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_IDS, fieldIds);
 		
-		Chain deleteFieldsChain = FacilioChainFactory.getdeleteFieldsChain();
+		FacilioChain deleteFieldsChain = FacilioChainFactory.getdeleteFieldsChain();
 		deleteFieldsChain.execute(context);
 		rowsDeleted = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 		
@@ -260,7 +260,7 @@ public class ModuleAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
 		context.put(FacilioConstants.ContextNames.RESOURCE_TYPE, getResourceType());
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, getCategoryId());
-		Chain metaField = FacilioChainFactory.getAllFieldsChain();
+		FacilioChain metaField = FacilioChainFactory.getAllFieldsChain();
 		metaField.execute(context);
 		setMeta((JSONObject) context.get(FacilioConstants.ContextNames.META));
 		return SUCCESS;
@@ -277,7 +277,7 @@ public class ModuleAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RESOURCE_TYPE, getResourceType());
 		context.put(FacilioConstants.ContextNames.PARENT_CATEGORY_ID, getCategoryId());
 		context.put(FacilioConstants.ContextNames.IS_FILTER, true);
-		Chain metaField = FacilioChainFactory.getAllFieldsChain();
+		FacilioChain metaField = FacilioChainFactory.getAllFieldsChain();
 		metaField.execute(context);
 		setMeta((JSONObject) context.get(FacilioConstants.ContextNames.META));
 		return SUCCESS;
@@ -288,7 +288,7 @@ public class ModuleAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
 		
-		Chain getFieldsChain = FacilioChainFactory.getGetFieldsChain();
+		FacilioChain getFieldsChain = FacilioChainFactory.getGetFieldsChain();
 		getFieldsChain.execute(context);
 	
 		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
@@ -447,7 +447,7 @@ public class ModuleAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.ID, getId());
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		
-		Chain dataDetailsChain = ReadOnlyChainFactory.fetchModuleDataDetailsChain();
+		FacilioChain dataDetailsChain = ReadOnlyChainFactory.fetchModuleDataDetailsChain();
 		dataDetailsChain.execute(context);
 		
 //		setModuleData((ModuleBaseWithCustomFields) context.get(FacilioConstants.ContextNames.RECORD));
@@ -460,7 +460,7 @@ public class ModuleAction extends FacilioAction {
 		FacilioContext context = constructListContext();
  		
  		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
- 		Chain dataList = ReadOnlyChainFactory.fetchModuleDataListChain();
+ 		FacilioChain dataList = ReadOnlyChainFactory.fetchModuleDataListChain();
  		dataList.execute(context);
  		
  		moduleDatas = (List<ModuleBaseWithCustomFields>) context.get(FacilioConstants.ContextNames.RECORD_LIST);
@@ -486,7 +486,7 @@ public class ModuleAction extends FacilioAction {
 		// TODO.... Temporary. Will be changed to counter field soon
 		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, getWithLocalId());
 		
-		Chain addModuleDataChain = FacilioChainFactory.addModuleDataChain();
+		FacilioChain addModuleDataChain = FacilioChainFactory.addModuleDataChain();
 		addModuleDataChain.execute(context);
 		
 		setId(moduleData.getId());
@@ -519,7 +519,7 @@ public class ModuleAction extends FacilioAction {
 		
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(moduleData.getId()));
 		
-		Chain updateModuleDataChain = FacilioChainFactory.updateModuleDataChain();
+		FacilioChain updateModuleDataChain = FacilioChainFactory.updateModuleDataChain();
 		updateModuleDataChain.execute(context);
 		
 		setId(moduleData.getId());
@@ -532,7 +532,7 @@ public class ModuleAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, ids);
 		
-		Chain deleteModuleDataChain = FacilioChainFactory.deleteModuleDataChain();
+		FacilioChain deleteModuleDataChain = FacilioChainFactory.deleteModuleDataChain();
 		deleteModuleDataChain.execute(context);
 		
 		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);

@@ -3,8 +3,6 @@ package com.facilio.controlaction.action;
 import java.util.Collections;
 import java.util.List;
 
-import com.facilio.modules.*;
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -25,6 +23,10 @@ import com.facilio.constants.FacilioConstants;
 import com.facilio.controlaction.context.ControlActionCommandContext;
 import com.facilio.controlaction.context.ControlGroupContext;
 import com.facilio.controlaction.util.ControlActionUtil;
+import com.facilio.modules.BmsAggregateOperators;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldType;
+import com.facilio.modules.ModuleFactory;
 
 public class ControlActionAction extends FacilioAction {
 
@@ -123,7 +125,7 @@ public class ControlActionAction extends FacilioAction {
 		
 		constructListContext.put(FacilioConstants.ContextNames.MODULE_NAME, ModuleFactory.getReadingDataMetaModule().getName());
 		
-		Chain rdmChain = ReadOnlyChainFactory.getRDMChain();
+		FacilioChain rdmChain = ReadOnlyChainFactory.getRDMChain();
 		
 		rdmChain.execute(constructListContext);
 		
@@ -138,7 +140,7 @@ public class ControlActionAction extends FacilioAction {
 		
 		constructListContext.put(FacilioConstants.ContextNames.MODULE_NAME, ModuleFactory.getControlGroupModule().getName());
 		
-		Chain rdmChain = ReadOnlyChainFactory.fetchControlGroupsChain();
+		FacilioChain rdmChain = ReadOnlyChainFactory.fetchControlGroupsChain();
 		
 		rdmChain.execute(constructListContext);
 		
@@ -162,7 +164,7 @@ public class ControlActionAction extends FacilioAction {
 		
 		FacilioContext constructListContext = new FacilioContext();
 		
-		Chain commandChain = ReadOnlyChainFactory.getControllableAssetsChain();
+		FacilioChain commandChain = ReadOnlyChainFactory.getControllableAssetsChain();
 		
 		commandChain.execute(constructListContext);
 		
@@ -178,7 +180,7 @@ public class ControlActionAction extends FacilioAction {
 		constructListContext.put(FacilioConstants.ContextNames.RESOURCE_ID, resourceId);
 		constructListContext.put(FacilioConstants.ContextNames.ASSET_CATEGORY, assetCategoryId);
 		
-		Chain commandChain = ReadOnlyChainFactory.getControllableFieldsChain();
+		FacilioChain commandChain = ReadOnlyChainFactory.getControllableFieldsChain();
 		
 		commandChain.execute(constructListContext);
 		
@@ -201,7 +203,7 @@ public class ControlActionAction extends FacilioAction {
 		
 		constructListContext.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.CONTROL_ACTION_COMMAND_MODULE);
 		
-		Chain commandChain = ReadOnlyChainFactory.getControlActionCommandsChain();
+		FacilioChain commandChain = ReadOnlyChainFactory.getControlActionCommandsChain();
 		
 		commandChain.execute(constructListContext);
 		
@@ -219,7 +221,7 @@ public class ControlActionAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.READING_ALARM_RULES, Collections.singletonList(readingAlarmRuleContext));
 			context.put(FacilioConstants.ContextNames.RULE_TYPE, RuleType.CONTROL_ACTION_READING_ALARM_RULE);
 			
-			Chain addReadingAlarmRuleChain = TransactionChainFactory.addReadingAlarmRuleChain();
+			FacilioChain addReadingAlarmRuleChain = TransactionChainFactory.addReadingAlarmRuleChain();
 			addReadingAlarmRuleChain.execute(context);
 			
 			setResult(FacilioConstants.ContextNames.READING_ALARM_RULE, readingAlarmRuleContext);
@@ -229,7 +231,7 @@ public class ControlActionAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
 			workflowRuleContext.setRuleType(RuleType.CONTROL_ACTION_SCHEDULED_RULE);
 			
-			Chain addWorkflowRuleChain = TransactionChainFactory.addWorkflowRuleChain();
+			FacilioChain addWorkflowRuleChain = TransactionChainFactory.addWorkflowRuleChain();
 			addWorkflowRuleChain.execute(context);
 			
 			setResult(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
@@ -297,7 +299,7 @@ public class ControlActionAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.READING_ALARM_RULES, Collections.singletonList(readingAlarmRuleContext));
 			context.put(FacilioConstants.ContextNames.RULE_TYPE, RuleType.CONTROL_ACTION_READING_ALARM_RULE);
 			
-			Chain addReadingAlarmRuleChain = TransactionChainFactory.updateReadingAlarmRuleChain();
+			FacilioChain addReadingAlarmRuleChain = TransactionChainFactory.updateReadingAlarmRuleChain();
 			addReadingAlarmRuleChain.execute(context);
 			
 			setResult(FacilioConstants.ContextNames.READING_ALARM_RULE, readingAlarmRuleContext);
@@ -307,7 +309,7 @@ public class ControlActionAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
 			workflowRuleContext.setRuleType(RuleType.CONTROL_ACTION_SCHEDULED_RULE);
 			
-			Chain addWorkflowRuleChain = TransactionChainFactory.updateWorkflowRuleChain();
+			FacilioChain addWorkflowRuleChain = TransactionChainFactory.updateWorkflowRuleChain();
 			addWorkflowRuleChain.execute(context);
 			
 			setResult(FacilioConstants.ContextNames.WORKFLOW_RULE, workflowRuleContext);
@@ -369,7 +371,7 @@ public class ControlActionAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, Collections.singletonList(ruleId));
 		
-		Chain deleteRule = TransactionChainFactory.getDeleteWorkflowRuleChain();
+		FacilioChain deleteRule = TransactionChainFactory.getDeleteWorkflowRuleChain();
 		deleteRule.execute(context);
 		
 		setResult("result", context.get(FacilioConstants.ContextNames.RESULT));
@@ -383,7 +385,7 @@ public class ControlActionAction extends FacilioAction {
 		
 		context.put(FacilioConstants.ContextNames.READING_DATA_META_LIST, Collections.singletonList(rdm));
 		
-		Chain addReadingAlarmRuleChain = TransactionChainFactory.updateReadingDataMetaChain();
+		FacilioChain addReadingAlarmRuleChain = TransactionChainFactory.updateReadingDataMetaChain();
 		addReadingAlarmRuleChain.execute(context);
 		
 		
@@ -405,7 +407,7 @@ public class ControlActionAction extends FacilioAction {
 		
 		constructListContext.put(FacilioConstants.ContextNames.MODULE_NAME,ModuleFactory.getWorkflowRuleModule().getName());
 		
-		Chain commandChain = ReadOnlyChainFactory.getControlActionRulesChain();
+		FacilioChain commandChain = ReadOnlyChainFactory.getControlActionRulesChain();
 		
 		commandChain.execute(constructListContext);
 		
@@ -472,7 +474,7 @@ public class ControlActionAction extends FacilioAction {
 			context.put(ControlActionUtil.CONTROL_ACTION_COMMANDS, Collections.singletonList(controlActionCommand));
 			context.put(ControlActionUtil.CONTROL_ACTION_COMMAND_EXECUTED_FROM, ControlActionCommandContext.Control_Action_Execute_Mode.CARD);
 			
-			Chain executeControlActionCommandChain = TransactionChainFactory.getExecuteControlActionCommandChain();
+			FacilioChain executeControlActionCommandChain = TransactionChainFactory.getExecuteControlActionCommandChain();
 			executeControlActionCommandChain.execute(context);
 		}
 		

@@ -12,8 +12,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.facilio.aws.util.FacilioProperties;
-import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.LogManager;
@@ -27,6 +25,7 @@ import com.amazonaws.services.kinesis.model.Record;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bacnet.BACNetUtil.InstanceType;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
@@ -38,6 +37,7 @@ import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingType;
 import com.facilio.bmsconsole.util.ControllerAPI;
 import com.facilio.bmsconsole.util.IoTMessageAPI;
 import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -101,7 +101,7 @@ public class TimeSeriesAPI {
 		//Temp code. To be removed later *END*
 		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.KINESIS);
 		context.put(FacilioConstants.ContextNames.ADJUST_READING_TTIME, adjustTime);
-		Chain processDataChain = TransactionChainFactory.getProcessDataChain();
+		FacilioChain processDataChain = TransactionChainFactory.getProcessDataChain();
 		processDataChain.execute(context);
 	}
 	
@@ -121,7 +121,7 @@ public class TimeSeriesAPI {
 			context.put(FacilioConstants.ContextNames.CONTROLLER_ID, controller.getId());
 		}
 		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.KINESIS);
-		Chain processDataChain = TransactionChainFactory.getProcessDataChain();
+		FacilioChain processDataChain = TransactionChainFactory.getProcessDataChain();
 		processDataChain.execute(context);
 	}
 	

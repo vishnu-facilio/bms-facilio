@@ -2,11 +2,10 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
-
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.GraphicsContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -42,7 +41,7 @@ public class GraphicsAction extends FacilioAction{
 	public String getGraphicsList() throws Exception {
 		FacilioContext context = new FacilioContext();
  		
-		Chain chain = ReadOnlyChainFactory.getGraphicsListChain();
+		FacilioChain chain = ReadOnlyChainFactory.getGraphicsListChain();
 		chain.execute(context);
 		
 		List<GraphicsContext> graphicsList = (List<GraphicsContext>) context.get(FacilioConstants.ContextNames.GRAPHICS_LIST);
@@ -55,7 +54,7 @@ public class GraphicsAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.GRAPHICS, graphics);
 		
-		Chain chain = TransactionChainFactory.getAddGraphicsChain();
+		FacilioChain chain = TransactionChainFactory.getAddGraphicsChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.GRAPHICS, graphics);
@@ -67,7 +66,7 @@ public class GraphicsAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.ID, recordId);
 		context.put(FacilioConstants.ContextNames.FETCH_ONLY_META,fetchOnlyMeta);
 		
-		Chain chain = ReadOnlyChainFactory.getGraphicsDetailsChain();
+		FacilioChain chain = ReadOnlyChainFactory.getGraphicsDetailsChain();
 		chain.execute(context);
 		
 		GraphicsContext graphicsContext = (GraphicsContext) context.get(FacilioConstants.ContextNames.GRAPHICS);
@@ -79,7 +78,7 @@ public class GraphicsAction extends FacilioAction{
 	public String deleteGraphics() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, recordId);
-		Chain chain = TransactionChainFactory.getDeleteGraphicsChain();
+		FacilioChain chain = TransactionChainFactory.getDeleteGraphicsChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECORD_ID, recordId);
@@ -94,7 +93,7 @@ public class GraphicsAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.GRAPHICS, graphics);
 
-		Chain updateGraphicsChain = TransactionChainFactory.getUpdateGraphicsChain();
+		FacilioChain updateGraphicsChain = TransactionChainFactory.getUpdateGraphicsChain();
 		updateGraphicsChain.execute(context);
 		setRecordId(graphics.getId());
 		setResult(FacilioConstants.ContextNames.GRAPHICS, graphics);
@@ -122,7 +121,7 @@ public class GraphicsAction extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.ASSET_CATEGORY, assetCategoryId);
 		context.put(FacilioConstants.ContextNames.ASSET_ID, assetId);
 		
-		Chain chain = ReadOnlyChainFactory.getGraphicsForAssetCategoryChain();
+		FacilioChain chain = ReadOnlyChainFactory.getGraphicsForAssetCategoryChain();
 		chain.execute(context);
 		
 		List<GraphicsContext> graphicsList = (List<GraphicsContext>) context.get(FacilioConstants.ContextNames.GRAPHICS_LIST);

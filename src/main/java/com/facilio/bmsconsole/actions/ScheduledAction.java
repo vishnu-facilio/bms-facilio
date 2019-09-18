@@ -2,11 +2,10 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.Collections;
 
-import org.apache.commons.chain.Chain;
-
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ScheduledActionContext;
 import com.facilio.bmsconsole.util.ScheduledActionAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -30,7 +29,7 @@ public class ScheduledAction extends FacilioAction {
 		FacilioContext facilioContext = new FacilioContext();
 		facilioContext.put(FacilioConstants.ContextNames.SCHEDULE_INFO, scheduledAction);
 		facilioContext.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(scheduledAction.getAction()));
-		Chain addAction = TransactionChainFactory.getAddScheduledActionChain();
+		FacilioChain addAction = TransactionChainFactory.getAddScheduledActionChain();
 		addAction.execute(facilioContext);
 		setResult("action", scheduledAction);
 		return SUCCESS;

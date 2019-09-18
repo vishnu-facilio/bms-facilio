@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -24,6 +23,7 @@ import com.facilio.bmsconsole.context.WorkOrderRequestContext;
 import com.facilio.bmsconsole.view.FacilioView;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.TicketActivity;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -43,7 +43,7 @@ public class WorkOrderRequestAction extends FacilioAction {
 	public String newWorkOrderRequest() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
-		Chain newTicket = FacilioChainFactory.getNewWorkOrderRequestChain();
+		FacilioChain newTicket = FacilioChainFactory.getNewWorkOrderRequestChain();
 		newTicket.execute(context);
 		
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));
@@ -131,7 +131,7 @@ public class WorkOrderRequestAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.WORK_ORDER_REQUEST, workorderrequest);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		
-		Chain updateWorkOrder = FacilioChainFactory.getUpdateWorkOrderRequestChain();
+		FacilioChain updateWorkOrder = FacilioChainFactory.getUpdateWorkOrderRequestChain();
 		updateWorkOrder.execute(context);
 		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 		
@@ -143,7 +143,7 @@ public class WorkOrderRequestAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.DELETE);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, id);
 		
-		Chain deleteWorkOrder = FacilioChainFactory.getDeleteWorkOrderRequestChain();
+		FacilioChain deleteWorkOrder = FacilioChainFactory.getDeleteWorkOrderRequestChain();
 		deleteWorkOrder.execute(context);
 		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 		
@@ -323,7 +323,7 @@ public class WorkOrderRequestAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.TICKET_ID, workOrderRequestId);
 
-		Chain activitiesChain = FacilioChainFactory.getTicketActivitiesChain();
+		FacilioChain activitiesChain = FacilioChainFactory.getTicketActivitiesChain();
 		activitiesChain.execute(context);
 
 		setActivities((List<TicketActivity>) context.get(FacilioConstants.TicketActivity.TICKET_ACTIVITIES));
@@ -345,7 +345,7 @@ public class WorkOrderRequestAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getWorkOrderRequestId());
 		
-		Chain getWorkOrderChain = FacilioChainFactory.getWorkOrderRequestDetailsChain();
+		FacilioChain getWorkOrderChain = FacilioChainFactory.getWorkOrderRequestDetailsChain();
 		getWorkOrderChain.execute(context);
 		
 		setWorkorderrequest((WorkOrderRequestContext) context.get(FacilioConstants.ContextNames.WORK_ORDER_REQUEST));
@@ -428,7 +428,7 @@ public class WorkOrderRequestAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.WO_VIEW_COUNT, true);
 		}
  		System.out.println("View Name : "+getViewName());
- 		Chain workOrderListChain = FacilioChainFactory.getWorkOrderRequestListChain();
+ 		FacilioChain workOrderListChain = FacilioChainFactory.getWorkOrderRequestListChain();
  		workOrderListChain.execute(context);
  		
 		setModuleName((String) context.get(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME));

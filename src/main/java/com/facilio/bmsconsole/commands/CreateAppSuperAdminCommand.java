@@ -1,12 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.chain.Context;
 
-import com.facilio.accounts.dto.User;
 import com.facilio.accounts.dto.Role;
+import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountConstants;
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
 
 public class CreateAppSuperAdminCommand extends FacilioCommand{
 

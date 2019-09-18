@@ -3,9 +3,8 @@ package com.facilio.bmsconsole.jobs;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.chain.Chain;
-
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.job.FacilioJob;
@@ -22,7 +21,7 @@ public class PostPMReminderJob extends FacilioJob {
 			context.put(FacilioConstants.ContextNames.ONLY_POST_REMINDER_TYPE, true);
 			context.put(FacilioConstants.ContextNames.ID, jc.getJobId());
 			
-			Chain executePMReminderChain = FacilioChainFactory.getExecutePMReminderChain();
+			FacilioChain executePMReminderChain = FacilioChainFactory.getExecutePMReminderChain();
 			executePMReminderChain.execute(context);
 			
 		}

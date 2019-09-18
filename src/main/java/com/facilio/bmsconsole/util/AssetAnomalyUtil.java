@@ -9,9 +9,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.lang3.StringUtils;
 
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AnalyticsAnomalyContext;
 import com.facilio.bmsconsole.context.AnomalyAssetConfigurationContext;

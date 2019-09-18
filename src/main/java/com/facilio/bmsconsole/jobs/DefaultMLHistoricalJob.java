@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -13,6 +12,7 @@ import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.MLContext;
 import com.facilio.bmsconsole.util.BmsJobUtil;
 import com.facilio.bmsconsole.util.MLUtil;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.job.FacilioJob;
@@ -75,7 +75,7 @@ public class DefaultMLHistoricalJob extends FacilioJob
 					LOGGER.info("Executing Events for ml"+mlContext.getId());
 					FacilioContext context = new FacilioContext();
 					context.put(EventConstants.EventContextNames.EVENT_LIST,mlContext.getEventList());
-					Chain chain = TransactionChainFactory.getV2AddEventChain();
+					FacilioChain chain = TransactionChainFactory.getV2AddEventChain();
 					chain.execute(context);
 				}
 			}
@@ -87,7 +87,7 @@ public class DefaultMLHistoricalJob extends FacilioJob
 					LOGGER.info("Executing Events for ml"+mlContext.getId());
 					FacilioContext context = new FacilioContext();
 					context.put(EventConstants.EventContextNames.EVENT_LIST,mlContext.getEventList());
-					Chain chain = TransactionChainFactory.getV2AddEventChain();
+					FacilioChain chain = TransactionChainFactory.getV2AddEventChain();
 					chain.execute(context);
 				}
 			}
@@ -147,7 +147,7 @@ public class DefaultMLHistoricalJob extends FacilioJob
 			Context context = new FacilioContext();
 			context.put(FacilioConstants.ContextNames.ML, mlContext);
 			
-			Chain c = FacilioChainFactory.getMLModelBuildingChain();
+			FacilioChain c = FacilioChainFactory.getMLModelBuildingChain();
 			c.execute(context);
 		}
 	}

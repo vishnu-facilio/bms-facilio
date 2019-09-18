@@ -1,6 +1,5 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.modules.FacilioModule;
 import org.apache.commons.chain.Context;
 
 import com.facilio.beans.ModuleBean;
@@ -8,6 +7,7 @@ import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.StateflowTransitionContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.FacilioModule;
 import com.facilio.modules.fields.FacilioField;
 
 public class ConstructStateFlowTransitionCommand extends FacilioCommand {

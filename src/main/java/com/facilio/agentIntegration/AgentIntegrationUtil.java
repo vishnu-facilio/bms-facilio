@@ -5,11 +5,11 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Properties;
 
-import com.facilio.aws.util.FacilioProperties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 
 public class AgentIntegrationUtil {
     private static final Logger LOGGER = LogManager.getLogger(AgentIntegrationUtil.class.getName());

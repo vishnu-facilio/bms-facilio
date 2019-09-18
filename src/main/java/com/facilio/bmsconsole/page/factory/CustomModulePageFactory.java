@@ -1,5 +1,9 @@
 package com.facilio.bmsconsole.page.factory;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.apache.commons.collections4.CollectionUtils;
 import org.json.simple.JSONObject;
 
 import com.facilio.beans.ModuleBean;
@@ -13,10 +17,6 @@ import com.facilio.modules.FacilioModule;
 import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
-import org.apache.commons.collections4.CollectionUtils;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class CustomModulePageFactory extends PageFactory {
 	

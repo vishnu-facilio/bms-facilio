@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.util.ActionAPI;
@@ -18,6 +17,7 @@ import com.facilio.bmsconsole.workflow.rule.ReadingAlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext.ThresholdType;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericUpdateRecordBuilder;
 import com.facilio.modules.FieldFactory;
@@ -90,7 +90,7 @@ public class UpdateAlarmRuleCommand extends FacilioCommand {
 			alarmTriggerRule.setClearAlarm(alarmRule.isAutoClear());
 			
 			
-			Chain chain = TransactionChainFactory.updateVersionedWorkflowRuleChain();
+			FacilioChain chain = TransactionChainFactory.updateVersionedWorkflowRuleChain();
 			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, alarmTriggerRule);
 			chain.execute(context);
 			
@@ -120,7 +120,7 @@ public class UpdateAlarmRuleCommand extends FacilioCommand {
 				if(alarmRCARule.getId() > 0) {
 					long oldId = alarmRCARule.getId();
 					
-					Chain chain = TransactionChainFactory.updateVersionedWorkflowRuleChain();
+					FacilioChain chain = TransactionChainFactory.updateVersionedWorkflowRuleChain();
 					context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, alarmRCARule);
 					chain.execute(context);
 					

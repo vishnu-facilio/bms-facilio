@@ -2,10 +2,10 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.Arrays;
 
-import com.facilio.bmsconsole.util.PMStatus;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.context.PreventiveMaintenance;
+import com.facilio.bmsconsole.util.PMStatus;
 import com.facilio.constants.FacilioConstants;
 
 public class ResetContext extends FacilioCommand {

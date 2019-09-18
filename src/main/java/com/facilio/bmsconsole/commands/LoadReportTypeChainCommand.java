@@ -1,8 +1,8 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 
 public class LoadReportTypeChainCommand extends FacilioCommand{
@@ -18,27 +18,27 @@ public class LoadReportTypeChainCommand extends FacilioCommand{
 		}
  		switch(reportType) {
  		case FacilioConstants.Reports.SUMMARY_REPORT_TYPE:
- 	 		Chain summaryReportChain = ReportsChainFactory.getSummaryReportChain();
+ 	 		FacilioChain summaryReportChain = ReportsChainFactory.getSummaryReportChain();
  	 		summaryReportChain.execute(repContext);
  			break;
  		case FacilioConstants.Reports.TOP_N_SUMMARY_REPORT_TYPE:
- 	 		Chain topNSummaryReportChain = ReportsChainFactory.getTopNSummaryReportChain();
+ 	 		FacilioChain topNSummaryReportChain = ReportsChainFactory.getTopNSummaryReportChain();
  	 		topNSummaryReportChain.execute(repContext);
  			break;
  		case FacilioConstants.Reports.TOP_N_NUMERIC_REPORT_TYPE:
  			break;
  		case FacilioConstants.Reports.TOP_N_TABULAR_REPORT_TYPE:
- 	 		Chain topNTabularReportChain = ReportsChainFactory.getTopNTabularReportChain();
+ 	 		FacilioChain topNTabularReportChain = ReportsChainFactory.getTopNTabularReportChain();
  	 		topNTabularReportChain.execute(repContext);
  			break;
  		case FacilioConstants.Reports.NUMERIC_REPORT_TYPE:
- 	 		Chain numericReportChain = ReportsChainFactory.getNumericReportChain();
+ 	 		FacilioChain numericReportChain = ReportsChainFactory.getNumericReportChain();
  	 		numericReportChain.execute(repContext);
  			break;
  		case FacilioConstants.Reports.TREND_REPORT_TYPE:
  			break;
  		case FacilioConstants.Reports.TABULAR_REPORT_TYPE:
- 	 		Chain tabularReportChain = ReportsChainFactory.getTabularReportChain();
+ 	 		FacilioChain tabularReportChain = ReportsChainFactory.getTabularReportChain();
  	 		tabularReportChain.execute(repContext);
  			break;
  		}

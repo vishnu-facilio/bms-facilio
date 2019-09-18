@@ -1,9 +1,9 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 
 public class AddorUpdateRecordRuleCommand extends FacilioCommand{
@@ -18,7 +18,7 @@ public class AddorUpdateRecordRuleCommand extends FacilioCommand{
 				recordRule.setExecutionOrder(0);
 			}
 			context.put(FacilioConstants.ContextNames.WORKFLOW_RULE, recordRule);
-			Chain ruleChain;
+			FacilioChain ruleChain;
 			if (recordRule.getId() > 0) {
 				ruleChain = TransactionChainFactory.updateWorkflowRuleChain();
 			} else {

@@ -9,11 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.aws.util.FacilioProperties;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
-import org.apache.commons.chain.Chain;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -31,11 +26,13 @@ import com.facilio.agent.AgentKeys.AckMessageType;
 import com.facilio.agent.AgentUtil;
 import com.facilio.agent.FacilioAgent;
 import com.facilio.agent.protocol.ProtocolUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ControllerContext;
 import com.facilio.bmsconsole.context.PublishData;
 import com.facilio.bmsconsole.context.PublishMessage;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -53,6 +50,9 @@ import com.facilio.modules.fields.FacilioField;
 import com.facilio.serializable.SerializableConsumer;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.wms.message.WmsPublishResponse;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
 
 public class IoTMessageAPI {
 	private static final Logger LOGGER = LogManager.getLogger(IoTMessageAPI.class.getName());
@@ -184,7 +184,7 @@ public class IoTMessageAPI {
 		else {
 			prop = Collections.singletonMap("acknowledgeTime", System.currentTimeMillis());
 		}
-		Chain updateChain = TransactionChainFactory.updateAckChain();
+		FacilioChain updateChain = TransactionChainFactory.updateAckChain();
 		FacilioContext context = new FacilioContext();
 		context.put(AgentKeys.ID,id);
 		context.put(FacilioConstants.ContextNames.ID,id);

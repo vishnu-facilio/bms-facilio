@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.commands;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -11,6 +10,7 @@ import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ItemContext;
 import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 
 public class RotatingItemQuantityRollUpCommand extends FacilioCommand{
@@ -42,12 +42,12 @@ public class RotatingItemQuantityRollUpCommand extends FacilioCommand{
 			}
 			if(CollectionUtils.isNotEmpty(itemIds)) {
 				context.put(FacilioConstants.ContextNames.ITEM_IDS, itemIds);
-				Chain c = TransactionChainFactory.getUpdateItemQuantityRollupChain();
+				FacilioChain c = TransactionChainFactory.getUpdateItemQuantityRollupChain();
 				c.execute(context);
 			}
 			if(CollectionUtils.isNotEmpty(toolIds)) {
 				context.put(FacilioConstants.ContextNames.TOOL_IDS, toolIds);
-				Chain c2 = TransactionChainFactory.getUpdatetoolQuantityRollupChain();
+				FacilioChain c2 = TransactionChainFactory.getUpdatetoolQuantityRollupChain();
 				c2.execute(context);
 			}
 		}

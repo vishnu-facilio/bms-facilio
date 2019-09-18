@@ -1,10 +1,9 @@
 package com.facilio.bmsconsole.actions;
 
-import org.apache.commons.chain.Chain;
-
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetBDSourceDetailsContext;
 import com.facilio.bmsconsole.context.AssetBreakdownContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -16,7 +15,7 @@ public class AssetBreakdownAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ASSET_ACTIVITY);
 		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 		context.put(FacilioConstants.ContextNames.ASSET_BD_SOURCE_DETAILS, assetBDSourceDetails);
-		Chain newAssetDowntime = TransactionChainFactory.getAddAssetDowntimeChain();
+		FacilioChain newAssetDowntime = TransactionChainFactory.getAddAssetDowntimeChain();
 		newAssetDowntime.execute(context);
 		return SUCCESS;
 	}

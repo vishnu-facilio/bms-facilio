@@ -14,7 +14,6 @@ import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.websocket.EncodeException;
 
-import org.apache.commons.chain.Chain;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONObject;
 
@@ -24,6 +23,7 @@ import com.facilio.auth.actions.FacilioAuthAction;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.util.AdminAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants.ContextNames;
 import com.facilio.fw.BeanFactory;
@@ -262,7 +262,7 @@ public class AdminAction extends ActionSupport
 			FacilioContext context=new FacilioContext();
 			context.put(ContextNames.DEMO_ROLLUP_EXECUTION_TIME,timeDuration);
 			context.put(ContextNames.DEMO_ROLLUP_JOB_ORG,orgId);
-			Chain demoRollupChain = TransactionChainFactory.demoRollUpChain();
+			FacilioChain demoRollupChain = TransactionChainFactory.demoRollUpChain();
 				demoRollupChain.execute(context);
 		}		
 		catch(Exception e) {

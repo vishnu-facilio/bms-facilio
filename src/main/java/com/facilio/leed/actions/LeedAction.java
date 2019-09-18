@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -19,6 +18,7 @@ import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.context.ViewLayout;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.leed.constants.LeedConstants;
@@ -136,7 +136,7 @@ public class LeedAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(LeedConstants.ContextNames.ORGID, AccountUtil.getCurrentOrg().getOrgId());
 		
-		Chain fetchLeedListChain = LeedConstants.FetchLeedListChain();
+		FacilioChain fetchLeedListChain = LeedConstants.FetchLeedListChain();
 		fetchLeedListChain.execute(context);
 		
 		setIsLoginRequired((boolean)context.get(LeedConstants.ContextNames.LOGINREQ));
@@ -173,7 +173,7 @@ public class LeedAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(LeedConstants.ContextNames.ARCCONTEXT, credentials);
 		
-		Chain arcloginChain = LeedConstants.ArcLoginChain();
+		FacilioChain arcloginChain = LeedConstants.ArcLoginChain();
 		arcloginChain.execute(context);
 		
 		importLeedList();
@@ -184,7 +184,7 @@ public class LeedAction extends ActionSupport {
 	public String importLeedList() throws Exception
 	{
 		FacilioContext context = new FacilioContext();
-		Chain FetchAssetsFromArcChain = FacilioChainFactory.FetchAssetsFromArcChain();
+		FacilioChain FetchAssetsFromArcChain = FacilioChainFactory.FetchAssetsFromArcChain();
 		FetchAssetsFromArcChain.execute(context);
 		leedList();
 		return SUCCESS;
@@ -222,7 +222,7 @@ public class LeedAction extends ActionSupport {
 		FacilioContext context = new FacilioContext();
 		context.put(LeedConstants.ContextNames.BUILDINGID, getBuildingId());
 		context.put(LeedConstants.ContextNames.METERTYPE, getMeterType());
-		Chain meterListChain = LeedConstants.MeterListChain();
+		FacilioChain meterListChain = LeedConstants.MeterListChain();
 		meterListChain.execute(context);
 		List<LeedEnergyMeterContext> meterList  = (List<LeedEnergyMeterContext>)context.get(LeedConstants.ContextNames.METERLIST);
 		setMeterList(meterList);
@@ -369,7 +369,7 @@ public class LeedAction extends ActionSupport {
 	{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.BUILDINGID, getBuildingId());
-		Chain LeedDetailsPageChain = FacilioChainFactory.LeedDetailsPageChain();
+		FacilioChain LeedDetailsPageChain = FacilioChainFactory.LeedDetailsPageChain();
 		LeedDetailsPageChain.execute(context);
 		LeedConfigurationContext leedConfigurationContext = (LeedConfigurationContext)context.get(FacilioConstants.ContextNames.LEED);
 		setLeedConfigurationContext(leedConfigurationContext);
@@ -428,7 +428,7 @@ public class LeedAction extends ActionSupport {
 		
 		context.put(FacilioConstants.ContextNames.ID, getBuildingId());
 		
-		Chain getBuildingChain = FacilioChainFactory.getBuildingUtilityProviderDetailsChain();
+		FacilioChain getBuildingChain = FacilioChainFactory.getBuildingUtilityProviderDetailsChain();
 		
 		getBuildingChain.execute(context);
 		
@@ -564,7 +564,7 @@ public class LeedAction extends ActionSupport {
 		leedEnergyMeterContext.setName(getMeterName());
 		
 		context.put(LeedConstants.ContextNames.LEEDMETERCONTEXT, leedEnergyMeterContext);
-		Chain addEnergyMeterChain = FacilioChainFactory.AddEnergyMeterChain();
+		FacilioChain addEnergyMeterChain = FacilioChainFactory.AddEnergyMeterChain();
 		addEnergyMeterChain.execute(context);
 		
 		return context;
@@ -581,7 +581,7 @@ public class LeedAction extends ActionSupport {
 		FacilioContext context = addEnergyMeter();
 		context.put(FacilioConstants.ContextNames.COMSUMPTIONDATA_LIST, getConsumptionJSONArray());
 		context.put(FacilioConstants.ContextNames.METERTYPE, getMeterType());
-		Chain addConsumptionDataChain = FacilioChainFactory.addConsumptionDataChain();
+		FacilioChain addConsumptionDataChain = FacilioChainFactory.addConsumptionDataChain();
 		addConsumptionDataChain.execute(context);
 		meterList();
 		JSONArray consumptionArray =  LeedAPI.getConsumptionData((long)context.get(FacilioConstants.ContextNames.DEVICEID));
@@ -660,7 +660,7 @@ public class LeedAction extends ActionSupport {
 		context.put(FacilioConstants.ContextNames.LEEDID, getLeedID());
 		context.put(FacilioConstants.ContextNames.DEVICEID, getDeviceId());
 		context.put(FacilioConstants.ContextNames.COMSUMPTIONDATA_LIST, getConsumptionJSONArray());
-		Chain addConsumptionDataChain = FacilioChainFactory.addConsumptionDataChain();
+		FacilioChain addConsumptionDataChain = FacilioChainFactory.addConsumptionDataChain();
 		addConsumptionDataChain.execute(context);
 		fetchConsumptionData();
 		return SUCCESS;	

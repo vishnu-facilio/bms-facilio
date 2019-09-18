@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.List;
 
-import com.facilio.aws.util.FacilioProperties;
 import org.apache.commons.io.IOUtils;
 
 import com.amazonaws.services.rekognition.model.DetectTextRequest;
@@ -17,6 +16,7 @@ import com.amazonaws.services.rekognition.model.TextDetection;
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.fs.FileInfo;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fs.S3FileStore;

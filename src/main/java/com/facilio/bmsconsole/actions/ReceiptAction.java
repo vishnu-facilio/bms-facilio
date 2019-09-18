@@ -2,11 +2,10 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
-
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ReceiptContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -41,7 +40,7 @@ public class ReceiptAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, receipts);
 		
-		Chain chain = TransactionChainFactory.getAddOrUpdateReceiptsChain();
+		FacilioChain chain = TransactionChainFactory.getAddOrUpdateReceiptsChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECEIPTS, context.get(FacilioConstants.ContextNames.RECEIPTS));
@@ -60,7 +59,7 @@ public class ReceiptAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PARENT_ID, receivableId);
 		
-		Chain chain = ReadOnlyChainFactory.getAllReceiptsChain();
+		FacilioChain chain = ReadOnlyChainFactory.getAllReceiptsChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECEIPTS, context.get(FacilioConstants.ContextNames.RECORD_LIST));

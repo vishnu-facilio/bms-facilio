@@ -3,12 +3,12 @@ package com.facilio.bmsconsole.util;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.facilio.aws.util.FacilioProperties;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.User;
+import com.facilio.aws.util.FacilioProperties;
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.twilio.sdk.Twilio;

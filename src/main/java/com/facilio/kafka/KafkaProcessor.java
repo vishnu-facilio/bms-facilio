@@ -6,10 +6,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 
-import com.facilio.accounts.dto.Organization;
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.aws.util.FacilioProperties;
-
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.KafkaAdminClient;
@@ -17,6 +13,9 @@ import org.apache.kafka.clients.admin.ListTopicsResult;
 import org.apache.kafka.common.KafkaFuture;
 import org.apache.log4j.LogManager;
 
+import com.facilio.accounts.dto.Organization;
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.procon.processor.FacilioProcessor;
 

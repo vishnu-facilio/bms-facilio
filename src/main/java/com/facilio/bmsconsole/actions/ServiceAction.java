@@ -3,13 +3,13 @@ package com.facilio.bmsconsole.actions;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ServiceContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -91,7 +91,7 @@ public class ServiceAction extends FacilioAction{
 	public String addOrUpdateService() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, service);
-		Chain chain = TransactionChainFactory.getAddOrUpdateServiceChain();
+		FacilioChain chain = TransactionChainFactory.getAddOrUpdateServiceChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.SERVICE, context.get(FacilioConstants.ContextNames.RECORD));
@@ -126,7 +126,7 @@ public class ServiceAction extends FacilioAction{
  	 		pagination.put("perPage", 5000);
  	 	}
  	 	
-		Chain chain = ReadOnlyChainFactory.getServiceListChain();
+		FacilioChain chain = ReadOnlyChainFactory.getServiceListChain();
 		chain.execute(context);
 		
 		if (getFetchCount()) {
@@ -147,7 +147,7 @@ public class ServiceAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordId != -1 ? Collections.singletonList(recordId) : recordIds);
 		
-		Chain chain = TransactionChainFactory.getServiceDeleteChain();
+		FacilioChain chain = TransactionChainFactory.getServiceDeleteChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, recordId != -1 ? Collections.singletonList(recordId) : recordIds);
@@ -158,7 +158,7 @@ public class ServiceAction extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, recordId);
 		
-		Chain chain = ReadOnlyChainFactory.getServiceDetailsChain();
+		FacilioChain chain = ReadOnlyChainFactory.getServiceDetailsChain();
 		chain.execute(context);
 		
 		ServiceContext servicecontext = (ServiceContext) context.get(FacilioConstants.ContextNames.RECORD);

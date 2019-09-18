@@ -5,7 +5,6 @@ import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
-import org.apache.commons.chain.Chain;
 
 public class PMAction extends FacilioAction {
 
@@ -27,7 +26,7 @@ public class PMAction extends FacilioAction {
         FacilioContext context = new FacilioContext();
         context.put(FacilioConstants.ContextNames.PM_ID, getPmId());
         context.put(FacilioConstants.ContextNames.SCHEDULE_GENERATION_TIME, getEndTime());
-        Chain chain = TransactionChainFactory.generateScheduleChain();
+        FacilioChain chain = TransactionChainFactory.generateScheduleChain();
         chain.execute(context);
         return SUCCESS;
     }

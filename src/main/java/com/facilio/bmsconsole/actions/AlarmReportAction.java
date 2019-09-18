@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -22,6 +21,7 @@ import com.facilio.bmsconsole.context.SiteContext;
 import com.facilio.bmsconsole.reports.ReportsUtil;
 import com.facilio.bmsconsole.util.NewAlarmAPI;
 import com.facilio.bmsconsole.util.SpaceAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -345,7 +345,7 @@ public class AlarmReportAction extends ActionSupport {
 						FacilioContext context = new FacilioContext();
 						context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.LOCATION);
 						context.put(FacilioConstants.ContextNames.ID, site.getLocation().getId());
-						Chain getLocationChain = FacilioChainFactory.getLocationChain();
+						FacilioChain getLocationChain = FacilioChainFactory.getLocationChain();
 						getLocationChain.execute(context);
 						
 						if(context.get(FacilioConstants.ContextNames.LOCATION) != null ) {

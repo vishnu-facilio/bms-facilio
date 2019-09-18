@@ -1,14 +1,15 @@
 package com.facilio.bmsconsole.commands;
 
-import com.facilio.bmsconsole.context.AttachmentContext;
-import com.facilio.bmsconsole.context.BulkWorkOrderContext;
-import com.facilio.constants.FacilioConstants;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.commons.chain.Command;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.facilio.bmsconsole.context.AttachmentContext;
+import com.facilio.bmsconsole.context.BulkWorkOrderContext;
+import com.facilio.constants.FacilioConstants;
 
 public class BulkAttachmentContextCommand implements Command {
     @Override

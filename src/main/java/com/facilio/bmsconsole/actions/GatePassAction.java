@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -17,6 +16,7 @@ import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
 import com.facilio.bmsconsole.context.WorkorderItemContext;
 import com.facilio.bmsconsole.context.WorkorderToolsContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -161,7 +161,7 @@ public class GatePassAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.TOOL_TRANSACTION_APPORVED_STATE, approvedState);
 		context.put(FacilioConstants.ContextNames.WORKORDER_COST_TYPE, 2);
 
-		Chain c = TransactionChainFactory.getAddGatePassChain();
+		FacilioChain c = TransactionChainFactory.getAddGatePassChain();
 		c.execute(context);
 		setGatePass((GatePassContext) context.get(FacilioConstants.ContextNames.GATE_PASS));
 		setResult(FacilioConstants.ContextNames.GATE_PASS, gatePass);
@@ -172,7 +172,7 @@ public class GatePassAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, gatePass);
 		
-		Chain c = TransactionChainFactory.getAddOrUpdateGatePassChain();
+		FacilioChain c = TransactionChainFactory.getAddOrUpdateGatePassChain();
 		c.execute(context);
 		setGatePass((GatePassContext) context.get(FacilioConstants.ContextNames.RECORD));
 		setResult(FacilioConstants.ContextNames.GATE_PASS, gatePass);
@@ -207,7 +207,7 @@ public class GatePassAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 		}
 
-		Chain gatePassListChain = ReadOnlyChainFactory.getGatePassList();
+		FacilioChain gatePassListChain = ReadOnlyChainFactory.getGatePassList();
 		gatePassListChain.execute(context);
 		if (getCount()) {
 			setGatePassCount((Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
@@ -233,7 +233,7 @@ public class GatePassAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getGatePassId());
 
-		Chain inventryDetailsChain = ReadOnlyChainFactory.fetchGatePassDetails();
+		FacilioChain inventryDetailsChain = ReadOnlyChainFactory.fetchGatePassDetails();
 		inventryDetailsChain.execute(context);
 
 		setGatePass((GatePassContext) context.get(FacilioConstants.ContextNames.GATE_PASS));
@@ -244,7 +244,7 @@ public class GatePassAction extends FacilioAction {
 	public String deleteGatePass() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, gatePassIds);
-		Chain chain = TransactionChainFactory.getGatePassDeleteChain();
+		FacilioChain chain = TransactionChainFactory.getGatePassDeleteChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, gatePassId != -1 ? Collections.singletonList(gatePassId) : gatePassIds);
@@ -254,7 +254,7 @@ public class GatePassAction extends FacilioAction {
 	public String usePoLineItemsForGatepass() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS, gatePassId != -1 ? Collections.singletonList(gatePassId) : gatePassIds);
-		Chain chain = TransactionChainFactory.getGatePassDeleteChain();
+		FacilioChain chain = TransactionChainFactory.getGatePassDeleteChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, gatePassId != -1 ? Collections.singletonList(gatePassId) : gatePassIds);

@@ -2,17 +2,17 @@ package com.facilio.bmsconsole.commands;
 
 import java.util.List;
 
-import com.facilio.accounts.util.AccountUtil;
-import com.facilio.bmsconsole.context.BMSEventContext;
-import com.facilio.bmsconsole.util.ResourceAPI;
-import com.facilio.events.context.EventContext;
-import com.facilio.events.util.EventAPI;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
+import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.context.BMSEventContext;
 import com.facilio.bmsconsole.context.BaseEventContext;
 import com.facilio.bmsconsole.util.AlarmAPI;
+import com.facilio.bmsconsole.util.ResourceAPI;
 import com.facilio.events.constants.EventConstants;
+import com.facilio.events.context.EventContext;
+import com.facilio.events.util.EventAPI;
 import com.facilio.time.DateTimeUtil;
 
 public class InsertNewEventsCommand extends FacilioCommand {

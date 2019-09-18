@@ -7,7 +7,6 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.struts2.ServletActionContext;
@@ -21,6 +20,7 @@ import com.facilio.bmsconsole.context.PublishData;
 import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.util.IoTMessageAPI;
 import com.facilio.bmsconsole.util.IoTMessageAPI.IotCommandType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Criteria;
@@ -91,7 +91,7 @@ public class TimeSeries extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.DEVICE_LIST , deviceList);
 		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.KINESIS);
-		Chain processDataChain = TransactionChainFactory.getProcessHistoricalDataChain();
+		FacilioChain processDataChain = TransactionChainFactory.getProcessHistoricalDataChain();
 		processDataChain.execute(context);
 		
 		return SUCCESS;
@@ -124,7 +124,7 @@ public class TimeSeries extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.INSTANCE_INFO, instances);
 		context.put(FacilioConstants.ContextNames.CONTROLLER_ID, controllerId);
-		Chain mappingChain = TransactionChainFactory.getInstanceAssetMappingChain();
+		FacilioChain mappingChain = TransactionChainFactory.getInstanceAssetMappingChain();
 		mappingChain.execute(context);
 		
 		setResult("result", "success");
@@ -163,7 +163,7 @@ public class TimeSeries extends FacilioAction {
 		if (getSearch() != null) {
 			context.put(FacilioConstants.ContextNames.SEARCH, getSearch());
 		}
-		Chain chain = ReadOnlyChainFactory.getUnmodelledInstancesForController();
+		FacilioChain chain = ReadOnlyChainFactory.getUnmodelledInstancesForController();
 		chain.execute(context);
 		
 		setResult("instances", context.get(FacilioConstants.ContextNames.INSTANCE_INFO));
@@ -179,7 +179,7 @@ public class TimeSeries extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.CONFIGURE , configured);
 		context.put(FacilioConstants.ContextNames.CONTROLLER_ID , controllerId);
 		
-		Chain markChain = TransactionChainFactory.getMarkUnmodeledInstanceChain();
+		FacilioChain markChain = TransactionChainFactory.getMarkUnmodeledInstanceChain();
 		markChain.execute(context);
 
 		setResult("result", "success");
@@ -191,7 +191,7 @@ public class TimeSeries extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.INSTANCE_INFO, instances);
 		context.put(FacilioConstants.ContextNames.CONTROLLER_ID , controllerId);
 		
-		Chain markChain = TransactionChainFactory.getSubscribeInstanceChain();
+		FacilioChain markChain = TransactionChainFactory.getSubscribeInstanceChain();
 		markChain.execute(context);
 
 		setResult("result", "success");
@@ -203,7 +203,7 @@ public class TimeSeries extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.UNSUBSCRIBE_IDS, ids);
 		context.put(FacilioConstants.ContextNames.CONTROLLER_ID , controllerId);
 		
-		Chain markChain = TransactionChainFactory.getUnSubscribeInstanceChain();
+		FacilioChain markChain = TransactionChainFactory.getUnSubscribeInstanceChain();
 		markChain.execute(context);
 
 		setResult("result", "success");

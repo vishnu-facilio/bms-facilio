@@ -1,8 +1,8 @@
 package com.facilio.urjanet.contants;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.impl.ChainBase;
 
+import com.facilio.chain.FacilioChain;
 import com.facilio.urjanet.command.UrjanetLoginCommand;
 
 public class UrjanetConstants {
@@ -11,9 +11,9 @@ public class UrjanetConstants {
 			
 			public static final String CREDENTIAL = "Credential";		
 		}
-			public static Chain UrjanetLoginChain()
+			public static FacilioChain UrjanetLoginChain()
 			{
-				Chain c = new ChainBase();
+				FacilioChain c = FacilioChain.getTransactionChain();
 				c.addCommand(new UrjanetLoginCommand());
 				return c;
 			}

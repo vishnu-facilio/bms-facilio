@@ -2,13 +2,13 @@ package com.facilio.bmsconsole.actions;
 
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Command;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ItemTypesVendorsContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -51,7 +51,7 @@ public class ItemTypesVendorActions extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, itemTypesVendors);
-		Chain addWorkorderPartChain = TransactionChainFactory.getAddItemTypesVendorsChain();
+		FacilioChain addWorkorderPartChain = TransactionChainFactory.getAddItemTypesVendorsChain();
 		addWorkorderPartChain.execute(context);
 		setItemsVendorsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
 		setResult("itemsVendorsId", itemsVendorsId);
@@ -62,7 +62,7 @@ public class ItemTypesVendorActions extends FacilioAction{
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.EDIT);
 		context.put(FacilioConstants.ContextNames.RECORD_LIST, itemTypesVendors);
-		Chain addWorkorderPartChain = TransactionChainFactory.getUpdateItemTypesVendorsChain();
+		FacilioChain addWorkorderPartChain = TransactionChainFactory.getUpdateItemTypesVendorsChain();
 		addWorkorderPartChain.execute(context);
 		setItemsVendorsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
 		setResult("itemsVendorsId", itemsVendorsId);
@@ -76,7 +76,7 @@ public class ItemTypesVendorActions extends FacilioAction{
 		context.put(FacilioConstants.ContextNames.PARENT_ID, itemTypesId);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, itemsVendorsId);
 
-		Chain deleteInventoryChain = TransactionChainFactory.getDeleteItemTypesVendorsChain();
+		FacilioChain deleteInventoryChain = TransactionChainFactory.getDeleteItemTypesVendorsChain();
 		deleteInventoryChain.execute(context);
 		setItemsVendorsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
 		setResult("itemsVendorsId", itemsVendorsId);

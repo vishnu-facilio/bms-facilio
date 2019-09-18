@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
@@ -22,6 +21,7 @@ import com.facilio.bmsconsole.context.MLContext;
 import com.facilio.bmsconsole.context.MLModelVariableContext;
 import com.facilio.bmsconsole.context.MLVariableContext;
 import com.facilio.bmsconsole.util.DeviceAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
@@ -475,7 +475,7 @@ public class EnableAnomalyDetectionCommand extends FacilioCommand
          context.put(FacilioConstants.ContextNames.OVER_RIDE_READING_SPLIT, true);
          
 
-         Chain addReadingChain = TransactionChainFactory.getAddCategoryReadingChain();
+         FacilioChain addReadingChain = TransactionChainFactory.getAddCategoryReadingChain();
          addReadingChain.execute(context);
 	}
 

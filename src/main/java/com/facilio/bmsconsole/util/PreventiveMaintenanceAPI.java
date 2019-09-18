@@ -20,8 +20,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.facilio.bmsconsole.context.*;
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -37,12 +35,30 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.bmsconsole.context.AssetContext;
+import com.facilio.bmsconsole.context.BaseSpaceContext;
+import com.facilio.bmsconsole.context.BulkWorkOrderContext;
+import com.facilio.bmsconsole.context.PMIncludeExcludeResourceContext;
 import com.facilio.bmsconsole.context.PMJobsContext.PMJobsStatus;
+import com.facilio.bmsconsole.context.PMReminder;
 import com.facilio.bmsconsole.context.PMReminder.ReminderType;
+import com.facilio.bmsconsole.context.PMReminderAction;
+import com.facilio.bmsconsole.context.PMResourcePlannerContext;
+import com.facilio.bmsconsole.context.PMResourcePlannerReminderContext;
+import com.facilio.bmsconsole.context.PMTaskSectionTemplateTriggers;
+import com.facilio.bmsconsole.context.PMTriggerContext;
 import com.facilio.bmsconsole.context.PMTriggerContext.TriggerExectionSource;
 import com.facilio.bmsconsole.context.PMTriggerContext.TriggerType;
+import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.PreventiveMaintenance.PMAssignmentType;
+import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.bmsconsole.context.ReadingDataMeta;
+import com.facilio.bmsconsole.context.ResourceContext;
+import com.facilio.bmsconsole.context.SpaceContext;
+import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.context.TaskContext.InputType;
+import com.facilio.bmsconsole.context.TicketContext;
+import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.context.WorkOrderContext.PreRequisiteStatus;
 import com.facilio.bmsconsole.templates.TaskSectionTemplate;
 import com.facilio.bmsconsole.templates.TaskTemplate;
@@ -53,6 +69,7 @@ import com.facilio.bmsconsole.workflow.rule.ActionContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericDeleteRecordBuilder;
@@ -734,7 +751,7 @@ public class PreventiveMaintenanceAPI {
 
 		//Temp fix. Have to be removed eventually
 		PreventiveMaintenanceAPI.updateResourceDetails(wo, taskMap);
-		Chain addWOChain = TransactionChainFactory.getAddPreOpenedWorkOrderChain();
+		FacilioChain addWOChain = TransactionChainFactory.getAddPreOpenedWorkOrderChain();
 		addWOChain.execute(context);
 
 		return wo;
@@ -950,7 +967,7 @@ public class PreventiveMaintenanceAPI {
 				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(activePm.getId()));
 				context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 
-				Chain migrationChain = TransactionChainFactory.getPMMigration(activePm.getId());
+				FacilioChain migrationChain = TransactionChainFactory.getPMMigration(activePm.getId());
 				migrationChain.execute(context);
 
 				// LOGGER.log(Level.WARN, "Migrated " + activePm.getId());
@@ -977,7 +994,7 @@ public class PreventiveMaintenanceAPI {
 				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(activePm.getId()));
 				context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 
-				Chain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChainForMig();
+				FacilioChain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChainForMig();
 				addTemplate.execute(context);
 
 				// LOGGER.log(Level.WARN, "Activated: " + activePm.getId());
@@ -999,7 +1016,7 @@ public class PreventiveMaintenanceAPI {
 				context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Arrays.asList(activePm.getId()));
 				context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
 
-				Chain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChainForMig();
+				FacilioChain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChainForMig();
 				addTemplate.execute(context);
 
 				// LOGGER.log(Level.WARN, "Deactivated: " + activePm.getId());
@@ -2351,7 +2368,7 @@ public class PreventiveMaintenanceAPI {
 				PreventiveMaintenance pm = new PreventiveMaintenance();
 				pm.setStatus(PMStatus.INACTIVE);
 				context.put(FacilioConstants.ContextNames.PREVENTIVE_MAINTENANCE, pm);
-				Chain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChain();
+				FacilioChain addTemplate = TransactionChainFactory.getChangeNewPreventiveMaintenanceStatusChain();
 				addTemplate.execute(context);
 
 				pm = new PreventiveMaintenance();

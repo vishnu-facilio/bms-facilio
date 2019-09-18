@@ -6,7 +6,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -16,6 +15,7 @@ import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.util.ReadingsAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.constants.EventConstants;
@@ -210,7 +210,7 @@ public class ModeledDataCommand extends FacilioCommand {
 		json.put("timestamp", timeStamp);
 		FacilioContext addEventContext = new FacilioContext();
 		addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, json);
-		Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
+		FacilioChain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
 		getAddEventChain.execute(addEventContext);
 	}
 }

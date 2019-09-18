@@ -12,20 +12,20 @@ import java.util.SortedMap;
 import java.util.StringJoiner;
 import java.util.TreeMap;
 
-import com.facilio.aws.util.FacilioProperties;
-import org.apache.commons.chain.Chain;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.context.TicketContext.SourceType;
 import com.facilio.bmsconsole.util.AssetsAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.Condition;
@@ -316,7 +316,7 @@ public class HistoricalAnomalyDetectionJob extends FacilioJob
 					obj.put("readingMessage", message);
 					FacilioContext addEventContext = new FacilioContext();
 					addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, obj);
-					Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
+					FacilioChain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
 					getAddEventChain.execute(addEventContext);
 					
 					if(assetID==parentMeterID)
@@ -488,7 +488,7 @@ public class HistoricalAnomalyDetectionJob extends FacilioJob
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
 		context.put(FacilioConstants.ContextNames.READINGS, readings);
 		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, com.facilio.bmsconsole.context.ReadingContext.SourceType.ML);
-		Chain chain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
+		FacilioChain chain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
 		chain.execute(context);
 	}
 	
@@ -526,7 +526,7 @@ public class HistoricalAnomalyDetectionJob extends FacilioJob
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
 		context.put(FacilioConstants.ContextNames.READINGS, readingList);
 		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, com.facilio.bmsconsole.context.ReadingContext.SourceType.ML);
-		Chain chain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
+		FacilioChain chain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
 		chain.execute(context);
 	}
 	

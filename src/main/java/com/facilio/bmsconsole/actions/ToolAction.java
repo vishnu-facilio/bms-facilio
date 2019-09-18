@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -12,6 +11,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ToolContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -89,7 +89,7 @@ public class ToolAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 		context.put(FacilioConstants.ContextNames.PURCHASED_TOOL, tool.getPurchasedTools());
 		context.put(FacilioConstants.ContextNames.TOOL_TYPES_ID, tool.getToolType().getId());
-		Chain addStockedTool = TransactionChainFactory.getAddToolChain();
+		FacilioChain addStockedTool = TransactionChainFactory.getAddToolChain();
 		addStockedTool.execute(context);
 		setResult(FacilioConstants.ContextNames.TOOL, tool);
 		context.put(FacilioConstants.ContextNames.TOOL_ID, tool.getId());
@@ -102,7 +102,7 @@ public class ToolAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.TOOLS, tools);
 		context.put(FacilioConstants.ContextNames.STORE_ROOM, storeRoom);
 		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
-		Chain addStockedTool = TransactionChainFactory.getBulkAddToolChain();
+		FacilioChain addStockedTool = TransactionChainFactory.getBulkAddToolChain();
 		addStockedTool.execute(context);
 		setResult(FacilioConstants.ContextNames.TOOL, tools);
 		return SUCCESS;
@@ -118,7 +118,7 @@ public class ToolAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, Collections.singletonList(tool.getId()));
 		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 
-		Chain updateInventryChain = TransactionChainFactory.getUpdateToolChain();
+		FacilioChain updateInventryChain = TransactionChainFactory.getUpdateToolChain();
 		updateInventryChain.execute(context);
 		setToolId(tool.getId());
 		toolDetails();
@@ -130,7 +130,7 @@ public class ToolAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getToolId());
 
-		Chain inventryDetailsChain = ReadOnlyChainFactory.fetchStockedToolsDetails();
+		FacilioChain inventryDetailsChain = ReadOnlyChainFactory.fetchStockedToolsDetails();
 		inventryDetailsChain.execute(context);
 
 		setTool((ToolContext) context.get(FacilioConstants.ContextNames.TOOL));
@@ -169,7 +169,7 @@ public class ToolAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 		}
 
-		Chain itemsListChain = ReadOnlyChainFactory.getStockedToolsList();
+		FacilioChain itemsListChain = ReadOnlyChainFactory.getStockedToolsList();
 		itemsListChain.execute(context);
 		if (getCount()) {
 			setStockedToolsCount((Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));

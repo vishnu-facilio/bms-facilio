@@ -1,9 +1,16 @@
 package com.facilio.events.actions;
 
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.collections4.CollectionUtils;
+import org.json.simple.JSONObject;
+
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.bmsconsole.actions.FacilioAction;
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.context.ReadingContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.events.commands.FetchEventFromBaseEventCommand;
@@ -13,12 +20,6 @@ import com.facilio.events.context.EventProperty;
 import com.facilio.events.context.EventRuleContext;
 import com.facilio.events.util.EventAPI;
 import com.facilio.events.util.EventRulesAPI;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.collections4.CollectionUtils;
-import org.json.simple.JSONObject;
-
-import java.util.List;
-import java.util.Map;
 
 @SuppressWarnings("serial")
 public class EventAction extends FacilioAction {
@@ -39,7 +40,7 @@ public class EventAction extends FacilioAction {
 
 		FacilioContext context = new FacilioContext();
 		context.put(EventConstants.EventContextNames.EVENT_PAYLOAD, payload);
-		Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
+		FacilioChain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
 		getAddEventChain.execute(context);
 		
 		return SUCCESS;
@@ -58,7 +59,7 @@ public class EventAction extends FacilioAction {
 		context.put(EventConstants.EventContextNames.EVENT_ID, eventId);
 
 		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
-			Chain c = ReadOnlyChainFactory.getV2EventDetailChain();
+			FacilioChain c = ReadOnlyChainFactory.getV2EventDetailChain();
 			c.addCommand(new FetchEventFromBaseEventCommand());
 			c.execute(context);
 
@@ -68,7 +69,7 @@ public class EventAction extends FacilioAction {
 			}
 		}
 		else {
-			Chain getEventDetailChain = EventConstants.EventChainFactory.getEventDetailChain();
+			FacilioChain getEventDetailChain = EventConstants.EventChainFactory.getEventDetailChain();
 			getEventDetailChain.execute(context);
 			setEvent((EventContext) context.get(EventConstants.EventContextNames.EVENT));
 		}
@@ -83,7 +84,7 @@ public class EventAction extends FacilioAction {
  		context.put(EventConstants.EventContextNames.TYPE, type);
  		context.put(EventConstants.EventContextNames.PARENT_ID, parentId);
  		
-		Chain eventListChain = EventConstants.EventChainFactory.getExportFieldsValue();
+		FacilioChain eventListChain = EventConstants.EventChainFactory.getExportFieldsValue();
 		eventListChain.execute(context);
 		setEvents((List<EventContext>) context.get(EventConstants.EventContextNames.EVENT_LIST));
 		setReadingValues((Map<Long,ReadingContext>) context.get(EventConstants.EventContextNames.READING_VALUES));
@@ -145,7 +146,7 @@ public class EventAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		if (AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.NEW_ALARMS)) {
 			context.put(FacilioConstants.ContextNames.RECORD_ID, getAlarmId());
-			Chain chain = ReadOnlyChainFactory.getEventListChain();
+			FacilioChain chain = ReadOnlyChainFactory.getEventListChain();
 			chain.addCommand(new FetchEventFromBaseEventCommand());
 			chain.execute(context);
 		}
@@ -160,7 +161,7 @@ public class EventAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 			context.put(EventConstants.EventContextNames.ALARM_ID, alarmId);
 
-			Chain eventListChain = EventConstants.EventChainFactory.getEventListChain();
+			FacilioChain eventListChain = EventConstants.EventChainFactory.getEventListChain();
 			eventListChain.execute(context);
 		}
 		
@@ -255,7 +256,7 @@ public class EventAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, id);
 		
-		Chain getEventRuleChain = EventConstants.EventChainFactory.getEventRuleChain();
+		FacilioChain getEventRuleChain = EventConstants.EventChainFactory.getEventRuleChain();
 		getEventRuleChain.execute(context);
 		
 		eventRule = (EventRuleContext) context.get(EventConstants.EventContextNames.EVENT_RULE);
@@ -268,7 +269,7 @@ public class EventAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(EventConstants.EventContextNames.EVENT_RULE, eventRule);
 		
-		Chain addEventRuleChain = EventConstants.EventChainFactory.addEventRuleChain();
+		FacilioChain addEventRuleChain = EventConstants.EventChainFactory.addEventRuleChain();
 		addEventRuleChain.execute(context);
 		
 		return SUCCESS;
@@ -278,7 +279,7 @@ public class EventAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(EventConstants.EventContextNames.EVENT_RULE, eventRule);
 		
-		Chain updateEventRule = EventConstants.EventChainFactory.updateEventRuleChain();
+		FacilioChain updateEventRule = EventConstants.EventChainFactory.updateEventRuleChain();
 		updateEventRule.execute(context);
 		
 		return SUCCESS;
@@ -287,7 +288,7 @@ public class EventAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, id);
 		
-		Chain deleteEventRule = EventConstants.EventChainFactory.deleteEventRuleChain();
+		FacilioChain deleteEventRule = EventConstants.EventChainFactory.deleteEventRuleChain();
 		deleteEventRule.execute(context);
 		eventRule = (EventRuleContext) context.get(EventConstants.EventContextNames.EVENT_RULE);
 		
@@ -304,7 +305,7 @@ public class EventAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.ID, id);
 		context.put(EventConstants.EventContextNames.RESOURCE_ID, resourceId);
 		
-		Chain updateAssetChain = EventConstants.EventChainFactory.updateNodeToResourceMappingChain();
+		FacilioChain updateAssetChain = EventConstants.EventChainFactory.updateNodeToResourceMappingChain();
 		updateAssetChain.execute(context);
 		setResult(FacilioConstants.ContextNames.RESULT, context.get(FacilioConstants.ContextNames.RESULT));
 		return SUCCESS;

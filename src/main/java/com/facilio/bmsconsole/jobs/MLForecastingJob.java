@@ -6,14 +6,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
 
-import com.facilio.aws.util.FacilioProperties;
-import org.apache.commons.chain.Chain;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.MlForecastingContext;
@@ -22,6 +21,7 @@ import com.facilio.bmsconsole.context.ReadingContext.SourceType;
 import com.facilio.bmsconsole.util.MLUtil;
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
@@ -149,7 +149,7 @@ public class MLForecastingJob extends FacilioJob
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, module.getName());
 		context.put(FacilioConstants.ContextNames.READINGS, readings);
 		context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.ML);
-		Chain chain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
+		FacilioChain chain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
 		chain.execute(context);
 	}
 	
@@ -261,7 +261,7 @@ public class MLForecastingJob extends FacilioJob
 					 context.put(FacilioConstants.ContextNames.MODULE_NAME, predictField.getModule().getName());
 					 context.put(FacilioConstants.ContextNames.READINGS, predictReadingList);
 					 context.put(FacilioConstants.ContextNames.READINGS_SOURCE, SourceType.ML);
-					 Chain chain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
+					 FacilioChain chain = TransactionChainFactory.onlyAddOrUpdateReadingsChain();
 					 chain.execute(context);
 					 
 					 /*

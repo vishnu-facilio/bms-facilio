@@ -1,11 +1,11 @@
 package com.facilio.bmsconsole.actions;
 
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.util.RuleTemplateAPI;
 import com.facilio.bmsconsole.util.TemplateAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -48,7 +48,7 @@ public class RuleTemplateAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.TEMPLATE_ID, id);
 		context.put(FacilioConstants.ContextNames.PLACE_HOLDER, placeHolder);
 		context.put(FacilioConstants.ContextNames.IS_EDIT_TEMPLATE, false);
-		Chain createRuleChain = TransactionChainFactory.getAddTemplateToRules();
+		FacilioChain createRuleChain = TransactionChainFactory.getAddTemplateToRules();
 		createRuleChain.execute(context);
 		setResult("rule", id);
 		return SUCCESS;
@@ -61,7 +61,7 @@ public class RuleTemplateAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.TEMPLATE_ID, id);
 		context.put(FacilioConstants.ContextNames.PLACE_HOLDER, placeHolder);
 		context.put(FacilioConstants.ContextNames.IS_EDIT_TEMPLATE, true);
-		Chain createRuleChain = TransactionChainFactory.getAddTemplateToRules();
+		FacilioChain createRuleChain = TransactionChainFactory.getAddTemplateToRules();
 		createRuleChain.execute(context);
 		setResult("alarmRule", context.get(FacilioConstants.ContextNames.ALARM_RULE));
 		return SUCCESS;

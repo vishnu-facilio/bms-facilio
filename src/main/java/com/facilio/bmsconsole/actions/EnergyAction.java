@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
@@ -18,6 +17,7 @@ import com.facilio.bmsconsole.context.HistoricalLoggerContext;
 import com.facilio.bmsconsole.context.ReadingContext;
 import com.facilio.bmsconsole.util.HistoricalLoggerUtil;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.FieldUtil;
@@ -39,7 +39,7 @@ public class EnergyAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 		context.put(FacilioConstants.ContextNames.RECORD, energyMeter);
 		//energyMeter.setName("test1");
-		Chain addAssetChain = FacilioChainFactory.getAddEnergyMeterChain();
+		FacilioChain addAssetChain = FacilioChainFactory.getAddEnergyMeterChain();
 		addAssetChain.execute(context);
 		setId(energyMeter.getId());
 		
@@ -51,7 +51,7 @@ public class EnergyAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		context.put(FacilioConstants.ContextNames.RECORD, energyMeter);
 		
-		Chain updateChain = FacilioChainFactory.updateEnergyMeterChain();
+		FacilioChain updateChain = FacilioChainFactory.updateEnergyMeterChain();
 		updateChain.execute(context);
 		
 		return SUCCESS;
@@ -70,7 +70,7 @@ public class EnergyAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.ENDTIME, endTime);
 			context.put(FacilioConstants.ContextNames.VM_LIST, vmList);
 			
-			Chain insertVMChain = TransactionChainFactory.getAddHistoricalVMCalculationChain();
+			FacilioChain insertVMChain = TransactionChainFactory.getAddHistoricalVMCalculationChain();
 			insertVMChain.execute(context);	
 		}
 		catch (Exception e) 
@@ -160,7 +160,7 @@ public class EnergyAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
 		context.put(FacilioConstants.ContextNames.RECORD, energyMeterPurpose);
 		//energyMeterPurpose.setName("new name 1");
-		Chain addAssetChain = FacilioChainFactory.getAddEnergyMeterPurposeChain();
+		FacilioChain addAssetChain = FacilioChainFactory.getAddEnergyMeterPurposeChain();
 		addAssetChain.execute(context);
 		setId(energyMeterPurpose.getId());
 		
@@ -192,7 +192,7 @@ public String addEnergyData() throws Exception {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, "energydata");
 		context.put(FacilioConstants.ContextNames.MODULE_DATA_TABLE_NAME, "Energy_Data");
 		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE);
-		Chain getAddEnergyDataChain = FacilioChainFactory.getAddEnergyDataChain();
+		FacilioChain getAddEnergyDataChain = FacilioChainFactory.getAddEnergyDataChain();
 		getAddEnergyDataChain.execute(context);
 		
 		return SUCCESS;
@@ -210,7 +210,7 @@ public String addEnergyData() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID, id);
 		
-		Chain virtualMeterChain = FacilioChainFactory.getVirtualMeterChildrenChain();
+		FacilioChain virtualMeterChain = FacilioChainFactory.getVirtualMeterChildrenChain();
 		virtualMeterChain.execute(context);
 		
 		setEnergyMeters((List<EnergyMeterContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST));
@@ -222,7 +222,7 @@ public String addEnergyData() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.CV_NAME, getViewName());
 		
-		Chain getEnergyMeterListChain = FacilioChainFactory.getEnergyMeterListChain();
+		FacilioChain getEnergyMeterListChain = FacilioChainFactory.getEnergyMeterListChain();
 		getEnergyMeterListChain.execute(context);
 		
 		setEnergyMeters((List<EnergyMeterContext>) context.get(FacilioConstants.ContextNames.RECORD_LIST));

@@ -1,10 +1,10 @@
 package com.facilio.bmsconsole.commands;
 
-import org.apache.commons.chain.Chain;
 import org.apache.commons.chain.Context;
 
 import com.facilio.bmsconsole.util.WorkflowRuleAPI;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.tasker.job.JobContext;
@@ -28,7 +28,7 @@ public class ExecuteJobChainCommand extends FacilioCommand{
 			FacilioContext context2 = new FacilioContext();
 			context2.put(FacilioConstants.ContextNames.WORKFLOW_RULE, rule);
 			context2.put(FacilioConstants.Job.JOB_CONTEXT, jc);
-			Chain executeRule = TransactionChainFactory.scheduledRuleExecutionChain();
+			FacilioChain executeRule = TransactionChainFactory.scheduledRuleExecutionChain();
 			executeRule.execute(context2);
 		}
 		

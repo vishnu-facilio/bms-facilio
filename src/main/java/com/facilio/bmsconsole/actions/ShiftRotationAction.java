@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.actions;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
@@ -11,6 +10,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.ShiftRotationContext;
 import com.facilio.bmsconsole.context.ShiftRotationDetailsContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -54,7 +54,7 @@ public class ShiftRotationAction extends FacilioAction {
 //		context.put(FacilioConstants.ContextNames.SHIFT_ROTATION_APPLICABLE_FOR, shiftRotation.getApplicableFor());
 //		context.put(FacilioConstants.ContextNames.SHIFT_ROTATION_DETAILS, shiftRotation.getShiftRotations());
 
-		Chain c = TransactionChainFactory.getAddShiftRotationChain();
+		FacilioChain c = TransactionChainFactory.getAddShiftRotationChain();
 		c.execute(context);
 
 		return SUCCESS;
@@ -68,7 +68,7 @@ public class ShiftRotationAction extends FacilioAction {
 //		context.put(FacilioConstants.ContextNames.SHIFT_ROTATION_APPLICABLE_FOR, shiftRotation.getApplicableFor());
 //		context.put(FacilioConstants.ContextNames.SHIFT_ROTATION_DETAILS, shiftRotation.getShiftRotations());
 
-		Chain c = TransactionChainFactory.getUpdateShiftRotationChain();
+		FacilioChain c = TransactionChainFactory.getUpdateShiftRotationChain();
 		c.execute(context);
 
 		return SUCCESS;
@@ -78,7 +78,7 @@ public class ShiftRotationAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getId());
 		
-		Chain chain = TransactionChainFactory.getDeleteShiftRotationChain();
+		FacilioChain chain = TransactionChainFactory.getDeleteShiftRotationChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.ID, getId());
@@ -89,7 +89,7 @@ public class ShiftRotationAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getShiftRotationId());
 
-		Chain chain = ReadOnlyChainFactory.getShiftRotationDetails();
+		FacilioChain chain = ReadOnlyChainFactory.getShiftRotationDetails();
 		chain.execute(context);
 
 		setShiftRotation((ShiftRotationContext) context.get(FacilioConstants.ContextNames.SHIFT_ROTATION));
@@ -112,7 +112,7 @@ public class ShiftRotationAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, id);
 
-		Chain c = TransactionChainFactory.getExecuteShiftRotationCommand();
+		FacilioChain c = TransactionChainFactory.getExecuteShiftRotationCommand();
 		c.execute(context);
 
 		return SUCCESS;
@@ -147,7 +147,7 @@ public class ShiftRotationAction extends FacilioAction {
 			context.put(FacilioConstants.ContextNames.PAGINATION, pagination);
 		}
 
-		Chain c = ReadOnlyChainFactory.getShiftRotationList();
+		FacilioChain c = ReadOnlyChainFactory.getShiftRotationList();
 		c.execute(context);
 
 		if (getCount()) {

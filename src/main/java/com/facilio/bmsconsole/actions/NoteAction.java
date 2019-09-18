@@ -3,13 +3,13 @@ package com.facilio.bmsconsole.actions;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
 import com.facilio.bmsconsole.commands.FacilioChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.context.NoteContext;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -82,7 +82,7 @@ public class NoteAction extends FacilioAction {
 		else if (moduleName.equals(FacilioConstants.ContextNames.ASSET_NOTES)) {
 			context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ASSET_ACTIVITY);
 			}
-		Chain addNote = TransactionChainFactory.getAddNotesChain();
+		FacilioChain addNote = TransactionChainFactory.getAddNotesChain();
 		addNote.execute(context);
 		
 		setNoteId(note.getId());
@@ -203,7 +203,7 @@ public class NoteAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.PARENT_ID, this.parentId);
 
-		Chain getRelatedNoteChain = FacilioChainFactory.getNotesChain();
+		FacilioChain getRelatedNoteChain = FacilioChainFactory.getNotesChain();
 		getRelatedNoteChain.execute(context);
 		if (notesIds != null && !notesIds.isEmpty()) {
 			setNotesLists((Map<Long, List<NoteContext>>) context.get(FacilioConstants.ContextNames.NOTE_LIST));

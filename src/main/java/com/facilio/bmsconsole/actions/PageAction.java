@@ -1,8 +1,7 @@
 package com.facilio.bmsconsole.actions;
 
-import org.apache.commons.chain.Chain;
-
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
@@ -15,7 +14,7 @@ public class PageAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.ID, id);
-		Chain chain = ReadOnlyChainFactory.getPageChain();
+		FacilioChain chain = ReadOnlyChainFactory.getPageChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.PAGE, context.get(FacilioConstants.ContextNames.PAGE));
@@ -28,7 +27,7 @@ public class PageAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
 		context.put(FacilioConstants.ContextNames.ID, id);
 		context.put(FacilioConstants.ContextNames.IS_SPECIAL_MODULE, true);
-		Chain chain = ReadOnlyChainFactory.getSpecialModulePageChain();
+		FacilioChain chain = ReadOnlyChainFactory.getSpecialModulePageChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.PAGE, context.get(FacilioConstants.ContextNames.PAGE));

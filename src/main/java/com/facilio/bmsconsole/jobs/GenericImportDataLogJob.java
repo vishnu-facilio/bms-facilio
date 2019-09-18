@@ -3,7 +3,6 @@ package com.facilio.bmsconsole.jobs;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.chain.Chain;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
 
@@ -14,6 +13,7 @@ import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportAssetMandatoryFieldsException;
 import com.facilio.bmsconsole.exceptions.importExceptions.ImportFieldValueMissingException;
 import com.facilio.bmsconsole.util.ImportAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.tasker.FacilioTimer;
 import com.facilio.tasker.job.InstantJob;
@@ -38,7 +38,7 @@ public class GenericImportDataLogJob extends InstantJob{
 				}
 			}	
 			
-			Chain c = TransactionChainFactory.parseImportData();
+			FacilioChain c = TransactionChainFactory.parseImportData();
 			c.execute(context);
 			
 			boolean hasDuplicates = (boolean) context.get(ImportAPI.ImportProcessConstants.HAS_DUPLICATE_ENTRIES);

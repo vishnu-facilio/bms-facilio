@@ -1,5 +1,16 @@
 package com.facilio.bmsconsole.commands;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.apache.commons.chain.Context;
+import org.json.simple.JSONObject;
+
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.BulkWorkOrderContext;
 import com.facilio.bmsconsole.context.PMResourcePlannerContext;
@@ -8,19 +19,16 @@ import com.facilio.bmsconsole.context.PreventiveMaintenance;
 import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.context.WorkOrderContext;
 import com.facilio.bmsconsole.templates.WorkorderTemplate;
-import com.facilio.bmsconsole.util.*;
+import com.facilio.bmsconsole.util.BmsJobUtil;
+import com.facilio.bmsconsole.util.PreventiveMaintenanceAPI;
+import com.facilio.bmsconsole.util.ResourceAPI;
+import com.facilio.bmsconsole.util.TemplateAPI;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.serializable.SerializableCommand;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
-import org.apache.commons.chain.Chain;
-import org.apache.commons.chain.Context;
-import org.json.simple.JSONObject;
-
-import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 //Move to jobs package after migrations are completed and remove SerializableCommand interface
 public class ScheduleNewPMCommand extends FacilioJob implements SerializableCommand {
@@ -232,7 +240,7 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
                 LOGGER.log(Level.SEVERE,"Work orders are empty before sending it to chain");
             }
 
-            Chain addWOChain = TransactionChainFactory.getTempAddPreOpenedWorkOrderChain();
+            FacilioChain addWOChain = TransactionChainFactory.getTempAddPreOpenedWorkOrderChain();
             addWOChain.addCommand(new PMEditBlockRemovalCommand(pm.getId()));
             addWOChain.execute(context);
             if (bulkWorkOrderContext.getWorkOrderContexts() != null && !bulkWorkOrderContext.getWorkOrderContexts().isEmpty()) {

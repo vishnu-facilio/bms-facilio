@@ -6,8 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.facilio.modules.*;
-import org.apache.commons.chain.Chain;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.LogManager;
@@ -33,6 +31,7 @@ import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleAlarmMeta;
 import com.facilio.bmsconsole.workflow.rule.ReadingRuleContext;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.criteria.CriteriaAPI;
@@ -41,6 +40,10 @@ import com.facilio.db.criteria.operators.DateOperators;
 import com.facilio.db.criteria.operators.PickListOperators;
 import com.facilio.events.constants.EventConstants;
 import com.facilio.fw.BeanFactory;
+import com.facilio.modules.BmsAggregateOperators;
+import com.facilio.modules.FieldFactory;
+import com.facilio.modules.FieldUtil;
+import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.tasker.job.FacilioJob;
 import com.facilio.tasker.job.JobContext;
@@ -151,7 +154,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 			{
 				FacilioContext context = new FacilioContext();
 				context.put(EventConstants.EventContextNames.EVENT_LIST, events);
-				Chain addEvent = TransactionChainFactory.getV2AddEventChain();
+				FacilioChain addEvent = TransactionChainFactory.getV2AddEventChain();
 				addEvent.execute(context);
 					
 				Integer alarmOccurrenceCount = (Integer) context.get(FacilioConstants.ContextNames.ALARM_COUNT);
@@ -294,7 +297,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 
 				FacilioContext addEventContext = new FacilioContext();
 				addEventContext.put(EventConstants.EventContextNames.EVENT_PAYLOAD, json);
-				Chain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
+				FacilioChain getAddEventChain = EventConstants.EventChainFactory.getAddEventChain();
 				getAddEventChain.execute(addEventContext);
 			}
 		}

@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.facilio.aws.util.FacilioProperties;
-import org.apache.commons.chain.Chain;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -30,9 +28,11 @@ import com.facilio.agent.FacilioAgent;
 import com.facilio.agent.MessageStatus;
 import com.facilio.agent.PublishType;
 import com.facilio.agentIntegration.wattsense.WattsenseUtil;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.devicepoints.DevicePointsUtil;
 import com.facilio.events.context.EventRuleContext;
@@ -242,7 +242,7 @@ public class Processor implements IRecordProcessor {
 
                         FacilioContext context = new FacilioContext();
                         context.put(AgentKeys.NAME, agentName);
-                        Chain updateAgentTable = TransactionChainFactory.updateAgentTable();
+                        FacilioChain updateAgentTable = TransactionChainFactory.updateAgentTable();
                         updateAgentTable.execute(context);
 
 

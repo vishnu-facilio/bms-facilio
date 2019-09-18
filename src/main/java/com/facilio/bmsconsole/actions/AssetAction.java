@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.chain.Chain;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -21,6 +20,7 @@ import com.facilio.bmsconsole.context.InventoryType;
 import com.facilio.bmsconsole.context.ReadingDataMeta.ReadingInputType;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.workflow.rule.EventType;
+import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -39,7 +39,7 @@ public class AssetAction extends FacilioAction {
 	public String newAsset() throws Exception {
 		
 		FacilioContext context = new FacilioContext();
-		Chain newAsset = FacilioChainFactory.getNewAssetChain();
+		FacilioChain newAsset = FacilioChainFactory.getNewAssetChain();
 		newAsset.execute(context);
 		
 		fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.EXISTING_FIELD_LIST);
@@ -82,7 +82,7 @@ public class AssetAction extends FacilioAction {
 	public String generateQr() throws Exception {
 		FacilioContext context=new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST,id);
-		Chain updateQrChain = TransactionChainFactory.getUpdateQrChain();
+		FacilioChain updateQrChain = TransactionChainFactory.getUpdateQrChain();
 		updateQrChain.execute(context);
 		Map<Long,String> mappedqr =(Map<Long,String>) context.get(FacilioConstants.ContextNames.MAP_QR);
 		setResult("mappedqr",mappedqr);
@@ -104,7 +104,7 @@ public class AssetAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.SET_LOCAL_MODULE_ID, true);
 		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
 		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ASSET_ACTIVITY);
-		Chain addAssetChain = TransactionChainFactory.getAddAssetChain();
+		FacilioChain addAssetChain = TransactionChainFactory.getAddAssetChain();
 		addAssetChain.execute(context);
 		setAssetId(asset.getId());
 		
@@ -133,7 +133,7 @@ public class AssetAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.TRANSITION_ID, stateTransitionId);
 		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, FacilioConstants.ContextNames.ASSET_ACTIVITY);
 		context.put(FacilioConstants.ContextNames.WITH_CHANGE_SET, true);
-		Chain updateAssetChain = TransactionChainFactory.getUpdateAssetChain();
+		FacilioChain updateAssetChain = TransactionChainFactory.getUpdateAssetChain();
 		updateAssetChain.execute(context);
 		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 		
@@ -149,7 +149,7 @@ public class AssetAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.RECORD, asset);
 		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, assetsId);
 		
-		Chain deleteAssetChain = FacilioChainFactory.getDeleteAssetChain();
+		FacilioChain deleteAssetChain = FacilioChainFactory.getDeleteAssetChain();
 		deleteAssetChain.execute(context);
 		setAssetsId((List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
 		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
@@ -210,7 +210,7 @@ public class AssetAction extends FacilioAction {
  		context.put(FacilioConstants.ContextNames.INPUT_TYPE, getInputType());
  		context.put(FacilioConstants.ContextNames.WITH_READINGS, this.getWithReadings());
  		context.put(FacilioConstants.ContextNames.WITH_WRITABLE_READINGS, this.getWithWritableReadings());
- 		Chain assetList = FacilioChainFactory.getAssetListChain();
+ 		FacilioChain assetList = FacilioChainFactory.getAssetListChain();
  		assetList.execute(context);
  		if (getCount()) {
 			setAssetCount((Long) context.get(FacilioConstants.ContextNames.RECORD_COUNT));
@@ -257,7 +257,7 @@ public class AssetAction extends FacilioAction {
 		}
 		context.put(FacilioConstants.ContextNames.SHOW_RELATIONS_COUNT, showRelationsCount);
 		context.put(FacilioConstants.ContextNames.FETCH_HIERARCHY, getFetchHierarchy());
-		Chain assetDetailsChain = FacilioChainFactory.getAssetDetailsChain();
+		FacilioChain assetDetailsChain = FacilioChainFactory.getAssetDetailsChain();
 		assetDetailsChain.execute(context);
 		
 		setAsset((AssetContext) context.get(FacilioConstants.ContextNames.ASSET));
@@ -359,7 +359,7 @@ public class AssetAction extends FacilioAction {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getAssetId());
 		
-		Chain getReportCardsChain = FacilioChainFactory.getAssetReportCardsChain();
+		FacilioChain getReportCardsChain = FacilioChainFactory.getAssetReportCardsChain();
 		getReportCardsChain.execute(context);
 		
 		setReports((JSONObject) context.get(FacilioConstants.ContextNames.REPORTS));
@@ -567,7 +567,7 @@ public class AssetAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.QR_VALUE, value);
 		context.put(FacilioConstants.ContextNames.LOCATION, location);
 		context.put(FacilioConstants.ContextNames.CURRENT_ACTIVITY, ContextNames.ASSET_ACTIVITY);
-		Chain getAssetChain = TransactionChainFactory.getAssetFromQRChain();
+		FacilioChain getAssetChain = TransactionChainFactory.getAssetFromQRChain();
 		getAssetChain.execute(context);
 		setResult("asset", context.get(FacilioConstants.ContextNames.ASSET));
 		
@@ -579,7 +579,7 @@ public class AssetAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.PARENT_ID, assetId);
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, FacilioConstants.ContextNames.ASSET_ACTIVITY);
 		
-		Chain assetActivity = ReadOnlyChainFactory.getActivitiesChain();
+		FacilioChain assetActivity = ReadOnlyChainFactory.getActivitiesChain();
 		assetActivity.execute(context);
 		setResult("activity", context.get(FacilioConstants.ContextNames.RECORD_LIST));
 		
@@ -716,7 +716,7 @@ public class AssetAction extends FacilioAction {
 	public String getAssetAssociatedActiveContracts() throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.ID, getAssetId());
-		Chain chain =ReadOnlyChainFactory.getAssetAssociatedActiveContractsChain();
+		FacilioChain chain =ReadOnlyChainFactory.getAssetAssociatedActiveContractsChain();
 		chain.execute(context);
 		
 		setResult(FacilioConstants.ContextNames.CONTRACTS, context.get(FacilioConstants.ContextNames.CONTRACTS));

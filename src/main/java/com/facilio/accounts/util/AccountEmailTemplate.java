@@ -1,10 +1,8 @@
 package com.facilio.accounts.util;
 
-import com.facilio.aws.util.AwsUtil;
-import com.facilio.aws.util.FacilioProperties;
-import com.facilio.bmsconsole.templates.Template;
-import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
-import com.facilio.bmsconsole.util.TemplateAPI;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.log4j.LogManager;
@@ -13,9 +11,11 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import com.facilio.aws.util.AwsUtil;
+import com.facilio.aws.util.FacilioProperties;
+import com.facilio.bmsconsole.templates.DefaultTemplate.DefaultTemplateType;
+import com.facilio.bmsconsole.templates.Template;
+import com.facilio.bmsconsole.util.TemplateAPI;
 
 public enum AccountEmailTemplate {
 	WELCOME_EMAIL(1),
