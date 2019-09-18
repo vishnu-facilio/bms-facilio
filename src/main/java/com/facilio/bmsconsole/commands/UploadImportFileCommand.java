@@ -9,6 +9,7 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
@@ -82,6 +83,8 @@ public class UploadImportFileCommand extends FacilioCommand {
         importProcessContext.setImportTime(DateTimeUtil.getCurrenTime());
         
         importProcessContext.setImportType(ImportProcessContext.ImportType.EXCEL.getValue());
+        
+        importProcessContext.setUploadedBy(AccountUtil.getCurrentUser().getOuid());
         
         long assetId = (long) context.get(FacilioConstants.ContextNames.ASSET_ID);
         

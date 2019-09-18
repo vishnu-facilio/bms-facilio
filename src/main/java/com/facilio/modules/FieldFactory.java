@@ -5418,6 +5418,8 @@ public class FieldFactory {
 		fields.add(getField("id", "ID", module, FieldType.NUMBER));
 		//fields.add(getOrgIdField(module));
 		fields.add(getModuleIdField(module));
+		fields.add(getSiteIdField(module));
+		fields.add(getField("uploadedBy", "UPLOADED_BY", module, FieldType.NUMBER));
 		fields.add(getField("status", "STATUS", module, FieldType.NUMBER));
 		fields.add(getField("columnHeadingString", "COLUMN_HEADING", module, FieldType.STRING));
 		fields.add(getField("filePath", "FILE_PATH", module, FieldType.STRING));

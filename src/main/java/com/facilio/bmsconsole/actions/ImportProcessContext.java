@@ -51,6 +51,16 @@ public class ImportProcessContext implements Serializable
 	String fileName;
 	Long totalRows;
 	String firstRowString;
+	private long siteId = -1;
+	
+	private long uploadedBy;
+	
+	public long getSiteId() {
+		return siteId;
+	}
+	public void setSiteId(long siteId) {
+		this.siteId = siteId;
+	}
 	
 	
 	public String getFirstRowString() {
@@ -404,7 +414,12 @@ public class ImportProcessContext implements Serializable
 		return fieldMappingJSON;
 		
 	}
-	
+	public long getUploadedBy() {
+		return uploadedBy;
+	}
+	public void setUploadedBy(long uploadedBy) {
+		this.uploadedBy = uploadedBy;
+	}
 	public enum ImportSetting {
 		INSERT,
 		INSERT_SKIP,
