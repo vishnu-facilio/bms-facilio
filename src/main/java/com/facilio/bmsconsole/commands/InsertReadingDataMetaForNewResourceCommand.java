@@ -117,6 +117,9 @@ public class InsertReadingDataMetaForNewResourceCommand extends FacilioCommand i
 					dataMeta.setTtime(timestamp);
 					dataMeta.setValue("-1");
 					dataMeta.setInputType(type);
+					if (!field.isDefault()) {
+						dataMeta.setCustom(true);							
+					}
 					builder.addRecord(FieldUtil.getAsProperties(dataMeta));
 				}
 			}
