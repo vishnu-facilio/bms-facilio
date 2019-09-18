@@ -12,9 +12,12 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.util.AccountUtil;
+import com.facilio.bmsconsole.activity.WorkOrderActivityType;
+import com.facilio.bmsconsole.commands.util.CommonCommandUtil;
 import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.bmsconsole.workflow.rule.TicketActivity;
+import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.modules.FieldFactory;
@@ -26,8 +29,6 @@ public class AddTaskReadingCorrectionActivityCommand extends FacilioCommand {
     public boolean executeCommand(Context context) throws Exception {
         List<TaskContext> tasks = (List<TaskContext>) context.get(FacilioConstants.ContextNames.TASKS);
         List<TaskContext> oldTasks = (List<TaskContext>) context.get(FacilioConstants.ContextNames.OLD_TASKS);
-        long modifiedTime = System.currentTimeMillis();
-        long modifiedUser = AccountUtil.getCurrentUser().getId();
 
         if (CollectionUtils.isEmpty(tasks)) {
             return false;
@@ -48,21 +49,11 @@ public class AddTaskReadingCorrectionActivityCommand extends FacilioCommand {
             workOrderMap.get(oldTaskContext.getParentTicketId()).add(oldTaskContext);
         }
 
-        GenericInsertRecordBuilder insertActivityBuilder = new GenericInsertRecordBuilder()
-                .table(ModuleFactory.getTicketActivityModule().getTableName())
-                .fields(FieldFactory.getTicketActivityFields());
-
         for (Map.Entry<Long, List<TaskContext>> entry: workOrderMap.entrySet()) {
             List<TaskContext> oldTaskContexts = entry.getValue();
             for (TaskContext oldTaskContext: oldTaskContexts) {
-                TicketActivity activity = new TicketActivity();
-                long parentTicketId = entry.getKey();
-                activity.setTicketId(parentTicketId);
-                activity.setModifiedTime(modifiedTime);
-                activity.setModifiedBy(modifiedUser);
-                activity.setOrgId(AccountUtil.getCurrentOrg().getOrgId());
-                activity.setActivityType(EventType.READING_CORRECTION);
 
+                long parentTicketId = entry.getKey();
                 TaskContext taskContext = taskContextMap.get(oldTaskContext.getId());
 
                 JSONObject info = new JSONObject();
@@ -92,12 +83,9 @@ public class AddTaskReadingCorrectionActivityCommand extends FacilioCommand {
                 }
 
                 info.put("updatedFields", updatedFields);
-                activity.setInfo(info);
-                insertActivityBuilder.addRecord(FieldUtil.getAsProperties(activity));
+                CommonCommandUtil.addActivityToContext(parentTicketId, -1, WorkOrderActivityType.READING_CORRECTION, info, (FacilioContext) context);
             }
         }
-
-        insertActivityBuilder.save();
         return false;
     }
 }

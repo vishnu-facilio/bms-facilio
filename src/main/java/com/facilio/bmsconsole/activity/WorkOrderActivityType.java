@@ -144,7 +144,15 @@ public enum WorkOrderActivityType implements ActivityType {
 			// TODO Auto-generated method stub
 			return " removed Prerequisite Photo";
 		}	
-	};
+	},
+	READING_CORRECTION (42) {
+		@Override
+		public String constructMessage(JSONObject json) {
+			// TODO Auto-generated method stub
+			return " corrected reading";
+		}
+	}
+	;
 	private int value;
 
 	private WorkOrderActivityType(int value) {

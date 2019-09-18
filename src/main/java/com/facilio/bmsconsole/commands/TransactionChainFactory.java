@@ -1,6 +1,12 @@
 package com.facilio.bmsconsole.commands;
 
 import org.apache.commons.chain.Context;
+import com.facilio.constants.FacilioConstants;
+import com.facilio.events.commands.NewExecuteEventRulesCommand;
+import com.facilio.events.constants.EventConstants;
+import com.facilio.bmsconsole.commands.reservation.CreateExternalAttendeesCommand;
+import com.facilio.bmsconsole.commands.reservation.CreateInternalAttendeesCommand;
+import com.facilio.bmsconsole.commands.reservation.ValidateAndSetReservationPropCommand;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.activity.AddActivitiesCommand;
@@ -22,14 +28,9 @@ import com.facilio.agentIntegration.UpdateIntegrationCommand;
 import com.facilio.agentIntegration.wattsense.AgentIntegrationDeleteCommand;
 import com.facilio.bmsconsole.actions.PurchaseOrderCompleteCommand;
 import com.facilio.bmsconsole.commands.data.PopulateImportProcessCommand;
-import com.facilio.bmsconsole.commands.reservation.CreateExternalAttendeesCommand;
-import com.facilio.bmsconsole.commands.reservation.CreateInternalAttendeesCommand;
-import com.facilio.bmsconsole.commands.reservation.ValidateAndSetReservationPropCommand;
 import com.facilio.bmsconsole.workflow.rule.WorkflowRuleContext.RuleType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.events.commands.NewEventsToAlarmsConversionCommand;
-import com.facilio.events.commands.NewExecuteEventRulesCommand;
-import com.facilio.events.constants.EventConstants;
 import com.facilio.mv.command.AddMVAdjustmentCommand;
 import com.facilio.mv.command.AddMVBaselineCommand;
 import com.facilio.mv.command.AddMVProjectCommand;
@@ -969,7 +970,7 @@ public class TransactionChainFactory {
 			c.addCommand(new ReadingUnitConversionToRdmOrSiUnit());
 			c.addCommand(TransactionChainFactory.onlyAddOrUpdateReadingsChain());
 			c.addCommand(new AddTaskReadingCorrectionActivityCommand());
-			c.addCommand(new AddActivitiesCommand());
+			c.addCommand(new AddActivitiesCommand(FacilioConstants.ContextNames.WORKORDER_ACTIVITY));
 			return c;
 		}
 
