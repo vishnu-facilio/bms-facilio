@@ -593,7 +593,13 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 		 */
 		List<String> instanceNames = null;
 		if (controllerId != null) {
+			if(AccountUtil.getCurrentOrg().getId()==152) {
+				LOGGER.info("## Device Points in come payload " + instanceArray);
+			}
 			List<Map<String, Object>> instances = getPointsInstancesForController(controllerId, true);
+			if(AccountUtil.getCurrentOrg().getId()==152) {
+				LOGGER.info("## Device Points Data already added in Points Table" + instances);
+			}
 			if (instances != null && !instances.isEmpty()) {
 				instanceNames = instances.stream().map(instance -> instance.get("device") + "|" + instance.get("instance")).collect(Collectors.toList());
 			}
@@ -623,9 +629,9 @@ public static void insertInstanceAssetMapping(String deviceName, long assetId, l
 				instanceObj.put("controllerId", controllerId);
 			}
 			insertBuilderPoints.addRecord(instanceObj);
-//			if(TimeSeriesAPI.isStage() && AccountUtil.getCurrentOrg().getId()==104) {
-				LOGGER.info(instanceObj+"device points data######");
-//			}
+			if(AccountUtil.getCurrentOrg().getId()==152) {
+				LOGGER.info("## Device Points Data comes form ORG 152 check" + instanceObj);
+			}
 		}
 		insertBuilderPoints.save();
 		return insertBuilderPoints.getRecords().size();
