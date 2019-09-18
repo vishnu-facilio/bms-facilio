@@ -77,7 +77,11 @@ public class AddTaskReadingCorrectionActivityCommand extends FacilioCommand {
 
                 JSONObject unitProp = new JSONObject();
                 unitProp.put("oldUnit", oldTaskContext.getReadingFieldUnitEnum().getDisplayName());
-                unitProp.put("newUnit", taskContext.getReadingFieldUnitEnum().getDisplayName());
+                if (taskContext.getReadingFieldUnitEnum() != null) {
+                    unitProp.put("newUnit", taskContext.getReadingFieldUnitEnum().getDisplayName());
+                } else {
+                    unitProp.put("newUnit", oldTaskContext.getReadingFieldUnitEnum().getDisplayName());
+                }
 
                 info.put("updatedFields", updatedFields);
                 activity.setInfo(info);

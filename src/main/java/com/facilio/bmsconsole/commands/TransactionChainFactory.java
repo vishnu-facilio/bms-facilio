@@ -965,6 +965,7 @@ public class TransactionChainFactory {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new ValidatePMReadingCorrection());
 			c.addCommand(new AddPMCorrectiveReadingsContext());
+			c.addCommand(new UpdateTaskInputValuesCommand());
 			c.addCommand(new ReadingUnitConversionToRdmOrSiUnit());
 			c.addCommand(TransactionChainFactory.onlyAddOrUpdateReadingsChain());
 			c.addCommand(new AddTaskReadingCorrectionActivityCommand());

@@ -12,6 +12,8 @@ import com.facilio.time.DateTimeUtil;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -36,7 +38,10 @@ public class ValidatePMReadingCorrection extends FacilioCommand {
         Map<Long, TaskContext> tasksAsMap = FieldUtil.getAsMap(tasks);
 
         Map<Long, TaskContext> oldTasks = TicketAPI.getTaskMap(recordIds);
-        context.put(FacilioConstants.ContextNames.OLD_TASKS, oldTasks);
+        if (oldTasks != null && !oldTasks.isEmpty()) {
+            Collection<TaskContext> values = oldTasks.values();
+            context.put(FacilioConstants.ContextNames.OLD_TASKS, new ArrayList<>(values));
+        }
 
         for(int i = 0; i < recordIds.size(); i++) {
             validateTaskInputTime(oldTasks.get(recordIds.get(i)), tasksAsMap.get(recordIds.get(i)));
