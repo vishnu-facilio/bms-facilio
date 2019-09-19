@@ -69,6 +69,8 @@ public class FacilioProperties {
     private static int iotEndPointPort;
     private static String iotExchange;
 
+    private static String emailClient;
+
     static {
         loadProperties();
     }
@@ -98,6 +100,7 @@ public class FacilioProperties {
                 kafkaProducer = PROPERTIES.getProperty("kafka.producer");
                 kafkaConsumer = PROPERTIES.getProperty("kafka.consumer");
                 isSmtp = "smtp".equalsIgnoreCase(PROPERTIES.getProperty("email.type"));
+                emailClient = PROPERTIES.getProperty("service.email");
                 anomalyTempDir = PROPERTIES.getProperty("anomalyTempDir", "/tmp");
                 anomalyCheckServiceURL = PROPERTIES.getProperty("anomalyCheckServiceURL", "http://localhost:7444/api");
                 anomalyBucket = PROPERTIES.getProperty("anomalyBucket","facilio-analytics");
@@ -360,4 +363,6 @@ public class FacilioProperties {
     public static String getIotExchange() {
         return iotExchange;
     }
+
+    public static String getEmailClient(){return emailClient;}
 }

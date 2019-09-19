@@ -90,7 +90,7 @@ public enum InstantJobExecutor implements Runnable {
 											Future f = THREAD_POOL_EXECUTOR.submit(() -> job._execute(context, (instantJob.getTransactionTimeout() - JOB_TIMEOUT_BUFFER) * 1000));
 											JOB_MONITOR_MAP.put(receiptHandle, new JobTimeOutInfo(System.currentTimeMillis(), (instantJob.getTransactionTimeout() + JOB_TIMEOUT_BUFFER) * 1000, f, job));
 										} catch (InstantiationException | IllegalAccessException e) {
-											LOGGER.info("Exception while executing job " + e);
+											LOGGER.error("Exception while executing job " + e);
 										}
 									}
 								}
@@ -103,13 +103,14 @@ public enum InstantJobExecutor implements Runnable {
 				try {
 					Thread.sleep(5000);
 				} catch (InterruptedException e) {
-					LOGGER.info("Exception in sleep ", e);
+					LOGGER.error("Exception in sleep ", e);
 				}
 			} catch (Exception e) {
     			LOGGER.error("Exception in instant job executor "+ e.getMessage());
 				CommonCommandUtil.emailException(InstantJobExecutor.class.getSimpleName(), "Exception in instant job executor", e);
 			}
 		}
+    	LOGGER.info("Executor running is false and so stopping executor thread");
     }
 
     public void jobEnd(String receiptHandle) {

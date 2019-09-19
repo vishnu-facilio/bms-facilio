@@ -37,6 +37,7 @@ import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimeUtility;
 import javax.transaction.SystemException;
 
+import com.facilio.services.factory.FacilioFactory;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.config.RequestConfig;
@@ -401,7 +402,10 @@ public class AwsUtil
     }
 	
 	public static void sendEmail(JSONObject mailJson) throws Exception  {
-		logEmail(mailJson);
+
+		FacilioFactory.getEmailClient().sendEmail(mailJson);
+
+		/*logEmail(mailJson);
 		if(FacilioProperties.isDevelopment()) {
 //			mailJson.put("subject", "Local - "+mailJson.get("subject"));
 			return;
@@ -410,7 +414,7 @@ public class AwsUtil
 			EmailUtil.sendEmail(mailJson);
 		} else {
 			sendEmailViaAws(mailJson);
-		}
+		}*/
 	}
 
 	private static void sendEmailViaAws(JSONObject mailJson) throws Exception  {
@@ -471,8 +475,9 @@ public class AwsUtil
 		}
 	}
 
-	private static void logEmail (JSONObject mailJson) {
-		try {
+	private static void logEmail (JSONObject mailJson) throws Exception {
+		FacilioFactory.getEmailClient().logEmail(mailJson);
+		/*try {
 			if (AccountUtil.getCurrentOrg() != null) {
 				String toAddress = (String) mailJson.get("to");
 				if (!"error+alert@facilio.com".equals(toAddress) && !"error@facilio.com".equals(toAddress)) {
@@ -485,11 +490,13 @@ public class AwsUtil
 		}
 		catch (Exception e) {
 			LOGGER.error("Error occurred while logging email", e);
-		}
+		}*/
 	}
 	
 	public static void sendEmail(JSONObject mailJson, Map<String,String> files) throws Exception  {
-		if(files == null || files.isEmpty()) {
+
+		FacilioFactory.getEmailClient().sendEmail(mailJson,files);
+		/*if(files == null || files.isEmpty()) {
 			sendEmail(mailJson);
 			return;
 		}
@@ -498,7 +505,7 @@ public class AwsUtil
 			EmailUtil.sendEmail(mailJson, files);
 		} else {
 			sendEmailViaAws(mailJson, files);
-		}
+		}*/
 	}
 
 	private static void sendEmailViaAws(JSONObject mailJson, Map<String,String> files) throws Exception  {
