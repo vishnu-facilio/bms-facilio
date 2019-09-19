@@ -32,6 +32,10 @@ public class AddOrUpdatePurchaseOrderCommand extends FacilioCommand {
 		String moduleName = (String) context.get(FacilioConstants.ContextNames.MODULE_NAME);
 		PurchaseOrderContext purchaseOrderContext = (PurchaseOrderContext) context.get(FacilioConstants.ContextNames.RECORD);
 		if (purchaseOrderContext != null) {
+			if (purchaseOrderContext.getVendor() == null || purchaseOrderContext.getVendor().getId() <= 0) {
+				throw new Exception("Vendor cannot be empty");
+			}
+			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
 			List<FacilioField> fields = modBean.getAllFields(moduleName);
@@ -42,9 +46,9 @@ public class AddOrUpdatePurchaseOrderCommand extends FacilioCommand {
 				throw new Exception("Line items cannot be empty");
 			}
 			
-			if (purchaseOrderContext.getVendor() == null) {
-				throw new Exception("Vendor cannot be empty");
-			}
+//			if (purchaseOrderContext.getVendor() == null) {
+//				throw new Exception("Vendor cannot be empty");
+//			}
 			checkForStoreRoom(purchaseOrderContext, purchaseOrderContext.getLineItems());
 			// setting current user to requestedBy
 			if(purchaseOrderContext.getRequestedBy() == null) {

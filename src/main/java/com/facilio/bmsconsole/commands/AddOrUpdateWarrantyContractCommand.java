@@ -37,6 +37,18 @@ public class AddOrUpdateWarrantyContractCommand extends FacilioCommand{
 		boolean isContractRevised = (boolean) context.get(FacilioConstants.ContextNames.IS_CONTRACT_REVISED);
 		
 		if (warrantyContractContext != null) {
+			if (warrantyContractContext.getVendor() == null || warrantyContractContext.getVendor().getId() <= 0) {
+				throw new Exception("Vendor cannot be empty");
+			}
+			
+			if(warrantyContractContext.getFromDate() > 0 && warrantyContractContext.getEndDate() > 0)
+				{
+					if(warrantyContractContext.getEndDate() <= warrantyContractContext.getFromDate())
+					{
+						throw new IllegalArgumentException("Contract End Date should be greater than From Date");
+					}
+				}
+			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
 			List<FacilioField> fields = modBean.getAllFields(moduleName);
@@ -52,9 +64,9 @@ public class AddOrUpdateWarrantyContractCommand extends FacilioCommand{
 //			if (CollectionUtils.isEmpty(warrantyContractContext.getLineItems())) {
 //				throw new Exception("Line items cannot be empty");
 //			}
-			if (warrantyContractContext.getVendor() == null) {
-				throw new Exception("Vendor cannot be empty");
-			}
+//			if (warrantyContractContext.getVendor() == null) {
+//				throw new Exception("Vendor cannot be empty");
+//			}
 			warrantyContractContext.setContractType(ContractType.WARRANTY);
 			
 			if (!isContractRevised && warrantyContractContext.getId() > 0) {

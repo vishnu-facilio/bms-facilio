@@ -17,9 +17,9 @@ public class AddRotatingItemToolCommand extends FacilioCommand {
 		
 		if (asset != null)
 		{
-			if(asset.getRotatingItem() != null && asset.getRotatingTool() != null)
+			if((asset.getRotatingItem() != null && asset.getRotatingItem().getId() > 0) && (asset.getRotatingTool() != null && asset.getRotatingTool().getId() > 0))
 			{
-				throw new IllegalArgumentException("An asset can be either a \"Rotating Item\" or a \"Rotating Tool\". Can't be both");
+				throw new IllegalArgumentException("An asset can be either a Rotating Item or a Rotating Tool. Can't be both");
 			}
 			else
 			{
