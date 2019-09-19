@@ -386,7 +386,7 @@
 
 					clearedTimeSum = readingAlarmOccurrence.fetch(sumClearedTime);
 					durationForYear = (clearedTimeSum - createdTimeSum);
-					durationInSeconds = durationForYear / 1000
+					durationInSeconds = durationForYear / 1000;
 					log durationForYear;
 				}
 				resMap[\"commonRule\"] = commonRule;
