@@ -6,9 +6,9 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 
 public class AccountsAction extends FacilioAction{
-	
+
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
@@ -23,7 +23,7 @@ public class AccountsAction extends FacilioAction{
 	public void setUrl(String url) {
 		this.url = url;
 	}
-	
+
 	public String getEmail() {
 		return email;
 	}
@@ -31,7 +31,7 @@ public class AccountsAction extends FacilioAction{
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	
+
 	public String getPermaLinkUrlToken() {
 		return permaLinkUrlToken;
 	}
@@ -39,18 +39,17 @@ public class AccountsAction extends FacilioAction{
 	public void setPermaLinkUrlToken(String url) {
 		this.permaLinkUrlToken = url;
 	}
-	
-   public String getPermalinkToken() throws Exception {
-   
-	    FacilioContext context = new FacilioContext();
-	    context.put(FacilioConstants.ContextNames.PERMALINK_FOR_URL, getUrl());
-	    context.put(FacilioConstants.ContextNames.USER_EMAIL, getEmail());
+
+	public String getPermalinkToken() throws Exception {
+
 		FacilioChain permaLinkTokenChain = FacilioChainFactory.getPermaLinkTokenChain();
-		permaLinkTokenChain.execute(context);
-		
-		setPermaLinkUrlToken((String)context.get(FacilioConstants.ContextNames.PERMALINK_TOKEN_FOR_URL));
-		
-	   return SUCCESS;       
+		permaLinkTokenChain.getContext().put(FacilioConstants.ContextNames.PERMALINK_FOR_URL, getUrl());
+		permaLinkTokenChain.getContext().put(FacilioConstants.ContextNames.USER_EMAIL, getEmail());
+		permaLinkTokenChain.execute();
+
+		setPermaLinkUrlToken((String)permaLinkTokenChain.getContext().get(FacilioConstants.ContextNames.PERMALINK_TOKEN_FOR_URL));
+
+		return SUCCESS;
 	}
 
 

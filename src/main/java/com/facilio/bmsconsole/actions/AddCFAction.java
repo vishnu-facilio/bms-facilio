@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.facilio.chain.FacilioChain;
 import org.apache.commons.chain.Command;
 import org.apache.struts2.ServletActionContext;
 import org.json.simple.JSONArray;
@@ -40,15 +41,13 @@ public class AddCFAction extends ActionSupport {
 				field.setDataType(Integer.parseInt((String) cf.get("dataType")));
 				fields.add(field);
 			}
+
+			FacilioChain addCF = TransactionChainFactory.getAddFieldsChain();
+			addCF.getContext().put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
+			addCF.getContext().put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
+			addCF.execute();
 			
-			FacilioContext context = new FacilioContext();
-			context.put(FacilioConstants.ContextNames.MODULE_NAME, moduleName);
-			context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
-			
-			Command addCF = TransactionChainFactory.getAddFieldsChain();
-			addCF.execute(context);
-			
-			setFieldsIds((List<Long>) context.get("FieldIds"));
+			setFieldsIds((List<Long>) addCF.getContext().get("FieldIds"));
 		}
 		
 		return SUCCESS;

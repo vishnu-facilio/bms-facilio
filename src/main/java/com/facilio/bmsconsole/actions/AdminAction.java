@@ -259,11 +259,10 @@ public class AdminAction extends ActionSupport
 		long timeDuration = Long.parseLong(request.getParameter("durations"));
 
 		try {
-			FacilioContext context=new FacilioContext();
-			context.put(ContextNames.DEMO_ROLLUP_EXECUTION_TIME,timeDuration);
-			context.put(ContextNames.DEMO_ROLLUP_JOB_ORG,orgId);
 			FacilioChain demoRollupChain = TransactionChainFactory.demoRollUpChain();
-				demoRollupChain.execute(context);
+			demoRollupChain.getContext().put(ContextNames.DEMO_ROLLUP_EXECUTION_TIME,timeDuration);
+			demoRollupChain.getContext().put(ContextNames.DEMO_ROLLUP_JOB_ORG,orgId);
+			demoRollupChain.execute();
 		}		
 		catch(Exception e) {
 			logger.log(Level.SEVERE, "Exception while executing Demojob" +e.getMessage(), e);
