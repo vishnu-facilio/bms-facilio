@@ -75,12 +75,17 @@ public class AddTaskReadingCorrectionActivityCommand extends FacilioCommand {
                 updatedFields.add(timeProp);
 
                 JSONObject unitProp = new JSONObject();
-                unitProp.put("oldUnit", oldTaskContext.getReadingFieldUnitEnum().getDisplayName());
-                if (taskContext.getReadingFieldUnitEnum() != null) {
-                    unitProp.put("newUnit", taskContext.getReadingFieldUnitEnum().getDisplayName());
-                } else {
-                    unitProp.put("newUnit", oldTaskContext.getReadingFieldUnitEnum().getDisplayName());
+                if (oldTaskContext.getReadingFieldUnitEnum() != null) {
+                	unitProp.put("oldUnit", oldTaskContext.getReadingFieldUnitEnum().getDisplayName());
+                	
+                	if (taskContext.getReadingFieldUnitEnum() != null) {
+                        unitProp.put("newUnit", taskContext.getReadingFieldUnitEnum().getDisplayName());
+                    } else {
+                        unitProp.put("newUnit", oldTaskContext.getReadingFieldUnitEnum().getDisplayName());
+                    }
                 }
+                
+                
 
                 info.put("updatedFields", updatedFields);
                 CommonCommandUtil.addActivityToContext(parentTicketId, -1, WorkOrderActivityType.READING_CORRECTION, info, (FacilioContext) context);

@@ -26,7 +26,7 @@ public class UpdateTaskInputValuesCommand extends FacilioCommand {
         for (TaskContext task: tasks) {
             UpdateRecordBuilder<TaskContext> updateRecordBuilder = new UpdateRecordBuilder<>();
             updateRecordBuilder.module(taskModule)
-                    .fields(Arrays.asList(taskFieldMap.get("inputTime"), taskFieldMap.get("inputValue"), taskFieldMap.get("readingFieldUnit")))
+                    .fields(Arrays.asList(taskFieldMap.get("inputTime"), taskFieldMap.get("inputValue")))
                     .andCondition(CriteriaAPI.getIdCondition(task.getId(), taskModule));
             updateRecordBuilder.update(task);
         }
