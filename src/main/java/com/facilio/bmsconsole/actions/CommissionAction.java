@@ -42,7 +42,7 @@ public class CommissionAction extends FacilioAction{
 	public void setType(int type) {
 		this.type = type;
 	}
-	private long controllerId=1;
+	private long controllerId=-1;
 
 	/**
 	 * @return the controllerId
