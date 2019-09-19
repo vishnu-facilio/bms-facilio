@@ -52,7 +52,7 @@ public class CustomModulePageFactory extends PageFactory {
 					relatedList.put("module", subModule);
 					relatedList.put("field", fields.get(0));
 					relatedListWidget.setRelatedList(relatedList);
-					relatedListWidget.addToLayoutParams(section, 24, 5);
+					relatedListWidget.addToLayoutParams(section, 24, 8);
 					section.addWidget(relatedListWidget);
 				}
 			}
@@ -61,7 +61,7 @@ public class CustomModulePageFactory extends PageFactory {
 
 	private static void addSecondaryDetailsWidget(Section section) {
 		PageWidget detailsWidget = new PageWidget(WidgetType.SECONDARY_DETAILS_WIDGET);
-		detailsWidget.addToLayoutParams(section, 24, 5);
+		detailsWidget.addToLayoutParams(section, 24, 7);
 		section.addWidget(detailsWidget);
 	}
 	
