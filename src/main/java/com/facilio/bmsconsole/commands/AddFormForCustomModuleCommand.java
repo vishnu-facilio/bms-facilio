@@ -32,6 +32,7 @@ public class AddFormForCustomModuleCommand extends FacilioCommand{
 		FacilioModule module = modBean.getModule(moduleName);
 		if (module.getTypeEnum() == ModuleType.CUSTOM) {
 		List<FormField> formFields = new ArrayList<>();
+		List<FormField> photoFields = new ArrayList<>();
 		List<FacilioField> fields = (List<FacilioField>) context.get(FacilioConstants.ContextNames.MODULE_FIELD_LIST);
 		
 			Map<String, FacilioField> fieldsAsMap = FieldFactory.getAsMap(fields);
@@ -40,11 +41,20 @@ public class AddFormForCustomModuleCommand extends FacilioCommand{
 				FormField formField = new FormField(field.getId(), field.getName(), field.getDisplayType(), field.getDisplayName(), Required.OPTIONAL, 0, 1);
 				formFields.add(formField);
 			}
+			FacilioField photoField = fieldsAsMap.get("photo");
+			if (photoField != null) {
+				FormField formField = new FormField(photoField.getId(), photoField.getName(), photoField.getDisplayType(), photoField.getDisplayName(), Required.OPTIONAL, 0, 1);
+				photoFields.add(formField);
+			}
 		
-		FormSection formSection = new FormSection("Untitled", 0, formFields, true);
-		form.setSections(Collections.singletonList(formSection));
-		
-		FormsAPI.createForm(form, module);
+			List<FormSection> sections = new ArrayList<>();
+			FormSection photoSection = new FormSection("", 0, photoFields, false);
+			sections.add(photoSection);
+			FormSection formSection = new FormSection("Untitled", 1, formFields, true);
+			sections.add(formSection);
+			
+			form.setSections((sections));
+			FormsAPI.createForm(form, module);
 		}
 		return false;
 	}
