@@ -34,12 +34,16 @@ public class UploadImportFileCommand extends FacilioCommand {
 		String fileUploadContentType = (String) context.get(FacilioConstants.ContextNames.FILE_CONTENT_TYPE);
 		ImportProcessContext importProcessContext = (ImportProcessContext) context.get(FacilioConstants.ContextNames.IMPORT_PROCESS_CONTEXT);
 		Long assetCategory = (Long) context.get(FacilioConstants.ContextNames.ASSET_CATEGORY);
+		Long siteId = (Long) context.get(FacilioConstants.ContextNames.SITE_ID);
 		
 		long fileId = fs.addFile(fileUploadFileName, fileUpload, fileUploadContentType);
 				
 		Workbook workbook = WorkbookFactory.create(fileUpload);
 		if (workbook.getNumberOfSheets() > 1) {
 			throw new IllegalArgumentException("Uploaded File contains more than one Sheet");
+		}
+		if (siteId == null || siteId < 0) {
+			throw new IllegalArgumentException("Kindly Input a Site");
 		}
 		importProcessContext = ImportAPI.getColumnHeadings(workbook, importProcessContext);
 		
@@ -79,6 +83,8 @@ public class UploadImportFileCommand extends FacilioCommand {
         importProcessContext.setStatus(ImportProcessContext.ImportStatus.UPLOAD_COMPLETE.getValue());
         
         importProcessContext.setFileId(fileId);
+        
+        importProcessContext.setSiteId(siteId);
         
         importProcessContext.setImportTime(DateTimeUtil.getCurrenTime());
         

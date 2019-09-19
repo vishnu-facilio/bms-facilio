@@ -63,6 +63,7 @@ public class ImportDataAction extends FacilioAction {
 		context.put(FacilioConstants.ContextNames.ASSET_ID, assetId);
 		context.put(FacilioConstants.ContextNames.TEMPLATE_ID, templateId);
 		context.put(ImportAPI.ImportProcessConstants.MODULE_META, moduleMeta);
+		context.put(FacilioConstants.ContextNames.SITE_ID, siteId);
 		
 		FacilioChain uploadFile = TransactionChainFactory.uploadImportFileChain();
 		uploadFile.execute(context);
@@ -491,7 +492,16 @@ public class ImportDataAction extends FacilioAction {
 	private long orgId;
 	private JSONObject moduleExists;
 	private long templateId;
+	private long siteId;
 	
+	public long getSiteId() {
+		return siteId;
+	}
+
+	public void setSiteId(long siteId) {
+		this.siteId = siteId;
+	}
+
 	public long getTemplateId() {
 		return templateId;
 	}

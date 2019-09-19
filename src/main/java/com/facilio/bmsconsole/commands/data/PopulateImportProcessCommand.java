@@ -275,14 +275,8 @@ public class PopulateImportProcessCommand extends FacilioCommand {
 						.moduleName(moduleName).
 						fields(bean.getAllFields(moduleName));
 				if (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) || (importProcessContext.getModule().getExtendModule() != null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {
-					JSONObject importMeta = importProcessContext.getImportJobMetaJson();
-					JSONObject moduleStaticFields = (JSONObject) importMeta.get(ImportAPI.ImportProcessConstants.MODULE_STATIC_FIELDS);
-					Long siteId = null;
-					if(moduleStaticFields != null && !moduleStaticFields.isEmpty()) {
-						siteId = (Long)moduleStaticFields.get(FacilioConstants.ContextNames.SITE);
-					}
+					Long siteId = importProcessContext.getSiteId();
 					if (siteId != null) {
-//						updateBuilder.andCustomWhere("SITE_ID = ?", siteId);
 						updateBuilder.andCondition(CriteriaAPI.getCondition(siteField, siteId.toString(), NumberOperators.EQUALS));
 					}
 				}

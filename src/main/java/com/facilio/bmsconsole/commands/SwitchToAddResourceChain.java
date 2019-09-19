@@ -41,12 +41,8 @@ public class SwitchToAddResourceChain extends FacilioCommand {
 				) {
 			FacilioChain c = TransactionChainFactory.getGenericImportChain();
 			JSONObject importMeta = importProcessContext.getImportJobMetaJson();
-			Long siteId;
-			JSONObject moduleStaticFields = (JSONObject) importMeta.get(ImportAPI.ImportProcessConstants.MODULE_STATIC_FIELDS);
-			if(moduleStaticFields != null && !moduleStaticFields.isEmpty()) {
-				siteId = (Long)moduleStaticFields.get(FacilioConstants.ContextNames.SITE);
-				context.put(FacilioConstants.ContextNames.SITE, siteId);
-			}
+			Long siteId = importProcessContext.getSiteId();
+			context.put(FacilioConstants.ContextNames.SITE, siteId);
 			c.execute(context);	
 		}
 		

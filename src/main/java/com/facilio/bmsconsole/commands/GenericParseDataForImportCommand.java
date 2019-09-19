@@ -55,11 +55,7 @@ public class GenericParseDataForImportCommand extends FacilioCommand {
 		int row_no = 0;
 		
 		JSONObject importMeta = importProcessContext.getImportJobMetaJson();
-		Long siteId = null;
-		JSONObject moduleStaticFields = (JSONObject) importMeta.get(ImportAPI.ImportProcessConstants.MODULE_STATIC_FIELDS);
-		if(moduleStaticFields != null && !moduleStaticFields.isEmpty()) {
-			siteId = (Long)moduleStaticFields.get(FacilioConstants.ContextNames.SITE);
-		}
+		Long siteId = importProcessContext.getSiteId();
 		
 		if(importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.ASSET) ||
 				(importProcessContext.getModule().getExtendModule()!= null && importProcessContext.getModule().getExtendModule().getName().equals(FacilioConstants.ContextNames.ASSET))) {

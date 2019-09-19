@@ -125,11 +125,7 @@ public class ProcessImportCommand extends FacilioCommand {
 						
 //						String siteName = (String) colVal.get(fieldMapping.get(importProcessContext.getModule().getName() + "__site"));
 
-						Long siteId = null;
-						JSONObject moduleStaticFields = (JSONObject) importMeta.get(ImportAPI.ImportProcessConstants.MODULE_STATIC_FIELDS);
-						if(moduleStaticFields != null && !moduleStaticFields.isEmpty()) {
-							siteId = (Long)moduleStaticFields.get(FacilioConstants.ContextNames.SITE);
-						}
+						Long siteId = importProcessContext.getSiteId();
 						
 						if(!(importProcessContext.getImportSetting() == ImportSetting.UPDATE.getValue() || importProcessContext.getImportSetting() == ImportSetting.UPDATE_NOT_NULL.getValue())) {
 //							List<SiteContext> sites = SpaceAPI.getAllSites();
