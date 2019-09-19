@@ -172,6 +172,9 @@ public class CreateReadingAnalyticsReportCommand extends FacilioCommand {
 		Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(yField.getModule().getName()));
 		setXAndDateFields(dataPoint, mode, fieldMap);
 		setCriteria(dataPoint, fieldMap, metric);
+		if(metric.isxDataPoint()) {
+			dataPoint.setxDataPoint(metric.isxDataPoint());
+		}
 		if (dataPoint.isFetchResource()) {
 			resourceAlias.add(report.getxAlias());
 		}

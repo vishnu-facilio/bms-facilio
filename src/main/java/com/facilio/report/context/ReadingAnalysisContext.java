@@ -129,6 +129,14 @@ public class ReadingAnalysisContext {
 		this.defaultSortPoint = defaultSortPoint;
 	}
 	
+	public boolean xDataPoint;
+	public boolean isxDataPoint() {
+		return xDataPoint;
+	}
+	public void setxDataPoint(boolean xDataPoint) {
+		this.xDataPoint = xDataPoint;
+	}
+	
 	private Map<String, Object> metaData;
 	public Map<String, Object> getMetaData() {
 		return metaData;
