@@ -299,7 +299,7 @@ public class TaskAction extends FacilioAction {
 		this.taskIdList = taskIdList;
 	}
 	
-	private boolean skipValidation = false;
+	private boolean skipValidation = true;
 
 
 	public boolean isSkipValidation() {

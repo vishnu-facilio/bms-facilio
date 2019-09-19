@@ -34,6 +34,7 @@ public class TaskErrorContext {
 	}
 
 	String previousValue;
+	String nextValue;
 	String currentValue;
 	String averageValue;
 
@@ -51,6 +52,14 @@ public class TaskErrorContext {
 
 	public void setPreviousValue(String previousValue) {
 		this.previousValue = previousValue;
+	}
+	
+	public String getNextValue() {
+		return nextValue;
+	}
+
+	public void setNextValue(String nextValue) {
+		this.nextValue = nextValue;
 	}
 
 	public String getCurrentValue() {
