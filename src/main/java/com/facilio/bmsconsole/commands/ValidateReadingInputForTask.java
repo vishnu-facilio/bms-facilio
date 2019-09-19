@@ -1,5 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -223,12 +225,13 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 				}
 				error.setCurrentValue(currentValueString);
 				
-				
 				String averageValueString = averageValue+"";
 				if(numberField.getMetric() > 0) {
 					averageValue = (double) UnitsUtil.convertToDisplayUnit(averageValue, numberField);
-					averageValue = (double) Math.round(averageValue);
-					averageValueString  = averageValue + " " + UnitsUtil.getDisplayUnit(numberField).getSymbol();
+					
+					MathContext m3 = new MathContext(3);
+					BigDecimal averageValueToRound = new BigDecimal(averageValue);
+					averageValueString  = averageValueToRound.round(m3) + " " + UnitsUtil.getDisplayUnit(numberField).getSymbol();
 				} 
 				error.setAverageValue(averageValueString);
 				error.setMessage("Current Value is less than the average delta value "+ error.getAverageValue());				
@@ -250,8 +253,10 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 				String averageValueString = averageValue+"";
 				if(numberField.getMetric() > 0) {
 					averageValue = (double) UnitsUtil.convertToDisplayUnit(averageValueString, numberField);
-					averageValue = (double) Math.round(averageValue);
-					averageValueString  = averageValue + " " + UnitsUtil.getDisplayUnit(numberField).getSymbol();
+					
+					MathContext m3 = new MathContext(3);
+					BigDecimal averageValueToRound = new BigDecimal(averageValue);	
+					averageValueString  = averageValueToRound.round(m3) + " " + UnitsUtil.getDisplayUnit(numberField).getSymbol();
 				} 
 				error.setAverageValue(averageValueString);
 				error.setMessage("Current Value is greater than the average delta value " + error.getAverageValue());				

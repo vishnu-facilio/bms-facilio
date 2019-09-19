@@ -1,5 +1,6 @@
 package com.facilio.bmsconsole.commands;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -45,7 +46,7 @@ public class SiUnitConversionToEnteredReadingUnit extends FacilioCommand {
 				{
 					int siUnit = numberField.getMetricEnum().getSiUnitId();
 					Double enteredInputValue = UnitsUtil.convert(taskContext.getInputValue(), siUnit, task.getReadingFieldUnit());
-					task.setInputValue(String.valueOf(enteredInputValue));
+					task.setInputValue(String.valueOf(BigDecimal.valueOf(enteredInputValue).toPlainString()));
 				}
 			}
 			context.put(FacilioConstants.ContextNames.TASK, task);		
