@@ -33,8 +33,7 @@ public class SiUnitConversionToSelectedReadingUnit extends FacilioCommand {
 					if(numberField.getMetricEnum() != null && task.getInputValue() != null)
 					{
 						int siUnit = numberField.getMetricEnum().getSiUnitId();
-						Double enteredInputValue = UnitsUtil.convert(task.getInputValue(), siUnit, task.getReadingFieldUnit());
-						task.setInputValue(String.valueOf(enteredInputValue));
+						task.setInputValue(String.valueOf(UnitsUtil.convert(task.getInputValue(), siUnit, task.getReadingFieldUnit())));
 					}
 				}
 			}

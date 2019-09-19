@@ -1,7 +1,4 @@
 package com.facilio.bmsconsole.commands;
-
-import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -10,6 +7,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.chain.Context;
+import org.apache.commons.math3.util.Precision;
 
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
@@ -176,7 +174,8 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			error.setPreviousValue(previousValueString);	
 			error.setMessage("Entered reading is less than the previous day reading " + error.getPreviousValue());
 			taskErrors.add(error);
-		}	
+		}
+		
 		if(futureCase && nextValue > 0 && currentValueInSiUnit > nextValue) 
 		{		
 			TaskErrorContext error = setIncrementalErrorMode(currentTask, numberField, rdm);
@@ -188,7 +187,8 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			error.setNextValue(nextValueString);
 			error.setMessage("Entered value is greater than the next day reading " + error.getNextValue());
 			taskErrors.add(error);
-		}	
+		}
+		
 		return taskErrors;
 	}
 
@@ -218,22 +218,10 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 				error.setMode(TaskErrorContext.Mode.SUGGESTION.getValue());
 				error.setSuggestionType(TaskErrorContext.SuggestionType.LESS_THAN_AVG_VALUE.getValue());
 				
-				String currentValueString = currentTask.getInputValue()+"";
-				Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);
-				if(currentInputUnit != null) {
-					currentValueString = currentValueString + " "+currentInputUnit.getSymbol();
-				}
-				error.setCurrentValue(currentValueString);
+				Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);	
+				error.setCurrentValue(setCurrentValueString(currentTask, currentInputUnit));
+				error.setAverageValue(setAverageValueString(averageValue, numberField));
 				
-				String averageValueString = averageValue+"";
-				if(numberField.getMetric() > 0) {
-					averageValue = (double) UnitsUtil.convertToDisplayUnit(averageValue, numberField);
-					
-					MathContext m3 = new MathContext(3);
-					BigDecimal averageValueToRound = new BigDecimal(averageValue);
-					averageValueString  = averageValueToRound.round(m3) + " " + UnitsUtil.getDisplayUnit(numberField).getSymbol();
-				} 
-				error.setAverageValue(averageValueString);
 				error.setMessage("Current Value is less than the average delta value "+ error.getAverageValue());				
 				return error;
 			}
@@ -242,23 +230,11 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 				TaskErrorContext error = new TaskErrorContext();
 				error.setMode(TaskErrorContext.Mode.SUGGESTION.getValue());
 				error.setSuggestionType(TaskErrorContext.SuggestionType.GREATER_THAN_AVG_VALUE.getValue());
-				
-				String currentValueString = currentTask.getInputValue()+"";	
-				Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);
-				if(currentInputUnit != null) {
-					currentValueString = currentValueString + " "+currentInputUnit.getSymbol();
-				}
-				error.setCurrentValue(currentValueString);
-				
-				String averageValueString = averageValue+"";
-				if(numberField.getMetric() > 0) {
-					averageValue = (double) UnitsUtil.convertToDisplayUnit(averageValueString, numberField);
 					
-					MathContext m3 = new MathContext(3);
-					BigDecimal averageValueToRound = new BigDecimal(averageValue);	
-					averageValueString  = averageValueToRound.round(m3) + " " + UnitsUtil.getDisplayUnit(numberField).getSymbol();
-				} 
-				error.setAverageValue(averageValueString);
+				Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);
+				error.setCurrentValue(setCurrentValueString(currentTask, currentInputUnit));
+				error.setAverageValue(setAverageValueString(averageValue, numberField));
+				
 				error.setMessage("Current Value is greater than the average delta value " + error.getAverageValue());				
 				return error;
 			}
@@ -285,14 +261,9 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			TaskErrorContext error = new TaskErrorContext();		
 			error.setMode(TaskErrorContext.Mode.SUGGESTION.getValue());
 			error.setSuggestionType(TaskErrorContext.SuggestionType.UNIT_CHANGE.getValue());
+			error.setCurrentValue(setCurrentValueString(currentTask, currentInputUnit));
 			error.setSuggestedUnit(suggestedUnit);
 			error.setMessage("You might have to check your unit. It might be "+ Unit.valueOf(error.getSuggestedUnit()).getSymbol()+".");
-			
-			String currentValueString = currentTask.getInputValue()+"";
-			if(currentInputUnit != null) {
-				currentValueString = currentValueString + " "+currentInputUnit.getSymbol();
-			}
-			error.setCurrentValue(currentValueString);
 
 			String previousValueString = previousValue+"";
 			if(numberField.getMetric() > 0) {
@@ -401,6 +372,23 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		error.setCurrentValue(currentValueString);
 		
 		return error;
+	}
+	
+	public static String setCurrentValueString(TaskContext currentTask, Unit currentInputUnit) throws Exception {	
+		String currentValueString = currentTask.getInputValue()+"";
+		if(currentInputUnit != null) {
+			currentValueString = currentValueString + " "+currentInputUnit.getSymbol();
+		}
+		return currentValueString;
+	}
+	
+	public static String setAverageValueString(Double averageValue, NumberField numberField) throws Exception {	
+		
+		String averageValueString = averageValue+"";
+		if(numberField.getMetric() > 0) {
+			averageValueString  = Math.round((double)UnitsUtil.convertToDisplayUnit(averageValue, numberField))+ " " + UnitsUtil.getDisplayUnit(numberField).getSymbol();
+		} 
+		return averageValueString;
 	}
 	
 	private TaskErrorContext checkUnitForHighValueError(TaskContext currentTask, NumberField numberField,ReadingDataMeta rdm, Double currentValueInSiUnit) throws Exception {

@@ -19,7 +19,7 @@ public class SiUnitConversionToEnteredReadingUnit extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
-		if(AccountUtil.getCurrentOrg().getId() != 155l) {
+		if(AccountUtil.getCurrentOrg().getId() != 155l && AccountUtil.getCurrentOrg().getId() != 1l) {
 			return false;
 		}
 
@@ -45,8 +45,7 @@ public class SiUnitConversionToEnteredReadingUnit extends FacilioCommand {
 				if(numberField.getMetricEnum() != null && taskContext.getInputValue() != null)
 				{
 					int siUnit = numberField.getMetricEnum().getSiUnitId();
-					Double enteredInputValue = UnitsUtil.convert(taskContext.getInputValue(), siUnit, task.getReadingFieldUnit());
-					task.setInputValue(String.valueOf(BigDecimal.valueOf(enteredInputValue).toPlainString()));
+					task.setInputValue(String.valueOf(UnitsUtil.convert(taskContext.getInputValue(), siUnit, task.getReadingFieldUnit())));
 				}
 			}
 			context.put(FacilioConstants.ContextNames.TASK, task);		
