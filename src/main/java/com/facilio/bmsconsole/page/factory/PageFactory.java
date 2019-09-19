@@ -1,8 +1,8 @@
 
 package com.facilio.bmsconsole.page.factory;
 
+import com.facilio.bmsconsole.context.ReadingAlarm;
 import org.json.simple.JSONObject;
-
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
 import com.facilio.bmsconsole.context.FormulaFieldContext;
@@ -39,6 +39,8 @@ public class PageFactory {
 				return MLAnomalyPageFactory.getMLAlarmPage((BaseAlarmContext) record);
 			case ContextNames.FORMULA_FIELD:
 				return KPIPageFacory.getKpiPage((FormulaFieldContext) record);
+			case ContextNames.READING_ALARM:
+				return  ReadingAlarmPageFactory.getReadingAlarmPage((ReadingAlarm) record);
 		}
 		if (module.getTypeEnum() == ModuleType.CUSTOM) {
 			return CustomModulePageFactory.getCustomModulePage((ModuleBaseWithCustomFields) record);

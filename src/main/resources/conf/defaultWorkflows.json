@@ -283,6 +283,7 @@
 			"usage" : "AssetSummary",
 			"workflow" : "Map assetAlarmDetails(Number resourceId) {
 				date = NameSpace(\"date\");
+				durtaion = 0;
 				thisCurrentYear = date.getDateRange(\"Current Year\");
 				readingAlarmOccurrence = Module(\"readingalarmoccurrence\");
 				occurenceThisMonthCrit = null;
@@ -300,25 +301,32 @@
 				if (thisYearOccurrence != null) {
 					for each index, value in thisYearOccurrence {
 						if (occurrenceCount < value.rule) {
-						ruleId = value.result.id;
-						occurrenceCount = value.rule;
+							ruleId = value.result.id;
+							occurrenceCount = value.rule;
 						}
 					}
 				}
 				if (ruleId > 0) {
 					readingRuleModule = Module(\"workflowrule\");
 					readingRuleCrite = {
-					criteria: [id == ruleId]
-				};
-				ruleObj = readingRuleModule.fetch(readingRuleCrite);
-
+						criteria: [id == ruleId]
+					};
+					ruleDurationCriteria = {
+						criteria: [rule == ruleId],
+						field: \"duration\",
+						aggregation: \"sum, duration\"
+					};
+					durationrecord = readingAlarmOccurrence.fetch(ruleDurationCriteria);
+					duration = durationrecord;
+					ruleObj = readingRuleModule.fetch(readingRuleCrite);
 					if (ruleObj != null) {
-					firstRes =ruleObj[0];
-					commonRule = firstRes.name;
+						firstRes =ruleObj[0];
+						commonRule = firstRes.name;
 					}
 				}
 				resMap[\"commonRule\"] = commonRule;
-				resMap[\"duration\"] = 0;
+				resMap[\"duration\"] = duration;
+				resMap[\"durationInSeconds\"] = duration;
 				log resMap;
 				return resMap;
 			}"
@@ -327,13 +335,13 @@
 			"description": "",
 			"usage": "",
 			"workflow": "Map assetAlarmDetails(Number resourceId) {
-				// resourceId = 896318 ;
 				date = NameSpace(\"date\");
 				thisCurrentYear = date.getDateRange(\"Current Year\");
 				readingAlarmOccurrence = Module(\"readingalarm\");
 				occurenceThisMonthCrit = null;
 				resMap = {};
 				durationForYear =0;
+				durationInSeconds = 0;
 				occurenceThisYearCrit = {
 					criteria: [resource == resourceId && createdTime ==  thisCurrentYear],
 					field: \"ruleId\",
@@ -378,10 +386,12 @@
 
 					clearedTimeSum = readingAlarmOccurrence.fetch(sumClearedTime);
 					durationForYear = (clearedTimeSum - createdTimeSum);
+					durationInSeconds = durationForYear / 1000
 					log durationForYear;
 				}
 				resMap[\"commonRule\"] = commonRule;
 				resMap[\"duration\"] = durationForYear;
+				resMap[\"durationInSeconds\"] = durationInSeconds;
 				return resMap;
 				}"
 		},

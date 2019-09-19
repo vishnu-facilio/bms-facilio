@@ -215,7 +215,9 @@ public class PageWidget {
  		ANOMALY_RCA("anomalyRca"),
  		OCCURRENCE_HISTORY("occurrenceHistory"),
  		ANOMALY_METRICS("anomalyMetrics"),
- 		FORMULA_LOG("formulaLog")
+ 		FORMULA_LOG("formulaLog"),
+		ALARM_DETAILS("alarmDetails"),
+ 		ALARM_REPORT("alarmReport");
  		;
 		
 		private String name;
