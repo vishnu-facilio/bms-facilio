@@ -37,7 +37,7 @@ import com.facilio.modules.fields.FacilioField;
 
 public class AssetPageFactory extends PageFactory {
 	
-	private static final Logger LOGGER = LogManager.getLogger(AssetPageFactory.class);
+	private static final Logger LOGGER = LogManager.getLogger(AssetPageFactory.class.getName());
 	
 	public static Page getAssetPage(AssetContext asset) throws Exception {
 		Page page = new Page();
@@ -139,7 +139,7 @@ public class AssetPageFactory extends PageFactory {
 			addDepreciationCostTrendWidget(tab7Sec1, depreciationCostCriteria);
 		}
 		// if (AccountUtil.isFeatureEnabled(FeatureLicense.GRAPHICS)) {
-		if ((AccountUtil.getCurrentOrg().getOrgId() == 210 && asset.isConnected() ) || (AccountUtil.getCurrentOrg().getOrgId() == 75 && module.equals("fahu"))) {
+		if ((AccountUtil.getCurrentOrg().getOrgId() == 210 && asset.isConnected() ) || (AccountUtil.getCurrentOrg().getOrgId() == 75 && module.getName().equals("fahu"))) {
 			
 			Tab tab6 = page.new Tab("graphics", "graphics");
 			page.addTab(tab6);
