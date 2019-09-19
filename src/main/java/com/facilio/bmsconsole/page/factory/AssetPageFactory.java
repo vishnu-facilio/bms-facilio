@@ -37,7 +37,7 @@ import com.facilio.modules.fields.FacilioField;
 
 public class AssetPageFactory extends PageFactory {
 	
-	private static final Logger LOGGER = LogManager.getLogger(AssetPageFactory.class.getName());
+	private static final Logger LOGGER = LogManager.getLogger(AssetPageFactory.class);
 	
 	public static Page getAssetPage(AssetContext asset) throws Exception {
 		Page page = new Page();
@@ -139,7 +139,7 @@ public class AssetPageFactory extends PageFactory {
 			addDepreciationCostTrendWidget(tab7Sec1, depreciationCostCriteria);
 		}
 		// if (AccountUtil.isFeatureEnabled(FeatureLicense.GRAPHICS)) {
-		if ((AccountUtil.getCurrentOrg().getOrgId() == 210 && asset.isConnected() ) || (AccountUtil.getCurrentOrg().getOrgId() == 75 && module.getName().equals("fahu"))) {
+		if ((AccountUtil.getCurrentOrg().getOrgId() == 210 && asset.isConnected() ) || (AccountUtil.getCurrentOrg().getOrgId() == 75 && module.equals("fahu"))) {
 			
 			Tab tab6 = page.new Tab("graphics", "graphics");
 			page.addTab(tab6);
@@ -202,7 +202,7 @@ public class AssetPageFactory extends PageFactory {
 	private static void addFailureMetricWidget(Section section) {
 		PageWidget fddWidget = new PageWidget(WidgetType.CARD);
 		fddWidget.addToLayoutParams(section, 10, 8);
-		fddWidget.addToWidgetParams("type", CardType.FAILURE_METRICS.getName());
+		fddWidget.addCardType(CardType.FAILURE_METRICS);
 		section.addWidget(fddWidget);
 	}
 	
@@ -217,21 +217,21 @@ public class AssetPageFactory extends PageFactory {
 	private static void addNextPmWidget(Section section) {
 		PageWidget nextPmWidget = new PageWidget(WidgetType.CARD);
 		nextPmWidget.addToLayoutParams(section, 8, 7);
-		nextPmWidget.addToWidgetParams("type", CardType.NEXT_PM.getName());
+		nextPmWidget.addCardType(CardType.NEXT_PM);
 		section.addWidget(nextPmWidget);
 	}
 	
 	private static void addWoDetailsWidget(Section section) {
 		PageWidget woDetailsWidget = new PageWidget(WidgetType.CARD);
 		woDetailsWidget.addToLayoutParams(section, 8, 7);
-		woDetailsWidget.addToWidgetParams("type", CardType.WO_DETAILS.getName());
+		woDetailsWidget.addCardType(CardType.WO_DETAILS);
 		section.addWidget(woDetailsWidget);
 	}
 	
 	private static void addRecentlyClosedWidget(Section section) {
 		PageWidget recentlyClosedWidget = new PageWidget(WidgetType.CARD);
 		recentlyClosedWidget.addToLayoutParams(section, 8, 7);
-		recentlyClosedWidget.addToWidgetParams("type", CardType.RECENTLY_CLOSED_PM.getName());
+		recentlyClosedWidget.addCardType(CardType.RECENTLY_CLOSED_PM);
 		section.addWidget(recentlyClosedWidget);
 	}
 	
@@ -272,7 +272,7 @@ public class AssetPageFactory extends PageFactory {
 					
 					PageWidget commandWidget = new PageWidget(WidgetType.CARD);
 					commandWidget.addToLayoutParams(section, 6, 6);
-					commandWidget.addToWidgetParams("type", CardType.SET_COMMAND.getName());
+					commandWidget.addCardType(CardType.SET_COMMAND);
 					
 					JSONObject obj = new JSONObject();
 					obj.put("field", rdm.getField());
@@ -297,13 +297,13 @@ public class AssetPageFactory extends PageFactory {
 	private static void addAssetCostDetailsWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
 		cardWidget.addToLayoutParams(section, 24, 6);
-		cardWidget.addToWidgetParams("type", CardType.ASSET_COST_DETAILS.getName());
+		cardWidget.addCardType(CardType.ASSET_COST_DETAILS);
 		section.addWidget(cardWidget);
 	}
 	private static void addCostBreakupWidget(Section section, Criteria criteria) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
 		cardWidget.addToLayoutParams(section, 24, 14);
-		cardWidget.addToWidgetParams("type", CardType.COST_BREAKUP.getName());
+		cardWidget.addCardType(CardType.COST_BREAKUP);
 		addChartParams(cardWidget, "createdTime", "totalCost","plannedvsunplanned", criteria);
 		section.addWidget(cardWidget);
 	}
@@ -311,14 +311,14 @@ public class AssetPageFactory extends PageFactory {
 	private static void addDepreciationScheduleWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
 		cardWidget.addToLayoutParams(section, 24, 8);
-		cardWidget.addToWidgetParams("type", CardType.DEPRECIATION_SCHEDULE.getName());
+		cardWidget.addCardType(CardType.DEPRECIATION_SCHEDULE);
 		section.addWidget(cardWidget);
 	}
 	
 	private static void addMaintenanceCostTrendWidget(Section section, Criteria criteria) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART, "maintenanceCostTrend");
 		cardWidget.addToLayoutParams(section, 24, 14);
-		cardWidget.addToWidgetParams("type", CardType.MAINTENANCE_COST_TREND.getName());
+		cardWidget.addCardType(CardType.MAINTENANCE_COST_TREND);
 		addChartParams(cardWidget, "createdTime", "totalCost","plannedvsunplanned", criteria);
 		section.addWidget(cardWidget);
 	}
@@ -326,7 +326,7 @@ public class AssetPageFactory extends PageFactory {
 	private static void addDepreciationCostTrendWidget(Section section, Criteria criteria) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART, "depreciationCostTrend");
 		cardWidget.addToLayoutParams(section, 24, 14);
-		cardWidget.addToWidgetParams("type", CardType.DEPRECIATION_COST_TREND.getName());
+		cardWidget.addCardType(CardType.DEPRECIATION_COST_TREND);
 		addChartParams(cardWidget, "createdTime", "totalCost","plannedvsunplanned", criteria);
 		section.addWidget(cardWidget);
 	}
@@ -334,35 +334,35 @@ public class AssetPageFactory extends PageFactory {
 	private static void addAssetLifeWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
 		cardWidget.addToLayoutParams(section, 24, 2);
-		cardWidget.addToWidgetParams("type", CardType.ASSET_LIFE.getName());
+		cardWidget.addCardType(CardType.ASSET_LIFE);
 		section.addWidget(cardWidget);
 	}
 	
 	private static void addAlarmInsightsWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
 		cardWidget.addToLayoutParams(section, 24, 11);
-		cardWidget.addToWidgetParams("type", CardType.ALARM_INSIGHTS.getName());
+		cardWidget.addCardType(CardType.ALARM_INSIGHTS);
 		section.addWidget(cardWidget);
 	}
 	
 	private static void addLastDownTimeWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD, "lastReportedDownTime");
 		cardWidget.addToLayoutParams(section, 12, 5);
-		cardWidget.addToWidgetParams("type", CardType.LAST_DOWNTIME.getName());
+		cardWidget.addCardType(CardType.LAST_DOWNTIME);
 		section.addWidget(cardWidget);
 	}
 	
 	private static void addOverallDowntimeWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD, "overallDownTime");
 		cardWidget.addToLayoutParams(section, 12, 5);
-		cardWidget.addToWidgetParams("type", CardType.OVERALL_DOWNTIME.getName());
+		cardWidget.addCardType(CardType.OVERALL_DOWNTIME);
 		section.addWidget(cardWidget);
 	}
 	
 	private static void addFailureRateWidget(Section section, Criteria breakdownCriteria) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART, "failureRate");
 		cardWidget.addToLayoutParams(section, 12, 14);
-		cardWidget.addToWidgetParams("type", CardType.FAILURE_RATE.getName());
+		cardWidget.addCardType(CardType.FAILURE_RATE);
 		
 		addChartParams(cardWidget, "fromtime", "timeBetweenFailure", breakdownCriteria);
 		
@@ -372,7 +372,7 @@ public class AssetPageFactory extends PageFactory {
 	private static void addAvgTtrWidget(Section section, Criteria breakdownCriteria) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART, "avgTtr");
 		cardWidget.addToLayoutParams(section, 12, 14);
-		cardWidget.addToWidgetParams("type", CardType.AVG_TTR.getName());
+		cardWidget.addCardType(CardType.AVG_TTR);
 		
 		addChartParams(cardWidget, "fromtime", "duration", breakdownCriteria);
 		

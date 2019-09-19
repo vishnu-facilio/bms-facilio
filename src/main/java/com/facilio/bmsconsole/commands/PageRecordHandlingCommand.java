@@ -2,6 +2,8 @@ package com.facilio.bmsconsole.commands;
 
 import org.apache.commons.chain.Context;
 
+import com.facilio.bmsconsole.context.FormulaFieldContext;
+import com.facilio.bmsconsole.util.FormulaFieldAPI;
 import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.constants.FacilioConstants.ContextNames;
@@ -26,6 +28,12 @@ public class PageRecordHandlingCommand extends FacilioCommand {
 				FacilioChain fetchAlarmChain = ReadOnlyChainFactory.fetchAlarmRuleWithActionsChain();
 				fetchAlarmChain.execute(context);
 				context.put(ContextNames.RECORD, context.get(ContextNames.ALARM_RULE));
+				break;
+				
+			case ContextNames.FORMULA_FIELD:
+				FormulaFieldContext formula = FormulaFieldAPI.getFormulaField(recordId);
+				context.put(ContextNames.RECORD, formula);
+				break;
 		}
 		
 		if (context.containsKey(ContextNames.RECORD)) {

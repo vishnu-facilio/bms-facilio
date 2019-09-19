@@ -117,7 +117,9 @@ public class PageWidget {
 		widgetParams.put(key, value);
 	}
 	
-	
+	public void addCardType (CardType cardType) {
+		addToWidgetParams("type", cardType.getName());
+	}
 
 	private JSONObject layoutParams;
 	public JSONObject getLayoutParams() {
@@ -188,6 +190,7 @@ public class PageWidget {
 
 	@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 	public enum WidgetType {
+		DETAILS_WIDGET("detailsWidget"),
  		PRIMARY_DETAILS_WIDGET("primaryDetailsWidget"),
  		MV_DETAILS_WIDGET("mvSummaryWidget"),
  		SECONDARY_DETAILS_WIDGET("secondaryDetailsWidget"),
@@ -212,6 +215,7 @@ public class PageWidget {
  		ANOMALY_RCA("anomalyRca"),
  		OCCURRENCE_HISTORY("occurrenceHistory"),
  		ANOMALY_METRICS("anomalyMetrics"),
+ 		FORMULA_LOG("formulaLog")
  		;
 		
 		private String name;
@@ -242,6 +246,7 @@ public class PageWidget {
 		WO_DETAILS("woDetails"),
 		RECENTLY_CLOSED_PM("recentlyClosedPm"),
 		ASSET_LIFE("assetLife"),
+		TIME("time"),
 		ALARM_INSIGHTS("alarmInsights"),
 		LAST_DOWNTIME("lastDownTime"),
 		OVERALL_DOWNTIME("overallDownTime"),
@@ -258,6 +263,10 @@ public class PageWidget {
 		CARBON_EMISSION("carbonEmision"),
 		BASELINE_EQUATION("baselineEquation"),
 		MV_ADJUSTMENTS("mvAdjustments"),
+		MV_BASELINE_ACTUAL("baselineVsActual"),
+		MV_COST_TREND("costTrend"),
+		MV_CUMULATIVE_SAVINGS("cumulativeSavings"),
+		MV_PERCENTAGE_SAVINGS("mvPercentageSavings"),
 		RULE_ASSOCIATED_WO("ruleAssociatedWo"),
 		RULE_WO_DURATION("ruleWoDuration"),
 		MAINTENACE_COST("maintenanceCost"),
@@ -274,6 +283,11 @@ public class PageWidget {
  		ML_MTBA("mlMtba"),
  		ML_MTTC("mlMttc"),
  		ML_DEVIATION("mlDeviation"),
+ 		KPI_METERS_ASSOCIATED("metersAssociated"),
+ 		KPI_VIOLATIONS("kpiViolations"),
+ 		KPI_TARGET("kpiTarget"),
+ 		KPI_TREND("kpiTrend"),
+ 		KPI_TABULAR("kpiTabular")
  		;
 		private String name;
 		

@@ -53,7 +53,7 @@ public class MVProjectPageFactory {
 	private static void addECMWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
 		cardWidget.addToLayoutParams(section, 24, 2);
-		cardWidget.addToWidgetParams("type", CardType.ECM.getName());
+		cardWidget.addCardType(CardType.ECM);
 		section.addWidget(cardWidget);
 	}
 	
@@ -66,63 +66,63 @@ public class MVProjectPageFactory {
 	private static void addSavingsWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
 		cardWidget.addToLayoutParams(section, 9, 4);
-		cardWidget.addToWidgetParams("type", CardType.MV_SAVINGS.getName());
+		cardWidget.addCardType(CardType.MV_SAVINGS);
 		section.addWidget(cardWidget);
 	}
 	
 	private static void addEnergyWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
 		cardWidget.addToLayoutParams(section, 9, 4);
-		cardWidget.addToWidgetParams("type", CardType.MV_ENERGY.getName());
+		cardWidget.addCardType(CardType.MV_ENERGY);
 		section.addWidget(cardWidget);
 	}
 	
 	private static void addCarbonWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
 		cardWidget.addToLayoutParams(section, 6, 4);
-		cardWidget.addToWidgetParams("type", CardType.CARBON_EMISSION.getName());
+		cardWidget.addCardType(CardType.CARBON_EMISSION);
 		section.addWidget(cardWidget);
 	}
 	
 	private static void addBaselineVsActualWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART, "baselineVsActual");
 		cardWidget.addToLayoutParams(section, 24, 14);
-		cardWidget.addToWidgetParams("type", "baselineVsActual");
+		cardWidget.addCardType(CardType.MV_BASELINE_ACTUAL);
 		section.addWidget(cardWidget);
 	}
 	
 	private static void addCostTrendWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART, "costTrend");
 		cardWidget.addToLayoutParams(section, 24, 13);
-		cardWidget.addToWidgetParams("type", "costTrend");
+		cardWidget.addCardType(CardType.MV_COST_TREND);
 		section.addWidget(cardWidget);
 	}
 	
 	private static void addCumulativeSavingsWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART, "cumulativeSavings");
 		cardWidget.addToLayoutParams(section, 24, 13);
-		cardWidget.addToWidgetParams("type", "cumulativeSavings");
+		cardWidget.addCardType(CardType.MV_CUMULATIVE_SAVINGS);
 		section.addWidget(cardWidget);
 	}
 	
 	private static void addPercentSavingsWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CHART, "mvPercentageSavings");
 		cardWidget.addToLayoutParams(section, 24, 13);
-		cardWidget.addToWidgetParams("type", "mvPercentageSavings");
+		cardWidget.addCardType(CardType.MV_PERCENTAGE_SAVINGS);
 		section.addWidget(cardWidget);
 	}
 	
 	private static void addBaselineEquationWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD,  "baselineEquation");
 		cardWidget.addToLayoutParams(section, 24, 6);
-		cardWidget.addToWidgetParams("type", CardType.BASELINE_EQUATION.getName());
+		cardWidget.addCardType(CardType.BASELINE_EQUATION);
 		section.addWidget(cardWidget);
 	}
 	
 	private static void addBaselineEquationListWidget(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.LIST, CardType.BASELINE_EQUATION.getName());
 		cardWidget.addToLayoutParams(section, 24, 10);
-//		cardWidget.addToWidgetParams("type", CardType.BASELINE_EQUATION.getName());
+//		cardWidget.addCardType(CardType.BASELINE_EQUATION);
 		section.addWidget(cardWidget);
 	}
 	
@@ -146,7 +146,7 @@ public class MVProjectPageFactory {
 			}
 			
 			cardWidget.addToLayoutParams(section, 12, width);
-			cardWidget.addToWidgetParams("type", CardType.MV_ADJUSTMENTS.getName());
+			cardWidget.addCardType(CardType.MV_ADJUSTMENTS);
 			cardWidget.addToWidgetParams("adjustmentIndex", i);
 			section.addWidget(cardWidget);
 		}

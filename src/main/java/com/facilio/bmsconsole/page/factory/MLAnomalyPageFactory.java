@@ -22,7 +22,7 @@ public class MLAnomalyPageFactory extends PageFactory {
 		Section tab1Sec1 = page.new Section();
 		tab1.addSection(tab1Sec1);
 		
-		addMlAnomalyCreatedTymWidget(tab1Sec1);
+		addTimeWidget(tab1Sec1);
 		addMlAnomalyDetailsWidget(tab1Sec1);
 		addNoOfAnomalies(tab1Sec1);
 		addConspumstionDetails(tab1Sec1);
@@ -70,12 +70,7 @@ public class MLAnomalyPageFactory extends PageFactory {
 
 		return page;
 	}
-	private static void addMlAnomalyCreatedTymWidget(Section section) {
-		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
-		cardWidget.addToLayoutParams(section, 24, 2);
-		cardWidget.addToWidgetParams("type", CardType.ASSET_LIFE.getName());
-		section.addWidget(cardWidget);
-	}
+	
 	private static void addMlAnomalyDetailsWidget (Section section) {
 		PageWidget pageWidget = new PageWidget(WidgetType.ANOMALY_DETAILS_WIDGET);
 		pageWidget.addToLayoutParams(section, 24, 4);
@@ -84,38 +79,38 @@ public class MLAnomalyPageFactory extends PageFactory {
 	private static void addNoOfAnomalies(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD, "noOfAnomalies");
 		cardWidget.addToLayoutParams(section, 8, 4);
-		cardWidget.addToWidgetParams("type", CardType.NO_OF_ANOMALIES.getName());
+		cardWidget.addCardType(CardType.NO_OF_ANOMALIES);
 		section.addWidget(cardWidget);
 	}
 	private static void addConspumstionDetails(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD, "energyCDD");
 		cardWidget.addToLayoutParams(section, 8, 4);
-		cardWidget.addToWidgetParams("type", CardType.ML_ALARM_ENERGY_CDD.getName());
+		cardWidget.addCardType(CardType.ML_ALARM_ENERGY_CDD);
 		section.addWidget(cardWidget);
 	}
 	private static void addEnergyWastage(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD, "energyWastageDetails");
 		cardWidget.addToLayoutParams(section, 8, 4);
-		cardWidget.addToWidgetParams("type", CardType.ENERGY_WASTAGE_DETAILS.getName());
+		cardWidget.addCardType(CardType.ENERGY_WASTAGE_DETAILS);
 		section.addWidget(cardWidget);
 	}
 	
 	private static void addMeanTimeBetweenAnomalyCard(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD, "mtba");
 		cardWidget.addToLayoutParams(section, 8, 4);
-		cardWidget.addToWidgetParams("type", CardType.ML_MTBA.getName());
+		cardWidget.addCardType(CardType.ML_MTBA);
 		section.addWidget(cardWidget);
 	}
 	private static void addMeanTimeToClearCard(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD, "mttc");
 		cardWidget.addToLayoutParams(section, 8, 4);
-		cardWidget.addToWidgetParams("type", CardType.ML_MTTC.getName());
+		cardWidget.addCardType(CardType.ML_MTTC);
 		section.addWidget(cardWidget);
 	}
 	private static void addDeviationCard(Section section) {
 		PageWidget cardWidget = new PageWidget(WidgetType.CARD, "deviation");
 		cardWidget.addToLayoutParams(section, 8, 4);
-		cardWidget.addToWidgetParams("type", CardType.ML_DEVIATION.getName());
+		cardWidget.addCardType(CardType.ML_DEVIATION);
 		section.addWidget(cardWidget);
 	}
 	

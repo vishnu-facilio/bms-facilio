@@ -5,9 +5,11 @@ import org.json.simple.JSONObject;
 
 import com.facilio.bmsconsole.context.AssetContext;
 import com.facilio.bmsconsole.context.BaseAlarmContext;
+import com.facilio.bmsconsole.context.FormulaFieldContext;
 import com.facilio.bmsconsole.page.Page;
 import com.facilio.bmsconsole.page.Page.Section;
 import com.facilio.bmsconsole.page.PageWidget;
+import com.facilio.bmsconsole.page.PageWidget.CardType;
 import com.facilio.bmsconsole.page.PageWidget.WidgetType;
 import com.facilio.bmsconsole.page.WidgetGroup.WidgetGroupType;
 import com.facilio.bmsconsole.workflow.rule.AlarmRuleContext;
@@ -35,6 +37,8 @@ public class PageFactory {
 				return MVProjectPageFactory.getMVProjectPage((MVProjectWrapper) record);
 			case ContextNames.ML_ANOMALY_ALARM:
 				return MLAnomalyPageFactory.getMLAlarmPage((BaseAlarmContext) record);
+			case ContextNames.FORMULA_FIELD:
+				return KPIPageFacory.getKpiPage((FormulaFieldContext) record);
 		}
 		if (module.getTypeEnum() == ModuleType.CUSTOM) {
 			return CustomModulePageFactory.getCustomModulePage((ModuleBaseWithCustomFields) record);
@@ -98,6 +102,20 @@ public class PageFactory {
 		addReadingCard(cardWidget, fieldName, moduleName, 3, 22, 20);
 	}
 	
+	@SuppressWarnings("unchecked")
+	protected static void addTimeWidget(Section section) {
+		PageWidget cardWidget = new PageWidget(WidgetType.CARD);
+		cardWidget.addToLayoutParams(section, 24, 2);
+		cardWidget.addCardType(CardType.TIME);
+		section.addWidget(cardWidget);
+	}
+	
+	protected static void addDetailsWidget(Section section) {
+		PageWidget pageWidget = new PageWidget(WidgetType.DETAILS_WIDGET);
+		pageWidget.addToLayoutParams(section, 24, 6);
+		section.addWidget(pageWidget);
+	}
+	
 	private static void addReadingCard(PageWidget cardWidget, String fieldName, String moduleName, long aggregateFunc, long dateOperator, long xAggr) {
 		cardWidget.addToWidgetParams("staticKey", "readingWithGraphCard");
 		JSONObject paramsJson = new JSONObject();
@@ -110,7 +128,7 @@ public class PageFactory {
 	}
 	
 	protected static void addChartParams(PageWidget widget, String xFieldName, String yFieldName, Criteria criteria) {
-		addChartParams(widget, "line", DateAggregateOperator.MONTHANDYEAR, xFieldName, NumberAggregateOperator.AVERAGE, yFieldName, null , DateOperators.CURRENT_YEAR, null, criteria);
+		addChartParams(widget, xFieldName, yFieldName, null, criteria);
 	}
 	
 	protected static void addChartParams(PageWidget widget, String xFieldName, String yFieldName,String groupByFieldName, Criteria criteria) {

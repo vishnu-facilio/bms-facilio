@@ -4,6 +4,7 @@ import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
+import com.facilio.constants.FacilioConstants.ContextNames;
 
 public class PageAction extends FacilioAction {
 	
@@ -17,7 +18,8 @@ public class PageAction extends FacilioAction {
 		FacilioChain chain = ReadOnlyChainFactory.getPageChain();
 		chain.execute(context);
 		
-		setResult(FacilioConstants.ContextNames.PAGE, context.get(FacilioConstants.ContextNames.PAGE));
+		setResult(ContextNames.PAGE, context.get(ContextNames.PAGE));
+		setResult(ContextNames.RECORD, context.get(ContextNames.RECORD));
 		
 		return SUCCESS;
 	}
