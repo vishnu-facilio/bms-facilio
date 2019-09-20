@@ -183,8 +183,10 @@ public class FormField implements Serializable {
 		return displayType;
 	}
 	
-	private Boolean showField = false;
-
+	
+	
+	private Boolean showField;
+	
 
 	public Boolean getShowField() {
 		return showField;
