@@ -50,7 +50,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		
 		try {
 			
-			if(AccountUtil.getCurrentOrg().getId() != 155l) {
+			if(AccountUtil.getCurrentOrg().getId() != 155l && AccountUtil.getCurrentOrg().getId() != 1l) {
 				return false;
 			}
 			
@@ -319,7 +319,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 	public double getLatestPreviousReading(NumberField numberField, ReadingDataMeta rdm, TaskContext currentTask, TaskContext taskContext) throws Exception {
 		
 		double value = -1;
-		if(currentTask.getInputTime() > rdm.getTtime())
+		if(currentTask.getInputTime() > rdm.getTtime() && taskContext.getReadingDataId() != rdm.getReadingDataId())
 		{
 			value = FacilioUtil.parseDouble(rdm.getValue());
 		}
