@@ -414,7 +414,7 @@ public class FormsAPI {
 		}
 		return null;
 	}
-	
+		
 	public static Map<Long, FacilioForm> getFormsAsMap(Collection<Long> ids) throws Exception {
 		List<FacilioForm> forms = getFormsFromDB(ids);
 		if (forms != null && !forms.isEmpty()) {
@@ -537,6 +537,7 @@ public class FormsAPI {
 		}
 
 		if (form.getModule().getTypeEnum() == FacilioModule.ModuleType.CUSTOM) {
+			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			boolean hasPhoto = false;
 			for (FormField field : form.getFields()) {

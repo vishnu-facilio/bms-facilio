@@ -204,10 +204,16 @@ public class ModuleAction extends FacilioAction {
 	}
 	
 	public String updateField() throws Exception {
+		updateCustomField(false);
+		return SUCCESS;
+	}
+	
+	public String updateCustomField(boolean avoidFieldDisplayNameDuplication) throws Exception {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD, field);
-		
+		context.put(FacilioConstants.ContextNames.CHECK_FIELD_DISPLAY_NAME_DUPLICATION, avoidFieldDisplayNameDuplication);
 		FacilioChain updateFieldChain = FacilioChainFactory.getUpdateFieldChain();
+
 		updateFieldChain.execute(context);
 		rowsUpdated = (int) context.get(FacilioConstants.ContextNames.ROWS_UPDATED);
 		
@@ -215,7 +221,7 @@ public class ModuleAction extends FacilioAction {
 	}
 	
 	public String v2updateField() throws Exception {
-		updateField();
+		updateCustomField(true);
 		
 		setFieldId(field.getId());
 		fieldDetails();

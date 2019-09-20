@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections.CollectionUtils;
@@ -13,6 +14,8 @@ import com.facilio.bmsconsole.util.FormsAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
+import com.facilio.modules.FacilioModule.ModuleType;
+import com.facilio.modules.fields.FacilioField;
 
 public class AddFormCommand extends FacilioCommand {
 
@@ -40,7 +43,7 @@ public class AddFormCommand extends FacilioCommand {
 			form.setLabelPosition(LabelPosition.LEFT);
 		}
 		
-		if (form.getSections() == null) {
+		if (form.getSections() == null && (module.getTypeEnum() != ModuleType.CUSTOM)) {
 			FacilioForm defaultForm = FormsAPI.getDefaultForm(moduleName, form);
 			if (defaultForm != null && CollectionUtils.isNotEmpty(defaultForm.getSections())) {
 				form.setSections(new ArrayList<>(defaultForm.getSections()));
@@ -48,9 +51,14 @@ public class AddFormCommand extends FacilioCommand {
 					FormsAPI.setFieldDetails(modBean, section.getFields(), moduleName);
 				}
 			}
+			FormsAPI.createForm(form, module);
+		}
+		if (module.getTypeEnum() == ModuleType.CUSTOM) {
+			List<FacilioField> fields = new ArrayList();
+			context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, fields);
+			context.put(FacilioConstants.ContextNames.MODULE, module);
 		}
 		
-		FormsAPI.createForm(form, module);
 		
 		return false;
 	}

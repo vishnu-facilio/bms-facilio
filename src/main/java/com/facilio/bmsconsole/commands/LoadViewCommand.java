@@ -59,6 +59,11 @@ public class LoadViewCommand extends FacilioCommand {
 			}
 			
 			if(view == null) {
+				
+				if (viewName.equals("hidden-all")) {
+					viewName = "all";
+				}
+				
 				view = ViewFactory.getView(module, viewName, modBean);
 				if (view == null && parentViewName != null) {
 					view = ViewFactory.getView(module, parentViewName, modBean);

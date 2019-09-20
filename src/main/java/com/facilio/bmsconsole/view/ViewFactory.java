@@ -85,9 +85,11 @@ public class ViewFactory {
 					}
 					List<FacilioField> allFields = modBean.getAllFields(moduleName);
 					for (FacilioField field : allFields) {
+						if (module.getTypeEnum() == ModuleType.CUSTOM && (!field.getName().equals("stateFlowId"))) {
 					    ViewField viewField = new ViewField(field.getName(), field.getDisplayName());
 					    viewField.setField(field);
 					    columns.add(viewField);
+						}
 					}
 				}
 				view.setFields(columns);

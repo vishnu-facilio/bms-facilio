@@ -2237,6 +2237,9 @@ public class TransactionChainFactory {
 		public static FacilioChain getAddFormCommand() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new AddFormCommand());
+			c.addCommand(new AddSystemFieldsCommand());
+			c.addCommand(new AddFormForCustomModuleCommand());
+			
 			return c;
 		}
 
