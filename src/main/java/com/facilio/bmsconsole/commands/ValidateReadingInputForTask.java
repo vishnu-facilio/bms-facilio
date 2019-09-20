@@ -50,7 +50,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		
 		try {
 			
-			if(AccountUtil.getCurrentOrg().getId() != 155l && AccountUtil.getCurrentOrg().getId() != 1l) {
+			if(AccountUtil.getCurrentOrg().getId() != 155l) {
 				return false;
 			}
 			
@@ -63,7 +63,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 				TaskContext currentTask = (TaskContext) context.get(FacilioConstants.ContextNames.TASK);
 				List<TaskErrorContext> errors = new ArrayList<TaskErrorContext>();
 				boolean hasErrors = false;
-				if(currentTask != null) {
+				if(currentTask != null && currentTask.getInputValue() != null) {
 					List<Long> recordIds = (List<Long>) context.get(FacilioConstants.ContextNames.RECORD_ID_LIST);
 					if(recordIds != null && !recordIds.isEmpty()) {
 						Map<Long, TaskContext> oldTasks = TicketAPI.getTaskMap(recordIds);
@@ -124,6 +124,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 				if(!errors.isEmpty()) {
 					context.put(FacilioConstants.ContextNames.TASK_ERRORS, errors);
 					context.put(FacilioConstants.ContextNames.HAS_TASK_ERRORS, hasErrors);
+					LOGGER.log(Level.INFO, "Task Errors", errors);
 //					if(hasErrors) {
 						return true;
 //					}
@@ -391,44 +392,44 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		return averageValueString;
 	}
 	
-	private TaskErrorContext checkUnitForHighValueError(TaskContext currentTask, NumberField numberField,ReadingDataMeta rdm, Double currentValueInSiUnit) throws Exception {
-
-		double value = FacilioUtil.parseDouble(rdm.getValue());
-		double currentvalue = FacilioUtil.parseDouble(currentTask.getInputValue());
-		
-		double diff = value / currentvalue;
-		
-		Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);
-		
-		Unit suggestedUnit = UnitsUtil.getUnitMultiplierResult(currentInputUnit, diff);
-		
-		if(suggestedUnit != null) {
-			
-			TaskErrorContext error = new TaskErrorContext();
-			error.setMode(TaskErrorContext.Mode.SUGGESTION.getValue());
-			error.setSuggestionType(TaskErrorContext.SuggestionType.UNIT_CHANGE.getValue());
-			error.setMessage("You might have to check your unit");
-			
-			double previousValue = FacilioUtil.parseDouble(rdm.getValue());
-			String previousValueString = previousValue+"";
-			if(numberField.getMetric() > 0) {
-				previousValue = (double) UnitsUtil.convertToDisplayUnit(previousValue, numberField);
-				previousValueString  = previousValue + " " + UnitsUtil.getDisplayUnit(numberField).getSymbol();
-			} 
-			
-			error.setPreviousValue(previousValueString);
-			
-			String currentValueString = currentTask.getInputValue()+"";
-			
-			if(currentInputUnit != null) {
-				currentValueString = currentValueString + " "+currentInputUnit.getSymbol();
-			}
-			
-			error.setCurrentValue(currentValueString);
-			
-			return error;
-		}
-		return null;
-	}
+//	private TaskErrorContext checkUnitForHighValueError(TaskContext currentTask, NumberField numberField,ReadingDataMeta rdm, Double currentValueInSiUnit) throws Exception {
+//
+//		double value = FacilioUtil.parseDouble(rdm.getValue());
+//		double currentvalue = FacilioUtil.parseDouble(currentTask.getInputValue());
+//		
+//		double diff = value / currentvalue;
+//		
+//		Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);
+//		
+//		Unit suggestedUnit = UnitsUtil.getUnitMultiplierResult(currentInputUnit, diff);
+//		
+//		if(suggestedUnit != null) {
+//			
+//			TaskErrorContext error = new TaskErrorContext();
+//			error.setMode(TaskErrorContext.Mode.SUGGESTION.getValue());
+//			error.setSuggestionType(TaskErrorContext.SuggestionType.UNIT_CHANGE.getValue());
+//			error.setMessage("You might have to check your unit");
+//			
+//			double previousValue = FacilioUtil.parseDouble(rdm.getValue());
+//			String previousValueString = previousValue+"";
+//			if(numberField.getMetric() > 0) {
+//				previousValue = (double) UnitsUtil.convertToDisplayUnit(previousValue, numberField);
+//				previousValueString  = previousValue + " " + UnitsUtil.getDisplayUnit(numberField).getSymbol();
+//			} 
+//			
+//			error.setPreviousValue(previousValueString);
+//			
+//			String currentValueString = currentTask.getInputValue()+"";
+//			
+//			if(currentInputUnit != null) {
+//				currentValueString = currentValueString + " "+currentInputUnit.getSymbol();
+//			}
+//			
+//			error.setCurrentValue(currentValueString);
+//			
+//			return error;
+//		}
+//		return null;
+//	}
 		
 }
