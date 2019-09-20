@@ -623,6 +623,7 @@ public class FieldFactory {
 		fields.add(getField("description", "DESCRIPTION", module, FieldType.STRING));
 		fields.add(getField("createdTime", "CREATED_TIME", module, FieldType.NUMBER));
 		fields.add(getField("createdBy", "CREATED_BY", module, FieldType.LOOKUP));
+		fields.add(getField("stateFlowEnabled", "STATE_FLOW_ENABLED", module, FieldType.BOOLEAN));
 		return fields;
 	}
 

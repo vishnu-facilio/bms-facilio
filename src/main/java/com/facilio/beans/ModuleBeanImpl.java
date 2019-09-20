@@ -480,6 +480,10 @@ public class ModuleBeanImpl implements ModuleBean {
 			joiner.add("DESCRIPTION = ?");
 			params.add(module.getDescription());
 		}
+		if (module.getStateFlowEnabled() != null) {
+			joiner.add("STATE_FLOW_ENABLED = ?");
+			params.add(module.isStateFlowEnabled());
+		}
 		
 		if (!params.isEmpty()) {
 			StringBuilder sql = new StringBuilder("UPDATE Modules SET ")

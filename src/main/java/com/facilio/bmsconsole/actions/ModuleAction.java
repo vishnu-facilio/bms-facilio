@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.chain.FacilioChain;
+import org.apache.commons.chain.Chain;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -34,14 +36,12 @@ public class ModuleAction extends FacilioAction {
 	 */
 	private static final long serialVersionUID = 1L;
 	public String addNewModule() throws Exception {
-		
-		FacilioContext context = new FacilioContext();
+		FacilioChain addModulesChain = TransactionChainFactory.getAddModuleChain();
+		FacilioContext context = addModulesChain.getContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
 		context.put(FacilioConstants.ContextNames.MODULE_TYPE, moduleType);
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
-		
-		FacilioChain addModulesChain = TransactionChainFactory.getAddModuleChain();
-		addModulesChain.execute(context);
+		addModulesChain.execute();
 		
 		FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
 		setResult("module", module);
@@ -59,15 +59,15 @@ public class ModuleAction extends FacilioAction {
 //	}
 	
 	public String v2AddModule() throws Exception {
-		FacilioContext context = new FacilioContext();
+		FacilioChain addModulesChain = TransactionChainFactory.getAddModuleChain();
+		FacilioContext context = addModulesChain.getContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
 		context.put(FacilioConstants.ContextNames.MODULE_TYPE, moduleType);
 		context.put(FacilioConstants.ContextNames.MODULE_DESCRIPTION, description);
 		
 		context.put(FacilioConstants.ContextNames.MODULE_FIELD_LIST, getFields());
 		
-		FacilioChain addModulesChain = TransactionChainFactory.getAddModuleChain();
-		addModulesChain.execute(context);
+		addModulesChain.execute();
 		
 		FacilioModule module = (FacilioModule) context.get(FacilioConstants.ContextNames.MODULE);
 		setResult("module", module);
@@ -84,23 +84,23 @@ public class ModuleAction extends FacilioAction {
 	}
 
 	public String v2GetModuleList() throws Exception {
-		FacilioContext context = new FacilioContext();
+		FacilioChain chain = ReadOnlyChainFactory.getModuleList();
+		FacilioContext context = chain.getContext();
 		context.put(FacilioConstants.ContextNames.MODULE_TYPE, moduleType);
 		context.put(FacilioConstants.ContextNames.FETCH_DEFAULT_MODULES, defaultModules);
 		
-		FacilioChain chain = ReadOnlyChainFactory.getModuleList();
-		chain.execute(context);
+		chain.execute();
 		
 		setResult("moduleList", context.get(FacilioConstants.ContextNames.MODULE_LIST));
 		return SUCCESS;
 	}
 
 	public String v2GetModule() throws Exception {
-		FacilioContext context = new FacilioContext();
+		FacilioChain c = ReadOnlyChainFactory.getModuleDetails();
+		FacilioContext context = c.getContext();
 		context.put(ContextNames.MODULE_NAME, moduleName);
 
-		FacilioChain c = ReadOnlyChainFactory.getModuleDetails();
-		c.execute(context);
+		c.execute();
 
 		setResult(ContextNames.MODULE, context.get(ContextNames.MODULE));
 		setResult(ContextNames.MODULE_FIELD_COUNT, context.get(ContextNames.MODULE_FIELD_COUNT));
@@ -114,15 +114,24 @@ public class ModuleAction extends FacilioAction {
 	public void setModuleDisplayName(String moduleDisplayName) {
 		this.moduleDisplayName = moduleDisplayName;
 	}
-	
+
+	public boolean stateFlowEnabled;
+	public boolean isStateFlowEnabled() {
+		return stateFlowEnabled;
+	}
+	public void setStateFlowEnabled(boolean stateFlowEnabled) {
+		this.stateFlowEnabled = stateFlowEnabled;
+	}
+
 	public String v2UpdateModule() throws Exception {
-		FacilioContext context = new FacilioContext();
+		FacilioChain chain = TransactionChainFactory.getUpdateModuleChain();
+		FacilioContext context = chain.getContext();
 		context.put(FacilioConstants.ContextNames.MODULE_NAME, getModuleName());
 		context.put(FacilioConstants.ContextNames.MODULE_DISPLAY_NAME, moduleDisplayName);
 		context.put(FacilioConstants.ContextNames.MODULE_DESCRIPTION, description);
-		
-		FacilioChain chain = TransactionChainFactory.getUpdateModuleChain();
-		chain.execute(context);
+		context.put(FacilioConstants.ContextNames.STATE_FLOW_ENABLED, stateFlowEnabled);
+
+		chain.execute();
 		
 		setResult(FacilioConstants.ContextNames.MODULE, context.get(FacilioConstants.ContextNames.MODULE));
 		return SUCCESS;

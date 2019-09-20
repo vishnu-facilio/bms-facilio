@@ -307,6 +307,7 @@ public class FacilioConstants {
 		public static final String MODULE_NAME = "moduleName";
 		public static final String MODULE_DESCRIPTION = "moduleDescription";
 		public static final String MODULE_DISPLAY_NAME = "moduleDisplayName";
+		public static final String STATE_FLOW_ENABLED = "stateFlowEnabled";
 		public static final String MODULE_DATA_TABLE_NAME = "moduleDataTable";
 		public static final String MODULE_DATA = "moduleData";
 		public static final String MODULE_DATA_LIST = "moduleDatas";
