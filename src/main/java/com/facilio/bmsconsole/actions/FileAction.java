@@ -117,7 +117,12 @@ public class FileAction extends FacilioAction {
 						response.setHeader("Last-Modified", dateStamp);
 						if (getIsDownload()) {
 							setContentType("application/x-download");
-							setFilename(fileInfo.getFileName());
+							// temp
+							boolean isPdf = false;
+							if (fileInfo.getContentType() != null) {
+								isPdf = fileInfo.getContentType().equals("application/pdf");
+							}
+							setFilename(fileInfo.getFileName()+ (isPdf ? ".pdf" : ""));
 						}
 						else {
 							setContentType(fileInfo.getContentType());
