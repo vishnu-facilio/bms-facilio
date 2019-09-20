@@ -53,7 +53,7 @@ public class StoreRoomAction extends FacilioAction{
 				}
 				else
 				{
-					throw new Exception("StoreRoom Located Site cannot be empty");
+					throw new IllegalArgumentException("StoreRoom Located Site cannot be empty");
 				}
 		     }
 		context.put(FacilioConstants.ContextNames.SITES_FOR_STORE_ROOM, storeRoom.getSites());

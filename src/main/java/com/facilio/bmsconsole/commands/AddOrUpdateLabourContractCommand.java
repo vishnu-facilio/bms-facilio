@@ -36,7 +36,7 @@ public class AddOrUpdateLabourContractCommand extends FacilioCommand{
 		
 		if (labourContractContext != null) {
 			if (labourContractContext.getVendor() == null || labourContractContext.getVendor().getId() <= 0) {
-				throw new Exception("Vendor cannot be empty");
+				throw new IllegalArgumentException("Vendor cannot be empty");
 			}
 			
 			if(labourContractContext.getFromDate() > 0 && labourContractContext.getEndDate() > 0)

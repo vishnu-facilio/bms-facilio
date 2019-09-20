@@ -33,7 +33,7 @@ public class AddOrUpdatePurchaseOrderCommand extends FacilioCommand {
 		PurchaseOrderContext purchaseOrderContext = (PurchaseOrderContext) context.get(FacilioConstants.ContextNames.RECORD);
 		if (purchaseOrderContext != null) {
 			if (purchaseOrderContext.getVendor() == null || purchaseOrderContext.getVendor().getId() <= 0) {
-				throw new Exception("Vendor cannot be empty");
+				throw new IllegalArgumentException("Vendor cannot be empty");
 			}
 			
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");

@@ -40,7 +40,7 @@ public class AddOrUpdateRentalLeaseContractCommand extends FacilioCommand{
 		
 		if (rentalLeaseContractContext != null) {
 			if (rentalLeaseContractContext.getVendor() == null || rentalLeaseContractContext.getVendor().getId() <= 0){
-				throw new Exception("Vendor cannot be empty");
+				throw new IllegalArgumentException("Vendor cannot be empty");
 			}
 			
 			if(rentalLeaseContractContext.getFromDate() > 0 && rentalLeaseContractContext.getEndDate() > 0)

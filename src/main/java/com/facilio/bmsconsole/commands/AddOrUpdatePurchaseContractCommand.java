@@ -33,7 +33,7 @@ public class AddOrUpdatePurchaseContractCommand extends FacilioCommand {
 
 		if (purchaseContractContext != null) {
 			if (purchaseContractContext.getVendor() == null || purchaseContractContext.getVendor().getId() <= 0) {
-				throw new Exception("Vendor cannot be empty");
+				throw new IllegalArgumentException("Vendor cannot be empty");
 			}
 			
 			if(purchaseContractContext.getFromDate() > 0 && purchaseContractContext.getEndDate() > 0)

@@ -38,7 +38,7 @@ public class AddOrUpdateWarrantyContractCommand extends FacilioCommand{
 		
 		if (warrantyContractContext != null) {
 			if (warrantyContractContext.getVendor() == null || warrantyContractContext.getVendor().getId() <= 0) {
-				throw new Exception("Vendor cannot be empty");
+				throw new IllegalArgumentException("Vendor cannot be empty");
 			}
 			
 			if(warrantyContractContext.getFromDate() > 0 && warrantyContractContext.getEndDate() > 0)
