@@ -322,7 +322,7 @@ public class ContractsAPI {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, workflowRuleContext);
 		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(emailAction));
-		
+        
 		FacilioChain chain = TransactionChainFactory.getAddOrUpdateRecordRuleChain();
 		chain.execute(context);
 	
@@ -395,8 +395,8 @@ public class ContractsAPI {
 		FacilioContext context = new FacilioContext();
 		context.put(FacilioConstants.ContextNames.RECORD, workflowRuleContext);
 		context.put(FacilioConstants.ContextNames.WORKFLOW_ACTION_LIST, Collections.singletonList(emailAction));
-		
-		Chain chain = TransactionChainFactory.getAddOrUpdateRecordRuleChain();
+
+		FacilioChain chain = TransactionChainFactory.getAddOrUpdateRecordRuleChain();
 		chain.execute(context);
 	
 		return (Long)context.get(FacilioConstants.ContextNames.WORKFLOW_RULE_ID);
