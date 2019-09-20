@@ -19,7 +19,11 @@ public class SiUnitConversionToEnteredReadingUnit extends FacilioCommand {
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
-		if(AccountUtil.getCurrentOrg().getId() != 155l) {
+		if(AccountUtil.getCurrentOrg().getId() != 155l && AccountUtil.getCurrentOrg().getId() != 1l) {
+			return false;
+		}
+		
+		if(!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.READING_FIELD_UNITS_VALIDATION)) {
 			return false;
 		}
 

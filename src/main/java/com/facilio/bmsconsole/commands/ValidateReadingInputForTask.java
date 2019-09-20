@@ -42,7 +42,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 	
 	public static final int noOfDaysDeltaToBeFetched = 10;
 	
-	public final static int averageboundPercentage = 30; 
+	public final static int averageboundPercentage = 50; 
 	
 	private static final Logger LOGGER = Logger.getLogger(ValidateReadingInputForTask.class.getName());
 	@Override
@@ -51,6 +51,10 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		try {
 			
 			if(AccountUtil.getCurrentOrg().getId() != 155l && AccountUtil.getCurrentOrg().getId() != 1l) {
+				return false;
+			}
+			
+			if(!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.READING_FIELD_UNITS_VALIDATION)) {
 				return false;
 			}
 			
@@ -110,8 +114,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 														errors.add(unitSuggestion);
 													}
 												}
-											}
-											
+											}																					
 										}	
 										
 									}
@@ -145,7 +148,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		List<TaskErrorContext> taskErrors = new ArrayList<TaskErrorContext>();
 		double previousValue = -1, nextValue = -1;
 		boolean futureCase = false;
-		if(currentTask.getInputTime() > rdm.getTtime()) 
+		if(currentTask.getInputTime() > rdm.getTtime() && taskContext.getReadingDataId() != rdm.getReadingDataId()) 
 		{
 			previousValue = FacilioUtil.parseDouble(rdm.getValue());
 		}
@@ -163,6 +166,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		
 		if(previousValue < 0 && nextValue < 0)
 			return null;
+		taskContext.setLastReading(previousValue);
 		
 		if(currentValueInSiUnit < previousValue) 
 		{
@@ -173,7 +177,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 				previousValueString  = previousValue + " " + UnitsUtil.getDisplayUnit(numberField).getSymbol();
 			} 
 			error.setPreviousValue(previousValueString);	
-			error.setMessage("Entered reading is less than the previous day reading " + error.getPreviousValue());
+			error.setMessage("The reading you have entered is less than the previous reading of " + error.getPreviousValue() +".");
 			taskErrors.add(error);
 		}
 		
@@ -186,7 +190,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 				nextValueString  = nextValue + " " + UnitsUtil.getDisplayUnit(numberField).getSymbol();
 			} 
 			error.setNextValue(nextValueString);
-			error.setMessage("Entered value is greater than the next day reading " + error.getNextValue());
+			error.setMessage("The reading you have entered is greater than the next reading of " + error.getNextValue() + ", in this series.");
 			taskErrors.add(error);
 		}
 		
@@ -223,7 +227,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 				error.setCurrentValue(setCurrentValueString(currentTask, currentInputUnit));
 				error.setAverageValue(setAverageValueString(averageValue, numberField));
 				
-				error.setMessage("Current Value is less than the average delta value "+ error.getAverageValue());				
+				error.setMessage("The reading you have entered is less than the average delta value of "+ error.getAverageValue() +".");				
 				return error;
 			}
 			if(currentDelta >= averageHigherLimit) {
@@ -236,7 +240,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 				error.setCurrentValue(setCurrentValueString(currentTask, currentInputUnit));
 				error.setAverageValue(setAverageValueString(averageValue, numberField));
 				
-				error.setMessage("Current Value is greater than the average delta value " + error.getAverageValue());				
+				error.setMessage("The reading you have entered is greater than the average delta value of " + error.getAverageValue() +".");				
 				return error;
 			}
 		}
@@ -264,7 +268,8 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			error.setSuggestionType(TaskErrorContext.SuggestionType.UNIT_CHANGE.getValue());
 			error.setCurrentValue(setCurrentValueString(currentTask, currentInputUnit));
 			error.setSuggestedUnit(suggestedUnit);
-			error.setMessage("You might have to check your unit. It might be "+ Unit.valueOf(error.getSuggestedUnit()).getSymbol()+".");
+			error.setMessage("We suggest you to double check the unit you have chosen.");
+			//It might be "+ Unit.valueOf(error.getSuggestedUnit()).getSymbol()+"."
 
 			String previousValueString = previousValue+"";
 			if(numberField.getMetric() > 0) {
