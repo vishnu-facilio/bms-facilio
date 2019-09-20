@@ -33,8 +33,20 @@ public class AddOrUpdateLabourContractCommand extends FacilioCommand{
 		LabourContractContext labourContractContext = (LabourContractContext) context.get(FacilioConstants.ContextNames.RECORD);
 		labourContractContext.computeNextPaymentDate();
 		boolean isContractRevised = (boolean) context.get(FacilioConstants.ContextNames.IS_CONTRACT_REVISED);
-
+		
 		if (labourContractContext != null) {
+			if (labourContractContext.getVendor() == null || labourContractContext.getVendor().getId() <= 0) {
+				throw new Exception("Vendor cannot be empty");
+			}
+			
+			if(labourContractContext.getFromDate() > 0 && labourContractContext.getEndDate() > 0)
+				{
+					if(labourContractContext.getEndDate() <= labourContractContext.getFromDate())
+					{
+						throw new IllegalArgumentException("Contract End Date should be greater than From Date");
+					}
+				}
+				
 			ModuleBean modBean = (ModuleBean) BeanFactory.lookup("ModuleBean");
 			FacilioModule module = modBean.getModule(moduleName);
 			FacilioModule termsModule = modBean.getModule(FacilioConstants.ContextNames.CONTRACT_ASSOCIATED_TERMS);
@@ -48,9 +60,7 @@ public class AddOrUpdateLabourContractCommand extends FacilioCommand{
 //			if (CollectionUtils.isEmpty(labourContractContext.getLineItems())) {
 //				throw new Exception("Line items cannot be empty");
 //			}
-			if (labourContractContext.getVendor() == null) {
-				throw new Exception("Vendor cannot be empty");
-			}
+			
 			labourContractContext.setContractType(ContractType.LABOUR);
 			
 			if (!isContractRevised && labourContractContext.getId() > 0) {
@@ -109,9 +119,7 @@ public class AddOrUpdateLabourContractCommand extends FacilioCommand{
 
 
 			}
-			context.put(FacilioConstants.ContextNames.RECORD_ID, labourContractContext.getId());
-			
-			
+			context.put(FacilioConstants.ContextNames.RECORD_ID, labourContractContext.getId());	
 		}
 		return false;
 	}

@@ -206,7 +206,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		double currentValue = FacilioUtil.parseDouble(currentTask.getInputValue());
 		double currentDelta = currentValue-previousValue;
 		
-		Double averageValue = getAverageValue(rdm, (NumberField)modBean.getField(numberField.getName()+"Delta", numberField.getModule().getName()));
+		Double averageValue = getAverageValue(rdm, (NumberField)modBean.getField(numberField.getName()+"Delta", numberField.getModule().getName()), currentTask.getInputTime());
 		
 		if(averageValue != null && averageValue > 0) {
 			
@@ -278,7 +278,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		return null;
 	}
 	
-	public Double getAverageValue(ReadingDataMeta rdm,NumberField numberField) throws Exception {
+	public Double getAverageValue(ReadingDataMeta rdm,NumberField numberField, long endTaskTime) throws Exception {
 		
 		if(rdm.getResourceId() > 0) {
 			
@@ -292,7 +292,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 					.table(module.getTableName())
 					.module(module)
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), rdm.getResourceId()+"", NumberOperators.EQUALS))
-					.andCondition(CriteriaAPI.getCondition(fieldMap.get("ttime"), lastNdays.getStartTime()+","+DateTimeUtil.getCurrenTime(), DateOperators.BETWEEN))
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("ttime"), lastNdays.getStartTime()+","+(endTaskTime-1), DateOperators.BETWEEN))
 					.aggregate(NumberAggregateOperator.AVERAGE, numberField);
 					;
 			
