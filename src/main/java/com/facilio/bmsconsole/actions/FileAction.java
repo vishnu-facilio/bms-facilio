@@ -16,7 +16,6 @@ import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fs.FileInfo;
-import com.facilio.fs.FileInfo.FileFormat;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 
@@ -118,14 +117,7 @@ public class FileAction extends FacilioAction {
 						response.setHeader("Last-Modified", dateStamp);
 						if (getIsDownload()) {
 							setContentType("application/x-download");
-							String extension  = "";
-							if (fileInfo.getContentType() != null) {
-								FileFormat format = FileFormat.getFileFormat(fileInfo.getContentType());
-								if (format != null) {
-									extension = format.getExtention();
-								}
-							}
-							setFilename(fileInfo.getFileName()+ extension);
+							setFilename(fileInfo.getFileName());
 						}
 						else {
 							setContentType(fileInfo.getContentType());

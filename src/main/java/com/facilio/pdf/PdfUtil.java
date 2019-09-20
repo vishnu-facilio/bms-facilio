@@ -103,7 +103,7 @@ public class PdfUtil {
             FileStore fs = FileStoreFactory.getInstance().getFileStore();
             long fileId = 0;
             try {
-                fileId = fs.addFile(name != null ? name : pdfFile.getName(), pdfFile, format.getContentType());
+                fileId = fs.addFile(name != null ? name+format.getExtention() : pdfFile.getName(), pdfFile, format.getContentType());
                 if (isS3Url) {
                 		return fs.getOrgiDownloadUrl(fileId);
                 }
