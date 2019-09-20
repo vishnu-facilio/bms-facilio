@@ -43,14 +43,19 @@ public class StoreRoomAction extends FacilioAction{
 		storeRoom.setTtime(System.currentTimeMillis());
 		storeRoom.setModifiedTime(System.currentTimeMillis());
 		context.put(FacilioConstants.ContextNames.RECORD, storeRoom);
+
 		//adding located site as one of the serving sites if no serving site is given
-		if(CollectionUtils.isEmpty(storeRoom.getSites())) {
-			List<Long> sites = new ArrayList<Long>();
-			if(storeRoom.getSite() != null) {
-				sites.add(storeRoom.getSite().getId());
-				storeRoom.setSites(sites);
-			}
-		}
+			if(CollectionUtils.isEmpty(storeRoom.getSites())) {
+				List<Long> sites = new ArrayList<Long>();
+				if(storeRoom.getSite() != null && storeRoom.getSite().getId() > 0) {
+					sites.add(storeRoom.getSite().getId());
+					storeRoom.setSites(sites);
+				}
+				else
+				{
+					throw new Exception("StoreRoom Located Site cannot be empty");
+				}
+		     }
 		context.put(FacilioConstants.ContextNames.SITES_FOR_STORE_ROOM, storeRoom.getSites());
 		FacilioChain addStoreRoom = TransactionChainFactory.getAddStoreRoomChain();
 		addStoreRoom.execute(context);
