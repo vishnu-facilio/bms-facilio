@@ -22,8 +22,8 @@ public class UpdateFieldCommand extends FacilioCommand {
 			FacilioField updateField = modBean.getFieldFromDB(field.getFieldId());
 			List<FacilioField> facilioFields = modBean.getAllFields(updateField.getModule().getName());
 			for(FacilioField facilioField : facilioFields) {
-				if (!updateField.isDefault() &&  facilioField.getDisplayName().equals(updateField.getDisplayName()) && facilioField.getFieldId() != updateField.getFieldId()) {
-					throw new Exception("Field Display Name Duplication Is Not Allowed");
+				if (facilioField.getDisplayName().equals(field.getDisplayName()) && facilioField.getFieldId() != field.getFieldId()) {
+					throw new IllegalArgumentException("Field Display Name Duplication Is Not Allowed");
 				}
 				
 			}
