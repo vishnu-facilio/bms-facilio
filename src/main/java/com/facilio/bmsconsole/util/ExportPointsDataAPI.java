@@ -4,10 +4,10 @@
 package com.facilio.bmsconsole.util;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
@@ -28,6 +28,7 @@ import com.facilio.modules.fields.FacilioField;
  */
 public class ExportPointsDataAPI {
 
+	private static final Logger LOGGER = Logger.getLogger(ExportPointsDataAPI.class.getName());
 
 	public static Map<String,Object> getTableData(List<String> columns, List<Map<String,Object>> recorddata) throws Exception {
 
@@ -144,10 +145,11 @@ public class ExportPointsDataAPI {
 				.andCondition(CriteriaAPI.getCondition(fieldMap.get("controllerId"),String.valueOf(controllerId) ,StringOperators.IS));
 
 		List<Map<String, Object>> props = builder.get();
-		if(props!=null && !props.isEmpty()) {
-			return props;
-		}
-		return Collections.emptyList();
+
+		LOGGER.info("Select query for ExportPoints  "+builder.toString());
+
+		return props;
+
 
 
 	}
