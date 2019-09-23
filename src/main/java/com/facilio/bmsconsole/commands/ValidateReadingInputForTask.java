@@ -127,7 +127,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 				if(!errors.isEmpty()) {
 					context.put(FacilioConstants.ContextNames.TASK_ERRORS, errors);
 					context.put(FacilioConstants.ContextNames.HAS_TASK_ERRORS, hasErrors);
-					LOGGER.log(Level.INFO, "Task Errors"+ errors);
+					LOGGER.log(Level.INFO, "Currenttask ID: "+ currentTask.getId() + "Task Errors: "+ errors);
 //					if(hasErrors) {
 						return true;
 //					}
