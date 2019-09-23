@@ -399,50 +399,10 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		if(numberField.getMetric() > 0) {
 			double averageValueInDisplayUnit  = (double)UnitsUtil.convertToDisplayUnit(averageValue, numberField);
 			
-			String averageValueInString = WorkflowUtil.getStringValueFromDouble(averageValueInDisplayUnit);			 
+			String averageValueInString = WorkflowUtil.getStringValueFromDouble(FacilioUtil.decimalClientFormat(averageValueInDisplayUnit));			 
 			averageValueString  = (averageValueInString != null ? averageValueInString : averageValueInDisplayUnit) + " " + UnitsUtil.getDisplayUnit(numberField).getSymbol();
 		} 
 		return averageValueString;
 	}
-	
-//	private TaskErrorContext checkUnitForHighValueError(TaskContext currentTask, NumberField numberField,ReadingDataMeta rdm, Double currentValueInSiUnit) throws Exception {
-//
-//		double value = FacilioUtil.parseDouble(rdm.getValue());
-//		double currentvalue = FacilioUtil.parseDouble(currentTask.getInputValue());
-//		
-//		double diff = value / currentvalue;
-//		
-//		Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);
-//		
-//		Unit suggestedUnit = UnitsUtil.getUnitMultiplierResult(currentInputUnit, diff);
-//		
-//		if(suggestedUnit != null) {
-//			
-//			TaskErrorContext error = new TaskErrorContext();
-//			error.setMode(TaskErrorContext.Mode.SUGGESTION.getValue());
-//			error.setSuggestionType(TaskErrorContext.SuggestionType.UNIT_CHANGE.getValue());
-//			error.setMessage("You might have to check your unit");
-//			
-//			double previousValue = FacilioUtil.parseDouble(rdm.getValue());
-//			String previousValueString = previousValue+"";
-//			if(numberField.getMetric() > 0) {
-//				previousValue = (double) UnitsUtil.convertToDisplayUnit(previousValue, numberField);
-//				previousValueString  = previousValue + " " + UnitsUtil.getDisplayUnit(numberField).getSymbol();
-//			} 
-//			
-//			error.setPreviousValue(previousValueString);
-//			
-//			String currentValueString = currentTask.getInputValue()+"";
-//			
-//			if(currentInputUnit != null) {
-//				currentValueString = currentValueString + " "+currentInputUnit.getSymbol();
-//			}
-//			
-//			error.setCurrentValue(currentValueString);
-//			
-//			return error;
-//		}
-//		return null;
-//	}
 		
 }
