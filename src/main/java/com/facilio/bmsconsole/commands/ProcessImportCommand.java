@@ -48,18 +48,19 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
-import com.facilio.services.filestore.FileStore;
-import com.facilio.services.factory.FacilioFactory;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
 import com.facilio.modules.fields.LookupField;
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FileStore;
 import com.facilio.time.DateTimeUtil;
 import com.google.common.collect.ArrayListMultimap;
 
@@ -458,9 +459,9 @@ public class ProcessImportCommand extends FacilioCommand {
 			else {
 				Object value = colVal.get(key);
 				
-				if(value == null) {
-					throw new Exception("Field value for column: " + key + " is missing.");
-				}
+//				if(value == null) {
+//					throw new Exception("Field value for column: " + key + " is missing.");
+//				}
 				
 				LOGGER.severe("getLookupProps -- " + lookupField.getColumnName() + " facilioField.getModule() - "
 						+ lookupField.getLookupModule().getTableName() + " with value -- " + value);
@@ -483,12 +484,12 @@ public class ProcessImportCommand extends FacilioCommand {
 						fieldName = "priority";
 					}
 				}
-				GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fieldsList)
-						.table(lookupField.getLookupModule().getTableName())
-						.andCustomWhere("LOWER(" + collumnName + ") = ?", value.toString().toLowerCase());
-//						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(lookupField.getLookupModule()));
-
-				List<Map<String, Object>> props = selectBuilder.get();
+				SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder =  new SelectRecordsBuilder<>()
+												.module(lookupField.getLookupModule())
+												.select(fieldsList)
+												.andCustomWhere("LOWER(" + collumnName + ") = ?", value.toString().toLowerCase());
+				
+				List<Map<String, Object>> props = selectBuilder.getAsProps();
 
 				if (props.isEmpty()) {
 
@@ -568,9 +569,6 @@ public class ProcessImportCommand extends FacilioCommand {
 
 		Object value = colVal.get(importProcessContext.getFieldMapping().get(lookupField.getModule().getName()+ "__" + lookupField.getName()));
 		
-//		if(value == null) {
-//			throw new Exception("Field value missing under column " + importProcessContext.getFieldMapping().get(lookupField.getModule().getName()+ "__" + lookupField.getName()) + ".");
-//		}
 		
 		try {
 			String moduleName;
@@ -581,9 +579,9 @@ public class ProcessImportCommand extends FacilioCommand {
 				moduleName = lookupField.getLookupModule().getName();
 			}
 			
-			if(value == null && (moduleName.equals("users") == false) && (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER) == false)) {
-				throw new Exception("Field value missing under column " + importProcessContext.getFieldMapping().get(lookupField.getModule().getName()+ "__" + lookupField.getName()) + ".");
-			}
+//			if(value == null && (moduleName.equals("users") == false) && (importProcessContext.getModule().getName().equals(FacilioConstants.ContextNames.WORK_ORDER) == false)) {
+//				throw new Exception("Field value missing under column " + importProcessContext.getFieldMapping().get(lookupField.getModule().getName()+ "__" + lookupField.getName()) + ".");
+//			}
 			
 			switch (moduleName) {
 			case "workorder": {

@@ -253,6 +253,7 @@ public class ImportDataAction extends FacilioAction {
 
 		chain.getContext().put(FacilioConstants.ContextNames.COUNT, count);
 		chain.getContext().put(FacilioConstants.ContextNames.IMPORT_MODE, importMode);
+		chain.getContext().put(ImportAPI.ImportProcessConstants.CHOOSEN_MODULE, moduleName);
 		
 		chain.execute();
 		List<ImportProcessContext> historyDetailsList;
@@ -480,7 +481,6 @@ public class ImportDataAction extends FacilioAction {
 	}
 	public void setModuleName(String module)
 	{
-		LOGGER.severe("Setting module : " + module);
 		this.moduleName=module;
 	}
 	
