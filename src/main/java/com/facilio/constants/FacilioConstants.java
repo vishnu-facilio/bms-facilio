@@ -1246,6 +1246,17 @@ public class FacilioConstants {
 		public static final String ASSET_MOVEMENT = "assetmovement";
 		public static final String ASSET_MOVEMENT_RECORDS = "assetmovementrecords";
 		
+		public static final String VISITOR = "visitor";
+		public static final String VISITORS = "visitors";
+		public static final String VISITOR_LOGGING = "visitorlogging";
+		public static final String VISITOR_EVENT_REL = "visitoreventrel";
+		public static final String VISITOR_EVENT = "visitorevent";
+		public static final String VISITOR_EVENTS = "visitorevents";
+		public static final String VISITOR_EVENT_ID = "visitorEventId";
+		public static final String VISITOR_EVENT_INVITEES = "visitoreventinvitees";
+		public static final String VISITOR_LOGGING_RECORDS = "visitorloggingrecords";
+		
+		
 		public static final int SITE_BOUNDARY_RADIUS = 1000; //meter 
 		public static final int ASSET_BOUNDARY_RADIUS = 10; //meter 
 		

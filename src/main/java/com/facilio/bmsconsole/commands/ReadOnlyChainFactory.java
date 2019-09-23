@@ -1420,7 +1420,7 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new LoadViewCommand());
 		chain.addCommand(new GenerateCriteriaFromFilterCommand());
 		chain.addCommand(new GenerateSearchConditionCommand());
-		chain.addCommand(new AddLookupFetchForAssetMovementCommand());
+		chain.addCommand(new AddLookupFetchForModuleStateCommand());
 		chain.addCommand(new GenericGetModuleDataListCommand());
 		chain.addCommand(new GetStateflowsForModuleDataListCommand());
 		return chain;
@@ -1501,4 +1501,64 @@ public class ReadOnlyChainFactory {
 		chain.addCommand(new GetAssetAlarmDetailsCommand());
 		return chain;
 	}
+	public static FacilioChain getVisitorListChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForVisitor());
+		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new GenericGetModuleDataListCommand());
+		return chain;
+	}
+	
+	public static FacilioChain getVisitorDetailsChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForVisitor());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		return c;
+	}
+
+	public static FacilioChain getVisitorEventsListChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForVisitorEvents());
+		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new GenericGetModuleDataListCommand());
+		return chain;
+	}
+	
+	public static FacilioChain getVisitorEventsDetailsChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForVisitorEvents());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		c.addCommand(new GetEventInviteesListCommand());
+		
+		return c;
+	}
+	
+	public static FacilioChain getVisitorLoggingListChain() {
+		FacilioChain chain = getDefaultChain();
+		chain.addCommand(SetTableNamesCommand.getForVisitorLogging());
+		chain.addCommand(new LoadAllFieldsCommand());
+		chain.addCommand(new LoadViewCommand());
+		chain.addCommand(new GenerateCriteriaFromFilterCommand());
+		chain.addCommand(new GenerateSearchConditionCommand());
+		chain.addCommand(new GenericGetModuleDataListCommand());
+		return chain;
+	}
+	
+	public static FacilioChain getVisitorLoggingDetailsChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(SetTableNamesCommand.getForVisitorLogging());
+		c.addCommand(new LoadVisitorLoggingLookUpCommand());
+		c.addCommand(new AddLookupFetchForModuleStateCommand());
+		c.addCommand(new GenericGetModuleDataDetailCommand());
+		
+		return c;
+	}
+	
+
 }

@@ -402,6 +402,20 @@ public class SetTableNamesCommand extends FacilioCommand {
 	public static SetTableNamesCommand getForImportProcess() {
 		return new SetTableNamesCommand("importProcess", "ImportProcess");
 	}
+	public static SetTableNamesCommand getForVisitor() {
+		return new SetTableNamesCommand("visitor", "Visitor");
+	}
+	public static SetTableNamesCommand getForVisitorEvents() {
+		return new SetTableNamesCommand("visitorevent", "Visitor_Events");
+	}
+	
+	public static SetTableNamesCommand getForVisitorEventRel() {
+		return new SetTableNamesCommand("visitoreventrel", "Event_Visitor_Rel");
+	}
+	
+	public static SetTableNamesCommand getForVisitorLogging() {
+		return new SetTableNamesCommand("visitorlogging", "Visitor_Logging");
+	}
 	
 	public static void setForModule (Context context, String moduleName) {
 		//TODO handle all module and get from map

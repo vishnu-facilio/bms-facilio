@@ -3589,6 +3589,96 @@ public class TransactionChainFactory {
 	    	return c;
 	    }
 		
+		public static FacilioChain getAddModuleWorkflowRuleChain() {
+			FacilioChain chain = getDefaultChain();
+			chain.addCommand(new ModuleWorkflowRuleCommand());
+			chain.addCommand(addWorkflowRuleChain());
+			return chain;
+		}
+	
+		public static FacilioChain getUpdateModuleWorkflowRuleChain() {
+			FacilioChain chain = getDefaultChain();
+			chain.addCommand(new ModuleWorkflowRuleCommand());
+			chain.addCommand(updateWorkflowRuleChain());
+			return chain;
+		}
+		
+		public static FacilioChain generateScheduleChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new BlockPMEditOnWOGeneration(false, false, true));
+			c.addCommand(new SchedulePMWorkOrderGenerationCommand());
+			return c;
+		}
+		
+		public static FacilioChain addVisitorChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForVisitor());
+			c.addCommand(new GenericAddModuleDataListCommand());
+			return c;
+		}
+		
+		public static FacilioChain updateVisitorChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForVisitor());
+			c.addCommand(new GenericUpdateListModuleDataCommand());
+			return c;
+		}
+	
+		public static FacilioChain addVisitorEventsChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForVisitorEvents());
+			c.addCommand(new GenericAddModuleDataListCommand());
+			return c;
+		}
+		
+		public static FacilioChain updateVisitorEventsChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForVisitorEvents());
+			c.addCommand(new GenericUpdateListModuleDataCommand());
+			return c;
+		}
+		
+		public static FacilioChain addEventInviteesChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new AddNewVisitorsForEventCommand());
+			c.addCommand(addVisitorChain());
+			c.addCommand(new AddEventVisitorRelCommand());
+			c.addCommand(SetTableNamesCommand.getForVisitorEventRel());
+			c.addCommand(new GenericAddModuleDataListCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
+			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+			c.addCommand(addVisitorLoggingRecordsChain());
+			
+			return c;
+		}
+		
+		public static FacilioChain addVisitorLoggingRecordsChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForVisitorLogging());
+			c.addCommand(new GenericAddModuleDataListCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
+			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+			return c;
+		}
+		
+		public static FacilioChain updateVisitorLoggingRecordsChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForVisitorLogging());
+			c.addCommand(new GenericAddModuleDataListCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
+			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+			return c;
+		}
+		
+		public static FacilioChain preRegisterVisitorsChain() {
+			FacilioChain c = getDefaultChain();
+			c.addCommand(SetTableNamesCommand.getForVisitorLogging());
+			c.addCommand(new AddNewVisitorsWhilePreRegisteringCommand());
+			c.addCommand(new GenericAddModuleDataListCommand());
+			c.addCommand(new ExecuteAllWorkflowsCommand(RuleType.STATE_FLOW));
+			c.addCommand(new ExecuteStateTransitionsCommand(RuleType.STATE_RULE));
+			return c;
+		}
 }
 
 

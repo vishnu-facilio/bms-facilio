@@ -2020,4 +2020,33 @@ public class FacilioChainFactory {
 		return c;
 	}
 	
+	public static FacilioChain deleteVisitorChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForVisitor());
+		c.addCommand(new GenericDeleteModuleDataCommand());
+		return c;
+	}
+	
+	public static FacilioChain deleteVisitorEventsChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForVisitorEvents());
+		c.addCommand(new GenericDeleteModuleDataCommand());
+		return c;
+	}
+	
+	public static FacilioChain deleteVisitorLoggingChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForVisitorLogging());
+		c.addCommand(new GenericDeleteModuleDataCommand());
+		return c;
+	}
+	
+	public static FacilioChain deleteEventVisitorRelChain() {
+		FacilioChain c = FacilioChain.getTransactionChain();
+		c.addCommand(SetTableNamesCommand.getForVisitorEventRel());
+		c.addCommand(new GenericDeleteModuleDataCommand());
+		return c;
+	}
+	
+	
 }

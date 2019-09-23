@@ -1976,6 +1976,15 @@
 		</action>
 	</package>
 
+	<package name="publicfilePreviewApiv2"
+		namespace="/api/v2/public/files/preview" extends="attachmentPreviewApi">
+		<action name="*"
+			class="com.facilio.bmsconsole.actions.FileAction"
+			method="previewPublicFile">
+			<param name="permission">READ</param>
+			<param name="fileID">{1}</param>
+		</action>
+	</package>
 	<package name="filePreviewApiv2"
 		namespace="/api/v2/files/preview" extends="attachmentPreviewApi">
 		<action name="*"
@@ -4395,5 +4404,54 @@
 			</action>
 			<action name="disconnect" class="com.facilio.bmsconsole.actions.DevicesAction" method="disconnectDevice">							
 			</action>
+	</package>
+	<package name="visitor" namespace="/api/v2/visitor"
+		extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.VisitorAction" method="addVisitors" />
+		<action name="addVisitor"
+			class="com.facilio.bmsconsole.actions.VisitorAction" method="addVisitor" />
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.VisitorAction" method="updateVisitors" />
+		<action name="list"
+			class="com.facilio.bmsconsole.actions.VisitorAction" method="getVisitorsList" />
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.VisitorAction" method="deleteVisitors" />
+		<action name="details"
+			class="com.facilio.bmsconsole.actions.VisitorAction" method="getVisitorDetails" />	
+	</package>
+	
+	<package name="visitorevent" namespace="/api/v2/visitorEvent"
+		extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.VisitorEventAction" method="addVisitorEvents" />
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.VisitorEventAction" method="updateVisitorEvents" />
+		<action name="list"
+			class="com.facilio.bmsconsole.actions.VisitorEventAction" method="getVisitorEventsList" />
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.VisitorEventAction" method="deleteVisitorEvents" />
+		<action name="details"
+			class="com.facilio.bmsconsole.actions.VisitorEventAction" method="getVisitorEventDetails" />
+		<action name="addInvitees"
+			class="com.facilio.bmsconsole.actions.VisitorEventAction" method="addEventInvitees" />
+		<action name="deleteInvitees"
+			class="com.facilio.bmsconsole.actions.VisitorEventAction" method="deleteEventInvitees" />			
+	</package>
+	
+		<package name="visitorlogging" namespace="/api/v2/visitorLogging"
+		extends="v2Api">
+		<action name="add"
+			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="addVisitorLogging" />
+		<action name="update"
+			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="updateVisitorLogging" />
+		<action name="list"
+			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorLoggingList" />
+		<action name="delete"
+			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="deleteVisitorLogging" />
+		<action name="details"
+			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="getVisitorLoggingDetails" />
+		<action name="preRegister"
+			class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="preRegisterVisitor" />
 	</package>
 </struts>

@@ -116,6 +116,13 @@ public class IAMAccountConstants {
 			domain.setModule(module);
 			fields.add(domain);
 
+//			FacilioField logoId = new FacilioField();
+//			logoId.setName("orgPhoto");
+//			logoId.setDataType(FieldType.FILE);
+//			logoId.setColumnName("LOGO_ID");
+//			logoId.setModule(module);
+//			fields.add(logoId);
+			
 			FacilioField logoId = new FacilioField();
 			logoId.setName("logoId");
 			logoId.setDataType(FieldType.NUMBER);

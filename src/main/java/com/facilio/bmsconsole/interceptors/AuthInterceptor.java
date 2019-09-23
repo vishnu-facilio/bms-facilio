@@ -68,13 +68,13 @@ public class AuthInterceptor extends AbstractInterceptor {
 				}
 			}
 			else if (!isRemoteScreenMode(request)) {
-				IAMAccount iamAccount = AuthenticationUtil.validateToken(request, false, "app");
-				if (iamAccount != null) {
-					request.setAttribute("iamAccount", iamAccount);
-				}
-				else {
-					String authRequired = ActionContext.getContext().getParameters().get("auth").getValue();
-					if (authRequired == null || "".equalsIgnoreCase(authRequired.trim()) || "true".equalsIgnoreCase(authRequired)) {
+				String authRequired = ActionContext.getContext().getParameters().get("auth").getValue();
+				if(authRequired == null || "".equalsIgnoreCase(authRequired.trim()) || "true".equalsIgnoreCase(authRequired)) {
+					IAMAccount iamAccount = AuthenticationUtil.validateToken(request, false, "app");
+					if (iamAccount != null) {
+						request.setAttribute("iamAccount", iamAccount);
+					}
+					else {
 						return Action.LOGIN;
 					}
 				}

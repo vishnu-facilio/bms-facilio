@@ -54,7 +54,9 @@ public class AddOrUpdatePurchaseContractCommand extends FacilioCommand {
 //			if (CollectionUtils.isEmpty(purchaseContractContext.getLineItems())) {
 //				throw new Exception("Line items cannot be empty");
 //			}
-			
+			if (purchaseContractContext.getVendor() == null) {
+				throw new IllegalArgumentException("Vendor cannot be empty");
+			}
 			purchaseContractContext.setContractType(ContractType.PURCHASE);
 			if (!isContractRevised && purchaseContractContext.getId() > 0) {
 				ContractsAPI.updateRecord(purchaseContractContext, module, fields, true, (FacilioContext) context);
