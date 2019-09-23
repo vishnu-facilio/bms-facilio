@@ -47,13 +47,15 @@ public class CustomModulePageFactory extends PageFactory {
 				List<FacilioField> allFields = modBean.getAllFields(subModule.getName());
 				List<FacilioField> fields = allFields.stream().filter(field -> (field instanceof LookupField && ((LookupField) field).getLookupModuleId() == moduleId)).collect(Collectors.toList());
 				if (CollectionUtils.isNotEmpty(fields)) {
-					PageWidget relatedListWidget = new PageWidget(WidgetType.RELATED_LIST);
-					JSONObject relatedList = new JSONObject();
-					relatedList.put("module", subModule);
-					relatedList.put("field", fields.get(0));
-					relatedListWidget.setRelatedList(relatedList);
-					relatedListWidget.addToLayoutParams(section, 24, 8);
-					section.addWidget(relatedListWidget);
+					for (FacilioField field : fields) {
+						PageWidget relatedListWidget = new PageWidget(WidgetType.RELATED_LIST);
+						JSONObject relatedList = new JSONObject();
+						relatedList.put("module", subModule);
+						relatedList.put("field", field);
+						relatedListWidget.setRelatedList(relatedList);
+						relatedListWidget.addToLayoutParams(section, 24, 8);
+						section.addWidget(relatedListWidget);
+					}
 				}
 			}
 		}
@@ -64,6 +66,6 @@ public class CustomModulePageFactory extends PageFactory {
 		detailsWidget.addToLayoutParams(section, 24, 7);
 		section.addWidget(detailsWidget);
 	}
-	
+
 
 }
