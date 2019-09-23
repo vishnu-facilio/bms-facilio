@@ -27,8 +27,11 @@ public class GetImportHistoryListCommand extends FacilioCommand {
 		int count = (int) context.get(FacilioConstants.ContextNames.COUNT);
 		Integer importMode = (Integer) context.get(FacilioConstants.ContextNames.IMPORT_MODE);
 		String moduleName = (String) context.get(ImportAPI.ImportProcessConstants.CHOOSEN_MODULE);
-		ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
-		Long moduleId = bean.getModule(moduleName).getModuleId();
+		Long moduleId = (long) -1;
+		if (moduleName != null) {
+			ModuleBean bean = (ModuleBean) BeanFactory.lookup("ModuleBean");
+			moduleId = bean.getModule(moduleName).getModuleId();
+		}
 		GenericSelectRecordBuilder selectRecordBuilder = new GenericSelectRecordBuilder()
 				.table(ModuleFactory.getImportProcessModule().getTableName())
 				.select(FieldFactory.getImportProcessFields())
