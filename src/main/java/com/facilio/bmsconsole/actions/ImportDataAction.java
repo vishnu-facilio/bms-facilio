@@ -84,6 +84,9 @@ public class ImportDataAction extends FacilioAction {
 		else {
 			moduleInfo.put("moduleExists", false);
 		}
+		importProcessContext.setImportMode(1);
+        importProcessContext.setModuleId(module.getModuleId());
+
 		
 		setModuleExists(moduleInfo);
 		
@@ -96,6 +99,14 @@ public class ImportDataAction extends FacilioAction {
 			System.out.println("File " + fileId + " has been deleted");
 		}
 		return SUCCESS;
+	}
+	
+	public String updateImportProcessContext() throws Exception {
+		ImportAPI.updateImportProcess(importProcessContext);
+		setResult(FacilioConstants.ContextNames.IMPORT_PROCESS_CONTEXT ,importProcessContext);
+		
+		return SUCCESS;
+		
 	}
 	public String getAssets() throws Exception
 	{
@@ -310,7 +321,7 @@ public class ImportDataAction extends FacilioAction {
 		JSONObject meta = im.getImportJobMetaJson();
 		Integer setting = importProcessContext.getImportSetting();
 		
-		if(status == 8 && mail ==null) {
+		if(status == 8 && (mail == null || mail < 0)) {
 			if(setting == ImportProcessContext.ImportSetting.INSERT.getValue()) {
 				String inserted = meta.get("Inserted").toString();
 				im.setnewEntries(Integer.parseInt(inserted));
@@ -346,8 +357,7 @@ public class ImportDataAction extends FacilioAction {
 				im.setnewEntries(Integer.parseInt(inserted));
 				im.setupdateEntries(Integer.parseInt(updated));				
 			}
-		}
-		else if(status == 7 && mail!=null) {
+		} else if (status == 7 && (mail != null && mail > 0)) {
 			ImportAPI.updateImportProcess(getImportProcessContext());
 		}
 		importProcessContext = im;

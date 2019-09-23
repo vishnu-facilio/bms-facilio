@@ -44,11 +44,12 @@ public class SpecificValidationCheckForImportCommand extends FacilioCommand {
 			List<FacilioField> fields = new ArrayList<>();
 			fields.add(FieldFactory.getIdField(module));
 			fields.add(modBean.getField("name", "resource"));
-
+			Long siteId = importProcessContext.getSiteId();
 			SelectRecordsBuilder<ReadingContext> selectBuilder = new SelectRecordsBuilder<ReadingContext>()
 					.beanClass(ReadingContext.class).moduleName(module.getName()).select(fields)
 					.table(module.getTableName()).andCondition(
-							CriteriaAPI.getCondition("Resources.NAME", "name", nameQueryString, StringOperators.IS));
+							CriteriaAPI.getCondition("Resources.NAME", "name", nameQueryString, StringOperators.IS))
+					.andCondition(CriteriaAPI.getCondition("Resources.SITE_ID", "siteId", siteId.toString(), StringOperators.IS));
 			List<ReadingContext> readingContext = selectBuilder.get();
 			if (readingContext != null && readingContext.size() > 0) {
 				for (ReadingContext rContext : readingContext) {

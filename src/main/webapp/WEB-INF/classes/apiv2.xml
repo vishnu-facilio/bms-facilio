@@ -4275,6 +4275,8 @@
 		</action>
 		<action name ="upload" class="com.facilio.bmsconsole.actions.ImportDataAction" method="upload">
 		</action>
+		<action name ="updateImportProcessContext" class="com.facilio.bmsconsole.actions.ImportDataAction" method="updateImportProcessContext">
+		</action>
 	</package>
 
 	<package name="autoCommissiondata"

@@ -3212,7 +3212,6 @@
 		<action name="checkModule" class="com.facilio.bmsconsole.actions.ImportDataAction"
 			method="checkModule">
 				<result name="success" type="json">
-				<param name="includeProperties">moduleExists.*</param>
 			</result>
 		</action>
 		<action name="processImport" class="com.facilio.bmsconsole.actions.ImportDataAction"
