@@ -124,7 +124,7 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
                             }
                         }
 
-                        if (action ==  PreventiveMaintenanceAPI.ScheduleActions.INIT) {
+                        if (action == PreventiveMaintenanceAPI.ScheduleActions.INIT) {
                             List<PMTriggerContext> triggers = null;
                             for (Long resourceId: resourceIds) {
                                 PMResourcePlannerContext currentResourcePlanner = pmResourcePlanner.get(resourceId);
@@ -143,7 +143,7 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
                                 triggers.add(PreventiveMaintenanceAPI.getDefaultTrigger(pm.getTriggers()));
                             }
 
-                            endTime = PreventiveMaintenanceAPI.getEndTime(pm.getWoGeneratedUpto(), triggers);
+                            endTime = PreventiveMaintenanceAPI.getEndTime(-1L, triggers);
                         }
 
 
@@ -208,7 +208,7 @@ public class ScheduleNewPMCommand extends FacilioJob implements SerializableComm
                 ResourceContext resource = ResourceAPI.getResource(workorderTemplate.getResourceIdVal());
                 workorderTemplate.setResource(resource);
                 if (action == PreventiveMaintenanceAPI.ScheduleActions.INIT) {
-                    endTime = PreventiveMaintenanceAPI.getEndTime(pm.getWoGeneratedUpto(), pm.getTriggers());
+                    endTime = PreventiveMaintenanceAPI.getEndTime(-1, pm.getTriggers());
                 }
                 for (PMTriggerContext trigger : pm.getTriggers()) {
                     if (trigger.getSchedule() != null) {
