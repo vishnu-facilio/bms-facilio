@@ -44,16 +44,15 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 	
 	public final static int averageboundPercentage = 50; 
 	
+	long taskContextId;
+	String currentInputValue;
+	
 	private static final Logger LOGGER = Logger.getLogger(ValidateReadingInputForTask.class.getName());
 	@Override
 	public boolean executeCommand(Context context) throws Exception {
 		
 		try {
-			
-			if(AccountUtil.getCurrentOrg().getId() != 155l && AccountUtil.getCurrentOrg().getId() != 1l) {
-				return false;
-			}
-			
+						
 			if(!AccountUtil.isFeatureEnabled(AccountUtil.FeatureLicense.READING_FIELD_UNITS_VALIDATION)) {
 				return false;
 			}
@@ -82,6 +81,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 									case NUMBER:
 									case DECIMAL:
 										
+										taskContextId = taskContext.getId();
 										ReadingDataMeta rdm = ReadingsAPI.getReadingDataMeta(taskContext.getResource().getId(), taskContext.getReadingField());
 										NumberField numberField = (NumberField) taskContext.getReadingField();
 										
@@ -89,6 +89,12 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 											return false;
 										}
 										
+										if(currentTask.getInputValue().trim().isEmpty())
+										{
+											return false;
+										}
+								
+										currentInputValue = currentTask.getInputValue();
 										Double currentValue = FacilioUtil.parseDouble(currentTask.getInputValue());
 										
 										Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);	
@@ -127,7 +133,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 				if(!errors.isEmpty()) {
 					context.put(FacilioConstants.ContextNames.TASK_ERRORS, errors);
 					context.put(FacilioConstants.ContextNames.HAS_TASK_ERRORS, hasErrors);
-					LOGGER.log(Level.INFO, "Currenttask ID: "+ currentTask.getId() + "Task Errors: "+ errors);
+					LOGGER.log(Level.INFO, "Currenttask ID: "+ taskContextId + " Task Errors: "+ errors);
 //					if(hasErrors) {
 						return true;
 //					}
@@ -137,7 +143,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 
 		}
 		catch(Exception e) {
-			LOGGER.log(Level.SEVERE, e.getMessage(), e);
+			LOGGER.log(Level.SEVERE, "Currenttask ID: "+ taskContextId + " Current Input Value: " + currentInputValue + " " + e.getMessage() , e);
 		}
 		return false;
 	}
