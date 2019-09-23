@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+    "http://struts.apache.org/dtds/struts-2.5.dtd">
+
+<struts>
+
+
+	<package name="visitorPortalApiV2" namespace="/api/v2/visitor" extends="v2BaseApi">
+	
+		<interceptors>
+			<interceptor name="cacheinterceptor"
+						 class="com.facilio.bmsconsole.interceptors.CacheInterceptor" />
+			<interceptor name="scopeinterceptor"
+				class="com.facilio.bmsconsole.interceptors.ScopeInterceptor" />
+			<interceptor name="datasourceinterceptor"
+				class="com.facilio.bmsconsole.interceptors.DataSourceInterceptor" />
+			<interceptor name="portalauthinterceptor"
+				class="com.facilio.serviceportal.actions.PortalAuthInterceptor" />
+			<interceptor-stack name="defaultInterceptor">
+				<interceptor-ref name="defaultStack" />
+				<interceptor-ref name="portalauthinterceptor" />
+				<interceptor-ref name="datasourceinterceptor" />
+				<interceptor-ref name="scopeinterceptor" />
+				<interceptor-ref name="cacheinterceptor" />
+				<interceptor-ref name="json">
+					<param name="enableSMD">true</param>
+				</interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+
+		<default-interceptor-ref name="defaultInterceptor" />
+		<global-results>
+			<result name="login">/service/login.jsp</result>
+			<result name="unauthorized" type="redirect">
+				<param name="location">/jsps/serviceportal/unauthorized.jsp</param>
+				<param name="parse">false</param>
+			</result>
+		</global-results>
+		
+		<action name="addMe" class="com.facilio.bmsconsole.actions.VisitorAction" method="addVisitor">
+		</action>
+		
+		<action name="addVisitorLog" class="com.facilio.bmsconsole.actions.VisitorLoggingAction" method="addVisitorLogging">
+		</action>
+		
+		<action name="account" class="com.facilio.bmsconsole.actions.LoginAction"
+			method="v2portalAccount"> 
+		</action>
+	</package>
+
+
+	<!-- end -->
+</struts>
