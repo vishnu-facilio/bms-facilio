@@ -450,6 +450,7 @@ public class PreventiveMaintenanceAPI {
 		long currentTime = System.currentTimeMillis();
 		boolean isScheduled = false;
 		List<Long> nextExecutionTimes = new ArrayList<>();
+		LOGGER.log(Level.ERROR, "PM "+ pm.getId() + " PM Trigger ID: "+pmTrigger.getId() + " next exec time " + nextExecutionTime.getLeft() + " end time " + endTime);
 		while (nextExecutionTime.getLeft() <= endTime && (pm.getMaxCount() == -1 || currentCount < pm.getMaxCount()) && (pm.getEndTime() == -1 || nextExecutionTime.getLeft() <= pm.getEndTime())) {
 			if ((nextExecutionTime.getLeft() * 1000) < currentTime) {
 				nextExecutionTime = pmTrigger.getSchedule().nextExecutionTime(nextExecutionTime);
