@@ -217,9 +217,15 @@ public class ToolTransactionContext extends ModuleBaseWithCustomFields {
 	public void setRequestedLineItem(InventoryRequestLineItemContext requestedLineItem) {
 		this.requestedLineItem = requestedLineItem;
 	}
+	private ResourceContext resource;
 
+	public ResourceContext getResource() {
+		return resource;
+	}
 
-
+	public void setResource(ResourceContext resource) {
+		this.resource = resource;
+	}
 
 	private long shipment;
 

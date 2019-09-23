@@ -1151,6 +1151,7 @@ public class FacilioConstants {
 		public static final String WARRANTY_CONTRACT_TYPE = "Warranty_Contract_Type";
 		public static final String CONTRACT_ASSOCIATED_ASSETS = "contractassets";
 		public static final String CONTRACT_ASSOCIATED_TERMS = "contractterms";
+		public static final String PO_ASSOCIATED_TERMS = "poterms";
 		
 		public static final String CONTRACT_TYPE = "Contract_Type";
 		

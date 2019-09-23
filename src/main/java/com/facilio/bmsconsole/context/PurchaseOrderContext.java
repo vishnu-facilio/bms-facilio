@@ -302,5 +302,16 @@ public class PurchaseOrderContext extends ModuleBaseWithCustomFields {
 		this.contract = contract;
 	}
 	
+	private List<PoAssociatedTermsContext> termsAssociated;
+
+	public List<PoAssociatedTermsContext> getTermsAssociated() {
+		return termsAssociated;
+	}
+
+	public void setTermsAssociated(List<PoAssociatedTermsContext> termsAssociated) {
+		this.termsAssociated = termsAssociated;
+	}
+
+	
 	
 }

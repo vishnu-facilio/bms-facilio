@@ -2086,6 +2086,7 @@ public class TransactionChainFactory {
 			FacilioChain chain = getDefaultChain();
 			chain.addCommand(SetTableNamesCommand.getForPurchaseOrder());
 			chain.addCommand(new AddOrUpdatePurchaseOrderCommand());
+			chain.addCommand(new AssociateDefaultTermsToPoCommand());
 			chain.addCommand(getPurchaseOrderTotalCostChain()); //update purchase order total cost
 			chain.addCommand(new AddPurchaseRequestOrderRelation());
 			return chain;
@@ -3520,12 +3521,23 @@ public class TransactionChainFactory {
 		chain.addCommand(updateWorkflowRuleChain());
 		return chain;
 	}
-		public static FacilioChain generateScheduleChain() {
-			FacilioChain c = getDefaultChain();
-			c.addCommand(new BlockPMEditOnWOGeneration(false, false, true));
-			c.addCommand(new SchedulePMWorkOrderGenerationCommand());
-			return c;
-		}
+	public static FacilioChain generateScheduleChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new BlockPMEditOnWOGeneration(false, false, true));
+		c.addCommand(new SchedulePMWorkOrderGenerationCommand());
+		return c;
+	}
+	
+	public static FacilioChain getAssociateTermsToPOChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new AssociateTermsToPOCommand());
+		return c;
+	}
+	public static FacilioChain getDisAssociateTermsToPOChain() {
+		FacilioChain c = getDefaultChain();
+		c.addCommand(new DisAssociateTermsFromPoCommand());
+		return c;
+	}
 }
 
 

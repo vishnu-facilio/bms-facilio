@@ -230,4 +230,14 @@ public class ItemTransactionsContext extends ModuleBaseWithCustomFields {
 		this.requestedLineItem = requestedLineItem;
 	}
 
+	private ResourceContext resource;
+
+	public ResourceContext getResource() {
+		return resource;
+	}
+
+	public void setResource(ResourceContext resource) {
+		this.resource = resource;
+	}
+	
 }

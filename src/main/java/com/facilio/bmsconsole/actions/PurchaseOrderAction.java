@@ -9,9 +9,12 @@ import org.json.simple.parser.JSONParser;
 
 import com.facilio.bmsconsole.commands.ReadOnlyChainFactory;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
+import com.facilio.bmsconsole.context.ContractAssociatedTermsContext;
 import com.facilio.bmsconsole.context.InventoryType;
+import com.facilio.bmsconsole.context.PoAssociatedTermsContext;
 import com.facilio.bmsconsole.context.PurchaseOrderContext;
 import com.facilio.bmsconsole.context.PurchaseOrderLineItemContext;
+import com.facilio.bmsconsole.workflow.rule.EventType;
 import com.facilio.chain.FacilioChain;
 import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
@@ -28,6 +31,14 @@ public class PurchaseOrderAction extends FacilioAction {
 		this.moduleName = moduleName;
 	}
 	
+	private List<PoAssociatedTermsContext> associatedTerms;
+	
+	public List<PoAssociatedTermsContext> getAssociatedTerms() {
+		return associatedTerms;
+	}
+	public void setAssociatedTerms(List<PoAssociatedTermsContext> associatedTerms) {
+		this.associatedTerms = associatedTerms;
+	}
 	private Boolean fetchCount;
 	public Boolean getFetchCount() {
 		if (fetchCount == null) {
@@ -120,6 +131,7 @@ public class PurchaseOrderAction extends FacilioAction {
 	}
 	public String addPurchaseOrder() throws Exception {
 		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.EVENT_TYPE, EventType.CREATE.getValue());
 		context.put(FacilioConstants.ContextNames.RECORD, purchaseOrder);
 		
 		if(!CollectionUtils.isEmpty(prIds)) {
@@ -394,6 +406,33 @@ public class PurchaseOrderAction extends FacilioAction {
 		}
 		
 		setResult(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS, context.get(FacilioConstants.ContextNames.PURCHASE_ORDER_LINE_ITEMS));
+		return SUCCESS;
+	}
+	
+	public String associateTerms() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID, recordId );
+		context.put(FacilioConstants.ContextNames.PO_ASSOCIATED_TERMS, associatedTerms );
+		
+		FacilioChain chain = TransactionChainFactory.getAssociateTermsToPOChain();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.PO_ASSOCIATED_TERMS, context.get(FacilioConstants.ContextNames.PO_ASSOCIATED_TERMS));
+		
+		return SUCCESS;
+	}
+	
+	public String disAssociateTerms() throws Exception {
+		
+		FacilioContext context = new FacilioContext();
+		context.put(FacilioConstants.ContextNames.RECORD_ID_LIST, recordIds );
+		
+		FacilioChain chain = TransactionChainFactory.getDisAssociateTermsToPOChain();
+		chain.execute(context);
+		
+		setResult(FacilioConstants.ContextNames.RECORD_ID_LIST, context.get(FacilioConstants.ContextNames.RECORD_ID_LIST));
+		
 		return SUCCESS;
 	}
 
