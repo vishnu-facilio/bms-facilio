@@ -424,11 +424,15 @@
 			    deviationCount = 0;
 			    if (thismothoccurence != null) {
 			      for each index,value in thismothoccurence {
+			        startTime = value.createdTime;
+			        if (value.createdTime < thisMonthStartTime) {
+			          startTime = thisMonthStartTime;
+			        }
 			        endTime = value.clearedTime;
 			        if (endTime == null) {
 			          endTime = thisMonthEndTime;
 			        }
-			        ttimes = date.dateRange(value.createdTime, endTime);
+			        ttimes = date.dateRange(startTime, endTime);
 			        thisMonthEnergy = {
 			          criteria: [parentId == resourceId && ttime == ttimes && adjustedUpperBound > 0 && actualValue > adjustedUpperBoundField]
 			        };
@@ -451,11 +455,15 @@
 			    deviationCount = 0;
 			    if (lastmonthoccurrence != null) {
 			      for each index,value in lastmonthoccurrence {
+			      	startTime = value.createdTime;
+			        if (value.createdTime < lastMonthStartTime) {
+			          startTime = lastMonthStartTime;
+			        }
 			        endTime = value.clearedTime;
-			        if (endTime == null) {
+			        if (endTime == null || endTime > lastMonthEndTime) {
 			          endTime = lastMonthEndTime;
 			        }
-			        ttimes = date.dateRange(value.createdTime, endTime);
+			        ttimes = date.dateRange(startTime, endTime);
 			        lastMonthEnergy = {
 			          criteria: [parentId == resourceId && ttime == ttimes && adjustedUpperBound > 0 && actualValue > adjustedUpperBoundField],
 			        };
@@ -950,11 +958,15 @@
                 lstMntWastage= 0;
 			    if (thismothoccurence != null) {
 			      for each index,value in thismothoccurence {
+			        startTime = value.createdTime;
+                    if (value.createdTime < thisMonthStartTime) {
+			          startTime = thisMonthStartTime;
+			        }
 			        endTime = value.clearedTime;
 			        if (endTime == null) {
 			          endTime = thisMonthEndTime;
 			        }
-			        ttimes = date.dateRange(value.createdTime, endTime);
+			        ttimes = date.dateRange(startTime, endTime);
 			        thisMonthEnergy = {
 			          criteria: [parentId == resourceId && ttime == ttimes && adjustedUpperBound > 0 && actualValue > adjustedUpperBoundField],
 			        };
@@ -969,11 +981,15 @@
                 result[resourceId] = energyWastage;
                 if (lastmonthoccurrence != null) {
 			      for each index,value in lastmonthoccurrence {
+			        startTime = value.createdTime;
+			        if (value.createdTime < lastMonthStartTime) {
+			          startTime = lastMonthStartTime;
+			        }
 			        endTime = value.clearedTime;
-			        if (endTime == null) {
+			        if (endTime == null || endTime > lastMonthEndTime) {
 			          endTime = lastMonthEndTime;
 			        }
-			        ttimes = date.dateRange(value.createdTime, endTime);
+			        ttimes = date.dateRange(startTime, endTime);
 			        lastMonthEnergy = {
 			          criteria: [parentId == resourceId && ttime == ttimes && adjustedUpperBound > 0 && actualValue > adjustedUpperBoundField],
 			        };
