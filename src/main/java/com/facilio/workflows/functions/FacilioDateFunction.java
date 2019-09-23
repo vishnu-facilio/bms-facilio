@@ -19,6 +19,7 @@ import com.facilio.unitconversion.Unit;
 import com.facilio.unitconversion.UnitsUtil;
 import com.facilio.util.FacilioUtil;
 import com.facilio.workflows.exceptions.FunctionParamException;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 
@@ -464,6 +465,10 @@ public enum FacilioDateFunction implements FacilioWorkflowFunctionInterface {
 				String secondParam = objects[1].toString();
 				if(FacilioUtil.isNumeric(secondParam)) {
 					operatorParam = ""+(int) Double.parseDouble(secondParam);
+					if(objects.length > 2 && objects[2] != null) {
+						Double operatorParam2 = (Double)objects[2];
+						operatorParam = operatorParam + ","+WorkflowUtil.getStringValueFromDouble(operatorParam2);
+					}
 				}
 				else {
 					baselineName = secondParam;
