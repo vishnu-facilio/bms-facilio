@@ -5,6 +5,8 @@
  <%@page import="java.net.HttpURLConnection" %> 
 <%@page import="java.net.URL" %>
 <%@page import="java.util.Scanner" %>
+<%@page import="java.util.Date" %>
+<%@page import="java.sql.Timestamp" %>
 <%@page import="com.facilio.aws.util.FacilioProperties" %>
 <%@page import="com.facilio.bmsconsole.actions.AdminAction" %>
 
@@ -67,16 +69,20 @@ function handleShowMore(target)
 		 for(int i = 0; i <  jsonArray.length();i++) {
 			 org.json.JSONObject jsonObj = jsonArray.getJSONObject(i);
 			 
-			 System.out.println(jsonObj.get("device"));
-			 System.out.println(jsonObj.get("arrivalTime"));
-	         System.out.println(jsonObj.get("message"));
+			
+			 String arrival= jsonObj.get("arrivalTime").toString();
+			 double time =Double.parseDouble(arrival);
+				
+			 Timestamp timestamp = new Timestamp((long) time);
+			 Date date = new Date(timestamp.getTime());
+			
 	         
 	       
 		%>
 		
 	<tr >
 	<td   align="center"><%=i+1 %></td>
-	<td   align="center"><%=jsonObj.get("arrivalTime") %></td>
+	<td   align="center"><%=date %></td>
 	<td   align="center"><%= jsonObj.get("device")%></td>
 
 	<td   align="left">
