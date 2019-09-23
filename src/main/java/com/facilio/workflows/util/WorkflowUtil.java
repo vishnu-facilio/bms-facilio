@@ -2089,4 +2089,15 @@ public class WorkflowUtil {
 		
 		return criteria;
 	}
+	
+	public static String getStringValueFromDouble (Double value) {
+		if(value != null)
+		{	
+			DecimalFormat decimalFormat = new DecimalFormat("#");
+			decimalFormat.setMaximumFractionDigits(340);
+		    String convertedString = decimalFormat.format(value);
+		    return convertedString;	
+		}
+		return null;
+	}
 }
