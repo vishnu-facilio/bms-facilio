@@ -1,6 +1,7 @@
 package com.facilio.bmsconsole.commands;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import com.facilio.db.criteria.operators.NumberOperators;
 import com.facilio.db.criteria.operators.Operator;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.BmsAggregateOperators.NumberAggregateOperator;
+import com.facilio.modules.BmsAggregateOperators;
 import com.facilio.modules.FacilioModule;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.ModuleBaseWithCustomFields;
@@ -221,12 +223,21 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		double currentValue = FacilioUtil.parseDouble(currentTask.getInputValue());
 		double currentDelta = currentValue-previousValue;
 		
-		Double averageValue = getAverageValue(rdm, (NumberField)modBean.getField(numberField.getName()+"Delta", numberField.getModule().getName()), currentTask.getInputTime());
+		Double averageValue = getAverageValue(rdm, (NumberField)modBean.getField(numberField.getName()+"Delta", numberField.getModule().getName()), currentTask, taskContext);
 		
-		if(averageValue != null && averageValue > 0) {
+		if(averageValue != null && averageValue > 0 && numberField.getMetric() > 0) {
 			
 			Double averageLowerLimit = averageValue - (averageValue * averageboundPercentage /100);
 			Double averageHigherLimit = averageValue + (averageValue * averageboundPercentage /100);
+			
+			double averageLowerLimitEnergyReading = previousValue + averageLowerLimit;
+			double averageHigherLimitEnergyReading = previousValue + averageHigherLimit;
+			
+			double averageLowerLimitInDisplayUnit  = (double)UnitsUtil.convertToDisplayUnit(averageLowerLimitEnergyReading, numberField);
+			double averageHigherLimitInDisplayUnit  = (double)UnitsUtil.convertToDisplayUnit(averageHigherLimitEnergyReading, numberField);
+					
+			String averageLowerLimitString = WorkflowUtil.getStringValueFromDouble(FacilioUtil.decimalClientFormat(averageLowerLimitInDisplayUnit));
+			String averageHigherLimitString = WorkflowUtil.getStringValueFromDouble(FacilioUtil.decimalClientFormat(averageHigherLimitInDisplayUnit));
 			
 			if(currentDelta <= averageLowerLimit) {
 				
@@ -237,8 +248,18 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 				Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);	
 				error.setCurrentValue(setCurrentValueString(currentTask, currentInputUnit));
 				error.setAverageValue(setAverageValueString(averageValue, numberField));
-								
-				error.setMessage("The reading you have entered is less than the average delta value of "+ error.getAverageValue() +".");				
+				
+				if(averageLowerLimitString != null && averageHigherLimitString != null )
+				{
+					error.setMessage("The reading you have entered " +error.getCurrentValue()+ " is not within the expected range of " 
+							+ averageLowerLimitString + " - " 
+							+ averageHigherLimitString + " " + UnitsUtil.getDisplayUnit(numberField).getSymbol());	
+				}
+				else
+				{
+					error.setMessage("The reading you have entered is less than the average delta value of "+ error.getAverageValue() +".");
+				}	
+				
 				return error;
 			}
 			if(currentDelta >= averageHigherLimit) {
@@ -251,7 +272,17 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 				error.setCurrentValue(setCurrentValueString(currentTask, currentInputUnit));
 				error.setAverageValue(setAverageValueString(averageValue, numberField));
 				
-				error.setMessage("The reading you have entered is greater than the average delta value of " + error.getAverageValue() +".");				
+				if(averageLowerLimitString != null && averageHigherLimitString != null )
+				{
+					error.setMessage("The reading you have entered " +error.getCurrentValue()+ " is not within the expected range of " 
+							+ averageLowerLimitString + " - " 
+							+ averageHigherLimitString + " " + UnitsUtil.getDisplayUnit(numberField).getSymbol());			
+				}
+				else
+				{
+					error.setMessage("The reading you have entered is greater than the average delta value of " + error.getAverageValue() +".");
+				}
+				
 				return error;
 			}
 		}
@@ -294,7 +325,8 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		return null;
 	}
 	
-	public Double getAverageValue(ReadingDataMeta rdm,NumberField numberField, long endTaskTime) throws Exception {
+	public Double getAverageValue(ReadingDataMeta rdm,NumberField numberField, TaskContext currentTask, TaskContext taskContext) 
+			throws Exception {
 		
 		if(rdm.getResourceId() > 0) {
 			
@@ -303,15 +335,25 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			Map<String, FacilioField> fieldMap = FieldFactory.getAsMap(modBean.getAllFields(module.getName()));
 			
 			DateRange lastNdays = DateOperators.LAST_N_DAYS.getRange(noOfDaysDeltaToBeFetched+"");
+			long endTaskTime;
+			
+			if(currentTask.getInputTime() > rdm.getTtime() && taskContext.getReadingDataId() == rdm.getReadingDataId())
+			{
+				endTaskTime = rdm.getTtime();
+			}
+			else 
+			{
+				endTaskTime = currentTask.getInputTime();
+			}
 			
 			SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 					.table(module.getTableName())
 					.module(module)
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), rdm.getResourceId()+"", NumberOperators.EQUALS))
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("ttime"), lastNdays.getStartTime()+","+(endTaskTime-1), DateOperators.BETWEEN))
+					.andCondition(CriteriaAPI.getCondition(numberField, 0+"", NumberOperators.NOT_EQUALS))
 					.aggregate(NumberAggregateOperator.AVERAGE, numberField);
-					;
-			
+							
 			List<Map<String, Object>> res = selectBuilder.getAsProps();
 			if(res != null && !res.isEmpty()) {
 				Double average = (Double) res.get(0).get(numberField.getName());
@@ -339,7 +381,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		{
 			value = FacilioUtil.parseDouble(rdm.getValue());
 		}
-		else if(rdm != null && taskContext.getReadingDataId() != -1 && rdm.getReadingDataId()!= -1 &&  
+		else if(taskContext.getReadingDataId() != -1 && rdm.getReadingDataId()!= -1 &&  
 				taskContext.getReadingDataId() == rdm.getReadingDataId())
 		{				
 			value = getLatestInputReading(numberField, rdm, currentTask, "TTIME DESC", rdm.getTtime(),NumberOperators.LESS_THAN);	
