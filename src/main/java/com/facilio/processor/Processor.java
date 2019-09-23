@@ -134,9 +134,12 @@ public class Processor implements IRecordProcessor {
 
                     reader = new StringReader(data);
                     JSONObject payLoad = (JSONObject) parser.parse(reader);
-                    if(payLoad.containsKey("testing")){
-                        LOGGER.info("Message from new agent \n "+payLoad);
-                        continue;
+                    if(payLoad.containsKey(AgentKeys.VERSION)){
+                        String version = String.valueOf(payLoad.get(AgentKeys.VERSION));
+                        if( version.equals("2")){
+                            LOGGER.info("Message from new agent \n "+payLoad);
+                            continue;
+                        }
                     }
                     String dataType = PublishType.event.getValue();
                     if(payLoad.containsKey(EventUtil.DATA_TYPE)) {
