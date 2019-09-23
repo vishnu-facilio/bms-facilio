@@ -167,8 +167,8 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		else
 		{
 			futureCase = true;
-			previousValue = getLatestInputReading(numberField, rdm, currentTask, "TTIME DESC", currentTask.getInputTime(), NumberOperators.LESS_THAN);
-			nextValue =	getLatestInputReading(numberField, rdm, currentTask, "TTIME ASC", currentTask.getInputTime(), NumberOperators.GREATER_THAN);
+			previousValue = getLatestInputReading(numberField, rdm, currentTask, "TTIME DESC", taskContext.getInputTime(), NumberOperators.LESS_THAN);
+			nextValue =	getLatestInputReading(numberField, rdm, currentTask, "TTIME ASC", taskContext.getInputTime(), NumberOperators.GREATER_THAN);
 		}	
 		
 		if(previousValue < 0 && nextValue < 0)
@@ -221,7 +221,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		}
 		
 		double currentValue = FacilioUtil.parseDouble(currentTask.getInputValue());
-		double currentDelta = currentValue-previousValue;
+		double currentDelta = currentValueInSiUnit-previousValue;
 		
 		Double averageValue = getAverageValue(rdm, (NumberField)modBean.getField(numberField.getName()+"Delta", numberField.getModule().getName()), currentTask, taskContext);
 		
@@ -298,7 +298,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		}
 		
 		double currentValue = FacilioUtil.parseDouble(currentTask.getInputValue());
-		double diff = previousValue / currentValue;
+		double diff = previousValue / currentValueInSiUnit;
 		
 		Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);
 		Unit suggestedUnit = UnitsUtil.getUnitMultiplierResult(currentInputUnit, diff);
