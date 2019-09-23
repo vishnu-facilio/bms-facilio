@@ -9,6 +9,7 @@ import com.facilio.bmsconsole.context.TaskContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.unitconversion.UnitsUtil;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public class SiUnitConversionToSelectedReadingUnit extends FacilioCommand {
 
@@ -33,7 +34,10 @@ public class SiUnitConversionToSelectedReadingUnit extends FacilioCommand {
 					if(numberField.getMetricEnum() != null && task.getInputValue() != null)
 					{
 						int siUnit = numberField.getMetricEnum().getSiUnitId();
-						task.setInputValue(String.valueOf(UnitsUtil.convert(task.getInputValue(), siUnit, task.getReadingFieldUnit())));
+						String convertedReadingString = WorkflowUtil.getStringValueFromDouble(UnitsUtil.convert(task.getInputValue(), siUnit, task.getReadingFieldUnit()));
+						if(convertedReadingString != null) {
+							task.setInputValue(String.valueOf(convertedReadingString));
+						}
 					}
 				}
 			}

@@ -3,7 +3,7 @@ package com.facilio.bmsconsole.context;
 import com.facilio.unitconversion.Unit;
 
 public class TaskErrorContext {
-
+	
 	Mode mode;
 	FailType failType;
 	SuggestionType suggestionType;
@@ -99,6 +99,13 @@ public class TaskErrorContext {
 
 	public void setMode(int mode) {
 		this.mode = Mode.valueOf(mode);
+	}
+	
+	@Override
+	public String toString() {
+		return "TaskErrorContext [mode=" + mode + ", suggestionType=" + suggestionType
+				+ ", previousValue=" + previousValue + ", nextValue=" + nextValue
+				+ ", currentValue=" + currentValue + ", averageValue=" + averageValue + ", message=" + message + "]";
 	}
 	
 	public enum FailType {	

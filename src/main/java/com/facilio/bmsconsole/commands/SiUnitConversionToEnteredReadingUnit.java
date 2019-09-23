@@ -13,6 +13,7 @@ import com.facilio.bmsconsole.util.TicketAPI;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.modules.fields.NumberField;
 import com.facilio.unitconversion.UnitsUtil;
+import com.facilio.workflows.util.WorkflowUtil;
 
 public class SiUnitConversionToEnteredReadingUnit extends FacilioCommand {
 
@@ -49,7 +50,10 @@ public class SiUnitConversionToEnteredReadingUnit extends FacilioCommand {
 				if(numberField.getMetricEnum() != null && taskContext.getInputValue() != null)
 				{
 					int siUnit = numberField.getMetricEnum().getSiUnitId();
-					task.setInputValue(String.valueOf(UnitsUtil.convert(taskContext.getInputValue(), siUnit, task.getReadingFieldUnit())));
+					String convertedReadingString = WorkflowUtil.getStringValueFromDouble(UnitsUtil.convert(taskContext.getInputValue(), siUnit, task.getReadingFieldUnit()));
+					if(convertedReadingString != null) {
+						task.setInputValue(String.valueOf(convertedReadingString));
+					}
 				}
 			}
 			context.put(FacilioConstants.ContextNames.TASK, task);		
