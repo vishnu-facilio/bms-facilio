@@ -84,7 +84,7 @@ public class MLAPI {
 		FacilioField resourceFieldColumn = fieldMaps.get("resource");
 
 		StringBuilder durationAggrColumn = new StringBuilder("SUM(COALESCE(")
-				.append(clearedTimeFieldColumn).append(",").append(System.currentTimeMillis()).append(") - ")
+				.append(clearedTimeFieldColumn).append(",").append(dateRange.getEndTime()).append(") - ")
 				.append(createdTimeFieldColumn).append(")")
 				;
 		FacilioField durationField = FieldFactory.getField("duration", durationAggrColumn.toString(), FieldType.NUMBER);
