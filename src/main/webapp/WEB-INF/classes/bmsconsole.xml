@@ -1056,7 +1056,7 @@
 			method="jobs">
 			<result name="success">/jsps/adminjobs.jsp</result>
 		</action>
-<action name="showcache" class="com.facilio.bmsconsole.actions.AdminAction">
+       <action name="showcache" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result name="success">/jsps/admin/showCache.jsp</result>
 		</action>
 		<action name="clearcache" class="com.facilio.bmsconsole.actions.AdminAction" method="clearCache">
@@ -1128,7 +1128,10 @@
 			<action name="adminReadingTools" class="com.facilio.bmsconsole.actions.AdminAction" method="adminReadingTools">
 			<result  type="tiles">adminpage/deltacalculation.jsp</result>
 			</action>
-						
+			<action name="data" class="com.facilio.bmsconsole.actions.AdminAction">
+			<result   type="tiles">adminpage/data.jsp</result>
+			</action>					
+									
 			
 			</package>
 
@@ -3856,4 +3859,5 @@
 			</result>
 		</action>
 	</package>
+	
 </struts>

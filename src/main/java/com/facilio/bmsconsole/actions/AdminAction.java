@@ -1,12 +1,16 @@
 package com.facilio.bmsconsole.actions;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,11 +19,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.websocket.EncodeException;
 
 import org.apache.struts2.ServletActionContext;
+import org.json.JSONArray;
 import org.json.simple.JSONObject;
 
 import com.facilio.accounts.dto.User;
 import com.facilio.accounts.util.AccountUtil;
 import com.facilio.auth.actions.FacilioAuthAction;
+import com.facilio.aws.util.FacilioProperties;
 import com.facilio.beans.ModuleCRUDBean;
 import com.facilio.bmsconsole.commands.TransactionChainFactory;
 import com.facilio.bmsconsole.util.AdminAPI;
@@ -252,7 +258,7 @@ public class AdminAction extends ActionSupport
 		return SUCCESS;
 	}
 
-	public String demoRollUp() throws IOException{
+	public static String demoRollUp() throws IOException{
 
 		HttpServletRequest request = ServletActionContext.getRequest();
 		long orgId=Long.parseLong(request.getParameter("orgId"));
@@ -272,6 +278,8 @@ public class AdminAction extends ActionSupport
 		
 	}
 
+	
+	
 	public String adminReadingTools() throws Exception {
 
 		HttpServletRequest request = ServletActionContext.getRequest();
@@ -332,6 +340,64 @@ public class AdminAction extends ActionSupport
 		return SUCCESS;
 	}
 	
+	public static JSONArray getAlertsPointsData() throws Exception {
+
+		HttpServletRequest request = ServletActionContext.getRequest();
+		String orgDomain =request.getParameter("orgDomain");
+		String bridgeUrl =FacilioProperties.getBridgeUrl();
+		bridgeUrl = bridgeUrl +"="+orgDomain;
+		URL url = new URL(bridgeUrl);
+		JSONArray  jsonArray = new JSONArray();
+
+		HttpURLConnection conn = (HttpURLConnection)url.openConnection();
+
+		conn.setRequestMethod("GET");
+		try{
+			conn.connect(); 
+			int responsecode = conn.getResponseCode(); 
+			if(responsecode != 200) {
+				throw new RuntimeException("HttpResponseCode:" +responsecode);
+			} 
+			else
+			{
+				Scanner sc = new Scanner(url.openStream());
+				String inline="";
+				while(sc.hasNext())
+				{
+					inline = inline + sc.nextLine();
+				}
+				System.out.println("JSON data in string format");
+				System.out.println(inline);
+				sc.close();
+				jsonArray = new JSONArray(inline);
+
+
+
+			}
+
+		}catch(Exception e){
+			System.out.println("#Alters points Exception "+e);
+			logger.log(Level.SEVERE, "Alters points Exception" +e.getMessage(), e);
+
+		}
+		finally{
+			conn.disconnect();
+		}
+
+
+
+		return jsonArray;
+
+	}
+	
+	private String orgDomain;
+	public String getOrgDomain() {
+		return orgDomain;
+	}
+
+	public void setOrgDomain(String orgDomain) {
+		this.orgDomain = orgDomain;
+	}
 	private long statusLevel;
 	public long getStatusLevel() {
 		return statusLevel;

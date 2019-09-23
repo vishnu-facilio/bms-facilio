@@ -68,6 +68,7 @@ public class FacilioProperties {
     private static String iotVirtualHost;
     private static int iotEndPointPort;
     private static String iotExchange;
+    private static String bridgeUrl;
 
     private static String emailClient;
 
@@ -121,6 +122,7 @@ public class FacilioProperties {
                 iotPassword = PROPERTIES.getProperty("iot.secretKeyId");
                 iotVirtualHost = PROPERTIES.getProperty("iot.virtual.host");
                 iotExchange = PROPERTIES.getProperty("iot.exchange");
+                bridgeUrl = PROPERTIES.getProperty("bridge.url");
                 if(PROPERTIES.containsKey("iot.endpoint.port")) {
                     try {
                         iotEndPointPort = Integer.parseInt(PROPERTIES.getProperty("iot.endpoint.port"));
@@ -364,5 +366,12 @@ public class FacilioProperties {
         return iotExchange;
     }
 
+
     public static String getEmailClient(){return emailClient;}
+
+    
+    public static String getBridgeUrl() {
+        return bridgeUrl;
+    }
+
 }
