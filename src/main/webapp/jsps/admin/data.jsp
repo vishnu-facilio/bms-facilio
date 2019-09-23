@@ -8,11 +8,6 @@
 <%@page import="com.facilio.aws.util.FacilioProperties" %>
 <%@page import="com.facilio.bmsconsole.actions.AdminAction" %>
 
-<%
-    JSONArray jsonArray = new JSONArray();
-	jsonArray = AdminAction.getAlertsPointsData();
-%>
-
 
 
 
@@ -33,17 +28,29 @@ function handleShowMore(target)
 </script>
 
 <body>
- <form action="">
+ <form action="data">
     <label for="orgDomain"><h4>Enter ORG_Domain:</h4></label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
     <input type="text" id="orgDomain" name="orgDomain"><br>
 
 	<div align="center">
-	<input type = "submit" style="margin-left: -600px" name="data"  value = "Submit"/> 
+	
+	<input id="submit" type = "submit" style="margin-left: -600px" name="data"  value = "Submit" /> 
+	
+	
     </div>
     
   </form>
+  
+  
+<%
+    String orgDomain =request.getParameter("orgDomain");
+
+    JSONArray jsonArray = new JSONArray();
+    jsonArray = AdminAction.getAlertsPointsData(orgDomain);
+ %>
+  
   <%
-  if(jsonArray != null)
+  if(orgDomain != null && !orgDomain.isEmpty())
   {
   %>
      

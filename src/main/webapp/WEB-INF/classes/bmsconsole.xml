@@ -1131,7 +1131,9 @@
 			<action name="data" class="com.facilio.bmsconsole.actions.AdminAction">
 			<result   type="tiles">adminpage/data.jsp</result>
 			</action>					
-									
+			<action name="getAlertsPointsData" class="com.facilio.bmsconsole.actions.AdminAction" method ="getAlertsPointsData">
+			<result   type="tiles">adminpage/data.jsp</result>
+			</action>							
 			
 			</package>
 

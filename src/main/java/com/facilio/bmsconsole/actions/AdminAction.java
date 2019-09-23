@@ -340,11 +340,14 @@ public class AdminAction extends ActionSupport
 		return SUCCESS;
 	}
 	
-	public static JSONArray getAlertsPointsData() throws Exception {
-
-		HttpServletRequest request = ServletActionContext.getRequest();
-		String orgDomain =request.getParameter("orgDomain");
+	public static JSONArray getAlertsPointsData(String domain) throws Exception {
+		
+		
+		String orgDomain = domain;
 		String bridgeUrl =FacilioProperties.getBridgeUrl();
+		if(bridgeUrl ==null) {
+			throw new IllegalArgumentException("Facilio ALerts URL is null  ");
+		}
 		bridgeUrl = bridgeUrl +"="+orgDomain;
 		URL url = new URL(bridgeUrl);
 		JSONArray  jsonArray = new JSONArray();
