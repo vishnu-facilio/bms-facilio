@@ -80,12 +80,12 @@ public class ImportDataAction extends FacilioAction {
 		JSONObject moduleInfo = new JSONObject();
 		if(module != null) {
 			moduleInfo.put("moduleExists", true);
+	        importProcessContext.setModuleId(module.getModuleId());
 		}
 		else {
 			moduleInfo.put("moduleExists", false);
 		}
 		importProcessContext.setImportMode(1);
-        importProcessContext.setModuleId(module.getModuleId());
 
 		
 		setModuleExists(moduleInfo);
