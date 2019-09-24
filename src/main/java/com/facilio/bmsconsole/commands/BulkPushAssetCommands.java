@@ -124,7 +124,7 @@ public static List<Long> populateData(ImportProcessContext importProcessContext,
 			Thread.sleep(10000L);
 			
 			for(ReadingContext readingContext : readingsList) {
-				if (AccountUtil.getCurrentOrg().getId() == 1) {
+				if (AccountUtil.getCurrentOrg().getId() == 172) {
 					FacilioChain rotatingItemChain = TransactionChainFactory.getAddOrUpdateRotatingItemToolChain();
 					rotatingItemChain.getContext().put(FacilioConstants.ContextNames.RECORD, readingContext);
 					rotatingItemChain.execute();
