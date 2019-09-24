@@ -484,6 +484,10 @@ public class SelectRecordsBuilder<E extends ModuleBaseWithCustomFields> implemen
 		return builder.constructSelectStatement();
 	}
 
+	public Object[] getWhereValues() {
+		return builder.getWhereValue();
+	}
+
 	private boolean queryConstructed = false;
 
 	private Set<FacilioField> constructQuery() {

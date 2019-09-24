@@ -15,6 +15,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -638,18 +639,19 @@ public class WorkflowUtil {
 		
 		String name = exp.getName();
 		
-		if(exp.isCustomFunctionResultEvaluator()) {
-			code = code + name +" = NameSpace("+exp.getDefaultFunctionContext().getNameSpace()+")."+exp.getDefaultFunctionContext().getFunctionName()+exp.getDefaultFunctionContext().getParams()+";\n";
+		if(exp.getDefaultFunctionContext() != null) {
+			String paramString = exp.getDefaultFunctionContext().getParams().replace("'", "\"");
+			code = code + name +" = NameSpace(\""+exp.getDefaultFunctionContext().getNameSpace()+"\")."+exp.getDefaultFunctionContext().getFunctionName()+"("+paramString+");\n";
 		}
-		if(exp.getConstant() != null) {
+		else if(exp.getConstant() != null) {
 			code = code + name +" = "+exp.getConstant()+";\n";
 		}
-		if(exp.getExpr() != null) {
+		else if(exp.getExpr() != null) {
 			code = code + name +" = "+exp.getExpr()+";\n";
 		}
-		if(exp.getPrintStatement() != null) {
-			
-			code = code + "log "+exp.getPrintStatement()+";\n";
+		else if(exp.getPrintStatement() != null) {
+			String printStatement = exp.getPrintStatement().replace("'", "\"");
+			code = code + "log "+printStatement+";\n";
 		}
 		else {
 			String moduleName = exp.getModuleName().trim();
@@ -657,12 +659,14 @@ public class WorkflowUtil {
 			String field = exp.getFieldName();
 			String aggregate = exp.getAggregateString();
 			String orderBy = exp.getOrderByFieldName();
-			
+			String sortBy = exp.getSortBy();
 			String pattern = criteria.getPattern();
 			
 			pattern = pattern.replace("or", " || ");
 			pattern = pattern.replace("and", " && ");
-			pattern = pattern.substring(1, pattern.length()-1);
+			if(pattern.charAt(0) == '(' && pattern.charAt(pattern.length()-1) == ')') {
+				pattern = pattern.substring(1, pattern.length()-1);
+			}
 			
 			for(String key :criteria.getConditions().keySet()) {
 				Condition condition = criteria.getConditions().get(key);
@@ -673,14 +677,59 @@ public class WorkflowUtil {
 				String operatorStringValue = opp.getOperator().trim();
 				
 				String conditionString = null;
+				List<String> dateOperatorKeys = new ArrayList(DateOperators.getAllOperators().keySet());
+				dateOperatorKeys.removeAll(CommonOperators.getAllOperators().keySet());
+				dateOperatorKeys.remove(DateOperators.ISN_T.getOperator());
+				dateOperatorKeys.remove(DateOperators.IS.getOperator());
+				
+				
 				if(operatorStringValue.equals("between")) {
 					String[] values = getMultipleValueStringFromValue(value);
-					conditionString = conditionFieldName +" > "+ values[0] +" && "+conditionFieldName +" < "+ values[1];
+					conditionString = conditionFieldName +" >= "+ values[0] +" && "+conditionFieldName +" <= "+ values[1];
+				}
+				else if (operatorStringValue.equals("is empty")) {
+					conditionString = conditionFieldName +" == null";
+				}
+				else if (operatorStringValue.equals("is not empty")) {
+					conditionString = conditionFieldName +" != null";
+				}
+				else if (dateOperatorKeys.contains(operatorStringValue)) {
+					
+					String dateOperatorValue = null;
+					if(value != null) {
+						if(value.contains(",")) {
+							String[] values = value .split(",");
+							
+							String value1 = getValueStringFromValue(values[0]);
+							String value2 = getValueStringFromValue(values[1]);
+							
+							dateOperatorValue = value1 +","+value2;
+						}
+						else {
+							dateOperatorValue = value;
+						}
+					}
+					String dateOperatorVal = null;
+					operatorStringValue = "\""+operatorStringValue+"\"";
+					if(dateOperatorValue != null && !dateOperatorValue.equals("null") && !dateOperatorValue.isEmpty()) {
+						dateOperatorVal =  "NameSpace(\"date\").getDateRange("+operatorStringValue+","+dateOperatorValue+")";
+					}
+					else {
+						dateOperatorVal =  "NameSpace(\"date\").getDateRange("+operatorStringValue+")";
+					}
+					
+					conditionString = conditionFieldName +" == "+ dateOperatorVal;
 				}
 				else {
 					value = getValueStringFromValue(value);
 					if(operatorStringValue.equals("=")) {
 						operatorStringValue = "==";
+					}
+					if(operatorStringValue.equals("is")) {
+						operatorStringValue = "==";
+					}
+					if(operatorStringValue.equals("isn't")) {
+						operatorStringValue = "!=";
 					}
 					conditionString = conditionFieldName +" "+ operatorStringValue +" "+ value;
 				}
@@ -691,10 +740,14 @@ public class WorkflowUtil {
 			db = db + "field : \""+field+"\",";
 			db = db + "aggregation : \""+aggregate+"\",";
 			if(orderBy != null) {
-				db = db + "order by : \""+orderBy+"\"";
+				String sort = "asc";
+				if(sortBy != null) {
+					sortBy = sortBy.toLowerCase();
+				}
+				db = db + "orderBy : \""+orderBy+"\" "+sort+",";
 			}
-			
-			code = code + "Module(\""+moduleName+"\").fetch({"+db+"});\n";
+			db = db.substring(0, db.length()-1);
+			code = code + name + " = Module(\""+moduleName+"\").fetch({"+db+"});\n";
 		}
 		
 		return code;
@@ -702,6 +755,7 @@ public class WorkflowUtil {
 	
 	static String getValueStringFromValue(String value) {
 		
+		value = value.trim();
 		if(value.contains("${") && value.contains("}")) {
 			value = value.substring(2, value.length() - 1);
 		}
@@ -711,7 +765,7 @@ public class WorkflowUtil {
 		
 		String[] values = value.split(",");
 		for(int i=0;i<values.length;i++) {
-			String value1 = values[i];
+			String value1 = values[i].trim();
 			if(value1.contains("${") && value1.contains("}")) {
 				value1 = value1.substring(2, value1.length() - 1);
 			}
@@ -721,10 +775,10 @@ public class WorkflowUtil {
 		return values;
 	}
 	
-	public static String test() throws Exception {
+	public static WorkflowContext convertOldWorkflowToNew(long wfid) throws Exception {
 		// TODO Auto-generated method stub
 		
-		WorkflowContext workflow = WorkflowUtil.getWorkflowContext(3l, true);
+		WorkflowContext workflow = WorkflowUtil.getWorkflowContext(wfid, true);
 		
 		List<ParameterContext> params = workflow.getParameters();
 		String paramString = "";
@@ -736,7 +790,7 @@ public class WorkflowUtil {
 			paramString = paramString.substring(0, paramString.length()-1);
 		}
 		
-		String code = "void test("+paramString+") {";
+		String code = "void test("+paramString+") {\n";
 		
 		for(WorkflowExpression expression : workflow.getExpressions()) {
 			if(expression instanceof ExpressionContext) {
@@ -755,7 +809,7 @@ public class WorkflowUtil {
 					 
 					 ExpressionContext exp = (ExpressionContext) itrWorkflowExpression;
 					 
-					 getExpressionOldToNew(exp, code);
+					 code = getExpressionOldToNew(exp, code);
 				 }
 				 code = code +"}\n";
 			 }
@@ -773,7 +827,7 @@ public class WorkflowUtil {
 						 
 						 ExpressionContext exp = (ExpressionContext) itrWorkflowExpression;
 						 
-						 getExpressionOldToNew(exp, code);
+						 code = getExpressionOldToNew(exp, code);
 					 }
 				 }
 				 code = code +"}\n";
@@ -786,7 +840,7 @@ public class WorkflowUtil {
 								 
 								 ExpressionContext exp = (ExpressionContext) itrWorkflowExpression;
 								 
-								 getExpressionOldToNew(exp, code);
+								 code = getExpressionOldToNew(exp, code);
 							 }
 						 }
 						 code = code +"}\n";
@@ -799,7 +853,7 @@ public class WorkflowUtil {
 							 
 							 ExpressionContext exp = (ExpressionContext) itrWorkflowExpression;
 							 
-							 getExpressionOldToNew(exp, code);
+							 code = getExpressionOldToNew(exp, code);
 						 }
 					 }
 					 code = code +"}\n";
@@ -813,8 +867,18 @@ public class WorkflowUtil {
 		
 		code = code + "}";
 		
+		workflow.setWorkflowV2String(code);
+		workflow.setIsV2Script(true);
 		
-		return code;
+		boolean res = workflow.validateWorkflow();
+		
+		if(!res) {
+			System.out.println("errors -----"+ workflow.getErrorListener());
+		}
+		else {
+			System.out.println("no errors -----"+ workflow.getErrorListener());
+		}
+		return workflow;
 	}
 	
 	public static WorkflowContext getWorkflowContext(Long workflowId) throws Exception  {
@@ -2092,7 +2156,7 @@ public class WorkflowUtil {
 	
 	public static String getStringValueFromDouble (Double value) {
 		if(value != null)
-		{	
+		{
 			DecimalFormat decimalFormat = new DecimalFormat("#");
 			decimalFormat.setMaximumFractionDigits(340);
 		    String convertedString = decimalFormat.format(value);
