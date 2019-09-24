@@ -356,13 +356,16 @@ public class FetchReportDataCommand extends FacilioCommand {
 			countField.setName(aggrFieldName);
 
 			idField.setName(outerJoinField.getName());
+
+			String queryString = newSelectBuilder.constructQueryString();
 			GenericSelectRecordBuilder newSelect = new GenericSelectRecordBuilder()
 					.table(lookupModule.getTableName())
 					.select(Arrays.asList(idField, countField))
-					.leftJoinQuery(newSelectBuilder.constructQueryString(), "inn")
+					.leftJoinQuery(queryString, "inn")
 						.on(lookupModule.getTableName() + "." + idField.getColumnName() + " = inn." + outerJoinField.getName())
 					.andCondition(CriteriaAPI.getCondition(idField.getCompleteColumnName(), idField.getName(), StringUtils.join(dp.getxAxis().getSelectValuesOnly(), ","), NumberOperators.EQUALS))
 					;
+			newSelect.addWhereValue(Arrays.asList(newSelectBuilder.getWhereValues()), 0);
 			if (CollectionUtils.isNotEmpty(dp.getOrderBy()) && (dp.getOrderByFuncEnum() != null && dp.getOrderByFuncEnum() != OrderByFunction.NONE)) {
 				newSelect.orderBy(countField.getCompleteColumnName() + " " + dp.getOrderByFuncEnum().getStringValue());
 			}
