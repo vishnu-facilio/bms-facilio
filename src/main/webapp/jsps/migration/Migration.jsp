@@ -1,4 +1,4 @@
-Mig to run a Job
+
 <%@page import="com.facilio.modules.FieldType"%>
 <%@page import="com.facilio.modules.FieldFactory"%>
 <%@page import="java.util.Map"%>
@@ -59,10 +59,10 @@ for(Map<String, Object> org :orgids) {
 	
 	Long orgid = (Long) org.get("orgId");
 	
-	if(orgid != 75) {
+	/* if(orgid != 75) {
 		continue;
 	}
-	
+	 */
 	AccountUtil.setCurrentAccount(orgid);
 	
 	out.println("orgid -- "+orgid);
@@ -93,7 +93,12 @@ for(Map<String, Object> org :orgids) {
 			}
 		}
 		catch(Exception e) {
-			out.println("exception occured  -- "+workflow.getId());
+			if(e.getMessage() != null && e.getMessage().contains("Workflow Contains '.'"))  {
+				out.println("workflow With . fields  -- "+workflow.getId());
+			}
+			else {
+				out.println("exception occured  -- "+workflow.getId());
+			}
 		}
 	}
 }

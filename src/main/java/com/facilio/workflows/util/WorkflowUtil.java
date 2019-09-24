@@ -637,9 +637,13 @@ public class WorkflowUtil {
 	
 	private static final Pattern REG_EX = Pattern.compile("([1-9]\\d*)");
 	
-	public static String getExpressionOldToNew(ExpressionContext exp,String code) {
+	public static String getExpressionOldToNew(ExpressionContext exp,String code) throws Exception {
 		
 		String name = exp.getName();
+		
+		if(name.contains(".")) {
+			throw new Exception("Workflow Contains '.'");
+		}
 		
 		if(exp.getDefaultFunctionContext() != null) {
 			String paramString = exp.getDefaultFunctionContext().getParams().replace("'", "\"");
@@ -793,6 +797,9 @@ public class WorkflowUtil {
 		String paramString = "";
 		
 		for(ParameterContext param :params) {
+			if(param.getName().contains(".")) {
+				throw new Exception("Workflow Contains '.'");
+			}
 			paramString = paramString + param.getTypeString() +" "+param.getName()+",";
 		}
 		if(paramString .length() > 0) {
