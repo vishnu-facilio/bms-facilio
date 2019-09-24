@@ -620,13 +620,23 @@ public class UserAction extends FacilioAction {
 	}
 	
 	public String uploadUserAvatar() throws Exception {
-		
-		FileStore fs = FileStoreFactory.getInstance().getFileStore();
-		long fileId = fs.addFile(getAvatarFileName(), getAvatar(), getAvatarContentType());
-		
-		AccountUtil.getUserBean().updateUserPhoto(userId, fileId);
-		
-		setAvatarUrl(fs.getPrivateUrl(fileId));
+		if(!FacilioProperties.isProduction() || FacilioProperties.isServicesEnabled()){
+			com.facilio.services.filestore.FileStore fs = com.facilio.services.factory.FacilioFactory.getFileStore();
+			long fileId = fs.addFile(getAvatarFileName(), getAvatar(), getAvatarContentType());
+
+			AccountUtil.getUserBean().updateUserPhoto(userId, fileId);
+
+			setAvatarUrl(fs.getPrivateUrl(fileId));
+		}
+		else{
+			FileStore fs = FileStoreFactory.getInstance().getFileStore();
+			long fileId = fs.addFile(getAvatarFileName(), getAvatar(), getAvatarContentType());
+
+			AccountUtil.getUserBean().updateUserPhoto(userId, fileId);
+
+			setAvatarUrl(fs.getPrivateUrl(fileId));
+		}
+
 		
 		return SUCCESS;
 	}
