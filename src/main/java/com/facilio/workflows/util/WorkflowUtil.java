@@ -635,6 +635,8 @@ public class WorkflowUtil {
 		return null;
 	}
 	
+	private static final Pattern REG_EX = Pattern.compile("([1-9]\\d*)");
+	
 	public static String getExpressionOldToNew(ExpressionContext exp,String code) {
 		
 		String name = exp.getName();
@@ -667,9 +669,14 @@ public class WorkflowUtil {
 			if(pattern.charAt(0) == '(' && pattern.charAt(pattern.length()-1) == ')') {
 				pattern = pattern.substring(1, pattern.length()-1);
 			}
-			
-			for(String key :criteria.getConditions().keySet()) {
+			Matcher matcher = REG_EX.matcher(pattern);
+			int i = 0;
+			StringBuilder patternBuilder = new StringBuilder();
+			while (matcher.find()) {
+				
+				String key = matcher.group(1);
 				Condition condition = criteria.getConditions().get(key);
+				
 				String conditionFieldName = condition.getFieldName();
 				Operator opp = condition.getOperator();
 				String value = condition.getValue();
@@ -733,10 +740,12 @@ public class WorkflowUtil {
 					}
 					conditionString = conditionFieldName +" "+ operatorStringValue +" "+ value;
 				}
-				pattern = pattern.replace(key, conditionString);
+				patternBuilder.append(pattern.substring(i, matcher.start()));
+				patternBuilder.append(conditionString);
+				i = matcher.end();
 			}
-			
-			String db = "criteria : ["+pattern +"],";
+			patternBuilder.append(pattern.substring(i, pattern.length()));
+			String db = "criteria : ["+patternBuilder.toString() +"],";
 			db = db + "field : \""+field+"\",";
 			db = db + "aggregation : \""+aggregate+"\",";
 			if(orderBy != null) {
