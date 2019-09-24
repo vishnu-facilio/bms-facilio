@@ -284,6 +284,7 @@
 			"workflow" : "Map assetAlarmDetails(Number resourceId) {
 				date = NameSpace(\"date\");
 				durtaion = 0;
+                durationInMilli = 0;
 				thisCurrentYear = date.getDateRange(\"Current Year\");
 				readingAlarmOccurrence = Module(\"readingalarmoccurrence\");
 				occurenceThisMonthCrit = null;
@@ -317,7 +318,8 @@
 						aggregation: \"sum, duration\"
 					};
 					durationrecord = readingAlarmOccurrence.fetch(ruleDurationCriteria);
-					duration = durationrecord;
+					duration = durationrecord ;
+					durationInMilli = duration * 1000 ;
 					ruleObj = readingRuleModule.fetch(readingRuleCrite);
 					if (ruleObj != null) {
 						firstRes =ruleObj[0];
@@ -325,7 +327,7 @@
 					}
 				}
 				resMap[\"commonRule\"] = commonRule;
-				resMap[\"duration\"] = duration;
+				resMap[\"duration\"] = durationInMilli;
 				resMap[\"durationInSeconds\"] = duration;
 				log resMap;
 				return resMap;
