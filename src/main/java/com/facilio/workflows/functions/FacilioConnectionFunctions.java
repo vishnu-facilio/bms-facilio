@@ -38,8 +38,6 @@ public enum FacilioConnectionFunctions implements FacilioWorkflowFunctionInterfa
 			
 			JSONObject resultJson = (JSONObject) new JSONParser().parse(res);
 			
-			System.out.println("res --- "+resultJson);
-			
 			return resultJson;
 		};
 		
