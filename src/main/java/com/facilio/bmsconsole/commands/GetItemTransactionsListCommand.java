@@ -162,7 +162,7 @@ public class GetItemTransactionsListCommand extends FacilioCommand {
 						item.setStoreRoom(StoreroomApi.getStoreRoom(item.getStoreRoom().getId()));
 						itemTransactions.setItem(item);
 						if(itemTransactions.getTransactionType() == TransactionType.MANUAL.getValue()) {
-							itemTransactions.setResource(ResourceAPI.getResource(itemTransactions.getParentId()));
+							itemTransactions.setResource(ResourceAPI.getExtendedResource(itemTransactions.getParentId()));
 						}
 					}
 				}

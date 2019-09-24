@@ -175,7 +175,7 @@ public class GetToolTransactionsListCommand extends FacilioCommand {
 						tool.setStoreRoom(StoreroomApi.getStoreRoom(tool.getStoreRoom().getId()));
 						toolTransactions.setTool(tool);
 						if(toolTransactions.getTransactionType() == TransactionType.MANUAL.getValue()) {
-							toolTransactions.setResource(ResourceAPI.getResource(toolTransactions.getParentId()));
+							toolTransactions.setResource(ResourceAPI.getExtendedResource(toolTransactions.getParentId()));
 						}
 					}
 				}
