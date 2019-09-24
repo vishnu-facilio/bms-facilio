@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
+import com.facilio.accounts.util.AccountUtil;
 import com.facilio.beans.ModuleBean;
 import com.facilio.bmsconsole.actions.ImportProcessContext;
 import com.facilio.bmsconsole.context.AssetCategoryContext;
@@ -17,6 +18,7 @@ import com.facilio.bmsconsole.context.ResourceContext;
 import com.facilio.bmsconsole.util.AssetsAPI;
 import com.facilio.bmsconsole.util.ImportAPI;
 import com.facilio.bmsconsole.util.ModuleLocalIdUtil;
+import com.facilio.chain.FacilioChain;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.fw.BeanFactory;
 import com.facilio.modules.FacilioModule;
@@ -122,6 +124,11 @@ public static List<Long> populateData(ImportProcessContext importProcessContext,
 			Thread.sleep(10000L);
 			
 			for(ReadingContext readingContext : readingsList) {
+				if (AccountUtil.getCurrentOrg().getId() == 1) {
+					FacilioChain rotatingItemChain = TransactionChainFactory.getAddOrUpdateRotatingItemToolChain();
+					rotatingItemChain.getContext().put(FacilioConstants.ContextNames.RECORD, readingContext);
+					rotatingItemChain.execute();
+				}
 				listOfIds.add(readingContext.getId());
 			}
 		}

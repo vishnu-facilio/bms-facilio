@@ -48,6 +48,7 @@ import com.facilio.chain.FacilioContext;
 import com.facilio.constants.FacilioConstants;
 import com.facilio.db.builder.GenericInsertRecordBuilder;
 import com.facilio.db.builder.GenericSelectRecordBuilder;
+import com.facilio.db.builder.mysql.SelectRecordBuilder;
 import com.facilio.fs.FileStore;
 import com.facilio.fs.FileStoreFactory;
 import com.facilio.fw.BeanFactory;
@@ -56,6 +57,7 @@ import com.facilio.modules.FacilioModule.ModuleType;
 import com.facilio.modules.FieldFactory;
 import com.facilio.modules.FieldType;
 import com.facilio.modules.FieldUtil;
+import com.facilio.modules.ModuleBaseWithCustomFields;
 import com.facilio.modules.SelectRecordsBuilder;
 import com.facilio.modules.fields.EnumField;
 import com.facilio.modules.fields.FacilioField;
@@ -458,12 +460,18 @@ public class ProcessImportCommand extends FacilioCommand {
 						fieldName = "priority";
 					}
 				}
-				GenericSelectRecordBuilder selectBuilder = new GenericSelectRecordBuilder().select(fieldsList)
-						.table(lookupField.getLookupModule().getTableName())
-						.andCustomWhere("LOWER(" + collumnName + ") = ?", value.toString().toLowerCase());
-//						.andCondition(CriteriaAPI.getCurrentOrgIdCondition(lookupField.getLookupModule()));
-
-				List<Map<String, Object>> props = selectBuilder.get();
+				if (lookupField.getModule().getName().equals(FacilioConstants.ContextNames.ASSET)) {
+					if (lookupField.getName().equals("rotatingItem")) {
+						collumnName = "ID";
+						fieldName = "id";
+					}
+				}
+				SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder =  new SelectRecordsBuilder<>()
+												.module(lookupField.getLookupModule())
+												.select(fieldsList)
+												.andCustomWhere("LOWER(" + collumnName + ") = ?", value.toString().toLowerCase());
+				
+				List<Map<String, Object>> props = selectBuilder.getAsProps();
 
 				if (props.isEmpty()) {
 

@@ -660,6 +660,13 @@ public class TransactionChainFactory {
 			return c;
 		}
 		
+		public static FacilioChain getAddOrUpdateRotatingItemToolChain() {
+			// Temp Chain for Import 
+			FacilioChain c = getDefaultChain();
+			c.addCommand(new AddRotatingItemToolForImportCommand());
+			return c;
+		}
+		
 		public static FacilioChain getUpdateAssetChain() {
 			FacilioChain c = getDefaultChain();
 			c.addCommand(new AddCategoryOnAssetUpdateCommand());
