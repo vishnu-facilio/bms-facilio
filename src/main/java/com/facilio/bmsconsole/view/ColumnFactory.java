@@ -548,7 +548,7 @@ public class ColumnFactory {
 		columns.add(new ViewField("termType", "Term Type"));
 		columns.add(new ViewField("shortDesc", "Short Description"));
 		columns.add(new ViewField("longDesc", "Long Description"));
-		columns.add(new ViewField("isEditable", "Editable"));
+//		columns.add(new ViewField("isEditable", "Editable"));
 		columns.add(new ViewField("defaultOnPo", "Default On PO"));
 		return columns;
 	}
