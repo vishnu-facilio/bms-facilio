@@ -59,10 +59,10 @@ for(Map<String, Object> org :orgids) {
 	
 	Long orgid = (Long) org.get("orgId");
 	
-	/* if(orgid != 75) {
+	if(orgid != 75) {
 		continue;
 	}
-	 */
+	
 	AccountUtil.setCurrentAccount(orgid);
 	
 	out.println("orgid -- "+orgid);
