@@ -102,6 +102,7 @@ public class ModuleBeanImpl implements ModuleBean {
 			if (dataInterval != 0) {
 				currentModule.setDataInterval(dataInterval);
 			}
+			currentModule.setStateFlowEnabled(rs.getBoolean("STATE_FLOW_ENABLED"));
 			
 			if(isFirst) {
 				module = currentModule;
