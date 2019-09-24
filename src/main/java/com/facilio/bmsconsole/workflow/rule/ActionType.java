@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.chain.Context;
 import org.apache.commons.collections4.CollectionUtils;
@@ -101,7 +102,7 @@ public enum ActionType {
 					String to = (String) obj.get("to");
 					if (to != null && !to.isEmpty() && checkIfActiveUserFromEmail(to)) {
 						List<String> emails = new ArrayList<>();
-						AwsUtil.sendEmail(obj);
+						FacilioFactory.getEmailClient().sendEmail(obj);
 
 						emails.add(to);
 						if (context != null) {
@@ -165,7 +166,7 @@ public enum ActionType {
 									LOGGER.info("Gonna Email : "+obj.toJSONString());
 								}
 
-								AwsUtil.sendEmail(obj);
+								FacilioFactory.getEmailClient().sendEmail(obj);
 								emails.add(to);
 							}
 						}

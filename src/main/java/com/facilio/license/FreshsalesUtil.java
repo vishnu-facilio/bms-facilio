@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.services.factory.FacilioFactory;
 import org.json.simple.JSONObject;
 
 import com.facilio.aws.util.AwsUtil;
@@ -38,7 +39,7 @@ public static void createLead(String module,String modulekey , JSONObject data) 
 			     json.put("subject", "New Lead Created "+data.get("email"));
 			     json.put("message", "<!--"+postData.toJSONString()+"-->");
 			     
-			AwsUtil.sendEmail(json);
+			FacilioFactory.getEmailClient().sendEmail(json);
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

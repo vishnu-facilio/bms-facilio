@@ -51,7 +51,7 @@ public class SMSUtil {
 		LOGGER.info(to+"=>"+message);
 		return tmessage.getSid();
 		
-		//AwsUtil.sendEmail(obj);
+		//FacilioFactory.getEmailClient().sendEmail(obj);
 	}
 	
 	

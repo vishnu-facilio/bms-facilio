@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.jobs;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.services.factory.FacilioFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -62,7 +63,7 @@ public class HistoricalScheduledRuleJob extends FacilioJob {
 		json.put("subject", "Historical Run completed for Scheduled Rule : "+jc.getJobId());
 		json.put("message", "Total Time taken for Historical Run for Scheduled Rule : "+jc.getJobId()+" between "+startTime+" and "+endTime+" is "+timeTaken);
 		
-		AwsUtil.sendEmail(json);
+		FacilioFactory.getEmailClient().sendEmail(json);
 	}
 
 }

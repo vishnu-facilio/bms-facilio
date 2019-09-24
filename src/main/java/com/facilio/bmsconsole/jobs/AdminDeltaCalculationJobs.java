@@ -5,6 +5,7 @@ package com.facilio.bmsconsole.jobs;
 
 import java.util.Map;
 
+import com.facilio.services.factory.FacilioFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -64,7 +65,7 @@ public class AdminDeltaCalculationJobs extends FacilioJob{
 				json.put("subject", "Delta Calculation completed : "+jobId);
 				json.put("message", msg);
 				
-				AwsUtil.sendEmail(json);
+				FacilioFactory.getEmailClient().sendEmail(json);
 		}		
 		catch(Exception e) {
 			System.out.println("Error occurred during delta calculation for job id : "+jc.getJobId()+ e);

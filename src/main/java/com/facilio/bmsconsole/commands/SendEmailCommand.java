@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.chain.Context;
 import org.json.simple.JSONObject;
 
@@ -44,7 +45,7 @@ public class SendEmailCommand extends FacilioCommand implements Serializable{
 				template.setSubject("Import of" + fileInfo.getFileName());
 				JSONObject emailJSON = template.getOriginalTemplate();
 				emailJSON.put("mailType", "html");
-				AwsUtil.sendEmail(emailJSON);
+				FacilioFactory.getEmailClient().sendEmail(emailJSON);
 				LOGGER.info("Import email sent for importJob:" + importProcessContext.getId() + "to" + user.getEmail());
 			}
 			else {

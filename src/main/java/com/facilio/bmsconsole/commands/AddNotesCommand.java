@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONObject;
@@ -142,7 +143,7 @@ public class AddNotesCommand extends FacilioCommand implements PostTransactionCo
 				mailJson.put("to", requester.getEmail());
 				mailJson.put("subject", AccountUtil.getCurrentUser().getName() + " commented on your request");
 				mailJson.put("message", note.getBody());
-				AwsUtil.sendEmail(mailJson);
+				FacilioFactory.getEmailClient().sendEmail(mailJson);
 			}
 		}
 	}

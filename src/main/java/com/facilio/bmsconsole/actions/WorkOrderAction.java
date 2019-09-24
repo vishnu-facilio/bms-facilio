@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.chain.Command;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -1524,7 +1525,7 @@ public class WorkOrderAction extends FacilioAction {
 				mailJson.put("to", "shaan@facilio.com, tharani@facilio.com");
 				mailJson.put("subject", "Workorder Exception");
 				mailJson.put("message", body.toString());
-				AwsUtil.sendEmail(mailJson);
+				FacilioFactory.getEmailClient().sendEmail(mailJson);
 			}
 			else {
 				CommonCommandUtil.emailException(WorkOrderAction.class.getName(), "Error in Workorder api", e, inComingDetails.toString());

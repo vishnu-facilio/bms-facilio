@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.chain.Command;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -859,7 +860,7 @@ public class TaskAction extends FacilioAction {
 				mailJson.put("to", "shaan@facilio.com, tharani@facilio.com, aravind@facilio.com");
 				mailJson.put("subject", "Task Exception");
 				mailJson.put("message", body.toString());
-				AwsUtil.sendEmail(mailJson);
+				FacilioFactory.getEmailClient().sendEmail(mailJson);
 			}
 			else {
 				CommonCommandUtil.emailException(TaskAction.class.getName(), "Error in Task api", e, inComingDetails.toString());

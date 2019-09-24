@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.text.StringSubstitutor;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -62,7 +63,7 @@ public enum AccountEmailTemplate {
 			EmailUtil.sendEmail(getTemplate(placeHolders));
 		} else {
 		}*/
-		AwsUtil.sendEmail(getTemplate(placeHolders));
+		FacilioFactory.getEmailClient().sendEmail(getTemplate(placeHolders));
 	}
 	
 	public static AccountEmailTemplate getEmailTemplate(int val) {

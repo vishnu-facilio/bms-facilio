@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.StringUtils;
 import org.json.simple.JSONArray;
@@ -123,7 +124,7 @@ public class SendReportMailCommand extends FacilioCommand {
 			toList = (String) template.get("to");
 		}
 		template.replace("to", toList);
- 		AwsUtil.sendEmail(template, files);
+ 		FacilioFactory.getEmailClient().sendEmail(template, files);
  		
 		return false;
 	}

@@ -184,7 +184,7 @@ public class HistoricalRunForReadingRule extends FacilioJob {
 //				json.put("subject", "Historical Run completed for RuleLogger : "+jc.getJobId());
 //				json.put("message", "Total Time taken for Historical Run for RuleLogger: "+jc.getJobId()+" Reading Rule : "+ruleId+" between "+startTime+" and "+endTime+" is "+timeTaken);
 //
-//				AwsUtil.sendEmail(json);
+//				FacilioFactory.getEmailClient().sendEmail(json);
 //			}
 		}
 		catch (Exception e) {

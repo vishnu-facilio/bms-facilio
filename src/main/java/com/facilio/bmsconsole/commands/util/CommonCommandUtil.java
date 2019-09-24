@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.chain.Context;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.tuple.Pair;
@@ -262,7 +263,7 @@ public class CommonCommandUtil {
 										;
 				json.put("message", body.toString());
 				
-				AwsUtil.sendEmail(json);
+				FacilioFactory.getEmailClient().sendEmail(json);
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -350,7 +351,7 @@ public class CommonCommandUtil {
 			checkDB(errorTrace, body);
 			String message = body.toString();
 			json.put("message", message);
-			//AwsUtil.sendEmail(json);
+			//FacilioFactory.getEmailClient().sendEmail(json);
 			if(FacilioProperties.isProduction() && !FacilioProperties.isOnpremise()) {
 				FAWSQueue.sendMessage("Exception", message);
 			}

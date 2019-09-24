@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.TimerTask;
 
+import com.facilio.services.factory.FacilioFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -50,7 +51,7 @@ public class FacilioExceptionProcessor extends TimerTask {
                 json.put("subject", orgWithClass+" - Exception Mail");
                 json.put("message", builder.toString());
                 try {
-                    AwsUtil.sendEmail(json);
+                    FacilioFactory.getEmailClient().sendEmail(json);
                     LOGGER.info("calling delete msg with "+ RECEIPT_HANDLE_LIST.get(orgWithClass).size());
                     FAWSQueue.deleteMessage(QUEUE, RECEIPT_HANDLE_LIST.get(orgWithClass));
                 } catch (Exception e) {

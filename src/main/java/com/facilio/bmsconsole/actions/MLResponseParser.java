@@ -3,6 +3,7 @@ package com.facilio.bmsconsole.actions;
 import java.time.ZoneId;
 import java.util.List;
 
+import com.facilio.services.factory.FacilioFactory;
 import org.apache.commons.chain.Context;
 import org.apache.log4j.LogManager;
 import org.json.simple.JSONObject;
@@ -87,7 +88,7 @@ public class MLResponseParser extends ActionSupport
 									;
 			json.put("message", body.toString());
 			
-			AwsUtil.sendEmail(json);
+			FacilioFactory.getEmailClient().sendEmail(json);
 		}
 		catch(Exception e)
 		{

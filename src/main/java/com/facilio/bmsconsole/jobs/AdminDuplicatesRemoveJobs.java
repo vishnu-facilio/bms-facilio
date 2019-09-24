@@ -5,6 +5,7 @@ package com.facilio.bmsconsole.jobs;
 
 import java.util.Map;
 
+import com.facilio.services.factory.FacilioFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -63,7 +64,7 @@ public class AdminDuplicatesRemoveJobs extends FacilioJob{
 					json.put("subject", "Duplicate Data Remove : "+jobId);
 					json.put("message", msg);
 					
-					AwsUtil.sendEmail(json);
+					FacilioFactory.getEmailClient().sendEmail(json);
 			}		
 			catch(Exception e) {
 				LOGGER.info("Error occurred during Duplicate Data Remove for job id : "+jc.getJobId(), e);

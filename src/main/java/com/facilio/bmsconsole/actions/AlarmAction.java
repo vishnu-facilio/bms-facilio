@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.facilio.services.factory.FacilioFactory;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.json.simple.JSONObject;
@@ -444,7 +445,7 @@ public class AlarmAction extends FacilioAction {
 				}
 				
 				mailJson.put("to", value);
-				AwsUtil.sendEmail(mailJson);
+				FacilioFactory.getEmailClient().sendEmail(mailJson);
 			}
 			else if ("mobile".equalsIgnoreCase(type)) {
 				value = AlarmAPI.sendAlarmSMS(alarm, value, message);
