@@ -88,16 +88,16 @@ public class PreventiveMaintenanceReadingsCommand extends FacilioCommand {
 
 		while (workOrderItr.hasNext()) {
 			WorkOrderContext workOrder = workOrderItr.next();
-			List<TaskContext> taskContexts = taskMap.get(workOrder.getId());
+			List<TaskContext> woTaskContexts = taskMap.get(workOrder.getId());
 
-			if (CollectionUtils.isEmpty(taskContextList)) {
+			if (CollectionUtils.isEmpty(woTaskContexts)) {
 				workOrderItr.remove();
 			}
 
 			Map<Long, List<TaskContext>> woTasksMap = new HashMap<>();
 			workOrder.setTasks(woTasksMap);
 
-			for (TaskContext taskContext: taskContexts) {
+			for (TaskContext taskContext: woTaskContexts) {
 				long sectionId = taskContext.getSectionId();
 
 				if (woTasksMap.get(sectionId) == null) {
