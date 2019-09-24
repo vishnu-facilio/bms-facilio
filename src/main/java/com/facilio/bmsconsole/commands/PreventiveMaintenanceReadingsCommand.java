@@ -11,6 +11,7 @@ import com.facilio.fw.BeanFactory;
 import com.facilio.modules.*;
 import com.facilio.modules.fields.FacilioField;
 import org.apache.commons.chain.Context;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -83,13 +84,19 @@ public class PreventiveMaintenanceReadingsCommand extends FacilioCommand {
 			taskMap.get(taskContext.getParentTicketId()).add(taskContext);
 		}
 
-		LOGGER.error("task map " + Arrays.toString(taskMap.entrySet().toArray()));
+		Iterator<WorkOrderContext> workOrderItr = workOrderContextList.iterator();
 
-		for (WorkOrderContext workOrder : workOrderContextList) {
+		while (workOrderItr.hasNext()) {
+			WorkOrderContext workOrder = workOrderItr.next();
 			List<TaskContext> taskContexts = taskMap.get(workOrder.getId());
+
+			if (CollectionUtils.isEmpty(taskContextList)) {
+				workOrderItr.remove();
+			}
 
 			Map<Long, List<TaskContext>> woTasksMap = new HashMap<>();
 			workOrder.setTasks(woTasksMap);
+
 			for (TaskContext taskContext: taskContexts) {
 				long sectionId = taskContext.getSectionId();
 
