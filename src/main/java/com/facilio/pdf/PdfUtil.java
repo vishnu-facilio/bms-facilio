@@ -3,6 +3,8 @@ package com.facilio.pdf;
 import java.io.File;
 import java.io.IOException;
 
+import com.facilio.services.factory.FacilioFactory;
+import com.facilio.services.filestore.FacilioFileStore;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 
@@ -92,7 +94,7 @@ public class PdfUtil {
     		return exportUrlAsPdf(url, false, null, formats);
     }
     
-    public static String exportUrlAsPdf(String url, boolean isS3Url, String name, FileFormat... formats){
+    public static String exportUrlAsPdf(String url, boolean isPublicUrl, String name, FileFormat... formats){
         FileFormat format = FileFormat.PDF;
         if (formats != null && formats.length > 0) {
             format = formats[0];
@@ -100,17 +102,33 @@ public class PdfUtil {
         String pdfFileLocation = convertUrlToPdfNew(AccountUtil.getCurrentOrg().getOrgId(), url, format);
         File pdfFile = new File(pdfFileLocation);
         if(pdfFileLocation != null) {
-            FileStore fs = FileStoreFactory.getInstance().getFileStore();
-            long fileId = 0;
-            try {
-                fileId = fs.addFile(name != null ? name+format.getExtention() : pdfFile.getName(), pdfFile, format.getContentType());
-                if (isS3Url) {
-                		return fs.getOrgiDownloadUrl(fileId);
+            if(!FacilioProperties.isProduction() || FacilioProperties.isServicesEnabled()){
+                com.facilio.services.filestore.FileStore fs =  com.facilio.services.factory.FacilioFactory.getFileStore();
+                long fileId = 0;
+                try {
+                    fileId = fs.addFile(name != null ? name+format.getExtention() : pdfFile.getName(), pdfFile, format.getContentType());
+                    if (isPublicUrl) {
+                        return fs.getOrgiDownloadUrl(fileId);
+                    }
+                    return fs.getDownloadUrl(fileId);
+                } catch (Exception e) {
+                    LOGGER.info("Exception occurred ", e);
                 }
-                return fs.getDownloadUrl(fileId);
-            } catch (Exception e) {
-                LOGGER.info("Exception occurred ", e);
+
+            }else{
+                FileStore fs = FileStoreFactory.getInstance().getFileStore();
+                long fileId = 0;
+                try {
+                    fileId = fs.addFile(name != null ? name+format.getExtention() : pdfFile.getName(), pdfFile, format.getContentType());
+                    if (isPublicUrl) {
+                        return fs.getOrgiDownloadUrl(fileId);
+                    }
+                    return fs.getDownloadUrl(fileId);
+                } catch (Exception e) {
+                    LOGGER.info("Exception occurred ", e);
+                }
             }
+
         }
         return null;
     }

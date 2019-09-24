@@ -79,10 +79,18 @@ public class OrgBeanImpl implements OrgBean {
 			throw new IllegalArgumentException("Organization not found");
 		}
 		org.setPortalId(portalId);
-		FileStore fs = FileStoreFactory.getInstance().getFileStoreFromOrg(org.getId());
-		org.setLogoUrl(fs.getPrivateUrl(org.getLogoId(), true));
-		org.setOriginalUrl(fs.orginalFileUrl(org.getLogoId()));
-        if(portalInfo.getCustomDomain() != null) { 
+		if(!FacilioProperties.isProduction() || (FacilioProperties.isServicesEnabled())){
+			com.facilio.services.filestore.FileStore fs= com.facilio.services.factory.FacilioFactory.getFileStoreFromOrg(org.getId());
+			org.setLogoUrl(fs.getPrivateUrl(org.getLogoId(), true));
+			org.setOriginalUrl(fs.orginalFileUrl(org.getLogoId()));
+		}
+		else{
+			FileStore fs = FileStoreFactory.getInstance().getFileStoreFromOrg(org.getId());
+			org.setLogoUrl(fs.getPrivateUrl(org.getLogoId(), true));
+			org.setOriginalUrl(fs.orginalFileUrl(org.getLogoId()));
+		}
+
+        if(portalInfo.getCustomDomain() != null) {
             org.setDomain(portalInfo.getCustomDomain()); 
         } else { 
             org.setDomain(org.getDomain() + "." + FacilioProperties.getConfig("portal.domain"));

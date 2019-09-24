@@ -845,9 +845,15 @@ public class UserBeanImpl implements UserBean {
 			boolean isPortalRequest) throws Exception {
 		User user = FieldUtil.getAsBeanFromMap(prop, User.class);
 		if (user.getPhotoId() > 0) {
-			FileStore fs = FileStoreFactory.getInstance().getFileStoreFromOrg(user.getOrgId(), user.getOuid());
-			user.setAvatarUrl(fs.getPrivateUrl(user.getPhotoId(), isPortalRequest));
-			user.setOriginalUrl(fs.orginalFileUrl(user.getPhotoId()));
+			if(!FacilioProperties.isProduction() || FacilioProperties.isServicesEnabled()){
+				com.facilio.services.filestore.FileStore fs = com.facilio.services.factory.FacilioFactory.getFileStoreFromOrg(user.getOrgId(), user.getOuid());
+				user.setAvatarUrl(fs.getPrivateUrl(user.getPhotoId(), isPortalRequest));
+				user.setOriginalUrl(fs.orginalFileUrl(user.getPhotoId()));
+			}else {
+				FileStore fs = FileStoreFactory.getInstance().getFileStoreFromOrg(user.getOrgId(), user.getOuid());
+				user.setAvatarUrl(fs.getPrivateUrl(user.getPhotoId(), isPortalRequest));
+				user.setOriginalUrl(fs.orginalFileUrl(user.getPhotoId()));
+			}
 		}
 
 		if (fetchRole) {

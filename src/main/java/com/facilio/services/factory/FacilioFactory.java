@@ -2,25 +2,34 @@ package com.facilio.services.factory;
 
 import com.facilio.services.email.EmailClient;
 import com.facilio.services.email.EmailFactory;
+import com.facilio.services.filestore.FileStore;
+import com.facilio.services.filestore.FileStoreFactory;
 
 
 import java.util.Objects;
 
 public class FacilioFactory {
 
-    private static final Object LOCK = new Object();
 
     private FacilioFactory(){}
 
-   /* public static FileStore getFileStore(){
+    public static FileStore getFileStore(){
 
         return FileStoreFactory.getInstance().getFileStore();
 
-    }*/
+    }
 
 
     public static EmailClient getEmailClient(){
         return EmailFactory.getEmailClient();
+    }
+
+    public static FileStore getFileStoreFromOrg(long id) {
+        return FileStoreFactory.getInstance().getFileStoreFromOrg(id);
+    }
+
+    public static FileStore getFileStoreFromOrg(long orgId, long ouid) {
+        return FileStoreFactory.getInstance().getFileStoreFromOrg(orgId,ouid);
     }
 
  /*   public static MessageQueue getMessageQueue(){

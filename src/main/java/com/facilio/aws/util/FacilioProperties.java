@@ -71,6 +71,8 @@ public class FacilioProperties {
     private static String bridgeUrl;
 
     private static String emailClient;
+    private static String fileStore;
+    private static boolean isServicesEnabled;
 
     static {
         loadProperties();
@@ -101,7 +103,9 @@ public class FacilioProperties {
                 kafkaProducer = PROPERTIES.getProperty("kafka.producer");
                 kafkaConsumer = PROPERTIES.getProperty("kafka.consumer");
                 isSmtp = "smtp".equalsIgnoreCase(PROPERTIES.getProperty("email.type"));
+                isServicesEnabled="enabled".equalsIgnoreCase(PROPERTIES.getProperty("services.isEnabled"));
                 emailClient = PROPERTIES.getProperty("service.email");
+                fileStore=PROPERTIES.getProperty("service.file.store");
                 anomalyTempDir = PROPERTIES.getProperty("anomalyTempDir", "/tmp");
                 anomalyCheckServiceURL = PROPERTIES.getProperty("anomalyCheckServiceURL", "http://localhost:7444/api");
                 anomalyBucket = PROPERTIES.getProperty("anomalyBucket","facilio-analytics");
@@ -374,4 +378,11 @@ public class FacilioProperties {
         return bridgeUrl;
     }
 
+    public static String getFileStore() {
+        return fileStore;
+    }
+
+    public static boolean isServicesEnabled() {
+        return isServicesEnabled;
+    }
 }
