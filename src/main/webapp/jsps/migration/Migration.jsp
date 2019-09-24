@@ -56,7 +56,12 @@ List<Map<String, Object>> orgids = select.get();
 
 List<Map<String, Object>> props = new ArrayList<>();
 for(Map<String, Object> org :orgids) {
+	
 	Long orgid = (Long) org.get("orgId");
+	
+	if(orgid != 75) {
+		continue;
+	}
 	
 	AccountUtil.setCurrentAccount(orgid);
 	
