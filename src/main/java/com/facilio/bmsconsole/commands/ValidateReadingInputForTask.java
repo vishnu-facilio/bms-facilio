@@ -102,7 +102,7 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 										Unit currentInputUnit = getCurrentInputUnit(rdm, currentTask, numberField);	
 										Double currentValueInSiUnit = UnitsUtil.convertToSiUnit(currentValue, currentInputUnit);
 										
-										if(numberField.isCounterField()) 
+										if(numberField.isCounterField() || (numberField.getName().equals("totalEnergyConsumption") && numberField.getModule().getName().equals("energydata"))) 
 										{
 											List<TaskErrorContext> taskErrors = checkIncremental(currentTask,numberField,rdm,currentValueInSiUnit,taskContext);
 											if(taskErrors!= null && !taskErrors.isEmpty()) {
@@ -164,11 +164,11 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 		{				
 			previousValue = getLatestInputReading(numberField, rdm, currentTask, "TTIME DESC", rdm.getTtime(), NumberOperators.LESS_THAN);	
 		}
-		else
+		else 
 		{
 			futureCase = true;
-			previousValue = getLatestInputReading(numberField, rdm, currentTask, "TTIME DESC", taskContext.getInputTime(), NumberOperators.LESS_THAN);
-			nextValue =	getLatestInputReading(numberField, rdm, currentTask, "TTIME ASC", taskContext.getInputTime(), NumberOperators.GREATER_THAN);
+			previousValue = getLatestInputReading(numberField, rdm, currentTask, "TTIME DESC", currentTask.getInputTime(), NumberOperators.LESS_THAN);
+			nextValue =	getLatestInputReading(numberField, rdm, currentTask, "TTIME ASC", currentTask.getInputTime(), NumberOperators.GREATER_THAN);
 		}	
 		
 		if(previousValue < 0 && nextValue < 0)
@@ -349,17 +349,29 @@ public class ValidateReadingInputForTask extends FacilioCommand {
 			SelectRecordsBuilder<ModuleBaseWithCustomFields> selectBuilder = new SelectRecordsBuilder<ModuleBaseWithCustomFields>()
 					.table(module.getTableName())
 					.module(module)
+					.select(Collections.singletonList(numberField))
 					.andCondition(CriteriaAPI.getCondition(fieldMap.get("parentId"), rdm.getResourceId()+"", NumberOperators.EQUALS))
-					.andCondition(CriteriaAPI.getCondition(fieldMap.get("ttime"), lastNdays.getStartTime()+","+(endTaskTime-1), DateOperators.BETWEEN))
-					.andCondition(CriteriaAPI.getCondition(numberField, 0+"", NumberOperators.NOT_EQUALS))
-					.aggregate(NumberAggregateOperator.AVERAGE, numberField);
+					.andCondition(CriteriaAPI.getCondition(fieldMap.get("ttime"), lastNdays.getStartTime()+","+(endTaskTime-1), DateOperators.BETWEEN));
 							
 			List<Map<String, Object>> res = selectBuilder.getAsProps();
-			if(res != null && !res.isEmpty()) {
-				Double average = (Double) res.get(0).get(numberField.getName());
-				return average;
+			if(res != null && !res.isEmpty()) { 			
+				double sum=0, avg=0, n=0;
+				for(Map<String, Object> prop: res)
+				{
+					if(prop.get(numberField.getName()) != null)
+					{
+						sum+=(double)prop.get(numberField.getName());
+						n++;
+					}			
+				}
+				if(n>7)
+				{
+					avg = sum/n;
+					return avg;
+				}
 			}
 		}
+		LOGGER.log(Level.INFO,"Avg not calculated, Currenttask ID: "+ taskContextId + " Current Input Value: " + currentInputValue);
 		return null;
 	}
 	
